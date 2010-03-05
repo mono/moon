@@ -63,10 +63,10 @@ class EventLists;
 #define GET_OBJ_ID(x) (x ? x->GetId () : 0)
 
 /* @CBindingRequisite */
-typedef void (* ToggleNotifyHandler) (EventObject *sender, bool isLastRef);
+typedef void (* ToggleNotifyHandler) (gpointer sender, bool isLastRef);
 class ToggleNotifyListener {
 public:
-	ToggleNotifyListener (EventObject *sender, ToggleNotifyHandler callback)
+	ToggleNotifyListener (gpointer sender, ToggleNotifyHandler callback)
 	{
 		this->callback = callback;
 		this->sender = sender;
@@ -80,7 +80,7 @@ public:
 	}
 
 private:
-	EventObject *sender;
+	gpointer sender;
 	ToggleNotifyHandler callback;
 };
 

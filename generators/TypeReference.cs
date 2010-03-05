@@ -357,10 +357,11 @@ class TypeReference {
 			case "callback_dom_event*":
 				managed_type = "DomEventCallback";
 				break;
+			case "InvalidateHandleDelegate":
+			case "HasMemberDelegate":
 			case "InvokeDelegate":
 			case "SetPropertyDelegate":
 			case "GetPropertyDelegate":
-			case "EventHandlerDelegate":
 				managed_type = Value;
 				break;
 			default:

@@ -1750,18 +1750,6 @@ detach_xaml_proxy (gpointer key, gpointer value, gpointer closure)
 	proxy->SetOwner (NULL);
 }
 
-NPObject *
-moonlight_object_to_npobject (MoonlightObject *obj)
-{
-	return (NPObject *) obj;
-}
-
-MoonlightObject *
-npobject_to_moonlight_object (NPObject *obj)
-{
-	return (MoonlightObject *) obj;
-}
-
 MoonlightObject::~MoonlightObject ()
 {
 	if (event_listener_proxies) {
@@ -1778,6 +1766,11 @@ MoonlightObject::destroy_proxy (gpointer data)
 {
 	EventListenerProxy *proxy = (EventListenerProxy*)data;
 	proxy->RemoveHandler ();
+}
+
+void
+MoonlightObject::Invalidate ()
+{
 }
 
 bool
@@ -1865,6 +1858,34 @@ MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
 		abort();
 #endif
 	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()));
+}
+
+void
+MoonlightObject::AddToggleRefNotifier (ToggleNotifyHandler tr)
+{
+	if (toggleNotifyListener)
+		return;
+
+	MOON_NPN_RetainObject (this);
+	toggleNotifyListener = new ToggleNotifyListener ((NPObject*)this, tr);
+}
+
+void
+MoonlightObject::RemoveToggleRefNotifier ()
+{
+	if (!toggleNotifyListener)
+		return;
+
+	delete toggleNotifyListener;
+	toggleNotifyListener = NULL;
+	MOON_NPN_ReleaseObject (this);
+}
+
+void
+MoonlightObject::InvokeToggleNotifyListener (bool isLastRef)
+{
+	if (toggleNotifyListener)
+		toggleNotifyListener->Invoke (isLastRef);
 }
 
 
@@ -1955,6 +1976,18 @@ _invoke_default (NPObject *npobj,
 	_set_deployment (npobj);
 	g_warning ("moonlight_object_invoke_default reached");
 	return false;
+}
+
+void
+moonlight_object_add_toggle_ref_notifier (NPObject* /*MoonlightObject* */ obj, ToggleNotifyHandler tr)
+{
+	((MoonlightObject*)obj)->AddToggleRefNotifier (tr);
+}
+
+void
+moonlight_object_remove_toggle_ref_notifier (NPObject* /*MoonlightObject* */ obj)
+{
+	((MoonlightObject*)obj)->RemoveToggleRefNotifier ();
 }
 
 static const MoonNameIdMapping
@@ -2089,7 +2122,12 @@ MoonlightScriptControlObject::Invalidate ()
 {
 	MoonlightObject::Invalidate ();
 
+	if (!settings_fetched)
+		MOON_NPN_ReleaseObject (settings);
 	settings = NULL;
+
+	if (!content_fetched)
+		MOON_NPN_ReleaseObject (content);
 	content = NULL;
 }
 
@@ -2102,10 +2140,12 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 	case MoonId_Settings:
 		MOON_NPN_RetainObject (settings);
 		OBJECT_TO_NPVARIANT (settings, *result);
+		settings_fetched = true;
 		return true;
 	case MoonId_Content:
 		MOON_NPN_RetainObject (content);
 		OBJECT_TO_NPVARIANT (content, *result);
+		content_fetched = true;
 		return true;
 	case MoonId_InitParams:
 		string_to_npvariant (plugin->GetInitParams (), result);
@@ -2481,15 +2521,34 @@ moonlight_content_allocate (NPP instance, NPClass *klass)
 	return new MoonlightContentObject (instance);
 }
 
+static void
+release_scriptable_object (gpointer unused_key,
+			   MoonlightScriptableObjectObject *value,
+			   gpointer unused_data)
+{
+	MOON_NPN_ReleaseObject (value);
+}
+
 MoonlightContentObject::~MoonlightContentObject ()
 {
 	// FIXME: need to free registered scriptable objects
 	if (registered_scriptable_objects) {
+		g_hash_table_foreach (registered_scriptable_objects, (GHFunc)release_scriptable_object, NULL);
 		g_hash_table_destroy (registered_scriptable_objects);
 		registered_scriptable_objects = NULL;
 	}
 	if (accessibility)
 		accessibility->unref();
+}
+
+void
+MoonlightContentObject::Invalidate ()
+{
+	if (registered_scriptable_objects) {
+		g_hash_table_foreach (registered_scriptable_objects, (GHFunc)release_scriptable_object, NULL);
+		g_hash_table_destroy (registered_scriptable_objects);
+		registered_scriptable_objects = NULL;
+	}
 }
 
 static const MoonNameIdMapping
@@ -2591,7 +2650,7 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		obj = (MoonlightScriptableObjectObject *) val;
 		
 		MOON_NPN_RetainObject (obj);
-		OBJECT_TO_NPVARIANT (obj, *result);
+		OBJECT_TO_NPVARIANT ((NPObject*)obj, *result);
 		return true;
 	}
 	default:
@@ -4601,15 +4660,22 @@ moonlight_scriptable_object_allocate (NPP instance, NPClass *klass)
 
 MoonlightScriptableObjectObject::~MoonlightScriptableObjectObject ()
 {
-	if (managed_scriptable) {
-		// FIXME: unref the scriptable object however we need to.
-		managed_scriptable = NULL;
-	}
-	
-	// FIXME: free the properties, events, and methods hashes.
-	g_hash_table_destroy (properties);
-	g_hash_table_destroy (methods);
-	g_hash_table_destroy (events);
+}
+
+void
+MoonlightScriptableObjectObject::Invalidate ()
+{
+	MoonlightObject::Invalidate ();
+
+	if (invalidate_handle)
+		invalidate_handle (this);
+
+	invalidate_handle = NULL;
+	invoke = NULL;
+	has_method = NULL;
+	has_property = NULL;
+	setprop = NULL;
+	getprop = NULL;
 }
 
 bool
@@ -4617,26 +4683,23 @@ MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 {
 	bool result;
 
-#if ds(!)0
 	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
+#if ds(!)0
 	printf ("is indexer: %s\n", MOON_NPN_IdentifierIsString (name) ? "false" : "true");
-	if (MOON_NPN_IdentifierIsString (name)) {
-		printf ("scriptable has property %x = %s\n", name, strname);
-	} else {
-		printf ("scriptable has property this[%d]\n", MOON_NPN_IntFromIdentifier (name));
-	}
 #endif
 
-	if (!MOON_NPN_IdentifierIsString (name))
+	if (!MOON_NPN_IdentifierIsString (name)) {
 		name = MOON_NPN_GetStringIdentifier ("item");
+		strname = MOON_NPN_UTF8FromIdentifier (name);
+	}
 
-	result = (g_hash_table_lookup (properties, name) != NULL
-		|| g_hash_table_lookup (events, name)) || MoonlightObject::HasProperty (name);
+	result = has_property ((NPObject*)this, strname) || MoonlightObject::HasProperty (name);
 
 #if ds(!)0
 	printf ("scriptable has property %x = %s: result: %i\n", name, strname, result);
-	MOON_NPN_MemFree (strname);
 #endif
+
+	MOON_NPN_MemFree (strname);
 
 
 	return result;
@@ -4646,7 +4709,8 @@ bool
 MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	bool res;
-	
+
+	char *exc_string = NULL;
 	Value **vargs = NULL;
 	guint32 argCount = 0;
 	if (!MOON_NPN_IdentifierIsString (name)) {
@@ -4664,16 +4728,18 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	printf ("getting scriptable object property %x = %s\n", name, strname);	
 #endif
 
-	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (properties, name);
-	if (!prop) {
+	Value v;
+
+	if ((res = getprop (this, strname, vargs, argCount, &v, &exc_string))) {
+		if (exc_string) {
+			MOON_NPN_SetException (this, exc_string);
+			g_free (exc_string);
+		}
+		else
+			value_to_variant (this, &v, result);
+	}
+	else {
 		res = MoonlightObject::GetProperty (id, name, result);
-	} else {
-		Value v;
-
-		getprop (managed_scriptable, strname, vargs, argCount, &v);
-
-		value_to_variant (this, &v, result);
-		res = true;		
 	}
 
 #if ds(!)0
@@ -4694,10 +4760,17 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 bool
 MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
-	ScriptableProperty *prop;
-	ScriptableEvent *event;
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
+
+	ds(printf ("setting scriptable object property %s\n", strname));
+
 	Value *v;
 
+	variant_to_value (value, &v);
+
+	bool res;
+
+	char *exc_string = NULL;
 	Value **vargs = NULL;
 	guint32 argCount = 0;
 	if (!MOON_NPN_IdentifierIsString (name)) {
@@ -4705,90 +4778,58 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 		vargs = new Value*[argCount];
 		vargs[0] = new Value (MOON_NPN_IntFromIdentifier (name));
 		name = MOON_NPN_GetStringIdentifier ("item");
+		strname = MOON_NPN_UTF8FromIdentifier (name);
 #if ds(!)0
 		printf ("index: %d\n", vargs[0]->AsInt32 ());
 #endif
 	}
 
-	// first we try the property hash
-	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
-
-		NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
-
-		ds(printf ("setting scriptable object property %s\n", strname));
-
-		variant_to_value (value, &v);
-		setprop (managed_scriptable, strname, vargs, argCount, v);
-		delete v;
-
-		if (argCount > 0) {
-			for (guint32 i = 0; i < argCount; i++)
-				delete vargs[i];
-			delete [] vargs;
+	if ((res = setprop (this, strname, vargs, argCount, v, &exc_string))) {
+		if (exc_string) {
+			MOON_NPN_SetException (this, exc_string);
+			g_free (exc_string);
 		}
-
-		MOON_NPN_MemFree (strname);
-		
-		return true;
 	}
-	
-	// if that fails, look for the event of that name
-	if ((event = (ScriptableEvent *) g_hash_table_lookup (events, name))) {
-#if ds(!)0
-		NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
-		printf ("adding scriptable object event %s\n", strname);
-		MOON_NPN_MemFree (strname);
-#endif
-		
-		if (NPVARIANT_IS_OBJECT (*value)) {
-			NPObject *cb_obj = NPVARIANT_TO_OBJECT (*value);
-
-			MOON_NPN_RetainObject (cb_obj);
-
-			addevent (managed_scriptable, event->event_handle, this, cb_obj);
-		} else {
-			DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.register_event (non-object)");
-		}
-		
-		return true;
+	else {
+		res = MoonlightObject::SetProperty (id, name, value);
 	}
 
-	return MoonlightObject::SetProperty (id, name, value);
-}
+	delete v;
 
-#if ds(!)0
-void 
-dump_ptr_npid_hash (gpointer key, gpointer value, gpointer user_data)
-{
-	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier ((NPIdentifier) key );
-	printf (" %i (%s) => %p\n", key, strname, value);
+	if (argCount > 0) {
+		for (guint32 i = 0; i < argCount; i++)
+			delete vargs[i];
+		delete [] vargs;
+	}
+
 	MOON_NPN_MemFree (strname);
+
+	return res;
 }
-#endif
 
 bool
 MoonlightScriptableObjectObject::HasMethod (NPIdentifier name)
 {
-	bool result;
+	bool result = false;
 	
-#if ds(!)0
 	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
-	printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) this: %p hash table: %p\n", name, strname, this, methods);
+#if ds(!)0
+	printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) this: %p\n", name, strname, this);
 #endif
 
-	result = g_hash_table_lookup (methods, name) != NULL;
-
+	if (strname)
+		result = has_method (this, strname);
 
 #if ds(!)0
 	if (!result) {
 		printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) failed, this: %p\n", name, strname, this);
-		g_hash_table_foreach (methods, dump_ptr_npid_hash, NULL);		
 	} else {
 		printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) this: %p result: %i\n", name, strname, this, result);
 	}
-	MOON_NPN_MemFree (strname);
 #endif
 	
+	MOON_NPN_MemFree (strname);
+
 	return result;
 }
 
@@ -4798,18 +4839,17 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 					 NPVariant *result)
 {
 	PluginInstance *plugin = GetPlugin ();
+
 	if (plugin->IsCrossDomainApplication ()) {
 		if (Deployment::GetCurrent ()->GetExternalCallersFromCrossDomain () == CrossDomainAccessNoAccess)
 			THROW_JS_EXCEPTION ("XDomain Restriction");
 	}
 
-	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (methods, name);
+	char *exc_string = NULL;
 	Value rv, **vargs = NULL;
 	guint32 i;
+	bool res;
 	
-	if (!method)
-		return MoonlightObject::Invoke (id, name, args, argCount, result);
-
 	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 #if ds(!)0
 	printf ("invoking scriptable object method %s\n", strname);
@@ -4821,8 +4861,19 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 			variant_to_value (&args[i], &vargs[i]);
 	}
 	
-	invoke (managed_scriptable, method->method_handle, strname, vargs, argCount, &rv);
-	
+	if ((res = invoke ((NPObject*)this, strname, vargs, argCount, &rv, &exc_string))) {
+		if (exc_string) {
+			MOON_NPN_SetException (this, exc_string);
+			g_free (exc_string);
+		}
+		else if (rv.GetKind() == Type::INVALID)
+			VOID_TO_NPVARIANT (*result);
+		else
+			value_to_variant (this, &rv, result);
+	}
+	else
+		res = MoonlightObject::Invoke (id, name, args, argCount, result);
+		
 	if (argCount > 0) {
 		for (i = 0; i < argCount; i++)
 			delete vargs[i];
@@ -4832,16 +4883,9 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 
 	ds(printf ("result of invoking %s was %p\n", strname, rv.ToString()));
 	
-	/* Note: this 1 is "void" */
-	if (method->method_return_type != 0)
-		value_to_variant (this, &rv, result);
-	else
-		VOID_TO_NPVARIANT (*result);
-	
 	MOON_NPN_MemFree (strname);
 	return true;
 }
-
 
 MoonlightScriptableObjectType::MoonlightScriptableObjectType ()
 {
@@ -4850,137 +4894,46 @@ MoonlightScriptableObjectType::MoonlightScriptableObjectType ()
 
 MoonlightScriptableObjectType *MoonlightScriptableObjectClass;
 
-MoonlightScriptableObjectObject *
-moonlight_scriptable_object_wrapper_create_root (PluginInstance *plugin, gpointer scriptable,
-					    InvokeDelegate invoke_func,
-					    SetPropertyDelegate setprop_func,
-					    GetPropertyDelegate getprop_func,
-					    EventHandlerDelegate addevent_func,
-					    EventHandlerDelegate removeevent_func)
+NPObject* /*MoonlightScriptableObjectObject* */
+moonlight_scriptable_object_create (PluginInstance *plugin,
+				    InvalidateHandleDelegate invalidate_handle,
+				    HasMemberDelegate has_method,
+				    HasMemberDelegate has_property,
+				    InvokeDelegate invoke_func,
+				    SetPropertyDelegate setprop_func,
+				    GetPropertyDelegate getprop_func)
 
-{
-	MoonlightScriptControlObject *root_object = plugin->GetRootObject ();
-	return moonlight_scriptable_object_wrapper_create (root_object, scriptable,
-							   invoke_func,
-							   setprop_func,
-							   getprop_func,
-							   addevent_func,
-							   removeevent_func);
-}
-
-MoonlightScriptableObjectObject *
-moonlight_scriptable_object_wrapper_create (NPObject *parent, gpointer scriptable,
-					    InvokeDelegate invoke_func,
-					    SetPropertyDelegate setprop_func,
-					    GetPropertyDelegate getprop_func,
-					    EventHandlerDelegate addevent_func,
-					    EventHandlerDelegate removeevent_func)
 {
 	MoonlightScriptableObjectObject *obj = (MoonlightScriptableObjectObject *)
-		MOON_NPN_CreateObject (((MoonlightObject *) parent)->GetInstance (),
-				  MoonlightScriptableObjectClass);
+		MOON_NPN_CreateObject (plugin->GetInstance (),
+				       MoonlightScriptableObjectClass);
 
-	obj->managed_scriptable = scriptable;
+	obj->invalidate_handle = invalidate_handle;
+	obj->has_method = has_method;
+	obj->has_property = has_property;
 	obj->invoke = invoke_func;
 	obj->setprop = setprop_func;
 	obj->getprop = getprop_func;
-	obj->addevent = addevent_func;
-	obj->removeevent = removeevent_func;
 	
 	ds(printf ("creating scriptable object wrapper => %p\n", obj));
 	
 	return obj;
 }
 
-
-void
-moonlight_scriptable_object_add_property (PluginInstance *plugin,
-					  MoonlightScriptableObjectObject *obj,
-					  gpointer property_handle,
-					  char *property_name,
-					  int property_type,
-					  bool can_read,
-					  bool can_write)
-{
-	ds(printf ("adding property named %s to scriptable object %p\n", property_name, obj));
-	
-	ScriptableProperty *prop = new ScriptableProperty ();
-	prop->property_handle = property_handle;
-	prop->property_type = property_type;
-	prop->can_read = can_read;
-	prop->can_write = can_write;
-	
-	g_hash_table_insert (obj->properties, NPID(property_name), prop);
-}
-
-void
-moonlight_scriptable_object_add_event (PluginInstance *plugin,
-				       MoonlightScriptableObjectObject *obj,
-				       gpointer event_handle,
-				       char *event_name)
-{
-	ds(printf ("adding event named %s to scriptable object %p\n", event_name, obj));
-	
-	ScriptableEvent *event = new ScriptableEvent ();
-	event->event_handle = event_handle;
-
-	g_hash_table_insert (obj->events, NPID(event_name), event);
-}
-
-void
-moonlight_scriptable_object_add_method (PluginInstance *plugin,
-					MoonlightScriptableObjectObject *obj,
-					gpointer method_handle,
-					char *method_name,
-					int method_return_type,
-					int *method_parameter_types,
-					int parameter_count)
-
-{
-	NPIdentifier id = NPID (method_name);
-
-	ds(printf ("adding method named %s (npid: %i) (return type = %d) to scriptable object %p\n", method_name, id, method_return_type, obj));
-	
-	ScriptableMethod *method = new ScriptableMethod ();
-	method->method_handle = method_handle;
-	method->method_return_type = method_return_type;
-	method->method_parameter_types = new int[parameter_count];
-	memcpy (method->method_parameter_types, method_parameter_types, sizeof (int) * parameter_count);
-	method->parameter_count = parameter_count;
-
-	g_hash_table_insert (obj->methods, id, method);
-}
-
 void
 moonlight_scriptable_object_register (PluginInstance *plugin,
 				      char *name,
-				      MoonlightScriptableObjectObject *obj)
+				      NPObject* /*MoonlightScriptableObjectObject* */ npobj)
 {
 	MoonlightContentObject *content = (MoonlightContentObject *) plugin->GetRootObject ()->content;
+	MoonlightScriptableObjectObject* obj = (MoonlightScriptableObjectObject*)npobj;
 	
 	ds(printf ("registering scriptable object '%s' => %p\n", name, obj));
-	
+
 	g_hash_table_insert (content->registered_scriptable_objects, NPID (name), obj);
 	
 	ds(printf (" => done\n"));
 }
-
-void
-moonlight_scriptable_object_emit_event (PluginInstance *plugin,
-					MoonlightScriptableObjectObject *sobj,
-					MoonlightScriptableObjectObject *event_args,
-					NPObject *cb_obj)
-{
-	NPVariant args[2];
-	NPVariant result;
-
-	OBJECT_TO_NPVARIANT (sobj, args[0]);
-	OBJECT_TO_NPVARIANT (event_args, args[1]);
-
-	if (MOON_NPN_InvokeDefault (plugin->GetInstance (), cb_obj, args, 2, &result))
-		MOON_NPN_ReleaseVariantValue (&result);
-}
-
 
 /****************************** HtmlObject *************************/
 
@@ -5111,7 +5064,7 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 
 bool
 html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
-		Value *args, guint32 arg_count, Value *result)
+		    Value *args, guint32 arg_count, Value *result)
 {
 	NPVariant npresult;
 	NPVariant *npargs = NULL;

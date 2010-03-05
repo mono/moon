@@ -24,6 +24,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -83,6 +84,59 @@ namespace MoonTest.System.Windows.Browser
 			Assert.AreEqual (null, c, "A1");
 			c = content.GetProperty("calc") as ScriptObject;
 			Assert.AreEqual (calc, c.ManagedObject, "A2");
+		}
+
+		[TestMethod]
+		public void ServicesTest ()
+		{
+			ScriptObject services = (ScriptObject)content.GetProperty ("services");
+			Assert.AreEqual ("ManagedObject", services.GetType().Name);
+			Assert.AreEqual ("[ManagedServices]", services.ManagedObject.ToString());
+		}
+
+		[TestMethod]
+		[MoonlightBug ("no serializer yet")]
+		public void JsonSerializerTest ()
+		{
+			ScriptObject services = (ScriptObject)content.GetProperty ("services");
+
+			// the msdn docs say this is valid, but it appears it is not.
+			ScriptObject serializer = (ScriptObject)window.Eval ("serializer = " + strplugin + ".content.services.createObject ('jsonSerializer');");
+
+			Assert.IsNull (serializer);
+
+			// the jsonSerialize method is, however, available
+
+			List<int> l = new List<int> {4, 5, 6};
+
+			object o = services.Invoke ("jsonSerialize", new object[] { l });
+			Assert.IsInstanceOfType (o, typeof (string), "serialize #1");
+			Assert.AreEqual ("[4,5,6]", o, "serialize #2");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("no serializer yet")]
+		public void JsonSerializerFromJSTest ()
+		{
+			ScriptObject services = (ScriptObject)content.GetProperty ("services");
+			ScriptObject so = (ScriptObject) HtmlPage.Window.Eval (@"new function () { this.test1 = function (arg1, arg2) {
+				return arg1.jsonSerialize (arg2);
+			}}");
+
+			object ret = so.Invoke ("test1", new object[] {services, new List<int> {4, 5, 6}});
+			Assert.AreEqual ("[4,5,6]", ret, "serialize #1");
+		}
+
+		[TestMethod]
+		public void CreateManagedObjectTest ()
+		{
+			// msdn docs say that createManagedObject can
+			// be used this way (with primitive types),
+			// but this doesn't appear to be the case.
+
+			window.Eval ("createabletype = " + strplugin + ".content.services.createObject ('createable');");
+
+			Assert.IsNull (window.Eval ("mobj = createabletype.createManagedObject ('int');"), "createManagedObject #1");
 		}
 
 		[TestMethod]
@@ -257,6 +311,22 @@ namespace MoonTest.System.Windows.Browser
 			Assert.IsInstanceOfType (a, typeof (HtmlDocument), "should be a HtmlDocument");
 			a = window.Eval ("a = window.document.body;");
 			Assert.IsInstanceOfType (a, typeof (HtmlElement), "should be a HtmlElement");
+		}
+
+		[TestMethod]
+		public void EventAsPropertyTest ()
+		{
+			object o, result;
+			HtmlPage.RegisterCreateableType ("eventAsPropertyTestCalculator", typeof (EventCalculator));
+			o = window.Eval ("scriptable = " + strplugin + ".content.services.createObject ('eventAsPropertyTestCalculator');");
+
+			o = window.Eval ("event_as_property_test_event_raised = 0;");
+			o = window.Eval ("scriptable.DoneEvent = function () { event_as_property_test_event_raised = true; };");
+			o = window.Eval ("scriptable.Add (1, 2);");
+
+			o = window.GetProperty ("event_as_property_test_event_raised");
+			Assert.IsInstanceOfType (o, typeof (bool), "#1 return type");
+			Assert.IsTrue ((bool) o, "#1 event raised");
 		}
 
 		[TestMethod]

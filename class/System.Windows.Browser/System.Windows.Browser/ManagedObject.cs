@@ -1,0 +1,367 @@
+//
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
+//
+// Copyright (C) 2010 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+using System.Globalization;
+using System.Collections;
+using System.ComponentModel;
+using System.Reflection;
+using System.Windows.Interop;
+using System.Windows.Threading;
+using System.Collections.Generic;
+using Mono;
+
+namespace System.Windows.Browser {
+
+	public class ManagedObject : ScriptObject {
+
+		object managed;
+
+		public ManagedObject (object obj)
+		{
+//			Console.WriteLine ("new ManagedObject created wrapping object of type {0}, handle == {1}", obj.GetType(), Handle);
+
+			managed = obj;
+
+			Type type = obj.GetType ();
+
+			bool isScriptable = type.IsDefined (typeof(ScriptableTypeAttribute), true);
+
+			// add properties
+
+			foreach (PropertyInfo pi in type.GetProperties ()) {
+				if (!isScriptable && !pi.IsDefined (typeof(ScriptableMemberAttribute), true))
+					continue;
+				RegisterScriptableProperty (pi);
+				if (RegisterScriptableTypes (pi))
+					HasTypes = true;
+			}
+
+			// add events
+			foreach (EventInfo ei in type.GetEvents ()) {
+				if (!isScriptable && !ei.IsDefined (typeof(ScriptableMemberAttribute), true))
+					continue;
+				RegisterScriptableEvent (ei);
+				HasEvents = true;
+
+				// XXX toshok - do we need to RegisterScriptableTypes for parameters on the delegate?
+			}
+
+			// add functions
+			foreach (MethodInfo mi in type.GetMethods ()) {
+				if (!isScriptable && !mi.IsDefined (typeof(ScriptableMemberAttribute), true))
+					continue;
+				RegisterScriptableMethod (mi);
+				if (RegisterScriptableTypes (mi))
+					HasTypes = true;
+			}
+
+			if (HasTypes)
+				RegisterBuiltinScriptableMethod ("createManagedObject");
+
+			if (HasEvents) {
+				RegisterBuiltinScriptableMethod ("addEventListener");
+				RegisterBuiltinScriptableMethod ("removeEventListener");
+			}
+
+			RegisterScriptableMethod (type.GetMethod ("ToString"), "toString");
+
+			if (ManagedObject is IList) {
+				if (type.GetProperty ("Length") != null)
+					RegisterScriptableProperty (type.GetProperty ("Length"), "length");
+				else if (type.GetProperty ("Count") != null)
+					RegisterScriptableProperty (type.GetProperty ("Count"), "length");
+
+				if (type.GetProperty ("Item") != null)
+					RegisterScriptableProperty (type.GetProperty ("Item"), "item");
+
+#if notused
+				TypeCode inner;
+				if (type.IsGenericType)
+					inner = Type.GetTypeCode (type.GetGenericArguments()[0]);
+				else
+					inner = Type.GetTypeCode (type.GetElementType ());
+#endif
+
+				foreach (MethodInfo mi in type.GetMethods ()) {
+					switch (mi.Name) {
+					case "IndexOf":
+						RegisterScriptableMethod (mi, "indexOf");
+						break;
+					case "LastIndexOf":
+						RegisterScriptableMethod (mi, "lastIndexOf");
+						break;
+					case "ToArray":
+						RegisterScriptableMethod (mi, "toArray");
+						break;
+					}
+				}
+
+				Ops ops = new Ops ((IList)ManagedObject);
+				Type opt = typeof (Ops);
+
+				RegisterScriptableMethod (opt.GetMethod ("Pop"), "pop", ops);
+				RegisterScriptableMethod (opt.GetMethod ("Push"), "push", ops);
+				RegisterScriptableMethod (opt.GetMethod ("Reverse"), "reverse", ops);
+				RegisterScriptableMethod (opt.GetMethod ("Shift"), "shift", ops);
+				RegisterScriptableMethod (opt.GetMethod ("Unshift"), "unshift", ops);
+				RegisterScriptableMethod (opt.GetMethod ("Splice"), "splice", ops);
+			}
+		}
+
+
+
+		public override void SetProperty (string name, object value)
+		{
+			PropertyInfo pi = properties[name];
+			pi.SetValue (ManagedObject, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
+		}
+
+		internal override void SetProperty (string name, object[] args)
+		{
+			PropertyInfo pi = properties[name];
+			MethodInfo mi = pi.GetSetMethod ();
+			Invoke (mi, ManagedObject, args);
+		}
+
+		public override object GetProperty (string name)
+		{
+			// this should likely call a GetProperty overload passing ManagedObject in, instead of "this",
+			// but we already do the book keeping in the base class, so do we need this method at all?
+
+			return base.GetProperty (name, new object[]{});
+		}
+
+		protected override object ConvertTo (Type targetType, bool allowSerialization)
+		{
+			// hmmm, yeah what?
+			throw new NotImplementedException ();
+		}
+
+		public override object Invoke (string name, params object [] args)
+		{
+			// this should likely call an Invoke overload passing ManagedObject in, instead of "this",
+			// but we already do the book keeping in the base class, so do we need this method at all?
+
+			Value v = new Value ();
+
+			base.Invoke (name, args, ref v);
+
+			return ScriptObjectHelper.ObjectFromValue<object> (v);
+		}
+
+		public override object InvokeSelf (params object [] args)
+		{
+			throw new InvalidOperationException ("Invoke failed");
+		}
+
+		internal override object ManagedObjectCore {
+			get { return managed; }
+		}
+
+		private static bool RegisterScriptableTypes (PropertyInfo pi)
+		{
+			bool ret = false;
+			if (IsCreateable (pi.PropertyType)) {
+				ret = true;
+				RegisterScriptableType (pi.PropertyType);
+			}
+			return ret;
+		}
+
+		private static bool RegisterScriptableTypes (MethodInfo mi)
+		{
+			bool ret = false;
+			if (IsCreateable (mi.ReturnType)) {
+				ret = true;
+				RegisterScriptableType (mi.ReturnType);
+			}
+
+			ParameterInfo[] ps = mi.GetParameters();
+			foreach (ParameterInfo p in ps) {
+				if (IsCreateable (p.ParameterType)) {
+					ret = true;
+					RegisterScriptableType (p.ParameterType);
+				}
+			}
+			return ret;
+		}
+
+		private static void RegisterScriptableType (Type type)
+		{
+			if (!HtmlPage.ScriptableTypes.ContainsKey (type.Name))
+				HtmlPage.ScriptableTypes[type.Name] = type;
+		}
+
+		public static bool IsSupportedType (Type t)
+		{
+			TypeCode tc = Type.GetTypeCode (t);
+			if (tc == TypeCode.Object) {
+				return true;
+			}
+
+			switch (tc) {
+			// string
+			case TypeCode.Char:
+			case TypeCode.String:
+			// boolean
+			case TypeCode.Boolean:
+			// number
+			case TypeCode.Byte:
+			case TypeCode.SByte:
+			case TypeCode.Int16:
+			case TypeCode.Int32:
+			case TypeCode.Int64:
+			case TypeCode.UInt16:
+			case TypeCode.UInt32:
+			case TypeCode.UInt64:
+			case TypeCode.Single:
+			case TypeCode.Double:
+			// case TypeCode.Decimal: // decimal is unsupported(!)
+				return true;
+			}
+
+			return false;
+		}
+
+		public static bool IsScriptable (Type t)
+		{
+			if (t.IsDefined (typeof(ScriptableTypeAttribute), true))
+				return true;
+
+			foreach (MethodInfo mi in t.GetMethods ())
+				if (mi.IsDefined (typeof(ScriptableMemberAttribute), true))
+					return true;
+
+			foreach (PropertyInfo pi in t.GetProperties ())
+				if (pi.IsDefined (typeof(ScriptableMemberAttribute), true))
+					return true;
+
+			foreach (EventInfo ei in t.GetEvents ())
+				if (ei.IsDefined (typeof(ScriptableMemberAttribute), true))
+					return true;
+
+			return false;
+		}
+
+		public static bool IsCreateable (Type type)
+		{
+			if (type != null && (type == typeof (object) || typeof(Delegate).IsAssignableFrom(type)))
+				return false;
+
+			if (!type.IsVisible || type.IsAbstract ||
+				type.IsInterface || type.IsPrimitive ||
+				type.IsGenericTypeDefinition)
+				return false;
+
+			// we like value types and arrays and things with default constructors
+			if (!type.IsValueType && !type.IsArray && type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) == null)
+				return false;
+
+			return true;
+		}
+
+
+#region built-in operations on collections
+		class Ops {
+			IList col;
+
+			public Ops (IList obj)
+			{
+				col = obj;
+			}
+
+			public object Pop ()
+			{
+				if (col.IsFixedSize)
+					throw new NotSupportedException ();
+				object ret = col[col.Count - 1];
+				col.RemoveAt (col.Count - 1);
+				return ret;
+			}
+
+			public void Push (object value, params object[] valueN)
+			{
+				if (col.IsFixedSize)
+					throw new NotSupportedException ();
+				col.Add (value);
+				if (valueN != null)
+					foreach (object o in valueN)
+						col.Add (o);
+			}
+
+			public void Reverse ()
+			{
+				int mid = col.Count / 2;
+				for (int i = 0, j = col.Count-1; i < mid; i++, j--) {
+					object o = col[i];
+					col[i] = col[j];
+					col[j] = o;
+				}
+			}
+
+			public object Shift ()
+			{
+				if (col.IsFixedSize)
+					throw new NotSupportedException ();
+				object ret = col[0];
+				col.RemoveAt (0);
+				return ret;
+			}
+
+			public void Unshift (object value, params object[] valueN)
+			{
+				if (col.IsFixedSize)
+					throw new NotSupportedException ();
+				int i = 0;
+				col.Insert (i++, value);
+				if (valueN != null)
+					foreach (object o in valueN)
+						col.Insert (i++, o);
+			}
+
+			public void Splice (int startIndex, params object[] args)
+			{
+				if (col.IsFixedSize)
+					throw new NotSupportedException ();
+				double count = col.Count - startIndex;
+
+				if (args != null && args.Length > 0)
+					count = (double)args[0];
+
+				for (; count > 0; count--)
+					col.RemoveAt (startIndex);
+
+				if (args != null && args.Length > 0)
+					for (int i = 1; i < args.Length; i++)
+						col.Insert (startIndex + i - 1, args[i]);
+			}
+		}
+#endregion
+
+
+	}
+
+}

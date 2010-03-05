@@ -251,11 +251,6 @@ DomEventListener::Invoke (NPIdentifier name,
 	eventObj = NPVARIANT_TO_OBJECT(args[0]);
 	MOON_NPN_RetainObject (eventObj);
 
-	MOON_NPN_GetProperty (npp, eventObj, NPID("target"), &res);
-	eventTarget = NPVARIANT_TO_OBJECT (res);
-	MOON_NPN_RetainObject (eventTarget);
-	MOON_NPN_ReleaseVariantValue (&res);
-
 	int client_x, client_y, offset_x, offset_y, mouse_button, key_code, char_code;
 	gboolean alt_key, ctrl_key, shift_key;
 	client_x = client_y = offset_x = offset_y = mouse_button = 0;
@@ -290,7 +285,7 @@ DomEventListener::Invoke (NPIdentifier name,
 	MOON_NPN_ReleaseVariantValue (&res);
 
 	callback (context, t, client_x, client_y, offset_x, offset_y,
-		alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code, eventTarget);
+		  alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code, eventObj);
 
 
 	return true;

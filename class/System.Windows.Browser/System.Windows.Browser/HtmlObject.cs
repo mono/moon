@@ -54,7 +54,7 @@ namespace System.Windows.Browser {
 					if (info.handler != null) {
 						info.handler (info.obj, EventArgs.Empty);
 					} else if (info.handler_args != null) {
-						ScriptObject dom = new ScriptObject (ScriptableObjectWrapper.MoonToNPObj (domEvent));
+						ScriptObject dom = new ScriptObject (domEvent);
 						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, 
 						                                                alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, 
 						                                                key_code, char_code, name, dom));
@@ -122,8 +122,8 @@ namespace System.Windows.Browser {
 		{
 		}
 
-		internal HtmlObject (IntPtr handle)
-			: base (handle)
+		internal HtmlObject (IntPtr handle, bool handleIsScriptableNPObject)
+			: base (handle, handleIsScriptableNPObject)
 		{
 		}
 

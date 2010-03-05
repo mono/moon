@@ -168,13 +168,13 @@ namespace Mono {
 #endregion
 
 		/* accessed from several threads, all usage must use a lock */
-		internal static Dictionary<IntPtr, ToggleRef> objects = new Dictionary<IntPtr, ToggleRef> ();
+		internal static Dictionary<IntPtr, EventObjectToggleRef> objects = new Dictionary<IntPtr, EventObjectToggleRef> ();
 
 
 		/* thread-safe */
 		public static bool AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
-			ToggleRef tref;
+			EventObjectToggleRef tref;
 			
 			if (native == IntPtr.Zero)
 				return false;
@@ -189,7 +189,7 @@ namespace Mono {
 					return false;
 				}
 				
-				tref = new ToggleRef (wrapper);
+				tref = new EventObjectToggleRef (wrapper);
 				objects[native] = tref;
 			}
 			tref.Initialize ();
@@ -199,7 +199,7 @@ namespace Mono {
 		/* thread-safe */
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
-			ToggleRef tref;
+			EventObjectToggleRef tref;
 			IntPtr native = wrapper.NativeHandle;
 			
 			if (native == IntPtr.Zero)
@@ -226,7 +226,7 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			ToggleRef reference;
+			EventObjectToggleRef reference;
 			lock (objects) {
 				if (objects.TryGetValue (ptr, out reference))
 					return reference.Target;
@@ -262,7 +262,7 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			ToggleRef tref;
+			EventObjectToggleRef tref;
 			lock (objects) {
 				if (objects.TryGetValue (ptr, out tref))
 					return tref.Target;

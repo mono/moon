@@ -1,6 +1,29 @@
+2010-03-04  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-domevents.cpp (DomEventListener::Invoke): we need to pass
+	the event object, not the target, to managed code.  Fixes NRE when
+	using the mousewheel on memorabilia.
+
+	* plugin.h.in, plugin.cpp: remove a bunch of additional book
+	keeping.  the scriptable_object code doesn't keep track of
+	hashtables of methods/events/properties in unmanaged code anymore,
+	it just punts over to the managed code (which already has those
+	same tables).  This allows us to remove the add_event/remove_event
+	code/delegates entirely, since they're handled using the
+	set_property machinery. We also have toggle notify listeners on
+	MoonlightObjects, and an invalidate delegate which allows us to
+	tell managed when an NPObject handle is going away.
+
+	* plugin-entry.cpp (MOON_NPN_RetainObject)
+	(MOON_NPN_ReleaseObject): gross, and potentially ineffective, but
+	this is the only place we can really put these.  We can lose out
+	if mozilla holds additional refs, but hopefully our invalidate
+	delegate will catch those problems and allow us to shutdown
+	without leaks.
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* Makefile.am: Link statically with libmoon. 
+	* Makefile.am: Link statically with libmoon.
 
 	* plugin-proxy.cpp: Don't dlopen libmoon.so, libmono.so nor libmoonxpi.so,
 	we're linking statically with them. Update the dllmap accordingly.

@@ -1,3 +1,24 @@
+2010-03-04  Chris Toshok  <toshok@ximian.com>
+
+	* everything:
+
+	Rework a lot of things.
+
+	1. Add a toggleref system for the
+	NPObjects (ScriptObjectToggleRef, subclassing from ToggleRef found
+	in S.W.dll).
+
+	2. Remove ScriptableObjectGenerator.cs and
+	ScriptableObjectWrapper.  They've been mostly subsumed into
+	ManagedObject (subclassed from ScriptObject), with other portions
+	of the files split out into Mono/ScriptObjectHelper.cs and
+	Mono/JSFriendlyMethodBinder.cs
+
+	3. don't rely on a hack for generating content.services's api
+	using the ScriptableObjectWrapper/Generator.  Instead just use a
+	separate class, HostServices, which gets returned to JS as a
+	ManagedObject-wrapped object.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: smcs needs to be executed using the moonlight mono.

@@ -1,11 +1,11 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# make this internal type totally [SecurityCritical] and we'll deal with the (much fewer) callers
-+SC-T: System.Windows.Browser.ScriptableObjectWrapper
+# analogous to System.Window's EventObjectToggleRef
++SC-T: Mono.ScriptObjectToggleRef
+
+# members of ScriptObject that need SC
++SC-M: System.Object System.Windows.Browser.ScriptObject::Invoke(System.Reflection.MethodInfo,System.Object,System.Object[])
 
 # special case for the static ctor, which only create delegates on methods with IntPtr parameters
-+SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::.cctor()
-
-# change internal/non-visible method to SecurityCritical (all callers are already SecuritySafeCritical)
-+SC-M: System.Windows.Browser.ScriptableObjectWrapper System.Windows.ScriptableObjectGenerator::Generate(System.Object)
++SSC-M: System.Void System.Windows.Browser.ScriptObject::.cctor()
 

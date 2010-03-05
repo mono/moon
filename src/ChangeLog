@@ -1,3 +1,13 @@
+2010-03-04  Chris Toshok  <toshok@ximian.com>
+
+	* deployment.cpp (Deployment::Dispose): only call
+	g_hash_table_destroy if interned_strings != null, fixes a
+	g_warning.
+
+	* dependencyobject.h (ToggleNotifyListener): sender is now a
+	gpointer instead of an EventObject* so we can reuse it in the
+	plugin as well.
+
 2010-03-05  Jackson Harper  <jackson@ximian.com>
 
 	* Makefile.am: Add the asxparser

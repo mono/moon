@@ -1,3 +1,11 @@
+2010-03-04  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs: add a couple new delegate types (and remove a
+	couple).
+
+	* Makefile.am (FILES): include .h.in files just so we can make
+	sure a generator run happens when plugin.h.in is changed.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Execute generator using the system mono.

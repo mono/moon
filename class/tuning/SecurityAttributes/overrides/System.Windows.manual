@@ -33,6 +33,7 @@
 +SC-T: Mono.ManagedStreamCallbacks
 +SC-T: Mono.MoonlightValueConverter
 +SC-T: Mono.ToggleRef
++SC-T: Mono.EventObjectToggleRef
 +SC-T: System.IO.SimpleUnmanagedMemoryStream
 # don't SC-T Mono.DispatcherTimer, Mono.Events, Mono.ManagedType, Mono.NativeDependencyObjectHelper,
 # Mono.Types, Mono.UnmanagedEventHandler - it's not worth it

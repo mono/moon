@@ -38,7 +38,6 @@
 		g_free (message);	\
 	} while (0);	\
 
-
 enum PluginPropertyId {
 	NoMapping = 0,
 
@@ -300,9 +299,11 @@ struct MoonlightObject : NPObject {
 			this->plugin->ref ();
 		this->moonlight_type = Type::INVALID;
 		this->event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+		this->toggleNotifyListener = NULL;
 	}
 
-	virtual void Invalidate () { }
+	virtual void Invalidate ();
 	virtual ~MoonlightObject ();
 
 	virtual bool HasProperty (NPIdentifier name);
@@ -335,6 +336,13 @@ struct MoonlightObject : NPObject {
 	PluginInstance *plugin;
 	Type::Kind moonlight_type;
 	GHashTable *event_listener_proxies;
+
+	void AddToggleRefNotifier (ToggleNotifyHandler tr);
+	void RemoveToggleRefNotifier ();
+
+	void InvokeToggleNotifyListener (bool isLastRef);
+
+	ToggleNotifyListener *toggleNotifyListener;
 };
 
 
@@ -651,6 +659,8 @@ struct MoonlightContentObject : MoonlightObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
+	virtual void Invalidate ();
+
 	DependencyObject *accessibility;
 	GHashTable *registered_scriptable_objects;
 };
@@ -668,6 +678,9 @@ struct MoonlightScriptControlObject : MoonlightObject {
 	{
 		settings = (MoonlightSettingsObject *) MOON_NPN_CreateObject (instance, MoonlightSettingsClass);
 		content = (MoonlightContentObject *) MOON_NPN_CreateObject (instance, MoonlightContentClass);
+
+		settings_fetched =
+			content_fetched = false;
 	}
 
 	virtual ~MoonlightScriptControlObject ();
@@ -695,6 +708,9 @@ private:
 	MoonlightObject **events_object;
 	gpointer *events_callbacks;
 	bool *events_is_func;
+
+	bool settings_fetched;
+	bool content_fetched;
 };
 
 
@@ -1077,10 +1093,11 @@ struct MoonlightStrokeObject : MoonlightDependencyObjectObject {
 
 struct MoonlightScriptableObjectObject;
 
-typedef void (*InvokeDelegate) (gpointer managed_obj_handle, gpointer method_handle, char* name, Value** args, int arg_count, Value* return_value);
-typedef void (*SetPropertyDelegate) (gpointer managed_obj_handle, char* name, Value** args, int arg_count, Value *value);
-typedef void (*GetPropertyDelegate) (gpointer managed_obj_handle, char* name, Value** args, int arg_count, Value *value);
-typedef void (*EventHandlerDelegate) (gpointer managed_obj_handle, gpointer event_handle, MoonlightScriptableObjectObject* scriptable_obj, gpointer closure);
+typedef void (*InvalidateHandleDelegate) (NPObject *handle);
+typedef bool (*HasMemberDelegate) (NPObject *handle, char *name);
+typedef bool (*InvokeDelegate) (NPObject *handle, char* name, Value** args, int arg_count, Value* return_value, char **exc_string);
+typedef bool (*SetPropertyDelegate) (NPObject *handle, char* name, Value** args, int arg_count, Value *value, char **exc_string);
+typedef bool (*GetPropertyDelegate) (NPObject *handle, char* name, Value** args, int arg_count, Value *value, char **exc_string);
 
 struct MoonlightScriptableObjectType : MoonlightObjectType {
 	MoonlightScriptableObjectType ();
@@ -1091,13 +1108,11 @@ extern MoonlightScriptableObjectType *MoonlightScriptableObjectClass;
 struct MoonlightScriptableObjectObject : MoonlightObject {
 	MoonlightScriptableObjectObject (NPP instance) : MoonlightObject (instance)
 	{
-		managed_scriptable = NULL;
-		properties = g_hash_table_new (g_direct_hash, g_direct_equal);
-		methods = g_hash_table_new (g_direct_hash, g_direct_equal);
-		events = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
 
 	virtual ~MoonlightScriptableObjectObject ();
+
+	virtual void Invalidate ();
 
 	virtual bool HasProperty (NPIdentifier name);
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
@@ -1107,76 +1122,38 @@ struct MoonlightScriptableObjectObject : MoonlightObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
-	gpointer managed_scriptable;
-	GHashTable *properties;
-	GHashTable *methods;
-	GHashTable *events;
-
+	InvalidateHandleDelegate invalidate_handle;
 	InvokeDelegate invoke;
+	HasMemberDelegate has_method;
+	HasMemberDelegate has_property;
 	SetPropertyDelegate setprop;
 	GetPropertyDelegate getprop;
-	EventHandlerDelegate addevent;
-	EventHandlerDelegate removeevent;
 };
 
 
 G_BEGIN_DECLS
 
-// These are meant to be called by System.Silverlight.dll
 /* @GeneratePInvoke */
-NPObject * moonlight_object_to_npobject (MoonlightObject *obj);
-MoonlightObject * npobject_to_moonlight_object (NPObject *npobj);
+void moonlight_object_add_toggle_ref_notifier (NPObject* /*MoonlightObject* */obj, ToggleNotifyHandler tr);
 
 /* @GeneratePInvoke */
-MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create_root (PluginInstance *plugin, gpointer scriptable,
-									     InvokeDelegate invoke,
-									     SetPropertyDelegate setprop,
-									     GetPropertyDelegate getprop,
-									     EventHandlerDelegate addevent,
-									     EventHandlerDelegate removeevent);
+void moonlight_object_remove_toggle_ref_notifier (NPObject* /*MoonlightObject* */obj);
+
 
 /* @GeneratePInvoke */
-MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (NPObject *parent, gpointer scriptable,
-									     InvokeDelegate invoke,
-									     SetPropertyDelegate setprop,
-									     GetPropertyDelegate getprop,
-									     EventHandlerDelegate addevent,
-									     EventHandlerDelegate removeevent);
-
-/* @GeneratePInvoke */
-void moonlight_scriptable_object_add_property (PluginInstance *plugin,
-					       MoonlightScriptableObjectObject *obj,
-					       gpointer property_handle,
-					       char *property_name,
-					       /* @MarshalAs=TypeCode */ int property_type,
-					       bool can_read,
-					       bool can_write);
-
-/* @GeneratePInvoke */
-void moonlight_scriptable_object_add_event (PluginInstance *plugin,
-					    MoonlightScriptableObjectObject *obj,
-					    gpointer event_handle,
-					    char *event_name);
-
-/* @GeneratePInvoke */
-void moonlight_scriptable_object_add_method (PluginInstance *plugin,
-					     MoonlightScriptableObjectObject *obj,
-					     gpointer method_handle,
-					     char *method_name,
-					     /* @MarshalAs=TypeCode */ int method_return_type,
-					     /* @MarshalAs=TypeCode[] */ int *method_parameter_types,
-					     int parameter_count);
+NPObject* /*MoonlightScriptableObjectObject* */
+moonlight_scriptable_object_create (PluginInstance *plugin,
+				    InvalidateHandleDelegate invalidate_handle,
+				    HasMemberDelegate has_method,
+				    HasMemberDelegate has_property,
+				    InvokeDelegate invoke,
+				    SetPropertyDelegate setprop,
+				    GetPropertyDelegate getprop);
 
 /* @GeneratePInvoke */
 void moonlight_scriptable_object_register (PluginInstance *plugin,
 					   char *name,
-					   MoonlightScriptableObjectObject *obj);
-
-/* @GeneratePInvoke */
-void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
-					     MoonlightScriptableObjectObject *obj,
-					     MoonlightScriptableObjectObject *event_args,
-					     NPObject *cb_obj);
+					   NPObject* /*MoonlightScriptableObjectObject* */ obj);
 
 /*** HtmlObject ***************************************************/
 

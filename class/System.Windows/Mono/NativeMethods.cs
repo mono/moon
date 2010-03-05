@@ -77,26 +77,34 @@ namespace Mono {
 	internal delegate void TickCallHandler (IntPtr handle);
 
 
-	internal delegate void InvokeDelegate (IntPtr obj_handle, IntPtr method_handle,
-								[MarshalAs (UnmanagedType.LPStr)] string name,
-								[MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 4)]
-								IntPtr[] args,
-								int arg_count,
-								ref Value return_value);
+	internal delegate bool InvalidateHandleDelegate (IntPtr obj_handle);
 
-	internal delegate void SetPropertyDelegate (IntPtr obj_handle,
-								[MarshalAs (UnmanagedType.LPStr)] string name,
-								[MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 3)]
-								IntPtr[] args,
-								int arg_count,
-								ref Value return_value);
-	internal delegate void GetPropertyDelegate (IntPtr obj_handle,
-								[MarshalAs (UnmanagedType.LPStr)] string name,
-								[MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 3)]
-								IntPtr[] args,
-								int arg_count,
-								ref Value return_value);
-	internal delegate void EventHandlerDelegate (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure);
+	internal delegate bool HasMemberDelegate (IntPtr obj_handle,
+						  [MarshalAs (UnmanagedType.LPStr)] string name);
+
+	internal delegate bool InvokeDelegate (IntPtr obj_handle,
+					       [MarshalAs (UnmanagedType.LPStr)] string name,
+					       [MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 3)]
+					       IntPtr[] args,
+					       int arg_count,
+					       ref Value return_value,
+					       out string exc_string);
+
+	internal delegate bool SetPropertyDelegate (IntPtr obj_handle,
+						    [MarshalAs (UnmanagedType.LPStr)] string name,
+						    [MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 3)]
+						    IntPtr[] args,
+						    int arg_count,
+						    ref Value return_value,
+						    out string exc_string);
+
+	internal delegate bool GetPropertyDelegate (IntPtr obj_handle,
+						    [MarshalAs (UnmanagedType.LPStr)] string name,
+						    [MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 3)]
+						    IntPtr[] args,
+						    int arg_count,
+						    ref Value return_value,
+						    out string exc_string);
 	
 	internal delegate uint DownloaderResponseStartedDelegate (IntPtr native, IntPtr context);
 	internal delegate uint DownloaderResponseAvailableDelegate (IntPtr native, IntPtr context, IntPtr data, uint length);

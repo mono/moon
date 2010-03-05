@@ -92,12 +92,10 @@ namespace MoonTest.System.Windows.Browser {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("actually it's a (documented) FireFox limitation - even on Windows/SL2")]
 		public void Eval_Invalid ()
 		{
-			Assert.Throws<InvalidOperationException> (delegate {
-				HtmlPage.Window.Eval ("moon");
-			}, "invalid");
+			// does not throw an exception in SL3
+			HtmlPage.Window.Eval ("moon");
 		}
 
 		[TestMethod]

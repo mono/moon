@@ -29,11 +29,12 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 using Mono;
 using Mono.Xaml;
 
-namespace System.Windows.Browser{
+namespace System.Windows.Browser {
 
 	public static class HtmlPage {
 
@@ -42,26 +43,21 @@ namespace System.Windows.Browser{
 		private static HtmlDocument document;
 		private static HtmlElement plugin;
 		private static Dictionary<string, Type> scriptableTypes;
-		private static Dictionary<IntPtr, object> cachedObjects;
 		private static int last_user_initiated_event;
 
 		static HtmlPage ()
 		{
 			scriptableTypes = new Dictionary<string, Type> ();
-			cachedObjects = new Dictionary<IntPtr, object> ();
 
 			// we don't call RegisterScriptableObject since we're registering a private type
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (new ScriptableObjectWrapper ());
-			wrapper.Register ("services");
+			ScriptObject services = new ManagedObject (HostServices.Services);
+			NativeMethods.moonlight_scriptable_object_register (PluginHost.Handle, "services", services.Handle);
 		}
 
 		static internal Dictionary<string, Type> ScriptableTypes {
 			get { return scriptableTypes;}
 		}
 
-		static internal Dictionary<IntPtr, object> CachedObjects {
-			get { return cachedObjects;}
-		}
 
 		public static BrowserInformation BrowserInformation {
 			get {
@@ -111,11 +107,14 @@ namespace System.Windows.Browser{
 			if (!t.IsPublic && !t.IsNestedPublic)
 				throw new InvalidOperationException ("'instance' type is not public.");
 
-			if (!ScriptableObjectGenerator.IsScriptable (t))
+			if (!ManagedObject.IsScriptable (t))
 				throw new ArgumentException ("No public [ScriptableMember] method was found.", "instance");
 
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance);
-			wrapper.Register (scriptKey);
+			ScriptObject sobj = instance as ScriptObject;
+			if (sobj == null)
+				sobj = new ManagedObject (instance);
+
+			NativeMethods.moonlight_scriptable_object_register (PluginHost.Handle, scriptKey, sobj.Handle);
 		}
 
 		public static void RegisterCreateableType (string scriptAlias, Type type)
@@ -125,7 +124,7 @@ namespace System.Windows.Browser{
 			if (type == null)
 				throw new ArgumentNullException ("type");
 
-			if (!ScriptableObjectGenerator.IsCreateable (type))
+			if (!ManagedObject.IsCreateable (type))
 				throw new ArgumentException (type.ToString (), "type");
 
 			if (ScriptableTypes.ContainsKey (scriptAlias))
@@ -155,7 +154,7 @@ namespace System.Windows.Browser{
 		static HtmlWindow UnsafeWindow {
 			get {
 				if (window == null)
-					window = HtmlObject.GetPropertyInternal<HtmlWindow> (IntPtr.Zero, "window");
+					window = ScriptObject.GetPropertyInternal<HtmlWindow> (IntPtr.Zero, "window");
 
 				return window;
 			}

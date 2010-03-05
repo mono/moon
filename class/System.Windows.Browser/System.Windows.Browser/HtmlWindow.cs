@@ -35,7 +35,7 @@ namespace System.Windows.Browser
 	public sealed class HtmlWindow : HtmlObject
 	{	
 		internal HtmlWindow (IntPtr handle)
-				: base (handle)
+			: base (handle, false)
 		{
 		}
 	
@@ -56,7 +56,7 @@ namespace System.Windows.Browser
 			
 			if (result != IntPtr.Zero) {
 				Value v = (Value)Marshal.PtrToStructure (result, typeof (Value));
-				return ScriptableObjectWrapper.ObjectFromValue<object> (v);
+				return ScriptObjectHelper.ObjectFromValue<object> (v);
 			}
 			return null;
 		}

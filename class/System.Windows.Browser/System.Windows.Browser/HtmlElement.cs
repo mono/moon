@@ -37,7 +37,7 @@ namespace System.Windows.Browser
 		}
 
 		internal HtmlElement (IntPtr handle)
-			: base (handle)
+			: base (handle, false)
 		{
 		}
 
@@ -64,14 +64,14 @@ namespace System.Windows.Browser
 		[MonoTODO]
 		public string GetStyleAttribute (string name)
 		{
-			IntPtr style = GetPropertyInternal<IntPtr> (Handle, "style");
+			ScriptObject style = GetPropertyInternal<ScriptObject> ("style");
 
-			if (style == IntPtr.Zero) {
+			if (style == null) {
 				//Console.WriteLine ("HtmlElement.GetStyleAttribute ('{0}'). Getting style failed.", name);
 				return null;
 			}
 
-			object result = GetPropertyInternal<object> (style, name);
+			object result = style.GetPropertyInternal<object> (name);
 
 			//Console.WriteLine ("HtmlElement.GetStyleAttribute ('{0}'): {1} {2}", name, result, result == null ? null : result.GetType ());
 			
@@ -103,8 +103,8 @@ namespace System.Windows.Browser
 		[MonoTODO ("This doesn't seem to work.")]
 		public void SetStyleAttribute (string name, string value)
 		{
-			IntPtr style = GetPropertyInternal<IntPtr> ("style");
-			SetPropertyInternal (style, name, value);
+			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
+			so.SetProperty (name, value);
 		}
 
 		public ScriptObjectCollection Children {
@@ -113,12 +113,12 @@ namespace System.Windows.Browser
 
 		public string CssClass {
 			get { return GetPropertyInternal<string> ("class"); }
-			set { SetPropertyInternal ("class", value); }
+			set { SetProperty ("class", value); }
 		}
 
 		public string Id {
 			get { return GetPropertyInternal<string> ("id"); }
-			set { SetPropertyInternal ("id", value); }
+			set { SetProperty ("id", value); }
 		}
 
 		public HtmlElement Parent {

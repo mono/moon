@@ -32,21 +32,40 @@ using System.Collections.Generic;
 
 namespace Mono
 {
-	internal sealed class ToggleRef
+	internal abstract class ToggleRef
 	{
-		IntPtr handle;
-		object reference;
-		GCHandle gch;
+		protected IntPtr handle;
+		protected object reference;
+		protected GCHandle gch;
 
-		public ToggleRef (INativeEventObjectWrapper target)
+		public ToggleRef (IntPtr handle, object reference)
 		{
-			handle = target.NativeHandle;
+			this.handle = handle;
+			this.reference = reference;
+
 			gch = GCHandle.Alloc (this);
-			reference = target;
 		}
 		
-		public void Initialize () {
-			NativeMethods.event_object_add_toggle_ref_notifier (handle, ToggleNotifyCallback);
+		protected abstract void AddToggleRefNotifyCallback ();
+		protected abstract void RemoveToggleRefNotifyCallback ();
+
+		protected object TargetCore {
+			get {
+				if (reference == null)
+					return null;
+
+				WeakReference weak = reference as WeakReference;
+				if (weak == null)
+					return reference;
+				else
+					return weak.Target;
+			}
+		}
+
+
+		public void Initialize ()
+		{
+			AddToggleRefNotifyCallback  ();
 		}
 
 		public bool IsAlive {
@@ -66,58 +85,26 @@ namespace Mono
 			}
 		}
 
-		public INativeEventObjectWrapper Target {
-			get {
-				if (reference == null)
-					return null;
-				else if (reference is INativeEventObjectWrapper)
-					return reference as INativeEventObjectWrapper;
-
-				WeakReference weak = reference as WeakReference;
-				return weak.Target as INativeEventObjectWrapper;
-			}
-		}
-
 		public void Free ()
 		{
-			NativeMethods.event_object_remove_toggle_ref_notifier (handle);
+			RemoveToggleRefNotifyCallback ();
 			reference = null;
 			gch.Free ();
 		}
 
-		void Toggle (bool isLastRef)
+		protected void Toggle (bool isLastRef)
 		{
-			if (isLastRef && reference is INativeEventObjectWrapper)
-				reference = new WeakReference (reference);
-			else if (!isLastRef && reference is WeakReference) {
-				WeakReference weak = reference as WeakReference;
-				if (weak.IsAlive)
+			WeakReference weak = reference as WeakReference;
+			if (!isLastRef) {
+				if (weak != null && weak.IsAlive)
 					reference = weak.Target;
+			}
+			else {
+				if (weak == null)
+					reference = new WeakReference (reference);
 			}
 		}
 
 		internal delegate void ToggleNotifyHandler (IntPtr obj, bool isLastref);
-
-		static void RefToggled (IntPtr obj, bool isLastRef)
-		{
-			try {
-				ToggleRef tref = null;
-				NativeDependencyObjectHelper.objects.TryGetValue (obj, out tref);
-				if (tref != null)
-					tref.Toggle (isLastRef);
-			} catch (Exception e) {
-				//ExceptionManager.RaiseUnhandledException (e, false);
-				Console.WriteLine (e);
-			}
-		}
-
-		static ToggleNotifyHandler toggle_notify_callback;
-		static ToggleNotifyHandler ToggleNotifyCallback {
-			get {
-				if (toggle_notify_callback == null)
-					toggle_notify_callback = new ToggleNotifyHandler (RefToggled);
-				return toggle_notify_callback;
-			}
-		}
 	}
 }

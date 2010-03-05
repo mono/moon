@@ -1,7 +1,10 @@
+//
+// EventObjectToggleRef.cs
+//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -10,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -24,34 +27,46 @@
 //
 
 using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Browser;
 using System.Runtime.InteropServices;
-using System.Reflection;
-using Mono;
+using System.Collections.Generic;
 
-namespace System.Windows.Browser
+namespace Mono
 {
-	sealed class ScriptableObjectEventInfo
+	internal sealed class EventObjectToggleRef : ToggleRef
 	{
-		public ScriptObject Callback;
-		public string Name;
-		public EventInfo EventInfo;
-		private System.Delegate Delegate;
-		
-		public Delegate GetDelegate ()
+		public EventObjectToggleRef (INativeEventObjectWrapper target)
+			: base (target.NativeHandle, target)
 		{
-			if (Delegate == null)
-				Delegate = System.Delegate.CreateDelegate (EventInfo.EventHandlerType, this, GetType ().GetMethod ("HandleEvent", BindingFlags.Instance | BindingFlags.NonPublic));
-			return Delegate;
 		}
-				
-		private void HandleEvent (object sender, EventArgs args)
+
+		protected override void AddToggleRefNotifyCallback ()
 		{
-			Callback.InvokeSelf (sender, args);
+			NativeMethods.event_object_add_toggle_ref_notifier (handle, toggle_notify_callback);
 		}
+
+		protected override void RemoveToggleRefNotifyCallback ()
+		{
+			NativeMethods.event_object_remove_toggle_ref_notifier (handle);
+		}
+
+		public INativeEventObjectWrapper Target {
+			get { return (INativeEventObjectWrapper)TargetCore; }
+		}
+
+
+		static void RefToggled (IntPtr obj, bool isLastRef)
+		{
+			try {
+				EventObjectToggleRef tref = null;
+				NativeDependencyObjectHelper.objects.TryGetValue (obj, out tref);
+				if (tref != null)
+					tref.Toggle (isLastRef);
+			} catch (Exception e) {
+				//ExceptionManager.RaiseUnhandledException (e, false);
+				Console.WriteLine (e);
+			}
+		}
+
+		static ToggleNotifyHandler toggle_notify_callback = new ToggleNotifyHandler (RefToggled);
 	}
 }

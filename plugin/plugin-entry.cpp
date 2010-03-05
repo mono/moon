@@ -17,6 +17,8 @@
 #include "moonlight.h"
 #include "deployment.h"
 
+#include "plugin-class.h"
+
 // Global function table
 static NPNetscapeFuncs MozillaFuncs;
 
@@ -227,14 +229,34 @@ NPObject *
 MOON_NPN_RetainObject (NPObject *obj)
 {
 	DeploymentStack deployment_push_pop;
-	return MozillaFuncs.retainobject (obj);
+
+	if (obj == NULL)
+	  return obj;
+
+	obj = MozillaFuncs.retainobject (obj);
+
+	if (obj->_class == MoonlightScriptableObjectClass && obj->referenceCount == 2)
+		((MoonlightScriptableObjectObject*)obj)->InvokeToggleNotifyListener (false);
+
+	return obj;
 }
 
 void
 MOON_NPN_ReleaseObject (NPObject *obj)
 {
 	DeploymentStack deployment_push_pop;
-	return MozillaFuncs.releaseobject (obj);
+
+	if (obj == NULL)
+	  return;
+
+	bool check_toggle = false;
+	if (obj->_class == MoonlightScriptableObjectClass && obj->referenceCount == 2)
+		check_toggle = true;
+
+	MozillaFuncs.releaseobject (obj);
+
+	if (check_toggle && obj->referenceCount == 1)
+		((MoonlightScriptableObjectObject*)obj)->InvokeToggleNotifyListener (true);
 }
 
 bool

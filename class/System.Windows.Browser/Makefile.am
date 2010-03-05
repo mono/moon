@@ -33,7 +33,7 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequest.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequestInternal.cs	\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
-	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs		\
+	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs	\
 	$(srcdir)/System.Windows.Browser.Net/BaseDomainPolicy.cs		\
 	$(srcdir)/System.Windows.Browser.Net/ClientAccessPolicy.cs		\
 	$(srcdir)/System.Windows.Browser.Net/ClientAccessPolicyParser.cs	\
@@ -45,23 +45,26 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser.Net/PolicyDownloadPolicy.cs		\
 	$(srcdir)/System.Windows.Browser.Net/SiteOfOriginPolicy.cs		\
 	$(srcdir)/System.Windows.Browser/BrowserInformation.cs			\
-	$(srcdir)/System.Windows.Browser/HtmlDocument.cs				\
+	$(srcdir)/System.Windows.Browser/HostServices.cs			\
+	$(srcdir)/System.Windows.Browser/HtmlDocument.cs			\
 	$(srcdir)/System.Windows.Browser/HtmlElement.cs				\
-	$(srcdir)/System.Windows.Browser/HtmlEventArgs.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlEventArgs.cs			\
 	$(srcdir)/System.Windows.Browser/HtmlObject.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlPage.cs				\
-	$(srcdir)/System.Windows.Browser/HtmlPopupWindowOptions.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlPopupWindowOptions.cs		\
 	$(srcdir)/System.Windows.Browser/HtmlWindow.cs				\
 	$(srcdir)/System.Windows.Browser/HttpUtility.cs				\
-	$(srcdir)/System.Windows.Browser/MouseButtons.cs				\
-	$(srcdir)/System.Windows.Browser/ScriptableMemberAttribute.cs			\
-	$(srcdir)/System.Windows.Browser/ScriptableObjectWrapper.cs			\
-	$(srcdir)/System.Windows.Browser/ScriptableTypeAttribute.cs			\
+	$(srcdir)/System.Windows.Browser/ManagedObject.cs			\
+	$(srcdir)/System.Windows.Browser/MouseButtons.cs			\
+	$(srcdir)/System.Windows.Browser/ScriptableMemberAttribute.cs		\
+	$(srcdir)/System.Windows.Browser/ScriptableTypeAttribute.cs		\
 	$(srcdir)/System.Windows.Browser/ScriptEventHandler.cs			\
 	$(srcdir)/System.Windows.Browser/ScriptObject.cs			\
-	$(srcdir)/System.Windows.Browser/ScriptableObjectEventInfo.cs		\
-	$(srcdir)/System.Windows.Browser/ScriptObjectCollection.cs				\
-	$(srcdir)/System.Windows/ScriptableObjectGenerator.cs
+	$(srcdir)/System.Windows.Browser/ScriptObjectCollection.cs		\
+	$(srcdir)/Mono/JSFriendlyMethodBinder.cs				\
+	$(srcdir)/Mono/ScriptObjectHelper.cs					\
+	$(srcdir)/Mono/ScriptObjectToggleRef.cs					\
+	$(srcdir)/Mono/ScriptObjectEventInfo.cs
 
 test_sources = \
 	$(srcdir)/Test/System.Windows/WebApplicationTest.cs

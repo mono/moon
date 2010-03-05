@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 625 methods needs to be decorated.
+# 623 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -845,13 +845,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_show_save_file_dialog_(System.IntPtr,System.String,System.String,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moonlight_object_to_npobject(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moonlight_scriptable_object_wrapper_create(System.IntPtr,System.IntPtr,Mono.InvokeDelegate,Mono.SetPropertyDelegate,Mono.GetPropertyDelegate,Mono.EventHandlerDelegate,Mono.EventHandlerDelegate)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moonlight_scriptable_object_wrapper_create_root(System.IntPtr,System.IntPtr,Mono.InvokeDelegate,Mono.SetPropertyDelegate,Mono.GetPropertyDelegate,Mono.EventHandlerDelegate,Mono.EventHandlerDelegate)
++SC-M: System.IntPtr Mono.NativeMethods::moonlight_scriptable_object_create(System.IntPtr,Mono.InvalidateHandleDelegate,Mono.HasMemberDelegate,Mono.HasMemberDelegate,Mono.InvokeDelegate,Mono.SetPropertyDelegate,Mono.GetPropertyDelegate)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::mouse_button_event_args_new()
@@ -1357,6 +1351,12 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(Mono.Xaml.XamlCallbackData*,System.String,System.String)
 
+# overrides 'System.Void Mono.ToggleRef::AddToggleRefNotifyCallback()'.
++SC-M: System.Void Mono.EventObjectToggleRef::AddToggleRefNotifyCallback()
+
+# overrides 'System.Void Mono.ToggleRef::RemoveToggleRefNotifyCallback()'.
++SC-M: System.Void Mono.EventObjectToggleRef::RemoveToggleRefNotifyCallback()
+
 # Promoting interface member to [SecurityCritical] because of 'System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
 
@@ -1586,16 +1586,10 @@
 +SC-M: System.Void Mono.NativeMethods::moon_window_set_transparent(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_add_event(System.IntPtr,System.IntPtr,System.IntPtr,System.String)
++SC-M: System.Void Mono.NativeMethods::moonlight_object_add_toggle_ref_notifier(System.IntPtr,Mono.ToggleRef/ToggleNotifyHandler)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_add_method(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.TypeCode,System.TypeCode[],System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_add_property(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.TypeCode,System.Boolean,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_emit_event(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::moonlight_object_remove_toggle_ref_notifier(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_register(System.IntPtr,System.String,System.IntPtr)

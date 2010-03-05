@@ -1,3 +1,13 @@
+2010-03-04  Chris Toshok  <toshok@ximian.com>
+
+	* ToggleRef.cs, EventObjectToggleRef.cs: make ToggleRef an
+	abstract base class and EventObjectToggleRef the implementation
+	for EventObjects.  System.Windows.Browser will include its own
+	ToggleRef implementation for ScriptObjects.
+
+	* NativeDependencyObjectHelper.cs:
+	s/ToggleRef/EventObjectToggleRef/
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Types.cs: Remove verbose sanity block.

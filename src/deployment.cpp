@@ -833,7 +833,8 @@ Deployment::Dispose ()
 	}
 #endif
 
-	g_hash_table_destroy (interned_strings);
+	if (interned_strings)
+		g_hash_table_destroy (interned_strings);
 	interned_strings = NULL;
 
 	DependencyObject::Dispose ();

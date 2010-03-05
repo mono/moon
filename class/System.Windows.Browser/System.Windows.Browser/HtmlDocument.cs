@@ -40,7 +40,7 @@ namespace System.Windows.Browser
 		}
 
 		internal HtmlDocument (IntPtr handle)
-			: base (handle)
+			: base (handle, false)
 		{
 		}
 
@@ -74,8 +74,8 @@ namespace System.Windows.Browser
 		public IDictionary<string,string> QueryString {
 			get {
 				// document.location.search
-				IntPtr loc = GetPropertyInternal<IntPtr> ("location");
-				string search = GetPropertyInternal<string> (loc, "search");
+				ScriptObject loc = GetPropertyInternal<ScriptObject> ("location");
+				string search = loc.GetPropertyInternal<string> ("search");
 
 				Dictionary<string, string> res = new Dictionary<string, string> ();
 
@@ -110,27 +110,27 @@ namespace System.Windows.Browser
 		
 		public string Cookies {
 			get {
-				return GetPropertyInternal<string> (Handle, "cookie");
+				return GetPropertyInternal<string> ("cookie");
 			}
 			set {
-				SetPropertyInternal ("cookie", value);
+				SetProperty ("cookie", value);
 			}
 		}
 
 		public Uri DocumentUri {
 			get {
-				IntPtr location = GetPropertyInternal<IntPtr> (Handle, "location");
-				if (location == IntPtr.Zero)
+				ScriptObject location = GetPropertyInternal<ScriptObject> ("location");
+				if (location == null)
 					return null;
 
-				return new Uri (GetPropertyInternal<string> (location, "href"));
+				return new Uri (location.GetPropertyInternal<string> ("href"));
 			}
 		}
 		
 		public HtmlElement Body {
 			get {
 				if (body == null)
-					body = GetPropertyInternal<HtmlElement> (Handle, "body");
+					body = GetPropertyInternal<HtmlElement> ("body");
 
 				return body;
 			}
