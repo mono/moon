@@ -72,7 +72,7 @@ libmoonplugin_la_SOURCES = \
 #--- libmoonpluginxpi ----------------------
 libmoonpluginxpi_la_LDFLAGS = $(libmoonplugin_la_LDFLAGS) -rpath /nowhere
 
-libmoonpluginxpi_la_LIBADD = $(PLUGIN_XPI_LIBS)
+libmoonpluginxpi_la_LIBADD = $(top_builddir)/src/libmoon-static.la $(PLUGIN_XPI_LIBS)
 
 libmoonpluginxpi_la_SOURCES = $(libmoonplugin_la_SOURCES)
 

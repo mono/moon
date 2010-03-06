@@ -1,0 +1,15 @@
+{
+  "name": "Novell Moonlight",
+  "version": "@CHROME_VERSION@",
+
+  "description": "The open source implementation of Microsoft Silverlight",
+
+  "icons": { "48": "icon48.png",
+             "128": "icon128.png" },
+
+  "plugins": [
+    { "path": "libmoonloaderxpi.so", "public": true }
+  ],
+
+  "update_url": "http://go-mono.com/archive/moonlight-plugins/updates/update-@SL_PROFILE@-@INSTALL_ARCH@.xml"
+}

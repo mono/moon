@@ -4,7 +4,7 @@
     <em:name>Novell Moonlight</em:name>
     <em:version>@VERSION@</em:version>
     <em:description>The open source implementation of Microsoft Silverlight</em:description>
-    <em:iconURL>chrome://moonlight/skin/icon.png</em:iconURL>
+    <em:iconURL>chrome://moonlight/skin/icon32.png</em:iconURL>
     <em:updateURL>http://go-mono.com/archive/moonlight-plugins/updates/update-@SL_PROFILE@-@INSTALL_ARCH@.rdf</em:updateURL>
     <em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCi8rEWjKukJk4igOKjOU3RLj3vri9pff1znkb12M4N6
                   irBv4vbTSBjjrDOzOOB+g6C/fAP8LsFCDHgqmXmRbsCxAycED/TKzbevpTkX0ywlUL6nfVwegwQMclzP5
