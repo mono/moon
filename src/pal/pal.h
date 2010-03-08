@@ -11,6 +11,7 @@
 #include "point.h"
 #include "rect.h"
 #include "error.h"
+#include "list.h"
 
 // I hate X11
 #ifdef FocusIn
@@ -266,6 +267,129 @@ public:
 
 	virtual MoonMessageListener* CreateMessagingListener (const char *domain, const char *listenerName, MoonError *error) = 0;
 	virtual MoonMessageSender* CreateMessagingSender (const char *listenerName, const char *listenerDomain, const char *domain, MoonError *error) = 0;
+};
+
+
+//
+// XXX media capture api below not finished
+//
+struct MoonVideoFormat {
+public:
+	MoonVideoFormat (MoonPixelFormat format,
+			 int framesPerSecond,
+			 int stride,
+			 int width,
+			 int height) :
+		format (format),
+		framesPerSecond (framesPerSecond),
+		stride (stride),
+		width (width),
+		height (height)
+	{ }
+
+	MoonPixelFormat GetPixelFormat () { return format; }
+	int GetFramesPerSecond () { return framesPerSecond; }
+	int GetStride () { return stride; }
+	int GetHeight () { return height; }
+	int GetWidth () { return width; }
+	
+private:
+	MoonPixelFormat format;
+	int framesPerSecond;
+	int stride;
+	int width;
+	int height;
+};
+
+class MoonAudioFormat {
+public:
+	MoonAudioFormat (int bitsPerSample,
+			 int channels,
+			 int samplesPerSecond,
+			 MoonWaveFormatType waveFormatType) :
+		bitsPerSample (bitsPerSample),
+		channels (channels),
+		samplesPerSecond (samplesPerSecond),
+		waveFormatType (waveFormatType)
+	{ }
+
+	int GetBitsPerSample () { return bitsPerSample; }
+	int GetChannels () { return channels; }
+	int GetSamplesPerSecond () { return samplesPerSecond; }
+	MoonWaveFormatType GetWaveFormatType () { return waveFormatType; }
+
+private:
+	int bitsPerSample;
+	int channels;
+	int samplesPerSecond;
+	MoonWaveFormatType waveFormatType;
+};
+
+class MoonCaptureDevice {
+public:
+	MoonCaptureDevice () {};
+	virtual ~MoonCaptureDevice () {};
+
+	virtual const char GetFriendlyName () = 0;
+	virtual bool GetIsDefaultDevice () = 0;
+};
+
+class MoonVideoCaptureDevice : public MoonCaptureDevice {
+public:
+	MoonVideoCaptureDevice () {};
+	virtual ~MoonVideoCaptureDevice () {};
+
+	virtual MoonVideoFormat* GetDesiredFormat () = 0;
+
+	// FIXME this should just return an array of structs
+	virtual List* GetSupportedFormats () = 0;
+};
+
+class MoonAudioCaptureDevice : public MoonCaptureDevice {
+	MoonAudioCaptureDevice () {};
+	virtual ~MoonAudioCaptureDevice () {};
+
+	virtual int GetAudioFrameSize () = 0;
+	virtual MoonAudioFormat* GetDesiredFormat () = 0;
+	// FIXME this should just return an array of structs
+	virtual List* GetSupportedFormats () = 0;
+};
+
+class MoonVideoCaptureService {
+public:
+	MoonVideoCaptureService () {};
+	virtual ~MoonVideoCaptureService () {}
+
+	virtual MoonVideoCaptureDevice* GetDefaultCaptureDevice () = 0;
+	// FIXME this should just return an array of MoonVideoCaptureDevice*
+	virtual List* GetAvailableCaptureDevices () = 0;
+};
+
+class MoonAudioCaptureService {
+public:
+	MoonAudioCaptureService () {};
+	virtual ~MoonAudioCaptureService () {}
+
+	virtual MoonAudioCaptureDevice* GetDefaultCaptureDevice () = 0;
+	// FIXME this should just return an array of MoonAudioCaptureDevice*
+	virtual List* GetAvailableCaptureDevices () = 0;
+};
+
+class MoonCaptureService {
+public:
+	MoonCaptureService () {};
+	virtual ~MoonCaptureService () {};
+
+	virtual MoonVideoCaptureService *GetVideoCaptureService() = 0;
+	virtual MoonAudioCaptureService *GetAudioCaptureService() = 0;
+
+	// return true if the platform requires its own user
+	// interaction to enable access to video/audio capture devices
+	virtual bool RequiresSystemPermissionForDeviceAccess () = 0;
+
+	// it's alright to block waiting on a response here, return
+	// true if the user has allowed access.
+	virtual bool RequestSystemAccess () = 0;
 };
 
 #endif /* MOON_PAL_H */

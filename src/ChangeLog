@@ -1,3 +1,9 @@
+2010-03-08  Chris Toshok  <toshok@ximian.com>
+
+	* pal/pal.h: add the start of the media capture api.
+
+	* enums.h: add MoonWaveFormatType.
+
 2010-03-05  Alan McGovern  <amcgovern@novell.com>
 
 	* provider.h:

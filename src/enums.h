@@ -426,6 +426,10 @@ enum MoonPixelFormat {
 	MoonPixelFormatYUV420P
 };
 
+enum MoonWaveFormatType {
+	MoonWaveFormatTypePCM = 1
+};
+
 enum MediaStreamType {
 	MediaTypeAudio = 0,
 	MediaTypeVideo = 1,
