@@ -1,5 +1,13 @@
 2010-03-08  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp,h: add runtime_get_capture_service.
+
+	* pal/capture/v4l2/pal-v4l2-video-capture.cpp,h: stub out the V4L2
+	video capture implementation.
+
+	* pal/capture/pal-linux-capture.cpp,h: stub out the linux capture
+	stuff.
+
 	* pal/pal.h: add the start of the media capture api.
 
 	* enums.h: add MoonWaveFormatType.

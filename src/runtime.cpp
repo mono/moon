@@ -56,6 +56,9 @@
 #if PAL_GLIB_MESSAGING
 #include "pal/messaging/glib/pal-glib-msg.h"
 #endif
+#if PAL_LINUX_CAPTURE
+#include "pal/capture/pal-linux-capture.h"
+#endif
 #include "pipeline.h"
 #include "effect.h"
 
@@ -74,6 +77,7 @@ pthread_t Surface::main_thread = 0;
 
 static MoonWindowingSystem *windowing_system = NULL;
 static MoonMessagingService *messaging_service = NULL;
+static MoonCaptureService *capture_service = NULL;
 
 static bool inited = false;
 static bool g_type_inited = false;
@@ -2524,9 +2528,14 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 #if PAL_GLIB_MESSAGING
 	messaging_service = new MoonMessagingServiceGlib ();
 #else
-#error "no PAL windowing system defined"
+#error "no PAL windowing service defined"
 #endif
-	
+
+#if PAL_LINUX_CAPTURE
+	capture_service = new MoonCaptureServiceLinux ();
+#else
+#error "no PAL capture service defined"
+#endif
 
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 
@@ -2546,6 +2555,12 @@ MoonMessagingService *
 runtime_get_messaging_service ()
 {
 	return messaging_service;
+}
+
+MoonCaptureService *
+runtime_get_capture_service ()
+{
+	return capture_service;
 }
 
 void

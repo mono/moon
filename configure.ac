@@ -338,6 +338,9 @@ cat <<EOF
   Platform abstraction layer:
 	Windowing system: $pal_windowing
 	Messaging layer: $pal_messaging
+        Capture Service: $pal_capture
+	    Video capture backends: $pal_video_capture
+	    Audio capture backends: $pal_audio_capture
 EOF
 
 # blank line

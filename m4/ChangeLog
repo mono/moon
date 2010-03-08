@@ -1,3 +1,8 @@
+2010-03-08  Chris Toshok  <toshok@ximian.com>
+
+	* pal.m4: hardcode more stuff about pal (this time for media
+	capture).
+
 2010-03-04  Andreia Gaita  <avidigal@novell.com>
 
 	* build-configuration.m4: Add --with-manual-mono flag to disable

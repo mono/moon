@@ -9,4 +9,13 @@ AC_DEFUN([MOONLIGHT_CHECK_PAL],
 
 	AC_DEFINE([PAL_GLIB_MESSAGING],1,[Hack in support for the pal-glib so we can start using it.])
 	pal_messaging="glib+unix (hardcoded)"
+
+	AC_DEFINE([PAL_LINUX_CAPTURE],1,[Hack in support for the linux capture container])
+	pal_capture="linux (hardcoded)"
+
+	AC_DEFINE([PAL_V4L2_VIDEO_CAPTURE],1,[Hack in support for pal-v4l2 so we can start using it.])
+	pal_video_capture="v4l2 (hardcoded)"
+
+	dnl AC_DEFINE([PAL_PULSE_AUDIO_CAPTURE],1,[Hack in support for pal-pulse so we can start using it.])
+	pal_audio_capture="none (hardcoded)"
 ])

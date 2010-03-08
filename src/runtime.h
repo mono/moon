@@ -549,6 +549,8 @@ MoonWindowingSystem *runtime_get_windowing_system ();
 
 MoonMessagingService *runtime_get_messaging_service ();
 
+MoonCaptureService *runtime_get_capture_service ();
+
 
 void     runtime_shutdown (void);
 
