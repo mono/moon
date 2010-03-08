@@ -1,3 +1,8 @@
+2010-03-08  Alan McGovern  <amcgovern@novell.com>
+
+	* src.mdp: Update the build files to add in some missing
+	  files.
+
 2010-03-08  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp,h: add runtime_get_capture_service.

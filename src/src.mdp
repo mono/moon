@@ -312,6 +312,17 @@
     <File subtype="Code" buildaction="Compile" name="notificationwindow.cpp" />
     <File subtype="Code" buildaction="Compile" name="webbrowser.cpp" />
     <File subtype="Code" buildaction="Nothing" name="webbrowser.h" />
+    <File subtype="Code" buildaction="Compile" name="asxparser.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="asxparser.h" />
+    <File subtype="Code" buildaction="Nothing" name="framerate-display.xaml" />
+    <File subtype="Code" buildaction="Compile" name="messaging.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="messaging.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/capture/v4l2/pal-v4l2-video-capture.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/capture/v4l2/pal-v4l2-video-capture.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/capture/pal-linux-capture.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/capture/pal-linux-capture.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/messaging/glib/pal-glib-msg.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/messaging/glib/pal-glib-msg.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
