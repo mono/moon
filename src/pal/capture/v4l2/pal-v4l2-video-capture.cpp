@@ -8,12 +8,9 @@
  * 
  */
 
-#ifndef MOON_PAL_VIDEO_CAPTURE_V4L2_H
-#define MOON_PAL_VIDEO_CAPTURE_V4L2_H
-
 #include "config.h"
 
-#include "pal/v4l2/pal-v4l2-video-capture.h"
+#include "pal/capture/v4l2/pal-v4l2-video-capture.h"
 
 MoonVideoCaptureServiceV4L2::MoonVideoCaptureServiceV4L2 ()
 {
@@ -26,9 +23,11 @@ MoonVideoCaptureServiceV4L2::~MoonVideoCaptureServiceV4L2 ()
 MoonVideoCaptureDevice*
 MoonVideoCaptureServiceV4L2::GetDefaultCaptureDevice ()
 {
+	return NULL;
 }
 
-MoonVideoCaptureDeviceList*
+List*
 MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices ()
 {
+	return NULL;
 }
