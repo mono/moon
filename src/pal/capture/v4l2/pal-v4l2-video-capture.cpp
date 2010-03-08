@@ -15,7 +15,7 @@
 
 #include "pal/v4l2/pal-v4l2-video-capture.h"
 
-MoonVideoMoonVideoCaptureServiceV4L2::MoonVideoCaptureServiceV4L2 ()
+MoonVideoCaptureServiceV4L2::MoonVideoCaptureServiceV4L2 ()
 {
 }
 
