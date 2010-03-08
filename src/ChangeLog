@@ -1,3 +1,9 @@
+2010-03-08  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (value_from_str_with_parser): when parsing a
+	<sys:Double> element we have no prop_name, so fix this check so
+	that it works in that case as well when dealing with NaN.
+
 2010-03-08  Alan McGovern  <amcgovern@novell.com>
 
 	* usercontrol.cpp: Remove unused variable.

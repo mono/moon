@@ -3562,8 +3562,8 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		}
 
 		if (is_nan || errno || endptr == s || *endptr) {
-			if (prop_name
-			    && (!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
+			if ((!prop_name
+			     || !strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
 			    && (!g_ascii_strcasecmp (s, "Auto") || is_nan))
 				d = NAN;
 			else
