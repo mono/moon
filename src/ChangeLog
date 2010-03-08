@@ -1,5 +1,9 @@
 2010-03-08  Alan McGovern  <amcgovern@novell.com>
 
+	* usercontrol.cpp: Remove unused variable.
+
+2010-03-08  Alan McGovern  <amcgovern@novell.com>
+
 	* src.mdp: Update the build files to add in some missing
 	  files.
 
