@@ -10,10 +10,10 @@ AC_DEFUN([MOONLIGHT_CHECK_CHROME_CRX],
 
 	chrome_extension="yes"
 
-	AC_PATH_PROG(CHROME, google-chrome, no)
-	if test "x$CHROME = "xno" ; then
+	AC_PATH_PROG(PYTHON, python, no)
+	if test "x$PYTHON = "xno" ; then
 	   chrome_extension="no"
-	   chrome_reason="no google-chrome executable"
+	   chrome_reason="no python executable"
 	fi
 
 	if test "x$with_curl = "xno" ; then
