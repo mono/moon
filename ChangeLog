@@ -1,3 +1,8 @@
+2010-03-08  Alan McGovern  <amcgovern@novell.com>
+
+	* README: Update mono/mcs requirement to 153123 to bring in
+	  some linker fixes.
+
 2010-03-08  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: output stuff about the PAL capture configuration.

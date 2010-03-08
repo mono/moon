@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 423 methods needs to be decorated.
+# 422 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -330,9 +330,6 @@
 
 # internal call
 +SC-M: System.Int32 System.Decimal::decimalSetExponent(System.Decimal&,System.Int32)
-
-# internal call
-+SC-M: System.Int32 System.Decimal::double2decimal(System.Decimal&,System.Double,System.Int32)
 
 # internal call
 +SC-M: System.Int32 System.Decimal::string2decimal(System.Decimal&,System.String,System.UInt32,System.Int32)
