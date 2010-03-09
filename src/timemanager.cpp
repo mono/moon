@@ -154,7 +154,7 @@ TimeManager::Start()
 {
 	last_global_time = current_global_time = source->GetNow();
 	current_global_time_usec = current_global_time / 10;
-	source->SetTimerFrequency (current_timeout);
+	source->Start ();
 	source_tick_pending = true;
 }
 
