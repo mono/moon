@@ -386,7 +386,7 @@ enum ImeConversionModeValues {
 	ImeConversionModeValuesSymbol = 128,
 	ImeConversionModeValuesFixed = 256,
 	ImeConversionModeValuesAlphanumeric = 512,
-	ImeConversionModeValuesDoNotCare = -2147483648LL,
+	ImeConversionModeValuesDoNotCare = INT_MIN,
 };
 
 enum InputMethodState {
