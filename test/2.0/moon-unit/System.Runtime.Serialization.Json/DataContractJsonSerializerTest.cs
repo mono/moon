@@ -102,7 +102,6 @@ namespace MoonTest.System.Runtime.Serialization.Json {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Mono WCF bug #573690")]
 		public void ReadWriteNullString ()
 		{
 			DataContractJsonSerializer dcjs = new DataContractJsonSerializer (typeof (string));

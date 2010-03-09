@@ -1,3 +1,10 @@
+2010-03-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Runtime.Serialization.Json/DataContractJsonSerializerTest.cs:
+	Remove [MoonlightBug] on ReadWriteNullString
+	* System.Windows.Controls/ScrollViewer_IScrollInfoTest.cs: Rename
+	type and remove unneeded using statements.
+
 2010-03-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Add tests to make sure
