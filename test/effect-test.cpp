@@ -43,7 +43,7 @@ main (int argc, char **argv)
 	shader->SetTokensFromPath (argv[1]);
 	effect->SetPixelShader (shader);
 
-	status = effect->Composite (dst, src, 0, 0, 0, 0, width, height);
+	status = effect->Composite (dst, src, 0, 0);
 
 	effect->unref ();
 	shader->unref ();
