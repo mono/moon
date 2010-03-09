@@ -1,3 +1,10 @@
+2010-03-09  Jackson Harper  <jackson@ximian.com>
+
+	* playlist.h|cpp: Integrate the new ASX parser, to use this parser
+	you need to set the env var MOONLIGHT_USE_INTERNAL_ASXPARSER.
+	* asxparser.h|cpp: Some api updates so we can integrate with
+	playlist.cpp easily.
+
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (IsVersionSupported): report that we support SL4
