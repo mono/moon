@@ -399,9 +399,13 @@ failed:
 	if (loader)
 		loader->Close ();
 
-	ImageErrorEventArgs *args = new ImageErrorEventArgs (*moon_error);
+	ImageErrorEventArgs *args = NULL;
+
+	if (HasHandlers(ImageFailedEvent))
+		args = new ImageErrorEventArgs (*moon_error);
 	CleanupLoader ();
-	Emit (ImageFailedEvent, args);
+	if (args)
+		Emit (ImageFailedEvent, args);
 }
 
 
@@ -449,9 +453,13 @@ BitmapImage::PixmapComplete ()
 	}
 
 failed:
-	ImageErrorEventArgs *args = new ImageErrorEventArgs (*moon_error);
+	ImageErrorEventArgs *args = NULL;
+
+	if (HasHandlers (ImageFailedEvent))
+		args = new ImageErrorEventArgs (*moon_error);
 	CleanupLoader ();
-	Emit (ImageFailedEvent, args);
+	if (args)
+		Emit (ImageFailedEvent, args);
 }
 
 void
@@ -516,8 +524,11 @@ BitmapImage::pixbuf_write (void *buffer, gint32 offset, gint32 n, gpointer data)
 
 	source->PixbufWrite ((unsigned char *)buffer, offset, n);
 	if (source->moon_error) {
-		ImageErrorEventArgs *args = new ImageErrorEventArgs (*source->moon_error);
+		ImageErrorEventArgs *args = NULL;
+		if (source->HasHandlers(ImageFailedEvent))
+			args = new ImageErrorEventArgs (*source->moon_error);
 		source->CleanupLoader ();
-		source->Emit (ImageFailedEvent, args);
+		if (args)
+			source->Emit (ImageFailedEvent, args);
 	}
 }
