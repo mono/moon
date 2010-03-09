@@ -1,3 +1,12 @@
+2010-03-09  Alan McGovern  <amcgovern@novell.com>
+
+	* HtmlWindow.cs: Add support for DeepLinking. It works for my
+	  (trivial) testcases. Basically the only change we appear to
+	  need is to change HyperlinkButton to look up UIElements
+	  implementing INavigator in the visual tree if the
+	  'TargetName' is not one of the known names and then call
+	  'Navigate' on it.
+
 2010-03-05  Chris Toshok  <toshok@ximian.com>
 
 	* ScriptObject.cs: remove the by-name handling of builtin methods

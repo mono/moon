@@ -1,3 +1,12 @@
+2010-03-09  Alan McGovern  <amcgovern@novell.com>
+
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: Add
+	  support for DeepLinking. It works for my (trivial)
+	  testcases. Basically the only change we appear to need is to
+	  change HyperlinkButton to look up UIElements implementing
+	  INavigator in the visual tree if the 'TargetName' is not one
+	  of the known names and then call 'Navigate' on it.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Controls/Src/ToolTip/ToolTip.cs:

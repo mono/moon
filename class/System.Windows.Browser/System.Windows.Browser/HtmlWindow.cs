@@ -29,11 +29,21 @@
 using Mono;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using System.Collections.Generic;
 
 namespace System.Windows.Browser
 {
 	public sealed class HtmlWindow : HtmlObject
-	{	
+	{
+		// These targets open the target Uri in a new window, otherwise
+		// the existing window is reused. List was compiled from the MSDN
+		// docs for HyperLinkButton.NavigateUri
+		static readonly List<string> NewWindowTargets = new List<string> {
+			"_blank",
+			"_media",
+			"_search",
+		};
+
 		internal HtmlWindow (IntPtr handle)
 			: base (handle, false)
 		{
@@ -76,7 +86,7 @@ namespace System.Windows.Browser
 			if (navigateToUri == null)
 				throw new ArgumentNullException ("navigateToUri");
 
-			HtmlPage.Window.SetProperty ("location", navigateToUri.ToString ());
+			Navigate (navigateToUri, NewWindowTargets [0]);
 		}
 		
 		public HtmlWindow Navigate (Uri navigateToUri, string target)
@@ -86,7 +96,7 @@ namespace System.Windows.Browser
 			if (target == null)
 				throw new ArgumentNullException ("target");
 
-			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target);
+			return Navigate (navigateToUri, target, "");
 		}
 
 		public HtmlWindow Navigate (Uri navigateToUri, string target, string targetFeatures)
@@ -98,7 +108,13 @@ namespace System.Windows.Browser
 			if (targetFeatures == null)
 				throw new ArgumentNullException ("targetFeatures");
 
-			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
+			if (NewWindowTargets.Contains (target)) {
+				return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
+			} else {
+				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
+				SetPropertyInternal (loc, "href", navigateToUri.ToString ());
+				return HtmlPage.Window;
+			}
 		}
 
 		public void NavigateToBookmark (string bookmark)

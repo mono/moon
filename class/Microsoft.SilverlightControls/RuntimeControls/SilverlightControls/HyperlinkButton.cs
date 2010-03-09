@@ -14,6 +14,8 @@ using System.Windows.Automation.Peers;
 using System.Security;
 #if !BOOTSTRAP
 using System.Windows.Browser;
+using System.Windows.Media;
+using System.Collections.Generic;
 #endif 
 
 namespace System.Windows.Controls
@@ -29,6 +31,19 @@ namespace System.Windows.Controls
     [TemplateVisualState(Name = HyperlinkButton.StateFocused, GroupName = HyperlinkButton.GroupFocus)]
     public partial class HyperlinkButton : ButtonBase 
     {
+#if !BOOTSTRAP
+        // If the targetname is one of these, it counts as an external target.
+        // The list is compiled from the MSDN docs.
+        static readonly List<string> ExternalTargets = new List<string> {
+            "",
+            "_blank",
+            "_media",
+            "_parent",
+            "_search",
+            "_self",
+            "_top",
+        };
+#endif
         #region NavigateUri
         /// <summary> 
         /// Gets or sets a URI to navigate to when the link is clicked.
@@ -183,7 +198,7 @@ namespace System.Windows.Controls
         { 
             Uri destination = GetAbsoluteUri();
             string target = TargetName;
- 
+
             if (!destination.IsAbsoluteUri || !IsSafeScheme(destination.Scheme))
             {
                 throw new InvalidOperationException(); 
@@ -191,18 +206,16 @@ namespace System.Windows.Controls
 
             try 
             {
-                if (!string.IsNullOrEmpty(target))
-                { 
 #if !BOOTSTRAP
-                    HtmlPage.Window.Navigate(destination, target);
-#endif
+                if (ExternalTargets.Contains (TargetName))
+                { 
+                    HtmlPage.Window.Navigate(destination, TargetName);
                 }
                 else 
                 { 
-#if !BOOTSTRAP
-                    HtmlPage.Window.Navigate(destination, "_self");
-#endif
+                    NavigateInternally (NavigateUri);
                 } 
+#endif
             }
             catch (InvalidOperationException)
             { 
@@ -210,6 +223,34 @@ namespace System.Windows.Controls
             }
         } 
  
+#if !BOOTSTRAP
+        void NavigateInternally (Uri destination)
+        {
+            UIElement e = this;
+            INavigate navigator;
+            while (e != null && !FindNavigatorInSubtree (e, out navigator))
+                e = (UIElement) VisualTreeHelper.GetParent (e);
+
+            if (navigator != null)
+                navigator.Navigate (destination);
+        }
+        
+        bool FindNavigatorInSubtree (UIElement e, out INavigate navigator)
+        {
+            // The docs say that HyperLinkButton searches the visual tree so that's what I implemented
+            // Maybe it actually uses FindName.
+            navigator = e as INavigate;
+            if (navigator != null)
+                return true;
+
+            int count = VisualTreeHelper.GetChildrenCount (e);
+            for (int i = 0; i < count; i++)
+                if (FindNavigatorInSubtree ((UIElement) VisualTreeHelper.GetChild (e, i), out navigator))
+                    return true;
+            return false;
+        }
+#endif
+
         private bool IsSafeScheme(string scheme)
         { 
             if (scheme.Equals("http", StringComparison.OrdinalIgnoreCase) ||
