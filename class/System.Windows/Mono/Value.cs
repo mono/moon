@@ -516,6 +516,11 @@ namespace Mono {
 					// i.e. the unmanaged and managed structure layouts ARE NOT equal
 					return FromObject (new UnmanagedMatrix ((Matrix) v), box_value_types);
 				}
+				else if (v is Matrix3D) {
+					// hack around the fact that managed Matrix3D is a struct while unmanaged Matrix3D is a DO
+					// i.e. the unmanaged and managed structure layouts ARE NOT equal
+					return FromObject (new UnmanagedMatrix3D ((Matrix3D) v), box_value_types);
+				}
 				else if (v is Duration) {
 					Duration d = (Duration) v;
 					value.k = Kind.DURATION;

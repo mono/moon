@@ -1,5 +1,9 @@
 2010-03-09  David Reveman  <davidr@novell.com>
 
+	* Value.cs: Handle the transition between libmoon DO-based
+	matrix (UnmanagedMatrix3D) and the managed, struct-based,
+	Matrix3D type.
+
 	* Types.cs: Force System.Windows.Media.Media3D.Matrix to be
 	registered as an UNMANAGEDMATRIX3D.
 
