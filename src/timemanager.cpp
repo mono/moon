@@ -91,6 +91,7 @@ TimeManager::TimeManager ()
 
 	start_time = source->GetNow ();
 	start_time_usec = start_time / 10;
+	source->SetTimerFrequency (current_timeout);
 	source->AddHandler (TimeSource::TickEvent, source_tick_callback, this);
 
 	registered_timeouts = NULL;
@@ -153,7 +154,7 @@ TimeManager::Start()
 {
 	last_global_time = current_global_time = source->GetNow();
 	current_global_time_usec = current_global_time / 10;
-	source->Start ();
+	source->SetTimerFrequency (current_timeout);
 	source_tick_pending = true;
 }
 
