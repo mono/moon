@@ -1,3 +1,8 @@
+2010-03-09  David Reveman  <davidr@novell.com>
+
+	* xaml.cpp (matrix3d_from_str): Fix typo that caused
+	M14 property to not be set properly.
+
 2010-02-24  David Reveman  <davidr@novell.com>
 
 	* uielement.h:

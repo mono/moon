@@ -2879,7 +2879,7 @@ matrix3d_from_str (const char *str)
 	matrix->SetM11 (values->GetValueAt (0)->AsDouble ());
 	matrix->SetM12 (values->GetValueAt (1)->AsDouble ());
 	matrix->SetM13 (values->GetValueAt (2)->AsDouble ());
-	matrix->SetM13 (values->GetValueAt (3)->AsDouble ());
+	matrix->SetM14 (values->GetValueAt (3)->AsDouble ());
 	matrix->SetM21 (values->GetValueAt (4)->AsDouble ());
 	matrix->SetM22 (values->GetValueAt (5)->AsDouble ());
 	matrix->SetM23 (values->GetValueAt (6)->AsDouble ());
