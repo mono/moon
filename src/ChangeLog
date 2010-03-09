@@ -1,3 +1,9 @@
+2010-03-09  Chris Toshok  <toshok@ximian.com>
+
+	* downloader.cpp (SendInternal): only emit
+	DownloadFailedEvent (and create args) if we have listeners.
+	(NotifyFailed): same.
+
 2010-03-08  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (value_from_str_with_parser): when parsing a

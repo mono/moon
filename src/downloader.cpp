@@ -536,9 +536,11 @@ Downloader::SendInternal ()
 	}
 	
 	if (failed_msg != NULL) {
-		// Consumer is re-sending a request which failed.
-		Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
-							       MoonError (MoonError::EXCEPTION, 1, failed_msg)));
+		if (HasHandlers (DownloadFailedEvent)) {
+			// Consumer is re-sending a request which failed.
+			Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
+								       MoonError (MoonError::EXCEPTION, 1, failed_msg)));
+		}
 		return;
 	}
 	
@@ -697,8 +699,9 @@ Downloader::NotifyFailed (const char *msg)
 	// SetStatus (400);
 	// For some reason the status is 0, not updated on errors?
 	
-	Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
-						       MoonError (MoonError::EXCEPTION, 1, msg)));
+	if (HasHandlers (DownloadFailedEvent))
+		Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
+							       MoonError (MoonError::EXCEPTION, 1, msg)));
 	
 	failed_msg = g_strdup (msg);
 }
