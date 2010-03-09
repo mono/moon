@@ -4182,3 +4182,60 @@ PixelShader::GetInstruction (int                   index,
 
 	return index;
 }
+
+ProjectionEffect::ProjectionEffect ()
+{
+	SetObjectType (Type::PROJECTIONEFFECT);
+}
+
+ProjectionEffect::~ProjectionEffect ()
+{
+}
+
+unsigned int
+ProjectionEffect::GetTopPadding ()
+{
+	return 0;
+}
+
+unsigned int
+ProjectionEffect::GetBottomPadding ()
+{
+	return 0;
+}
+
+unsigned int
+ProjectionEffect::GetLeftPadding ()
+{
+	return 0;
+}
+
+unsigned int
+ProjectionEffect::GetRightPadding ()
+{
+	return 0;
+}
+
+Rect
+ProjectionEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
+{
+	return bounds;
+}
+
+bool
+ProjectionEffect::Composite (cairo_surface_t *dst,
+			     cairo_surface_t *src,
+			     int             src_x,
+			     int             src_y,
+			     int             x,
+			     int             y,
+			     unsigned int    width,
+			     unsigned int    height)
+{
+	return 0;
+}
+
+void
+ProjectionEffect::UpdateShader ()
+{
+}

@@ -433,5 +433,39 @@ protected:
 	void *fs;
 };
 
+/* @Namespace=None,ManagedDependencyProperties=None */
+class ProjectionEffect : public Effect {
+public:
+	ProjectionEffect ();
+
+	//
+	// Padding
+	//
+	unsigned int GetTopPadding ();
+	unsigned int GetBottomPadding ();
+	unsigned int GetLeftPadding ();
+	unsigned int GetRightPadding ();
+	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
+
+	//
+	// Composite
+	//
+	bool Composite (cairo_surface_t *dst,
+			cairo_surface_t *src,
+			int             src_x,
+			int             src_y,
+			int             x,
+			int             y,
+			unsigned int    width,
+			unsigned int    height);
+
+	//
+	// Shader
+	//
+	void UpdateShader ();
+
+protected:
+	virtual ~ProjectionEffect ();
+};
 
 #endif /* __MOONLIGHT_EFFECT_H__ */
