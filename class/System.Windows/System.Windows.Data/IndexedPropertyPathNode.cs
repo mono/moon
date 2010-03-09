@@ -56,7 +56,11 @@ namespace System.Windows.Data
 
 		void OnCollectionChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
-			object newVal = ((IList)Source) [Index];
+			IList source = (IList) Source;
+			if (Index >= source.Count)
+				return;
+
+			object newVal = PropertyInfo.GetValue (source, new object [] { Index });
 			if (Value != newVal) {
 				Value = newVal;
 				if (Next != null)
@@ -75,13 +79,13 @@ namespace System.Windows.Data
 
 			IList source = Source as IList;
 
-			if (source == null || !GetIndexer ()) {
+			if (source == null || !GetIndexer () || Index >= source.Count) {
 				PropertyInfo = null;
 				ValueType = null;
 				Value = null;
 			} else {
 				ValueType = PropertyInfo.PropertyType;
-				Value = source [Index];
+				Value = PropertyInfo.GetValue (source, new object [] { Index });
 			}
 		}
 

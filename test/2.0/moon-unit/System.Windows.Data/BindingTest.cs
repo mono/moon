@@ -18,6 +18,7 @@ using Microsoft.Silverlight.Testing;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace MoonTest.System.Windows.Data
 {
@@ -1062,6 +1063,57 @@ namespace MoonTest.System.Windows.Data
 			rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[2]"));
 
 			Assert.AreEqual (2, rect.Width, "#1");
+		}
+
+		[TestMethod]
+		public void IndexerOnIndexableProperty_IndexNegative ()
+		{
+			bool fail = false;
+			var data = new Data { };
+			data.DoubleList.AddRange (new double [] { 0, 1, 2, 3, 4 });
+
+			var rect = new Rectangle { DataContext = data };
+			try {
+				rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[-20]"));
+				fail = true;
+			} catch (Exception ex) {
+				bool oor = ex is ArgumentOutOfRangeException || ex.InnerException is ArgumentOutOfRangeException;
+				Assert.IsTrue (oor, "#OOR exception");
+			}
+			if (fail)
+				Assert.Fail ("#3 An exception should have been thrown");
+		}
+
+		[TestMethod]
+		public void IndexerOnIndexableProperty_IndexNegative_ExactException ()
+		{
+			bool fail = false;
+			var data = new Data { };
+			data.DoubleList.AddRange (new double [] { 0, 1, 2, 3, 4 });
+
+			var rect = new Rectangle { DataContext = data };
+			try {
+				rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[-20]"));
+				fail = true;
+			} catch (Exception ex) {
+				Assert.IsInstanceOfType<TargetInvocationException> (ex, "#1");
+				Assert.IsInstanceOfType<ArgumentOutOfRangeException> (ex.InnerException, "#2");
+			}
+
+			if (fail)
+				Assert.Fail ("#3 An exception should have been thrown");
+		}
+
+		[TestMethod]
+		public void IndexerOnIndexableProperty_IndexTooLarge ()
+		{
+			var data = new Data { };
+			data.DoubleList.AddRange (new double [] { 0, 1, 2, 3, 4 });
+
+			var rect = new Rectangle { DataContext = data };
+			rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[20]"));
+
+			Assert.IsTrue(double.IsNaN (rect.Width), "#1");
 		}
 
 		[TestMethod]

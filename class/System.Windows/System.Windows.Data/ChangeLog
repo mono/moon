@@ -1,3 +1,8 @@
+2010-03-09  Alan McGovern  <amcgovern@novell.com>
+
+	* IndexedPropertyPathNode.cs: Add tests to make sure we handle
+	  large and negative indices when databinding to ILists.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* CollectionViewGroup.cs:
