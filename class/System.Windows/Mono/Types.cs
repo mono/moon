@@ -127,6 +127,8 @@ namespace Mono
 					info.native_handle = Kind.INT32;
 				else if (type == typeof (System.Windows.Media.Matrix))
 					info.native_handle = Kind.UNMANAGEDMATRIX;
+				else if (type == typeof (System.Windows.Media.Media3D.Matrix3D))
+					info.native_handle = Kind.UNMANAGEDMATRIX3D;
 				else {
 					info.native_handle = NativeMethods.types_register_type (native, type.FullName, 
 						GCHandle.ToIntPtr (info.gc_handle), 

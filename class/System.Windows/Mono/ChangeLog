@@ -1,3 +1,8 @@
+2010-03-09  David Reveman  <davidr@novell.com>
+
+	* Types.cs: Force System.Windows.Media.Media3D.Matrix to be
+	registered as an UNMANAGEDMATRIX3D.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Kind.cs:
