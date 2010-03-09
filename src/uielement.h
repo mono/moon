@@ -582,12 +582,14 @@ protected:
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr, bool path_only = false);
 	Rect TransformBoundsThroughEffect (Rect bounds);
+	Rect ProjectBounds (Rect bounds);
 
 	void SetDesiredSize (Size s) { desired_size = s; }
 	void SetRenderSize (Size s) { render_size = s; }
 
 	// The computed bounding box
 	Size hidden_desire;
+	Rect unprojected_bounds;
 	Rect bounds;
 	Rect extents;
 

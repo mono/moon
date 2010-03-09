@@ -25,6 +25,7 @@
 #include "style.h"
 #include "validators.h"
 #include "effect.h"
+#include "projection.h"
 
 #define MAX_LAYOUT_PASSES 250
 
@@ -258,6 +259,7 @@ void
 FrameworkElement::ComputeBounds ()
 {
 	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+	Projection *projection = GetProjection ();
 	Size size (GetActualWidth (), GetActualHeight ());
 	size = ApplySizeConstraints (size);
 
@@ -273,6 +275,10 @@ FrameworkElement::ComputeBounds ()
 
 		bounds_with_children = bounds_with_children.Union (item->GetSubtreeBounds ());
 	}
+
+	unprojected_bounds = bounds_with_children;
+	if (projection)
+		bounds = bounds_with_children = projection->ProjectBounds (unprojected_bounds);
 
 	if (effect)
 		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);

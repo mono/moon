@@ -31,6 +31,7 @@
 #include "window.h"
 #include "provider.h"
 #include "effect.h"
+#include "projection.h"
 
 //#define DEBUG_INVALIDATE 0
 #define MIN_FRONT_TO_BACK_COUNT 25
@@ -186,6 +187,17 @@ UIElement::TransformBoundsThroughEffect (Rect bounds)
 	return effect->TransformBounds (bounds);
 }
 
+Rect
+UIElement::ProjectBounds (Rect bounds)
+{
+	Projection *projection = GetProjection ();
+
+	if (!projection)
+		return bounds;
+
+	return projection->ProjectBounds (bounds);
+}
+
 void
 UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
@@ -245,6 +257,8 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	} else if (args->GetId () == UIElement::EffectProperty) {
+		FullInvalidate (false);
+	} else if (args->GetId () == UIElement::ProjectionProperty) {
 		FullInvalidate (false);
 	}
 
@@ -487,7 +501,10 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	else if (prop && prop->GetId () == UIElement::EffectProperty) {
 		FullInvalidate (false);
 	}
-	
+	else if (prop && prop->GetId () == UIElement::ProjectionProperty) {
+		FullInvalidate (false);
+	}
+
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
@@ -1150,6 +1167,7 @@ bool
 UIElement::UseBackToFront ()
 {
 	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return FALSE;
+	if (GetProjection ()) return FALSE;
 	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
 }
 
@@ -1167,9 +1185,13 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 	if (!UseBackToFront ()) {
 		Region *self_region = new Region (surface_region);
+		Projection *projection = GetProjection ();
 		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 
-		if (effect) {
+		if (projection) {
+			self_region = new Region (unprojected_bounds.RoundOut ());
+		}
+		else if (effect) {
 			self_region = new Region (GetSubtreeBounds ().RoundOut ());
 		}
 		else {
@@ -1312,6 +1334,18 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
 		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
 	}
+
+	if (GetProjection ()) {
+		cairo_surface_t *group_surface;
+		Rect            r = unprojected_bounds.RoundOut ();
+
+		group_surface = cairo_surface_create_similar (cairo_get_target (cr),
+							      CAIRO_CONTENT_COLOR_ALPHA,
+							      r.width,
+							      r.height);
+		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
+		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+	}
 }
 
 void
@@ -1325,8 +1359,56 @@ UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 	}
 
 	double local_opacity = GetOpacity ();
+	Projection *projection = GetProjection ();
 	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 	cairo_t *cr;
+
+	if (projection)
+	{
+		List::Node *node = ctx->First ();
+		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
+		cairo_surface_t *src = cairo_get_target (group_cr);
+
+		ctx->Unlink (node);
+
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			Effect          *effect = Effect::GetProjectionEffect ();
+			cairo_surface_t *dst = cairo_get_target (cr);
+			double          dst_x, dst_y;
+			int             x, y;
+			Rect            r = unprojected_bounds.RoundOut ();
+
+			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
+
+			x = r.x + dst_x;
+			y = r.y + dst_y;
+
+			Effect::SetShaderMatrix (src, projection->GetMatrix3D ());
+
+			if (!effect->Composite (dst, src, x, y))
+			{
+				cairo_save (cr);
+				cairo_identity_matrix (cr);
+				cairo_reset_clip (cr);
+				cairo_surface_set_device_offset (dst, 0, 0);
+				cairo_surface_set_device_offset (src, 0, 0);
+				cairo_rectangle (cr, x, y, r.width, r.height);
+				cairo_set_source_surface (cr, src, x, y);
+				cairo_fill (cr);
+				cairo_surface_set_device_offset (dst, dst_x, dst_y);
+				cairo_restore (cr);
+			}
+		}
+
+		cairo_destroy (group_cr);
+		cairo_surface_destroy (src);
+		delete node;
+	}
+	else {
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+	}
 
 	if (effect)
 	{

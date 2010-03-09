@@ -19,6 +19,7 @@
 #include "runtime.h"
 #include "deployment.h"
 #include "effect.h"
+#include "projection.h"
 
 Panel::Panel ()
 {
@@ -48,6 +49,7 @@ void
 Panel::ComputeBounds ()
 {
 	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+	Projection *projection = GetProjection ();
 
 #if DEBUG_BOUNDS
 	levelb += 4;
@@ -82,6 +84,10 @@ Panel::ComputeBounds ()
 		bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 		bounds_with_children = bounds_with_children.Union (bounds);
 	}
+
+	unprojected_bounds = bounds_with_children;
+	if (projection)
+		bounds = bounds_with_children = projection->ProjectBounds (unprojected_bounds);
 
 	if (effect)
 		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);

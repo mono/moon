@@ -63,6 +63,8 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Matrix3D ();
+
+	Matrix3D (double *m);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
@@ -119,6 +121,8 @@ public:
 
 	void SetM44 (double m44);
 	double GetM44 ();
+
+	static void TransformPoint (double *out, const double *m, const double *in);
 };
 
 /* @Namespace=System.Windows.Media.Media3D */
@@ -136,10 +140,20 @@ class UnmanagedMatrix3D : public Matrix3D {
 class Projection : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Projection () { SetObjectType (Type::PROJECTION); }
+	Projection ();
+
+	virtual Matrix3D *GetProjectionMatrix ();
+
+	Matrix3D *GetMatrix3D ();
+	Rect ProjectBounds (Rect bounds);
 
 protected:
 	virtual ~Projection () {}
+
+	virtual void UpdateProjection ();
+	void MaybeUpdateProjection ();
+
+	bool need_update;
 };
 
 /* @Namespace=System.Windows.Media */
@@ -147,6 +161,8 @@ class PlaneProjection : public Projection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	PlaneProjection () { SetObjectType (Type::PLANEPROJECTION); }
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	const static int CenterOfRotationXProperty;
@@ -223,6 +239,8 @@ public:
 	
 protected:
 	virtual ~PlaneProjection () {}
+
+	void UpdateProjection ();
 };
 
 /* @Namespace=System.Windows.Media */

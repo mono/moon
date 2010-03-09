@@ -466,8 +466,10 @@ TextBlock::ComputeBounds ()
 	extents.y += padding.top;
 	
         bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	unprojected_bounds = bounds;
+	bounds = ProjectBounds (unprojected_bounds);
 	bounds = TransformBoundsThroughEffect (bounds);
-        bounds_with_children = bounds;
+	bounds_with_children = bounds;
 }
 
 Point

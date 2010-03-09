@@ -18,14 +18,18 @@
 #include "application.h"
 #include "eventargs.h"
 #include "uri.h"
+#include "projection.h"
 #include "debug.h"
 
 struct st_context *Effect::st_context;
 
 cairo_user_data_key_t Effect::textureKey;
 cairo_user_data_key_t Effect::surfaceKey;
+cairo_user_data_key_t Effect::matrixKey;
 
 int Effect::filtertable0[256];
+
+Effect *Effect::projection;
 
 #ifdef USE_GALLIUM
 #undef CLAMP
@@ -1318,6 +1322,31 @@ Effect::Shutdown ()
 	st_context_reference (&st_context, NULL);
 #endif
 
+}
+
+Effect *
+Effect::GetProjectionEffect ()
+{
+	if (!projection)
+		projection = new ProjectionEffect ();
+
+	return projection;
+}
+
+void
+Effect::SetShaderMatrix (cairo_surface_t *surface,
+			 Matrix3D        *matrix)
+{
+	cairo_surface_set_user_data (surface,
+				     &matrixKey,
+				     (void *) matrix,
+				     NULL);
+}
+
+Matrix3D *
+Effect::GetShaderMatrix (cairo_surface_t *surface)
+{
+	return (Matrix3D *) cairo_surface_get_user_data (surface, &matrixKey);
 }
 
 Effect::Effect ()
@@ -4093,7 +4122,158 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 			     int             x,
 			     int             y)
 {
+
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	struct pipe_texture *texture;
+	struct pipe_surface *surface;
+	struct pipe_buffer  *vertices;
+	float               *verts;
+	Matrix3D            *matrix = GetShaderMatrix (src);
+	double              *m;
+
+	if (!matrix)
+		return 0;
+
+	MaybeUpdateShader ();
+
+	surface = GetShaderSurface (dst);
+	if (!surface)
+		return 0;
+
+	texture = GetShaderTexture (src);
+	if (!texture)
+		return 0;
+
+	vertices = pipe_buffer_create (ctx->pipe->screen, 32,
+				       PIPE_BUFFER_USAGE_VERTEX,
+				       sizeof (float) * 8 * 4);
+	if (!vertices)
+		return 0;
+
+	verts = (float *) pipe_buffer_map (ctx->pipe->screen,
+					   vertices,
+					   PIPE_BUFFER_USAGE_CPU_WRITE);
+	if (!verts)
+	{
+		pipe_buffer_reference (&vertices, NULL);
+		return 0;
+	}
+
+	m = (double *) matrix->GetMatrixValues ();
+
+	double s1 = 0.5 / texture->width0;
+	double t1 = 0.5 / texture->height0;
+	double s2 = (texture->width0 + 0.5) / texture->width0;
+	double t2 = (texture->height0 + 0.5) / texture->height0;
+
+	double xscale = (1.0 / surface->width);
+	double yscale = (1.0 / surface->height);
+
+	double p1[4] = { 0.0, 0.0, 1.0, 1.0 };
+	double p2[4] = { texture->width0, 0.0, 1.0, 1.0 };
+	double p3[4] = { texture->width0, texture->height0, 1.0, 1.0 };
+	double p4[4] = { 0.0, texture->height0, 1.0, 1.0 };
+
+	Matrix3D::TransformPoint (p1, m, p1);
+	Matrix3D::TransformPoint (p2, m, p2);
+	Matrix3D::TransformPoint (p3, m, p3);
+	Matrix3D::TransformPoint (p4, m, p4);
+
+	if (p1[3] == 0.0 || p2[3] == 0.0 || p3[3] == 0.0 || p4[3] == 0.0)
+		return 0;
+
+	p1[0] /= p1[3];
+	p1[1] /= p1[3];
+
+	p2[0] /= p2[3];
+	p2[1] /= p2[3];
+
+	p3[0] /= p3[3];
+	p3[1] /= p3[3];
+
+	p4[0] /= p4[3];
+	p4[1] /= p4[3];
+
+	p1[0] += x;
+	p1[1] += y;
+
+	p2[0] += x;
+	p2[1] += y;
+
+	p3[0] += x;
+	p3[1] += y;
+
+	p4[0] += x;
+	p4[1] += y;
+
+	*verts++ = p1[0] * xscale;
+	*verts++ = p1[1] * yscale;
+	*verts++ = 1.f;
+	*verts++ = 1.f;
+
+	*verts++ = s1;
+	*verts++ = t1;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	*verts++ = p2[0] * xscale;
+	*verts++ = p2[1] * yscale;
+	*verts++ = 1.f;
+	*verts++ = 1.f;
+
+	*verts++ = s2;
+	*verts++ = t1;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	*verts++ = p3[0] * xscale;
+	*verts++ = p3[1] * yscale;
+	*verts++ = 1.f;
+	*verts++ = 1.f;
+
+	*verts++ = s2;
+	*verts++ = t2;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	*verts++ = p4[0] * xscale;
+	*verts++ = p4[1] * yscale;
+	*verts++ = 1.f;
+	*verts++ = 1.f;
+
+	*verts++ = s1;
+	*verts++ = t2;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+
+	struct pipe_sampler_state sampler;
+	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_LINEAR;
+	sampler.min_img_filter = PIPE_TEX_MIPFILTER_LINEAR;
+	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_LINEAR;
+	sampler.normalized_coords = 1;
+	cso_single_sampler (ctx->cso, 1, &sampler);
+	cso_single_sampler_done (ctx->cso);
+
+	cso_set_sampler_textures (ctx->cso, 1, &texture);
+
+	DrawVertices (surface, vertices, 1, 1);
+
+	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
+
+	pipe_buffer_reference (&vertices, NULL);
+
+	return 1;
+#else
 	return 0;
+#endif
+
 }
 
 void

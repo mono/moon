@@ -105,11 +105,16 @@ public:
 	static void Initialize ();
 	static void Shutdown ();
 
+	static Effect *GetProjectionEffect ();
+	static void SetShaderMatrix (cairo_surface_t *surface,
+				     Matrix3D        *matrix);
+
 protected:
 	virtual ~Effect () {}
 
 	pipe_texture_t *GetShaderTexture (cairo_surface_t *surface);
 	pipe_surface_t *GetShaderSurface (cairo_surface_t *surface);
+	Matrix3D       *GetShaderMatrix (cairo_surface_t *surface);
 	pipe_buffer_t  *GetShaderVertexBuffer (float    x1,
 					       float    y1,
 					       float    x2,
@@ -138,8 +143,11 @@ protected:
 
 	static cairo_user_data_key_t textureKey;
 	static cairo_user_data_key_t surfaceKey;
+	static cairo_user_data_key_t matrixKey;
 
 	static int filtertable0[256];
+
+	static Effect *projection;
 };
 
 #define MAX_BLUR_RADIUS 20
