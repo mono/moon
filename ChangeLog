@@ -1,3 +1,7 @@
+2010-03-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* README: Update mono/mcs requirement to 153349 to fix moon-unit
+
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: add SILVERLIGHT_4_0_TARGETRUNTIME.
