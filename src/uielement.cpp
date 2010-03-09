@@ -180,10 +180,10 @@ UIElement::TransformBoundsThroughEffect (Rect bounds)
 {
 	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 
-	if (effect)
-		return effect->TransformBounds (bounds);
-
-	return bounds;
+	if (!effect)
+		return bounds;
+	
+	return effect->TransformBounds (bounds);
 }
 
 void
@@ -1167,7 +1167,15 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 	if (!UseBackToFront ()) {
 		Region *self_region = new Region (surface_region);
-		self_region->Intersect (GetSubtreeBounds().RoundOut());
+		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+
+		if (effect) {
+			self_region = new Region (GetSubtreeBounds ().RoundOut ());
+		}
+		else {
+			self_region = new Region (surface_region);
+			self_region->Intersect (GetSubtreeBounds ().RoundOut ());
+		}
 
 		// we need to include our children in this one, since
 		// we'll be rendering them in the PostRender method.
@@ -1333,41 +1341,23 @@ UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			cairo_surface_t *dst = cairo_get_target (cr);
 			double          dst_x, dst_y;
-			double          src_x, src_y;
-			int             x1, y1, x2, y2;
+			int             x, y;
 			Rect            r = GetSubtreeBounds ().RoundOut ();
 
 			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
-			cairo_surface_get_device_offset (src, &src_x, &src_y);
 
-			src_x -= dst_x;
-			src_y -= dst_y;
+			x = r.x + dst_x;
+			y = r.y + dst_y;
 
-			x1 = r.x + dst_x;
-			y1 = r.y + dst_y;
-			x2 = x1 + r.width;
-			y2 = y1 + r.height;
-
-			if (!effect->Composite (dst,
-						src,
-						src_x + x1,
-						src_y + y1,
-						x1,
-						y1,
-						x2 - x1,
-						y2 - y1))
+			if (!effect->Composite (dst, src, x, y))
 			{
 				cairo_save (cr);
 				cairo_identity_matrix (cr);
 				cairo_reset_clip (cr);
 				cairo_surface_set_device_offset (dst, 0, 0);
 				cairo_surface_set_device_offset (src, 0, 0);
-				cairo_rectangle (cr,
-						 x1,
-						 y1,
-						 x2 - x1,
-						 y2 - y1);
-				cairo_set_source_surface (cr, src, -src_x, -src_y);
+				cairo_rectangle (cr, x, y, r.width, r.height);
+				cairo_set_source_surface (cr, src, x, y);
 				cairo_fill (cr);
 				cairo_surface_set_device_offset (dst, dst_x, dst_y);
 				cairo_restore (cr);

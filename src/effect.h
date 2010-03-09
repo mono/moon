@@ -99,12 +99,8 @@ public:
 	//
 	virtual bool Composite (cairo_surface_t *dst,
 				cairo_surface_t *src,
-				int             src_x,
-				int             src_y,
 				int             x,
-				int             y,
-				unsigned int    width,
-				unsigned int    height);
+				int             y);
 
 	static void Initialize ();
 	static void Shutdown ();
@@ -175,12 +171,8 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			int             src_x,
-			int             src_y,
 			int             x,
-			int             y,
-			unsigned int    width,
-			unsigned int    height);
+			int             y);
 
 	//
 	// Shader
@@ -253,12 +245,8 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			int             src_x,
-			int             src_y,
 			int             x,
-			int             y,
-			unsigned int    width,
-			unsigned int    height);
+			int             y);
 
 	//
 	// Shader
@@ -389,12 +377,8 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			int             src_x,
-			int             src_y,
 			int             x,
-			int             y,
-			unsigned int    width,
-			unsigned int    height);
+			int             y);
 
 	//
 	// Shader
@@ -427,12 +411,8 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			int             src_x,
-			int             src_y,
 			int             x,
-			int             y,
-			unsigned int    width,
-			unsigned int    height);
+			int             y);
 
 	//
 	// Shader

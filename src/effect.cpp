@@ -1539,14 +1539,10 @@ Effect::DrawVertices (struct pipe_surface *surface,
 bool
 Effect::Composite (cairo_surface_t *dst,
 		   cairo_surface_t *src,
-		   int             src_x,
-		   int             src_y,
 		   int             x,
-		   int             y,
-		   unsigned int    width,
-		   unsigned int    height)
+		   int             y)
 {
-	g_warning ("Effect::Compiste has been called. The derived class should have overridden it.");
+	g_warning ("Effect::Composite has been called. The derived class should have overridden it.");
 	return 0;
 }
 
@@ -1639,12 +1635,8 @@ BlurEffect::TransformBounds (Rect bounds)
 bool
 BlurEffect::Composite (cairo_surface_t *dst,
 		       cairo_surface_t *src,
-		       int             src_x,
-		       int             src_y,
 		       int             x,
-		       int             y,
-		       unsigned int    width,
-		       unsigned int    height)
+		       int             y)
 {
 	
 #ifdef USE_GALLIUM
@@ -1711,8 +1703,8 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
 					  (1.0 / surface->height) * y,
-					  (1.0 / surface->width)  * (x + width),
-					  (1.0 / surface->height) * (y + height),
+					  (1.0 / surface->width)  * (x + texture->width0),
+					  (1.0 / surface->height) * (y + texture->height0),
 					  1,
 					  &verts);
 	if (!vertices) {
@@ -1720,10 +1712,10 @@ BlurEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	double s1 = src_x + 0.5;
-	double t1 = src_y + 0.5;
-	double s2 = src_x + width  + 0.5;
-	double t2 = src_y + height + 0.5;
+	double s1 = 0.5;
+	double t1 = 0.5;
+	double s2 = texture->width0 + 0.5;
+	double t2 = texture->height0 + 0.5;
 
 	idx = 4;
 	verts[idx + 0] = s1;
@@ -2058,12 +2050,8 @@ DropShadowEffect::TransformBounds (Rect bounds)
 bool
 DropShadowEffect::Composite (cairo_surface_t *dst,
 			     cairo_surface_t *src,
-			     int             src_x,
-			     int             src_y,
 			     int             x,
-			     int             y,
-			     unsigned int    width,
-			     unsigned int    height)
+			     int             y)
 {
 
 #ifdef USE_GALLIUM
@@ -2144,8 +2132,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
 					  (1.0 / surface->height) * y,
-					  (1.0 / surface->width)  * (x + width),
-					  (1.0 / surface->height) * (y + height),
+					  (1.0 / surface->width)  * (x + texture[0]->width0),
+					  (1.0 / surface->height) * (y + texture[0]->height0),
 					  1,
 					  &verts);
 	if (!vertices) {
@@ -2153,10 +2141,10 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	double s1 = src_x + 0.5;
-	double t1 = src_y + 0.5;
-	double s2 = src_x + width  + 0.5;
-	double t2 = src_y + height + 0.5;
+	double s1 = 0.5;
+	double t1 = 0.5;
+	double s2 = texture[0]->width0 + 0.5;
+	double t2 = texture[0]->height0 + 0.5;
 
 	idx = 4;
 	verts[idx + 0] = s1;
@@ -3025,12 +3013,8 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 bool
 ShaderEffect::Composite (cairo_surface_t *dst,
 			 cairo_surface_t *src,
-			 int             src_x,
-			 int             src_y,
 			 int             x,
-			 int             y,
-			 unsigned int    width,
-			 unsigned int    height)
+			 int             y)
 {
 
 #ifdef USE_GALLIUM
@@ -3084,17 +3068,17 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
 					  (1.0 / surface->height) * y,
-					  (1.0 / surface->width)  * (x + width),
-					  (1.0 / surface->height) * (y + height),
+					  (1.0 / surface->width)  * (x + texture->width0),
+					  (1.0 / surface->height) * (y + texture->height0),
 					  1,
 					  &verts);
 	if (!vertices)
 		return 0;
 
-	double s1 = (src_x + 0.5) / texture->width0;
-	double t1 = (src_y + 0.5) / texture->height0;
-	double s2 = (src_x + width  + 0.5) / texture->width0;
-	double t2 = (src_y + height + 0.5) / texture->height0;
+	double s1 = 0.5 / texture->width0;
+	double t1 = 0.5 / texture->height0;
+	double s2 = (texture->width0 + 0.5) / texture->width0;
+	double t2 = (texture->height0 + 0.5) / texture->height0;
 
 	idx = 4;
 	verts[idx + 0] = s1;
@@ -4106,12 +4090,8 @@ ProjectionEffect::~ProjectionEffect ()
 bool
 ProjectionEffect::Composite (cairo_surface_t *dst,
 			     cairo_surface_t *src,
-			     int             src_x,
-			     int             src_y,
 			     int             x,
-			     int             y,
-			     unsigned int    width,
-			     unsigned int    height)
+			     int             y)
 {
 	return 0;
 }

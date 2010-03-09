@@ -1,5 +1,9 @@
 2010-03-09  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Simplify effect compositing. The complete
+	UI element needs to be rendered whenever an effect is
+	present.
+
 	* xaml.cpp (matrix3d_from_str): Fix typo that caused
 	M14 property to not be set properly.
 
