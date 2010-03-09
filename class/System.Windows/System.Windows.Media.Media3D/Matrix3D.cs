@@ -427,8 +427,37 @@ namespace System.Windows.Media.Media3D {
 
 		public static Matrix3D operator * (Matrix3D matrix1, Matrix3D matrix2)
 		{
-			Console.WriteLine ("System.Windows.Media.Media3D.Matrix3D.op_Multiply: NIEX");
-			throw new NotImplementedException ();
+			if (!matrix1.init) {
+				if (!matrix2.init)
+					return new Matrix3D ();
+
+				matrix1.SetIdentity ();
+			}
+
+			if (!matrix2.init) {
+				matrix2.SetIdentity ();
+			}
+
+			return new Matrix3D (
+			matrix1.m_11 * matrix2.m_11 + matrix1.m_12 * matrix2.m_21 + matrix1.m_13 * matrix2.m_31 + matrix1.m_14 * matrix2.offset_x,
+			matrix1.m_11 * matrix2.m_12 + matrix1.m_12 * matrix2.m_22 + matrix1.m_13 * matrix2.m_32 + matrix1.m_14 * matrix2.offset_y,
+			matrix1.m_11 * matrix2.m_13 + matrix1.m_12 * matrix2.m_23 + matrix1.m_13 * matrix2.m_33 + matrix1.m_14 * matrix2.offset_z,
+			matrix1.m_11 * matrix2.m_14 + matrix1.m_12 * matrix2.m_24 + matrix1.m_13 * matrix2.m_34 + matrix1.m_14 * matrix2.m_44,
+
+			matrix1.m_21 * matrix2.m_11 + matrix1.m_22 * matrix2.m_21 + matrix1.m_23 * matrix2.m_31 + matrix1.m_24 * matrix2.offset_x,
+			matrix1.m_21 * matrix2.m_12 + matrix1.m_22 * matrix2.m_22 + matrix1.m_23 * matrix2.m_32 + matrix1.m_24 * matrix2.offset_y,
+			matrix1.m_21 * matrix2.m_13 + matrix1.m_22 * matrix2.m_23 + matrix1.m_23 * matrix2.m_33 + matrix1.m_24 * matrix2.offset_z,
+			matrix1.m_21 * matrix2.m_14 + matrix1.m_22 * matrix2.m_24 + matrix1.m_23 * matrix2.m_34 + matrix1.m_24 * matrix2.m_44,
+
+			matrix1.m_31 * matrix2.m_11 + matrix1.m_32 * matrix2.m_21 + matrix1.m_33 * matrix2.m_31 + matrix1.m_34 * matrix2.offset_x,
+			matrix1.m_31 * matrix2.m_12 + matrix1.m_32 * matrix2.m_22 + matrix1.m_33 * matrix2.m_32 + matrix1.m_34 * matrix2.offset_y,
+			matrix1.m_31 * matrix2.m_13 + matrix1.m_32 * matrix2.m_23 + matrix1.m_33 * matrix2.m_33 + matrix1.m_34 * matrix2.offset_z,
+			matrix1.m_31 * matrix2.m_14 + matrix1.m_32 * matrix2.m_24 + matrix1.m_33 * matrix2.m_34 + matrix1.m_34 * matrix2.m_44,
+
+			matrix1.offset_x * matrix2.m_11 + matrix1.offset_y * matrix2.m_21 + matrix1.offset_z * matrix2.m_31 + matrix1.m_44 * matrix2.offset_x,
+			matrix1.offset_x * matrix2.m_12 + matrix1.offset_y * matrix2.m_22 + matrix1.offset_z * matrix2.m_32 + matrix1.m_44 * matrix2.offset_y,
+			matrix1.offset_x * matrix2.m_13 + matrix1.offset_y * matrix2.m_23 + matrix1.offset_z * matrix2.m_33 + matrix1.m_44 * matrix2.offset_z,
+			matrix1.offset_x * matrix2.m_14 + matrix1.offset_y * matrix2.m_24 + matrix1.offset_z * matrix2.m_34 + matrix1.m_44 * matrix2.m_44);
 		}
 
 		public void Invert ()

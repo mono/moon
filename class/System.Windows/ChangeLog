@@ -1,3 +1,8 @@
+2010-03-09  David Reveman  <davidr@novell.com>
+
+	* System.Windows.Media.Media3D/Matrix3D.cs: Add
+	multiply operator.
+
 2010-03-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Add support for DeepLinking. It works
