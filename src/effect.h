@@ -96,7 +96,6 @@ public:
 	virtual unsigned int GetBottomPadding () { return 0; }
 	virtual unsigned int GetLeftPadding () { return 0; }
 	virtual unsigned int GetRightPadding () { return 0; }
-	virtual Rect GrowDirtyRectangle (Rect bounds, Rect rect) { return rect; }
 
 	//
 	// Composite
@@ -176,7 +175,6 @@ public:
 	unsigned int GetBottomPadding ();
 	unsigned int GetLeftPadding ();
 	unsigned int GetRightPadding ();
-	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
 	// Composite
@@ -258,7 +256,6 @@ public:
 	unsigned int GetBottomPadding ();
 	unsigned int GetLeftPadding ();
 	unsigned int GetRightPadding ();
-	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
 	// Composite
@@ -398,7 +395,6 @@ public:
 	unsigned int GetBottomPadding ();
 	unsigned int GetLeftPadding ();
 	unsigned int GetRightPadding ();
-	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
 	// Composite
@@ -445,7 +441,6 @@ public:
 	unsigned int GetBottomPadding ();
 	unsigned int GetLeftPadding ();
 	unsigned int GetRightPadding ();
-	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
 	// Composite

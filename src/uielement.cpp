@@ -910,7 +910,7 @@ UIElement::Invalidate (Rect r)
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
 		if (effect)
-			dirty_region->Union (effect->GrowDirtyRectangle (GetSubtreeBounds (), r));
+			dirty_region->Union (GetSubtreeBounds ());
 		else
 			dirty_region->Union (r);
 
@@ -931,24 +931,10 @@ UIElement::Invalidate (Region *region)
 
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
-		if (effect) {
-			GdkRectangle *rects;
-			int count;
-
-			region->GetRectangles (&rects, &count);
-			while (count--) {
-				Rect r = Rect ((double) rects[count].x,
-					       (double) rects[count].y,
-					       (double) rects[count].width,
-					       (double) rects[count].height);
-
-				dirty_region->Union (effect->GrowDirtyRectangle (GetSubtreeBounds (), r));
-			}
-			g_free (rects);
-		}
-		else {
+		if (effect)
+			dirty_region->Union (GetSubtreeBounds ());
+		else
 			dirty_region->Union (region);
-		}
 
 		GetTimeManager()->NeedRedraw ();
 

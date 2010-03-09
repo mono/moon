@@ -1652,12 +1652,6 @@ BlurEffect::GetRightPadding ()
 	return GetTopPadding ();
 }
 
-Rect
-BlurEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
-{
-	return bounds;
-}
-
 bool
 BlurEffect::Composite (cairo_surface_t *dst,
 		       cairo_surface_t *src,
@@ -2116,12 +2110,6 @@ DropShadowEffect::GetRightPadding ()
 		return 1; /* need at least 1 pixel padding */
 
 	return ceil (dx);
-}
-
-Rect
-DropShadowEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
-{
-	return bounds;
 }
 
 bool
@@ -3103,12 +3091,6 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 	}
 #endif
 
-}
-
-Rect
-ShaderEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
-{
-	return bounds;
 }
 
 bool
@@ -4214,12 +4196,6 @@ unsigned int
 ProjectionEffect::GetRightPadding ()
 {
 	return 0;
-}
-
-Rect
-ProjectionEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
-{
-	return bounds;
 }
 
 bool

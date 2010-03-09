@@ -1,5 +1,9 @@
 2010-02-24  David Reveman  <davidr@novell.com>
 
+	* effect.h:
+	* effect.cpp:
+	* uielement.cpp: Remove GrowDirtyRectangle.
+
 	* effect.cpp: Move PixelShader functions above ShaderEffect
 	functions.
 
