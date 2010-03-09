@@ -1,5 +1,10 @@
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (IsVersionSupported): report that we support SL4
+	apps to remove the roadblock to starting them up.
+
+2010-03-09  Chris Toshok  <toshok@ximian.com>
+
 	* timemanager.cpp (TimeManager::TimeManager): set the initial
 	source frequency here so when it's later started we don't get a
 	g_warning.

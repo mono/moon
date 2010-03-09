@@ -1,3 +1,8 @@
+2010-03-09  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: we need to figure out SL3 version validation, and
+	we also need to ignore SL4 versions.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Clipboard.cs:

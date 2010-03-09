@@ -2288,7 +2288,7 @@ Surface::GetBackgroundColor ()
 bool
 Surface::IsVersionSupported (const char *version_list)
 {
-	/* we support all 0.*, 1.0.*, 1.1.* and 2.0.* versions. */
+	/* we support all 0.*, 1.0.*, 1.1.*, 2.0.*, 3.0.*, and 4.0.* versions. */
 	bool supported = true;
 	gchar **versions;
 	char *version = NULL;
@@ -2334,6 +2334,9 @@ Surface::IsVersionSupported (const char *version_list)
 			break;
 		case 3:
 			supported &= numbers [1] == 0; // 3.0.*
+			break;
+		case 4:
+			supported &= numbers [1] == 0; // 4.0.*
 			break;
 		default:
 			supported = false;

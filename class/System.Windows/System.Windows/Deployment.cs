@@ -214,7 +214,10 @@ namespace System.Windows {
 						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
 			}
 			else if (versions[0] == 3) {
-				// we don't actually validate any 3.0
+				// we need to add validation stuff for SL3 rtm here
+			}
+			else if (versions[0] == 4) {
+				// we don't actually validate any 4.0
 				// runtime versions yet since there's
 				// no telling what it'll be at RTM.
 			}
