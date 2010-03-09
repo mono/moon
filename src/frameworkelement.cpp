@@ -275,11 +275,7 @@ FrameworkElement::ComputeBounds ()
 	}
 
 	if (effect)
-		bounds = bounds_with_children =
-			bounds_with_children.GrowBy (effect->GetLeftPadding (),
-						     effect->GetTopPadding (),
-						     effect->GetRightPadding (),
-						     effect->GetBottomPadding ());
+		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);
 }
 
 Rect

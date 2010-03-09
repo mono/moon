@@ -179,13 +179,11 @@ Rect
 UIElement::GrowBoundsByEffectPadding (Rect bounds)
 {
 	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
-	if (!effect)
-		return bounds;
 
-	return bounds.GrowBy (effect->GetLeftPadding (),
-			      effect->GetTopPadding (),
-			      effect->GetRightPadding (),
-			      effect->GetBottomPadding ());
+	if (effect)
+		return effect->TransformBounds (bounds);
+
+	return bounds;
 }
 
 void

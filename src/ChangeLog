@@ -1,6 +1,11 @@
 2010-02-24  David Reveman  <davidr@novell.com>
 
-	* effect.h:
+	* frameworkelement.cpp:
+	* uielement.cpp:
+	* effect.cpp:
+	* effect.h: Replace padding functions with TransformBounds
+	function.
+
 	* effect.cpp:
 	* uielement.cpp: Remove GrowDirtyRectangle.
 

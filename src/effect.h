@@ -90,12 +90,9 @@ public:
 	Effect ();
 
 	//
-	// Padding
+	// Bounds
 	//
-	virtual unsigned int GetTopPadding () { return 0; }
-	virtual unsigned int GetBottomPadding () { return 0; }
-	virtual unsigned int GetLeftPadding () { return 0; }
-	virtual unsigned int GetRightPadding () { return 0; }
+	virtual Rect TransformBounds (Rect bounds) { return bounds; }
 
 	//
 	// Composite
@@ -169,12 +166,9 @@ public:
 	double GetRadius ();
 
 	//
-	// Padding
+	// Bounds
 	//
-	unsigned int GetTopPadding ();
-	unsigned int GetBottomPadding ();
-	unsigned int GetLeftPadding ();
-	unsigned int GetRightPadding ();
+	Rect TransformBounds (Rect bounds);
 
 	//
 	// Composite
@@ -250,12 +244,9 @@ public:
 	double GetShadowDepth ();
 
 	//
-	// Padding
+	// Bounds
 	//
-	unsigned int GetTopPadding ();
-	unsigned int GetBottomPadding ();
-	unsigned int GetLeftPadding ();
-	unsigned int GetRightPadding ();
+	Rect TransformBounds (Rect bounds);
 
 	//
 	// Composite
@@ -389,12 +380,9 @@ public:
 	void UpdateShaderSampler (int reg, int mode, Brush *input);
 
 	//
-	// Padding
+	// Bounds
 	//
-	unsigned int GetTopPadding ();
-	unsigned int GetBottomPadding ();
-	unsigned int GetLeftPadding ();
-	unsigned int GetRightPadding ();
+	Rect TransformBounds (Rect bounds);
 
 	//
 	// Composite
@@ -433,14 +421,6 @@ protected:
 class ProjectionEffect : public Effect {
 public:
 	ProjectionEffect ();
-
-	//
-	// Padding
-	//
-	unsigned int GetTopPadding ();
-	unsigned int GetBottomPadding ();
-	unsigned int GetLeftPadding ();
-	unsigned int GetRightPadding ();
 
 	//
 	// Composite

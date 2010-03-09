@@ -1627,29 +1627,13 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-unsigned int
-BlurEffect::GetTopPadding ()
+Rect
+BlurEffect::TransformBounds (Rect bounds)
 {
 	MaybeUpdateFilter ();
-	return nfiltervalues;
-}
 
-unsigned int
-BlurEffect::GetBottomPadding ()
-{
-	return GetTopPadding ();
-}
-
-unsigned int
-BlurEffect::GetLeftPadding ()
-{
-	return GetTopPadding ();
-}
-
-unsigned int
-BlurEffect::GetRightPadding ()
-{
-	return GetTopPadding ();
+	return bounds.GrowBy (nfiltervalues, nfiltervalues,
+			      nfiltervalues, nfiltervalues);
 }
 
 bool
@@ -2048,68 +2032,27 @@ DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-unsigned int
-DropShadowEffect::GetTopPadding ()
+Rect
+DropShadowEffect::TransformBounds (Rect bounds)
 {
 	double direction = GetDirection () * (M_PI / 180.0);
 	double depth = GetShadowDepth ();
-	double dy;
+	double left;
+	double top;
+	double right;
+	double bottom;
 
 	MaybeUpdateFilter ();
 
-	dy = sin (direction) * depth + nfiltervalues;
-	if (dy < 1.0)
-		return 1; /* need at least 1 pixel padding */
+	left   = -cos (direction) * depth + nfiltervalues;
+	top    =  sin (direction) * depth + nfiltervalues;
+	right  =  cos (direction) * depth + nfiltervalues;
+	bottom = -sin (direction) * depth + nfiltervalues;
 
-	return ceil (dy);
-}
-
-unsigned int
-DropShadowEffect::GetBottomPadding ()
-{
-	double direction = GetDirection () * (M_PI / 180.0);
-	double depth = GetShadowDepth ();
-	double dy;
-
-	MaybeUpdateFilter ();
-
-	dy = -sin (direction) * depth + nfiltervalues;
-	if (dy < 1.0)
-		return 1; /* need at least 1 pixel padding */
-
-	return ceil (dy);
-}
-
-unsigned int
-DropShadowEffect::GetLeftPadding ()
-{
-	double direction = GetDirection () * (M_PI / 180.0);
-	double depth = GetShadowDepth ();
-	double dx;
-
-	MaybeUpdateFilter ();
-
-	dx = -cos (direction) * depth + nfiltervalues;
-	if (dx < 1.0)
-		return 1; /* need at least 1 pixel padding */
-
-	return ceil (dx);
-}
-
-unsigned int
-DropShadowEffect::GetRightPadding ()
-{
-	double direction = GetDirection () * (M_PI / 180.0);
-	double depth = GetShadowDepth ();
-	double dx;
-
-	MaybeUpdateFilter ();
-
-	dx = cos (direction) * depth + nfiltervalues;
-	if (dx < 1.0)
-		return 1; /* need at least 1 pixel padding */
-
-	return ceil (dx);
+	return bounds.GrowBy (left   < 1.0 ? 1.0 : ceil (left),
+			      top    < 1.0 ? 1.0 : ceil (top),
+			      right  < 1.0 ? 1.0 : ceil (right),
+			      bottom < 1.0 ? 1.0 : ceil (bottom));
 }
 
 bool
@@ -2976,32 +2919,18 @@ ShaderEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-unsigned int
-ShaderEffect::GetTopPadding ()
+Rect
+ShaderEffect::TransformBounds (Rect bounds)
 {
-	Value *v = GetValue (ShaderEffect::PaddingTopProperty);
-	return v ? ceil (v->AsDouble ()) : 0;
-}
+	Value *left   = GetValue (ShaderEffect::PaddingLeftProperty);
+	Value *top    = GetValue (ShaderEffect::PaddingTopProperty);
+	Value *right  = GetValue (ShaderEffect::PaddingRightProperty);
+	Value *bottom = GetValue (ShaderEffect::PaddingBottomProperty);
 
-unsigned int
-ShaderEffect::GetBottomPadding ()
-{
-	Value *v = GetValue (ShaderEffect::PaddingBottomProperty);
-	return v ? ceil (v->AsDouble ()) : 0;
-}
-
-unsigned int
-ShaderEffect::GetLeftPadding ()
-{
-	Value *v = GetValue (ShaderEffect::PaddingLeftProperty);
-	return v ? ceil (v->AsDouble ()) : 0;
-}
-
-unsigned int
-ShaderEffect::GetRightPadding ()
-{
-	Value *v = GetValue (ShaderEffect::PaddingRightProperty);
-	return v ? ceil (v->AsDouble ()) : 0;
+	return bounds.GrowBy (left   ? ceil (left->AsDouble ())   : 0.0,
+			      top    ? ceil (top->AsDouble ())    : 0.0,
+			      right  ? ceil (right->AsDouble ())  : 0.0,
+			      bottom ? ceil (bottom->AsDouble ()) : 0.0);
 }
 
 pipe_buffer_t *
@@ -4172,30 +4101,6 @@ ProjectionEffect::ProjectionEffect ()
 
 ProjectionEffect::~ProjectionEffect ()
 {
-}
-
-unsigned int
-ProjectionEffect::GetTopPadding ()
-{
-	return 0;
-}
-
-unsigned int
-ProjectionEffect::GetBottomPadding ()
-{
-	return 0;
-}
-
-unsigned int
-ProjectionEffect::GetLeftPadding ()
-{
-	return 0;
-}
-
-unsigned int
-ProjectionEffect::GetRightPadding ()
-{
-	return 0;
 }
 
 bool
