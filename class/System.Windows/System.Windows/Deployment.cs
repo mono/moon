@@ -482,7 +482,15 @@ namespace System.Windows {
 		internal void EmitError (int errorCode, string message)
 		{
 			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
-			NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
+			INativeDependencyObjectWrapper app = Application.Current;
+			if (app.CheckAccess ()) {
+				NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
+			} else {
+				Dispatcher.BeginInvoke (() => {
+					// call again but, this time, from main thread
+					EmitError (errorCode, message);
+				});
+			}
 		}
 
 		// extracted since Assembly.GetName is security critical

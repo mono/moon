@@ -1,3 +1,9 @@
+2010-03-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Mark CheckAndDownloadUpdateAsync with [MonoTODO]
+	* Deployment.cs: Only call NativeMethods.surface_emit_error from
+	main thread.
+
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
 	* Deployment.cs: we need to figure out SL3 version validation, and

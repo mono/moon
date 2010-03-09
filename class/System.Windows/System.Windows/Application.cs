@@ -291,9 +291,9 @@ namespace System.Windows {
 			style.ConvertSetterValues ();
 		}
 
-		[MonoTODO]
 		public void CheckAndDownloadUpdateAsync ()
 		{
+
 		}
 
 		internal Style GetGenericXamlStyleFor (Type type)
