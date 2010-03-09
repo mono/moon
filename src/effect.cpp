@@ -2550,6 +2550,393 @@ DropShadowEffect::UpdateShader ()
 
 }
 
+PixelShader::PixelShader ()
+{
+	SetObjectType (Type::PIXELSHADER);
+
+	tokens = NULL;
+}
+
+PixelShader::~PixelShader ()
+{
+	g_free (tokens);
+}
+
+void
+PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
+				MoonError                *error)
+{
+	if (args->GetProperty ()->GetOwnerType() != Type::PIXELSHADER) {
+		DependencyObject::OnPropertyChanged (args, error);
+		return;
+	}
+
+	if (args->GetId () == PixelShader::UriSourceProperty) {
+		Application *application = Application::GetCurrent ();
+		Uri *uri = GetUriSource ();
+		char *path;
+
+		g_free (tokens);
+		tokens = NULL;
+
+		if (!Uri::IsNullOrEmpty (uri) &&
+		    (path = application->GetResourceAsPath (GetResourceBase (),
+							    uri))) {
+			SetTokensFromPath (path);
+			g_free (path);
+		}
+		else {
+			g_warning ("invalid uri: %s", uri->ToString ());
+		}
+	}
+
+	NotifyListenersOfPropertyChange (args, error);
+}
+
+void
+PixelShader::SetTokensFromPath (const char *path)
+{
+	GError *error = NULL;
+	gchar  *bytes;
+	gsize  nbytes;
+
+	if (!g_file_get_contents (path,
+				  (char **) &bytes,
+				  &nbytes,
+				  &error)) {
+		g_warning ("%s", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	g_free (tokens);
+	tokens = (guint32 *) bytes;
+	ntokens = nbytes / sizeof (guint32);
+}
+
+int
+PixelShader::GetToken (int     index,
+		       guint32 *token)
+{
+	if (!tokens || index < 0 || index >= (int) ntokens) {
+		if (index >= 0)
+			g_warning ("incomplete pixel shader");
+
+		return -1;
+	}
+
+	if (token)
+		*token = *(tokens + index);
+
+	return index + 1;
+}
+
+int
+PixelShader::GetToken (int   index,
+		       float *token)
+{
+	return GetToken (index, (guint32 *) token);
+}
+
+/* major version */
+#define D3D_VERSION_MAJOR_SHIFT 8
+#define D3D_VERSION_MAJOR_MASK  0xff
+
+/* minor version */
+#define D3D_VERSION_MINOR_SHIFT 0
+#define D3D_VERSION_MINOR_MASK  0xff
+
+/* shader type */
+#define D3D_VERSION_TYPE_SHIFT 16
+#define D3D_VERSION_TYPE_MASK  0xffff
+
+int
+PixelShader::GetVersion (int	       index,
+			 d3d_version_t *value)
+{
+	guint32 token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	value->major = (token >> D3D_VERSION_MAJOR_SHIFT) &
+		D3D_VERSION_MAJOR_MASK;
+	value->minor = (token >> D3D_VERSION_MINOR_SHIFT) &
+		D3D_VERSION_MINOR_MASK;
+	value->type  = (token >> D3D_VERSION_TYPE_SHIFT) &
+		D3D_VERSION_TYPE_MASK;
+
+	return index;
+}
+
+/* instruction type */
+#define D3D_OP_TYPE_SHIFT 0
+#define D3D_OP_TYPE_MASK  0xffff
+
+/* instruction length */
+#define D3D_OP_LENGTH_SHIFT 24
+#define D3D_OP_LENGTH_MASK  0xf
+
+/* comment length */
+#define D3D_OP_COMMENT_LENGTH_SHIFT 16
+#define D3D_OP_COMMENT_LENGTH_MASK  0xffff
+
+int
+PixelShader::GetOp (int      index,
+		    d3d_op_t *value)
+{
+	const d3d_op_metadata_t metadata[] = {
+		{ "NOP", 0, 0 }, /* D3DSIO_NOP 0 */
+		{ "MOV", 1, 1 }, /* D3DSIO_MOV 1 */
+		{ "ADD", 1, 2 }, /* D3DSIO_ADD 2 */
+		{ "SUB", 1, 2 }, /* D3DSIO_SUB 3 */
+		{ "MAD", 1, 3 }, /* D3DSIO_MAD 4 */
+		{ "MUL", 1, 2 }, /* D3DSIO_MUL 5 */
+		{ "RCP", 1, 1 }, /* D3DSIO_RCP 6 */
+		{ "RSQ", 1, 1 }, /* D3DSIO_RSQ 7 */
+		{ "DP3", 1, 2 }, /* D3DSIO_DP3 8 */
+		{ "DP4", 1, 2 }, /* D3DSIO_DP4 9 */
+		{ "MIN", 1, 2 }, /* D3DSIO_MIN 10 */
+		{ "MAX", 1, 2 }, /* D3DSIO_MAX 11 */
+		{ "SLT", 1, 2 }, /* D3DSIO_SLT 12 */
+		{ "SGE", 1, 2 }, /* D3DSIO_SGE 13 */
+		{ "EXP", 1, 1 }, /* D3DSIO_EXP 14 */
+		{ "LOG", 1, 1 }, /* D3DSIO_LOG 15 */
+		{ "LIT", 1, 1 }, /* D3DSIO_LIT 16 */
+		{ "DST", 1, 2 }, /* D3DSIO_DST 17 */
+		{ "LRP", 1, 3 }, /* D3DSIO_LRP 18 */
+		{ "FRC", 1, 1 }, /* D3DSIO_FRC 19 */
+		{  NULL, 0, 0 }, /* D3DSIO_M4x4 20 */
+		{  NULL, 0, 0 }, /* D3DSIO_M4x3 21 */
+		{  NULL, 0, 0 }, /* D3DSIO_M3x4 22 */
+		{  NULL, 0, 0 }, /* D3DSIO_M3x3 23 */
+		{  NULL, 0, 0 }, /* D3DSIO_M3x2 24 */
+		{  NULL, 0, 0 }, /* D3DSIO_CALL 25 */
+		{  NULL, 0, 0 }, /* D3DSIO_CALLNZ 26 */
+		{  NULL, 0, 0 }, /* D3DSIO_LOOP 27 */
+		{  NULL, 0, 0 }, /* D3DSIO_RET 28 */
+		{  NULL, 0, 0 }, /* D3DSIO_ENDLOOP 29 */
+		{  NULL, 0, 0 }, /* D3DSIO_LABEL 30 */
+		{ "DCL", 0, 0 }, /* D3DSIO_DCL 31 */
+		{ "POW", 1, 2 }, /* D3DSIO_POW 32 */
+		{  NULL, 0, 0 }, /* D3DSIO_CRS 33 */
+		{  NULL, 0, 0 }, /* D3DSIO_SGN 34 */
+		{ "ABS", 1, 1 }, /* D3DSIO_ABS 35 */
+		{ "NRM", 1, 1 }, /* D3DSIO_NRM 36 */
+		{ "SIN", 1, 3 }, /* D3DSIO_SINCOS 37 */
+		{  NULL, 0, 0 }, /* D3DSIO_REP 38 */
+		{  NULL, 0, 0 }, /* D3DSIO_ENDREP 39 */
+		{  NULL, 0, 0 }, /* D3DSIO_IF 40 */
+		{  NULL, 0, 0 }, /* D3DSIO_IFC 41 */
+		{  NULL, 0, 0 }, /* D3DSIO_ELSE 42 */
+		{  NULL, 0, 0 }, /* D3DSIO_ENDIF 43 */
+		{  NULL, 0, 0 }, /* D3DSIO_BREAK 44 */
+		{  NULL, 0, 0 }, /* D3DSIO_BREAKC 45 */
+		{  NULL, 0, 0 }, /* D3DSIO_MOVA 46 */
+		{  NULL, 0, 0 }, /* D3DSIO_DEFB 47 */
+		{  NULL, 0, 0 }, /* D3DSIO_DEFI 48 */
+		{  NULL, 0, 0 }, /* 49 */
+		{  NULL, 0, 0 }, /* 50 */
+		{  NULL, 0, 0 }, /* 51 */
+		{  NULL, 0, 0 }, /* 52 */
+		{  NULL, 0, 0 }, /* 53 */
+		{  NULL, 0, 0 }, /* 54 */
+		{  NULL, 0, 0 }, /* 55 */
+		{  NULL, 0, 0 }, /* 56 */
+		{  NULL, 0, 0 }, /* 57 */
+		{  NULL, 0, 0 }, /* 58 */
+		{  NULL, 0, 0 }, /* 59 */
+		{  NULL, 0, 0 }, /* 60 */
+		{  NULL, 0, 0 }, /* 61 */
+		{  NULL, 0, 0 }, /* 62 */
+		{  NULL, 0, 0 }, /* 63 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXCOORD 64 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXKILL 65 */
+		{ "TEX", 1, 2 }, /* D3DSIO_TEX 66 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXBEM 67 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXBEML 68 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2AR 69 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2GB 70 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2PAD 71 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2TEX 72 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3PAD 73 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3TEX 74 */
+		{  NULL, 0, 0 }, /* D3DSIO_RESERVED0 75 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3SPEC 76 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3VSPEC 77 */
+		{  NULL, 0, 0 }, /* D3DSIO_EXPP 78 */
+		{  NULL, 0, 0 }, /* D3DSIO_LOGP 79 */
+		{ "CND", 1, 3 }, /* D3DSIO_CND 80 */
+		{ "DEF", 0, 0 }, /* D3DSIO_DEF 81 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2RGB 82 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXDP3TEX 83 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2DEPTH 84 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXDP3 85 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3 86 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXDEPTH 87 */
+		{ "CMP", 1, 3 }, /* D3DSIO_CMP 88 */
+		{  NULL, 0, 0 }, /* D3DSIO_BEM 89 */
+		{ "D2A", 1, 3 }, /* D3DSIO_DP2ADD 90 */
+		{  NULL, 0, 0 }, /* D3DSIO_DSX 91 */
+		{  NULL, 0, 0 }, /* D3DSIO_DSY 92 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXLDD 93 */
+		{  NULL, 0, 0 }, /* D3DSIO_SETP 94 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXLDL 95 */
+		{  NULL, 0, 0 }, /* D3DSIO_BREAKP 96 */
+		{  NULL, 0, 0 }  /* 97 */
+	};
+	guint32 token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	value->type = (token >> D3D_OP_TYPE_SHIFT) & D3D_OP_TYPE_MASK;
+	value->length = (token >> D3D_OP_LENGTH_SHIFT) & D3D_OP_LENGTH_MASK;
+	value->comment_length = (token >> D3D_OP_COMMENT_LENGTH_SHIFT) &
+		D3D_OP_COMMENT_LENGTH_MASK;
+
+	if (value->type < G_N_ELEMENTS (metadata))
+		value->meta = metadata[value->type];
+	else
+		value->meta = metadata[G_N_ELEMENTS (metadata) - 1];
+
+	return index;
+}
+
+/* register number */
+#define D3D_DP_REGNUM_MASK 0x7ff
+
+/* register type */
+#define D3D_DP_REGTYPE_SHIFT1 28
+#define D3D_DP_REGTYPE_MASK1  0x7
+#define D3D_DP_REGTYPE_SHIFT2 8
+#define D3D_DP_REGTYPE_MASK2  0x18
+
+/* write mask */
+#define D3D_DP_WRITEMASK_SHIFT 16
+#define D3D_DP_WRITEMASK_MASK  0xf
+
+/* destination modifier */
+#define D3D_DP_DSTMOD_SHIFT 20
+#define D3D_DP_DSTMOD_MASK  0x7
+
+int
+PixelShader::GetDestinationParameter (int                         index,
+				      d3d_destination_parameter_t *value)
+{
+	guint32 token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	if (!value)
+		return index;
+
+	value->regnum = token & D3D_DP_REGNUM_MASK;
+	value->regtype =
+		((token >> D3D_DP_REGTYPE_SHIFT1) & D3D_DP_REGTYPE_MASK1) |
+		((token >> D3D_DP_REGTYPE_SHIFT2) & D3D_DP_REGTYPE_MASK2);
+	value->writemask = (token >> D3D_DP_WRITEMASK_SHIFT) &
+		D3D_DP_WRITEMASK_MASK;
+	value->dstmod = (token >> D3D_DP_DSTMOD_SHIFT) & D3D_DP_DSTMOD_MASK;
+
+	return index;
+}
+
+/* register number */
+#define D3D_SP_REGNUM_MASK 0x7ff
+
+/* register type */
+#define D3D_SP_REGTYPE_SHIFT1 28
+#define D3D_SP_REGTYPE_MASK1  0x7
+#define D3D_SP_REGTYPE_SHIFT2 8
+#define D3D_SP_REGTYPE_MASK2  0x18
+
+/* swizzle */
+#define D3D_SP_SWIZZLE_X_SHIFT 16
+#define D3D_SP_SWIZZLE_X_MASK  0x3
+#define D3D_SP_SWIZZLE_Y_SHIFT 18
+#define D3D_SP_SWIZZLE_Y_MASK  0x3
+#define D3D_SP_SWIZZLE_Z_SHIFT 20
+#define D3D_SP_SWIZZLE_Z_MASK  0x3
+#define D3D_SP_SWIZZLE_W_SHIFT 22
+#define D3D_SP_SWIZZLE_W_MASK  0x3
+
+/* source modifier */
+#define D3D_SP_SRCMOD_SHIFT 24
+#define D3D_SP_SRCMOD_MASK  0x7
+
+int
+PixelShader::GetSourceParameter (int                    index,
+				 d3d_source_parameter_t *value)
+{
+	guint32 token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	if (!value)
+		return index;
+
+	value->regnum = token & D3D_SP_REGNUM_MASK;
+	value->regtype =
+		((token >> D3D_SP_REGTYPE_SHIFT1) & D3D_SP_REGTYPE_MASK1) |
+		((token >> D3D_SP_REGTYPE_SHIFT2) & D3D_SP_REGTYPE_MASK2);
+	value->swizzle.x = (token >> D3D_SP_SWIZZLE_X_SHIFT) &
+		D3D_SP_SWIZZLE_X_MASK;
+	value->swizzle.y = (token >> D3D_SP_SWIZZLE_Y_SHIFT) &
+		D3D_SP_SWIZZLE_Y_MASK;
+	value->swizzle.z = (token >> D3D_SP_SWIZZLE_Z_SHIFT) &
+		D3D_SP_SWIZZLE_Z_MASK;
+	value->swizzle.w = (token >> D3D_SP_SWIZZLE_W_SHIFT) &
+		D3D_SP_SWIZZLE_W_MASK;
+	value->srcmod = (token >> D3D_SP_SRCMOD_SHIFT) & D3D_SP_SRCMOD_MASK;
+
+	return index;
+}
+
+int
+PixelShader::GetInstruction (int                   index,
+			     d3d_def_instruction_t *value)
+{
+	index = GetDestinationParameter (index, &value->reg);
+	index = GetToken (index, &value->v[0]);
+	index = GetToken (index, &value->v[1]);
+	index = GetToken (index, &value->v[2]);
+	index = GetToken (index, &value->v[3]);
+
+	return index;
+}
+
+/* DCL usage */
+#define D3D_DCL_USAGE_SHIFT 0
+#define D3D_DCL_USAGE_MASK  0xf
+
+/* DCL usage index */
+#define D3D_DCL_USAGEINDEX_SHIFT 16
+#define D3D_DCL_USAGEINDEX_MASK  0xf
+
+int
+PixelShader::GetInstruction (int                   index,
+			     d3d_dcl_instruction_t *value)
+{
+	guint32 token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	index = GetDestinationParameter (index, &value->reg);
+
+	if (!value)
+		return index;
+
+	value->usage = (token >> D3D_DCL_USAGE_SHIFT) & D3D_DCL_USAGE_MASK;
+	value->usageindex = (token >> D3D_DCL_USAGEINDEX_SHIFT) &
+		D3D_DCL_USAGEINDEX_MASK;
+
+	return index;
+}
+
 ShaderEffect::ShaderEffect ()
 {
 	int i;
@@ -3794,393 +4181,6 @@ ShaderEffect::ShaderError (const char *format, ...)
 
 		i += op.length;
 	}
-}
-
-PixelShader::PixelShader ()
-{
-	SetObjectType (Type::PIXELSHADER);
-
-	tokens = NULL;
-}
-
-PixelShader::~PixelShader ()
-{
-	g_free (tokens);
-}
-
-void
-PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
-				MoonError                *error)
-{
-	if (args->GetProperty ()->GetOwnerType() != Type::PIXELSHADER) {
-		DependencyObject::OnPropertyChanged (args, error);
-		return;
-	}
-
-	if (args->GetId () == PixelShader::UriSourceProperty) {
-		Application *application = Application::GetCurrent ();
-		Uri *uri = GetUriSource ();
-		char *path;
-
-		g_free (tokens);
-		tokens = NULL;
-
-		if (!Uri::IsNullOrEmpty (uri) &&
-		    (path = application->GetResourceAsPath (GetResourceBase (),
-							    uri))) {
-			SetTokensFromPath (path);
-			g_free (path);
-		}
-		else {
-			g_warning ("invalid uri: %s", uri->ToString ());
-		}
-	}
-
-	NotifyListenersOfPropertyChange (args, error);
-}
-
-void
-PixelShader::SetTokensFromPath (const char *path)
-{
-	GError *error = NULL;
-	gchar  *bytes;
-	gsize  nbytes;
-
-	if (!g_file_get_contents (path,
-				  (char **) &bytes,
-				  &nbytes,
-				  &error)) {
-		g_warning ("%s", error->message);
-		g_error_free (error);
-		return;
-	}
-
-	g_free (tokens);
-	tokens = (guint32 *) bytes;
-	ntokens = nbytes / sizeof (guint32);
-}
-
-int
-PixelShader::GetToken (int     index,
-		       guint32 *token)
-{
-	if (!tokens || index < 0 || index >= (int) ntokens) {
-		if (index >= 0)
-			g_warning ("incomplete pixel shader");
-
-		return -1;
-	}
-
-	if (token)
-		*token = *(tokens + index);
-
-	return index + 1;
-}
-
-int
-PixelShader::GetToken (int   index,
-		       float *token)
-{
-	return GetToken (index, (guint32 *) token);
-}
-
-/* major version */
-#define D3D_VERSION_MAJOR_SHIFT 8
-#define D3D_VERSION_MAJOR_MASK  0xff
-
-/* minor version */
-#define D3D_VERSION_MINOR_SHIFT 0
-#define D3D_VERSION_MINOR_MASK  0xff
-
-/* shader type */
-#define D3D_VERSION_TYPE_SHIFT 16
-#define D3D_VERSION_TYPE_MASK  0xffff
-
-int
-PixelShader::GetVersion (int	       index,
-			 d3d_version_t *value)
-{
-	guint32 token;
-
-	if ((index = GetToken (index, &token)) < 0)
-		return -1;
-
-	value->major = (token >> D3D_VERSION_MAJOR_SHIFT) &
-		D3D_VERSION_MAJOR_MASK;
-	value->minor = (token >> D3D_VERSION_MINOR_SHIFT) &
-		D3D_VERSION_MINOR_MASK;
-	value->type  = (token >> D3D_VERSION_TYPE_SHIFT) &
-		D3D_VERSION_TYPE_MASK;
-
-	return index;
-}
-
-/* instruction type */
-#define D3D_OP_TYPE_SHIFT 0
-#define D3D_OP_TYPE_MASK  0xffff
-
-/* instruction length */
-#define D3D_OP_LENGTH_SHIFT 24
-#define D3D_OP_LENGTH_MASK  0xf
-
-/* comment length */
-#define D3D_OP_COMMENT_LENGTH_SHIFT 16
-#define D3D_OP_COMMENT_LENGTH_MASK  0xffff
-
-int
-PixelShader::GetOp (int      index,
-		    d3d_op_t *value)
-{
-	const d3d_op_metadata_t metadata[] = {
-		{ "NOP", 0, 0 }, /* D3DSIO_NOP 0 */
-		{ "MOV", 1, 1 }, /* D3DSIO_MOV 1 */
-		{ "ADD", 1, 2 }, /* D3DSIO_ADD 2 */
-		{ "SUB", 1, 2 }, /* D3DSIO_SUB 3 */
-		{ "MAD", 1, 3 }, /* D3DSIO_MAD 4 */
-		{ "MUL", 1, 2 }, /* D3DSIO_MUL 5 */
-		{ "RCP", 1, 1 }, /* D3DSIO_RCP 6 */
-		{ "RSQ", 1, 1 }, /* D3DSIO_RSQ 7 */
-		{ "DP3", 1, 2 }, /* D3DSIO_DP3 8 */
-		{ "DP4", 1, 2 }, /* D3DSIO_DP4 9 */
-		{ "MIN", 1, 2 }, /* D3DSIO_MIN 10 */
-		{ "MAX", 1, 2 }, /* D3DSIO_MAX 11 */
-		{ "SLT", 1, 2 }, /* D3DSIO_SLT 12 */
-		{ "SGE", 1, 2 }, /* D3DSIO_SGE 13 */
-		{ "EXP", 1, 1 }, /* D3DSIO_EXP 14 */
-		{ "LOG", 1, 1 }, /* D3DSIO_LOG 15 */
-		{ "LIT", 1, 1 }, /* D3DSIO_LIT 16 */
-		{ "DST", 1, 2 }, /* D3DSIO_DST 17 */
-		{ "LRP", 1, 3 }, /* D3DSIO_LRP 18 */
-		{ "FRC", 1, 1 }, /* D3DSIO_FRC 19 */
-		{  NULL, 0, 0 }, /* D3DSIO_M4x4 20 */
-		{  NULL, 0, 0 }, /* D3DSIO_M4x3 21 */
-		{  NULL, 0, 0 }, /* D3DSIO_M3x4 22 */
-		{  NULL, 0, 0 }, /* D3DSIO_M3x3 23 */
-		{  NULL, 0, 0 }, /* D3DSIO_M3x2 24 */
-		{  NULL, 0, 0 }, /* D3DSIO_CALL 25 */
-		{  NULL, 0, 0 }, /* D3DSIO_CALLNZ 26 */
-		{  NULL, 0, 0 }, /* D3DSIO_LOOP 27 */
-		{  NULL, 0, 0 }, /* D3DSIO_RET 28 */
-		{  NULL, 0, 0 }, /* D3DSIO_ENDLOOP 29 */
-		{  NULL, 0, 0 }, /* D3DSIO_LABEL 30 */
-		{ "DCL", 0, 0 }, /* D3DSIO_DCL 31 */
-		{ "POW", 1, 2 }, /* D3DSIO_POW 32 */
-		{  NULL, 0, 0 }, /* D3DSIO_CRS 33 */
-		{  NULL, 0, 0 }, /* D3DSIO_SGN 34 */
-		{ "ABS", 1, 1 }, /* D3DSIO_ABS 35 */
-		{ "NRM", 1, 1 }, /* D3DSIO_NRM 36 */
-		{ "SIN", 1, 3 }, /* D3DSIO_SINCOS 37 */
-		{  NULL, 0, 0 }, /* D3DSIO_REP 38 */
-		{  NULL, 0, 0 }, /* D3DSIO_ENDREP 39 */
-		{  NULL, 0, 0 }, /* D3DSIO_IF 40 */
-		{  NULL, 0, 0 }, /* D3DSIO_IFC 41 */
-		{  NULL, 0, 0 }, /* D3DSIO_ELSE 42 */
-		{  NULL, 0, 0 }, /* D3DSIO_ENDIF 43 */
-		{  NULL, 0, 0 }, /* D3DSIO_BREAK 44 */
-		{  NULL, 0, 0 }, /* D3DSIO_BREAKC 45 */
-		{  NULL, 0, 0 }, /* D3DSIO_MOVA 46 */
-		{  NULL, 0, 0 }, /* D3DSIO_DEFB 47 */
-		{  NULL, 0, 0 }, /* D3DSIO_DEFI 48 */
-		{  NULL, 0, 0 }, /* 49 */
-		{  NULL, 0, 0 }, /* 50 */
-		{  NULL, 0, 0 }, /* 51 */
-		{  NULL, 0, 0 }, /* 52 */
-		{  NULL, 0, 0 }, /* 53 */
-		{  NULL, 0, 0 }, /* 54 */
-		{  NULL, 0, 0 }, /* 55 */
-		{  NULL, 0, 0 }, /* 56 */
-		{  NULL, 0, 0 }, /* 57 */
-		{  NULL, 0, 0 }, /* 58 */
-		{  NULL, 0, 0 }, /* 59 */
-		{  NULL, 0, 0 }, /* 60 */
-		{  NULL, 0, 0 }, /* 61 */
-		{  NULL, 0, 0 }, /* 62 */
-		{  NULL, 0, 0 }, /* 63 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXCOORD 64 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXKILL 65 */
-		{ "TEX", 1, 2 }, /* D3DSIO_TEX 66 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXBEM 67 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXBEML 68 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2AR 69 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2GB 70 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2PAD 71 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2TEX 72 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3PAD 73 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3TEX 74 */
-		{  NULL, 0, 0 }, /* D3DSIO_RESERVED0 75 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3SPEC 76 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3VSPEC 77 */
-		{  NULL, 0, 0 }, /* D3DSIO_EXPP 78 */
-		{  NULL, 0, 0 }, /* D3DSIO_LOGP 79 */
-		{ "CND", 1, 3 }, /* D3DSIO_CND 80 */
-		{ "DEF", 0, 0 }, /* D3DSIO_DEF 81 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2RGB 82 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXDP3TEX 83 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2DEPTH 84 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXDP3 85 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3 86 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXDEPTH 87 */
-		{ "CMP", 1, 3 }, /* D3DSIO_CMP 88 */
-		{  NULL, 0, 0 }, /* D3DSIO_BEM 89 */
-		{ "D2A", 1, 3 }, /* D3DSIO_DP2ADD 90 */
-		{  NULL, 0, 0 }, /* D3DSIO_DSX 91 */
-		{  NULL, 0, 0 }, /* D3DSIO_DSY 92 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXLDD 93 */
-		{  NULL, 0, 0 }, /* D3DSIO_SETP 94 */
-		{  NULL, 0, 0 }, /* D3DSIO_TEXLDL 95 */
-		{  NULL, 0, 0 }, /* D3DSIO_BREAKP 96 */
-		{  NULL, 0, 0 }  /* 97 */
-	};
-	guint32 token;
-
-	if ((index = GetToken (index, &token)) < 0)
-		return -1;
-
-	value->type = (token >> D3D_OP_TYPE_SHIFT) & D3D_OP_TYPE_MASK;
-	value->length = (token >> D3D_OP_LENGTH_SHIFT) & D3D_OP_LENGTH_MASK;
-	value->comment_length = (token >> D3D_OP_COMMENT_LENGTH_SHIFT) &
-		D3D_OP_COMMENT_LENGTH_MASK;
-
-	if (value->type < G_N_ELEMENTS (metadata))
-		value->meta = metadata[value->type];
-	else
-		value->meta = metadata[G_N_ELEMENTS (metadata) - 1];
-
-	return index;
-}
-
-/* register number */
-#define D3D_DP_REGNUM_MASK 0x7ff
-
-/* register type */
-#define D3D_DP_REGTYPE_SHIFT1 28
-#define D3D_DP_REGTYPE_MASK1  0x7
-#define D3D_DP_REGTYPE_SHIFT2 8
-#define D3D_DP_REGTYPE_MASK2  0x18
-
-/* write mask */
-#define D3D_DP_WRITEMASK_SHIFT 16
-#define D3D_DP_WRITEMASK_MASK  0xf
-
-/* destination modifier */
-#define D3D_DP_DSTMOD_SHIFT 20
-#define D3D_DP_DSTMOD_MASK  0x7
-
-int
-PixelShader::GetDestinationParameter (int                         index,
-				      d3d_destination_parameter_t *value)
-{
-	guint32 token;
-
-	if ((index = GetToken (index, &token)) < 0)
-		return -1;
-
-	if (!value)
-		return index;
-
-	value->regnum = token & D3D_DP_REGNUM_MASK;
-	value->regtype =
-		((token >> D3D_DP_REGTYPE_SHIFT1) & D3D_DP_REGTYPE_MASK1) |
-		((token >> D3D_DP_REGTYPE_SHIFT2) & D3D_DP_REGTYPE_MASK2);
-	value->writemask = (token >> D3D_DP_WRITEMASK_SHIFT) &
-		D3D_DP_WRITEMASK_MASK;
-	value->dstmod = (token >> D3D_DP_DSTMOD_SHIFT) & D3D_DP_DSTMOD_MASK;
-
-	return index;
-}
-
-/* register number */
-#define D3D_SP_REGNUM_MASK 0x7ff
-
-/* register type */
-#define D3D_SP_REGTYPE_SHIFT1 28
-#define D3D_SP_REGTYPE_MASK1  0x7
-#define D3D_SP_REGTYPE_SHIFT2 8
-#define D3D_SP_REGTYPE_MASK2  0x18
-
-/* swizzle */
-#define D3D_SP_SWIZZLE_X_SHIFT 16
-#define D3D_SP_SWIZZLE_X_MASK  0x3
-#define D3D_SP_SWIZZLE_Y_SHIFT 18
-#define D3D_SP_SWIZZLE_Y_MASK  0x3
-#define D3D_SP_SWIZZLE_Z_SHIFT 20
-#define D3D_SP_SWIZZLE_Z_MASK  0x3
-#define D3D_SP_SWIZZLE_W_SHIFT 22
-#define D3D_SP_SWIZZLE_W_MASK  0x3
-
-/* source modifier */
-#define D3D_SP_SRCMOD_SHIFT 24
-#define D3D_SP_SRCMOD_MASK  0x7
-
-int
-PixelShader::GetSourceParameter (int                    index,
-				 d3d_source_parameter_t *value)
-{
-	guint32 token;
-
-	if ((index = GetToken (index, &token)) < 0)
-		return -1;
-
-	if (!value)
-		return index;
-
-	value->regnum = token & D3D_SP_REGNUM_MASK;
-	value->regtype =
-		((token >> D3D_SP_REGTYPE_SHIFT1) & D3D_SP_REGTYPE_MASK1) |
-		((token >> D3D_SP_REGTYPE_SHIFT2) & D3D_SP_REGTYPE_MASK2);
-	value->swizzle.x = (token >> D3D_SP_SWIZZLE_X_SHIFT) &
-		D3D_SP_SWIZZLE_X_MASK;
-	value->swizzle.y = (token >> D3D_SP_SWIZZLE_Y_SHIFT) &
-		D3D_SP_SWIZZLE_Y_MASK;
-	value->swizzle.z = (token >> D3D_SP_SWIZZLE_Z_SHIFT) &
-		D3D_SP_SWIZZLE_Z_MASK;
-	value->swizzle.w = (token >> D3D_SP_SWIZZLE_W_SHIFT) &
-		D3D_SP_SWIZZLE_W_MASK;
-	value->srcmod = (token >> D3D_SP_SRCMOD_SHIFT) & D3D_SP_SRCMOD_MASK;
-
-	return index;
-}
-
-int
-PixelShader::GetInstruction (int                   index,
-			     d3d_def_instruction_t *value)
-{
-	index = GetDestinationParameter (index, &value->reg);
-	index = GetToken (index, &value->v[0]);
-	index = GetToken (index, &value->v[1]);
-	index = GetToken (index, &value->v[2]);
-	index = GetToken (index, &value->v[3]);
-
-	return index;
-}
-
-/* DCL usage */
-#define D3D_DCL_USAGE_SHIFT 0
-#define D3D_DCL_USAGE_MASK  0xf
-
-/* DCL usage index */
-#define D3D_DCL_USAGEINDEX_SHIFT 16
-#define D3D_DCL_USAGEINDEX_MASK  0xf
-
-int
-PixelShader::GetInstruction (int                   index,
-			     d3d_dcl_instruction_t *value)
-{
-	guint32 token;
-
-	if ((index = GetToken (index, &token)) < 0)
-		return -1;
-
-	index = GetDestinationParameter (index, &value->reg);
-
-	if (!value)
-		return index;
-
-	value->usage = (token >> D3D_DCL_USAGE_SHIFT) & D3D_DCL_USAGE_MASK;
-	value->usageindex = (token >> D3D_DCL_USAGEINDEX_SHIFT) &
-		D3D_DCL_USAGEINDEX_MASK;
-
-	return index;
 }
 
 ProjectionEffect::ProjectionEffect ()

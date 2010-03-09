@@ -1,6 +1,8 @@
 2010-02-24  David Reveman  <davidr@novell.com>
 
-	* effect.cpp:
+	* effect.cpp: Move PixelShader functions above ShaderEffect
+	functions.
+
 	* effect.h: Add ProjectionEffect class.
 
 2010-03-09  Jackson Harper  <jackson@ximian.com>
