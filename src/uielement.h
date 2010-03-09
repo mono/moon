@@ -581,7 +581,7 @@ protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr, bool path_only = false);
-	Rect GrowBoundsByEffectPadding (Rect bounds);
+	Rect TransformBoundsThroughEffect (Rect bounds);
 
 	void SetDesiredSize (Size s) { desired_size = s; }
 	void SetRenderSize (Size s) { render_size = s; }

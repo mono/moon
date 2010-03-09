@@ -454,7 +454,7 @@ Glyphs::ComputeBounds ()
 		Layout ();
 	
 	bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
-	bounds = GrowBoundsByEffectPadding (bounds);
+	bounds = TransformBoundsThroughEffect (bounds);
 }
 
 Point

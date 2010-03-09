@@ -176,7 +176,7 @@ UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 }
 
 Rect
-UIElement::GrowBoundsByEffectPadding (Rect bounds)
+UIElement::TransformBoundsThroughEffect (Rect bounds)
 {
 	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 

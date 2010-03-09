@@ -466,7 +466,7 @@ TextBlock::ComputeBounds ()
 	extents.y += padding.top;
 	
         bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	bounds = GrowBoundsByEffectPadding (bounds);
+	bounds = TransformBoundsThroughEffect (bounds);
         bounds_with_children = bounds;
 }
 

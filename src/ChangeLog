@@ -1,5 +1,14 @@
 2010-02-24  David Reveman  <davidr@novell.com>
 
+	* uielement.h:
+	* uielement.cpp:
+	* textblock.cpp (ComputeBounds):
+	* shape.cpp:
+	* panel.cpp (ComputeBounds):
+	* grid.cpp (ComputeBounds):
+	* glyphs.cpp (ComputeBounds): GrowBoundsByEffectPadding ->
+	TransformBoundsThroughEffect.
+
 	* frameworkelement.cpp:
 	* uielement.cpp:
 	* effect.cpp:

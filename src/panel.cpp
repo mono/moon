@@ -18,6 +18,7 @@
 #include "collection.h"
 #include "runtime.h"
 #include "deployment.h"
+#include "effect.h"
 
 Panel::Panel ()
 {
@@ -83,7 +84,7 @@ Panel::ComputeBounds ()
 	}
 
 	if (effect)
-		bounds = bounds_with_children = GrowBoundsByEffectPadding (bounds_with_children);
+		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);
 
 #if DEBUG_BOUNDS
 	space (levelb);

@@ -716,7 +716,7 @@ Shape::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 {
 	InvalidateSurfaceCache ();
 	bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (current);
-        bounds = GrowBoundsByEffectPadding (bounds);
+        bounds = TransformBoundsThroughEffect (bounds);
         bounds_with_children = bounds;
 }
 
@@ -724,7 +724,7 @@ void
 Shape::ComputeBounds ()
 {
         bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (&absolute_xform);
-        bounds = GrowBoundsByEffectPadding (bounds);
+        bounds = TransformBoundsThroughEffect (bounds);
         bounds_with_children = bounds;
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 }
