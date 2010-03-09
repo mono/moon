@@ -23,6 +23,7 @@
 #include "media.h"
 #include "mediaplayer.h"
 
+
 /*
  * PlaylistParserInternal
  */
@@ -30,12 +31,15 @@
 PlaylistParserInternal::PlaylistParserInternal ()
 {
 	parser = XML_ParserCreate (NULL);
+	asxparser = new AsxParser ();
 }
 
 PlaylistParserInternal::~PlaylistParserInternal ()
 {
 	XML_ParserFree (parser);
 	parser = NULL;
+
+	delete asxparser;
 }
 
 /*
@@ -1133,7 +1137,7 @@ Playlist::OnEntryFailed (ErrorEventArgs *args)
 	bool fatal = true;
 	PlaylistRoot *root = GetRoot ();
 	
-	LOG_PLAYLIST ("Playlist::OnEntryFailed () extended_code: %i is_single_file: %i\n", args ? args->GetExtendedCode() : 0, is_single_file);
+	LOG_PLAYLIST ("Playlist::OnEntryFailed () extended_code: %i is_single_file: %i\n", args ? args->GetExtendedCode() : 0, is_single_file, root);
 	
 	g_return_if_fail (root != NULL);
 	
@@ -1663,6 +1667,8 @@ PlaylistParser::PlaylistParser (PlaylistRoot *root, MemoryBuffer *source)
 	this->current_entry = NULL;
 	this->current_text = NULL;
 	this->error_args = NULL;
+
+	this->use_internal_asxparser = getenv ("MOONLIGHT_USE_INTERNAL_ASXPARSER") != NULL;
 }
 
 void
@@ -1679,9 +1685,16 @@ PlaylistParser::Setup (XmlType type)
 	PushCurrentKind (PlaylistKind::Root);
 
 	if (type == XML_TYPE_ASX3) {
-		XML_SetUserData (internal->parser, this);
-		XML_SetElementHandler (internal->parser, on_asx_start_element, on_asx_end_element);
-		XML_SetCharacterDataHandler (internal->parser, on_asx_text);
+		if (use_internal_asxparser) {
+			internal->asxparser->SetUserData (this);
+			internal->asxparser->SetElementStartHandler (on_start_element_internal_asxparser);
+			internal->asxparser->SetElementEndHandler (on_end_element_internal_asxparser);
+			internal->asxparser->SetTextHandler (on_text_internal_asxparser);
+		} else {
+			XML_SetUserData (internal->parser, this);
+			XML_SetElementHandler (internal->parser, on_asx_start_element, on_asx_end_element);
+			XML_SetCharacterDataHandler (internal->parser, on_asx_text);
+		}
 	}
 	
 }
@@ -1715,6 +1728,50 @@ static bool
 str_match (const char *candidate, const char *tag)
 {
 	return g_ascii_strcasecmp (candidate, tag) == 0;
+}
+
+
+void
+PlaylistParser::on_start_element_internal_asxparser (AsxParser *parser, const char *name, GHashTable *atts)
+{
+	PlaylistParser *pp = (PlaylistParser *) parser->GetUserData ();
+
+	/*
+	  For now, because we are runtime configurable, just make the internal asxparser look like
+	  the expat parser by wrapping the attributes into an array.  Once the internal parser
+	  is better tested we can remove this and change OnASXStartElement code to use the hashtable.
+	*/
+
+	GList *keys = g_hash_table_get_keys (atts);
+	int kl = g_hash_table_size (atts);
+	const char **attr_list = (const char **) g_malloc (sizeof (char *) * kl + 1);
+
+	int i = 0;
+	while (keys) {
+		attr_list [i++] = (const char *) keys->data;
+		attr_list [i++] = (const char *) g_hash_table_lookup (atts, keys->data);
+		keys = keys->next;
+	}
+	attr_list [i] = attr_list [i+1] = NULL;
+
+	pp->OnASXStartElement (name, attr_list);
+
+	g_list_free (keys);
+	g_free (attr_list);
+}
+
+void
+PlaylistParser::on_end_element_internal_asxparser (AsxParser *parser, const char *name)
+{
+	PlaylistParser *pp = (PlaylistParser *) parser->GetUserData ();
+	pp->OnASXEndElement (name);
+}
+
+void
+PlaylistParser::on_text_internal_asxparser (AsxParser *parser, const char *text)
+{
+	PlaylistParser *pp = (PlaylistParser *) parser->GetUserData ();
+	pp->OnASXText (text, strlen (text));
 }
 
 void
@@ -2479,7 +2536,7 @@ PlaylistParser::Parse ()
 		Setup (XML_TYPE_NONE);
 		result = this->ParseASX2 ();
 	} else if (this->IsASX3 (source)) {
-		result = this->ParseASX3 ();
+		result = use_internal_asxparser ? this->ParseASX3Internal () : this->ParseASX3 ();
 	} else {
 		result = false;
 	}
@@ -2551,6 +2608,14 @@ PlaylistParser::ParseASX3 ()
 		g_free (buffer);
 
 	return result && playlist != NULL;
+}
+
+bool
+PlaylistParser::ParseASX3Internal ()
+{
+	Setup (XML_TYPE_ASX3);
+
+	return internal->asxparser->ParseBuffer (source);
 }
 
 PlaylistEntry *

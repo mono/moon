@@ -31,22 +31,31 @@ typedef void asx_element_end_handler (AsxParser *parser, const char* element);
 class AsxParser {
 
 public:
-	AsxParser (MemoryBuffer *buffer);
+	AsxParser ();
 	~AsxParser ();
 
-	void set_error_handler (asx_error_handler *handler);
-	void set_text_handler (asx_text_handler *handler);
-	void set_element_start_handler (asx_element_start_handler *handler);
-	void set_element_end_handler (asx_element_end_handler *handler);
+	void SetErrorHandler (asx_error_handler *handler);
+	void SetTextHandler (asx_text_handler *handler);
+	void SetElementStartHandler (asx_element_start_handler *handler);
+	void SetElementEndHandler (asx_element_end_handler *handler);
 
-	void Run ();
+	bool ParseBuffer (MemoryBuffer *buffer);
 	void Stop ();
-	
+
+	void SetUserData (void *data)
+	{
+		user_data = data;
+	}
+
+	void* GetUserData ()
+	{
+		return user_data;
+	}
 private:
 	AsxParserInternal *parser;
 
 	MemoryBuffer *buffer;
-	TextStream *stream;
+	void *user_data;
 };
 
 

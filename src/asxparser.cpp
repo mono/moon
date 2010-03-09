@@ -145,6 +145,8 @@ public:
 
 	~AsxTokenizer ()
 	{
+		delete stream;
+
 		delete current_token;
 		g_string_free (buffer, true);
 	}
@@ -203,9 +205,11 @@ private:
 class AsxParserInternal {
 
 public:
-	AsxParserInternal (TextStream *stream)
+	AsxParserInternal (AsxParser *parser)
 	{
-		tokenizer = new AsxTokenizer (stream);
+		this->parser = parser;
+
+		tokenizer = NULL;
 
 		element_stack = g_queue_new ();
 		current_attributes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
@@ -239,7 +243,7 @@ public:
 		end_element_handler = handler;
 	}
 
-	void run ();
+	bool parse_stream (TextStream *stream);
 	void stop ();
 
 private:
@@ -691,13 +695,17 @@ AsxParserInternal::set_current_element (const char* name)
 	strncpy (current_element, name, MAX_ELEMENT_LEN);
 }
 
-void
-AsxParserInternal::run ()
+bool
+AsxParserInternal::parse_stream (TextStream *stream)
 {
+	tokenizer = new AsxTokenizer (stream);
+
 	while (move_next ()) {
 		if (stop_parsing)
-			break;
+			return false;
 	}
+
+	return true;
 }
 
 void
@@ -730,6 +738,9 @@ free_element (gpointer data, gpointer user)
 
 AsxParserInternal::~AsxParserInternal ()
 {
+	if (tokenizer)
+		delete tokenizer;
+
 	g_queue_foreach (element_stack, free_element, NULL);
 	g_queue_free (element_stack);
 
@@ -737,49 +748,51 @@ AsxParserInternal::~AsxParserInternal ()
 }
 
 
-AsxParser::AsxParser (MemoryBuffer *buffer)
-{
-	this->buffer = buffer;
+AsxParser::AsxParser ()
+{	
+        this->parser = new AsxParserInternal (this);
 
-	stream = new TextStream ();
-	stream->OpenBuffer ((char *)buffer->GetCurrentPtr (), buffer->GetSize ());
-        this->parser = new AsxParserInternal (stream);
+	this->buffer = NULL;
+	this->user_data = NULL;
 }
 
 AsxParser::~AsxParser ()
 {
-	delete stream;
 	delete parser;
 }
 
 void
-AsxParser::set_error_handler (asx_error_handler *handler)
+AsxParser::SetErrorHandler (asx_error_handler *handler)
 {
 	parser->set_error_handler (handler);
 }
 
 void
-AsxParser::set_text_handler (asx_text_handler *handler)
+AsxParser::SetTextHandler (asx_text_handler *handler)
 {
 	parser->set_text_handler (handler);
 }
 
 void
-AsxParser::set_element_start_handler (asx_element_start_handler *handler)
+AsxParser::SetElementStartHandler (asx_element_start_handler *handler)
 {
 	parser->set_element_start_handler (handler);
 }
 
 void
-AsxParser::set_element_end_handler (asx_element_end_handler *handler)
+AsxParser::SetElementEndHandler (asx_element_end_handler *handler)
 {
 	parser->set_element_end_handler (handler);
 }
 
-void
-AsxParser::Run ()
+bool
+AsxParser::ParseBuffer (MemoryBuffer *buffer)
 {
-	parser->run ();
+	this->buffer = buffer;
+	TextStream *stream = new TextStream ();
+	stream->OpenBuffer ((char *) buffer->GetCurrentPtr (), buffer->GetSize ());
+
+	return parser->parse_stream (stream);
 }
 
 void

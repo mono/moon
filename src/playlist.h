@@ -24,6 +24,7 @@ class PlaylistRoot;
 #include "dependencyobject.h"
 #include "uri.h"
 #include "pipeline.h"
+#include "asxparser.h"
 
 class PlaylistKind {
 public:
@@ -356,6 +357,7 @@ public:
 class PlaylistParserInternal {
 public:
 	XML_Parser parser;
+	AsxParser *asxparser;
 
 	PlaylistParserInternal ();
 	~PlaylistParserInternal ();
@@ -375,6 +377,7 @@ private:
 	// The presence of a version does not guarantee that the playlist
 	// was parsed correctly.
 	int playlist_version;
+	bool use_internal_asxparser;
 
 	enum XmlType {
 		XML_TYPE_NONE,
@@ -405,6 +408,10 @@ private:
 	static void on_asx_end_element (gpointer user_data, const char *name);
 	static void on_asx_text (gpointer user_data, const char *text, int len);
 
+	static void on_start_element_internal_asxparser (AsxParser *parser, const char *name, GHashTable *atts);
+	static void on_end_element_internal_asxparser (AsxParser *parser, const char *name);
+	static void on_text_internal_asxparser (AsxParser *parser, const char *name);
+
 	void EndEntry ();
 	PlaylistEntry *GetCurrentEntry ();
 
@@ -429,6 +436,7 @@ public:
 	MediaResult Parse ();
 	bool ParseASX2 ();
 	bool ParseASX3 ();
+	bool ParseASX3Internal ();
 	static bool Is (MemoryBuffer *source, const char *header);
 	static bool IsASX2 (MemoryBuffer *source);
 	static bool IsASX3 (MemoryBuffer *source);
