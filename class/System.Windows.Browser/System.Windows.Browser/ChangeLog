@@ -1,3 +1,8 @@
+2010-03-10  Andreia Gaita  <avidigal@novell.com>
+
+	* HtmlEventArgs.cs: Fix the mouse button mapping from the
+	browser 'button' arg to the MouseButtons enum
+
 2010-03-09  Alan McGovern  <amcgovern@novell.com>
 
 	* HtmlWindow.cs: Add support for DeepLinking. It works for my

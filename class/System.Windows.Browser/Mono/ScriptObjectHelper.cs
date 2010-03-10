@@ -43,6 +43,7 @@ namespace Mono {
 
 			Type type = typeof (T);
 			bool isobject = type.Equals (typeof(object));
+			bool ismousebuttons = type.Equals (typeof(MouseButtons));
 
 			switch (v.k) {
 			case Kind.BOOL:
@@ -56,7 +57,15 @@ namespace Mono {
 			case Kind.INT32:
 				if (isobject)
 					return (double) v.u.i32;
-				else if (type.IsAssignableFrom (typeof (Int32)))
+				else if (ismousebuttons) {
+					switch (v.u.i32) {
+						case 0: return MouseButtons.Left;
+						case 1: return MouseButtons.Middle;
+						case 2:	return MouseButtons.Right;
+						default:
+							throw new ArgumentException ("The browser returned an unsupported value for 'button'");
+					}
+				} else if (type.IsAssignableFrom (typeof (Int32)))
 					return Convert.ChangeType (v.u.i32, type, null);
 				return v.u.i32;
 			case Kind.INT64:

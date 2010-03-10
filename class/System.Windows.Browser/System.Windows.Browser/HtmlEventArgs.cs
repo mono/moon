@@ -114,7 +114,7 @@ namespace System.Windows.Browser
 		}
 
 		public MouseButtons MouseButton {
-			get { return eventKind == EventKind.Mouse ? (MouseButtons)eventObject.GetPropertyInternal<int>("button") : (MouseButtons)0; }
+			get { return eventKind == EventKind.Mouse ? (MouseButtons)eventObject.GetPropertyInternal<MouseButtons>("button") : (MouseButtons)0; }
 		}
 
 		public int KeyCode {
