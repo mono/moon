@@ -1,3 +1,8 @@
+2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ivt-check.cs: Allow System.Json (SDK assembly) access
+	to System.ServiceModel.Web internals.
+	
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Cecil is now in the basic profile.

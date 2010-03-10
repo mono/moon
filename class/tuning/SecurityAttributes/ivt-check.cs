@@ -37,6 +37,9 @@ class Program {
 			// but only if it's installed at a specific (plugin) place
 			retval = (ivtname == "MoonAtkBridge");
 			break;
+		case "System.ServiceModel.Web, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+			retval = (ivtname == "System.Json");
+			break;
 		case "System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
 			// note: right now our System.Xml is totally transparent (no SC nor SSC) and is not,
 			// for moonlight, considered as platform code anymore (r146370)
