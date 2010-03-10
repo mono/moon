@@ -1,3 +1,8 @@
+2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Add test cases to confirm
+	that DefaultValue cannot be used tp create a [SecurityCritical] type
+
 2010-03-10  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Correctly handle the

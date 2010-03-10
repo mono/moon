@@ -1578,6 +1578,25 @@ namespace MoonTest.System.Windows
 			Assert.IsInstanceOfType<int> (val, "#3");
 			Assert.AreEqual (5, (int) val, "#4");
 		}
+
+		[TestMethod]
+		public void GetMetadata_DefaultValue_TransparentType ()
+		{
+			Type t = GetType ();
+			// Int32 is a transparent type
+			DependencyProperty dp = DependencyProperty.Register ("a", typeof (int), t, null);
+			Assert.AreEqual (0, dp.GetMetadata (t).DefaultValue, "int");
+		}
+
+		[TestMethod]
+		public void GetMetadata_DefaultValue_SecurityCriticalType ()
+		{
+			Type t = GetType ();
+			// AppDomainManager is a [SecurityCritical] type
+			DependencyProperty dp = DependencyProperty.Register ("b", typeof (AppDomainManager), t, null);
+			object obj = dp.GetMetadata (t).DefaultValue;
+			Assert.AreEqual (typeof (object), obj.GetType (), "!AppDomainManager");
+		}
 #endregion
 	}
 	
