@@ -20,6 +20,9 @@ public:
 
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx);
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx);
+	virtual bool ShowInstallDialog ();
+	
+	virtual bool CheckInstalled ();
 	
 	virtual Color *GetSystemColor (SystemColor id);
 	

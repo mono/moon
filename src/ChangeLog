@@ -1,3 +1,32 @@
+2010-03-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* application.cpp (IsRunningOutOfBrowser): New helper method.
+	(SetInstallState): New property method.
+	(GetInstallState): New method. If the state is unknown, use PAL
+	interfaces to check if it is installed or not.
+	(IsInstallable): New helper method to check if the xap Uri is
+	installable (e.g. is of the right schema).
+	(InstallWithError): New method to install an Application.
+
+	* pal/gtk/install-dialog.cpp|h: New source files implementing a
+	gtk install dialog (and utility functions).
+
+	* pal/gtk/pal-gtk.cpp (CheckInstalled): Check if the application
+	is installed by checking the filesystem.
+	(ShowInstallDialog): Show an install dialog allowing the user to
+	install the application.
+
+	* pal/gtk/window-gtk.cpp (install_application): New right-click
+	menu callback to call Application.Install().
+	(uninstall_application): New right-click menu callback to
+	uninstall an application.
+	(RightClickMenu): Conditionally add Install/Remove menu items.
+
+	* pal/pal.h (class MoonWindowingSystem): Added ShowInstallDialog()
+	and CheckInstalled() interfaces.
+
+	* enums.h (enum InstallState): New enum.
+
 2010-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* asxparser.cpp|h: Add getters for the error code/message.

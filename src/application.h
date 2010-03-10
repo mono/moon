@@ -55,6 +55,19 @@ public:
 	const char *GetResourceRoot ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
+	bool IsRunningOutOfBrowser ();
+	
+	void SetInstallState (InstallState state);
+	/* @GenerateCBinding,GeneratePInvoke */
+	InstallState GetInstallState ();
+	
+	bool IsInstallable ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool InstallWithError (MoonError *error);
+	bool Install ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	static Application *GetCurrent ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	static void SetCurrent (Application *current);
@@ -65,6 +78,8 @@ public:
 	void SetResources (ResourceDictionary *value);
 	ResourceDictionary *GetResources ();
 	
+	const static int InstallStateChangedEvent;
+	
 protected:
 	virtual ~Application ();
 
@@ -73,6 +88,7 @@ private:
 	ConvertSetterValuesCallback convert_setter_values_cb;
 	ConvertKeyframeValueCallback convert_keyframe_callback;
 	GetResourceCallback get_resource_cb;
+	InstallState install_state;
 	char *resource_root;
 };
 

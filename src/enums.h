@@ -91,6 +91,14 @@ enum LineStackingStrategy {
 	LineStackingStrategyBlockLineHeight
 };
 
+enum InstallState {
+	InstallStateNotInstalled,
+	InstallStateInstalling,
+	InstallStateInstalled,
+	InstallStateInstallFailed,
+	InstallStateUnknown  // not a valid value in managed land
+};
+
 enum MediaState {
 	MediaStateClosed,
 	MediaStateOpening,

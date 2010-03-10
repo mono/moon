@@ -28,6 +28,7 @@ Application::Application ()
 {
 	SetObjectType (Type::APPLICATION);
 	
+	install_state = InstallStateUnknown;
 	resource_root = NULL;
 	
 	get_default_style_cb = NULL;
@@ -381,4 +382,78 @@ Application::GetResourceRoot ()
 		Deployment::GetCurrent()->TrackPath (resource_root);
 	}
 	return resource_root;
+}
+
+bool
+Application::IsRunningOutOfBrowser ()
+{
+	return runtime_is_running_out_of_browser ();
+}
+
+void
+Application::SetInstallState (InstallState state)
+{
+	if (install_state == state)
+		return;
+	
+	// FIXME: emit InstallStateChangedEvent...
+	
+	install_state = state;
+}
+
+InstallState
+Application::GetInstallState ()
+{
+	if (install_state == InstallStateUnknown) {
+		if (runtime_get_windowing_system ()->CheckInstalled ())
+			install_state = InstallStateInstalled;
+		else
+			install_state = InstallStateNotInstalled;
+	}
+	
+	return install_state;
+}
+
+bool
+Application::IsInstallable ()
+{
+	Deployment *deployment = Deployment::GetCurrent ();
+	const char *location = deployment->GetXapLocation ();
+	
+	return location && (!g_ascii_strncasecmp (location, "file:", 5) ||
+			    !g_ascii_strncasecmp (location, "http:", 5) ||
+			    !g_ascii_strncasecmp (location, "https:", 6));
+}
+
+bool
+Application::InstallWithError (MoonError *error)
+{
+	if (!IsInstallable ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Applications may only be installed from http, https or file URLs");
+		return false;
+	}
+	
+	if (GetInstallState () == InstallStateInstalled || IsRunningOutOfBrowser ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Application is already installed");
+		return false;
+	}
+	
+	SetInstallState (InstallStateInstalling);
+	
+	if (runtime_get_windowing_system ()->ShowInstallDialog ()) {
+		SetInstallState (InstallStateInstalled);
+		return true;
+	}
+	
+	SetInstallState (InstallStateInstallFailed);
+	
+	return false;
+}
+
+bool
+Application::Install ()
+{
+	MoonError err;
+	
+	return InstallWithError (&err);
 }

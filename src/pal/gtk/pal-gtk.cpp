@@ -5,6 +5,7 @@
 #include "runtime.h"
 #include "window-gtk.h"
 #include "pixbuf-gtk.h"
+#include "install-dialog.h"
 #include "im-gtk.h"
 
 #define Visual _XxVisual
@@ -17,7 +18,7 @@
 #undef Window
 
 #include <gdk/gdkkeysyms.h>
-
+#include <sys/stat.h>
 
 static Key
 MapKeyvalToKey (guint keyval)
@@ -776,6 +777,43 @@ MoonWindowingSystemGtk::ShowSaveFileDialog (const char *title, const char *filte
 	gtk_widget_destroy (widget);
 
 	return ret;
+}
+
+bool
+MoonWindowingSystemGtk::CheckInstalled ()
+{
+	Deployment *deployment = Deployment::GetCurrent ();
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	char *install_dir;
+	struct stat st;
+	
+	install_dir = install_utils_get_install_dir (settings);
+	
+	if (stat (install_dir, &st) == -1 || !S_ISDIR (st.st_mode)) {
+		g_free (install_dir);
+		return false;
+	}
+	
+	g_free (install_dir);
+	
+	return true;
+}
+
+bool
+MoonWindowingSystemGtk::ShowInstallDialog ()
+{
+	Deployment *deployment = Deployment::GetCurrent ();
+	bool installed = false;
+	GtkDialog *dialog;
+	
+	dialog = install_dialog_new (deployment);
+	
+	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK)
+		installed = install_dialog_install ((InstallDialog *) dialog);
+	
+	gtk_widget_destroy ((GtkWidget *) dialog);
+	
+	return installed;
 }
 
 void

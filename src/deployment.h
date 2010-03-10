@@ -175,9 +175,9 @@ public:
 	OutOfBrowserSettings ();
 
 	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
-	const static int BlurbProperty;	
+	const static int BlurbProperty;
 	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
-	const static int ShortNameProperty;	
+	const static int ShortNameProperty;
 	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int EnableGPUAccelerationProperty;
 	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */

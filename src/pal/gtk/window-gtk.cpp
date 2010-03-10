@@ -13,12 +13,17 @@
 
 #include "config.h"
 
+#include <glib.h>
+#include <glib/gstdio.h>
+
 #include "authors.h"
- 
+
 #include "window-gtk.h"
 #include "clipboard-gtk.h"
+#include "install-dialog.h"
 #include "deployment.h"
 #include "timemanager.h"
+#include "enums.h"
 
 #include "pipeline.h"
 #include "pipeline-ui.h"
@@ -908,10 +913,43 @@ MoonWindowGtk::show_properties (MoonWindowGtk *window)
 }
 
 void
+MoonWindowGtk::install_application (MoonWindowGtk *window)
+{
+	Application *app = Application::GetCurrent ();
+	
+	app->Install ();
+}
+
+void
+MoonWindowGtk::uninstall_application (MoonWindowGtk *window)
+{
+	Deployment *deployment = Deployment::GetCurrent ();
+	Application *application = deployment->GetCurrentApplication ();
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	char *install_dir, *shortcut;
+	
+	shortcut = install_utils_get_start_menu_shortcut (settings);
+	g_unlink (shortcut);
+	g_free (shortcut);
+	
+	shortcut = install_utils_get_desktop_shortcut (settings);
+	g_unlink (shortcut);
+	g_free (shortcut);
+	
+	install_dir = install_utils_get_install_dir (settings);
+	RemoveDir (install_dir);
+	g_free (install_dir);
+	
+	application->SetInstallState (InstallStateNotInstalled);
+}
+
+void
 MoonWindowGtk::RightClickMenu ()
 {
-	GtkWidget *menu;
+	Deployment *deployment = Deployment::GetCurrent ();
+	OutOfBrowserSettings *settings;
 	GtkWidget *menu_item;
+	GtkWidget *menu;
 	char *name;
 
 	menu = gtk_menu_new();
@@ -937,6 +975,29 @@ MoonWindowGtk::RightClickMenu ()
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (install_media_pack), this);
 #endif
+	}
+	
+	if (deployment && (settings = deployment->GetOutOfBrowserSettings ())) {
+		Application *application = deployment->GetCurrentApplication ();
+		
+		switch (application->GetInstallState ()) {
+		case InstallStateNotInstalled:
+			if (application->IsInstallable () && settings->GetShowInstallMenuItem ()) {
+				name = g_strdup_printf ("Install %s onto this computer...", settings->GetShortName ());
+				menu_item = gtk_menu_item_new_with_label (name);
+				gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+				g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (install_application), this);
+				g_free (name);
+			}
+			break;
+		case InstallStateInstalled:
+			menu_item = gtk_menu_item_new_with_label ("Remove this application...");
+			gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+			g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (uninstall_application), this);
+			break;
+		default:
+			break;
+		}
 	}
 	
 #ifdef DEBUG

@@ -105,7 +105,9 @@ private:
 	static void show_about (MoonWindowGtk *window);
 	static void show_properties (MoonWindowGtk *window);
 	static void properties_dialog_response (GtkWidget *dialog, int response, MoonWindowGtk *window);
-
+	static void uninstall_application (MoonWindowGtk *window);
+	static void install_application (MoonWindowGtk *window);
+	
 	GtkWidget *properties_fps_label;
 	GtkWidget *properties_cache_label;
 };
