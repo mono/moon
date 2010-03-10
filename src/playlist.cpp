@@ -1137,7 +1137,7 @@ Playlist::OnEntryFailed (ErrorEventArgs *args)
 	bool fatal = true;
 	PlaylistRoot *root = GetRoot ();
 	
-	LOG_PLAYLIST ("Playlist::OnEntryFailed () extended_code: %i is_single_file: %i\n", args ? args->GetExtendedCode() : 0, is_single_file, root);
+	LOG_PLAYLIST ("Playlist::OnEntryFailed () extended_code: %i is_single_file: %i\n", args ? args->GetExtendedCode() : 0, is_single_file);
 	
 	g_return_if_fail (root != NULL);
 	
