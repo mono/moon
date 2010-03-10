@@ -57,6 +57,9 @@ public:
 	{
 		return user_data;
 	}
+
+	AsxParserError GetErrorCode ();
+	const char* GetErrorMessage ();
 private:
 	AsxParserInternal *parser;
 

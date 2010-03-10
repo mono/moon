@@ -214,6 +214,9 @@ public:
 		element_stack = g_queue_new ();
 		current_attributes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
+		error_code = ASXPARSER_ERROR_NONE;
+		error_message = NULL;
+
 		stop_parsing = false;
 		start_element_handler = NULL;
 		end_element_handler = NULL;
@@ -243,6 +246,16 @@ public:
 		end_element_handler = handler;
 	}
 
+	AsxParserError get_error_code ()
+	{
+		return error_code;
+	}
+
+	const char* get_error_message ()
+	{
+		return error_message;
+	}
+
 	bool parse_stream (TextStream *stream);
 	void stop ();
 
@@ -261,6 +274,9 @@ private:
 
 	char current_element [MAX_ELEMENT_LEN];
 	GHashTable *current_attributes;
+
+	AsxParserError error_code;
+	const char* error_message;
 
 	void raise_error (AsxParserError code, const char* error);
 
@@ -681,6 +697,9 @@ AsxParserInternal::raise_error (AsxParserError code, const char* error)
 {
 	if (error_handler)
 		error_handler (parser, code, error);
+
+	this->error_code = code;
+	this->error_message = error;
 }
 
 void
@@ -800,6 +819,23 @@ AsxParser::Stop ()
 {
 	parser->stop ();
 }
+
+
+AsxParserError
+AsxParser::GetErrorCode ()
+{
+	return parser->get_error_code ();
+}
+
+
+const char*
+AsxParser::GetErrorMessage ()
+{
+	return parser->get_error_message ();
+}
+
+
+
 
 
 #ifdef ASX_TEST

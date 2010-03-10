@@ -1,3 +1,7 @@
+2010-03-10  Jackson Harper  <jackson@ximian.com>
+
+	* asxparser.cpp|h: Add getters for the error code/message.
+
 2010-03-10  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Elements with opacity ~= 0 are not
