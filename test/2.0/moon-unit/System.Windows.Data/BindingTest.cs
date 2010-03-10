@@ -1117,6 +1117,21 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void IndexerOnIndexableProperty_IndexTooLarge_INCC ()
+		{
+			// Attach the binding, then add values to the collection to
+			// force an update through the INotifyCollectionChanged interface
+			var data = new Data { };
+			var rect = new Rectangle { DataContext = data };
+			rect.SetBinding (Rectangle.WidthProperty, new Binding ("ObservableDoubles[1]"));
+
+			Assert.IsTrue (double.IsNaN (rect.Width), "#1");
+			data.ObservableDoubles.Add (1.0);
+			data.ObservableDoubles.Add (2.0);
+			Assert.AreEqual (2.0, rect.Width, "#2");
+		}
+
+		[TestMethod]
 		public void IndexerOnIndexableProperty_TwoWay ()
 		{
 			var data = new Data { };

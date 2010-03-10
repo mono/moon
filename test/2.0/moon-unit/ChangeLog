@@ -1,5 +1,11 @@
 2010-03-10  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Correctly handle the
+	  case where an indexed Binding is attached before the
+	  collection has been initialized.
+
+2010-03-10  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs: Add tests to
 	  see whether or not the container is in the panel when
 	  PrepareContainer and ClearContainer are called.

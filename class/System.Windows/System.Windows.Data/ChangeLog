@@ -1,3 +1,9 @@
+2010-03-10  Alan McGovern  <amcgovern@novell.com>
+
+	* IndexedPropertyPathNode.cs: Correctly handle the case where
+	  an indexed Binding is attached before the collection has
+	  been initialized.
+
 2010-03-09  Alan McGovern  <amcgovern@novell.com>
 
 	* IndexedPropertyPathNode.cs: Add tests to make sure we handle

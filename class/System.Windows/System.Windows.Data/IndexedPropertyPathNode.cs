@@ -78,14 +78,14 @@ namespace System.Windows.Data
 				((INotifyCollectionChanged) newSource).CollectionChanged += OnCollectionChanged;
 
 			IList source = Source as IList;
-
-			if (source == null || !GetIndexer () || Index >= source.Count) {
+			if (source == null || !GetIndexer ()) {
 				PropertyInfo = null;
 				ValueType = null;
 				Value = null;
 			} else {
 				ValueType = PropertyInfo.PropertyType;
-				Value = PropertyInfo.GetValue (source, new object [] { Index });
+				if (Index < source.Count)
+					Value = PropertyInfo.GetValue (source, new object [] { Index });
 			}
 		}
 
