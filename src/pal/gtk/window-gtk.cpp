@@ -482,8 +482,8 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		}
 #if FULLSCREEN_BACKING_STORE_SOPTIMIZATION
 		if (IsFullScreen ()) {
-			backing_store_width = MAX (event->area.width, 1);
-			backing_store_height = MAX (event->area.height, 1);
+			backing_store_width = MAX (event->area.x + event->area.width, 1);
+			backing_store_height = MAX (event->area.y + event->area.height, 1);
 		}
 		else
 #endif
@@ -786,8 +786,11 @@ MoonWindowGtk::CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool 
 						     GDK_VISUAL_XVISUAL (visual),
 						     width, height);
 	else {
-		if (backing_image_data == NULL)
+		if (backing_image_data == NULL) {
+			printf ("allocating backing_image_data for %d x %d\n", width, height);
+
 			backing_image_data = (unsigned char*)g_malloc (width * height * 4);
+		}
 
 		surface = cairo_image_surface_create_for_data (backing_image_data,
 							       CAIRO_FORMAT_ARGB32,

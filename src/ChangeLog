@@ -1,3 +1,17 @@
+2010-03-10  Chris Toshok  <toshok@ximian.com>
+
+	* pal/gtk/windowless-gtk.cpp (MoonWindowlessGtk::Resize): we need
+	to invalidate the backing image data when we resize.  fixes crash
+	on resizing telerik's demo site.
+
+	* pal/gtk/window-gtk.h: make backing_image_data and
+	backing_store_width/height protected so the windowless code can
+	get at it.
+
+	* pal/gtk/window-gtk.cpp (MoonWindowGtk::ExposeEvent): make sure
+	we make the backing store large enough if we enable the fullscreen
+	memory soptimization.
+
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp,h: there's no reason to heap allocate the

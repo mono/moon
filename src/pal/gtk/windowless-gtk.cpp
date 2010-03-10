@@ -71,7 +71,13 @@ MoonWindowlessGtk::Resize (int width, int height)
         if (this->width != width || this->height != height) {
 		this->width = width;
 		this->height = height;
-		
+
+		g_free (backing_image_data);
+		backing_image_data = NULL;
+
+		backing_store_width = GetWidth();
+		backing_store_height = GetHeight();
+
 		emit_resize = true;
 	}
 
@@ -167,6 +173,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 
 			if (visual) {
 				GdkEventExpose expose;
+				int width, height;
 
 				expose.type = GDK_EXPOSE;
 				expose.window = NULL;
