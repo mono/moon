@@ -1,7 +1,8 @@
 # [SecuritySafeCritical] needed inside System.Net to call all [SecurityCritical] methods
-# 20 methods
+# 21 methods
 
 +SSC-M: System.Net.IPAddress[] System.Net.Dns::GetHostAddresses(System.String)
++SSC-M: System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
 +SSC-M: System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
 +SSC-M: System.Boolean System.Net.Sockets.Socket::get_NoDelay()
 +SSC-M: System.Void System.Net.Sockets.Socket::set_NoDelay(System.Boolean)

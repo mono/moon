@@ -1,3 +1,8 @@
+2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Remove manual override for the reflection 
+	hack that was needed for policing sockets
+
 2010-02-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Adjust Action<> signature for WebRequest.

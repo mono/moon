@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -29,9 +29,9 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Policy;
 using System.Text;
 using System.Windows;
-using System.Windows.Browser.Net;
 using System.Xml;
 
 using Mono.Moonlight.UnitTesting;

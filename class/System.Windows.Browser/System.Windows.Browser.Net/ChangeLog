@@ -1,3 +1,11 @@
+2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs, ClientAccessPolicy[Parser].cs, 
+	CrossDomainPolicyManager.cs, FlashCrossDomainPolicy[Parser].cs,
+	ICrossDomainPolicy.cs, NoAccessPolicy.cs, PolicyDownloadPolicy.cs,
+	SiteOfOriginPolicy.cs: Moved to System.Net.dll
+	* BrowserHttpWebRequest.cs: Adjust namespace
+
 2010-03-03  Andreia Gaita  <avidigal@novell.com>
 
 	* BrowserHttpWebResponse.cs: keep the handle around until the

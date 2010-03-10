@@ -92,13 +92,13 @@ SOURCES= \
 	$(wildcard $(srcdir)/*.xaml.cs)	\
 	$(wildcard $(srcdir)/*/*.cs)	\
 	$(wildcard $(srcdir)/*/*/*.cs)	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicyParser.cs	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/CrossDomainPolicyManager.cs	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ICrossDomainPolicy.cs
+	$(MCS_PATH)/class/System.Net/System.Net.Policy/BaseDomainPolicy.cs	\
+	$(MCS_PATH)/class/System.Net/System.Net.Policy/ClientAccessPolicy.cs	\
+	$(MCS_PATH)/class/System.Net/System.Net.Policy/ClientAccessPolicyParser.cs	\
+	$(MCS_PATH)/class/System.Net/System.Net.Policy/CrossDomainPolicyManager.cs	\
+	$(MCS_PATH)/class/System.Net/System.Net.Policy/FlashCrossDomainPolicy.cs	\
+	$(MCS_PATH)/class/System.Net/System.Net.Policy/FlashCrossDomainPolicyParser.cs	\
+	$(MCS_PATH)/class/System.Net/System.Net.Policy/ICrossDomainPolicy.cs
 
 REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/System.Windows.Controls.dll \

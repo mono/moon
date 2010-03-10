@@ -3,9 +3,6 @@
 # use of reflection to set the "progress" field
 +SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Action`2<System.Int64,System.Int64>)
 
-# use reflection to call the (socket) policy manager
-+SSC-M: System.Boolean System.Net.Sockets.SocketAsyncEventArgs::CheckEndPoint(System.Net.EndPoint)
-
 # force *_nocheck methods into SecurityCritical (instead of, automatic, SecuritySafeCritical) so we can deal with/protect the callers
 +SC-M: System.Int32 System.Net.Sockets.Socket::Receive_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
 +SC-M: System.Int32 System.Net.Sockets.Socket::Send_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)

@@ -1,3 +1,9 @@
+2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove xdomain policy types (moved to System.Net.dll
+	so it will be easier to reuse for the client stack and also removes
+	the need to use reflection for sockets)
+
 2010-03-04  Chris Toshok  <toshok@ximian.com>
 
 	* everything:

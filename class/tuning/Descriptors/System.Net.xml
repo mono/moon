@@ -8,6 +8,8 @@
 		<type fullname="System.Net.WebRequest" preserve="all" />
 		<type fullname="System.Net.WebResponse" preserve="all" />
 		<type fullname="System.Net.WebHeaderCollection" preserve="all" />
+		<type fullname="System.Net.Policy.CrossDomainPolicyManager" preserve="all" />
+		<type fullname="System.Net.Policy.ICrossDomainPolicy" preserve="all" />
 		<type fullname="System.Net.Sockets.SocketAsyncEventArgs" preserve="all" />
 	</assembly>
 </linker>

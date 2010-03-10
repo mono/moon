@@ -1,3 +1,8 @@
+2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.ssc: Regenerated with new xdomain policies
+	classes.
+
 2010-03-08  Alan McGovern  <amcgovern@novell.com>
 
 	* mscorlib.auto.sc:

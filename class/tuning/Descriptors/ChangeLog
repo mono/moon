@@ -1,3 +1,8 @@
+2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.xml: Preserve System.Net.Policy.CrossDomainPolicyManager
+	and ICrossDomainPolicy types for the http stack(s)
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.ServiceModel.xml: Protect two internal classes MS accesses through
