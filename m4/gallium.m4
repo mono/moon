@@ -24,4 +24,7 @@ AC_DEFUN([MOONLIGHT_CHECK_GALLIUM],
 		GALLIUM_CFLAGS="-DUSE_GALLIUM=1 -I\$(GALLIUM_PATH)/src/gallium/include -I\$(GALLIUM_PATH)/src/gallium/auxiliary -I\$(GALLIUM_PATH)/src/gallium/drivers"
 		GALLIUM_LIBS="\$(GALLIUM_PATH)/src/gallium/drivers/softpipe/libsoftpipe.a \$(GALLIUM_PATH)/src/gallium/auxiliary/libgallium.a"
 	fi
+
+	AC_SUBST(GALLIUM_CFLAGS)
+	AC_SUBST(GALLIUM_LIBS)
 ])

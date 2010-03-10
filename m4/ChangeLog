@@ -1,3 +1,8 @@
+2010-03-10  David Reveman  <davidr@novell.com>
+
+	* gallium.m4: GALLIUM_CFLAGS and GALLIUM_LIBS are used in
+	src/Makefile.am.
+
 2010-03-08  Chris Toshok  <toshok@ximian.com>
 
 	* pal.m4: hardcode more stuff about pal (this time for media
