@@ -77,6 +77,7 @@ namespace System.Windows.Controls {
 		
 		void OnItemsChangedInternal (object sender, ItemsChangedEventArgs args)
  		{
+			InvalidateMeasure ();
 			if (args.Action == NotifyCollectionChangedAction.Reset) {
 				Children.Clear ();
 				ItemContainerGenerator.RemoveAll ();

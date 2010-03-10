@@ -1,5 +1,12 @@
 2010-03-10  Alan McGovern  <amcgovern@novell.com>
 
+	* VirtualizingPanel.cs: Whenever the items collection changes
+	  we need to invalidate the measure as we can't rely on the
+	  user doing it. Fixes the bug where nothing would render in
+	  the telerik Book demo. 
+
+2010-03-10  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: We need to add the container to the panel
 	  before invoking PrepareContainerForItem. This fixes the
 	  telerik book demo completely.
