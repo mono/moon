@@ -2452,7 +2452,7 @@ get_runtime_options (RuntimeInitFlag def)
 				if (strncmp (options[i].name, flag, n))
 					continue;
 
-				size_t v = (inptr - equal);
+				size_t v = (inptr - equal - 1);
 
 				if (options[i].enable_value && !strncmp (options[i].enable_value, equal + 1, v)) {
 					flags = (RuntimeInitFlag)(flags | options[i].flag);
