@@ -49,6 +49,9 @@ namespace MoonTest.System.Windows.Controls {
 
 	public class ItemsControlPoker : ItemsControl, IPoker
 	{
+		public Action<FrameworkElement> PrepareContainerCallback { get; set; }
+		public Action<FrameworkElement> ClearContainerCallback { get; set; }
+
 		public Action<NotifyCollectionChangedEventArgs> OnItemsChangedAction {
 			get; set;
 		}
@@ -87,6 +90,8 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
+			if (ClearContainerCallback != null)
+				ClearContainerCallback ((FrameworkElement)element);
 			LastClearedContainer = element;
 			base.ClearContainerForItemOverride (element, item);
 		}
@@ -131,6 +136,8 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
+			if (PrepareContainerCallback != null)
+				PrepareContainerCallback ((FrameworkElement) element);
 			LastPreparedItem = item;
 			LastPreparedContainer = element;
 			base.PrepareContainerForItemOverride (element, item);
@@ -206,7 +213,7 @@ namespace MoonTest.System.Windows.Controls {
 			set { throw new NotSupportedException (); }
 		}
 	}
-	
+
 	[TestClass]
 	public partial class ItemsControlTest : ItemsControlTestBase {
 		protected override IPoker CreateControl ()
@@ -446,6 +453,25 @@ namespace MoonTest.System.Windows.Controls {
 				poker.Items.Clear ();
 				Assert.IsNotNull (poker.EventArgs, "#2");
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("We need to remove the item from the panel before we clear the container")]
+		public void ClearedItemIsInPanel ()
+		{
+			var poker = (ItemsControlPoker) CurrentControl;
+			poker.ClearContainerCallback = e => Assert.IsNull (VisualTreeHelper.GetParent (e), "#1");
+
+			CreateAsyncTest (poker,
+				() => {
+					poker.ApplyTemplate ();
+				}, () => {
+					poker.Items.Add (new object ());
+					poker.Items.Clear ();
+					Assert.IsNotNull (poker.LastClearedContainer, "#2");
+				}
+			);
 		}
 
 		[TestMethod]
@@ -751,6 +777,23 @@ namespace MoonTest.System.Windows.Controls {
 	</ItemsControl.ItemsSource>
 </ItemsControl>");
 			Assert.AreEqual (1, c.Items.Count);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PreparedItemIsInPanel ()
+		{
+			var poker = (ItemsControlPoker) CurrentControl;
+			poker.PrepareContainerCallback = e => Assert.IsInstanceOfType<Panel> (VisualTreeHelper.GetParent (e), "#1");
+
+			CreateAsyncTest (poker,
+				() => {
+					poker.ApplyTemplate ();
+				}, () => {
+					poker.Items.Add (new object ());
+					Assert.IsNotNull (poker.LastPreparedContainer, "#2");
+				}
+			);
 		}
 	}
 }

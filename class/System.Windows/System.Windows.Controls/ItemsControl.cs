@@ -297,8 +297,8 @@ namespace System.Windows.Controls {
 				if (f != null && !(item is FrameworkElement))
 					f.DataContext  = item;
 
-				ItemContainerGenerator.PrepareItemContainer (container);
 				panel.Children.Insert (newIndex + i, (UIElement) container);
+				ItemContainerGenerator.PrepareItemContainer (container);
 			}
 		}
 		

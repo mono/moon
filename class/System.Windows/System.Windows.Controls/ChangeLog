@@ -1,3 +1,9 @@
+2010-03-10  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: We need to add the container to the panel
+	  before invoking PrepareContainerForItem. This fixes the
+	  telerik book demo completely.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* HtmlBrush.cs:
