@@ -2250,8 +2250,6 @@ DependencyObject::DependencyObject (Type::Kind object_type)
 void
 DependencyObject::Initialize ()
 {
-	providers = new PropertyValueProvider*[PropertyPrecedence_Count];
-
 	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue);
 	providers[PropertyPrecedence_DynamicValue] = NULL;  // subclasses will set this if they need it.
 
@@ -2461,8 +2459,6 @@ DependencyObject::~DependencyObject ()
 	g_hash_table_destroy (provider_bitmasks);
 	g_hash_table_destroy (local_values);
 	local_values = NULL;
-	delete[] providers;
-	providers = NULL;
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	totals ts;

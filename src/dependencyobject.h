@@ -446,7 +446,7 @@ protected:
 
 	virtual void CloneCore (Types *types, DependencyObject* from);
 
-	PropertyValueProvider **providers;
+	PropertyValueProvider *providers[PropertyPrecedence_Count];
 
 private:
 	void DetachTemplateOwnerDestroyed ();

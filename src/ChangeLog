@@ -1,5 +1,10 @@
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp,h: there's no reason to heap allocate the
+	providers array.  just make it a normal instance variable.
+
+2010-03-09  Chris Toshok  <toshok@ximian.com>
+
 	* pal/gtk/window-gtk.cpp,h (MoonWindowGtk::CreateCairoContext):
 	rename runtime_cairo_create to this, making it an instance method.
 	Store off the pixel buffer we allocate for the image buffer
