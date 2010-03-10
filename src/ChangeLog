@@ -1,3 +1,7 @@
+2010-03-10  Jackson Harper  <jackson@ximian.com>
+
+	* asxparser.cpp|h: Add error codes.
+
 2010-03-10  Chris Toshok  <toshok@ximian.com>
 
 	* pal/gtk/windowless-gtk.cpp (MoonWindowlessGtk::Resize): we need

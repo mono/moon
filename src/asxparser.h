@@ -22,11 +22,17 @@ class AsxParser;
 class AsxParserInternal;
 
 typedef void asx_text_handler (AsxParser *parser, const char* text);
-typedef void asx_error_handler (AsxParser *parser, const char* error);
+typedef void asx_error_handler (AsxParser *parser, int error_code, const char* error);
 typedef void asx_element_start_handler (AsxParser *parser, const char* element, GHashTable *atts);
 typedef void asx_element_end_handler (AsxParser *parser, const char* element); 
 
-
+enum AsxParserError {
+	ASXPARSER_ERROR_NONE,
+	ASXPARSER_ERROR_INVALID_TOKEN,	
+	ASXPARSER_ERROR_DUPLICATE_ATTRIBUTE,
+	ASXPARSER_ERROR_NO_ELEMENTS,
+	ASXPARSER_ERROR_UNBALANCED_ELEMENTS,
+};
 
 class AsxParser {
 

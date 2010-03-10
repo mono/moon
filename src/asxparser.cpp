@@ -262,7 +262,7 @@ private:
 	char current_element [MAX_ELEMENT_LEN];
 	GHashTable *current_attributes;
 
-	void raise_error (const char* error);
+	void raise_error (AsxParserError code, const char* error);
 
 	void clear_current_element ();
 	void set_current_element (const char* name);
@@ -539,7 +539,7 @@ AsxParserInternal::move_next ()
 		return handle_char_data ();
 
 	if (tok->get_type () != TOKEN_OPEN_ELEMENT) {
-		raise_error ("Invalid char data found.");
+		raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid char data found.");
 		return false;
 	}
 
@@ -550,7 +550,7 @@ AsxParserInternal::move_next ()
 	}
 
 	if (tok->get_type () != TOKEN_NAME) {
-		raise_error ("Invalid element formation, no name found.");
+		raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid element formation, no name found.");
 		return false;
 	}
 
@@ -558,7 +558,7 @@ AsxParserInternal::move_next ()
 		char *close = g_strdup (tokenizer->get_current ()->get_value ());
 		tok = next_non_whitespace_token ();
 		if (tok->get_type () != TOKEN_CLOSE_ELEMENT) {
-			raise_error ("Invalid closing element found.");
+			raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid closing element found.");
 			return false;
 		}
 
@@ -576,7 +576,7 @@ AsxParserInternal::move_next ()
 		if (tok->get_type () == TOKEN_SLASH) {
 			tok = next_non_whitespace_token ();
 			if (tok->get_type () != TOKEN_CLOSE_ELEMENT) {
-				raise_error ("Invalid / character found in element.\n");
+				raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid / character found in element.\n");
 				return false;
 			}
 			is_self_closing = true;
@@ -607,26 +607,26 @@ AsxParserInternal::parse_attribute ()
 
 	AsxToken *tok = tokenizer->get_current ();
 	if (tok->get_type () != TOKEN_NAME) {
-		raise_error ("Invalid attribute, no name specified.");
+		raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid attribute, no name specified.");
 		return false;
 	}
 
 	name = g_strdup (tok->get_value ());
 	
 	if (g_hash_table_lookup (current_attributes, name)) {
-		raise_error ("Invalid element, attribute specified twice.\n");
+		raise_error (ASXPARSER_ERROR_DUPLICATE_ATTRIBUTE, "Invalid element, attribute specified twice.\n");
 		return false;
 	}
 
 	tok = next_non_whitespace_token ();
 	if (tok->get_type () != TOKEN_ASSIGNMENT) {
-		raise_error ("Invalid attribute, = character not found.\n");
+		raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid attribute, = character not found.\n");
 		return false;
 	}
 
 	tok = next_non_whitespace_token ();
 	if (tok->get_type () != TOKEN_QUOTED_STRING) {
-		raise_error ("Invalid attribute, value not found.\n");
+		raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid attribute, value not found.\n");
 		return false;
 	}
 
@@ -652,7 +652,7 @@ AsxParserInternal::handle_element_close (const char* name)
 	char *expected = (char *) g_queue_pop_head (element_stack);
 
 	if (g_ascii_strcasecmp (expected, name)) {
-		raise_error ("Invalid closing element found.");
+		raise_error (ASXPARSER_ERROR_UNBALANCED_ELEMENTS, "Invalid closing element found.");
 		return false;
 	}
 
@@ -677,10 +677,10 @@ AsxParserInternal::handle_char_data ()
 }
 
 void
-AsxParserInternal::raise_error (const char* error)
+AsxParserInternal::raise_error (AsxParserError code, const char* error)
 {
 	if (error_handler)
-		error_handler (parser, error);
+		error_handler (parser, code, error);
 }
 
 void
