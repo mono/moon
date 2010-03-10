@@ -308,17 +308,46 @@ namespace Mono.Xaml {
 		private static string GetNextPiece (ref string remaining, out char next, bool allow_spaces)
 		{
 			int end = 0;
-			remaining = remaining.TrimStart ();
+			bool orig_allow_spaces = allow_spaces;
+			StringBuilder piece = new StringBuilder ();
 
-			if (remaining.StartsWith ("\\{"))
-				end = remaining.IndexOf ("\\}", end + 1) + 2;
-			else if (remaining.Length > 1 && remaining [end] == '\'')
+			remaining = remaining.TrimStart ();
+			if (remaining.Length > 1 && remaining [end] == '\'')
 				end = remaining.IndexOf ('\'', end + 1) + 1;
 			
 			if (end == -1 || end == 0) {
 				end = 0;
-				while (end < remaining.Length && (allow_spaces || !Char.IsWhiteSpace (remaining [end])) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
+				bool allow_one_more_space = false;
+				while (end < remaining.Length && (allow_spaces || !Char.IsWhiteSpace (remaining [end])) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=') {
+					// Skip over escaped chars
+					if (remaining [end] == '\\') {
+						if (end >= remaining.Length - 1)
+							continue;
+						// Inside of a \{   \} block we are allowed spaces
+						if (remaining [end+1] == '{') {
+							Console.WriteLine ("entering escaped block:  {0}", remaining.Substring (end));
+							end += 2;
+							allow_spaces = true;
+							continue;
+						} else if (remaining [end+1] == '}') {
+							end += 2;
+							allow_one_more_space = true;
+							continue;
+						}
+						// Advance past the \ char
+						piece.Append (remaining [end + 1]);
+						end += 2;
+					}
+					if (allow_one_more_space) {
+						allow_spaces = orig_allow_spaces;
+						allow_one_more_space = false;
+					}
+					piece.Append (remaining [end]);
 					end++;
+					
+				}
+				if (end >= remaining.Length)
+					end = remaining.Length;
 			}
 
 			if (end == 0) {
@@ -330,10 +359,8 @@ namespace Mono.Xaml {
 			string res;
 			if (remaining [0] == '\'' && remaining [end - 1] == '\'')
 				res = remaining.Substring (1, end - 2);
-			else if (remaining.StartsWith ("\\{"))
-				res = remaining.Substring (2, end - 4);
 			else
-				res = remaining.Substring (0, end);
+				res = piece.ToString ();
 
 			remaining = remaining.Substring (end + 1);
 			return EscapeString (res.TrimEnd ());

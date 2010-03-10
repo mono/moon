@@ -504,5 +504,26 @@ Width=""100"" Height=""100"">
 			BindingExpression beb = (BindingExpression) text;
 			Assert.AreEqual (beb.ParentBinding.ConverterParameter, "0:MMMM d, yyyy");
 		}
+
+		[TestMethod]
+		public void EscapedExtensions2 ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+Width=""100"" Height=""100"">
+	<Canvas.Resources>
+	</Canvas.Resources>
+	<TextBlock x:Name=""text"" Text=""{Binding somedate, Converter={StaticResource DateTimeConverter}, ConverterParameter=\{0:t\} ET, Mode=OneWay}"" />
+</Canvas>
+");
+
+			TextBlock block = (TextBlock) canvas.Children[0];
+			object text = block.ReadLocalValue (TextBlock.TextProperty);
+			Assert.IsTrue (text is BindingExpression);
+
+			BindingExpression beb = (BindingExpression) text;
+			Assert.AreEqual (beb.ParentBinding.ConverterParameter, "0:t ET");
+		}
 	}
 }
