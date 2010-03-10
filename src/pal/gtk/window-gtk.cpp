@@ -473,13 +473,19 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		if (backing_store_gc)
 			g_object_unref (backing_store_gc);
 #if FULLSCREEN_BACKING_STORE_SOPTIMIZATION
-		if (IsFullScreen ())
-			backing_store = gdk_pixmap_new (w->window,
-							MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
+		if (IsFullScreen ()) {
+			backing_store_width = MAX (event->area.width, 1);
+			backing_store_height = MAX (event->area.height, 1);
+		}
 		else
 #endif
-			backing_store = gdk_pixmap_new (w->window,
-							MAX (GetWidth(), 1), MAX (GetHeight(), 1), -1);
+		{
+			backing_store_width = MAX (GetWidth(), 1);
+			backing_store_height = MAX (GetHeight(), 1);
+		}
+
+		backing_store = gdk_pixmap_new (w->window,
+						backing_store_width, backing_store_height, -1);
 
 		backing_store_gc = gdk_gc_new (backing_store);
 	}
