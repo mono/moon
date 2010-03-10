@@ -1,3 +1,7 @@
+2010-03-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Application.cs: Hooked up the Install and InstallState methods.
+
 2010-03-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Mark CheckAndDownloadUpdateAsync with [MonoTODO]

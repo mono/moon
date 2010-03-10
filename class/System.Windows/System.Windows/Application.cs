@@ -172,16 +172,15 @@ namespace System.Windows {
 			}
 		}
 
-		[MonoTODO]
 		public InstallState InstallState {
-			get { return InstallState.NotInstalled; }
+			get {
+				return NativeMethods.application_get_install_state (NativeHandle);
+			}
 		}
 
-		[MonoTODO]
 		public bool Install ()
 		{
-			Console.WriteLine ("System.Windows.Application.Install (): Not implemented (returning false).");
-			return false;
+			return NativeMethods.application_install (NativeHandle);
 		}
 
 		public IList ApplicationLifetimeObjects {
