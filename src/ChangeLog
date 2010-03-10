@@ -1,3 +1,9 @@
+2010-03-10  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: Elements with opacity ~= 0 are not
+	  clickable with the mouse. Fixes the bug where elements were
+	  stealing mouse clicks in telerik.
+
 2010-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* asxparser.cpp|h: Add error codes.

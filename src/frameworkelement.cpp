@@ -350,6 +350,9 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 	if (!GetRenderVisible ())
 		return;
 
+	if (IS_INVISIBLE (GetOpacity ()))
+		return;
+
 	if (!GetHitTestVisible ())
 		return;
 	
