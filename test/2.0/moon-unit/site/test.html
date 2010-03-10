@@ -53,7 +53,7 @@
         function onSilverlightError(sender, args) {
             TestLogger.LogError("Plugin failed to initialize: " + args.ErrorMessage);
             TestLogger.LogResult(-1);
-            SignalShutdown();
+            //SignalShutdown();
         }		
 
         function ScriptObjectInvokeSelfTest() {

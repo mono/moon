@@ -1,3 +1,9 @@
+2010-03-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* site/test.html: Don't shutdown if something goes wrong, just wait
+	for a timeout (if the page didn't load correctly) or the test to fail out
+	(so that we only fail 1 test instead of not getting any results at all).
+
 2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/SocketPolicyTest.cs: Adjust namespace
