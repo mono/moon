@@ -157,9 +157,11 @@ namespace System.Windows.Controls {
 				index = (int) HorizontalOffset;
 			else
 				index = (int) VerticalOffset;
-			
+
+			// Ensure we always touch ItemContainerGenerator as by accessing this property
+			// we hook up to some events on it.
+			IItemContainerGenerator generator = ItemContainerGenerator;
 			if (owner.Items.Count > 0) {
-				IItemContainerGenerator generator = ItemContainerGenerator;
 				GeneratorPosition start;
 				Size childAvailable;
 				int insertAt;
