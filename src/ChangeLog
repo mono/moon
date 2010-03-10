@@ -1,5 +1,10 @@
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::UseBackToFront): correct these such
+	that effects/projects turn off front-to-back.
+
+2010-03-09  Chris Toshok  <toshok@ximian.com>
+
 	* pal/gtk/window-gtk.cpp (ExposeEvent): actually enable the
 	backbuffer reuse optimization.
 

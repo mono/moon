@@ -1166,8 +1166,8 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 bool
 UIElement::UseBackToFront ()
 {
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return FALSE;
-	if (GetProjection ()) return FALSE;
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return TRUE;
+	if (GetProjection ()) return TRUE;
 	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
 }
 
