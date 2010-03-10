@@ -59,11 +59,15 @@ public:
 	virtual gpointer GetPlatformWindow ();
 
 protected:
+	cairo_t* CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool native);
+
 	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 
 	static gboolean container_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
 private:
+	unsigned char *backing_image_data;
+
 	GdkPixmap *backing_store;
 	GdkGC *backing_store_gc;
 	int backing_store_width;

@@ -1,5 +1,13 @@
 2010-03-09  Chris Toshok  <toshok@ximian.com>
 
+	* pal/gtk/window-gtk.cpp,h (MoonWindowGtk::CreateCairoContext):
+	rename runtime_cairo_create to this, making it an instance method.
+	Store off the pixel buffer we allocate for the image buffer
+	instead of having cairo allocate it every time we need an image
+	surface.
+
+2010-03-09  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.cpp (UIElement::UseBackToFront): correct these such
 	that effects/projects turn off front-to-back.
 
