@@ -293,6 +293,9 @@ class TypeReference {
 			case "BindingMode":
 				managed_type = "int";
 				break;
+			case "InstallState":
+				managed_type = "InstallState";
+				break;
 			case "ReceiverNameScope":
 				managed_type = "int";
 				break;
