@@ -187,13 +187,15 @@ public:
 	MoonWindow *GetWindow () { return active_window; }
 	MoonWindow *DetachWindow ();
 	
-	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
 	void Paint (cairo_t *ctx, Region *region);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Paint (cairo_t *ctx, int x, int y, int width, int height);
 
 	void Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
+
+	void PaintBackground (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);

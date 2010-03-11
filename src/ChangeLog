@@ -1,3 +1,11 @@
+2010-03-11  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp,h (Paint): reverse the paint foreground/background
+	containment so that we benefit from the front-to-back pass while
+	painting the background.
+	(PaintBackground): split out the background painting here, called
+	from Paint.
+
 2010-03-10  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h: make FrontToBack public.

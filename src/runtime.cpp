@@ -723,9 +723,18 @@ Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
        Paint (ctx, &region);
 }
 
+// arbitrary cairo context.
 void
-Surface::Paint (cairo_t *cr, Region *region)
+Surface::Paint (cairo_t *ctx, Region *region)
 {
+	Paint (ctx, region, false, false);
+}
+
+void
+Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transparent)
+{
+	frames++;
+
 #if FRONT_TO_BACK_STATS
 	uielements_rendered_front_to_back = 0;
 	uielements_rendered_back_to_front = 0;
@@ -741,17 +750,21 @@ Surface::Paint (cairo_t *cr, Region *region)
 	int layer_count = layers->GetCount ();
 
 	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+		Region *copy = new Region (region);
+
 		for (int i = layer_count - 1; i >= 0; i --) {
 			UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
-			Region *copy = new Region (region);
 
 			layer->FrontToBack (copy, render_list);
-
-			delete copy;
 		}
 
-
 		if (!render_list->IsEmpty ()) {
+			region->Draw (cr);
+
+			if (!copy->IsEmpty())
+				PaintBackground (cr, copy, transparent, clear_transparent);
+
+			cairo_save (cr);
 			while (RenderNode *node = (RenderNode*)render_list->First()) {
 #if FRONT_TO_BACK_STATS
 				uielements_rendered_front_to_back ++;
@@ -762,18 +775,25 @@ Surface::Paint (cairo_t *cr, Region *region)
 			}
 
 			did_front_to_back = true;
+			cairo_restore (cr);
+			cairo_clip (cr);
 		}
 	}
 
 	if (!did_front_to_back) {
+		region->Draw (cr);
+
+		PaintBackground (cr, region, transparent, clear_transparent);
+
+		cairo_save (cr);
 		for (int i = 0; i < layer_count; i ++) {
 			UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 
 			layer->DoRender (ctx, region);
 		}
+		cairo_restore (cr);
+		cairo_clip (cr);
 	}
-	
-	delete ctx;
 
 #ifdef DEBUG
 	if (debug_selected_element) {
@@ -792,6 +812,20 @@ Surface::Paint (cairo_t *cr, Region *region)
 	}
 #endif
 
+	if (GetEnableRedrawRegions ()) {
+		// pink: 234, 127, 222
+		// yellow: 234, 239, 110
+		// purple: 127, 127, 222
+		int r = abs (frames) % 3 == 2 ? 127 : 234;
+		int g = abs (frames) % 3 == 1 ? 239 : 127;
+		int b = abs (frames) % 3 == 1 ? 110 : 222;
+		
+		cairo_new_path (cr);
+		region->Draw (cr);
+		//cairo_set_line_width (cr, 2.0);
+		cairo_set_source_rgba (cr, (double) r / 255.0, (double) g / 255.0, (double) b / 255.0, 0.75);
+		cairo_fill (cr);
+	}
 
 #if FRONT_TO_BACK_STATS
 	printf ("%d UIElements rendered front-to-back for Surface::Paint (%p)\n", uielements_rendered_front_to_back, this);
@@ -800,11 +834,8 @@ Surface::Paint (cairo_t *cr, Region *region)
 }
 
 void
-Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent)
+Surface::PaintBackground (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent)
 {
-	frames++;
-
-	region->Draw (ctx);
 	//
 	// These are temporary while we change this to paint at the offset position
 	// instead of using the old approach of modifying the topmost UIElement (a no-no),
@@ -844,26 +875,6 @@ Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_trans
 	}
 
 	cairo_fill_preserve (ctx);
-	cairo_clip (ctx);
-
-	cairo_save (ctx);
-	Paint (ctx, region);
-	cairo_restore (ctx);
-
-	if (GetEnableRedrawRegions ()) {
-		// pink: 234, 127, 222
-		// yellow: 234, 239, 110
-		// purple: 127, 127, 222
-		int r = abs (frames) % 3 == 2 ? 127 : 234;
-		int g = abs (frames) % 3 == 1 ? 239 : 127;
-		int b = abs (frames) % 3 == 1 ? 110 : 222;
-		
-		cairo_new_path (ctx);
-		region->Draw (ctx);
-		//cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgba (ctx, (double) r / 255.0, (double) g / 255.0, (double) b / 255.0, 0.75);
-		cairo_fill (ctx);
-	}
 }
 
 
