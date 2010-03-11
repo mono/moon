@@ -1,3 +1,8 @@
+2010-03-10  Jackson Harper  <jackson@ximian.com>
+
+	* deployment.h: IconCollection needs to be a
+	DependencyObjectCollection if it wants to have Icons added to it.
+
 2010-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* application.cpp (IsRunningOutOfBrowser): New helper method.
@@ -26,11 +31,6 @@
 	and CheckInstalled() interfaces.
 
 	* enums.h (enum InstallState): New enum.
-
-2010-03-10  Jackson Harper  <jackson@ximian.com>
-
-	* deployment.h: IconCollection needs to be a
-	DependencyObjectCollection if it wants to have Icons added to it.
 
 2010-03-10  Jackson Harper  <jackson@ximian.com>
 
