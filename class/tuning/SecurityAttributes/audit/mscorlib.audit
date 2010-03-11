@@ -1860,8 +1860,8 @@ System.Void System.Threading.Thread::MoonlightUnhandledException(System.Exceptio
 
 !SSC-E6B1217AA739C0719BF50CFD1916913F
 System.Void System.Threading.Thread::set_CurrentCulture(System.Globalization.CultureInfo)
-	r142661		spouliot - most logic is now around the InternalThread (Internal property)
 	r145215		spouliot - call GetCachedCurrentCulture (icall in threads.c), SetCachedCurrentCulture (icall in threads.c) on non-null value and SetSerializedCurrentCulture (icall in threads.c)
+	r142661		spouliot - most logic is now around the InternalThread (Internal property)
 
 !SSC-FA060D337447D22A72C4706721F6F2C4
 System.Void System.Threading.Thread::set_CurrentUICulture(System.Globalization.CultureInfo)
