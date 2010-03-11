@@ -1147,7 +1147,7 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 	}
 
 #if FRONT_TO_BACK_STATS
-	GetSurface()->uielements_rendered_back_to_front ++;
+	GetDeployment ()->GetSurface ()->uielements_rendered_back_to_front ++;
 #endif
 
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
@@ -1168,22 +1168,26 @@ UIElement::UseBackToFront ()
 {
 	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return TRUE;
 	if (GetProjection ()) return TRUE;
-	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
+
+	// for now we just force use of the front-to-back pass when
+	// effects/transforms aren't used.
+	//	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
+	return FALSE;
 }
 
 void
 UIElement::FrontToBack (Region *surface_region, List *render_list)
 {
-	double local_opacity = GetOpacity ();
-
 	if (surface_region->RectIn (GetSubtreeBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
+
+	double local_opacity = GetOpacity ();
 
 	if (!GetRenderVisible ()
 	    || IS_INVISIBLE (local_opacity))
 		return;
 
-	if (!UseBackToFront ()) {
+	if (UseBackToFront ()) {
 		Region *self_region = new Region (surface_region);
 		Projection *projection = GetProjection ();
 		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
@@ -1526,8 +1530,8 @@ UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
 		g_warning ("passing a transform to UIElement::Paint is not yet supported");
 
 #if FRONT_TO_BACK_STATS
-	uielements_rendered_front_to_back = 0;
-	uielements_rendered_back_to_front = 0;
+	GetDeployment ()->GetSurface ()->uielements_rendered_front_to_back = 0;
+	GetDeployment ()->GetSurface ()->uielements_rendered_back_to_front = 0;
 #endif
 
 	List *ctx = new List ();
@@ -1543,7 +1547,7 @@ UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
 		if (!render_list->IsEmpty ()) {
 			while (RenderNode *node = (RenderNode*)render_list->First()) {
 #if FRONT_TO_BACK_STATS
-				uielements_rendered_front_to_back ++;
+				GetDeployment ()->GetSurface ()->uielements_rendered_front_to_back ++;
 #endif
 				node->Render (ctx);
 
@@ -1564,8 +1568,8 @@ UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
 	delete ctx;
 
 #if FRONT_TO_BACK_STATS
-	printf ("UIElements rendered front-to-back for: %s(%p)\n", uielements_rendered_front_to_back, GetName (), this);
-	printf ("UIElements rendered back-to-front for: %s(%p)\n", uielements_rendered_back_to_front, GetName (), this);
+	printf ("%d UIElements rendered front-to-back for: %s(%p)\n", GetDeployment ()->GetSurface ()->uielements_rendered_front_to_back, GetName (), this);
+	printf ("%d UIElements rendered back-to-front for: %s(%p)\n", GetDeployment ()->GetSurface ()->uielements_rendered_back_to_front, GetName (), this);
 #endif
 }
 

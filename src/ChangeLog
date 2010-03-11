@@ -1,3 +1,16 @@
+2010-03-10  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h: make FrontToBack public.
+
+	* uielement.cpp (UseBackToFront): if projects/effects aren't used,
+	use a front-to-back pass regardless of how many children there
+	are.
+	(globally): fix the front_to_back stats.
+
+	* runtime.cpp (Surface::Paint): duplicate the UIElement::Paint
+	front to back pass here so that layers will correctly occlude each
+	other.
+
 2010-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* asxparser.cpp|h: Add in accessors for the column/line info.

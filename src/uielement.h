@@ -179,6 +179,7 @@ public:
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
+	void FrontToBack (Region *surface_region, List *render_list);
 	void DoRender (List *ctx, Region *region);
 	bool UseBackToFront ();
 
@@ -599,7 +600,6 @@ protected:
 	cairo_matrix_t absolute_xform;
 	cairo_matrix_t layout_xform;
 
-	void FrontToBack (Region *surface_region, List *render_list);
 	virtual void PreRender (List *ctx, Region *region, bool front_to_back);
 	virtual void PostRender (List *ctx, Region *region, bool front_to_back);
 

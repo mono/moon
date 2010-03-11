@@ -724,29 +724,78 @@ Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 }
 
 void
-Surface::Paint (cairo_t *ctx, Region *region)
+Surface::Paint (cairo_t *cr, Region *region)
 {
+#if FRONT_TO_BACK_STATS
+	uielements_rendered_front_to_back = 0;
+	uielements_rendered_back_to_front = 0;
+#endif
+
+	List *ctx = new List ();
+	List *render_list = new List ();
+
+	bool did_front_to_back = false;
+
+	ctx->Append (new ContextNode (cr));
+
 	int layer_count = layers->GetCount ();
-	for (int i = 0; i < layer_count; i++) {
-		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
-		layer->Paint (ctx, region, NULL);
+
+	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+		for (int i = layer_count - 1; i >= 0; i --) {
+			UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+			Region *copy = new Region (region);
+
+			layer->FrontToBack (copy, render_list);
+
+			delete copy;
+		}
+
+
+		if (!render_list->IsEmpty ()) {
+			while (RenderNode *node = (RenderNode*)render_list->First()) {
+#if FRONT_TO_BACK_STATS
+				uielements_rendered_front_to_back ++;
+#endif
+				node->Render (ctx);
+
+				render_list->Remove (node);
+			}
+
+			did_front_to_back = true;
+		}
 	}
+
+	if (!did_front_to_back) {
+		for (int i = 0; i < layer_count; i ++) {
+			UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+
+			layer->DoRender (ctx, region);
+		}
+	}
+	
+	delete ctx;
 
 #ifdef DEBUG
 	if (debug_selected_element) {
 		Rect bounds = debug_selected_element->GetSubtreeBounds();
 // 			printf ("debug_selected_element is %s\n", debug_selected_element->GetName());
 // 			printf ("bounds is %g %g %g %g\n", bounds.x, bounds.y, bounds.w, bounds.h);
-		cairo_save (ctx);
-		//RenderClipPath (ctx);
-		cairo_new_path (ctx);
-		cairo_identity_matrix (ctx);
-		cairo_set_source_rgba (ctx, 1.0, 0.5, 0.2, 1.0);
-		cairo_set_line_width (ctx, 1);
-		cairo_rectangle (ctx, bounds.x, bounds.y, bounds.width, bounds.height);
-		cairo_stroke (ctx);
-		cairo_restore (ctx);
+		cairo_save (cr);
+		//RenderClipPath (cr);
+		cairo_new_path (cr);
+		cairo_identity_matrix (cr);
+		cairo_set_source_rgba (cr, 1.0, 0.5, 0.2, 1.0);
+		cairo_set_line_width (cr, 1);
+		cairo_rectangle (cr, bounds.x, bounds.y, bounds.width, bounds.height);
+		cairo_stroke (cr);
+		cairo_restore (cr);
 	}
+#endif
+
+
+#if FRONT_TO_BACK_STATS
+	printf ("%d UIElements rendered front-to-back for Surface::Paint (%p)\n", uielements_rendered_front_to_back, this);
+	printf ("%d UIElements rendered back-to-front for Surface::Paint (%p)\n", uielements_rendered_back_to_front, this);
 #endif
 }
 
@@ -772,6 +821,7 @@ Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_trans
 	// clear the background to white beforehand.    For now am going with
 	// making this an explicit surface API.
 	//
+#if false
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 
 	if (transparent) {
@@ -795,6 +845,7 @@ Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_trans
 	}
 
 	cairo_fill_preserve (ctx);
+#endif
 	cairo_clip (ctx);
 
 	cairo_save (ctx);
