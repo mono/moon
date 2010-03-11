@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 511 methods
+# 513 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -20,6 +20,8 @@
 +SSC-M: System.Void System.Windows.Application::.ctor()
 +SSC-M: System.Void System.Windows.Application::Free()
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
++SSC-M: System.Windows.InstallState System.Windows.Application::get_InstallState()
++SSC-M: System.Boolean System.Windows.Application::Install()
 +SSC-M: System.IntPtr System.Windows.Application::get_default_style_cb(System.IntPtr)
 +SSC-M: System.Void System.Windows.Application::convert_setter_values_cb(System.IntPtr)
 +SSC-M: System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)

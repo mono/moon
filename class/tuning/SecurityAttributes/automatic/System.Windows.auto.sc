@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 646 methods needs to be decorated.
+# 650 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -12,6 +12,12 @@
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::application_is_running_out_of_browser(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_clear(System.IntPtr)
@@ -78,6 +84,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_window_get_transparent(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::moon_windowing_system_show_install_dialog(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_allow_html_popup_window(System.IntPtr)
@@ -1917,6 +1926,9 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::LookupDependencyPropertyForBinding(Mono.Xaml.XamlCallbackData*,System.Windows.FrameworkElement,System.String,System.String)
+
+# p/invoke declaration
++SC-M: System.Windows.InstallState Mono.NativeMethods::application_get_install_state(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Windows.Point Mono.NativeMethods::multi_scale_image_element_to_logical_point(System.IntPtr,System.Windows.Point)
