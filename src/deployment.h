@@ -157,7 +157,7 @@ protected:
 };
 
 /* @Namespace=System.Windows */
-class IconCollection : public Collection {
+class IconCollection : public DependencyObjectCollection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	IconCollection ();
