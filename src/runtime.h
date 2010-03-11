@@ -195,8 +195,6 @@ public:
 
 	void Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
 
-	void PaintBackground (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
@@ -356,6 +354,8 @@ protected:
 private:
 	// are we headed for death?
 	bool zombie;
+
+	void PaintBackground (cairo_t *ctx, bool transparent, bool clear_transparent);
 
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();

@@ -24,6 +24,9 @@
 //
 /* @Namespace=System.Windows.Controls */
 class Canvas : public Panel {
+ private:
+	Rect coverage_bounds;
+
  protected:
 	virtual ~Canvas () {}
 	
@@ -43,6 +46,8 @@ class Canvas : public Panel {
 	virtual bool IsLayoutContainer ();
 	virtual void ShiftPosition (Point p);
 	virtual void ComputeBounds ();
+
+	virtual Rect GetCoverageBounds () { return coverage_bounds; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 

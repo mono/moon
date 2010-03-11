@@ -1171,7 +1171,7 @@ UIElement::UseBackToFront ()
 
 	// for now we just force use of the front-to-back pass when
 	// effects/transforms aren't used.
-	//	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
+	// return VisualTreeWalker (this).GetCount () > MIN_FRONT_TO_BACK_COUNT;
 	return FALSE;
 }
 

@@ -26,6 +26,7 @@
 Canvas::Canvas ()
 {
 	SetObjectType (Type::CANVAS);
+	bounds = Rect (0,0,0,0);
 }
 
 void
@@ -33,6 +34,7 @@ Canvas::ComputeBounds ()
 {
 	Surface *surface = GetDeployment ()->GetSurface ();
 	Panel::ComputeBounds ();
+	coverage_bounds = bounds;
 	if (surface && IsAttached () && surface->IsTopLevel (this)) {
 		// toplevel canvas don't subscribe to the same bounds computation as others
 		bounds = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());

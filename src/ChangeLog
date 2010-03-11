@@ -1,3 +1,13 @@
+2010-03-11  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Paint): correct background painting and
+	clipping (clip before drawing our render_list in FTB or the layers
+	in BTF).
+
+	* canvas.h/canvas.cpp (GetCoverageBounds): override UIElement's
+	implementation and return coverage_bounds regardless of if we're
+	toplevel or not.  fixes DRT 98 when using FTB rendering.
+
 2010-03-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/install-dialog.cpp (install_dialog_init): seems the bots

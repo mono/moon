@@ -761,8 +761,12 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 		if (!render_list->IsEmpty ()) {
 			region->Draw (cr);
 
-			if (!copy->IsEmpty())
-				PaintBackground (cr, copy, transparent, clear_transparent);
+			cairo_clip (cr);
+
+			if (!copy->IsEmpty()) {
+				copy->Draw (cr);
+				PaintBackground (cr, transparent, clear_transparent);
+			}
 
 			cairo_save (cr);
 			while (RenderNode *node = (RenderNode*)render_list->First()) {
@@ -776,14 +780,15 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 
 			did_front_to_back = true;
 			cairo_restore (cr);
-			cairo_clip (cr);
 		}
 	}
 
 	if (!did_front_to_back) {
 		region->Draw (cr);
 
-		PaintBackground (cr, region, transparent, clear_transparent);
+		cairo_clip (cr);
+
+		PaintBackground (cr, transparent, clear_transparent);
 
 		cairo_save (cr);
 		for (int i = 0; i < layer_count; i ++) {
@@ -792,7 +797,6 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 			layer->DoRender (ctx, region);
 		}
 		cairo_restore (cr);
-		cairo_clip (cr);
 	}
 
 #ifdef DEBUG
@@ -834,7 +838,7 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 }
 
 void
-Surface::PaintBackground (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent)
+Surface::PaintBackground (cairo_t *ctx, bool transparent, bool clear_transparent)
 {
 	//
 	// These are temporary while we change this to paint at the offset position
