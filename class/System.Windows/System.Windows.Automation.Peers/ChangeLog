@@ -1,3 +1,9 @@
+2010-03-11  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: GetNameCore returning valie value when using
+	ItemsSource.
+	* SelectorItemAutomationPeer.cs: Using SL3 API for selecting items.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ItemAutomationPeer.cs:

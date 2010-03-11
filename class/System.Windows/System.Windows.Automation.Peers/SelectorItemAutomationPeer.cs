@@ -109,8 +109,16 @@ namespace System.Windows.Automation.Peers {
 			if (!IsEnabled ())
 				throw new ElementNotEnabledException ();
 
-			if (selector != null)
-				selector.SelectedItem = Item;
+			if (selector != null) {
+				object item = Item;
+				if (item != null) {
+					DependencyObject container
+						= selector.ItemContainerGenerator.ContainerFromItem (item);
+					if (container != null)
+						selector.SelectedIndex
+							= selector.ItemContainerGenerator.IndexFromContainer (container);
+				}
+			}
 		}
 
 		bool ISelectionItemProvider.IsSelected {

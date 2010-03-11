@@ -1,3 +1,7 @@
+2010-03-11  Mario Carrion  <mcarrion@novell.com>
+
+	* .gitignore: Temporal vim locking files added.
+
 2010-03-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* README: Update mono/mcs requirement to 153349 to fix moon-unit

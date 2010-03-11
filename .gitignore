@@ -21,6 +21,7 @@
 /*.pidb
 *.o
 *~
+*.swp
 *#*#
 /confdefs.h
 /doltcompile
