@@ -2615,7 +2615,37 @@ PlaylistParser::ParseASX3Internal ()
 {
 	Setup (XML_TYPE_ASX3);
 
-	return internal->asxparser->ParseBuffer (source);
+	bool result = internal->asxparser->ParseBuffer (source);
+
+	if (result)
+		return true;
+
+	switch (internal->asxparser->GetErrorCode ()) {
+	case ASXPARSER_ERROR_NO_ELEMENTS:
+		ParsingError (new ErrorEventArgs (MediaError,
+				MoonError (MoonError::EXCEPTION, 7000, "unexpected end of input")));
+		result = false;
+		break;
+	case ASXPARSER_ERROR_DUPLICATE_ATTRIBUTE:
+		ParsingError (new ErrorEventArgs (MediaError,
+				MoonError (MoonError::EXCEPTION, 7031, "wfc: unique attribute spec")));
+		result = false;
+		break;
+	default:
+		char *msg = g_strdup_printf ("%s %d (%d, %d)", 
+				internal->asxparser->GetErrorMessage (),
+				internal->asxparser->GetErrorCode (),
+				internal->asxparser->GetCurrentLineNumber (),
+				internal->asxparser->GetCurrentColumnNumber ());
+
+		ParsingError (new ErrorEventArgs (MediaError,
+				MoonError (MoonError::EXCEPTION, 3000, msg)));
+		g_free (msg);
+		result = false;
+		break;
+	}
+
+	return result;
 }
 
 PlaylistEntry *

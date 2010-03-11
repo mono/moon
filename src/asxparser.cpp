@@ -173,6 +173,15 @@ public:
 		error_handler = handler;
 	}
 
+	int get_current_line_number ()
+	{
+		return line;
+	}
+
+	int get_current_column_number ()
+	{
+		return col;
+	}
 private:
 	TextStream *stream;
 	asx_error_handler *error_handler;
@@ -254,6 +263,20 @@ public:
 	const char* get_error_message ()
 	{
 		return error_message;
+	}
+
+	int get_current_line_number ()
+	{
+		if (!tokenizer)
+			return -1;
+		return tokenizer->get_current_line_number ();
+	}
+
+	int get_current_column_number ()
+	{
+		if (!tokenizer)
+			return -1;
+		return tokenizer->get_current_column_number ();
 	}
 
 	bool parse_stream (TextStream *stream);
@@ -835,6 +858,17 @@ AsxParser::GetErrorMessage ()
 }
 
 
+int
+AsxParser::GetCurrentLineNumber ()
+{
+	return parser->get_current_line_number ();
+}
+
+int
+AsxParser::GetCurrentColumnNumber ()
+{
+	return parser->get_current_column_number ();
+}
 
 
 

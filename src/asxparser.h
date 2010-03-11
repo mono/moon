@@ -60,6 +60,9 @@ public:
 
 	AsxParserError GetErrorCode ();
 	const char* GetErrorMessage ();
+
+	int GetCurrentLineNumber ();
+	int GetCurrentColumnNumber ();
 private:
 	AsxParserInternal *parser;
 

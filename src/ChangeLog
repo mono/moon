@@ -1,5 +1,10 @@
 2010-03-10  Jackson Harper  <jackson@ximian.com>
 
+	* asxparser.cpp|h: Add in accessors for the column/line info.
+	* playlist.cpp: Respond to some of the asx parser errors.
+
+2010-03-10  Jackson Harper  <jackson@ximian.com>
+
 	* deployment.h: IconCollection needs to be a
 	DependencyObjectCollection if it wants to have Icons added to it.
 
