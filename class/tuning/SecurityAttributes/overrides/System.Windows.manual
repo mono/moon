@@ -11,10 +11,6 @@
 # this is called by ApplicationLauncher's [SecurityCritical] DestroyApplication method (in System.Windows assembly)
 +SC-M: System.Void Mono.A11yHelper::Shutdown()
 
-# System.Net.Browser.BrowserHttpWebRequestCreator creates an instance of System.Windows.Browser.Net.BrowserHttpWebRequest
-# (a non-visible type inside System.Windows.Browser.dll, platform code) using reflection so it needs to be SSC
-+SSC-M: System.Net.WebRequest System.Net.Browser.BrowserHttpWebRequestCreator::CreateBrowserHttpWebRequest(System.Uri)
-
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
 

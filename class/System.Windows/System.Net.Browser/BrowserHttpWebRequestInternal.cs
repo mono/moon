@@ -29,14 +29,13 @@
 #if NET_2_1
 
 using System.IO;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 
 using Mono;
 using Mono.Xaml;
 
-namespace System.Windows.Browser.Net {
+namespace System.Net.Browser {
 
 	// This class maps with the browser. 
 	// One request is one exchange with the server.

@@ -1,3 +1,8 @@
+2010-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove browser stack files from build (moved to
+	System.Windows.dll to ease sharing with the client stack).
+
 2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove xdomain policy types (moved to System.Net.dll

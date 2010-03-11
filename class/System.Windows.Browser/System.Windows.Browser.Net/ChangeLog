@@ -1,3 +1,8 @@
+2010-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebAsyncResult.cs, BrowserHttpWebRequest[Internal].cs,
+	BrowserHttpWebResponse.cs: Sources moved to System.Windows.dll
+
 2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BaseDomainPolicy.cs, ClientAccessPolicy[Parser].cs, 

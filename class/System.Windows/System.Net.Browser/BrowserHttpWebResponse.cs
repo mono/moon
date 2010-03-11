@@ -28,16 +28,14 @@
 
 #if NET_2_1
 
-using System;
 using System.Globalization;
 using System.IO;
-using System.Net;
 using System.Runtime.InteropServices;
 
 using Mono;
 
-namespace System.Windows.Browser.Net
-{
+namespace System.Net.Browser {
+
 	sealed class BrowserHttpWebResponse : HttpWebResponse
 	{
 		HttpWebRequest request;

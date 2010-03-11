@@ -29,12 +29,10 @@
 #if NET_2_1
 
 using System.IO;
-using System.Net;
-using System.Net.Browser;
 using System.Net.Policy;
 using System.Security;
 
-namespace System.Windows.Browser.Net {
+namespace System.Net.Browser {
 
 	// This class maps with Silverlight exposed behavior.
 	// One request can represent multiple connections with a server.

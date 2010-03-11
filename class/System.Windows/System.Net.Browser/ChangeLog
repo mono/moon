@@ -1,3 +1,8 @@
+2010-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebAsyncResult.cs, BrowserHttpWebRequest[Internal].cs,
+	BrowserHttpWebResponse.cs: Sources moved from System.Windows.Browser.dll
+
 2010-02-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserWebRequestCreate.cs: Not for desktop assemblies.

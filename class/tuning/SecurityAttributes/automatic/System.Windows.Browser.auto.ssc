@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 33 methods
+# 24 methods
 
 +SSC-M: System.Void Mono.ScriptObjectEventInfo::.ctor(System.String,System.Windows.Browser.ScriptObject,System.Reflection.EventInfo)
 +SSC-M: System.Void Mono.ScriptObjectEventInfo::Finalize()
@@ -12,15 +12,6 @@
 +SSC-M: System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::PopupWindow(System.Uri,System.String,System.Windows.Browser.HtmlPopupWindowOptions)
 +SSC-M: System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
 +SSC-M: System.Void System.Windows.Browser.ManagedObject::SetProperty(System.String,System.Object[])
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::.ctor(System.Uri)
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::Finalize()
-+SSC-M: System.Windows.Browser.Net.BrowserHttpWebRequestInternal System.Windows.Browser.Net.BrowserHttpWebRequestInternal::BrowserFromHandle(System.IntPtr)
-+SSC-M: System.Net.WebResponse System.Windows.Browser.Net.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::InitializeNativeRequest()
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.IntPtr)
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::Dispose()
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr,System.IntPtr)
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::Write(System.IntPtr,System.Int32)
 +SSC-M: System.Void System.Windows.Browser.ScriptObject::.ctor()
 +SSC-M: T System.Windows.Browser.ScriptObject::GetPropertyInternal<T>(System.IntPtr,System.String)
 +SSC-M: System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)

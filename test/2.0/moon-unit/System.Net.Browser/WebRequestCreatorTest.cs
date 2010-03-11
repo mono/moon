@@ -56,8 +56,7 @@ namespace MoonTest.System.Net.Browser {
 			Assert.AreEqual (wrc.GetType ().ToString (), "System.Net.Browser.BrowserHttpWebRequestCreator", "Type");
 
 			WebRequest wr = wrc.Create (Uri);
-// we historically use another name
-//			Assert.AreEqual (wr.GetType ().ToString (), "System.Net.Browser.BrowserHttpWebRequest", "Type");
+			Assert.AreEqual (wr.GetType ().ToString (), "System.Net.Browser.BrowserHttpWebRequest", "Type");
 
 			Assert.AreSame (wrc, wr.CreatorInstance, "CreatorInstance");
 

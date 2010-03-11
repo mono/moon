@@ -30,10 +30,6 @@ nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(mono
 
 system_windows_browser_sources =					\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
-	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequest.cs		\
-	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequestInternal.cs	\
-	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
-	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs	\
 	$(srcdir)/System.Windows.Browser/BrowserInformation.cs			\
 	$(srcdir)/System.Windows.Browser/HostServices.cs			\
 	$(srcdir)/System.Windows.Browser/HtmlDocument.cs			\

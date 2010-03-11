@@ -28,32 +28,13 @@
 
 #if NET_2_1
 
-using System.Reflection;
-
 namespace System.Net.Browser {
 
 	internal class BrowserHttpWebRequestCreator : IWebRequestCreate {
 
-		static Type browser_http_request;
-
-		static WebRequest CreateBrowserHttpWebRequest (Uri uri)
-		{
-			var assembly = Assembly.Load ("System.Windows.Browser, Version=2.0.5.0, Culture=Neutral, PublicKeyToken=7cec85d7bea7798e");
-			if (assembly == null)
-				throw new InvalidOperationException ("Can not load System.Windows.Browser");
- 
-			browser_http_request = assembly.GetType ("System.Windows.Browser.Net.BrowserHttpWebRequest");
-			if (browser_http_request == null)
-				throw new InvalidOperationException ("Can not get BrowserHttpWebRequest");
-
-			return (WebRequest) Activator.CreateInstance (browser_http_request, new object [] { uri });
-		}
-
 		public WebRequest Create (Uri uri)
 		{
-			// note: we can't decorate this method with [SecurityCritical] or [SecuritySafeCritical] since it implement
-			// an interface and, even if the interface was decorated, application code could not be decorated
-			return CreateBrowserHttpWebRequest (uri);
+			return new BrowserHttpWebRequest (uri);
 		}
 	}
 }

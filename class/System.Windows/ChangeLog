@@ -1,3 +1,8 @@
+2010-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add browser stack files to build (moved from
+	System.Windows.Browser.dll to ease sharing with the client stack).
+
 2010-03-09  David Reveman  <davidr@novell.com>
 
 	* System.Windows.Media.Media3D/Matrix3D.cs: Add

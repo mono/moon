@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,10 +28,8 @@
 
 #if NET_2_1
 
-using System;
 using System.Globalization;
 using System.IO;
-using System.Net;
 using System.Threading;
 
 using Mono;
@@ -40,7 +38,7 @@ using Mono;
 // http://www.bluebytesoftware.com/blog/2006/05/31/ImplementingAHighperfIAsyncResultLockfreeLazyAllocation.aspx
 // Thanks Joe!
 
-namespace System.Windows.Browser.Net
+namespace System.Net.Browser
 {
 	sealed class BrowserHttpWebAsyncResult : IAsyncResult, IDisposable
 	{
