@@ -172,7 +172,16 @@ install_dialog_destroy (GtkObject *obj)
 static void
 notify_cb (NotifyType type, gint64 args, gpointer user_data)
 {
-	/* no-op */
+	FILE *fp = (FILE *) user_data;
+	
+	switch (type) {
+	case NotifyProgressChanged:
+		break;
+	case NotifyCompleted:
+	case NotifyFailed:
+		fclose (fp);
+		break;
+	}
 }
 
 static void
@@ -200,10 +209,8 @@ extract_icons (Application *application, IconCollection *icons, const char *icon
 		snprintf (name, sizeof (name), "%dx%d.png", (int) size->width, (int) size->height);
 		filename = g_build_filename (icons_dir, name, NULL);
 		
-		if ((fp = fopen (filename, "wb"))) {
+		if ((fp = fopen (filename, "wb")))
 			application->GetResource (NULL, uri, notify_cb, write_cb, MediaPolicy, NULL, fp);
-			fclose (fp);
-		}
 		
 		g_free (filename);
 	}
