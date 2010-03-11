@@ -1,3 +1,10 @@
+2010-03-11  Alan McGovern  <amcgovern@novell.com>
+
+	* pal/gtk/pal-gtk.cpp: Sprinkle some null cheks in
+	  MoonWindowingSystemGtk::CheckInstalled to prevent moon-unit
+	  from blowing up. Similar checks are probably needed
+	  elsewhere.
+
 2010-03-11  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp,h (Paint): reverse the paint foreground/background

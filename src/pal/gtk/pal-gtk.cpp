@@ -787,8 +787,13 @@ MoonWindowingSystemGtk::CheckInstalled ()
 	char *install_dir;
 	struct stat st;
 	
+	if (!settings)
+		return false;
+
 	install_dir = install_utils_get_install_dir (settings);
-	
+	if (!install_dir)
+		return false;
+
 	if (stat (install_dir, &st) == -1 || !S_ISDIR (st.st_mode)) {
 		g_free (install_dir);
 		return false;
