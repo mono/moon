@@ -137,8 +137,8 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_container_set_border_width ((GtkContainer *) hbox, 12);
 	gtk_widget_show (hbox);
 	
-	container = gtk_dialog_get_content_area ((GtkDialog *) dialog);
-	//gtk_container_set_border_width ((GtkContainer *) container, 12);
+	//container = gtk_dialog_get_content_area ((GtkDialog *) dialog);
+	container = ((GtkDialog *) dialog)->vbox;
 	gtk_container_add ((GtkContainer *) container, hbox);
 	
 	/* Add OK and Cancel buttons */

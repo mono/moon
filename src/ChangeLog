@@ -1,3 +1,9 @@
+2010-03-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_dialog_init): seems the bots
+	have an old gtk that doesn't have gtk_dialog_get_content_area() so
+	we'll have to poke the dialog->vbox directly.
+
 2010-03-11  Alan McGovern  <amcgovern@novell.com>
 
 	* pal/gtk/pal-gtk.cpp: Sprinkle some null cheks in
