@@ -14,6 +14,7 @@
 #define MOON_INSTALL_DIALOG_H
 
 #include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "deployment.h"
 #include "downloader.h"
@@ -31,6 +32,8 @@ typedef struct _InstallDialogClass InstallDialogClass;
 struct _InstallDialog {
 	GtkDialog parent_object;
 	
+	GdkPixbufLoader *loader;
+	Application *application;
 	Deployment *deployment;
 	char *install_dir;
 	bool installed;

@@ -22,8 +22,6 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include <gdk-pixbuf/gdk-pixbuf.h>
-
 #include "install-dialog.h"
 #include "application.h"
 #include "runtime.h"
@@ -78,7 +76,7 @@ install_dialog_class_init (InstallDialogClass *klass)
 static void
 install_dialog_init (InstallDialog *dialog)
 {
-	GtkWidget *checkboxes, *input, *container;
+	GtkWidget *checkboxes, *primary, *secondary, *container;
 	GtkWidget *vbox, *hbox, *label;
 	
 	gtk_window_set_title ((GtkWindow *) dialog, "Install application");
@@ -123,14 +121,19 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_box_pack_start ((GtkBox *) vbox, checkboxes, false, false, 0);
 	gtk_widget_show (vbox);
 	
-	input = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
-	gtk_alignment_set_padding ((GtkAlignment *) input, 6, 0, 0, 0);
-	gtk_container_add ((GtkContainer *) input, vbox);
-	gtk_widget_show (input);
+	primary = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
+	gtk_alignment_set_padding ((GtkAlignment *) primary, 0, 0, 0, 0);
+	gtk_container_add ((GtkContainer *) primary, (GtkWidget *) dialog->primary_text);
+	gtk_widget_show (primary);
+	
+	secondary = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
+	gtk_alignment_set_padding ((GtkAlignment *) secondary, 6, 0, 0, 0);
+	gtk_container_add ((GtkContainer *) secondary, vbox);
+	gtk_widget_show (secondary);
 	
 	vbox = gtk_vbox_new (false, 6);
-	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) dialog->primary_text, false, false, 0);
-	gtk_box_pack_start ((GtkBox *) vbox, input, false, false, 0);
+	gtk_box_pack_start ((GtkBox *) vbox, primary, false, false, 0);
+	gtk_box_pack_start ((GtkBox *) vbox, secondary, false, false, 0);
 	gtk_widget_show (vbox);
 	
 	gtk_box_pack_start ((GtkBox *) hbox, vbox, false, false, 0);
@@ -158,6 +161,12 @@ install_dialog_finalize (GObject *obj)
 	
 	g_free (dialog->install_dir);
 	
+	if (dialog->loader) {
+		gdk_pixbuf_loader_close (dialog->loader, NULL);
+		g_object_unref (dialog->loader);
+	}
+	
+	dialog->application->unref ();
 	dialog->deployment->unref ();
 	
 	G_OBJECT_CLASS (parent_class)->finalize (obj);
@@ -170,55 +179,48 @@ install_dialog_destroy (GtkObject *obj)
 }
 
 static void
-notify_cb (NotifyType type, gint64 args, gpointer user_data)
+pixbuf_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 {
-	FILE *fp = (FILE *) user_data;
+	InstallDialog *dialog = (InstallDialog *) user_data;
+	GdkPixbuf *pixbuf;
 	
 	switch (type) {
-	case NotifyProgressChanged:
-		break;
 	case NotifyCompleted:
+		if (dialog->loader) {
+			if (gdk_pixbuf_loader_close (dialog->loader, NULL)) {
+				/* set the dialog's icon to the 128x128 pixbuf */
+				pixbuf = gdk_pixbuf_loader_get_pixbuf (dialog->loader);
+				gtk_image_set_from_pixbuf (dialog->icon, pixbuf);
+				g_object_unref (dialog->loader);
+				dialog->loader = NULL;
+				break;
+			}
+			
+			/* fall through as if we got a NotifyFailed */
+		}
 	case NotifyFailed:
-		fclose (fp);
+		if (dialog->loader) {
+			/* load default icon and destroy the loader */
+			gtk_image_set_from_icon_name (dialog->icon, "gnome-remote-desktop", GTK_ICON_SIZE_DIALOG);
+			g_object_unref (dialog->loader);
+			dialog->loader = NULL;
+		}
+		break;
+	default:
 		break;
 	}
 }
 
 static void
-write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
+pixbuf_write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
 {
-	FILE *fp = (FILE *) user_data;
+	InstallDialog *dialog = (InstallDialog *) user_data;
 	
-	fwrite (buffer, 1, n, fp); 
-}
-
-static void
-extract_icons (Application *application, IconCollection *icons, const char *icons_dir)
-{
-	int count = icons->GetCount ();
-	int i;
-	
-	for (i = 0; icons && i < count; i++) {
-		Value *value = icons->GetValueAt (i);
-		Icon *icon = value->AsIcon ();
-		Uri *uri = icon->GetSource ();
-		Size *size = icon->GetSize ();
-		char *filename, name[64];
-		FILE *fp;
-		
-		snprintf (name, sizeof (name), "%dx%d.png", (int) size->width, (int) size->height);
-		filename = g_build_filename (icons_dir, name, NULL);
-		
-		if ((fp = fopen (filename, "wb")))
-			application->GetResource (NULL, uri, notify_cb, write_cb, MediaPolicy, NULL, fp);
-		
-		g_free (filename);
+	if (dialog->loader && !gdk_pixbuf_loader_write (dialog->loader, (const guchar *) buffer, n, NULL)) {
+		g_object_unref (dialog->loader);
+		dialog->loader = NULL;
 	}
 }
-
-static const char *icon_names[4] = {
-	"128x128.png", "48x48.png", "32x32.png", "16x16.png"
-};
 
 GtkDialog *
 install_dialog_new (Deployment *deployment)
@@ -226,10 +228,13 @@ install_dialog_new (Deployment *deployment)
 	InstallDialog *dialog = (InstallDialog *) g_object_new (INSTALL_DIALOG_TYPE, NULL);
 	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
 	Application *application = deployment->GetCurrentApplication ();
-	char *filename, *icons_dir, *markup, *location;
 	IconCollection *icons = settings->GetIcons ();
-	GdkPixbuf *pixbuf = NULL;
-	guint i;
+	char *markup, *location;
+	bool loading = false;
+	int count, i;
+	
+	dialog->application = application;
+	application->ref ();
 	
 	dialog->deployment = deployment;
 	deployment->ref ();
@@ -247,29 +252,27 @@ install_dialog_new (Deployment *deployment)
 	g_free (markup);
 	
 	dialog->install_dir = install_utils_get_install_dir (settings);
-	g_mkdir_with_parents (dialog->install_dir, 0777);
 	
-	if (icons && icons->GetCount () > 0) {
-		icons_dir = g_build_filename (dialog->install_dir, "icons", NULL);
-		g_mkdir_with_parents (icons_dir, 0777);
-		
-		extract_icons (application, icons, icons_dir);
-		
-		for (i = 0; i < G_N_ELEMENTS (icon_names) && !pixbuf; i++) {
-			filename = g_build_filename (icons_dir, icon_names[i], NULL);
-			pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
-			g_free (filename);
+	// We want to load the 128x128 icon for use in the installer dialog
+	if (icons && (count = icons->GetCount ()) > 0) {
+		for (i = 0; i < count; i++) {
+			Value *value = icons->GetValueAt (i);
+			Icon *icon = value->AsIcon ();
+			Size *size = icon->GetSize ();
+			
+			if ((int) size->width == 128 || (int) size->height == 128) {
+				Uri *uri = icon->GetSource ();
+				
+				dialog->loader = gdk_pixbuf_loader_new ();
+				application->GetResource (NULL, uri, pixbuf_notify_cb, pixbuf_write_cb, MediaPolicy, NULL, dialog);
+				loading = true;
+				break;
+			}
 		}
-		
-		g_free (icons_dir);
 	}
 	
-	if (!pixbuf) {
+	if (!loading)
 		gtk_image_set_from_icon_name (dialog->icon, "gnome-remote-desktop", GTK_ICON_SIZE_DIALOG);
-	} else {
-		gtk_image_set_from_pixbuf (dialog->icon, pixbuf);
-		g_object_unref (pixbuf);
-	}
 	
 	return (GtkDialog *) dialog;
 }
@@ -306,18 +309,96 @@ install_xap (Deployment *deployment, const char *path)
 }
 
 static bool
-install_html (const char *filename)
+install_html (OutOfBrowserSettings *settings, const char *filename)
 {
+	WindowSettings *window = settings->GetWindowSettings ();
+	char *title;
 	FILE *fp;
 	
 	if (!(fp = fopen (filename, "wt")))
 		return false;
 	
-	// FIXME: write out a template html file to load Application.xap
+	if (window && window->GetTitle ())
+		title = g_markup_escape_text (window->GetTitle (), -1);
+	else
+		title = g_markup_escape_text (settings->GetShortName (), -1);
 	
+	fprintf (fp, "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+	fprintf (fp, "  <head>\n");
+	fprintf (fp, "    <title>%s</title>\n", title);
+	fprintf (fp, "  </head>\n");
+	fprintf (fp, "  <body>\n");
+	fprintf (fp, "    <div id=\"MoonlightControl\">\n");
+	fprintf (fp, "      <object data=\"data:application/x-silverlight-2,\" type=\"application/x-silverlight-2\" width=\"100%%\" height=\"100%%\">\n");
+	fprintf (fp, "        <param name=\"source\" value=\"Application.xap\"/>\n");
+	fprintf (fp, "        <param name=\"isOutOfBrowser\" value=\"true\"/>\n");
+	fprintf (fp, "        <param name=\"background\" value=\"white\"/>\n");
+	fprintf (fp, "      </object>\n");
+	fprintf (fp, "    </div>\n");
+	fprintf (fp, "  </body>\n");
+	fprintf (fp, "</html>\n");
+	
+	g_free (title);
 	fclose (fp);
 	
 	return true;
+}
+
+static void
+notify_cb (NotifyType type, gint64 args, gpointer user_data)
+{
+	FILE *fp = (FILE *) user_data;
+	
+	switch (type) {
+	case NotifyCompleted:
+	case NotifyFailed:
+		fclose (fp);
+		break;
+	default:
+		break;
+	}
+}
+
+static void
+write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
+{
+	FILE *fp = (FILE *) user_data;
+	
+	fwrite (buffer, 1, n, fp);
+}
+
+static void
+install_icons (Application *application, OutOfBrowserSettings *settings, const char *install_dir)
+{
+	IconCollection *icons = settings->GetIcons ();
+	char *filename, *icons_dir, name[64];
+	int i, count;
+	
+	if (icons && (count = icons->GetCount ()) > 0) {
+		icons_dir = g_build_filename (install_dir, "icons", NULL);
+		
+		for (i = 0; i < count; i++) {
+			Value *value = icons->GetValueAt (i);
+			Icon *icon = value->AsIcon ();
+			Size *size = icon->GetSize ();
+			
+			if ((int) size->width == 48 || (int) size->height == 48) {
+				/* we only need to extract the 48x48 icon for the .desktop files */
+				Uri *uri = icon->GetSource ();
+				FILE *fp;
+				
+				snprintf (name, sizeof (name), "%dx%d.png", (int) size->width, (int) size->height);
+				filename = g_build_filename (icons_dir, name, NULL);
+				
+				if ((fp = fopen (filename, "wb")))
+					application->GetResource (NULL, uri, notify_cb, write_cb, MediaPolicy, NULL, fp);
+				
+				g_free (filename);
+			}
+		}
+		
+		g_free (icons_dir);
+	}
 }
 
 static bool
@@ -326,7 +407,6 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 	char *icon_name;
 	struct stat st;
 	FILE *fp;
-	guint i;
 	
 	if (!(fp = fopen (filename, "wt")))
 		return false;
@@ -341,19 +421,12 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 	if (settings->GetBlurb ())
 		fprintf (fp, "Comment=%s\n", settings->GetBlurb ());
 	
-	for (i = 1; i < G_N_ELEMENTS (icon_names); i++) {
-		icon_name = g_build_filename (app_dir, "icons", icon_names[i], NULL);
-		if (stat (icon_name, &st) != -1 && S_ISREG (st.st_mode)) {
-			fprintf (fp, "Icon=%s\n", icon_name);
-			g_free (icon_name);
-			break;
-		}
-		
-		g_free (icon_name);
-	}
+	icon_name = g_build_filename (app_dir, "icons", "48x48.png", NULL);
+	if (stat (icon_name, &st) != -1 && S_ISREG (st.st_mode))
+		fprintf (fp, "Icon=%s\n", icon_name);
+	g_free (icon_name);
 	
-	// FIXME: this won't actually work...
-	fprintf (fp, "Exec=MOONLIGHT_OUT_OF_BROWSER=1 firefox \"%s/index.html\"\n", app_dir);
+	fprintf (fp, "Exec=gnome-open \"file:%s/index.html\"\n", app_dir);
 	
 	fclose (fp);
 	
@@ -373,7 +446,10 @@ install_dialog_install (InstallDialog *dialog)
 	
 	settings = dialog->deployment->GetOutOfBrowserSettings ();
 	
-	/* Install the XAP */
+	if (g_mkdir_with_parents (dialog->install_dir, 0777) == -1)
+		return false;
+	
+	/* install the XAP */
 	filename = g_build_filename (dialog->install_dir, "Application.xap", NULL);
 	if (!install_xap (dialog->deployment, filename)) {
 		g_free (filename);
@@ -382,9 +458,9 @@ install_dialog_install (InstallDialog *dialog)
 	
 	g_free (filename);
 	
-	/* Install the HTML page */
+	/* install the HTML page */
 	filename = g_build_filename (dialog->install_dir, "index.html", NULL);
-	if (!install_html (filename)) {
+	if (!install_html (settings, filename)) {
 		g_free (filename);
 		return false;
 	}
@@ -393,12 +469,17 @@ install_dialog_install (InstallDialog *dialog)
 	
 	dialog->installed = true;
 	
+	/* install the icon(s) */
+	install_icons (dialog->application, settings, dialog->install_dir);
+	
+	/* conditionally install start menu shortcut */
 	if (install_dialog_get_install_to_start_menu (dialog)) {
 		filename = install_utils_get_start_menu_shortcut (settings);
 		install_gnome_desktop (settings, dialog->install_dir, filename);
 		g_free (filename);
 	}
 	
+	/* conditionally install desktop shortcut */
 	if (install_dialog_get_install_to_desktop (dialog)) {
 		filename = install_utils_get_desktop_shortcut (settings);
 		install_gnome_desktop (settings, dialog->install_dir, filename);

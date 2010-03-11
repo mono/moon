@@ -1,3 +1,19 @@
+2010-03-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_dialog_init): Left-justify
+	the primary dialog text.
+	(install_dialog_finalize): Close/unref the pixbuf loader.
+	(install_dialog_new): Only extract the 128x128 icon (don't do
+	fallback, Silverlight doesn't) and load it asynchronously into a
+	GdkPixbuf that we'll set on the GtkImage.
+	(install_html): Implemented, more or less.
+	(install_icons): New function to install the icons needed by the
+	.desktop files.
+	(install_gnome_desktop): Modified a bit to only bother with the
+	48x48 icon - if it doesn't exist, don't bother falling back to the
+	others (Silverlight doesn't).
+	(install_dialog_install): Call install_icons().
+
 2010-03-11  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Paint): correct background painting and
