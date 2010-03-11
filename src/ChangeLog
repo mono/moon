@@ -1,5 +1,12 @@
 2010-03-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pal/gtk/install-dialog.cpp (install_gnome_desktop): Make sure to
+	create the directory first. Also added Categories to the .desktop
+	file so it actually shows up in the menu if the user installs it
+	there.
+
+2010-03-11  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pal/gtk/install-dialog.cpp (install_dialog_init): Left-justify
 	the primary dialog text.
 	(install_dialog_finalize): Close/unref the pixbuf loader.

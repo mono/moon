@@ -387,6 +387,8 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 				Uri *uri = icon->GetSource ();
 				FILE *fp;
 				
+				g_mkdir_with_parents (icons_dir, 0777);
+				
 				snprintf (name, sizeof (name), "%dx%d.png", (int) size->width, (int) size->height);
 				filename = g_build_filename (icons_dir, name, NULL);
 				
@@ -404,9 +406,13 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 static bool
 install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, const char *filename)
 {
-	char *icon_name;
+	char *dirname, *icon_name;
 	struct stat st;
 	FILE *fp;
+	
+	dirname = g_path_get_dirname (filename);
+	g_mkdir_with_parents (dirname, 0777);
+	g_free (dirname);
 	
 	if (!(fp = fopen (filename, "wt")))
 		return false;
@@ -416,6 +422,7 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 	fprintf (fp, "Encoding=UTF-8\n");
 	fprintf (fp, "Version=1.0\n");
 	fprintf (fp, "Terminal=false\n");
+	fprintf (fp, "Categories=Application;Utility;\n");
 	fprintf (fp, "Name=%s\n", settings->GetShortName ());
 	
 	if (settings->GetBlurb ())
