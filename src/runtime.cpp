@@ -821,7 +821,6 @@ Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_trans
 	// clear the background to white beforehand.    For now am going with
 	// making this an explicit surface API.
 	//
-#if false
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 
 	if (transparent) {
@@ -845,7 +844,6 @@ Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_trans
 	}
 
 	cairo_fill_preserve (ctx);
-#endif
 	cairo_clip (ctx);
 
 	cairo_save (ctx);
