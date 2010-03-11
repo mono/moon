@@ -2,10 +2,6 @@
 System.Boolean System.Net.Sockets.Socket::get_NoDelay()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
-!SSC-691A1B091F8F10206F8DEA7D903C1471
-System.Boolean System.Net.Sockets.SocketAsyncEventArgs::CheckEndPoint(System.Net.EndPoint)
-	r142747		spouliot - use reflection to invoke System.Windows.Browser.Net.CrossDomainPolicyManager.CheckEndPoint
-
 !SSC-D85ED56C0DF32C3B57FB9F9CF08DC7EE
 System.Int16 System.Net.Sockets.Socket::get_Ttl()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
@@ -25,6 +21,10 @@ System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
 !SSC-18AC3D5EB307A10367424DDDDB15065D
 System.Net.IPAddress[] System.Net.Dns::GetHostAddresses(System.String)
 	r142747		spouliot - calls GetHostByName_internal (icall)
+
+!SSC-75C18304686DA1A80EFF9AEB47EBBFD9
+System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
+	r153396		spouliot - call AppDomain.GetData [SecurityCritical] to retrive the XAP URI
 
 !SSC-8FA2C90DE7524D8C78B28F874DE32549
 System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
