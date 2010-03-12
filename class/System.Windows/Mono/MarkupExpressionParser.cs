@@ -325,11 +325,12 @@ namespace Mono.Xaml {
 							continue;
 						// Inside of a \{   \} block we are allowed spaces
 						if (remaining [end+1] == '{') {
-							Console.WriteLine ("entering escaped block:  {0}", remaining.Substring (end));
+							piece.Append ('{');
 							end += 2;
 							allow_spaces = true;
 							continue;
 						} else if (remaining [end+1] == '}') {
+							piece.Append ('}');
 							end += 2;
 							allow_one_more_space = true;
 							continue;

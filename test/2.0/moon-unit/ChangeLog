@@ -1,3 +1,10 @@
+2010-03-12  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/Parsing/MiscParsing.cs: Add a bunch of extra tests to
+	  check how attached properties are handled by the parser.
+	  Also correct the tests for escaped markup so that they pass
+	  on Silverlight.
+
 2010-03-11  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: Testing

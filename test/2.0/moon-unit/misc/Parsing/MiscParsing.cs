@@ -12,10 +12,84 @@ using System.Windows.Media.Animation;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 
 namespace MoonTest.Misc.Parsing
 {
+	public class AttachedProperties : FrameworkElement
+	{
+		public static bool InstantiateLists;
+
+		public static readonly DependencyProperty FE_GetProperty =
+			DependencyProperty.RegisterAttached ("FE_Get", typeof (FrameworkElement), typeof (AttachedProperties), null);
+		public static FrameworkElement GetFE_Get (DependencyObject o)
+		{
+			return (FrameworkElement) o.GetValue (FE_GetProperty);
+		}
+
+
+		public static readonly DependencyProperty FE_SetProperty =
+			DependencyProperty.RegisterAttached ("FE_Set", typeof (FrameworkElement), typeof (AttachedProperties), null);
+		public static void SetFE_Set (DependencyObject o, FrameworkElement value)
+		{
+			o.SetValue (FE_SetProperty, value);
+		}
+
+
+		public static readonly DependencyProperty FE_GetSetProperty =
+			DependencyProperty.RegisterAttached ("FE_GetSet", typeof (FrameworkElement), typeof (AttachedProperties), null);
+		public static FrameworkElement GetFE_GetSet (DependencyObject o)
+		{
+			return (FrameworkElement) o.GetValue (FE_GetSetProperty);
+		}
+		public static void SetFE_GetSet (DependencyObject o, FrameworkElement value)
+		{
+			o.SetValue (FE_GetSetProperty, value);
+		}
+
+
+		public static readonly DependencyProperty IList_GetProperty =
+			DependencyProperty.RegisterAttached ("IList_Get", typeof (List<FrameworkElement>), typeof (AttachedProperties), null);
+		public static List<FrameworkElement> GetIList_Get (DependencyObject o)
+		{
+			var f = (List<FrameworkElement>) o.GetValue (IList_GetProperty);
+			if (InstantiateLists) {
+				InstantiateLists = false;
+				f = f ?? new List<FrameworkElement> ();
+				o.SetValue (IList_GetProperty, f);
+			}
+			return f;
+		}
+
+
+		public static readonly DependencyProperty IList_SetProperty =
+			DependencyProperty.RegisterAttached ("IList_Set", typeof (List<FrameworkElement>), typeof (AttachedProperties), null);
+		public static void SetIList_Set (DependencyObject o, List<FrameworkElement> value)
+		{
+			o.SetValue (IList_SetProperty, value);
+		}
+
+
+		public static readonly DependencyProperty IList_GetSetProperty =
+			DependencyProperty.RegisterAttached ("IList_GetSet", typeof (List<FrameworkElement>), typeof (AttachedProperties), null);
+		public static List<FrameworkElement> GetIList_GetSet (DependencyObject o)
+		{
+			var f = (List<FrameworkElement>) o.GetValue (IList_GetSetProperty);
+			if (InstantiateLists) {
+				InstantiateLists = false;
+				f = f ?? new List<FrameworkElement>();
+				o.SetValue (IList_GetSetProperty, f);
+			}
+			return f;
+		}
+		public static void SetIList_GetSet (DependencyObject o, List<FrameworkElement> value)
+		{
+			o.SetValue (IList_GetSetProperty, value);
+		}
+	}
+
 	public class MiscParsingTestPage : Canvas {
 
 		public MiscParsingTestPage (string url)
@@ -177,6 +251,152 @@ namespace MoonTest.Misc.Parsing
 	[TestClass]
 	public class MiscParsingTest : SilverlightTest
 	{
+		T AttachedPropertiesCore <T> (Expression<Func<DependencyProperty>> expression)
+			where T : UIElement
+		{
+			// Load up some xaml where the child of the canvas is of type 'T' and we set
+			// the AttachedProperty which is named in the ExpressionTree above.
+
+			// Get the property name and strip out the 'Property' part at the end
+			string propName = ((MemberExpression) expression.Body).Member.Name;
+			propName = propName.Replace ("Property", "");
+			
+			// Work out the type name. If it's attached properties we need to prepend clr:
+			// otherwise assume it's a regular type like Rectangle which doesn't need any prepending.
+			string typeName = typeof (T).Name;
+			if (typeof (T) == typeof (AttachedProperties))
+				typeName = "clr:" + typeName;
+
+			// Create our xaml and load it
+			string s = string.Format (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		xmlns:clr=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"">
+	<{0}>
+		<clr:AttachedProperties.{1}>
+			<Rectangle />
+		</clr:AttachedProperties.{1}>
+	</{0}>
+</Canvas>
+", typeName, propName);
+			
+			// Return the child of the canvas so we can poke its values
+			Canvas canvas = (Canvas) XamlReader.Load (s);
+			return (T) canvas.Children [0];
+		}
+
+		[TestMethod]
+		public void AttachedProp_FE_GetOnly_OnAttachedProperties ()
+		{
+			// Attached properties need a getter and setter
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.FE_GetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AttachedProp_FE_GetOnly_OnRectangle ()
+		{
+			// Attached properties need a getter and setter
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_GetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_FE_SetOnly_OnAttachedProperties ()
+		{
+			// Attached properties need a getter and setter
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.FE_SetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AttachedProp_FE_SetOnly_OnRectangle ()
+		{
+			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_SetProperty);
+			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_SetProperty), "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_FE_GetAndSet_OnAttachedProperties ()
+		{
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.FE_GetSetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_FE_GetAndSet_OnRectangle ()
+		{
+			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_GetSetProperty);
+			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_GetSetProperty), "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_IList_GetOnly_OnAttachedProperties ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			// Attached properties need a getter and setter
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.IList_GetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_IList_GetOnly_OnRectangle ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			// Attached properties need a getter and setter
+			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.IList_GetProperty);
+			var list = (List<FrameworkElement>) f.GetValue (AttachedProperties.IList_GetProperty);
+			Assert.AreEqual (1, list.Count, "#1");
+			Assert.IsInstanceOfType<Rectangle> (list [0], "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_IList_SetOnly_OnAttachedProperties ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			// Attached properties need a getter and setter
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.IList_SetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_IList_SetOnly_OnRectangle ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			// Attached properties need a getter and setter
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<Rectangle> (() => AttachedProperties.IList_SetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_IList_GetAndSet_OnAttachedProperties ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			Assert.Throws<XamlParseException>(() =>
+				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.IList_GetSetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProp_IList_GetAndSet_OnRectangle ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.IList_GetSetProperty);
+			var list = (List<FrameworkElement>) f.GetValue (AttachedProperties.IList_GetSetProperty);
+			Assert.AreEqual (1, list.Count, "#1");
+			Assert.IsInstanceOfType<Rectangle> (list [0], "#2");
+
+		}
+
 		[TestMethod]
 		public void FindNameOfManagedControl ()
 		{
@@ -497,12 +717,8 @@ Width=""100"" Height=""100"">
 </Canvas>
 ");
 			
-			TextBlock block = (TextBlock) canvas.Children[0];
-			object text = block.ReadLocalValue (TextBlock.TextProperty);
-			Assert.IsTrue (text is BindingExpression);
-
-			BindingExpression beb = (BindingExpression) text;
-			Assert.AreEqual (beb.ParentBinding.ConverterParameter, "0:MMMM d, yyyy");
+			var beb = (BindingExpression) canvas.Children[0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual ("{0:MMMM d, yyyy}", beb.ParentBinding.ConverterParameter, "#1");
 		}
 
 		[TestMethod]
@@ -518,12 +734,8 @@ Width=""100"" Height=""100"">
 </Canvas>
 ");
 
-			TextBlock block = (TextBlock) canvas.Children[0];
-			object text = block.ReadLocalValue (TextBlock.TextProperty);
-			Assert.IsTrue (text is BindingExpression);
-
-			BindingExpression beb = (BindingExpression) text;
-			Assert.AreEqual (beb.ParentBinding.ConverterParameter, "0:t ET");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual ("{0:t} ET", beb.ParentBinding.ConverterParameter, "#1");
 		}
 	}
 }
