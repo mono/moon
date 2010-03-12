@@ -42,6 +42,17 @@ Canvas::ComputeBounds ()
 	}
 }
 
+Rect
+Canvas::GetCoverageBounds ()
+{
+	Brush *background = GetBackground ();
+	
+	if (background && background->IsOpaque ())
+		return coverage_bounds;
+
+	return Rect ();
+}
+
 void
 Canvas::ShiftPosition (Point p)
 {

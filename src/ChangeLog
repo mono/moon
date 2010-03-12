@@ -1,3 +1,13 @@
+2010-03-12  Chris Toshok  <toshok@ximian.com>
+
+	* downloader.cpp (Downloader::NotifyFailed): i know this is going
+	to break things, but drt 97 fails because our error code is 1
+	instead of 4001 here.
+	(Downloader::SendInternal): same.
+
+	* canvas.cpp,h (Canvas::GetCoverageBounds): this needs to make
+	sure the background brush is opaque.
+
 2010-03-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/install-dialog.cpp (install_html): Attempt to use

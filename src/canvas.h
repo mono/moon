@@ -47,7 +47,7 @@ class Canvas : public Panel {
 	virtual void ShiftPosition (Point p);
 	virtual void ComputeBounds ();
 
-	virtual Rect GetCoverageBounds () { return coverage_bounds; }
+	virtual Rect GetCoverageBounds ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 

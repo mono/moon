@@ -539,7 +539,7 @@ Downloader::SendInternal ()
 		if (HasHandlers (DownloadFailedEvent)) {
 			// Consumer is re-sending a request which failed.
 			Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
-								       MoonError (MoonError::EXCEPTION, 1, failed_msg)));
+								       MoonError (MoonError::EXCEPTION, 4001, failed_msg)));
 		}
 		return;
 	}
@@ -701,7 +701,7 @@ Downloader::NotifyFailed (const char *msg)
 	
 	if (HasHandlers (DownloadFailedEvent))
 		Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
-							       MoonError (MoonError::EXCEPTION, 1, msg)));
+							       MoonError (MoonError::EXCEPTION, 4001, msg)));
 	
 	failed_msg = g_strdup (msg);
 }
