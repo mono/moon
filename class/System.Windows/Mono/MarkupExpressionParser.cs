@@ -137,7 +137,7 @@ namespace Mono.Xaml {
 				return binding;
 
 			string remaining = expression;
-			string piece = GetNextPiece (ref remaining, out next, false);
+			string piece = GetNextPiece (ref remaining, out next);
 			
 
 			if (next == '=')
@@ -146,7 +146,7 @@ namespace Mono.Xaml {
 				binding.Path = new PropertyPath (piece);
 
 			do {
-				piece = GetNextPiece (ref remaining, out next, false);
+				piece = GetNextPiece (ref remaining, out next);
 
 				if (piece == null)
 					break;
@@ -161,7 +161,7 @@ namespace Mono.Xaml {
 		public object ParseStaticResource (ref string expression)
 		{
 			char next;
-			string name = GetNextPiece (ref expression, out next, true);
+			string name = GetNextPiece (ref expression, out next);
 
 			object o = LookupNamedResource (null, name);
 
@@ -178,7 +178,7 @@ namespace Mono.Xaml {
 			TemplateBindingExpression tb = new TemplateBindingExpression ();
 
 			char next;
-			string prop = GetNextPiece (ref expression, out next, false);
+			string prop = GetNextPiece (ref expression, out next);
 			/*FrameworkTemplate template = */GetParentTemplate ();
 
 			tb.Target = target as FrameworkElement;
@@ -192,7 +192,7 @@ namespace Mono.Xaml {
 		public object ParseRelativeSource (ref string expression)
 		{
 			char next;
-			string mode_str = GetNextPiece (ref expression, out next, false);
+			string mode_str = GetNextPiece (ref expression, out next);
 
 			if (!Enum.IsDefined (typeof (RelativeSourceMode), mode_str))
 				throw new XamlParseException (String.Format ("MarkupExpressionParser:  Error parsing RelativeSource, unknown mode: {0}", mode_str));
@@ -245,7 +245,7 @@ namespace Mono.Xaml {
 					str_value = (string) value;
 			}
 			else {
-				str_value = GetNextPiece (ref remaining, out next, false);
+				str_value = GetNextPiece (ref remaining, out next);
 			}
 
 			switch (prop) {
@@ -305,10 +305,9 @@ namespace Mono.Xaml {
 			}
 		}
 
-		private static string GetNextPiece (ref string remaining, out char next, bool allow_spaces)
+		private static string GetNextPiece (ref string remaining, out char next)
 		{
 			int end = 0;
-			bool orig_allow_spaces = allow_spaces;
 			StringBuilder piece = new StringBuilder ();
 
 			remaining = remaining.TrimStart ();
@@ -317,31 +316,23 @@ namespace Mono.Xaml {
 			
 			if (end == -1 || end == 0) {
 				end = 0;
-				bool allow_one_more_space = false;
-				while (end < remaining.Length && (allow_spaces || !Char.IsWhiteSpace (remaining [end])) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=') {
+				while (end < remaining.Length && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=') {
 					// Skip over escaped chars
 					if (remaining [end] == '\\') {
 						if (end >= remaining.Length - 1)
 							continue;
-						// Inside of a \{   \} block we are allowed spaces
 						if (remaining [end+1] == '{') {
 							piece.Append ('{');
 							end += 2;
-							allow_spaces = true;
 							continue;
 						} else if (remaining [end+1] == '}') {
 							piece.Append ('}');
 							end += 2;
-							allow_one_more_space = true;
 							continue;
 						}
 						// Advance past the \ char
 						piece.Append (remaining [end + 1]);
 						end += 2;
-					}
-					if (allow_one_more_space) {
-						allow_spaces = orig_allow_spaces;
-						allow_one_more_space = false;
 					}
 					piece.Append (remaining [end]);
 					end++;

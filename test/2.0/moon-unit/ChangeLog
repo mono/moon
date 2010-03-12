@@ -1,5 +1,12 @@
 2010-03-12  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/Parsing/MiscParsing.cs: Spaces aren't a terminating
+	  character for segments in a binding expression, only '}' and
+	  ',' appear to indicate the end of a segment. Fixes the new
+	  moon-unit testcase and appears to regress nothing.
+
+2010-03-12  Alan McGovern  <amcgovern@novell.com>
+
 	* misc/Parsing/MiscParsing.cs: Add a bunch of extra tests to
 	  check how attached properties are handled by the parser.
 	  Also correct the tests for escaped markup so that they pass

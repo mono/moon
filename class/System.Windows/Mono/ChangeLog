@@ -1,5 +1,12 @@
 2010-03-12  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: Spaces aren't a terminating
+	  character for segments in a binding expression, only '}' and
+	  ',' appear to indicate the end of a segment. Fixes the new
+	  moon-unit testcase and appears to regress nothing.
+
+2010-03-12  Alan McGovern  <amcgovern@novell.com>
+
 	* MarkupExpressionParser.cs: When we enter or leave an escaped
 	  block, we need to include the escaped characters in our
 	  output string.

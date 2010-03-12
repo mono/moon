@@ -274,7 +274,7 @@ namespace MoonTest.Misc.Parsing
 		xmlns:clr=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"">
 	<{0}>
 		<clr:AttachedProperties.{1}>
-			<Rectangle />
+			<Rectangle x:Name=""Hidden"" />
 		</clr:AttachedProperties.{1}>
 	</{0}>
 </Canvas>
@@ -282,6 +282,7 @@ namespace MoonTest.Misc.Parsing
 			
 			// Return the child of the canvas so we can poke its values
 			Canvas canvas = (Canvas) XamlReader.Load (s);
+			Assert.IsNotNull (canvas.FindName ("Hidden"), "#should be findable");
 			return (T) canvas.Children [0];
 		}
 
@@ -334,6 +335,9 @@ namespace MoonTest.Misc.Parsing
 		{
 			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_GetSetProperty);
 			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_GetSetProperty), "#1");
+
+			// The rectangle should not be parented already, so this should succeed
+			new Canvas ().Children.Add ((Rectangle) f.GetValue (AttachedProperties.FE_GetSetProperty));
 		}
 
 		[TestMethod]
@@ -395,6 +399,8 @@ namespace MoonTest.Misc.Parsing
 			Assert.AreEqual (1, list.Count, "#1");
 			Assert.IsInstanceOfType<Rectangle> (list [0], "#2");
 
+			// The rectangle should not be parented already, so this won't throw an exception
+			new Canvas ().Children.Add (list[0]);
 		}
 
 		[TestMethod]
@@ -736,6 +742,18 @@ Width=""100"" Height=""100"">
 
 			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
 			Assert.AreEqual ("{0:t} ET", beb.ParentBinding.ConverterParameter, "#1");
+		}
+
+		[TestMethod]
+		public void EscapedExtensions_CommaTerminated ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter=Click \{0\}, Mode=OneWay}"" />
+</Canvas>
+");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual ("Click {0}", beb.ParentBinding.ConverterParameter, "#1");
 		}
 	}
 }
