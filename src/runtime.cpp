@@ -766,6 +766,7 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 			if (!copy->IsEmpty()) {
 				copy->Draw (cr);
 				PaintBackground (cr, transparent, clear_transparent);
+				cairo_new_path (cr);
 			}
 
 			cairo_save (cr);
@@ -786,9 +787,9 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 	if (!did_front_to_back) {
 		region->Draw (cr);
 
-		cairo_clip (cr);
-
 		PaintBackground (cr, transparent, clear_transparent);
+
+		cairo_clip (cr);
 
 		cairo_save (cr);
 		for (int i = 0; i < layer_count; i ++) {

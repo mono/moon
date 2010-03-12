@@ -1,3 +1,10 @@
+2010-03-12  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Paint): in the ftb case we need to clear the path
+	after calling PaintBackground.  in the btf case clip after the
+	call to PaintBackground so that the path is available for the
+	background painting.
+
 2010-03-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/install-dialog.cpp (install_gnome_desktop): Make sure to
