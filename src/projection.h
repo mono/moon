@@ -123,6 +123,14 @@ public:
 	double GetM44 ();
 
 	static void TransformPoint (double *out, const double *m, const double *in);
+	static void Multiply (double *out, const double *a, const double *b);
+	static void Translate (double *out, double tx, double ty, double tz);
+	static void Scale (double *out, double sx, double sy, double sz);
+	static void RotateX (double *out, double theta);
+	static void RotateY (double *out, double theta);
+	static void RotateZ (double *out, double theta);
+	static void Perspective (double *out, double fieldOfViewY, double aspectRatio, double zNearPlane, double zFarPlane);
+	static void Viewport (double *out, double width, double height);
 };
 
 /* @Namespace=System.Windows.Media.Media3D */
@@ -144,7 +152,8 @@ public:
 
 	virtual Matrix3D *GetProjectionMatrix ();
 
-	Matrix3D *GetMatrix3D ();
+	virtual void SetObjectSize (double width, double height) {}
+	void GetTransform (double *value);
 	Rect ProjectBounds (Rect bounds);
 
 protected:
@@ -160,7 +169,7 @@ protected:
 class PlaneProjection : public Projection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	PlaneProjection () { SetObjectType (Type::PLANEPROJECTION); }
+	PlaneProjection ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
@@ -168,7 +177,7 @@ public:
 	const static int CenterOfRotationXProperty;
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	const static int CenterOfRotationYProperty;
-	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int CenterOfRotationZProperty;
 
 	/* @PropertyType=double,GenerateAccessors */
@@ -236,11 +245,16 @@ public:
 
 	Matrix3D* GetProjectionMatrix ();
 	void SetProjectionMatrix (Matrix3D* value);
-	
+
+	void SetObjectSize (double width, double height);
+
 protected:
 	virtual ~PlaneProjection () {}
 
 	void UpdateProjection ();
+
+	double objectWidth;
+	double objectHeight;
 };
 
 /* @Namespace=System.Windows.Media */

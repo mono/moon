@@ -1335,18 +1335,18 @@ Effect::GetProjectionEffect ()
 
 void
 Effect::SetShaderMatrix (cairo_surface_t *surface,
-			 Matrix3D        *matrix)
+			 double          *matrix)
 {
 	cairo_surface_set_user_data (surface,
 				     &matrixKey,
-				     (void *) matrix,
-				     NULL);
+				     (void *) g_memdup (matrix, sizeof (double) * 16),
+				     g_free);
 }
 
-Matrix3D *
+double *
 Effect::GetShaderMatrix (cairo_surface_t *surface)
 {
-	return (Matrix3D *) cairo_surface_get_user_data (surface, &matrixKey);
+	return (double *) cairo_surface_get_user_data (surface, &matrixKey);
 }
 
 Effect::Effect ()
@@ -4129,10 +4129,9 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	struct pipe_surface *surface;
 	struct pipe_buffer  *vertices;
 	float               *verts;
-	Matrix3D            *matrix = GetShaderMatrix (src);
-	double              *m;
+	double              *m = GetShaderMatrix (src);
 
-	if (!matrix)
+	if (!m)
 		return 0;
 
 	MaybeUpdateShader ();
@@ -4159,8 +4158,6 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 		pipe_buffer_reference (&vertices, NULL);
 		return 0;
 	}
-
-	m = (double *) matrix->GetMatrixValues ();
 
 	double s1 = 0.5 / texture->width0;
 	double t1 = 0.5 / texture->height0;

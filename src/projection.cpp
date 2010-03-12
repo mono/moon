@@ -113,6 +113,128 @@ Matrix3D::TransformPoint (double *out, const double *m, const double *in)
 	memcpy (out, tmp, 4 * sizeof (double));
 }
 
+void
+Matrix3D::Multiply (double *out, const double *a, const double *b)
+{
+	double tmp[16];
+	int    i;
+
+#define A(row, col) a[col * 4 + row]
+#define B(row, col) b[col * 4 + row]
+#define T(row, col) tmp[col * 4 + row]
+	for (i = 0; i < 4; i++) {
+		T (0, i) = A (0, i) * B (0, 0) + A (1, i) * B (0, 1) + A (2, i) * B (0, 2) + A (3, i) * B (0, 3);
+		T (1, i) = A (0, i) * B (1, 0) + A (1, i) * B (1, 1) + A (2, i) * B (1, 2) + A (3, i) * B (1, 3);
+		T (2, i) = A (0, i) * B (2, 0) + A (1, i) * B (2, 1) + A (2, i) * B (2, 2) + A (3, i) * B (2, 3);
+		T (3, i) = A (0, i) * B (3, 0) + A (1, i) * B (3, 1) + A (2, i) * B (3, 2) + A (3, i) * B (3, 3);
+	}
+#undef T
+#undef B
+#undef A
+
+	memcpy (out, tmp, 16 * sizeof (double));
+}
+
+void
+Matrix3D::Translate (double *out, double tx, double ty, double tz)
+{
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = 1.0; M (1, 0) = 0.0; M (2, 0) = 0.0; M (3, 0) = 0.0;
+	M (0, 1) = 0.0; M (1, 1) = 1.0; M (2, 1) = 0.0; M (3, 1) = 0.0;
+	M (0, 2) = 0.0; M (1, 2) = 0.0; M (2, 2) = 1.0; M (3, 2) = 0.0;
+	M (0, 3) = tx;  M (1, 3) = ty;  M (2, 3) = tz;  M (3, 3) = 1.0;
+#undef M
+
+}
+
+void
+Matrix3D::Scale (double *out, double sx, double sy, double sz)
+{
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = sx;  M (1, 0) = 0.0; M (2, 0) = 0.0; M (3, 0) = 0.0;
+	M (0, 1) = 0.0; M (1, 1) = sy;  M (2, 1) = 0.0; M (3, 1) = 0.0;
+	M (0, 2) = 0.0; M (1, 2) = 0.0; M (2, 2) = sz;  M (3, 2) = 0.0;
+	M (0, 3) = 0.0; M (1, 3) = 0.0; M (2, 3) = 0.0; M (3, 3) = 1.0;
+#undef M
+
+}
+
+void
+Matrix3D::RotateX (double *out, double theta)
+{
+	double sr = sin (theta);
+	double cr = cos (theta);
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = 1.0; M (1, 0) = 0.0; M (2, 0) = 0.0; M (3, 0) = 0.0;
+	M (0, 1) = 0.0; M (1, 1) = cr;  M (2, 1) = sr;  M (3, 1) = 0.0;
+	M (0, 2) = 0.0; M (1, 2) = -sr; M (2, 2) = cr;  M (3, 2) = 0.0;
+	M (0, 3) = 0.0; M (1, 3) = 0.0; M (2, 3) = 0.0; M (3, 3) = 1.0;
+#undef M
+
+}
+
+void
+Matrix3D::RotateY (double *out, double theta)
+{
+	double sr = sin (theta);
+	double cr = cos (theta);
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = cr;  M (1, 0) = 0.0; M (2, 0) = -sr; M (3, 0) = 0.0;
+	M (0, 1) = 0.0; M (1, 1) = 1.0; M (2, 1) = 0.0; M (3, 1) = 0.0;
+	M (0, 2) = sr;  M (1, 2) = 0.0; M (2, 2) = cr;  M (3, 2) = 0.0;
+	M (0, 3) = 0.0; M (1, 3) = 0.0; M (2, 3) = 0.0; M (3, 3) = 1.0;
+#undef M
+
+}
+
+void
+Matrix3D::RotateZ (double *out, double theta)
+{
+	double sr = sin (theta);
+	double cr = cos (theta);
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = cr;  M (1, 0) = sr;  M (2, 0) = 0.0; M (3, 0) = 0.0;
+	M (0, 1) = -sr; M (1, 1) = cr;  M (2, 1) = 0.0; M (3, 1) = 0.0;
+	M (0, 2) = 0.0; M (1, 2) = 0.0; M (2, 2) = 1.0; M (3, 2) = 0.0;
+	M (0, 3) = 0.0; M (1, 3) = 0.0; M (2, 3) = 0.0; M (3, 3) = 1.0;
+#undef M
+	
+}
+
+void
+Matrix3D::Perspective (double *out, double fieldOfViewY, double aspectRatio, double zNearPlane, double zFarPlane)
+{
+	double height = 1.0 / tan (fieldOfViewY / 2.0);
+	double width = height / aspectRatio;
+	double d = zNearPlane - zFarPlane;
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = width; M (1, 0) = 0.0;    M (2, 0) = 0.0;                        M (3, 0) = 0.0;
+	M (0, 1) = 0.0;   M (1, 1) = height; M (2, 1) = 0.0;                        M (3, 1) = 0.0;
+	M (0, 2) = 0.0;   M (1, 2) = 0.0;    M (2, 2) = zFarPlane / d;              M (3, 2) = -1.0;
+	M (0, 3) = 0.0;   M (1, 3) = 0.0;    M (2, 3) = zNearPlane * zFarPlane / d; M (3, 3) = 0.0;
+#undef M
+
+}
+
+void
+Matrix3D::Viewport (double *out, double width, double height)
+{
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = width / 2.0; M (1, 0) = 0.0;           M (2, 0) = 0.0; M (3, 0) = 0.0;
+	M (0, 1) = 0.0;         M (1, 1) = -height / 2.0; M (2, 1) = 0.0; M (3, 1) = 0.0;
+	M (0, 2) = 0.0;         M (1, 2) = 0.0;           M (2, 2) = 1.0; M (3, 2) = 0.0;
+	M (0, 3) = width / 2.0; M (1, 3) = height / 2.0;  M (2, 3) = 0.0; M (3, 3) = 1.0;
+#undef M
+
+}
+
 Projection::Projection ()
 {
 	SetObjectType (Type::PROJECTION);
@@ -128,44 +250,35 @@ Projection::GetProjectionMatrix ()
 }
 
 void
-Projection::UpdateProjection ()
+Projection::GetTransform (double *value)
 {
-	g_warning ("Projection::UpdateProjection has been called. "
-		   "The derived class should have overridden it.");
-}
+	Matrix3D *matrix;
 
-void
-Projection::MaybeUpdateProjection ()
-{
-	if (need_update) {
-		UpdateProjection ();
-		need_update = false;
-	}
-}
-
-Matrix3D *
-Projection::GetMatrix3D ()
-{
 	MaybeUpdateProjection ();
-	return GetProjectionMatrix ();
+
+	matrix = GetProjectionMatrix ();
+	if (matrix) {
+		memcpy (value, matrix->GetMatrixValues (), sizeof (double) * 16);
+	}
+	else {
+		memset (value, 0, sizeof (value));
+		value[0] = value[5] = value[10] = value[15] = 1.0;
+	}
 }
 
 Rect
 Projection::ProjectBounds (Rect bounds)
 {
-	Matrix3D *matrix = GetMatrix3D ();
-	double   *m;
-	double   x = bounds.x;
-	double   y = bounds.y;
+	Rect     r = bounds.RoundOut ();
 	double   p1[4] = { 0.0, 0.0, 1.0, 1.0 };
-	double   p2[4] = { bounds.width, 0.0, 1.0, 1.0 };
-	double   p3[4] = { bounds.width, bounds.height, 1.0, 1.0 };
-	double   p4[4] = { 0.0, bounds.height, 1.0, 1.0 };
+	double   p2[4] = { r.width, 0.0, 1.0, 1.0 };
+	double   p3[4] = { r.width, r.height, 1.0, 1.0 };
+	double   p4[4] = { 0.0, r.height, 1.0, 1.0 };
+	double   m[16];
 
-	if (!matrix)
-		return bounds;
+	SetObjectSize (r.width, r.height);
 
-	m = (double *) matrix->GetMatrixValues ();
+	GetTransform (m);
 
 	Matrix3D::TransformPoint (p1, m, p1);
 	Matrix3D::TransformPoint (p2, m, p2);
@@ -192,10 +305,32 @@ Projection::ProjectBounds (Rect bounds)
 	bounds = bounds.ExtendTo (p3[0], p3[1]);
 	bounds = bounds.ExtendTo (p4[0], p4[1]);
 
-	bounds.x += x;
-	bounds.y += y;
+	bounds.x += r.x;
+	bounds.y += r.y;
 
 	return bounds;
+}
+
+void
+Projection::UpdateProjection ()
+{
+	g_warning ("Projection::UpdateProjection has been called. "
+		   "The derived class should have overridden it.");
+}
+
+void
+Projection::MaybeUpdateProjection ()
+{
+	if (need_update) {
+		UpdateProjection ();
+		need_update = false;
+	}
+}
+
+PlaneProjection::PlaneProjection ()
+{
+	SetObjectType (Type::PLANEPROJECTION);
+	objectWidth = objectHeight = 1.0;
 }
 
 void
@@ -212,12 +347,85 @@ PlaneProjection::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 }
 
 void
+PlaneProjection::SetObjectSize (double width, double height)
+{
+	if (width != objectWidth || height != objectHeight) {
+		objectWidth = width;
+		objectHeight = height;
+		need_update = true;
+	}
+}
+
+void
 PlaneProjection::UpdateProjection ()
 {
-	double matrix[16];
+	Value *rotationX = GetValue (RotationXProperty);
+	Value *rotationY = GetValue (RotationYProperty);
+	Value *rotationZ = GetValue (RotationZProperty);
+	double radiansX = rotationX ? rotationX->AsDouble () / 180.0 * M_PI : 0.0;
+	double radiansY = rotationY ? rotationY->AsDouble () / 180.0 * M_PI : 0.0;
+	double radiansZ = rotationZ ? rotationZ->AsDouble () / 180.0 * M_PI : 0.0;
+	Value *globalOffsetX = GetValue (GlobalOffsetXProperty);
+	Value *globalOffsetY = GetValue (GlobalOffsetYProperty);
+	Value *globalOffsetZ = GetValue (GlobalOffsetZProperty);
+	double globalX = globalOffsetX ? globalOffsetX->AsDouble () : 0.0;
+	double globalY = globalOffsetY ? globalOffsetY->AsDouble () : 0.0;
+	double globalZ = globalOffsetZ ? globalOffsetZ->AsDouble () : 0.0;
+	Value *localOffsetX = GetValue (LocalOffsetXProperty);
+	Value *localOffsetY = GetValue (LocalOffsetYProperty);
+	Value *localOffsetZ = GetValue (LocalOffsetZProperty);
+	double localX = localOffsetX ? localOffsetX->AsDouble () : 0.0;
+	double localY = localOffsetY ? localOffsetY->AsDouble () : 0.0;
+	double localZ = localOffsetZ ? localOffsetZ->AsDouble () : 0.0;
 
-	memset (matrix, 0, sizeof (matrix));
-	matrix[0] = matrix[5] = matrix[10] = matrix[15] = 1.0;
+	const double fovY = 57.0 / 180.0 * M_PI;
+	const double cameraZ = 999.0;
 
-	SetProjectionMatrix (new Matrix3D (matrix));
+	double height = 2.0 * cameraZ * tan (fovY / 2.0);
+	double scale = height / objectHeight;
+
+	double toCenter[16];
+	double invertY[16];
+	double localOffset[16];
+	double rotateX[16];
+	double rotateY[16];
+	double rotateZ[16];
+	double toCamera[16];
+	double perspective[16];
+	double zoom[16];
+	double viewport[16];
+	double m[16];
+
+	Matrix3D::Translate (toCenter,
+			     -objectWidth * GetCenterOfRotationX (),
+			     -objectHeight * GetCenterOfRotationY (),
+			     -GetCenterOfRotationZ ());
+	Matrix3D::Scale (invertY, 1.0, -1.0, 1.0);
+	Matrix3D::Translate (localOffset, localX, localY, localZ);
+	Matrix3D::RotateX (rotateX, radiansX);
+	Matrix3D::RotateY (rotateY, -radiansY);
+	Matrix3D::RotateZ (rotateZ, radiansZ);
+	Matrix3D::Translate (toCamera,
+			     objectWidth * (GetCenterOfRotationX () - 0.5) + globalX,
+			     -objectHeight * (GetCenterOfRotationY () - 0.5) - globalY,
+			     GetCenterOfRotationZ () - cameraZ + globalZ);
+	Matrix3D::Perspective (perspective,
+			       fovY,
+			       objectWidth / objectHeight,
+			       1.0,
+			       1000.0);
+	Matrix3D::Scale (zoom, scale, scale, 0.0);
+	Matrix3D::Viewport (viewport, objectWidth, objectHeight);
+
+	Matrix3D::Multiply (m, toCenter, invertY);
+	Matrix3D::Multiply (m, m, localOffset);
+	Matrix3D::Multiply (m, m, rotateX);
+	Matrix3D::Multiply (m, m, rotateY);
+	Matrix3D::Multiply (m, m, rotateZ);
+	Matrix3D::Multiply (m, m, toCamera);
+	Matrix3D::Multiply (m, m, perspective);
+	Matrix3D::Multiply (m, m, zoom);
+	Matrix3D::Multiply (m, m, viewport);
+
+	SetProjectionMatrix (new Matrix3D (m));
 }

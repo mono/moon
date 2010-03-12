@@ -1,3 +1,11 @@
+2010-03-12  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp:
+	* uielement.cpp:
+	* projection.h:
+	* projection.cpp: Initial PlaneProjection support.
+
 2010-03-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/pal-gtk.cpp (ShowInstallDialog): Get the parent window

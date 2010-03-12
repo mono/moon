@@ -1383,13 +1383,16 @@ UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 			double          dst_x, dst_y;
 			int             x, y;
 			Rect            r = unprojected_bounds.RoundOut ();
+			double          m[16];
 
 			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
 
 			x = r.x + dst_x;
 			y = r.y + dst_y;
 
-			Effect::SetShaderMatrix (src, projection->GetMatrix3D ());
+			projection->SetObjectSize (r.width, r.height);
+			projection->GetTransform (m);
+			Effect::SetShaderMatrix (src, m);
 
 			if (!effect->Composite (dst, src, x, y))
 			{
