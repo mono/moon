@@ -83,9 +83,3 @@ System.Void System.Net.Sockets.SocketException::.ctor()
 System.Void System.Net.WebClient::.ctor()
 	r142142		spouliot - get "xap_uri" by calling (critical) AppDomain.GetData
 
-!SSC-848A6420A2690202B4A6D6D587ABEFDF
-System.Void System.Net.WebRequest::SetupProgressDelegate(System.Action`2<System.Int64,System.Int64>)
-	r151801		spouliot - signature changed to use Action`2 instead of Action`2
-	r149328		spouliot - signature changed to use Action<> instead of custom delegate
-	r142142		spouliot - if present set the (non-visible) progress_delegate field to the user delegate using reflection
-
