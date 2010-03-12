@@ -347,13 +347,19 @@ install_dialog_get_install_to_desktop (InstallDialog *dialog)
 }
 
 static bool
-install_xap (Deployment *deployment, const char *path)
+install_xap (Deployment *deployment, const char *app_dir)
 {
 	Surface *surface = deployment->GetSurface ();
+	char *filename;
 	int fd;
 	
-	if ((fd = open (path, O_CREAT | O_EXCL | O_WRONLY, 0666)) == -1)
+	filename = g_build_filename (app_dir, "Application.xap", NULL);
+	if ((fd = open (filename, O_CREAT | O_EXCL | O_WRONLY, 0666)) == -1) {
+		g_free (filename);
 		return false;
+	}
+	
+	g_free (filename);
 	
 	if (CopyFileTo (surface->GetSourceLocation (), fd) == -1)
 		return false;
@@ -362,14 +368,19 @@ install_xap (Deployment *deployment, const char *path)
 }
 
 static bool
-install_html (OutOfBrowserSettings *settings, const char *filename)
+install_html (OutOfBrowserSettings *settings, const char *app_dir)
 {
 	WindowSettings *window = settings->GetWindowSettings ();
-	char *title;
+	char *filename, *title;
 	FILE *fp;
 	
-	if (!(fp = fopen (filename, "wt")))
+	filename = g_build_filename (app_dir, "index.html", NULL);
+	if (!(fp = fopen (filename, "wt"))) {
+		g_free (filename);
 		return false;
+	}
+	
+	g_free (filename);
 	
 	if (window && window->GetTitle ())
 		title = g_markup_escape_text (window->GetTitle (), -1);
@@ -379,12 +390,17 @@ install_html (OutOfBrowserSettings *settings, const char *filename)
 	fprintf (fp, "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
 	fprintf (fp, "  <head>\n");
 	fprintf (fp, "    <title>%s</title>\n", title);
+	fprintf (fp, "    <script type=\"text/javascript\">\n");
+	fprintf (fp, "      function resize () {\n");
+	if (window)
+		fprintf (fp, "        window.resizeTo (%d, %d);\n", (int) window->GetWidth (), (int) window->GetHeight ());
+	fprintf (fp, "      }\n");
+	fprintf (fp, "    </script>\n");
 	fprintf (fp, "  </head>\n");
 	fprintf (fp, "  <body>\n");
 	fprintf (fp, "    <div id=\"MoonlightControl\">\n");
-	fprintf (fp, "      <object data=\"data:application/x-silverlight-2,\" type=\"application/x-silverlight-2\" width=\"100%%\" height=\"100%%\">\n");
+	fprintf (fp, "      <object data=\"data:application/x-silverlight-2,\" type=\"application/x-silverlight-2\" width=\"100%%\" height=\"100%%\" onload=\"resize\">\n");
 	fprintf (fp, "        <param name=\"source\" value=\"Application.xap\"/>\n");
-	fprintf (fp, "        <param name=\"isOutOfBrowser\" value=\"true\"/>\n");
 	fprintf (fp, "        <param name=\"background\" value=\"white\"/>\n");
 	fprintf (fp, "      </object>\n");
 	fprintf (fp, "    </div>\n");
@@ -457,9 +473,37 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 }
 
 static bool
+install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
+{
+	char *filename;
+	FILE *fp;
+	
+	filename = g_build_filename (app_dir, "lunar-launcher", NULL);
+	if (!(fp = fopen (filename, "wt"))) {
+		g_free (filename);
+		return false;
+	}
+	
+	fprintf (fp, "#!/bin/sh\n\n");
+	fprintf (fp, "export MOONLIGHT_IS_OUT_OF_BROWSER=1\n");
+	fprintf (fp, "google-chrome --app=\"file:%s/index.html\"\n", app_dir);
+	fclose (fp);
+	
+	if (chmod (filename, 0777) == -1) {
+		unlink (filename);
+		g_free (filename);
+		return false;
+	}
+	
+	g_free (filename);
+	
+	return true;
+}
+
+static bool
 install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, const char *filename)
 {
-	char *dirname, *icon_name;
+	char *dirname, *icon_name, *quoted, *launcher;
 	struct stat st;
 	FILE *fp;
 	
@@ -486,7 +530,11 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 		fprintf (fp, "Icon=%s\n", icon_name);
 	g_free (icon_name);
 	
-	fprintf (fp, "Exec=gnome-open \"file:%s/index.html\"\n", app_dir);
+	launcher = g_build_filename (app_dir, "lunar-launcher", NULL);
+	quoted = g_shell_quote (launcher);
+	fprintf (fp, "Exec=%s\n", quoted);
+	g_free (launcher);
+	g_free (quoted);
 	
 	fclose (fp);
 	
@@ -511,22 +559,22 @@ install_dialog_install (InstallDialog *dialog)
 		return false;
 	
 	/* install the XAP */
-	filename = g_build_filename (priv->install_dir, "Application.xap", NULL);
-	if (!install_xap (priv->deployment, filename)) {
-		g_free (filename);
+	if (!install_xap (priv->deployment, priv->install_dir)) {
+		RemoveDir (priv->install_dir);
 		return false;
 	}
-	
-	g_free (filename);
 	
 	/* install the HTML page */
-	filename = g_build_filename (priv->install_dir, "index.html", NULL);
-	if (!install_html (settings, filename)) {
-		g_free (filename);
+	if (!install_html (settings, priv->install_dir)) {
+		RemoveDir (priv->install_dir);
 		return false;
 	}
 	
-	g_free (filename);
+	/* install the launcher script */
+	if (!install_launcher_script (settings, priv->install_dir)) {
+		RemoveDir (priv->install_dir);
+		return false;
+	}
 	
 	priv->installed = true;
 	
@@ -592,4 +640,16 @@ install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings)
 	g_free (shortcut);
 	
 	return path;
+}
+
+char *
+install_utils_get_launcher_script (OutOfBrowserSettings *settings)
+{
+	char *app_name, *launcher;
+	
+	app_name = install_utils_get_app_name (settings);
+	launcher = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", app_name, "lunar-launcher", NULL);
+	g_free (app_name);
+	
+	return launcher;
 }

@@ -1,3 +1,12 @@
+2010-03-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_html): Attempt to use
+	javascript to resize the window to the proper size.
+	(install_launcher_script): New function to create a launcher
+	script for the app.
+	(install_gnome_desktop): Exec the launcher script.
+	(install_dialog_install): Install the launcher script.
+
 2010-03-12  David Reveman  <davidr@novell.com>
 
 	* effect.h:

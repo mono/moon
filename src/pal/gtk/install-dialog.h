@@ -53,5 +53,6 @@ char *install_utils_get_app_name (OutOfBrowserSettings *settings);
 char *install_utils_get_install_dir (OutOfBrowserSettings *settings);
 char *install_utils_get_desktop_shortcut (OutOfBrowserSettings *settings);
 char *install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings);
+char *install_utils_get_launcher_script (OutOfBrowserSettings *settings);
 
 #endif /* MOON_INSTALL_DIALOG_H */
