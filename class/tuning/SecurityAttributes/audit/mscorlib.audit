@@ -259,6 +259,14 @@ System.Char System.BitConverter::ToChar(System.Byte[],System.Int32)
 System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
 	r142142		spouliot - unsafe call to CharCopy after all parameters are validated
 
+!SSC-CBDB15284FF15712026E2523CECA5326
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.File::ReadLines(System.String)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+
+!SSC-A72833A280DF709E3A2F2204D2C4CCDB
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.File::ReadLines(System.String,System.Text.Encoding)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+
 !SSC-D11ED37AED1474CDA3FDF7C08F264FB4
 System.Collections.IEnumerator System.Array::GetEnumerator()
 	r144307		spouliot - create a new instance of internal SimpleEnumerator (SecurityCritical type)
@@ -1082,10 +1090,6 @@ System.String System.Diagnostics.StackFrame::GetSecureFileName()
 System.String System.Environment::get_NewLine()
 	r144558		spouliot - visible icall - returns "\r\n" string (except on windows)
 
-!SSC-1793D86DC31DD9CBD62FD35518B93585
-System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
-	r153397		unaudited - new
-
 !SSC-7EF5BAE06648376C9C9D9F6BD1C05162
 System.String System.Exception::get_StackTrace()
 	r142142		spouliot - call StackTrace(Exception,int,bool,bool) a manual SC which calls get_trace (icall)
@@ -1098,13 +1102,13 @@ System.String System.Globalization.TextInfo::ToLower(System.String)
 System.String System.Globalization.TextInfo::ToUpper(System.String)
 	r142142		spouliot - call String.InternalAllocateStr (icall) and use unsafe loop to convert string to uppercase
 
-!SSC-AF6636677225FE1C598273D187BF1CFD
-System.String System.IO.Directory::ValidateDirectoryListing(System.String,System.String,System.Boolean&)
-	r146698		unaudited - new
+!SSC-AE4EB56E4F1FC072575A77EBE1358C69
+System.String System.IO.File::ReadAllText(System.String)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
 
-!SSC-3255B5E7AE9147C0D841293C9FAA97AC
+!SSC-0162F8F0FB224A72D1E3EE451EE6CD09
 System.String System.IO.File::ReadAllText(System.String,System.Text.Encoding)
-	r153397		unaudited - new - VISIBLE
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
 
 !SSC-1F46C56C543FBA66534941949253718B
 System.String System.IO.IsolatedStorage.IsolatedStorageFileStream::Verify(System.IO.IsolatedStorage.IsolatedStorageFile,System.String)
@@ -1605,21 +1609,37 @@ System.Void System.Globalization.RegionInfo::.ctor(System.String)
 System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
-!SSC-FDABC3F88887B1B0886946E887758871
-System.Void System.IO.File::AppendAllText(System.String,System.String)
-	r153397		unaudited - new - VISIBLE
+!SSC-6E17BC57D81D448074EA657FEA23F214
+System.Void System.IO.File::AppendAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
 
-!SSC-3C0DBE22A637EA4783C899A52B00BA82
+!SSC-7F201B396960895BBED3F4B21193B6FF
+System.Void System.IO.File::AppendAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>,System.Text.Encoding)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+
+!SSC-22D565A6A2A39EA76DCD150DB5323EFF
+System.Void System.IO.File::AppendAllText(System.String,System.String)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+
+!SSC-2BFBF728EBEBEB6B13AA2008A8C51D91
 System.Void System.IO.File::AppendAllText(System.String,System.String,System.Text.Encoding)
-	r153397		unaudited - new - VISIBLE
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
 
 !SSC-BE5E8C25800991FE5F5C635C1D3EC133
 System.Void System.IO.File::WriteAllBytes(System.String,System.Byte[])
-	r153397		unaudited - new - VISIBLE
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+
+!SSC-16CC809213F75CEF672F212F6360959B
+System.Void System.IO.File::WriteAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+
+!SSC-971CF5ADEB6F73586708CA262731F213
+System.Void System.IO.File::WriteAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>,System.Text.Encoding)
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
 
 !SSC-A235CAAA70A5DCD4AC92781E7DD43B9A
 System.Void System.IO.File::WriteAllText(System.String,System.String,System.Text.Encoding)
-	r153397		unaudited - new - VISIBLE
+	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
 
 !SSC-7D6047CAB1EE522D0A118DECAB1A6D1C
 System.Void System.IO.FileInfo::InternalRefresh()

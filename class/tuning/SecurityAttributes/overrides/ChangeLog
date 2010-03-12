@@ -1,3 +1,8 @@
+2010-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Adjust to minimize SSC
+	* System.Windows.Browser.manual: Adjust to minimize SSC
+
 2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Remove manual override for the reflection 

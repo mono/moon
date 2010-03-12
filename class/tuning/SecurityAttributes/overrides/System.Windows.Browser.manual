@@ -3,9 +3,20 @@
 # analogous to System.Window's EventObjectToggleRef
 +SC-T: Mono.ScriptObjectToggleRef
 
+# keep low-level (Mono.*) types as [SecurityCritical] and validate their callers
++SC-T: Mono.ScriptObjectHelper
++SC-T: Mono.ScriptObjectEventInfo
++SC-T: System.Windows.Browser.ManagedObject/EventOps
+
 # members of ScriptObject that need SC
 +SC-M: System.Object System.Windows.Browser.ScriptObject::Invoke(System.Reflection.MethodInfo,System.Object,System.Object[])
++SC-M: System.Void System.Windows.Browser.ScriptObject::Invoke(System.String,System.Object[],Mono.Value&)
 
-# special case for the static ctor, which only create delegates on methods with IntPtr parameters
-+SSC-M: System.Void System.Windows.Browser.ScriptObject::.cctor()
+# make them [SecurityCritical] so the methods named *Safe ends up being [SecuritySafeCritical]
++SC-M: System.Boolean System.Windows.Browser.ScriptObject::GetPropertyFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
++SC-M: System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
++SC-M: System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
+
+# parameter type is [SecurityCritical] so the code needs to be too (and the tooling is not wise enough to cover this right now)
++SC-M: System.Void System.Windows.Browser.ScriptObject::AddEventHandler(Mono.ScriptObjectEventInfo)
 

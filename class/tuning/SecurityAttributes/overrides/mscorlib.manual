@@ -395,3 +395,7 @@
 +SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Initialize(System.IntPtr,System.String,System.Boolean)
 +SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()
 
+#
++SC-M: System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
++SC-M: System.String System.IO.Directory::ValidateDirectoryListing(System.String,System.String,System.Boolean&)
+

@@ -4,43 +4,31 @@ System.Boolean System.Windows.Browser.HtmlPage::get_IsPopupWindowAllowed()
 
 !SSC-7F05F82E9138D6E491B8F59C7DFA72C1
 System.Boolean System.Windows.Browser.ScriptObject::AddNativeMapping(System.IntPtr,System.Windows.Browser.ScriptObject)
-	r153096		unaudited - new
+	r153088		spouliot - add/track a new ScriptObjectToggleRef [SecurityCritical] (unexposed) based on the IntPtr and ScriptObject
 
-!SSC-59994D2DFC8DC66E846108E545B2E979
-System.Boolean System.Windows.Browser.ScriptObject::GetPropertyFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
-	r153397		unaudited - new
+!SSC-F86EFCF7D12AE38903FBD3EF9942FC8C
+System.Boolean System.Windows.Browser.ScriptObject::GetPropertyFromUnmanagedSafe(System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&,System.String&)
+	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call GetPropertyFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
-!SSC-7CCC96CD9F344F1399F257CE5EFA7D85
-System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
-	r153397		unaudited - new
+!SSC-80A3C430A520D1090A8AACD4EDF79C79
+System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanagedSafe(System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&,System.String&)
+	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call InvokeFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
-!SSC-7D285EEE7B4CD054DAEADA3284DF45D2
-System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
-	r153397		unaudited - new
-
-!SSC-0240164030A97895B71E8DF4B585F1B4
-System.Object Mono.ScriptObjectHelper::ObjectFromValue<T>(Mono.Value)
-	r153397		unaudited - new
+!SSC-477B8C1B7BD0858F8DFC2F82ED50C496
+System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanagedSafe(System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&,System.String&)
+	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call SetPropertyFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
 !SSC-A765C36C8641572A68B66AEF8763F5BE
 System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
 	r142142		spouliot - added extra checks and unit tests
 
+!SSC-5E621DCD36C1DB4CADA896CEF66DE00B
+System.Object System.Windows.Browser.ManagedObject::Invoke(System.String,System.Object[])
+	r153088		spouliot - call ScriptObjectHelper [SecurityCritical] ObjectFromValue to get an object from the (return) Value of the call to base.Invoke
+
 !SSC-DA8A8DE1D235928AFF304F5A8FE2CD7B
 System.Object System.Windows.Browser.ScriptObject::GetProperty(System.String,System.Object[])
-	r153397		unaudited - new
-
-!SSC-7ECE53E03A51462EAB7795267504BF95
-System.Void Mono.ScriptObjectEventInfo::.ctor(System.String,System.Windows.Browser.ScriptObject,System.Reflection.EventInfo)
-	r153397		unaudited - new
-
-!SSC-7F0109768737BDB56CE8B6570A170643
-System.Void Mono.ScriptObjectEventInfo::Finalize()
-	r153397		unaudited - new
-
-!SSC-9D1481DBDCEA840B44B48254A704B941
-System.Void Mono.ScriptObjectHelper::ValueFromObject(Mono.Value&,System.Object)
-	r153397		unaudited - new
+	r153088		spouliot - calls Invoke [SecurityCritical] on the 'scriptAlias' property getter using the arguments 'args'
 
 !SSC-401048995EF5228679D4F025E4BEB30C
 System.Void System.Windows.Browser.HtmlPage::.cctor()
@@ -50,25 +38,21 @@ System.Void System.Windows.Browser.HtmlPage::.cctor()
 System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
 	r143068		spouliot - calls ScriptableObjectGenerator.Generate
 
+!SSC-2DD03B3272363EEDEA3FA36724A93D93
+System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
+	r153088		spouliot - create instances of inner-type EventOps [SecurityCritical] (unexposed)
+
 !SSC-61F76F92CD34A18107923B69C5FAD9D9
 System.Void System.Windows.Browser.ManagedObject::SetProperty(System.String,System.Object[])
 	r153088		spouliot - calls Invoke [SecurityCritical] on the 'name' property setter using the arguments 'args'
 
-!SSC-C902D9EA9EE47FBB60DDD4BD0866C4B9
-System.Void System.Windows.Browser.ScriptObject::.cctor()
-	r153397		unaudited - new
-
 !SSC-32B26A53D7D668F3CF0A71B913AB36F9
 System.Void System.Windows.Browser.ScriptObject::.ctor()
-	r153397		unaudited - new
+	r153088		spouliot - pinvoke into moonlight_scriptable_object_create using PluginHost.Handle and delegates to safe methods to be used
 
 !SSC-C2149763080C51713EDD4271C4C21481
 System.Void System.Windows.Browser.ScriptObject::FreeNativeMapping(System.Windows.Browser.ScriptObject)
-	r153397		unaudited - new
-
-!SSC-FA5A1626820F4C5377F5BAF1A6A6B5B1
-System.Void System.Windows.Browser.ScriptObject::Invoke(System.String,System.Object[],Mono.Value&)
-	r153397		unaudited - new
+	r153088		spouliot - remove a ScriptObjectToggleRef [SecurityCritical] (unexposed) related to the ScriptObject parameter from the tracked references
 
 !SSC-55EC96774D15505A717681134C1A77D7
 System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
@@ -84,7 +68,7 @@ System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::PopupWindow(S
 
 !SSC-0C5DAF8327872EFFC07D2F785A23CF0E
 System.Windows.Browser.ScriptObject System.Windows.Browser.ScriptObject::LookupScriptObject(System.IntPtr,System.Boolean)
-	r153397		unaudited - new
+	r153088		spouliot - retrieve a ScriptObjectToggleRef [SecurityCritical] (unexposed) from an IntPtr, optionally creating a ScriptObject is not found
 
 !SSC-1AC5E9BD897947C17BF230A83069CF94
 T System.Windows.Browser.ScriptObject::GetPropertyInternal<T>(System.IntPtr,System.String)

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 407 methods
+# 412 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -101,7 +101,6 @@
 +SSC-M: System.Int32 System.Enum::CompareTo(System.Object)
 +SSC-M: System.Int32 System.Enum::GetHashCode()
 +SSC-M: System.OperatingSystem System.Environment::get_OSVersion()
-+SSC-M: System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SSC-M: System.Boolean System.Environment::get_IsRunningOnWindows()
 +SSC-M: System.String System.Exception::get_StackTrace()
 +SSC-M: System.Void System.GC::Collect()
@@ -129,12 +128,18 @@
 +SSC-M: System.String System.Globalization.TextInfo::ToUpper(System.String)
 +SSC-M: System.Byte[] System.IO.BinaryReader::ReadBytes(System.Int32)
 +SSC-M: System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
-+SSC-M: System.String System.IO.Directory::ValidateDirectoryListing(System.String,System.String,System.Boolean&)
 +SSC-M: System.Void System.IO.File::AppendAllText(System.String,System.String)
 +SSC-M: System.Void System.IO.File::AppendAllText(System.String,System.String,System.Text.Encoding)
++SSC-M: System.String System.IO.File::ReadAllText(System.String)
 +SSC-M: System.String System.IO.File::ReadAllText(System.String,System.Text.Encoding)
 +SSC-M: System.Void System.IO.File::WriteAllBytes(System.String,System.Byte[])
 +SSC-M: System.Void System.IO.File::WriteAllText(System.String,System.String,System.Text.Encoding)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.File::ReadLines(System.String)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.File::ReadLines(System.String,System.Text.Encoding)
++SSC-M: System.Void System.IO.File::AppendAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
++SSC-M: System.Void System.IO.File::AppendAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>,System.Text.Encoding)
++SSC-M: System.Void System.IO.File::WriteAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
++SSC-M: System.Void System.IO.File::WriteAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>,System.Text.Encoding)
 +SSC-M: System.Void System.IO.FileInfo::InternalRefresh()
 +SSC-M: System.IO.StreamReader System.IO.FileInfo::OpenText()
 +SSC-M: System.IO.FileStream System.IO.FileInfo::OpenRead()
