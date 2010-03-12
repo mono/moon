@@ -332,11 +332,11 @@ namespace Mono.Xaml
 			if (name == null)
 				return false;
 
-			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
-			if (set_method == null)
+			MethodInfo get_method = GetGetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
+			if (get_method == null)
 				return false;
 
-			return !target.GetType ().IsSubclassOf (set_method.DeclaringType);
+			return !target.GetType ().IsSubclassOf (get_method.DeclaringType);
 		}
 
 		private unsafe DependencyProperty LookupDependencyPropertyForBinding (XamlCallbackData *data, FrameworkElement fwe, string type_name, string propertyName)
@@ -497,30 +497,24 @@ namespace Mono.Xaml
 			if (name == null)
 				return false;
 
-			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
-			if (set_method == null) {
-				Console.Error.WriteLine ("set method is null: {0}  {1}", String.Concat ("Set", name), prop_xmlns);
+			MethodInfo get_method = GetGetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
+			if (get_method == null) {
+				Console.Error.WriteLine ("get method is null: {0}  {1}", String.Concat ("Get", name), prop_xmlns);
 				return false;
 			}
-
-			ParameterInfo [] set_params = set_method.GetParameters ();
-			if (set_params == null || set_params.Length < 2) {
-				Console.Error.WriteLine ("set method signature is incorrect.");
-				return false;
-			}
-
-			MethodInfo get_method = set_method.DeclaringType.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
 			//
 			// The Setter might actually want a collection, in this case we grab the old collection with the getter
 			// and then add the new object to the collection
 			//
 			// TODO: Check if the setter method still gets called on Silverlight
-			if (typeof (IList).IsAssignableFrom (set_params [1].ParameterType) && !(o_value is IList)) {
+			if (typeof (IList).IsAssignableFrom (get_method.ReturnType) && !(o_value is IList)) {
 				
 				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
 					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
-
+					// FIXME: Silverlight 3.0 does not autogenerate a list if there is none there.
+					// This needs a verification test added to moon-unit before commenting out the block
+					// of code below.
 					if (the_list == null) {
 						the_list = (IList) Activator.CreateInstance (set_params [1].ParameterType);
 						if (the_list == null)
@@ -545,6 +539,18 @@ namespace Mono.Xaml
 					Console.WriteLine ("ow god my eye!");
 					return false;
 				}
+			}
+
+			MethodInfo set_method = get_method.DeclaringType.GetMethod (String.Concat ("Set", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			if (set_method == null) {
+				Console.Error.WriteLine ("set method is null: {0}  {1}", String.Concat ("Set", name), prop_xmlns);
+				return false;
+			}
+
+			ParameterInfo [] set_params = set_method.GetParameters ();
+			if (set_params == null || set_params.Length < 2) {
+				Console.Error.WriteLine ("set method signature is incorrect.");
+				return false;
 			}
 
 			o_value = ConvertType (get_method, set_params [1].ParameterType, o_value);

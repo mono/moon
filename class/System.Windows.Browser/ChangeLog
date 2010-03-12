@@ -1,3 +1,14 @@
+2010-03-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Browser.mdp: Refactor ManagedXamlLoader to
+	  look for the getter method instead of the setter method when
+	  trying to figure out if a DP is an attached DP or not as
+	  setters are not always required. When a DP type is typeof
+	  (IList), we use the IList setting code before attempting to
+	  use the static setter method. Fixes the bug where setting an
+	  attached property with no static setter in xaml would
+	  silently fail.
+
 2010-03-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove browser stack files from build (moved to
