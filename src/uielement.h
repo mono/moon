@@ -607,7 +607,6 @@ protected:
 	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool front_to_back);
 
 private:
-	int visual_level;
 	UIElement *visual_parent;
 	DependencyObject *subtree_object;
 	double total_opacity;
