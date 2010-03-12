@@ -1,5 +1,10 @@
 2010-03-12  Alan McGovern  <amcgovern@novell.com>
 
+	* ManagedXamlLoader.cs: Comment this back out to fix the
+	  build. I'll add a test for this change next...
+
+2010-03-12  Alan McGovern  <amcgovern@novell.com>
+
 	* ManagedXamlLoader.cs: Refactor ManagedXamlLoader to look for
 	  the getter method instead of the setter method when trying
 	  to figure out if a DP is an attached DP or not as setters

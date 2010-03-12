@@ -513,14 +513,13 @@ namespace Mono.Xaml
 				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
 					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
 					// FIXME: Silverlight 3.0 does not autogenerate a list if there is none there.
-					// This needs a verification test added to moon-unit before commenting out the block
-					// of code below.
-					if (the_list == null) {
-						the_list = (IList) Activator.CreateInstance (set_params [1].ParameterType);
-						if (the_list == null)
-							return false;
-						set_method.Invoke (null, new object [] {target, the_list});
-					}
+					// This needs a verification test added to moon-unit before removing the code below.
+//					if (the_list == null) {
+//						the_list = (IList) Activator.CreateInstance (set_params [1].ParameterType);
+//						if (the_list == null)
+//							return false;
+//						set_method.Invoke (null, new object [] {target, the_list});
+//					}
 
 					try {
 						the_list.Add (o_value);
