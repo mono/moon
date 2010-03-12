@@ -1,3 +1,8 @@
+2010-03-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net.manual: Remove entry for reflection usage to set
+	'progress' field
+
 2010-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Adjust to minimize SSC

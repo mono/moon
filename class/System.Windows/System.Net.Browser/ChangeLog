@@ -1,3 +1,8 @@
+2010-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest[Internal].cs: Remove 'progress' field. It
+	is now defined as an internal in WebRequest (System.Net).
+
 2010-03-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebAsyncResult.cs, BrowserHttpWebRequest[Internal].cs,

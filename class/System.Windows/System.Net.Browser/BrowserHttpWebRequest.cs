@@ -50,11 +50,8 @@ namespace System.Net.Browser {
 		internal InternalWebRequestStreamWrapper request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
- 		
-		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in System.Net
-		// FIXME: how does this behave wrt redirection ?
- 		Action<long,long> progress;
 
+ 		
  		public BrowserHttpWebRequest (Uri uri)
  		{
  			this.uri = uri;

@@ -60,8 +60,6 @@ namespace System.Net.Browser {
 
 		WebHeaderCollection headers;
  		
- 		internal Action<long,long> progress;
-
  		public BrowserHttpWebRequestInternal (Uri uri)
 		{
 			started = new DownloaderResponseStartedDelegate (OnAsyncResponseStartedSafe);
