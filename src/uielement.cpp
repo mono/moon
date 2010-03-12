@@ -40,6 +40,7 @@ UIElement::UIElement ()
 {
 	SetObjectType (Type::UIELEMENT);
 
+	visual_level = 0;
 	visual_parent = NULL;
 	subtree_object = NULL;
 	opacityMask = NULL;
