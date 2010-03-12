@@ -789,11 +789,10 @@ MoonWindowingSystemGtk::CheckInstalled ()
 	
 	if (!settings)
 		return false;
-
-	install_dir = install_utils_get_install_dir (settings);
-	if (!install_dir)
+	
+	if (!(install_dir = install_utils_get_install_dir (settings)))
 		return false;
-
+	
 	if (stat (install_dir, &st) == -1 || !S_ISDIR (st.st_mode)) {
 		g_free (install_dir);
 		return false;
@@ -808,10 +807,19 @@ bool
 MoonWindowingSystemGtk::ShowInstallDialog ()
 {
 	Deployment *deployment = Deployment::GetCurrent ();
+	GtkWidget *parent = NULL;
 	bool installed = false;
+	MoonWindow *window;
 	GtkDialog *dialog;
+	GtkWidget *widget;
+	Surface *surface;
 	
-	dialog = install_dialog_new (deployment);
+	if ((surface = deployment->GetSurface ()) && (window = surface->GetWindow ())) {
+		widget = ((MoonWindowGtk *) window)->GetWidget ();
+		parent = gtk_widget_get_toplevel (widget);
+	}
+	
+	dialog = install_dialog_new ((GtkWindow *) parent, deployment);
 	
 	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK)
 		installed = install_dialog_install ((InstallDialog *) dialog);

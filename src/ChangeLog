@@ -1,3 +1,14 @@
+2010-03-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/pal-gtk.cpp (ShowInstallDialog): Get the parent window
+	to pass along to the InstallDialog so that it can destroy itself
+	if/when the parent window gets destroyed and also be transient.
+
+	* pal/gtk/install-dialog.cpp: Moved all the dialog state into a
+	private structure. Fixed to be transient for its parent window and
+	also to destroy itself if parent is destroyed. Also use the app
+	icons to decorate the dialog window.
+
 2010-03-12  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Paint): in the ftb case we need to clear the path

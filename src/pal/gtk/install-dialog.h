@@ -32,16 +32,7 @@ typedef struct _InstallDialogClass InstallDialogClass;
 struct _InstallDialog {
 	GtkDialog parent_object;
 	
-	GdkPixbufLoader *loader;
-	Application *application;
-	Deployment *deployment;
-	char *install_dir;
-	bool installed;
-	
-	GtkImage *icon;
-	GtkLabel *primary_text;
-	GtkToggleButton *start_menu;
-	GtkToggleButton *desktop;
+	struct _InstallDialogPrivate *priv;
 };
 
 struct _InstallDialogClass {
@@ -50,7 +41,7 @@ struct _InstallDialogClass {
 
 GType install_dialog_get_type (void);
 
-GtkDialog *install_dialog_new (Deployment *deployment);
+GtkDialog *install_dialog_new (GtkWindow *parent, Deployment *deployment);
 
 bool install_dialog_get_install_to_start_menu (InstallDialog *dialog);
 bool install_dialog_get_install_to_desktop (InstallDialog *dialog);

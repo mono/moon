@@ -28,6 +28,27 @@
 #include "utils.h"
 #include "uri.h"
 
+typedef struct {
+	GdkPixbufLoader *loader;
+	InstallDialog *dialog;
+	int size;
+} IconLoader;
+
+typedef struct _InstallDialogPrivate {
+	Application *application;
+	Deployment *deployment;
+	GPtrArray *loaders;
+	GList *icon_list;
+	
+	char *install_dir;
+	bool installed;
+	
+	GtkToggleButton *start_menu;
+	GtkToggleButton *desktop;
+	GtkLabel *primary_text;
+	GtkImage *icon;
+} InstallDialogPrivate;
+
 static void install_dialog_class_init (InstallDialogClass *klass);
 static void install_dialog_init (InstallDialog *dialog);
 static void install_dialog_destroy (GtkObject *obj);
@@ -78,6 +99,9 @@ install_dialog_init (InstallDialog *dialog)
 {
 	GtkWidget *checkboxes, *primary, *secondary, *container;
 	GtkWidget *vbox, *hbox, *label;
+	InstallDialogPrivate *priv;
+	
+	dialog->priv = priv = g_new0 (InstallDialogPrivate, 1);
 	
 	gtk_window_set_title ((GtkWindow *) dialog, "Install application");
 	gtk_window_set_resizable ((GtkWindow *) dialog, false);
@@ -85,30 +109,30 @@ install_dialog_init (InstallDialog *dialog)
 	
 	hbox = gtk_hbox_new (false, 12);
 	
-	dialog->icon = (GtkImage *) gtk_image_new ();
-	gtk_widget_show ((GtkWidget *) dialog->icon);
+	priv->icon = (GtkImage *) gtk_image_new ();
+	gtk_widget_show ((GtkWidget *) priv->icon);
 	
-	gtk_box_pack_start ((GtkBox *) hbox, (GtkWidget *) dialog->icon, false, false, 0);
+	gtk_box_pack_start ((GtkBox *) hbox, (GtkWidget *) priv->icon, false, false, 0);
 	
-	dialog->primary_text = (GtkLabel *) gtk_label_new ("");
-	gtk_label_set_line_wrap (dialog->primary_text, true);
-	gtk_widget_show ((GtkWidget *) dialog->primary_text);
+	priv->primary_text = (GtkLabel *) gtk_label_new ("");
+	gtk_label_set_line_wrap (priv->primary_text, true);
+	gtk_widget_show ((GtkWidget *) priv->primary_text);
 	
 	label = gtk_label_new ("Please confirm the location for the shortcuts.");
 	gtk_label_set_line_wrap ((GtkLabel *) label, true);
 	gtk_widget_show (label);
 	
-	dialog->start_menu = (GtkToggleButton *) gtk_check_button_new_with_label ("Start menu");
-	gtk_toggle_button_set_active (dialog->start_menu, true);
-	gtk_widget_show ((GtkWidget *) dialog->start_menu);
+	priv->start_menu = (GtkToggleButton *) gtk_check_button_new_with_label ("Start menu");
+	gtk_toggle_button_set_active (priv->start_menu, true);
+	gtk_widget_show ((GtkWidget *) priv->start_menu);
 	
-	dialog->desktop = (GtkToggleButton *) gtk_check_button_new_with_label ("Desktop");
-	gtk_toggle_button_set_active (dialog->desktop, false);
-	gtk_widget_show ((GtkWidget *) dialog->desktop);
+	priv->desktop = (GtkToggleButton *) gtk_check_button_new_with_label ("Desktop");
+	gtk_toggle_button_set_active (priv->desktop, false);
+	gtk_widget_show ((GtkWidget *) priv->desktop);
 	
 	vbox = gtk_vbox_new (false, 2);
-	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) dialog->start_menu, false, false, 0);
-	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) dialog->desktop, false, false, 0);
+	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->start_menu, false, false, 0);
+	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->desktop, false, false, 0);
 	gtk_widget_show (vbox);
 	
 	checkboxes = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
@@ -123,7 +147,7 @@ install_dialog_init (InstallDialog *dialog)
 	
 	primary = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
 	gtk_alignment_set_padding ((GtkAlignment *) primary, 0, 0, 0, 0);
-	gtk_container_add ((GtkContainer *) primary, (GtkWidget *) dialog->primary_text);
+	gtk_container_add ((GtkContainer *) primary, (GtkWidget *) priv->primary_text);
 	gtk_widget_show (primary);
 	
 	secondary = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
@@ -155,19 +179,32 @@ static void
 install_dialog_finalize (GObject *obj)
 {
 	InstallDialog *dialog = (InstallDialog *) obj;
+	InstallDialogPrivate *priv = dialog->priv;
+	IconLoader *loader;
+	guint i;
 	
-	if (!dialog->installed)
-		RemoveDir (dialog->install_dir);
+	if (!priv->installed)
+		RemoveDir (priv->install_dir);
 	
-	g_free (dialog->install_dir);
+	g_free (priv->install_dir);
 	
-	if (dialog->loader) {
-		gdk_pixbuf_loader_close (dialog->loader, NULL);
-		g_object_unref (dialog->loader);
+	if (priv->loaders) {
+		for (i = 0; i < priv->loaders->len; i++) {
+			loader = (IconLoader *) priv->loaders->pdata[i];
+			if (loader->loader)
+				g_object_unref (loader->loader);
+			g_free (loader);
+		}
+		
+		g_ptr_array_free (priv->loaders, true);
 	}
 	
-	dialog->application->unref ();
-	dialog->deployment->unref ();
+	g_list_free (priv->icon_list);
+	
+	priv->application->unref ();
+	priv->deployment->unref ();
+	
+	g_free (priv);
 	
 	G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
@@ -179,31 +216,37 @@ install_dialog_destroy (GtkObject *obj)
 }
 
 static void
-pixbuf_notify_cb (NotifyType type, gint64 args, gpointer user_data)
+icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 {
-	InstallDialog *dialog = (InstallDialog *) user_data;
+	IconLoader *loader = (IconLoader *) user_data;
+	InstallDialogPrivate *priv = loader->dialog->priv;
 	GdkPixbuf *pixbuf;
 	
 	switch (type) {
 	case NotifyCompleted:
-		if (dialog->loader) {
-			if (gdk_pixbuf_loader_close (dialog->loader, NULL)) {
-				/* set the dialog's icon to the 128x128 pixbuf */
-				pixbuf = gdk_pixbuf_loader_get_pixbuf (dialog->loader);
-				gtk_image_set_from_pixbuf (dialog->icon, pixbuf);
-				g_object_unref (dialog->loader);
-				dialog->loader = NULL;
+		if (loader->loader) {
+			if (gdk_pixbuf_loader_close (loader->loader, NULL)) {
+				/* get the pixbuf and add it to our icon_list */
+				pixbuf = gdk_pixbuf_loader_get_pixbuf (loader->loader);
+				priv->icon_list = g_list_prepend (priv->icon_list, pixbuf);
+				
+				if (loader->size == 128) {
+					/* set the 128x128 pixbuf as the icon in our dialog */
+					gtk_image_set_from_pixbuf (priv->icon, pixbuf);
+				}
+				
+				gtk_window_set_icon_list ((GtkWindow *) loader->dialog, priv->icon_list);
 				break;
 			}
 			
 			/* fall through as if we got a NotifyFailed */
 		}
 	case NotifyFailed:
-		if (dialog->loader) {
+		if (loader->loader) {
 			/* load default icon and destroy the loader */
-			gtk_image_set_from_icon_name (dialog->icon, "gnome-remote-desktop", GTK_ICON_SIZE_DIALOG);
-			g_object_unref (dialog->loader);
-			dialog->loader = NULL;
+			gtk_image_set_from_icon_name (priv->icon, "gnome-remote-desktop", GTK_ICON_SIZE_DIALOG);
+			g_object_unref (loader->loader);
+			loader->loader = NULL;
 		}
 		break;
 	default:
@@ -212,31 +255,38 @@ pixbuf_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 }
 
 static void
-pixbuf_write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
+icon_loader_write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
 {
-	InstallDialog *dialog = (InstallDialog *) user_data;
+	IconLoader *loader = (IconLoader *) user_data;
 	
-	if (dialog->loader && !gdk_pixbuf_loader_write (dialog->loader, (const guchar *) buffer, n, NULL)) {
-		g_object_unref (dialog->loader);
-		dialog->loader = NULL;
+	if (loader->loader && !gdk_pixbuf_loader_write (loader->loader, (const guchar *) buffer, n, NULL)) {
+		/* loading failed, destroy the loader */
+		g_object_unref (loader->loader);
+		loader->loader = NULL;
 	}
 }
 
 GtkDialog *
-install_dialog_new (Deployment *deployment)
+install_dialog_new (GtkWindow *parent, Deployment *deployment)
 {
 	InstallDialog *dialog = (InstallDialog *) g_object_new (INSTALL_DIALOG_TYPE, NULL);
 	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
 	Application *application = deployment->GetCurrentApplication ();
 	IconCollection *icons = settings->GetIcons ();
+	InstallDialogPrivate *priv = dialog->priv;
 	char *markup, *location;
-	bool loading = false;
+	IconLoader *loader;
 	int count, i;
 	
-	dialog->application = application;
+	if (parent) {
+		gtk_window_set_transient_for ((GtkWindow *) dialog, parent);
+		gtk_window_set_destroy_with_parent ((GtkWindow *) dialog, true);
+	}
+	
+	priv->application = application;
 	application->ref ();
 	
-	dialog->deployment = deployment;
+	priv->deployment = deployment;
 	deployment->ref ();
 	
 	if (g_ascii_strncasecmp (deployment->GetXapLocation (), "file:", 5) != 0) {
@@ -247,32 +297,35 @@ install_dialog_new (Deployment *deployment)
 	
 	markup = g_markup_printf_escaped ("You are installing <b>%s</b> from <b>%s</b>",
 					  settings->GetShortName (), location);
-	gtk_label_set_markup (dialog->primary_text, markup);
+	gtk_label_set_markup (priv->primary_text, markup);
 	g_free (location);
 	g_free (markup);
 	
-	dialog->install_dir = install_utils_get_install_dir (settings);
+	priv->install_dir = install_utils_get_install_dir (settings);
 	
-	// We want to load the 128x128 icon for use in the installer dialog
+	/* load the icons */
 	if (icons && (count = icons->GetCount ()) > 0) {
+		priv->loaders = g_ptr_array_sized_new (count);
+		
 		for (i = 0; i < count; i++) {
 			Value *value = icons->GetValueAt (i);
 			Icon *icon = value->AsIcon ();
 			Size *size = icon->GetSize ();
+			Uri *uri = icon->GetSource ();
 			
-			if ((int) size->width == 128 || (int) size->height == 128) {
-				Uri *uri = icon->GetSource ();
-				
-				dialog->loader = gdk_pixbuf_loader_new ();
-				application->GetResource (NULL, uri, pixbuf_notify_cb, pixbuf_write_cb, MediaPolicy, NULL, dialog);
-				loading = true;
-				break;
-			}
+			loader = g_new (IconLoader, 1);
+			loader->size = MAX ((int) size->width, (int) size->height);
+			loader->loader = gdk_pixbuf_loader_new ();
+			loader->dialog = dialog;
+			
+			g_ptr_array_add (priv->loaders, loader);
+			
+			application->GetResource (NULL, uri, icon_loader_notify_cb, icon_loader_write_cb, MediaPolicy, NULL, loader);
 		}
 	}
 	
-	if (!loading)
-		gtk_image_set_from_icon_name (dialog->icon, "gnome-remote-desktop", GTK_ICON_SIZE_DIALOG);
+	if (!priv->loaders)
+		gtk_image_set_from_icon_name (priv->icon, "gnome-remote-desktop", GTK_ICON_SIZE_DIALOG);
 	
 	return (GtkDialog *) dialog;
 }
@@ -282,7 +335,7 @@ install_dialog_get_install_to_start_menu (InstallDialog *dialog)
 {
 	g_return_val_if_fail (IS_INSTALL_DIALOG (dialog), false);
 	
-	return gtk_toggle_button_get_active (dialog->start_menu);
+	return gtk_toggle_button_get_active (dialog->priv->start_menu);
 }
 
 bool
@@ -290,7 +343,7 @@ install_dialog_get_install_to_desktop (InstallDialog *dialog)
 {
 	g_return_val_if_fail (IS_INSTALL_DIALOG (dialog), false);
 	
-	return gtk_toggle_button_get_active (dialog->desktop);
+	return gtk_toggle_button_get_active (dialog->priv->desktop);
 }
 
 static bool
@@ -443,22 +496,23 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 bool
 install_dialog_install (InstallDialog *dialog)
 {
+	InstallDialogPrivate *priv = dialog->priv;
 	OutOfBrowserSettings *settings;
 	char *filename;
 	
 	g_return_val_if_fail (IS_INSTALL_DIALOG (dialog), false);
 	
-	if (dialog->installed)
+	if (priv->installed)
 		return true;
 	
-	settings = dialog->deployment->GetOutOfBrowserSettings ();
+	settings = priv->deployment->GetOutOfBrowserSettings ();
 	
-	if (g_mkdir_with_parents (dialog->install_dir, 0777) == -1)
+	if (g_mkdir_with_parents (priv->install_dir, 0777) == -1)
 		return false;
 	
 	/* install the XAP */
-	filename = g_build_filename (dialog->install_dir, "Application.xap", NULL);
-	if (!install_xap (dialog->deployment, filename)) {
+	filename = g_build_filename (priv->install_dir, "Application.xap", NULL);
+	if (!install_xap (priv->deployment, filename)) {
 		g_free (filename);
 		return false;
 	}
@@ -466,7 +520,7 @@ install_dialog_install (InstallDialog *dialog)
 	g_free (filename);
 	
 	/* install the HTML page */
-	filename = g_build_filename (dialog->install_dir, "index.html", NULL);
+	filename = g_build_filename (priv->install_dir, "index.html", NULL);
 	if (!install_html (settings, filename)) {
 		g_free (filename);
 		return false;
@@ -474,22 +528,22 @@ install_dialog_install (InstallDialog *dialog)
 	
 	g_free (filename);
 	
-	dialog->installed = true;
+	priv->installed = true;
 	
 	/* install the icon(s) */
-	install_icons (dialog->application, settings, dialog->install_dir);
+	install_icons (priv->application, settings, priv->install_dir);
 	
 	/* conditionally install start menu shortcut */
 	if (install_dialog_get_install_to_start_menu (dialog)) {
 		filename = install_utils_get_start_menu_shortcut (settings);
-		install_gnome_desktop (settings, dialog->install_dir, filename);
+		install_gnome_desktop (settings, priv->install_dir, filename);
 		g_free (filename);
 	}
 	
 	/* conditionally install desktop shortcut */
 	if (install_dialog_get_install_to_desktop (dialog)) {
 		filename = install_utils_get_desktop_shortcut (settings);
-		install_gnome_desktop (settings, dialog->install_dir, filename);
+		install_gnome_desktop (settings, priv->install_dir, filename);
 		g_free (filename);
 	}
 	
