@@ -1164,15 +1164,14 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 }
 
 bool
-UIElement::UseBackToFront ()
+UIElement::UseFrontToBack ()
 {
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return TRUE;
-	if (GetProjection ()) return TRUE;
+	// for now the only things that drop us out of front-to-back
+	// rendering for a subtree are projections and effects.
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return FALSE;
+	if (GetProjection ()) return FALSE;
 
-	// for now we just force use of the front-to-back pass when
-	// effects/transforms aren't used.
-	// return VisualTreeWalker (this).GetCount () > MIN_FRONT_TO_BACK_COUNT;
-	return FALSE;
+	return TRUE;
 }
 
 void
@@ -1187,7 +1186,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 	    || IS_INVISIBLE (local_opacity))
 		return;
 
-	if (UseBackToFront ()) {
+	if (!UseFrontToBack ()) {
 		Region *self_region = new Region (surface_region);
 		Projection *projection = GetProjection ();
 		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;

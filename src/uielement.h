@@ -181,7 +181,7 @@ public:
 	// with debugging and/or timing info
 	void FrontToBack (Region *surface_region, List *render_list);
 	void DoRender (List *ctx, Region *region);
-	bool UseBackToFront ();
+	bool UseFrontToBack ();
 
 	//
 	// GetSizeForBrush:
