@@ -389,12 +389,24 @@ BitmapImage::DownloaderComplete ()
 		downloader = NULL;
 	}
 
+	if (get_res_aborter) {
+		delete get_res_aborter;
+		get_res_aborter = NULL;
+	}
+
 	PixmapComplete ();
 
 	return;
 failed:
-	downloader->unref ();
-	downloader = NULL;
+	if (downloader) {
+		downloader->unref ();
+		downloader = NULL;
+	}
+
+	if (get_res_aborter) {
+		delete get_res_aborter;
+		get_res_aborter = NULL;
+	}
 
 	if (loader)
 		loader->Close ();

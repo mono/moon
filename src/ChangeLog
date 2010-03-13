@@ -1,3 +1,9 @@
+2010-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* bitmapimage.cpp (BitmapImage::DownloaderComplete): we need to
+	delete the get_res_aborter or we abort things when we're being
+	destroyed which is confusing to follow.
+
 2010-03-12  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp (Render): restore the context and unlock the source
