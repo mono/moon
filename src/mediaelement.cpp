@@ -778,8 +778,10 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		if (GetStretch () == StretchNone)
 			paint = paint.Union (video);
 
-		if (video.width == 0.0 && video.height == 0.0)
+		if (video.width == 0.0 && video.height == 0.0) {
+			cairo_restore (cr);
 			return;
+		}
 
 		pattern = cairo_pattern_create_for_surface (surface);
 

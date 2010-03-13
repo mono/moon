@@ -393,7 +393,7 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 			paint = paint.Union (image);
 
 		if (image.width == 0.0 && image.height == 0.0)
-			return;
+			goto cleanup;
 
 		pattern = cairo_pattern_create_for_surface (source->GetSurface (cr));
 		image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, 
@@ -425,8 +425,8 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	if (!path_only)
 		cairo_fill (cr);
 
+cleanup:
 	cairo_restore (cr);
-
 	source->Unlock ();
 }
 

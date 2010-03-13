@@ -1,3 +1,12 @@
+2010-03-12  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp (Render): restore the context and unlock the source
+	properly when leaving Render.
+
+	* mediaelement.cpp (Render):
+	* frameworkelement.cpp (FindElementsInHostCoordinates): restore
+	the context when we bail.
+
 2010-03-12  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (RenderNode::Render): front_to_back =

@@ -440,8 +440,10 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 
 	Geometry *clip = GetClip ();
 	if (clip) {
-		if (!r.IntersectsWith (clip->GetBounds ().Transform (&absolute_xform)))
+		if (!r.IntersectsWith (clip->GetBounds ().Transform (&absolute_xform))) {
+			cairo_restore (cr);
 			return;
+		}
 		r = r.Intersection (clip->GetBounds ().Transform (&absolute_xform));
 	}
 
