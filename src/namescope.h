@@ -16,10 +16,7 @@
 #include "error.h"
 #include "list.h"
 
-/* @Namespace=None */
-/* @ManagedDependencyProperties=None */
-/* @ManagedEvents=None */
-class NameScope : public DependencyObject {
+class NameScope : public EventObject {
 	GHashTable *names;
 	bool is_locked;
 	bool temporary;

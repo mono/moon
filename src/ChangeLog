@@ -1,3 +1,9 @@
+2010-03-14  Chris Toshok  <toshok@ximian.com>
+
+	* namescope.h,cpp: there's no reason (that I can find) that a
+	namescope needs to be a DependencyObject.  using an EventObject is
+	good enough, and saves us 64 bytes per instance.
+
 2010-03-13  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp, runtime.h, stylus.cpp, stylus.h, uielement.cpp,
