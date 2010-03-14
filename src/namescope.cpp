@@ -13,12 +13,8 @@
 
 #include "namescope.h"
 
-int num_namescopes = 0;
-
 NameScope::NameScope ()
 {
-  num_namescopes ++;
-
 	SetObjectType (Type::NAMESCOPE);
 	is_locked = false;
 	names = NULL;
