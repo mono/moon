@@ -77,6 +77,7 @@ Clock::Clock (Timeline *tl)
 {
 	SetObjectType (Type::CLOCK);
 
+	name = NULL;
 	calculated_natural_duration = false;
 	state = Clock::Stopped;
 	progress = 0.0;
@@ -104,15 +105,28 @@ Clock::Clock (Timeline *tl)
 Clock::~Clock ()
 {
 	timeline->unref();
+	g_free (name);
 }
 
 void
 Clock::Dispose ()
 {
 	if (!IsDisposed ()) {
-		DependencyObject::Dispose ();
+		EventObject::Dispose ();
 		GetTimeline()->TeardownClock ();
 	}
+}
+
+void
+Clock::SetName (char *name)
+{
+	this->name = name;
+}
+
+const char*
+Clock::GetName ()
+{
+	return name;
 }
 
 Duration

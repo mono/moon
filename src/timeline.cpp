@@ -350,8 +350,7 @@ DispatcherTimer::Start ()
 	} else {
 		AllocateClock ();
 		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
-		clock->SetValue (DependencyObject::NameProperty, name);
-		g_free (name);
+		clock->SetName (name);
 
 		surface->GetTimeManager()->AddClock (clock);
 

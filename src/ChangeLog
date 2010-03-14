@@ -1,5 +1,19 @@
 2010-03-14  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h, clock.cpp: Clocks are another DO-subclass that don't
+	need to be DO-subclasses.  make them EO-subclasses instead.  This
+	does require the addition of SetName/GetName (the only DP used by
+	the clock code), but ends up saving us 60 bytes per instance.
+
+	* animation.cpp (Storyboard::BeginWithError): call clock->SetName
+	instead of SetValue.
+
+	* timemanager.cpp (TimeManager::TimeManager): same.
+
+	* timeline.cpp (DispatcherTimer::Start): same.
+
+2010-03-14  Chris Toshok  <toshok@ximian.com>
+
 	* value.h.in: remove a couple of unimplemented constructors.
 
 2010-03-14  Chris Toshok  <toshok@ximian.com>

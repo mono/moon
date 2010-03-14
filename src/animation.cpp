@@ -307,8 +307,6 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 				      targetprop->GetName());
 	SetName (name);
 
-	g_free (name);
-
 	if (storage)
 		delete storage;
 	storage = new AnimationStorage (this, timeline, targetobj, targetprop);
@@ -524,8 +522,7 @@ Storyboard::BeginWithError (MoonError *error)
 	// will be a child of ClockGroup cB.
 	AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
-	clock->SetValue (DependencyObject::NameProperty, name);
-	g_free (name);
+	clock->SetName (name);
 
 
 	// walk the clock tree hooking up the correct properties and

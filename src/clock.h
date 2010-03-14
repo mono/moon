@@ -183,7 +183,7 @@ class TimelineGroup;
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
 /* @Namespace=None,ManagedDependencyProperties=None,ManagedEvents=Manual */
-class Clock : public DependencyObject {
+class Clock : public EventObject {
 public:
 	Clock (Timeline *timeline);
 	
@@ -221,6 +221,10 @@ public:
 	bool GetBeginOnTick () { return begin_on_tick; }
 
 	void SetRootParentTime (TimeSpan parentTime);
+
+	// takes ownership
+	void SetName (char *name);
+	const char* GetName ();
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
@@ -280,6 +284,8 @@ protected:
 	TimeSpan seek_time;
 
 private:
+	char *name;
+
 	bool emit_completed;
 	bool has_completed;
 	TimeManager *time_manager;

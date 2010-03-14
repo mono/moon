@@ -107,8 +107,7 @@ TimeManager::TimeManager ()
 	timeline->SetDuration (Duration::Forever);
 	root_clock = new RootClockGroup (timeline);
 	char *name = g_strdup_printf ("Surface clock group for time manager (%p)", this);
-	root_clock->SetValue(DependencyObject::NameProperty, name);
-	g_free (name);
+	root_clock->SetName (name);
 	root_clock->SetTimeManager (this);
 
 	stop_time = 0;
