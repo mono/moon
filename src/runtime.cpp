@@ -90,32 +90,32 @@ guint32 debug_flags = 0;
 
 static MoonlightRuntimeOption options [] = {
 
-	/* flag                               name               enable        disable   runtime changable  description */
-	// There's no "ms-codecs=yes" option to not allow enabling them from the command line.
-	{ RUNTIME_INIT_ENABLE_MS_CODECS,      "ms-codecs",       NULL,         "no" },
-	{ RUNTIME_INIT_DISABLE_FFMPEG_CODECS, "ffmpeg-codecs",   "yes",        "no" },
-	{ RUNTIME_INIT_MANUAL_TIMESOURCE,     "timesource",      "manual",     "system" },
-	{ RUNTIME_INIT_SHOW_EXPOSE,           "expose",          "show",       "hide",   true,              "Show expose regions" },
-	{ RUNTIME_INIT_SHOW_CLIPPING,         "clipping",        "show",       "hide",   true,              "Show clipping rectangles" },
-	{ RUNTIME_INIT_SHOW_BOUNDING_BOXES,   "bbox",            "show",       "hide",   true,              "Show UIElement bounding boxes" },
-	{ RUNTIME_INIT_SHOW_TEXTBOXES,        "textbox",         "show",       "hide",   true,              "Show TextBox bounds" },
-	{ RUNTIME_INIT_SHOW_FPS,              "fps",             "show",       "hide",   true,              "Show Frames Per Second" },
-	{ RUNTIME_INIT_RENDER_FRONT_TO_BACK,  "render",          "ftb",        "btf",    true,              "Enable Occlusion Culling" },
-	{ RUNTIME_INIT_SHOW_CACHE_SIZE,       "cache",           "show",       "hide",   true,              "Show cache size" },
-	{ RUNTIME_INIT_FFMPEG_YUV_CONVERTER,  "converter",       "ffmpeg",     "default" },
-	{ RUNTIME_INIT_USE_SHAPE_CACHE,       "shapecache",      "yes",        "no" },
-	{ RUNTIME_INIT_USE_UPDATE_POSITION,   "updatepos",       "yes",        "no" },
-	{ RUNTIME_INIT_ALLOW_WINDOWLESS,      "windowless",      "yes",        "no" },
-	{ RUNTIME_INIT_AUDIO_PULSE,           "audio",           "pulseaudio", "alsa" },
-	{ RUNTIME_INIT_AUDIO_ALSA,            "alsa",            "mmap",       "rw" },
-	{ RUNTIME_INIT_USE_IDLE_HINT,         "idlehint",        "yes",        "no" },
-	{ RUNTIME_INIT_USE_BACKEND_IMAGE,     "backend",         "image",      "native", true,              "Use client side surface rasterizing" },
-	{ RUNTIME_INIT_KEEP_MEDIA,            "keepmedia",       "yes",        "no",     true,              "Don't remove media files from /tmp after download" },
-	{ RUNTIME_INIT_ALL_IMAGE_FORMATS,     "allimages",       "yes",        "no" },
-	{ RUNTIME_INIT_EMULATE_KEYCODES,      "emulatekeycodes", "yes",        "no",     true,              "Emulate Windows PlatformKeyCodes" },
-	{ RUNTIME_INIT_ENABLE_EFFECTS,        "effects",         "yes",        "no",     true,              "Enable Pixel Effects" },
-	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",      "yes",        "no",     true,              "Enable Curl bridge" },
-	{ RUNTIME_INIT_ENABLE_TOGGLEREFS,     "togglerefs",      "yes",        "no" },
+	/* flag                               name                 enable        disable   runtime changable  description */
+	// There's no "ms-codecs=yes" option to not allow enablin  g them from the command line.
+	{ RUNTIME_INIT_ENABLE_MS_CODECS,      "ms-codecs",         NULL,         "no" },
+	{ RUNTIME_INIT_DISABLE_FFMPEG_CODECS, "ffmpeg-codecs",     "yes",        "no" },
+	{ RUNTIME_INIT_MANUAL_TIMESOURCE,     "timesource",        "manual",     "system" },
+	{ RUNTIME_INIT_SHOW_EXPOSE,           "expose",            "show",       "hide",   true,            "Show expose regions" },
+	{ RUNTIME_INIT_SHOW_CLIPPING,         "clipping",          "show",       "hide",   true,            "Show clipping rectangles" },
+	{ RUNTIME_INIT_SHOW_BOUNDING_BOXES,   "bbox",              "show",       "hide",   true,            "Show UIElement bounding boxes" },
+	{ RUNTIME_INIT_SHOW_TEXTBOXES,        "textbox",           "show",       "hide",   true,            "Show TextBox bounds" },
+	{ RUNTIME_INIT_SHOW_FPS,              "fps",               "show",       "hide",   true,            "Show Frames Per Second" },
+	{ RUNTIME_INIT_OCCLUSION_CULLING,     "occlusion-culling", "yes",        "no",    true,             "Enable Occlusion Culling" },
+	{ RUNTIME_INIT_SHOW_CACHE_SIZE,       "cache",             "show",       "hide",   true,            "Show cache size" },
+	{ RUNTIME_INIT_FFMPEG_YUV_CONVERTER,  "converter",         "ffmpeg",     "default" },
+	{ RUNTIME_INIT_USE_SHAPE_CACHE,       "shapecache",        "yes",        "no" },
+	{ RUNTIME_INIT_USE_UPDATE_POSITION,   "updatepos",         "yes",        "no" },
+	{ RUNTIME_INIT_ALLOW_WINDOWLESS,      "windowless",        "yes",        "no" },
+	{ RUNTIME_INIT_AUDIO_PULSE,           "audio",             "pulseaudio", "alsa" },
+	{ RUNTIME_INIT_AUDIO_ALSA,            "alsa",              "mmap",       "rw" },
+	{ RUNTIME_INIT_USE_IDLE_HINT,         "idlehint",          "yes",        "no" },
+	{ RUNTIME_INIT_USE_BACKEND_IMAGE,     "backend",           "image",      "native", true,            "Use client side surface rasterizing" },
+	{ RUNTIME_INIT_KEEP_MEDIA,            "keepmedia",         "yes",        "no",     true,            "Don't remove media files from /tmp after download" },
+	{ RUNTIME_INIT_ALL_IMAGE_FORMATS,     "allimages",         "yes",        "no" },
+	{ RUNTIME_INIT_EMULATE_KEYCODES,      "emulatekeycodes",   "yes",        "no",     true,            "Emulate Windows PlatformKeyCodes" },
+	{ RUNTIME_INIT_ENABLE_EFFECTS,        "effects",           "yes",        "no",     true,            "Enable Pixel Effects" },
+	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",        "yes",        "no",     true,            "Enable Curl bridge" },
+	{ RUNTIME_INIT_ENABLE_TOGGLEREFS,     "togglerefs",        "yes",        "no" },
 	{ (RuntimeInitFlag)0 }
 
 };
@@ -150,8 +150,8 @@ moonlight_get_runtime_option (RuntimeInitFlag flag)
 	return moonlight_flags & flag;
 }
 
-#define RUNTIME_INIT_DESKTOP (RuntimeInitFlag)(RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS | RUNTIME_INIT_ENABLE_EFFECTS | RUNTIME_INIT_ENABLE_TOGGLEREFS )
-#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | RUNTIME_INIT_ENABLE_EFFECTS | RUNTIME_INIT_ENABLE_TOGGLEREFS )
+#define RUNTIME_INIT_DESKTOP (RuntimeInitFlag)(RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS | RUNTIME_INIT_ENABLE_EFFECTS | RUNTIME_INIT_ENABLE_TOGGLEREFS )
+#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | RUNTIME_INIT_ENABLE_EFFECTS | RUNTIME_INIT_ENABLE_TOGGLEREFS )
 
 #if DEBUG || LOGGING
 static struct MoonlightDebugOption debugs[] = {
@@ -735,21 +735,21 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 {
 	frames++;
 
-#if FRONT_TO_BACK_STATS
-	uielements_rendered_front_to_back = 0;
-	uielements_rendered_back_to_front = 0;
+#if OCCLUSION_CULLING_STATS
+	uielements_rendered_with_occlusion_culling = 0;
+	uielements_rendered_with_painters = 0;
 #endif
 
 	List *ctx = new List ();
 	List *render_list = new List ();
 
-	bool did_front_to_back = false;
+	bool did_occlusion_culling = false;
 
 	ctx->Append (new ContextNode (cr));
 
 	int layer_count = layers->GetCount ();
 
-	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+	if (moonlight_flags & RUNTIME_INIT_OCCLUSION_CULLING) {
 		Region *copy = new Region (region);
 
 		for (int i = layer_count - 1; i >= 0; i --) {
@@ -771,20 +771,17 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 
 			cairo_save (cr);
 			while (RenderNode *node = (RenderNode*)render_list->First()) {
-#if FRONT_TO_BACK_STATS
-				uielements_rendered_front_to_back ++;
-#endif
 				node->Render (ctx);
 
 				render_list->Remove (node);
 			}
 
-			did_front_to_back = true;
+			did_occlusion_culling = true;
 			cairo_restore (cr);
 		}
 	}
 
-	if (!did_front_to_back) {
+	if (!did_occlusion_culling) {
 		region->Draw (cr);
 
 		PaintBackground (cr, transparent, clear_transparent);
@@ -832,9 +829,9 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 		cairo_fill (cr);
 	}
 
-#if FRONT_TO_BACK_STATS
-	printf ("%d UIElements rendered front-to-back for Surface::Paint (%p)\n", uielements_rendered_front_to_back, this);
-	printf ("%d UIElements rendered back-to-front for Surface::Paint (%p)\n", uielements_rendered_back_to_front, this);
+#if OCCLUSION_CULLING_STATS
+	printf ("%d UIElements rendered using occlusion culling for Surface::Paint (%p)\n", uielements_rendered_with_occlusion_culling, this);
+	printf ("%d UIElements rendered using normal painter's algorithm for Surface::Paint (%p)\n", uielements_rendered_with_painters, this);
 #endif
 }
 
@@ -1419,16 +1416,22 @@ RenderNode::RenderNode (UIElement *el,
 void
 RenderNode::Render (List *ctx)
 {
-	bool front_to_back = uielement->UseFrontToBack ();
+	bool use_occlusion_culling = uielement->UseOcclusionCulling ();
+
+#if OCCLUSION_CULLING_STATS
+	if (use_occlusion_culling)
+		uielements_rendered_with_occlusion_culling ++;
+#endif
 
 	if (pre_render)
-		pre_render (ctx, uielement, region, front_to_back);
+		pre_render (ctx, uielement, region, use_occlusion_culling);
 
-	if (render_element)
+	if (render_element) {
 		uielement->Render (((ContextNode *) ctx->First ())->GetCr (), region);
+	}
 	
 	if (post_render)
-		post_render (ctx, uielement, region, front_to_back);
+		post_render (ctx, uielement, region, use_occlusion_culling);
 }
 
 RenderNode::~RenderNode ()

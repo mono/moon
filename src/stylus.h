@@ -308,7 +308,7 @@ class InkPresenter : public Canvas {
  protected:
 	virtual ~InkPresenter () {}
 
-	virtual void PostRender (List *ctx, Region *region, bool front_to_back);
+	virtual void PostRender (List *ctx, Region *region, bool skip_children);
 
  public:
 	/* @PropertyType=StrokeCollection,AutoCreateValue,GenerateAccessors */

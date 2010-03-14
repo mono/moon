@@ -1,5 +1,15 @@
 2010-03-13  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp, runtime.h, stylus.cpp, stylus.h, uielement.cpp,
+	uielement.h, grid.cpp, grid.h: mostly change away from the name
+	"FrontToBack" and use "OcclusionCulling" instead, since that's
+	what we're doing.  Also standardize the name of the bool arg we
+	pass to PreRender/PostRender as "skip_children" to more clearly
+	express what that arg means (instead of the "switching to front to
+	back mode" confusion that was there before.)
+
+2010-03-13  Chris Toshok  <toshok@ximian.com>
+
 	* bitmapimage.cpp (BitmapImage::DownloaderComplete): we need to
 	delete the get_res_aborter or we abort things when we're being
 	destroyed which is confusing to follow.

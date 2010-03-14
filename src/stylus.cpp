@@ -833,10 +833,10 @@ InkPresenter::InkPresenter ()
 }
 
 void
-InkPresenter::PostRender (List *ctx, Region *region, bool front_to_back)
+InkPresenter::PostRender (List *ctx, Region *region, bool skip_children)
 {
-	// render our chidren if not in front to back mode
-	if (!front_to_back) {
+	// render our chidren if we need to
+	if (!skip_children) {
 		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
 		while (UIElement *child = walker.Step ())
 			child->DoRender (ctx, region);
@@ -865,7 +865,7 @@ InkPresenter::PostRender (List *ctx, Region *region, bool front_to_back)
 		stroke->ResetDirty ();
 	}
 
-	// Chain up in front_to_back mode since we've alread rendered content
+	// Chain up, but skip children since we've already rendered them here.
 	UIElement::PostRender (ctx, region, true);
 }
 

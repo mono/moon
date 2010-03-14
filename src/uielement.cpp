@@ -34,7 +34,6 @@
 #include "projection.h"
 
 //#define DEBUG_INVALIDATE 0
-#define MIN_FRONT_TO_BACK_COUNT 25
 
 UIElement::UIElement ()
 {
@@ -1146,8 +1145,8 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 		return;
 	}
 
-#if FRONT_TO_BACK_STATS
-	GetDeployment ()->GetSurface ()->uielements_rendered_back_to_front ++;
+#if OCCLUSION_CULLING_STATS
+	GetDeployment ()->GetSurface ()->uielements_rendered_with_painters ++;
 #endif
 
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
@@ -1164,10 +1163,10 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 }
 
 bool
-UIElement::UseFrontToBack ()
+UIElement::UseOcclusionCulling ()
 {
-	// for now the only things that drop us out of front-to-back
-	// rendering for a subtree are projections and effects.
+	// for now the only things that drop us out of the occlusion
+	// culling pass for a subtree are projections and effects.
 	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return FALSE;
 	if (GetProjection ()) return FALSE;
 
@@ -1186,7 +1185,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 	    || IS_INVISIBLE (local_opacity))
 		return;
 
-	if (!UseFrontToBack ()) {
+	if (!UseOcclusionCulling ()) {
 		Region *self_region = new Region (surface_region);
 		Projection *projection = GetProjection ();
 		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
@@ -1352,10 +1351,9 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 }
 
 void
-UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
+UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 {
-	// if we didn't render front to back, then render the children here
-	if (!front_to_back) {
+	if (!skip_children) {
 		VisualTreeWalker walker (this, ZForward);
 		while (UIElement *child = walker.Step ())
 			child->DoRender (ctx, region);
@@ -1531,60 +1529,57 @@ UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
 	if (xform)
 		g_warning ("passing a transform to UIElement::Paint is not yet supported");
 
-#if FRONT_TO_BACK_STATS
-	GetDeployment ()->GetSurface ()->uielements_rendered_front_to_back = 0;
-	GetDeployment ()->GetSurface ()->uielements_rendered_back_to_front = 0;
+#if OCCLUSION_CULLING_STATS
+	GetDeployment ()->GetSurface ()->uielements_rendered_with_occlusion_culling = 0;
+	GetDeployment ()->GetSurface ()->uielements_rendered_with_painters = 0;
 #endif
 
 	List *ctx = new List ();
-	bool did_front_to_back = false;
+	bool did_occlusion_culling = false;
 	List *render_list = new List ();
 
 	ctx->Append (new ContextNode (cr));
 
-	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+	if (moonlight_flags & RUNTIME_INIT_OCCLUSION_CULLING) {
 		Region *copy = new Region (region);
 		FrontToBack (copy, render_list);
 		
 		if (!render_list->IsEmpty ()) {
 			while (RenderNode *node = (RenderNode*)render_list->First()) {
-#if FRONT_TO_BACK_STATS
-				GetDeployment ()->GetSurface ()->uielements_rendered_front_to_back ++;
-#endif
 				node->Render (ctx);
 
 				render_list->Remove (node);
 			}
 
-			did_front_to_back = true;
+			did_occlusion_culling = true;
 		}
 
 		delete render_list;
 		delete copy;
 	}
 
-	if (!did_front_to_back) {
+	if (!did_occlusion_culling) {
 		DoRender (ctx, region);
 	}
 
 	delete ctx;
 
-#if FRONT_TO_BACK_STATS
-	printf ("%d UIElements rendered front-to-back for: %s(%p)\n", GetDeployment ()->GetSurface ()->uielements_rendered_front_to_back, GetName (), this);
-	printf ("%d UIElements rendered back-to-front for: %s(%p)\n", GetDeployment ()->GetSurface ()->uielements_rendered_back_to_front, GetName (), this);
+#if OCCLUSION_CULLING_STATS
+	printf ("%d UIElements rendered front-to-back for: %s(%p)\n", GetDeployment ()->GetSurface ()->uielements_rendered_with_occlusion_culling, GetName (), this);
+	printf ("%d UIElements rendered back-to-front for: %s(%p)\n", GetDeployment ()->GetSurface ()->uielements_rendered_with_painters, GetName (), this);
 #endif
 }
 
 void
-UIElement::CallPreRender (List *ctx, UIElement *element, Region *region, bool front_to_back)
+UIElement::CallPreRender (List *ctx, UIElement *element, Region *region, bool skip_children)
 {
-	element->PreRender (ctx, region, front_to_back);
+	element->PreRender (ctx, region, skip_children);
 }
 
 void
-UIElement::CallPostRender (List *ctx, UIElement *element, Region *region, bool front_to_back)
+UIElement::CallPostRender (List *ctx, UIElement *element, Region *region, bool skip_children)
 {
-	element->PostRender (ctx, region, front_to_back);
+	element->PostRender (ctx, region, skip_children);
 }
 
 void

@@ -181,7 +181,7 @@ public:
 	// with debugging and/or timing info
 	void FrontToBack (Region *surface_region, List *render_list);
 	void DoRender (List *ctx, Region *region);
-	bool UseFrontToBack ();
+	bool UseOcclusionCulling ();
 
 	//
 	// GetSizeForBrush:
@@ -600,11 +600,11 @@ protected:
 	cairo_matrix_t absolute_xform;
 	cairo_matrix_t layout_xform;
 
-	virtual void PreRender (List *ctx, Region *region, bool front_to_back);
-	virtual void PostRender (List *ctx, Region *region, bool front_to_back);
+	virtual void PreRender (List *ctx, Region *region, bool skip_children);
+	virtual void PostRender (List *ctx, Region *region, bool skip_children);
 
-	static void CallPreRender (List *ctx, UIElement *element, Region *region, bool front_to_back);
-	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool front_to_back);
+	static void CallPreRender (List *ctx, UIElement *element, Region *region, bool skip_children);
+	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool skip_children);
 
 private:
 	int visual_level;

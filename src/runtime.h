@@ -30,7 +30,7 @@
 
 #define MAXIMUM_CACHE_SIZE 6000000
 
-#define FRONT_TO_BACK_STATS 0
+#define OCCLUSION_CULLING_STATS 0
 
 #define TIMERS 0
 #define DEBUG_MARKER_KEY 0
@@ -63,7 +63,7 @@ enum RuntimeInitFlag {
 	RUNTIME_INIT_SHOW_BOUNDING_BOXES   = 1 << 7,
 	RUNTIME_INIT_SHOW_TEXTBOXES        = 1 << 8,
 	RUNTIME_INIT_SHOW_FPS              = 1 << 9,
-	RUNTIME_INIT_RENDER_FRONT_TO_BACK  = 1 << 10,
+	RUNTIME_INIT_OCCLUSION_CULLING     = 1 << 10,
 	RUNTIME_INIT_SHOW_CACHE_SIZE	   = 1 << 11,
 	RUNTIME_INIT_FFMPEG_YUV_CONVERTER  = 1 << 12,
 	RUNTIME_INIT_USE_SHAPE_CACHE	   = 1 << 13,
@@ -308,9 +308,9 @@ public:
 
 	void DetachDownloaders ();
 	
-#if FRONT_TO_BACK_STATS
-	int uielements_rendered_front_to_back;
-	int uielements_rendered_back_to_front;
+#if OCCLUSION_CULLING_STATS
+	int uielements_rendered_with_occlusion_culling;
+	int uielements_rendered_with_painters;
 #endif
 
 #ifdef DEBUG
@@ -511,7 +511,7 @@ private:
 };
 
 /* for rendering */
-typedef void (*RenderFunc) (List *ctx, UIElement *uielement, Region *region, bool front_to_back);
+typedef void (*RenderFunc) (List *ctx, UIElement *uielement, Region *region, bool skip_children);
 
 class RenderNode : public List::Node {
 public:

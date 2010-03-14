@@ -173,7 +173,7 @@ class Grid : public Panel {
 
  protected:
 	virtual ~Grid ();
-	virtual void PostRender (List *ctx, Region *region, bool front_to_back);
+	virtual void PostRender (List *ctx, Region *region, bool skip_children);
 
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
