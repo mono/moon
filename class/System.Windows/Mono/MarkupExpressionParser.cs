@@ -41,6 +41,7 @@ namespace Mono.Xaml {
 	internal sealed class MarkupExpressionParser {
 
 		private bool parsingBinding;
+		StringBuilder piece;
 		private object target;
 		private string attribute_name;
 		private IntPtr parser;
@@ -305,12 +306,13 @@ namespace Mono.Xaml {
 			}
 		}
 
-		private static string GetNextPiece (ref string remaining, out char next)
+		private string GetNextPiece (ref string remaining, out char next)
 		{
 			bool inString = false;
 			int end = 0;
-			StringBuilder piece = new StringBuilder ();
 			remaining = remaining.TrimStart ();
+			piece = piece ?? new StringBuilder ();
+			piece.Length = 0;
 
 			// If we're inside a quoted string we append all chars to our piece until we hit the ending quote.
 			while (end < remaining.Length && (inString || (remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '='))) {

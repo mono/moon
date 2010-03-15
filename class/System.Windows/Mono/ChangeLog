@@ -1,5 +1,10 @@
 2010-03-15  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: Don't allocate a new
+	  StringBuilder every time we want to get the next piece
+
+2010-03-15  Alan McGovern  <amcgovern@novell.com>
+
 	* MarkupExpressionParser.cs: Fix some bugs in our handling of
 	  both quoted characters and trailing whitespace when parsing
 	  bindings.
