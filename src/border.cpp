@@ -75,7 +75,6 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	Brush *border_brush = GetBorderBrush ();
 
 	cairo_set_matrix (cr, &absolute_xform);
-	cairo_new_path (cr);
 	
 	cairo_save (cr);
 	if (!path_only)
