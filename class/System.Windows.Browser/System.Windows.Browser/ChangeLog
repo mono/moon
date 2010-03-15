@@ -1,3 +1,8 @@
+2010-03-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlElement.cs: If we don't have a parent, return null instead of a
+	HtmlElement with a zero native pointer.
+
 2010-03-10  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlEventArgs.cs: Fix the mouse button mapping from the
