@@ -1,3 +1,9 @@
+2010-03-15  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (AnimationStorage::AnimationStorage): for value
+	types, don't permit a null value for baseValue, or else we crash
+	later on.
+
 2010-03-14  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: Clocks are another DO-subclass that don't
