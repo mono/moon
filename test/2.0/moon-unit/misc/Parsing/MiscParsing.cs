@@ -282,7 +282,6 @@ namespace MoonTest.Misc.Parsing
 			
 			// Return the child of the canvas so we can poke its values
 			Canvas canvas = (Canvas) XamlReader.Load (s);
-			Assert.IsNotNull (canvas.FindName ("Hidden"), "#should be findable");
 			return (T) canvas.Children [0];
 		}
 
@@ -320,6 +319,7 @@ namespace MoonTest.Misc.Parsing
 		{
 			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_SetProperty);
 			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_SetProperty), "#1");
+			Assert.IsNotNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should be findable");
 		}
 
 		[TestMethod]
@@ -338,6 +338,7 @@ namespace MoonTest.Misc.Parsing
 
 			// The rectangle should not be parented already, so this should succeed
 			new Canvas ().Children.Add ((Rectangle) f.GetValue (AttachedProperties.FE_GetSetProperty));
+			Assert.IsNotNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should be findable");
 		}
 
 		[TestMethod]
@@ -351,6 +352,7 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
+		[MoonlightBug ("The rectangle in the IList should not have its name registered")]
 		public void AttachedProp_IList_GetOnly_OnRectangle ()
 		{
 			AttachedProperties.InstantiateLists = true;
@@ -359,6 +361,7 @@ namespace MoonTest.Misc.Parsing
 			var list = (List<FrameworkElement>) f.GetValue (AttachedProperties.IList_GetProperty);
 			Assert.AreEqual (1, list.Count, "#1");
 			Assert.IsInstanceOfType<Rectangle> (list [0], "#1");
+			Assert.IsNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should not be findable");
 		}
 
 		[TestMethod]
@@ -391,6 +394,7 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
+		[MoonlightBug ("The rectangle in the IList should not have its name registered")]
 		public void AttachedProp_IList_GetAndSet_OnRectangle ()
 		{
 			AttachedProperties.InstantiateLists = true;
@@ -401,6 +405,7 @@ namespace MoonTest.Misc.Parsing
 
 			// The rectangle should not be parented already, so this won't throw an exception
 			new Canvas ().Children.Add (list[0]);
+			Assert.IsNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should not be findable");
 		}
 
 		[TestMethod]

@@ -1,5 +1,11 @@
 2010-03-15  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/Parsing/MiscParsing.cs: Fix the tests so that they pass
+	  on SL. There are actually cases where the rectangle does not
+	  have its name registered.
+
+2010-03-15  Alan McGovern  <amcgovern@novell.com>
+
 	* misc/Parsing/MiscParsing.cs: Fix some bugs in our handling
 	  of both quoted characters and trailing whitespace when
 	  parsing bindings.
