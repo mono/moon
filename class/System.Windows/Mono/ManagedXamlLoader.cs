@@ -507,27 +507,12 @@ namespace Mono.Xaml
 			// The Setter might actually want a collection, in this case we grab the old collection with the getter
 			// and then add the new object to the collection
 			//
-			// TODO: Check if the setter method still gets called on Silverlight
 			if (typeof (IList).IsAssignableFrom (get_method.ReturnType) && !(o_value is IList)) {
 				
 				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
 					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
-					// FIXME: Silverlight 3.0 does not autogenerate a list if there is none there.
-					// This needs a verification test added to moon-unit before removing the code below.
-//					if (the_list == null) {
-//						the_list = (IList) Activator.CreateInstance (set_params [1].ParameterType);
-//						if (the_list == null)
-//							return false;
-//						set_method.Invoke (null, new object [] {target, the_list});
-//					}
-
 					try {
 						the_list.Add (o_value);
-
-						if (o_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
-							NativeMethods.dependency_object_set_parent_safe (((DependencyObject)o_value).native, ((DependencyObject)target).native);
-						}
-
 						return true;
 					}
 					catch {
@@ -871,10 +856,6 @@ namespace Mono.Xaml
 
 				try {
 					the_dict.Add (key_name, child);
-					if (child is DependencyObject && parent_parent is DependencyObject && !(the_dict is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent_safe (((DependencyObject) child).native, ((DependencyObject) parent_parent).native);
-					}
-
 					return true;
 				} catch (ArgumentException) {
 					throw new XamlParseException (2273, "Elements in the same ResourceDictionary cannot have the same x:Key");
@@ -895,11 +876,6 @@ namespace Mono.Xaml
 
 				try {
 					the_list.Add (child);
-
-					if (child is DependencyObject && parent_parent is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent_safe (((DependencyObject)child).native, ((DependencyObject)parent_parent).native);
-					}
-
 					return true;
 				}
 				catch (Exception e) {
@@ -924,10 +900,6 @@ namespace Mono.Xaml
 
 				try {
 					the_dict.Add (key_name, child);
-					if (child is DependencyObject && parent is DependencyObject && !(the_dict is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent_safe (((DependencyObject) child).native, ((DependencyObject) parent).native);
-					}
-
 					return true;
 				} catch (Exception e) {
 					// Fall through to string
@@ -941,11 +913,6 @@ namespace Mono.Xaml
 
 				try {
 					the_list.Add (child);
-
-					if (child is DependencyObject && parent is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent_safe (((DependencyObject)child).native, ((DependencyObject)parent).native);
-					}
-
 					return true;
 				}
 				catch {
@@ -978,10 +945,6 @@ namespace Mono.Xaml
 
 				try {
 					the_list.Add (child);
-
-					if (child is DependencyObject && parent is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent_safe (((DependencyObject)child).native, ((DependencyObject)parent).native);
-					}
 					return true;
 				}
 				catch {

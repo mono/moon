@@ -1,3 +1,9 @@
+2010-03-15  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: The managed xaml loader doesn't need
+	  to call SetParent on DOs anymore. This should be handled
+	  fine by the engine.
+
 2010-03-12  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: Spaces aren't a terminating
