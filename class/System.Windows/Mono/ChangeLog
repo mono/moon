@@ -1,5 +1,11 @@
 2010-03-15  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: Fix some bugs in our handling of
+	  both quoted characters and trailing whitespace when parsing
+	  bindings.
+
+2010-03-15  Alan McGovern  <amcgovern@novell.com>
+
 	* ManagedXamlLoader.cs: The managed xaml loader doesn't need
 	  to call SetParent on DOs anymore. This should be handled
 	  fine by the engine.

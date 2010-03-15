@@ -713,6 +713,7 @@ namespace MoonTest.Misc.Parsing
 		[TestMethod]
 		public void EscapedExtensions ()
 		{
+			// Parse a binding which has escaped curly braces with escaped commas inside it
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
 <Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
@@ -730,6 +731,7 @@ Width=""100"" Height=""100"">
 		[TestMethod]
 		public void EscapedExtensions2 ()
 		{
+			// Parse a binding which uses escaped curly braces and has whitespace in it
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
 <Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
@@ -747,6 +749,7 @@ Width=""100"" Height=""100"">
 		[TestMethod]
 		public void EscapedExtensions_CommaTerminated ()
 		{
+			// Parse a binding with spaces and escaped curly braces
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
 <Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
 	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter=Click \{0\}, Mode=OneWay}"" />
@@ -755,5 +758,85 @@ Width=""100"" Height=""100"">
 			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
 			Assert.AreEqual ("Click {0}", beb.ParentBinding.ConverterParameter, "#1");
 		}
+
+		[TestMethod]
+		public void EscapedCharacters ()
+		{
+			// Parse a binding with escaped backslashes, escaped curly braces and escaped commas
+			// with whitespace at the end
+			Canvas canvas = (Canvas) XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter=\\a\{\, test , Mode=OneWay}"" />
+</Canvas>
+");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual (@"\a{, test", beb.ParentBinding.ConverterParameter, "#1");
+		}
+
+		[TestMethod]
+		public void QuotedString_EscapedQuotes ()
+		{
+			// Parse a binding with an escaped quote mark and whitespace at the end
+			Canvas canvas = (Canvas) XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter='\'' , Mode=OneWay}"" />
+</Canvas>
+");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual (@"'", beb.ParentBinding.ConverterParameter, "#1");
+		}
+
+		[TestMethod]
+		public void QuotedString_EscapedBackslashesAndWhitespace ()
+		{
+			// Parse a binding with an escaped quote mark with whitespace inside it
+			Canvas canvas = (Canvas) XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter='\\ \\ ' , Mode=OneWay}"" />
+</Canvas>
+");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual (@"\ \ ", beb.ParentBinding.ConverterParameter, "#1");
+		}
+
+		[TestMethod]
+		public void QuotedString_EscapedQuotesAndWhitespace ()
+		{
+			// Parse a binding with an escaped quote mark with whitespace inside it
+			Canvas canvas = (Canvas) XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter='\' ' , Mode=OneWay}"" />
+</Canvas>
+");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual (@"' ", beb.ParentBinding.ConverterParameter, "#1");
+		}
+
+		[TestMethod]
+		public void QuotedString_UnescapedComma ()
+		{
+			// Parse a binding unescaped commas inside a quoted string with whitespace at the end
+			Canvas canvas = (Canvas) XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, ConverterParameter='dddd, MMMM, yyyy' , Mode=OneWay}"" />
+</Canvas>
+");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual (@"dddd, MMMM, yyyy", beb.ParentBinding.ConverterParameter, "#1");
+		}
+
+		[TestMethod]
+		public void QuotedString_UnescapedBraces ()
+		{
+			// parse a binding with unescaped curly braces and commas
+			Canvas canvas = (Canvas) XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, ConverterParameter=',}{ } }{' , Mode=OneWay}"" />
+</Canvas>
+");
+			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
+			Assert.AreEqual (@",}{ } }{", beb.ParentBinding.ConverterParameter, "#1");
+		}
+
 	}
 }

@@ -1,5 +1,11 @@
 2010-03-15  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/Parsing/MiscParsing.cs: Fix some bugs in our handling
+	  of both quoted characters and trailing whitespace when
+	  parsing bindings.
+
+2010-03-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ToolTipServiceTest.cs: Add tests for
 	  the last change to make the Tooltip properties custom DPs
 	  instead of core DPs. We pass these now because the DP is

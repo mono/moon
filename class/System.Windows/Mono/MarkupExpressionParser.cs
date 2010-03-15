@@ -307,39 +307,24 @@ namespace Mono.Xaml {
 
 		private static string GetNextPiece (ref string remaining, out char next)
 		{
+			bool inString = false;
 			int end = 0;
 			StringBuilder piece = new StringBuilder ();
-
 			remaining = remaining.TrimStart ();
-			if (remaining.Length > 1 && remaining [end] == '\'')
-				end = remaining.IndexOf ('\'', end + 1) + 1;
-			
-			if (end == -1 || end == 0) {
-				end = 0;
-				while (end < remaining.Length && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=') {
-					// Skip over escaped chars
-					if (remaining [end] == '\\') {
-						if (end >= remaining.Length - 1)
-							continue;
-						if (remaining [end+1] == '{') {
-							piece.Append ('{');
-							end += 2;
-							continue;
-						} else if (remaining [end+1] == '}') {
-							piece.Append ('}');
-							end += 2;
-							continue;
-						}
-						// Advance past the \ char
-						piece.Append (remaining [end + 1]);
-						end += 2;
-					}
-					piece.Append (remaining [end]);
-					end++;
-					
+
+			// If we're inside a quoted string we append all chars to our piece until we hit the ending quote.
+			while (end < remaining.Length && (inString || (remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '='))) {
+				if (remaining [end] == '\'')
+					inString = !inString;
+
+				// If this is an escape char, consume it and append the next char to our piece.
+				if (remaining [end] == '\\') {
+					end ++;
+					if (end == remaining.Length)
+						break;;
 				}
-				if (end >= remaining.Length)
-					end = remaining.Length;
+				piece.Append (remaining [end]);
+				end++;
 			}
 
 			if (end == 0) {
@@ -348,33 +333,19 @@ namespace Mono.Xaml {
 			}
 
 			next = remaining [end];
-			string res;
-			if (remaining [0] == '\'' && remaining [end - 1] == '\'')
-				res = remaining.Substring (1, end - 2);
-			else
-				res = piece.ToString ();
-
 			remaining = remaining.Substring (end + 1);
-			return EscapeString (res.TrimEnd ());
-		}
 
-		private static string EscapeString (string str)
-		{
-			StringBuilder builder = new StringBuilder (str.Length);
-			char prev = Char.MaxValue;
+			// Whitespace is trimmed from the end of the piece before stripping
+			// quote chars from the start/end of the string. 
+			while (piece.Length > 0 && char.IsWhiteSpace (piece [piece.Length - 1]))
+				piece.Length --;
 
-			for (int i = 0; i < str.Length; i++) {
-				// There has to be more escape chars than this
-				if (str [i] == '\\') {
-					prev = str [i];
-					continue;
-				}
-
-				prev = str [i];
-				builder.Append (str [i]);
+			if (piece.Length >= 2 && piece [0] == '\'' && piece [piece.Length - 1] == '\'') {
+				piece.Remove (piece.Length - 1, 1);
+				piece.Remove (0, 1);
 			}
 
-			return builder.ToString ();
+			return piece.ToString ();
 		}
 	}
 }
