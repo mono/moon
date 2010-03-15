@@ -39,7 +39,7 @@ namespace System.Windows.Controls
 
         #region Placement Property
         public static readonly DependencyProperty PlacementProperty =
-                        DependencyProperty.RegisterAttachedCore( 
+                        DependencyProperty.RegisterAttached( 
                         "Placement",            // Name 
                         typeof(PlacementMode),  // Type
                         typeof(ToolTipService), // Owner 
@@ -72,7 +72,7 @@ namespace System.Windows.Controls
 
 	#region Placement Target Property
         public static readonly DependencyProperty PlacementTargetProperty =
-                        DependencyProperty.RegisterAttachedCore( 
+                        DependencyProperty.RegisterAttached( 
                         "PlacementTarget",      // Name 
                         typeof(UIElement),      // Type
                         typeof(ToolTipService), // Owner 
@@ -107,7 +107,7 @@ namespace System.Windows.Controls
         ///     The DependencyProperty for the ToolTip property. 
         /// </summary>
         public static readonly DependencyProperty ToolTipProperty =
-                        DependencyProperty.RegisterAttachedCore( 
+                        DependencyProperty.RegisterAttached( 
                         "ToolTip",              // Name 
                         typeof(object),         // Type
                         typeof(ToolTipService), // Owner 
