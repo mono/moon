@@ -1,3 +1,7 @@
+2010-03-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Bump to 153581.
+
 2010-03-11  Mario Carrion  <mcarrion@novell.com>
 
 	* .gitignore: Temporal vim locking files added.
