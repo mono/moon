@@ -212,6 +212,35 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.AreEqual (String.Empty, iap.GetItemTypeCore_ (), "GetItemTypeCore");
 			Assert.IsNull (iap.ItemsControlAutomationPeer_, "ItemsControlAutomationPeer");
 			Assert.IsTrue (Object.ReferenceEquals (cc, iap.Item_), "Item");
+
+			TextBlock textBlock = new TextBlock () { Text = "Name" };
+			cc.Content = textBlock;
+			Assert.AreEqual ("Name", iap.GetNameCore_ (), "GetNameCore");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsSource ()
+		{
+			ListBox listbox = new ListBox ();
+			List<Car> carList = new List<Car> ();
+			carList.Add (new Car () { Name = "Ferrari", Price = 150000 });
+			carList.Add (new Car () { Name = "Honda", Price = 12500 });
+			carList.Add (new Car () { Name = "Toyota", Price = 11500 });
+			listbox.DisplayMemberPath = "Name";
+			listbox.ItemsSource = carList;
+
+			CreateAsyncTest (listbox,
+			() => {
+				AutomationPeer listboxPeer = FrameworkElementAutomationPeer.CreatePeerForElement (listbox);
+				List<AutomationPeer> children = listboxPeer.GetChildren ();
+				Assert.IsNotNull (children, "#0");
+				Assert.AreEqual (3, children.Count, "#1");
+
+				Assert.AreEqual ("Ferrari 150000", children [0].GetName (), "#2");
+				Assert.AreEqual ("Honda 12500", children [1].GetName (), "#3");
+				Assert.AreEqual ("Toyota 11500", children [2].GetName (), "#4");
+			});
 		}
 
 		[TestMethod]
@@ -544,6 +573,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
 		{
 			return new ItemAutomationPeerPoker (element as ConcreteContentControl);
+		}
+
+		class Car {
+			public string Name { get; set; }
+			public int Price { get; set; }
+
+			public override string ToString ()
+			{
+				return string.Format ("{0} {1}", Name, Price);
+			}
 		}
 	}
 }

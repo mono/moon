@@ -20,6 +20,7 @@
 /*.usertasks
 /*.pidb
 *~
+*.swp
 *#*#
 /confdefs.h
 /doltcompile

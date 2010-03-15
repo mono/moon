@@ -99,7 +99,11 @@ namespace System.Windows.Automation.Peers {
 			if (selector.SelectedIndex == -1) 
 				return null;
 
-			return FrameworkElementAutomationPeer.CreatePeerForElement (selector.GetContainerItem (selector.SelectedIndex));
+			UIElement selectedElement
+				= selector.ItemContainerGenerator.ContainerFromIndex (selector.SelectedIndex) as UIElement;
+			if (selectedElement == null)
+				return null;
+			return FrameworkElementAutomationPeer.CreatePeerForElement (selectedElement as UIElement);
 		}
 
 		private IRawElementProviderSimple [] GetProviderArrayFromPeer (AutomationPeer peer)

@@ -38,7 +38,23 @@ namespace System.Windows.Automation.Peers {
 
 		protected override string GetNameCore ()
 		{
-			return ((ContentControl) Owner).Content as string ?? string.Empty;
+			ItemsControl parent = ItemsControl;
+			if (parent != null && parent.ItemsSource != null)
+				return Item.ToString ();
+
+			ContentControl owner = Owner as ContentControl;
+			if (owner.Content == null)
+				return string.Empty;
+
+			string contentString = owner.Content as string;
+			if (contentString != null)
+				return contentString;
+
+			TextBlock textBlock = owner.Content as TextBlock;
+			if (textBlock != null)
+				return textBlock.Text ?? string.Empty;
+
+			return string.Empty;
 		}
 
 		protected override string GetItemTypeCore ()
@@ -49,18 +65,21 @@ namespace System.Windows.Automation.Peers {
 		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
 			get {
 				ContentControl control = Owner as ContentControl;
-				if (control == null || control.Parent == null)
+				ItemsControl itemsControl = ItemsControl;
+				if (itemsControl == null)
 					return null;
 
-				return FrameworkElementAutomationPeer.FromElement (control.Parent as UIElement) as ItemsControlAutomationPeer;
+				return FrameworkElementAutomationPeer.FromElement (itemsControl) as ItemsControlAutomationPeer;
 			}
 		}
 
 		protected object Item {
 			get {
-				ListBoxItem lbi = Owner as ListBoxItem;
-				if (lbi != null)
-					return lbi.Item;
+				ItemsControl itemsControl = ItemsControl;
+				if (itemsControl != null)
+					// We already know Owner is ListBoxItem otherwise 'itemsControl'
+					// would be null
+					return itemsControl.ItemContainerGenerator.ItemFromContainer (Owner);
 				else
 					return Owner;
 			}
@@ -68,6 +87,10 @@ namespace System.Windows.Automation.Peers {
 
 		internal override List<AutomationPeer> ChildrenCore {
 			get {
+				ItemsControl itemsControl = ItemsControl;
+				if (itemsControl != null && itemsControl.ItemsSource != null)
+					return null;
+
 				ContentControl owner = (ContentControl) Owner;
 				if (owner.Content == null || owner.Content is string)
 					return null;
@@ -75,5 +98,21 @@ namespace System.Windows.Automation.Peers {
 					return base.ChildrenCore; 
 			}
 		}
+
+		internal ItemsControl ItemsControl {
+			get {
+				ContentControl control = Owner as ContentControl;
+				ItemsControl itemsControl = control.Parent as ItemsControl;
+				if (itemsControl == null) {
+					ListBoxItem lbi = Owner as ListBoxItem;
+					if (lbi != null)
+						return lbi.ParentSelector;
+					return null;
+				}
+
+				return itemsControl;
+			}
+		}
+
 	}
 }
