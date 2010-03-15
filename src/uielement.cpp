@@ -331,10 +331,6 @@ UIElement::UpdateTotalRenderVisibility ()
 void
 UIElement::UpdateTotalHitTestVisibility ()
 {
-	VisualTreeWalker walker (this);
-	while (UIElement *child = walker.Step ())
-		child->UpdateTotalHitTestVisibility ();
-
 	if (IsAttached ())
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
 }
@@ -510,9 +506,6 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 void 
 UIElement::CacheInvalidateHint () 
 {
-	VisualTreeWalker walker (this);
-	while (UIElement *child = walker.Step ())
-		child->CacheInvalidateHint ();
 }
 
 void
@@ -539,6 +532,24 @@ UIElement::SetSubtreeObject (DependencyObject *value)
 	  subtree_object->ref ();
 }
 
+static bool
+clear_loaded_and_cache_invalidate_hint (UIElement *el, gpointer data)
+{
+	el->CacheInvalidateHint ();
+	el->ClearLoaded ();
+	return TRUE; // we never prune subtrees
+}
+
+void
+UIElement::VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data)
+{
+	UIElement *e;
+	DeepTreeWalker walker (this);
+	while ((e = walker.Step ()))
+		if (!visitor (e, visitor_data))
+			walker.SkipBranch ();
+}
+
 void
 UIElement::ElementRemoved (UIElement *item)
 {
@@ -548,8 +559,8 @@ UIElement::ElementRemoved (UIElement *item)
 	if (IsAttached ())
 		GetDeployment ()->GetSurface ()->RemoveDirtyElement (item);
 	item->SetVisualParent (NULL);
-	item->CacheInvalidateHint ();
-	item->ClearLoaded ();
+
+	item->VisitVisualTree (clear_loaded_and_cache_invalidate_hint, item);
 
 	Rect emptySlot (0,0,0,0);
 	LayoutInformation::SetLayoutSlot (item, &emptySlot);
@@ -866,7 +877,6 @@ UIElement::OnLoaded ()
 void
 UIElement::ClearLoaded ()
 {
-	UIElement *e = NULL;
 	Surface *s = Deployment::GetCurrent ()->GetSurface ();
 	if (s->GetFocusedElement () == this)
 		s->FocusElement (NULL);
@@ -874,14 +884,7 @@ UIElement::ClearLoaded ()
 	ClearForeachGeneration (UIElement::LoadedEvent);
 	ClearWalkedForLoaded ();
 
-	if (!IsLoaded ())
-		return;
-	
 	flags &= ~UIElement::IS_LOADED;
-
-	VisualTreeWalker walker (this);
-	while ((e = walker.Step ()))
-		e->ClearLoaded ();
 }
 
 bool
@@ -1251,17 +1254,30 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		self_region->Intersect (GetSubtreeBounds().RoundOut ()); // note the RoundOut
 	}
 
-	if (self_region->IsEmpty() && render_list->First() == cleanup_node) {
-		/* we don't intersect the surface region, and none of
-		   our children did either, remove the cleanup node */
+	if (render_list->First() == cleanup_node) {
+		// our children (if we had any) didn't intersect
+		// the region.  so there's no need for the cleanup
+		// node at all.
 		render_list->Remove (render_list->First());
-		delete self_region;
-		if (delete_region)
-			delete region;
-		return;
-	}
 
-	render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
+		if (self_region->IsEmpty()) {
+			/* we don't intersect the surface region either, so just bail */
+			delete self_region;
+			if (delete_region)
+				delete region;
+			return;
+		}
+		else {
+			// we intersect the surface region, so add a
+			// single node that does all the work
+			render_list->Prepend (new RenderNode (this, self_region, true, UIElement::CallPreRender, UIElement::CallPostRender));
+		}
+	}
+	else {
+		// our children intersected the region, so prepend the
+		// prerender/render call here.
+		render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
+	}
 
 	if (!self_region->IsEmpty()) {
 		if (((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */

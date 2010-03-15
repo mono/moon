@@ -37,6 +37,9 @@
 
 class Surface;
 
+// return false to skip the subtree rooted at el
+typedef bool (*VisualTreeVisitor)(UIElement *el, gpointer data);
+
 /* @Namespace=System.Windows */
 class UIElement : public DependencyObject {
 public:
@@ -607,6 +610,8 @@ protected:
 	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool skip_children);
 
 private:
+	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);
+
 	int visual_level;
 	UIElement *visual_parent;
 	DependencyObject *subtree_object;

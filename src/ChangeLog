@@ -1,5 +1,12 @@
 2010-03-15  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::FrontToBack): be a little smarter
+	about how many nodes we add to the render list.  For leaf
+	elements (or elements with children who aren't rendering), only
+	insert 1 instead of 2 nodes.
+
+2010-03-15  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp (AnimationStorage::AnimationStorage): for value
 	types, don't permit a null value for baseValue, or else we crash
 	later on.
