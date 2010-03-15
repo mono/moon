@@ -1,3 +1,10 @@
+2010-03-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ToolTipServiceTest.cs: Add tests for
+	  the last change to make the Tooltip properties custom DPs
+	  instead of core DPs. We pass these now because the DP is
+	  custom.
+
 2010-03-12  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/Parsing/MiscParsing.cs: Spaces aren't a terminating

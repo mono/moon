@@ -70,6 +70,43 @@ namespace MoonTest
 		}
 
 		[TestMethod]
+		public void SameTooltipObjectForMultipleObjects_TooltipObject ()
+		{
+			// We can set multiple tooltips with the same name without getting
+			// a name collision as the Name is not registered.
+			string name = "TooltipNameNotRegistered";
+			var target1 = new Grid ();
+			var target2 = new Grid ();
+			TestPanel.Children.Add (target1);
+			TestPanel.Children.Add (target2);
+
+			ToolTipService.SetToolTip (target1, new ToolTip { Name = name });
+			ToolTipService.SetToolTip (target2, new ToolTip { Name = name });
+			ToolTipService.SetToolTip (TestPanel, new ToolTip { Name = name });
+
+			Assert.IsNull (TestPanel.FindName (name), "#1");
+		}
+
+		[TestMethod]
+		public void SamePlacementTarget_MultipleTooltips ()
+		{
+			// We can use the same object and name multiple times for PlacementTarget
+			// as the Name is not registered.
+			var placementTarget = new ToolTip { Name = "TooltipNameNotRegistered" };
+			var target1 = new Grid ();
+			var target2 = new Grid ();
+
+			TestPanel.Children.Add (target1);
+			TestPanel.Children.Add (target2);
+
+			ToolTipService.SetPlacementTarget (target1, placementTarget);
+			ToolTipService.SetPlacementTarget (target2, placementTarget);
+			ToolTipService.SetPlacementTarget (TestPanel, new ToolTip { Name = "TooltipNameNotRegistered" });
+
+			Assert.IsNull (TestPanel.FindName (placementTarget.Name), "#1");
+		}
+
+		[TestMethod]
 		public void SameTooltipObjectForMultipleObjects_RemoveFromBoth ()
 		{
 			// ToolTip does not set "ContentControl.ContentSetsParent" to false
