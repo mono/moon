@@ -358,7 +358,7 @@ GetTestDirectory (ShockerScriptableControlObject* obj, char* name, const NPVaria
 	const char* dir = getenv ("MOONLIGHT_HARNESS_TESTDIRECTORY");
 
 	if (!dir) {
-		printf ("[shocker] GetTestDirectory: MOONLIGHT_HARNESS_TESTDIRECTORY IS NOT SET, using /tmp instead.\n");
+		printf ("[shocker] GetTestDirectory: MOONLIGHT_HARNESS_TESTDIRECTORY is not set, using /tmp instead.\n");
 		dir = "/tmp";
 	}
 

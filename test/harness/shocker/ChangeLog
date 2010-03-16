@@ -1,5 +1,9 @@
 2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shocker.cpp: Fix capitalization.
+
+2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shocker.cpp: Make NPN_strdup static so that it doesn't clash with
 	libmoonplugin's version of it. Also don't call MOON_NPN_MemAlloc, but call our
 	browser class' MemAlloc.
