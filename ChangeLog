@@ -1,3 +1,7 @@
+2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Bump to 153674 for System.Xml.Serialization.
+
 2010-03-16  Jb Evain  <jbevain@novell.com>
 
 	* README: Bump to 153639.

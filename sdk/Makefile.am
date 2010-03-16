@@ -58,6 +58,9 @@ install-redist-assemblies:
 	$(INSTALL) -c $(CLASS_DIR)/System.Windows.Controls.Data.dll.mdb $(SDK2_REDIST_DIR)/System.Windows.Controls.Data.dll.mdb
 	$(INSTALL) -c $(CLASS_DIR)/System.Xml.Linq.dll $(SDK2_REDIST_DIR)/System.Xml.Linq.dll
 	$(INSTALL) -c $(CLASS_DIR)/System.Xml.Linq.dll.mdb $(SDK2_REDIST_DIR)/System.Xml.Linq.dll.mdb
+	$(INSTALL) -c $(CLASS_DIR)/System.Xml.Serialization.dll $(SDK2_REDIST_DIR)/System.Xml.Serialization.dll
+	$(INSTALL) -c $(CLASS_DIR)/System.Xml.Serialization.dll.mdb $(SDK2_REDIST_DIR)/System.Xml.Serialization.dll.mdb
+	
 
 clean-local:
 	-rm -rf buildversion

@@ -1,0 +1,2054 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assemblies>
+  <assembly name="System.Xml.Serialization" version="2.0.5.0">
+    <attributes>
+      <attribute name="System.Runtime.CompilerServices.ExtensionAttribute" />
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AssemblyName" value="System.ServiceModel, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9" />
+        </properties>
+      </attribute>
+      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+        <properties>
+          <property name="WrapNonExceptionThrows" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyProductAttribute">
+        <properties>
+          <property name="Product" value="Microsoft® Silverlight" />
+        </properties>
+      </attribute>
+      <attribute name="System.Diagnostics.DebuggableAttribute">
+        <properties>
+          <property name="DebuggingFlags" value="IgnoreSymbolStoreSequencePoints" />
+        </properties>
+      </attribute>
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+        <properties>
+          <property name="Value" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.CLSCompliantAttribute">
+        <properties>
+          <property name="IsCompliant" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyTitleAttribute">
+        <properties>
+          <property name="Title" value="System.Xml.Serialization.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDescriptionAttribute">
+        <properties>
+          <property name="Description" value="System.Xml.Serialization.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute">
+        <properties>
+          <property name="DefaultAlias" value="System.Xml.Serialization.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCompanyAttribute">
+        <properties>
+          <property name="Company" value="Microsoft Corporation" />
+        </properties>
+      </attribute>
+      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute">
+        <properties>
+          <property name="CompilationRelaxations" value="8" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute">
+        <properties>
+          <property name="Copyright" value="© Microsoft Corporation.  All rights reserved." />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute">
+        <properties>
+          <property name="Version" value="4.0.41108.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute">
+        <properties>
+          <property name="InformationalVersion" value="4.0.41108.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.SatelliteContractVersionAttribute">
+        <properties>
+          <property name="Version" value="2.0.5.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.NeutralResourcesLanguageAttribute">
+        <properties>
+          <property name="CultureName" value="en-US" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDelaySignAttribute">
+        <properties>
+          <property name="DelaySign" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute">
+        <properties>
+          <property name="KeyFile" value="f:\dd\Tools\devdiv\silverlightpublickey.snk" />
+        </properties>
+      </attribute>
+    </attributes>
+    <namespaces>
+      <namespace name="System.ServiceModel">
+        <classes>
+          <class name="XmlSerializerFormatAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="AllowMultiple" value="False" />
+                  <property name="Inherited" value="False" />
+                  <property name="ValidOn" value="Interface, Method, Class" />
+                </properties>
+              </attribute>
+            </attributes>
+            <interfaces>
+              <interface name="System.Runtime.InteropServices._Attribute" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Style" attrib="0" ptype="System.ServiceModel.OperationFormatStyle">
+                <methods>
+                  <method name="get_Style()" attrib="2182" returntype="System.ServiceModel.OperationFormatStyle">
+                    <parameters />
+                  </method>
+                  <method name="set_Style(System.ServiceModel.OperationFormatStyle)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.ServiceModel.OperationFormatStyle" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="SupportFaults" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_SupportFaults()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_SupportFaults(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+        </classes>
+      </namespace>
+      <namespace name="System.Xml.Serialization">
+        <classes>
+          <class name="XmlAnyElementAttributes" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
+            </attributes>
+            <interfaces>
+              <interface name="System.Collections.IList" />
+              <interface name="System.Collections.ICollection" />
+              <interface name="System.Collections.IEnumerable" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Count" attrib="0" ptype="System.Int32">
+                <methods>
+                  <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Xml.Serialization.XmlAnyElementAttribute" params="System.Int32">
+                <methods>
+                  <method name="get_Item(System.Int32)" attrib="2182" returntype="System.Xml.Serialization.XmlAnyElementAttribute">
+                    <parameters>
+                      <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                  <method name="set_Item(System.Int32, System.Xml.Serialization.XmlAnyElementAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                      <parameter name="value" position="1" attrib="0" type="System.Xml.Serialization.XmlAnyElementAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Add(System.Xml.Serialization.XmlAnyElementAttribute)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlAnyElementAttribute" />
+                </parameters>
+              </method>
+              <method name="Clear()" attrib="486" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="Contains(System.Xml.Serialization.XmlAnyElementAttribute)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlAnyElementAttribute" />
+                </parameters>
+              </method>
+              <method name="CopyTo(System.Xml.Serialization.XmlAnyElementAttribute[], System.Int32)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="array" position="0" attrib="0" type="System.Xml.Serialization.XmlAnyElementAttribute[]" />
+                  <parameter name="index" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="GetEnumerator()" attrib="486" virtual="true" returntype="System.Collections.IEnumerator">
+                <parameters />
+              </method>
+              <method name="IndexOf(System.Xml.Serialization.XmlAnyElementAttribute)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlAnyElementAttribute" />
+                </parameters>
+              </method>
+              <method name="Insert(System.Int32, System.Xml.Serialization.XmlAnyElementAttribute)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="attribute" position="1" attrib="0" type="System.Xml.Serialization.XmlAnyElementAttribute" />
+                </parameters>
+              </method>
+              <method name="Remove(System.Xml.Serialization.XmlAnyElementAttribute)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlAnyElementAttribute" />
+                </parameters>
+              </method>
+              <method name="RemoveAt(System.Int32)" attrib="486" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlArrayItemAttributes" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
+            </attributes>
+            <interfaces>
+              <interface name="System.Collections.IList" />
+              <interface name="System.Collections.ICollection" />
+              <interface name="System.Collections.IEnumerable" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Count" attrib="0" ptype="System.Int32">
+                <methods>
+                  <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Xml.Serialization.XmlArrayItemAttribute" params="System.Int32">
+                <methods>
+                  <method name="get_Item(System.Int32)" attrib="2182" returntype="System.Xml.Serialization.XmlArrayItemAttribute">
+                    <parameters>
+                      <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                  <method name="set_Item(System.Int32, System.Xml.Serialization.XmlArrayItemAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                      <parameter name="value" position="1" attrib="0" type="System.Xml.Serialization.XmlArrayItemAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Add(System.Xml.Serialization.XmlArrayItemAttribute)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlArrayItemAttribute" />
+                </parameters>
+              </method>
+              <method name="Clear()" attrib="486" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="Contains(System.Xml.Serialization.XmlArrayItemAttribute)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlArrayItemAttribute" />
+                </parameters>
+              </method>
+              <method name="CopyTo(System.Xml.Serialization.XmlArrayItemAttribute[], System.Int32)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="array" position="0" attrib="0" type="System.Xml.Serialization.XmlArrayItemAttribute[]" />
+                  <parameter name="index" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="GetEnumerator()" attrib="486" virtual="true" returntype="System.Collections.IEnumerator">
+                <parameters />
+              </method>
+              <method name="IndexOf(System.Xml.Serialization.XmlArrayItemAttribute)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlArrayItemAttribute" />
+                </parameters>
+              </method>
+              <method name="Insert(System.Int32, System.Xml.Serialization.XmlArrayItemAttribute)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="attribute" position="1" attrib="0" type="System.Xml.Serialization.XmlArrayItemAttribute" />
+                </parameters>
+              </method>
+              <method name="Remove(System.Xml.Serialization.XmlArrayItemAttribute)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlArrayItemAttribute" />
+                </parameters>
+              </method>
+              <method name="RemoveAt(System.Int32)" attrib="486" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlAttributeOverrides" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
+            </attributes>
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Item" attrib="0" ptype="System.Xml.Serialization.XmlAttributes" params="System.Type, System.String">
+                <methods>
+                  <method name="get_Item(System.Type, System.String)" attrib="2182" returntype="System.Xml.Serialization.XmlAttributes">
+                    <parameters>
+                      <parameter name="type" position="0" attrib="0" type="System.Type" />
+                      <parameter name="member" position="1" attrib="0" type="System.String" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Xml.Serialization.XmlAttributes" params="System.Type">
+                <methods>
+                  <method name="get_Item(System.Type)" attrib="2182" returntype="System.Xml.Serialization.XmlAttributes">
+                    <parameters>
+                      <parameter name="type" position="0" attrib="0" type="System.Type" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Add(System.Type, System.String, System.Xml.Serialization.XmlAttributes)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="member" position="1" attrib="0" type="System.String" />
+                  <parameter name="attributes" position="2" attrib="0" type="System.Xml.Serialization.XmlAttributes" />
+                </parameters>
+              </method>
+              <method name="Add(System.Type, System.Xml.Serialization.XmlAttributes)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="attributes" position="1" attrib="0" type="System.Xml.Serialization.XmlAttributes" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlAttributes" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor(System.Reflection.ICustomAttributeProvider)" attrib="6278">
+                <parameters>
+                  <parameter name="provider" position="0" attrib="0" type="System.Reflection.ICustomAttributeProvider" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="XmlAnyElements" attrib="0" ptype="System.Xml.Serialization.XmlAnyElementAttributes">
+                <methods>
+                  <method name="get_XmlAnyElements()" attrib="2182" returntype="System.Xml.Serialization.XmlAnyElementAttributes">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlArray" attrib="0" ptype="System.Xml.Serialization.XmlArrayAttribute">
+                <methods>
+                  <method name="get_XmlArray()" attrib="2182" returntype="System.Xml.Serialization.XmlArrayAttribute">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlArray(System.Xml.Serialization.XmlArrayAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.Serialization.XmlArrayAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlArrayItems" attrib="0" ptype="System.Xml.Serialization.XmlArrayItemAttributes">
+                <methods>
+                  <method name="get_XmlArrayItems()" attrib="2182" returntype="System.Xml.Serialization.XmlArrayItemAttributes">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlAttribute" attrib="0" ptype="System.Xml.Serialization.XmlAttributeAttribute">
+                <methods>
+                  <method name="get_XmlAttribute()" attrib="2182" returntype="System.Xml.Serialization.XmlAttributeAttribute">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlAttribute(System.Xml.Serialization.XmlAttributeAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.Serialization.XmlAttributeAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlChoiceIdentifier" attrib="0" ptype="System.Xml.Serialization.XmlChoiceIdentifierAttribute">
+                <methods>
+                  <method name="get_XmlChoiceIdentifier()" attrib="2182" returntype="System.Xml.Serialization.XmlChoiceIdentifierAttribute">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlDefaultValue" attrib="0" ptype="System.Object">
+                <methods>
+                  <method name="get_XmlDefaultValue()" attrib="2182" returntype="System.Object">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlDefaultValue(System.Object)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Object" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlElements" attrib="0" ptype="System.Xml.Serialization.XmlElementAttributes">
+                <methods>
+                  <method name="get_XmlElements()" attrib="2182" returntype="System.Xml.Serialization.XmlElementAttributes">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlEnum" attrib="0" ptype="System.Xml.Serialization.XmlEnumAttribute">
+                <methods>
+                  <method name="get_XmlEnum()" attrib="2182" returntype="System.Xml.Serialization.XmlEnumAttribute">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlEnum(System.Xml.Serialization.XmlEnumAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.Serialization.XmlEnumAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlIgnore" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_XmlIgnore()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlIgnore(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Xmlns" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_Xmlns()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_Xmlns(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlRoot" attrib="0" ptype="System.Xml.Serialization.XmlRootAttribute">
+                <methods>
+                  <method name="get_XmlRoot()" attrib="2182" returntype="System.Xml.Serialization.XmlRootAttribute">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlRoot(System.Xml.Serialization.XmlRootAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.Serialization.XmlRootAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlText" attrib="0" ptype="System.Xml.Serialization.XmlTextAttribute">
+                <methods>
+                  <method name="get_XmlText()" attrib="2182" returntype="System.Xml.Serialization.XmlTextAttribute">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlText(System.Xml.Serialization.XmlTextAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.Serialization.XmlTextAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlType" attrib="0" ptype="System.Xml.Serialization.XmlTypeAttribute">
+                <methods>
+                  <method name="get_XmlType()" attrib="2182" returntype="System.Xml.Serialization.XmlTypeAttribute">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlType(System.Xml.Serialization.XmlTypeAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.Serialization.XmlTypeAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+          <class name="XmlElementAttributes" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
+            </attributes>
+            <interfaces>
+              <interface name="System.Collections.IList" />
+              <interface name="System.Collections.ICollection" />
+              <interface name="System.Collections.IEnumerable" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Count" attrib="0" ptype="System.Int32">
+                <methods>
+                  <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Xml.Serialization.XmlElementAttribute" params="System.Int32">
+                <methods>
+                  <method name="get_Item(System.Int32)" attrib="2182" returntype="System.Xml.Serialization.XmlElementAttribute">
+                    <parameters>
+                      <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                  <method name="set_Item(System.Int32, System.Xml.Serialization.XmlElementAttribute)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                      <parameter name="value" position="1" attrib="0" type="System.Xml.Serialization.XmlElementAttribute" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Add(System.Xml.Serialization.XmlElementAttribute)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlElementAttribute" />
+                </parameters>
+              </method>
+              <method name="Clear()" attrib="486" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="Contains(System.Xml.Serialization.XmlElementAttribute)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlElementAttribute" />
+                </parameters>
+              </method>
+              <method name="CopyTo(System.Xml.Serialization.XmlElementAttribute[], System.Int32)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="array" position="0" attrib="0" type="System.Xml.Serialization.XmlElementAttribute[]" />
+                  <parameter name="index" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="GetEnumerator()" attrib="486" virtual="true" returntype="System.Collections.IEnumerator">
+                <parameters />
+              </method>
+              <method name="IndexOf(System.Xml.Serialization.XmlElementAttribute)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlElementAttribute" />
+                </parameters>
+              </method>
+              <method name="Insert(System.Int32, System.Xml.Serialization.XmlElementAttribute)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="attribute" position="1" attrib="0" type="System.Xml.Serialization.XmlElementAttribute" />
+                </parameters>
+              </method>
+              <method name="Remove(System.Xml.Serialization.XmlElementAttribute)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="attribute" position="0" attrib="0" type="System.Xml.Serialization.XmlElementAttribute" />
+                </parameters>
+              </method>
+              <method name="RemoveAt(System.Int32)" attrib="486" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlMapping" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
+            <properties>
+              <property name="ElementName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_ElementName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Namespace" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_Namespace()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XsdElementName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_XsdElementName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="SetKey(System.String)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="key" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlMappingAccess" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <attributes>
+              <attribute name="System.FlagsAttribute" />
+            </attributes>
+            <interfaces>
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+              <interface name="System.IComparable" />
+            </interfaces>
+            <fields>
+              <field name="None" attrib="32854" fieldtype="System.Xml.Serialization.XmlMappingAccess" value="0" />
+              <field name="Read" attrib="32854" fieldtype="System.Xml.Serialization.XmlMappingAccess" value="1" />
+              <field name="Write" attrib="32854" fieldtype="System.Xml.Serialization.XmlMappingAccess" value="2" />
+            </fields>
+          </class>
+          <class name="XmlMemberMapping" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <properties>
+              <property name="Any" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_Any()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="CheckSpecified" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_CheckSpecified()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="ElementName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_ElementName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="MemberName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_MemberName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Namespace" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_Namespace()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="TypeFullName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_TypeFullName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="TypeName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_TypeName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="TypeNamespace" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_TypeNamespace()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XsdElementName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_XsdElementName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+          <class name="XmlMembersMapping" type="class" base="System.Xml.Serialization.XmlMapping" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
+            </attributes>
+            <properties>
+              <property name="Count" attrib="0" ptype="System.Int32">
+                <methods>
+                  <method name="get_Count()" attrib="2182" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Xml.Serialization.XmlMemberMapping" params="System.Int32">
+                <methods>
+                  <method name="get_Item(System.Int32)" attrib="2182" returntype="System.Xml.Serialization.XmlMemberMapping">
+                    <parameters>
+                      <parameter name="index" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="TypeName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_TypeName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="TypeNamespace" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_TypeNamespace()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+          <class name="XmlReflectionImporter" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor(System.Xml.Serialization.XmlAttributeOverrides)" attrib="6278">
+                <parameters>
+                  <parameter name="attributeOverrides" position="0" attrib="0" type="System.Xml.Serialization.XmlAttributeOverrides" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Xml.Serialization.XmlAttributeOverrides, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="attributeOverrides" position="0" attrib="0" type="System.Xml.Serialization.XmlAttributeOverrides" />
+                  <parameter name="defaultNamespace" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="defaultNamespace" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <methods>
+              <method name="ImportMembersMapping(System.String, System.String, System.Xml.Serialization.XmlReflectionMember[], System.Boolean, System.Boolean)" attrib="134" returntype="System.Xml.Serialization.XmlMembersMapping">
+                <parameters>
+                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="members" position="2" attrib="0" type="System.Xml.Serialization.XmlReflectionMember[]" />
+                  <parameter name="hasWrapperElement" position="3" attrib="0" type="System.Boolean" />
+                  <parameter name="rpc" position="4" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ImportMembersMapping(System.String, System.String, System.Xml.Serialization.XmlReflectionMember[], System.Boolean)" attrib="134" returntype="System.Xml.Serialization.XmlMembersMapping">
+                <parameters>
+                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="members" position="2" attrib="0" type="System.Xml.Serialization.XmlReflectionMember[]" />
+                  <parameter name="hasWrapperElement" position="3" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ImportMembersMapping(System.String, System.String, System.Xml.Serialization.XmlReflectionMember[], System.Boolean, System.Boolean, System.Boolean, System.Xml.Serialization.XmlMappingAccess)" attrib="134" returntype="System.Xml.Serialization.XmlMembersMapping">
+                <parameters>
+                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="members" position="2" attrib="0" type="System.Xml.Serialization.XmlReflectionMember[]" />
+                  <parameter name="hasWrapperElement" position="3" attrib="0" type="System.Boolean" />
+                  <parameter name="rpc" position="4" attrib="0" type="System.Boolean" />
+                  <parameter name="openModel" position="5" attrib="0" type="System.Boolean" />
+                  <parameter name="access" position="6" attrib="0" type="System.Xml.Serialization.XmlMappingAccess" />
+                </parameters>
+              </method>
+              <method name="ImportMembersMapping(System.String, System.String, System.Xml.Serialization.XmlReflectionMember[], System.Boolean, System.Boolean, System.Boolean)" attrib="134" returntype="System.Xml.Serialization.XmlMembersMapping">
+                <parameters>
+                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="members" position="2" attrib="0" type="System.Xml.Serialization.XmlReflectionMember[]" />
+                  <parameter name="hasWrapperElement" position="3" attrib="0" type="System.Boolean" />
+                  <parameter name="rpc" position="4" attrib="0" type="System.Boolean" />
+                  <parameter name="openModel" position="5" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ImportTypeMapping(System.Type, System.Xml.Serialization.XmlRootAttribute, System.String)" attrib="134" returntype="System.Xml.Serialization.XmlTypeMapping">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="root" position="1" attrib="0" type="System.Xml.Serialization.XmlRootAttribute" />
+                  <parameter name="defaultNamespace" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ImportTypeMapping(System.Type)" attrib="134" returntype="System.Xml.Serialization.XmlTypeMapping">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="ImportTypeMapping(System.Type, System.String)" attrib="134" returntype="System.Xml.Serialization.XmlTypeMapping">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="defaultNamespace" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ImportTypeMapping(System.Type, System.Xml.Serialization.XmlRootAttribute)" attrib="134" returntype="System.Xml.Serialization.XmlTypeMapping">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="root" position="1" attrib="0" type="System.Xml.Serialization.XmlRootAttribute" />
+                </parameters>
+              </method>
+              <method name="IncludeType(System.Type)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="IncludeTypes(System.Reflection.ICustomAttributeProvider)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="provider" position="0" attrib="0" type="System.Reflection.ICustomAttributeProvider" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlReflectionMember" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="IsReturnValue" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_IsReturnValue()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_IsReturnValue(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="MemberName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_MemberName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                  <method name="set_MemberName(System.String)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.String" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="MemberType" attrib="0" ptype="System.Type">
+                <methods>
+                  <method name="get_MemberType()" attrib="2182" returntype="System.Type">
+                    <parameters />
+                  </method>
+                  <method name="set_MemberType(System.Type)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Type" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="OverrideIsNullable" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_OverrideIsNullable()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_OverrideIsNullable(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlAttributes" attrib="0" ptype="System.Xml.Serialization.XmlAttributes">
+                <methods>
+                  <method name="get_XmlAttributes()" attrib="2182" returntype="System.Xml.Serialization.XmlAttributes">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlAttributes(System.Xml.Serialization.XmlAttributes)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.Serialization.XmlAttributes" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+          <class name="XmlSerializationGeneratedCode" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor()" attrib="6276">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="XmlSerializationReader" type="class" base="System.Xml.Serialization.XmlSerializationGeneratedCode" abstract="true" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor()" attrib="6276">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="DecodeName" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_DecodeName()" attrib="2180" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_DecodeName(System.Boolean)" attrib="2180" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="IsReturnValue" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_IsReturnValue()" attrib="2180" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_IsReturnValue(System.Boolean)" attrib="2180" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Reader" attrib="0" ptype="System.Xml.XmlReader">
+                <methods>
+                  <method name="get_Reader()" attrib="2180" returntype="System.Xml.XmlReader">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="ReaderCount" attrib="0" ptype="System.Int32">
+                <methods>
+                  <method name="get_ReaderCount()" attrib="2180" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="CheckReaderCount(System.Int32&amp;, System.Int32&amp;)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="whileIterations" position="0" attrib="0" type="System.Int32&amp;" direction="ref" />
+                  <parameter name="readerCount" position="1" attrib="0" type="System.Int32&amp;" direction="ref" />
+                </parameters>
+              </method>
+              <method name="CollapseWhitespace(System.String)" attrib="132" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateAbstractTypeException(System.String, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateBadDerivationException(System.String, System.String, System.String, System.String, System.String, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="xsdDerived" position="0" attrib="0" type="System.String" />
+                  <parameter name="nsDerived" position="1" attrib="0" type="System.String" />
+                  <parameter name="xsdBase" position="2" attrib="0" type="System.String" />
+                  <parameter name="nsBase" position="3" attrib="0" type="System.String" />
+                  <parameter name="clrDerived" position="4" attrib="0" type="System.String" />
+                  <parameter name="clrBase" position="5" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateCtorHasSecurityException(System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="typeName" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateInaccessibleConstructorException(System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="typeName" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateInvalidCastException(System.Type, System.Object)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="value" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="CreateInvalidCastException(System.Type, System.Object, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="value" position="1" attrib="0" type="System.Object" />
+                  <parameter name="id" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateMissingIXmlSerializableType(System.String, System.String, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="clrType" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateReadOnlyCollectionException(System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateUnknownConstantException(System.String, System.Type)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                  <parameter name="enumType" position="1" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="CreateUnknownNodeException()" attrib="132" returntype="System.Exception">
+                <parameters />
+              </method>
+              <method name="CreateUnknownTypeException(System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="EnsureArrayIndex(System.Array, System.Int32, System.Type)" attrib="132" returntype="System.Array">
+                <parameters>
+                  <parameter name="a" position="0" attrib="0" type="System.Array" />
+                  <parameter name="index" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="elementType" position="2" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="GetNullAttr()" attrib="132" returntype="System.Boolean">
+                <parameters />
+              </method>
+              <method name="GetXsiType()" attrib="132" returntype="System.Xml.XmlQualifiedName">
+                <parameters />
+              </method>
+              <method name="InitCallbacks()" attrib="1476" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="InitIDs()" attrib="1476" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="IsXmlnsAttribute(System.String)" attrib="132" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ReadElementQualifiedName()" attrib="132" returntype="System.Xml.XmlQualifiedName">
+                <parameters />
+              </method>
+              <method name="ReadEndElement()" attrib="132" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="ReadNull()" attrib="132" returntype="System.Boolean">
+                <parameters />
+              </method>
+              <method name="ReadNullableQualifiedName()" attrib="132" returntype="System.Xml.XmlQualifiedName">
+                <parameters />
+              </method>
+              <method name="ReadNullableString()" attrib="132" returntype="System.String">
+                <parameters />
+              </method>
+              <method name="ReadSerializable(System.Xml.Serialization.IXmlSerializable, System.Boolean)" attrib="132" returntype="System.Xml.Serialization.IXmlSerializable">
+                <parameters>
+                  <parameter name="serializable" position="0" attrib="0" type="System.Xml.Serialization.IXmlSerializable" />
+                  <parameter name="wrappedAny" position="1" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ReadSerializable(System.Xml.Serialization.IXmlSerializable)" attrib="132" returntype="System.Xml.Serialization.IXmlSerializable">
+                <parameters>
+                  <parameter name="serializable" position="0" attrib="0" type="System.Xml.Serialization.IXmlSerializable" />
+                </parameters>
+              </method>
+              <method name="ReadString(System.String, System.Boolean)" attrib="132" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                  <parameter name="trim" position="1" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ReadString(System.String)" attrib="132" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ReadTypedNull(System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Object">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="ReadTypedPrimitive(System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Object">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="ShrinkArray(System.Array, System.Int32, System.Type, System.Boolean)" attrib="132" returntype="System.Array">
+                <parameters>
+                  <parameter name="a" position="0" attrib="0" type="System.Array" />
+                  <parameter name="length" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="elementType" position="2" attrib="0" type="System.Type" />
+                  <parameter name="isNullable" position="3" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ToByteArrayBase64(System.Boolean)" attrib="132" returntype="System.Byte[]">
+                <parameters>
+                  <parameter name="isNull" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ToByteArrayBase64(System.String)" attrib="148" static="true" returntype="System.Byte[]">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToByteArrayHex(System.Boolean)" attrib="132" returntype="System.Byte[]">
+                <parameters>
+                  <parameter name="isNull" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ToByteArrayHex(System.String)" attrib="148" static="true" returntype="System.Byte[]">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToChar(System.String)" attrib="148" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToDate(System.String)" attrib="148" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToDateTime(System.String)" attrib="148" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToEnum(System.String, System.Collections.IDictionary, System.String)" attrib="148" static="true" returntype="System.Int64">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                  <parameter name="h" position="1" attrib="0" type="System.Collections.IDictionary" />
+                  <parameter name="typeName" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToTime(System.String)" attrib="148" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToXmlName(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToXmlNCName(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToXmlNmToken(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToXmlNmTokens(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToXmlQualifiedName(System.String)" attrib="132" returntype="System.Xml.XmlQualifiedName">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="UnknownNode(System.Object, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                  <parameter name="qnames" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="UnknownNode(System.Object)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlSerializationWriteCallback" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
+            <interfaces>
+              <interface name="System.ICloneable" />
+              <interface name="System.Runtime.Serialization.ISerializable" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
+                <parameters>
+                  <parameter name="object" position="0" attrib="0" type="System.Object" />
+                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <methods>
+              <method name="BeginInvoke(System.Object, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                  <parameter name="callback" position="1" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="object" position="2" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                </parameters>
+              </method>
+              <method name="Invoke(System.Object)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlSerializationWriter" type="class" base="System.Xml.Serialization.XmlSerializationGeneratedCode" abstract="true" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor()" attrib="6276">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="EscapeName" attrib="0" ptype="System.Boolean">
+                <methods>
+                  <method name="get_EscapeName()" attrib="2180" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_EscapeName(System.Boolean)" attrib="2180" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Writer" attrib="0" ptype="System.Xml.XmlWriter">
+                <methods>
+                  <method name="get_Writer()" attrib="2180" returntype="System.Xml.XmlWriter">
+                    <parameters />
+                  </method>
+                  <method name="set_Writer(System.Xml.XmlWriter)" attrib="2180" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Xml.XmlWriter" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlNamespaces" attrib="0" ptype="System.Collections.IList">
+                <methods>
+                  <method name="get_XmlNamespaces()" attrib="2180" returntype="System.Collections.IList">
+                    <parameters />
+                  </method>
+                  <method name="set_XmlNamespaces(System.Collections.IList)" attrib="2180" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Collections.IList" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="CreateChoiceIdentifierValueException(System.String, System.String, System.String, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                  <parameter name="identifier" position="1" attrib="0" type="System.String" />
+                  <parameter name="name" position="2" attrib="0" type="System.String" />
+                  <parameter name="ns" position="3" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateInvalidAnyTypeException(System.Object)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="CreateInvalidAnyTypeException(System.Type)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="CreateInvalidChoiceIdentifierValueException(System.String, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.String" />
+                  <parameter name="identifier" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateInvalidEnumValueException(System.Object, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Object" />
+                  <parameter name="typeName" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateMismatchChoiceException(System.String, System.String, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                  <parameter name="elementName" position="1" attrib="0" type="System.String" />
+                  <parameter name="enumValue" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateUnknownAnyElementException(System.String, System.String)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="CreateUnknownTypeException(System.Object)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="CreateUnknownTypeException(System.Type)" attrib="132" returntype="System.Exception">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="FromByteArrayBase64(System.Byte[])" attrib="148" static="true" returntype="System.Byte[]">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="FromByteArrayHex(System.Byte[])" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="FromChar(System.Char)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="FromDate(System.DateTime)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="FromDateTime(System.DateTime)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="FromEnum(System.Int64, System.String[], System.Int64[])" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
+                  <parameter name="values" position="1" attrib="0" type="System.String[]" />
+                  <parameter name="ids" position="2" attrib="0" type="System.Int64[]" />
+                </parameters>
+              </method>
+              <method name="FromEnum(System.Int64, System.String[], System.Int64[], System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
+                  <parameter name="values" position="1" attrib="0" type="System.String[]" />
+                  <parameter name="ids" position="2" attrib="0" type="System.Int64[]" />
+                  <parameter name="typeName" position="3" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="FromTime(System.DateTime)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="FromXmlName(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="FromXmlNCName(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="ncName" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="FromXmlNmToken(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="nmToken" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="FromXmlNmTokens(System.String)" attrib="148" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="nmTokens" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="FromXmlQualifiedName(System.Xml.XmlQualifiedName, System.Boolean)" attrib="132" returntype="System.String">
+                <parameters>
+                  <parameter name="xmlQualifiedName" position="0" attrib="0" type="System.Xml.XmlQualifiedName" />
+                  <parameter name="ignoreEmpty" position="1" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="FromXmlQualifiedName(System.Xml.XmlQualifiedName)" attrib="132" returntype="System.String">
+                <parameters>
+                  <parameter name="xmlQualifiedName" position="0" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="InitCallbacks()" attrib="1476" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="TopLevelElement()" attrib="132" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="WriteAttribute(System.String, System.String, System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="prefix" position="0" attrib="0" type="System.String" />
+                  <parameter name="localName" position="1" attrib="0" type="System.String" />
+                  <parameter name="ns" position="2" attrib="0" type="System.String" />
+                  <parameter name="value" position="3" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteAttribute(System.String, System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteAttribute(System.String, System.String, System.Byte[])" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="WriteAttribute(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteAttribute(System.String, System.Byte[])" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="WriteElementQualifiedName(System.String, System.Xml.XmlQualifiedName, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.Xml.XmlQualifiedName" />
+                  <parameter name="xsiType" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementQualifiedName(System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementQualifiedName(System.String, System.String, System.Xml.XmlQualifiedName, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementQualifiedName(System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementString(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteElementString(System.String, System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementString(System.String, System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteElementString(System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.String" />
+                  <parameter name="xsiType" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.String, System.Byte[])" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.Byte[], System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.Byte[]" />
+                  <parameter name="xsiType" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.String" />
+                  <parameter name="xsiType" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.Byte[])" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="value" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.String, System.Byte[], System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Byte[]" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteElementStringRaw(System.String, System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteEmptyTag(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteEmptyTag(System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteEndElement()" attrib="132" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="WriteEndElement(System.Object)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="WriteNamespaceDeclarations(System.Xml.Serialization.XmlSerializerNamespaces)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="xmlns" position="0" attrib="0" type="System.Xml.Serialization.XmlSerializerNamespaces" />
+                </parameters>
+              </method>
+              <method name="WriteNullableQualifiedNameEncoded(System.String, System.String, System.Xml.XmlQualifiedName, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteNullableQualifiedNameLiteral(System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteNullableStringEncoded(System.String, System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteNullableStringEncodedRaw(System.String, System.String, System.Byte[], System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Byte[]" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteNullableStringEncodedRaw(System.String, System.String, System.String, System.Xml.XmlQualifiedName)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Xml.XmlQualifiedName" />
+                </parameters>
+              </method>
+              <method name="WriteNullableStringLiteral(System.String, System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteNullableStringLiteralRaw(System.String, System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteNullableStringLiteralRaw(System.String, System.String, System.Byte[])" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="WriteNullTagEncoded(System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteNullTagEncoded(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteNullTagLiteral(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteNullTagLiteral(System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteSerializable(System.Xml.Serialization.IXmlSerializable, System.String, System.String, System.Boolean, System.Boolean)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="serializable" position="0" attrib="0" type="System.Xml.Serialization.IXmlSerializable" />
+                  <parameter name="name" position="1" attrib="0" type="System.String" />
+                  <parameter name="ns" position="2" attrib="0" type="System.String" />
+                  <parameter name="isNullable" position="3" attrib="0" type="System.Boolean" />
+                  <parameter name="wrapped" position="4" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="WriteSerializable(System.Xml.Serialization.IXmlSerializable, System.String, System.String, System.Boolean)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="serializable" position="0" attrib="0" type="System.Xml.Serialization.IXmlSerializable" />
+                  <parameter name="name" position="1" attrib="0" type="System.String" />
+                  <parameter name="ns" position="2" attrib="0" type="System.String" />
+                  <parameter name="isNullable" position="3" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="WriteStartDocument()" attrib="132" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="WriteStartElement(System.String, System.String, System.Boolean)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="writePrefixed" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="WriteStartElement(System.String, System.String, System.Object)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="o" position="2" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="WriteStartElement(System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteStartElement(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteStartElement(System.String, System.String, System.Object, System.Boolean, System.Xml.Serialization.XmlSerializerNamespaces)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="o" position="2" attrib="0" type="System.Object" />
+                  <parameter name="writePrefixed" position="3" attrib="0" type="System.Boolean" />
+                  <parameter name="xmlns" position="4" attrib="0" type="System.Xml.Serialization.XmlSerializerNamespaces" />
+                </parameters>
+              </method>
+              <method name="WriteStartElement(System.String, System.String, System.Object, System.Boolean)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="o" position="2" attrib="0" type="System.Object" />
+                  <parameter name="writePrefixed" position="3" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="WriteTypedPrimitive(System.String, System.String, System.Object, System.Boolean)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="o" position="2" attrib="0" type="System.Object" />
+                  <parameter name="xsiType" position="3" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="WriteValue(System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteValue(System.Byte[])" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Byte[]" />
+                </parameters>
+              </method>
+              <method name="WriteXsiType(System.String, System.String)" attrib="132" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlSerializer" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor(System.Xml.Serialization.XmlTypeMapping)" attrib="6278">
+                <parameters>
+                  <parameter name="xmlTypeMapping" position="0" attrib="0" type="System.Xml.Serialization.XmlTypeMapping" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Type, System.Xml.Serialization.XmlAttributeOverrides)" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="overrides" position="1" attrib="0" type="System.Xml.Serialization.XmlAttributeOverrides" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Type, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="defaultNamespace" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Type)" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Type, System.Xml.Serialization.XmlAttributeOverrides, System.Type[], System.Xml.Serialization.XmlRootAttribute, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="overrides" position="1" attrib="0" type="System.Xml.Serialization.XmlAttributeOverrides" />
+                  <parameter name="extraTypes" position="2" attrib="0" type="System.Type[]" />
+                  <parameter name="root" position="3" attrib="0" type="System.Xml.Serialization.XmlRootAttribute" />
+                  <parameter name="defaultNamespace" position="4" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6276">
+                <parameters />
+              </constructor>
+              <constructor name=".ctor(System.Type, System.Type[])" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="extraTypes" position="1" attrib="0" type="System.Type[]" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Type, System.Xml.Serialization.XmlRootAttribute)" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="root" position="1" attrib="0" type="System.Xml.Serialization.XmlRootAttribute" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <methods>
+              <method name="CanDeserialize(System.Xml.XmlReader)" attrib="454" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="xmlReader" position="0" attrib="0" type="System.Xml.XmlReader" />
+                </parameters>
+              </method>
+              <method name="CreateReader()" attrib="452" virtual="true" returntype="System.Xml.Serialization.XmlSerializationReader">
+                <parameters />
+              </method>
+              <method name="CreateWriter()" attrib="452" virtual="true" returntype="System.Xml.Serialization.XmlSerializationWriter">
+                <parameters />
+              </method>
+              <method name="Deserialize(System.IO.TextReader)" attrib="134" returntype="System.Object">
+                <parameters>
+                  <parameter name="textReader" position="0" attrib="0" type="System.IO.TextReader" />
+                </parameters>
+              </method>
+              <method name="Deserialize(System.Xml.XmlReader)" attrib="134" returntype="System.Object">
+                <parameters>
+                  <parameter name="xmlReader" position="0" attrib="0" type="System.Xml.XmlReader" />
+                </parameters>
+              </method>
+              <method name="Deserialize(System.Xml.Serialization.XmlSerializationReader)" attrib="452" virtual="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="reader" position="0" attrib="0" type="System.Xml.Serialization.XmlSerializationReader" />
+                </parameters>
+              </method>
+              <method name="Deserialize(System.IO.Stream)" attrib="134" returntype="System.Object">
+                <parameters>
+                  <parameter name="stream" position="0" attrib="0" type="System.IO.Stream" />
+                </parameters>
+              </method>
+              <method name="FromMappings(System.Xml.Serialization.XmlMapping[])" attrib="150" static="true" returntype="System.Xml.Serialization.XmlSerializer[]">
+                <parameters>
+                  <parameter name="mappings" position="0" attrib="0" type="System.Xml.Serialization.XmlMapping[]" />
+                </parameters>
+              </method>
+              <method name="FromMappings(System.Xml.Serialization.XmlMapping[], System.Type)" attrib="150" static="true" returntype="System.Xml.Serialization.XmlSerializer[]">
+                <parameters>
+                  <parameter name="mappings" position="0" attrib="0" type="System.Xml.Serialization.XmlMapping[]" />
+                  <parameter name="type" position="1" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="FromTypes(System.Type[])" attrib="150" static="true" returntype="System.Xml.Serialization.XmlSerializer[]">
+                <parameters>
+                  <parameter name="types" position="0" attrib="0" type="System.Type[]" />
+                </parameters>
+              </method>
+              <method name="Serialize(System.IO.TextWriter, System.Object, System.Xml.Serialization.XmlSerializerNamespaces)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="textWriter" position="0" attrib="0" type="System.IO.TextWriter" />
+                  <parameter name="o" position="1" attrib="0" type="System.Object" />
+                  <parameter name="namespaces" position="2" attrib="0" type="System.Xml.Serialization.XmlSerializerNamespaces" />
+                </parameters>
+              </method>
+              <method name="Serialize(System.IO.TextWriter, System.Object)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="textWriter" position="0" attrib="0" type="System.IO.TextWriter" />
+                  <parameter name="o" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Serialize(System.Object, System.Xml.Serialization.XmlSerializationWriter)" attrib="452" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                  <parameter name="writer" position="1" attrib="0" type="System.Xml.Serialization.XmlSerializationWriter" />
+                </parameters>
+              </method>
+              <method name="Serialize(System.IO.Stream, System.Object)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="stream" position="0" attrib="0" type="System.IO.Stream" />
+                  <parameter name="o" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Serialize(System.Xml.XmlWriter, System.Object)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="xmlWriter" position="0" attrib="0" type="System.Xml.XmlWriter" />
+                  <parameter name="o" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Serialize(System.Xml.XmlWriter, System.Object, System.Xml.Serialization.XmlSerializerNamespaces)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="xmlWriter" position="0" attrib="0" type="System.Xml.XmlWriter" />
+                  <parameter name="o" position="1" attrib="0" type="System.Object" />
+                  <parameter name="namespaces" position="2" attrib="0" type="System.Xml.Serialization.XmlSerializerNamespaces" />
+                </parameters>
+              </method>
+              <method name="Serialize(System.IO.Stream, System.Object, System.Xml.Serialization.XmlSerializerNamespaces)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="stream" position="0" attrib="0" type="System.IO.Stream" />
+                  <parameter name="o" position="1" attrib="0" type="System.Object" />
+                  <parameter name="namespaces" position="2" attrib="0" type="System.Xml.Serialization.XmlSerializerNamespaces" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlSerializerImplementation" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor()" attrib="6276">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Reader" attrib="0" ptype="System.Xml.Serialization.XmlSerializationReader">
+                <methods>
+                  <method name="get_Reader()" attrib="2502" virtual="true" returntype="System.Xml.Serialization.XmlSerializationReader">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Writer" attrib="0" ptype="System.Xml.Serialization.XmlSerializationWriter">
+                <methods>
+                  <method name="get_Writer()" attrib="2502" virtual="true" returntype="System.Xml.Serialization.XmlSerializationWriter">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlReadMethods" attrib="0" ptype="System.Collections.IDictionary">
+                <methods>
+                  <method name="get_XmlReadMethods()" attrib="2502" virtual="true" returntype="System.Collections.IDictionary">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlTypedSerializers" attrib="0" ptype="System.Collections.IDictionary">
+                <methods>
+                  <method name="get_XmlTypedSerializers()" attrib="2502" virtual="true" returntype="System.Collections.IDictionary">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XmlWriteMethods" attrib="0" ptype="System.Collections.IDictionary">
+                <methods>
+                  <method name="get_XmlWriteMethods()" attrib="2502" virtual="true" returntype="System.Collections.IDictionary">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="CanSerialize(System.Type)" attrib="454" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="GetSerializer(System.Type)" attrib="454" virtual="true" returntype="System.Xml.Serialization.XmlSerializer">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="XmlSerializerNamespaces" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor(System.Xml.XmlQualifiedName[])" attrib="6278">
+                <parameters>
+                  <parameter name="namespaces" position="0" attrib="0" type="System.Xml.XmlQualifiedName[]" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Xml.Serialization.XmlSerializerNamespaces)" attrib="6278">
+                <parameters>
+                  <parameter name="namespaces" position="0" attrib="0" type="System.Xml.Serialization.XmlSerializerNamespaces" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Count" attrib="0" ptype="System.Int32">
+                <methods>
+                  <method name="get_Count()" attrib="2182" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Add(System.String, System.String)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="prefix" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToArray()" attrib="134" returntype="System.Xml.XmlQualifiedName[]">
+                <parameters />
+              </method>
+            </methods>
+          </class>
+          <class name="XmlTypeMapping" type="class" base="System.Xml.Serialization.XmlMapping" charset="Ansi" layout="Auto">
+            <properties>
+              <property name="TypeFullName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_TypeFullName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="TypeName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_TypeName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XsdTypeName" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_XsdTypeName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="XsdTypeNamespace" attrib="0" ptype="System.String">
+                <methods>
+                  <method name="get_XsdTypeNamespace()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+        </classes>
+      </namespace>
+    </namespaces>
+  </assembly>
+</assemblies>

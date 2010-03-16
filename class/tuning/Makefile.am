@@ -33,6 +33,7 @@ MCS_ASSEMBLIES = \
 	System.Core	\
 	System.Xml	\
 	System.Xml.Linq	\
+	System.Xml.Serialization	\
 	System.Runtime.Serialization	\
 	System.ServiceModel	\
 	System.ServiceModel.Web

@@ -1,3 +1,7 @@
+2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Added System.Xml.Serialization to the build.
+
 2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Do not install Mono.CompilerServices.SymbolWriter
