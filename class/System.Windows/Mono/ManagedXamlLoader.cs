@@ -67,7 +67,6 @@ namespace Mono.Xaml
 				callbacks.create_gchandle = new CreateGCHandleCallback (cb_create_gchandle);
 				callbacks.set_property = new SetPropertyCallback (cb_set_property);
 				callbacks.import_xaml_xmlns = new ImportXamlNamespaceCallback (cb_import_xaml_xmlns);
-				callbacks.get_content_property_name = new GetContentPropertyNameCallback (cb_get_content_property_name);
 				callbacks.add_child = new AddChildCallback (cb_add_child);
 			}
 
@@ -1544,18 +1543,6 @@ namespace Mono.Xaml
 				return false;
 			}
 
-		}
-
-		private unsafe string cb_get_content_property_name (XamlCallbackData *data, Value* object_ptr, ref MoonError error)
-		{
-			object obj = Value.ToObject (null, object_ptr);
-
-			if (obj == null)
-				return null;
-
-			Type t = obj.GetType ();
-			return GetContentPropertyName (t);
-			
 		}
 
 		private unsafe bool cb_add_child (XamlCallbackData *data, Value* parent_parent, bool parent_is_property, string parent_xmlns, Value *parent, IntPtr parent_data, Value* child, IntPtr child_data, ref MoonError error)

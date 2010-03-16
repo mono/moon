@@ -1,3 +1,11 @@
+2010-03-16  Jackson Harper  <jackson@ximian.com>
+
+	* type.h.in|type.cpp: Registering a type requires the content
+	property name now (NULL if there is no content property), this is
+	passed off to the type constructor.
+	* xaml.cpp|h: We no longer need to get the content property name
+	via a callback, this is handled by type registration now.
+
 2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: Add environment variable to disable the incomplete support

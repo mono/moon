@@ -1324,8 +1324,6 @@ class XamlElementInfoManaged : public XamlElementInfo {
 
 	const char* GetName () { return name; }
 
-	const char* GetContentProperty (XamlParserInfo *p);
-
 	virtual bool RequiresManagedSet () { return true; }
 	
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
@@ -1363,8 +1361,6 @@ class XamlElementInfoImportedManaged : public XamlElementInfoManaged {
 	XamlElementInfoImportedManaged (const char *name, XamlElementInfo *parent, Value *obj, bool delete_value) : XamlElementInfoManaged (NULL, name, parent, obj->GetKind (), obj, delete_value)
 	{
 	}
-
-	const char* GetContentProperty (XamlParserInfo *p);
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, Value *o);
@@ -1474,17 +1470,6 @@ XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* 
 	}
 		
 	return false;
-}
-
-const char *
-XamlLoader::GetContentPropertyName (void *p, Value *top_level, Value *object)
-{
-	if (callbacks.get_content_property_name) {
-		MoonError error;
-		XamlCallbackData data = XamlCallbackData (this, p, top_level);
-		return callbacks.get_content_property_name (&data, object, &error);
-	}
-	return NULL;
 }
 
 bool
@@ -4440,19 +4425,6 @@ XamlElementInfoEnum::CreateWrappedElementInstance (XamlParserInfo *p, Value *o)
 	return res;
 }
 
-const char *
-XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
-{
-	if (!p->loader)
-		return NULL;
-
-	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, p->GetTopElementPtr (), obj);
-	if (res)
-		return res;
-	return XamlElementInfo::GetContentProperty (p);
-}
-
 XamlElementInstance *
 XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 {
@@ -4588,25 +4560,6 @@ XamlElementInfoImportedManaged::CreateElementInstance (XamlParserInfo *p)
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::ELEMENT, obj);
 
 	return inst;
-}
-
-const char *
-XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
-{
-	if (!p->loader)
-		return NULL;
-
-	// TODO: Test, it's possible that managed objects that aren't DOs are allowed to have content properties.
-	if (!obj->Is (p->deployment, Type::DEPENDENCY_OBJECT))
-		return XamlElementInfo::GetContentProperty (p);
-
-	
-	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, p->GetTopElementPtr (), obj);
-	if (res)
-		return res;
-	
-	return XamlElementInfo::GetContentProperty (p);
 }
 
 XamlElementInstance *

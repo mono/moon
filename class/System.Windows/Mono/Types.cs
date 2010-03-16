@@ -32,6 +32,8 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Windows.Markup;
+
 
 namespace Mono
 {	
@@ -130,7 +132,9 @@ namespace Mono
 				else if (type == typeof (System.Windows.Media.Media3D.Matrix3D))
 					info.native_handle = Kind.UNMANAGEDMATRIX3D;
 				else {
-					info.native_handle = NativeMethods.types_register_type (native, type.FullName, 
+					string cp = GetContentPropertyName (type);
+
+					info.native_handle = NativeMethods.types_register_type (native, type.FullName, cp,
 						GCHandle.ToIntPtr (info.gc_handle), 
 						(parent != null ? parent.native_handle : Kind.INVALID), 
 						type.IsInterface, 
@@ -173,6 +177,16 @@ namespace Mono
 				type = type.BaseType;
 			}
 			return Kind.INVALID;
+		}
+
+		private string GetContentPropertyName (Type t)
+		{
+			object [] o = t.GetCustomAttributes (typeof (ContentPropertyAttribute), true);
+			if (o.Length == 0)
+				return null;
+			ContentPropertyAttribute cpa = (ContentPropertyAttribute ) o [0];
+
+			return cpa.Name;
 		}
 	}
 }

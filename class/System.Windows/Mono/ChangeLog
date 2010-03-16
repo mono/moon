@@ -1,3 +1,11 @@
+2010-03-16  Jackson Harper  <jackson@ximian.com>
+
+	* Types.cs: When we register a type we supply its content property
+	name now.
+	* ManagedXamlLoader.cs:
+	* XamlLoaderCallbacks.cs: We dont need a callback for getting
+	content properties anymore
+
 2010-03-16  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeDependencyObjectHelper.cs: Managed land should not
