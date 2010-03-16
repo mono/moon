@@ -652,7 +652,8 @@ UIElement::DoMeasure ()
 void
 UIElement::DoArrange ()
 {
-	Rect *last = LayoutInformation::GetLayoutSlot (this);
+	Value *lastVal = ReadLocalValue (LayoutInformation::LayoutSlotProperty);
+	Rect *last = Value::IsNull (lastVal) ? NULL : lastVal->AsRect ();
 	Size previous_render = Size ();
 	UIElement *parent = GetVisualParent ();
 	Rect viewport;

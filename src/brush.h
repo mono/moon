@@ -216,7 +216,7 @@ class LinearGradientBrush : public GradientBrush {
  public:
 	/* @PropertyType=Point,DefaultValue=Point(1\,1),GenerateAccessors */
 	const static int EndPointProperty;
-	/* @PropertyType=Point,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int StartPointProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -1,3 +1,9 @@
+2010-03-16  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeDependencyObjectHelper.cs: Managed land should not
+	  generate default values to cover up for missing
+	  DefaultValue/AutoCreateValue attributes in native.
+
 2010-03-15  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: Don't allocate a new

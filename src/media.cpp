@@ -438,7 +438,7 @@ Image::ComputeActualSize ()
 	ImageSource *source = GetSource ();
 	
 	if (parent && !parent->Is (Type::CANVAS))
-		if (LayoutInformation::GetLayoutSlot (this))
+		if (ReadLocalValue (LayoutInformation::LayoutSlotProperty))
 			return result;
 		
 	if (source && source->GetSurface (NULL)) {

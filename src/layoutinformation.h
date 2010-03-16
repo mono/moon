@@ -19,7 +19,7 @@ class LayoutInformation {
 public:
 	/* @PropertyType=Geometry,Attached,GenerateAccessors */
 	const static int LayoutClipProperty;
-	/* @PropertyType=Rect,Attached,GenerateAccessors */
+	/* @PropertyType=Rect,DefaultValue=Rect(),Attached,GenerateAccessors */
 	const static int LayoutSlotProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
 	const static int PreviousConstraintProperty;

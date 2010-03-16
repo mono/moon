@@ -3385,7 +3385,7 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Size
 TextBoxView::ComputeActualSize ()
 {
-	if (LayoutInformation::GetLayoutSlot (this))
+	if (ReadLocalValue (LayoutInformation::LayoutSlotProperty))
 		return FrameworkElement::ComputeActualSize ();
 
 	Layout (Size (INFINITY, INFINITY));

@@ -76,22 +76,8 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 	baseValue = targetobj->GetValue (targetprop);
 	if (baseValue)
 		baseValue = new Value(*baseValue);
-	else {
-		switch (targetprop->GetPropertyType ()) {
-		case Type::DOUBLE:
-			baseValue = new Value (0.0);
-			break;
-		case Type::COLOR:
-			baseValue = new Value (Color ());
-			break;
-		case Type::POINT:
-			baseValue = new Value (Point ());
-			break;
-		default:
-			baseValue = new Value (targetprop->GetPropertyType ());
-			break;
-		}
-	}
+	else
+		baseValue = new Value (targetprop->GetPropertyType ());
 
 	if (prev_storage) {
 		Value *v = prev_storage->GetResetValue ();

@@ -1,3 +1,9 @@
+2010-03-16  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: Managed land should not generate
+	  default values to cover up for missing
+	  DefaultValue/AutoCreateValue attributes in native.
+
 2010-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Application.cs: Hooked up the Install and InstallState methods.

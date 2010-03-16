@@ -569,7 +569,7 @@ MediaElement::ComputeActualSize ()
 	UIElement *parent = GetVisualParent ();
 
 	if (parent && !parent->Is (Type::CANVAS))
-		if (LayoutInformation::GetPreviousConstraint (this) || LayoutInformation::GetLayoutSlot (this))
+		if (LayoutInformation::GetPreviousConstraint (this) || ReadLocalValue (LayoutInformation::LayoutSlotProperty))
 			return result;
 		
 	if (mplayer) {

@@ -573,7 +573,8 @@ void
 FrameworkElement::Arrange (Rect finalRect)
 {
 	//LOG_LAYOUT ("arranging %p %s %g,%g,%g,%g\n", this, GetTypeName (), finalRect.x, finalRect.y, finalRect.width, finalRect.height);
-	Rect *slot = LayoutInformation::GetLayoutSlot (this);
+	Value *slotValue = ReadLocalValue (LayoutInformation::LayoutSlotProperty);
+	Rect *slot = Value::IsNull (slotValue) ? NULL : slotValue->AsRect ();
 	bool doarrange = this->dirty_flags & DirtyArrange;
 	
 	if (GetUseLayoutRounding ()) {

@@ -310,8 +310,6 @@ namespace System.Windows {
 			if (create) {
 				property = new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind), null);
 				property.DefaultValue = Value.ToObject (property_type, Mono.NativeMethods.dependency_property_get_default_value (handle));
-				if (property.DefaultValue == null && property_type.IsValueType && !property.IsNullable)
-					property.DefaultValue = Activator.CreateInstance (property_type);
 			}
 
 			return property != null;

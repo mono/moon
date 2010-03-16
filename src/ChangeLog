@@ -1,3 +1,23 @@
+2010-03-16  Alan McGovern  <amcgovern@novell.com>
+
+	* brush.h:
+	* shape.cpp:
+	* media.cpp:
+	* geometry.h:
+	* transform.h:
+	* textbox.cpp:
+	* animation.cpp:
+	* textblock.cpp:
+	* uielement.cpp:
+	* mediaelement.cpp:
+	* layoutinformation.h:
+	* frameworkelement.cpp: Add a bunch of missing
+	  DefaultValue/AutoCreateValue attributes to the native DPs
+	  which are missing them. Update code which used
+	  LayoutInformation::GetLayoutSlot to use ReadLocalValue to
+	  check whether or not the value has been set as it now
+	  returns a non-null value all the time.
+
 2010-03-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (SetTextInternal): If the first inline is an

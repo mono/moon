@@ -147,7 +147,7 @@ class EllipseGeometry : public Geometry {
 	virtual Rect ComputePathBounds ();
 	
  public:
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int CenterProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RadiusXProperty;
@@ -183,9 +183,9 @@ class LineGeometry : public Geometry {
 	virtual Rect ComputePathBounds ();
 	
  public:
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int EndPointProperty;
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int StartPointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -273,7 +273,7 @@ class RectangleGeometry : public Geometry {
 	const static int RadiusXProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RadiusYProperty;
- 	/* @PropertyType=Rect,GenerateAccessors */
+ 	/* @PropertyType=Rect,DefaultValue=Rect(),GenerateAccessors */
 	const static int RectProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -323,7 +323,7 @@ class PathFigure : public DependencyObject {
 	const static int IsClosedProperty;
  	/* @PropertyType=PathSegmentCollection,AutoCreateValue,GenerateAccessors */
 	const static int SegmentsProperty;
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int StartPointProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2,GenerateAccessors */
 	const static int IsFilledProperty;
@@ -388,11 +388,11 @@ class ArcSegment : public PathSegment {
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsLargeArcProperty;
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int PointProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RotationAngleProperty;
- 	/* @PropertyType=Size,GenerateAccessors */
+ 	/* @PropertyType=Size,DefaultValue=Size(),GenerateAccessors */
 	const static int SizeProperty;
  	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise,GenerateAccessors */
 	const static int SweepDirectionProperty;
@@ -433,11 +433,11 @@ class BezierSegment : public PathSegment {
 	virtual ~BezierSegment ();
 
  public:
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point1Property;
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point2Property;
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point3Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -470,7 +470,7 @@ class LineSegment : public PathSegment {
 	virtual ~LineSegment ();
 
  public:
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int PointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -582,9 +582,9 @@ class QuadraticBezierSegment : public PathSegment {
 	virtual ~QuadraticBezierSegment ();
 
  public:
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point1Property;
- 	/* @PropertyType=Point,GenerateAccessors */
+ 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point2Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

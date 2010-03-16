@@ -488,7 +488,7 @@ TextBlock::ComputeActualSize ()
 	Size constraint = ApplySizeConstraints (Size (INFINITY, INFINITY));
 	Size result = Size (0.0, 0.0);
 
-	if (LayoutInformation::GetLayoutSlot (this) || LayoutInformation::GetPreviousConstraint (this)) {
+	if (ReadLocalValue (LayoutInformation::LayoutSlotProperty) || LayoutInformation::GetPreviousConstraint (this)) {
 		layout->Layout ();
 		layout->GetActualExtents (&actual_width, &actual_height);
 	}  else {

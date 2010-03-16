@@ -323,7 +323,7 @@ class MatrixTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=Matrix,GenerateAccessors */
+	/* @PropertyType=Matrix,AutoCreateValue,GenerateAccessors */
 	const static int MatrixProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
