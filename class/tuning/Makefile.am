@@ -37,7 +37,7 @@ MCS_ASSEMBLIES = \
 	System.ServiceModel	\
 	System.ServiceModel.Web
 
-MCS_DLLFILES = $(MCS_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_1_raw/%.dll)
+MCS_DLLFILES = $(MCS_ASSEMBLIES:%=$(MCS_PATH)/class/lib/moonlight_raw/%.dll)
 
 if HAVE_MONO_BASIC
 MONO_BASIC_TUNER_ASSEMBLIES = Microsoft.VisualBasic
@@ -55,14 +55,14 @@ EXTRA_DIST = $(TUNER_DESCS) $(TUNER_MASTERS)
 # different sources (mcs, mono-basic)
 WORKING_DIR = ../lib/2.1_raw
 OUTPUT_DIR = ../lib/2.1
-MCS_OUTPUT_DIR = $(MCS_PATH)/class/lib/net_2_1
+MCS_OUTPUT_DIR = $(MCS_PATH)/class/lib/moonlight
 
 DLLFILES = $(TUNER_ASSEMBLIES:%=%.dll)
 
 FILES = smcs.exe $(DLLFILES)
 WORKING_FILES = $(FILES:%=$(WORKING_DIR)/%)
 OUTPUT_FILES = $(FILES:%=$(OUTPUT_DIR)/%)
-INPUT_FILES = $(MCS_PATH)/class/lib/net_2_1_raw/smcs.exe $(MCS_DLLFILES) $(MONO_BASIC_DLLFILES)
+INPUT_FILES = $(MCS_PATH)/class/lib/moonlight_raw/smcs.exe $(MCS_DLLFILES) $(MONO_BASIC_DLLFILES)
 
 TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
 

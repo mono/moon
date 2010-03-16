@@ -1,3 +1,7 @@
+2010-03-16  Jb Evain  <jbevain@novell.com>
+
+	* Makefile: rename the net_2_1 profile to moonlight.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Skip the CheckVisibility step for the tuner until jb can fix
