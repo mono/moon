@@ -80,11 +80,11 @@ Shocker_Shutdown (void)
 		delete ShockerScriptableControlClass;
 }
 
-char *
+static char *
 NPN_strdup (const char *tocopy)
 {
-	int len = strlen(tocopy);
-	char *ptr = (char *)MOON_NPN_MemAlloc (len+1);
+	int len = strlen (tocopy);
+	char *ptr = (char *) Browser::Instance ()->MemAlloc (len + 1);
 	if (ptr != NULL) {
 		strcpy (ptr, tocopy);
 		// WebKit should calloc so we dont have to do this

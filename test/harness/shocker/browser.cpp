@@ -101,6 +101,12 @@ Browser::Instance ()
 	return Browser::instance;
 }
 
+void*
+Browser::MemAlloc (uint32_t size)
+{
+	return browser_funcs.memalloc (size);
+}
+
 NPObject*
 Browser::CreateObject (NPP npp, NPClass *klass)
 {
