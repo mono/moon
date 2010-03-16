@@ -982,6 +982,10 @@ Surface::IsTopLevel (UIElement* top)
 void
 Surface::ShowIncompleteSilverlightSupportMessage ()
 {
+#if DEBUG
+	if (getenv ("MOONLIGHT_DISABLE_INCOMPLETE_MESSAGE") != NULL)
+		return;
+#endif
 	g_return_if_fail (incomplete_support_message == NULL);
 
 	Type::Kind dummy;
