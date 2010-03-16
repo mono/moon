@@ -60,14 +60,6 @@ get_now (void)
 	return 0;
 }
 
-ImageCaptureProvider::ImageCaptureProvider ()
-{
-}
-
-ImageCaptureProvider::~ImageCaptureProvider ()
-{
-}
-
 static char *moonlight_harness_output_dir = NULL;
 
 void
@@ -344,4 +336,11 @@ CaptureSingleImage (const char *directory, const char *filename, int x, int y, i
 		printf ("[shocker] CaptureSingleImage: a non-zero delay was specified, it will not be respected.\n"); // FIXME: implement delay
 	
 	shocker_capture_image (filename, x, y, width, height);
+}
+
+void
+ImageHelper_CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay)
+{
+	g_assert (delay == 0); // "Non-zero delay not implemented");
+	ImageCaptureProvider::CaptureSingleImage (directory, filename, x, y, width, height);
 }

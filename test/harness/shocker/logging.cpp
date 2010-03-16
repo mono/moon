@@ -33,8 +33,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include "logging.h"
+#include "harness.h"
 
 LogProvider *LogProvider::instance = NULL;
 
@@ -64,11 +66,13 @@ LogProvider::GetInstance ()
 LogProvider::LogProvider (const char* test_name)
 {
 	this->test_name = strdup (test_name);
+	runtime_properties = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 }
 
 LogProvider::~LogProvider ()
 {
 	free (test_name);
+	g_hash_table_destroy (runtime_properties);
 }
 
 void
@@ -137,7 +141,47 @@ LogProvider::Log (const char* level, const char* msg)
 	printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);
 }
 
+char *
+LogProvider::GetTestDefinition (bool isJson)
+{
+	char *test_definition;
+	const char *msg;
+	const int buffer_length = 32000;/* test definitions can be pretty huge */
+	guint8 *buffer = (guint8 *) g_malloc0 (buffer_length);
+	guint32 output_length;
 
+	if (isJson) {
+		msg = "TestDefinition.GetTestDefinitionJson";
+	} else {
+		msg = "TestDefinition.GetTestDefinition";
+	}
+	
+	if (send_harness_message (msg, buffer, buffer_length, &output_length)) {
+		test_definition = g_strndup ((char *) buffer, output_length);
+
+		//printf ("[shocker] LogProvider::GetTestDefinition (isJson: %i)\n", isJson);
+		//printf (test_definition);
+		//printf ("\n");
+	} else {
+		printf ("[shocker] LogProvider::GetTestDefinition (): Could not get test definition: %s\n", strerror (errno));
+		test_definition = NULL;
+	}
+	
+	g_free (buffer);
+	return test_definition;
+}
+
+char *
+LogProvider::GetRuntimePropertyValue (const char *propertyName)
+{
+	return g_strdup ((gchar *) g_hash_table_lookup (runtime_properties, propertyName));
+}
+
+void
+LogProvider::SetRuntimePropertyValue (const char *propertyName, const char *value)
+{
+	g_hash_table_insert (runtime_properties, g_strdup (propertyName), g_strdup (value));
+}
 
 void 
 LogDebug (const char *message)
@@ -174,6 +218,70 @@ void GetTestDefinition (char **result)
 {
 	printf ("[shocker] GetTestDefinition: Not implemented\n");
 }
+
+
+void TestLogger_StartLog (const char *message, const char *testDefinitionXml, const char *filePath)
+{
+	g_warning ("[shocker] TestLogger_StartLog (message: '%s', testDefinitionXml: '%s', filePath: '%s'): Not implemented\n", message, testDefinitionXml, filePath);
+}
+
+void TestLogger_EndLog (const char *message)
+{
+	g_warning ("[shocker] TestLogger_EndLog (message: '%s')\n", message);
+}
+
+void TestLogger_LogDebug (const char *message)
+{
+	LogDebug (message);
+}
+
+void TestLogger_LogMessage (const char *message)
+{
+	LogMessage (message);
+}
+
+void TestLogger_LogResult (guint32 result)
+{
+	LogResult ((LogProvider::TestResult) result);
+}
+
+void TestLogger_LogError (const char *message)
+{
+	LogError (message);
+}
+
+void TestLogger_LogWarning (const char *message)
+{
+	LogWarning (message);
+}
+
+void TestLogger_GetTestDefinition (bool isJson, gunichar2 **result)
+{
+	char *utf8 = LogProvider::GetInstance ()->GetTestDefinition (isJson);
+	if (utf8 != NULL) {
+		*result = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
+	} else {
+		*result = NULL;
+	}
+	g_free (utf8);
+}
+
+void TestLogger_GetRuntimePropertyValue (const char *propertyName, gunichar2 **value)
+{
+	char *utf8 = LogProvider::GetInstance ()->GetRuntimePropertyValue (propertyName);
+	if (utf8 != NULL) {
+		*value = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
+	} else {
+		*value = NULL;
+	}
+	g_free (utf8);
+}
+
+void TestLogger_SetRuntimePropertyValue (const char *propertyName, const char *value)
+{
+	LogProvider::GetInstance ()->SetRuntimePropertyValue (propertyName, value);
+}
+
 
 
 

@@ -62,11 +62,11 @@ public:
 
 class ImageCaptureProvider {
 public:
-	ImageCaptureProvider ();
-	virtual ~ImageCaptureProvider ();
+	ImageCaptureProvider () {}
+	virtual ~ImageCaptureProvider () {}
 
-	void CaptureSingleImage (const char* image_dir, const char* file_name, int x, int y, int width, int height);
-	void CaptureMultipleImages (const char* test_path, int x, int y, int width, int height,
+	static void CaptureSingleImage (const char* image_dir, const char* file_name, int x, int y, int width, int height);
+	static void CaptureMultipleImages (const char* test_path, int x, int y, int width, int height,
 			int count, int capture_interval, int initial_delay);
 };
 
@@ -100,6 +100,8 @@ private:
 G_BEGIN_DECLS
 void shocker_capture_image (const char *filename, int x, int y, int width, int height);
 void CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay);
+
+void ImageHelper_CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay);
 G_END_DECLS
 
 #endif  // __IMAGE_CAPTURE_H__

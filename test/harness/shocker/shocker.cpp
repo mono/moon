@@ -307,7 +307,8 @@ CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant*
 {
 	bool res = false;
 	char *msg;
-	int output;
+	guint8 output = 0;
+	guint32 output_length;
 	
 	g_assert (arg_count >= 6);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
@@ -321,7 +322,7 @@ CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant*
 		STR_FROM_VARIANT (args [0]), STR_FROM_VARIANT (args [1]), NUMBER_TO_INT32 (args [2]), 
 		STR_FROM_VARIANT (args [3]), STR_FROM_VARIANT (args [4]), NPVARIANT_TO_BOOLEAN (args [5]));
 	
-	if (send_harness_message (msg, &output))
+	if (send_harness_message (msg, &output, 1, &output_length))
 		res = output == 0;
 	g_free (msg);
 	
@@ -371,22 +372,31 @@ static void
 GetTestDefinition (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	char *test_definition;
+	bool free_test_definition = false;
 	char *retval;
+	bool isJson = false;
 	
-	g_assert (arg_count == 0);
-	
+	g_assert (arg_count <= 1);
+
 	test_definition = getenv ("MOONLIGHT_HARNESS_TESTDEFINITION");
+
+	if (test_definition == NULL) {
+
+		if (arg_count > 0) {
+			g_assert (NPVARIANT_IS_BOOLEAN (args [0]));
+			isJson = NPVARIANT_TO_BOOLEAN (args [0]);
+		}
 	
-	if (test_definition == NULL || test_definition [0] == 0)
-		printf ("[shocker] GetTestDefinition (): MOONLIGHT_HARNESS_TESTDEFINITION isn't set, this will probably cause the test to fail.\n");
-	
-	printf ("[shocker] GetTestDefinition ()\n");
-	//printf (test_definition);
-	//printf ("\n");
-	
+
+		test_definition = LogProvider::GetInstance ()->GetTestDefinition (isJson);
+		free_test_definition = true;
+	}
+
 	retval = NPN_strdup (test_definition == NULL ? "" : test_definition);
 	
 	STRINGZ_TO_NPVARIANT (retval, *result);
+	if (free_test_definition)
+		g_free (test_definition);
 }
 
 static void

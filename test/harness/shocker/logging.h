@@ -60,10 +60,15 @@ public:
 	void LogDebug (const char* str);
 
 	void LogResult (TestResult result);
+	char *GetTestDefinition (bool isJson);
+	char *GetRuntimePropertyValue (const char *propertyName);
+	void SetRuntimePropertyValue (const char *propertyName, const char *value);
+
 private:
 	void Log (const char* level, const char* msg);
 	
 	char *test_name;
+	GHashTable *runtime_properties;
 };
 
 G_BEGIN_DECLS
@@ -74,6 +79,17 @@ void LogResult (LogProvider::TestResult result);
 void LogError (const char *message);
 void LogWarning (const char *message);
 void GetTestDefinition (char **result);
+
+void TestLogger_StartLog (const char *message, const char *testDefinitionXml, const char *filePath);
+void TestLogger_EndLog (const char *message);
+void TestLogger_LogDebug (const char *message);
+void TestLogger_LogMessage (const char *message);
+void TestLogger_LogResult (guint32 result);
+void TestLogger_LogError (const char *message);
+void TestLogger_LogWarning (const char *message);
+void TestLogger_GetTestDefinition (bool isJson, gunichar2 **result);
+void TestLogger_GetRuntimePropertyValue (const char *propertyName, gunichar2 **value);
+void TestLogger_SetRuntimePropertyValue (const char *propertyName, const char *value);
 
 G_END_DECLS
 

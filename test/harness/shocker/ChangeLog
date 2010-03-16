@@ -1,5 +1,16 @@
 2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shocker.cpp:
+	* logging.cpp|h: Added new p/invokable c methods and a few new methods too.
+
+	* image-capture.cpp|h: Make Capture[Single|Multiple]Image[s] static, no need
+	to be instance methods. Add new p/invokable c method.
+
+	* harness.cpp|h: send_harness_message: add support for receiving more than 1
+	byte back.
+
+2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shocker.cpp: Fix capitalization.
 
 2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>

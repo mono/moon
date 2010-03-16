@@ -33,7 +33,9 @@
 #ifndef __HARNESS_H__
 #define __HARNESS_H__
 
-bool send_harness_message (const char *msg, int *output);
+#include <glib.h>
+
+bool send_harness_message (const char *msg, guint8 *buffer, guint32 buffer_length, guint32 *output_length);
 
 #endif /* __HARNESS_H__ */
 

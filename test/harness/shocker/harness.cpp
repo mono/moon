@@ -41,7 +41,8 @@
 
 #include "harness.h"
 
-bool send_harness_message (const char *msg, int *output)
+bool
+send_harness_message (const char *msg, guint8 *buffer, guint32 buffer_length, guint32 *output_length)
 {
 	int sockfd;
 	int result;
@@ -49,7 +50,7 @@ bool send_harness_message (const char *msg, int *output)
 	char *strport;
 	int port;
 
-	*output = 0;
+	*output_length = 0;
 
 	// get and validate port
 	strport = getenv ("MOONLIGHT_HARNESS_LISTENER_PORT");
@@ -84,19 +85,21 @@ bool send_harness_message (const char *msg, int *output)
 	} else {
 		result = send (sockfd, msg, strlen (msg), MSG_NOSIGNAL);
 		if (result > 0) {
-			char out; 
-			result = recv (sockfd, &out, 1, 0);
-			if (result > 0) {
-				*output = out;
-			} else {
+			do {
+				result = recv (sockfd, buffer, buffer_length, MSG_WAITALL);
+			} while (result == -1 && errno == EINTR);
+			
+			if (result < 0) {
 				printf ("[Shocker]: receive failed, returned %i (%i %s)\n", result, errno, strerror (errno));
+			} else {
+				*output_length = result;
 			}
 		} else {
 			printf ("[Shocker]: send failed, returned %i (%i %s)\n", result, errno, strerror (errno));
 		}
 	}
 
-	close (sockfd);;
+	close (sockfd);
 
 	return result != -1;
 }
