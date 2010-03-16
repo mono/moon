@@ -1,3 +1,8 @@
+2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Add DataErrorsChangedEventArgs.cs and INotifyDataErrorInfo.cs
+	to the build.
+
 2010-03-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add browser stack files to build (moved from

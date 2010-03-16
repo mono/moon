@@ -91,8 +91,10 @@ system_windows_sources =							\
 	$(srcdir)/Mono/XamlLoaderCallbacks.cs					\
 	$(srcdir)/System.ComponentModel/CurrentChangingEventArgs.cs		\
 	$(srcdir)/System.ComponentModel/CurrentChangingEventHandler.cs		\
+	$(srcdir)/System.ComponentModel/DataErrorsChangedEventArgs.cs		\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.ComponentModel/ICollectionView.cs			\
+	$(srcdir)/System.ComponentModel/INotifyDataErrorInfo.cs			\
 	$(srcdir)/System.ComponentModel/IEditableCollectionView.cs			\
 	$(srcdir)/System.ComponentModel/GroupDescription.cs			\
 	$(srcdir)/System.ComponentModel/NewItemPlaceholderPosition.cs			\

@@ -1,3 +1,9 @@
+2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* INotifyDataErrorInfo.cs:
+	* DataErrorsChangedEventArgs.cs: Added, these have been moved here from
+	System.dll in Silverlight 4 RC.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* IEditableCollectionView.cs:
