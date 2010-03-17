@@ -1076,7 +1076,8 @@ MoonWindowGtk::properties_dialog_response (GtkWidget *dialog, int response, Moon
 enum OptionColumn {
 	OPTION_COLUMN_TOGGLE,
 	OPTION_COLUMN_NAME,
-	OPTION_COLUMN_FLAG
+	OPTION_COLUMN_FLAG,
+	OPTION_COLUMN_SURFACE
 };
 
 static void
@@ -1088,6 +1089,7 @@ option_cell_toggled (GtkCellRendererToggle *cell_renderer,
 	GtkTreePath *tree_path;
 	gboolean set;
 	guint32 flag;
+	Surface *surface;
 
 	tree_path = gtk_tree_path_new_from_string (path);
 
@@ -1104,13 +1106,16 @@ option_cell_toggled (GtkCellRendererToggle *cell_renderer,
 			    &iter,
 			    OPTION_COLUMN_TOGGLE, &set,
 			    OPTION_COLUMN_FLAG, &flag,
+			    OPTION_COLUMN_SURFACE, &surface,
 			    -1);
 
 	// we're toggling here
 	set = !set;
 
+	surface->SetCurrentDeployment ();
+
 	// toggle the debug state for moonlight
-	moonlight_set_runtime_option ((RuntimeInitFlag)flag, set);
+	surface->SetRuntimeOption ((RuntimeInitFlag)flag, set);
 
 	// and reflect the change in the UI
 	gtk_list_store_set (GTK_LIST_STORE (model),
@@ -1120,7 +1125,7 @@ option_cell_toggled (GtkCellRendererToggle *cell_renderer,
 }
 
 static GtkWidget*
-create_option_treeview ()
+create_option_treeview (Surface *surface)
 {
 	GtkListStore *model;
 	GtkTreeIter iter;
@@ -1131,10 +1136,11 @@ create_option_treeview ()
 
 	const MoonlightRuntimeOption *options;
 
-	model = gtk_list_store_new (3,
-				    /* OPTION_COLUMN_TOGGLE */ G_TYPE_BOOLEAN,
-				    /* OPTION_COLUMN_NAME   */ G_TYPE_STRING,
-				    /* OPTION_COLUMN_FLAG   */ G_TYPE_INT);
+	model = gtk_list_store_new (4,
+				    /* OPTION_COLUMN_TOGGLE  */ G_TYPE_BOOLEAN,
+				    /* OPTION_COLUMN_NAME    */ G_TYPE_STRING,
+				    /* OPTION_COLUMN_FLAG    */ G_TYPE_INT,
+				    /* OPTION_COLUMN_SURFACE */ G_TYPE_POINTER);
 
 	options = moonlight_get_runtime_options ();
 	
@@ -1143,9 +1149,10 @@ create_option_treeview ()
 			continue;
 		gtk_list_store_append (model, &iter);
 		gtk_list_store_set (model, &iter,
-				    OPTION_COLUMN_TOGGLE, moonlight_get_runtime_option (options [i].flag),
+				    OPTION_COLUMN_TOGGLE, surface->GetRuntimeOption (options[i].flag),
 				    OPTION_COLUMN_NAME, options [i].description,
 				    OPTION_COLUMN_FLAG, options [i].flag,
+				    OPTION_COLUMN_SURFACE, surface,
 				    -1);
 	}
 
@@ -1257,7 +1264,7 @@ MoonWindowGtk::Properties ()
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
 
-	treeview = create_option_treeview ();
+	treeview = create_option_treeview (surface);
 
 	gtk_box_pack_start (vbox, treeview, TRUE, TRUE, 0);
 

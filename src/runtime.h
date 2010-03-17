@@ -345,6 +345,11 @@ public:
 
 	void ShowDrmMessage ();
 
+	guint32 GetRuntimeOptions ();
+	void SetRuntimeOptions (guint32 flags);
+	void SetRuntimeOption (RuntimeInitFlag flag, bool value);
+	bool GetRuntimeOption (RuntimeInitFlag flag);
+
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;
@@ -352,6 +357,8 @@ protected:
 	virtual ~Surface();
 
 private:
+	guint32 surface_flags;
+
 	// are we headed for death?
 	bool zombie;
 

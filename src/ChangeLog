@@ -1,3 +1,13 @@
+2010-03-17  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (class Surface): add GetRuntimeOption(s) and
+	SetRuntimeOption(s) for the properties window to call through such
+	that runtime settable per-surface settings actually work.  Fixes
+	the FPS display, for instance.
+
+	* pal/gtk/window-gtk.cpp: when setting runtime options go through
+	the surface, not through a global variable.
+
 2010-03-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* debug.cpp (stack_trace_prefix_n): Slightly modified version of

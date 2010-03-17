@@ -114,7 +114,7 @@ static MoonlightRuntimeOption options [] = {
 	{ RUNTIME_INIT_ALL_IMAGE_FORMATS,     "allimages",         "yes",        "no" },
 	{ RUNTIME_INIT_EMULATE_KEYCODES,      "emulatekeycodes",   "yes",        "no",     true,            "Emulate Windows PlatformKeyCodes" },
 	{ RUNTIME_INIT_ENABLE_EFFECTS,        "effects",           "yes",        "no",     true,            "Enable Pixel Effects" },
-	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",        "yes",        "no",     true,            "Enable Curl bridge" },
+	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",        "yes",        "no",     true,            "Prefer Curl bridge" },
 	{ RUNTIME_INIT_ENABLE_TOGGLEREFS,     "togglerefs",        "yes",        "no" },
 	{ (RuntimeInitFlag)0 }
 
@@ -136,13 +136,20 @@ moonlight_set_runtime_option (RuntimeInitFlag flag, bool set)
 			break;
 		}
 	}
-	printf ("Moonlight: setting option %s to %i\n", index == -1 ? "?" : options [index].name, set);
-	if (set) {
-		moonlight_flags |= flag;
-	} else {
-		moonlight_flags &= ~flag;
+
+	if (index == -1)
+		return;
+
+	if (options[index].runtime_changeable) {
+		printf ("Moonlight: setting option %s to %i\n", index == -1 ? "?" : options [index].name, set);
+		if (set) {
+			moonlight_flags |= flag;
+		} else {
+			moonlight_flags &= ~flag;
+		}
 	}
 }
+
 
 bool
 moonlight_get_runtime_option (RuntimeInitFlag flag)
@@ -394,6 +401,8 @@ Surface::Surface (MoonWindow *window)
 	down_dirty = new DirtyLists (false);
 	
 	surface_list = g_list_append (surface_list, this);
+
+	SetRuntimeOptions (moonlight_flags);
 }
 
 Surface::~Surface ()
@@ -456,6 +465,61 @@ Surface::Zombify ()
 	time_manager->Shutdown ();
 	DetachDownloaders ();
 	zombie = true;
+}
+
+guint32
+Surface::GetRuntimeOptions ()
+{
+	return surface_flags;
+}
+
+void
+Surface::SetRuntimeOptions (guint32 flags)
+{
+	surface_flags = flags;
+	for (int i = 0; i < 32; i ++)
+		SetRuntimeOption ((RuntimeInitFlag)i, (flags & (1 << i)) != 0);
+}
+
+bool
+Surface::GetRuntimeOption (RuntimeInitFlag flag)
+{
+	return (surface_flags & flag) != 0;
+}
+
+void
+Surface::SetRuntimeOption (RuntimeInitFlag flag, bool value)
+{
+	if (value)
+		surface_flags |= (1 << flag);
+	else
+		surface_flags &= ~(1 << flag);
+
+	switch (flag) {
+	case RUNTIME_INIT_SHOW_EXPOSE:
+		SetEnableRedrawRegions (value);
+		break;
+
+	case RUNTIME_INIT_SHOW_FPS:
+		SetEnableFrameRateCounter (value);
+		break;
+
+	// FIXME: these flags just modify the global settings, but
+	// many shouldn't
+	case RUNTIME_INIT_ENABLE_EFFECTS:
+	case RUNTIME_INIT_SHOW_CACHE_SIZE:
+	case RUNTIME_INIT_SHOW_CLIPPING:
+	case RUNTIME_INIT_SHOW_BOUNDING_BOXES:
+	case RUNTIME_INIT_SHOW_TEXTBOXES:
+	case RUNTIME_INIT_OCCLUSION_CULLING:
+	case RUNTIME_INIT_USE_BACKEND_IMAGE:
+	case RUNTIME_INIT_KEEP_MEDIA:
+	case RUNTIME_INIT_CURL_BRIDGE:
+	case RUNTIME_INIT_EMULATE_KEYCODES:
+	default:
+		moonlight_set_runtime_option (flag, value);
+		break;
+	}
 }
 
 MoonWindow *
