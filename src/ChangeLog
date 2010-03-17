@@ -2,6 +2,7 @@
 
 	* effect.h:
 	* effect.cpp: Pass viewport offsets to DrawVertices.
+	(Composite): Fix perspective divide in ProjectionEffect.
 
 2010-03-17  Chris Toshok  <toshok@ximian.com>
 

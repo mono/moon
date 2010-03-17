@@ -4015,22 +4015,10 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	if (p1[3] == 0.0 || p2[3] == 0.0 || p3[3] == 0.0 || p4[3] == 0.0)
 		return 0;
 
-	p1[0] /= p1[3];
-	p1[1] /= p1[3];
-
-	p2[0] /= p2[3];
-	p2[1] /= p2[3];
-
-	p3[0] /= p3[3];
-	p3[1] /= p3[3];
-
-	p4[0] /= p4[3];
-	p4[1] /= p4[3];
-
 	*verts++ = p1[0] * xscale;
 	*verts++ = p1[1] * yscale;
-	*verts++ = 1.f;
-	*verts++ = 1.f;
+	*verts++ = 0.f;
+	*verts++ = p1[3];
 
 	*verts++ = s1;
 	*verts++ = t1;
@@ -4039,8 +4027,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	*verts++ = p2[0] * xscale;
 	*verts++ = p2[1] * yscale;
-	*verts++ = 1.f;
-	*verts++ = 1.f;
+	*verts++ = 0.f;
+	*verts++ = p2[3];
 
 	*verts++ = s2;
 	*verts++ = t1;
@@ -4049,8 +4037,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	*verts++ = p3[0] * xscale;
 	*verts++ = p3[1] * yscale;
-	*verts++ = 1.f;
-	*verts++ = 1.f;
+	*verts++ = 0.f;
+	*verts++ = p3[3];
 
 	*verts++ = s2;
 	*verts++ = t2;
@@ -4059,8 +4047,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	*verts++ = p4[0] * xscale;
 	*verts++ = p4[1] * yscale;
-	*verts++ = 1.f;
-	*verts++ = 1.f;
+	*verts++ = 0.f;
+	*verts++ = p4[3];
 
 	*verts++ = s1;
 	*verts++ = t2;
