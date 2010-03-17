@@ -122,6 +122,8 @@ protected:
 					       unsigned stride,
 					       float    **ptr);
 	void DrawVertices (pipe_surface_t *surface,
+			   int            x,
+			   int            y,
 			   pipe_buffer_t  *vertices,
 			   int            nattrib,
 			   int            blend_enable);

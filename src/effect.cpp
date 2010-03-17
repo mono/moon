@@ -1333,6 +1333,8 @@ Effect::GetShaderVertexBuffer (float    x1,
 
 void
 Effect::DrawVertices (struct pipe_surface *surface,
+		      int		  x,
+		      int		  y,
 		      struct pipe_buffer  *vertices,
 		      int                 nattrib,
 		      int                 blend_enable)
@@ -1350,8 +1352,8 @@ Effect::DrawVertices (struct pipe_surface *surface,
 	viewport.scale[1] = surface->height;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
-	viewport.translate[0] = 0.0;
-	viewport.translate[1] = 0.0;
+	viewport.translate[0] = x;
+	viewport.translate[1] = y;
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
@@ -1565,10 +1567,10 @@ BlurEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
-					  (1.0 / surface->height) * y,
-					  (1.0 / surface->width)  * (x + texture->width0),
-					  (1.0 / surface->height) * (y + texture->height0),
+	vertices = GetShaderVertexBuffer (0.0,
+					  0.0,
+					  (1.0 / surface->width)  * texture->width0,
+					  (1.0 / surface->height) * texture->height0,
 					  1,
 					  &verts);
 	if (!vertices) {
@@ -1670,7 +1672,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, horz_pass_constant_buffer);
 
-	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
+	DrawVertices (intermediate_surface, 0, 0, intermediate_vertices, 1, 0);
 
 	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
 
@@ -1678,7 +1680,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, vert_pass_constant_buffer);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, x, y, vertices, 1, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1994,10 +1996,10 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
-					  (1.0 / surface->height) * y,
-					  (1.0 / surface->width)  * (x + texture->width0),
-					  (1.0 / surface->height) * (y + texture->height0),
+	vertices = GetShaderVertexBuffer (0.0,
+					  0.0,
+					  (1.0 / surface->width)  * texture->width0,
+					  (1.0 / surface->height) * texture->height0,
 					  1,
 					  &verts);
 	if (!vertices) {
@@ -2100,7 +2102,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, horz_pass_constant_buffer);
 
-	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
+	DrawVertices (intermediate_surface, 0, 0, intermediate_vertices, 1, 0);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
 		pipe_buffer_reference (&intermediate_vertices, NULL);
@@ -2115,7 +2117,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, vert_pass_constant_buffer);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, x, y, vertices, 1, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2931,10 +2933,10 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
 		return 0;
 
-	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
-					  (1.0 / surface->height) * y,
-					  (1.0 / surface->width)  * (x + texture->width0),
-					  (1.0 / surface->height) * (y + texture->height0),
+	vertices = GetShaderVertexBuffer (0.0,
+					  0.0,
+					  (1.0 / surface->width)  * texture->width0,
+					  (1.0 / surface->height) * texture->height0,
 					  1,
 					  &verts);
 	if (!vertices)
@@ -3023,7 +3025,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, constants);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, x, y, vertices, 1, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -4025,18 +4027,6 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	p4[0] /= p4[3];
 	p4[1] /= p4[3];
 
-	p1[0] += x;
-	p1[1] += y;
-
-	p2[0] += x;
-	p2[1] += y;
-
-	p3[0] += x;
-	p3[1] += y;
-
-	p4[0] += x;
-	p4[1] += y;
-
 	*verts++ = p1[0] * xscale;
 	*verts++ = p1[1] * yscale;
 	*verts++ = 1.f;
@@ -4093,7 +4083,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	st_set_fragment_sampler_texture (ctx, 0, texture);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, x, y, vertices, 1, 1);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
