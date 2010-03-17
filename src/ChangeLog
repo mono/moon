@@ -1,5 +1,10 @@
 2010-03-17  Chris Toshok  <toshok@ximian.com>
 
+	* application.cpp (Application::GetResource): remove some unneeded
+	checks & code.
+
+2010-03-17  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h (class Surface): add GetRuntimeOption(s) and
 	SetRuntimeOption(s) for the properties window to call through such
 	that runtime settable per-surface settings actually work.  Fixes

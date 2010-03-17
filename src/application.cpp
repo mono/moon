@@ -186,16 +186,9 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 		cancellable->SetCancelFuncAndData (downloader_abort, downloader, ctx);
 	}
 
-	if (downloader->Completed ()) {
-		if (notify_cb)
-			notify_cb (NotifyCompleted, NULL, user_data);
-	} else {
-		if (!downloader->Started ()) {
-			downloader->Open ("GET", (Uri*)uri, policy);
-			downloader->SetStreamFunctions (downloader_write, downloader_notify_size, ctx);
-			downloader->Send ();
-		}
-	}
+	downloader->Open ("GET", (Uri*)uri, policy);
+	downloader->SetStreamFunctions (downloader_write, downloader_notify_size, ctx);
+	downloader->Send ();
 	
 	return true;
 }
