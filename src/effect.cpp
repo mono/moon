@@ -3437,6 +3437,7 @@ ShaderEffect::UpdateShader ()
 		for (unsigned k = 0; k < op.meta.nsrcparam; k++) {
 			j = ps->GetSourceParameter (j, &source[k]);
 			src[k] = src_reg[source[k].regtype][source[k].regnum];
+			src_tmp[k] = ureg_dst_undef ();
 
 			switch (source[k].srcmod) {
 				case D3DSPS_NEGATE:

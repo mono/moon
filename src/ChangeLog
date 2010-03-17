@@ -2,6 +2,7 @@
 
 	* effect.cpp: Update to work with revision
 	59e743b8d393f2bdf023e3a5ad8fe848a7459ec9 of mesa.
+	(UpdateShader): Initialize src_tmp register properly.
 
 2010-03-16  Jackson Harper  <jackson@ximian.com>
 
