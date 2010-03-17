@@ -76,7 +76,7 @@ namespace System.Windows.Data {
 				} else if (Binding.ElementName != null) {
 					source = Target.FindName (Binding.ElementName);
 					if (source == null)
-						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName could not be found");
+						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName ('{0}') could not be found", Binding.ElementName);
 				} else if (Binding.RelativeSource != null) {
 					if (Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
 						source = Target;
