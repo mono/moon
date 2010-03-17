@@ -1,3 +1,12 @@
+2010-03-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* debug.cpp (stack_trace_prefix_n): Slightly modified version of
+	the old get_stack_trace_prefix_n(). No longer returns anything,
+	but writes the stack trace out to either a GString or a FILE
+	handle. This makes getting stack traces for machines with less
+	resources possible (since most of the time we just dump to stdout
+	anyway).
+
 2010-03-17  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Update to work with revision

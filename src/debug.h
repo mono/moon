@@ -28,10 +28,6 @@
 
 
 #if DEBUG
-char* get_stack_trace_prefix (const char* prefix);
-char* get_stack_trace_prefix_n (const char* prefix, int maxframes);
-void print_stack_trace_prefix (const char* prefix); 
-void print_stack_trace_prefix_n (const char* prefix, int maxframes); 
 
 void print_reftrace (const char * type, const char * typname, int refcount, bool keep);
 void dump_frames (void);
@@ -47,8 +43,8 @@ G_END_DECLS
 #else
 
 #define print_stack_trace()
-#define print_reftrace (const char * type, const char * typname, int refcount, bool keep)
-#define dump_frames (void)
+#define print_reftrace(type, typname, refcount, keep)
+#define dump_frames()
 
 #endif /* DEBUG */
 

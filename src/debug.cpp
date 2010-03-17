@@ -119,16 +119,6 @@ get_max_frames ()
 	return max_stack_trace_frames;
 }
 
-char* get_stack_trace (void)
-{
-	return get_stack_trace_prefix_n ("\t", get_max_frames ()); 
-}
-
-void print_stack_trace (void)
-{
-	print_stack_trace_prefix_n ("\t", get_max_frames ());
-}
-
 static char tohex[16] = {
 	'0', '1', '2', '3', '4', '5', '6', '7',
 	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
@@ -388,47 +378,42 @@ addr2line_offset (gpointer ip, bool use_offset)
 	return res;
 }
 
-char*
+static char *
 get_managed_frame (gpointer ip)
 {
 	return get_method_from_ip (ip);
 }
 
-GHashTable *ip_hash = NULL;
-pthread_mutex_t ip_lock = PTHREAD_MUTEX_INITIALIZER;
+static GHashTable *ip_hash = NULL;
+static pthread_mutex_t ip_lock = PTHREAD_MUTEX_INITIALIZER;
 
-char*
-get_stack_trace_prefix_n (const char* prefix, int maxframes)
+static void
+stack_trace_prefix_n (FILE *fout, GString *sout, const char *prefix, int maxframes)
 {
-	int address_count;
-	gpointer ip;
-	int total_length = 0;
-	int prefix_length = strlen (prefix);
+	size_t prefix_length = strlen (prefix);
 	void *ips [maxframes];
-	char *frames [maxframes];
+	int address_count;
 	char **names;
+	gpointer ip;
 	
 	address_count = backtrace (ips, maxframes);
-
+	
+	pthread_mutex_lock (&ip_lock);
+	
 	for (int i = 2; i < address_count; i++) {
-		ip = ips [i];
-
-		char* frame = NULL;
-
 		bool hashed = false;
+		char *frame = NULL;
 		
 		ip = ips [i];
-
+		
 		if (ip_hash != NULL) {
-			pthread_mutex_lock (&ip_lock);
 			frame = (char *) g_hash_table_lookup (ip_hash, ip);
-			pthread_mutex_unlock (&ip_lock);
 			if (frame != NULL) {
 				frame = g_strdup (frame);
 				hashed = true;
 			}
 		}
-
+		
 		if (frame == NULL)
 			frame = addr2line (ip);
 		
@@ -441,50 +426,45 @@ get_stack_trace_prefix_n (const char* prefix, int maxframes)
 			frame = g_strdup (names [0]);
 			free (names);
 		}
-		frames [i] = frame;
-
+		
 		if (!hashed) {
-			pthread_mutex_lock (&ip_lock);
 			if (ip_hash == NULL)
 				ip_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-			g_hash_table_insert (ip_hash, ip, g_strdup (frame));
-			pthread_mutex_unlock (&ip_lock);
+			g_hash_table_insert (ip_hash, ip, frame);
 		}
-
-		total_length += prefix_length + strlen (frame) + 1;
-	}
-	
-	char* result = (char*) g_malloc0 (total_length + 1);
-	int position = 0;
-	for (int i = 2; i < address_count; i++) {
-		char* frame = frames [i];
-		size_t frame_length = strlen (frame);
-
-		memcpy (result + position, prefix, prefix_length);
-		position += prefix_length;
-		memcpy (result + position, frame, frame_length);
-		position += frame_length;
-		memcpy (result + position, "\n", 1);
-		position ++;
 		
-		g_free (frame);
+		if (fout != NULL) {
+			fputs (prefix, fout);
+			fputs (frame, fout);
+			fputc ('\n', fout);
+		} else if (sout != NULL) {
+			g_string_append_len (sout, prefix, prefix_length);
+			g_string_append (sout, frame);
+			g_string_append_c (sout, '\n');
+		}
 	}
 	
-	return result;
+	pthread_mutex_unlock (&ip_lock);
+}
+
+char *
+get_stack_trace (void)
+{
+	GString *str = g_string_new ("");
+	char *trace;
+	
+	stack_trace_prefix_n (NULL, str, "\t", get_max_frames ());
+	trace = str->str;
+	
+	g_string_free (str, false);
+	
+	return trace;
 }
 
 void
-print_stack_trace_prefix (const char* prefix)
+print_stack_trace (void)
 {
-	print_stack_trace_prefix_n (prefix, get_max_frames ());
-}
-
-void
-print_stack_trace_prefix_n (const char* prefix, int maxframes)
-{
-	char* st = get_stack_trace_prefix_n (prefix, maxframes);
-	printf (st);
-	g_free (st);
+	stack_trace_prefix_n (stdout, NULL, "\t", get_max_frames ());
 }
 
 #ifdef HAVE_UNWIND
