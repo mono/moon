@@ -34,6 +34,8 @@ Effect *Effect::projection;
 #ifdef USE_GALLIUM
 #undef CLAMP
 
+extern "C" {
+
 #include "pipe/p_format.h"
 #include "pipe/p_context.h"
 #include "pipe/p_shader_tokens.h"
@@ -44,53 +46,29 @@ Effect *Effect::projection;
 #include "util/u_format.h"
 #include "util/u_memory.h"
 #include "util/u_math.h"
+#include "util/u_sampler.h"
 #include "util/u_simple_shaders.h"
-#include "softpipe/sp_winsys.h"
+#include "util/u_debug.h"
+#include "softpipe/sp_public.h"
+#include "state_tracker/sw_winsys.h"
 #include "cso_cache/cso_context.h"
 #include "tgsi/tgsi_ureg.h"
 #include "tgsi/tgsi_dump.h"
 
-#ifdef USE_LLVM
-#include "llvmpipe/lp_winsys.h"
-#endif
+}
 
 #if MAX_SAMPLERS > PIPE_MAX_SAMPLERS
 #error MAX_SAMPLERS is too large
 #endif
 
-struct pipe_screen;
-struct pipe_context;
-
 struct st_winsys
 {
 	struct pipe_screen  *(*screen_create)  (void);
-	struct pipe_context *(*context_create) (struct pipe_screen *screen);
 	struct pipe_texture *(*texture_create) (struct pipe_screen *screen,
 						const struct pipe_texture *templat,
 						void *data,
 						unsigned stride);
 };
-
-struct st_softpipe_winsys
-{
-	struct pipe_winsys base;
-
-	void     *user_data;
-	unsigned user_stride;
-};
-
-struct st_softpipe_buffer
-{
-	struct pipe_buffer base;
-	boolean userBuffer;  /** Is this a user-space buffer? */
-	void *data;
-	void *mapped;
-};
-
-struct cso_context;
-struct pipe_screen;
-struct pipe_context;
-struct st_winsys;
 
 struct st_context {
 	struct pipe_reference reference;
@@ -105,7 +83,8 @@ struct st_context {
 	void *fs;
 
 	struct pipe_texture *default_texture;
-	struct pipe_texture *sampler_textures[PIPE_MAX_SAMPLERS];
+	struct pipe_sampler_view *fragment_sampler_views[PIPE_MAX_SAMPLERS];
+	struct pipe_sampler_view *vertex_sampler_views[PIPE_MAX_VERTEX_SAMPLERS];
 
 	unsigned num_vertex_buffers;
 	struct pipe_vertex_buffer vertex_buffers[PIPE_MAX_ATTRIBS];
@@ -114,6 +93,8 @@ struct st_context {
 	struct pipe_vertex_element vertex_elements[PIPE_MAX_ATTRIBS];
 
 	struct pipe_framebuffer_state framebuffer;
+
+	struct pipe_vertex_element velems[2];
 };
 
 struct st_device {
@@ -172,6 +153,13 @@ st_context_really_destroy (struct st_context *st_ctx)
 	if (st_ctx) {
 		struct st_device *st_dev = st_ctx->st_dev;
 
+		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
+			pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[i], NULL);
+		for (i = 0; i < PIPE_MAX_VERTEX_SAMPLERS; i++)
+			pipe_sampler_view_reference (&st_ctx->vertex_sampler_views[i], NULL);
+
+		pipe_texture_reference (&st_ctx->default_texture, NULL);
+
 		if (st_ctx->cso) {
 			cso_delete_vertex_shader (st_ctx->cso, st_ctx->vs);
 			cso_delete_fragment_shader (st_ctx->cso, st_ctx->fs);
@@ -181,10 +169,6 @@ st_context_really_destroy (struct st_context *st_ctx)
 
 		if (st_ctx->pipe)
 			st_ctx->pipe->destroy (st_ctx->pipe);
-
-		for(i = 0; i < PIPE_MAX_SAMPLERS; ++i)
-			pipe_texture_reference (&st_ctx->sampler_textures[i], NULL);
-		pipe_texture_reference (&st_ctx->default_texture, NULL);
 
 		FREE (st_ctx);
 
@@ -205,7 +189,7 @@ st_context_create (struct st_device *st_dev)
 
 	st_device_reference (&st_ctx->st_dev, st_dev);
 
-	st_ctx->pipe = st_dev->st_ws->context_create (st_dev->screen);
+	st_ctx->pipe = st_dev->screen->context_create (st_dev->screen, NULL);
 	if (!st_ctx->pipe) {
 		st_context_really_destroy (st_ctx);
 		return NULL;
@@ -288,6 +272,8 @@ st_context_create (struct st_device *st_dev)
 		struct pipe_screen *screen = st_dev->screen;
 		struct pipe_texture templat;
 		struct pipe_transfer *transfer;
+		struct pipe_sampler_view view_templ;
+		struct pipe_sampler_view *view;
 		unsigned i;
 
 		memset( &templat, 0, sizeof( templat ) );
@@ -298,30 +284,44 @@ st_context_create (struct st_device *st_dev)
 		templat.depth0 = 1;
 		templat.last_level = 0;
 
-		st_ctx->default_texture = screen->texture_create( screen, &templat );
+		st_ctx->default_texture = screen->texture_create (screen, &templat);
 		if(st_ctx->default_texture) {
-			transfer = screen->get_tex_transfer(screen,
-							    st_ctx->default_texture,
-							    0, 0, 0,
-							    PIPE_TRANSFER_WRITE,
-							    0, 0,
-							    st_ctx->default_texture->width0,
-							    st_ctx->default_texture->height0);
+			transfer = st_ctx->pipe->get_tex_transfer (st_ctx->pipe,
+								   st_ctx->default_texture,
+								   0, 0, 0,
+								   PIPE_TRANSFER_WRITE,
+								   0, 0,
+								   st_ctx->default_texture->width0,
+								   st_ctx->default_texture->height0);
 			if (transfer) {
 				uint32_t *map;
-				map = (uint32_t *) screen->transfer_map(screen, transfer);
+				map = (uint32_t *) st_ctx->pipe->transfer_map (st_ctx->pipe, transfer);
 				if(map) {
 					*map = 0x00000000;
-					screen->transfer_unmap(screen, transfer);
+					st_ctx->pipe->transfer_unmap (st_ctx->pipe, transfer);
 				}
-				screen->tex_transfer_destroy(transfer);
+				st_ctx->pipe->tex_transfer_destroy (st_ctx->pipe, transfer);
 			}
 		}
 
-		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
-			pipe_texture_reference(&st_ctx->sampler_textures[i], st_ctx->default_texture);
+		u_sampler_view_default_template (&view_templ,
+						 st_ctx->default_texture,
+						 st_ctx->default_texture->format);
+		view = st_ctx->pipe->create_sampler_view (st_ctx->pipe,
+							  st_ctx->default_texture,
+							  &view_templ);
 
-		cso_set_sampler_textures(st_ctx->cso, PIPE_MAX_SAMPLERS, st_ctx->sampler_textures);
+		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
+			pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[i], view);
+		for (i = 0; i < PIPE_MAX_VERTEX_SAMPLERS; i++)
+			pipe_sampler_view_reference (&st_ctx->vertex_sampler_views[i], view);
+
+		st_ctx->pipe->set_fragment_sampler_views (st_ctx->pipe,
+							  PIPE_MAX_SAMPLERS,
+							  st_ctx->fragment_sampler_views);
+		st_ctx->pipe->set_vertex_sampler_views (st_ctx->pipe,
+							PIPE_MAX_VERTEX_SAMPLERS,
+							st_ctx->vertex_sampler_views);
 	}
 
 	/* vertex shader */
@@ -341,6 +341,18 @@ st_context_create (struct st_device *st_dev)
 	{
 		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D);
 		cso_set_fragment_shader_handle (st_ctx->cso, st_ctx->fs);
+	}
+
+	/* vertex elements */
+	{
+		unsigned i;
+
+		for (i = 0; i < 2; i++) {
+			st_ctx->velems[i].src_offset = i * 4 * sizeof (float);
+			st_ctx->velems[i].instance_divisor = 0;
+			st_ctx->velems[i].vertex_buffer_index = 0;
+			st_ctx->velems[i].src_format = PIPE_FORMAT_R32G32B32A32_FLOAT;
+		}
 	}
 
 	return st_ctx;
@@ -368,152 +380,94 @@ st_create_texture (struct st_device *st_dev,
 					      stride);
 }
 
-static struct st_softpipe_buffer *
-st_softpipe_buffer (struct pipe_buffer *buf)
+static void
+st_set_fragment_sampler_texture (struct st_context *st_ctx,
+				 unsigned index,
+				 struct pipe_texture *texture)
 {
-	return (struct st_softpipe_buffer *) buf;
+      struct pipe_sampler_view templ;
+
+      if (!texture)
+	      texture = st_ctx->default_texture;
+
+      pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[index], NULL);
+
+      u_sampler_view_default_template (&templ,
+				       texture,
+				       texture->format);
+
+      st_ctx->fragment_sampler_views[index] = st_ctx->pipe->create_sampler_view (st_ctx->pipe,
+										 texture,
+										 &templ);
+
+      st_ctx->pipe->set_fragment_sampler_views (st_ctx->pipe,
+						PIPE_MAX_SAMPLERS,
+						st_ctx->fragment_sampler_views);
+}
+
+struct st_softpipe_winsys
+{
+	struct sw_winsys base;
+
+	void     *user_data;
+	unsigned user_stride;
+};
+
+static boolean
+softpipe_ws_is_displaytarget_format_supported (struct sw_winsys *ws,
+					       unsigned tex_usage,
+					       enum pipe_format format)
+{
+	return FALSE;
 }
 
 static void *
-st_softpipe_buffer_map (struct pipe_winsys *winsys,
-			struct pipe_buffer *buf,
-			unsigned flags)
+softpipe_ws_displaytarget_map (struct sw_winsys *ws,
+			       struct sw_displaytarget *dt,
+			       unsigned flags)
 {
-	struct st_softpipe_buffer *st_softpipe_buf = st_softpipe_buffer (buf);
-	st_softpipe_buf->mapped = st_softpipe_buf->data;
-	return st_softpipe_buf->mapped;
+	return (void *) dt;
 }
 
 static void
-st_softpipe_buffer_unmap (struct pipe_winsys *winsys,
-			  struct pipe_buffer *buf)
+softpipe_ws_displaytarget_unmap (struct sw_winsys *ws,
+				 struct sw_displaytarget *dt)
 {
-	struct st_softpipe_buffer *st_softpipe_buf = st_softpipe_buffer (buf);
-	st_softpipe_buf->mapped = NULL;
 }
 
 static void
-st_softpipe_buffer_destroy (struct pipe_buffer *buf)
-{
-	struct st_softpipe_buffer *oldBuf = st_softpipe_buffer(buf);
-
-	if (oldBuf->data) {
-		if (!oldBuf->userBuffer)
-			align_free (oldBuf->data);
-
-		oldBuf->data = NULL;
-	}
-
-	FREE (oldBuf);
-}
-
-static void
-st_softpipe_flush_frontbuffer (struct pipe_winsys *winsys,
-			       struct pipe_surface *surf,
-			       void *context_private)
+softpipe_ws_displaytarget_destroy (struct sw_winsys *winsys,
+				   struct sw_displaytarget *dt)
 {
 }
 
-static const char *
-st_softpipe_get_name (struct pipe_winsys *winsys)
-{
-	return "moon-softpipe";
-}
-
-static struct pipe_buffer *
-st_softpipe_buffer_create (struct pipe_winsys *winsys,
-			   unsigned alignment,
-			   unsigned usage,
-			   unsigned size)
-{
-	struct st_softpipe_buffer *buffer = CALLOC_STRUCT (st_softpipe_buffer);
-
-	pipe_reference_init (&buffer->base.reference, 1);
-	buffer->base.alignment = alignment;
-	buffer->base.usage = usage;
-	buffer->base.size = size;
-
-	buffer->data = align_malloc (size, alignment);
-
-	return &buffer->base;
-}
-
-static struct pipe_buffer *
-st_softpipe_user_buffer_create (struct pipe_winsys *winsys,
-				void *ptr,
-				unsigned bytes)
-{
-	struct st_softpipe_buffer *buffer;
-
-	buffer = CALLOC_STRUCT (st_softpipe_buffer);
-	if (!buffer)
-		return NULL;
-
-	pipe_reference_init (&buffer->base.reference, 1);
-	buffer->base.size = bytes;
-	buffer->userBuffer = TRUE;
-	buffer->data = ptr;
-
-	return &buffer->base;
-}
-
-static struct pipe_buffer *
-st_softpipe_surface_buffer_create (struct pipe_winsys *winsys,
-				   unsigned width, unsigned height,
-				   enum pipe_format format,
-				   unsigned usage,
-				   unsigned tex_usage,
-				   unsigned *stride)
+static struct sw_displaytarget *
+softpipe_ws_displaytarget_create (struct sw_winsys *winsys,
+				  unsigned tex_usage,
+				  enum pipe_format format,
+				  unsigned width,
+				  unsigned height,
+				  unsigned alignment,
+				  unsigned *stride)
 {
 	struct st_softpipe_winsys *st_ws =
 		(struct st_softpipe_winsys *) winsys;
-	const unsigned alignment = 64;
-	unsigned nblocksy;
 
-	nblocksy = util_format_get_nblocksy (format, height);
-
-	if (st_ws->user_data && st_ws->user_stride)
-	{
-		*stride = st_ws->user_stride;
-		return winsys->user_buffer_create (winsys,
-						   st_ws->user_data,
-						   *stride * nblocksy);
-	}
-	else
-	{
-		*stride = align (util_format_get_stride (format, width), alignment);
-		return winsys->buffer_create (winsys, alignment,
-					      usage,
-					      *stride * nblocksy);
-	}
+	*stride = st_ws->user_stride;
+	return (struct sw_displaytarget *) st_ws->user_data;
 }
 
 static void
-st_softpipe_fence_reference (struct pipe_winsys *winsys,
-			     struct pipe_fence_handle **ptr,
-			     struct pipe_fence_handle *fence)
+softpipe_ws_displaytarget_display (struct sw_winsys *winsys,
+				   struct sw_displaytarget *dt,
+				   void *context_private)
 {
-}
-
-static int
-st_softpipe_fence_signalled (struct pipe_winsys *winsys,
-			     struct pipe_fence_handle *fence,
-			     unsigned flag)
-{
-	return 0;
-}
-
-static int
-st_softpipe_fence_finish (struct pipe_winsys *winsys,
-			  struct pipe_fence_handle *fence,
-			  unsigned flag)
-{
-	return 0;
 }
 
 static void
-st_softpipe_destroy (struct pipe_winsys *winsys)
+softpipe_ws_destroy (struct sw_winsys *winsys)
 {
+	FREE (winsys);
 }
 
 static struct pipe_screen *
@@ -526,31 +480,20 @@ st_softpipe_screen_create (void)
 	if (!winsys)
 		return NULL;
 
-	winsys->base.destroy = st_softpipe_destroy;
-	winsys->base.get_name = st_softpipe_get_name;
-	winsys->base.flush_frontbuffer = st_softpipe_flush_frontbuffer;
-	winsys->base.buffer_create = st_softpipe_buffer_create;
-	winsys->base.user_buffer_create = st_softpipe_user_buffer_create;
-	winsys->base.surface_buffer_create = st_softpipe_surface_buffer_create;
-	winsys->base.buffer_map = st_softpipe_buffer_map;
-	winsys->base.buffer_unmap = st_softpipe_buffer_unmap;
-	winsys->base.buffer_destroy = st_softpipe_buffer_destroy;
-	winsys->base.fence_reference = st_softpipe_fence_reference;
-	winsys->base.fence_signalled  = st_softpipe_fence_signalled;
-	winsys->base.fence_finish = st_softpipe_fence_finish;
+	winsys->base.destroy = softpipe_ws_destroy;
+	winsys->base.is_displaytarget_format_supported =
+		softpipe_ws_is_displaytarget_format_supported;
+	winsys->base.displaytarget_create = softpipe_ws_displaytarget_create;
+	winsys->base.displaytarget_map = softpipe_ws_displaytarget_map;
+	winsys->base.displaytarget_unmap = softpipe_ws_displaytarget_unmap;
+	winsys->base.displaytarget_display = softpipe_ws_displaytarget_display;
+	winsys->base.displaytarget_destroy = softpipe_ws_displaytarget_destroy;
 
 	screen = softpipe_create_screen (&winsys->base);
-	if (!screen) {
-		FREE (winsys);
-	}
+	if (screen)
+		screen->winsys = (struct pipe_winsys *) winsys;
 
 	return screen;
-}
-
-static struct pipe_context *
-st_softpipe_context_create (struct pipe_screen *screen)
-{
-	return softpipe_create (screen);
 }
 
 static struct pipe_texture *
@@ -565,142 +508,20 @@ st_softpipe_texture_create (struct pipe_screen *screen,
 	st_ws->user_data = data;
 	st_ws->user_stride = stride;
 
-	return screen->texture_create (screen, templat); 
+	return screen->texture_create (screen, templat);
 }
 
 const struct st_winsys st_softpipe_winsys = {
 	st_softpipe_screen_create,
-	st_softpipe_context_create,
 	st_softpipe_texture_create
 };
-
-#ifdef USE_LLVM
-struct st_llvmpipe_winsys
-{
-	struct llvmpipe_winsys base;
-
-	void     *user_data;
-	unsigned user_stride;
-};
-
-static boolean
-llvmpipe_ws_is_displaytarget_format_supported (struct llvmpipe_winsys *ws,
-					       enum pipe_format format)
-{
-	return FALSE;
-}
-
-static void *
-llvmpipe_ws_displaytarget_map (struct llvmpipe_winsys *ws,
-			       struct llvmpipe_displaytarget *dt,
-			       unsigned flags)
-{
-	return (void *) dt;
-}
-
-static void
-llvmpipe_ws_displaytarget_unmap (struct llvmpipe_winsys *ws,
-				 struct llvmpipe_displaytarget *dt)
-{
-}
-
-static void
-llvmpipe_ws_displaytarget_destroy (struct llvmpipe_winsys *winsys,
-				   struct llvmpipe_displaytarget *dt)
-{
-}
-
-static struct llvmpipe_displaytarget *
-llvmpipe_ws_displaytarget_create (struct llvmpipe_winsys *winsys,
-				  enum pipe_format format,
-				  unsigned width,
-				  unsigned height,
-				  unsigned alignment,
-				  unsigned *stride)
-{
-	struct st_llvmpipe_winsys *st_ws =
-		(struct st_llvmpipe_winsys *) winsys;
-
-	*stride = st_ws->user_stride;
-	return (struct llvmpipe_displaytarget *) st_ws->user_data;
-}
-
-static void
-llvmpipe_ws_displaytarget_display (struct llvmpipe_winsys *winsys,
-				   struct llvmpipe_displaytarget *dt,
-				   void *context_private)
-{
-}
-
-static void
-llvmpipe_ws_destroy (struct llvmpipe_winsys *winsys)
-{
-	FREE (winsys);
-}
-
-static struct pipe_screen *
-st_llvmpipe_screen_create (void)
-{
-	static struct st_llvmpipe_winsys *winsys;
-	struct pipe_screen *screen;
-
-	winsys = CALLOC_STRUCT (st_llvmpipe_winsys);
-	if (!winsys)
-		return NULL;
-
-	winsys->base.destroy = llvmpipe_ws_destroy;
-	winsys->base.is_displaytarget_format_supported =
-		llvmpipe_ws_is_displaytarget_format_supported;
-	winsys->base.displaytarget_create = llvmpipe_ws_displaytarget_create;
-	winsys->base.displaytarget_map = llvmpipe_ws_displaytarget_map;
-	winsys->base.displaytarget_unmap = llvmpipe_ws_displaytarget_unmap;
-	winsys->base.displaytarget_display = llvmpipe_ws_displaytarget_display;
-	winsys->base.displaytarget_destroy = llvmpipe_ws_displaytarget_destroy;
-
-	screen = llvmpipe_create_screen (&winsys->base);
-	if (!screen) {
-		FREE (winsys);
-	}
-
-	screen->winsys = (struct pipe_winsys *) winsys;
-
-	return screen;
-}
-
-static struct pipe_context *
-st_llvmpipe_context_create (struct pipe_screen *screen)
-{
-	return llvmpipe_create (screen);
-}
-
-static struct pipe_texture *
-st_llvmpipe_texture_create (struct pipe_screen *screen,
-			    const struct pipe_texture *templat,
-			    void *data,
-			    unsigned stride)
-{
-	struct st_llvmpipe_winsys *st_ws =
-		(struct st_llvmpipe_winsys *) screen->winsys;
-
-	st_ws->user_data = data;
-	st_ws->user_stride = stride;
-
-	return screen->texture_create (screen, templat); 
-}
-
-const struct st_winsys st_llvmpipe_winsys = {
-	st_llvmpipe_screen_create,
-	st_llvmpipe_context_create,
-	st_llvmpipe_texture_create
-};
-#endif
 
 static void
 st_texture_destroy_callback (void *data)
 {
 	struct pipe_texture *texture = (struct pipe_texture *) data;
 
-	pipe_texture_reference(&texture, NULL);
+	pipe_texture_reference (&texture, NULL);
 }
 
 static void
@@ -1372,13 +1193,23 @@ Effect::GetShaderTexture (cairo_surface_t *surface)
 		return NULL;
 
 	memset (&templat, 0, sizeof (templat));
-	templat.format = PIPE_FORMAT_A8R8G8B8_UNORM;
+	templat.format = PIPE_FORMAT_B8G8R8A8_UNORM;
 	templat.width0 = cairo_image_surface_get_width (surface);
 	templat.height0 = cairo_image_surface_get_height (surface);
 	templat.depth0 = 1;
 	templat.last_level = 0;
 	templat.target = PIPE_TEXTURE_2D;
 	templat.tex_usage = PIPE_TEXTURE_USAGE_SAMPLER | PIPE_TEXTURE_USAGE_DISPLAY_TARGET;
+
+	switch (cairo_image_surface_get_format (surface)) {
+		case CAIRO_FORMAT_ARGB32:
+			templat.format = PIPE_FORMAT_B8G8R8A8_UNORM;
+			break;
+		case CAIRO_FORMAT_RGB24:
+		case CAIRO_FORMAT_A8:
+		case CAIRO_FORMAT_A1:
+			return NULL;
+	}
 
 	tex = st_create_texture (ctx->st_dev,
 				 &templat,
@@ -1549,8 +1380,12 @@ Effect::DrawVertices (struct pipe_surface *surface,
 	}
 	cso_set_blend (ctx->cso, &blend);
 
-	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, nattrib + 1);
-
+	cso_set_vertex_elements (ctx->cso, 2, ctx->velems);
+	util_draw_vertex_buffer (ctx->pipe, vertices, 0,
+				 PIPE_PRIM_TRIANGLE_FAN,
+				 4,
+				 1 + nattrib);
+	
 	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
 	if (fence) {
 		/* TODO: allow asynchronous operation */
@@ -1829,7 +1664,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler(ctx->cso, 0, &sampler);
 	cso_single_sampler_done(ctx->cso);
 
-	cso_set_sampler_textures (ctx->cso, 1, &texture);
+	st_set_fragment_sampler_texture (ctx, 0, texture);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1837,7 +1672,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
 
-	cso_set_sampler_textures( ctx->cso, 1, &intermediate_texture );
+	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1849,7 +1684,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
 
-	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
+	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
 	pipe_buffer_reference (&intermediate_vertices, NULL);
 	pipe_buffer_reference (&vertices, NULL);
@@ -2086,7 +1921,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 #ifdef USE_GALLIUM
 	struct st_context   *ctx = st_context;
 	cairo_surface_t     *intermediate;
-	struct pipe_texture *texture[2];
+	struct pipe_texture *texture, *intermediate_texture;
 	struct pipe_surface *surface, *intermediate_surface;
 	struct pipe_buffer  *vertices, *intermediate_vertices;
 	float               *verts;
@@ -2137,18 +1972,18 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	if (!surface)
 		return 0;
 
-	texture[0] = GetShaderTexture (src);
-	if (!texture[0])
+	texture = GetShaderTexture (src);
+	if (!texture)
 		return 0;
 
 	intermediate = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-						   texture[0]->width0,
-						   texture[0]->height0);
+						   texture->width0,
+						   texture->height0);
 	if (!intermediate)
 		return 0;
 
-	texture[1] = GetShaderTexture (intermediate);
-	if (!texture[1]) {
+	intermediate_texture = GetShaderTexture (intermediate);
+	if (!intermediate_texture) {
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
@@ -2161,8 +1996,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
 					  (1.0 / surface->height) * y,
-					  (1.0 / surface->width)  * (x + texture[0]->width0),
-					  (1.0 / surface->height) * (y + texture[0]->height0),
+					  (1.0 / surface->width)  * (x + texture->width0),
+					  (1.0 / surface->height) * (y + texture->height0),
 					  1,
 					  &verts);
 	if (!vertices) {
@@ -2172,8 +2007,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	double s1 = 0.5;
 	double t1 = 0.5;
-	double s2 = texture[0]->width0 + 0.5;
-	double t2 = texture[0]->height0 + 0.5;
+	double s2 = texture->width0 + 0.5;
+	double t2 = texture->height0 + 0.5;
 
 	idx = 4;
 	verts[idx + 0] = s1;
@@ -2210,8 +2045,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	s1 = 0.5;
 	t1 = 0.5;
-	s2 = texture[1]->width0  + 0.5;
-	t2 = texture[1]->height0 + 0.5;
+	s2 = intermediate_texture->width0  + 0.5;
+	t2 = intermediate_texture->height0 + 0.5;
 
 	idx = 4;
 	verts[idx + 0] = s1;
@@ -2259,7 +2094,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler (ctx->cso, 1, &sampler);
 	cso_single_sampler_done (ctx->cso);
 
-	cso_set_sampler_textures (ctx->cso, 1, texture);
+	st_set_fragment_sampler_texture (ctx, 0, texture);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2274,7 +2109,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	cso_set_sampler_textures (ctx->cso, 2, texture);
+	st_set_fragment_sampler_texture (ctx, 1, intermediate_texture);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2286,7 +2121,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
 
-	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
+	st_set_fragment_sampler_texture (ctx, 1, NULL);
+	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
 	pipe_buffer_reference (&intermediate_vertices, NULL);
 	pipe_buffer_reference (&vertices, NULL);
@@ -3180,10 +3016,8 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 			sampler_texture = texture;
 		}
 
-		pipe_texture_reference (&ctx->sampler_textures[i], sampler_texture);
+		st_set_fragment_sampler_texture (ctx, i, sampler_texture);
 	}
-
-	cso_set_sampler_textures (ctx->cso, sampler_last + 1, ctx->sampler_textures);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -3195,10 +3029,8 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
 
-	for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
-		pipe_texture_reference (&ctx->sampler_textures[i], ctx->default_texture);
-
-	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
+	for (i = 0; i <= sampler_last; i++)
+		st_set_fragment_sampler_texture (ctx, i, NULL);
 
 	for (i = 0; i <= sampler_last; i++)
 		if (input[i])
@@ -4258,11 +4090,11 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler (ctx->cso, 1, &sampler);
 	cso_single_sampler_done (ctx->cso);
 
-	cso_set_sampler_textures (ctx->cso, 1, &texture);
+	st_set_fragment_sampler_texture (ctx, 0, texture);
 
 	DrawVertices (surface, vertices, 1, 1);
 
-	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
+	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
 	pipe_buffer_reference (&vertices, NULL);
 

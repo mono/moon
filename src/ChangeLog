@@ -1,3 +1,8 @@
+2010-03-17  David Reveman  <davidr@novell.com>
+
+	* effect.cpp: Update to work with revision
+	59e743b8d393f2bdf023e3a5ad8fe848a7459ec9 of mesa.
+
 2010-03-16  Jackson Harper  <jackson@ximian.com>
 
 	* type.h.in|type.cpp: Registering a type requires the content
