@@ -1,6 +1,7 @@
 2010-03-18  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Set min/mag sampler image filters properly.
+	(Composite): Update sampler 0 and not 1.
 
 2010-03-18  Alan McGovern  <amcgovern@novell.com>
 

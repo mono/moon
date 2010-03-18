@@ -4066,7 +4066,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	sampler.min_img_filter = PIPE_TEX_FILTER_LINEAR;
 	sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
 	sampler.normalized_coords = 1;
-	cso_single_sampler (ctx->cso, 1, &sampler);
+	cso_single_sampler (ctx->cso, 0, &sampler);
 	cso_single_sampler_done (ctx->cso);
 
 	st_set_fragment_sampler_texture (ctx, 0, texture);
