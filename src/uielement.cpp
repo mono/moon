@@ -924,10 +924,11 @@ UIElement::Invalidate (Rect r)
 
 	if (IsAttached ()) {
 		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+		Projection *projection = GetProjection ();
 
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
-		if (effect)
+		if (effect || projection)
 			dirty_region->Union (GetSubtreeBounds ());
 		else
 			dirty_region->Union (r);
@@ -946,10 +947,11 @@ UIElement::Invalidate (Region *region)
 
 	if (IsAttached ()) {
 		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+		Projection *projection = GetProjection ();
 
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
-		if (effect)
+		if (effect || projection)
 			dirty_region->Union (GetSubtreeBounds ());
 		else
 			dirty_region->Union (region);
