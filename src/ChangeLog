@@ -1,3 +1,7 @@
+2010-03-18  David Reveman  <davidr@novell.com>
+
+	* effect.cpp: Set min/mag sampler image filters properly.
+
 2010-03-18  Alan McGovern  <amcgovern@novell.com>
 
 	* application.cpp: Revert r153796 for now as it causes

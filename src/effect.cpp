@@ -258,9 +258,9 @@ st_context_create (struct st_device *st_dev)
 		sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 		sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 		sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-		sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NEAREST;
-		sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
-		sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+		sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
+		sampler.min_img_filter = PIPE_TEX_FILTER_NEAREST;
+		sampler.mag_img_filter = PIPE_TEX_FILTER_NEAREST;
 		sampler.normalized_coords = 1;
 		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
 			cso_single_sampler(st_ctx->cso, i, &sampler);
@@ -1660,8 +1660,8 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
-	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.min_img_filter = PIPE_TEX_FILTER_NEAREST;
+	sampler.mag_img_filter = PIPE_TEX_FILTER_NEAREST;
 	sampler.normalized_coords = 0;
 	cso_single_sampler(ctx->cso, 0, &sampler);
 	cso_single_sampler_done(ctx->cso);
@@ -2089,8 +2089,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
-	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.min_img_filter = PIPE_TEX_FILTER_NEAREST;
+	sampler.mag_img_filter = PIPE_TEX_FILTER_NEAREST;
 	sampler.normalized_coords = 0;
 	cso_single_sampler (ctx->cso, 0, &sampler);
 	cso_single_sampler (ctx->cso, 1, &sampler);
@@ -2737,7 +2737,7 @@ ShaderEffect::ShaderEffect ()
 		sampler_input[i] = NULL;
 
 #ifdef USE_GALLIUM
-		sampler_filter[i] = PIPE_TEX_MIPFILTER_NEAREST;
+		sampler_filter[i] = PIPE_TEX_FILTER_NEAREST;
 #endif
 
 	}
@@ -2867,10 +2867,10 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 
 	switch (mode) {
 		case 2:
-			sampler_filter[reg] = PIPE_TEX_MIPFILTER_LINEAR;
+			sampler_filter[reg] = PIPE_TEX_FILTER_LINEAR;
 			break;
 		default:
-			sampler_filter[reg] = PIPE_TEX_MIPFILTER_NEAREST;
+			sampler_filter[reg] = PIPE_TEX_FILTER_NEAREST;
 			break;
 	}
 #endif
@@ -4062,9 +4062,9 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_LINEAR;
-	sampler.min_img_filter = PIPE_TEX_MIPFILTER_LINEAR;
-	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_LINEAR;
+	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
+	sampler.min_img_filter = PIPE_TEX_FILTER_LINEAR;
+	sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
 	sampler.normalized_coords = 1;
 	cso_single_sampler (ctx->cso, 1, &sampler);
 	cso_single_sampler_done (ctx->cso);
