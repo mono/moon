@@ -4059,9 +4059,9 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_sampler_state sampler;
 	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
 	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
 	sampler.min_img_filter = PIPE_TEX_FILTER_LINEAR;
 	sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
