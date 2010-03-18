@@ -88,8 +88,13 @@ namespace Mono.Moonlight.UnitTesting
 			settings.TestAssemblies.Add (app.GetType ().Assembly);
 			UnitTestSystem.PrepareCustomLogProviders (settings);
 			settings.LogProviders.Add (moonlog);
-			if (!string.IsNullOrEmpty (HtmlPage.Document.DocumentUri.Query))
-				settings.TagExpression = HtmlPage.Document.DocumentUri.Query.Substring (1);
+            // Silverlight thinks HtmlPage.Document.DocumentUri.Query is empty
+            // so lets just manually parse instead. This allows tagging to work on SL.
+			if (HtmlPage.Document.DocumentUri.OriginalString.IndexOf ('?') > 0) {
+				settings.TagExpression = HtmlPage.Document.DocumentUri.OriginalString.Substring (HtmlPage.Document.DocumentUri.OriginalString.IndexOf ('?') + 1);
+				if (settings.TagExpression.IndexOf ('#') > 0)
+					settings.TagExpression = settings.TagExpression.Remove (settings.TagExpression.IndexOf ('#'));
+			}
 			test_page = UnitTestSystem.CreateTestPage (settings);
 			
 			settings.TestHarness.TestHarnessCompleted += new EventHandler<TestHarnessCompletedEventArgs> (Harness_Completed);
