@@ -777,13 +777,10 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 }
 
 cairo_t *
-MoonWindowGtk::CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool native)
+MoonWindowGtk::CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool native, int width, int height)
 {
-	int width, height;
 	cairo_surface_t *surface;
 	cairo_t *cr;
-
-	gdk_drawable_get_size (drawable, &width, &height);
 
 	if (native)
 		surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
@@ -832,7 +829,8 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
-	cairo_t *ctx = CreateCairoContext (drawable, visual, !(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE));
+	cairo_t *ctx = CreateCairoContext (drawable, visual, !(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE),
+					   GetWidth(), GetHeight());
 	Region *region = new Region (event->region);
 
 	region->Offset (-off_x, -off_y);
@@ -844,7 +842,7 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 
 	if (moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) {
 		cairo_surface_flush (cairo_get_target (ctx));
-		cairo_t *native = CreateCairoContext (drawable, visual, true);
+		cairo_t *native = CreateCairoContext (drawable, visual, true, GetWidth(), GetHeight());
 
 		cairo_surface_set_device_offset (cairo_get_target (native),
 						 0, 0);

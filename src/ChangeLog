@@ -1,5 +1,15 @@
 2010-03-17  Chris Toshok  <toshok@ximian.com>
 
+	* pal/gtk/windowless-gtk.cpp (MoonWindowlessGtk::HandleEvent): we
+	need to pass true for @clear_transparent.
+
+	* pal/gtk/window-gtk.cpp|h (MoonWindowGtk::CreateCairoContext):
+	add width/height parameters so we don't need to query gtk for it.
+	(MoonWindowGtk::PaintToDrawable): pass GetWidth()/GetHeight() to
+	CreateCairoContext.
+
+2010-03-17  Chris Toshok  <toshok@ximian.com>
+
 	* application.cpp (downloader_abort): free ctx after we abort.
 
 2010-03-17  David Reveman  <davidr@novell.com>

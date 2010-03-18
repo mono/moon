@@ -187,7 +187,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 
 				expose.area.x = expose.area.y = 0;
 
-				PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), false);
+				PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), true);
 
 				handled = TRUE;
 

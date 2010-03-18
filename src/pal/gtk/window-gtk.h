@@ -63,7 +63,7 @@ protected:
 	int backing_store_width;
 	int backing_store_height;
 
-	cairo_t* CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool native);
+	cairo_t* CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool native, int width, int height);
 
 	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 
