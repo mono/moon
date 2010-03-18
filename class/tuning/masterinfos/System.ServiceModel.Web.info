@@ -2,25 +2,25 @@
 <assemblies>
   <assembly name="System.ServiceModel.Web" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
-      <attribute name="System.Reflection.AssemblyProductAttribute" />
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+      <attribute name="System.CLSCompliantAttribute" />
+      <attribute name="System.Reflection.AssemblyTitleAttribute" />
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute" />
-      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-      <attribute name="System.CLSCompliantAttribute" />
-      <attribute name="System.Reflection.AssemblyTitleAttribute" />
-      <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
-      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
-      <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
       <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
-      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
+      <attribute name="System.Diagnostics.DebuggableAttribute" />
+      <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
+      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
+      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
+      <attribute name="System.Reflection.AssemblyProductAttribute" />
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
+      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Reflection.AssemblyKeyFileAttribute" />

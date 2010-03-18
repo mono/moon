@@ -2,10 +2,15 @@
 <assemblies>
   <assembly name="System" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
-          <property name="WrapNonExceptionThrows" value="True" />
+          <property name="AllInternalsVisible" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.Diagnostics.DebuggableAttribute" />
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
@@ -14,6 +19,11 @@
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+        <properties>
+          <property name="WrapNonExceptionThrows" value="True" />
+        </properties>
+      </attribute>
       <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
       <attribute name="System.CLSCompliantAttribute" />
       <attribute name="System.Reflection.AssemblyTitleAttribute" />
@@ -28,16 +38,6 @@
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
@@ -1448,6 +1448,115 @@
               </method>
             </methods>
           </class>
+          <class name="BindableAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.BindableAttribute" />
+              <field name="No" attrib="54" fieldtype="System.ComponentModel.BindableAttribute" />
+              <field name="Yes" attrib="54" fieldtype="System.ComponentModel.BindableAttribute" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor(System.ComponentModel.BindableSupport)" attrib="6278">
+                <parameters>
+                  <parameter name="flags" position="0" attrib="0" type="System.ComponentModel.BindableSupport" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.ComponentModel.BindableSupport, System.ComponentModel.BindingDirection)" attrib="6278">
+                <parameters>
+                  <parameter name="flags" position="0" attrib="0" type="System.ComponentModel.BindableSupport" />
+                  <parameter name="direction" position="1" attrib="0" type="System.ComponentModel.BindingDirection" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Boolean)" attrib="6278">
+                <parameters>
+                  <parameter name="bindable" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Boolean, System.ComponentModel.BindingDirection)" attrib="6278">
+                <parameters>
+                  <parameter name="bindable" position="0" attrib="0" type="System.Boolean" />
+                  <parameter name="direction" position="1" attrib="0" type="System.ComponentModel.BindingDirection" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Bindable" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_Bindable()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Direction" attrib="0" ptype="System.ComponentModel.BindingDirection" params="">
+                <methods>
+                  <method name="get_Direction()" attrib="2182" returntype="System.ComponentModel.BindingDirection">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
+          </class>
+          <class name="BindableSupport" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Default" attrib="32854" fieldtype="System.ComponentModel.BindableSupport" value="2" />
+              <field name="No" attrib="32854" fieldtype="System.ComponentModel.BindableSupport" value="0" />
+              <field name="Yes" attrib="32854" fieldtype="System.ComponentModel.BindableSupport" value="1" />
+            </fields>
+          </class>
+          <class name="BindingDirection" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="OneWay" attrib="32854" fieldtype="System.ComponentModel.BindingDirection" value="0" />
+              <field name="TwoWay" attrib="32854" fieldtype="System.ComponentModel.BindingDirection" value="1" />
+            </fields>
+          </class>
+          <class name="BrowsableAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.BrowsableAttribute" />
+              <field name="No" attrib="54" fieldtype="System.ComponentModel.BrowsableAttribute" />
+              <field name="Yes" attrib="54" fieldtype="System.ComponentModel.BrowsableAttribute" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor(System.Boolean)" attrib="6278">
+                <parameters>
+                  <parameter name="browsable" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Browsable" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_Browsable()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
+          </class>
           <class name="CancelEventArgs" type="class" base="System.EventArgs" charset="Ansi" layout="Auto">
             <constructors>
               <constructor name=".ctor(System.Boolean)" attrib="6278">
@@ -1617,27 +1726,161 @@
               </method>
             </methods>
           </class>
-          <class name="ComponentCollection" type="class" base="System.Object" charset="Ansi" layout="Auto" />
-          <class name="DataErrorsChangedEventArgs" type="class" base="System.EventArgs" sealed="true" charset="Ansi" layout="Auto">
+          <class name="ComplexBindingPropertiesAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.ComplexBindingPropertiesAttribute" />
+            </fields>
             <constructors>
+              <constructor name=".ctor(System.String, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="dataSource" position="0" attrib="0" type="System.String" />
+                  <parameter name="dataMember" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
-                  <parameter name="propertyName" position="0" attrib="0" type="System.String" />
+                  <parameter name="dataSource" position="0" attrib="0" type="System.String" />
                 </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
             </constructors>
             <properties>
-              <property name="PropertyName" attrib="0" ptype="System.String" params="">
+              <property name="DataMember" attrib="0" ptype="System.String" params="">
                 <methods>
-                  <method name="get_PropertyName()" attrib="2182" returntype="System.String">
-                    <attributes>
-                      <attribute name="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
-                    </attributes>
+                  <method name="get_DataMember()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="DataSource" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DataSource()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
             </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
+          </class>
+          <class name="ComponentCollection" type="class" base="System.Object" charset="Ansi" layout="Auto" />
+          <class name="DefaultBindingPropertyAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.DefaultBindingPropertyAttribute" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Name" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_Name()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
+          </class>
+          <class name="DefaultEventAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.DefaultEventAttribute" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Name" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_Name()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
+          </class>
+          <class name="DefaultPropertyAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.DefaultPropertyAttribute" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Name" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_Name()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
           </class>
           <class name="DefaultValueAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
@@ -1760,6 +2003,45 @@
                     <parameters>
                       <parameter name="value" position="0" attrib="0" type="System.String" />
                     </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
+          </class>
+          <class name="DesignTimeVisibleAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.DesignTimeVisibleAttribute" />
+              <field name="No" attrib="54" fieldtype="System.ComponentModel.DesignTimeVisibleAttribute" />
+              <field name="Yes" attrib="54" fieldtype="System.ComponentModel.DesignTimeVisibleAttribute" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+              <constructor name=".ctor(System.Boolean)" attrib="6278">
+                <parameters>
+                  <parameter name="visible" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Visible" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_Visible()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
                   </method>
                 </methods>
               </property>
@@ -1998,27 +2280,6 @@
               </method>
             </methods>
           </class>
-          <class name="INotifyDataErrorInfo" type="interface" abstract="true" charset="Ansi" layout="Auto">
-            <properties>
-              <property name="HasErrors" attrib="0" ptype="System.Boolean" params="">
-                <methods>
-                  <method name="get_HasErrors()" attrib="3526" abstract="true" virtual="true" returntype="System.Boolean">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-            </properties>
-            <events>
-              <event name="ErrorsChanged" attrib="0" eventtype="System.EventHandler`1[System.ComponentModel.DataErrorsChangedEventArgs]" />
-            </events>
-            <methods>
-              <method name="GetErrors(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Collections.IEnumerable">
-                <parameters>
-                  <parameter name="propertyName" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
           <class name="INotifyPropertyChanged" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <events>
               <event name="PropertyChanged" attrib="0" eventtype="System.ComponentModel.PropertyChangedEventHandler" />
@@ -2077,6 +2338,16 @@
               </property>
             </properties>
           </class>
+          <class name="ISupportInitialize" type="interface" abstract="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="BeginInit()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="EndInit()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+            </methods>
+          </class>
           <class name="ITypeDescriptorContext" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <interfaces>
               <interface name="System.IServiceProvider" />
@@ -2118,6 +2389,67 @@
               <field name="Ascending" attrib="32854" fieldtype="System.ComponentModel.ListSortDirection" value="0" />
               <field name="Descending" attrib="32854" fieldtype="System.ComponentModel.ListSortDirection" value="1" />
             </fields>
+          </class>
+          <class name="LookupBindingPropertiesAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <fields>
+              <field name="Default" attrib="54" fieldtype="System.ComponentModel.LookupBindingPropertiesAttribute" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor(System.String, System.String, System.String, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="dataSource" position="0" attrib="0" type="System.String" />
+                  <parameter name="displayMember" position="1" attrib="0" type="System.String" />
+                  <parameter name="valueMember" position="2" attrib="0" type="System.String" />
+                  <parameter name="lookupMember" position="3" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="DataSource" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DataSource()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="DisplayMember" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DisplayMember()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="LookupMember" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_LookupMember()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="ValueMember" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_ValueMember()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
           </class>
           <class name="ProgressChangedEventArgs" type="class" base="System.EventArgs" charset="Ansi" layout="Auto">
             <constructors>
@@ -2786,8 +3118,6 @@
           </class>
           <class name="Regex" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <fields>
-              <field name="capnames" attrib="5" fieldtype="System.Collections.Generic.Dictionary`2[System.String,System.Int32]" />
-              <field name="caps" attrib="5" fieldtype="System.Collections.Generic.Dictionary`2[System.Int32,System.Int32]" />
               <field name="capsize" attrib="5" fieldtype="System.Int32" />
               <field name="capslist" attrib="5" fieldtype="System.String[]" />
               <field name="pattern" attrib="5" fieldtype="System.String" />

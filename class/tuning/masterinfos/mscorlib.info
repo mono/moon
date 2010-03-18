@@ -23,6 +23,16 @@
           <property name="AllInternalsVisible" value="False" />
         </properties>
       </attribute>
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
+        </properties>
+      </attribute>
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
@@ -43,16 +53,6 @@
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
@@ -228,9 +228,9 @@
           </class>
           <class name="Activator" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <methods>
@@ -265,9 +265,9 @@
           </class>
           <class name="AppDomain" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -293,6 +293,64 @@
                   <method name="get_FriendlyName()" attrib="2534" virtual="true" returntype="System.String">
                     <attributes>
                       <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="MonitoringIsEnabled" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_MonitoringIsEnabled()" attrib="2198" static="true" returntype="System.Boolean">
+                    <attributes>
+                      <attribute name="System.Security.SecurityCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                  <method name="set_MonitoringIsEnabled(System.Boolean)" attrib="2198" static="true" returntype="System.Void">
+                    <attributes>
+                      <attribute name="System.Security.SecurityCriticalAttribute" />
+                    </attributes>
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="MonitoringSurvivedMemorySize" attrib="0" ptype="System.Int64" params="">
+                <methods>
+                  <method name="get_MonitoringSurvivedMemorySize()" attrib="2182" returntype="System.Int64">
+                    <attributes>
+                      <attribute name="System.Security.SecurityCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="MonitoringSurvivedProcessMemorySize" attrib="0" ptype="System.Int64" params="">
+                <methods>
+                  <method name="get_MonitoringSurvivedProcessMemorySize()" attrib="2198" static="true" returntype="System.Int64">
+                    <attributes>
+                      <attribute name="System.Security.SecurityCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="MonitoringTotalAllocatedMemorySize" attrib="0" ptype="System.Int64" params="">
+                <methods>
+                  <method name="get_MonitoringTotalAllocatedMemorySize()" attrib="2182" returntype="System.Int64">
+                    <attributes>
+                      <attribute name="System.Security.SecurityCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="MonitoringTotalProcessorTime" attrib="0" ptype="System.TimeSpan" params="">
+                <methods>
+                  <method name="get_MonitoringTotalProcessorTime()" attrib="2182" returntype="System.TimeSpan">
+                    <attributes>
+                      <attribute name="System.Security.SecurityCriticalAttribute" />
                     </attributes>
                     <parameters />
                   </method>
@@ -356,8 +414,8 @@
           </class>
           <class name="AppDomainManager" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Security.SecurityCriticalAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Security.SecurityCriticalAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -382,8 +440,8 @@
           </class>
           <class name="AppDomainSetup" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -1185,15 +1243,15 @@
           </class>
           <class name="Attribute" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
                   <property name="Inherited" value="True" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <constructors>
@@ -1434,8 +1492,8 @@
           </class>
           <class name="AttributeTargets" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="All" attrib="32854" fieldtype="System.AttributeTargets" value="32767" />
@@ -2010,14 +2068,14 @@
                   <parameter name="value" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
-              <method name="Equals(System.Char)" attrib="486" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="obj" position="0" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
               <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Equals(System.Char)" attrib="486" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
               <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
@@ -2057,11 +2115,6 @@
                   <parameter name="index" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="IsControl(System.Char)" attrib="150" static="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="c" position="0" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
               <method name="IsControl(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -2071,6 +2124,16 @@
                   <parameter name="index" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
+              <method name="IsControl(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="c" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="IsDigit(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="c" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
               <method name="IsDigit(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -2078,11 +2141,6 @@
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                   <parameter name="index" position="1" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="IsDigit(System.Char)" attrib="150" static="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
               <method name="IsLetter(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
@@ -2113,11 +2171,6 @@
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
-              <method name="IsLower(System.Char)" attrib="150" static="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="c" position="0" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
               <method name="IsLower(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -2125,6 +2178,11 @@
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                   <parameter name="index" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="IsLower(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
               <method name="IsNumber(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
@@ -2155,11 +2213,6 @@
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
-              <method name="IsSeparator(System.Char)" attrib="150" static="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="c" position="0" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
               <method name="IsSeparator(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -2169,15 +2222,20 @@
                   <parameter name="index" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="IsSurrogate(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
+              <method name="IsSeparator(System.Char)" attrib="150" static="true" returntype="System.Boolean">
                 <parameters>
-                  <parameter name="s" position="0" attrib="0" type="System.String" />
-                  <parameter name="index" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
               <method name="IsSurrogate(System.Char)" attrib="150" static="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="IsSurrogate(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="s" position="0" attrib="0" type="System.String" />
+                  <parameter name="index" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="IsSurrogatePair(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
@@ -2206,6 +2264,11 @@
                   <parameter name="index" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
+              <method name="IsUpper(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="c" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
               <method name="IsUpper(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -2213,11 +2276,6 @@
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                   <parameter name="index" position="1" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="IsUpper(System.Char)" attrib="150" static="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
               <method name="IsWhiteSpace(System.String, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
@@ -2234,15 +2292,20 @@
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
+              <method name="ToLower(System.Char, System.Globalization.CultureInfo)" attrib="150" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="c" position="0" attrib="0" type="System.Char" />
+                  <parameter name="culture" position="1" attrib="0" type="System.Globalization.CultureInfo" />
+                </parameters>
+              </method>
               <method name="ToLower(System.Char)" attrib="150" static="true" returntype="System.Char">
                 <parameters>
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
-              <method name="ToLower(System.Char, System.Globalization.CultureInfo)" attrib="150" static="true" returntype="System.Char">
+              <method name="ToLowerInvariant(System.Char)" attrib="150" static="true" returntype="System.Char">
                 <parameters>
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
-                  <parameter name="culture" position="1" attrib="0" type="System.Globalization.CultureInfo" />
                 </parameters>
               </method>
               <method name="ToString(System.IFormatProvider)" attrib="486" virtual="true" returntype="System.String">
@@ -2258,13 +2321,18 @@
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
+              <method name="ToUpper(System.Char)" attrib="150" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="c" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
               <method name="ToUpper(System.Char, System.Globalization.CultureInfo)" attrib="150" static="true" returntype="System.Char">
                 <parameters>
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
                   <parameter name="culture" position="1" attrib="0" type="System.Globalization.CultureInfo" />
                 </parameters>
               </method>
-              <method name="ToUpper(System.Char)" attrib="150" static="true" returntype="System.Char">
+              <method name="ToUpperInvariant(System.Char)" attrib="150" static="true" returntype="System.Char">
                 <parameters>
                   <parameter name="c" position="0" attrib="0" type="System.Char" />
                 </parameters>
@@ -2543,13 +2611,13 @@
           </class>
           <class name="ContextStaticAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.ObsoleteAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.ObsoleteAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -4293,8 +4361,8 @@
               </method>
               <method name="ToUInt64(System.Double)" attrib="150" static="true" returntype="System.UInt64">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Double" />
@@ -4739,6 +4807,11 @@
                   <parameter name="value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
+              <method name="FromBinary(System.Int64)" attrib="150" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="dateData" position="0" attrib="0" type="System.Int64" />
+                </parameters>
+              </method>
               <method name="FromFileTime(System.Int64)" attrib="150" static="true" returntype="System.DateTime">
                 <parameters>
                   <parameter name="fileTime" position="0" attrib="0" type="System.Int64" />
@@ -4830,6 +4903,15 @@
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="Parse(System.String, System.IFormatProvider)" attrib="150" static="true" returntype="System.DateTime">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="s" position="0" attrib="0" type="System.String" />
+                  <parameter name="provider" position="1" attrib="0" type="System.IFormatProvider" />
+                </parameters>
+              </method>
               <method name="Parse(System.String, System.IFormatProvider, System.Globalization.DateTimeStyles)" attrib="150" static="true" returntype="System.DateTime">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -4838,15 +4920,6 @@
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                   <parameter name="provider" position="1" attrib="0" type="System.IFormatProvider" />
                   <parameter name="styles" position="2" attrib="0" type="System.Globalization.DateTimeStyles" />
-                </parameters>
-              </method>
-              <method name="Parse(System.String, System.IFormatProvider)" attrib="150" static="true" returntype="System.DateTime">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="s" position="0" attrib="0" type="System.String" />
-                  <parameter name="provider" position="1" attrib="0" type="System.IFormatProvider" />
                 </parameters>
               </method>
               <method name="ParseExact(System.String, System.String, System.IFormatProvider, System.Globalization.DateTimeStyles)" attrib="150" static="true" returntype="System.DateTime">
@@ -6129,8 +6202,8 @@
               </method>
               <method name="ToUInt32(System.Decimal)" attrib="150" static="true" returntype="System.UInt32">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="d" position="0" attrib="0" type="System.Decimal" />
@@ -6138,8 +6211,8 @@
               </method>
               <method name="ToUInt64(System.Decimal)" attrib="150" static="true" returntype="System.UInt64">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="d" position="0" attrib="0" type="System.Decimal" />
@@ -6177,8 +6250,8 @@
           </class>
           <class name="Delegate" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <interfaces />
             <constructors>
@@ -6477,7 +6550,9 @@
                 </parameters>
               </method>
               <method name="IsNaN(System.Double)" attrib="150" static="true" returntype="System.Boolean">
-                <attributes />
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
                 <parameters>
                   <parameter name="d" position="0" attrib="0" type="System.Double" />
                 </parameters>
@@ -6661,8 +6736,8 @@
               </method>
               <method name="Parse(System.Type, System.String, System.Boolean)" attrib="150" static="true" returntype="System.Object">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="enumType" position="0" attrib="0" type="System.Type" />
@@ -6981,9 +7056,9 @@
           </class>
           <class name="Exception" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <constructors>
@@ -7884,8 +7959,8 @@
             <constructors>
               <constructor name=".ctor(System.Void*)" attrib="6278">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Void*" />
@@ -7944,8 +8019,8 @@
               </method>
               <method name="op_Explicit(System.IntPtr)" attrib="2198" static="true" returntype="System.Void*">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.IntPtr" />
@@ -8011,8 +8086,8 @@
               </method>
               <method name="ToPointer()" attrib="134" returntype="System.Void*">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters />
               </method>
@@ -8084,6 +8159,27 @@
               </constructor>
               <constructor name=".ctor()" attrib="6278">
                 <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="InvalidTimeZoneException" type="class" base="System.Exception" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Runtime.CompilerServices.TypeForwardedFromAttribute" />
+            </attributes>
+            <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+              <constructor name=".ctor(System.String, System.Exception)" attrib="6278">
+                <parameters>
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
+                  <parameter name="innerException" position="1" attrib="0" type="System.Exception" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
+                </parameters>
               </constructor>
             </constructors>
           </class>
@@ -9320,8 +9416,8 @@
           </class>
           <class name="ResolveEventHandler" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Security.SecurityCriticalAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
@@ -9488,8 +9584,8 @@
           </class>
           <class name="SByte" type="struct" base="System.ValueType" sealed="true" charset="Ansi" layout="Sequential">
             <attributes>
-              <attribute name="System.CLSCompliantAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.CLSCompliantAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.IComparable" />
@@ -9670,7 +9766,9 @@
                 </parameters>
               </method>
               <method name="IsNaN(System.Single)" attrib="150" static="true" returntype="System.Boolean">
-                <attributes />
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
                 <parameters>
                   <parameter name="f" position="0" attrib="0" type="System.Single" />
                 </parameters>
@@ -9791,9 +9889,9 @@
           </class>
           <class name="STAThreadAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.ObsoleteAttribute" />
               <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -9900,6 +9998,14 @@
               </property>
             </properties>
             <methods>
+              <method name="Compare(System.String, System.String, System.Globalization.CultureInfo, System.Globalization.CompareOptions)" attrib="150" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="strA" position="0" attrib="0" type="System.String" />
+                  <parameter name="strB" position="1" attrib="0" type="System.String" />
+                  <parameter name="culture" position="2" attrib="0" type="System.Globalization.CultureInfo" />
+                  <parameter name="options" position="3" attrib="0" type="System.Globalization.CompareOptions" />
+                </parameters>
+              </method>
               <method name="Compare(System.String, System.String, System.StringComparison)" attrib="150" static="true" returntype="System.Int32">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -9949,14 +10055,6 @@
                   <parameter name="length" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="Compare(System.String, System.String, System.Globalization.CultureInfo, System.Globalization.CompareOptions)" attrib="150" static="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="strA" position="0" attrib="0" type="System.String" />
-                  <parameter name="strB" position="1" attrib="0" type="System.String" />
-                  <parameter name="culture" position="2" attrib="0" type="System.Globalization.CultureInfo" />
-                  <parameter name="options" position="3" attrib="0" type="System.Globalization.CompareOptions" />
-                </parameters>
-              </method>
               <method name="CompareOrdinal(System.String, System.String)" attrib="150" static="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="strA" position="0" attrib="0" type="System.String" />
@@ -9985,39 +10083,23 @@
                   <parameter name="strB" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Concat(System.Object, System.Object, System.Object)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="arg0" position="0" attrib="0" type="System.Object" />
-                  <parameter name="arg1" position="1" attrib="0" type="System.Object" />
-                  <parameter name="arg2" position="2" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="Concat(System.Object, System.Object)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="arg0" position="0" attrib="0" type="System.Object" />
-                  <parameter name="arg1" position="1" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="Concat(System.Object)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="arg0" position="0" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="Concat(System.Object[])" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="args" position="0" attrib="0" type="System.Object[]">
-                    <attributes>
-                      <attribute name="System.ParamArrayAttribute" />
-                    </attributes>
-                  </parameter>
-                </parameters>
-              </method>
-              <method name="Concat(System.Collections.Generic.IEnumerable`1[System.String])" attrib="150" static="true" returntype="System.String">
+              <method name="Concat(System.String, System.String)" attrib="150" static="true" returntype="System.String">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
-                  <parameter name="values" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[System.String]" />
+                  <parameter name="str0" position="0" attrib="0" type="System.String" />
+                  <parameter name="str1" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Concat(System.String, System.String, System.String)" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="str0" position="0" attrib="0" type="System.String" />
+                  <parameter name="str1" position="1" attrib="0" type="System.String" />
+                  <parameter name="str2" position="2" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="Concat(System.String, System.String, System.String, System.String)" attrib="150" static="true" returntype="System.String">
@@ -10031,22 +10113,28 @@
                   <parameter name="str3" position="3" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Concat(System.String[])" attrib="150" static="true" returntype="System.String">
+              <method name="Concat(System.Collections.Generic.IEnumerable`1[System.String])" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                </attributes>
                 <parameters>
-                  <parameter name="values" position="0" attrib="0" type="System.String[]">
+                  <parameter name="values" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[System.String]" />
+                </parameters>
+              </method>
+              <method name="Concat(System.Object, System.Object, System.Object)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="arg0" position="0" attrib="0" type="System.Object" />
+                  <parameter name="arg1" position="1" attrib="0" type="System.Object" />
+                  <parameter name="arg2" position="2" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Concat(System.Object[])" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="args" position="0" attrib="0" type="System.Object[]">
                     <attributes>
                       <attribute name="System.ParamArrayAttribute" />
                     </attributes>
                   </parameter>
-                </parameters>
-              </method>
-              <method name="Concat(System.String, System.String)" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="str0" position="0" attrib="0" type="System.String" />
-                  <parameter name="str1" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="Concat(System.Collections.Generic.IEnumerable`1[T])" attrib="150" static="true" returntype="System.String">
@@ -10057,14 +10145,24 @@
                   <parameter name="values" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
                 </parameters>
               </method>
-              <method name="Concat(System.String, System.String, System.String)" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
+              <method name="Concat(System.String[])" attrib="150" static="true" returntype="System.String">
                 <parameters>
-                  <parameter name="str0" position="0" attrib="0" type="System.String" />
-                  <parameter name="str1" position="1" attrib="0" type="System.String" />
-                  <parameter name="str2" position="2" attrib="0" type="System.String" />
+                  <parameter name="values" position="0" attrib="0" type="System.String[]">
+                    <attributes>
+                      <attribute name="System.ParamArrayAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="Concat(System.Object, System.Object)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="arg0" position="0" attrib="0" type="System.Object" />
+                  <parameter name="arg1" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Concat(System.Object)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="arg0" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
               <method name="Contains(System.String)" attrib="134" returntype="System.Boolean">
@@ -10091,11 +10189,6 @@
                   <parameter name="count" position="3" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="EndsWith(System.String)" attrib="134" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
               <method name="EndsWith(System.String, System.StringComparison)" attrib="134" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -10104,6 +10197,11 @@
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.String" />
                   <parameter name="comparisonType" position="1" attrib="0" type="System.StringComparison" />
+                </parameters>
+              </method>
+              <method name="EndsWith(System.String)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="Equals(System.String, System.String)" attrib="150" static="true" returntype="System.Boolean">
@@ -10122,6 +10220,12 @@
                   <parameter name="comparisonType" position="2" attrib="0" type="System.StringComparison" />
                 </parameters>
               </method>
+              <method name="Equals(System.String)" attrib="486" virtual="true" returntype="System.Boolean">
+                <attributes />
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="Equals(System.String, System.StringComparison)" attrib="134" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -10135,20 +10239,6 @@
                 <attributes />
                 <parameters>
                   <parameter name="obj" position="0" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="Equals(System.String)" attrib="486" virtual="true" returntype="System.Boolean">
-                <attributes />
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="Format(System.String, System.Object, System.Object, System.Object)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="format" position="0" attrib="0" type="System.String" />
-                  <parameter name="arg0" position="1" attrib="0" type="System.Object" />
-                  <parameter name="arg1" position="2" attrib="0" type="System.Object" />
-                  <parameter name="arg2" position="3" attrib="0" type="System.Object" />
                 </parameters>
               </method>
               <method name="Format(System.String, System.Object[])" attrib="150" static="true" returntype="System.String">
@@ -10186,6 +10276,14 @@
                   <parameter name="format" position="0" attrib="0" type="System.String" />
                   <parameter name="arg0" position="1" attrib="0" type="System.Object" />
                   <parameter name="arg1" position="2" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Format(System.String, System.Object, System.Object, System.Object)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="format" position="0" attrib="0" type="System.String" />
+                  <parameter name="arg0" position="1" attrib="0" type="System.Object" />
+                  <parameter name="arg1" position="2" attrib="0" type="System.Object" />
+                  <parameter name="arg2" position="3" attrib="0" type="System.Object" />
                 </parameters>
               </method>
               <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
@@ -10316,28 +10414,23 @@
                   <parameter name="value" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Join(System.String, System.Collections.Generic.IEnumerable`1[T])" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="separator" position="0" attrib="0" type="System.String" />
-                  <parameter name="values" position="1" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="Join(System.String, System.Collections.Generic.IEnumerable`1[System.String])" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="separator" position="0" attrib="0" type="System.String" />
-                  <parameter name="values" position="1" attrib="0" type="System.Collections.Generic.IEnumerable`1[System.String]" />
-                </parameters>
-              </method>
               <method name="Join(System.String, System.String[])" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="separator" position="0" attrib="0" type="System.String" />
                   <parameter name="value" position="1" attrib="0" type="System.String[]">
+                    <attributes>
+                      <attribute name="System.ParamArrayAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="Join(System.String, System.Object[])" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="separator" position="0" attrib="0" type="System.String" />
+                  <parameter name="values" position="1" attrib="0" type="System.Object[]">
                     <attributes>
                       <attribute name="System.ParamArrayAttribute" />
                     </attributes>
@@ -10355,17 +10448,22 @@
                   <parameter name="count" position="3" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="Join(System.String, System.Object[])" attrib="150" static="true" returntype="System.String">
+              <method name="Join(System.String, System.Collections.Generic.IEnumerable`1[System.String])" attrib="150" static="true" returntype="System.String">
                 <attributes>
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="separator" position="0" attrib="0" type="System.String" />
-                  <parameter name="values" position="1" attrib="0" type="System.Object[]">
-                    <attributes>
-                      <attribute name="System.ParamArrayAttribute" />
-                    </attributes>
-                  </parameter>
+                  <parameter name="values" position="1" attrib="0" type="System.Collections.Generic.IEnumerable`1[System.String]" />
+                </parameters>
+              </method>
+              <method name="Join(System.String, System.Collections.Generic.IEnumerable`1[T])" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="separator" position="0" attrib="0" type="System.String" />
+                  <parameter name="values" position="1" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
                 </parameters>
               </method>
               <method name="LastIndexOf(System.String, System.Int32, System.Int32, System.StringComparison)" attrib="134" returntype="System.Int32">
@@ -10383,17 +10481,6 @@
                   <parameter name="comparisonType" position="2" attrib="0" type="System.StringComparison" />
                 </parameters>
               </method>
-              <method name="LastIndexOf(System.Char)" attrib="134" returntype="System.Int32">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
-              <method name="LastIndexOf(System.Char, System.Int32)" attrib="134" returntype="System.Int32">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Char" />
-                  <parameter name="startIndex" position="1" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
               <method name="LastIndexOf(System.Char, System.Int32, System.Int32)" attrib="134" returntype="System.Int32">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -10402,6 +10489,30 @@
                   <parameter name="value" position="0" attrib="0" type="System.Char" />
                   <parameter name="startIndex" position="1" attrib="0" type="System.Int32" />
                   <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="LastIndexOf(System.Char, System.Int32)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Char" />
+                  <parameter name="startIndex" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="LastIndexOf(System.Char)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="LastIndexOf(System.String, System.Int32, System.Int32)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                  <parameter name="startIndex" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="LastIndexOf(System.String, System.Int32)" attrib="134" returntype="System.Int32">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                  <parameter name="startIndex" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="LastIndexOf(System.String)" attrib="134" returntype="System.Int32">
@@ -10419,19 +10530,6 @@
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.String" />
                   <parameter name="comparisonType" position="1" attrib="0" type="System.StringComparison" />
-                </parameters>
-              </method>
-              <method name="LastIndexOf(System.String, System.Int32, System.Int32)" attrib="134" returntype="System.Int32">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.String" />
-                  <parameter name="startIndex" position="1" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="LastIndexOf(System.String, System.Int32)" attrib="134" returntype="System.Int32">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.String" />
-                  <parameter name="startIndex" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="LastIndexOfAny(System.Char[])" attrib="134" returntype="System.Int32">
@@ -10467,15 +10565,15 @@
                   <parameter name="b" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="PadLeft(System.Int32)" attrib="134" returntype="System.String">
+                <parameters>
+                  <parameter name="totalWidth" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
               <method name="PadLeft(System.Int32, System.Char)" attrib="134" returntype="System.String">
                 <parameters>
                   <parameter name="totalWidth" position="0" attrib="0" type="System.Int32" />
                   <parameter name="paddingChar" position="1" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
-              <method name="PadLeft(System.Int32)" attrib="134" returntype="System.String">
-                <parameters>
-                  <parameter name="totalWidth" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="PadRight(System.Int32)" attrib="134" returntype="System.String">
@@ -10489,11 +10587,6 @@
                   <parameter name="paddingChar" position="1" attrib="0" type="System.Char" />
                 </parameters>
               </method>
-              <method name="Remove(System.Int32)" attrib="134" returntype="System.String">
-                <parameters>
-                  <parameter name="startIndex" position="0" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
               <method name="Remove(System.Int32, System.Int32)" attrib="134" returntype="System.String">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -10501,6 +10594,11 @@
                 <parameters>
                   <parameter name="startIndex" position="0" attrib="0" type="System.Int32" />
                   <parameter name="count" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Remove(System.Int32)" attrib="134" returntype="System.String">
+                <parameters>
+                  <parameter name="startIndex" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="Replace(System.Char, System.Char)" attrib="134" returntype="System.String">
@@ -10521,13 +10619,13 @@
                   <parameter name="newValue" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Split(System.String[], System.StringSplitOptions)" attrib="134" returntype="System.String[]">
-                <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-                </attributes>
+              <method name="Split(System.Char[])" attrib="134" returntype="System.String[]">
                 <parameters>
-                  <parameter name="separator" position="0" attrib="0" type="System.String[]" />
-                  <parameter name="options" position="1" attrib="0" type="System.StringSplitOptions" />
+                  <parameter name="separator" position="0" attrib="0" type="System.Char[]">
+                    <attributes>
+                      <attribute name="System.ParamArrayAttribute" />
+                    </attributes>
+                  </parameter>
                 </parameters>
               </method>
               <method name="Split(System.Char[], System.StringSplitOptions)" attrib="134" returntype="System.String[]">
@@ -10539,13 +10637,13 @@
                   <parameter name="options" position="1" attrib="0" type="System.StringSplitOptions" />
                 </parameters>
               </method>
-              <method name="Split(System.Char[])" attrib="134" returntype="System.String[]">
+              <method name="Split(System.String[], System.StringSplitOptions)" attrib="134" returntype="System.String[]">
+                <attributes>
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                </attributes>
                 <parameters>
-                  <parameter name="separator" position="0" attrib="0" type="System.Char[]">
-                    <attributes>
-                      <attribute name="System.ParamArrayAttribute" />
-                    </attributes>
-                  </parameter>
+                  <parameter name="separator" position="0" attrib="0" type="System.String[]" />
+                  <parameter name="options" position="1" attrib="0" type="System.StringSplitOptions" />
                 </parameters>
               </method>
               <method name="StartsWith(System.String)" attrib="134" returntype="System.Boolean">
@@ -10555,8 +10653,8 @@
               </method>
               <method name="StartsWith(System.String, System.StringComparison)" attrib="134" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.String" />
@@ -10591,6 +10689,9 @@
                   <parameter name="culture" position="0" attrib="0" type="System.Globalization.CultureInfo" />
                 </parameters>
               </method>
+              <method name="ToLowerInvariant()" attrib="134" returntype="System.String">
+                <parameters />
+              </method>
               <method name="ToString(System.IFormatProvider)" attrib="486" virtual="true" returntype="System.String">
                 <parameters>
                   <parameter name="provider" position="0" attrib="0" type="System.IFormatProvider" />
@@ -10605,6 +10706,9 @@
                 </parameters>
               </method>
               <method name="ToUpper()" attrib="134" returntype="System.String">
+                <parameters />
+              </method>
+              <method name="ToUpperInvariant()" attrib="134" returntype="System.String">
                 <parameters />
               </method>
               <method name="Trim()" attrib="134" returntype="System.String">
@@ -10756,8 +10860,8 @@
           </class>
           <class name="StringSplitOptions" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.FlagsAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="None" attrib="32854" fieldtype="System.StringSplitOptions" value="0" />
@@ -11192,6 +11296,135 @@
                   <parameter name="formatProvider" position="2" attrib="0" type="System.IFormatProvider" />
                   <parameter name="result" position="3" attrib="2" type="System.TimeSpan&amp;" direction="out" />
                 </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="TimeZoneInfo" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Runtime.CompilerServices.TypeForwardedFromAttribute" />
+            </attributes>
+            <interfaces>
+              <interface name="System.IEquatable`1[System.TimeZoneInfo]" />
+            </interfaces>
+            <properties>
+              <property name="BaseUtcOffset" attrib="0" ptype="System.TimeSpan" params="">
+                <methods>
+                  <method name="get_BaseUtcOffset()" attrib="2182" returntype="System.TimeSpan">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="DaylightName" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DaylightName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="DisplayName" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DisplayName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Local" attrib="0" ptype="System.TimeZoneInfo" params="">
+                <methods>
+                  <method name="get_Local()" attrib="2198" static="true" returntype="System.TimeZoneInfo">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="StandardName" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_StandardName()" attrib="2182" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="SupportsDaylightSavingTime" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_SupportsDaylightSavingTime()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Utc" attrib="0" ptype="System.TimeZoneInfo" params="">
+                <methods>
+                  <method name="get_Utc()" attrib="2198" static="true" returntype="System.TimeZoneInfo">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="ConvertTime(System.DateTimeOffset, System.TimeZoneInfo)" attrib="150" static="true" returntype="System.DateTimeOffset">
+                <parameters>
+                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
+                  <parameter name="destinationTimeZone" position="1" attrib="0" type="System.TimeZoneInfo" />
+                </parameters>
+              </method>
+              <method name="ConvertTime(System.DateTime, System.TimeZoneInfo)" attrib="150" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
+                  <parameter name="destinationTimeZone" position="1" attrib="0" type="System.TimeZoneInfo" />
+                </parameters>
+              </method>
+              <method name="Equals(System.TimeZoneInfo)" attrib="486" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="other" position="0" attrib="0" type="System.TimeZoneInfo" />
+                </parameters>
+              </method>
+              <method name="GetAmbiguousTimeOffsets(System.DateTimeOffset)" attrib="134" returntype="System.TimeSpan[]">
+                <parameters>
+                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
+                </parameters>
+              </method>
+              <method name="GetAmbiguousTimeOffsets(System.DateTime)" attrib="134" returntype="System.TimeSpan[]">
+                <parameters>
+                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+              <method name="GetUtcOffset(System.DateTimeOffset)" attrib="134" returntype="System.TimeSpan">
+                <parameters>
+                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
+                </parameters>
+              </method>
+              <method name="GetUtcOffset(System.DateTime)" attrib="134" returntype="System.TimeSpan">
+                <parameters>
+                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="IsAmbiguousTime(System.DateTimeOffset)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
+                </parameters>
+              </method>
+              <method name="IsAmbiguousTime(System.DateTime)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="IsDaylightSavingTime(System.DateTimeOffset)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
+                </parameters>
+              </method>
+              <method name="IsDaylightSavingTime(System.DateTime)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="IsInvalidTime(System.DateTime)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="ToString()" attrib="198" virtual="true" returntype="System.String">
+                <parameters />
               </method>
             </methods>
           </class>
@@ -11781,9 +12014,9 @@
           </class>
           <class name="Type" type="class" base="System.Reflection.MemberInfo" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Reflection.IReflect" />
@@ -11987,6 +12220,13 @@
                   </method>
                 </methods>
               </property>
+              <property name="IsNested" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_IsNested()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
               <property name="IsNestedAssembly" attrib="0" ptype="System.Boolean" params="">
                 <methods>
                   <method name="get_IsNestedAssembly()" attrib="2534" virtual="true" returntype="System.Boolean">
@@ -12166,14 +12406,6 @@
               <method name="GetAttributeFlagsImpl()" attrib="1476" abstract="true" virtual="true" returntype="System.Reflection.TypeAttributes">
                 <parameters />
               </method>
-              <method name="GetConstructor(System.Type[])" attrib="486" virtual="true" returntype="System.Reflection.ConstructorInfo">
-                <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="types" position="0" attrib="0" type="System.Type[]" />
-                </parameters>
-              </method>
               <method name="GetConstructor(System.Reflection.BindingFlags, System.Reflection.Binder, System.Type[], System.Reflection.ParameterModifier[])" attrib="486" virtual="true" returntype="System.Reflection.ConstructorInfo">
                 <attributes>
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
@@ -12183,6 +12415,14 @@
                   <parameter name="binder" position="1" attrib="0" type="System.Reflection.Binder" />
                   <parameter name="types" position="2" attrib="0" type="System.Type[]" />
                   <parameter name="modifiers" position="3" attrib="0" type="System.Reflection.ParameterModifier[]" />
+                </parameters>
+              </method>
+              <method name="GetConstructor(System.Type[])" attrib="486" virtual="true" returntype="System.Reflection.ConstructorInfo">
+                <attributes>
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="types" position="0" attrib="0" type="System.Type[]" />
                 </parameters>
               </method>
               <method name="GetConstructorImpl(System.Reflection.BindingFlags, System.Reflection.Binder, System.Reflection.CallingConventions, System.Type[], System.Reflection.ParameterModifier[])" attrib="1476" abstract="true" virtual="true" returntype="System.Reflection.ConstructorInfo">
@@ -12247,13 +12487,13 @@
                   <parameter name="bindingAttr" position="1" attrib="0" type="System.Reflection.BindingFlags" />
                 </parameters>
               </method>
-              <method name="GetFields()" attrib="486" virtual="true" returntype="System.Reflection.FieldInfo[]">
-                <parameters />
-              </method>
               <method name="GetFields(System.Reflection.BindingFlags)" attrib="1478" abstract="true" virtual="true" returntype="System.Reflection.FieldInfo[]">
                 <parameters>
                   <parameter name="bindingAttr" position="0" attrib="0" type="System.Reflection.BindingFlags" />
                 </parameters>
+              </method>
+              <method name="GetFields()" attrib="486" virtual="true" returntype="System.Reflection.FieldInfo[]">
+                <parameters />
               </method>
               <method name="GetGenericArguments()" attrib="454" virtual="true" returntype="System.Type[]">
                 <parameters />
@@ -12284,15 +12524,15 @@
               <method name="GetInterfaces()" attrib="1478" abstract="true" virtual="true" returntype="System.Type[]">
                 <parameters />
               </method>
+              <method name="GetMember(System.String)" attrib="486" virtual="true" returntype="System.Reflection.MemberInfo[]">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="GetMember(System.String, System.Reflection.BindingFlags)" attrib="454" virtual="true" returntype="System.Reflection.MemberInfo[]">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                   <parameter name="bindingAttr" position="1" attrib="0" type="System.Reflection.BindingFlags" />
-                </parameters>
-              </method>
-              <method name="GetMember(System.String)" attrib="486" virtual="true" returntype="System.Reflection.MemberInfo[]">
-                <parameters>
-                  <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="GetMember(System.String, System.Reflection.MemberTypes, System.Reflection.BindingFlags)" attrib="454" virtual="true" returntype="System.Reflection.MemberInfo[]">
@@ -12442,16 +12682,6 @@
                   <parameter name="modifiers" position="5" attrib="0" type="System.Reflection.ParameterModifier[]" />
                 </parameters>
               </method>
-              <method name="GetType(System.String, System.Boolean, System.Boolean)" attrib="150" static="true" returntype="System.Type">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="typeName" position="0" attrib="0" type="System.String" />
-                  <parameter name="throwOnError" position="1" attrib="0" type="System.Boolean" />
-                  <parameter name="ignoreCase" position="2" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
               <method name="GetType()" attrib="486" virtual="true" returntype="System.Type">
                 <parameters />
               </method>
@@ -12472,6 +12702,16 @@
                   <parameter name="throwOnError" position="1" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
+              <method name="GetType(System.String, System.Boolean, System.Boolean)" attrib="150" static="true" returntype="System.Type">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="typeName" position="0" attrib="0" type="System.String" />
+                  <parameter name="throwOnError" position="1" attrib="0" type="System.Boolean" />
+                  <parameter name="ignoreCase" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
               <method name="GetTypeCode(System.Type)" attrib="150" static="true" returntype="System.TypeCode">
                 <parameters>
                   <parameter name="type" position="0" attrib="0" type="System.Type" />
@@ -12485,13 +12725,18 @@
                   <parameter name="handle" position="0" attrib="0" type="System.RuntimeTypeHandle" />
                 </parameters>
               </method>
+              <method name="GetTypeHandle(System.Object)" attrib="150" static="true" returntype="System.RuntimeTypeHandle">
+                <parameters>
+                  <parameter name="o" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
               <method name="HasElementTypeImpl()" attrib="1476" abstract="true" virtual="true" returntype="System.Boolean">
                 <parameters />
               </method>
               <method name="InvokeMember(System.String, System.Reflection.BindingFlags, System.Reflection.Binder, System.Object, System.Object[])" attrib="486" virtual="true" returntype="System.Object">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
                   <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
@@ -12821,8 +13066,8 @@
               </method>
               <method name="TryParse(System.String, out System.UInt16&amp;)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -12833,8 +13078,8 @@
           </class>
           <class name="UInt32" type="struct" base="System.ValueType" sealed="true" charset="Ansi" layout="Sequential">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.CLSCompliantAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.IComparable" />
@@ -13077,8 +13322,8 @@
               </method>
               <method name="TryParse(System.String, System.Globalization.NumberStyles, System.IFormatProvider, out System.UInt64&amp;)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -13110,8 +13355,8 @@
             <constructors>
               <constructor name=".ctor(System.Void*)" attrib="6278">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Void*" />
@@ -13185,8 +13430,8 @@
               </method>
               <method name="op_Explicit(System.UIntPtr)" attrib="2198" static="true" returntype="System.Void*">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.UIntPtr" />
@@ -13194,8 +13439,8 @@
               </method>
               <method name="op_Explicit(System.Void*)" attrib="2198" static="true" returntype="System.UIntPtr">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Void*" />
@@ -13301,8 +13546,8 @@
           </class>
           <class name="UnhandledExceptionEventHandler" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Security.SecurityCriticalAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Security.SecurityCriticalAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
@@ -13594,8 +13839,8 @@
         <classes>
           <class name="BitArray" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.ICollection" />
@@ -13998,8 +14243,8 @@
           </class>
           <class name="IList" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.ICollection" />
@@ -14136,9 +14381,9 @@
           </class>
           <class name="Dictionary`2" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Reflection.DefaultMemberAttribute" />
             </attributes>
             <interfaces>
@@ -14289,8 +14534,8 @@
               </class>
               <class name="KeyCollection" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
                   <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
                 </attributes>
                 <interfaces>
                   <interface name="System.Collections.Generic.ICollection`1[TKey]" />
@@ -14354,8 +14599,8 @@
               </class>
               <class name="ValueCollection" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
                   <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
                 </attributes>
                 <interfaces>
                   <interface name="System.Collections.Generic.ICollection`1[TValue]" />
@@ -14720,9 +14965,9 @@
           </class>
           <class name="List`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Reflection.DefaultMemberAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.IList`1[T]" />
@@ -14990,10 +15235,10 @@
         <classes>
           <class name="Collection`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute" />
               <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.IList`1[T]" />
@@ -15112,10 +15357,10 @@
           </class>
           <class name="KeyedCollection`2" type="class" base="System.Collections.ObjectModel.Collection`1[TItem]" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Reflection.DefaultMemberAttribute" />
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Collections.Generic.IEqualityComparer`1[TKey], System.Int32)" attrib="6276">
@@ -15350,8 +15595,8 @@
             <classes>
               <class name="DebuggingModes" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
                 <attributes>
-                  <attribute name="System.FlagsAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.FlagsAttribute" />
                 </attributes>
                 <fields>
                   <field name="Default" attrib="32854" fieldtype="System.Diagnostics.DebuggableAttribute+DebuggingModes" value="1" />
@@ -15420,12 +15665,12 @@
           </class>
           <class name="DebuggerBrowsableAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Diagnostics.DebuggerBrowsableState)" attrib="6278">
@@ -15456,12 +15701,12 @@
           </class>
           <class name="DebuggerDisplayAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -15545,12 +15790,12 @@
           </class>
           <class name="DebuggerNonUserCodeAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -15560,12 +15805,12 @@
           </class>
           <class name="DebuggerStepThroughAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -15928,9 +16173,6 @@
       <namespace name="System.Diagnostics.Contracts">
         <classes>
           <class name="Contract" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
-            <events>
-              <event name="ContractFailed" attrib="0" eventtype="System.EventHandler`1[System.Diagnostics.Contracts.ContractFailedEventArgs]" />
-            </events>
             <methods>
               <method name="Assert(System.Boolean)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
@@ -16135,13 +16377,13 @@
           </class>
           <class name="ContractClassForAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Diagnostics.ConditionalAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Diagnostics.ConditionalAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Type)" attrib="6278">
@@ -16159,77 +16401,6 @@
                 </methods>
               </property>
             </properties>
-          </class>
-          <class name="ContractFailedEventArgs" type="class" base="System.EventArgs" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Diagnostics.Contracts.ContractFailureKind, System.String, System.String, System.Exception)" attrib="6278">
-                <attributes />
-                <parameters>
-                  <parameter name="failureKind" position="0" attrib="0" type="System.Diagnostics.Contracts.ContractFailureKind" />
-                  <parameter name="message" position="1" attrib="0" type="System.String" />
-                  <parameter name="condition" position="2" attrib="0" type="System.String" />
-                  <parameter name="originalException" position="3" attrib="0" type="System.Exception" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <properties>
-              <property name="Condition" attrib="0" ptype="System.String" params="">
-                <methods>
-                  <method name="get_Condition()" attrib="2182" returntype="System.String">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="FailureKind" attrib="0" ptype="System.Diagnostics.Contracts.ContractFailureKind" params="">
-                <methods>
-                  <method name="get_FailureKind()" attrib="2182" returntype="System.Diagnostics.Contracts.ContractFailureKind">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="Handled" attrib="0" ptype="System.Boolean" params="">
-                <methods>
-                  <method name="get_Handled()" attrib="2182" returntype="System.Boolean">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="Message" attrib="0" ptype="System.String" params="">
-                <methods>
-                  <method name="get_Message()" attrib="2182" returntype="System.String">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="OriginalException" attrib="0" ptype="System.Exception" params="">
-                <methods>
-                  <method name="get_OriginalException()" attrib="2182" returntype="System.Exception">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="Unwind" attrib="0" ptype="System.Boolean" params="">
-                <methods>
-                  <method name="get_Unwind()" attrib="2182" returntype="System.Boolean">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-            </properties>
-            <methods>
-              <method name="SetHandled()" attrib="134" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
-                </attributes>
-                <parameters />
-              </method>
-              <method name="SetUnwind()" attrib="134" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
-                </attributes>
-                <parameters />
-              </method>
-            </methods>
           </class>
           <class name="ContractFailureKind" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <fields>
@@ -16291,13 +16462,13 @@
           </class>
           <class name="ContractRuntimeIgnoredAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Diagnostics.ConditionalAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
                   <property name="Inherited" value="True" />
                 </properties>
               </attribute>
-              <attribute name="System.Diagnostics.ConditionalAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -16363,8 +16534,8 @@
               </method>
               <method name="TriggerFailure(System.Diagnostics.Contracts.ContractFailureKind, System.String, System.String, System.String, System.Exception)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.Diagnostics.DebuggerNonUserCodeAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="kind" position="0" attrib="0" type="System.Diagnostics.Contracts.ContractFailureKind" />
@@ -17032,8 +17203,8 @@
           </class>
           <class name="CompareOptions" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="IgnoreCase" attrib="32854" fieldtype="System.Globalization.CompareOptions" value="1" />
@@ -17263,17 +17434,16 @@
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
-              <constructor name=".ctor(System.String, System.Int32, System.Exception)" attrib="6278">
+              <constructor name=".ctor(System.String, System.Exception)" attrib="6278">
                 <parameters>
                   <parameter name="message" position="0" attrib="0" type="System.String" />
-                  <parameter name="invalidCultureId" position="1" attrib="0" type="System.Int32" />
-                  <parameter name="innerException" position="2" attrib="0" type="System.Exception" />
+                  <parameter name="innerException" position="1" attrib="0" type="System.Exception" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.String, System.Int32, System.String)" attrib="6278">
+              <constructor name=".ctor(System.String, System.String, System.String)" attrib="6278">
                 <parameters>
                   <parameter name="paramName" position="0" attrib="0" type="System.String" />
-                  <parameter name="invalidCultureId" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="invalidCultureName" position="1" attrib="0" type="System.String" />
                   <parameter name="message" position="2" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
@@ -17284,25 +17454,12 @@
                   <parameter name="innerException" position="2" attrib="0" type="System.Exception" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.String, System.String, System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="paramName" position="0" attrib="0" type="System.String" />
-                  <parameter name="invalidCultureName" position="1" attrib="0" type="System.String" />
-                  <parameter name="message" position="2" attrib="0" type="System.String" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="message" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-              <constructor name=".ctor(System.String, System.Exception)" attrib="6278">
-                <parameters>
-                  <parameter name="message" position="0" attrib="0" type="System.String" />
-                  <parameter name="innerException" position="1" attrib="0" type="System.Exception" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.String)" attrib="6278">
@@ -17313,13 +17470,6 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="InvalidCultureId" attrib="0" ptype="System.Nullable`1[System.Int32]" params="">
-                <methods>
-                  <method name="get_InvalidCultureId()" attrib="2502" virtual="true" returntype="System.Nullable`1[System.Int32]">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
               <property name="InvalidCultureName" attrib="0" ptype="System.String" params="">
                 <methods>
                   <method name="get_InvalidCultureName()" attrib="2502" virtual="true" returntype="System.String">
@@ -19019,8 +19169,8 @@
           </class>
           <class name="NumberStyles" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="AllowCurrencySymbol" attrib="32854" fieldtype="System.Globalization.NumberStyles" value="256" />
@@ -19959,6 +20109,12 @@
               <method name="Close()" attrib="454" virtual="true" returntype="System.Void">
                 <parameters />
               </method>
+              <method name="Dispose()" attrib="486" virtual="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters />
+              </method>
               <method name="Dispose(System.Boolean)" attrib="452" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="disposing" position="0" attrib="0" type="System.Boolean" />
@@ -20108,6 +20264,12 @@
             </properties>
             <methods>
               <method name="Close()" attrib="454" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="Dispose()" attrib="486" virtual="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
                 <parameters />
               </method>
               <method name="Dispose(System.Boolean)" attrib="452" virtual="true" returntype="System.Void">
@@ -20274,25 +20436,6 @@
                   <parameter name="recursive" position="1" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
-              <!-- the two GetFiles methods are used by the SL2 test suite, but they're not in SL4. Add them back manually -->
-              <method name="GetFiles(System.String)" attrib="150" static="true" returntype="System.String[]">
-                <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="path" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="GetFiles(System.String, System.String)" attrib="150" static="true" returntype="System.String[]">
-                <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="path" position="0" attrib="0" type="System.String" />
-                  <parameter name="searchPattern" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-               
               <method name="EnumerateDirectories(System.String)" attrib="150" static="true" returntype="System.Collections.Generic.IEnumerable`1[System.String]">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -20956,8 +21099,8 @@
           </class>
           <class name="FileAccess" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="Read" attrib="32854" fieldtype="System.IO.FileAccess" value="1" />
@@ -21228,8 +21371,8 @@
           </class>
           <class name="FileShare" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.FlagsAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="Delete" attrib="32854" fieldtype="System.IO.FileShare" value="4" />
@@ -21245,6 +21388,17 @@
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
+              <constructor name=".ctor(System.String, System.IO.FileMode, System.IO.FileAccess, System.IO.FileShare)" attrib="6278">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="path" position="0" attrib="0" type="System.String" />
+                  <parameter name="mode" position="1" attrib="0" type="System.IO.FileMode" />
+                  <parameter name="access" position="2" attrib="0" type="System.IO.FileAccess" />
+                  <parameter name="share" position="3" attrib="0" type="System.IO.FileShare" />
+                </parameters>
+              </constructor>
               <constructor name=".ctor(System.String, System.IO.FileMode, System.IO.FileAccess, System.IO.FileShare, System.Int32)" attrib="6278">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -21255,30 +21409,6 @@
                   <parameter name="access" position="2" attrib="0" type="System.IO.FileAccess" />
                   <parameter name="share" position="3" attrib="0" type="System.IO.FileShare" />
                   <parameter name="bufferSize" position="4" attrib="0" type="System.Int32" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.String, System.IO.FileMode, System.IO.FileAccess, System.IO.FileShare, System.Int32, System.Boolean)" attrib="6278">
-                <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="path" position="0" attrib="0" type="System.String" />
-                  <parameter name="mode" position="1" attrib="0" type="System.IO.FileMode" />
-                  <parameter name="access" position="2" attrib="0" type="System.IO.FileAccess" />
-                  <parameter name="share" position="3" attrib="0" type="System.IO.FileShare" />
-                  <parameter name="bufferSize" position="4" attrib="0" type="System.Int32" />
-                  <parameter name="useAsync" position="5" attrib="0" type="System.Boolean" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.String, System.IO.FileMode, System.IO.FileAccess, System.IO.FileShare)" attrib="6278">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="path" position="0" attrib="0" type="System.String" />
-                  <parameter name="mode" position="1" attrib="0" type="System.IO.FileMode" />
-                  <parameter name="access" position="2" attrib="0" type="System.IO.FileAccess" />
-                  <parameter name="share" position="3" attrib="0" type="System.IO.FileShare" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.IO.FileMode)" attrib="6278">
@@ -23681,12 +23811,12 @@
           </class>
           <class name="AssemblyAlgorithmIdAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.UInt32)" attrib="6278">
@@ -23744,12 +23874,12 @@
           </class>
           <class name="AssemblyConfigurationAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -23796,12 +23926,12 @@
           </class>
           <class name="AssemblyCultureAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -23822,12 +23952,12 @@
           </class>
           <class name="AssemblyDefaultAliasAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -23848,12 +23978,12 @@
           </class>
           <class name="AssemblyDelaySignAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Boolean)" attrib="6278">
@@ -23874,12 +24004,12 @@
           </class>
           <class name="AssemblyDescriptionAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -23926,12 +24056,12 @@
           </class>
           <class name="AssemblyFlagsAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Reflection.AssemblyNameFlags)" attrib="6278">
@@ -23952,12 +24082,12 @@
           </class>
           <class name="AssemblyInformationalVersionAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -23978,12 +24108,12 @@
           </class>
           <class name="AssemblyKeyFileAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -24030,9 +24160,9 @@
           </class>
           <class name="AssemblyName" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <constructors>
@@ -24202,12 +24332,12 @@
           </class>
           <class name="AssemblyProductAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -24228,12 +24358,12 @@
           </class>
           <class name="AssemblyTitleAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -24306,8 +24436,8 @@
           </class>
           <class name="Binder" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6276">
@@ -24368,8 +24498,8 @@
           </class>
           <class name="BindingFlags" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="CreateInstance" attrib="32854" fieldtype="System.Reflection.BindingFlags" value="512" />
@@ -24409,9 +24539,9 @@
           </class>
           <class name="ConstructorInfo" type="class" base="System.Reflection.MethodBase" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <fields>
@@ -24503,8 +24633,8 @@
           </class>
           <class name="EventAttributes" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.FlagsAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="None" attrib="32854" fieldtype="System.Reflection.EventAttributes" value="0" />
@@ -24560,8 +24690,8 @@
             <methods>
               <method name="AddEventHandler(System.Object, System.Delegate)" attrib="454" virtual="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="target" position="0" attrib="0" type="System.Object" />
@@ -24606,8 +24736,8 @@
           </class>
           <class name="FieldAttributes" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.FlagsAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="Assembly" attrib="32854" fieldtype="System.Reflection.FieldAttributes" value="3" />
@@ -24633,9 +24763,9 @@
           </class>
           <class name="FieldInfo" type="class" base="System.Reflection.MemberInfo" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -24781,8 +24911,8 @@
               </method>
               <method name="SetValue(System.Object, System.Object)" attrib="486" virtual="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="obj" position="0" attrib="0" type="System.Object" />
@@ -24868,8 +24998,8 @@
           </class>
           <class name="IReflect" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.GuidAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <properties>
               <property name="UnderlyingSystemType" attrib="0" ptype="System.Type" params="">
@@ -25028,8 +25158,8 @@
           <class name="MemberInfo" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Reflection.ICustomAttributeProvider" />
@@ -25149,9 +25279,9 @@
           </class>
           <class name="MethodBase" type="class" base="System.Reflection.MemberInfo" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -25178,14 +25308,14 @@
               </property>
               <property name="IsAbstract" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsAbstract()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsAbstract()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsAssembly" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsAssembly()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsAssembly()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
@@ -25195,35 +25325,35 @@
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <methods>
-                  <method name="get_IsConstructor()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsConstructor()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsFamily" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsFamily()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsFamily()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsFamilyAndAssembly" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsFamilyAndAssembly()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsFamilyAndAssembly()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsFamilyOrAssembly" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsFamilyOrAssembly()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsFamilyOrAssembly()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsFinal" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsFinal()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsFinal()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
@@ -25244,42 +25374,42 @@
               </property>
               <property name="IsHideBySig" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsHideBySig()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsHideBySig()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsPrivate" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsPrivate()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsPrivate()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsPublic" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsPublic()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsPublic()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsSpecialName" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsSpecialName()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsSpecialName()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsStatic" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsStatic()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsStatic()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
               <property name="IsVirtual" attrib="0" ptype="System.Boolean" params="">
                 <methods>
-                  <method name="get_IsVirtual()" attrib="2182" returntype="System.Boolean">
+                  <method name="get_IsVirtual()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
@@ -25331,8 +25461,8 @@
               </method>
               <method name="Invoke(System.Object, System.Object[])" attrib="486" virtual="true" returntype="System.Object">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="obj" position="0" attrib="0" type="System.Object" />
@@ -25375,8 +25505,8 @@
           <class name="MethodInfo" type="class" base="System.Reflection.MethodBase" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -25447,8 +25577,8 @@
           <class name="Module" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Reflection.ICustomAttributeProvider" />
@@ -25647,8 +25777,8 @@
           <class name="ParameterInfo" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Reflection.ICustomAttributeProvider" />
@@ -25722,6 +25852,13 @@
                   </method>
                 </methods>
               </property>
+              <property name="RawDefaultValue" attrib="0" ptype="System.Object" params="">
+                <methods>
+                  <method name="get_RawDefaultValue()" attrib="2502" virtual="true" returntype="System.Object">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
             </properties>
             <methods>
               <method name="GetCustomAttributes(System.Type, System.Boolean)" attrib="454" virtual="true" returntype="System.Object[]">
@@ -25778,8 +25915,8 @@
           </class>
           <class name="PropertyAttributes" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="HasDefault" attrib="32854" fieldtype="System.Reflection.PropertyAttributes" value="4096" />
@@ -25794,9 +25931,9 @@
           </class>
           <class name="PropertyInfo" type="class" base="System.Reflection.MemberInfo" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -26309,9 +26446,9 @@
         <classes>
           <class name="AssemblyBuilder" type="class" base="System.Reflection.Assembly" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -26538,9 +26675,9 @@
           </class>
           <class name="ConstructorBuilder" type="class" base="System.Reflection.ConstructorInfo" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -26682,8 +26819,8 @@
               </method>
               <method name="SetCustomAttribute(System.Reflection.ConstructorInfo, System.Byte[])" attrib="134" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="con" position="0" attrib="0" type="System.Reflection.ConstructorInfo" />
@@ -26702,8 +26839,8 @@
           </class>
           <class name="CustomAttributeBuilder" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
@@ -26929,8 +27066,8 @@
               </method>
               <method name="CreateDelegate(System.Type)" attrib="134" returntype="System.Delegate">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="delegateType" position="0" attrib="0" type="System.Type" />
@@ -27298,8 +27435,8 @@
               </method>
               <method name="SetCustomAttribute(System.Reflection.ConstructorInfo, System.Byte[])" attrib="134" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="con" position="0" attrib="0" type="System.Reflection.ConstructorInfo" />
@@ -27315,8 +27452,8 @@
           </class>
           <class name="EventBuilder" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
@@ -27342,8 +27479,8 @@
               </method>
               <method name="SetCustomAttribute(System.Reflection.ConstructorInfo, System.Byte[])" attrib="134" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="con" position="0" attrib="0" type="System.Reflection.ConstructorInfo" />
@@ -27422,8 +27559,8 @@
           </class>
           <class name="FieldBuilder" type="class" base="System.Reflection.FieldInfo" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <interfaces />
@@ -27988,8 +28125,8 @@
               </method>
               <method name="SetInterfaceConstraints(System.Type[])" attrib="134" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="interfaceConstraints" position="0" attrib="0" type="System.Type[]">
@@ -28007,8 +28144,8 @@
           <class name="ILGenerator" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <methods>
@@ -28312,8 +28449,8 @@
           <class name="MethodBuilder" type="class" base="System.Reflection.MethodInfo" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -28652,8 +28789,8 @@
           <class name="ModuleBuilder" type="class" base="System.Reflection.Module" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -28925,8 +29062,8 @@
               </method>
               <method name="GetConstructorToken(System.Reflection.ConstructorInfo)" attrib="134" returntype="System.Reflection.Emit.MethodToken">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="con" position="0" attrib="0" type="System.Reflection.ConstructorInfo" />
@@ -29504,8 +29641,8 @@
           <class name="ParameterBuilder" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <properties>
@@ -29640,8 +29777,8 @@
           </class>
           <class name="PropertyBuilder" type="class" base="System.Reflection.PropertyInfo" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <interfaces />
@@ -29876,9 +30013,9 @@
           </class>
           <class name="SignatureHelper" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <methods>
@@ -30132,8 +30269,8 @@
           <class name="TypeBuilder" type="class" base="System.Type" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
-              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
             </attributes>
             <interfaces />
             <fields>
@@ -30291,8 +30428,8 @@
             <methods>
               <method name="AddInterfaceImplementation(System.Type)" attrib="134" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="interfaceType" position="0" attrib="0" type="System.Type" />
@@ -30329,8 +30466,8 @@
               </method>
               <method name="DefineDefaultConstructor(System.Reflection.MethodAttributes)" attrib="134" returntype="System.Reflection.Emit.ConstructorBuilder">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="attributes" position="0" attrib="0" type="System.Reflection.MethodAttributes" />
@@ -30833,8 +30970,8 @@
               </method>
               <method name="SetCustomAttribute(System.Reflection.ConstructorInfo, System.Byte[])" attrib="134" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="con" position="0" attrib="0" type="System.Reflection.ConstructorInfo" />
@@ -31233,12 +31370,12 @@
           </class>
           <class name="SatelliteContractVersionAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -31272,8 +31409,8 @@
         <classes>
           <class name="AccessedThroughPropertyAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -31294,8 +31431,8 @@
           </class>
           <class name="CompilationRelaxations" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="NoStringInterning" attrib="32854" fieldtype="System.Runtime.CompilerServices.CompilationRelaxations" value="8" />
@@ -31303,8 +31440,8 @@
           </class>
           <class name="CompilationRelaxationsAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Runtime.CompilerServices.CompilationRelaxations)" attrib="6278">
@@ -31436,12 +31573,12 @@
           </class>
           <class name="CustomConstantAttribute" type="class" base="System.Attribute" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6276">
@@ -31460,12 +31597,12 @@
           </class>
           <class name="DateTimeConstantAttribute" type="class" base="System.Runtime.CompilerServices.CustomConstantAttribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Int64)" attrib="6278">
@@ -31562,12 +31699,12 @@
           </class>
           <class name="IndexerNameAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="True" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -31641,12 +31778,12 @@
           </class>
           <class name="MethodImplAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="MethodCodeType" attrib="6" fieldtype="System.Runtime.CompilerServices.MethodCodeType" />
@@ -31964,12 +32101,12 @@
           </class>
           <class name="ClassInterfaceAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Int16)" attrib="6278">
@@ -32070,12 +32207,12 @@
           </class>
           <class name="ComImportAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -32200,12 +32337,12 @@
           </class>
           <class name="DefaultCharSetAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Runtime.InteropServices.CharSet)" attrib="6278">
@@ -32252,12 +32389,12 @@
           </class>
           <class name="DllImportAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="BestFitMapping" attrib="6" fieldtype="System.Boolean" />
@@ -32317,12 +32454,12 @@
           </class>
           <class name="FieldOffsetAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Int32)" attrib="6278">
@@ -32464,12 +32601,12 @@
           </class>
           <class name="InAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -32781,8 +32918,8 @@
               </method>
               <method name="PtrToStructure(System.IntPtr, System.Object)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="ptr" position="0" attrib="0" type="System.IntPtr" />
@@ -32880,8 +33017,8 @@
               </method>
               <method name="StructureToPtr(System.Object, System.IntPtr, System.Boolean)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="structure" position="0" attrib="0" type="System.Object" />
@@ -32995,12 +33132,12 @@
           </class>
           <class name="MarshalAsAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="ArraySubType" attrib="6" fieldtype="System.Runtime.InteropServices.UnmanagedType" />
@@ -33047,12 +33184,12 @@
           </class>
           <class name="OptionalAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -33077,12 +33214,12 @@
           </class>
           <class name="PreserveSigAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -33200,12 +33337,12 @@
           </class>
           <class name="StructLayoutAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="CharSet" attrib="6" fieldtype="System.Runtime.InteropServices.CharSet" />
@@ -33231,13 +33368,13 @@
           </class>
           <class name="UnmanagedFunctionPointerAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Runtime.InteropServices.CallingConvention)" attrib="6278">
@@ -33340,12 +33477,12 @@
           </class>
           <class name="OnSerializingAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -33472,6 +33609,7 @@
             <fields>
               <field name="Exchange" attrib="32854" fieldtype="System.Runtime.Versioning.ComponentGuaranteesOptions" value="1" />
               <field name="None" attrib="32854" fieldtype="System.Runtime.Versioning.ComponentGuaranteesOptions" value="0" />
+              <field name="SideBySide" attrib="32854" fieldtype="System.Runtime.Versioning.ComponentGuaranteesOptions" value="4" />
               <field name="Stable" attrib="32854" fieldtype="System.Runtime.Versioning.ComponentGuaranteesOptions" value="2" />
             </fields>
           </class>
@@ -33673,13 +33811,13 @@
           </class>
           <class name="UnverifiableCodeAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -34329,6 +34467,14 @@
               </constructor>
             </constructors>
             <methods>
+              <method name="Dispose(System.Boolean)" attrib="196" virtual="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="disposing" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
               <method name="GetBytes(System.Byte[])" attrib="198" virtual="true" returntype="System.Void">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
@@ -34569,7 +34715,7 @@
                   <parameter name="cert" position="0" attrib="0" type="System.Security.Cryptography.X509Certificates.X509Certificate" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.IntPtr)" attrib="6278">
+              <constructor name=".ctor(System.IntPtr)" attrib="22662">
                 <attributes>
                   <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
@@ -34613,7 +34759,7 @@
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <methods>
-                  <method name="get_Handle()" attrib="2182" returntype="System.IntPtr">
+                  <method name="get_Handle()" attrib="18566" returntype="System.IntPtr">
                     <attributes>
                       <attribute name="System.Security.SecurityCriticalAttribute" />
                     </attributes>
@@ -34752,16 +34898,16 @@
               <method name="GetSerialNumberString()" attrib="454" virtual="true" returntype="System.String">
                 <parameters />
               </method>
-              <method name="Import(System.String)" attrib="454" virtual="true" returntype="System.Void">
+              <method name="Import(System.String)" attrib="16838" virtual="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="fileName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Import(System.String, System.String, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags)" attrib="454" virtual="true" returntype="System.Void">
+              <method name="Import(System.String, System.String, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags)" attrib="16838" virtual="true" returntype="System.Void">
                 <attributes>
                   <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
@@ -34772,19 +34918,19 @@
                   <parameter name="keyStorageFlags" position="2" attrib="0" type="System.Security.Cryptography.X509Certificates.X509KeyStorageFlags" />
                 </parameters>
               </method>
-              <method name="Import(System.Byte[])" attrib="454" virtual="true" returntype="System.Void">
+              <method name="Import(System.Byte[])" attrib="16838" virtual="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="rawData" position="0" attrib="0" type="System.Byte[]" />
                 </parameters>
               </method>
-              <method name="Import(System.Byte[], System.String, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags)" attrib="454" virtual="true" returntype="System.Void">
+              <method name="Import(System.Byte[], System.String, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags)" attrib="16838" virtual="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="rawData" position="0" attrib="0" type="System.Byte[]" />
@@ -34829,6 +34975,7 @@
         <classes>
           <class name="CodeAccessSecurityAttribute" type="class" base="System.Security.Permissions.SecurityAttribute" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
+              <attribute name="System.ObsoleteAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
@@ -34836,7 +34983,6 @@
                 </properties>
               </attribute>
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.ObsoleteAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Security.Permissions.SecurityAction)" attrib="6276">
@@ -34848,8 +34994,8 @@
           </class>
           <class name="SecurityAction" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.ObsoleteAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.ObsoleteAttribute" />
             </attributes>
             <fields>
               <field name="Assert" attrib="32854" fieldtype="System.Security.Permissions.SecurityAction" value="3" />
@@ -34881,14 +35027,14 @@
           </class>
           <class name="SecurityAttribute" type="class" base="System.Attribute" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.ObsoleteAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.ObsoleteAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Security.Permissions.SecurityAction)" attrib="6276">
@@ -34926,14 +35072,14 @@
           </class>
           <class name="SecurityPermissionAttribute" type="class" base="System.Security.Permissions.CodeAccessSecurityAttribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.ObsoleteAttribute" />
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
                   <property name="Inherited" value="False" />
                 </properties>
               </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.ObsoleteAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Security.Permissions.SecurityAction)" attrib="6278">
@@ -35044,8 +35190,8 @@
           <class name="SecurityPermissionFlag" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.FlagsAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.ObsoleteAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
             </attributes>
             <fields>
               <field name="AllFlags" attrib="32854" fieldtype="System.Security.Permissions.SecurityPermissionFlag" value="16383" />
@@ -35152,9 +35298,9 @@
               </method>
               <method name="Convert(System.Byte*, System.Int32, System.Char*, System.Int32, System.Boolean, out System.Int32&amp;, out System.Int32&amp;, out System.Boolean&amp;)" attrib="454" virtual="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-                  <attribute name="System.CLSCompliantAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
+                  <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="bytes" position="0" attrib="0" type="System.Byte*" />
@@ -35199,8 +35345,8 @@
               </method>
               <method name="GetChars(System.Byte*, System.Int32, System.Char*, System.Int32, System.Boolean)" attrib="454" virtual="true" returntype="System.Int32">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
@@ -35292,8 +35438,8 @@
               <method name="Convert(System.Char*, System.Int32, System.Byte*, System.Int32, System.Boolean, out System.Int32&amp;, out System.Int32&amp;, out System.Boolean&amp;)" attrib="454" virtual="true" returntype="System.Void">
                 <attributes>
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="chars" position="0" attrib="0" type="System.Char*" />
@@ -35356,8 +35502,8 @@
               <method name="GetBytes(System.Char*, System.Int32, System.Byte*, System.Int32, System.Boolean)" attrib="454" virtual="true" returntype="System.Int32">
                 <attributes>
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-                  <attribute name="System.CLSCompliantAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
+                  <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="chars" position="0" attrib="0" type="System.Char*" />
@@ -35468,8 +35614,8 @@
             <methods>
               <method name="Clone()" attrib="454" virtual="true" returntype="System.Object">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters />
               </method>
@@ -35527,8 +35673,8 @@
               </method>
               <method name="GetBytes(System.Char*, System.Int32, System.Byte*, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
@@ -35633,8 +35779,8 @@
           </class>
           <class name="StringBuilder" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute" />
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String, System.Int32)" attrib="6278">
@@ -36045,8 +36191,8 @@
               </method>
               <method name="GetBytes(System.Char*, System.Int32, System.Byte*, System.Int32)" attrib="198" virtual="true" returntype="System.Int32">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
@@ -36129,8 +36275,8 @@
               </method>
               <method name="GetString(System.Byte[], System.Int32, System.Int32)" attrib="198" virtual="true" returntype="System.String">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="bytes" position="0" attrib="0" type="System.Byte[]" />
@@ -36186,9 +36332,9 @@
               </method>
               <method name="GetBytes(System.Char*, System.Int32, System.Byte*, System.Int32)" attrib="198" virtual="true" returntype="System.Int32">
                 <attributes>
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="chars" position="0" attrib="0" type="System.Char*" />
@@ -36267,8 +36413,8 @@
               </method>
               <method name="GetString(System.Byte[], System.Int32, System.Int32)" attrib="198" virtual="true" returntype="System.String">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="bytes" position="0" attrib="0" type="System.Byte[]" />
@@ -36535,9 +36681,6 @@
                 </parameters>
               </method>
               <method name="TryEnter(System.Object)" attrib="150" static="true" returntype="System.Boolean">
-                <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
-                </attributes>
                 <parameters>
                   <parameter name="obj" position="0" attrib="0" type="System.Object" />
                 </parameters>
@@ -36552,18 +36695,12 @@
                 </parameters>
               </method>
               <method name="TryEnter(System.Object, System.TimeSpan)" attrib="150" static="true" returntype="System.Boolean">
-                <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
-                </attributes>
                 <parameters>
                   <parameter name="obj" position="0" attrib="0" type="System.Object" />
                   <parameter name="timeout" position="1" attrib="0" type="System.TimeSpan" />
                 </parameters>
               </method>
               <method name="TryEnter(System.Object, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
-                <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
-                </attributes>
                 <parameters>
                   <parameter name="obj" position="0" attrib="0" type="System.Object" />
                   <parameter name="millisecondsTimeout" position="1" attrib="0" type="System.Int32" />
@@ -36662,8 +36799,8 @@
             <methods>
               <method name="Free(System.Threading.NativeOverlapped*)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
+                  <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="nativeOverlappedPtr" position="0" attrib="0" type="System.Threading.NativeOverlapped*" />
@@ -36671,8 +36808,8 @@
               </method>
               <method name="Pack(System.Threading.IOCompletionCallback, System.Object)" attrib="134" returntype="System.Threading.NativeOverlapped*">
                 <attributes>
-                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.Security.SecurityCriticalAttribute" />
+                  <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
@@ -36682,8 +36819,8 @@
               </method>
               <method name="Unpack(System.Threading.NativeOverlapped*)" attrib="150" static="true" returntype="System.Threading.Overlapped">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="nativeOverlappedPtr" position="0" attrib="0" type="System.Threading.NativeOverlapped*" />
@@ -36730,8 +36867,8 @@
             <methods>
               <method name="Unregister(System.Threading.WaitHandle)" attrib="134" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="waitObject" position="0" attrib="0" type="System.Threading.WaitHandle" />
@@ -36822,9 +36959,9 @@
           </class>
           <class name="Thread" type="class" base="System.Runtime.ConstrainedExecution.CriticalFinalizerObject" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ClassInterfaceAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComDefaultInterfaceAttribute" />
             </attributes>
             <interfaces />
             <constructors>
@@ -36957,7 +37094,7 @@
               </property>
             </properties>
             <methods>
-              <method name="Abort()" attrib="134" returntype="System.Void">
+              <method name="Abort()" attrib="16518" returntype="System.Void">
                 <attributes>
                   <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
@@ -37045,7 +37182,7 @@
           </class>
           <class name="ThreadPool" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
             <methods>
-              <method name="BindHandle(System.Runtime.InteropServices.SafeHandle)" attrib="150" static="true" returntype="System.Boolean">
+              <method name="BindHandle(System.Runtime.InteropServices.SafeHandle)" attrib="16534" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
@@ -37137,7 +37274,7 @@
                   <parameter name="executeOnlyOnce" position="4" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
-              <method name="SetMaxThreads(System.Int32, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
+              <method name="SetMaxThreads(System.Int32, System.Int32)" attrib="16534" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
@@ -37146,7 +37283,7 @@
                   <parameter name="completionPortThreads" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="SetMinThreads(System.Int32, System.Int32)" attrib="150" static="true" returntype="System.Boolean">
+              <method name="SetMinThreads(System.Int32, System.Int32)" attrib="16534" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
@@ -37157,8 +37294,8 @@
               </method>
               <method name="UnsafeQueueNativeOverlapped(System.Threading.NativeOverlapped*)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.Security.SecurityCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="overlapped" position="0" attrib="0" type="System.Threading.NativeOverlapped*" />
@@ -37198,8 +37335,8 @@
           <class name="ThreadStartException" type="class" base="System.SystemException" sealed="true" charset="Ansi" layout="Auto" />
           <class name="ThreadState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.FlagsAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.FlagsAttribute" />
             </attributes>
             <fields>
               <field name="Aborted" attrib="32854" fieldtype="System.Threading.ThreadState" value="256" />
@@ -37272,8 +37409,8 @@
               </constructor>
               <constructor name=".ctor(System.Threading.TimerCallback, System.Object, System.UInt32, System.UInt32)" attrib="6278">
                 <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                   <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="callback" position="0" attrib="0" type="System.Threading.TimerCallback" />
@@ -37436,13 +37573,13 @@
             <properties>
               <property name="SafeWaitHandle" attrib="0" ptype="Microsoft.Win32.SafeHandles.SafeWaitHandle" params="">
                 <methods>
-                  <method name="get_SafeWaitHandle()" attrib="2182" returntype="Microsoft.Win32.SafeHandles.SafeWaitHandle">
+                  <method name="get_SafeWaitHandle()" attrib="18566" returntype="Microsoft.Win32.SafeHandles.SafeWaitHandle">
                     <attributes>
                       <attribute name="System.Security.SecurityCriticalAttribute" />
                     </attributes>
                     <parameters />
                   </method>
-                  <method name="set_SafeWaitHandle(Microsoft.Win32.SafeHandles.SafeWaitHandle)" attrib="2182" returntype="System.Void">
+                  <method name="set_SafeWaitHandle(Microsoft.Win32.SafeHandles.SafeWaitHandle)" attrib="18566" returntype="System.Void">
                     <attributes>
                       <attribute name="System.Security.SecurityCriticalAttribute" />
                     </attributes>
@@ -37465,14 +37602,8 @@
                   <parameter name="explicitDisposing" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
-              <method name="WaitAll(System.Threading.WaitHandle[], System.Int32)" attrib="150" static="true" returntype="System.Boolean">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="waitHandles" position="0" attrib="0" type="System.Threading.WaitHandle[]" />
-                  <parameter name="millisecondsTimeout" position="1" attrib="0" type="System.Int32" />
-                </parameters>
+              <method name="Dispose()" attrib="486" virtual="true" returntype="System.Void">
+                <parameters />
               </method>
               <method name="WaitAll(System.Threading.WaitHandle[], System.TimeSpan)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
@@ -37483,16 +37614,19 @@
                   <parameter name="timeout" position="1" attrib="0" type="System.TimeSpan" />
                 </parameters>
               </method>
-              <method name="WaitAll(System.Threading.WaitHandle[])" attrib="150" static="true" returntype="System.Boolean">
+              <method name="WaitAll(System.Threading.WaitHandle[], System.Int32)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="waitHandles" position="0" attrib="0" type="System.Threading.WaitHandle[]" />
+                  <parameter name="millisecondsTimeout" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="WaitAny(System.Threading.WaitHandle[])" attrib="150" static="true" returntype="System.Int32">
-                <attributes />
+              <method name="WaitAll(System.Threading.WaitHandle[])" attrib="150" static="true" returntype="System.Boolean">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
                 <parameters>
                   <parameter name="waitHandles" position="0" attrib="0" type="System.Threading.WaitHandle[]" />
                 </parameters>
@@ -37502,6 +37636,12 @@
                 <parameters>
                   <parameter name="waitHandles" position="0" attrib="0" type="System.Threading.WaitHandle[]" />
                   <parameter name="millisecondsTimeout" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="WaitAny(System.Threading.WaitHandle[])" attrib="150" static="true" returntype="System.Int32">
+                <attributes />
+                <parameters>
+                  <parameter name="waitHandles" position="0" attrib="0" type="System.Threading.WaitHandle[]" />
                 </parameters>
               </method>
               <method name="WaitAny(System.Threading.WaitHandle[], System.TimeSpan)" attrib="150" static="true" returntype="System.Int32">

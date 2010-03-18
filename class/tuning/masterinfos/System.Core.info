@@ -2,28 +2,28 @@
 <assemblies>
   <assembly name="System.Core" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
-      <attribute name="System.Runtime.CompilerServices.ExtensionAttribute" />
       <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Diagnostics.DebuggableAttribute" />
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
+      <attribute name="System.Diagnostics.DebuggableAttribute" />
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
-      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
+      <attribute name="System.Runtime.CompilerServices.ExtensionAttribute" />
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
       <attribute name="System.CLSCompliantAttribute" />
       <attribute name="System.Reflection.AssemblyTitleAttribute" />
       <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
       <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
-      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Reflection.AssemblyProductAttribute" />
       <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
       <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
       <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
       <attribute name="System.Resources.SatelliteContractVersionAttribute" />
+      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
     </attributes>
     <namespaces>
       <namespace name="System">
@@ -1459,33 +1459,15 @@
               </method>
             </methods>
           </class>
-          <class name="InvalidTimeZoneException" type="class" base="System.Exception" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-              <constructor name=".ctor(System.String, System.Exception)" attrib="6278">
-                <parameters>
-                  <parameter name="message" position="0" attrib="0" type="System.String" />
-                  <parameter name="innerException" position="1" attrib="0" type="System.Exception" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="message" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
-            </constructors>
-          </class>
           <class name="Lazy`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
             </attributes>
             <constructors>
-              <constructor name=".ctor(System.Boolean)" attrib="6278">
+              <constructor name=".ctor(System.Threading.LazyThreadSafetyMode)" attrib="6278">
                 <parameters>
-                  <parameter name="isThreadSafe" position="0" attrib="0" type="System.Boolean" />
+                  <parameter name="mode" position="0" attrib="0" type="System.Threading.LazyThreadSafetyMode" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.Func`1[T], System.Boolean)" attrib="6278">
@@ -1494,12 +1476,23 @@
                   <parameter name="isThreadSafe" position="1" attrib="0" type="System.Boolean" />
                 </parameters>
               </constructor>
+              <constructor name=".ctor(System.Func`1[T], System.Threading.LazyThreadSafetyMode)" attrib="6278">
+                <parameters>
+                  <parameter name="valueFactory" position="0" attrib="0" type="System.Func`1[T]" />
+                  <parameter name="mode" position="1" attrib="0" type="System.Threading.LazyThreadSafetyMode" />
+                </parameters>
+              </constructor>
               <constructor name=".ctor()" attrib="6278">
                 <parameters />
               </constructor>
               <constructor name=".ctor(System.Func`1[T])" attrib="6278">
                 <parameters>
                   <parameter name="valueFactory" position="0" attrib="0" type="System.Func`1[T]" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Boolean)" attrib="6278">
+                <parameters>
+                  <parameter name="isThreadSafe" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
               </constructor>
             </constructors>
@@ -1528,164 +1521,14 @@
               </method>
             </methods>
           </class>
-          <class name="TimeZoneInfo" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
-            <interfaces>
-              <interface name="System.IEquatable`1[System.TimeZoneInfo]" />
-            </interfaces>
-            <properties>
-              <property name="BaseUtcOffset" attrib="0" ptype="System.TimeSpan" params="">
-                <methods>
-                  <method name="get_BaseUtcOffset()" attrib="2182" returntype="System.TimeSpan">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="DaylightName" attrib="0" ptype="System.String" params="">
-                <methods>
-                  <method name="get_DaylightName()" attrib="2182" returntype="System.String">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="DisplayName" attrib="0" ptype="System.String" params="">
-                <methods>
-                  <method name="get_DisplayName()" attrib="2182" returntype="System.String">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="Local" attrib="0" ptype="System.TimeZoneInfo" params="">
-                <methods>
-                  <method name="get_Local()" attrib="2198" static="true" returntype="System.TimeZoneInfo">
-                    <attributes>
-                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                    </attributes>
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="StandardName" attrib="0" ptype="System.String" params="">
-                <methods>
-                  <method name="get_StandardName()" attrib="2182" returntype="System.String">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="SupportsDaylightSavingTime" attrib="0" ptype="System.Boolean" params="">
-                <methods>
-                  <method name="get_SupportsDaylightSavingTime()" attrib="2182" returntype="System.Boolean">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="Utc" attrib="0" ptype="System.TimeZoneInfo" params="">
-                <methods>
-                  <method name="get_Utc()" attrib="2198" static="true" returntype="System.TimeZoneInfo">
-                    <attributes>
-                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                    </attributes>
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-            </properties>
-            <methods>
-              <method name="ConvertTime(System.DateTimeOffset, System.TimeZoneInfo)" attrib="150" static="true" returntype="System.DateTimeOffset">
-                <parameters>
-                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
-                  <parameter name="destinationTimeZone" position="1" attrib="0" type="System.TimeZoneInfo" />
-                </parameters>
-              </method>
-              <method name="ConvertTime(System.DateTime, System.TimeZoneInfo)" attrib="150" static="true" returntype="System.DateTime">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
-                  <parameter name="destinationTimeZone" position="1" attrib="0" type="System.TimeZoneInfo" />
-                </parameters>
-              </method>
-              <method name="Equals(System.TimeZoneInfo)" attrib="486" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.TimeZoneInfo" />
-                </parameters>
-              </method>
-              <method name="GetAmbiguousTimeOffsets(System.DateTimeOffset)" attrib="134" returntype="System.TimeSpan[]">
-                <parameters>
-                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
-                </parameters>
-              </method>
-              <method name="GetAmbiguousTimeOffsets(System.DateTime)" attrib="134" returntype="System.TimeSpan[]">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
-                </parameters>
-              </method>
-              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
-                <parameters />
-              </method>
-              <method name="GetUtcOffset(System.DateTimeOffset)" attrib="134" returntype="System.TimeSpan">
-                <parameters>
-                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
-                </parameters>
-              </method>
-              <method name="GetUtcOffset(System.DateTime)" attrib="134" returntype="System.TimeSpan">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
-                </parameters>
-              </method>
-              <method name="IsAmbiguousTime(System.DateTimeOffset)" attrib="134" returntype="System.Boolean">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
-                </parameters>
-              </method>
-              <method name="IsAmbiguousTime(System.DateTime)" attrib="134" returntype="System.Boolean">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
-                </parameters>
-              </method>
-              <method name="IsDaylightSavingTime(System.DateTimeOffset)" attrib="134" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="dateTimeOffset" position="0" attrib="0" type="System.DateTimeOffset" />
-                </parameters>
-              </method>
-              <method name="IsDaylightSavingTime(System.DateTime)" attrib="134" returntype="System.Boolean">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
-                </parameters>
-              </method>
-              <method name="IsInvalidTime(System.DateTime)" attrib="134" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="dateTime" position="0" attrib="0" type="System.DateTime" />
-                </parameters>
-              </method>
-              <method name="ToString()" attrib="198" virtual="true" returntype="System.String">
-                <parameters />
-              </method>
-            </methods>
-          </class>
         </classes>
       </namespace>
       <namespace name="System.Collections.Generic">
         <classes>
           <class name="HashSet`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
+              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.ISet`1[T]" />
@@ -9978,14 +9821,14 @@
           </class>
           <class name="CallSiteOps" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
               <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
+              <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
             </attributes>
             <methods>
               <method name="AddRule(System.Runtime.CompilerServices.CallSite`1[T], T)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                   <attribute name="System.ObsoleteAttribute" />
+                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="site" position="0" attrib="0" type="System.Runtime.CompilerServices.CallSite`1[T]" />
@@ -9994,8 +9837,8 @@
               </method>
               <method name="Bind(System.Runtime.CompilerServices.CallSiteBinder, System.Runtime.CompilerServices.CallSite`1[T], System.Object[])" attrib="150" static="true" returntype="T">
                 <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                   <attribute name="System.ObsoleteAttribute" />
+                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="binder" position="0" attrib="0" type="System.Runtime.CompilerServices.CallSiteBinder" />
@@ -10005,8 +9848,8 @@
               </method>
               <method name="ClearMatch(System.Runtime.CompilerServices.CallSite)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                   <attribute name="System.ObsoleteAttribute" />
+                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="site" position="0" attrib="0" type="System.Runtime.CompilerServices.CallSite" />
@@ -10032,8 +9875,8 @@
               </method>
               <method name="GetMatch(System.Runtime.CompilerServices.CallSite)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                   <attribute name="System.ObsoleteAttribute" />
+                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="site" position="0" attrib="0" type="System.Runtime.CompilerServices.CallSite" />
@@ -10331,8 +10174,8 @@
           </class>
           <class name="RuleCache`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
               <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+              <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
             </attributes>
           </class>
           <class name="RuntimeOps" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
@@ -10360,8 +10203,8 @@
               </method>
               <method name="ExpandoCheckVersion(System.Dynamic.ExpandoObject, System.Object)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
                   <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
+                  <attribute name="System.ObsoleteAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="expando" position="0" attrib="0" type="System.Dynamic.ExpandoObject" />
@@ -10370,8 +10213,8 @@
               </method>
               <method name="ExpandoPromoteClass(System.Dynamic.ExpandoObject, System.Object, System.Object)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                   <attribute name="System.ObsoleteAttribute" />
+                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="expando" position="0" attrib="0" type="System.Dynamic.ExpandoObject" />
@@ -10466,18 +10309,6 @@
       </namespace>
       <namespace name="System.Security.Cryptography">
         <classes>
-         <!-- System.Security.Cryptography.Aes has moved from System.Core.dll to mscorlib.dll in SL4 (beta) - but for now we keep this class
-              in System.Core.dll. Add the class here so that the tuner doesn't make it private -->
-         <class name="Aes" type="class" base="System.Security.Cryptography.SymmetricAlgorithm" abstract="true" charset="Ansi" layout="Auto">
-            <attributes>
-              <attribute name="System.Runtime.CompilerServices.TypeForwardedFromAttribute" />
-            </attributes>
-            <constructors>
-              <constructor name=".ctor()" attrib="6276">
-                <parameters />
-              </constructor>
-            </constructors>
-          </class>
           <class name="AesManaged" type="class" base="System.Security.Cryptography.Aes" sealed="true" charset="Ansi" layout="Auto">
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -10553,6 +10384,17 @@
                 <parameters />
               </method>
             </methods>
+          </class>
+        </classes>
+      </namespace>
+      <namespace name="System.Threading">
+        <classes>
+          <class name="LazyThreadSafetyMode" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="ExecutionAndPublication" attrib="32854" fieldtype="System.Threading.LazyThreadSafetyMode" value="2" />
+              <field name="None" attrib="32854" fieldtype="System.Threading.LazyThreadSafetyMode" value="0" />
+              <field name="PublicationOnly" attrib="32854" fieldtype="System.Threading.LazyThreadSafetyMode" value="1" />
+            </fields>
           </class>
         </classes>
       </namespace>
