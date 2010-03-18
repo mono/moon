@@ -48,7 +48,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ML has the property Matrix frozen")]
 		public void EnsureNotFrozen ()
 		{
 			SolidColorBrush scb = new SolidColorBrush ();
@@ -68,7 +67,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void RelativeTransform ()
 		{
 			SolidColorBrush scb = new SolidColorBrush ();
@@ -76,7 +74,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void Transform ()
 		{
 			SolidColorBrush scb = new SolidColorBrush ();

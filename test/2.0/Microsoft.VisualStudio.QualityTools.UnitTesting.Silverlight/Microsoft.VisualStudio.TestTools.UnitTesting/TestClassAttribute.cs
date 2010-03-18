@@ -14,7 +14,7 @@ using System;
 
 namespace Microsoft.VisualStudio.TestTools.UnitTesting
 {
-	[AttributeUsage (AttributeTargets.Class, AllowMultiple=false)]
+	[AttributeUsage (AttributeTargets.Class, AllowMultiple=true)]
 	public sealed class TestClassAttribute : Attribute
 	{
 	}

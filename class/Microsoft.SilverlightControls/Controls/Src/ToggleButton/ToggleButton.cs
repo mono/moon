@@ -243,11 +243,6 @@ namespace System.Windows.Controls.Primitives
         /// </summary>
         public ToggleButton() 
         {
-            // IsTabStop should always match IsEnabled (which is false by
-            // default) to prevent tabbing into disabled buttons. 
-            IsTabStop = false;
-
-// 
 IsChecked = false; 
         }
  

@@ -308,8 +308,9 @@ namespace System.Windows {
 				return true;
 
 			if (create) {
-				property = new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind), null);
-				property.DefaultValue = Value.ToObject (property_type, Mono.NativeMethods.dependency_property_get_default_value (handle));
+				var defaultValue = Value.ToObject (property_type, Mono.NativeMethods.dependency_property_get_default_value (handle));
+				property = new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind), new PropertyMetadata (defaultValue ?? UnsetValue));
+				property.DefaultValue = defaultValue;
 			}
 
 			return property != null;

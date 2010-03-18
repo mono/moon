@@ -162,7 +162,7 @@ class TimelineMarker : public DependencyObject {
 public:
  	/* @PropertyType=string,GenerateAccessors */
 	const static int TextProperty;
- 	/* @PropertyType=TimeSpan,GenerateAccessors */
+ 	/* @PropertyType=TimeSpan,DefaultValue=(TimeSpan)0\,Type::TIMESPAN,GenerateAccessors */
 	const static int TimeProperty;
  	/* @PropertyType=string,GenerateAccessors */
 	const static int TypeProperty;

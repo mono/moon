@@ -163,13 +163,13 @@ class MediaElement : public FrameworkElement {
 	const static int IsMutedProperty;
  	/* @PropertyType=TimelineMarkerCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int MarkersProperty;
- 	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateAccessors */
+ 	/* @PropertyType=Duration,DefaultValue=Duration::Automatic,ReadOnly,GenerateAccessors */
 	const static int NaturalDurationProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoHeightProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoWidthProperty;
- 	/* @PropertyType=TimeSpan,AlwaysChange,GenerateAccessors */
+ 	/* @PropertyType=TimeSpan,DefaultValue=(TimeSpan)0\,Type::TIMESPAN,AlwaysChange,GenerateAccessors */
 	const static int PositionProperty;
 	/* @PropertyType=Uri,AlwaysChange,ManagedPropertyType=Uri,Nullable,GenerateAccessors */
 	const static int SourceProperty;

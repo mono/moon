@@ -71,7 +71,7 @@ class MultiScaleImage : public MediaBase {
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
 
-	double *GetZoomAnimationEndPoint ();
+	double GetZoomAnimationEndPoint ();
 	void SetZoomAnimationEndPoint (double endpoint);
 	Point *GetPanAnimationEndPoint ();
 	void SetPanAnimationEndPoint (Point endpoint);
@@ -102,7 +102,7 @@ class MultiScaleImage : public MediaBase {
 
 	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateAccessors */
 	const static int AllowDownloadingProperty;
-	/* @PropertyType=double,ReadOnly,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	/* @PropertyType=double,ReadOnly,DefaultValue=0.0,Version=2.0,GenerateGetter */
 	const static int AspectRatioProperty;
 	/* @PropertyType=double,DefaultValue=1.0,Version=3.0,GenerateAccessors */
 	const static int BlurFactorProperty;

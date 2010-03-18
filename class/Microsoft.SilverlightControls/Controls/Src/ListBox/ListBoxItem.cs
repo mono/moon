@@ -87,9 +87,7 @@ namespace System.Windows.Controls
             KeyboardNavigation.SetTabNavigation(this, KeyboardNavigationMode.Local); 
 #else
             // DirectionalNavigation not supported by Silverlight
-            TabNavigation = KeyboardNavigationMode.Local; 
 #endif 
-            IsTabStop = true;
         }
  
         

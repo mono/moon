@@ -1244,9 +1244,9 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	if (args->GetId () == MultiScaleImage::UseSpringsProperty) {
 		if (!args->GetNewValue()->AsBool ()) {
 			if (zoom_sb) {
-				double *endpoint = GetZoomAnimationEndPoint ();
+				double endpoint = GetZoomAnimationEndPoint ();
 				zoom_sb->StopWithError (NULL);
-				SetViewportWidth (*endpoint);
+				SetViewportWidth (endpoint);
 			}
 			if (pan_sb) {
 				Point *endpoint = GetPanAnimationEndPoint ();
@@ -1333,7 +1333,7 @@ MultiScaleImage::SetPanAnimationEndPoint (Point value)
 	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (value);
 }
 
-double*
+double
 MultiScaleImage::GetZoomAnimationEndPoint ()
 {
 	return zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->GetValue ();

@@ -42,7 +42,7 @@ class BitmapImage : public BitmapSource {
 	const static int UriSourceProperty;
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Internal,GenerateAccessors */
 	const static int ProgressProperty;
-	/* @PropertyType=BitmapCreateOptions,DefaultValue=BitmapCreateOptionsNone,GenerateAccessors */
+	/* @PropertyType=BitmapCreateOptions,DefaultValue=BitmapCreateOptionsDelayCreation,GenerateAccessors */
 	const static int CreateOptionsProperty;
 
 	void SetUriSource (Uri* value);

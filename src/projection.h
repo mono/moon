@@ -180,28 +180,28 @@ public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int CenterOfRotationZProperty;
 
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int GlobalOffsetXProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int GlobalOffsetYProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int GlobalOffsetZProperty;
 
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int LocalOffsetXProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int LocalOffsetYProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int LocalOffsetZProperty;
 
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RotationXProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RotationYProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RotationZProperty;
 
-	/* @PropertyType=Matrix3D,GenerateAccessors,ManagedSetterAccess=Internal */
+	/* @PropertyType=Matrix3D,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Internal */
 	const static int ProjectionMatrixProperty;
 
 	//
@@ -264,7 +264,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Matrix3DProjection () { SetObjectType (Type::MATRIX3DPROJECTION); }
 
-	/* @PropertyType=Matrix3D,GenerateAccessors */
+	/* @PropertyType=Matrix3D,AutoCreateValue,GenerateAccessors */
 	const static int ProjectionMatrixProperty;
 
 

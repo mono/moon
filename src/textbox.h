@@ -376,7 +376,7 @@ class TextBox : public TextBoxBase {
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	const static int AcceptsReturnProperty;
-	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
@@ -512,7 +512,7 @@ class PasswordBox : public TextBoxBase {
 	virtual ~PasswordBox ();
 	
  public:
-	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;

@@ -91,7 +91,7 @@ class Shape : public FrameworkElement {
 	const static int StretchProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int StrokeProperty;
- 	/* @PropertyType=DoubleCollection,GenerateAccessors */
+ 	/* @PropertyType=DoubleCollection,AutoCreateValue,GenerateAccessors */
 	const static int StrokeDashArrayProperty;
  	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
 	const static int StrokeDashCapProperty;

@@ -82,7 +82,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ML has the property Matrix frozen")]
 		public void EnsureNotFrozen ()
 		{
 			LinearGradientBrush lgb = new LinearGradientBrush ();
@@ -102,7 +101,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void RelativeTransform ()
 		{
 			LinearGradientBrush lgb = new LinearGradientBrush ();
@@ -110,7 +108,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void Transform ()
 		{
 			LinearGradientBrush lgb = new LinearGradientBrush ();

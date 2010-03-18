@@ -1,3 +1,13 @@
+2010-03-18  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemContainerGenerator.cs: 1) Regenerate the default value
+	  tests for SL3.
+	2) Add in a lot of missing DefaultValue attributes to native
+	  DPs and fixed some cases where we were using DefaultValue
+	  instead of AutoCreateValue.
+	3) Remove a bunch of places where we set local values in ctors
+	  instead of just using the DefaultValue.
+
 2010-03-10  Alan McGovern  <amcgovern@novell.com>
 
 	* VirtualizingStackPanel.cs: Ensure we always attach to the

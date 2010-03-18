@@ -102,13 +102,13 @@ public:
 
 	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int TitleProperty;	
-	/* @PropertyType=double,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=600.0,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int HeightProperty;	
-	/* @PropertyType=double,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=800.0,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int WidthProperty;	
-	/* @PropertyType=double,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int LeftProperty;
-	/* @PropertyType=double,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int TopProperty;
 	/* @PropertyType=WindowStartupLocation,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int WindowStartupLocationProperty;
@@ -141,9 +141,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Icon ();
 
-	/* @PropertyType=Uri,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=Uri,DefaultValue=Uri(),ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int SourceProperty;
-	/* @PropertyType=Size,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=Size,DefaultValue=Size(),ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int SizeProperty;
 
 	Uri* GetSource ();
@@ -178,13 +178,13 @@ public:
 	const static int BlurbProperty;
 	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
 	const static int ShortNameProperty;
-	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int EnableGPUAccelerationProperty;
 	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ShowInstallMenuItemProperty;
 	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int WindowSettingsProperty;
-	/* @PropertyType=IconCollection,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=IconCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IconsProperty;
 	/* @PropertyType=SecuritySettings,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int SecuritySettingsProperty;

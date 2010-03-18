@@ -289,7 +289,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	PixelShader ();
 
-	/* @PropertyType=Uri,GenerateAccessors */
+	/* @PropertyType=Uri,DefaultValue=Uri(),GenerateAccessors */
 	const static int UriSourceProperty;
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

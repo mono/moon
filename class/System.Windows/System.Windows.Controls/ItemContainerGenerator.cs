@@ -107,8 +107,10 @@ namespace System.Windows.Controls {
 				throw new InvalidOperationException ("Only items which have been Realized can be removed");
 		}
 
+		static int counter;
 		internal DependencyObject GenerateNext (out bool isNewlyRealized)
 		{
+			Console.WriteLine ("Generating container {0} at position {1}/{2}", counter ++, GenerationState.Position.Index, GenerationState.Position.Offset);
 			int index;
 			// This is relative to the realised elements.
 			int startAt = GenerationState.Position.Index;
@@ -255,7 +257,8 @@ namespace System.Windows.Controls {
 			
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
-				MoveExistingItems (e.NewStartingIndex, 1);
+				if ((e.NewStartingIndex + 1) != Owner.Items.Count)
+					MoveExistingItems (e.NewStartingIndex, 1);
 				itemCount = 1;
 				itemUICount = 0;
 				position = GeneratorPositionFromIndex (e.NewStartingIndex);

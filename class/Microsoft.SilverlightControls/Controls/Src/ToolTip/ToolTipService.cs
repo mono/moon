@@ -43,7 +43,7 @@ namespace System.Windows.Controls
                         "Placement",            // Name 
                         typeof(PlacementMode),  // Type
                         typeof(ToolTipService), // Owner 
-                        new PropertyMetadata(OnPlacementPropertyChanged));
+                        new PropertyMetadata(PlacementMode.Mouse, OnPlacementPropertyChanged));
 
         public static PlacementMode GetPlacement(DependencyObject element)
         { 

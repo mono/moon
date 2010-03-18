@@ -1,3 +1,30 @@
+2010-03-18  Alan McGovern  <amcgovern@novell.com>
+
+	* brush.h:
+	* shape.h:
+	* effect.h:
+	* stylus.h:
+	* brush.cpp:
+	* textbox.h:
+	* shape.cpp:
+	* timeline.h:
+	* animation.h:
+	* projection.h:
+	* deployment.h:
+	* animation.cpp:
+	* bitmapimage.h:
+	* mediaelement.h:
+	* usercontrol.cpp:
+	* multiscaleimage.h:
+	* multiscaleimage.cpp:
+	* multiscalesubimage.h: 1) Regenerate the default value tests
+	  for SL3.
+	2) Add in a lot of missing DefaultValue attributes to native
+	  DPs and fixed some cases where we were using DefaultValue
+	  instead of AutoCreateValue.
+	3) Remove a bunch of places where we set local values in ctors
+	  instead of just using the DefaultValue.
+
 2010-03-17  Chris Toshok  <toshok@ximian.com>
 
 	* pal/gtk/windowless-gtk.cpp (MoonWindowlessGtk::HandleEvent): we

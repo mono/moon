@@ -107,7 +107,7 @@ namespace System.Windows {
 		}
 		
 		public Uri Source {
-			get { return source; }
+			get { return (source = source ?? new Uri ("", UriKind.Relative)); }
 			set {
 				if (source == value)
 					return;

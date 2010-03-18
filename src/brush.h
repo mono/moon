@@ -60,9 +60,9 @@ class Brush : public DependencyObject {
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int OpacityProperty;
-	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
+	/* @PropertyType=Transform,AutoCreator=Brush::CreateDefaultMatrixTransform,GenerateAccessors */
 	const static int RelativeTransformProperty;
-	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
+	/* @PropertyType=Transform,AutoCreator=Brush::CreateDefaultMatrixTransform,GenerateAccessors */
 	const static int TransformProperty;
 	
 	// internal property - generic brush property change
@@ -99,6 +99,8 @@ class Brush : public DependencyObject {
 	
 	void SetTransform (Transform *transform);
 	Transform *GetTransform ();
+	
+	static Value *CreateDefaultMatrixTransform (DependencyObject *obj, DependencyProperty *property);
 };
 
 

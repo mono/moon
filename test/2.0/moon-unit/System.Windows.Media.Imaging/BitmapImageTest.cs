@@ -47,15 +47,6 @@ namespace MoonTest.System.Windows.Media.Imaging {
 			Assert.IsFalse (image.UriSource.IsAbsoluteUri, "#1");
 			Assert.AreEqual (string.Empty, image.UriSource.ToString (), "#2");
 		}
-		
-		[TestMethod]
-		public void ImageDefaults ()
-		{
-			Image image = new Image ();
-			Assert.IsNotNull (image.Source, "#1"); // Fails in Silverlight 3
-			Assert.IsTrue (image.Source is BitmapImage, "#2");
-			Assert.AreEqual (string.Empty, ((BitmapImage)image.Source).UriSource.ToString (), "#3");
-		}
 
 		[TestMethod]
 		public void EmptyUriInCtor ()

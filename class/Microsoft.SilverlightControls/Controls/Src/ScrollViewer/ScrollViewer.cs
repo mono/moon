@@ -341,15 +341,6 @@ namespace System.Windows.Controls
         public ScrollViewer()
         {
 		DefaultStyleKey = typeof (ScrollViewer);
-
-#if WPF 
-            KeyboardNavigation.SetDirectionalNavigation(this, KeyboardNavigationMode.Local);
-            VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
-            IsTabStop = false; 
-#else 
-            // DirectionalNavigation not supported by Silverlight
-            IsTabStop = true; 
-#endif
         }
 
 #if WPF 

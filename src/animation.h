@@ -333,7 +333,7 @@ public:
 	// Property Accessors
 	//
 	virtual KeyTime *GetKeyTime () = 0;
-	virtual void SetKeyTime (KeyTime keytime) = 0;
+	void SetKeyTime (KeyTime keytime) { SetKeyTime (&keytime); }
 	virtual void SetKeyTime (KeyTime *keytime) = 0;
 
 protected:
@@ -416,9 +416,9 @@ protected:
 /* @Namespace=System.Windows.Media.Animation */
 class DoubleKeyFrame : public KeyFrame {
 public:
- 	/* @PropertyType=double,Nullable,ManagedPropertyType=double,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=0.0,ManagedPropertyType=double,GenerateAccessors */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -427,12 +427,11 @@ public:
 	//
 	// Property Accessors
 	//
-	double *GetValue ();
-	void    SetValue (double *pv);
-	void    SetValue (double v);
+	double GetValue ();
+	void SetValue (double v);
 
 	virtual KeyTime *GetKeyTime ();
-	virtual void SetKeyTime (KeyTime keytime);
+	void SetKeyTime (KeyTime keytime) { SetKeyTime (&keytime); }
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
@@ -442,9 +441,9 @@ protected:
 /* @Namespace=System.Windows.Media.Animation */
 class ColorKeyFrame : public KeyFrame {
 public:
- 	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color,GenerateAccessors */
+ 	/* @PropertyType=Color,DefaultValue=Color(0.0\,0.0\,0.0\,1.0),ManagedPropertyType=Color,GenerateAccessors */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -454,11 +453,11 @@ public:
 	// Property Accessors
 	//
 	Color *GetValue ();
-	void   SetValue (Color *pv);
-	void   SetValue (Color v);
+	void SetValue (Color v) { SetValue (&v); }
+	void SetValue (Color *v);
 
 	virtual KeyTime *GetKeyTime ();
-	virtual void SetKeyTime (KeyTime keytime);
+	void SetKeyTime (KeyTime keytime) { SetKeyTime (&keytime); }
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
@@ -475,7 +474,7 @@ public:
 	const static int ConvertedValueProperty;
 	/* @PropertyType=object,ManagedPropertyType=object */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
 
 	Value *GetConvertedValue ();
@@ -483,7 +482,7 @@ public:
 	Value *GetValue ();
 
 	virtual KeyTime *GetKeyTime ();
-	virtual void SetKeyTime (KeyTime keytime);
+	void SetKeyTime (KeyTime keytime) { SetKeyTime (&keytime); }
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
@@ -493,9 +492,9 @@ protected:
 /* @Namespace=System.Windows.Media.Animation */
 class PointKeyFrame : public KeyFrame {
 public:
- 	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point(),ManagedPropertyType=Point,GenerateAccessors */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -505,11 +504,11 @@ public:
 	// Property Accessors
 	//
 	Point *GetValue ();
-	void   SetValue (Point *pv);
-	void   SetValue (Point v);
+	void SetValue (Point v) { SetValue (&v); }
+	void SetValue (Point *v);
 
 	virtual KeyTime *GetKeyTime ();
-	virtual void SetKeyTime (KeyTime keytime);
+	void SetKeyTime (KeyTime keytime) { SetKeyTime (&keytime); }
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:

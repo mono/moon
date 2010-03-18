@@ -53,7 +53,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ML has the property Matrix frozen")]
 		public void EnsureNotFrozen ()
 		{
 			VideoBrush vb = new VideoBrush ();
@@ -73,7 +72,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void RelativeTransform ()
 		{
 			VideoBrush vb = new VideoBrush ();
@@ -81,7 +79,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void Transform ()
 		{
 			VideoBrush vb = new VideoBrush ();

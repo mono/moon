@@ -1167,7 +1167,6 @@ PointKeyFrameCollection::~PointKeyFrameCollection ()
 DoubleKeyFrame::DoubleKeyFrame ()
 {
 	SetObjectType (Type::DOUBLEKEYFRAME);
-	SetValue (0.0);
 }
 
 DoubleKeyFrame::~DoubleKeyFrame ()
@@ -1178,7 +1177,6 @@ ColorKeyFrame::ColorKeyFrame ()
 {
 	SetObjectType (Type::COLORKEYFRAME);
 	static Color c = Color (0, 0, 0, 1);
-	SetValue (c);
 }
 
 ColorKeyFrame::~ColorKeyFrame ()
@@ -1188,7 +1186,6 @@ ColorKeyFrame::~ColorKeyFrame ()
 PointKeyFrame::PointKeyFrame ()
 {
 	SetObjectType (Type::POINTKEYFRAME);
-	SetValue (Point (0,0));
 }
 
 PointKeyFrame::~PointKeyFrame ()
@@ -1207,10 +1204,10 @@ DiscreteDoubleKeyFrame::~DiscreteDoubleKeyFrame ()
 Value*
 DiscreteDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	double *to = GetValue();
+	double to = GetValue ();
 
-	if (to && keyFrameProgress == 1.0)
-		return new Value(*to);
+	if (keyFrameProgress == 1.0)
+		return new Value(to);
 	else
 		return new Value (baseValue->AsDouble());
 }
@@ -1227,10 +1224,8 @@ DiscreteColorKeyFrame::~DiscreteColorKeyFrame ()
 Value*
 DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Color *to = GetValue();
-
-	if (to && keyFrameProgress == 1.0)
-		return new Value(*to);
+	if (keyFrameProgress == 1.0)
+		return new Value (*GetValue ());
 	else
 		return new Value (*baseValue->AsColor());
 }
@@ -1247,10 +1242,8 @@ DiscretePointKeyFrame::~DiscretePointKeyFrame ()
 Value*
 DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Point *to = GetValue();
-
-	if (to && keyFrameProgress == 1.0)
-		return new Value(*to);
+	if (keyFrameProgress == 1.0)
+		return new Value (*GetValue ());
 	else
 		return new Value (*baseValue->AsPoint());
 }
@@ -1268,15 +1261,8 @@ LinearDoubleKeyFrame::~LinearDoubleKeyFrame ()
 Value*
 LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	double *to = GetValue();
-
-	if (!to)
-		return new Value (baseValue->AsDouble());
-
-	double start, end;
-
-	start = baseValue->AsDouble();
-	end = *to;
+	double start = baseValue->AsDouble();
+	double end = GetValue ();
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }
@@ -1293,15 +1279,8 @@ LinearColorKeyFrame::~LinearColorKeyFrame ()
 Value*
 LinearColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Color *to = GetValue();
-
-	if (!to)
-		return new Value (*baseValue->AsColor());
-
-	Color start, end;
-
-	start = *baseValue->AsColor();
-	end = *to;
+	Color start = *baseValue->AsColor();
+	Color end = *GetValue();
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }
@@ -1318,15 +1297,8 @@ LinearPointKeyFrame::~LinearPointKeyFrame ()
 Value*
 LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Point *to = GetValue();
-
-	if (!to)
-		return new Value (*baseValue->AsPoint());
-
-	Point start, end;
-
-	start = *baseValue->AsPoint();
-	end = *to;
+	Point start = *baseValue->AsPoint();
+	Point end = *GetValue();
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }
@@ -1343,19 +1315,12 @@ SplineDoubleKeyFrame::~SplineDoubleKeyFrame ()
 Value *
 SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
+	if (keyFrameProgress >= 1.0)
+		return new Value (GetValue ());
+
+	double start = baseValue->AsDouble();
+	double end = GetValue ();
 	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
-
-	double *to = GetValue();
-
-	if (!to)
-		return new Value (baseValue->AsDouble());
-	else if (keyFrameProgress >= 1.0)
-		return new Value (*to);
-
-	double start, end;
-
-	start = baseValue->AsDouble();
-	end = *to;
 
 	return new Value (LERP (start, end, splineProgress));
 }
@@ -1373,19 +1338,12 @@ SplineColorKeyFrame::~SplineColorKeyFrame ()
 Value *
 SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
+	if (keyFrameProgress >= 1.0)
+		return new Value (*GetValue ());
+
+	Color start = *baseValue->AsColor();
+	Color end = *GetValue ();
 	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
-
-	Color *to = GetValue();
-
-	if (!to)
-		return new Value (*baseValue->AsColor());
-	else if (keyFrameProgress >= 1.0)
-		return new Value (*to);
-
-	Color start, end;
-
-	start = *baseValue->AsColor();
-	end = *to;
 
 	return new Value (LERP (start, end, splineProgress));
 }
@@ -1403,19 +1361,12 @@ SplinePointKeyFrame::~SplinePointKeyFrame ()
 Value *
 SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
+	if (keyFrameProgress >= 1.0)
+		return new Value (*GetValue ());
+
+	Point start = *baseValue->AsPoint();
+	Point end = *GetValue ();
 	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
-
-	Point *to = GetValue();
-
-	if (!to)
-		return new Value (*baseValue->AsPoint());
-	else if (keyFrameProgress >= 1.0)
-		return new Value (*to);
-
-	Point start, end;
-
-	start = *baseValue->AsPoint();
-	end = *to;
 
 	return new Value (LERP (start, end, splineProgress));
 }
@@ -1432,17 +1383,11 @@ EasingColorKeyFrame::~EasingColorKeyFrame ()
 Value *
 EasingColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Color *to = GetValue();
+	if (keyFrameProgress >= 1.0)
+		return new Value (*GetValue ());
 
-	if (!to)
-		return new Value (*baseValue->AsColor());
-	else if (keyFrameProgress >= 1.0)
-		return new Value (*to);
-
-	Color start, end;
-
-	start = *baseValue->AsColor();
-	end = *to;
+	Color start = *baseValue->AsColor();
+	Color end = *GetValue ();
 
 	if (GetEasingFunction ())
 		keyFrameProgress = GetEasingFunction ()->Ease (keyFrameProgress);
@@ -1462,17 +1407,11 @@ EasingDoubleKeyFrame::~EasingDoubleKeyFrame ()
 Value *
 EasingDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	double *to = GetValue();
+	if (keyFrameProgress >= 1.0)
+		return new Value (GetValue ());
 
-	if (!to)
-		return new Value (baseValue->AsDouble());
-	else if (keyFrameProgress >= 1.0)
-		return new Value (*to);
-
-	double start, end;
-
-	start = baseValue->AsDouble();
-	end = *to;
+	double start = baseValue->AsDouble();
+	double end = GetValue ();
 
 	if (GetEasingFunction ())
 		keyFrameProgress = GetEasingFunction ()->Ease (keyFrameProgress);
@@ -1493,17 +1432,11 @@ EasingPointKeyFrame::~EasingPointKeyFrame ()
 Value *
 EasingPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Point *to = GetValue();
+	if (keyFrameProgress >= 1.0)
+		return new Value (*GetValue ());
 
-	if (!to)
-		return new Value (*baseValue->AsPoint());
-	else if (keyFrameProgress >= 1.0)
-		return new Value (*to);
-
-	Point start, end;
-
-	start = *baseValue->AsPoint();
-	end = *to;
+	Point start = *baseValue->AsPoint();
+	Point end = *GetValue ();
 
 	if (GetEasingFunction ())
 		keyFrameProgress = GetEasingFunction ()->Ease (keyFrameProgress);
@@ -1710,7 +1643,7 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	}
 	else {
 		/* start at the previous keyframe's target value */
-		baseValue = new Value (*previous_keyframe->GetValue ());
+		baseValue = new Value (previous_keyframe->GetValue ());
 		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
 	}

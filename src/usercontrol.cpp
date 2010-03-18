@@ -17,7 +17,6 @@
 UserControl::UserControl ()
 {
 	SetObjectType (Type::USERCONTROL);
-	SetIsTabStop (false);
 }
 
 UserControl::~UserControl ()
