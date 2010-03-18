@@ -1,5 +1,10 @@
 2010-03-18  Alan McGovern  <amcgovern@novell.com>
 
+	* application.cpp: Revert r153796 for now as it causes
+	  moon-unit to explode within seconds.
+
+2010-03-18  Alan McGovern  <amcgovern@novell.com>
+
 	* brush.h:
 	* shape.h:
 	* effect.h:

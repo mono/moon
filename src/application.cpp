@@ -216,7 +216,6 @@ downloader_abort (gpointer data, void *ctx)
 	dl->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, nc);
 	dl->RemoveHandler (Downloader::CompletedEvent, downloader_complete, nc);
 	dl->Abort ();
-	g_free (ctx);
 }
 
 static void
