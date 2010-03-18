@@ -29,9 +29,8 @@ namespace System.Windows.Browser
 		}
 
 		public ScriptObject this [int i] {
-			// is this approach (creating HtmlElement every time) bogus?
 			get {
-				return new HtmlElement (InvokeInternal<IntPtr> ("item", i));
+				return InvokeInternal<HtmlElement> ("item", i);
 			}
 		}
 

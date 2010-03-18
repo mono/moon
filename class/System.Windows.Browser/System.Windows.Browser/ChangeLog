@@ -1,3 +1,15 @@
+2010-03-17  Chris Toshok  <toshok@ximian.com>
+
+	* HtmlDocument.cs (CreateElement): use InvokeInternal<HtmlElement>
+	instead of possibly passing IntPtr.Zero to HtmlElement's ctor.
+	(GetElementById): replace the IntPtr munging here with
+	InvokeInternal<HtmlElement> and let ScriptObjctHelper do the heavy
+	lifting.
+
+	* HtmlElement.cs (Parent): same.
+
+	* ScriptObjectCollection.cs (get_Item): same.
+
 2010-03-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* HtmlElement.cs: If we don't have a parent, return null instead of a

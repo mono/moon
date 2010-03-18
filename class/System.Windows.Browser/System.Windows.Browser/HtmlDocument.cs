@@ -54,16 +54,12 @@ namespace System.Windows.Browser
 
 		public HtmlElement CreateElement (string tagName)
 		{
-			return new HtmlElement ((IntPtr)InvokeInternal<IntPtr> ("createElement", tagName));
+			return InvokeInternal<HtmlElement> ("createElement", tagName);
 		}
 
 		public HtmlElement GetElementById (string id)
 		{
-			var handle = InvokeInternal<IntPtr> ("getElementById", id);
-			if (handle == IntPtr.Zero)
-				return null;
-
-			return new HtmlElement (handle);
+			return InvokeInternal<HtmlElement>("getElementById", id);
 		}
 
 		public ScriptObjectCollection GetElementsByTagName (string tagName)

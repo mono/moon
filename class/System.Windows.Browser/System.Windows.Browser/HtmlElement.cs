@@ -123,8 +123,7 @@ namespace System.Windows.Browser
 
 		public HtmlElement Parent {
 			get {
-				IntPtr parent = GetPropertyInternal<IntPtr> ("parentNode");
-				return parent == IntPtr.Zero ? null : new HtmlElement (parent);
+				return GetPropertyInternal <HtmlElement> ("parentNode");
 			}
 		}
 
