@@ -49,19 +49,6 @@ namespace MoonTest.System.Net.Browser {
 
 		protected abstract WebRequest GetWebRequest (Uri uri);
 
-		[TestMethod]
-		public void Credentials ()
-		{
-			WebRequest wr = GetWebRequest (localhost);
-			Assert.Throws<NotImplementedException> (delegate {
-				// not sure then this is enabled (both browser and client throws)
-				Assert.IsNotNull (wr.Credentials);
-			}, "Credentials-get");
-			Assert.Throws<NotImplementedException> (delegate {
-				wr.Credentials = new NetworkCredential ("me", "****", "here");
-			}, "Credentials-set");
-		}
-
 		bool IsValidHeader (HttpRequestHeader header)
 		{
 			switch (header) {
@@ -83,13 +70,15 @@ namespace MoonTest.System.Net.Browser {
 			case HttpRequestHeader.AcceptCharset:
 			case HttpRequestHeader.AcceptEncoding:
 			case HttpRequestHeader.AcceptLanguage:
-			case HttpRequestHeader.Authorization:
+			// Authorization was not valid before SL4
+			// case HttpRequestHeader.Authorization:
 			case HttpRequestHeader.Cookie:
 			case HttpRequestHeader.Expect:
 			case HttpRequestHeader.Host:
 			case HttpRequestHeader.IfModifiedSince:
 			case HttpRequestHeader.MaxForwards:
-			case HttpRequestHeader.ProxyAuthorization:
+			// ProxyAuthorization was not valid before SL4
+			// case HttpRequestHeader.ProxyAuthorization:
 			case HttpRequestHeader.Referer:
 			case HttpRequestHeader.Te:
 			// Range was not valid in SL2 but is accepted in SL3

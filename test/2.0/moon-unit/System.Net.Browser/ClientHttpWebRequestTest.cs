@@ -54,6 +54,18 @@ namespace MoonTest.System.Net.Browser {
 
 		[TestMethod]
 		[MoonlightBug]
+		public void Credentials ()
+		{
+			WebRequest wr = GetWebRequest (localhost);
+			Assert.IsNull (wr.Credentials, "get");
+			wr.Credentials = new NetworkCredential ("me", "****", "here");
+			Assert.IsNotNull (wr.Credentials, "set");
+			wr.Credentials = null;
+			Assert.IsNull (wr.Credentials, "reset");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
 		public void Methods_Extended ()
 		{
 			WebRequest wr = GetWebRequest (new Uri ("http://localhost"));

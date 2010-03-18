@@ -55,6 +55,19 @@ namespace MoonTest.System.Net.Browser {
 		}
 
 		[TestMethod]
+		public void Credentials ()
+		{
+			WebRequest wr = GetWebRequest (localhost);
+			Assert.Throws<NotImplementedException> (delegate {
+				// not sure then this is enabled (both browser and client throws)
+				Assert.IsNotNull (wr.Credentials);
+			}, "Credentials-get");
+			Assert.Throws<NotImplementedException> (delegate {
+				wr.Credentials = new NetworkCredential ("me", "****", "here");
+			}, "Credentials-set");
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void Methods_Extended ()
 		{

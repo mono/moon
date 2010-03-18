@@ -1,3 +1,10 @@
+2010-03-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.Browser/BaseHttpWebRequestTest.cs:
+	* System.Net.Browser/ClientHttpWebRequestTest.cs:
+	* System.Net.Browser/BrowserHttpWebRequestTest.cs:
+		SL4 specific behaviour
+
 2010-03-18  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs:
