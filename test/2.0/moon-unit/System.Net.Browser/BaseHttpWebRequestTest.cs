@@ -377,6 +377,37 @@ namespace MoonTest.System.Net.Browser {
 			EnqueueConditional (() => get_response_called);
 			EnqueueTestComplete ();
 		}
+
+		void NonHttpProtocol (Uri uri)
+		{
+			IAsyncResult async_result = null;
+			WebRequest request = GetWebRequest (uri);
+			request.BeginGetResponse ((IAsyncResult result) => async_result = result, null);
+			EnqueueConditional (() => async_result != null);
+			Enqueue (() => Assert.Throws<SecurityException> (() => request.EndGetResponse (async_result)));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void File ()
+		{
+			NonHttpProtocol (new Uri ("file:///test"));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Ftp ()
+		{
+			NonHttpProtocol (new Uri ("ftp://ftp.novell.com"));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Mailto ()
+		{
+			NonHttpProtocol (new Uri ("mailto:mono@novell.com"));
+		}
 	}
 }
 

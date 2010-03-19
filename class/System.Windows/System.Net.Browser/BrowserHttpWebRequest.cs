@@ -126,6 +126,12 @@ namespace System.Net.Browser {
 
 		private IAsyncResult GetResponse (string method, Uri uri)
 		{
+			if ((uri.Scheme != "http") && (uri.Scheme != "https")) {
+				async_result.Exception = new SecurityException ("Bad scheme");
+				async_result.SetComplete ();
+				return async_result;
+			}
+
 			// this is a same site (site of origin, SOO) request; or
 			// we either already know the policy (previously downloaded); or
 			// we try to download the policy

@@ -1,3 +1,8 @@
+2010-03-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net.Browser/BaseHttpWebRequestTest.cs: Add test cases
+	for non-http[s] protocols
+
 2010-03-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/HttpWebRequestTest.cs: Add assert for new (SL4 RC)
