@@ -1,3 +1,9 @@
+2010-03-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Override both AllowWriteStreamBuffering,
+	SupportsCookieContainer and UseDefaultCredentials (SL4 RC) new 
+	properties. Fix restricted Cache-Control header (unit test).
+
 2010-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest[Internal].cs: Remove 'progress' field. It

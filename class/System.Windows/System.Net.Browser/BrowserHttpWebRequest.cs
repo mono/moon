@@ -43,6 +43,7 @@ namespace System.Net.Browser {
 		Uri uri;
 		bool aborted;
 		bool allow_read_buffering;
+		bool allow_write_buffering;
 		string method = "GET";
 
 		ICrossDomainPolicy policy;
@@ -57,6 +58,7 @@ namespace System.Net.Browser {
  			this.uri = uri;
 			aborted = false;
 			allow_read_buffering = true;
+			allow_write_buffering = true;
 		}
 
 		~BrowserHttpWebRequest () /* thread-safe: no p/invokes */
@@ -284,6 +286,13 @@ namespace System.Net.Browser {
 			set { allow_read_buffering = value; }
 		}
 
+		// new in SL4 RC
+		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
+		public override bool AllowWriteStreamBuffering {
+			get { return allow_write_buffering; }
+			set { allow_write_buffering = value; }
+		}
+
 		public override bool HaveResponse {
 			get {
 				if (response != null)
@@ -316,12 +325,29 @@ namespace System.Net.Browser {
 			get { return uri; }
 		}
 
+		// FIXME - temporary until new client stack is committed (otherwise base implementation, returning false is ok)
+		public override bool SupportsCookieContainer {
+			get { return true; }
+		}
+
+		public override bool UseDefaultCredentials {
+			get { return true; }
+			set {
+				// this is the default (and unchangeable) behavior of the browser stack
+				if (!value)
+					throw new NotSupportedException ();
+			}
+		}
+
 		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires", "Content-Type" };
 
 		void CheckProtocolViolation ()
 		{
 			if (String.Compare (method, "GET", StringComparison.OrdinalIgnoreCase) != 0)
 				return;
+
+			if (Headers.headers.ContainsKey ("Cache-Control"))
+				throw new NotSupportedException ();
 
 			// most headers are checked when set, but some are checked much later
 			foreach (string header in bad_get_headers) {
