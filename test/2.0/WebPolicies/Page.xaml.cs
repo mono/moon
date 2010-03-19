@@ -2,26 +2,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Browser;
 using System.Reflection;
 using System.Security;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Threading;
 
 namespace WebPolicies {
 	public partial class Page : UserControl {
+		string stack;
+
 		public Page ()
 		{
 			InitializeComponent ();
-			this.WebClientButton.Click += delegate {
+			this.BrowserWebClientButton.Click += delegate {
+				stack = "browser";
+				WebRequest.RegisterPrefix ("http://", WebRequestCreator.BrowserHttp);
 				WebClientTest ();
 			};
-			this.WebRequestButton.Click += delegate {
+			this.BrowserWebRequestButton.Click += delegate {
+				stack = "browser";
+				WebRequest.RegisterPrefix ("http://", WebRequestCreator.BrowserHttp);
+				WebRequestTest ();
+			};
+			this.ClientWebClientButton.Click += delegate {
+				stack = "client";
+				WebRequest.RegisterPrefix ("http://", WebRequestCreator.ClientHttp);
+				WebClientTest ();
+			};
+			this.ClientWebRequestButton.Click += delegate {
+				stack = "client";
+				WebRequest.RegisterPrefix ("http://", WebRequestCreator.ClientHttp);
 				WebRequestTest ();
 			};
 		}
@@ -248,7 +261,7 @@ namespace WebPolicies {
 				}
 			};
 			string uri = urls [uri_no - 1];
-			log.Text += String.Format ("{0}WEBCLIENT {1}. {2} : ", Environment.NewLine, uri_no, uri);
+			log.Text += String.Format ("{0}WEBCLIENT({3}) {1}. {2} : ", Environment.NewLine, uri_no, uri, stack);
 			current = new Uri (uri);
 			wc.OpenReadAsync (current);
 		}
@@ -294,14 +307,14 @@ namespace WebPolicies {
 					fail++;
 				}
 
-				string msg = String.Format ("{1} : {2}", Environment.NewLine, wreq.RequestUri.OriginalString, status);
+				string msg = String.Format ("{0} '{1}' : {2}", wreq.CreatorInstance.GetType (), wreq.RequestUri.OriginalString, status);
 				syncContext.Post (new SendOrPostCallback (PostCallback), msg);
 			}
 		}
 
 		void PostCallback (object o)
 		{
-			log.Text += String.Format ("{0}WEBREQUEST {1}. {2}", Environment.NewLine, uri_no++, o as string);
+			log.Text += String.Format ("{0}{1}. {2}", Environment.NewLine, uri_no++, o as string);
 			if (uri_no - 1 == urls.Length)
 				ShowFinalStatus ();
 		}

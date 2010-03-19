@@ -1,3 +1,8 @@
+2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Page.xaml[.cs]: Add option to use either the browser stack or
+	the client stack when testing xdomain policies.
+
 2009-09-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Global.asax, Page.xaml.cs: Add policies and test cases for
