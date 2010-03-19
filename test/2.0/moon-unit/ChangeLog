@@ -1,3 +1,17 @@
+2010-03-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/HttpWebRequestTest.cs: Add assert for new (SL4 RC)
+	AllowWriteStreamBuffering property
+	* System.Net/WebClientTest.cs: Add assert for new (SL4 RC)
+	AllowWriteStreamBuffering and UseDefaultCredentials properties
+	* System.Net.Browser/BaseHttpWebRequestTest.cs: Add default
+	buffering assertions.
+	* System.Net.Browser/BrowserHttpWebRequestTest.cs: Add assert
+	for new (SL4 RC) SupportsCookieContainer property
+	* System.Net.Browser/ClientHttpWebRequestTest.cs: Add assert
+	for new (SL4 RC) SupportsCookieContainer property. Add
+	[MoonlightBug] on HeadersGetThrowingInGetResponse
+
 2010-03-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.Browser/BaseHttpWebRequestTest.cs:

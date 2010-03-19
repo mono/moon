@@ -49,6 +49,7 @@ namespace MoonTest.System.Net.Browser {
 		public void CookieContainer ()
 		{
 			HttpWebRequest wr = (HttpWebRequest) GetWebRequest (new Uri ("http://localhost"));
+			Assert.IsTrue (wr.SupportsCookieContainer, "SupportsCookieContainer");
 			Assert.IsNull (wr.CookieContainer, "CookieContainer");
 		}
 
@@ -103,6 +104,7 @@ namespace MoonTest.System.Net.Browser {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void HeadersGetThrowingInGetResponse ()
 		{
 			// NotSupportedException is thrown on the browser stack

@@ -57,6 +57,14 @@ namespace MoonTest.System.Net {
 				hwr.AllowReadStreamBuffering = true;
 			}, "AllowReadStreamBuffering-set");
 
+			// new in SL4
+			Assert.Throws<NotImplementedException> (delegate {
+				Assert.IsFalse (hwr.AllowWriteStreamBuffering);
+			}, "AllowWriteStreamBuffering-get");
+			Assert.Throws<NotImplementedException> (delegate {
+				hwr.AllowWriteStreamBuffering = true;
+			}, "AllowWriteStreamBuffering-set");
+
 			Assert.Throws<NotImplementedException> (delegate {
 				hwr.BeginGetRequestStream (null, null);
 			}, "BeginGetRequestStream");
@@ -103,6 +111,9 @@ namespace MoonTest.System.Net {
 				hwr.CookieContainer = null;
 			}, "CookieContainer-set");
 
+			// new in SL4
+			Assert.IsFalse (hwr.SupportsCookieContainer, "SupportsCookieContainer");
+
 			Assert.IsNull (hwr.CreatorInstance, "CreatorInstance");
 		}
 
@@ -142,9 +153,8 @@ namespace MoonTest.System.Net {
 			Assert.IsNull (hwr.Headers ["Accept"], "Headers['Accept']-get");
 			Assert.AreEqual (0, hwr.Headers.Count, "Count-a");
 
-			Assert.Throws<ArgumentException> (delegate {
-				hwr.Accept = String.Empty; // this used to work in SL2
-			}, "Empty");
+			// Empty is accepted (stays null) in SL2 and SL4 (was throwing an ArgumentException in SL3)
+			hwr.Accept = String.Empty;
 			// still null
 			Assert.IsNull (hwr.Accept, "Accept-set-null");
 			Assert.IsNull (hwr.Headers [HttpRequestHeader.Accept], "Headers[HttpRequestHeader.Accept]-set-null");
@@ -157,12 +167,8 @@ namespace MoonTest.System.Net {
 			Assert.AreEqual ("a", hwr.Headers ["Accept"], "Headers['Accept']-set");
 			Assert.AreEqual (1, hwr.Headers.Count, "Count-c");
 
-			Assert.Throws<ArgumentException> (delegate {
-				hwr.Accept = String.Empty; // this used to reset the value in SL2
-			}, "Empty-Reset");
-			Assert.Throws<ArgumentNullException> (delegate {
-				hwr.Accept = null;
-			}, "null");
+			hwr.Accept = null;
+			Assert.IsNull (hwr.Accept, "Accept-reset-null");
 		}
 
 		[TestMethod]
@@ -175,9 +181,8 @@ namespace MoonTest.System.Net {
 			Assert.IsNull (hwr.Headers ["Content-Type"], "Headers['Content-Type']-get");
 			Assert.AreEqual (0, hwr.Headers.Count, "Count-a");
 
-			Assert.Throws<ArgumentException> (delegate {
-				hwr.ContentType = String.Empty; // this used to work in SL2
-			}, "Empty");
+			// Empty is accepted (stays null) in SL2 and SL4 (was throwing an ArgumentException in SL3)
+			hwr.ContentType = String.Empty;
 			// still null
 			Assert.IsNull (hwr.ContentType, "ContentType-set-null");
 			Assert.IsNull (hwr.Headers [HttpRequestHeader.ContentType], "Headers[HttpRequestHeader.ContentType]-set-null");
@@ -190,12 +195,8 @@ namespace MoonTest.System.Net {
 			Assert.AreEqual ("a", hwr.Headers ["Content-Type"], "Headers['Content-Type']-set");
 			Assert.AreEqual (1, hwr.Headers.Count, "Count-c");
 
-			Assert.Throws<ArgumentException> (delegate {
-				hwr.ContentType = String.Empty; // this used to reset the value in SL2
-			}, "Empty-Reset");
-			Assert.Throws<ArgumentNullException> (delegate {
-				hwr.ContentType = null;
-			}, "null");
+			hwr.ContentType = null;
+			Assert.IsNull (hwr.ContentType, "ContentType-reset-null");
 		}
 	}
 }

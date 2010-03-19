@@ -46,12 +46,14 @@ namespace MoonTest.System.Net {
 		private void CheckDefaults (WebClient wc)
 		{
 			Assert.IsTrue (wc.AllowReadStreamBuffering, "AllowReadStreamBuffering");
+			Assert.IsTrue (wc.AllowWriteStreamBuffering, "AllowWriteStreamBuffering");
 			Assert.IsTrue (wc.BaseAddress.EndsWith ("/moon-unit.xap"), "BaseAddress");
 			Assert.AreEqual ("utf-8", wc.Encoding.WebName, "Encoding");
 			Assert.AreEqual (0, wc.Headers.Count, "Headers");
 			Assert.IsFalse (wc.IsBusy, "IsBusy");
 			Assert.IsNull (wc.Credentials, "Credentials");
 			Assert.IsNull (wc.ResponseHeaders, "ResponseHeaders");
+			Assert.IsTrue (wc.UseDefaultCredentials, "UseDefaultCredentials");
 		}
 
 		[TestMethod]

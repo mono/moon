@@ -49,6 +49,7 @@ namespace MoonTest.System.Net.Browser {
 		public void CookieContainer ()
 		{
 			HttpWebRequest wr = (HttpWebRequest) GetWebRequest (new Uri ("http://localhost"));
+			Assert.IsFalse (wr.SupportsCookieContainer, "SupportsCookieContainer");
 			Assert.Throws<NotImplementedException> (delegate {
 				Assert.IsNotNull (wr.CookieContainer);
 			}, "CookieContainer");
