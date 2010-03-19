@@ -1,3 +1,9 @@
+2010-03-19  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/TabItemAutomationPeerTest.cs: Tests
+	fix when ItemContainerGenerator.ItemFromContainer returns
+	DependencyProperty.UnsetValue.
+
 2010-03-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net.Browser/BaseHttpWebRequestTest.cs: Add test cases
