@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 412 methods
+# 424 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -100,6 +100,7 @@
 +SSC-M: System.Type System.Enum::GetUnderlyingType(System.Type)
 +SSC-M: System.Int32 System.Enum::CompareTo(System.Object)
 +SSC-M: System.Int32 System.Enum::GetHashCode()
++SSC-M: System.Boolean System.Enum::HasFlag(System.Enum)
 +SSC-M: System.OperatingSystem System.Environment::get_OSVersion()
 +SSC-M: System.Boolean System.Environment::get_IsRunningOnWindows()
 +SSC-M: System.String System.Exception::get_StackTrace()
@@ -128,6 +129,12 @@
 +SSC-M: System.String System.Globalization.TextInfo::ToUpper(System.String)
 +SSC-M: System.Byte[] System.IO.BinaryReader::ReadBytes(System.Int32)
 +SSC-M: System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
++SSC-M: System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator1::MoveNext()
++SSC-M: System.Void System.IO.Directory/<EnumerateKind>c__Iterator1::Dispose()
++SSC-M: System.Boolean System.IO.DirectoryInfo/<EnumerateDirectories>c__Iterator2::MoveNext()
++SSC-M: System.Boolean System.IO.DirectoryInfo/<EnumerateFiles>c__Iterator3::MoveNext()
++SSC-M: System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator4::MoveNext()
++SSC-M: System.Void System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator4::Dispose()
 +SSC-M: System.Void System.IO.File::AppendAllText(System.String,System.String)
 +SSC-M: System.Void System.IO.File::AppendAllText(System.String,System.String,System.Text.Encoding)
 +SSC-M: System.String System.IO.File::ReadAllText(System.String)
@@ -314,6 +321,11 @@
 +SSC-M: System.String System.String::IsInterned(System.String)
 +SSC-M: System.String System.String::Join(System.String,System.String[])
 +SSC-M: System.String System.String::Join(System.String,System.String[],System.Int32,System.Int32)
++SSC-M: System.String System.String::Concat(System.Collections.Generic.IEnumerable`1<System.String>)
++SSC-M: System.String System.String::Concat<T>(System.Collections.Generic.IEnumerable`1<T>)
++SSC-M: System.String System.String::Join(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
++SSC-M: System.String System.String::Join(System.String,System.Object[])
++SSC-M: System.String System.String::Join<T>(System.String,System.Collections.Generic.IEnumerable`1<T>)
 +SSC-M: System.String System.String::CreateString(System.Char[],System.Int32,System.Int32)
 +SSC-M: System.String System.String::CreateString(System.Char[])
 +SSC-M: System.String System.String::CreateString(System.Char,System.Int32)

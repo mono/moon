@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 422 methods needs to be decorated.
+# 425 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -345,6 +345,9 @@
 
 # internal call
 +SC-M: System.Int32 System.GC::GetGeneration(System.Object)
+
+# internal call
++SC-M: System.Int32 System.IO.MonoIO::FindClose(System.IntPtr)
 
 # internal call
 +SC-M: System.Int32 System.IO.MonoIO::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32,System.IO.MonoIOError&)
@@ -798,6 +801,12 @@
 
 # implements 'System.String System.Runtime.InteropServices._Exception::get_Source()'.
 +SC-M: System.String System.Exception::get_Source()
+
+# internal call
++SC-M: System.String System.IO.MonoIO::FindFirst(System.String,System.String,System.IO.FileAttributes&,System.IO.MonoIOError&,System.IntPtr&)
+
+# internal call
++SC-M: System.String System.IO.MonoIO::FindNext(System.IntPtr,System.IO.FileAttributes&,System.IO.MonoIOError&)
 
 # internal call
 +SC-M: System.String System.IO.MonoIO::GetCurrentDirectory(System.IO.MonoIOError&)

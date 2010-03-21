@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 650 methods needs to be decorated.
+# 647 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -11,7 +11,7 @@
 +SC-M: Mono.Kind Mono.NativeMethods::event_object_get_object_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
++SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&)
@@ -285,9 +285,6 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.IAsyncResult Mono.Xaml.AddChildCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
-
-# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.GetContentPropertyNameCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.IAsyncResult Mono.Xaml.ImportXamlNamespaceCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.MoonError&,System.AsyncCallback,System.Object)
@@ -1416,12 +1413,6 @@
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
-
-# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
-+SC-M: System.String Mono.Xaml.GetContentPropertyNameCallback::Invoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,Mono.MoonError&)
-
-# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
-+SC-M: System.String Mono.Xaml.ManagedXamlLoader::cb_get_content_property_name(Mono.Xaml.XamlCallbackData*,Mono.Value*,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::LookupType(Mono.Value*,System.String,System.String)
