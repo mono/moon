@@ -538,10 +538,17 @@ UIElementCollection::~UIElementCollection ()
 static int
 UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 {
-	int z1 = Canvas::GetZIndex (*((UIElement **) ui1));
-	int z2 = Canvas::GetZIndex (*((UIElement **) ui2));
-	
-	return z1 - z2;
+	int zi1 = Canvas::GetZIndex (*((UIElement **) ui1));
+	int zi2 = Canvas::GetZIndex (*((UIElement **) ui2));
+
+	if (zi1 == zi2) {
+		double z1 = Canvas::GetZ (*((UIElement **) ui1));
+		double z2 = Canvas::GetZ (*((UIElement **) ui2));
+
+		return z1 > z2 ? 1 : z1 < z2 ? -1 : 0;
+	}
+
+	return zi1 - zi2;
 }
 
 void

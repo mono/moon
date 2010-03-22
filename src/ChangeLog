@@ -1,5 +1,8 @@
 2010-03-22  David Reveman  <davidr@novell.com>
 
+	* collection.cpp (UIElementZIndexComparer): Use Z property when ZIndex
+	properties are equal.
+
 	* canvas.h: Add Z property to canvas class.
 
 	* uielement.cpp (UIElement): Initialize unprojected_bounds properly.
