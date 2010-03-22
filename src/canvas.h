@@ -37,7 +37,9 @@ class Canvas : public Panel {
 	const static int TopProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	const static int ZIndexProperty;
-	
+	/* @PropertyType=double,DefaultValue=0.0,Attached,GenerateAccessors */
+	const static int ZProperty;
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	Canvas ();
 	
@@ -64,6 +66,9 @@ class Canvas : public Panel {
 	
 	static void SetZIndex (DependencyObject *item, int zindex);
 	static int GetZIndex (DependencyObject *item);
+
+	static void SetZ (DependencyObject *item, double z);
+	static double GetZ (DependencyObject *item);
 };
 
 #endif /* __MOON_CANVAS_H__ */

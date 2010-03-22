@@ -1,5 +1,7 @@
 2010-03-22  David Reveman  <davidr@novell.com>
 
+	* canvas.h: Add Z property to canvas class.
+
 	* uielement.cpp (UIElement): Initialize unprojected_bounds properly.
 
 2010-03-22  Alan McGovern  <amcgovern@novell.com>
