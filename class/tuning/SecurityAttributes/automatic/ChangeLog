@@ -1,3 +1,8 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.auto.ssc, System.Net.auto.ssc: Regenerated with
+	simplified rules
+
 2010-03-22  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.ssc, System.auto.s[s]c, System.Net.auto.ssc: 

@@ -1,3 +1,10 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.manual: Change System.Net.Dns, System.Net.Sockets.Socket
+	and System.Net.Sockets.SocketAsyncEventArgs to [SecurityCritical]
+	only in this assembly.
+	* System.Net.manual: Remove unneeded rules and add SC on Linger.
+
 2010-03-22  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: Add more entries for new API that work only in

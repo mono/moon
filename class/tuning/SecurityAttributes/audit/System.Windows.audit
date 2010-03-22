@@ -22,8 +22,9 @@ Mono.Kind System.Windows.DependencyObject::GetKind()
 Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
 	r142142		spouliot - pinvoke into event_object_get_object_type
 
-!SSC-DF0BF1E00611713FB9E0F885FB5814D9
+!SSC-F0236B284B1BDCC7FA0FACF00358C2A5
 Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
+	r153695		spouliot - add a parameter (content of the [ContentProperty] attribute) to the call to types_register_type (pinvoke)
 	r153359		spouliot - handle Matrix3D
 	r150373		spouliot - removed C.WL
 	r146045		spouliot - not critical - use of Type.EmptyTypes instead of allocated a new, empty, array

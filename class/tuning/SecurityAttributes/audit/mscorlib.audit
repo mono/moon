@@ -26,6 +26,10 @@ System.Boolean System.Diagnostics.Debugger::get_IsAttached()
 System.Boolean System.Double::Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Boolean,System.Double&,System.Exception&)
 	r142142		spouliot - call, from an unsafe block, ParseImpl (icall named mono_double_ParseImpl)
 
+!SSC-830D34484F4C2E6F67118EDE9B624B6C
+System.Boolean System.Enum::HasFlag(System.Enum)
+	r153663		spouliot - (new SL4/FX4) call get_value (icall) to compare (as long) with the parameter
+
 !SSC-49DE777171D97109042D803D3A4C9BE8
 System.Boolean System.Environment::get_HasShutdownStarted()
 	r144558		spouliot - visible icall - parameterless
@@ -45,6 +49,22 @@ System.Boolean System.Globalization.CompareInfo::IsSuffix(System.String,System.S
 !SSC-379EF2FFCEE0E1A936045AC2CBB5174A
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
 	r142142		spouliot - call construct_internal_locale_from_current_locale (icall in locales.c)
+
+!SSC-DBCF48F647DEA10BC4BAF5966F3DA008
+System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator1::MoveNext()
+	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
+
+!SSC-60ED1FE404983B4B2EA4C177C9703A25
+System.Boolean System.IO.DirectoryInfo/<EnumerateDirectories>c__Iterator2::MoveNext()
+	r153896		spouliot - compiler generated code used by EnumerateDirectories [SecurityCritical]
+
+!SSC-142427D810AC4DAB4B0F4B7F3E9F6A65
+System.Boolean System.IO.DirectoryInfo/<EnumerateFiles>c__Iterator3::MoveNext()
+	r153896		spouliot - compiler generated code used by EnumerateFiles [SecurityCritical]
+
+!SSC-6B35CBF90924B3959AEE0DD95ADC1399
+System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator4::MoveNext()
+	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
 
 !SSC-3E6B14C829A106DEA4BCBCD32C14E375
 System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::DirectoryExists(System.String)
@@ -258,6 +278,46 @@ System.Char System.BitConverter::ToChar(System.Byte[],System.Int32)
 !SSC-9F50FEB8F7DF5BF18704BE0D775402EC
 System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
 	r142142		spouliot - unsafe call to CharCopy after all parameters are validated
+
+!SSC-091729CE6491C9519F657A3543FDC27A
+System.Collections.Generic.IEnumerable`1<System.IO.FileSystemInfo> System.IO.DirectoryInfo::EnumerateFileSystemInfos(System.String,System.IO.SearchOption)
+	r153971		spouliot - call EnumerateFileSystemInfos [SecurityCritical] overload which does validate the FullPath property
+
+!SSC-5F49179CE9D0078A8B37F694C737ADA2
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-7255D49677D62E73C101C04E1895F781
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String,System.String)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-5A6E3B29F9102DFFC2D9766E0EDEC5C7
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String,System.String,System.IO.SearchOption)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-88AC8907C26BCD418658BF5A80E1D00D
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-14F47F716C616EA9DD388F2F7AC2A178
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String,System.String)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-20D582594001CE8AC67458D620606B8D
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String,System.String,System.IO.SearchOption)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-EDA96AD13DDBDFC4097D8C3B03A25795
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-C26465C90EE9CE055E03ED369AD1C7E8
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String,System.String)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+
+!SSC-CD73B6DE5DE90FA8A6787FAE3999A8F8
+System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String,System.String,System.IO.SearchOption)
+	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
 
 !SSC-CBDB15284FF15712026E2523CECA5326
 System.Collections.Generic.IEnumerable`1<System.String> System.IO.File::ReadLines(System.String)
@@ -1150,6 +1210,10 @@ System.String System.Reflection.MonoCMethod::get_Name()
 System.String System.Reflection.MonoMethod::get_Name()
 	r142142		spouliot - call get_name (icall)
 
+!SSC-9E681DEBC28627FB3A441412EA1A657D
+System.String System.String::Concat(System.Collections.Generic.IEnumerable`1<System.String>)
+	r153874		spouliot - (new SL4/FX4) check parameter (non-null) then call ConcatInternal [SecurityCritical] with valid parameters
+
 !SSC-C91F9004B127B1349399FABB6DD9C4EC
 System.String System.String::Concat(System.Object[])
 	r144912		spouliot - call ConcatInternal [SecurityCritical] with a non-null, non-empty array of string and a computed 'len'
@@ -1169,6 +1233,10 @@ System.String System.String::Concat(System.String,System.String,System.String,Sy
 !SSC-BC1D57F52128607BEB9C10DD6604E1C0
 System.String System.String::Concat(System.String[])
 	r144912		spouliot - call ConcatInternal [SecurityCritical] with a validated (non-null) 'values' string array and a computed 'len'
+
+!SSC-5BF39EC1231D594C6CDDFFB6851D9C38
+System.String System.String::Concat<T>(System.Collections.Generic.IEnumerable`1<T>)
+	r153874		spouliot - (new SL4/FX4) check parameter (non-null) then call ConcatInternal [SecurityCritical] with valid parameters
 
 !SSC-7BB0D935F74DBAAFF03A7538C43AC400
 System.String System.String::Copy(System.String)
@@ -1198,6 +1266,14 @@ System.String System.String::Intern(System.String)
 System.String System.String::IsInterned(System.String)
 	r142142		spouliot - call InternalIsInterned (icall) on non-null value
 
+!SSC-44B1752019B5D61D27D4BCBBA7EEBCD6
+System.String System.String::Join(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
+	r153874		spouliot - (new SL4/FX4) check parameters (non-null) then call JoinUnchecked [SecurityCritical] with valid parameters
+
+!SSC-6597B639313E212B2CFED772F8B2AD15
+System.String System.String::Join(System.String,System.Object[])
+	r153874		spouliot - (new SL4/FX4) check parameters (non-null) then call JoinUnchecked [SecurityCritical] with valid parameters
+
 !SSC-EB1F132ACFC4B4ED00489F5D3301E031
 System.String System.String::Join(System.String,System.String[])
 	r144912		spouliot - call JoinUnchecked [SecurityCritical] with validated parameters
@@ -1205,6 +1281,10 @@ System.String System.String::Join(System.String,System.String[])
 !SSC-86B45B6340D791DC70E1F4CB093671EC
 System.String System.String::Join(System.String,System.String[],System.Int32,System.Int32)
 	r144912		spouliot - call JoinUnchecked [SecurityCritical] with validated parameters
+
+!SSC-618ECA3936D7D543EB6EBFC1E23268C2
+System.String System.String::Join<T>(System.String,System.Collections.Generic.IEnumerable`1<T>)
+	r153874		spouliot - (new SL4/FX4) check parameters (non-null) then call JoinUnchecked [SecurityCritical] with valid parameters
 
 !SSC-85FA0C0EB3C9C77A277CD8A0337B2A0F
 System.String System.String::PadLeft(System.Int32,System.Char)
@@ -1234,12 +1314,14 @@ System.String System.String::Substring(System.Int32)
 System.String System.String::Substring(System.Int32,System.Int32)
 	r144912		spouliot - call SubstringUnchecked [SecurityCritical] with validated 'startIndex' and 'length' parameters
 
-!SSC-C587B48CFF370306A5A6B1B6864E1F92
+!SSC-FF25D2AC6026B9143FA09E11AAA9C54D
 System.String System.String::ToLowerInvariant()
+	r144921		spouliot - shortcut added to return String.Empty if length == 0 (no security concern)
 	r142142		spouliot - call InternalAllocateStr (icall in mono/metadata/string-icalls.c) and unsafe loop over the 'length' of the string
 
-!SSC-97E2DCB17D3CD1C42C8F2C2E13E71F89
+!SSC-0D4F064AA8C0C553AB8B4C775A9E7FCC
 System.String System.String::ToUpperInvariant()
+	r144921		spouliot - shortcut added to return String.Empty if length == 0 (no security concern)
 	r142142		spouliot - call InternalAllocateStr (icall in mono/metadata/string-icalls.c) and unsafe loop over the 'length' of the string
 
 !SSC-2519AD0ACA4C6B37EE2C075DBA9FAD5A
@@ -1608,6 +1690,14 @@ System.Void System.Globalization.RegionInfo::.ctor(System.String)
 !SSC-85ABF27C1DF25F7F3C14420ED1A923F0
 System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
+
+!SSC-E6F17DD81016E418E83EBF81FAE4741D
+System.Void System.IO.Directory/<EnumerateKind>c__Iterator1::Dispose()
+	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
+
+!SSC-DCC4C7B761AFD08208F493D60024A4E8
+System.Void System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator4::Dispose()
+	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
 
 !SSC-6E17BC57D81D448074EA657FEA23F214
 System.Void System.IO.File::AppendAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>)

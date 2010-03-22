@@ -2,3 +2,7 @@
 System.Threading.SynchronizationContext System.ComponentModel.AsyncOperationManager::get_SynchronizationContext()
 	r142142		spouliot, getter only, return same as SynchronizationContext.Current
 
+!SSC-EDEFDC8F89EC33B2D6A1CBF4C2D8F8C3
+System.Void System.Net.Sockets.SocketException::.ctor()
+	r153971		spouliot - call WSAGetLastError_internal (icall) to set the error code
+

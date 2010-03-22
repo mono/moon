@@ -8,38 +8,8 @@
 +SC-M: System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
 +SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
 
++SC-M: System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
+
 # we now have two different copies (type name clash) in System.dll and System.Net.dll
 +SC-T: System.Net.Dns
-
-# the System.dll copy of Socket expose more stuff (for the client http stack) than the user-accessible one in System.Net.dll
-+SC-M: System.Void System.Net.Sockets.Socket::set_Blocking(System.Boolean)
-+SC-M: System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
-+SC-M: System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
-+SC-M: System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode,System.Int32&)
-+SC-M: System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
-+SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
-+SC-M: System.Void System.Net.Sockets.Socket::Select(System.Collections.IList,System.Collections.IList,System.Collections.IList,System.Int32)
-+SC-M: System.Int32 System.Net.Sockets.Socket::get_Available()
-+SC-M: System.Net.EndPoint System.Net.Sockets.Socket::get_LocalEndPoint()
-+SC-M: System.Net.Sockets.Socket System.Net.Sockets.Socket::Accept()
-+SC-M: System.Void System.Net.Sockets.Socket::Accept(System.Net.Sockets.Socket)
-+SC-M: System.IAsyncResult System.Net.Sockets.Socket::BeginConnect(System.Net.EndPoint,System.AsyncCallback,System.Object)
-+SC-M: System.IAsyncResult System.Net.Sockets.Socket::BeginSendFile(System.String,System.AsyncCallback,System.Object)
-+SC-M: System.IAsyncResult System.Net.Sockets.Socket::BeginSendFile(System.String,System.Byte[],System.Byte[],System.Net.Sockets.TransmitFileOptions,System.AsyncCallback,System.Object)
-+SC-M: System.Void System.Net.Sockets.Socket::Bind(System.Net.EndPoint)
-+SC-M: System.Void System.Net.Sockets.Socket::Connect(System.Net.IPAddress[],System.Int32)
-+SC-M: System.Void System.Net.Sockets.Socket::Disconnect(System.Boolean)
-+SC-M: System.Void System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Byte[])
-+SC-M: System.Byte[] System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
-+SC-M: System.Int32 System.Net.Sockets.Socket::IOControl(System.Int32,System.Byte[],System.Byte[])
-+SC-M: System.Void System.Net.Sockets.Socket::Listen(System.Int32)
-+SC-M: System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode)
-+SC-M: System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
-+SC-M: System.Int32 System.Net.Sockets.Socket::ReceiveFrom_nochecks_exc(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.EndPoint&,System.Boolean,System.Int32&)
-+SC-M: System.Int32 System.Net.Sockets.Socket::Send(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
-+SC-M: System.Void System.Net.Sockets.Socket::SendFile(System.String,System.Byte[],System.Byte[],System.Net.Sockets.TransmitFileOptions)
-+SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Byte[])
-+SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Object)
-+SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Boolean)
-+SC-M: System.Void System.Net.Sockets.Socket/Worker::Connect()
 

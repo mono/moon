@@ -1,1 +1,7 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
+
+# we now have two different copies (type name clash) in System.dll and System.Net.dll
++SC-T: System.Net.Dns
++SC-T: System.Net.Sockets.Socket
++SC-T: System.Net.Sockets.SocketAsyncEventArgs
+

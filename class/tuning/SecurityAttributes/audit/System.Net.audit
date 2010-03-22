@@ -18,10 +18,6 @@ System.Int32 System.Net.Sockets.Socket::get_SendBufferSize()
 System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
 	r142142		spouliot - calls into RemoteEndPoint_internal (icall) to retrieve a SocketAddress
 
-!SSC-18AC3D5EB307A10367424DDDDB15065D
-System.Net.IPAddress[] System.Net.Dns::GetHostAddresses(System.String)
-	r142747		spouliot - calls GetHostByName_internal (icall)
-
 !SSC-75C18304686DA1A80EFF9AEB47EBBFD9
 System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
 	r153396		spouliot - call AppDomain.GetData [SecurityCritical] to retrive the XAP URI
@@ -43,10 +39,6 @@ System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
 System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
 	r142142		spouliot - calls into Close_internal (icall) and calls Thread.Abort on the socket blocking_thread
 
-!SSC-EB8AF66C72B9DE99E8EDBD25FD5DD963
-System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
-	r142796		spouliot - calls into Shutdown_internal (icall) and potentially Poll_internal and SetSocketOption_internal (icalls)
-
 !SSC-4B48CEBEF3A019F32D3646A33C4B84C6
 System.Void System.Net.Sockets.Socket::set_NoDelay(System.Boolean)
 	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
@@ -66,6 +58,10 @@ System.Void System.Net.Sockets.Socket::set_Ttl(System.Int16)
 !SSC-2772F7FCB2A2E3FCDA3561F9689BFED2
 System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
 	r142142		spouliot - calls Shutdown_internal (icall)
+
+!SSC-A9CEA642527079CCDD65021191A9F2E9
+System.Void System.Net.Sockets.SocketAsyncEventArgs::ConnectCallback()
+	r153971		spouliot - call Dns [SecurityCritical] GetHostAddresses to get a list of address on the DnsEndPoint's Host
 
 !SSC-EE0014F1EEE4C026729F68C8889178E8
 System.Void System.Net.Sockets.SocketAsyncEventArgs::ReceiveCallback()
