@@ -45,11 +45,12 @@ class CurlDownloaderRequest : public DownloaderRequest {
 	State state;
 
  public:
+	bool aborting;
 
 	CurlDownloaderRequest (CurlBrowserBridge *bridge, const char *method, const char *uri, bool disable_cache);
 	~CurlDownloaderRequest ();
 	void Abort ();
-	const bool IsAborted () { return state = (bridge->shutting_down ? (state != CLOSED ? ABORTED : state) : state); }
+	const bool IsAborted () { return (state = (bridge->shutting_down ? (state != CLOSED ? ABORTED : state) : state)); }
 	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (void *ptr, int size);
@@ -73,9 +74,11 @@ class CurlDownloaderResponse : public DownloaderResponse {
 
 	enum State {
 		STOPPED = 0,
-		HEADER = 1,
-		DATA = 2,
-		DONE = 3,
+		STARTED = 1,
+		FINISHED = 2,
+		HEADER = 3,
+		DATA = 4,
+		DONE = 5,
 	};
 	State state;
 

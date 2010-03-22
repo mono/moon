@@ -321,6 +321,13 @@ CurlBrowserBridge::AddCallback (CallHandler func, DownloaderResponse *res, char 
 	calls = g_list_append (calls, data);
 }
 
+
+bool
+CurlBrowserBridge::IsDataThread ()
+{
+	return pthread_equal (pthread_self (), worker_thread);
+}
+
 static gboolean
 Emit (void* data)
 {

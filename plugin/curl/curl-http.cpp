@@ -33,7 +33,8 @@ class CurlDownloaderResponse;
 
 static size_t header_received (void *ptr, size_t size, size_t nmemb, void *data);
 static size_t data_received (void *ptr, size_t size, size_t nmemb, void *data);
-static void open_callback (EventObject *sender);
+static void _open (EventObject *sender);
+static gboolean _abort (void *sender);
 
 // These 4 methods are for asynchronous operation
 static void _started (CallData *sender);
@@ -163,9 +164,16 @@ data_received (void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 static void
-open_callback (EventObject *sender)
+_open (EventObject *sender)
 {
 	((ResponseClosure*)sender)->res->Open ();
+}
+
+static gboolean
+_abort (void *req)
+{
+	((CurlDownloaderRequest*)req)->Abort ();
+	return FALSE;
 }
 
 // These 4 methods are for asynchronous operation
@@ -202,7 +210,7 @@ _finished (CallData *sender)
 
 CurlDownloaderRequest::CurlDownloaderRequest (CurlBrowserBridge *bridge, const char *method, const char *uri, bool disable_cache)
 	: DownloaderRequest (method, uri), headers(NULL), response(NULL),
-	  bridge(bridge), post(NULL), postlast(NULL), body(NULL), state(NONE)
+	  bridge(bridge), post(NULL), postlast(NULL), body(NULL), state(NONE), aborting(FALSE)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p %s\n", this, uri));
 
@@ -306,7 +314,7 @@ CurlDownloaderResponse::Open ()
 
 	if (delay) {
 		delay--;
-		bridge->plugin->GetSurface()->GetTimeManager()->AddDispatcherCall (open_callback, closure);
+		bridge->plugin->GetSurface()->GetTimeManager()->AddDispatcherCall (_open, closure);
 		return;
 	}
 	bridge->OpenHandle (request, request->GetHandle ());
@@ -316,13 +324,16 @@ void
 CurlDownloaderRequest::Abort () {
 	d(printf ("BRIDGE CurlDownloaderRequest::Abort request:%p response:%p\n", this, response));
 
-	VERIFY_MAIN_THREAD
+	if (bridge->IsDataThread ()) {
+		aborting = TRUE;
+		g_idle_add (_abort, this);
+	} else {
+		if (state != OPENED)
+			return;
 
-	if (state != OPENED)
-		return;
-
-	state = ABORTED;
-	Close ();
+		state = ABORTED;
+		Close ();
+	}
 }
 
 void
@@ -386,7 +397,7 @@ CurlDownloaderResponse::Close ()
 	bridge->CloseHandle (request, request->GetHandle ());
 
 	if (closure) {
-		bridge->plugin->GetSurface()->GetTimeManager()->RemoveTickCall (open_callback, closure);
+		bridge->plugin->GetSurface()->GetTimeManager()->RemoveTickCall (_open, closure);
 		closure = NULL;
 	}
 	state = DONE;
@@ -429,22 +440,23 @@ void CurlDownloaderResponse::unref ()
 void
 CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 {
-	if (IsAborted ())
+	d(printf ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n", this));
+	d(printf ("%s", ptr));
+
+	if (IsAborted () || request->aborting)
 		return;
 
 	if (!ptr || size <= 2)
 		return;
 
-	d(printf ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n", this));
-	d(printf ("%s", ptr));
 	if (state == STOPPED) {
 		curl_easy_getinfo (request->GetHandle (), CURLINFO_RESPONSE_CODE, &status);
 		statusText = g_strndup ((char*)ptr, size-2);
 		if (status == 200) {
-			state = HEADER;
+			state = STARTED;
 			bridge->AddCallback (_started, this, NULL, NULL, NULL, NULL);
 		} else if (status > 302) {
-			request->Close ();
+			request->Abort ();
 		}
 		return;
 	}
@@ -470,6 +482,9 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::DataReceived %p\n", this));
 
+	if (request->aborting)
+		return -1;
+
 	if (state == STOPPED || state == DONE)
 		return size;
 	state = DATA;
@@ -488,8 +503,13 @@ void
 CurlDownloaderResponse::Started ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Started %p\n", this));
-	if (started)
+
+	if (started) {
+		state = HEADER;
 		started (this, context);
+	}
+	if (state == FINISHED)
+		Finished ();
 }
 
 void
@@ -512,7 +532,11 @@ void
 CurlDownloaderResponse::Finished ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Finished %p\n", this));
-	if (finished)
+
+	if (state == STARTED) {
+		state = FINISHED;
+		return;
+	}
+	if (finished && (int)state > FINISHED)
 		finished (this, context, true, NULL, NULL);
 }
-

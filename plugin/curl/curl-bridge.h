@@ -69,6 +69,7 @@ class CurlBrowserBridge : public BrowserBridge {
 
 	void GetData ();
 	void AddCallback (CallHandler func, DownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val);
+	bool IsDataThread ();
 };
 
 
