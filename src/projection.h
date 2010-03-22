@@ -155,6 +155,7 @@ public:
 	virtual void SetObjectSize (double width, double height) {}
 	void GetTransform (double *value);
 	Rect ProjectBounds (Rect bounds);
+	virtual double DistanceFromXYPlane () { return 0.0; }
 
 protected:
 	virtual ~Projection () {}
@@ -247,6 +248,7 @@ public:
 	void SetProjectionMatrix (Matrix3D* value);
 
 	void SetObjectSize (double width, double height);
+	double DistanceFromXYPlane ();
 
 protected:
 	virtual ~PlaneProjection () {}

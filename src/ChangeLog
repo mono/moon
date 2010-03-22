@@ -1,5 +1,10 @@
 2010-03-22  David Reveman  <davidr@novell.com>
 
+	* projection.h:
+	* projection.cpp: Add DistanceFromXYPlane function to Projection class.
+	Avoid unnecessary property matrix updates and make sure
+	objectWidth/objectHeight are greater than 0.
+
 	* collection.cpp (UIElementZIndexComparer): Use Z property when ZIndex
 	properties are equal.
 

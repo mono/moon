@@ -341,7 +341,8 @@ PlaneProjection::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		return;
 	}
 
-	need_update = true;
+	if (args->GetId () != PlaneProjection::ProjectionMatrixProperty)
+		need_update = true;
 
 	NotifyListenersOfPropertyChange (args, error);
 }
@@ -349,11 +350,29 @@ PlaneProjection::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 void
 PlaneProjection::SetObjectSize (double width, double height)
 {
+	width = MAX (width, 1.0);
+	height = MAX (height, 1.0);
+
 	if (width != objectWidth || height != objectHeight) {
 		objectWidth = width;
 		objectHeight = height;
 		need_update = true;
 	}
+}
+
+double
+PlaneProjection::DistanceFromXYPlane ()
+{
+	double p[4] = { objectWidth / 2.0, objectHeight / 2.0, 0.0, 1.0 };
+	double m[16];
+
+	GetTransform (m);
+	Matrix3D::TransformPoint (p, m, p);
+
+	if (p[3] == 0.0)
+		return 0.0;
+
+	return 1.0 - p[2] / p[3];
 }
 
 void
@@ -414,7 +433,7 @@ PlaneProjection::UpdateProjection ()
 			       objectWidth / objectHeight,
 			       1.0,
 			       1000.0);
-	Matrix3D::Scale (zoom, scale, scale, 0.0);
+	Matrix3D::Scale (zoom, scale, scale, 1.0);
 	Matrix3D::Viewport (viewport, objectWidth, objectHeight);
 
 	Matrix3D::Multiply (m, toCenter, invertY);
