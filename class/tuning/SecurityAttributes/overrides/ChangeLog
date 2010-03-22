@@ -1,3 +1,10 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Add more entries for new API that work only in
+	elevated trust (but should not work before or without that)
+	* System.Net.manual: Add entires for Dns and Sockets (dual use
+	in System.Net.dll and System.dll)
+
 2010-03-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net.manual: Remove entry for reflection usage to set

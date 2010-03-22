@@ -398,4 +398,7 @@
 #
 +SC-M: System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SC-M: System.String System.IO.Directory::ValidateDirectoryListing(System.String,System.String,System.Boolean&)
++SC-M: System.Void System.IO.Directory::ValidatePath(System.String)
++SC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateKind(System.String,System.String,System.IO.SearchOption,System.IO.FileAttributes)
++SC-M: System.Collections.Generic.IEnumerable`1<System.IO.FileSystemInfo> System.IO.DirectoryInfo::EnumerateFileSystemInfos(System.String,System.String,System.IO.SearchOption)
 

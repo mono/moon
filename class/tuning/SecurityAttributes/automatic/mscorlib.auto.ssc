@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 424 methods
+# 434 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -129,8 +129,18 @@
 +SSC-M: System.String System.Globalization.TextInfo::ToUpper(System.String)
 +SSC-M: System.Byte[] System.IO.BinaryReader::ReadBytes(System.Int32)
 +SSC-M: System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String,System.String,System.IO.SearchOption)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String,System.String)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String,System.String,System.IO.SearchOption)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String,System.String)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String,System.String,System.IO.SearchOption)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String,System.String)
++SSC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String)
 +SSC-M: System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator1::MoveNext()
 +SSC-M: System.Void System.IO.Directory/<EnumerateKind>c__Iterator1::Dispose()
++SSC-M: System.Collections.Generic.IEnumerable`1<System.IO.FileSystemInfo> System.IO.DirectoryInfo::EnumerateFileSystemInfos(System.String,System.IO.SearchOption)
 +SSC-M: System.Boolean System.IO.DirectoryInfo/<EnumerateDirectories>c__Iterator2::MoveNext()
 +SSC-M: System.Boolean System.IO.DirectoryInfo/<EnumerateFiles>c__Iterator3::MoveNext()
 +SSC-M: System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator4::MoveNext()
