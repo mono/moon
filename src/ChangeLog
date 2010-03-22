@@ -1,5 +1,7 @@
 2010-03-22  David Reveman  <davidr@novell.com>
 
+	* effect.cpp (Composite): Handle Z coordinates correctly.
+
 	* projection.cpp: Move far clipping plane back to 1000000 and calculate
 	distance from XY-plane correctly.
 

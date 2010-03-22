@@ -4002,22 +4002,19 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	double xscale = (1.0 / surface->width);
 	double yscale = (1.0 / surface->height);
 
-	double p1[4] = { 0.0, 0.0, 1.0, 1.0 };
-	double p2[4] = { texture->width0, 0.0, 1.0, 1.0 };
-	double p3[4] = { texture->width0, texture->height0, 1.0, 1.0 };
-	double p4[4] = { 0.0, texture->height0, 1.0, 1.0 };
+	double p1[4] = { 0.0, 0.0, 0.0, 1.0 };
+	double p2[4] = { texture->width0, 0.0, 0.0, 1.0 };
+	double p3[4] = { texture->width0, texture->height0, 0.0, 1.0 };
+	double p4[4] = { 0.0, texture->height0, 0.0, 1.0 };
 
 	Matrix3D::TransformPoint (p1, m, p1);
 	Matrix3D::TransformPoint (p2, m, p2);
 	Matrix3D::TransformPoint (p3, m, p3);
 	Matrix3D::TransformPoint (p4, m, p4);
 
-	if (p1[3] == 0.0 || p2[3] == 0.0 || p3[3] == 0.0 || p4[3] == 0.0)
-		return 0;
-
 	*verts++ = p1[0] * xscale;
 	*verts++ = p1[1] * yscale;
-	*verts++ = 0.f;
+	*verts++ = p1[2];
 	*verts++ = p1[3];
 
 	*verts++ = s1;
@@ -4027,7 +4024,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	*verts++ = p2[0] * xscale;
 	*verts++ = p2[1] * yscale;
-	*verts++ = 0.f;
+	*verts++ = p2[2];
 	*verts++ = p2[3];
 
 	*verts++ = s2;
@@ -4037,7 +4034,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	*verts++ = p3[0] * xscale;
 	*verts++ = p3[1] * yscale;
-	*verts++ = 0.f;
+	*verts++ = p3[2];
 	*verts++ = p3[3];
 
 	*verts++ = s2;
@@ -4047,7 +4044,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	*verts++ = p4[0] * xscale;
 	*verts++ = p4[1] * yscale;
-	*verts++ = 0.f;
+	*verts++ = p4[2];
 	*verts++ = p4[3];
 
 	*verts++ = s1;
