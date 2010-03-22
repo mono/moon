@@ -17,17 +17,17 @@ Requirements
 	mono-basic modules from trunk at the following revison: 153983
 
 	Do this like this:
-		svn co http://anonsvn.mono-project.com/source/trunk/moon
-		svn co -r 153983 http://anonsvn.mono-project.com/source/trunk/mono
-		svn co -r 153983 http://anonsvn.mono-project.com/source/trunk/mcs
-		svn co -r 153983 http://anonsvn.mono-project.com/source/trunk/mono-basic
+            svn co http://anonsvn.mono-project.com/source/trunk/moon
+            svn co -r 153983 http://anonsvn.mono-project.com/source/trunk/mono
+            svn co -r 153983 http://anonsvn.mono-project.com/source/trunk/mcs
+            svn co -r 153983 http://anonsvn.mono-project.com/source/trunk/mono-basic
 
 	You don't have to build mono before building moon, so to build
 	moonlight just do:
 
-		cd moon
-		./autogen.sh
-		make && make install
+                cd moon
+                ./autogen.sh
+                make && make install
 
 	To build Moonlight with pixel shader support, you need to get the mesa
 	module from freedesktop.org. Last known revision to work is
@@ -35,10 +35,10 @@ Requirements
 
 	Do this like this:
 
-		git clone git://anongit.freedesktop.org/mesa/mesa
-		cd mesa
-		git checkout 59e743b8d393f2bdf023e3a5ad8fe848a7459ec9 -b moonlight
-		 ./autogen.sh --with-driver=xlib && cd src/gallium && make
+                git clone git://anongit.freedesktop.org/mesa/mesa
+                cd mesa
+                git checkout 59e743b8d393f2bdf023e3a5ad8fe848a7459ec9 -b moonlight
+                ./autogen.sh --with-driver=xlib && cd src/gallium && make
 
 	There is no need to do a make install this.
 
