@@ -1,0 +1,101 @@
+DUAL (BROWSER / CLIENT) HTTP[S] STACK
+
+A quick intro on who's doing what.
+
+
+* Introduction
+
+What looks like a simple web request is in fact a bit more involving.
+
+Foremost we must deal with cross-domain policies (done in 
+PolicyBasedWebRequest). The policy is always downloaded using the browser
+stack (BrowserHttpWebRequestInternal). This indirectly means that the 
+browser trusted roots will be applied when using SSL/TLS with the client
+stack. If the policy allows web access to cross-domain then either a 
+browser (default) or client (opt-in) request will be sent.
+
+Next we need to handle redirection (the browser would not) and this can't
+be mixed with policy.
+
+So what looks like a simple GET request might end up doing several 
+requests using different HTTP stack. E.g. using the client stack to access
+an external, secure web site would:
+
+a) create a request using BrowserHttpWebRequestInternal to download the
+policy. This would fail if no policy is found (or a policy that disallow
+its use) or if the SSL/TLS connection fails (e.g. non-trusted certificate)
+
+b) create the actual "user" request using ClientHttpWebRequestInternal.
+If this implies redirection then more ClientHttpWebRequestInternal would be
+created until we reach the final resource.
+
+
+
+* Class Hierarchy
+
+WebRequest							public, System.Net.dll
+	HttpWebRequest						public, System.Net.dll
+		PolicyBasedWebRequest				internal, System.Windows.dll
+			BrowserHttpWebRequest			internal, System.Windows.dll
+			ClientHttpWebRequest			internal, System.Windows.dll
+		HttpWebRequestCore				internal, System.Windows.dll
+			BrowserHttpWebRequestInternal		internal, System.Windows.dll
+			ClientHttpWebRequestInternal		internal, System.Windows.dll
+
+WebResponse							public, System.Net.dll
+	HttpWebResponse						public, System.Net.dll
+		HttpWebResponseCore				internal, System.Windows.dll
+			BrowserHttpWebResponse			internal, System.Windows.dll
+			ClientHttpWebResponse			internal, System.Windows.dll
+
+
+* PolicyBasedWebRequest
+
+	Internal base class for both the browser and client http stacks. 
+	This class job is to handle the downloading, caching and applying
+	of the cross-domain policies when a request is made.
+
+* BrowserHttpWebRequest
+
+	Internal class to defer the http requests to the web browser 
+	(e.g. Firefox).
+
+	The browser stack has many restrictions. E.g. only GET and POST
+	are possible. Cookies are not enabled. Credentials are limited
+	to the default (browser) and cannot be disable or controlled.
+
+* ClientHttpWebRequest
+
+	It offers many more features (e.g. almost any verb for methods, 
+	cookies, custom credentials, precise status code).
+
+
+* HttpWebRequestCore
+
+	Common base class for both browser and client requests to avoid 
+	code duplication.
+
+* BrowserHttpWebRequestInternal
+
+	Browser-stack specific request. It p/invoke into libmoon.
+
+* ClientHttpWebRequestInternal
+
+	Client-stack specific request. Mostly a reflection-based wrapper
+	on (internal) System.dll HttpWebRequest.
+
+
+* HttpWebResponseCore
+
+	Common base class for both browser and client responses to avoid 
+	code duplication.
+
+* BrowserHttpWebResponse
+
+	Browser-stack specific response. It p/invoke into libmoon.
+
+* ClientHttpWebResponse
+
+	Client-stack specific response. Mostly a reflection-based wrapper
+	on (internal) System.dll HttpWebResponse.
+

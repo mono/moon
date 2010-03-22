@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 522 methods
+# 524 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -16,7 +16,7 @@
 +SSC-M: System.Void Mono.Surface::set_Native(System.IntPtr)
 +SSC-M: System.Void Mono.Surface::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
-+SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::.ctor(System.Uri)
++SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::.ctor(System.Net.Browser.BrowserHttpWebRequest,System.Uri)
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::Finalize()
 +SSC-M: System.Net.Browser.BrowserHttpWebRequestInternal System.Net.Browser.BrowserHttpWebRequestInternal::BrowserFromHandle(System.IntPtr)
 +SSC-M: System.Net.WebResponse System.Net.Browser.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)
@@ -25,6 +25,8 @@
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebResponse::Dispose()
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebResponse::Write(System.IntPtr,System.Int32)
++SSC-M: System.IAsyncResult System.Net.Browser.ClientHttpWebRequestInternal::BeginGetResponse(System.AsyncCallback,System.Object)
++SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Object)
 +SSC-M: System.Void System.Windows.Application::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.Application::.ctor()
 +SSC-M: System.Void System.Windows.Application::Free()

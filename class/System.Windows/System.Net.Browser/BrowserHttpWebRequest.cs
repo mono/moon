@@ -30,49 +30,22 @@
 
 using System.IO;
 using System.Net.Policy;
-using System.Security;
 
 namespace System.Net.Browser {
 
-	// This class maps with Silverlight exposed behavior.
+	// This class maps with Silverlight exposed behavior for the browser http stack.
 	// One request can represent multiple connections with a server.
 	// e.g. requesting a policy for cross-domain requests
 	// e.g. http redirection
 
-	sealed class BrowserHttpWebRequest : HttpWebRequest {
-		Uri uri;
-		bool aborted;
-		bool allow_read_buffering;
-		bool allow_write_buffering;
-		string method = "GET";
-
-		ICrossDomainPolicy policy;
+	sealed class BrowserHttpWebRequest : PolicyBasedWebRequest {
 
 		internal InternalWebRequestStreamWrapper request;
-		BrowserHttpWebResponse response;
-		BrowserHttpWebAsyncResult async_result;
 
  		
  		public BrowserHttpWebRequest (Uri uri)
+			: base (uri)
  		{
- 			this.uri = uri;
-			aborted = false;
-			allow_read_buffering = true;
-			allow_write_buffering = true;
-		}
-
-		~BrowserHttpWebRequest () /* thread-safe: no p/invokes */
-		{
-			Abort ();
-
-			if (async_result != null)
-				async_result.Dispose ();
-		}
-
-		// FIXME: to be moved to client stack only - but needed for SL3 as long as we share a single stack
-		public override CookieContainer CookieContainer {
-			get;
-			set;
 		}
 
 		public override IWebRequestCreate CreatorInstance { 
@@ -81,145 +54,18 @@ namespace System.Net.Browser {
 
 		public override void Abort ()
 		{
-			if (response != null)
-				response.InternalAbort ();
+			BrowserHttpWebResponse wresp = (response as BrowserHttpWebResponse);
+			if (wresp != null)
+				wresp.Abort ();
 
-			InternalAbort ();
-		}
-
-		internal void InternalAbort ()
-		{
-			aborted = true;
+			base.Abort ();
 		}
 
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
 		{
-			BrowserHttpWebAsyncResult result = new BrowserHttpWebAsyncResult (callback, state);
+			HttpWebAsyncResult result = new HttpWebAsyncResult (callback, state);
 			result.SetComplete ();
 			return result;
-		}
-
-		// NOTE: the supplied callback must be called only once the request is complete
-		//	 i.e. it's not called after the policy is downloaded
-		//	 i.e. it's not called after each redirection we need to follow
-		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
-		{
-			// we're not allowed to reuse an aborted request
-			if (aborted)
-				throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
-
-			// under SL the callback MUST call the EndGetResponse, so having no callback is BAD
-			// this also means that faking a synch op using EndGetReponse(BeginGetReponse(null,null)) does NOT work
-			if (callback == null)
-				throw new NotSupportedException ();
-
-			// we cannot issue 2 requests from the same instance
-			if (async_result != null)
-				throw new InvalidOperationException ();
-
-			// this is the "global/total" IAsyncResult, it's also the public one
-			async_result = new BrowserHttpWebAsyncResult (callback, state);
-
-			GetResponse (this.Method, uri);
-			return async_result;
-		}
-
-		private IAsyncResult GetResponse (string method, Uri uri)
-		{
-			if ((uri.Scheme != "http") && (uri.Scheme != "https")) {
-				async_result.Exception = new SecurityException ("Bad scheme");
-				async_result.SetComplete ();
-				return async_result;
-			}
-
-			// this is a same site (site of origin, SOO) request; or
-			// we either already know the policy (previously downloaded); or
-			// we try to download the policy
-			if (!IsDownloadingPolicy ()) {
-				policy = CrossDomainPolicyManager.GetCachedWebPolicy (uri);
-				if (policy == null) {
-					// we'll download the policy *then* proceed to the requested URI
-					policy = CrossDomainPolicyManager.PolicyDownloadPolicy;
-
-					Uri silverlight_policy_uri = CrossDomainPolicyManager.GetSilverlightPolicyUri (uri);
-					BrowserHttpWebRequestInternal preq = new BrowserHttpWebRequestInternal (silverlight_policy_uri);
-					return preq.BeginGetResponse (new AsyncCallback (SilverlightPolicyCallback), preq);
-				}
-			}
-
-			// Console.WriteLine ("{0} '{1}' using policy: {2}", method, uri, policy);
-			BrowserHttpWebRequestInternal wreq = new BrowserHttpWebRequestInternal (this, uri);
-			wreq.Method = method;
-			// store SecurityException, to throw later, if we have no policy or are not allowed by the policy
-			if ((policy == null) || !policy.IsAllowed (wreq)) {
-				async_result.Exception = new SecurityException ();
-				async_result.SetComplete ();
-				return async_result;
-			}
-
-			wreq.progress = progress;
-
-			return wreq.BeginGetResponse (new AsyncCallback (EndCallback), wreq);
-		}
-
-		private void SilverlightPolicyCallback (IAsyncResult result)
-		{
-			WebRequest wreq = (result.AsyncState as WebRequest);
-			BrowserHttpWebResponse wres = (BrowserHttpWebResponse) wreq.EndGetResponse (result);
-
-			policy = CrossDomainPolicyManager.BuildSilverlightPolicy (wres);
-			if (policy != null) {
-				// we got our policy so we can proceed with the main request
-				GetResponse (this.Method, uri);
-			} else {
-				// no policy but we get a second chance to try a Flash policy
-				Uri flash_policy_uri = CrossDomainPolicyManager.GetFlashPolicyUri (wres.ResponseUri);
-				BrowserHttpWebRequestInternal preq = new BrowserHttpWebRequestInternal (flash_policy_uri);
-				preq.BeginGetResponse (new AsyncCallback (FlashPolicyCallback), preq);
-			}
-		}
-
-		private void FlashPolicyCallback (IAsyncResult result)
-		{
-			WebRequest wreq = (result.AsyncState as WebRequest);
-			BrowserHttpWebResponse wres = (BrowserHttpWebResponse) wreq.EndGetResponse (result);
-
-			// we either got a Flash policy or (if none/bad) a NoAccessPolicy, either way we continue...
-			policy = CrossDomainPolicyManager.BuildFlashPolicy (wres);
-			GetResponse (this.Method, uri);
-		}
-
-		private void EndCallback (IAsyncResult result)
-		{
-			WebRequest wreq = (result.AsyncState as WebRequest);
-			BrowserHttpWebResponse wres = (BrowserHttpWebResponse) wreq.EndGetResponse (result);
-
-			//			Redirection	Error
-			// Normal Request	allowed		throw
-			// Policy Request	throw		ignore (no policy)
-			if (IsRedirection (wres)) {
-				if (IsDownloadingPolicy ()) {
-					// redirection is NOT allowed for policy files
-					async_result.Exception = new SecurityException ("Cannot redirect policy files");
-					async_result.SetComplete ();
-				} else {
-					string location = wres.Headers ["Location"];
-					GetResponse (method, new Uri (location));
-				}
-			} else if (wres.StatusCode != HttpStatusCode.OK) {
-				// policy file could be missing, but then it means no policy
-				if (!IsDownloadingPolicy ()) {
-					async_result.Response = wres;
-					async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.Success, wres);
-					async_result.SetComplete ();
-				} else {
-					async_result.SetComplete ();
-				}
-			} else {
-				wres.method = method;
-				async_result.Response = wres;
-				async_result.SetComplete ();
-			}
 		}
 
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
@@ -230,110 +76,12 @@ namespace System.Net.Browser {
 			return request;
 		}
 
-		public override WebResponse EndGetResponse (IAsyncResult asyncResult)
-		{
-			try {
-				CheckProtocolViolation ();
-
-				if (async_result != asyncResult)
-					throw new ArgumentException ("asyncResult");
-
-				if (aborted) {
-					throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
-				}
-
-				// we could already have an exception waiting for us
-				if (async_result.HasException)
-					throw async_result.Exception;
-
-				if (!async_result.IsCompleted)
-					async_result.AsyncWaitHandle.WaitOne ();
-
-				// (again) exception could occur during the wait
-				if (async_result.HasException)
-					throw async_result.Exception;
-
-				response = async_result.Response;
-			}
-			finally {
-				async_result.Dispose ();
-			}
-
-			return response;
-		}
-
-		bool IsRedirection (BrowserHttpWebResponse response)
-		{
-			// FIXME - there's likely a maximum number of redirection allowed because throwing an exception
-			switch (response.RealStatusCode) {
-			case 301:	// Moved Permanently, RFC2616 10.3.2
-					// Silverlight always redirect (i.e. not just POST requests)
-			case 302:	// Found, RFC2616 10.3.3
-					// main one used by ASP/ASPX Redirect
-			case 303:	// See Other, RFC2616 10.3.4
-			case 304:	// Not Modified, RFC2616 10.3.5
-			case 305:	// Use Proxy, RFC2616 10.3.7
-			case 307:	// Temporaray Redirect, RFC2616 10.3.8
-					// see DRT 867
-				return true;
-			default:
-				return false;
-			}
-		}
-
-		bool IsDownloadingPolicy ()
-		{
-			return (policy == CrossDomainPolicyManager.PolicyDownloadPolicy);
-		}
-
-		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
-		public override bool AllowReadStreamBuffering {
-			get { return allow_read_buffering; }
-			set { allow_read_buffering = value; }
-		}
-
-		// new in SL4 RC
-		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
-		public override bool AllowWriteStreamBuffering {
-			get { return allow_write_buffering; }
-			set { allow_write_buffering = value; }
-		}
-
 		public override bool HaveResponse {
 			get {
 				if (response != null)
 					return true;
-				if (async_result != null && async_result.Response != null)
-					return true;
-				return false;
+				return ((async_result != null && async_result.Response != null));
 			}
-		}
-
-		public override string Method {
-			get { return method; }
-			set {
-				if (String.IsNullOrEmpty (value))
-					throw new NotSupportedException ("Method");
-
-				switch (value.ToUpperInvariant ()) {
-				case "GET":
-				case "POST":
-				case "HEAD":
-					method = value;
-					break;
-				default:
-					throw new NotSupportedException ("Method " + value);
-				}
-			}
-		}
-
-		public override Uri RequestUri {
-			get { return uri; }
-		}
-
-		// FIXME - temporary until new client stack is committed (otherwise base implementation, returning false is ok)
-		public override bool SupportsCookieContainer {
-			get { return true; }
 		}
 
 		public override bool UseDefaultCredentials {
@@ -345,11 +93,30 @@ namespace System.Net.Browser {
 			}
 		}
 
+		protected override HttpWebRequest GetHttpWebRequest (Uri uri)
+		{
+			return new BrowserHttpWebRequestInternal (this, uri);
+		}
+
+		protected override void CheckMethod (string method)
+		{
+			if (method == null)
+				throw new NotSupportedException ("method");
+
+			switch (method.ToLowerInvariant ()) {
+			case "get":
+			case "post":
+				break;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
 		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires", "Content-Type" };
 
-		void CheckProtocolViolation ()
+		protected override void CheckProtocolViolation ()
 		{
-			if (String.Compare (method, "GET", StringComparison.OrdinalIgnoreCase) != 0)
+			if (String.Compare (Method, "GET", StringComparison.OrdinalIgnoreCase) != 0)
 				return;
 
 			if (Headers.headers.ContainsKey ("Cache-Control"))

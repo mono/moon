@@ -1,5 +1,5 @@
 //
-// System.Windows.Browser.Net.BrowserHttpWebRequest class
+// System.Windows.Browser.Net.BrowserHttpWebRequestInternal class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -40,44 +40,33 @@ namespace System.Net.Browser {
 	// This class maps with the browser. 
 	// One request is one exchange with the server.
 
-	sealed class BrowserHttpWebRequestInternal : HttpWebRequest {
+	sealed class BrowserHttpWebRequestInternal : HttpWebRequestCore {
 		IntPtr native;
 		GCHandle managed;
 		IntPtr downloader;
-		Uri uri;
 		long bytes_read;
 		bool aborted;
-		bool allow_read_buffering;
-		string method = "GET";
 
 		InternalWebRequestStreamWrapper request;
 		BrowserHttpWebResponse response;
-		BrowserHttpWebAsyncResult async_result;
+		HttpWebAsyncResult async_result;
 		
 		DownloaderResponseStartedDelegate started;
 		DownloaderResponseAvailableDelegate available;
 		DownloaderResponseFinishedDelegate finished;
 
-		WebHeaderCollection headers;
- 		
- 		public BrowserHttpWebRequestInternal (Uri uri)
-		{
+ 		public BrowserHttpWebRequestInternal (BrowserHttpWebRequest wreq, Uri uri)
+			: base (wreq, uri)
+ 		{
 			started = new DownloaderResponseStartedDelegate (OnAsyncResponseStartedSafe);
 			available = new DownloaderResponseAvailableDelegate (OnAsyncDataAvailableSafe);
 			finished = new DownloaderResponseFinishedDelegate (OnAsyncResponseFinishedSafe);
- 			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
-		}
-
- 		public BrowserHttpWebRequestInternal (BrowserHttpWebRequest wreq, Uri uri)
-			: this (uri)
- 		{
-			allow_read_buffering = wreq.AllowReadStreamBuffering;
-			method = wreq.Method;
-			request = wreq.request;
-			Headers = wreq.Headers;
-			CookieContainer = wreq.CookieContainer; // FIXME
+			if (wreq != null) {
+				request = wreq.request;
+				Headers = wreq.Headers;
+			}
 		}
 
 		~BrowserHttpWebRequestInternal () /* thread-safe: all p/invokes are thread-safe */
@@ -94,44 +83,15 @@ namespace System.Net.Browser {
 				NativeMethods.event_object_unref (downloader); /* thread-safe */
 		}
 
-		// FIXME: to be moved to client stack only - but needed for SL3 as long as we share a single stack
-		public override CookieContainer CookieContainer {
-			get;
-			set;
-		}
-
-		public override WebHeaderCollection Headers {
-			get {
-				if (headers == null)
-					headers = new WebHeaderCollection ();
-				return headers;
-			}
-			set { headers = value; }
-		}
-
 		public override void Abort ()
 		{
 			if (native == IntPtr.Zero)
 				return;
 			
 			if (response != null)
-				response.InternalAbort ();
+				response.Abort ();
 
-			InternalAbort ();
-		}
-
-		internal void InternalAbort ()
-		{
 			aborted = true;
-		}
-
-		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
-		{
-			Console.WriteLine ("BrowserHttpWebRequest.BeginGetRequestStream: Should be async, doing it sync for now.");
-
-			BrowserHttpWebAsyncResult result = new BrowserHttpWebAsyncResult (callback, state);
-			result.SetComplete ();
-			return result;
 		}
 
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
@@ -140,7 +100,7 @@ namespace System.Net.Browser {
 			if (aborted)
 				throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
 
-			async_result = new BrowserHttpWebAsyncResult (callback, state);
+			async_result = new HttpWebAsyncResult (callback, state);
 
 			new Dispatcher ().BeginInvoke (new Action (InitializeNativeRequestSafe), null);
 
@@ -195,10 +155,10 @@ namespace System.Net.Browser {
 		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
 			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
-			BrowserHttpWebAsyncResult async_result = obj.async_result;
+			HttpWebAsyncResult async_result = obj.async_result;
 			try {
 				if (obj.progress != null) {
-					BrowserHttpWebResponse response = async_result.Response;
+					BrowserHttpWebResponse response = async_result.Response as BrowserHttpWebResponse;
 					// report the 100% progress on compressed (or without Content-Length)
 					if (response.IsCompressed) {
 						long length = response.ContentLength;
@@ -228,8 +188,8 @@ namespace System.Net.Browser {
 		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
 			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
-			BrowserHttpWebAsyncResult async_result = obj.async_result;
-			BrowserHttpWebResponse response = async_result.Response;
+			HttpWebAsyncResult async_result = obj.async_result;
+			BrowserHttpWebResponse response = async_result.Response as BrowserHttpWebResponse;
 			try {
 				obj.bytes_read += length;
 				if (obj.progress != null) {
@@ -252,15 +212,6 @@ namespace System.Net.Browser {
 			return 0;
 		}
 
-		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
-		{
-			if (request == null) {
-				request = new InternalWebRequestStreamWrapper (new MemoryStream ());
-				request.WriteByte ((byte) '\n');
-			}
-			return request;
-		}
-
 		public override WebResponse EndGetResponse (IAsyncResult asyncResult)
 		{
 			try {
@@ -279,7 +230,7 @@ namespace System.Net.Browser {
 					throw async_result.Exception;
 				}
 
-				response = async_result.Response;
+				response = async_result.Response as BrowserHttpWebResponse;
 			}
 			finally {
 				async_result.Dispose ();
@@ -307,7 +258,7 @@ namespace System.Net.Browser {
 			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
 			if (downloader == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged downloader");
-			native = NativeMethods.downloader_create_web_request (downloader, method, uri.AbsoluteUri);
+			native = NativeMethods.downloader_create_web_request (downloader, Method, RequestUri.AbsoluteUri);
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
@@ -324,14 +275,6 @@ namespace System.Net.Browser {
 				Headers.SetHeader ("content-length", request_length.ToString ());
 			}
 
-// FIXME: remove this - cookie support is limited to client stack (not the browser stack)
-			if (CookieContainer != null && CookieContainer.Count > 0) {
-				string cookieHeader = CookieContainer.GetCookieHeader (uri);
-				if (cookieHeader != "")
-					Headers ["Cookie"] = cookieHeader;
-			}
-// FIXME
-
 			foreach (string header in Headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 
@@ -340,25 +283,6 @@ namespace System.Net.Browser {
 			}
 			
 			NativeMethods.downloader_request_get_response (native, started, available, finished, GCHandle.ToIntPtr (managed));
-		}
-
-		public override bool HaveResponse {
-			get {
-				if (response != null)
-					return true;
-				if (async_result != null && async_result.Response != null)
-					return true;
-				return false;
-			}
-		}
-
-		public override string Method {
-			get { return method; }
-			set { method = value; }
-		}
-
-		public override Uri RequestUri {
-			get { return uri; }
 		}
 	}
 }

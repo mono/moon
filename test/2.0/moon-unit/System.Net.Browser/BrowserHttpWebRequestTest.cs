@@ -45,7 +45,6 @@ namespace MoonTest.System.Net.Browser {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CookieContainer ()
 		{
 			HttpWebRequest wr = (HttpWebRequest) GetWebRequest (new Uri ("http://localhost"));
@@ -69,7 +68,6 @@ namespace MoonTest.System.Net.Browser {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Methods_Extended ()
 		{
 			WebRequest wr = GetWebRequest (new Uri ("http://localhost"));

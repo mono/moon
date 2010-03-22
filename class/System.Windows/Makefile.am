@@ -107,12 +107,19 @@ system_windows_sources =							\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
-	$(srcdir)/System.Net.Browser/BrowserHttpWebAsyncResult.cs		\
 	$(srcdir)/System.Net.Browser/BrowserHttpWebRequest.cs			\
 	$(srcdir)/System.Net.Browser/BrowserHttpWebRequestInternal.cs		\
 	$(srcdir)/System.Net.Browser/BrowserHttpWebResponse.cs			\
 	$(srcdir)/System.Net.Browser/BrowserWebRequestCreate.cs			\
+	$(srcdir)/System.Net.Browser/ClientHttpWebRequest.cs			\
+	$(srcdir)/System.Net.Browser/ClientHttpWebRequestInternal.cs		\
+	$(srcdir)/System.Net.Browser/ClientHttpWebResponse.cs			\
+	$(srcdir)/System.Net.Browser/ClientReflectionHelper.cs			\
 	$(srcdir)/System.Net.Browser/ClientWebRequestCreate.cs			\
+	$(srcdir)/System.Net.Browser/HttpWebAsyncResult.cs			\
+	$(srcdir)/System.Net.Browser/HttpWebRequestCore.cs			\
+	$(srcdir)/System.Net.Browser/HttpWebResponseCore.cs			\
+	$(srcdir)/System.Net.Browser/PolicyBasedHttpWebRequest.cs			\
 	$(srcdir)/System.Net.Browser/WebRequestCreator.cs			\
 	$(srcdir)/System.Windows.Automation/AutomationElementIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperties.cs		\

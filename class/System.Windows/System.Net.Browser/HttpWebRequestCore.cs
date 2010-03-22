@@ -1,10 +1,10 @@
 //
-// System.Net.Browser.ClientHttpWebRequestCreator
+// System.Windows.Browser.Net.HttpWebRequestCore class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009-2010 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,13 +28,48 @@
 
 #if NET_2_1
 
+using System.IO;
+
 namespace System.Net.Browser {
 
-	internal class ClientHttpWebRequestCreator : IWebRequestCreate {
+	// This class implement the base core of both the actual request for the browser and client http stacks. 
+	class HttpWebRequestCore : HttpWebRequest {
 
-		public WebRequest Create (Uri uri)
+		private Uri uri;
+		private string method;
+		private WebHeaderCollection headers;
+
+		public HttpWebRequestCore (HttpWebRequest parent, Uri uri)
 		{
-			return new ClientHttpWebRequest (uri);
+			if (uri == null)
+				throw new ArgumentNullException ("uri");
+
+			this.uri = uri;
+			if (parent == null) {
+				// special case used for policy
+				method = "GET";
+			} else {
+				method = parent.Method;
+				headers = parent.Headers;
+			}
+		}
+
+		public override WebHeaderCollection Headers {
+			get {
+				if (headers == null)
+					headers = new WebHeaderCollection ();
+				return headers;
+			}
+			set { headers = value; }
+		}
+
+		public override string Method {
+			get { return method; }
+			set { method = value; }
+		}
+
+		public override Uri RequestUri {
+			get { return uri; }
 		}
 	}
 }

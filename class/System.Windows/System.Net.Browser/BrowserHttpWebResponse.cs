@@ -36,15 +36,11 @@ using Mono;
 
 namespace System.Net.Browser {
 
-	sealed class BrowserHttpWebResponse : HttpWebResponse
-	{
+	sealed class BrowserHttpWebResponse : HttpWebResponseCore {
 		HttpWebRequest request;
 		Stream response;
 		bool aborted;
-		internal string method;
 
-		int real_status_code;
-		string status_desc;
 		GCHandle handle;
 		bool disposed;
 
@@ -54,25 +50,17 @@ namespace System.Net.Browser {
 			this.response = new MemoryStream ();
 			this.aborted = false;
 			Headers = new WebHeaderCollection ();
-			method = request.Method;
+			SetMethod (request.Method);
 
 			if (native == IntPtr.Zero)
 				return;
 			
 			// Get the status code and status text asap, this way we don't have to 
 			// ref/unref the native ptr
-			real_status_code = NativeMethods.downloader_response_get_response_status (native);
-
-			// Silverlight only returns OK or NotFound - but we keep the real value for ourselves
-			switch (real_status_code) {
-			case 200:
-			case 404:
-				status_desc = NativeMethods.downloader_response_get_response_status_text (native);
-				break;
-			default:
-				status_desc = "Requested resource was not found";
-				break;
-			}
+			int status_code = NativeMethods.downloader_response_get_response_status (native);
+			SetStatus ((HttpStatusCode) status_code, (status_code == 200 || status_code == 404) ?
+				NativeMethods.downloader_response_get_response_status_text (native) : 
+				"Requested resource was not found");
 
 			// TODO: this is leaking in certain cases
 			handle = GCHandle.Alloc (this);
@@ -81,7 +69,7 @@ namespace System.Net.Browser {
 
 		~BrowserHttpWebResponse () /* thread-safe: no p/invokes */
 		{
-			InternalAbort ();
+			Abort ();
 		}
 
 		void Dispose ()
@@ -94,15 +82,8 @@ namespace System.Net.Browser {
 
 		public void Abort ()
 		{
-			Dispose ();
-			InternalAbort ();
-		}
-
-		internal void InternalAbort () {
-			if (aborted)
-				return;
-			
 			aborted = true;
+			Dispose ();
 		}
 
 		static void OnHttpHeader (IntPtr context, IntPtr name, IntPtr value)
@@ -147,11 +128,6 @@ namespace System.Net.Browser {
 			get { return Headers [HttpRequestHeader.ContentType]; }
 		}
 
-		// this returns the "original" Method (if there was redirection involved)
-		public override string Method {
-			get { return method; }
-		}
-
 		internal bool IsCompressed {
 			get {
 				// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
@@ -171,22 +147,10 @@ namespace System.Net.Browser {
 			get { return request.RequestUri; }
 		}
 
-		// since Silverlight hides most of this data, we keep it available for the BCL
-		internal int RealStatusCode {
-			get {
-				return real_status_code;
-			}
-		}
-
+		// Silverlight only returns OK or NotFound - but we keep the real value for ourselves
 		public override HttpStatusCode StatusCode {
 			get {
-				return (RealStatusCode == 200) ? HttpStatusCode.OK : HttpStatusCode.NotFound;
-			}
-		}
-
-		public override string StatusDescription {
-			get {
-				return status_desc;
+				return (RealStatusCode == HttpStatusCode.OK) ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 			}
 		}
 	}

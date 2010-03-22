@@ -1,10 +1,10 @@
 //
-// System.Net.Browser.ClientHttpWebRequestCreator
+// System.Windows.Browser.Net.HttpWebResponseCore class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009-2010 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,13 +28,50 @@
 
 #if NET_2_1
 
+using System.IO;
+
 namespace System.Net.Browser {
 
-	internal class ClientHttpWebRequestCreator : IWebRequestCreate {
+	abstract class HttpWebResponseCore : HttpWebResponse {
 
-		public WebRequest Create (Uri uri)
+		private string method;
+		private HttpStatusCode status_code;
+		private string status_desc;
+
+		// this returns the "original" Method (if there was redirection involved)
+		public override string Method {
+			get { return method; }
+		}
+
+		// this is not exposed by the browser stack but we need to it internally
+		internal HttpStatusCode RealStatusCode {
+			get {
+				return status_code;
+			}
+		}
+
+		public override HttpStatusCode StatusCode {
+			get {
+				return status_code;
+			}
+		}
+
+		public override string StatusDescription {
+			get {
+				return status_desc;
+			}
+		}
+
+
+		public void SetMethod (string verb)
 		{
-			return new ClientHttpWebRequest (uri);
+			method = verb;
+		}
+
+		public void SetStatus (HttpStatusCode code, string description)
+		{
+			status_code = code;
+			status_desc = description;
 		}
 	}
 }

@@ -1,3 +1,9 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.manual: Add entries for internal types (duplicates or 
+	not) that the client http stack requires inside System.dll
+	* System.Windows.manual: Add entries for the client http stack
+
 2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.manual: Change System.Net.Dns, System.Net.Sockets.Socket

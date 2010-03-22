@@ -1,5 +1,5 @@
 //
-// System.Windows.Browser.Net.BrowserHttpWebAsyncResult class
+// System.Windows.Browser.Net.HttpWebAsyncResult class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -40,7 +40,7 @@ using Mono;
 
 namespace System.Net.Browser
 {
-	sealed class BrowserHttpWebAsyncResult : IAsyncResult, IDisposable
+	sealed class HttpWebAsyncResult : IAsyncResult, IDisposable
 	{
 		object state;
 		bool completed;
@@ -48,13 +48,13 @@ namespace System.Net.Browser
 		ManualResetEvent wait_handle;
 		Exception exception;
 
-		BrowserHttpWebResponse response;
+		HttpWebResponse response;
 
 		public object AsyncState {
 			get { return state; }
 		}
 
-		public BrowserHttpWebResponse Response {
+		public HttpWebResponse Response {
 			get { return response; }
 			set { response = value; }
 		}
@@ -92,7 +92,7 @@ namespace System.Net.Browser
 			set { exception = value; }
 		}
 
-		public BrowserHttpWebAsyncResult (AsyncCallback callback, object state)
+		public HttpWebAsyncResult (AsyncCallback callback, object state)
 		{
 			this.callback = callback;
 			this.state = state;
@@ -100,7 +100,7 @@ namespace System.Net.Browser
 
 		public void SetComplete ()
 		{
-			System.Threading.ThreadPool.QueueUserWorkItem (SetCompleteImpl);
+			ThreadPool.QueueUserWorkItem (SetCompleteImpl);
 		}
 
 		private void SetCompleteImpl (object dummy)

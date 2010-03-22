@@ -54,7 +54,6 @@ namespace MoonTest.System.Net.Browser {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Credentials ()
 		{
 			WebRequest wr = GetWebRequest (localhost);
@@ -66,7 +65,6 @@ namespace MoonTest.System.Net.Browser {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Methods_Extended ()
 		{
 			WebRequest wr = GetWebRequest (new Uri ("http://localhost"));
@@ -104,7 +102,6 @@ namespace MoonTest.System.Net.Browser {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void HeadersGetThrowingInGetResponse ()
 		{
 			// NotSupportedException is thrown on the browser stack

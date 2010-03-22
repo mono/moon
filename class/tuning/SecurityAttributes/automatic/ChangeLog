@@ -1,3 +1,9 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.auto.sc: More entries for SC internal types required
+	for the client http stack
+	* System.Windows.auto.ssc: Regenerated wrt manual overrides
+
 2010-03-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Core.auto.ssc:

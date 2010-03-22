@@ -5,5 +5,10 @@
 		<type fullname="System.ComponentModel.*Converter">
 			<method signature="System.Void .ctor()" />
 		</type>
+		<type fullname="System.Net.HttpRequestCreator" preserve="all" />
+		<type fullname="System.Net.HttpWebRequest" preserve="all" />
+		<type fullname="System.Net.HttpWebResponse" preserve="all" />
+		<type fullname="System.Net.WebHeaderCollection" preserve="all" />
+		<type fullname="System.Net.WebRequest" preserve="all" />
 	</assembly>
 </linker>

@@ -1,3 +1,12 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.Browser/BrowserHttpWebRequestTest.cs: Remove the
+	two [MoonlightBug] on test cases
+	* System.Net.Browser/ClientHttpWebRequestTest.cs: Remove the
+	three [MoonlightBug] on test cases
+	* System.Net.Browser/WebRequestCreatorTest.cs: Uncomment
+	assertions now that we have two actual stacks
+
 2010-03-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: Nuke

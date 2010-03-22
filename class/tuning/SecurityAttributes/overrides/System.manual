@@ -2,6 +2,27 @@
 
 # we now have two different copies (type name clash) in System.dll and System.Net.dll
 +SC-T: System.Net.Dns
++SC-T: System.Net.HttpWebRequest
++SC-T: System.Net.HttpWebResponse
 +SC-T: System.Net.Sockets.Socket
 +SC-T: System.Net.Sockets.SocketAsyncEventArgs
++SC-T: System.Net.WebRequest
+
+# type totally internal to System.dll, not duplicates, but only required for the client http stack
++SC-T: System.ComponentModel.Win32Exception
++SC-T: System.IO.Compression.DeflateStream
++SC-T: System.IO.Compression.GZipStream
++SC-T: System.Net.AuthenticationManager
++SC-T: System.Net.BasicClient
++SC-T: System.Net.DigestClient
++SC-T: System.Net.DigestSession
++SC-T: System.Net.GlobalProxySelection
++SC-T: System.Net.HttpRequestCreator
++SC-T: System.Net.ServicePoint
++SC-T: System.Net.ServicePointManager
++SC-T: System.Net.Sockets.NetworkStream
++SC-T: System.Net.WebAsyncResult
++SC-T: System.Net.WebConnection
++SC-T: System.Net.WebConnectionGroup
++SC-T: System.Net.WebConnectionStream
 

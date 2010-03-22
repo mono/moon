@@ -1,3 +1,8 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.xml: Preserve some internal types that are used, via 
+	reflection, by the client http stack
+
 2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.xml: Preserve System.Net.Policy.CrossDomainPolicyManager

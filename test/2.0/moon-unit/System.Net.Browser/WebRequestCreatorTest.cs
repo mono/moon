@@ -71,11 +71,10 @@ namespace MoonTest.System.Net.Browser {
 			Assert.AreEqual (wrc.GetType ().ToString (), "System.Net.Browser.ClientHttpWebRequestCreator", "Type");
 
 			WebRequest wr = wrc.Create (Uri);
-// we're still re-using the browser stack
-#if false
+
 			Assert.AreEqual (wr.GetType ().ToString (), "System.Net.Browser.ClientHttpWebRequest", "Type");
 			Assert.AreSame (wrc, wr.CreatorInstance, "CreatorInstance");
-#endif
+
 			// we use 'https' instead of 'http' to avoid messing with other tests
 
 			// registering 'https' is not good enough
@@ -86,15 +85,15 @@ namespace MoonTest.System.Net.Browser {
 			// you need to register 'https://'
 			Assert.IsTrue (WebRequest.RegisterPrefix ("https://", WebRequestCreator.ClientHttp), "RegisterPrefix-https://");
 			wr = WebRequest.Create ("https://www.mono-project.com");
-//			Assert.AreSame (WebRequestCreator.ClientHttp, wr.CreatorInstance, "WebRequest.Create(string)-https://");
+			Assert.AreSame (WebRequestCreator.ClientHttp, wr.CreatorInstance, "WebRequest.Create(string)-https://");
 
 			// we cannot register twice (e.g. go back to Browser)
 			Assert.IsFalse (WebRequest.RegisterPrefix ("https://", WebRequestCreator.BrowserHttp), "RegisterPrefix-https://-2");
 			wr = WebRequest.Create (new Uri ("https://www.mono-project.com"));
-//			Assert.AreSame (WebRequestCreator.ClientHttp, wr.CreatorInstance, "WebRequest.Create(Uri)-https://");
+			Assert.AreSame (WebRequestCreator.ClientHttp, wr.CreatorInstance, "WebRequest.Create(Uri)-https://");
 
 			// we cannot register twice (even with the same, Client, value)
-//			Assert.IsFalse (WebRequest.RegisterPrefix ("https://", WebRequestCreator.ClientHttp), "RegisterPrefix-https://-2");
+			Assert.IsFalse (WebRequest.RegisterPrefix ("https://", WebRequestCreator.ClientHttp), "RegisterPrefix-https://-2");
 		}
 	}
 }

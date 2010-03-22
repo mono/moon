@@ -1,3 +1,12 @@
+2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientHttpWebRequest.cs: New. Client stack that reflect back to
+	use the managed HttpWebRequest from System.dll
+	* ClientHttpWebResponse.cs: New. Client stack that reflect back to
+	use the managed HttpWebResponse from System.dll
+	* ClientWebRequestCreate.cs: Start using the real client http 
+	stack when asked to.
+
 2010-03-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Throw a SecurityException if the 

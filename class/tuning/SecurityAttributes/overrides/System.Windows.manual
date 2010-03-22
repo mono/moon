@@ -11,6 +11,11 @@
 # this is called by ApplicationLauncher's [SecurityCritical] DestroyApplication method (in System.Windows assembly)
 +SC-M: System.Void Mono.A11yHelper::Shutdown()
 
+# client stack is safe to use but calls (mostly via reflection) a bunch of critical code
++SC-T: System.Net.Browser.ClientReflectionHelper
++SSC-T: System.Net.Browser.ClientHttpWebRequestInternal
++SSC-T: System.Net.Browser.ClientHttpWebResponse
+
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
 
