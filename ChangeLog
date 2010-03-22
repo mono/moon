@@ -1,3 +1,7 @@
+2010-03-22  Andreia Gaita  <avidigal@novell.com>
+
+	* README: Bump to 153983
+
 2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* README: Bump to 153674 for System.Xml.Serialization.
@@ -1630,4 +1634,3 @@
 
 	* Makefile.am, configure.ac, plugin/*: Mozilla plugin added.
 
-	
