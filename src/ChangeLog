@@ -1,5 +1,8 @@
 2010-03-22  David Reveman  <davidr@novell.com>
 
+	* projection.cpp: Move far clipping plane back to 1000000 and calculate
+	distance from XY-plane correctly.
+
 	* frameworkelement.cpp (ComputeBounds):
 	* panel.cpp (ComputeBounds): SetZ whenever we recompute object bounds.
 

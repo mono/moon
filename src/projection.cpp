@@ -270,10 +270,10 @@ Rect
 Projection::ProjectBounds (Rect bounds)
 {
 	Rect     r = bounds.RoundOut ();
-	double   p1[4] = { 0.0, 0.0, 1.0, 1.0 };
-	double   p2[4] = { r.width, 0.0, 1.0, 1.0 };
-	double   p3[4] = { r.width, r.height, 1.0, 1.0 };
-	double   p4[4] = { 0.0, r.height, 1.0, 1.0 };
+	double   p1[4] = { 0.0, 0.0, 0.0, 1.0 };
+	double   p2[4] = { r.width, 0.0, 0.0, 1.0 };
+	double   p3[4] = { r.width, r.height, 0.0, 1.0 };
+	double   p4[4] = { 0.0, r.height, 0.0, 1.0 };
 	double   m[16];
 
 	SetObjectSize (r.width, r.height);
@@ -360,9 +360,15 @@ PlaneProjection::SetObjectSize (double width, double height)
 	}
 }
 
+#define FIELD_OF_VIEW (57.0 / 180.0 * M_PI)
+#define CAMERA_DIST   999.0
+#define NEAR_VAL      1.0
+#define FAR_VAL       1000000.0
+
 double
 PlaneProjection::DistanceFromXYPlane ()
 {
+	const double xyPlaneZ = (NEAR_VAL * FAR_VAL / (NEAR_VAL - FAR_VAL) * (1.0 - CAMERA_DIST)) / CAMERA_DIST;
 	double p[4] = { objectWidth / 2.0, objectHeight / 2.0, 0.0, 1.0 };
 	double m[16];
 
@@ -372,7 +378,7 @@ PlaneProjection::DistanceFromXYPlane ()
 	if (p[3] == 0.0)
 		return 0.0;
 
-	return 1.0 - p[2] / p[3];
+	return xyPlaneZ - (p[2] / p[3]);
 }
 
 void
@@ -397,8 +403,8 @@ PlaneProjection::UpdateProjection ()
 	double localY = localOffsetY ? localOffsetY->AsDouble () : 0.0;
 	double localZ = localOffsetZ ? localOffsetZ->AsDouble () : 0.0;
 
-	const double fovY = 57.0 / 180.0 * M_PI;
-	const double cameraZ = 999.0;
+	const double fovY = FIELD_OF_VIEW;
+	const double cameraZ = CAMERA_DIST;
 
 	double height = 2.0 * cameraZ * tan (fovY / 2.0);
 	double scale = height / objectHeight;
@@ -431,8 +437,8 @@ PlaneProjection::UpdateProjection ()
 	Matrix3D::Perspective (perspective,
 			       fovY,
 			       objectWidth / objectHeight,
-			       1.0,
-			       1000.0);
+			       NEAR_VAL,
+			       FAR_VAL);
 	Matrix3D::Scale (zoom, scale, scale, 1.0);
 	Matrix3D::Viewport (viewport, objectWidth, objectHeight);
 
