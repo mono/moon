@@ -155,7 +155,7 @@ namespace System.Net.Browser {
 				}
 			}
 
-			Console.WriteLine ("{0} '{1}' using policy: {2}", method, uri, policy);
+			// Console.WriteLine ("{0} '{1}' using policy: {2}", method, uri, policy);
 			HttpWebRequest wreq = GetHttpWebRequest (uri);
 			wreq.Method = method;
 			// store SecurityException, to throw later, if we have no policy or are not allowed by the policy

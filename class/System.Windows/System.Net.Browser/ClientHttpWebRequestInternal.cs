@@ -38,7 +38,6 @@ namespace System.Net.Browser {
 
 	// this type inherits System.Net (SL) version of HttpWebRequest while it use (internally) System.dll version of the same
 	// (named) class
-	// FIXME: no xdomain policy checks yet
 	sealed class ClientHttpWebRequestInternal : HttpWebRequestCore {
 
 		static MethodInfo create;

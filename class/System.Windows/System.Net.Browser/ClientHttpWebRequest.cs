@@ -29,8 +29,6 @@
 #if NET_2_1
 
 using System.IO;
-//using System.Reflection;
-//using System.Runtime.Serialization;
 using System.Security;
 
 namespace System.Net.Browser {
