@@ -2492,7 +2492,6 @@ DependencyObject::Dispose ()
 	g_assert (parent == NULL || parent->GetRefCount () >= 0); /* #if SANITY */
 #endif
 	if (parent != NULL) {
-		parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
 		SetParent (NULL, NULL);
 	}
 	
@@ -2841,23 +2840,6 @@ DependencyObject::SetIsAttached (bool value)
 }
 
 void
-DependencyObject::DestroyedHandler (EventObject *parent, EventArgs *args)
-{
-	g_return_if_fail (this->parent == parent);
-	this->parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
-	this->SetParent (NULL, NULL);
-}
-
-void
-DependencyObject::SetParentSafe (DependencyObject *parent, MoonError *error)
-{
-	/* We need to remove any current event handlers in SetParent, since SetParentSafe isn't necessarily called the next time the parent changes. */
-	SetParent (parent, error);
-	if (this->parent)
-		this->parent->AddHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
-}
-
-void
 DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 {
 	SetParent (parent, true, error);
@@ -2955,8 +2937,6 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 	}
 
 	if (!error || error->number == 0) {
-		if (this->parent)
-			this->parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
 		this->parent = parent;
 	}
 }

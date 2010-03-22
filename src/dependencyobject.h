@@ -336,10 +336,6 @@ public:
 
 	virtual void SetIsAttached (bool value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	/* this method differs from the one below in that it adds a handler for the parent's DestroyedHandler
-	 * so that the parent field can be cleared out when the parent is destroyed. */
-	void SetParentSafe (DependencyObject *parent, MoonError *error);
 	void SetParent (DependencyObject *parent, MoonError *error);
 	void SetParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error);
 	DependencyObject* GetParent () { return parent; }
@@ -452,7 +448,6 @@ private:
 	void DetachTemplateOwnerDestroyed ();
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
-	EVENTHANDLER (DependencyObject, Destroyed, EventObject, EventArgs);
 
 	static bool CanPropertyBeSetToNull (DependencyProperty* property);
 

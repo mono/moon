@@ -265,8 +265,6 @@ namespace System.Windows.Controls {
 				return;
 			foreach (object o in items) {
 				DependencyObject dep = o as DependencyObject;
-				if (dep != null)
-					Mono.NativeMethods.dependency_object_set_parent_safe (dep.native, parent);
 				
 				FrameworkElement el = o as FrameworkElement;
 				if (el != null)

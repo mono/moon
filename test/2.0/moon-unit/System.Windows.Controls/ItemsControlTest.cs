@@ -616,6 +616,16 @@ namespace MoonTest.System.Windows.Controls {
 				);
 			});
 		}
+		
+		[TestMethod]
+		public void NameIsNotRegisteredTest ()
+		{
+			string name = "MyRectInItemsControl";
+			ItemsControl c = (ItemsControl) CurrentControl;
+			TestPanel.Children.Add (c);
+			c.Items.Add (new Rectangle { Name = name });
+			Assert.IsNull (c.FindName (name), "#1");
+		}
 
 		[TestMethod]
 		public void OnItemsChanged_Null ()

@@ -1,3 +1,9 @@
+2010-03-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: Nuke
+	  SetParentSafe as the only place where it was being used
+	  shouldn't have been calling SetParent anyway.
+
 2010-03-19  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/TabItemAutomationPeerTest.cs: Tests
