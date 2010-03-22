@@ -265,6 +265,9 @@ PluginInstance::Shutdown ()
 	g_return_if_fail (!has_shutdown);
 
 	is_shutting_down = true;
+
+	if (bridge)
+		bridge->Shutdown ();
 	
 	Deployment::SetCurrent (deployment);
 

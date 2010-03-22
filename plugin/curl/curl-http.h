@@ -14,44 +14,53 @@
 #ifndef __CURL_HTTP_H__
 #define __CURL_HTTP_H__
 
+class ResponseClosure;
+class CurlDownloaderRequest;
+class CurlDownloaderResponse;
 
 #include <glib.h>
+#include <curl/curl.h>
+#include <curl/types.h>
+#include <curl/easy.h>
+
 #include "timemanager.h"
 #include "ptr.h"
 
-class ResponseClosure;
-class TickData;
-class DataClosure;
-class CurlDownloaderResponse;
-
 class CurlDownloaderRequest : public DownloaderRequest {
- protected:
-	bool aborted;
-	bool started;
+ private:
 	struct curl_slist *headers;
 	CurlDownloaderResponse *response;
 	CurlBrowserBridge *bridge;
 	struct curl_httppost *post;
 	struct curl_httppost *postlast;
 	void *body;
- public:
 	CURL* curl;
-	CURL* multicurl;
+
+	enum State {
+		NONE = 0,
+		OPENED = 1,
+		CLOSED = 3,
+		ABORTED = 4,
+	};
+	State state;
+
+ public:
 
 	CurlDownloaderRequest (CurlBrowserBridge *bridge, const char *method, const char *uri, bool disable_cache);
 	~CurlDownloaderRequest ();
 	void Abort ();
-	const bool IsAborted () { return this->aborted; }
+	const bool IsAborted () { return state = (bridge->shutting_down ? (state != CLOSED ? ABORTED : state) : state); }
 	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (void *ptr, int size);
 
 	bool isPost () { return strstr (method, "POST"); }
 	void Close ();
+	CURL* GetHandle () { return curl; }
 };
 
 class CurlDownloaderResponse : public DownloaderResponse {
- protected:
+ private:
 	CurlBrowserBridge *bridge;
 	CurlDownloaderRequest *request;
 	DownloaderResponseHeaderCallback visitor;
@@ -60,12 +69,7 @@ class CurlDownloaderResponse : public DownloaderResponse {
 	long status;
 	const char* statusText;
 	int delay;
-	CURL* curl;
-	CURL* multicurl;
 	DOPtr<ResponseClosure> closure;
-	GList *headers;
-	GList *bodies;
-	GList *callCache;
 
 	enum State {
 		STOPPED = 0,
@@ -76,12 +80,11 @@ class CurlDownloaderResponse : public DownloaderResponse {
 	State state;
 
 	const bool IsAborted () {
-		aborted = aborted || bridge->plugin->IsShuttingDown ();
+		aborted = aborted || bridge->shutting_down;
 		return aborted;
 	}
 
  public:
-
 	CurlDownloaderResponse (CurlBrowserBridge *bridge,
 	    CurlDownloaderRequest *request,
 	    DownloaderResponseStartedHandler started,
@@ -102,17 +105,15 @@ class CurlDownloaderResponse : public DownloaderResponse {
 	void unref ();
 
 	void Open ();
-	void GetData ();
 	void HeaderReceived (void *ptr, size_t size);
 	size_t DataReceived (void *ptr, size_t size);
 
 	void Started ();
-	void Available (DataClosure *dl);
+	void Available (char* buffer, size_t size);
 	void Finished ();
 	void Visitor (const char *name, const char *val);
-	void AddCallback (TickData *data, bool delayed = FALSE);
-	void Emit ();
 	void Close ();
+	CURL* GetHandle () { return request->GetHandle (); }
 };
 
 class ResponseClosure : public EventObject {
@@ -125,66 +126,6 @@ public:
 	virtual ~ResponseClosure () {}
 
 	CurlDownloaderResponse *res;
-};
-
-class DataClosure : public EventObject {
-private :
-public:
-	DataClosure (CurlDownloaderResponse *res,
-	    gpointer context, char *buffer, size_t size,
-	    const char *name, const char *val) :
-		res (res), context(context),
-		buffer(buffer), size(size),
-		name(name), val(val)
-	{
-	}
-
-	virtual ~DataClosure ();
-
-	CurlDownloaderResponse *res;
-	gpointer context;
-	char *buffer;
-	size_t size;
-	const char *name;
-	const char *val;
-};
-
-class TickData {
-public:
-	enum CallType {
-		HEADER = 0,
-		BODY = 1,
-	};
-
-	TickData (CallType type, TickCallHandler func, CurlDownloaderResponse *res, gpointer context, char *buffer, size_t size) :
-		type(type), func(func), res(res),
-		context(context), buffer(buffer), size(size), name(NULL), val(NULL)
-
-	{
-	}
-
-	TickData (CallType type, TickCallHandler func, CurlDownloaderResponse *res, const char *name, const char *val) :
-		type(type), func(func), res(res),
-		context(NULL), buffer(NULL), size(0), name(name), val(val)
-	{
-	}
-
-	~TickData ();
-
-	EventObject* GetClosure ()
-	{
-		return new DataClosure (res, context, buffer, size, name, val);
-	}
-
-	CallType type;
-	TickCallHandler func;
-	CurlDownloaderResponse *res;
-	gpointer context;
-	char *buffer;
-	size_t size;
-	const char *name;
-	const char *val;
-	bool delay;
 };
 
 #endif

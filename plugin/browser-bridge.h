@@ -28,9 +28,11 @@ G_END_DECLS
 
 class BrowserBridge {
  public:
-	void SetPlugin (PluginInstance* value) { plugin = value; }
 	virtual DownloaderRequest* CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache) = 0;
+	virtual void Shutdown () { shutting_down = true; }
+	void SetPlugin (PluginInstance* value) { plugin = value; }
 	PluginInstance* plugin;
+	bool shutting_down;
 };
 
 #endif /* BROWSER_BRIDGE */

@@ -1,3 +1,14 @@
+2010-03-22  Andreia Gaita  <avidigal@novell.com>
+
+	* curl-bridge.[h|cpp]: move the multi curl handle up to the bridge
+	so all requests are handled by it and all data from all connections
+	can be pumped in one call (GetData). data is handled on a separate
+	thread, and sent (AddCallback) out to the main thread via g_idle_add
+	(Emit). when requests are done, connection handles are cached in a
+	pool to be reused when needed.
+	* curl-http.[h|cpp]: Add asynchronous support and remove all curl
+	actions (except option settings), all work is now done by the bridge
+
 2010-03-11  Andreia Gaita  <avidigal@novell.com>
 
 	* curl-http.cpp: strip whitespaces from headers
