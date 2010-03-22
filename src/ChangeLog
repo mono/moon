@@ -1,5 +1,8 @@
 2010-03-22  David Reveman  <davidr@novell.com>
 
+	* frameworkelement.cpp (ComputeBounds):
+	* panel.cpp (ComputeBounds): SetZ whenever we recompute object bounds.
+
 	* projection.h:
 	* projection.cpp: Add DistanceFromXYPlane function to Projection class.
 	Avoid unnecessary property matrix updates and make sure

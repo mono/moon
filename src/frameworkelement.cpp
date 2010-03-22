@@ -26,6 +26,7 @@
 #include "validators.h"
 #include "effect.h"
 #include "projection.h"
+#include "canvas.h"
 
 #define MAX_LAYOUT_PASSES 250
 
@@ -277,8 +278,13 @@ FrameworkElement::ComputeBounds ()
 	}
 
 	unprojected_bounds = bounds_with_children;
-	if (projection)
+	if (projection) {
 		bounds = bounds_with_children = projection->ProjectBounds (unprojected_bounds);
+		Canvas::SetZ (this, projection->DistanceFromXYPlane ());
+	}
+	else {
+		Canvas::SetZ (this, 0.0);
+	}
 
 	if (effect)
 		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);

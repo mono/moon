@@ -86,8 +86,13 @@ Panel::ComputeBounds ()
 	}
 
 	unprojected_bounds = bounds_with_children;
-	if (projection)
+	if (projection) {
 		bounds = bounds_with_children = projection->ProjectBounds (unprojected_bounds);
+		Canvas::SetZ (this, projection->DistanceFromXYPlane ());
+	}
+	else {
+		Canvas::SetZ (this, 0.0);
+	}
 
 	if (effect)
 		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);
@@ -303,8 +308,8 @@ void
 Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
 	if (PropertyHasValueNoAutoCreate (Panel::ChildrenProperty, col)) {
-		// if a child changes its ZIndex property we need to resort our Children
-		if (args->GetId () == Canvas::ZIndexProperty) {
+		// if a child changes its ZIndex or Z property we need to resort our Children
+		if (args->GetId () == Canvas::ZIndexProperty || args->GetId () == Canvas::ZProperty) {
 			((UIElement *) obj)->Invalidate ();
 			if (IsAttached ()) {
 				// queue a resort based on ZIndex
