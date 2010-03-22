@@ -1,3 +1,7 @@
+2010-03-22  David Reveman  <davidr@novell.com>
+
+	* uielement.cpp (UIElement): Initialize unprojected_bounds properly.
+
 2010-03-22  Alan McGovern  <amcgovern@novell.com>
 
 	* dependencyobject.h:

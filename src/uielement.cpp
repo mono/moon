@@ -48,6 +48,7 @@ UIElement::UIElement ()
 
 	hidden_desire = Size (-INFINITY, -INFINITY);
 	bounds = Rect (0,0,0,0);
+	unprojected_bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 	cairo_matrix_init_identity (&layout_xform);
 	cairo_matrix_init_identity (&local_xform);
@@ -1691,4 +1692,3 @@ UIElement::TransformPoint (double *x, double *y)
 	
 	cairo_matrix_transform_point (&inverse, x, y);
 }
-
