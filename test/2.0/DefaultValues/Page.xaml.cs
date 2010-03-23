@@ -6,6 +6,9 @@ using System.Windows.Media;
 using System.Windows.Markup;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Windows.Shapes;
+using System.Diagnostics;
+using System.IO;
 
 namespace DefaultValues {
 	public partial class Page : Canvas {
@@ -38,6 +41,8 @@ namespace DefaultValues {
 			sb.AppendLine ("using System.Windows.Interop;");
 			sb.AppendLine ("using System.Windows.Markup;");
 			sb.AppendLine ("using System.Windows.Media;");
+			sb.AppendLine ("using System.Windows.Media.Effects;");
+			sb.AppendLine ("using System.Windows.Media.Media3D;");
 			sb.AppendLine ("using System.Windows.Media.Animation;");
 			sb.AppendLine ("using System.Windows.Media.Imaging;");
 			sb.AppendLine ("using System.Windows.Resources;");
@@ -58,24 +63,25 @@ namespace DefaultValues {
 		
 		void GenerateUnitTests (Type type)
 		{
-			DependencyObject widget;
-			
+			DependencyObject widget = null;
 			try {
-				if ((widget = Activator.CreateInstance (type) as DependencyObject) != null) {
-					sb.AppendLine ("namespace MoonTest." + type.Namespace);
-					sb.AppendLine ("{");
-					sb.AppendLine ("    public partial class " + type.Name + "Test");
-					sb.AppendLine ("    {");
-					GenerateReadLocalValueTests (widget, type);
-					GenerateGetValueTests (widget, type);
-					GeneratePropertyGetterTests (widget, type);
-					GenerateSetStringValueTests (widget, type);
-					//GenerateSetValueTests (widget, type);
-					sb.AppendLine ("    }");
-					sb.AppendLine ("}");
-				}
+				widget = Activator.CreateInstance (type) as DependencyObject;
 			} catch {
+				return;
 			}
+
+			sb.AppendLine ("namespace MoonTest." + type.Namespace);
+			sb.AppendLine ("{");
+			sb.AppendLine ("    [TestClass]");
+			sb.AppendLine ("    public partial class " + type.Name + "Test");
+			sb.AppendLine ("    {");
+			GenerateReadLocalValueTests (widget, type);
+			GenerateGetValueTests (widget, type);
+			GeneratePropertyGetterTests (widget, type);
+			GenerateSetStringValueTests (widget, type);
+			//GenerateSetValueTests (widget, type);
+			sb.AppendLine ("    }");
+			sb.AppendLine ("}");
 		}
 		
 		void EmitTestMethod (Type type, string test, bool retval)
@@ -135,9 +141,12 @@ namespace DefaultValues {
 			string special = null;
 			bool tostring = false;
 			
+			if (!retval.GetType ().IsPublic)
+				return;
+			
 			if (retval.GetType ().IsSubclassOf (typeof (DependencyObject))) {
-				sb.AppendLine (String.Format ("            Assert.IsTrue({0} is {1}, \"{2} is not of the correct type\");",
-							      retvalName, PrettyName (retval.GetType ()), method));
+				sb.AppendLine (String.Format ("            Assert.IsInstanceOfType<{1}>({0}, \"{2} is not of the correct type\");",
+								  retvalName, PrettyName (retval.GetType ()), method));
 				AssertDependencyObjectEqual (widget, type, method, retvalName, retval);
 				return;
 			} else if (retval.GetType ().IsGenericType) {
@@ -145,8 +154,8 @@ namespace DefaultValues {
 			}
 			
 			if (check_is_type)
-				sb.AppendLine (String.Format ("            Assert.IsTrue({0} is {1}, \"{2} is not of the correct type\");",
-							      retvalName, PrettyName (retval.GetType ()), method));
+				sb.AppendLine (String.Format ("            Assert.IsInstanceOfType<{1}>({0}, \"{2} is not of the correct type\");",
+								  retvalName, PrettyName (retval.GetType ()), method));
 			
 			if (retval.GetType ().IsPrimitive) {
 				if (retval is double) {
@@ -174,7 +183,10 @@ namespace DefaultValues {
 				}
 			} else if (retval.GetType ().IsEnum) {
 				// serialize the enum value
-				expected = retval.GetType ().Name + "." + retval.ToString ();
+				if (!Enum.IsDefined (retval.GetType (), retval))
+					expected = string.Format ("({0}){1}", retval.GetType ().Name, retval);
+				else
+					expected = retval.GetType ().Name + "." + Enum.GetName (retval.GetType (), retval);
 			} else if (retval is XmlLanguage) {
 				// for XmlLanguages, compare the IetfLanguageTags
 				expected = "\"" + ((XmlLanguage) retval).IetfLanguageTag + "\"";
@@ -190,10 +202,10 @@ namespace DefaultValues {
 			
 			if (special != null)
 				sb.AppendLine (String.Format ("            Assert.IsTrue({0}, \"{1} does not match the default value\");",
-							      special, method));
+								  special, method));
 			else
 				sb.AppendLine (String.Format ("            Assert.AreEqual({0}, {1}{2}, \"{3} does not match the default value\");",
-							      expected, retvalName, tostring ? ".ToString ()" : "", method));
+								  expected, retvalName, tostring ? ".ToString ()" : "", method));
 		}
 		
 		void GenerateReadLocalValueTests (DependencyObject widget, Type type)
@@ -322,6 +334,23 @@ namespace DefaultValues {
 						if (property == null)
 							continue;
 					
+						string fullDp = ctype.Name + "." + fields[i].Name;
+						try {
+							retval = property.GetMetadata (widget.GetType ()).DefaultValue;
+							sb.AppendLine (string.Format (@"            Assert.IsNotNull({0}.GetMetadata (typeof ({1})), ""#metadata should not be null for: {0}.{1}"");", fullDp, widget.GetType ().Name));
+							sb.AppendLine (string.Format ("            retval = {0}.GetMetadata (typeof ({1})).DefaultValue;", fullDp, widget.GetType ().Name));
+							if (retval != null && retval != DependencyProperty.UnsetValue) {
+								sb.AppendLine (string.Format (@"            Assert.IsNotNull(retval, ""PropertyMetadata.DefaultValue for {0} should be non-null value"");", fullDp));
+								AssertValuesEqual (widget, type, fullDp + ".GetMetadata()", "retval", retval, true);
+							} else if (retval == DependencyProperty.UnsetValue) {
+								sb.AppendLine (string.Format (@"            Assert.AreSame(retval, DependencyProperty.UnsetValue, ""PropertyMetadata.DefaultValue for {0} should be DP.UnsetValue but was '{1}'"", retval);", fullDp, "{0}"));
+							} else {
+								sb.AppendLine ("            Assert.IsNull(retval, \"" + fullDp + ".GetMetadata()" + " should have returned null\");");
+							}
+						} catch {
+							// FIXME: Bleurgh?
+						}
+						
 						method = "GetValue(" + ctype.Name + "." + fields[i].Name + ")";
 					
 						try {
@@ -506,7 +535,7 @@ namespace DefaultValues {
 						} catch (Exception ex) {
 							sb.AppendLine ("            Assert.Throws<" + ex.GetType ().Name + ">(delegate {");
 							sb.AppendLine ("                widget." + method + ";");
-							sb.AppendLine ("            }, \"" + method + " should thow an exception\");");
+							sb.AppendLine ("            }, \"" + method.Replace ("\"","\\\"") + " should thow an exception\");");
 						}
 					
 						// Then we check that the value is what we we just set
