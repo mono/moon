@@ -4153,7 +4153,7 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 		
 		XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v, true);
 		XamlElementInfo *container = p->current_namespace->FindElement (p, type_name, NULL, false);
-		info->SetPropertyOwnerKind (container->GetKind ());
+		res->SetPropertyOwnerKind (container->GetKind ());
 		g_free (type_name);
 		delete container;
 		return res;

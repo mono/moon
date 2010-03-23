@@ -1,3 +1,10 @@
+2010-03-23  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInstance::FindPropertyElement): we should
+	be setting the PropertyOwnerKind on the result of this call, not
+	on our own info. Fixes some bugs re: custom attached properties as
+	used by System.Windows.Interactivity.
+
 2010-03-23  David Reveman  <davidr@novell.com>
 
 	* projection.h:
