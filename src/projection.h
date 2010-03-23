@@ -131,6 +131,7 @@ public:
 	static void RotateZ (double *out, double theta);
 	static void Perspective (double *out, double fieldOfViewY, double aspectRatio, double zNearPlane, double zFarPlane);
 	static void Viewport (double *out, double width, double height);
+	static bool Inverse (double *out, const double *m);
 };
 
 /* @Namespace=System.Windows.Media.Media3D */
