@@ -104,11 +104,30 @@ namespace System.Windows.Threading {
 			return op;
 		}
 
+		internal static void InvokeDelegate (Delegate d, object[] args)
+		{
+			if (d is Action) {
+				((Action)d) ();
+			}
+			else if (d is SendOrPostCallback) {
+				((SendOrPostCallback)d) (args[0]);
+			}
+			else if (d is EventHandler) {
+				((EventHandler)d) (args[0], (EventArgs)args[1]);
+			}
+			else {
+#if DEBUG
+				Console.WriteLine ("slow path Dispatcher.InvokeDelegate, delegate type is {0}", d.GetType());
+#endif
+				d.DynamicInvoke (args);
+			}
+		}
+
 		internal void Invoke (Delegate d, params object[] args)
 		{
 			if (CheckAccess ()) {
 				try {
-					d.DynamicInvoke (args);
+					InvokeDelegate (d, args);
 				} catch (Exception ex) {
 					Application.OnUnhandledException (this, ex);
 				}
@@ -116,7 +135,7 @@ namespace System.Windows.Threading {
 				ManualResetEvent wait = new ManualResetEvent (false);
 				BeginInvoke (delegate {
 					try {
-						d.DynamicInvoke (args);
+						InvokeDelegate (d, args);
 					} catch (Exception ex) {
 						Application.OnUnhandledException (this, ex);
 					} finally {

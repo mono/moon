@@ -1,3 +1,12 @@
+2010-03-22  Chris Toshok  <toshok@ximian.com>
+
+	* Dispatcher.cs (InvokeDelegate): factor out all the delegate
+	invoking here, and special case Action, SendOrPostCallback, and
+	EventHandler.
+	(Invoke): call Dispatcher.InvokeDelegate.
+
+	* DispatcherOperation.cs (Invoke): call Dispatcher.InvokeDelegate.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* DispatcherSynchronizationContext.cs: Fix compiler warnings.

@@ -42,7 +42,7 @@ namespace System.Windows.Threading {
 		internal void Invoke ()
 		{
 			try {
-				d.DynamicInvoke (args);
+				Dispatcher.InvokeDelegate (d, args);
 			} catch (TargetInvocationException tie) {
 				// the unhandled exception is the inner exception, not the TargetInvocationException
 				Application.OnUnhandledException (this, tie.InnerException);
