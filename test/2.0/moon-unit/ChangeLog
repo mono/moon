@@ -1,3 +1,10 @@
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/DefaultValues.cs: regen
+
+	* System.Windows/DependencyPropertyTest.cs: Add a moonlightbug
+	  attribute
+
 2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.Browser/BrowserHttpWebRequestTest.cs: Remove the

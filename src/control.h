@@ -157,7 +157,7 @@ public:
 	const static int IsEnabledProperty;
 	/* @PropertyType=bool,DefaultValue=false,ManagedAccess=Internal,Attached,GenerateAccessors */
 	const static int IsTemplateItemProperty;
-	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,MetadataOverrides=USERCONTROL;false,GenerateAccessors */
 	const static int IsTabStopProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
 	const static int PaddingProperty;

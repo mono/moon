@@ -115,9 +115,9 @@ namespace System.Windows.Media.Effects
 			object obj = GetValue (dp);
 
 			cdp = dp as CustomDependencyProperty;
-			if (cdp != null && cdp.GetMetadata (null).property_changed_callback != null) {
+			if (cdp != null && cdp.property_changed_callback != null) {
 				var args = new DependencyPropertyChangedEventArgs (obj, obj, dp);
-				cdp.GetMetadata (null).property_changed_callback (this, args);
+				cdp.property_changed_callback (this, args);
 			}
 		}
 	}

@@ -60,7 +60,7 @@ brush_matrix_invert (cairo_matrix_t *matrix)
 //
 
 Value *
-Brush::CreateDefaultMatrixTransform (DependencyObject *obj, DependencyProperty *property)
+Brush::CreateDefaultMatrixTransform (Type::Kind type, DependencyProperty *property)
 {
 	return Value::CreateUnrefPtr (new MatrixTransform ());
 }

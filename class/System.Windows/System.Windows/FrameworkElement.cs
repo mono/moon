@@ -381,7 +381,7 @@ namespace System.Windows {
 				if (!addingExpression)
 					throw;
 				else
-					base.SetValueImpl (dp, dp.DefaultValue);
+					base.SetValueImpl (dp, dp.GetDefaultValue (this));
 			}
 		}
 

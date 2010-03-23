@@ -22,6 +22,12 @@
 #include "eventargs.h"
 #include "deployment.h"
 
+void
+DependencyProperty::free_value (Value *value)
+{
+	delete value;
+}
+
 /*
  *	DependencyProperty
  */
@@ -31,6 +37,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->hash_key = NULL;
 	this->name = g_strdup (name);
 	this->default_value = default_value;
+	this->default_value_overrides = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) free_value);
 	this->property_type = property_type;
 	this->is_nullable = false;
 	this->is_attached = attached;
@@ -67,6 +74,39 @@ DependencyProperty::Dispose ()
 			default_value = new Value (k); /* null */
 		}
 	}
+
+	g_hash_table_destroy (default_value_overrides);
+	default_value_overrides = NULL;
+}
+
+Value *
+DependencyProperty::GetDefaultValue (Type::Kind kind)
+{
+	if (default_value_overrides) {
+		Value *value = (Value *) g_hash_table_lookup (default_value_overrides, GINT_TO_POINTER (kind));
+		if (value)
+			return new Value (*value);
+	
+		Types *types = Deployment::GetCurrent ()->GetTypes ();
+		Type *t = types->Find (kind);
+		while ((t = t->GetParentType ()) != NULL) {
+			value = (Value *) g_hash_table_lookup (default_value_overrides, GINT_TO_POINTER (kind));
+			if (value)
+				return new Value (*value);
+		}
+	}
+
+	if (autocreator) {
+		return autocreator (kind, this);
+	} else {
+		return default_value ? new Value (*default_value) : NULL;
+	}
+}
+
+void
+DependencyProperty::AddDefaultValueOverride (Type::Kind kind, Value *value)
+{
+	g_hash_table_insert (default_value_overrides, GINT_TO_POINTER (kind), value);
 }
 
 const char *

@@ -1487,6 +1487,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void GetMetadata_DifferentType ()
 		{
 			var md = new PropertyMetadata (null, null);

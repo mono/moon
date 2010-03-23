@@ -100,7 +100,7 @@ class Brush : public DependencyObject {
 	void SetTransform (Transform *transform);
 	Transform *GetTransform ();
 	
-	static Value *CreateDefaultMatrixTransform (DependencyObject *obj, DependencyProperty *property);
+	static Value *CreateDefaultMatrixTransform (Type::Kind kind, DependencyProperty *property);
 };
 
 

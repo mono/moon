@@ -158,7 +158,7 @@ namespace System.Windows.Data {
 
 			cached = true;
 			if (DataSource == null) {
-				cachedValue = dp.DefaultValue;
+				cachedValue = dp.GetDefaultValue (Target);
 				return cachedValue;
 			}
 			else if (string.IsNullOrEmpty (Binding.Path.Path)) {
@@ -166,7 +166,7 @@ namespace System.Windows.Data {
 				cachedValue = DataSource;
 			}	
 			else if (PropertyPathWalker.IsPathBroken) {
-				cachedValue = dp.DefaultValue;
+				cachedValue = dp.GetDefaultValue (Target);
 				return cachedValue;
 			}
 			else {
@@ -175,7 +175,7 @@ namespace System.Windows.Data {
 			try {
 				cachedValue = ConvertToType (dp, cachedValue);
 			} catch {
-				cachedValue  = dp.DefaultValue;
+				cachedValue  = dp.GetDefaultValue (Target);
 			}
 			
 			return cachedValue;
@@ -207,7 +207,7 @@ namespace System.Windows.Data {
 			try {
 				Updating = true;
 				Invalidate ();
-				object value = PropertyPathWalker.IsPathBroken ? Property.DefaultValue : PropertyPathWalker.Value;
+				object value = PropertyPathWalker.IsPathBroken ? Property.GetDefaultValue (Target) : PropertyPathWalker.Value;
 				value = ConvertToType (Property, value);
 				Target.SetValueImpl (Property, value);
 			} catch {

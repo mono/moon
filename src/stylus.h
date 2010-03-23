@@ -136,7 +136,7 @@ class TouchPoint : public DependencyObject {
 	virtual ~TouchPoint () {}
 	
  public:
-	/* @PropertyType=TouchAction,DefalutValue=0\,Type::TOUCHACTION,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=TouchAction,DefaultValue=0,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ActionProperty;
 	/* @PropertyType=Point,DefaultValue=Point(),ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int PositionProperty;

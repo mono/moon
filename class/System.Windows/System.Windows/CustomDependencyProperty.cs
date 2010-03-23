@@ -36,8 +36,8 @@ namespace System.Windows
 	{
 		private UnmanagedPropertyChangeHandler property_changed_handler;
 		
-		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, PropertyMetadata metadata)
-			: base (handle, name, propertyType.type, ownerType.type, metadata)
+		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType)
+			: base (handle, name, propertyType.type, ownerType.type)
 		{
 			
 		}

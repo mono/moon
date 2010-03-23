@@ -87,7 +87,7 @@ class Shape : public FrameworkElement {
 	cairo_matrix_t stretch_transform;
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int FillProperty;
- 	/* @PropertyType=Stretch,AutoCreator=Shape::CreateDefaultStretch,GenerateAccessors */
+ 	/* @PropertyType=Stretch,DefaultValue=StretchNone,MetadataOverrides=RECTANGLE;StretchFill;ELLIPSE;StretchFill,GenerateAccessors */
 	const static int StretchProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int StrokeProperty;
@@ -194,8 +194,6 @@ class Shape : public FrameworkElement {
 	
 	void SetStrokeThickness (double thickness);
 	double GetStrokeThickness ();
-
-	static Value* CreateDefaultStretch (DependencyObject *instance, DependencyProperty *property);
 };
 
 

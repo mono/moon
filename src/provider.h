@@ -36,7 +36,6 @@ enum PropertyPrecedence {
 
 	PropertyPrecedence_Inherited,
 	PropertyPrecedence_InheritedDataContext,
-	PropertyPrecedence_DefaultValue,
 	PropertyPrecedence_AutoCreate,
 
 	PropertyPrecedence_Count,
@@ -116,15 +115,7 @@ private:
 							    Type::Kind descendantKind);
 };
 
-class DefaultValuePropertyValueProvider : public PropertyValueProvider {
-public:
-	DefaultValuePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence) : PropertyValueProvider (obj, precedence) { };
-	virtual ~DefaultValuePropertyValueProvider () { };
-
-	virtual Value *GetPropertyValue (DependencyProperty *property);
-};
-
-typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *property);
+typedef Value* AutoCreator  (Type::Kind kind, DependencyProperty *property);
 
 class AutoCreators {
 public:

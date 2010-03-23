@@ -31,7 +31,7 @@ class MultiScaleSubImage : public DependencyObject {
 	virtual ~MultiScaleSubImage () {}
 
  public:
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,ReadOnly,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,ReadOnly,GenerateGetter */
 	const static int AspectRatioProperty;
  	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int OpacityProperty;

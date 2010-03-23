@@ -206,7 +206,7 @@ class Image : public MediaBase {
 	void SetSource (ImageSource *source);
 	ImageSource *GetSource ();
 
-	static Value *CreateDefaultImageSource (DependencyObject *instance, DependencyProperty *property);
+	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
 };
 
 #endif /* __MEDIA_H__ */

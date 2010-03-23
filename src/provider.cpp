@@ -497,17 +497,6 @@ InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (UIEl
 }
 
 //
-// DefaultPropertyValueProvider
-//
-
-Value *
-DefaultValuePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
-{
-	return property->GetDefaultValue ();
-}
-
-
-//
 // AutoPropertyValueProvider
 //
 
@@ -557,14 +546,12 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
 	Value *value;
 	
-	if (!property->IsAutoCreated ())
-		return NULL;
-	
 	// return previously set auto value next
 	if ((value = (Value *) g_hash_table_lookup (auto_values, property)))
 		return value;
 	
-	value = (property->GetAutoCreator()) (obj, property);
+	if (!(value = property->GetDefaultValue (obj->GetType ()->GetKind ())))
+		return NULL;
 
 #if SANITY
 	Deployment *deployment = Deployment::GetCurrent ();
@@ -596,9 +583,9 @@ AutoCreatePropertyValueProvider::ClearValue (DependencyProperty *property)
 }
 
 Value* 
-AutoCreators::default_autocreator (DependencyObject *instance, DependencyProperty *property)
+AutoCreators::default_autocreator (Type::Kind kind, DependencyProperty *property)
 {
-	Type *type = Type::Find (instance->GetDeployment (), property->GetPropertyType ());
+	Type *type = Type::Find (Deployment::GetCurrent (), property->GetPropertyType ());
 	if (!type)
 		return NULL;
 
@@ -609,7 +596,7 @@ AutoCreators::default_autocreator (DependencyObject *instance, DependencyPropert
 #define XAP_FONT_SIZE     11.0
 
 Value *
-AutoCreators::CreateDefaultFontSize (DependencyObject *obj, DependencyProperty *property)
+AutoCreators::CreateDefaultFontSize (Type::Kind kind, DependencyProperty *property)
 {
 	Deployment *deployment;
 	

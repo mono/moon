@@ -22,7 +22,7 @@ class PropertyChangedEventArgs;
 class MoonError;
 
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
-typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *property);
+typedef Value* AutoCreator  (Type::Kind type, DependencyProperty *property);
 
 /* @CBindingRequisite */
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
@@ -62,8 +62,9 @@ class DependencyProperty {
 	bool IsCustom () { return is_custom; }
 	PropertyChangeHandler GetChangedCallback () { return changed_callback; }
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Value *GetDefaultValue () { return default_value; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetDefaultValue (Type::Kind kind);
+	void AddDefaultValueOverride (Type::Kind kind, Value *value);
 
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 
@@ -103,11 +104,14 @@ private:
 	char *name;
 
 	Value *default_value;
+	GHashTable *default_value_overrides;
 	ValueValidator *validator;
 
 	Type::Kind owner_type;
 	Type::Kind property_type;
 	PropertyChangeHandler changed_callback;
+	
+	static void free_value (Value *value);
 };
 
 G_BEGIN_DECLS

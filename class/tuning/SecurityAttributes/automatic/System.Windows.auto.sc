@@ -554,7 +554,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_default_value(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_default_value(System.IntPtr,Mono.Kind)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_dependency_property(Mono.Kind,System.String)

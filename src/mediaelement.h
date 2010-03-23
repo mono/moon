@@ -149,7 +149,7 @@ class MediaElement : public FrameworkElement {
 	const static int BalanceProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,GenerateAccessors */
 	const static int BufferingProgressProperty;
- 	/* @PropertyType=TimeSpan,GenerateAccessors,Validator=BufferingTimeValidator */
+ 	/* @PropertyType=TimeSpan,DefaultValue=(TimeSpan)0\,Type::TIMESPAN,GenerateAccessors,Validator=BufferingTimeValidator */
 	const static int BufferingTimeProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
 	const static int CanPauseProperty;

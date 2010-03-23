@@ -973,15 +973,6 @@ Shape::InvalidateSurfaceCache (void)
 	}
 }
 
-Value *
-Shape::CreateDefaultStretch (DependencyObject *instance, DependencyProperty *property)
-{
-	if (instance->Is (Type::RECTANGLE) || instance->Is (Type::ELLIPSE))
-		return new Value (StretchFill);
-	else
-		return new Value (StretchNone);
-}
-
 //
 // Ellipse
 //

@@ -1,3 +1,36 @@
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
+	* media.h:
+	* brush.h:
+	* shape.h:
+	* stylus.h:
+	* brush.cpp:
+	* media.cpp:
+	* shape.cpp:
+	* control.h:
+	* mediaelement.h:
+	* multiscaleimage.h:
+	* multiscalesubimage.h: Add in correct default values.
+
+	* provider.h:
+	* provider.cpp:
+	* dependencyobject.cpp: Get rid of the DefaultValue provider
+	  and refactor the AutoCreateValue provider to call
+	  DependencyProperty::GetDefaultValue (Type::Kind). This
+	  simplifies refcounting issues as the value returned by
+	  DP::GetDefaultValue must be tracked and freed by the caller
+	  and the DefaultValueProvider could not easily do this.
+
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: Refactor
+	  DependencyProperty::GetDefaultValue to handle both the
+	  AutoCreator func (if there is one) and also the values
+	  supplied in the DefaultValue or MetadataOverrides
+	  attributes. The Value* returned by this function needs to be
+	  freed by the caller. This makes it trivial for managed code
+	  to retrieve the correct default value, whether it's an
+	  AutoCreate value or a regular DefaultValue/MetadataOverride.
+
 2010-03-22  David Reveman  <davidr@novell.com>
 
 	* effect.cpp (Composite): Handle Z coordinates correctly.

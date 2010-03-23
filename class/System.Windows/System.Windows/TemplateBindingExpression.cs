@@ -57,7 +57,7 @@ namespace System.Windows {
 					Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType,
 											     NativeMethods.property_changed_event_args_get_new_value (propertyChangeArgs)));
 				} catch {
-					Target.SetValue (TargetProperty, TargetProperty.DefaultValue);
+					Target.SetValue (TargetProperty, TargetProperty.GetDefaultValue (Target));
 				}
 				Updating = false;
 			}

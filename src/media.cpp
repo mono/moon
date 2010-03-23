@@ -683,7 +683,7 @@ Image::InsideObject (cairo_t *cr, double x, double y)
 }
 
 Value *
-Image::CreateDefaultImageSource (DependencyObject *instance, DependencyProperty *property)
+Image::CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property)
 {
 	return Value::CreateUnrefPtr (new BitmapImage ());
 }

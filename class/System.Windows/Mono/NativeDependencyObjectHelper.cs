@@ -61,7 +61,7 @@ namespace Mono {
 
 			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
 			if (val == IntPtr.Zero)
-				return dp.DefaultValue;
+				return dp.GetDefaultValue (wrapper);
 			
 			result = Value.ToObject (dp.PropertyType, val);
 			

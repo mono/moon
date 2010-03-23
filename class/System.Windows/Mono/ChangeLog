@@ -1,3 +1,21 @@
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeDependencyObjectHelper.cs: 1) Refactor the managed
+	  DependencyProperty.GetValue () to take a Type::Kind
+	  parameter so the correct default value metadata is returned.
+	2) Ensure we instantiate a new PropertyMetadata every time we
+	  call GetMetadata (Type) as the default value can change
+	  depending on the Type argument.
+
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeDependencyObjectHelper.cs: 1) Refactor the managed
+	  DependencyProperty.GetValue () to take a Type::Kind
+	  parameter so the correct default value metadata is returned.
+	2) Ensure we instantiate a new PropertyMetadata every time we
+	  call GetMetadata (Type) as the default value can change
+	  depending on the Type argument.
+
 2010-03-16  Jackson Harper  <jackson@ximian.com>
 
 	* Types.cs: When we register a type we supply its content property

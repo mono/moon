@@ -1806,7 +1806,7 @@ DependencyObject::GetValueNoAutoCreate (int id)
 Value *
 DependencyObject::GetValueNoAutoCreate (DependencyProperty *property)
 {
-	Value *v = GetValue (property, PropertyPrecedence_LocalValue, PropertyPrecedence_DefaultValue);
+	Value *v = GetValue (property, PropertyPrecedence_LocalValue, PropertyPrecedence_InheritedDataContext);
 	if (v == NULL && property->IsAutoCreated() && providers[PropertyPrecedence_AutoCreate])
 		v = ((AutoCreatePropertyValueProvider*)providers[PropertyPrecedence_AutoCreate])->ReadLocalValue (property);
 
@@ -1833,7 +1833,6 @@ DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence sta
 	// providers we *always* consult
 	provider_bitmask |= ((1 << PropertyPrecedence_Inherited) |
 			     (1 << PropertyPrecedence_DynamicValue) |
-			     (1 << PropertyPrecedence_DefaultValue) |
 			     (1 << PropertyPrecedence_AutoCreate));
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	lookups ++; // for the provider bitmask
@@ -1879,7 +1878,7 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
 	Value *value = NULL;
 
-	for (int i = 0; i < PropertyPrecedence_DefaultValue; i ++) {
+	for (int i = 0; i < PropertyPrecedence_AutoCreate; i ++) {
 		if (!providers[i])
 			continue;
 		value = providers[i]->GetPropertyValue (property);
@@ -1929,7 +1928,6 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 	higher |= ((1 << PropertyPrecedence_Inherited) |
 		   (1 << PropertyPrecedence_DynamicValue) |
-		   (1 << PropertyPrecedence_DefaultValue) |
 		   (1 << PropertyPrecedence_AutoCreate));
 
 
@@ -2258,7 +2256,6 @@ DependencyObject::Initialize ()
 
 	providers[PropertyPrecedence_Inherited] = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
 	providers[PropertyPrecedence_InheritedDataContext] = NULL; // this is a frameworkelement specific thing
-	providers[PropertyPrecedence_DefaultValue] = new DefaultValuePropertyValueProvider (this, PropertyPrecedence_DefaultValue);
 	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate);
 	
 	local_values = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -2455,7 +2452,6 @@ output_hash_lookups_per_property (DependencyProperty *key, int count, totals *ts
 
 DependencyObject::~DependencyObject ()
 {
-	DetachTemplateOwnerDestroyed ();
 	g_hash_table_destroy (provider_bitmasks);
 	g_hash_table_destroy (local_values);
 	local_values = NULL;
@@ -2494,6 +2490,7 @@ DependencyObject::Dispose ()
 	if (parent != NULL) {
 		SetParent (NULL, NULL);
 	}
+	DetachTemplateOwnerDestroyed ();
 	
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);
