@@ -1,3 +1,11 @@
+2010-03-23  Larry Ewing  <lewing@novell.com>
+
+	* dependencyproperty.cpp (GetDefaultValue): actually look up the
+	default value on the parent type when walking up.  Also only
+	initialize default_value_overrides when an override is used, this
+	saves us from always walking up the classes and wasting lots of
+	time. Saves 3-4% on an iis profile.
+
 2010-03-23  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlElementInstance::FindPropertyElement): we should

@@ -38,7 +38,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->hash_key = NULL;
 	this->name = g_strdup (name);
 	this->default_value = default_value;
-	this->default_value_overrides = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) free_value);
+	this->default_value_overrides = NULL;
 	this->property_type = property_type;
 	this->is_nullable = false;
 	this->is_attached = attached;
@@ -91,7 +91,7 @@ DependencyProperty::GetDefaultValue (Type::Kind kind)
 		Types *types = Deployment::GetCurrent ()->GetTypes ();
 		Type *t = types->Find (kind);
 		while ((t = t->GetParentType ()) != NULL) {
-			value = (Value *) g_hash_table_lookup (default_value_overrides, GINT_TO_POINTER (kind));
+			value = (Value *) g_hash_table_lookup (default_value_overrides, GINT_TO_POINTER (t->GetKind ()));
 			if (value)
 				return new Value (*value);
 		}
@@ -107,6 +107,9 @@ DependencyProperty::GetDefaultValue (Type::Kind kind)
 void
 DependencyProperty::AddDefaultValueOverride (Type::Kind kind, Value *value)
 {
+	if (default_value_overrides == NULL)
+		default_value_overrides = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) free_value);
+
 	g_hash_table_insert (default_value_overrides, GINT_TO_POINTER (kind), value);
 }
 
