@@ -26,10 +26,11 @@ typedef struct {
 	const unsigned int color;
 } named_colors_t;
 
-named_colors_t named_colors [] = {
+static const named_colors_t named_colors [] = {
 	// NOTE: samples shows that XAML supports more than the colors defined in System.Windows.Media.Colors
 	// in fact tests shows that all System.Drawing.Color seems to be available
-	{ "transparent",		0x00FFFFFF },
+
+	// NOTE: make sure to keep this list SORTED, as we use a binary search to find colors.
 	{ "aliceblue",			0xFFF7FBFF },
 	{ "antiquewhite",		0xFFFAEBD7 },
 	{ "aqua",			0xFF00FFFF },
@@ -97,8 +98,8 @@ named_colors_t named_colors [] = {
 	{ "lightcoral",			0xFFF08080 },
 	{ "lightcyan",			0xFFE0FFFF },
 	{ "lightgoldenrodyellow",	0xFFFAFAD2 },
-	{ "lightgreen",			0xFF90EE90 },
 	{ "lightgray",			0xFFD3D3D3 },
+	{ "lightgreen",			0xFF90EE90 },
 	{ "lightpink",			0xFFFFB6C1 },
 	{ "lightsalmon",		0xFFFFA07A },
 	{ "lightseagreen",		0xFF20B2AA },
@@ -163,6 +164,7 @@ named_colors_t named_colors [] = {
 	{ "teal",			0xFF008080 },
 	{ "thistle",			0xFFD8BFD8 },
 	{ "tomato",			0xFFFF6347 },
+	{ "transparent",		0x00FFFFFF },
 	{ "turquoise",			0xFF40E0D0 },
 	{ "violet",			0xFFEE82EE },
 	{ "wheat",			0xFFF5DEB3 },
@@ -170,8 +172,18 @@ named_colors_t named_colors [] = {
 	{ "whitesmoke",			0xFFF5F5F5 },
 	{ "yellow",			0xFFFFFF00 },
 	{ "yellowgreen",		0xFF9ACD32 },
-	{ NULL, 0 }
 };
+
+static const int num_named_colors = sizeof (named_colors) / sizeof (named_colors[0]);
+
+static int
+compare_color_names (const void *v1, const void *v2)
+{
+	named_colors_t *c1 = (named_colors_t*)v1;
+	named_colors_t *c2 = (named_colors_t*)v2;
+
+	return g_ascii_strcasecmp (c1->name, c2->name);
+}
 
 /**
  * see: http://msdn2.microsoft.com/en-us/library/system.windows.media.solidcolorbrush.aspx
@@ -270,15 +282,17 @@ color_from_str (const char *name)
 		
 		return new Color (color);
 	}
-	
-	for (int i = 0; named_colors [i].name; i++) {
-		if (!g_ascii_strcasecmp (named_colors [i].name, name))
-			return new Color (named_colors [i].color);
-	}
-	
+
+	named_colors_t key = { name, 0 };
+
+	named_colors_t* result = (named_colors_t*)bsearch (&key, named_colors, num_named_colors, sizeof (named_colors_t),
+							   compare_color_names);
+
+	if (result)
+		return new Color (result->color);
+
 	return NULL;
 }
-
 
 const char *
 color_to_string (Color *color)

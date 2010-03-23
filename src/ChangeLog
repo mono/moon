@@ -1,3 +1,7 @@
+2010-03-23  Chris Toshok  <toshok@ximian.com>
+
+	* color.cpp (color_from_str): use a binary search here.
+
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
 	* shape.h:
