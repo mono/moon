@@ -113,7 +113,7 @@ class GeometryGroup : public Geometry {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
- 	/* @PropertyType=GeometryCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=GeometryCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -233,7 +233,7 @@ class PathGeometry : public Geometry {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
- 	/* @PropertyType=PathFigureCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=PathFigureCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int FiguresProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -321,7 +321,7 @@ class PathFigure : public DependencyObject {
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsClosedProperty;
- 	/* @PropertyType=PathSegmentCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=PathSegmentCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int SegmentsProperty;
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int StartPointProperty;
@@ -499,7 +499,7 @@ class PolyBezierSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -528,7 +528,7 @@ class PolyLineSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -556,7 +556,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

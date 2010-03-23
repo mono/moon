@@ -76,6 +76,10 @@ class FieldInfo : MemberInfo {
 		}
 	}
 
+	public bool HasHiddenDefaultValue {
+		get { return Annotations.ContainsKey ("HiddenDefaultValue"); }
+	}
+
 	public bool IsDPReadOnly {
 		get { return Annotations.ContainsKey ("ReadOnly"); }
 	}

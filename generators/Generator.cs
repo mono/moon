@@ -1052,6 +1052,12 @@ class Generator {
 				                   CreateValue (metadataOverride.Value));
 				text.AppendLine ();
 			}
+			if (field.HasHiddenDefaultValue) {
+				text.AppendFormat ("\tthis->GetProperty ({0}::{1})->SetHasHiddenDefaultValue (true);{2}",
+				                   field.Parent.Name,
+				                   field.Name,
+				                   Environment.NewLine);
+			}
 		}
 		text.AppendLine ("}");
 		text.AppendLine ();

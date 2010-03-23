@@ -62,6 +62,8 @@ brush_matrix_invert (cairo_matrix_t *matrix)
 Value *
 Brush::CreateDefaultMatrixTransform (Type::Kind type, DependencyProperty *property)
 {
+	if (type == Type::IMAGEBRUSH)
+		return NULL;
 	return Value::CreateUnrefPtr (new MatrixTransform ());
 }
 
@@ -543,6 +545,12 @@ ImageBrush::Dispose ()
 	}
 
 	TileBrush::Dispose ();
+}
+
+Value *
+ImageBrush::CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property)
+{
+	return Value::CreateUnrefPtr (new BitmapImage ());
 }
 
 void

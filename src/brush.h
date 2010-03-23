@@ -177,7 +177,7 @@ class GradientBrush : public Brush {
  public:
 	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation,GenerateAccessors */
 	const static int ColorInterpolationModeProperty;
-	/* @PropertyType=GradientStopCollection,AutoCreateValue,GenerateAccessors */
+	/* @PropertyType=GradientStopCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int GradientStopsProperty;
 	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox,GenerateAccessors */
 	const static int MappingModeProperty;
@@ -349,7 +349,7 @@ private:
  public:
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
 	const static int DownloadProgressProperty;
- 	/* @PropertyType=ImageSource,GenerateAccessors */
+ 	/* @PropertyType=ImageSource,AutoCreator=ImageBrush::CreateDefaultImageSource,HiddenDefaultValue,GenerateAccessors */
 	const static int ImageSourceProperty;
 	
 	/* @GenerateManagedEvent=false */
@@ -377,6 +377,8 @@ private:
 	
 	void SetImageSource (ImageSource *source);
 	ImageSource *GetImageSource ();
+
+	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
 };
 
 cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int height);

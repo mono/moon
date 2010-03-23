@@ -3,6 +3,14 @@
 	* README:
 	* Generator.cs:
 	* FieldInfo.cs:
+	* GlobalInfo.cs: Update the generator to understand the new
+	  HiddenDefaultValue attribute.
+
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
+	* README:
+	* Generator.cs:
+	* FieldInfo.cs:
 	* GlobalInfo.cs: Add a new attribute for DPs so that default
 	  values can be overridden on a per-type basis.
 

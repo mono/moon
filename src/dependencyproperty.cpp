@@ -34,6 +34,7 @@ DependencyProperty::free_value (Value *value)
 DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom)
 {
 	this->owner_type = owner_type;
+	this->has_hidden_default_value = false;
 	this->hash_key = NULL;
 	this->name = g_strdup (name);
 	this->default_value = default_value;

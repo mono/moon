@@ -1,5 +1,26 @@
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
+	* shape.h:
+	* stylus.h:
+	* geometry.h:
+	* transform.h:
+	* deployment.h: Mark all the properties whose default value
+	  does not show up in PropertyMetadata.DefaultValue with
+	  "HiddenDefaultValue"
+
+	* brush.h:
+	* brush.cpp:
+	* media.cpp:
+	* mediaelement.h: Return the correct default values
+
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: Add a new property
+	  'HiddenDefaultValue' to DependencyProperty so that managed
+	  land knows when it's not supposed to call the native
+	  get_default_value function and return DP.UnsetValue instead.
+
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
 	* media.h:
 	* brush.h:
 	* shape.h:

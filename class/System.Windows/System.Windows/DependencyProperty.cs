@@ -68,11 +68,10 @@ namespace System.Windows {
 		public PropertyMetadata GetMetadata (Type forType)
 		{
 			var kind = Deployment.Current.Types.TypeToNativeKind (forType);
-			var defaultValue = GetDefaultValue (kind) ?? UnsetValue;
-			// FIXME: This is a hack. DPs which should not show up here should be marked in the
-			// dp metadata and handled by the generator. This will do for now ;)
-			if (defaultValue is System.Collections.IList && defaultValue is DependencyObject)
-				defaultValue = UnsetValue;
+			var defaultValue = UnsetValue;
+			if (!HasHiddenDefaultValue)
+				defaultValue = GetDefaultValue (kind) ?? UnsetValue;
+
 			return new PropertyMetadata (defaultValue);
 		}
 		
@@ -370,6 +369,10 @@ namespace System.Windows {
 				} catch {
 				}
 			}
+		}
+
+		bool HasHiddenDefaultValue {
+			get { return Mono.NativeMethods.dependency_property_get_has_hidden_default_value (native); }
 		}
 
 		internal string Name {

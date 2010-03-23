@@ -311,7 +311,7 @@ class InkPresenter : public Canvas {
 	virtual void PostRender (List *ctx, Region *region, bool skip_children);
 
  public:
-	/* @PropertyType=StrokeCollection,AutoCreateValue,GenerateAccessors */
+	/* @PropertyType=StrokeCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int StrokesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

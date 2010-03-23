@@ -1,5 +1,12 @@
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyProperty.cs: Add a new property
+	  'HiddenDefaultValue' to DependencyProperty so that managed
+	  land knows when it's not supposed to call the native
+	  get_default_value function and return DP.UnsetValue instead.
+
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
 	* FrameworkElement.cs:
 	* DependencyProperty.cs:
 	* CustomDependencyProperty.cs:

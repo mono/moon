@@ -21,7 +21,6 @@ namespace MoonTest.System.Windows.Media
 	public partial class ImageBrushTest
 	{
 		[TestMethod]
-		[MoonlightBug ("ImageSource is null on ML")]
 		public void DefaultCtor ()
 		{
 			ImageBrush ib = new ImageBrush ();
@@ -31,7 +30,6 @@ namespace MoonTest.System.Windows.Media
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ImageSource is null on ML")]
 		public void EmptyUri ()
 		{
 			ImageBrush ib = new ImageBrush ();

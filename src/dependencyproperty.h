@@ -63,6 +63,10 @@ class DependencyProperty {
 	PropertyChangeHandler GetChangedCallback () { return changed_callback; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetHasHiddenDefaultValue () { return has_hidden_default_value; }
+	void SetHasHiddenDefaultValue (bool value) { has_hidden_default_value = value;}
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetDefaultValue (Type::Kind kind);
 	void AddDefaultValueOverride (Type::Kind kind, Value *value);
 
@@ -99,7 +103,7 @@ private:
 	bool is_attached;
 	bool always_change; // determines if SetValue will do something if the current and new values are equal.
 	bool is_custom; // If created using managed api
-	
+	bool has_hidden_default_value;
 	char *hash_key;
 	char *name;
 

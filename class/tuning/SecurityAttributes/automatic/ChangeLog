@@ -1,5 +1,10 @@
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: regen
+
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.auto.ssc: regen sec. attrs. (from last
 	  commit)
 

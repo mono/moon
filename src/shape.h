@@ -91,7 +91,7 @@ class Shape : public FrameworkElement {
 	const static int StretchProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int StrokeProperty;
- 	/* @PropertyType=DoubleCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=DoubleCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int StrokeDashArrayProperty;
  	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
 	const static int StrokeDashCapProperty;
@@ -317,7 +317,7 @@ class Polygon : public Shape {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
- 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -358,7 +358,7 @@ class Polyline : public Shape {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
- 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

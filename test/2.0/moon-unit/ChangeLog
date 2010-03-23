@@ -1,5 +1,11 @@
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs:
+	* System.Windows.Media/ImageBrushTest.cs: Remove moonlightbug
+	  from tests which are passing now.
+
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
 	* misc/DefaultValues.cs: regen
 
 	* System.Windows/DependencyPropertyTest.cs: Add a moonlightbug

@@ -163,7 +163,7 @@ class MediaElement : public FrameworkElement {
 	const static int IsMutedProperty;
  	/* @PropertyType=TimelineMarkerCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int MarkersProperty;
- 	/* @PropertyType=Duration,DefaultValue=Duration::Automatic,ReadOnly,GenerateAccessors */
+ 	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateAccessors */
 	const static int NaturalDurationProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoHeightProperty;

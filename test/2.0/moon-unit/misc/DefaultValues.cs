@@ -2584,6 +2584,7 @@ namespace MoonTest.System.Windows.Media
         }
 
         [TestMethod]
+        [MoonlightBug ("This is an SL bug by the looks of it. GetValue returns non-null if you check the value of brush.ImageSource first")]
         public void Test_GetValue_ImageBrush ()
         {
             ImageBrush widget = new ImageBrush ();
@@ -2632,7 +2633,6 @@ namespace MoonTest.System.Windows.Media
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_Brush ()
         {
             ImageBrush widget = new ImageBrush ();
@@ -2660,7 +2660,6 @@ namespace MoonTest.System.Windows.Media
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_ImageBrush ()
         {
             ImageBrush widget = new ImageBrush ();
@@ -10100,7 +10099,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_Image ()
         {
             Image widget = new Image ();
@@ -10346,7 +10344,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_Image ()
         {
             Image widget = new Image ();
@@ -11961,7 +11958,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_MediaElement ()
         {
             MediaElement widget = new MediaElement ();

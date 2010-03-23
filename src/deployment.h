@@ -184,7 +184,7 @@ public:
 	const static int ShowInstallMenuItemProperty;
 	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int WindowSettingsProperty;
-	/* @PropertyType=IconCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=IconCollection,AutoCreateValue,HiddenDefaultValue,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IconsProperty;
 	/* @PropertyType=SecuritySettings,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int SecuritySettingsProperty;

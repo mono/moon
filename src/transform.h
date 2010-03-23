@@ -361,7 +361,7 @@ class TransformGroup : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=TransformCollection,AutoCreateValue,GenerateAccessors */
+	/* @PropertyType=TransformCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
