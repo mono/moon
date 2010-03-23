@@ -130,8 +130,10 @@ namespace System.Windows {
 				propertyType = propertyType.GetGenericArguments () [0];
 			}
 			
-			property_type = Deployment.Current.Types.Find (propertyType);
-			owner_type = Deployment.Current.Types.Find (ownerType);
+			Types types = Deployment.Current.Types;
+
+			property_type = types.Find (propertyType);
+			owner_type = types.Find (ownerType);
 
 			if (metadata != null) {
 				default_value = metadata.DefaultValue ?? UnsetValue;
@@ -146,7 +148,7 @@ namespace System.Windows {
 
 			Value v;
 			if (default_value == DependencyProperty.UnsetValue) {
-				v = new Value { k = Deployment.Current.Types.TypeToKind (propertyType), IsNull = true };
+				v = new Value { k = types.TypeToKind (propertyType), IsNull = true };
 				default_value = null;
 			} else {
 				v = Value.FromObject (default_value, false);

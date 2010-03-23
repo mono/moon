@@ -1,3 +1,9 @@
+2010-03-23  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.cs (RegisterAny): retrieve
+	Deployment.Current.Types once here to make traces a little less
+	annoying.
+
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.cs: Cache the value of
