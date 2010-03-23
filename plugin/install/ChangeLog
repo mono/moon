@@ -1,3 +1,8 @@
+2010-03-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* install.rdf.in: Mark all us developers as developers rather than
+	contributors.
+
 2010-02-11  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: we need to include the ff3 bridge.
