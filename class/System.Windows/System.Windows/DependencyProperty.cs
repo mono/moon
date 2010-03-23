@@ -44,6 +44,7 @@ namespace System.Windows {
 		Type property_type;
 		Type declaring_type; 
 		bool? attached;
+		bool? hasHiddenDefaultValue;
 		ValueValidator validator;
 		internal PropertyChangedCallback property_changed_callback {
 			get; private set;
@@ -372,7 +373,11 @@ namespace System.Windows {
 		}
 
 		bool HasHiddenDefaultValue {
-			get { return Mono.NativeMethods.dependency_property_get_has_hidden_default_value (native); }
+			get {
+				if (!hasHiddenDefaultValue.HasValue)
+					hasHiddenDefaultValue = Mono.NativeMethods.dependency_property_get_has_hidden_default_value (native);
+				return hasHiddenDefaultValue.Value;
+			}
 		}
 
 		internal string Name {
