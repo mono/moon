@@ -36,7 +36,7 @@
 
 class LogProvider {
 private:
-	LogProvider (const char *test_name);
+	LogProvider ();
 	virtual ~LogProvider ();
 	
 	static LogProvider *instance;
@@ -49,7 +49,6 @@ public:
 	static TestResult IntToResult (int i) { return (TestResult) i; }
 	static int TestResultToInt (TestResult result) { return (int) result; }
 	
-	static void CreateInstance (const char *test_name);
 	static LogProvider *GetInstance ();
 	static void DeleteInstance ();
 
@@ -63,6 +62,8 @@ public:
 	char *GetTestDefinition (bool isJson);
 	char *GetRuntimePropertyValue (const char *propertyName);
 	void SetRuntimePropertyValue (const char *propertyName, const char *value);
+
+	void SetTestName (const char *test_name);
 
 private:
 	void Log (const char* level, const char* msg);

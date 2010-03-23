@@ -668,7 +668,7 @@ ShockerScriptableControlType *ShockerScriptableControlClass = NULL;
 
 ShockerScriptableControlObject::ShockerScriptableControlObject (NPP instance) : instance (instance), test_path (NULL)
 {	
-	LogProvider::CreateInstance (GetTestPath ());
+	LogProvider::GetInstance ()->SetTestName (GetTestPath ());
 	input_provider = new InputProvider ();
 	image_capture = new ImageCaptureProvider ();
 }

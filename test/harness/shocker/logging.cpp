@@ -41,14 +41,6 @@
 LogProvider *LogProvider::instance = NULL;
 
 void
-LogProvider::CreateInstance (const char *test_name)
-{
-	g_return_if_fail (instance == NULL);
-	
-	instance = new LogProvider (test_name);
-}
-
-void
 LogProvider::DeleteInstance ()
 {
 	g_return_if_fail (instance != NULL);
@@ -60,19 +52,29 @@ LogProvider::DeleteInstance ()
 LogProvider *
 LogProvider::GetInstance ()
 {
+	if (instance == NULL)
+		instance = new LogProvider ();
+
 	return instance;
 }
 
-LogProvider::LogProvider (const char* test_name)
+LogProvider::LogProvider ()
 {
-	this->test_name = strdup (test_name);
+	this->test_name = NULL;
 	runtime_properties = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 }
 
 LogProvider::~LogProvider ()
 {
-	free (test_name);
+	g_free (test_name);
 	g_hash_table_destroy (runtime_properties);
+}
+
+void
+LogProvider::SetTestName (const char *test_name)
+{
+	g_free (this->test_name);
+	test_name = g_strdup (test_name);
 }
 
 void

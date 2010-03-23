@@ -1,3 +1,9 @@
+2010-03-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp:
+	* logging.cpp|h: Make the log provider live as long as the process lives and
+	create it automatically when needed.
+
 2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.cpp:
