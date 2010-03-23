@@ -13,8 +13,15 @@
 
 # client stack is safe to use but calls (mostly via reflection) a bunch of critical code
 +SC-T: System.Net.Browser.ClientReflectionHelper
-+SSC-T: System.Net.Browser.ClientHttpWebRequestInternal
-+SSC-T: System.Net.Browser.ClientHttpWebResponse
++SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::.cctor()
++SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::.ctor(System.Net.Browser.ClientHttpWebRequest,System.Uri)
++SSC-M: System.IAsyncResult System.Net.Browser.ClientHttpWebRequestInternal::BeginGetRequestStream(System.AsyncCallback,System.Object)
++SSC-M: System.IAsyncResult System.Net.Browser.ClientHttpWebRequestInternal::BeginGetResponse(System.AsyncCallback,System.Object)
++SSC-M: System.IO.Stream System.Net.Browser.ClientHttpWebRequestInternal::EndGetRequestStream(System.IAsyncResult)
++SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::Abort()
++SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::EndCallback(System.IAsyncResult)
++SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.cctor()
++SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Object)
 
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods

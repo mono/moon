@@ -1,3 +1,8 @@
+2010-03-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Use mo specific entries for the client 
+	http stack (which reduce the number of methods to audit)
+
 2010-03-22  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.manual: Add entries for internal types (duplicates or 
