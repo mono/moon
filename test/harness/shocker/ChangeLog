@@ -1,5 +1,13 @@
 2010-03-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* image-capture.cpp|h: Add a CompareImages method with the signature the
+	drt test framework is p/invoking.
+
+	* shocker.cpp: Use the CompareImages in image-capture, and rename the methods
+	in here with the same name to avoid name clashes.
+
+2010-03-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shocker.cpp:
 	* logging.cpp|h: Make the log provider live as long as the process lives and
 	create it automatically when needed.

@@ -42,6 +42,7 @@
 #include "input.h"
 #include "shutdown-manager.h"
 #include "harness.h"
+#include "image-capture.h"
 
 
 // hack to track down the actual error message that
@@ -303,12 +304,11 @@ SetKeyboardInputSpeed (ShockerScriptableControlObject* obj, char* name, const NP
 }
 
 static void
-CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+Plugin_CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	bool res = false;
 	char *msg;
 	guint8 output = 0;
-	guint32 output_length;
 	
 	g_assert (arg_count >= 6);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
@@ -318,13 +318,10 @@ CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant*
 	g_assert (NPVARIANT_IS_STRING (args [4]));
 	g_assert (NPVARIANT_IS_BOOLEAN (args [5]));
 	
-	msg = g_strdup_printf ("TestHost.CompareImages %s|%s|%i|%s|%s|%i", 
-		STR_FROM_VARIANT (args [0]), STR_FROM_VARIANT (args [1]), NUMBER_TO_INT32 (args [2]), 
-		STR_FROM_VARIANT (args [3]), STR_FROM_VARIANT (args [4]), NPVARIANT_TO_BOOLEAN (args [5]));
+	CompareImages (STR_FROM_VARIANT (args [0]), STR_FROM_VARIANT (args [1]), NUMBER_TO_INT32 (args [2]),
+		/*STR_FROM_VARIANT (args [3]), */STR_FROM_VARIANT (args [4]), NPVARIANT_TO_BOOLEAN (args [5]), &output);
 	
-	if (send_harness_message (msg, &output, 1, &output_length))
-		res = output == 0;
-	g_free (msg);
+	res = output == 0;
 	
 	BOOLEAN_TO_NPVARIANT (res, *result);
 }
@@ -530,7 +527,7 @@ static ScriptableMethod scriptable_methods [] = {
 
 	// New test plugin methods in 2.0
     { "setKeyboardInputSpeed", &SetKeyboardInputSpeed },
-    { "CompareImages", &CompareImages },
+    { "CompareImages", &Plugin_CompareImages },
     { "GetActiveInputLocaleId", &GetActiveInputLocaleId },
     { "ActivateKeyboardLayout", &ActivateKeyboardLayout },
     { "IsInputLocaleInstalled", &IsInputLocaleInstalled },

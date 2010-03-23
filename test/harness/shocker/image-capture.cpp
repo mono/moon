@@ -37,6 +37,7 @@
 #include "shutdown-manager.h"
 #include "string.h"
 #include "errno.h"
+#include "harness.h"
 
 static gint64
 get_now (void)
@@ -343,4 +344,24 @@ ImageHelper_CaptureSingleImage (const char *directory, const char *filename, int
 {
 	g_assert (delay == 0); // "Non-zero delay not implemented");
 	ImageCaptureProvider::CaptureSingleImage (directory, filename, x, y, width, height);
+}
+
+
+void CompareImages (const char *imageFile1, const char *imageFile2, guint8 tolerance, 
+	const char *diffFileName, bool copySourceFiles, guint8 * result)
+{
+	bool res = false;
+	char *msg;
+	guint8 output = 0;
+	guint32 output_length;
+	
+	msg = g_strdup_printf ("TestHost.CompareImages %s|%s|%i|%s|%s|%i", 
+		imageFile1, imageFile2, tolerance, 
+		"", diffFileName, copySourceFiles);
+	
+	if (send_harness_message (msg, &output, 1, &output_length))
+		res = output == 0;
+	g_free (msg);
+	
+	*result = res;
 }
