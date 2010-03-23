@@ -1,5 +1,9 @@
 2010-03-23  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Dont use a regex here.
+
+2010-03-23  Jackson Harper  <jackson@ximian.com>
+
 	* MarkupExpressionParser.cs: Don't use regexs.  This almost
 	doubles performance of markup expression parsing.
 

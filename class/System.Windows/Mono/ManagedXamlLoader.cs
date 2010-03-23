@@ -1432,9 +1432,33 @@ namespace Mono.Xaml
 			return o_value;
 		}
 
+		private static readonly string NULL_EXP = "x:Null";
+
 		private static bool IsExplicitNull (string value)
 		{
-			 return Regex.IsMatch (value, "^{\\s*x:Null\\s*}");
+			if (value.Length < 8)
+				return false;
+			if (value [0] != '{' || value [value.Length - 1] != '}')
+				return false;
+
+			int i;
+			for (i = 0; i < value.Length; i++) {
+				if (value [i] != ' ')
+					break;
+			}
+
+			int c;
+			for (c = 0; c < NULL_EXP.Length; c++) {
+				if (value [i+c] != NULL_EXP [c])
+					return false;
+			}
+
+			for (i += c; i < value.Length - 1; i++) {
+				if (value [i] != ' ')
+					return false;
+			}
+
+			return true;
 		}
 
 		private PropertyInfo GetContentProperty (Type t)
