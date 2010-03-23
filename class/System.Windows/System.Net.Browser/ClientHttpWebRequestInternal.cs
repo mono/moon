@@ -46,7 +46,6 @@ namespace System.Net.Browser {
 		static MethodInfo end_get_request_stream;
 		static MethodInfo begin_get_response;
 		static MethodInfo end_get_response;
-		static MethodInfo get_response;
 		static MethodInfo set_method;
 		static MethodInfo get_headers;
 		static MethodInfo set_headers;
@@ -67,7 +66,6 @@ namespace System.Net.Browser {
 			end_get_request_stream = web_request.GetMethod ("EndGetRequestStream");
 			begin_get_response = web_request.GetMethod ("BeginGetResponse");
 			end_get_response = web_request.GetMethod ("EndGetResponse");
-			get_response = web_request.GetMethod ("GetResponse");
 
 			set_method = web_request.GetProperty ("Method").GetSetMethod ();
 			get_headers = web_request.GetProperty ("Headers").GetGetMethod ();
@@ -157,19 +155,6 @@ namespace System.Net.Browser {
 			HttpWebAsyncResult async_result = (result.AsyncState as HttpWebAsyncResult);
 			try {			
 				response = end_get_response.Invoke (request, new object[] { asyncResult });
-			}
-			catch (TargetInvocationException tie) {
-				throw tie.InnerException;
-			}
-			finally {
-				async_result.SetComplete ();
-			}
-		}
-
-		void InvokeGetResponse (HttpWebAsyncResult async_result)
-		{
-			try {			
-				response = get_response.Invoke (request, null);
 			}
 			catch (TargetInvocationException tie) {
 				throw tie.InnerException;

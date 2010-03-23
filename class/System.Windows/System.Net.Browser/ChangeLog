@@ -1,3 +1,7 @@
+2010-03-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientHttpWebRequestInternal.cs: Remove unused code
+
 2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Simplified by moving common code to
