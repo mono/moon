@@ -99,6 +99,9 @@ The following annotations are understood by the generator:
 	  Access value, which defaults to Public.
 	* GenerateManagedAccessors: Disables the generation of managed getters/setters
 	  Valid Values: 'true' or 'false'. Defaults to 'true'.
+	* MetadataOverrides: Allows subclasses of a type to provide different default
+	  values for the specified DependencyProperty.
+	  Usage: MetadataOverrides=SHAPE;11.0;RECTANGLE;12.0;ELLIPSE;13.0
 
 src/type.h
 ==========

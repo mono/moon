@@ -999,26 +999,10 @@ class Generator {
 			text.Append (field.IsCustom ? "true" : "false");
 			text.Append (", ");
 
-			if (is_full) {
-				if (has_default_value) {
-					if (default_value.StartsWith ("new "))
-						text.Append ("Value::CreateUnrefPtr (");
-					else
-						text.Append ("new Value (");
-					text.Append (default_value);
-					text.Append (")");
-				} else {
-					text.Append ("NULL");
-				}
-			} else {
-				if (has_default_value) {
-					if (default_value.StartsWith ("new "))
-						text.Append ("Value::CreateUnrefPtr (");
-					else
-						text.Append ("new Value (");
-					text.Append (default_value);
-					text.Append (")");
-				}
+			if (has_default_value) {
+				text.Append (CreateValue (default_value));
+			} else if (is_full) {
+				text.Append ("NULL");
 			}
 
 			if ((has_default_value || is_full))
@@ -1056,6 +1040,18 @@ class Generator {
 			}
 
 			text.AppendLine (");");
+		}
+
+		text.AppendLine ();
+		foreach (var field in fields) {
+			foreach (var metadataOverride in field.MetadataOverrides) {
+				text.AppendFormat ("\tthis->GetProperty ({0}::{1})->AddDefaultValueOverride (Type::{2}, {3});",
+				                   field.Parent.Name,
+				                   field.Name,
+				                   metadataOverride.Key,
+				                   CreateValue (metadataOverride.Value));
+				text.AppendLine ();
+			}
 		}
 		text.AppendLine ("}");
 		text.AppendLine ();
@@ -1158,10 +1154,10 @@ class Generator {
 						   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
 						   field.ParentType.Name, field.Name);
 
-				if (is_attached) {
-					text.AppendFormat ("\tif (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty ({0}::{1})->GetDefaultValue();\n",
-							   field.ParentType.Name, field.Name);
-				}
+//				if (is_attached) {
+//					text.AppendFormat ("\tif (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty ({0}::{1})->GetDefaultValue(obj->GetType ()->GetKind ());\n",
+//							   field.ParentType.Name, field.Name);
+//				}
 
 				if (value_str == null) {
 					// Skip this
@@ -1268,6 +1264,14 @@ class Generator {
 
 		Helper.WriteAllText (Path.Combine (moon_dir, "dependencyproperty.g.cpp"), text.ToString ());
 
+	}
+
+	static string CreateValue (string default_value)
+	{
+		if (default_value.StartsWith ("new "))
+			return string.Format ("Value::CreateUnrefPtr ({0})", default_value);
+		else
+			return string.Format ("new Value ({0})", default_value);
 	}
 
 	static GlobalInfo GetTypes2 ()

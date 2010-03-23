@@ -150,6 +150,7 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("Validator", null);
 				known_annotations.Add ("AutoCreator", null);
 				known_annotations.Add ("IsCustom", null);
+				known_annotations.Add ("MetadataOverrides", null);
 
 				dependency_properties = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {

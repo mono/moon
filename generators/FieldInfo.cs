@@ -11,6 +11,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 
 class FieldInfo : MemberInfo {
@@ -122,6 +123,21 @@ class FieldInfo : MemberInfo {
 
 	public string DPDefaultValue {
 		get { return Annotations.GetValue ("DefaultValue"); }
+	}
+
+	public IEnumerable <KeyValuePair <string, string>> MetadataOverrides {
+		get {
+			var val = Annotations.GetValue ("MetadataOverrides");
+			if (val == null)
+				yield break;
+
+			var split = val.Split (';');
+			if (split.Length % 2 == 1)
+				throw new Exception ("Invalid value for MetadataOverrides. " + val);
+
+			for (int i = 0; i < split.Length; i += 2)
+				yield return new KeyValuePair<string, string> (split [i], split [i + 1]);
+		}
 	}
 
 	public string DPValidator {

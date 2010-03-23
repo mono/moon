@@ -1,3 +1,11 @@
+2010-03-23  Alan McGovern  <amcgovern@novell.com>
+
+	* README:
+	* Generator.cs:
+	* FieldInfo.cs:
+	* GlobalInfo.cs: Add a new attribute for DPs so that default
+	  values can be overridden on a per-type basis.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Manually handle TextDecorationCollection. Don't special case
