@@ -1,3 +1,8 @@
+2010-03-23  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: Don't use regexs.  This almost
+	doubles performance of markup expression parsing.
+
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeDependencyObjectHelper.cs: 1) Refactor the managed

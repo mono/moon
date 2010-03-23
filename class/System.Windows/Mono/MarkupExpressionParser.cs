@@ -32,7 +32,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Windows.Markup;
 
 
@@ -82,17 +81,17 @@ namespace Mono.Xaml {
 
 		public static bool IsTemplateBinding (string expression)
 		{
-			return Regex.IsMatch (expression, "^{\\s*TemplateBinding");
+			return MatchExpression ("TemplateBinding", expression);
 		}
 
 		public static bool IsStaticResource (string expression)
 		{
-			return Regex.IsMatch (expression, "^{\\s*StaticResource");
+			return MatchExpression ("StaticResource", expression);
 		}
 
 		public static bool IsBinding (string expression)
 		{
-			return Regex.IsMatch (expression, "^{\\s*Binding");
+			return MatchExpression ("Binding", expression);
 		}
 
 		private delegate object ExpressionHandler (ref string expression);
@@ -103,26 +102,79 @@ namespace Mono.Xaml {
 			bool rv = false;
 
 			if (!rv)
-				rv = TryHandler ("^{\\s*Binding\\s*", ParseBinding, ref expression, out result);
+				rv = TryHandler ("Binding", ParseBinding, ref expression, out result);
 			if (!rv)
-				rv = TryHandler ("^{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result);
+				rv = TryHandler ("StaticResource", ParseStaticResource, ref expression, out result);
 			if (!rv)
-				rv = TryHandler ("^{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result);
+				rv = TryHandler ("TemplateBinding", ParseTemplateBinding, ref expression, out result);
 			if (!rv)
-				rv = TryHandler ("^{\\s*RelativeSource\\s*", ParseRelativeSource, ref expression, out result);
+				rv = TryHandler ("RelativeSource", ParseRelativeSource, ref expression, out result);
 
 			return result;
 		}
 
+		private static bool MatchExpression (string match, string expression)
+		{
+			int dummy;
+			return MatchExpression (match, expression, out dummy);
+		}
+
+		private static bool MatchExpression (string match, string expression, out int end)
+		{
+			if (expression.Length < 2) {
+				end = 1;
+				return false;
+			}
+
+			if (expression [0] != '{') {
+				end = 2;
+				return false;
+			}
+
+			int i;
+			bool found = false;
+			for (i = 1; i < expression.Length; i++) {
+				if (expression [i] == ' ')
+					continue;
+				found = true;
+				break;
+			}
+
+			if (!found) {
+				end = 3;
+				return false;
+			}
+
+			if (i + match.Length > expression.Length) {
+				end = 4;
+				return false;
+			}
+				
+			int c;
+			for (c = 0; c < match.Length; c++) {
+				if (expression [i+c] == match [c])
+					continue;
+				end = 5;
+				return false;
+			}
+
+			if (c != match.Length) {
+				end = 6;
+				return false;
+			}
+
+			end = i + c;
+			return true;
+		}
+
 		private bool TryHandler (string match, ExpressionHandler handler, ref string expression, out object result)
 		{
-			Match m = Regex.Match (expression, match);
-			if (m == Match.Empty) {
+			int len;
+			if (!MatchExpression (match, expression, out len)) {
 				result = null;
 				return false;
 			}
 
-			int len = m.Index + m.Length;
 			expression = expression.Substring (len);
 			result = handler (ref expression);
 			return true;
