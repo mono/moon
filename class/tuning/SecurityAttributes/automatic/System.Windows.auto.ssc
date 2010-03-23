@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 524 methods
+# 527 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -138,12 +138,15 @@
 +SSC-M: Mono.Kind System.Windows.DependencyObject::GetKind()
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::.ctor()
 +SSC-M: System.Int32 System.Windows.DependencyObjectCollection`1::get_Count()
++SSC-M: System.Windows.PropertyMetadata System.Windows.DependencyProperty::GetMetadata(System.Type)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(Mono.Kind,System.String,System.Type,System.Boolean)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::LookupInternal(Mono.Kind,System.String,System.Type,System.Boolean,System.Windows.DependencyProperty&)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsAttached()
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsNullable()
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsValueType()
++SSC-M: System.Object System.Windows.DependencyProperty::GetDefaultValue(System.Object)
++SSC-M: System.Object System.Windows.DependencyProperty::GetDefaultValue(Mono.Kind)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsReadOnly()
 +SSC-M: System.Void System.Windows.DependencyPropertyChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Deployment::.ctor()
