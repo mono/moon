@@ -1,3 +1,10 @@
+2010-03-23  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp (OnCollectionItemChanged): reverse the ignore
+	condition for the collection change handler.
+
+	Fixs the smooth streaming play button gradient.
+
 2010-03-23  Chris Toshok  <toshok@ximian.com>
 
 	* color.cpp (color_from_str): use a binary search here.
