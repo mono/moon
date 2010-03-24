@@ -371,6 +371,8 @@ static bool
 install_html (OutOfBrowserSettings *settings, const char *app_dir)
 {
 	WindowSettings *window = settings->GetWindowSettings ();
+	int height = (int) window->GetHeight ();
+	int width = (int) window->GetWidth ();
 	char *filename, *title;
 	FILE *fp;
 	
@@ -391,17 +393,16 @@ install_html (OutOfBrowserSettings *settings, const char *app_dir)
 	fprintf (fp, "  <head>\n");
 	fprintf (fp, "    <title>%s</title>\n", title);
 	fprintf (fp, "    <script type=\"text/javascript\">\n");
-	fprintf (fp, "      function resize () {\n");
+	fprintf (fp, "      function ResizeWindow () {\n");
 	if (window)
-		fprintf (fp, "        window.resizeTo (%d, %d);\n", (int) window->GetWidth (), (int) window->GetHeight ());
+		fprintf (fp, "        window.resizeTo (%d, %d);\n", width, height);
 	fprintf (fp, "      }\n");
 	fprintf (fp, "    </script>\n");
 	fprintf (fp, "  </head>\n");
 	fprintf (fp, "  <body>\n");
 	fprintf (fp, "    <div id=\"MoonlightControl\">\n");
-	fprintf (fp, "      <object data=\"data:application/x-silverlight-2,\" type=\"application/x-silverlight-2\" width=\"100%%\" height=\"100%%\" onload=\"resize\">\n");
+	fprintf (fp, "      <object data=\"data:application/x-silverlight-2,\" type=\"application/x-silverlight-2\" width=\"100%%\" height=\"100%%\" onload=\"ResizeWindow\">\n");
 	fprintf (fp, "        <param name=\"source\" value=\"Application.xap\"/>\n");
-	fprintf (fp, "        <param name=\"background\" value=\"white\"/>\n");
 	fprintf (fp, "      </object>\n");
 	fprintf (fp, "    </div>\n");
 	fprintf (fp, "  </body>\n");
@@ -475,7 +476,7 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 static bool
 install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 {
-	char *filename;
+	char *filename, *app_name;
 	FILE *fp;
 	
 	filename = g_build_filename (app_dir, "lunar-launcher", NULL);
@@ -484,10 +485,19 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 		return false;
 	}
 	
+	app_name = install_dialog_get_app_safe_name (settings);
+	
 	fprintf (fp, "#!/bin/sh\n\n");
 	fprintf (fp, "export MOONLIGHT_IS_OUT_OF_BROWSER=1\n");
+#if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
+	fprintf (fp, "firefox -CreateProfile %s -no-remote\n", app_name);
+	fprintf (fp, "firefox -P %s -no-remote -chrome chrome://moonlight/content/moonlight.xul \"file:%s/index.html\"\n", app_name, app_dir);
+#else
 	fprintf (fp, "google-chrome --app=\"file:%s/index.html\"\n", app_dir);
+#endif
 	fclose (fp);
+	
+	g_free (app_name);
 	
 	if (chmod (filename, 0777) == -1) {
 		unlink (filename);
@@ -598,12 +608,24 @@ install_dialog_install (InstallDialog *dialog)
 	return true;
 }
 
-
 char *
-install_utils_get_app_name (OutOfBrowserSettings *settings)
+install_utils_get_app_safe_name (OutOfBrowserSettings *settings)
 {
-	// FIXME: not safe to use the short name like this... but it'll do for now.
-	return g_strdup (settings->GetShortName ());
+	const char *s, *name = settings->GetShortName ();
+	char *app_name, *d;
+	
+	d = app_name = (char *) g_malloc (strlen (name) + 1);
+	s = name;
+	
+	while (*s != '\0') {
+		if (!strchr ("`~!#$%^&*\\|;:'\"/ ", *s))
+			*d++ = *s;
+		s++;
+	}
+	
+	*d = '\0';
+	
+	return app_name;
 }
 
 char *
@@ -611,7 +633,7 @@ install_utils_get_install_dir (OutOfBrowserSettings *settings)
 {
 	char *app_name, *install_dir;
 	
-	app_name = install_utils_get_app_name (settings);
+	app_name = install_utils_get_app_safe_name (settings);
 	install_dir = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", app_name, NULL);
 	g_free (app_name);
 	
@@ -645,11 +667,11 @@ install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings)
 char *
 install_utils_get_launcher_script (OutOfBrowserSettings *settings)
 {
-	char *app_name, *launcher;
+	char *app_dir, *launcher;
 	
-	app_name = install_utils_get_app_name (settings);
-	launcher = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", app_name, "lunar-launcher", NULL);
-	g_free (app_name);
+	app_dir = install_utils_get_install_dir (settings);
+	launcher = g_build_filename (app_dir, "lunar-launcher", NULL);
+	g_free (app_dir);
 	
 	return launcher;
 }

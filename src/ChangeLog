@@ -1,3 +1,11 @@
+2010-03-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_launcher_script): Create a
+	script to create a firefox profile for this app and then launch it
+	with our chrome:// url.
+	(install_utils_get_app_safe_name): Safe-ify our app's ShortName
+	for filesystem paths and for use with firefox profiles.
+
 2010-03-24  Alan McGovern  <amcgovern@novell.com>
 
 	* brush.cpp: If there's no source yet, just render
