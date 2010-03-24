@@ -76,7 +76,8 @@ DependencyProperty::Dispose ()
 		}
 	}
 
-	g_hash_table_destroy (default_value_overrides);
+	if (default_value_overrides)
+		g_hash_table_destroy (default_value_overrides);
 	default_value_overrides = NULL;
 }
 

@@ -5,6 +5,7 @@
 	initialize default_value_overrides when an override is used, this
 	saves us from always walking up the classes and wasting lots of
 	time. Saves 3-4% on an iis profile.
+	(Dispose): only destroy the talk if it is there.
 
 2010-03-23  Chris Toshok  <toshok@ximian.com>
 
