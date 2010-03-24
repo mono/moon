@@ -715,7 +715,7 @@ namespace System.Windows
 
             public bool Equals(TimelineDataToken other)
             {
-                return other.property.Equals (property) && other.target.Equals (target);
+                return object.Equals (other.property, property) && object.Equals (other.target, target);
             }
 
             public override bool Equals (object obj)
@@ -727,7 +727,12 @@ namespace System.Windows
 
             public override int GetHashCode()
             {
-                return property.GetHashCode () ^ target.GetHashCode ();
+                int hash = 0;
+                if (property != null)
+                    hash ^= property.GetHashCode ();
+                if (target != null)
+                    hash ^= target.GetHashCode ();
+                return hash;
             }
         }
 

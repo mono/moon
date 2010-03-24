@@ -1,3 +1,8 @@
+2010-03-24  Alan McGovern  <amcgovern@novell.com>
+
+	* VSM/System/Windows/VisualStateManager.cs: Fix a null ref
+	  caused by null properties.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* VSM/System/Windows/VisualStateGroup.cs: Update to SL4 beta API.
