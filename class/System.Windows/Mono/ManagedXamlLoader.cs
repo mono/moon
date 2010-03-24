@@ -791,12 +791,13 @@ namespace Mono.Xaml
 
 		private unsafe bool AddChild (XamlCallbackData *data, Value* parent_parent_ptr, bool parent_is_property, string parent_xmlns, Value *parent_ptr, IntPtr parent_data, Value* child_ptr, IntPtr child_data)
 		{
-			object parent_parent = Value.ToObject (null, parent_parent_ptr);
 			object parent = Value.ToObject (null, parent_ptr);
 			object child = Value.ToObject (null, child_ptr);
 
-			if (parent_is_property)
+			if (parent_is_property) {
+				object parent_parent = Value.ToObject (null, parent_parent_ptr);
 				return AddChildToProperty (data, parent_parent, parent_xmlns, parent, child, child_data);
+			}
 
 			return AddChildToItem (data, parent_parent_ptr, parent, parent_data, child_ptr, child, child_data);
 		}

@@ -1,3 +1,8 @@
+2010-03-24  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: ToObject is somewhat expensive so nonts
+	let not use it unnecessarily.
+
 2010-03-23  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Dont use a regex here.
