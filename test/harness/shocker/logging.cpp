@@ -185,6 +185,18 @@ LogProvider::SetRuntimePropertyValue (const char *propertyName, const char *valu
 	g_hash_table_insert (runtime_properties, g_strdup (propertyName), g_strdup (value));
 }
 
+void
+LogProvider::StartLog ()
+{
+	g_warning ("[shocker] LogProvider::StartLog (): Not implemented\n");
+}
+
+void
+LogProvider::EndLog ()
+{
+	g_warning ("[shocker] LogProvider::EndLog (): Not implemented\n");
+}
+
 void 
 LogDebug (const char *message)
 {
@@ -218,18 +230,17 @@ void LogWarning (const char *message)
 
 void GetTestDefinition (char **result)
 {
-	printf ("[shocker] GetTestDefinition: Not implemented\n");
+	g_error ("[shocker] GetTestDefinition: Not implemented\n");
 }
-
 
 void TestLogger_StartLog (const char *message, const char *testDefinitionXml, const char *filePath)
 {
-	g_warning ("[shocker] TestLogger_StartLog (message: '%s', testDefinitionXml: '%s', filePath: '%s'): Not implemented\n", message, testDefinitionXml, filePath);
+	LogProvider::GetInstance ()->StartLog ();
 }
 
 void TestLogger_EndLog (const char *message)
 {
-	g_warning ("[shocker] TestLogger_EndLog (message: '%s')\n", message);
+	LogProvider::GetInstance ()->EndLog ();
 }
 
 void TestLogger_LogDebug (const char *message)

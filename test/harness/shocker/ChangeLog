@@ -1,3 +1,10 @@
+2010-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: Stubbed out new test plugin methods and implemented
+	GetPlatformName.
+
+	* logging.cpp|h: Added Start|EndLog methods.
+
 2010-03-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* image-capture.cpp|h: Add a CompareImages method with the signature the

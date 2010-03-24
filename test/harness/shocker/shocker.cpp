@@ -307,7 +307,6 @@ static void
 Plugin_CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	bool res = false;
-	char *msg;
 	guint8 output = 0;
 	
 	g_assert (arg_count >= 6);
@@ -423,7 +422,91 @@ SwitchToHighContrastScheme (ShockerScriptableControlObject* obj, char* name, con
 	printf ("[shocker] SwitchToHighContrastScheme: Not implemented\n");
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
-    
+
+static void
+StartLog (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	LogProvider::GetInstance ()->StartLog ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+EndLog (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	LogProvider::GetInstance ()->EndLog ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+MouseWheel (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] mouseWheel (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+EnablePrivacyPrompts (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] EnablePrivacyPrompts (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+GetRenderDataCapturer (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] GetRenderDataCapturer (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+LogPerfEvent (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] LogPerfEvent (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+InitializePerfProvider (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] InitializePerfProvider (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+UninitializePerfProvider (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] UninitializePerfProvider (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+GetPlatformName (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] GetPlatformName (): Returning 'Linux', which may cause failures.\n");
+	STRINGZ_TO_NPVARIANT (strdup ("Linux"), *result);
+}
+
+static void
+GetPlatformVersion (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] GetPlatformVersion (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+StartWebCamWriter (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] StartWebCamWriter (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+StopWebCamWriter (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	g_error ("[shocker] StopWebCamWriter (): Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
 static void
 CaptureSingleImage (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
@@ -537,6 +620,21 @@ static ScriptableMethod scriptable_methods [] = {
     { "SetRuntimePropertyValue", &SetRuntimePropertyValue },
     { "CleanDRM", &CleanDRM },
     { "SwitchToHighContrastScheme", &SwitchToHighContrastScheme },
+    
+    // New test plugin methods in 3.0/4.0
+    { "StartLog", &StartLog },
+    { "EndLog", &EndLog },
+    { "mouseWheel", &MouseWheel },
+    { "EnablePrivacyPrompts", &EnablePrivacyPrompts },
+    { "GetRenderDataCapturer", &GetRenderDataCapturer },
+    { "LogPerfEvent", &LogPerfEvent },
+    { "InitializePerfProvider", &InitializePerfProvider },
+    { "UninitializePerfProvider", &UninitializePerfProvider },
+    { "GetPlatformName", &GetPlatformName },
+    { "GetPlatformVersion", &GetPlatformVersion },
+    { "StartWebCamWriter", &StartWebCamWriter },
+    { "StopWebCamWriter", &StopWebCamWriter },    
+    
 	{ NULL, NULL }
 };
 

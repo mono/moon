@@ -64,6 +64,8 @@ public:
 	void SetRuntimePropertyValue (const char *propertyName, const char *value);
 
 	void SetTestName (const char *test_name);
+	void StartLog ();
+	void EndLog ();
 
 private:
 	void Log (const char* level, const char* msg);
