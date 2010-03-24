@@ -1,5 +1,9 @@
 2010-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* logging.cpp: Fix local/instance variable write.
+
+2010-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* logging.cpp: Try to get the test definition again if the entire buffer was
 	filled.
 

@@ -74,7 +74,7 @@ void
 LogProvider::SetTestName (const char *test_name)
 {
 	g_free (this->test_name);
-	test_name = g_strdup (test_name);
+	this->test_name = g_strdup (test_name);
 }
 
 void
