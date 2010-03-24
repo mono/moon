@@ -1,3 +1,12 @@
+2010-03-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Makefile.am: Updated to include the chrome:// content in the xpi
+	and crx installers.
+
+	* chrome.manifest: Added content and locale entries for OOB.
+
+	* moonlight.xul: OutOfBrowser xul window.
+
 2010-03-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* install.rdf.in: Mark all us developers as developers rather than
