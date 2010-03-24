@@ -372,6 +372,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Effects/ShaderEffect.cs			\
 	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
+	$(srcdir)/System.Windows/ApplicationLifetimeObjectsCollection.cs	\
 	$(srcdir)/System.Windows/ApplicationServiceContext.cs			\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\

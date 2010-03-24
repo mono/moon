@@ -1,3 +1,13 @@
+2010-03-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Forward HasElevatedPermissions property to
+	SecurityManager (inside mscorlib) so all code can query the 
+	current trust level. Change ApplicationLifetimeObjects to use
+	an internal collection that mimic SL behavior (it's mostly
+	read-only expect at parse time).
+	* ApplicationLifetimeObjectsCollection.cs: New. Internal
+	collection that switch to read-only at application starup.
+
 2010-03-23  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.cs (RegisterAny): retrieve

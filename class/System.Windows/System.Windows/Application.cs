@@ -34,6 +34,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Windows.Controls;
 using System.Windows.Resources;
 using System.Windows.Interop;
@@ -59,6 +60,7 @@ namespace System.Windows {
 		ConvertSetterValuesCallback convert_setter_values;
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
+		ApplicationLifetimeObjectsCollection lifetime_objects;
 
 		bool free_mapping;
 
@@ -89,7 +91,7 @@ namespace System.Windows {
 				root_visual = Current.root_visual;
 			}
 
-			ApplicationLifetimeObjects = new List<IApplicationService> ();
+			lifetime_objects = new ApplicationLifetimeObjectsCollection ();
 
 			var handler = UIANewApplication;
 			if (handler != null)
@@ -184,7 +186,7 @@ namespace System.Windows {
 		}
 
 		public IList ApplicationLifetimeObjects {
-			get; private set;
+			get { return lifetime_objects; }
 		}
 
 
@@ -552,19 +554,19 @@ namespace System.Windows {
 				return NativeDependencyObjectHelper.Lookup (app) != null;
 			}
 		}
-
+#if NET_3_0
+		// desktop assemblies always have (more than) elevated permissions
 		public bool HasElevatedPermissions {
-			get {
-				Console.WriteLine ("System.Windows.Application.get_HasElevatedPermissions: not implemented (returning false)");
-				return false;
-			}
-			[EditorBrowsable (EditorBrowsableState.Never)]
-			set {
-				Console.WriteLine ("System.Windows.Application.set_HasElevatedPermissions: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return true; }
+			set { ; }
 		}
-
+#else
+		public bool HasElevatedPermissions {
+			get { return SecurityManager.HasElevatedPermissions; }
+			[EditorBrowsable (EditorBrowsableState.Never)]
+			set { SecurityManager.HasElevatedPermissions = value; }
+		}
+#endif
 		public Window MainWindow {
 			get {
 				Console.WriteLine ("System.Windows.Application.get_MainWindow: NIEX");
@@ -624,6 +626,8 @@ namespace System.Windows {
 			// the lifetime objects?  or should we be
 			// creating a new one for each call?
 			ApplicationServiceContext ctx = new ApplicationServiceContext (e.InitParamsAsDictionary);
+
+			lifetime_objects.Close (); // it's now too late to add items to this collection
 
 			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
 				IApplicationService svc = ApplicationLifetimeObjects[i] as IApplicationService;
