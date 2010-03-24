@@ -1,3 +1,8 @@
+2010-03-24  Alan McGovern  <amcgovern@novell.com>
+
+	* media.cpp: If there's no BitmapImage we need to create one
+	  as the default value for SourceProperty is NULL in SL3+.
+
 2010-03-23  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (ComputeStretchBounds): work around the the outside of

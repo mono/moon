@@ -345,8 +345,13 @@ Image::SourcePixelDataChanged ()
 void
 Image::SetSourceInternal (Downloader *downloader, char *PartName)
 {
+	// The default value for SourceProperty is NULL, so we need
+	// to create one here if required.
 	BitmapImage *source = (BitmapImage *) GetSource ();
-
+	if (!source) {
+		source = new BitmapImage ();
+		SetSource (source);
+	}
 	MediaBase::SetSourceInternal (downloader, PartName);
 
 	source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
