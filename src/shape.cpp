@@ -257,15 +257,18 @@ Shape::ComputeStretchBounds ()
 	}
 
 	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
+		framework.width = framework.width == 0.0 ? shape_bounds.width : framework.width;
+		framework.height = framework.height == 0.0 ? shape_bounds.height : framework.height;
+
 		if (!isnan (specified.width))
 			framework.width = specified.width;
 		if (!isnan (specified.height))
 			framework.height = specified.height;
-
+	} 
+	else if (!LayoutInformation::GetPreviousConstraint (this)) {
 		framework.width = framework.width == 0.0 ? shape_bounds.width : framework.width;
 		framework.height = framework.height == 0.0 ? shape_bounds.height : framework.height;
 	}
-
 
 	if (stretch != StretchNone) {
 		if (framework.width == 0.0 || framework.height == 0.0) {

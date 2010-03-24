@@ -1,5 +1,12 @@
 2010-03-23  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (ComputeStretchBounds): work around the the outside of
+	layout case until the we have a better plan.  
+
+	Fixes the missing pause button on the experience smooth streaming site
+
+2010-03-23  Larry Ewing  <lewing@novell.com>
+
 	* dependencyproperty.cpp (GetDefaultValue): actually look up the
 	default value on the parent type when walking up.  Also only
 	initialize default_value_overrides when an override is used, this
