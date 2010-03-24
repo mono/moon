@@ -485,7 +485,7 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 		return false;
 	}
 	
-	app_name = install_dialog_get_app_safe_name (settings);
+	app_name = install_utils_get_app_safe_name (settings);
 	
 	fprintf (fp, "#!/bin/sh\n\n");
 	fprintf (fp, "export MOONLIGHT_IS_OUT_OF_BROWSER=1\n");
