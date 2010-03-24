@@ -32,73 +32,58 @@ using System.ComponentModel;
 
 namespace System.Windows.Data {
 	public abstract class CollectionViewGroup : INotifyPropertyChanged {
-		private object name;
 
-		protected CollectionViewGroup (object name)
-		{
-			this.name = name;
+		protected event PropertyChangedEventHandler PropertyChanged;
 
-			Console.WriteLine ("System.Windows.Data.CollectionViewGroup..ctor: NIEX");
-			throw new NotImplementedException ();
+		event PropertyChangedEventHandler System.ComponentModel.INotifyPropertyChanged.PropertyChanged {
+			add { PropertyChanged += value; }
+			remove { PropertyChanged -= value; }
 		}
 
-		protected virtual void OnPropertyChanged (PropertyChangedEventArgs e)
-		{
-			Console.WriteLine ("System.Windows.Data.CollectionViewGroup.OnPropertyChanged: NIEX");
-			throw new NotImplementedException ();
+		public abstract bool IsBottomLevel {
+			get;
 		}
-
-		public abstract bool IsBottomLevel { get; }
 
 		public int ItemCount {
-			get {
-				Console.WriteLine ("System.Windows.Data.CollectionViewGroup.get_ItemCount: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
-		public ReadOnlyObservableCollection<object> Items {
-			get {
-				Console.WriteLine ("System.Windows.Data.CollectionViewGroup.get_Items: NIEX");
-				throw new NotImplementedException ();
-			}
+			get; private set;
 		}
 
 		public object Name {
-			get {
-				return name;
-			}
+			get; private set;
 		}
 
 		protected int ProtectedItemCount {
 			get {
-				Console.WriteLine ("System.Windows.Data.CollectionViewGroup.get_ProtectedItemCount: NIEX");
-				throw new NotImplementedException ();
+				return ItemCount;
 			}
 			set {
-				Console.WriteLine ("System.Windows.Data.CollectionViewGroup.set_ProtectedItemCount: NIEX");
-				throw new NotImplementedException ();
+				if (ItemCount != value) {
+					ItemCount = value;
+					OnPropertyChanged (new PropertyChangedEventArgs ("ItemCount"));
+				}
 			}
 		}
 
 		protected ObservableCollection<object> ProtectedItems {
-			get {
-				Console.WriteLine ("System.Windows.Data.CollectionViewGroup.get_ProtectedItems: NIEX");
-				throw new NotImplementedException ();
-			}
+			get; private set;
 		}
 
-		protected event PropertyChangedEventHandler PropertyChanged;
-	
-		event PropertyChangedEventHandler System.ComponentModel.INotifyPropertyChanged.PropertyChanged {
-			add {
-				Console.WriteLine ("System.Windows.Data.CollectionViewGroup.add_PropertyChanged: NIEX");
-				throw new NotImplementedException ();
-			}
-			remove {
-				Console.WriteLine ("System.Windows.Data.CollectionViewGroup.remove_PropertyChanged: NIEX");
-				throw new NotImplementedException ();
-			}
+		public ReadOnlyObservableCollection<object> Items {
+			get; private set;
+		}
+
+		protected CollectionViewGroup (object name)
+		{
+			Name = name;
+			ProtectedItems = new ObservableCollection<object> ();
+			Items = new ReadOnlyObservableCollection<object> (ProtectedItems);
+		}
+
+		protected virtual void OnPropertyChanged (PropertyChangedEventArgs e)
+		{
+			var h = PropertyChanged;
+			if (h != null)
+				h (this, e);
 		}
 	}
 }

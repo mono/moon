@@ -1,3 +1,9 @@
+2010-03-24  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionViewGroup.cs: Implement CollectionViewGroup enough
+	  to let DRT 872 run to completion. It still has MediaElement
+	  issues though.
+
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: 1) Refactor the managed
