@@ -1,3 +1,7 @@
+2010-03-24  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: re-add the CheckVisibility step.
+
 2010-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am:
