@@ -1,5 +1,10 @@
 2010-03-24  Alan McGovern  <amcgovern@novell.com>
 
+	* brush.cpp: If there's no source yet, just render
+	  transparent. Fixes drt 872.
+
+2010-03-24  Alan McGovern  <amcgovern@novell.com>
+
 	* media.cpp: If there's no BitmapImage we need to create one
 	  as the default value for SourceProperty is NULL in SL3+.
 

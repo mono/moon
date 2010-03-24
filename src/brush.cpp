@@ -1007,8 +1007,7 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	}
 	
 	if (!mplayer || !(surface = mplayer->GetCairoSurface ())) {
-		// not yet available, draw gray-ish shadow where the brush should be applied
-		cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.5);
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
 		return;
 	}
 	
