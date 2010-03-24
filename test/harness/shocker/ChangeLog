@@ -1,5 +1,10 @@
 2010-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* logging.cpp: Try to get the test definition again if the entire buffer was
+	filled.
+
+2010-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shocker.cpp: Stubbed out new test plugin methods and implemented
 	GetPlatformName.
 

@@ -148,8 +148,8 @@ LogProvider::GetTestDefinition (bool isJson)
 {
 	char *test_definition;
 	const char *msg;
-	const int buffer_length = 32000;/* test definitions can be pretty huge */
-	guint8 *buffer = (guint8 *) g_malloc0 (buffer_length);
+	int buffer_length = 16000;/* test definitions can be pretty huge */
+	guint8 *buffer = NULL;
 	guint32 output_length;
 
 	if (isJson) {
@@ -157,19 +157,28 @@ LogProvider::GetTestDefinition (bool isJson)
 	} else {
 		msg = "TestDefinition.GetTestDefinition";
 	}
-	
-	if (send_harness_message (msg, buffer, buffer_length, &output_length)) {
-		test_definition = g_strndup ((char *) buffer, output_length);
 
-		//printf ("[shocker] LogProvider::GetTestDefinition (isJson: %i)\n", isJson);
-		//printf (test_definition);
-		//printf ("\n");
-	} else {
-		printf ("[shocker] LogProvider::GetTestDefinition (): Could not get test definition: %s\n", strerror (errno));
-		test_definition = NULL;
-	}
+	do {
+		buffer_length *= 2;
+		g_free (buffer);
+		buffer = (guint8 *) g_malloc0 (buffer_length);
+		
+		if (send_harness_message (msg, buffer, buffer_length, &output_length)) {
+			if (output_length < buffer_length) {
+				test_definition = g_strndup ((char *) buffer, output_length);
 	
+				//printf ("[shocker] LogProvider::GetTestDefinition (isJson: %i)\n", isJson);
+				//printf (test_definition);
+				//printf ("\n");
+			}
+		} else {
+			printf ("[shocker] LogProvider::GetTestDefinition (): Could not get test definition: %s\n", strerror (errno));
+			test_definition = NULL;
+		}
+	} while (output_length == buffer_length);
+
 	g_free (buffer);
+
 	return test_definition;
 }
 
