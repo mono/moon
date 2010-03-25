@@ -1,3 +1,8 @@
+2010-03-25  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Dont add elements to their parent until they are fully
+	parsed.
+
 2010-03-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/install-dialog.cpp (install_launcher_script): Create a

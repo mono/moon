@@ -930,7 +930,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 	virtual DependencyObject *CreateItem () { return NULL; }
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { return false; }
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
-	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) {	}
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
 	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value) { return false; }
@@ -969,7 +969,7 @@ class XamlElementInstanceEnum : public XamlElementInstance {
 	virtual DependencyObject *CreateItem () { return NULL; }
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { return false; }
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
-	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) {	}
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
 	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value) { return false; }
@@ -1737,15 +1737,6 @@ start_element (void *data, const char *el, const char **attr)
 		if (p->error_args)
 			return;
 
-		if (inst->IsDependencyObject ()) {
-			if (p->current_element){
-				if (p->current_element->info) {
-					p->current_element->AddChild (p, inst);
-					if (p->error_args)
-						return;
-				}
-			}
-		}
 	} else {
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
 		// however we can't add properties to something bad, like a <Recta.gle> element
@@ -2004,6 +1995,10 @@ end_element_handler (void *data, const char *el)
 					}
 
 					template_->SetXamlBuffer (context, buffer);
+
+					if (p->current_element->parent)
+						p->current_element->parent->AddChild (p, p->current_element);
+
 					p->current_element = p->current_element->parent;
 				} else if (p->buffer_mode == BUFFER_MODE_IGNORE) {
 					// For now we'll actually keep/clear this buffer because it makes testing easier
@@ -2026,17 +2021,16 @@ end_element_handler (void *data, const char *el)
 		// according to http://blogs.msdn.com/devdave/archive/2008/10/11/control-lifecycle.aspx
 		// default styles are apply when the end tag is read.
 		//
+
+
+		if (p->current_element->parent)
+			p->current_element->parent->AddChild (p, p->current_element);
+
 		if (p->current_element->IsDependencyObject () &&
 		    p->current_element->GetAsDependencyObject() &&
 		    p->current_element->GetAsDependencyObject()->Is(Type::CONTROL)) {
-
 			Control *control = (Control*)p->current_element->GetAsDependencyObject();
 			control->ApplyDefaultStyle ();
-		}
-		else if (!p->current_element->IsDependencyObject ()) {
-
-			if (p->current_element->parent)
-				p->current_element->parent->AddChild (p, p->current_element);
 		}
 		break;
 	case XamlElementInstance::PROPERTY: {
