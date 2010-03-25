@@ -223,6 +223,7 @@ int InputHelper_MoveMouseDirect (int x, int y);
 int InputHelper_MouseLeftClick (unsigned int delay);
 int InputHelper_MouseRightClick (unsigned int delay);
 int InputHelper_MouseDoubleClick (unsigned int delay);
+int InputHelper_MouseLeftButtonUp (unsigned int delay);
 int InputHelper_MouseLeftButtonDown (unsigned int delay);
 int InputHelper_MouseWheel (guint16 clicks);
 int InputHelper_MouseIsAtPosition (int x, int y, guint8 *result);

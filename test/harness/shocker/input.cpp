@@ -544,6 +544,12 @@ int InputHelper_MouseDoubleClick (unsigned int delay)
 	return 0;
 }
 
+int InputHelper_MouseLeftButtonUp (unsigned int delay)
+{
+	InputProvider::GetInstance ()->MouseLeftButtonUp (delay);
+	return 0;
+}
+
 int InputHelper_MouseLeftButtonDown (unsigned int delay)
 {
 	InputProvider::GetInstance ()->MouseLeftButtonDown (delay);

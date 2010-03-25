@@ -1,5 +1,9 @@
 2010-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* input.cpp|h: Add p/invokable MouseLeftButtonUp too.
+
+2010-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* input.cpp: Implement MoveMouseDirect.
 
 2010-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
