@@ -1,7 +1,14 @@
+let nsISupports = Components.interfaces.nsISupports;
+let nsISupportsArray = Components.interfaces.nsISupportsArray;
+let nsISupportsString = Components.interfaces.nsISupportsString;
+
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+
 function ApplicationStartup()
 {
 	var uriToLoad = null;
 	var iframe = null;
+	var src = null;
 	
 	// window.arguments[0]: URI to load (string), or an nsISupportsArray of
 	//                      nsISupportsStrings to load, or a xul:tab of
@@ -16,5 +23,27 @@ function ApplicationStartup()
 		uriToLoad = window.arguments[0];
 	
 	iframe = document.getElementById ("MoonlightIFrame");
-	iframe.src = uriToLoad;
+	
+	if (uriToLoad) {
+		if (uriToLoad instanceof nsISupportsArray) {
+			let count = uriToLoad.Count ();
+			
+			alert ("loading " + count + " uris");
+			for (let i = 0; i < count; i++) {
+				let str = uriToLoad.GetElementAt (i).QueryInterface (nsISupportsString);
+				alert ("urilist[" + i + "] = " + str);
+			}
+		} else if (uriToLoad instanceof XULElement) {
+			alert ("loading a XULElement dingus");
+		} else if (uriToLoad instanceof nsISupports) {
+			alert ("loading a nsISupports dingus");
+		} else {
+			alert ("loading single uri " + uriToLoad);
+			src = uriToLoad;
+		}
+	} else {
+		alert ("no uris??");
+	}
+	
+	iframe.src = src;
 }

@@ -12,6 +12,7 @@ novell_moonlight_xpi_CONTENTS =		\
 				$(srcdir)/chrome.manifest \
 				$(srcdir)/moonlight.xul \
 				$(srcdir)/moonlight.js	\
+				$(srcdir)/application.js \
 				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
 				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
 				$(top_builddir)/src/.libs/libmoonxpi.so
@@ -78,6 +79,7 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) $(BRIDGES) Makefile
 	cp -L $(srcdir)/icon32.png .xpinstall/skin/
 	mkdir -p .xpinstall/content/
 	cp -L $(srcdir)/moonlight.xul .xpinstall/content/
+	cp -L $(srcdir)/application.js .xpinstall/content/
 	mkdir -p .xpinstall/locale/en-US/
 	touch .xpinstall/locale/en-US/moonlight.dtd
 	mkdir -p .xpinstall/components/
@@ -154,5 +156,5 @@ clean-local:
 	-rm -f *.crx
 	-rm -rf tmp*
 
-EXTRA_DIST = install.rdf.in manifest.json.in icon32.png icon48.png icon128.png chrome.manifest check_xpi.sh moonlight.xul moonlight.js
+EXTRA_DIST = install.rdf.in manifest.json.in icon32.png icon48.png icon128.png chrome.manifest check_xpi.sh moonlight.xul moonlight.js application.js
 DISTCLEANFILES = novell-moonlight.xpi
