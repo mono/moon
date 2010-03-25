@@ -17,7 +17,7 @@
       <Entry build="False" name="Microsoft.Silverlight.Testing" configuration="Debug" />
       <Entry build="False" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Debug" />
       <Entry build="False" name="Mono.Moonlight.UnitTesting" configuration="Debug" />
-      <Entry build="False" name="libshocker" configuration="Debug" />
+      <Entry build="True" name="libshocker" configuration="Debug" />
       <Entry build="False" name="tools/xamlg" configuration="Debug" />
       <Entry build="False" name="tools/xaml2html" configuration="Debug" />
       <Entry build="False" name="tools/unsign" configuration="Debug" />
