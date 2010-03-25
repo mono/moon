@@ -121,6 +121,18 @@ InputProvider::GetInstance ()
 }
 
 void
+InputProvider::MoveMouseDirect (int x, int y)
+{
+	LOG_INPUT ("InputProvider::MoveMouseDirect (%i, %i)\n", x, y);
+
+	g_assert (xtest_available);
+	g_assert (display);
+
+	XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, x, y, CurrentTime);
+	XFlush (display);
+}
+
+void
 InputProvider::MoveMouse (int x, int y)
 {
 	LOG_INPUT ("InputProvider::MoveMouse (%i, %i)\n", x, y);
