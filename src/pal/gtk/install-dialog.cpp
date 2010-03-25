@@ -403,6 +403,7 @@ install_html (OutOfBrowserSettings *settings, const char *app_dir)
 	fprintf (fp, "    <div id=\"MoonlightControl\">\n");
 	fprintf (fp, "      <object data=\"data:application/x-silverlight-2,\" type=\"application/x-silverlight-2\" width=\"100%%\" height=\"100%%\" onload=\"ResizeWindow\">\n");
 	fprintf (fp, "        <param name=\"source\" value=\"Application.xap\"/>\n");
+	fprintf (fp, "        <param name=\"out-of-browser\" value=\"true\"/>\n");
 	fprintf (fp, "      </object>\n");
 	fprintf (fp, "    </div>\n");
 	fprintf (fp, "  </body>\n");
@@ -476,6 +477,9 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 static bool
 install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 {
+	WindowSettings *window = settings->GetWindowSettings ();
+	int height = (int) window->GetHeight ();
+	int width = (int) window->GetWidth ();
 	char *filename, *app_name;
 	FILE *fp;
 	
@@ -488,10 +492,8 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	app_name = install_utils_get_app_safe_name (settings);
 	
 	fprintf (fp, "#!/bin/sh\n\n");
-	fprintf (fp, "export MOONLIGHT_IS_OUT_OF_BROWSER=1\n");
 #if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
-	fprintf (fp, "firefox -CreateProfile %s -no-remote\n", app_name);
-	fprintf (fp, "firefox -P %s -no-remote -chrome chrome://moonlight/content/moonlight.xul \"file:%s/index.html\"\n", app_name, app_dir);
+	fprintf (fp, "firefox -new-window -width %d -height %d -moonlight \"file:%s/index.html\"\n", width, height, app_dir);
 #else
 	fprintf (fp, "google-chrome --app=\"file:%s/index.html\"\n", app_dir);
 #endif

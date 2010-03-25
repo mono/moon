@@ -1,3 +1,9 @@
+2010-03-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_html): Provide an
+	out-of-browser parameter.
+	(install_launcher_script): Modified the firefox command-line.
+
 2010-03-25  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Dont add elements to their parent until they are fully
