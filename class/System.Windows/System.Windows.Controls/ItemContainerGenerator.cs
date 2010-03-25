@@ -107,10 +107,8 @@ namespace System.Windows.Controls {
 				throw new InvalidOperationException ("Only items which have been Realized can be removed");
 		}
 
-		static int counter;
 		internal DependencyObject GenerateNext (out bool isNewlyRealized)
 		{
-			Console.WriteLine ("Generating container {0} at position {1}/{2}", counter ++, GenerationState.Position.Index, GenerationState.Position.Offset);
 			int index;
 			// This is relative to the realised elements.
 			int startAt = GenerationState.Position.Index;

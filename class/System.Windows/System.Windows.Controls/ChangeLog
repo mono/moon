@@ -1,3 +1,8 @@
+2010-03-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemContainerGenerator.cs: Remove debug spew which shouldn't
+	  have been committed
+
 2010-03-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: Nuke SetParentSafe as the only place where
