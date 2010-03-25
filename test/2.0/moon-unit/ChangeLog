@@ -1,3 +1,12 @@
+2010-03-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ReflectionTest.cs (ReflectCriticalPublicClass_
+	PublicStaticProperty): Use AppDomain.MonitoringIsEnabled if 
+	available (SL4+) or the older Environment.CurrentDirectory
+	* System/TypeTest.cs: Change test case from File.OpenWrite to
+	Environment.FailFast (former is not [SecurityCritical] in SL4)
+	Also use X509Certificate instead of FileInfo for .ctor test
+
 2010-03-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/DelegateTest.cs: Change test case from using

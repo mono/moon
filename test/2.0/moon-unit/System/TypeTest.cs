@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,7 +28,6 @@
 
 using System;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Net;
@@ -55,11 +54,11 @@ namespace MoonTest.System {
 		[TestMethod]
 		public void Type_InvokeMember_StaticMethod_SecurityCritical ()
 		{
-			Type t = typeof (File);
+			Type t = typeof (Environment);
 			GCHandle h = new GCHandle ();
 			Assert.Throws<MethodAccessException> (delegate {
 				// SecurityCritical method
-				t.InvokeMember ("OpenWrite", BindingFlags.Static | BindingFlags.Public | BindingFlags.InvokeMethod, null, h, new object [1] { "file.txt" }, null, CultureInfo.InvariantCulture, null);
+				t.InvokeMember ("FailFast", BindingFlags.Static | BindingFlags.Public | BindingFlags.InvokeMethod, null, h, new object [1] { "uho" }, null, CultureInfo.InvariantCulture, null);
 			}, "InvokeMember");
 		}
 

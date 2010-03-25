@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -188,10 +188,10 @@ namespace MoonTest.Security {
 		[TestMethod]
 		public void ReflectCriticalPublicClass_Ctor ()
 		{
-			ConstructorInfo ci = typeof (FileInfo).GetConstructor (new Type [1] { typeof (string) });
+			ConstructorInfo ci = typeof (X509Certificate).GetConstructor (new Type [1] { typeof (string) });
 			Assert.Throws<MethodAccessException> (delegate {
 				ci.Invoke (new object [1] { "/info" });
-			}, "FileInfo.ctor(string)");
+			}, "X509Certificate.ctor(string)");
 		}
 
 		[TestMethod]
@@ -213,22 +213,27 @@ namespace MoonTest.Security {
 		[TestMethod]
 		public void ReflectCriticalPublicClass_PublicStaticProperty ()
 		{
-			PropertyInfo pi = typeof (Environment).GetProperty ("CurrentDirectory");
+			// starting with SL4 Environment.CurrentDirectory is not [SecurityCritical] anymore
+			// but we lack another public+static property to test (unless we use something new in SL4)
+			PropertyInfo pi = typeof (AppDomain).GetProperty ("MonitoringIsEnabled");
+			if (pi == null)
+				pi = typeof (Environment).GetProperty ("CurrentDirectory");
+
 			Assert.Throws<MethodAccessException> (delegate {
 				pi.GetValue (null, null);
-			}, "Environment.CurrentDirectory-GetValue");
+			}, "GetValue");
 			Assert.Throws<MethodAccessException> (delegate {
 				pi.SetValue (null, null, null);
-			}, "Environment.CurrentDirectory-SetValue");
+			}, "SetValue");
 
 			MethodInfo mi = pi.GetGetMethod ();
 			Assert.Throws<MethodAccessException> (delegate {
 				mi.Invoke (null, new object [0]);
-			}, "Environment.CurrentDirectory-Invoke-Getter");
+			}, "Invoke-Getter");
 			mi = pi.GetSetMethod ();
 			Assert.Throws<MethodAccessException> (delegate {
 				mi.Invoke (null, new object [1]);
-			}, "Environment.CurrentDirectory-Invoke-Setter");
+			}, "Invoke-Setter");
 		}
 
 		[TestMethod]
