@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -42,7 +42,7 @@ namespace MoonTest.Security {
 		[TestMethod]
 		public void Delegate_CreateDelegate_StaticCriticalProperty ()
 		{
-			PropertyInfo pi = typeof (Environment).GetProperty ("CurrentDirectory");
+			PropertyInfo pi = typeof (Assembly).GetProperty ("CodeBase");
 			MethodInfo miget = pi.GetGetMethod ();
 			StringGetter dget = null;
 			Assert.IsNotNull (miget, "CurrentDirectory");
@@ -62,12 +62,12 @@ namespace MoonTest.Security {
 
 			Assert.Throws<ArgumentNullException> (delegate {
 				// delegate could not be created
-				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, "get_CurrentDirectory");
+				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, "get_CodeBase");
 			}, "Delegate.CreateDelegate(Type,object,string)");
 
 			Assert.Throws<ArgumentException> (delegate {
 				// delegate could not be created
-				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (Environment), "get_CurrentDirectory");
+				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (Assembly), "get_CodeBase");
 			}, "Delegate.CreateDelegate(Type,Type,string)");
 
 			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, miget, false);
@@ -75,19 +75,19 @@ namespace MoonTest.Security {
 
 			Assert.Throws<ArgumentNullException> (delegate {
 				// delegate could not be created
-				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, "get_currentdirectory", true);
+				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, "get_codebase", true);
 			}, "Delegate.CreateDelegate(Type,object,string,bool)");
 
 			Assert.Throws<ArgumentException> (delegate {
 				// delegate could not be created
-				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (Environment), "get_currentdirectory", true);
+				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (Assembly), "get_codebase", true);
 			}, "Delegate.CreateDelegate(Type,Type,string,bool)");
 
 			Assert.Throws<ArgumentNullException> (delegate {
-				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, "get_currentdirectory", true, false);
+				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, "get_codebase", true, false);
 			}, "Delegate.CreateDelegate(Type,object,MethodInfo,bool,bool)");
 
-			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (Environment), "get_currentdirectory", true, false);
+			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (Assembly), "get_codebase", true, false);
 			Assert.IsNull (dget, "Delegate.CreateDelegate(Type,Type,MethodInfo,bool,bool)");
 		}
 

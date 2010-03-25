@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,8 +28,8 @@
 
 using System;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -42,7 +42,7 @@ namespace MoonTest.System.Reflection {
 		[TestMethod]
 		public void Invoke ()
 		{
-			ConstructorInfo ci = typeof (FileInfo).GetConstructor (new Type [] { typeof (string) });
+			ConstructorInfo ci = typeof (X509Certificate).GetConstructor (new Type [] { typeof (string) });
 			Assert.IsNotNull (ci, ".ctor(string)");
 
 			Assert.Throws<MethodAccessException> (delegate {

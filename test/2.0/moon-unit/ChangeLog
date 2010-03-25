@@ -1,3 +1,12 @@
+2010-03-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/DelegateTest.cs: Change test case from using
+	Environment.CurrentDirectory to Assembly.CodeBase since the
+	former is not [SecurityCritical] anymore in SL4 (because elevated
+	trust allows many file IO API)
+	* System.Reflection/ConstructorInfoTest.cs: Change test case
+	from FileInfo to X509Certificate (same reason as above)
+
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs:
