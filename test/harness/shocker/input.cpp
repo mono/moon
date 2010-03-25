@@ -23,7 +23,7 @@
  * Author:
  *   Jackson Harper (jackson@ximian.com)
  *
- * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2010 Novell, Inc. (http://www.novell.com)
  *
  *
  * input.cpp: Simulate user input.
@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <errno.h>
 
 #define XK_MISCELLANY
 #define XK_LATIN1
@@ -50,6 +51,26 @@
 #define MOVE_MOUSE_LOGARITHMIC_INTERVAL  30000
 
 #define MOUSE_IS_AT_POSITION_TOLERANCE	 2
+
+static void sleep_ms (guint32 ms)
+{
+	int res;
+	timespec tv;
+	timespec rem;
+
+	if (ms == 0)
+		return;
+
+	rem.tv_sec = ms / 1000;
+	rem.tv_nsec = ms * 1000000;
+
+	do {
+		tv = rem;
+		res = nanosleep (&tv, &rem);
+	} while (res == -1 && errno == EINTR);
+}
+
+InputProvider *InputProvider::instance = NULL;
 
 InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_available (false), down_keys (NULL)
 {
@@ -75,8 +96,9 @@ InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_avai
 	}
 
 	xtest_available = true;
+	keyboard_speed = 10;
 
-	SendKeyInput (VK_NUMLOCK, true);
+	SendKeyInput (VK_NUMLOCK, true, false, false);
 
 	MoveMouse (0,0);
 }
@@ -84,10 +106,18 @@ InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_avai
 InputProvider::~InputProvider ()
 {
 	while (down_keys)
-		SendKeyInput (GPOINTER_TO_UINT (down_keys->data), false);
+		SendKeyInput (GPOINTER_TO_UINT (down_keys->data), false, false, false);
 
-	SendKeyInput (VK_NUMLOCK, false);
+	SendKeyInput (VK_NUMLOCK, false, false, false);
 	g_slist_free (down_keys);
+}
+
+InputProvider *
+InputProvider::GetInstance ()
+{
+	if (instance == NULL)
+		instance = new InputProvider ();
+	return instance;
 }
 
 void
@@ -173,79 +203,92 @@ InputProvider::MouseIsAtPosition (int x, int y)
 }
 
 void
-InputProvider::MouseDoubleClick ()
+InputProvider::MouseDoubleClick (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseDoubleClick ()\n");
+	LOG_INPUT ("InputProvider::MouseDoubleClick (%u)\n", delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
 	XTestFakeButtonEvent (display, 1, true, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 
 	XTestFakeButtonEvent (display, 1, false, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 
 	XTestFakeButtonEvent (display, 1, true, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 
 	XTestFakeButtonEvent (display, 1, false, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 }
 
 void
-InputProvider::MouseLeftClick ()
+InputProvider::MouseLeftClick (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseLeftClick ()\n");
+	LOG_INPUT ("InputProvider::MouseLeftClick (%u)\n", delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
 	XTestFakeButtonEvent (display, 1, true, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 
 	XTestFakeButtonEvent (display, 1, false, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 }
 
 void
-InputProvider::MouseRightClick ()
+InputProvider::MouseRightClick (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseRightClick ()\n");
+	LOG_INPUT ("InputProvider::MouseRightClick (%u)\n", delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
 	XTestFakeButtonEvent (display, 3, true, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 
 	XTestFakeButtonEvent (display, 3, false, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 }
 
 void
-InputProvider::MouseLeftButtonDown ()
+InputProvider::MouseLeftButtonDown (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseLeftButtonDown ()\n");
+	LOG_INPUT ("InputProvider::MouseLeftButtonDown (%u)\n", delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
 	XTestFakeButtonEvent (display, 1, true, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 }
 
 void
-InputProvider::MouseLeftButtonUp ()
+InputProvider::MouseLeftButtonUp (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseLeftButtonUp ()\n");
+	LOG_INPUT ("InputProvider::MouseLeftButtonUp (%u)\n", delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
 	XTestFakeButtonEvent (display, 1, false, CurrentTime);
 	XFlush (display);
+	sleep_ms (delay);
 }
 
 void
-InputProvider::SendKeyInput (guint32 keysym, bool key_down)
+InputProvider::SendKeyInput (guint32 keysym, bool key_down, bool extended, bool unicode)
 {
-	LOG_INPUT ("InputProvider::SendKeyInput (%i, %i)\n", keysym, key_down);
+	LOG_INPUT ("InputProvider::SendKeyInput (%i, %i, %i, %i)\n", keysym, key_down, extended, unicode);
+
+	// MS' mac plugin ignores the extended and unicode arguments, so we'll do the same
+
 	g_assert (display);
 	g_assert (xtest_available);
 
@@ -259,6 +302,7 @@ InputProvider::SendKeyInput (guint32 keysym, bool key_down)
 
 	XTestFakeKeyEvent (display, keycode, key_down, CurrentTime);
 	XFlush (display);
+	sleep_ms (keyboard_speed - 10);
 
 	if (key_down) {
 		if (!g_slist_find (down_keys, GUINT_TO_POINTER (keysym)))
@@ -271,6 +315,7 @@ void
 InputProvider::GetCursorPos (int &x, int &y)
 {
 	LOG_INPUT ("InputProvider::GetCursorPos ()\n");
+
 	g_assert (display);
 	g_assert (root_window > 0);
 
@@ -279,6 +324,20 @@ InputProvider::GetCursorPos (int &x, int &y)
 	unsigned int mask;
 
 	XQueryPointer (display, root_window, &root_return, &child_return, &x, &y, &x_win, &y_win, &mask);
+}
+
+void
+InputProvider::MouseWheel (guint16 clicks)
+{
+	LOG_INPUT ("InputProvider::MouseWheel (%u)\n", clicks);
+	g_error ("InputProvider::MouseWheel (): not implemented\n");
+}
+
+void
+InputProvider::SetKeyboardInputSpeed (unsigned int keyboard_input_speed)
+{
+	LOG_INPUT ("InputProvider::SetKeyboardInputSpeed (%u)\n", keyboard_input_speed);
+	keyboard_speed = MIN (10, MAX (1, keyboard_input_speed));
 }
 
 int
@@ -443,3 +502,62 @@ InputProvider::MapToKeysym (int key)
 	return res;
 }
 
+int InputHelper_MoveMouseLogarithmic (int x, int y)
+{
+	InputProvider::GetInstance ()->MoveMouseLogarithmic (x, y);
+	return 0;
+}
+
+int InputHelper_MoveMouseDirect (int x, int y)
+{
+	InputProvider::GetInstance ()->MoveMouseDirect (x, y);
+	return 0;
+}
+
+int InputHelper_MouseLeftClick (unsigned int delay)
+{
+	InputProvider::GetInstance ()->MouseLeftClick (delay);
+	return 0;
+}
+
+int InputHelper_MouseRightClick (unsigned int delay)
+{
+	InputProvider::GetInstance ()->MouseRightClick (delay);
+	return 0;
+}
+
+int InputHelper_MouseDoubleClick (unsigned int delay)
+{
+	InputProvider::GetInstance ()->MouseDoubleClick (delay);
+	return 0;
+}
+
+int InputHelper_MouseLeftButtonDown (unsigned int delay)
+{
+	InputProvider::GetInstance ()->MouseLeftButtonDown (delay);
+	return 0;
+}
+
+int InputHelper_MouseWheel (guint16 clicks)
+{
+	InputProvider::GetInstance ()->MouseWheel (clicks);
+	return 0;
+}
+
+int InputHelper_MouseIsAtPosition (int x, int y, guint8 *result)
+{
+	*result = InputProvider::GetInstance ()->MouseIsAtPosition (x, y);
+	return 0;
+}
+
+int InputHelper_SendKeyInput (int vkey, bool down, bool extended, bool unicode)
+{
+	InputProvider::GetInstance ()->SendKeyInput (vkey, down, extended, unicode);
+	return 0;
+}
+
+int InputHelper_SetKeyboardInputSpeed (unsigned int keyboardInputSpeed)
+{
+	InputProvider::GetInstance ()->SetKeyboardInputSpeed (keyboardInputSpeed);
+	return 0;
+}

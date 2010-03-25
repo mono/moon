@@ -247,50 +247,74 @@ MouseIsAtPosition (ShockerScriptableControlObject* obj, char* name, const NPVari
 static void
 MouseDoubleClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	obj->GetInputProvider ()->MouseDoubleClick ();
+	unsigned int delay = 0;
+	if (arg_count >= 1) {
+		g_assert (NPVARIANT_IS_NUMBER (args [0]));
+		delay = NUMBER_TO_INT32 (args [0]);
+	}
+	obj->GetInputProvider ()->MouseDoubleClick (delay);
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 MouseLeftClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	obj->GetInputProvider ()->MouseLeftClick ();
+	unsigned int delay = 0;
+	if (arg_count >= 1) {
+		g_assert (NPVARIANT_IS_NUMBER (args [0]));
+		delay = NUMBER_TO_INT32 (args [0]);
+	}
+	obj->GetInputProvider ()->MouseLeftClick (delay);
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 MouseRightClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	obj->GetInputProvider ()->MouseRightClick ();
+	unsigned int delay = 0;
+	if (arg_count >= 1) {
+		g_assert (NPVARIANT_IS_NUMBER (args [0]));
+		delay = NUMBER_TO_INT32 (args [0]);
+	}
+	obj->GetInputProvider ()->MouseRightClick (delay);
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 MouseLeftButtonDown (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	obj->GetInputProvider ()->MouseLeftButtonDown ();
+	unsigned int delay = 0;
+	if (arg_count >= 1) {
+		g_assert (NPVARIANT_IS_NUMBER (args [0]));
+		delay = NUMBER_TO_INT32 (args [0]);
+	}
+	obj->GetInputProvider ()->MouseLeftButtonDown (delay);
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 MouseLeftButtonUp (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	obj->GetInputProvider ()->MouseLeftButtonUp ();
+	unsigned int delay = 0;
+	if (arg_count >= 1) {
+		g_assert (NPVARIANT_IS_NUMBER (args [0]));
+		delay = NUMBER_TO_INT32 (args [0]);
+	}
+	obj->GetInputProvider ()->MouseLeftButtonUp (delay);
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 SendKeyInput (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	//
-	// There are two optional args here that I am just going to ignore for now
-	//
-
-	g_assert (arg_count >= 2);
+	g_assert (arg_count >= 4);
 	g_assert (NPVARIANT_IS_NUMBER (args [0]));
 	g_assert (NPVARIANT_IS_BOOLEAN (args [1]));
+	g_assert (NPVARIANT_IS_BOOLEAN (args [2]));
+	g_assert (NPVARIANT_IS_BOOLEAN (args [3]));
 
-	obj->GetInputProvider ()->SendKeyInput (NUMBER_TO_INT32 (args [0]), NPVARIANT_TO_BOOLEAN (args [1]));
+	obj->GetInputProvider ()->SendKeyInput (NUMBER_TO_INT32 (args [0]), NPVARIANT_TO_BOOLEAN (args [1]),
+		NPVARIANT_TO_BOOLEAN (args [2]), NPVARIANT_TO_BOOLEAN (args [3]));
 
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
@@ -298,8 +322,11 @@ SendKeyInput (ShockerScriptableControlObject* obj, char* name, const NPVariant* 
 static void
 SetKeyboardInputSpeed (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] SetKeyboardInputSpeed: Not implemented\n");
-	print_stack_trace ();
+	g_assert (arg_count == 1);
+	g_assert (NPVARIANT_IS_NUMBER (args [0]));
+
+	obj->GetInputProvider ()->SetKeyboardInputSpeed (NUMBER_TO_INT32 (args [0]));
+
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
@@ -764,7 +791,6 @@ ShockerScriptableControlType *ShockerScriptableControlClass = NULL;
 ShockerScriptableControlObject::ShockerScriptableControlObject (NPP instance) : instance (instance), test_path (NULL)
 {	
 	LogProvider::GetInstance ()->SetTestName (GetTestPath ());
-	input_provider = new InputProvider ();
 	image_capture = new ImageCaptureProvider ();
 }
 
@@ -772,7 +798,6 @@ ShockerScriptableControlObject::~ShockerScriptableControlObject ()
 {
 	g_free (test_path);
 
-	delete input_provider;
 	delete image_capture;
 	LogProvider::DeleteInstance ();
 }
@@ -780,9 +805,7 @@ ShockerScriptableControlObject::~ShockerScriptableControlObject ()
 InputProvider *
 ShockerScriptableControlObject::GetInputProvider ()
 {
-	if (!input_provider)
-		input_provider = new InputProvider ();
-	return input_provider;
+	return InputProvider::GetInstance ();
 }
 
 ImageCaptureProvider *
@@ -807,8 +830,6 @@ ShockerScriptableControlObject::Connect ()
 void
 ShockerScriptableControlObject::SignalShutdown ()
 {
-	delete input_provider; input_provider = NULL;
-
 	LogProvider::DeleteInstance ();
 
 	shutdown_manager_queue_shutdown ();

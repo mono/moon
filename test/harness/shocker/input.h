@@ -185,32 +185,50 @@ enum VirtualKeys {
 };
 
 class InputProvider {
-
 public:
-	InputProvider ();
-	virtual ~InputProvider ();
-
 	void MoveMouseLogarithmic (int x, int y);
 	void MoveMouse (int x, int y);
-	void MouseDoubleClick ();
-	void MouseLeftClick ();
-	void MouseRightClick ();
-	void MouseLeftButtonDown ();
-	void MouseLeftButtonUp ();
-
+	void MoveMouseDirect (int x, int y);
+	void MouseDoubleClick (unsigned int delay);
+	void MouseLeftClick (unsigned int delay);
+	void MouseRightClick (unsigned int delay);
+	void MouseLeftButtonDown (unsigned int delay);
+	void MouseLeftButtonUp (unsigned int delay);
+	void MouseWheel (guint16 clicks);
 	bool MouseIsAtPosition (int x, int y);
+	void SendKeyInput (guint32 key_code, bool key_down, bool extended, bool unicode);
+	void SetKeyboardInputSpeed (unsigned int keyboard_input_speed);
 
-	void SendKeyInput (guint32 key_code, bool key_down);
+	static InputProvider *GetInstance ();
+
 private:
+	InputProvider ();
+	~InputProvider ();
+
+	static InputProvider *instance;
 	Display *display;
 	Window root_window;
 	bool xtest_available;
+	unsigned int keyboard_speed; // input speed from 1 (slow) to 10 (fast), default is 10
 
 	GSList* down_keys;
 
 	void GetCursorPos (int &x, int &y);
 	int MapToKeysym (int key);
 };
+
+G_BEGIN_DECLS
+int InputHelper_MoveMouseLogarithmic (int x, int y);
+int InputHelper_MoveMouseDirect (int x, int y);
+int InputHelper_MouseLeftClick (unsigned int delay);
+int InputHelper_MouseRightClick (unsigned int delay);
+int InputHelper_MouseDoubleClick (unsigned int delay);
+int InputHelper_MouseLeftButtonDown (unsigned int delay);
+int InputHelper_MouseWheel (guint16 clicks);
+int InputHelper_MouseIsAtPosition (int x, int y, guint8 *result);
+int InputHelper_SendKeyInput (int vkey, bool down, bool extended, bool unicode);
+int InputHelper_SetKeyboardInputSpeed (unsigned int keyboardInputSpeed);
+G_END_DECLS
 
 #endif  // __INPUT_H__
 

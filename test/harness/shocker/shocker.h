@@ -41,7 +41,6 @@ private:
 	NPP instance;
 	char* test_path;
 
-	InputProvider* input_provider;
 	ImageCaptureProvider* image_capture;
 };
 

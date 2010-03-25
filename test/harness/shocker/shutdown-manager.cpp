@@ -103,12 +103,12 @@ execute_shutdown ()
 		PluginObject::browser_app_context = 0;
 	} else {
 		printf ("[shocker] sending Ctrl-Q to firefox...\n");
-		InputProvider input;
+		InputProvider *input = InputProvider::GetInstance ();
 		// send ctrl-q
-		input.SendKeyInput (VK_CONTROL, true);
-		input.SendKeyInput (VK_Q, true);
-		input.SendKeyInput (VK_Q, false);
-		input.SendKeyInput (VK_CONTROL, false);
+		input->SendKeyInput (VK_CONTROL, true, false, false);
+		input->SendKeyInput (VK_Q, true, false, false);
+		input->SendKeyInput (VK_Q, false, false, false);
+		input->SendKeyInput (VK_CONTROL, false, false, false);
 	}
 	
 	// Have a backup in case the above fails.

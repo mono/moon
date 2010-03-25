@@ -1,3 +1,10 @@
+2010-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* input.cpp|h:
+	* shocker.cpp|h:
+	* shutdown-manager.cpp: Make InputProvider a singleton class, and implement a
+	few more 3.0/4.0 methods the SL tests require.
+
 2010-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* logging.cpp: Fix local/instance variable write.
