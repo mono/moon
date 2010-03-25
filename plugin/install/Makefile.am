@@ -11,6 +11,7 @@ novell_moonlight_xpi_CONTENTS =		\
 				$(srcdir)/icon32.png \
 				$(srcdir)/chrome.manifest \
 				$(srcdir)/moonlight.xul \
+				$(srcdir)/moonlight.js	\
 				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
 				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
 				$(top_builddir)/src/.libs/libmoonxpi.so
@@ -79,6 +80,8 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) $(BRIDGES) Makefile
 	cp -L $(srcdir)/moonlight.xul .xpinstall/content/
 	mkdir -p .xpinstall/locale/en-US/
 	touch .xpinstall/locale/en-US/moonlight.dtd
+	mkdir -p .xpinstall/components/
+	cp -L $(srcdir)/moonlight.js .xpinstall/components/
 	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
 	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
 
@@ -121,10 +124,6 @@ novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) $(CURL_BRIDGE) Makefile
 	cp -L $(srcdir)/manifest.json .crxinstall/
 	cp -L $(srcdir)/icon48.png .crxinstall/
 	cp -L $(srcdir)/icon128.png .crxinstall/
-	mkdir -p .crxinstall/content/
-	cp -L $(srcdir)/moonlight.xul .crxinstall/content/
-	mkdir -p .crxinstall/locale/en-US/
-	touch .crxinstall/locale/en-US/moonlight.dtd
 	cp -L ../.libs/libmoonloaderxpi.so .crxinstall/
 	cp -L ../.libs/libmoonpluginxpi.so .crxinstall/moonlight/
 
@@ -155,5 +154,5 @@ clean-local:
 	-rm -f *.crx
 	-rm -rf tmp*
 
-EXTRA_DIST = install.rdf.in manifest.json.in icon32.png icon48.png icon128.png chrome.manifest check_xpi.sh moonlight.xul
+EXTRA_DIST = install.rdf.in manifest.json.in icon32.png icon48.png icon128.png chrome.manifest check_xpi.sh moonlight.xul moonlight.js
 DISTCLEANFILES = novell-moonlight.xpi

@@ -1,3 +1,11 @@
+2010-03-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* moonlight.xul: Take the command-line argument and set it as the
+	source of the iframe.
+
+	* moonlight.js: New js script to provide command-line argument
+	handling in firefox.
+
 2010-03-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Makefile.am: Updated to include the chrome:// content in the xpi

@@ -10,9 +10,33 @@
 %moonlightDTD;
 ]>
 
+<script type="application/x-javascript">
+function OnLoad() {
+  var uriToLoad = null;
+  var iframe = null;
+
+  // window.arguments[0]: URI to load (string), or an nsISupportsArray of
+  //                      nsISupportsStrings to load, or a xul:tab of
+  //                      a tabbrowser, which will be replaced by this
+  //                      window (for this case, all other arguments are
+  //                      ignored).
+  //                 [1]: character set (string)
+  //                 [2]: referrer (nsIURI)
+  //                 [3]: postData (nsIInputStream)
+  //                 [4]: allowThirdPartyFixup (bool)
+  if ("arguments" in window && window.arguments[0])
+    uriToLoad = window.arguments[0];
+  
+  iframe = document.getElementById ("MoonlightIFrame");
+  iframe.src = uriToLoad;
+}
+</script>
+
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-  xmlns:html="http://www.w3.org/1999/xhtml" onclose="return true;"
-  id="MoonlightWindow" hidechrome="true" windowtype="navigator:desktop">
+  xmlns:html="http://www.w3.org/1999/xhtml" onload="OnLoad()" onclose="return true;"
+  id="MoonlightWindow" windowtype="navigator:desktop">
   <html:body>
+    <html:iframe id="MoonlightIFrame" width="100%" height="100%">
+    </html:iframe>
   </html:body>
 </window>
