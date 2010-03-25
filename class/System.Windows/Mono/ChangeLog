@@ -1,3 +1,8 @@
+2010-03-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Types.cs: Avoid a second dictionary lookup on the same type
+	  when doing a Type.Find in managed
+
 2010-03-24  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: ToObject is somewhat expensive so nonts
