@@ -876,7 +876,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBlock::TextDecorationsProperty) {
 		dirty = true;
 	} else if (args->GetId () == TextBlock::TextWrappingProperty) {
-		dirty = layout->SetTextWrapping (args->GetNewValue()->AsTextWrapping ());
+		dirty = layout->SetTextWrapping ((TextWrapping) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
@@ -894,11 +894,11 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			invalidate = false;
 		}
 	} else if (args->GetId () == TextBlock::LineStackingStrategyProperty) {
-		dirty = layout->SetLineStackingStrategy (args->GetNewValue()->AsLineStackingStrategy ());
+		dirty = layout->SetLineStackingStrategy ((LineStackingStrategy) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::LineHeightProperty) {
 		dirty = layout->SetLineHeight (args->GetNewValue()->AsDouble ());
 	} else if (args->GetId () == TextBlock::TextAlignmentProperty) {
-		dirty = layout->SetTextAlignment (args->GetNewValue()->AsTextAlignment ());
+		dirty = layout->SetTextAlignment ((TextAlignment) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontSourceProperty) {

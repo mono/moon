@@ -196,12 +196,19 @@ namespace Mono {
 					
 			case Kind.TIMESPAN:
 				return new TimeSpan (value->u.i64);
-			case Kind.CURSORTYPE:
-				return Cursors.FromEnum ((CursorType) value->u.i32);
-			case Kind.TEXTDECORATIONS:
-				return (value->u.i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
+						
 			case Kind.INT32:
-				return value->u.i32;
+				// marshall back to the .NET type that we simply serialised as int for unmanaged usage
+				int i32 = value->u.i32;
+				if (type == typeof (System.Windows.Input.Cursor))
+					return Cursors.FromEnum ((CursorType)i32);
+				else if (type == typeof (TextDecorationCollection))
+					return (i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
+				else if (type != null && type.IsEnum)
+					return Enum.ToObject (type, i32);
+				else
+					return i32;
+
 			case Kind.CHAR:
 				return (char) value->u.ui32;
 
@@ -361,11 +368,6 @@ namespace Mono {
 
 				return null;
 			}
-			default:
-				Type tt = Deployment.Current.Types.KindToType (value->k);
-				if (tt.IsEnum)
-					return Enum.ToObject (tt, value->u.i32);
-				break;
 			}
 
 			if (NativeMethods.type_is_dependency_object (value->k)){
@@ -428,7 +430,7 @@ namespace Mono {
 					value.u.p = ((DependencyProperty)v).Native;
 				}
 				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
-					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
+					value.k = Kind.INT32;
 					value.u.i32 = (int) v;
 				}
 				else if (v is bool) {
@@ -589,7 +591,8 @@ namespace Mono {
 				else if (v is Cursor) {
 					Cursor c = (Cursor) v;
 
-					value.k = Kind.CURSORTYPE;
+					value.k = Kind.INT32;
+
 					value.u.i32 = (int)c.cursor;
 				}
 				else if (v is GridLength) {
@@ -617,7 +620,7 @@ namespace Mono {
 					Marshal.StructureToPtr (weight, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is TextDecorationCollection) {
-					value.k = Kind.TEXTDECORATIONS;
+					value.k = Kind.INT32;
 					value.u.i32 = (int) (v as TextDecorationCollection).Kind;
 				}
 				else if (v is Type) {

@@ -1,5 +1,30 @@
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* enums.h:
+	* brush.h:
+	* xaml.cpp:
+	* type.cpp:
+	* value.cpp:
+	* type.h.in:
+	* runtime.h:
+	* enums.cpp:
+	* value.h.in:
+	* glyphs.cpp:
+	* textbox.cpp:
+	* runtime.cpp:
+	* uielement.h:
+	* pal/window.h:
+	* uielement.cpp:
+	* textblock.cpp:
+	* validators.cpp:
+	* pal/gtk/window-gtk.h:
+	* pal/gtk/window-gtk.cpp:
+	* pal/gtk/windowless-gtk.h:
+	* pal/gtk/windowless-gtk.cpp: Revert r154268 for now. It's
+	  causing regressions.
+
+2010-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* type.h.in: Whitespace change to ensure the generator runs
 	  again.
 

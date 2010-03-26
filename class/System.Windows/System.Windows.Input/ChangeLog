@@ -1,8 +1,7 @@
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
-	* Cursor.cs: Add enums to our type system so that we don't
-	  lose type information when attempting to parse them from
-	  xaml.
+	* ChangeLog:
+	* Cursor.cs: Revert r154268 for now. It's causing regressions.
 
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

@@ -85,10 +85,8 @@ namespace Mono
 					return info;
 			}
 
-			if (typedef.BaseType == null) {
+			if (typedef.BaseType == null || typedef.BaseType == typeof (object)) {
 				parent = null;
-			} else if (typedef.BaseType == typeof (System.Enum) || typedef.BaseType == typeof (System.ValueType)) {
-				parent = Find (typeof (System.Object));
 			} else {
 				parent = Find (typedef.BaseType);
 			}
@@ -127,7 +125,9 @@ namespace Mono
 				for (int i = 0; i < interfaces.Length; i ++)
 					interface_kinds[i] = interfaces[i].native_handle;
 
-				if (type == typeof (System.Windows.Media.Matrix))
+				if (type.IsEnum && Enum.GetUnderlyingType (type) == typeof(int))
+					info.native_handle = Kind.INT32;
+				else if (type == typeof (System.Windows.Media.Matrix))
 					info.native_handle = Kind.UNMANAGEDMATRIX;
 				else if (type == typeof (System.Windows.Media.Media3D.Matrix3D))
 					info.native_handle = Kind.UNMANAGEDMATRIX3D;
@@ -138,7 +138,7 @@ namespace Mono
 						GCHandle.ToIntPtr (info.gc_handle), 
 						(parent != null ? parent.native_handle : Kind.INVALID), 
 						type.IsInterface, 
-						type.IsEnum || type.GetConstructor (Type.EmptyTypes) != null, 
+						type.GetConstructor (Type.EmptyTypes) != null, 
 						interface_kinds, interface_kinds.Length);
 				}
 				types.Add (type, info);

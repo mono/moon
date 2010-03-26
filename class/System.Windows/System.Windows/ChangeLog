@@ -1,7 +1,8 @@
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
-	* SystemColors.cs: Move the SystemColor enum out of the
-	  SystemColors class to simplify our managed/native interop.
+	* ChangeLog:
+	* SystemColors.cs: Revert r154268 for now. It's causing
+	  regressions.
 
 2010-03-24  Sebastien Pouliot  <sebastien@ximian.com>
 

@@ -16,7 +16,6 @@
 #include <glib.h>
 
 #include "type.h"
-#include "enums.h"
 
 /* 
  * ugly file containing the catchall value type we use.
@@ -74,7 +73,6 @@ public:
 	explicit Value (gint32 i);
 	explicit Value (guint32 i);
 	Value (gunichar c, Type::Kind as); // for use with char values.
-	Value (gint32 i, Type::Kind as); // Use for enums.
 	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
 	Value (Color c);
 	Value (EventObject *obj);

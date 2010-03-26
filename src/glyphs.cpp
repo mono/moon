@@ -840,7 +840,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == Glyphs::OriginYProperty) {
 		dirty = true;
 	} else if (args->GetId () == Glyphs::StyleSimulationsProperty) {
-		StyleSimulations simulate = args->GetNewValue ()->AsStyleSimulations ();
+		StyleSimulations simulate = (StyleSimulations) args->GetNewValue ()->AsInt32 ();
 		
 		// clear any unsupported flags
 		simulate = (StyleSimulations) (simulate & StyleSimulationsBoldItalic);

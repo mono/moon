@@ -1,5 +1,13 @@
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* Value.cs:
+	* Types.cs:
+	* MoonlightTypeConverter.cs:
+	* NativeDependencyObjectHelper.cs: Revert r154268 for now.
+	  It's causing regressions.
+
+2010-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* Kind.cs: Really remove Kind.cs from SVN.
 
 2010-03-26  Alan McGovern  <amcgovern@novell.com>

@@ -311,40 +311,40 @@ MoonWindowGtk::SetBackgroundColor (Color *color)
 }
 
 void
-MoonWindowGtk::SetCursor (CursorType cursor)
+MoonWindowGtk::SetCursor (MouseCursor cursor)
 {
 	if (widget->window) {
 
 		GdkCursor *c = NULL;
 		switch (cursor) {
-		case CursorTypeDefault:
+		case MouseCursorDefault:
 			c = NULL;
 			break;
-		case CursorTypeArrow:
+		case MouseCursorArrow:
 			c = gdk_cursor_new (GDK_LEFT_PTR);
 			break;
-		case CursorTypeHand:
+		case MouseCursorHand:
 			c = gdk_cursor_new (GDK_HAND2);
 			break;
-		case CursorTypeWait:
+		case MouseCursorWait:
 			c = gdk_cursor_new (GDK_WATCH);
 			break;
-		case CursorTypeIBeam:
+		case MouseCursorIBeam:
 			c = gdk_cursor_new (GDK_XTERM);
 			break;
-		case CursorTypeStylus:
+		case MouseCursorStylus:
 			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), gdk_pixbuf_new_from_xpm_data ((const char**) dot), 0, 0);
 			break;
-		case CursorTypeEraser:
+		case MouseCursorEraser:
 			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), gdk_pixbuf_new_from_xpm_data ((const char**) eraser), 8, 8);
 			break;
-		case CursorTypeSizeNS:
+		case MouseCursorSizeNS:
 			c = gdk_cursor_new (GDK_SB_V_DOUBLE_ARROW);
 			break;
-		case CursorTypeSizeWE:
+		case MouseCursorSizeWE:
 			c = gdk_cursor_new (GDK_SB_H_DOUBLE_ARROW);
 			break;
-		case CursorTypeNone:
+		case MouseCursorNone:
 			// Silverlight display no cursor if the enumeration value is invalid (e.g. -1)
 		default:
 			//from gdk-cursor doc :"To make the cursor invisible, use gdk_cursor_new_from_pixmap() to create a cursor with no pixels in it."

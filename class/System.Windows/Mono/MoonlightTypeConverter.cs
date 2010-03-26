@@ -48,6 +48,9 @@ namespace Mono {
 			this.propertyName = propertyName;
 			this.destinationType = destinationType;
 
+			if (destinationType.IsEnum)
+				destinationType = typeof (Int32);
+
 			destinationKind = Deployment.Current.Types.TypeToKind (destinationType);
 			if (destinationKind == Kind.INVALID)
 				throw new InvalidOperationException (string.Format ("Cannot convert to type {0} (property {1})", destinationType, propertyName));
@@ -102,9 +105,6 @@ namespace Mono {
 				if (destinationType == typeof (FontStretch))
 					return new FontStretch ((FontStretchKind) Enum.Parse (typeof (FontStretchKind), str_val, true));
 
-				if (destinationType == typeof (Cursor))
-					return Cursors.FromEnum ((CursorType) Enum.Parse (typeof (CursorType), str_val, true));
-
 				if (destinationType == typeof (CacheMode)) {
 					if (str_val == "BitmapCache")
 						return new BitmapCache ();
@@ -124,6 +124,13 @@ namespace Mono {
 
 			if (str_val != null) {
 				Kind k = destinationKind;
+
+				/* ugh.  our desire to use enums in
+				   unmanaged code when the managed
+				   code has structs is painful all
+				   over. */
+				if (k == Kind.CURSOR)
+					k = Kind.INT32;
 
 				IntPtr unmanaged_value = IntPtr.Zero;
 				try {

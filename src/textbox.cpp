@@ -2711,7 +2711,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (contentElement) {
 			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility"))) {
 				// If TextWrapping is set to Wrap, disable the horizontal scroll bars
-				if (args->GetNewValue ()->AsTextWrapping () == TextWrappingWrap)
+				if (args->GetNewValue ()->AsInt32 () == (int) TextWrappingWrap)
 					contentElement->SetValue (prop, Value (ScrollBarVisibilityDisabled));
 				else
 					contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
@@ -3160,7 +3160,7 @@ TextBoxView::TextBoxView ()
 	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxView::mouse_left_button_down, this);
 	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxView::mouse_left_button_up, this);
 	
-	SetCursor (CursorTypeIBeam);
+	SetCursor (MouseCursorIBeam);
 	
 	cursor = Rect (0, 0, 0, 0);
 	layout = new TextLayout ();
@@ -3503,12 +3503,12 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 	switch (args->changed) {
 	case TextBoxModelChangedTextAlignment:
 		// text alignment changed, update our layout
-		if (layout->SetTextAlignment (args->property->GetNewValue()->AsTextAlignment ()))
+		if (layout->SetTextAlignment ((TextAlignment) args->property->GetNewValue()->AsInt32 ()))
 			dirty = true;
 		break;
 	case TextBoxModelChangedTextWrapping:
 		// text wrapping changed, update our layout
-		if (layout->SetTextWrapping (args->property->GetNewValue()->AsTextWrapping ()))
+		if (layout->SetTextWrapping ((TextWrapping) args->property->GetNewValue()->AsInt32 ()))
 			dirty = true;
 		break;
 	case TextBoxModelChangedSelection:

@@ -30,7 +30,7 @@ public:
 
 	virtual void Resize (int width, int height);
 
-	virtual void SetCursor (CursorType cursor);
+	virtual void SetCursor (MouseCursor cursor);
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 

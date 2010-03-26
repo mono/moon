@@ -1,5 +1,10 @@
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* Generator.cs: Revert r154268 for now. It's causing
+	  regressions.
+
+2010-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* Generator.cs: Update the generator to use proper type
 	  information for default values which are enum types. Also
 	  generate AsXXX methods for all the relevant enum types.

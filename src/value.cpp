@@ -158,13 +158,6 @@ Value::Value (gint32 i)
 	SetIsNull (false);
 }
 
-Value::Value (gint32 i, Type::Kind as)
-{
-	Init ();
-	k = as;
-	u.i32 = i;
-	SetIsNull (false);
-}
 
 Value::Value (guint32 i)
 {
