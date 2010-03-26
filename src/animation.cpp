@@ -1991,7 +1991,7 @@ ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, value);
 		} else {
 			Value converted;
-			Application::GetCurrent ()->ConvertKeyframeValue (target->GetType ()->GetKind (), property, value, &converted);
+			Application::GetCurrent ()->ConvertKeyframeValue (target->GetObjectType (), property, value, &converted);
 		
 			if (converted.GetKind () == Type::INVALID) {
 				printf ("Couldn't convert value.\n");

@@ -550,7 +550,7 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if ((value = (Value *) g_hash_table_lookup (auto_values, property)))
 		return value;
 	
-	if (!(value = property->GetDefaultValue (obj->GetType ()->GetKind ())))
+	if (!(value = property->GetDefaultValue (obj->GetObjectType ())))
 		return NULL;
 
 #if SANITY
