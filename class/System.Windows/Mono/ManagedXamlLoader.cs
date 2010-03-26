@@ -763,8 +763,8 @@ namespace Mono.Xaml
 
 			if (dot >= 0) {
 				type_name = name.Substring (0, dot);
-				if (xmlns != null) {
-					string ns = ClrNamespaceFromXmlns (xmlns);
+				if (prop_xmlns != null) {
+					string ns = ClrNamespaceFromXmlns (prop_xmlns);
 					if (ns != null)
 						type_name = String.Concat (ns, ".", type_name);
 				}

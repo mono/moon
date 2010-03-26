@@ -1,3 +1,8 @@
+2010-03-26  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: We should be using the property's xmlns
+	here.
+
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs:
