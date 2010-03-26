@@ -25,8 +25,6 @@
 //
 
 using Mono;
-using System;
-using System.Windows;
 
 namespace System.Windows.Controls {
 	public sealed class TextChangedEventArgs : RoutedEventArgs {
@@ -34,7 +32,7 @@ namespace System.Windows.Controls {
 		{
 		}
 		
-		internal TextChangedEventArgs () : base (NativeMethods.text_changed_event_args_new (), true)
+		internal TextChangedEventArgs () : base (SafeNativeMethods.text_changed_event_args_new (), true)
 		{
 		}
 	}

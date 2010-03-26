@@ -79,7 +79,7 @@ namespace System.Windows {
 
 		// This created objects with a managed lifetime, so the native ref will be dropped
 		// as soon as the object is created and handed to ToggleRef
-		protected DependencyObject () : this (NativeMethods.dependency_object_new (), true)
+		protected DependencyObject () : this (SafeNativeMethods.dependency_object_new (), true)
 		{
 		}
 

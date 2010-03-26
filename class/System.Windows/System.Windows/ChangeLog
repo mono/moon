@@ -1,3 +1,13 @@
+2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs
+	* DependencyObject.cs
+	* DependencyObject.g.cs
+	* RoutedEventArgs.cs
+	* SizeChangedEventArgs.cs:
+		Call SafeNativeMethods so the default ctor are not
+		decorated with a [SecuritySafeCritical] attribtue	
+
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
 	* ChangeLog:

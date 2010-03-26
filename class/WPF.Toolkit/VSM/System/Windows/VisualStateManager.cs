@@ -16,7 +16,7 @@ namespace System.Windows
 {
 	class VisualStateGroupCollection : PresentationFrameworkCollection<VisualStateGroup>
 	{
-		public VisualStateGroupCollection () : base (NativeMethods.dependency_object_collection_new (), true) {}
+		public VisualStateGroupCollection () : base (SafeNativeMethods.dependency_object_collection_new (), true) {}
 
 	}
 

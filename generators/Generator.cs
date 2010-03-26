@@ -587,7 +587,7 @@ class Generator {
 				Helper.WriteAccess (text, access);
 				text.Append (" ");
 				text.Append (type.ManagedName.Replace ("`1", ""));
-				text.Append (" () : base (NativeMethods.");
+				text.Append (" () : base (SafeNativeMethods.");
 				text.Append (type.C_Constructor);
 				text.Append (" (), true)");
 				if (call_initialize) {
@@ -2621,7 +2621,7 @@ class Generator {
 			}
 			if (minfo == null)
 				continue;
-			//Console.WriteLine ("Added: {0} IsSrc: {1} IsPlugin: {2} Header: {3}", minfo.Name, minfo.IsSrcMember, minfo.IsPluginMember, minfo.Header);
+			Console.WriteLine ("Added: {0} IsSrc: {1} IsPlugin: {2} Header: {3}", minfo.Name, minfo.IsSrcMember, minfo.IsPluginMember, minfo.Header);
 			methods.Add (minfo);
 		}
 
@@ -2631,30 +2631,55 @@ class Generator {
 		text.AppendLine ("using System.Runtime.InteropServices;");
 		text.AppendLine ("");
 		text.AppendLine ("namespace Mono {");
-		text.AppendLine ("\tinternal static partial class NativeMethods");
-		text.AppendLine ("\t{");
+
+		text.AppendLine ("\tinternal static partial class SafeNativeMethods {");
 		text.AppendLine ("\t\t/* moonplugin methods */");
 		text.AppendLine ("\t");
-		foreach (MethodInfo method in methods) {
-			if (!method.IsPluginMember || !method.Annotations.ContainsKey ("GeneratePInvoke"))
-				continue;
-			WritePInvokeMethod (NativeMethods_cs, method, text, "moonplugin");
-			text.AppendLine ();
-		}
-
+		WriteMethods (all, NativeMethods_cs, text, delegate (MethodInfo method) {
+			return method.IsPluginMember && IsSafe (method);
+		});
 		text.AppendLine ("\t");
 		text.AppendLine ("\t\t/* libmoon methods */");
 		text.AppendLine ("\t");
+		WriteMethods (all, NativeMethods_cs, text, delegate (MethodInfo method) {
+			return method.IsSrcMember && IsSafe (method);
+		});
+		text.AppendLine ("\t}");
+
+		text.AppendLine ("\tinternal static partial class NativeMethods {");
+		text.AppendLine ("\t\t/* moonplugin methods */");
+		text.AppendLine ("\t");
+		WriteMethods (all, NativeMethods_cs, text, delegate (MethodInfo method) {
+			return method.IsPluginMember && !IsSafe (method);
+		});
+		text.AppendLine ("\t");
+		text.AppendLine ("\t\t/* libmoon methods */");
+		text.AppendLine ("\t");
+		WriteMethods (all, NativeMethods_cs, text, delegate (MethodInfo method) {
+			return method.IsSrcMember && !IsSafe (method);
+		});
+		text.AppendLine ("\t}");
+
+		text.AppendLine ("}");
+		Helper.WriteAllText (Path.Combine (base_dir, "class/System.Windows/Mono/GeneratedPInvokes.cs".Replace ('/', Path.DirectorySeparatorChar)), text.ToString ());
+	}
+
+	static bool IsSafe (MethodInfo method)
+	{
+		// we consider "safe" parameter-less functions that returns a pointer to an allocated object
+		return (method.CMethod.Name.EndsWith ("_new") && (method.CMethod.Parameters.Count == 0));
+	}
+
+	static void WriteMethods (GlobalInfo all, string NativeMethods_cs, StringBuilder text, Func<MethodInfo,bool> func)
+	{
+		List <MethodInfo> methods = all.CPPMethodsToBind;
+
 		foreach (MethodInfo method in methods) {
-			if (!method.IsSrcMember || !method.Annotations.ContainsKey ("GeneratePInvoke"))
+			if (!func (method) || !method.Annotations.ContainsKey ("GeneratePInvoke"))
 				continue;
-			WritePInvokeMethod (NativeMethods_cs, method, text, "moon");
+			WritePInvokeMethod (NativeMethods_cs, method, text, method.IsPluginMember ? "moonplugin" : "moon");
 			text.AppendLine ();
 		}
-		text.AppendLine ("\t}");
-		text.AppendLine ("}");
-
-		Helper.WriteAllText (Path.Combine (base_dir, "class/System.Windows/Mono/GeneratedPInvokes.cs".Replace ('/', Path.DirectorySeparatorChar)), text.ToString ());
 	}
 
 	static void WritePInvokeMethod (string NativeMethods_cs, MethodInfo method, StringBuilder text, string library)

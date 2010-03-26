@@ -18,67 +18,67 @@ using System.Windows.Shapes;
 
 namespace Microsoft.Internal {
 	partial class TextBoxView {
-		public TextBoxView () : base (NativeMethods.text_box_view_new (), true) {}
+		public TextBoxView () : base (SafeNativeMethods.text_box_view_new (), true) {}
 		internal TextBoxView (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace Mono {
 	partial class DispatcherTimer {
-		public DispatcherTimer () : base (NativeMethods.dispatcher_timer_new (), true) {}
+		public DispatcherTimer () : base (SafeNativeMethods.dispatcher_timer_new (), true) {}
 		internal DispatcherTimer (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows {
 	partial class AssemblyPart {
-		public AssemblyPart () : base (NativeMethods.assembly_part_new (), true) {}
+		public AssemblyPart () : base (SafeNativeMethods.assembly_part_new (), true) {}
 		internal AssemblyPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class AssemblyPartCollection {
-		public AssemblyPartCollection () : base (NativeMethods.assembly_part_collection_new (), true) {}
+		public AssemblyPartCollection () : base (SafeNativeMethods.assembly_part_collection_new (), true) {}
 		internal AssemblyPartCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DataTemplate {
-		public DataTemplate () : base (NativeMethods.data_template_new (), true) {}
+		public DataTemplate () : base (SafeNativeMethods.data_template_new (), true) {}
 		internal DataTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DependencyObjectCollection<T> {
-		public DependencyObjectCollection () : base (NativeMethods.dependency_object_collection_new (), true) {}
+		public DependencyObjectCollection () : base (SafeNativeMethods.dependency_object_collection_new (), true) {}
 		internal DependencyObjectCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Deployment {
-		public Deployment () : base (NativeMethods.deployment_new (), true) {}
+		public Deployment () : base (SafeNativeMethods.deployment_new (), true) {}
 		internal Deployment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Actions")]
 	partial class EventTrigger {
-		public EventTrigger () : base (NativeMethods.event_trigger_new (), true) {}
+		public EventTrigger () : base (SafeNativeMethods.event_trigger_new (), true) {}
 		internal EventTrigger (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ExtensionPart {
-		public ExtensionPart () : base (NativeMethods.extension_part_new (), true) {}
+		public ExtensionPart () : base (SafeNativeMethods.extension_part_new (), true) {}
 		internal ExtensionPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ExternalPart {
-		public ExternalPart () : base (NativeMethods.external_part_new (), true) {}
+		public ExternalPart () : base (SafeNativeMethods.external_part_new (), true) {}
 		internal ExternalPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ExternalPartCollection {
-		public ExternalPartCollection () : base (NativeMethods.external_part_collection_new (), true) {}
+		public ExternalPartCollection () : base (SafeNativeMethods.external_part_collection_new (), true) {}
 		internal ExternalPartCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class FrameworkElement {
-		protected FrameworkElement () : base (NativeMethods.framework_element_new (), true)
+		protected FrameworkElement () : base (SafeNativeMethods.framework_element_new (), true)
 		{
 			Initialize ();
 		}
@@ -89,27 +89,27 @@ namespace System.Windows {
 	}
 
 	partial class FrameworkTemplate {
-		protected FrameworkTemplate () : base (NativeMethods.framework_template_new (), true) {}
+		protected FrameworkTemplate () : base (SafeNativeMethods.framework_template_new (), true) {}
 		internal FrameworkTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Icon {
-		public Icon () : base (NativeMethods.icon_new (), true) {}
+		public Icon () : base (SafeNativeMethods.icon_new (), true) {}
 		internal Icon (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class IconCollection {
-		public IconCollection () : base (NativeMethods.icon_collection_new (), true) {}
+		public IconCollection () : base (SafeNativeMethods.icon_collection_new (), true) {}
 		internal IconCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class NotificationWindow {
-		public NotificationWindow () : base (NativeMethods.notification_window_new (), true) {}
+		public NotificationWindow () : base (SafeNativeMethods.notification_window_new (), true) {}
 		internal NotificationWindow (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class OutOfBrowserSettings {
-		public OutOfBrowserSettings () : base (NativeMethods.out_of_browser_settings_new (), true) {}
+		public OutOfBrowserSettings () : base (SafeNativeMethods.out_of_browser_settings_new (), true) {}
 		internal OutOfBrowserSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
@@ -118,58 +118,58 @@ namespace System.Windows {
 	}
 
 	partial class ResourceDictionary {
-		public ResourceDictionary () : base (NativeMethods.resource_dictionary_new (), true) {}
+		public ResourceDictionary () : base (SafeNativeMethods.resource_dictionary_new (), true) {}
 		internal ResourceDictionary (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ResourceDictionaryCollection {
-		public ResourceDictionaryCollection () : base (NativeMethods.resource_dictionary_collection_new (), true) {}
+		public ResourceDictionaryCollection () : base (SafeNativeMethods.resource_dictionary_collection_new (), true) {}
 		internal ResourceDictionaryCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SecuritySettings {
-		public SecuritySettings () : base (NativeMethods.security_settings_new (), true) {}
+		public SecuritySettings () : base (SafeNativeMethods.security_settings_new (), true) {}
 		internal SecuritySettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Setter {
-		public Setter () : base (NativeMethods.setter_new (), true) {}
+		public Setter () : base (SafeNativeMethods.setter_new (), true) {}
 		internal Setter (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SetterBase {
-		internal SetterBase () : base (NativeMethods.setter_base_new (), true) {}
+		internal SetterBase () : base (SafeNativeMethods.setter_base_new (), true) {}
 		internal SetterBase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SetterBaseCollection {
-		public SetterBaseCollection () : base (NativeMethods.setter_base_collection_new (), true) {}
+		public SetterBaseCollection () : base (SafeNativeMethods.setter_base_collection_new (), true) {}
 		internal SetterBaseCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Setters")]
 	partial class Style {
-		public Style () : base (NativeMethods.style_new (), true) {}
+		public Style () : base (SafeNativeMethods.style_new (), true) {}
 		internal Style (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TriggerAction {
-		internal TriggerAction () : base (NativeMethods.trigger_action_new (), true) {}
+		internal TriggerAction () : base (SafeNativeMethods.trigger_action_new (), true) {}
 		internal TriggerAction (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TriggerActionCollection {
-		public TriggerActionCollection () : base (NativeMethods.trigger_action_collection_new (), true) {}
+		public TriggerActionCollection () : base (SafeNativeMethods.trigger_action_collection_new (), true) {}
 		internal TriggerActionCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TriggerBase {
-		internal TriggerBase () : base (NativeMethods.trigger_base_new (), true) {}
+		internal TriggerBase () : base (SafeNativeMethods.trigger_base_new (), true) {}
 		internal TriggerBase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TriggerCollection {
-		internal TriggerCollection () : base (NativeMethods.trigger_collection_new (), true) {}
+		internal TriggerCollection () : base (SafeNativeMethods.trigger_collection_new (), true) {}
 		internal TriggerCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
@@ -178,12 +178,12 @@ namespace System.Windows {
 	}
 
 	partial class Window {
-		public Window () : base (NativeMethods.window_new (), true) {}
+		public Window () : base (SafeNativeMethods.window_new (), true) {}
 		internal Window (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class WindowSettings {
-		public WindowSettings () : base (NativeMethods.window_settings_new (), true) {}
+		public WindowSettings () : base (SafeNativeMethods.window_settings_new (), true) {}
 		internal WindowSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
@@ -191,28 +191,28 @@ namespace System.Windows {
 namespace System.Windows.Controls {
 	[ContentProperty ("Child")]
 	partial class Border {
-		public Border () : base (NativeMethods.border_new (), true) {}
+		public Border () : base (SafeNativeMethods.border_new (), true) {}
 		internal Border (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Canvas {
-		public Canvas () : base (NativeMethods.canvas_new (), true) {}
+		public Canvas () : base (SafeNativeMethods.canvas_new (), true) {}
 		internal Canvas (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ColumnDefinition {
-		public ColumnDefinition () : base (NativeMethods.column_definition_new (), true) {}
+		public ColumnDefinition () : base (SafeNativeMethods.column_definition_new (), true) {}
 		internal ColumnDefinition (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ColumnDefinitionCollection {
-		internal ColumnDefinitionCollection () : base (NativeMethods.column_definition_collection_new (), true) {}
+		internal ColumnDefinitionCollection () : base (SafeNativeMethods.column_definition_collection_new (), true) {}
 		internal ColumnDefinitionCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Content")]
 	partial class ContentControl {
-		public ContentControl () : base (NativeMethods.content_control_new (), true)
+		public ContentControl () : base (SafeNativeMethods.content_control_new (), true)
 		{
 			Initialize ();
 		}
@@ -223,7 +223,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class Control {
-		protected Control () : base (NativeMethods.control_new (), true)
+		protected Control () : base (SafeNativeMethods.control_new (), true)
 		{
 			Initialize ();
 		}
@@ -234,68 +234,68 @@ namespace System.Windows.Controls {
 	}
 
 	partial class ControlTemplate {
-		public ControlTemplate () : base (NativeMethods.control_template_new (), true) {}
+		public ControlTemplate () : base (SafeNativeMethods.control_template_new (), true) {}
 		internal ControlTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Grid {
-		public Grid () : base (NativeMethods.grid_new (), true) {}
+		public Grid () : base (SafeNativeMethods.grid_new (), true) {}
 		internal Grid (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class HitTestCollection {
-		internal HitTestCollection () : base (NativeMethods.hit_test_collection_new (), true) {}
+		internal HitTestCollection () : base (SafeNativeMethods.hit_test_collection_new (), true) {}
 		internal HitTestCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class HtmlBrush {
-		public HtmlBrush () : base (NativeMethods.html_brush_new (), true) {}
+		public HtmlBrush () : base (SafeNativeMethods.html_brush_new (), true) {}
 		internal HtmlBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Image {
-		public Image () : base (NativeMethods.image_new (), true) {}
+		public Image () : base (SafeNativeMethods.image_new (), true) {}
 		internal Image (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class InkPresenter {
-		public InkPresenter () : base (NativeMethods.ink_presenter_new (), true) {}
+		public InkPresenter () : base (SafeNativeMethods.ink_presenter_new (), true) {}
 		internal InkPresenter (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ItemCollection {
-		internal ItemCollection () : base (NativeMethods.item_collection_new (), true) {}
+		internal ItemCollection () : base (SafeNativeMethods.item_collection_new (), true) {}
 		internal ItemCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MediaElement {
-		public MediaElement () : base (NativeMethods.media_element_new (), true) {}
+		public MediaElement () : base (SafeNativeMethods.media_element_new (), true) {}
 		internal MediaElement (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MultiScaleImage {
-		public MultiScaleImage () : base (NativeMethods.multi_scale_image_new (), true) {}
+		public MultiScaleImage () : base (SafeNativeMethods.multi_scale_image_new (), true) {}
 		internal MultiScaleImage (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MultiScaleSubImage {
-		public MultiScaleSubImage () : base (NativeMethods.multi_scale_sub_image_new (), true) {}
+		public MultiScaleSubImage () : base (SafeNativeMethods.multi_scale_sub_image_new (), true) {}
 		internal MultiScaleSubImage (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MultiScaleSubImageCollection {
-		internal MultiScaleSubImageCollection () : base (NativeMethods.multi_scale_sub_image_collection_new (), true) {}
+		internal MultiScaleSubImageCollection () : base (SafeNativeMethods.multi_scale_sub_image_collection_new (), true) {}
 		internal MultiScaleSubImageCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Children")]
 	partial class Panel {
-		protected Panel () : base (NativeMethods.panel_new (), true) {}
+		protected Panel () : base (SafeNativeMethods.panel_new (), true) {}
 		internal Panel (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PasswordBox {
-		public PasswordBox () : base (NativeMethods.password_box_new (), true)
+		public PasswordBox () : base (SafeNativeMethods.password_box_new (), true)
 		{
 			Initialize ();
 		}
@@ -307,28 +307,28 @@ namespace System.Windows.Controls {
 
 	[ContentProperty ("Blocks")]
 	partial class RichTextArea {
-		public RichTextArea () : base (NativeMethods.rich_text_area_new (), true) {}
+		public RichTextArea () : base (SafeNativeMethods.rich_text_area_new (), true) {}
 		internal RichTextArea (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class RowDefinition {
-		public RowDefinition () : base (NativeMethods.row_definition_new (), true) {}
+		public RowDefinition () : base (SafeNativeMethods.row_definition_new (), true) {}
 		internal RowDefinition (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class RowDefinitionCollection {
-		internal RowDefinitionCollection () : base (NativeMethods.row_definition_collection_new (), true) {}
+		internal RowDefinitionCollection () : base (SafeNativeMethods.row_definition_collection_new (), true) {}
 		internal RowDefinitionCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Inlines")]
 	partial class TextBlock {
-		public TextBlock () : base (NativeMethods.text_block_new (), true) {}
+		public TextBlock () : base (SafeNativeMethods.text_block_new (), true) {}
 		internal TextBlock (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TextBox {
-		public TextBox () : base (NativeMethods.text_box_new (), true)
+		public TextBox () : base (SafeNativeMethods.text_box_new (), true)
 		{
 			Initialize ();
 		}
@@ -339,24 +339,24 @@ namespace System.Windows.Controls {
 	}
 
 	partial class UIElementCollection {
-		internal UIElementCollection () : base (NativeMethods.uielement_collection_new (), true) {}
+		internal UIElementCollection () : base (SafeNativeMethods.uielement_collection_new (), true) {}
 		internal UIElementCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Content")]
 	partial class UserControl {
-		public UserControl () : base (NativeMethods.user_control_new (), true) {}
+		public UserControl () : base (SafeNativeMethods.user_control_new (), true) {}
 		internal UserControl (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Child")]
 	partial class Viewbox {
-		public Viewbox () : base (NativeMethods.viewbox_new (), true) {}
+		public Viewbox () : base (SafeNativeMethods.viewbox_new (), true) {}
 		internal Viewbox (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class WebBrowser {
-		public WebBrowser () : base (NativeMethods.web_browser_new (), true) {}
+		public WebBrowser () : base (SafeNativeMethods.web_browser_new (), true) {}
 		internal WebBrowser (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
@@ -364,7 +364,7 @@ namespace System.Windows.Controls {
 namespace System.Windows.Controls.Primitives {
 	[ContentProperty ("Child")]
 	partial class Popup {
-		public Popup () : base (NativeMethods.popup_new (), true)
+		public Popup () : base (SafeNativeMethods.popup_new (), true)
 		{
 			Initialize ();
 		}
@@ -377,290 +377,290 @@ namespace System.Windows.Controls.Primitives {
 
 namespace System.Windows.Documents {
 	partial class Block {
-		public Block () : base (NativeMethods.block_new (), true) {}
+		public Block () : base (SafeNativeMethods.block_new (), true) {}
 		internal Block (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class BlockCollection {
-		public BlockCollection () : base (NativeMethods.block_collection_new (), true) {}
+		public BlockCollection () : base (SafeNativeMethods.block_collection_new (), true) {}
 		internal BlockCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Bold {
-		public Bold () : base (NativeMethods.bold_new (), true) {}
+		public Bold () : base (SafeNativeMethods.bold_new (), true) {}
 		internal Bold (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Glyphs {
-		public Glyphs () : base (NativeMethods.glyphs_new (), true) {}
+		public Glyphs () : base (SafeNativeMethods.glyphs_new (), true) {}
 		internal Glyphs (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Hyperlink {
-		public Hyperlink () : base (NativeMethods.hyperlink_new (), true) {}
+		public Hyperlink () : base (SafeNativeMethods.hyperlink_new (), true) {}
 		internal Hyperlink (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Inline {
-		protected Inline () : base (NativeMethods.inline_new (), true) {}
+		protected Inline () : base (SafeNativeMethods.inline_new (), true) {}
 		internal Inline (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class InlineCollection {
-		internal InlineCollection () : base (NativeMethods.inline_collection_new (), true) {}
+		internal InlineCollection () : base (SafeNativeMethods.inline_collection_new (), true) {}
 		internal InlineCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Child")]
 	partial class InlineUIContainer {
-		public InlineUIContainer () : base (NativeMethods.inline_uicontainer_new (), true) {}
+		public InlineUIContainer () : base (SafeNativeMethods.inline_uicontainer_new (), true) {}
 		internal InlineUIContainer (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Italic {
-		public Italic () : base (NativeMethods.italic_new (), true) {}
+		public Italic () : base (SafeNativeMethods.italic_new (), true) {}
 		internal Italic (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LineBreak {
-		public LineBreak () : base (NativeMethods.line_break_new (), true) {}
+		public LineBreak () : base (SafeNativeMethods.line_break_new (), true) {}
 		internal LineBreak (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Inlines")]
 	partial class Paragraph {
-		public Paragraph () : base (NativeMethods.paragraph_new (), true) {}
+		public Paragraph () : base (SafeNativeMethods.paragraph_new (), true) {}
 		internal Paragraph (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Text")]
 	partial class Run {
-		public Run () : base (NativeMethods.run_new (), true) {}
+		public Run () : base (SafeNativeMethods.run_new (), true) {}
 		internal Run (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Inlines")]
 	partial class Span {
-		public Span () : base (NativeMethods.span_new (), true) {}
+		public Span () : base (SafeNativeMethods.span_new (), true) {}
 		internal Span (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TextElement {
-		protected TextElement () : base (NativeMethods.text_element_new (), true) {}
+		protected TextElement () : base (SafeNativeMethods.text_element_new (), true) {}
 		internal TextElement (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TextElementCollection<T> {
-		public TextElementCollection () : base (NativeMethods.text_element_collection_new (), true) {}
+		public TextElementCollection () : base (SafeNativeMethods.text_element_collection_new (), true) {}
 		internal TextElementCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Underline {
-		public Underline () : base (NativeMethods.underline_new (), true) {}
+		public Underline () : base (SafeNativeMethods.underline_new (), true) {}
 		internal Underline (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Ink {
 	partial class DrawingAttributes {
-		public DrawingAttributes () : base (NativeMethods.drawing_attributes_new (), true) {}
+		public DrawingAttributes () : base (SafeNativeMethods.drawing_attributes_new (), true) {}
 		internal DrawingAttributes (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Stroke {
-		public Stroke () : base (NativeMethods.stroke_new (), true) {}
+		public Stroke () : base (SafeNativeMethods.stroke_new (), true) {}
 		internal Stroke (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class StrokeCollection {
-		public StrokeCollection () : base (NativeMethods.stroke_collection_new (), true) {}
+		public StrokeCollection () : base (SafeNativeMethods.stroke_collection_new (), true) {}
 		internal StrokeCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Input {
 	partial class InputMethod {
-		internal InputMethod () : base (NativeMethods.input_method_new (), true) {}
+		internal InputMethod () : base (SafeNativeMethods.input_method_new (), true) {}
 		internal InputMethod (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class StylusInfo {
-		internal StylusInfo () : base (NativeMethods.stylus_info_new (), true) {}
+		internal StylusInfo () : base (SafeNativeMethods.stylus_info_new (), true) {}
 		internal StylusInfo (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class StylusPointCollection {
-		public StylusPointCollection () : base (NativeMethods.stylus_point_collection_new (), true) {}
+		public StylusPointCollection () : base (SafeNativeMethods.stylus_point_collection_new (), true) {}
 		internal StylusPointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TouchDevice {
-		public TouchDevice () : base (NativeMethods.touch_device_new (), true) {}
+		public TouchDevice () : base (SafeNativeMethods.touch_device_new (), true) {}
 		internal TouchDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TouchPoint {
-		public TouchPoint () : base (NativeMethods.touch_point_new (), true) {}
+		public TouchPoint () : base (SafeNativeMethods.touch_point_new (), true) {}
 		internal TouchPoint (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TouchPointCollection {
-		internal TouchPointCollection () : base (NativeMethods.touch_point_collection_new (), true) {}
+		internal TouchPointCollection () : base (SafeNativeMethods.touch_point_collection_new (), true) {}
 		internal TouchPointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Media {
 	partial class ArcSegment {
-		public ArcSegment () : base (NativeMethods.arc_segment_new (), true) {}
+		public ArcSegment () : base (SafeNativeMethods.arc_segment_new (), true) {}
 		internal ArcSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class AudioCaptureDevice {
-		internal AudioCaptureDevice () : base (NativeMethods.audio_capture_device_new (), true) {}
+		internal AudioCaptureDevice () : base (SafeNativeMethods.audio_capture_device_new (), true) {}
 		internal AudioCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class BezierSegment {
-		public BezierSegment () : base (NativeMethods.bezier_segment_new (), true) {}
+		public BezierSegment () : base (SafeNativeMethods.bezier_segment_new (), true) {}
 		internal BezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class BitmapCache {
-		public BitmapCache () : base (NativeMethods.bitmap_cache_new (), true) {}
+		public BitmapCache () : base (SafeNativeMethods.bitmap_cache_new (), true) {}
 		internal BitmapCache (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Brush {
-		protected Brush () : base (NativeMethods.brush_new (), true) {}
+		protected Brush () : base (SafeNativeMethods.brush_new (), true) {}
 		internal Brush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class CacheMode {
-		protected CacheMode () : base (NativeMethods.cache_mode_new (), true) {}
+		protected CacheMode () : base (SafeNativeMethods.cache_mode_new (), true) {}
 		internal CacheMode (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class CaptureDevice {
-		internal CaptureDevice () : base (NativeMethods.capture_device_new (), true) {}
+		internal CaptureDevice () : base (SafeNativeMethods.capture_device_new (), true) {}
 		internal CaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class CaptureSource {
-		public CaptureSource () : base (NativeMethods.capture_source_new (), true) {}
+		public CaptureSource () : base (SafeNativeMethods.capture_source_new (), true) {}
 		internal CaptureSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class CompositeTransform {
-		public CompositeTransform () : base (NativeMethods.composite_transform_new (), true) {}
+		public CompositeTransform () : base (SafeNativeMethods.composite_transform_new (), true) {}
 		internal CompositeTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DeepZoomImageTileSource {
-		public DeepZoomImageTileSource () : base (NativeMethods.deep_zoom_image_tile_source_new (), true) {}
+		public DeepZoomImageTileSource () : base (SafeNativeMethods.deep_zoom_image_tile_source_new (), true) {}
 		internal DeepZoomImageTileSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DoubleCollection {
-		public DoubleCollection () : base (NativeMethods.double_collection_new (), true) {}
+		public DoubleCollection () : base (SafeNativeMethods.double_collection_new (), true) {}
 		internal DoubleCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class EllipseGeometry {
-		public EllipseGeometry () : base (NativeMethods.ellipse_geometry_new (), true) {}
+		public EllipseGeometry () : base (SafeNativeMethods.ellipse_geometry_new (), true) {}
 		internal EllipseGeometry (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class GeneralTransform {
-		protected GeneralTransform () : base (NativeMethods.general_transform_new (), true) {}
+		protected GeneralTransform () : base (SafeNativeMethods.general_transform_new (), true) {}
 		internal GeneralTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Geometry {
-		internal Geometry () : base (NativeMethods.geometry_new (), true) {}
+		internal Geometry () : base (SafeNativeMethods.geometry_new (), true) {}
 		internal Geometry (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class GeometryCollection {
-		public GeometryCollection () : base (NativeMethods.geometry_collection_new (), true) {}
+		public GeometryCollection () : base (SafeNativeMethods.geometry_collection_new (), true) {}
 		internal GeometryCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Children")]
 	partial class GeometryGroup {
-		public GeometryGroup () : base (NativeMethods.geometry_group_new (), true) {}
+		public GeometryGroup () : base (SafeNativeMethods.geometry_group_new (), true) {}
 		internal GeometryGroup (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("GradientStops")]
 	partial class GradientBrush {
-		protected GradientBrush () : base (NativeMethods.gradient_brush_new (), true) {}
+		protected GradientBrush () : base (SafeNativeMethods.gradient_brush_new (), true) {}
 		internal GradientBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class GradientStop {
-		public GradientStop () : base (NativeMethods.gradient_stop_new (), true) {}
+		public GradientStop () : base (SafeNativeMethods.gradient_stop_new (), true) {}
 		internal GradientStop (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class GradientStopCollection {
-		public GradientStopCollection () : base (NativeMethods.gradient_stop_collection_new (), true) {}
+		public GradientStopCollection () : base (SafeNativeMethods.gradient_stop_collection_new (), true) {}
 		internal GradientStopCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ImageBrush {
-		public ImageBrush () : base (NativeMethods.image_brush_new (), true) {}
+		public ImageBrush () : base (SafeNativeMethods.image_brush_new (), true) {}
 		internal ImageBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ImageSource {
-		public ImageSource () : base (NativeMethods.image_source_new (), true) {}
+		public ImageSource () : base (SafeNativeMethods.image_source_new (), true) {}
 		internal ImageSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ImplicitInputBrush {
-		public ImplicitInputBrush () : base (NativeMethods.implicit_input_brush_new (), true) {}
+		public ImplicitInputBrush () : base (SafeNativeMethods.implicit_input_brush_new (), true) {}
 		internal ImplicitInputBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LinearGradientBrush {
-		public LinearGradientBrush () : base (NativeMethods.linear_gradient_brush_new (), true) {}
+		public LinearGradientBrush () : base (SafeNativeMethods.linear_gradient_brush_new (), true) {}
 		internal LinearGradientBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LineGeometry {
-		public LineGeometry () : base (NativeMethods.line_geometry_new (), true) {}
+		public LineGeometry () : base (SafeNativeMethods.line_geometry_new (), true) {}
 		internal LineGeometry (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LineSegment {
-		public LineSegment () : base (NativeMethods.line_segment_new (), true) {}
+		public LineSegment () : base (SafeNativeMethods.line_segment_new (), true) {}
 		internal LineSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("ProjectionMatrix")]
 	partial class Matrix3DProjection {
-		public Matrix3DProjection () : base (NativeMethods.matrix3_dprojection_new (), true) {}
+		public Matrix3DProjection () : base (SafeNativeMethods.matrix3_dprojection_new (), true) {}
 		internal Matrix3DProjection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MatrixTransform {
-		public MatrixTransform () : base (NativeMethods.matrix_transform_new (), true) {}
+		public MatrixTransform () : base (SafeNativeMethods.matrix_transform_new (), true) {}
 		internal MatrixTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MediaAttribute {
-		public MediaAttribute () : base (NativeMethods.media_attribute_new (), true) {}
+		public MediaAttribute () : base (SafeNativeMethods.media_attribute_new (), true) {}
 		internal MediaAttribute (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MediaAttributeCollection {
-		public MediaAttributeCollection () : base (NativeMethods.media_attribute_collection_new (), true) {}
+		public MediaAttributeCollection () : base (SafeNativeMethods.media_attribute_collection_new (), true) {}
 		internal MediaAttributeCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class MultiScaleTileSource {
-		internal MultiScaleTileSource () : base (NativeMethods.multi_scale_tile_source_new (), true)
+		internal MultiScaleTileSource () : base (SafeNativeMethods.multi_scale_tile_source_new (), true)
 		{
 			Initialize ();
 		}
@@ -672,249 +672,249 @@ namespace System.Windows.Media {
 
 	[ContentProperty ("Segments")]
 	partial class PathFigure {
-		public PathFigure () : base (NativeMethods.path_figure_new (), true) {}
+		public PathFigure () : base (SafeNativeMethods.path_figure_new (), true) {}
 		internal PathFigure (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PathFigureCollection {
-		public PathFigureCollection () : base (NativeMethods.path_figure_collection_new (), true) {}
+		public PathFigureCollection () : base (SafeNativeMethods.path_figure_collection_new (), true) {}
 		internal PathFigureCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Figures")]
 	partial class PathGeometry {
-		public PathGeometry () : base (NativeMethods.path_geometry_new (), true) {}
+		public PathGeometry () : base (SafeNativeMethods.path_geometry_new (), true) {}
 		internal PathGeometry (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PathSegment {
-		internal PathSegment () : base (NativeMethods.path_segment_new (), true) {}
+		internal PathSegment () : base (SafeNativeMethods.path_segment_new (), true) {}
 		internal PathSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PathSegmentCollection {
-		public PathSegmentCollection () : base (NativeMethods.path_segment_collection_new (), true) {}
+		public PathSegmentCollection () : base (SafeNativeMethods.path_segment_collection_new (), true) {}
 		internal PathSegmentCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PlaneProjection {
-		public PlaneProjection () : base (NativeMethods.plane_projection_new (), true) {}
+		public PlaneProjection () : base (SafeNativeMethods.plane_projection_new (), true) {}
 		internal PlaneProjection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PointCollection {
-		public PointCollection () : base (NativeMethods.point_collection_new (), true) {}
+		public PointCollection () : base (SafeNativeMethods.point_collection_new (), true) {}
 		internal PointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PolyBezierSegment {
-		public PolyBezierSegment () : base (NativeMethods.poly_bezier_segment_new (), true) {}
+		public PolyBezierSegment () : base (SafeNativeMethods.poly_bezier_segment_new (), true) {}
 		internal PolyBezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PolyLineSegment {
-		public PolyLineSegment () : base (NativeMethods.poly_line_segment_new (), true) {}
+		public PolyLineSegment () : base (SafeNativeMethods.poly_line_segment_new (), true) {}
 		internal PolyLineSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PolyQuadraticBezierSegment {
-		public PolyQuadraticBezierSegment () : base (NativeMethods.poly_quadratic_bezier_segment_new (), true) {}
+		public PolyQuadraticBezierSegment () : base (SafeNativeMethods.poly_quadratic_bezier_segment_new (), true) {}
 		internal PolyQuadraticBezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Projection {
-		protected Projection () : base (NativeMethods.projection_new (), true) {}
+		protected Projection () : base (SafeNativeMethods.projection_new (), true) {}
 		internal Projection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class QuadraticBezierSegment {
-		public QuadraticBezierSegment () : base (NativeMethods.quadratic_bezier_segment_new (), true) {}
+		public QuadraticBezierSegment () : base (SafeNativeMethods.quadratic_bezier_segment_new (), true) {}
 		internal QuadraticBezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class RadialGradientBrush {
-		public RadialGradientBrush () : base (NativeMethods.radial_gradient_brush_new (), true) {}
+		public RadialGradientBrush () : base (SafeNativeMethods.radial_gradient_brush_new (), true) {}
 		internal RadialGradientBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class RectangleGeometry {
-		public RectangleGeometry () : base (NativeMethods.rectangle_geometry_new (), true) {}
+		public RectangleGeometry () : base (SafeNativeMethods.rectangle_geometry_new (), true) {}
 		internal RectangleGeometry (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class RotateTransform {
-		public RotateTransform () : base (NativeMethods.rotate_transform_new (), true) {}
+		public RotateTransform () : base (SafeNativeMethods.rotate_transform_new (), true) {}
 		internal RotateTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ScaleTransform {
-		public ScaleTransform () : base (NativeMethods.scale_transform_new (), true) {}
+		public ScaleTransform () : base (SafeNativeMethods.scale_transform_new (), true) {}
 		internal ScaleTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SkewTransform {
-		public SkewTransform () : base (NativeMethods.skew_transform_new (), true) {}
+		public SkewTransform () : base (SafeNativeMethods.skew_transform_new (), true) {}
 		internal SkewTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SolidColorBrush {
-		public SolidColorBrush () : base (NativeMethods.solid_color_brush_new (), true) {}
+		public SolidColorBrush () : base (SafeNativeMethods.solid_color_brush_new (), true) {}
 		internal SolidColorBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TileBrush {
-		protected TileBrush () : base (NativeMethods.tile_brush_new (), true) {}
+		protected TileBrush () : base (SafeNativeMethods.tile_brush_new (), true) {}
 		internal TileBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TimelineMarker {
-		public TimelineMarker () : base (NativeMethods.timeline_marker_new (), true) {}
+		public TimelineMarker () : base (SafeNativeMethods.timeline_marker_new (), true) {}
 		internal TimelineMarker (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TimelineMarkerCollection {
-		public TimelineMarkerCollection () : base (NativeMethods.timeline_marker_collection_new (), true) {}
+		public TimelineMarkerCollection () : base (SafeNativeMethods.timeline_marker_collection_new (), true) {}
 		internal TimelineMarkerCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Transform {
-		internal Transform () : base (NativeMethods.transform_new (), true) {}
+		internal Transform () : base (SafeNativeMethods.transform_new (), true) {}
 		internal Transform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TransformCollection {
-		public TransformCollection () : base (NativeMethods.transform_collection_new (), true) {}
+		public TransformCollection () : base (SafeNativeMethods.transform_collection_new (), true) {}
 		internal TransformCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Children")]
 	partial class TransformGroup {
-		public TransformGroup () : base (NativeMethods.transform_group_new (), true) {}
+		public TransformGroup () : base (SafeNativeMethods.transform_group_new (), true) {}
 		internal TransformGroup (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TranslateTransform {
-		public TranslateTransform () : base (NativeMethods.translate_transform_new (), true) {}
+		public TranslateTransform () : base (SafeNativeMethods.translate_transform_new (), true) {}
 		internal TranslateTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class UnmanagedMatrix {
-		public UnmanagedMatrix () : base (NativeMethods.unmanaged_matrix_new (), true) {}
+		public UnmanagedMatrix () : base (SafeNativeMethods.unmanaged_matrix_new (), true) {}
 		internal UnmanagedMatrix (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class VideoBrush {
-		public VideoBrush () : base (NativeMethods.video_brush_new (), true) {}
+		public VideoBrush () : base (SafeNativeMethods.video_brush_new (), true) {}
 		internal VideoBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class VideoCaptureDevice {
-		internal VideoCaptureDevice () : base (NativeMethods.video_capture_device_new (), true) {}
+		internal VideoCaptureDevice () : base (SafeNativeMethods.video_capture_device_new (), true) {}
 		internal VideoCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Media.Animation {
 	partial class BackEase {
-		public BackEase () : base (NativeMethods.back_ease_new (), true) {}
+		public BackEase () : base (SafeNativeMethods.back_ease_new (), true) {}
 		internal BackEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Storyboard")]
 	partial class BeginStoryboard {
-		public BeginStoryboard () : base (NativeMethods.begin_storyboard_new (), true) {}
+		public BeginStoryboard () : base (SafeNativeMethods.begin_storyboard_new (), true) {}
 		internal BeginStoryboard (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class BounceEase {
-		public BounceEase () : base (NativeMethods.bounce_ease_new (), true) {}
+		public BounceEase () : base (SafeNativeMethods.bounce_ease_new (), true) {}
 		internal BounceEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class CircleEase {
-		public CircleEase () : base (NativeMethods.circle_ease_new (), true) {}
+		public CircleEase () : base (SafeNativeMethods.circle_ease_new (), true) {}
 		internal CircleEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ColorAnimation {
-		public ColorAnimation () : base (NativeMethods.color_animation_new (), true) {}
+		public ColorAnimation () : base (SafeNativeMethods.color_animation_new (), true) {}
 		internal ColorAnimation (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("KeyFrames")]
 	partial class ColorAnimationUsingKeyFrames {
-		public ColorAnimationUsingKeyFrames () : base (NativeMethods.color_animation_using_key_frames_new (), true) {}
+		public ColorAnimationUsingKeyFrames () : base (SafeNativeMethods.color_animation_using_key_frames_new (), true) {}
 		internal ColorAnimationUsingKeyFrames (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ColorKeyFrame {
-		protected ColorKeyFrame () : base (NativeMethods.color_key_frame_new (), true) {}
+		protected ColorKeyFrame () : base (SafeNativeMethods.color_key_frame_new (), true) {}
 		internal ColorKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ColorKeyFrameCollection {
-		public ColorKeyFrameCollection () : base (NativeMethods.color_key_frame_collection_new (), true) {}
+		public ColorKeyFrameCollection () : base (SafeNativeMethods.color_key_frame_collection_new (), true) {}
 		internal ColorKeyFrameCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class CubicEase {
-		public CubicEase () : base (NativeMethods.cubic_ease_new (), true) {}
+		public CubicEase () : base (SafeNativeMethods.cubic_ease_new (), true) {}
 		internal CubicEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DiscreteColorKeyFrame {
-		public DiscreteColorKeyFrame () : base (NativeMethods.discrete_color_key_frame_new (), true) {}
+		public DiscreteColorKeyFrame () : base (SafeNativeMethods.discrete_color_key_frame_new (), true) {}
 		internal DiscreteColorKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DiscreteDoubleKeyFrame {
-		public DiscreteDoubleKeyFrame () : base (NativeMethods.discrete_double_key_frame_new (), true) {}
+		public DiscreteDoubleKeyFrame () : base (SafeNativeMethods.discrete_double_key_frame_new (), true) {}
 		internal DiscreteDoubleKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DiscreteObjectKeyFrame {
-		public DiscreteObjectKeyFrame () : base (NativeMethods.discrete_object_key_frame_new (), true) {}
+		public DiscreteObjectKeyFrame () : base (SafeNativeMethods.discrete_object_key_frame_new (), true) {}
 		internal DiscreteObjectKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DiscretePointKeyFrame {
-		public DiscretePointKeyFrame () : base (NativeMethods.discrete_point_key_frame_new (), true) {}
+		public DiscretePointKeyFrame () : base (SafeNativeMethods.discrete_point_key_frame_new (), true) {}
 		internal DiscretePointKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DoubleAnimation {
-		public DoubleAnimation () : base (NativeMethods.double_animation_new (), true) {}
+		public DoubleAnimation () : base (SafeNativeMethods.double_animation_new (), true) {}
 		internal DoubleAnimation (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("KeyFrames")]
 	partial class DoubleAnimationUsingKeyFrames {
-		public DoubleAnimationUsingKeyFrames () : base (NativeMethods.double_animation_using_key_frames_new (), true) {}
+		public DoubleAnimationUsingKeyFrames () : base (SafeNativeMethods.double_animation_using_key_frames_new (), true) {}
 		internal DoubleAnimationUsingKeyFrames (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DoubleKeyFrame {
-		protected DoubleKeyFrame () : base (NativeMethods.double_key_frame_new (), true) {}
+		protected DoubleKeyFrame () : base (SafeNativeMethods.double_key_frame_new (), true) {}
 		internal DoubleKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DoubleKeyFrameCollection {
-		public DoubleKeyFrameCollection () : base (NativeMethods.double_key_frame_collection_new (), true) {}
+		public DoubleKeyFrameCollection () : base (SafeNativeMethods.double_key_frame_collection_new (), true) {}
 		internal DoubleKeyFrameCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class EasingColorKeyFrame {
-		public EasingColorKeyFrame () : base (NativeMethods.easing_color_key_frame_new (), true) {}
+		public EasingColorKeyFrame () : base (SafeNativeMethods.easing_color_key_frame_new (), true) {}
 		internal EasingColorKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class EasingDoubleKeyFrame {
-		public EasingDoubleKeyFrame () : base (NativeMethods.easing_double_key_frame_new (), true) {}
+		public EasingDoubleKeyFrame () : base (SafeNativeMethods.easing_double_key_frame_new (), true) {}
 		internal EasingDoubleKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class EasingFunctionBase {
-		protected EasingFunctionBase () : base (NativeMethods.easing_function_base_new (), true)
+		protected EasingFunctionBase () : base (SafeNativeMethods.easing_function_base_new (), true)
 		{
 			Initialize ();
 		}
@@ -925,225 +925,225 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class EasingPointKeyFrame {
-		public EasingPointKeyFrame () : base (NativeMethods.easing_point_key_frame_new (), true) {}
+		public EasingPointKeyFrame () : base (SafeNativeMethods.easing_point_key_frame_new (), true) {}
 		internal EasingPointKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ElasticEase {
-		public ElasticEase () : base (NativeMethods.elastic_ease_new (), true) {}
+		public ElasticEase () : base (SafeNativeMethods.elastic_ease_new (), true) {}
 		internal ElasticEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ExponentialEase {
-		public ExponentialEase () : base (NativeMethods.exponential_ease_new (), true) {}
+		public ExponentialEase () : base (SafeNativeMethods.exponential_ease_new (), true) {}
 		internal ExponentialEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class KeySpline {
-		public KeySpline () : base (NativeMethods.key_spline_new (), true) {}
+		public KeySpline () : base (SafeNativeMethods.key_spline_new (), true) {}
 		internal KeySpline (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LinearColorKeyFrame {
-		public LinearColorKeyFrame () : base (NativeMethods.linear_color_key_frame_new (), true) {}
+		public LinearColorKeyFrame () : base (SafeNativeMethods.linear_color_key_frame_new (), true) {}
 		internal LinearColorKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LinearDoubleKeyFrame {
-		public LinearDoubleKeyFrame () : base (NativeMethods.linear_double_key_frame_new (), true) {}
+		public LinearDoubleKeyFrame () : base (SafeNativeMethods.linear_double_key_frame_new (), true) {}
 		internal LinearDoubleKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LinearPointKeyFrame {
-		public LinearPointKeyFrame () : base (NativeMethods.linear_point_key_frame_new (), true) {}
+		public LinearPointKeyFrame () : base (SafeNativeMethods.linear_point_key_frame_new (), true) {}
 		internal LinearPointKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("KeyFrames")]
 	partial class ObjectAnimationUsingKeyFrames {
-		public ObjectAnimationUsingKeyFrames () : base (NativeMethods.object_animation_using_key_frames_new (), true) {}
+		public ObjectAnimationUsingKeyFrames () : base (SafeNativeMethods.object_animation_using_key_frames_new (), true) {}
 		internal ObjectAnimationUsingKeyFrames (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ObjectKeyFrame {
-		protected ObjectKeyFrame () : base (NativeMethods.object_key_frame_new (), true) {}
+		protected ObjectKeyFrame () : base (SafeNativeMethods.object_key_frame_new (), true) {}
 		internal ObjectKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ObjectKeyFrameCollection {
-		public ObjectKeyFrameCollection () : base (NativeMethods.object_key_frame_collection_new (), true) {}
+		public ObjectKeyFrameCollection () : base (SafeNativeMethods.object_key_frame_collection_new (), true) {}
 		internal ObjectKeyFrameCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PointAnimation {
-		public PointAnimation () : base (NativeMethods.point_animation_new (), true) {}
+		public PointAnimation () : base (SafeNativeMethods.point_animation_new (), true) {}
 		internal PointAnimation (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("KeyFrames")]
 	partial class PointAnimationUsingKeyFrames {
-		public PointAnimationUsingKeyFrames () : base (NativeMethods.point_animation_using_key_frames_new (), true) {}
+		public PointAnimationUsingKeyFrames () : base (SafeNativeMethods.point_animation_using_key_frames_new (), true) {}
 		internal PointAnimationUsingKeyFrames (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PointKeyFrame {
-		protected PointKeyFrame () : base (NativeMethods.point_key_frame_new (), true) {}
+		protected PointKeyFrame () : base (SafeNativeMethods.point_key_frame_new (), true) {}
 		internal PointKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PointKeyFrameCollection {
-		public PointKeyFrameCollection () : base (NativeMethods.point_key_frame_collection_new (), true) {}
+		public PointKeyFrameCollection () : base (SafeNativeMethods.point_key_frame_collection_new (), true) {}
 		internal PointKeyFrameCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PowerEase {
-		public PowerEase () : base (NativeMethods.power_ease_new (), true) {}
+		public PowerEase () : base (SafeNativeMethods.power_ease_new (), true) {}
 		internal PowerEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class QuadraticEase {
-		public QuadraticEase () : base (NativeMethods.quadratic_ease_new (), true) {}
+		public QuadraticEase () : base (SafeNativeMethods.quadratic_ease_new (), true) {}
 		internal QuadraticEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class QuarticEase {
-		public QuarticEase () : base (NativeMethods.quartic_ease_new (), true) {}
+		public QuarticEase () : base (SafeNativeMethods.quartic_ease_new (), true) {}
 		internal QuarticEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class QuinticEase {
-		public QuinticEase () : base (NativeMethods.quintic_ease_new (), true) {}
+		public QuinticEase () : base (SafeNativeMethods.quintic_ease_new (), true) {}
 		internal QuinticEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SineEase {
-		public SineEase () : base (NativeMethods.sine_ease_new (), true) {}
+		public SineEase () : base (SafeNativeMethods.sine_ease_new (), true) {}
 		internal SineEase (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SplineColorKeyFrame {
-		public SplineColorKeyFrame () : base (NativeMethods.spline_color_key_frame_new (), true) {}
+		public SplineColorKeyFrame () : base (SafeNativeMethods.spline_color_key_frame_new (), true) {}
 		internal SplineColorKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SplineDoubleKeyFrame {
-		public SplineDoubleKeyFrame () : base (NativeMethods.spline_double_key_frame_new (), true) {}
+		public SplineDoubleKeyFrame () : base (SafeNativeMethods.spline_double_key_frame_new (), true) {}
 		internal SplineDoubleKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class SplinePointKeyFrame {
-		public SplinePointKeyFrame () : base (NativeMethods.spline_point_key_frame_new (), true) {}
+		public SplinePointKeyFrame () : base (SafeNativeMethods.spline_point_key_frame_new (), true) {}
 		internal SplinePointKeyFrame (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Children")]
 	partial class Storyboard {
-		public Storyboard () : base (NativeMethods.storyboard_new (), true) {}
+		public Storyboard () : base (SafeNativeMethods.storyboard_new (), true) {}
 		internal Storyboard (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Timeline {
-		protected Timeline () : base (NativeMethods.timeline_new (), true) {}
+		protected Timeline () : base (SafeNativeMethods.timeline_new (), true) {}
 		internal Timeline (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TimelineCollection {
-		public TimelineCollection () : base (NativeMethods.timeline_collection_new (), true) {}
+		public TimelineCollection () : base (SafeNativeMethods.timeline_collection_new (), true) {}
 		internal TimelineCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Media.Effects {
 	partial class BlurEffect {
-		public BlurEffect () : base (NativeMethods.blur_effect_new (), true) {}
+		public BlurEffect () : base (SafeNativeMethods.blur_effect_new (), true) {}
 		internal BlurEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DropShadowEffect {
-		public DropShadowEffect () : base (NativeMethods.drop_shadow_effect_new (), true) {}
+		public DropShadowEffect () : base (SafeNativeMethods.drop_shadow_effect_new (), true) {}
 		internal DropShadowEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Effect {
-		protected Effect () : base (NativeMethods.effect_new (), true) {}
+		protected Effect () : base (SafeNativeMethods.effect_new (), true) {}
 		internal Effect (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PixelShader {
-		public PixelShader () : base (NativeMethods.pixel_shader_new (), true) {}
+		public PixelShader () : base (SafeNativeMethods.pixel_shader_new (), true) {}
 		internal PixelShader (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class ShaderEffect {
-		protected ShaderEffect () : base (NativeMethods.shader_effect_new (), true) {}
+		protected ShaderEffect () : base (SafeNativeMethods.shader_effect_new (), true) {}
 		internal ShaderEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Media.Imaging {
 	partial class BitmapImage {
-		public BitmapImage () : base (NativeMethods.bitmap_image_new (), true) {}
+		public BitmapImage () : base (SafeNativeMethods.bitmap_image_new (), true) {}
 		internal BitmapImage (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class BitmapSource {
-		protected BitmapSource () : base (NativeMethods.bitmap_source_new (), true) {}
+		protected BitmapSource () : base (SafeNativeMethods.bitmap_source_new (), true) {}
 		internal BitmapSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class WriteableBitmap {
-		internal WriteableBitmap () : base (NativeMethods.writeable_bitmap_new (), true) {}
+		internal WriteableBitmap () : base (SafeNativeMethods.writeable_bitmap_new (), true) {}
 		internal WriteableBitmap (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Media.Media3D {
 	partial class UnmanagedMatrix3D {
-		public UnmanagedMatrix3D () : base (NativeMethods.unmanaged_matrix3_d_new (), true) {}
+		public UnmanagedMatrix3D () : base (SafeNativeMethods.unmanaged_matrix3_d_new (), true) {}
 		internal UnmanagedMatrix3D (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Printing {
 	partial class PrintDocument {
-		public PrintDocument () : base (NativeMethods.print_document_new (), true) {}
+		public PrintDocument () : base (SafeNativeMethods.print_document_new (), true) {}
 		internal PrintDocument (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
 namespace System.Windows.Shapes {
 	partial class Ellipse {
-		public Ellipse () : base (NativeMethods.ellipse_new (), true) {}
+		public Ellipse () : base (SafeNativeMethods.ellipse_new (), true) {}
 		internal Ellipse (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Line {
-		public Line () : base (NativeMethods.line_new (), true) {}
+		public Line () : base (SafeNativeMethods.line_new (), true) {}
 		internal Line (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Path {
-		public Path () : base (NativeMethods.path_new (), true) {}
+		public Path () : base (SafeNativeMethods.path_new (), true) {}
 		internal Path (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Polygon {
-		public Polygon () : base (NativeMethods.polygon_new (), true) {}
+		public Polygon () : base (SafeNativeMethods.polygon_new (), true) {}
 		internal Polygon (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Polyline {
-		public Polyline () : base (NativeMethods.polyline_new (), true) {}
+		public Polyline () : base (SafeNativeMethods.polyline_new (), true) {}
 		internal Polyline (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Rectangle {
-		public Rectangle () : base (NativeMethods.rectangle_new (), true) {}
+		public Rectangle () : base (SafeNativeMethods.rectangle_new (), true) {}
 		internal Rectangle (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Shape {
-		protected Shape () : base (NativeMethods.shape_new (), true) {}
+		protected Shape () : base (SafeNativeMethods.shape_new (), true) {}
 		internal Shape (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }

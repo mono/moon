@@ -77,7 +77,7 @@ namespace System.Windows {
 			Free ();
 		}
 
-		public RoutedEventArgs () : this (NativeMethods.routed_event_args_new (), true)
+		public RoutedEventArgs () : this (SafeNativeMethods.routed_event_args_new (), true)
 		{
 		}
 

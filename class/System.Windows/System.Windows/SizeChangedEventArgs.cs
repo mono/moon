@@ -25,16 +25,14 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-//
 
-using System;
 using Mono;
 
 namespace System.Windows
 {
 	public sealed class SizeChangedEventArgs : RoutedEventArgs
 	{
-		internal SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new (), true)
+		internal SizeChangedEventArgs () : base (SafeNativeMethods.size_changed_event_args_new (), true)
 		{
 		}
 

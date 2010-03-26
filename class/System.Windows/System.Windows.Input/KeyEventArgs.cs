@@ -35,7 +35,7 @@ namespace System.Windows.Input {
 		{
 		}
 
-		internal KeyEventArgs () : base (NativeMethods.key_event_args_new (), true)
+		internal KeyEventArgs () : base (SafeNativeMethods.key_event_args_new (), true)
 		{
 		}
 

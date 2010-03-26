@@ -386,88 +386,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::application_get_current()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::application_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::arc_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::assembly_part_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::assembly_part_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::audio_capture_device_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::audio_stream_new(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::back_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::begin_storyboard_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::bezier_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::bitmap_cache_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::bitmap_image_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_get_bitmap_data(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::block_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::block_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::blur_effect_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::bold_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::border_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::bounce_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::cache_mode_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::canvas_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::capture_device_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::capture_source_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::circle_ease_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::collection_changed_event_args_get_new_item(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::collection_changed_event_args_get_old_item(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::collection_changed_event_args_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::collection_get_iterator(System.IntPtr)
@@ -479,58 +407,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::color_animation_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::color_animation_using_key_frames_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::color_key_frame_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::color_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::column_definition_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::column_definition_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::composite_transform_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::content_changed_event_args_get_new_content(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::content_changed_event_args_get_old_content(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::content_control_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::control_get_template_child(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::control_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::control_template_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::cubic_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::cursor_position_changed_event_args_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::data_template_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::deep_zoom_image_tile_source_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_collection_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_find_name(System.IntPtr,System.String,Mono.Kind&)
@@ -549,9 +432,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_with_error_(System.IntPtr,Mono.Kind,System.IntPtr,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
@@ -584,79 +464,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_types(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::deployment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::discrete_color_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::discrete_double_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::discrete_object_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::discrete_point_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dispatcher_timer_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::double_animation_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::double_animation_using_key_frames_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::double_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::double_key_frame_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::double_key_frame_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::downloader_create_web_request(System.IntPtr,System.String,System.String)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::downloader_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::downloader_request_get_downloader_response(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::downloader_response_get_response_status_text_(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::drawing_attributes_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::drop_shadow_effect_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::easing_color_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::easing_double_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::easing_function_base_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::easing_point_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::effect_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::elastic_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::ellipse_geometry_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::ellipse_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::error_event_args_get_error_message_(System.IntPtr)
@@ -668,145 +482,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::event_object_get_type_name_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::event_trigger_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::exponential_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::extension_part_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::external_part_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::external_part_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_element_get_logical_parent(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::framework_element_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_template_get_visual_tree(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::framework_template_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::general_transform_get_matrix(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::general_transform_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::geometry_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::geometry_group_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::geometry_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::glyphs_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::gradient_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::gradient_stop_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::gradient_stop_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::grid_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::hit_test_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::html_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::hyperlink_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::icon_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::icon_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::image_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::image_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::image_source_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::imedia_object_get_media_reffed(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::implicit_input_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::ink_presenter_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::inline_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::inline_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::inline_uicontainer_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::input_method_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::italic_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::item_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::key_event_args_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::key_frame_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::key_spline_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::line_break_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::line_geometry_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::line_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::line_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::linear_color_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::linear_double_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::linear_gradient_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::linear_point_key_frame_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::local_message_receiver_get_receiver_name_(System.IntPtr)
@@ -818,40 +503,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::local_message_sender_new(System.String,System.String)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::log_ready_routed_event_args_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::matrix_get_matrix_values(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::matrix_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::matrix_transform_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_get_matrix_values(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::matrix3_dprojection_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_attribute_collection_get_item_by_name(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::media_attribute_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::media_attribute_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::media_base_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::media_element_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_element_set_demuxer_source(System.IntPtr,System.IntPtr,System.Windows.Media.MediaStreamSource/CloseDemuxerDelegate,System.Windows.Media.MediaStreamSource/GetDiagnosticAsyncDelegate,System.Windows.Media.MediaStreamSource/GetFrameAsyncDelegate,System.Windows.Media.MediaStreamSource/OpenDemuxerAsyncDelegate,System.Windows.Media.MediaStreamSource/SeekAsyncDelegate,System.Windows.Media.MediaStreamSource/SwitchMediaStreamAsyncDelegate)
@@ -890,82 +548,10 @@
 +SC-M: System.IntPtr Mono.NativeMethods::moonlight_scriptable_object_create(System.IntPtr,Mono.InvalidateHandleDelegate,Mono.HasMemberDelegate,Mono.HasMemberDelegate,Mono.InvokeDelegate,Mono.SetPropertyDelegate,Mono.GetPropertyDelegate)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::mouse_button_event_args_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::mouse_event_args_get_stylus_info(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::mouse_event_args_get_stylus_points(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::mouse_event_args_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::mouse_wheel_event_args_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::multi_scale_image_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::multi_scale_sub_image_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::multi_scale_sub_image_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::multi_scale_tile_source_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::notification_window_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::object_animation_using_key_frames_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::object_key_frame_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::object_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::out_of_browser_settings_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::panel_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::paragraph_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::parallel_timeline_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::password_box_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::path_figure_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::path_figure_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::path_geometry_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::path_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::path_segment_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::path_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::pixel_shader_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::plane_projection_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_evaluate(System.IntPtr,System.String)
@@ -992,48 +578,6 @@
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_surface(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::point_animation_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::point_animation_using_key_frames_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::point_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::point_key_frame_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::point_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::poly_bezier_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::poly_line_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::poly_quadratic_bezier_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::polygon_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::polyline_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::popup_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::power_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::print_document_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::projection_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_new_value(System.IntPtr)
 
 # p/invoke declaration
@@ -1043,67 +587,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_property(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::quadratic_bezier_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::quadratic_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::quartic_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::quintic_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::radial_gradient_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rectangle_geometry_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rectangle_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_collection_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_get(System.IntPtr,System.String,System.Boolean&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_iterator_get_current_key_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rich_text_area_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rotate_transform_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::routed_event_args_get_source(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::routed_event_args_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::row_definition_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::row_definition_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::run_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::runtime_get_windowing_system()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::scale_transform_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::security_settings_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_managed_user_state(System.IntPtr)
@@ -1121,73 +614,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_response_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::setter_base_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::setter_base_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::setter_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::shader_effect_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::shape_get_geometry_transform(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::shape_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::sine_ease_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::size_changed_event_args_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::skew_transform_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::solid_color_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::span_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::spline_color_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::spline_double_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::spline_point_key_frame_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::storyboard_get_target_dependency_property(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::storyboard_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::stroke_collection_hit_test(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::stroke_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::stroke_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::style_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::stylus_info_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::stylus_point_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::stylus_point_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_create_downloader(System.IntPtr)
@@ -1208,40 +641,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_block_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_box_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_box_view_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_changed_event_args_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_element_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_element_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::tile_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::timeline_collection_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_get_manual_target(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::timeline_group_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::timeline_marker_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::timeline_marker_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_marker_routed_event_args_get_marker(System.IntPtr)
@@ -1250,16 +650,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_marker_routed_event_args_new(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::timeline_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::touch_device_get_directly_over(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::touch_device_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::touch_point_collection_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_position(System.IntPtr)
@@ -1271,40 +662,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_touch_device(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::touch_point_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::transform_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::transform_group_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::transform_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::translate_transform_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::trigger_action_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::trigger_action_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::trigger_base_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::trigger_collection_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::types_find(System.IntPtr,Mono.Kind)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::types_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::uielement_collection_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_subtree_object(System.IntPtr)
@@ -1316,46 +674,10 @@
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_visual_parent(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::underline_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::unmanaged_matrix_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::unmanaged_matrix3_d_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::user_control_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::video_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::video_capture_device_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::video_stream_new(System.IntPtr,System.Int32,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::viewbox_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::visual_brush_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::web_browser_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::window_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::window_settings_new()
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_initialize_from_bitmap_source(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_context_get_template_binding_source(System.IntPtr)
@@ -1392,6 +714,684 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xap_unpack_(System.String)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::application_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::arc_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::assembly_part_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::assembly_part_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::audio_capture_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::back_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::begin_storyboard_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::bezier_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::bitmap_cache_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::bitmap_image_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::bitmap_source_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::block_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::block_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::blur_effect_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::bold_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::border_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::bounce_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::cache_mode_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::canvas_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::capture_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::capture_source_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::circle_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::collection_changed_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::color_animation_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::color_animation_using_key_frames_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::color_key_frame_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::color_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::column_definition_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::column_definition_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::composite_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::content_control_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::control_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::control_template_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::cubic_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::cursor_position_changed_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::data_template_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::deep_zoom_image_tile_source_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::dependency_object_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::dependency_object_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::deployment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::discrete_color_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::discrete_double_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::discrete_object_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::discrete_point_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::dispatcher_timer_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::double_animation_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::double_animation_using_key_frames_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::double_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::double_key_frame_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::double_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::downloader_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::drawing_attributes_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::drop_shadow_effect_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::easing_color_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::easing_double_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::easing_function_base_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::easing_point_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::effect_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::elastic_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::ellipse_geometry_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::ellipse_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::event_trigger_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::exponential_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::extension_part_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::external_part_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::external_part_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::framework_element_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::framework_template_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::general_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::geometry_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::geometry_group_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::geometry_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::glyphs_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::gradient_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::gradient_stop_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::gradient_stop_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::grid_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::hit_test_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::html_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::hyperlink_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::icon_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::icon_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::image_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::image_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::image_source_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::implicit_input_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::ink_presenter_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::inline_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::inline_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::inline_uicontainer_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::input_method_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::italic_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::item_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::key_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::key_frame_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::key_spline_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::line_break_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::line_geometry_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::line_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::line_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::linear_color_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::linear_double_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::linear_gradient_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::linear_point_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::log_ready_routed_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::matrix_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::matrix_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::matrix3_d_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::matrix3_dprojection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::media_attribute_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::media_attribute_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::media_base_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::media_element_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::mouse_button_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::mouse_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::mouse_wheel_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::multi_scale_image_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::multi_scale_sub_image_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::multi_scale_sub_image_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::multi_scale_tile_source_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::notification_window_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::object_animation_using_key_frames_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::object_key_frame_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::object_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::out_of_browser_settings_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::panel_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::paragraph_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::parallel_timeline_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::password_box_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::path_figure_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::path_figure_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::path_geometry_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::path_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::path_segment_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::path_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::pixel_shader_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::plane_projection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::point_animation_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::point_animation_using_key_frames_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::point_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::point_key_frame_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::point_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::poly_bezier_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::poly_line_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::poly_quadratic_bezier_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::polygon_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::polyline_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::popup_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::power_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::print_document_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::projection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::quadratic_bezier_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::quadratic_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::quartic_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::quintic_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::radial_gradient_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::rectangle_geometry_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::rectangle_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::resource_dictionary_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::resource_dictionary_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::rich_text_area_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::rotate_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::routed_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::row_definition_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::row_definition_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::run_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::scale_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::security_settings_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::setter_base_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::setter_base_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::setter_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::shader_effect_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::shape_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::sine_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::size_changed_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::skew_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::solid_color_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::span_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::spline_color_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::spline_double_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::spline_point_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::storyboard_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::stroke_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::stroke_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::style_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::stylus_info_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::stylus_point_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::stylus_point_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::text_block_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::text_box_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::text_box_view_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::text_changed_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::text_element_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::text_element_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::tile_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::timeline_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::timeline_group_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::timeline_marker_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::timeline_marker_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::timeline_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::touch_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::touch_point_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::touch_point_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::transform_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::transform_group_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::translate_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::trigger_action_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::trigger_action_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::trigger_base_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::trigger_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::types_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::uielement_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::underline_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::unmanaged_matrix_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::unmanaged_matrix3_d_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::user_control_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::video_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::video_capture_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::viewbox_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::visual_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::web_browser_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::window_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::window_settings_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.SafeNativeMethods::writeable_bitmap_new()
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Value::ToObject(System.Type,Mono.Value*)

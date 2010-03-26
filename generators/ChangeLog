@@ -1,3 +1,10 @@
+2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Generator.cs: Split native methods into SafeNativeMethod
+	and NativeMethods based on the API. This let us have non SSC
+	default ctor which turns out to be an important (if unused 
+	before SL4) rule for inheritance wrt coreclr
+
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: Revert r154268 for now. It's causing

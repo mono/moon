@@ -98,7 +98,7 @@ namespace System.Windows {
 				handler (this, EventArgs.Empty);
 		}
 
-		public Application () : this (NativeMethods.application_new (), true)
+		public Application () : this (SafeNativeMethods.application_new (), true)
 		{
 		}
 

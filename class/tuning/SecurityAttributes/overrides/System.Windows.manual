@@ -25,6 +25,7 @@
 
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
++SSC-T: Mono.SafeNativeMethods
 
 # make most of Mono.* (or internal) types [SecurityCritical]
 +SC-T: Mono.ApplicationLauncher

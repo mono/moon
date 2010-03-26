@@ -33,7 +33,7 @@ namespace System.Windows.Media.Imaging
 		int[] pixels;
 		GCHandle pixels_handle;
 
-		public WriteableBitmap (BitmapSource source) : base (NativeMethods.writeable_bitmap_new (), true)
+		public WriteableBitmap (BitmapSource source) : base (SafeNativeMethods.writeable_bitmap_new (), true)
 		{
 			// if source is null then source.native will throw a NRE (like MS SL3 does)
 			NativeMethods.writeable_bitmap_initialize_from_bitmap_source (native, source.native);
@@ -58,14 +58,14 @@ namespace System.Windows.Media.Imaging
 			PinAndSetBitmapData ();
 		}
 
-		public WriteableBitmap (int width, int height) : base (NativeMethods.writeable_bitmap_new (), true)
+		public WriteableBitmap (int width, int height) : base (SafeNativeMethods.writeable_bitmap_new (), true)
 		{
 			AllocatePixels (width, height);
 			PinAndSetBitmapData ();
 		}
 
 		public WriteableBitmap (UIElement element, Transform transform) :
-			base (NativeMethods.writeable_bitmap_new (), true)
+			base (SafeNativeMethods.writeable_bitmap_new (), true)
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");

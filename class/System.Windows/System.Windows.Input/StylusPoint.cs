@@ -43,7 +43,7 @@ namespace System.Windows.Input
 			NativeHandle = raw;
 		}
 		
-		public StylusPoint (double x, double y) : this (NativeMethods.stylus_point_new ())
+		public StylusPoint (double x, double y) : this (SafeNativeMethods.stylus_point_new ())
 		{
 			X = x;
 			Y = y;
