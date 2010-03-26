@@ -13,6 +13,47 @@
 
 #include <glib.h>
 
+
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
+enum AlignmentX {
+	AlignmentXLeft,
+	AlignmentXCenter,
+	AlignmentXRight
+};
+
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
+enum AlignmentY {
+	AlignmentYTop,
+	AlignmentYCenter,
+	AlignmentYBottom
+};
+
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
+enum BrushMappingMode {
+	BrushMappingModeAbsolute,
+	BrushMappingModeRelativeToBoundingBox
+};
+
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
+enum ColorInterpolationMode {
+	ColorInterpolationModeScRgbLinearInterpolation,
+	ColorInterpolationModeSRgbLinearInterpolation
+};
+
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
+enum GradientSpreadMethod {
+	GradientSpreadMethodPad,
+	GradientSpreadMethodReflect,
+	GradientSpreadMethodRepeat
+};
+
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum SystemColor {
 	ActiveBorderColor,
 	ActiveCaptionColor,
@@ -73,6 +114,7 @@ enum FontStyles {
 	FontStylesItalic
 };
 
+/* @IncludeInKinds */
 enum FontWeights {
 	FontWeightsThin       = 100,
 	FontWeightsExtraLight = 200,
@@ -86,11 +128,15 @@ enum FontWeights {
 	FontWeightsExtraBlack = 950,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum LineStackingStrategy {
 	LineStackingStrategyMaxHeight,
 	LineStackingStrategyBlockLineHeight
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum InstallState {
 	InstallStateNotInstalled,
 	InstallStateInstalling,
@@ -99,6 +145,7 @@ enum InstallState {
 	InstallStateUnknown  // not a valid value in managed land
 };
 
+/* @IncludeInKinds */
 enum MediaState {
 	MediaStateClosed,
 	MediaStateOpening,
@@ -110,6 +157,8 @@ enum MediaState {
 	MediaStateAcquiringLicense,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum StyleSimulations {
 	StyleSimulationsNone       = 0,
 	StyleSimulationsBold       = (1 << 0),
@@ -117,6 +166,8 @@ enum StyleSimulations {
 	StyleSimulationsBoldItalic = (StyleSimulationsBold | StyleSimulationsItalic),
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum TextAlignment {
 	TextAlignmentCenter,
 	TextAlignmentLeft,
@@ -125,17 +176,22 @@ enum TextAlignment {
 
 // TextDecorations would appear to be a collection of bit flags rather
 // than a normal enumeration of values
+/* @IncludeInKinds */
 enum TextDecorations {
 	TextDecorationsNone      = 0,
 	TextDecorationsUnderline = (1 << 0)
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum TextWrapping {
 	TextWrappingWrapWithOverflow,
 	TextWrappingNoWrap,
 	TextWrappingWrap,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum Stretch {
 	StretchNone,
 	StretchFill,
@@ -143,6 +199,8 @@ enum Stretch {
 	StretchUniformToFill
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum PenLineCap {
 	PenLineCapFlat,
 	PenLineCapSquare,
@@ -150,46 +208,60 @@ enum PenLineCap {
 	PenLineCapTriangle
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum PenLineJoin {
 	PenLineJoinMiter,
 	PenLineJoinBevel,
 	PenLineJoinRound
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum FillRule {
 	FillRuleEvenOdd,
 	FillRuleNonzero
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum SweepDirection {
 	SweepDirectionCounterclockwise,
 	SweepDirectionClockwise
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum Visibility {
 	VisibilityVisible,
 	VisibilityCollapsed
 };
 
+/* @IncludeInKinds */
 enum Orientation {
 	OrientationVertical,
 	OrientationHorizontal
 };
 
+// FIXME: Rename this to match the managed enum. Then add the 'Namespace' attribute to the enum
 // make sure this stays in sync with System.Windows/System.Windows.Input/Cursor.cs (CursorType enum)
-enum MouseCursor {
-	MouseCursorDefault,
-	MouseCursorArrow,
-	MouseCursorHand,
-	MouseCursorWait,
-	MouseCursorIBeam,
-	MouseCursorStylus,
-	MouseCursorEraser,
-	MouseCursorSizeNS,
-	MouseCursorSizeWE,
-	MouseCursorNone	
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
+enum CursorType {
+	CursorTypeDefault,
+	CursorTypeArrow,
+	CursorTypeHand,
+	CursorTypeWait,
+	CursorTypeIBeam,
+	CursorTypeStylus,
+	CursorTypeEraser,
+	CursorTypeSizeNS,
+	CursorTypeSizeWE,
+	CursorTypeNone	
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
 enum Key {
 	KeyKEYNONE = 0,
 	KeyBACKSPACE = 1,
@@ -277,12 +349,16 @@ enum Key {
 	KeyUNKNOWN = 255
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
 enum TabletDeviceType {
 	TabletDeviceTypeMouse,
 	TabletDeviceTypeStylus,
 	TabletDeviceTypeTouch
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
 enum TouchAction {
 	TouchActionDown = 1,
 	TouchActionMove = 2,
@@ -291,12 +367,16 @@ enum TouchAction {
 
 // Silverlight 2.0 Enums:
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Data */
 enum BindingMode {
 	BindingModeOneWay  = 1,
 	BindingModeOneTime = 2,
 	BindingModeTwoWay  = 3
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum GridUnitType {
        GridUnitTypeAuto,
        GridUnitTypePixel,
@@ -304,6 +384,8 @@ enum GridUnitType {
 };
 
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum HorizontalAlignment {
 	HorizontalAlignmentLeft,
 	HorizontalAlignmentCenter,
@@ -311,12 +393,16 @@ enum HorizontalAlignment {
 	HorizontalAlignmentStretch
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
 enum KeyboardNavigationMode {
 	KeyboardNavigationModeLocal,
 	KeyboardNavigationModeCycle,
 	KeyboardNavigationModeOnce
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
 enum ModifierKeys {
 	ModifierKeyNone     = 0,
 	ModifierKeyAlt      = (1 << 0),
@@ -326,6 +412,8 @@ enum ModifierKeys {
 	ModifierKeyApple    = (1 << 3)
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Controls */
 enum ScrollBarVisibility {
 	ScrollBarVisibilityDisabled,
 	ScrollBarVisibilityAuto,
@@ -333,6 +421,8 @@ enum ScrollBarVisibility {
 	ScrollBarVisibilityVisible
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum VerticalAlignment {
 	VerticalAlignmentTop,
 	VerticalAlignmentCenter,
@@ -340,17 +430,23 @@ enum VerticalAlignment {
 	VerticalAlignmentStretch
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum CrossDomainAccess {
 	CrossDomainAccessNoAccess = 0,
 	// CrossDomainAccessFullAccess (1) was removed before final SL2 release
 	CrossDomainAccessScriptableOnly = 2,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media.Animation */
 enum FillBehavior {
 	FillBehaviorHoldEnd,
 	FillBehaviorStop
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media.Animation */
 enum EasingMode {
 	EasingModeOut,
 	EasingModeIn,
@@ -359,6 +455,8 @@ enum EasingMode {
 
 // Silverlight 3.0 enums
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum LogSource {
 	LogSourceRequestLog,
 	LogSourceStop,
@@ -372,17 +470,23 @@ enum LogSource {
 
 // Silverlight 4.0 enums
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum FlowDirection {
 	FlowDirectionLeftToRight,
 	FlowDirectionRightToLeft
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Controls */
 enum StretchDirection {
 	StretchDirectionUpOnly,
 	StretchDirectionDownOnly,
 	StretchDirectionBoth,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
 enum ImeConversionModeValues {
 	ImeConversionModeValuesNative = 1,
 	ImeConversionModeValuesKatakana = 2,
@@ -397,23 +501,29 @@ enum ImeConversionModeValues {
 	ImeConversionModeValuesDoNotCare = INT_MIN,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Input */
 enum InputMethodState {
 	InputMethodStateOff,
 	InputMethodStateOn,
 	InputMethodStateDoNotCare,
 };
 
+/* @IncludeInKinds */
 enum WindowState {
 	WindowStateNormal,
 	WindowStateMinimized,
 	WindowStateMaximized,
 };
 
+/* @IncludeInKinds */
 enum WindowStartupLocation {
 	WindowStartupLocationCenterScreen,
 	WindowStartupLocationManual,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum TextTrimming {
 	TextTrimmingNone = 0,
 	TextTrimmingWordEllipsis = 2,
@@ -453,11 +563,15 @@ enum MediaFrameState {
 	MediaFrameMarker    = 1 << 5,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 enum TextHintingMode {
 	TextHintingModeFixed,
 	TextHintingModeAnimated
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Media.Imaging */
 enum BitmapCreateOptions {
 	BitmapCreateOptionsNone = 0,
 	BitmapCreateOptionsDelayCreation = 2,

@@ -64,10 +64,6 @@ Validators::VolumeValidator (DependencyObject* instance, DependencyProperty *pro
 bool
 Validators::CursorValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	// If the value is null, it means the default cursor has been set.
-	if (value->GetIsNull ())
-		*value = Value ((int) MouseCursorDefault);
-
 	return true;
 }
 

@@ -85,30 +85,30 @@ MoonWindowlessGtk::Resize (int width, int height)
 }
 
 void
-MoonWindowlessGtk::SetCursor (MouseCursor cursor)
+MoonWindowlessGtk::SetCursor (CursorType cursor)
 {
 #if (NP_VERSION_MINOR >= NPVERS_HAS_WINDOWLESS_CURSORS)
 	NPCursor npcursor;
 	switch (cursor) {
-	case MouseCursorDefault:
+	case CursorTypeDefault:
 		npcursor = NPCursorAuto;
 		break;
-	case MouseCursorArrow:
+	case CursorTypeArrow:
 		npcursor = NPCursorPointer;
 		break;
-	case MouseCursorWait:
+	case CursorTypeWait:
 		npcursor = NPCursorWait;
 		break;
-	case MouseCursorIBeam:
+	case CursorTypeIBeam:
 		npcursor = NPCursorText;
 		break;
-	case MouseCursorStylus:
+	case CursorTypeStylus:
 		npcursor = NPCursorPointer; // XXX ugh...
 		break;
-	case MouseCursorEraser:
+	case CursorTypeEraser:
 		npcursor = NPCursorPointer; // XXX ugh...
 		break;
-	case MouseCursorNone:
+	case CursorTypeNone:
 		// Silverlight display no cursor if the enumeration value is invalid (e.g. -1)
 	default:
 		npcursor = NPCursorNone;

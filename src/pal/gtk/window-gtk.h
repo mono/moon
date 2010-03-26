@@ -36,7 +36,7 @@ public:
 	virtual void ConnectToContainerPlatformWindow (gpointer container_window);
 
 	virtual void Resize (int width, int height);
-	virtual void SetCursor (MouseCursor cursor);
+	virtual void SetCursor (CursorType cursor);
 	virtual void SetBackgroundColor (Color *color);
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();

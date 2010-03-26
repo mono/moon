@@ -335,7 +335,7 @@ Surface::Surface (MoonWindow *window)
 	downloader_context = NULL;
 	downloaders = NULL;
 	background_color = NULL;
-	cursor = MouseCursorDefault;
+	cursor = CursorTypeDefault;
 	mouse_event = NULL;
 	
 	background_color = new Color (1, 1, 1, 0);
@@ -537,7 +537,7 @@ Surface::DetachWindow ()
 }
 
 void
-Surface::SetCursor (MouseCursor new_cursor)
+Surface::SetCursor (CursorType new_cursor)
 {
 	if (new_cursor != cursor) {
 		cursor = new_cursor;
@@ -1890,14 +1890,14 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 void
 Surface::UpdateCursorFromInputList ()
 {
-	MouseCursor new_cursor = MouseCursorDefault;
+	CursorType new_cursor = CursorTypeDefault;
 	
 	// loop over the input list in order until we hit a node that
 	// has its cursor set to the non-default.
 	UIElementNode *node;
 	for (node = (UIElementNode*)input_list->First(); node; node = (UIElementNode*)node->next) {
 		new_cursor = node->uielement->GetCursor ();
-		if (new_cursor != MouseCursorDefault)
+		if (new_cursor != CursorTypeDefault)
 			break;
 	}
 

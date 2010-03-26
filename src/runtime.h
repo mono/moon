@@ -202,7 +202,7 @@ public:
 
 	void DetachLayer (UIElement *layer);
 	
-	void SetCursor (MouseCursor cursor);
+	void SetCursor (CursorType cursor);
 
 	void ReleaseMouseCapture (UIElement *capture);
 	bool SetMouseCapture (UIElement *capture);
@@ -406,7 +406,7 @@ private:
 	bool emittingMouseEvent;
 	
 	// the currently shown cursor
-	MouseCursor cursor;
+	CursorType cursor;
 
 	// Fullscreen support
 	bool full_screen;

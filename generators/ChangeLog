@@ -1,3 +1,9 @@
+2010-03-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Update the generator to use proper type
+	  information for default values which are enum types. Also
+	  generate AsXXX methods for all the relevant enum types.
+
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
 	* README:

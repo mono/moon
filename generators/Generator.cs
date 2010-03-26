@@ -1000,7 +1000,7 @@ class Generator {
 			text.Append (", ");
 
 			if (has_default_value) {
-				text.Append (CreateValue (default_value));
+				text.Append (CreateValue (all, field, default_value));
 			} else if (is_full) {
 				text.Append ("NULL");
 			}
@@ -1009,12 +1009,8 @@ class Generator {
 				text.Append (", ");
 
 			if (propertyType != null) {
-				if (propertyType.IsEnum) {
-					text.Append ("Type::INT32");
-				} else {
-					text.Append ("Type::");
-					text.Append (propertyType.KindName);
-				}
+				text.Append ("Type::");
+				text.Append (propertyType.KindName);
 			} else if (!has_default_value) {
 				text.Append ("Type::INVALID");
 				Console.WriteLine ("{0} does not define its property type.", field.FullName);
@@ -1049,7 +1045,7 @@ class Generator {
 				                   field.Parent.Name,
 				                   field.Name,
 				                   metadataOverride.Key,
-				                   CreateValue (metadataOverride.Value));
+				                   CreateValue (all, field, metadataOverride.Value));
 				text.AppendLine ();
 			}
 			if (field.HasHiddenDefaultValue) {
@@ -1170,7 +1166,7 @@ class Generator {
 				} else if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct || prop_type.Name == "char*")) {
 					text.Append ("\treturn value ? ");
 					if (prop_type.IsEnum) {
-						text.AppendFormat ("({0}) value->AsInt32() : ({0}) 0", prop_type.Name);
+						text.AppendFormat ("({0}) value->As{0}() : ({0}) 0", prop_type.Name);
 					} else {
 						if (!field.IsDPNullable && (/*prop_type.IsStruct || */prop_default != null))
 						    if (string.IsNullOrEmpty (prop_default))
@@ -1187,7 +1183,7 @@ class Generator {
 					// Value cannot be null, so don't need to check for it
 					text.Append ("\treturn ");
 					if (prop_type.IsEnum) {
-						text.AppendFormat ("({0}) value->AsInt32 ()", prop_type.Name);
+						text.AppendFormat ("value->As{0} ()", prop_type.Name);
 					} else {
 						text.AppendFormat ("value->As{0} ()", value_str);
 					}
@@ -1251,7 +1247,10 @@ class Generator {
 					else if (prop_type.IsClass) {
 						text.AppendLine ("Value::CreateUnrefPtr (value));");
 					}
-					else {
+					else if (prop_type.IsEnum) {
+						text.AppendFormat ("Value ((gint32) value, Type::{0}));", prop_type.KindName);
+						text.AppendLine ();
+					} else {
 						text.AppendLine ("Value (value));");
 					}
 				}
@@ -1272,10 +1271,12 @@ class Generator {
 
 	}
 
-	static string CreateValue (string default_value)
+	static string CreateValue (GlobalInfo all, FieldInfo field, string default_value)
 	{
 		if (default_value.StartsWith ("new "))
 			return string.Format ("Value::CreateUnrefPtr ({0})", default_value);
+		else if (field.GetDPPropertyType (all).IsEnum)
+			return string.Format ("new Value ((gint32) {0}, Type::{1})", default_value, field.GetDPPropertyType (all).KindName);
 		else
 			return string.Format ("new Value ({0})", default_value);
 	}
@@ -1436,7 +1437,6 @@ class Generator {
 		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true, false));
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
 
-		all.Children.Add (new TypeInfo ("System.Windows.Input.Cursor", "CURSOR", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("TextDecorationCollection", "TEXTDECORATION_COLLECTION", "OBJECT", true, true));
 
@@ -2075,7 +2075,6 @@ class Generator {
 		f ("System.Windows.FontStretch", "FONTSTRETCH");
 		f ("System.Windows.FontWeight", "FONTWEIGHT");
 		f ("System.Windows.FontStyle", "FONTSTYLE");
-		f ("System.Windows.Input.Cursor", "CURSOR");
 		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
 		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
 
@@ -2431,7 +2430,7 @@ class Generator {
 		text.AppendLine ("Types::RegisterNativeTypes ()");
 		text.AppendLine ("{");
 		text.AppendLine ("\tDeployment *deployment = Deployment::GetCurrent ();");
-		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (deployment, Type::INVALID, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (deployment, Type::INVALID, Type::INVALID, false, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
 			TypeInfo parent = null;
@@ -2450,10 +2449,11 @@ class Generator {
 			if (type.Interfaces.Count != 0)
 				interfaces = type.KindName + "_Interfaces";
 
-			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type (deployment, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12});",
+			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type (deployment, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13});",
 							"Type::" + type.KindName,
 							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
-							type.IsValueType ? "true" : "false",
+							type.IsEnum ? "true" : "false",
+							type.IsValueType || type.IsEnum ? "true" : "false",
 							type.IsInterface ? "true" : "false",
 							"\"" + type.Name + "\"",
 							type.GetEventCount (),
@@ -2461,14 +2461,14 @@ class Generator {
 							events,
 							type.Interfaces.Count,
 							interfaces,
-							type.DefaultCtorVisible ? "true" : "false",
+							type.DefaultCtorVisible || type.IsValueType || type.IsEnum ? "true" : "false",
 							(type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL",
 							type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
 							)
 					 );
 		}
 
-		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
+		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
 
 		text.AppendLine ("}");
 
@@ -2535,7 +2535,8 @@ class Generator {
 						if (!type.Annotations.ContainsKey("IncludeInKinds") ||
 						    type.Annotations.ContainsKey("SkipValue") ||
 						    type.IsNested ||
-						    type.IsStruct)
+						    type.IsStruct ||
+						    type.IsEnum)
 							continue;
 
 						if (type.IsStruct) {
@@ -2553,7 +2554,8 @@ class Generator {
 						if (!type.Annotations.ContainsKey("IncludeInKinds") ||
 						    type.Annotations.ContainsKey("SkipValue") ||
 						    type.IsNested ||
-						    type.IsStruct)
+						    type.IsStruct ||
+						    type.IsEnum)
 							continue;
 
 						//do_as.AppendLine (string.Format ("	{1,-30} As{0} () {{ checked_get_subclass (Type::{2}, {0}) }}", type.Name, type.Name + "*", type.KindName));
@@ -2569,6 +2571,18 @@ class Generator {
 						result.Append (", ");
 						result.Append (type.Name);
 						result.Append (") }");
+						result.AppendLine ();
+					}
+					foreach (TypeInfo type in all.Children.SortedTypesByKind) {
+						if (!type.IsEnum || !type.Annotations.ContainsKey ("IncludeInKinds"))
+							continue;
+						
+						result.AppendFormat ("\t{0} As{0} ()\t", type.Name);
+						result.Append ("\t{ ");
+						result.Append ("checked_get_exact (Type::");
+						result.Append (type.KindName);
+						result.AppendFormat (", ({0}) -1, ({0}) u.i32);", type.Name);
+						result.Append ("\t}");
 						result.AppendLine ();
 					}
 					result.AppendLine ();

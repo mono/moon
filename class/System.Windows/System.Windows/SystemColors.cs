@@ -30,35 +30,37 @@ using System.Windows;
 using System.Windows.Media;
 
 namespace System.Windows {
+
+	enum SystemColor {
+		ActiveBorderColor,
+		ActiveCaptionColor,
+		ActiveCaptionTextColor,
+		AppWorkspaceColor,
+		ControlColor,
+		ControlDarkColor,
+		ControlDarkDarkColor,
+		ControlLightColor,
+		ControlLightLightColor,
+		ControlTextColor,
+		DesktopColor,
+		GrayTextColor,
+		HighlightColor,
+		HighlightTextColor,
+		InactiveBorderColor,
+		InactiveCaptionColor,
+		InactiveCaptionTextColor,
+		InfoColor,
+		InfoTextColor,
+		MenuColor,
+		MenuTextColor,
+		ScrollBarColor,
+		WindowColor,
+		WindowFrameColor,
+		WindowTextColor
+	}
+
 	public static class SystemColors {
-		enum SystemColor {
-			ActiveBorderColor,
-			ActiveCaptionColor,
-			ActiveCaptionTextColor,
-			AppWorkspaceColor,
-			ControlColor,
-			ControlDarkColor,
-			ControlDarkDarkColor,
-			ControlLightColor,
-			ControlLightLightColor,
-			ControlTextColor,
-			DesktopColor,
-			GrayTextColor,
-			HighlightColor,
-			HighlightTextColor,
-			InactiveBorderColor,
-			InactiveCaptionColor,
-			InactiveCaptionTextColor,
-			InfoColor,
-			InfoTextColor,
-			MenuColor,
-			MenuTextColor,
-			ScrollBarColor,
-			WindowColor,
-			WindowFrameColor,
-			WindowTextColor
-		}
-		
+
 		static Color GetSystemColor (SystemColor id)
 		{
 			IntPtr clr = NativeMethods.moon_windowing_system_get_system_color (NativeMethods.runtime_get_windowing_system (), (int) id);

@@ -71,16 +71,16 @@ static enum_map_t color_interpolation_mode_map [] = {
 };
 
 static enum_map_t cursors_map [] = {
-	MAP_ENUM (MouseCursor, Default),
-	MAP_ENUM (MouseCursor, Arrow),
-	MAP_ENUM (MouseCursor, Hand),
-	MAP_ENUM (MouseCursor, Wait),
-	MAP_ENUM (MouseCursor, IBeam),
-	MAP_ENUM (MouseCursor, Stylus),
-	MAP_ENUM (MouseCursor, Eraser),
-	MAP_ENUM (MouseCursor, SizeNS),
-	MAP_ENUM (MouseCursor, SizeWE),
-	MAP_ENUM (MouseCursor, None),
+	MAP_ENUM (CursorType, Default),
+	MAP_ENUM (CursorType, Arrow),
+	MAP_ENUM (CursorType, Hand),
+	MAP_ENUM (CursorType, Wait),
+	MAP_ENUM (CursorType, IBeam),
+	MAP_ENUM (CursorType, Stylus),
+	MAP_ENUM (CursorType, Eraser),
+	MAP_ENUM (CursorType, SizeNS),
+	MAP_ENUM (CursorType, SizeWE),
+	MAP_ENUM (CursorType, None),
 	END_MAPPING
 };
 
@@ -411,7 +411,9 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "StrokeStartLineCap", pen_line_cap_map);
 	g_hash_table_insert (enum_map, (char *) "StrokeEndLineCap", pen_line_cap_map);
 	
+	g_hash_table_insert (enum_map, (char *) "PenLineJoin", pen_line_join_map);
 	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", pen_line_join_map);
+	
 	g_hash_table_insert (enum_map, (char *) "Stretch", stretch_map);
 	g_hash_table_insert (enum_map, (char *) "StyleSimulations", style_simulations_map);
 	g_hash_table_insert (enum_map, (char *) "SweepDirection", sweep_direction_map);

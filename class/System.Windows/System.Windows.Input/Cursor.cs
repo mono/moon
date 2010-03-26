@@ -30,7 +30,7 @@ using System;
 
 namespace System.Windows.Input {
 
-	// This should match the MouseCursor enum in src/enums.h
+	// This should match the CursorType enum in src/enums.h
 	internal enum CursorType {
 		Default,
 		Arrow,

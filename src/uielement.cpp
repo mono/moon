@@ -212,7 +212,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// note: invalid enum values are only validated in 1.1 (managed code),
 		// the default value for VisibilityProperty is VisibilityCollapsed
 		// (see bug #340799 for more details)
-		if (args->GetNewValue()->AsInt32() == VisibilityVisible)
+		if (args->GetNewValue()->AsVisibility () == VisibilityVisible)
 			flags |= UIElement::RENDER_VISIBLE;
 		else
 			flags &= ~UIElement::RENDER_VISIBLE;

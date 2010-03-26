@@ -60,12 +60,7 @@ namespace Mono {
 			CheckNativeAndThread (wrapper);
 
 			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
-			if (val == IntPtr.Zero)
-				return dp.GetDefaultValue (wrapper);
-			
-			result = Value.ToObject (dp.PropertyType, val);
-			
-			return result;
+			return Value.ToObject (dp.PropertyType, val);
 		}
 
 		public static void SetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp, object value)

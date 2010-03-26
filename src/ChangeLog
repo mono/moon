@@ -1,3 +1,34 @@
+2010-03-26  Alan McGovern  <amcgovern@novell.com>
+
+	* xaml.cpp: Update the parser to check if the current kind is
+	  an enum before trying to parse it as an enum. 
+
+	* type.cpp:
+	* type.h.in:
+	* runtime.h:
+	* value.cpp:
+	* value.h.in:
+	* glyphs.cpp:
+	* textbox.cpp:
+	* uielement.h:
+	* runtime.cpp:
+	* pal/window.h:
+	* textblock.cpp:
+	* uielement.cpp:
+	* pal/gtk/window-gtk.h:
+	* pal/gtk/window-gtk.cpp:
+	* pal/gtk/windowless-gtk.h:
+	* pal/gtk/windowless-gtk.cpp: Add enums to our type system so
+	  that we don't lose type information when attempting to parse
+	  them from xaml.
+
+	* brush.h:
+	* enums.h:
+	* enums.cpp: Move some enums to Enums.cpp to simplify things.
+
+	* validators.cpp: Remove this validator as SL3 doesn't need
+	  it.
+
 2010-03-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/install-dialog.cpp (install_html): Provide an
