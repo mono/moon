@@ -1,5 +1,10 @@
 2010-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* type.h.in: Whitespace change to ensure the generator runs
+	  again.
+
+2010-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* xaml.cpp: Update the parser to check if the current kind is
 	  an enum before trying to parse it as an enum. 
 

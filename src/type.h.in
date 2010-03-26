@@ -169,4 +169,3 @@ bool type_is_dependency_object (Type::Kind type);
 G_END_DECLS
 
 #endif
-
