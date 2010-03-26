@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 425 methods needs to be decorated.
+# 427 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -659,6 +659,9 @@
 +SC-M: System.Reflection.AssemblyName System.Runtime.InteropServices._Assembly::GetName(System.Boolean)
 
 # internal call
++SC-M: System.Reflection.AssemblyName[] System.Reflection.Assembly::GetReferencedAssemblies(System.Reflection.Assembly)
+
+# internal call
 +SC-M: System.Reflection.ConstructorInfo System.MonoType::GetCorrespondingInflatedConstructor(System.Reflection.ConstructorInfo)
 
 # internal call
@@ -1272,6 +1275,9 @@
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::SpinWait_nop()
+
+# internal call
++SC-M: System.Void System.Threading.ThreadPool::pool_queue(System.Runtime.Remoting.Messaging.AsyncResult)
 
 # internal call
 +SC-M: System.Void System.Type::GetInterfaceMapData(System.Type,System.Type,System.Reflection.MethodInfo[]&,System.Reflection.MethodInfo[]&)

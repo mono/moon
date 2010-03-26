@@ -1,3 +1,7 @@
+2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.s[s]c: : Update mono/mcs requirement to 154297
+
 2010-03-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc:

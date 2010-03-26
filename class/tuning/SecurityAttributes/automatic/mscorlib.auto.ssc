@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 434 methods
+# 437 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -91,6 +91,7 @@
 +SSC-M: System.Delegate System.Delegate::CreateDelegate(System.Type,System.Type,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Object System.Delegate::DynamicInvoke(System.Object[])
++SSC-M: System.Boolean System.Delegate::IsTransparentProxy()
 +SSC-M: System.Boolean System.Diagnostics.Debugger::get_IsAttached()
 +SSC-M: System.String System.Diagnostics.StackFrame::GetSecureFileName()
 +SSC-M: System.Void System.Diagnostics.StackTrace::.ctor()
@@ -218,11 +219,12 @@
 +SSC-M: System.Int32 System.Object::GetHashCode()
 +SSC-M: System.String System.Reflection.Assembly::get_ImageRuntimeVersion()
 +SSC-M: System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
-+SSC-M: System.Type System.Reflection.Assembly::GetType(System.String,System.Boolean,System.Boolean)
 +SSC-M: System.String System.Reflection.Assembly::ToString()
 +SSC-M: System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
 +SSC-M: System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
 +SSC-M: System.Reflection.Module System.Reflection.Assembly::GetManifestModule()
++SSC-M: System.Type System.Reflection.Assembly::GetType(System.String,System.Boolean,System.Boolean)
++SSC-M: System.Reflection.AssemblyName[] System.Reflection.Assembly::GetReferencedAssemblies()
 +SSC-M: System.Void System.Reflection.AssemblyName::.ctor(System.String)
 +SSC-M: System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
@@ -394,6 +396,7 @@
 +SSC-M: System.Boolean System.Threading.Thread::Join(System.Int32)
 +SSC-M: System.Void System.Threading.Thread::SpinWait(System.Int32)
 +SSC-M: System.Void System.Threading.Thread::Start()
++SSC-M: System.Boolean System.Threading.ThreadPool::QueueUserWorkItem(System.Threading.WaitCallback,System.Object)
 +SSC-M: System.Threading.RegisteredWaitHandle System.Threading.ThreadPool::RegisterWaitForSingleObject(System.Threading.WaitHandle,System.Threading.WaitOrTimerCallback,System.Object,System.Int64,System.Boolean)
 +SSC-M: System.Boolean System.Threading.Timer::Change(System.Int64,System.Int64,System.Boolean)
 +SSC-M: System.Boolean System.Threading.Timer::Dispose(System.Threading.WaitHandle)

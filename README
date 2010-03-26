@@ -18,9 +18,9 @@ Requirements
 
 	Do this like this:
             svn co http://anonsvn.mono-project.com/source/trunk/moon
-            svn co -r 154071 http://anonsvn.mono-project.com/source/trunk/mono
-            svn co -r 154212 http://anonsvn.mono-project.com/source/trunk/mcs
-            svn co -r 154129 http://anonsvn.mono-project.com/source/trunk/mono-basic
+            svn co -r 154297 http://anonsvn.mono-project.com/source/trunk/mono
+            svn co -r 154297 http://anonsvn.mono-project.com/source/trunk/mcs
+            svn co -r 154297 http://anonsvn.mono-project.com/source/trunk/mono-basic
 
 	You don't have to build mono before building moon, so to build
 	moonlight just do:
