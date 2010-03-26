@@ -51,6 +51,13 @@ class Program {
 
 	static void ProcessMethod (MethodDefinition method)
 	{
+		// we consider all SafeNativeMethods.* as [SecuritySafeCritical]
+		// if not then move them into NativeMethods or UnsafeNativeMethods
+		if (method.IsPInvokeImpl && (method.DeclaringType.Name == "SafeNativeMethods")) {
+			MarkAsSafeCritical (method);
+			return;
+		}
+
 		if (!method.HasBody)
 			return;
 

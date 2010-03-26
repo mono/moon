@@ -1,3 +1,8 @@
+2010-03-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.s[s]c: SC to SSC on *_new, removal of 
+	SSC on .ctor
+
 2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Renegerated wrt SafeNativeMethods

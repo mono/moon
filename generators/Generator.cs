@@ -2621,7 +2621,7 @@ class Generator {
 			}
 			if (minfo == null)
 				continue;
-			Console.WriteLine ("Added: {0} IsSrc: {1} IsPlugin: {2} Header: {3}", minfo.Name, minfo.IsSrcMember, minfo.IsPluginMember, minfo.Header);
+			//Console.WriteLine ("Added: {0} IsSrc: {1} IsPlugin: {2} Header: {3}", minfo.Name, minfo.IsSrcMember, minfo.IsPluginMember, minfo.Header);
 			methods.Add (minfo);
 		}
 

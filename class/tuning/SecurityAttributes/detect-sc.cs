@@ -94,8 +94,9 @@ class Program {
 	{
 		string comment = null;
 
-		// All p/invoke methods needs to be [SecurityCritical] to be executed
-		bool sc = method.IsPInvokeImpl;
+		// p/invoke methods needs to be [SecurityCritical] to be executed, 
+		// unless they are inside a type named "SafeNativeMethods"
+		bool sc = (method.IsPInvokeImpl && (method.DeclaringType.Name != "SafeNativeMethods"));
 		if (sc) {
 			comment = "p/invoke declaration";
 		}

@@ -1,3 +1,8 @@
+2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* detect-sc.cs: Do not decorate pinvoke inside SafeNativeMethods
+	* detect-ssc.cs: Decorate pinvoke inside SafeNativeMethods
+
 2010-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ivt-check.cs: Allow System.Json (SDK assembly) access
