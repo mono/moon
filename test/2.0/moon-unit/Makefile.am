@@ -200,11 +200,11 @@ copy-xaps-to-site: $(clientbin_xaps) site/ClientBin/timecode-long.wmv site/Clien
 
 $(clientbin_xaps): $(xaps)
 	@mkdir -p site/ClientBin
-	@cp $(xaps) site/ClientBin
-	@cp $(srcdir)/../../media/video/timecode-long.wmv site/ClientBin
+	@cp $(xaps) site/ClientBin/
+	@cp $(srcdir)/../../media/video/timecode-long.wmv site/ClientBin/
 
 site/ClientBin/timecode-long.wmv: $(srcdir)/../../media/video/timecode-long.wmv
-	@cp $(srcdir)/../../media/video/timecode-long.wmv site/ClientBin
+	@cp $(srcdir)/../../media/video/timecode-long.wmv site/ClientBin/
 
 site/ClientBin/images/mono-logo.png: $(srcdir)/mono-logo.png
 	@mkdir -p site/ClientBin/images/
