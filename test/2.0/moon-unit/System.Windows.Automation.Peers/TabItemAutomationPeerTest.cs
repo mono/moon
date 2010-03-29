@@ -100,6 +100,96 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		public void GetChildrenSelection ()
+		{
+			TabControl tabControl = new TabControl ();
+			TabItem tabItem0 = new TabItem () {
+				Header = "TabItem0",
+				Content = new TextBlock () { Text = "Content0" }
+			};
+			TabItem tabItem1 = new TabItem () {
+				Header = "TabItem1",
+				Content = new TextBlock () { Text = "Content1" }
+			};
+			TabItem tabItem2 = new TabItem () {
+				Header = "TabItem2",
+				Content = new TextBlock () { Text = "Content2" }
+			};
+
+			tabControl.Items.Add (tabItem0);
+			tabControl.Items.Add (tabItem1);
+			tabControl.Items.Add (tabItem2);
+
+			AutomationPeer tabPeer = null;
+			AutomationPeer tabItemPeer0 = null;
+			AutomationPeer tabItemPeer1 = null;
+			AutomationPeer tabItemPeer2 = null;
+
+			CreateAsyncTest (tabControl,
+			() => {
+				tabPeer = FrameworkElementAutomationPeer.CreatePeerForElement (tabControl);
+				tabItemPeer0 = FrameworkElementAutomationPeer.CreatePeerForElement (tabItem0);
+				tabItemPeer1 = FrameworkElementAutomationPeer.CreatePeerForElement (tabItem1);
+				tabItemPeer2 = FrameworkElementAutomationPeer.CreatePeerForElement (tabItem2);
+
+				Assert.IsNotNull (tabPeer, "#0");
+				Assert.IsNotNull (tabPeer.GetChildren (), "#1");
+				Assert.AreEqual (3, tabPeer.GetChildren ().Count, "#2");
+
+				Assert.IsNotNull (tabItemPeer0, "#3");
+				Assert.IsNotNull (tabItemPeer1, "#4");
+				Assert.IsNotNull (tabItemPeer2, "#5");
+			},
+			() => tabControl.SelectedItem = tabItem0,
+			() => {
+				List<AutomationPeer> children = tabItemPeer0.GetChildren ();
+				Assert.IsNotNull (children, "#6");
+				Assert.AreEqual (2, children.Count, "#7");
+				Assert.AreEqual ("TabItem0", children [0].GetName (), "#8");
+				Assert.AreEqual ("Content0", children [1].GetName (), "#9");
+
+				children = tabItemPeer1.GetChildren ();
+				Assert.IsNotNull (children, "#10");
+				Assert.AreEqual (1, children.Count, "#11");
+				Assert.AreEqual ("TabItem1", children [0].GetName (), "#12");
+
+				children = tabItemPeer2.GetChildren ();
+				Assert.IsNotNull (children, "#13");
+				Assert.AreEqual (1, children.Count, "#14");
+				Assert.AreEqual ("TabItem2", children [0].GetName (), "#15");
+			},
+			() => tabControl.SelectedItem = tabItem1,
+			() => {
+				List<AutomationPeer> children = tabItemPeer0.GetChildren ();
+				Assert.IsNotNull (children, "#16");
+				Assert.AreEqual (2, children.Count, "#17");
+
+				children = tabItemPeer1.GetChildren ();
+				Assert.IsNotNull (children, "#18");
+				Assert.AreEqual (3, children.Count, "#19");
+
+				children = tabItemPeer2.GetChildren ();
+				Assert.IsNotNull (children, "#20");
+				Assert.AreEqual (1, children.Count, "#21");
+			},
+			() => tabControl.SelectedItem = tabItem2,
+			() => {
+				List<AutomationPeer> children = tabItemPeer0.GetChildren ();
+				Assert.IsNotNull (children, "#22");
+				Assert.AreEqual (2, children.Count, "#23");
+
+				children = tabItemPeer1.GetChildren ();
+				Assert.IsNotNull (children, "#24");
+				Assert.AreEqual (2, children.Count, "#25");
+
+				children = tabItemPeer2.GetChildren ();
+				Assert.IsNotNull (children, "#26");
+				Assert.AreEqual (3, children.Count, "#27");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public override void GetChildrenChanged ()
 		{
 			if (!EventsManager.Instance.AutomationSingletonExists) {

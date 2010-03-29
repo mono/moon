@@ -1,3 +1,8 @@
+2010-03-29  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/TabItemAutomationPeerTest.cs:
+	Testing children in TabItem, when changing SelecteItem.
+
 2010-03-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/ReflectionTest.cs (ReflectCriticalPublicClass_
