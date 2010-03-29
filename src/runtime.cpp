@@ -794,6 +794,66 @@ Surface::Paint (cairo_t *ctx, Region *region)
 	Paint (ctx, region, false, false);
 }
 
+#if DEBUG
+static void
+dump_render_list (List *render_list)
+{
+	RenderNode *node;
+	int indent = 0;
+
+	node = (RenderNode*)render_list->First();
+	while (node) {
+		if (node->pre_render) {
+			Rect r = node->region->ClipBox();
+			Rect bounds = node->uielement->GetBounds();
+
+			for (int i = 0; i < indent; i ++) putc (' ', stdout);
+			printf ("<Render Name=\"%s\" Type=\"%s\" RenderExtents=\"%g %g %g %g\" Bounds=\"%g %g %g %g\" ",
+				node->uielement->GetName(), node->uielement->GetTypeName(),
+				r.x, r.y, r.width, r.height,
+				bounds.x, bounds.y, bounds.width, bounds.height);
+			printf ("RenderSelf=\"%s\" ", node->render_element ? "true" : "false");
+			if (node->uielement->GetEffect())
+				printf ("Effect=\"yes\" ");
+			if (node->uielement->GetOpacityMask ()) {
+				Brush *b = node->uielement->GetOpacityMask();
+				if (b->Is (Type::RADIALGRADIENTBRUSH))
+					printf ("OpacityMask=\"RadialGradient\" ");
+				else if (b->Is (Type::LINEARGRADIENTBRUSH))
+					printf ("OpacityMask=\"LinearGradient\" ");
+			}
+			if (node->uielement->GetValue (Shape::FillProperty)) {
+				Brush *b = node->uielement->GetValue (Shape::FillProperty)->AsBrush();
+				if (b->Is (Type::RADIALGRADIENTBRUSH))
+					printf ("Fill=\"RadialGradient\" ");
+				else if (b->Is (Type::LINEARGRADIENTBRUSH))
+					printf ("Fill=\"LinearGradient\" ");
+			}
+			if (node->uielement->GetValue (Shape::StrokeProperty)) {
+				Brush *b = node->uielement->GetValue (Shape::StrokeProperty)->AsBrush();
+				if (b->Is (Type::RADIALGRADIENTBRUSH))
+					printf ("Stroke=\"RadialGradient\" ");
+				else if (b->Is (Type::LINEARGRADIENTBRUSH))
+					printf ("Stroke=\"LinearGradient\" ");
+			}
+			if (node->post_render)
+				printf ("/>");
+			else {
+				printf (">");
+				indent += 2;
+			}
+		}
+		else if (node->post_render) {
+			indent -= 2;
+			for (int i = 0; i < indent; i ++) putc (' ', stdout);
+			printf ("</Render Name=\"%s\">", node->uielement->GetName());
+		}
+		printf ("\n");
+		node = (RenderNode*)node->next;
+	}
+}
+#endif
+
 void
 Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transparent)
 {

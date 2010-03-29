@@ -1,3 +1,9 @@
+2010-03-29  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (dump_render_list): new debugging function.
+
+	* runtime.h (RenderNode): make all members accessible.
+
 2010-03-29  Alan McGovern  <amcgovern@novell.com>
 
 	* enums.cpp: 1) Add a missing enum map for InstallState.

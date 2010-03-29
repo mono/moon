@@ -528,13 +528,11 @@ public:
 
 	virtual ~RenderNode ();
 
-private:
 	UIElement *uielement;
 	Region *region;
 	bool render_element;
 	RenderFunc pre_render;
 	RenderFunc post_render;
-
 };
 
 G_BEGIN_DECLS
