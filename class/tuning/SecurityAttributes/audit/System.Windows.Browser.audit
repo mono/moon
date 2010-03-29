@@ -46,13 +46,14 @@ System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
 System.Void System.Windows.Browser.ManagedObject::SetProperty(System.String,System.Object[])
 	r153088		spouliot - calls Invoke [SecurityCritical] on the 'name' property setter using the arguments 'args'
 
-!SSC-32B26A53D7D668F3CF0A71B913AB36F9
-System.Void System.Windows.Browser.ScriptObject::.ctor()
-	r153088		spouliot - pinvoke into moonlight_scriptable_object_create using PluginHost.Handle and delegates to safe methods to be used
-
 !SSC-C2149763080C51713EDD4271C4C21481
 System.Void System.Windows.Browser.ScriptObject::FreeNativeMapping(System.Windows.Browser.ScriptObject)
 	r153088		spouliot - remove a ScriptObjectToggleRef [SecurityCritical] (unexposed) related to the ScriptObject parameter from the tracked references
+
+!SSC-B6981C923A7E2CFC76E73E9383F49B7D
+System.Void System.Windows.Browser.ScriptObject::SetDefaultHandle()
+	r154365		spouliot - logic moved from default .ctor to new method in order to follow coreclr inheritance rules
+	r153088		spouliot - pinvoke into moonlight_scriptable_object_create using PluginHost.Handle and delegates to safe methods to be used
 
 !SSC-55EC96774D15505A717681134C1A77D7
 System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)

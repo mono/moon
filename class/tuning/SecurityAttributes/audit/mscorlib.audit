@@ -18,6 +18,10 @@ System.Boolean System.Array::System.Collections.IList.Contains(System.Object)
 System.Boolean System.Decimal::PerformParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Decimal&,System.Boolean)
 	r142142		spouliot - call string2decimal (icall named mono_string2decimal in decimal.c) and, if 'expFlag' is set, decimalSetExponent (icall named mono_decimalSetExponent in decimal.c)
 
+!SSC-BFF36F6863D084752E30FE5BD2146DE4
+System.Boolean System.Delegate::IsTransparentProxy()
+	r154243		spouliot - call RemotingServices [SecurityCritical] IsTransparentProxy on 'm_target' field - used by the new threadpool implementation
+
 !SSC-08076C3361DCD0D45A70366031E1631B
 System.Boolean System.Diagnostics.Debugger::get_IsAttached()
 	r142142		spouliot - call IsAttached_internal (icall)
@@ -121,6 +125,10 @@ System.Boolean System.Threading.Thread::get_IsBackground()
 !SSC-D025BE6346A3E268FD729B4F5921E310
 System.Boolean System.Threading.Thread::Join(System.Int32)
 	r142142		spouliot - call Join_internal (icall in threads.c) with non-negative (or infinite -1) 'ms' and 'system_thread_handle'
+
+!SSC-F45E6070DA498AA10D18D8880C4D7B38
+System.Boolean System.Threading.ThreadPool::QueueUserWorkItem(System.Threading.WaitCallback,System.Object)
+	r154243		spouliot - add a special case if the callback is not a transparent proxy, otherwise call (new) icall 'pool_queue' with the AsyncResult
 
 !SSC-4C5BC1CA0B56F7766DF6E2BC0876EF26
 System.Boolean System.Threading.Timer::Change(System.Int64,System.Int64,System.Boolean)
@@ -935,8 +943,9 @@ System.Reflection.Assembly System.Reflection.Assembly::GetCallingAssembly()
 System.Reflection.Assembly System.Reflection.Assembly::GetExecutingAssembly()
 	r144558		spouliot - visible icall. parameter-less (static)
 
-!SSC-CAB444F33C93536ECB809EB45B83C5D8
+!SSC-F17D5EB3540299473CA70964D6820436
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
+	r154229		spouliot - visibility changed from private to internal
 	r150368		spouliot - call AppDomain.LoadSatellite(AssemblyName,bool), with false, instead of LoadSatellite(AssemblyName)
 	r145284		spouliot - try/catch to ignore FileNotFoundException added in r144845
 	r144798		spouliot - call AppDomain.LoadSatellite [SecurityCritical] or Assembly.LoadFrom [SecurityCritical] with a validated filename
@@ -944,6 +953,10 @@ System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(Syst
 !SSC-FB0A26F46044BAB72C75D0264858B7AD
 System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
 	r143653		spouliot - call AppDomain.Load, which calls LoadAssembly (icall in mono/metadata/appdomain.c) with non-null, no-empty 'assemblyString'. This string is NOT a filename (but a fully qualified assembly name)
+
+!SSC-5945B08D3FC8A5BA9F7837F32CDE3A44
+System.Reflection.AssemblyName[] System.Reflection.Assembly::GetReferencedAssemblies()
+	r154229		spouliot - change from from icall to a method calling the icall with 'this' as parameter
 
 !SSC-D322BC4CB0F1FDE2DC72C2B98F74B78D
 System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
