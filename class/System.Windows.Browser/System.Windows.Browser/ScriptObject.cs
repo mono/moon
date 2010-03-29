@@ -48,9 +48,9 @@ namespace System.Windows.Browser {
 		bool free_mapping;
 		bool handleIsScriptableNPObject;
 
-		internal Dictionary<string, EventInfo> events;
-		internal Dictionary<string, List<Method>> methods;
-		internal Dictionary<string, PropertyInfo> properties;
+		internal Dictionary<string, EventInfo> events = new Dictionary<string, EventInfo> ();
+		internal Dictionary<string, List<Method>> methods = new Dictionary<string, List<Method>> ();
+		internal Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo> ();
 		internal Dictionary<string, List<ScriptObjectEventInfo>> event_handlers;
 		
 		internal bool HasTypes { get; set; }
@@ -61,14 +61,11 @@ namespace System.Windows.Browser {
 			toggleRefs = new Dictionary<IntPtr, ScriptObjectToggleRef> ();
 		}
 
-		internal ScriptObject () : this (NativeMethods.moonlight_scriptable_object_create (PluginHost.Handle,
-												   invalidate_handle,
-												   has_method,
-												   has_property,
-												   invoke,
-												   set_prop,
-												   get_prop), true)
+		internal ScriptObject ()
 		{
+			// we do not want a [SecuritySafeCritical] attribute on the default ctor
+			// since it mess with coreclr inheritance rules
+			SetDefaultHandle ();
 		}
 
 		internal ScriptObject (IntPtr handle) : this (handle, false)
@@ -79,10 +76,13 @@ namespace System.Windows.Browser {
 		{
 			this.handleIsScriptableNPObject = handleIsScriptableNPObject;
 			this.Handle = handle;
+		}
 
-			this.events = new Dictionary<string, EventInfo> ();
-			this.methods = new Dictionary<string, List<Method>> ();
-			this.properties = new Dictionary<string, PropertyInfo> ();
+		void SetDefaultHandle ()
+		{
+			handleIsScriptableNPObject = true;
+			Handle = NativeMethods.moonlight_scriptable_object_create (PluginHost.Handle,
+				invalidate_handle, has_method, has_property, invoke, set_prop, get_prop);
 		}
 
 		internal IntPtr Handle {
