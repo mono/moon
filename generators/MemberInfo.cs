@@ -88,8 +88,7 @@ class MemberInfo {
 			if (Header == null || Header == string.Empty)
 				return false;
 
-			return (Path.GetFileName (Path.GetDirectoryName (Header)) == "src" ||
-				Path.GetFileName (Path.GetDirectoryName (Header)) == "pal");
+			return Header.Contains (Path.DirectorySeparatorChar + "moon" + Path.DirectorySeparatorChar + "src" + Path.DirectorySeparatorChar);
 		}
 	}
 

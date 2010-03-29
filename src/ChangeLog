@@ -1,5 +1,17 @@
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* pal/gtk/install-dialog.h/cpp: fix
+	InstallDialogPrivate/_InstallDialogPrivate such that the generator
+	can deal with this header.
+
+	* pal/gtk/pixbuf-gtk.h (MoonPixbufLoaderGtk): virtual dtor.
+	(MoonPixbufGtk): same.
+
+	* pal/gtk/window-gtk.h (MoonWindowGtk): no need to decorate this
+	with GenerateCBinding/Pinvoke.
+
+2010-03-29  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (dump_render_list): new debugging function.
 
 	* runtime.h (RenderNode): make all members accessible.

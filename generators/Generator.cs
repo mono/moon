@@ -1286,11 +1286,13 @@ class Generator {
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
 		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
 		string paldir = Path.Combine (srcdir, "pal");
+		string palgtkdir = Path.Combine (paldir, "gtk");
 		List<string> all_files = new List<string> ();
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
+		all_files.AddRange (Directory.GetFiles (palgtkdir, "*.h"));
 
 		RemoveExcludedSrcFiles (srcdir, plugindir, paldir, all_files);
 
@@ -2113,6 +2115,7 @@ class Generator {
 		header.AppendLine ("#include <cairo.h>");
 		header.AppendLine ();
 		header.AppendLine ("#include \"pal.h\"");
+		header.AppendLine ("#include \"pal/gtk/window-gtk.h\"");
 		header.AppendLine ("#include \"enums.h\"");
 		header.AppendLine ();
 		foreach (MemberInfo member in info.Children.Values) {

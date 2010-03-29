@@ -28,11 +28,12 @@
 
 typedef struct _InstallDialog InstallDialog;
 typedef struct _InstallDialogClass InstallDialogClass;
+typedef struct _InstallDialogPrivate InstallDialogPrivate;
 
 struct _InstallDialog {
 	GtkDialog parent_object;
 	
-	struct _InstallDialogPrivate *priv;
+	InstallDialogPrivate *priv;
 };
 
 struct _InstallDialogClass {

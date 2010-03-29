@@ -1,3 +1,10 @@
+2010-03-29  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: include pal/gtk/*.h
+
+	* MemberInfo.cs: IsSrcMember should return true for everything
+	under moon/src
+
 2010-03-29  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: Update the generator to use proper type

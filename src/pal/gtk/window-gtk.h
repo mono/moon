@@ -28,7 +28,6 @@
 /* @Namespace=System.Windows */
 class MoonWindowGtk : public MoonWindow {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
 	MoonWindowGtk (bool fullscreen, int w = -1, int h = -1, MoonWindow* parent = NULL, Surface *surface = NULL);
 
 	virtual ~MoonWindowGtk ();

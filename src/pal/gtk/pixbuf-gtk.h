@@ -8,7 +8,7 @@
 class MoonPixbufGtk : public MoonPixbuf {
 public:
 	MoonPixbufGtk (GdkPixbuf *pixbuf);
-	~MoonPixbufGtk ();
+	virtual ~MoonPixbufGtk ();
 
 	virtual gint GetWidth ();
 	virtual gint GetHeight ();
@@ -24,7 +24,7 @@ class MoonPixbufLoaderGtk : public MoonPixbufLoader {
 public:
 	MoonPixbufLoaderGtk (const char *imageType);
 	MoonPixbufLoaderGtk ();
-	~MoonPixbufLoaderGtk ();
+	virtual ~MoonPixbufLoaderGtk ();
 
 	virtual void Write (const guchar *buffer, int buflen, MoonError **error);
 	virtual void Close (MoonError **error);

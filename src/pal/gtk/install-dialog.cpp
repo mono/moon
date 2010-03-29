@@ -34,7 +34,7 @@ typedef struct {
 	int size;
 } IconLoader;
 
-typedef struct _InstallDialogPrivate {
+struct _InstallDialogPrivate {
 	Application *application;
 	Deployment *deployment;
 	GPtrArray *loaders;
@@ -47,7 +47,7 @@ typedef struct _InstallDialogPrivate {
 	GtkToggleButton *desktop;
 	GtkLabel *primary_text;
 	GtkImage *icon;
-} InstallDialogPrivate;
+};
 
 static void install_dialog_class_init (InstallDialogClass *klass);
 static void install_dialog_init (InstallDialog *dialog);

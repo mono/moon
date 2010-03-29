@@ -16,7 +16,7 @@ generator_SRC = 		\
 	TypeInfo.cs		\
 	TypeReference.cs
 
-FILES = $(wildcard ../src/*.cpp) $(wildcard ../src/*.h) $(wildcard ../src/*.h.in) $(wildcard ../plugin/*.h) $(wildcard ../plugin/*.h.in)
+FILES = $(wildcard ../src/*.cpp) $(wildcard ../src/*.h) $(wildcard ../src/pal/*.h) $(wildcard ../src/pal/gtk/*.h) $(wildcard ../src/*.h.in) $(wildcard ../plugin/*.h) $(wildcard ../plugin/*.h.in)
 
 stamp: generator.exe $(FILES)
 	$(SYSTEM_MONO) --debug generator.exe
