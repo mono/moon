@@ -363,7 +363,7 @@ namespace Mono {
 			}
 			default:
 				Type tt = Deployment.Current.Types.KindToType (value->k);
-				if (tt.IsEnum)
+				if (tt != null && tt.IsEnum)
 					return Enum.ToObject (tt, value->u.i32);
 				break;
 			}

@@ -123,6 +123,14 @@ static enum_map_t font_stretches_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t install_state_map [] = {
+	MAP_ENUM (InstallState, NotInstalled),
+	MAP_ENUM (InstallState, Installing),
+	MAP_ENUM (InstallState, Installed),
+	MAP_ENUM (InstallState, InstallFailed),
+	END_MAPPING
+};
+
 static enum_map_t font_styles_map [] = {
 	MAP_ENUM (FontStyles, Normal),
 	MAP_ENUM (FontStyles, Oblique),
@@ -397,7 +405,6 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "AlignmentX", alignment_x_map);
 	g_hash_table_insert (enum_map, (char *) "AlignmentY", alignment_y_map);
 
-	g_hash_table_insert (enum_map, (char *) "MappingMode", brush_mapping_mode_map);
 	g_hash_table_insert (enum_map, (char *) "BrushMappingMode", brush_mapping_mode_map);
 
 	g_hash_table_insert (enum_map, (char *) "ColorInterpolationMode", color_interpolation_mode_map);
@@ -409,20 +416,15 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "FontStyle", font_styles_map);
 	g_hash_table_insert (enum_map, (char *) "FontWeight", font_weights_map);
 
-	g_hash_table_insert (enum_map, (char *) "SpreadMethod", gradient_spread_method_map);
 	g_hash_table_insert (enum_map, (char *) "GradientSpreadMethod", gradient_spread_method_map);
 
-	g_hash_table_insert (enum_map, (char *) "StrokeDashCap", pen_line_cap_map);
-	g_hash_table_insert (enum_map, (char *) "StrokeStartLineCap", pen_line_cap_map);
-	g_hash_table_insert (enum_map, (char *) "StrokeEndLineCap", pen_line_cap_map);
-	
+	g_hash_table_insert (enum_map, (char *) "PenLineCap", pen_line_cap_map);
 	g_hash_table_insert (enum_map, (char *) "PenLineJoin", pen_line_join_map);
-	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", pen_line_join_map);
 	
 	g_hash_table_insert (enum_map, (char *) "Stretch", stretch_map);
 	g_hash_table_insert (enum_map, (char *) "StyleSimulations", style_simulations_map);
 	g_hash_table_insert (enum_map, (char *) "SweepDirection", sweep_direction_map);
-	g_hash_table_insert (enum_map, (char *) "DeviceType", tablet_device_type_map);
+	g_hash_table_insert (enum_map, (char *) "TabletDeviceType", tablet_device_type_map);
 	g_hash_table_insert (enum_map, (char *) "TextDecorations", text_decorations_map);
 	g_hash_table_insert (enum_map, (char *) "TextWrapping", text_wrapping_map);
 	g_hash_table_insert (enum_map, (char *) "Visibility", visibility_map);
@@ -432,13 +434,10 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "ScrollBarVisibility", scrollbar_visibility_map);
 	g_hash_table_insert (enum_map, (char *) "LineStackingStrategy", line_stacking_strategy_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
-	g_hash_table_insert (enum_map, (char *) "HorizontalContentAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
-	g_hash_table_insert (enum_map, (char *) "VerticalContentAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "TextAlignment", text_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);
 
-	g_hash_table_insert (enum_map, (char *) "TabNavigation", keyboard_navigation_mode_map);
 	g_hash_table_insert (enum_map, (char *) "KeyboardNavigationMode", keyboard_navigation_mode_map);
 
 	g_hash_table_insert (enum_map, (char *) "MediaState", media_element_state_map);
@@ -449,16 +448,18 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "LogSource", log_source_map);
 	g_hash_table_insert (enum_map, (char *) "FlowDirection", flow_direction_map);
 	g_hash_table_insert (enum_map, (char *) "StretchDirection", stretch_direction_map);
-	g_hash_table_insert (enum_map, (char *) "ImeConversioNModeValues", ime_conversion_mode_values_map);
+	g_hash_table_insert (enum_map, (char *) "ImeConversionModeValues", ime_conversion_mode_values_map);
 	g_hash_table_insert (enum_map, (char *) "InputMethodState", input_method_state_map);
 	g_hash_table_insert (enum_map, (char *) "WindowState", window_state_map);
 	g_hash_table_insert (enum_map, (char *) "WindowStartupLocation", window_startup_location_map);
 
 	g_hash_table_insert (enum_map, (char *) "TextHintingMode", text_hinting_mode_map);
 
-	g_hash_table_insert (enum_map, (char *) "CreateOptions", bitmap_create_options_map);
+	g_hash_table_insert (enum_map, (char *) "BitmapCreateOptions", bitmap_create_options_map);
 	
 	g_hash_table_insert (enum_map, (char *) "MoonPixelFormat", moon_pixel_format_map);
+	g_hash_table_insert (enum_map, (char *) "InstallState", install_state_map);
+	g_hash_table_insert (enum_map, (char *) "TextTrimming", text_trimming_map);
 }
 
 static int

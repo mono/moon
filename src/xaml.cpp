@@ -939,7 +939,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 
 class XamlElementInfoEnum : public XamlElementInfo {
  public:
-	XamlElementInfoEnum (const char *name) : XamlElementInfo (NULL, name, Type::INT32)
+	XamlElementInfoEnum (const char *name, Type::Kind type) : XamlElementInfo (NULL, name, type)
 	{
 	}
 
@@ -1002,11 +1002,12 @@ class DefaultNamespace : public XamlNamespace {
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		Type* t = Type::Find (p->deployment, el, false);
-		if (t && !kind_requires_managed_load (t->GetKind ()))
-			return new XamlElementInfoNative (t);
-
-		if (enums_is_enum_name (el))
-			return new XamlElementInfoEnum (g_strdup (el));
+		if (t && !kind_requires_managed_load (t->GetKind ())) {
+			if (t->IsEnum ())
+				return new XamlElementInfoEnum (g_strdup (el), t->GetKind ());
+			else
+				return new XamlElementInfoNative (t);
+		}
 
 		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el, attr, create);
 		if (managed_element)
@@ -4395,11 +4396,11 @@ XamlElementInstanceEnum::XamlElementInstanceEnum (XamlElementInfoEnum *element_i
 bool
 XamlElementInstanceEnum::CreateEnumFromString (const char* str)
 {
-	int i = enums_str_to_int (element_name, str);
+	int i = enums_str_to_int (info->name, str);
 	if (i == -1)
 		return false;
 		
-	value = new Value (i);
+	value = new Value (i, info->GetKind ());
 	return true;
 }
 

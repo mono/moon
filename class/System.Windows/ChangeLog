@@ -1,3 +1,7 @@
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Add missing files to the solution
+
 2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove duplicate /System.Windows.Controls/StretchDirection.cs

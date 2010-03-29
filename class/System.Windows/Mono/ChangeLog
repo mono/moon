@@ -1,5 +1,11 @@
 2010-03-29  Alan McGovern  <amcgovern@novell.com>
 
+	* Value.cs: Check that the type is non-null before accessing
+	  it so we emit the right warning if a type could not be
+	  found.
+
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
 	* NativeDependencyObjectHelper.cs: This wasn't supposed to hit
 	  SVN.
 

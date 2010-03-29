@@ -238,6 +238,7 @@ enum Visibility {
 };
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows.Controls */
 enum Orientation {
 	OrientationVertical,
 	OrientationHorizontal
@@ -510,6 +511,7 @@ enum InputMethodState {
 };
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum WindowState {
 	WindowStateNormal,
 	WindowStateMinimized,
@@ -517,6 +519,7 @@ enum WindowState {
 };
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum WindowStartupLocation {
 	WindowStartupLocationCenterScreen,
 	WindowStartupLocationManual,

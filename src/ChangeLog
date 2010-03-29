@@ -1,5 +1,22 @@
 2010-03-29  Alan McGovern  <amcgovern@novell.com>
 
+	* enums.cpp: 1) Add a missing enum map for InstallState.
+	2) Ensure that enums are mapped to their type name and not the
+	  name of the DP which has the enum as its property type. As
+	  enums are now strongly typed, this is the simplest way of
+	  handling enum lookup.
+
+	* enums.h: Add some missing @Namespace attributes to some
+	  enums
+
+	* xaml.cpp: As enums are now strongly typed, we need to
+	  instantiate a XamlElementInfoEnum when the Type* is an enum.
+	  We don't have to check enums_is_enum_name. Finally, when
+	  calling CreateEnumFromString we need to create a Value* with
+	  the enums type and not Type::INT32.
+
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
 	* type.cpp:
 	* xaml.cpp:
 	* type.h.in:
