@@ -1,3 +1,7 @@
+2010-03-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser.auto.ssc: Change to ScriptObject ctor
+
 2010-03-26  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.s[s]c: SC to SSC on *_new, removal of 
