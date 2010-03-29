@@ -60,6 +60,7 @@ public:
 	void SetKind (Type::Kind value) { type = value; }
 	bool HasParent () { return parent != Type::INVALID; }
 	Type *GetParentType ();
+	bool IsEnum () { return is_enum; }
 	bool IsValueType () { return is_value_type; }
 	bool IsInterface () { return is_interface; }
 	bool IsCustomType () { return type > LASTTYPE; }
@@ -71,7 +72,7 @@ public:
 	bool IsCtorVisible () { return ctor_visible; }
 
 	~Type ();
-	Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
+	Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface,
 	      const char *name, 
 	      int event_count, int total_event_count, const char **events,
 	      int interface_count, const Type::Kind *interfaces, bool ctor_visible,
@@ -82,6 +83,7 @@ private:
 	
 	Type::Kind type; // this type
 	Type::Kind parent; // parent type, INVALID if no parent
+	bool is_enum;
 	bool is_value_type; // if this type is a value type
 	bool is_interface; // if this type is a value type
 

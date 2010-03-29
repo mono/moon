@@ -1441,6 +1441,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 							    "property %s::%s (property has type '%s', value has type '%s')",
 							    GetTypeName (), property->GetName(), Type::Find (GetDeployment (), property->GetPropertyType())->GetName (),
 							   Type::Find (GetDeployment (), value->GetKind ())->GetName ());
+			printf (error_msg);
 			MoonError::FillIn (error, MoonError::ARGUMENT, 1001, error_msg);
 			g_free (error_msg);
 			return false;

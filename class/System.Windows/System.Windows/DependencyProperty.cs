@@ -276,12 +276,13 @@ namespace System.Windows {
 		private static DependencyProperty Lookup (Kind declaring_kind, string name, Type property_type, bool create)
 		{
 			DependencyProperty prop;
-			if (!LookupInternal (declaring_kind, name, property_type, create, out prop))
+			if (!LookupInternal (declaring_kind, name, property_type, create, out prop)) {
 				throw new Exception (
 					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally " +
 						       "because System.Windows.dll libmoon is out of sync. " + 
 						       "Update /moon and do 'make generate' in moon/tools/generators and then " +
 						       "'make all install' in moon/ to fix it.", Deployment.Current.Types.KindToType (declaring_kind), name));
+			}
 			return prop;
 		}
 

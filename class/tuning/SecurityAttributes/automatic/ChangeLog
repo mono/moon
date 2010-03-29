@@ -1,3 +1,10 @@
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Add enums to our type system so
+	  that we don't lose type information when attempting to parse
+	  them from xaml.
+
+
 2010-03-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser.auto.ssc: Change to ScriptObject ctor

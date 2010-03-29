@@ -352,11 +352,9 @@ namespace Mono.Xaml
 
 			if (kind == Kind.INVALID)
 				return null;
-			
 			try {
 				return DependencyProperty.Lookup (kind, propertyName);
-			}
-			catch {
+			} catch {
 				return null;
 			}
 		}

@@ -1,3 +1,39 @@
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs:
+	* ManagedXamlLoader.cs:
+	* MoonlightTypeConverter.cs:
+	* NativeDependencyObjectHelper.cs: Add enums to our type
+	  system so that we don't lose type information when
+	  attempting to parse them from xaml.
+
+
+	* Types.cs: When registering an enum in our type system, make
+	  its base type "System.Object" instead of
+	  System.Enum/System.ValueType. This simplifies the type
+	  system slightly and allows us to easily add enums to
+	  properties which are Type::OBJECT. We also need to count all
+	  value types (and enums) as having a public ctor.
+
+
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs:
+	* ManagedXamlLoader.cs:
+	* MoonlightTypeConverter.cs:
+	* NativeDependencyObjectHelper.cs: Add enums to our type
+	  system so that we don't lose type information when
+	  attempting to parse them from xaml.
+
+
+	* Types.cs: When registering an enum in our type system, make
+	  its base type "System.Object" instead of
+	  System.Enum/System.ValueType. This simplifies the type
+	  system slightly and allows us to easily add enums to
+	  properties which are Type::OBJECT. We also need to count all
+	  value types (and enums) as having a public ctor.
+
+
 2010-03-26  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: We should be using the property's xmlns

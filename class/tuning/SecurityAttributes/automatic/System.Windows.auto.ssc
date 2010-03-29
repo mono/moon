@@ -521,7 +521,7 @@
 +SSC-M: System.Windows.Size System.Windows.SizeChangedEventArgs::get_PreviousSize()
 +SSC-M: System.Collections.Generic.Dictionary`2<System.String,System.String> System.Windows.StartupEventArgs::get_InitParamsAsDictionary()
 +SSC-M: System.Void System.Windows.Style::Seal()
-+SSC-M: System.Windows.Media.Color System.Windows.SystemColors::GetSystemColor(System.Windows.SystemColors/SystemColor)
++SSC-M: System.Windows.Media.Color System.Windows.SystemColors::GetSystemColor(System.Windows.SystemColor)
 +SSC-M: System.Object System.Windows.TemplateBindingExpression::GetValue(System.Windows.DependencyProperty)
 +SSC-M: System.Void System.Windows.TemplateBindingExpression::OnAttached(System.Windows.FrameworkElement)
 +SSC-M: System.Void System.Windows.TemplateBindingExpression::OnDetached(System.Windows.FrameworkElement)

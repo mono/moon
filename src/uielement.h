@@ -466,7 +466,7 @@ public:
 	const static int AllowDropProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
- 	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors,Validator=CursorValidator */
+ 	/* @PropertyType=CursorType,DefaultValue=CursorTypeDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors,Validator=CursorValidator */
 	const static int CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int ResourcesProperty;
@@ -485,8 +485,8 @@ public:
 	void SetCacheMode (CacheMode *mode);
 	CacheMode *GetCacheMode ();
 
-	MouseCursor GetCursor ();
-	void SetCursor (MouseCursor value);
+	CursorType GetCursor ();
+	void SetCursor (CursorType value);
 
 	Effect* GetEffect ();
 	void SetEffect (Effect *value);

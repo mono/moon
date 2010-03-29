@@ -71,16 +71,16 @@ static enum_map_t color_interpolation_mode_map [] = {
 };
 
 static enum_map_t cursors_map [] = {
-	MAP_ENUM (MouseCursor, Default),
-	MAP_ENUM (MouseCursor, Arrow),
-	MAP_ENUM (MouseCursor, Hand),
-	MAP_ENUM (MouseCursor, Wait),
-	MAP_ENUM (MouseCursor, IBeam),
-	MAP_ENUM (MouseCursor, Stylus),
-	MAP_ENUM (MouseCursor, Eraser),
-	MAP_ENUM (MouseCursor, SizeNS),
-	MAP_ENUM (MouseCursor, SizeWE),
-	MAP_ENUM (MouseCursor, None),
+	MAP_ENUM (CursorType, Default),
+	MAP_ENUM (CursorType, Arrow),
+	MAP_ENUM (CursorType, Hand),
+	MAP_ENUM (CursorType, Wait),
+	MAP_ENUM (CursorType, IBeam),
+	MAP_ENUM (CursorType, Stylus),
+	MAP_ENUM (CursorType, Eraser),
+	MAP_ENUM (CursorType, SizeNS),
+	MAP_ENUM (CursorType, SizeWE),
+	MAP_ENUM (CursorType, None),
 	END_MAPPING
 };
 
@@ -396,22 +396,29 @@ initialize_enums (void)
 	
 	g_hash_table_insert (enum_map, (char *) "AlignmentX", alignment_x_map);
 	g_hash_table_insert (enum_map, (char *) "AlignmentY", alignment_y_map);
+
 	g_hash_table_insert (enum_map, (char *) "MappingMode", brush_mapping_mode_map);
+	g_hash_table_insert (enum_map, (char *) "BrushMappingMode", brush_mapping_mode_map);
+
 	g_hash_table_insert (enum_map, (char *) "ColorInterpolationMode", color_interpolation_mode_map);
-	g_hash_table_insert (enum_map, (char *) "Cursor", cursors_map);
+	g_hash_table_insert (enum_map, (char *) "CursorType", cursors_map);
 	g_hash_table_insert (enum_map, (char *) "ErrorType", error_type_map);
 	g_hash_table_insert (enum_map, (char *) "FillBehavior", fill_behavior_map);
 	g_hash_table_insert (enum_map, (char *) "FillRule", fill_rule_map);
 	g_hash_table_insert (enum_map, (char *) "FontStretch", font_stretches_map);
 	g_hash_table_insert (enum_map, (char *) "FontStyle", font_styles_map);
 	g_hash_table_insert (enum_map, (char *) "FontWeight", font_weights_map);
+
 	g_hash_table_insert (enum_map, (char *) "SpreadMethod", gradient_spread_method_map);
-	
+	g_hash_table_insert (enum_map, (char *) "GradientSpreadMethod", gradient_spread_method_map);
+
 	g_hash_table_insert (enum_map, (char *) "StrokeDashCap", pen_line_cap_map);
 	g_hash_table_insert (enum_map, (char *) "StrokeStartLineCap", pen_line_cap_map);
 	g_hash_table_insert (enum_map, (char *) "StrokeEndLineCap", pen_line_cap_map);
 	
+	g_hash_table_insert (enum_map, (char *) "PenLineJoin", pen_line_join_map);
 	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", pen_line_join_map);
+	
 	g_hash_table_insert (enum_map, (char *) "Stretch", stretch_map);
 	g_hash_table_insert (enum_map, (char *) "StyleSimulations", style_simulations_map);
 	g_hash_table_insert (enum_map, (char *) "SweepDirection", sweep_direction_map);
@@ -421,9 +428,8 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "Visibility", visibility_map);
 
 	g_hash_table_insert (enum_map, (char *) "BindingMode", binding_mode_map);
-	g_hash_table_insert (enum_map, (char *) "ExternalCallersFromCrossDomain", cross_domain_access_map);
-	g_hash_table_insert (enum_map, (char *) "HorizontalScrollBarVisibility", scrollbar_visibility_map);
-	g_hash_table_insert (enum_map, (char *) "VerticalScrollBarVisibility", scrollbar_visibility_map);
+	g_hash_table_insert (enum_map, (char *) "CrossDomainAccess", cross_domain_access_map);
+	g_hash_table_insert (enum_map, (char *) "ScrollBarVisibility", scrollbar_visibility_map);
 	g_hash_table_insert (enum_map, (char *) "LineStackingStrategy", line_stacking_strategy_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalContentAlignment", horizontal_alignment_map);
@@ -433,6 +439,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);
 
 	g_hash_table_insert (enum_map, (char *) "TabNavigation", keyboard_navigation_mode_map);
+	g_hash_table_insert (enum_map, (char *) "KeyboardNavigationMode", keyboard_navigation_mode_map);
 
 	g_hash_table_insert (enum_map, (char *) "MediaState", media_element_state_map);
 	g_hash_table_insert (enum_map, (char *) "GridUnitType", grid_unit_type_map);

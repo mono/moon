@@ -3577,17 +3577,9 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	case Type::INT32: {
-		int i;
+		int i = 0;
 
-		if (IS_NULL_OR_EMPTY(s))
-			i = 0;
-		else if (g_ascii_isalpha (s[0]) && prop_name) {
-			i = enums_str_to_int (prop_name, s);
-			if (i == -1) {
-//				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
-				break;
-			}
-		} else {
+		if (!IS_NULL_OR_EMPTY(s)) {
 			errno = 0;
 			long l = strtol (s, &endptr, 10);
 
@@ -3963,11 +3955,22 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	default:
+		if (IS_NULL_OR_EMPTY (s))
+			break;
+
 		// we don't care about NULL or empty values
-		if (!IS_NULL_OR_EMPTY (s)) {
-			g_free (s);
-			return true;
+		Type *t = Type::Find (Deployment::GetCurrent (), type);
+		if (t && t->IsEnum ()) {
+			gint64 i;
+			if (g_ascii_isalpha (s[0]) && t->GetName ()) {
+				i = enums_str_to_int (t->GetName (), s);
+				if (i != -1) {
+					*v = new Value (i, type);
+					*v_set = true;
+				}
+			}
 		}
+		
 	}
 
 	g_free (s);

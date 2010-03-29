@@ -1,3 +1,23 @@
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* SystemColors.cs: Move the SystemColor enum out of the
+	  SystemColors class to simplify our managed/native interop.
+
+	* DependencyProperty.cs: Add enums to our type system so that
+	  we don't lose type information when attempting to parse them
+	  from xaml.
+
+
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* SystemColors.cs: Move the SystemColor enum out of the
+	  SystemColors class to simplify our managed/native interop.
+
+	* DependencyProperty.cs: Add enums to our type system so that
+	  we don't lose type information when attempting to parse them
+	  from xaml.
+
+
 2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs

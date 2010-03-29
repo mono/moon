@@ -39,7 +39,7 @@ class MoonWindow {
 
 	virtual void Resize (int width, int height) = 0;
 
-	virtual void SetCursor (MouseCursor cursor) = 0;
+	virtual void SetCursor (CursorType cursor) = 0;
 	virtual void Invalidate (Rect r) = 0;
 	virtual void Invalidate () { Invalidate (Rect (0, 0, width, height)); }
 	virtual void ProcessUpdates () = 0;

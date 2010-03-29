@@ -23,7 +23,7 @@
 /*
  * Type implementation
  */
-Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
+Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface,
 	    const char *name, 
 	    int event_count, int total_event_count, const char **events, 
 	    int interface_count, const Type::Kind *interfaces, bool ctor_visible,
@@ -31,6 +31,7 @@ Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_
 {
 	this->type = type;
 	this->parent = parent;
+	this->is_enum = is_enum;
 	this->is_value_type = is_value_type;
 	this->is_interface = is_interface;
 	this->name = name;
@@ -445,7 +446,7 @@ Types::Find (const char *name, bool ignore_case)
 Type::Kind
 Types::RegisterType (const char *name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind* interfaces, int interface_count)
 {
-	Type *type = new Type (Deployment::GetCurrent (), Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, content_property);
+	Type *type = new Type (Deployment::GetCurrent (), Type::INVALID, parent, false, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, content_property);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	

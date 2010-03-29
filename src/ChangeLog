@@ -1,3 +1,67 @@
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* type.cpp:
+	* xaml.cpp:
+	* type.h.in:
+	* runtime.h:
+	* value.cpp:
+	* value.h.in:
+	* glyphs.cpp:
+	* runtime.cpp:
+	* uielement.h:
+	* textbox.cpp:
+	* pal/window.h:
+	* uielement.cpp:
+	* textblock.cpp:
+	* dependencyobject.cpp:
+	* pal/gtk/window-gtk.h:
+	* pal/gtk/window-gtk.cpp:
+	* pal/gtk/windowless-gtk.h:
+	* pal/gtk/windowless-gtk.cpp: Add enums to our type system so
+	  that we don't lose type information when attempting to parse
+	  them from xaml.
+
+
+	* brush.h:
+	* enums.h: Move some enums to enums.h and mark all relevant
+	  enums with the IncludeInKinds and Namespace attributes.
+
+	* enums.cpp: Move some enums to enums.h to simplify things.
+
+	* validators.cpp: Nuke a now useless validator
+
+2010-03-29  Alan McGovern  <amcgovern@novell.com>
+
+	* type.cpp:
+	* xaml.cpp:
+	* type.h.in:
+	* runtime.h:
+	* value.cpp:
+	* value.h.in:
+	* glyphs.cpp:
+	* runtime.cpp:
+	* uielement.h:
+	* textbox.cpp:
+	* pal/window.h:
+	* uielement.cpp:
+	* textblock.cpp:
+	* dependencyobject.cpp:
+	* pal/gtk/window-gtk.h:
+	* pal/gtk/window-gtk.cpp:
+	* pal/gtk/windowless-gtk.h:
+	* pal/gtk/windowless-gtk.cpp: Add enums to our type system so
+	  that we don't lose type information when attempting to parse
+	  them from xaml.
+
+
+	* brush.h:
+	* enums.h: Move some enums to enums.h and mark all relevant
+	  enums with the IncludeInKinds and Namespace attributes.
+
+	* enums.cpp: Move some enums to enums.h to simplify things.
+
+	* validators.cpp: Nuke a now useless validator
+
 2010-03-26  Larry Ewing  <lewing@novell.com>
 
 	* provider.cpp (GetPropertyValue): 

@@ -22,35 +22,6 @@
 
 class MediaElement;
 
-enum AlignmentX {
-	AlignmentXLeft,
-	AlignmentXCenter,
-	AlignmentXRight
-};
-
-enum AlignmentY {
-	AlignmentYTop,
-	AlignmentYCenter,
-	AlignmentYBottom
-};
-
-enum BrushMappingMode {
-	BrushMappingModeAbsolute,
-	BrushMappingModeRelativeToBoundingBox
-};
-
-enum ColorInterpolationMode {
-	ColorInterpolationModeScRgbLinearInterpolation,
-	ColorInterpolationModeSRgbLinearInterpolation
-};
-
-enum GradientSpreadMethod {
-	GradientSpreadMethodPad,
-	GradientSpreadMethodReflect,
-	GradientSpreadMethodRepeat
-};
-
-
 /* @Namespace=System.Windows.Media */
 class Brush : public DependencyObject {
  protected:
