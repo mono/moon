@@ -1,3 +1,8 @@
+2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* frameworkelement.h: enums.h is in this directory, no need to qualify it with
+	a directory.
+
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* pal/gtk/install-dialog.cpp (install_xap): use

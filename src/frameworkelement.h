@@ -15,7 +15,7 @@
 #include <math.h>
 
 #include "uielement.h"
-#include "src/enums.h"
+#include "enums.h"
 
 /* @CBindingRequisite */
 typedef Size (*MeasureOverrideCallback)(Size availableSize);
