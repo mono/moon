@@ -92,6 +92,33 @@ namespace MoonTest.System.Windows.Input {
 			Assert.AreEqual ("v2.0.50727", ab.ImageRuntimeVersion, "ImageRuntimeVersion");
 			Assert.AreEqual ("AppDomainTest.DynamicAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", ab.ToString (), "ToString");
 		}
+
+		[TestMethod]
+		public void IsCompatibilitySwitchSet ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				AppDomain.CurrentDomain.IsCompatibilitySwitchSet (null);
+			}, "null");
+			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet (String.Empty), "Empty");
+			// defined in SL4 RC documentation
+			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("NetFx40_Legacy20SortingBehavior"), "NetFx40_Legacy20SortingBehavior");
+			// defined in FX4 beta documentation
+			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("NetFx40_LegacySecurityPolicy"), "NetFx40_LegacySecurityPolicy");
+			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("NetFx40_TimeSpanLegacyFormatMode"), "NetFx40_TimeSpanLegacyFormatMode");
+			// undefined
+			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("MONO"), "undefined");
+
+			// we can set compatibility switches on an AppDomainSetup but we
+			// can't associate it with the current domain so they get ignored
+			AppDomainSetup ads = new AppDomainSetup ();
+			try {
+				ads.SetCompatibilitySwitches (new[] { "MONO" });
+				Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("MONO"), "undefined");
+			}
+			finally {
+				ads.SetCompatibilitySwitches (null);
+			}
+		}
 	}
 }
 

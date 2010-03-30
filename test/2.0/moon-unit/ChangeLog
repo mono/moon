@@ -1,3 +1,9 @@
+<<<<<<< .mine
+2010-03-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System/AppDomainTest.cs: SL4 test for IsCompatibilitySwitchSet
+
+=======
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Input/StylusPointCollectionTest.cs:
@@ -5,6 +11,7 @@
 	  give it the same magic marshalling treatment that Matrix
 	  gets.
 
+>>>>>>> .r154470
 2010-03-29  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/TabItemAutomationPeerTest.cs:

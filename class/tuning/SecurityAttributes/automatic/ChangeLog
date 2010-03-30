@@ -1,3 +1,8 @@
+2010-03-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.ssc: : Update mono/mcs requirement to 154485
+	* System.Windows.auto.s[s]c: regenerated
+
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc: regen.
@@ -7,7 +12,6 @@
 	* System.Windows.auto.ssc: Add enums to our type system so
 	  that we don't lose type information when attempting to parse
 	  them from xaml.
-
 
 2010-03-29  Sebastien Pouliot  <sebastien@ximian.com>
 

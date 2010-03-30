@@ -1,5 +1,10 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
+# fix inheritance rules wrt default .ctor
++SC-M: System.Void System.IO.FileSystemInfo::.ctor()
++SC-M: System.Void System.IO.FileInfo::.ctor()
++SC-M: System.Void System.IO.DirectoryInfo::.ctor()
+
 # available on SL2 (even if it returns an IntPtr that cannot be cast back to a GCHandle)
 -SC-M: System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
 # but since it calls IntPtr::op_Explicit (SecurityCritical) we turn it into a SecuritySafeCritical

@@ -1,3 +1,7 @@
+2010-03-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Fix inheritance rules.
+
 2010-03-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Use mo specific entries for the client 

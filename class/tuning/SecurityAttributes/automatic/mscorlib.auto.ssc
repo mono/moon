@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 437 methods
+# 439 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -227,6 +227,7 @@
 +SSC-M: System.Reflection.AssemblyName[] System.Reflection.Assembly::GetReferencedAssemblies()
 +SSC-M: System.Void System.Reflection.AssemblyName::.ctor(System.String)
 +SSC-M: System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
++SSC-M: System.Boolean System.Reflection.Emit.CustomAttributeBuilder::IsValidType(System.Type)
 +SSC-M: System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
 +SSC-M: System.Type System.Reflection.Emit.DerivedType::get_UnderlyingSystemType()
 +SSC-M: System.Void System.Reflection.Emit.DynamicMethod::CreateDynMethod()
@@ -412,6 +413,7 @@
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32)
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan)
 +SSC-M: System.Void System.TimeZone::.cctor()
++SSC-M: System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
 +SSC-M: System.Boolean System.Type::get_IsSerializable()
 +SSC-M: System.Boolean System.Type::Equals(System.Object)
 +SSC-M: System.Boolean System.Type::Equals(System.Type)

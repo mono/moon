@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 422 methods needs to be decorated.
+# 421 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1218,9 +1218,6 @@
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
-
-# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
-+SC-M: System.Void System.Windows.Input.StylusPoint::set_NativeHandle(System.IntPtr)
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::set_NativeHandle(System.IntPtr)
