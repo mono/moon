@@ -1,5 +1,10 @@
 2010-03-30  Andreia Gaita  <avidigal@novell.com>
 
+	* m4/curl.m4: move CUSTOM_SUBDIR_OPTION to utilities.m4
+	* m4/utilities.m4: define m4_ifblank/m4_ifnblank helpers
+
+2010-03-30  Andreia Gaita  <avidigal@novell.com>
+
 	* various.m4: move curl checks to curl.m4
 	* curl.m4: add support for --with-curl=no|embedded|system options
 	* ax_file_escapes.m4, m4/ax_print_to_file.m4: helper files for

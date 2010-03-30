@@ -1,28 +1,3 @@
-dnl add conf options for the subdirectory only
-AC_DEFUN([CUSTOM_SUBDIR_OPTION],
-[
-AC_CONFIG_SUBDIRS([$1])
-
-m4_ifblank([$2], [rm -f $1/configure.gnu],
-    [AX_PRINT_TO_FILE([$1/configure.gnu],
-[#!/bin/sh
-./configure $2 ${AX_DOLLAR}@
-])
-])
-
-dnl If this macro or the invocation of it is changed, we want configure
-dnl to be re-run in subdirs. We cannot touch configure because that
-dnl would make it younger than its dependencies (e.g. configure.ac) and
-dnl we would potentially miss to regenerate configure. Instead we let
-dnl autoconf touch configure.ac, meaning when autoconf is run in topdir
-dnl it will trigger autotools to be run in subdirs.
-m4_syscmd([
-test -f $1/configure.ac && touch $1/configure.ac
-test -f $1/configure.in && touch $1/configure.in
-])
-
-])
-
 AC_DEFUN([MOONLIGHT_CHECK_CURL],
 [
 	AC_ARG_WITH(curl, AC_HELP_STRING([--with-curl=no|embedded|system],
