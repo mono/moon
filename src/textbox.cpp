@@ -3456,6 +3456,11 @@ TextBoxView::Paint (cairo_t *cr)
 		cairo_device_to_user (cr, &x, &y);
 		
 		// set the cursor color
+		bool unref = false;
+		if (!caret) {
+			caret = new SolidColorBrush ("Black");
+			unref = true;
+		}
 		caret->SetupBrush (cr, cursor);
 		
 		// draw the cursor
@@ -3466,6 +3471,9 @@ TextBoxView::Paint (cairo_t *cr)
 		// stroke the caret
 		caret->Stroke (cr);
 		
+		if (unref)
+			caret->unref ();
+
 		// restore antialiasing
 		cairo_set_antialias (cr, alias);
 	}
