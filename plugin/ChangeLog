@@ -1,3 +1,8 @@
+2010-03-29  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::LoadXAP): call SetXapFilename before
+	calling InitializeManagedDeployment.
+
 2010-03-22  Andreia Gaita  <avidigal@novell.com>
 
 	* browser-bridge.h: Add Shutdown method

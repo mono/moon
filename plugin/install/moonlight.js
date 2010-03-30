@@ -84,6 +84,7 @@ const moonlightHandler = {
       var uristr = cmdLine.handleFlagWithParam("moonapp", false);
       var width = cmdLine.handleFlagWithParam("moonwidth", false);
       var height = cmdLine.handleFlagWithParam("moonheight", false);
+      var title = cmdLine.handleFlagWithParam("moontitle", false);
 
       // only open a window if they supply an app for us to load.
       if (!uristr)
@@ -100,7 +101,10 @@ const moonlightHandler = {
       height = parseInt (height);
       if (isNaN (height)) height = 500;
 
-      openWindow(CHROME_URI, uri, width, height);
+      if (!title)
+	title = "Moonlight Out of Browser Application";
+      
+      openWindow(CHROME_URI, uri, title, width, height);
       cmdLine.preventDefault = true;
     }
     catch (e) {
@@ -118,7 +122,8 @@ const moonlightHandler = {
   helpInfo : "  -moonapp <uri>       Open the specified Silverlight application\n" +
              "                       in Out-of-Browser mode.\n" +
 	     "  -moonwidth <int>     Specifies the width of the Out-of-Browser window.\n" +
-	     "  -moonheight <int>    Specifies the height of the Out-of-Browser window.\n",
+	     "  -moonheight <int>    Specifies the height of the Out-of-Browser window.\n" +
+	     "  -moontitle <str>     Specifies the window title of the Out-of-Browser window.\n",
 
   /* nsIFactory */
 

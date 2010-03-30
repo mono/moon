@@ -235,7 +235,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
 	
-	bool InitializeManagedDeployment (gpointer plugin_instance, const char *file, const char *culture, const char *uiculture);
+	bool InitializeManagedDeployment (gpointer plugin_instance, const char *culture, const char *uiculture);
 	bool InitializeAppDomain ();
 
 	virtual void Dispose ();
@@ -303,6 +303,9 @@ public:
 
 	void SetXapLocation (const char *location);
 	const char *GetXapLocation ();
+
+	void SetXapFilename (const char *filename);
+	const char *GetXapFilename ();
 	
 	FontManager *GetFontManager ();
 	
@@ -424,6 +427,9 @@ private:
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders
 	char *xap_location;
+
+	// xap filename, for use in installing apps
+	char *xap_filename;
 
 #if GLIB_CHECK_VERSION(2,10,0)
 	volatile gpointer pending_unrefs;

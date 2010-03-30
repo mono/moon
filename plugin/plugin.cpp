@@ -1085,7 +1085,7 @@ PluginInstance::LoadXAML ()
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
 
-	if (!deployment->InitializeManagedDeployment (this, NULL, culture, uiCulture)) {
+	if (!deployment->InitializeManagedDeployment (this, culture, uiCulture)) {
 		RemoveCleanupPointer (&our_surface);
 		return false;
 	}
@@ -1137,7 +1137,8 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 
 	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
-	return GetDeployment ()->InitializeManagedDeployment (this, fname, culture, uiCulture);
+	GetDeployment()->SetXapFilename (fname);
+	return GetDeployment ()->InitializeManagedDeployment (this, culture, uiCulture);
 }
 
 void

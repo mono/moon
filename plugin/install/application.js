@@ -22,8 +22,9 @@ function ApplicationStartup()
     myDump ("window.arguments = " + window.arguments);
 
     uriToLoad = window.arguments[0];
-    windowWidth = window.arguments[1];
-    windowHeight = window.arguments[2];
+    windowTitle = window.arguments[1];
+    windowWidth = window.arguments[2];
+    windowHeight = window.arguments[3];
 
     myDump ("creating window for app " + uriToLoad + ", sizing to " + windowWidth + " x " + windowHeight);
 
@@ -40,6 +41,8 @@ function ApplicationStartup()
 
     win.width = windowWidth;
     win.height = windowHeight;
+
+    win.setAttribute ("title", windowTitle);
   }
   catch (e) {
     Components.utils.reportError(e);

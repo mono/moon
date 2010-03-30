@@ -1,5 +1,12 @@
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* moonlight.js: pass the -moontitle to the window in its args as
+	well.
+
+	* application.js: set the window title
+
+2010-03-29  Chris Toshok  <toshok@ximian.com>
+
 	* moonlight.xul: we don't need to use any html here, as xul has
 	its own <iframe>.  wrap the iframe in a vbox because otherwise we
 	don't seem to get a background.

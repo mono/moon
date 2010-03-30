@@ -1,5 +1,20 @@
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* pal/gtk/install-dialog.cpp (install_xap): use
+	Deployment::GetXapFilename instead of
+	Surface::GetSourceLocation (as the latter returns an http url
+	instead of the local filename)
+	(install_launcher_script): pass file:// + path, not file: + path.
+	also add the title to the firefox launcher.
+	(install_gnome_desktop): use open instead of fopen to create the
+	file so we can specify the umask (which needs to include +x or
+	else nautilus doesn't "trust" the launcher.)
+
+	* deployment.h,cpp (Deployment::SetXapFilename)
+	(Deployment::GetXapFilename): new methods.
+	(Deployment::InitializeManagedDeployment): remove the filename arg
+	- use GetXapFilename instead.)
+
 	* pal/gtk/install-dialog.cpp (install_launcher_script):
 	s/-moonlight/-moonapp, and also pass -moonwidth and -moonheight to
 	pass the width/height to the oob stuff.

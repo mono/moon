@@ -349,7 +349,6 @@ install_dialog_get_install_to_desktop (InstallDialog *dialog)
 static bool
 install_xap (Deployment *deployment, const char *app_dir)
 {
-	Surface *surface = deployment->GetSurface ();
 	char *filename;
 	int fd;
 	
@@ -361,7 +360,7 @@ install_xap (Deployment *deployment, const char *app_dir)
 	
 	g_free (filename);
 	
-	if (CopyFileTo (surface->GetSourceLocation (), fd) == -1)
+	if (CopyFileTo (deployment->GetXapFilename (), fd) == -1)
 		return false;
 	
 	return true;
@@ -493,9 +492,9 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	
 	fprintf (fp, "#!/bin/sh\n\n");
 #if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
-	fprintf (fp, "firefox -moonapp \"file:%s/index.html\" -moonwidth %d -moonheight %d\n", app_dir, width, height);
+	fprintf (fp, "firefox -moonapp \"file://%s/index.html\" -moonwidth %d -moonheight %d -moontitle \"%s\"\n", app_dir, width, height, settings->GetShortName());
 #else
-	fprintf (fp, "google-chrome --app=\"file:%s/index.html\"\n", app_dir);
+	fprintf (fp, "google-chrome --app=\"file://%s/index.html\"\n", app_dir);
 #endif
 	fclose (fp);
 	
@@ -517,15 +516,20 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 {
 	char *dirname, *icon_name, *quoted, *launcher;
 	struct stat st;
-	FILE *fp;
 	
 	dirname = g_path_get_dirname (filename);
 	g_mkdir_with_parents (dirname, 0777);
 	g_free (dirname);
-	
-	if (!(fp = fopen (filename, "wt")))
+
+	int fd = open (filename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	if (fd == -1)
 		return false;
-	
+
+	FILE *fp = fdopen (fd, "wt");
+	if (fp == NULL) {
+		close (fd); 
+		return false;
+	}
 	fprintf (fp, "[Desktop Entry]\n");
 	fprintf (fp, "Type=Application\n");
 	fprintf (fp, "Encoding=UTF-8\n");

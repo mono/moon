@@ -399,6 +399,7 @@ Deployment::InnerConstructor ()
 	shutdown_state = Running; /* 0 */
 	is_loaded_from_xap = false;
 	xap_location = NULL;
+	xap_filename = NULL;
 	current_app = NULL;
 	pending_unrefs = NULL;
 	pending_loaded = false;
@@ -559,7 +560,7 @@ Deployment::InitializeAppDomain ()
 }
 
 bool
-Deployment::InitializeManagedDeployment (gpointer plugin_instance, const char *file, const char *culture, const char *uiCulture)
+Deployment::InitializeManagedDeployment (gpointer plugin_instance, const char *culture, const char *uiCulture)
 {
 	if (moon_initialize_deployment_xap == NULL && moon_initialize_deployment_xaml)
 		return false;
@@ -570,9 +571,9 @@ Deployment::InitializeManagedDeployment (gpointer plugin_instance, const char *f
 
 	Deployment::SetCurrent (this);
 
-	if (file != NULL) {
+	if (GetXapFilename() != NULL) {
 		params [0] = &plugin_instance;
-		params [1] = mono_string_new (mono_domain_get (), file);
+		params [1] = mono_string_new (mono_domain_get (), GetXapFilename());
 		params [2] = culture ? mono_string_new (mono_domain_get (), culture) : NULL;
 		params [3] = uiCulture ? mono_string_new (mono_domain_get (), uiCulture) : NULL;
 		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, &exc);
@@ -1494,6 +1495,19 @@ const char*
 Deployment::GetXapLocation ()
 {
 	return xap_location;
+}
+
+void
+Deployment::SetXapFilename (const char *filename)
+{
+	g_free (xap_filename);
+	xap_filename = g_strdup (filename);
+}
+
+const char*
+Deployment::GetXapFilename ()
+{
+	return xap_filename;
 }
 
 void
