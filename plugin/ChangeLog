@@ -1,3 +1,10 @@
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin-class.cpp: Update
+	  MoonlightDependencyObjectObject::GetProperty to check if the
+	  value is of Type::ENUM and then calling enums_int_to_str if
+	  that is true. Fixes some regressions.
+
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::LoadXAP): call SetXapFilename before

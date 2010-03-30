@@ -3057,12 +3057,11 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			return true;
 		}
 		
-		if (value->GetKind () == Type::INT32) {
-			const char *s = enums_int_to_str (prop->GetName(), value->AsInt32 ());
+		if (value->Is (dob->GetDeployment (), Type::ENUM)) {
+			// FIXME: Casting to gint32 here instead of gint64.
+			const char *s = enums_int_to_str (prop->GetName(), (gint32)value->AsEnum ());
 			if (s)
 				string_to_npvariant (s, result);
-			else
-				value_to_variant (this, value, result, dob, prop);
 		} else
 			value_to_variant (this, value, result, dob, prop);
 		
@@ -5097,7 +5096,7 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
 			variant_to_value (&npresult, &res);
 			*result = *res;
-		    } else {
+		} else {
 			*result = Value (Type::INVALID);
 		}
 	} else {
