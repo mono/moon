@@ -1,3 +1,8 @@
+2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* image-capture.cpp: CompareImages: some drts are right and some are wrong
+	about master/comparison file order. Add some AI to detect the correct answer.
+
 2010-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* image-capture.cpp: CompareImages: drts are giving us the master and comparison

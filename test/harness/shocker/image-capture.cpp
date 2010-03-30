@@ -355,9 +355,14 @@ void CompareImages (const char *imageFile1, const char *imageFile2, guint8 toler
 	guint8 output = 0;
 	guint32 output_length;
 	
-	/* Reverse master/comparison paths, somebody at MS got mixed up at some point */
+	if (strstr (imageFile1, "Masters") > 0) {
+		/* Reverse master/comparison paths, somebody at MS got mixed up at some point */
+		const char *d = imageFile2;
+		imageFile2 = imageFile1;
+		imageFile1 = d;
+	}
 	msg = g_strdup_printf ("TestHost.CompareImages %s|%s|%i|%s|%s|%i", 
-		imageFile2, imageFile1, tolerance, 
+		imageFile1, imageFile2, tolerance, 
 		"", diffFileName, copySourceFiles);
 	
 	if (send_harness_message (msg, &output, 1, &output_length))
