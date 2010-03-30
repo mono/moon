@@ -2041,6 +2041,7 @@ class Generator {
 		f ("int", "INT32");
 		f ("string", "STRING");
 		f ("TimeSpan", "TIMESPAN");
+		f ("Enum", "ENUM");
 
 		// all the interfaces
 		f ("IComparable", "ICOMPARABLE");
@@ -2434,6 +2435,8 @@ class Generator {
 		text.AppendLine ("{");
 		text.AppendLine ("\tDeployment *deployment = Deployment::GetCurrent ();");
 		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (deployment, Type::INVALID, Type::INVALID, false, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::ENUM] = new Type (deployment, Type::ENUM, Type::OBJECT, false, false, false, \"Enum\", 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
 			TypeInfo parent = null;
@@ -2452,9 +2455,21 @@ class Generator {
 			if (type.Interfaces.Count != 0)
 				interfaces = type.KindName + "_Interfaces";
 
+			string parentKind;
+			if (type.KindName == "OBJECT") {
+				parentKind = "INVALID";
+			} else {
+				if (parent != null)
+					parentKind = parent.KindName;
+				else if (type.IsEnum)
+					parentKind = "ENUM";
+				else
+					parentKind = "OBJECT";
+			}
+
 			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type (deployment, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13});",
 							"Type::" + type.KindName,
-							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
+							"Type::" + parentKind,
 							type.IsEnum ? "true" : "false",
 							type.IsValueType || type.IsEnum ? "true" : "false",
 							type.IsInterface ? "true" : "false",

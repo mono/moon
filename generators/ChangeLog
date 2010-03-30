@@ -1,3 +1,8 @@
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Make System.Enum be the base type of all enums
+	  so we can have a typesafe Value::AsEnum () method in native.
+
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: include pal/gtk/*.h

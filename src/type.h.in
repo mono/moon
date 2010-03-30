@@ -32,6 +32,7 @@ public:
 	enum Kind {
 		// START_MANAGED_MAPPING
 		INVALID,
+		ENUM,
 /*DO_KINDS*/
 		LASTTYPE,
 		// END_MANAGED_MAPPING

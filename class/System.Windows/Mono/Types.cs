@@ -87,7 +87,7 @@ namespace Mono
 
 			if (typedef.BaseType == null) {
 				parent = null;
-			} else if (typedef.BaseType == typeof (System.Enum) || typedef.BaseType == typeof (System.ValueType)) {
+			} else if (typedef.BaseType == typeof (System.ValueType)) {
 				parent = Find (typeof (System.Object));
 			} else {
 				parent = Find (typedef.BaseType);
