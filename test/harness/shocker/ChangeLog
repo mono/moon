@@ -1,5 +1,9 @@
 2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shocker.cpp: CompareImages take 5 arguments, not 6.
+
+2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shocker.cpp:
 	* logging.cpp|h: Added p/invokable TestHost_GetTestDirectory.
 

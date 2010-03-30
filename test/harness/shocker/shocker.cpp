@@ -335,17 +335,16 @@ Plugin_CompareImages (ShockerScriptableControlObject* obj, char* name, const NPV
 {
 	bool res = false;
 	guint8 output = 0;
-	
-	g_assert (arg_count >= 6);
+
+	g_assert (arg_count >= 5);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 	g_assert (NPVARIANT_IS_STRING (args [1]));
 	g_assert (NPVARIANT_IS_NUMBER (args [2]));
 	g_assert (NPVARIANT_IS_STRING (args [3]));
-	g_assert (NPVARIANT_IS_STRING (args [4]));
-	g_assert (NPVARIANT_IS_BOOLEAN (args [5]));
+	g_assert (NPVARIANT_IS_BOOLEAN (args [4]));
 	
 	CompareImages (STR_FROM_VARIANT (args [0]), STR_FROM_VARIANT (args [1]), NUMBER_TO_INT32 (args [2]),
-		/*STR_FROM_VARIANT (args [3]), */STR_FROM_VARIANT (args [4]), NPVARIANT_TO_BOOLEAN (args [5]), &output);
+		STR_FROM_VARIANT (args [3]), NPVARIANT_TO_BOOLEAN (args [4]), &output);
 	
 	res = output == 0;
 	
