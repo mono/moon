@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 421 methods needs to be decorated.
+# 422 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -531,6 +531,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_get_platform_window(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_get_native_widget(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_create_window(System.IntPtr,System.Boolean,System.Int32,System.Int32,System.IntPtr,System.IntPtr)

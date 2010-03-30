@@ -1,3 +1,7 @@
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc: regen.
+
 2010-03-29  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: Add enums to our type system so
