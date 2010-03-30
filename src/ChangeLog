@@ -1,5 +1,11 @@
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
+	* stylus.h: Fix the default value of
+	  StylusInfo.DeviceTypeProperty so that it has the correct
+	  enum type.
+
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
 	* type.h.in:
 	* value.h.in: Make System.Enum be the base type of all enums
 	  so we can have a typesafe Value::AsEnum () method in native.
