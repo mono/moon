@@ -76,11 +76,12 @@ namespace System.Windows.Automation.Peers {
 		protected object Item {
 			get {
 				ItemsControl itemsControl = ItemsControl;
-				if (itemsControl != null)
-					// We already know Owner is ListBoxItem otherwise 'itemsControl'
-					// would be null
-					return itemsControl.ItemContainerGenerator.ItemFromContainer (Owner);
-				else
+				if (itemsControl != null) {
+					object obj = itemsControl.ItemContainerGenerator.ItemFromContainer (Owner);
+					if (obj == DependencyProperty.UnsetValue)
+						return Owner;
+					return obj;
+				} else
 					return Owner;
 			}
 		}

@@ -1,3 +1,11 @@
+2010-03-19  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: Fixes crash when
+	ItemContainerGenerator.ItemFromContainer returns
+	DependencyProperty.UnsetValue.
+
+	r: alan
+
 2010-03-11  Mario Carrion  <mcarrion@novell.com>
 
 	* ItemAutomationPeer.cs: GetNameCore returning valie value when using
