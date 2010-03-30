@@ -34,6 +34,9 @@ MoonWindowlessGtk::MoonWindowlessGtk (int w, int h, PluginInstance *plugin)
 {
 	this->plugin = plugin;
 
+	backing_store_width = w;
+	backing_store_height = h;
+
 	UpdateWindowInfo ();
 }
 
@@ -183,11 +186,11 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 						    xev->xgraphicsexpose.width,
 						    xev->xgraphicsexpose.height).ToGdkRectangle ();
 				/* XXX ugh */
+				expose.area.x -= x;
+				expose.area.y -= y;
 				expose.region = gdk_region_rectangle (&expose.area);
 
-				expose.area.x = expose.area.y = 0;
-
-				PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), true);
+				PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), false);
 
 				handled = TRUE;
 

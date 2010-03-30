@@ -467,13 +467,12 @@ gboolean
 MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 {
 	SetCurrentDeployment ();
-	
+
 	if (!surface)
 		return true;
 
 	// we draw to a backbuffer pixmap, then transfer the contents
 	// to the widget's window.
-
 	if (backing_store == NULL ||
 	    backing_store_width < (event->area.x + event->area.width) ||
 	    backing_store_height < (event->area.y + event->area.height)) {
@@ -506,8 +505,8 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 	PaintToDrawable (backing_store,
 			 gdk_drawable_get_visual (w->window),
 			 event,
-			 w->allocation.x,
-			 w->allocation.y,
+			 - event->area.x,
+			 - event->area.y,
 			 GetTransparent (),
 			 true);
 
@@ -517,7 +516,7 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 			   0, 0,
 			   event->area.x, event->area.y,
 			   event->area.width, event->area.height);
-	
+
 #if FULLSCREEN_BACKING_STORE_SOPTIMIZATION
 	if (IsFullScreen ()) {
 		g_object_unref (backing_store); backing_store = NULL;
@@ -782,16 +781,25 @@ MoonWindowGtk::CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool 
 	cairo_surface_t *surface;
 	cairo_t *cr;
 
-	if (native)
+	if (native) {
+#if DEBUG
+		int nw,nh;
+		gdk_drawable_get_size (drawable, &nw, &nh);
+
+		if (nw != width || nh != height)
+			g_printf ("size of drawable doesn't match requested size");
+#endif
+
 		surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
 						     gdk_x11_drawable_get_xid (drawable),
 						     GDK_VISUAL_XVISUAL (visual),
 						     width, height);
+	}
 	else {
 		if (backing_image_data == NULL) {
-			printf ("allocating backing_image_data for %d x %d\n", width, height);
-
-			backing_image_data = (unsigned char*)g_malloc (width * height * 4);
+			//printf ("allocating backing_image_data for %d x %d\n", width, height);
+			
+			backing_image_data = (unsigned char*)g_malloc (backing_store_height * cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, backing_store_width));
 		}
 
 		surface = cairo_image_surface_create_for_data (backing_image_data,
@@ -814,9 +822,6 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 // 		drawable, visual, event->area.x, event->area.y, event->area.width, event->area.height,
 // 		off_x, off_y, transparent, clear_transparent);
 	
-	if (event->area.x > (off_x + GetWidth()) || event->area.y > (off_y + GetHeight()))
-		return;
-
 	SetCurrentDeployment ();
 
 #if 0
@@ -826,41 +831,46 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	if (cache_size_multiplier == -1)
 		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
 #endif
-#ifdef DEBUG_INVALIDATE
-	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
-#endif
-	cairo_t *ctx = CreateCairoContext (drawable, visual, !(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE),
-					   GetWidth(), GetHeight());
+	int width, height;
+	gdk_drawable_get_size (drawable, &width, &height);
+	//printf ("Got a request to repaint at %d %d %d %d offset (%d, %d) drawable (%d, %d)\n", event->area.x, event->area.y, event->area.width, event->area.height, off_x, off_y, width, height);
+
+	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
+	GdkRectangle area = event->area;
+
+ 	cairo_t *native = CreateCairoContext (drawable, visual, true, width, height);
+	cairo_t *cr = NULL;
+	cairo_t *image = NULL;
+	
+	cairo_surface_set_device_offset (cairo_get_target (native), off_x, off_y);
+
 	Region *region = new Region (event->region);
 
-	region->Offset (-off_x, -off_y);
-	cairo_surface_set_device_offset (cairo_get_target (ctx),
-					 off_x - event->area.x, 
-					 off_y - event->area.y);
+	if (use_image) {
+		image = CreateCairoContext (drawable, visual, false, area.width, area.height);
+		cairo_surface_set_device_offset (cairo_get_target (image), -area.x, -area.y);
+		cr = image;
+	}
+	else {
+		cr = native;
+	}
 
-	surface->Paint (ctx, region, transparent, clear_transparent);
+	/* if we are redirecting to an image surface clear that first */
+	surface->Paint (cr, region, transparent, use_image ? true : clear_transparent);
 
-	if (moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) {
-		cairo_surface_flush (cairo_get_target (ctx));
-		cairo_t *native = CreateCairoContext (drawable, visual, true, GetWidth(), GetHeight());
+	if (image != NULL) {
+		cairo_surface_flush (cairo_get_target (image));
+		
+		cairo_set_source_surface (native, cairo_get_target (image), 0, 0);
+		cairo_set_operator (native, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
 
-		cairo_surface_set_device_offset (cairo_get_target (native),
-						 0, 0);
-		cairo_surface_set_device_offset (cairo_get_target (ctx),
-						 0, 0);
-
-		cairo_set_source_surface (native, cairo_get_target (ctx),
-					  0, 0);
-
-		region->Offset (off_x, off_y);
-		region->Offset (-event->area.x, -event->area.y);
 		region->Draw (native);
 
 		cairo_fill (native);
-		cairo_destroy (native);
+		cairo_destroy (image);
 	}
 
-	cairo_destroy (ctx);
+	cairo_destroy (native);
 
 	delete region;
 
