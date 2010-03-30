@@ -1,3 +1,10 @@
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Input/StylusPointCollectionTest.cs:
+	  StylusPoint is a DO in native and a struct in managed, so
+	  give it the same magic marshalling treatment that Matrix
+	  gets.
+
 2010-03-29  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/TabItemAutomationPeerTest.cs:

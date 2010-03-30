@@ -1,3 +1,10 @@
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* StylusPoint.cs:
+	* UnmanagedStylusPoint.cs: StylusPoint is a DO in native and a
+	  struct in managed, so give it the same magic marshalling
+	  treatment that Matrix gets.
+
 2010-03-29  Alan McGovern  <amcgovern@novell.com>
 
 	* Cursor.cs: Add enums to our type system so that we don't

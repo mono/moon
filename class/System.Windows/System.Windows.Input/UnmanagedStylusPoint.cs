@@ -1,7 +1,10 @@
+//
+// System.Windows.Input.UnmanagedStylusPoint
+//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -10,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,46 +26,23 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Threading;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Input;
-using System.Runtime.InteropServices;
 using Mono;
 
-namespace System.Windows.Input
-{
-	public struct StylusPoint
-	{
-		float presssureFactor;
-		public StylusPoint (double x, double y)
+namespace System.Windows.Input {
+
+	// the unmanaged StylusPoint is a DependencyObject so we can set it's value from JScript
+	internal partial class UnmanagedStylusPoint : DependencyObject {
+
+		internal static readonly DependencyProperty PressureFactorProperty = DependencyProperty.Lookup (Kind.STYLUSPOINT, "PressureFactor", typeof (double));
+		internal static readonly DependencyProperty XProperty = DependencyProperty.Lookup (Kind.STYLUSPOINT, "X", typeof (double));
+		internal static readonly DependencyProperty YProperty = DependencyProperty.Lookup (Kind.STYLUSPOINT, "Y", typeof (double));
+
+		public UnmanagedStylusPoint (StylusPoint p)
+			: this ()
 		{
-			X = x;
-			Y = y;
-			PressureFactor = 0.5f;
-		}
-
-		public float PressureFactor {
-			get { return presssureFactor; }
-			set {
-				if (value < 0 || value > 1)
-					throw new ArgumentOutOfRangeException ("value");
-				presssureFactor = value;
-			}
-		}
-
-		public double X {
-			get; set;
-		}
-
-		public double Y {
-			get; set;
-		}
-
-		public override string ToString ()
-		{
-			return string.Format("[StylusPoint: PressureFactor={0}, X={1}, Y={2}]", PressureFactor, X, Y);
+			SetValue (PressureFactorProperty, (double) p.PressureFactor);
+			SetValue (XProperty, p.X);
+			SetValue (YProperty, p.Y);
 		}
 	}
 }

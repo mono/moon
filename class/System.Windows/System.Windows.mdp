@@ -695,6 +695,7 @@
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Orientation.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/WindowStartupLocation.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/WindowState.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/UnmanagedStylusPoint.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

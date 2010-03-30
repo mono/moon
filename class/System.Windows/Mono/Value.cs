@@ -321,6 +321,16 @@ namespace Mono {
 				return new Matrix3D (value->u.p);
 			}
 
+			case Kind.STYLUSPOINT:
+			case Kind.UNMANAGEDSTYLUSPOINT: {
+				var kind = value->k;
+				var ptr = value->u.p;
+				var x = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, kind, UnmanagedStylusPoint.XProperty.Native));
+				var y = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, kind, UnmanagedStylusPoint.YProperty.Native));
+				var pressure = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, kind, UnmanagedStylusPoint.PressureFactorProperty.Native));
+				return new StylusPoint { X = x, Y = y, PressureFactor = (float) pressure };
+			}
+
 			case Kind.DURATION: {
 				Duration* duration = (Duration*)value->u.p;
 				return (duration == null) ? Duration.Automatic : *duration;
@@ -513,6 +523,9 @@ namespace Mono {
 					// hack around the fact that managed Matrix is a struct while unmanaged Matrix is a DO
 					// i.e. the unmanaged and managed structure layouts ARE NOT equal
 					return FromObject (new UnmanagedMatrix ((Matrix) v), box_value_types);
+				}
+				else if (v is StylusPoint) {
+					return FromObject (new UnmanagedStylusPoint ((StylusPoint) v), box_value_types);
 				}
 				else if (v is Matrix3D) {
 					// hack around the fact that managed Matrix3D is a struct while unmanaged Matrix3D is a DO

@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Input;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Input {
 
@@ -38,12 +39,59 @@ namespace MoonTest.System.Windows.Input {
 	public partial class StylusPointCollectionTest {
 
 		[TestMethod]
-		[MoonlightBug ("default struct ctor does not allocate unmanaged structure")]
+		public void StylusPoint_DefaultValues ()
+		{
+			var p = new StylusPoint ();
+			Assert.AreEqual (0, p.X, "#1");
+			Assert.AreEqual (0, p.Y, "#2");
+			Assert.AreEqual (0, p.PressureFactor, "#3");
+
+			p = new StylusPoint (1, 2);
+			Assert.AreEqual (1, p.X, "#4");
+			Assert.AreEqual (2, p.Y, "#5");
+			Assert.AreEqual (0.5, p.PressureFactor, "#6");
+		}
+
+		[TestMethod]
+		public void StylusPoint_NegativeValues ()
+		{
+			var p = new StylusPoint { X = -1000, Y = -1000 };
+			Assert.AreEqual (-1000, p.X, "#1");
+			Assert.AreEqual (-1000, p.Y, "#2");
+			Assert.Throws<ArgumentOutOfRangeException> (() => p.PressureFactor = -1, "#3");
+		}
+
+		[TestMethod]
+		public void StylusPoint_LargeValues ()
+		{
+			var p = new StylusPoint { X = 1000, Y = 1000 };
+			Assert.AreEqual (1000, p.X, "#1");
+			Assert.AreEqual (1000, p.Y, "#2");
+			Assert.Throws<ArgumentOutOfRangeException> (() => p.PressureFactor = 1.1f, "#3");
+		}
+
+		[TestMethod]
+		public void ModifyValuesInManaged ()
+		{
+			var c = (StylusPointCollection) XamlReader.Load (@"
+<StylusPointCollection	xmlns=""http://schemas.microsoft.com/client/2007""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<StylusPoint X=""1"" Y=""2"" /> 
+</StylusPointCollection>
+");
+			var expected = new StylusPoint(1, 2);
+			Assert.AreEqual (1, c.Count, "#1");
+			Assert.AreEqual (expected, c [0], "#2");
+
+			var p = c [0];
+			p.X = 10;
+			Assert.AreEqual (expected, c [0], "#3");
+		}
+
+		[TestMethod]
 		public void Add_StylusPoint_Validation ()
 		{
 			StylusPointCollection spc = new StylusPointCollection ();
-			// StylusPoint is a struct so it cannot be null
-			// but a default ctor always exists on a struct
 			StylusPoint sp = new StylusPoint ();
 			spc.Add (sp);
 			Assert.AreEqual (1, spc.Count, "Count");

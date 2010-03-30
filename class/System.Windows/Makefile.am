@@ -308,6 +308,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/TouchFrameEventHandler.cs	\
 	$(srcdir)/System.Windows.Input/TouchPoint.cs				\
 	$(srcdir)/System.Windows.Input/TouchPointCollection.cs			\
+	$(srcdir)/System.Windows.Input/UnmanagedStylusPoint.cs			\
 	$(srcdir)/System.Windows.Interop/ComAutomationEvent.cs				\
 	$(srcdir)/System.Windows.Interop/ComAutomationEventArgs.cs				\
 	$(srcdir)/System.Windows.Interop/ComAutomationEventHandler.cs				\

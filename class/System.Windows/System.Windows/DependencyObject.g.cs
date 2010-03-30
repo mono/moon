@@ -508,6 +508,11 @@ namespace System.Windows.Input {
 		internal TouchPointCollection () : base (SafeNativeMethods.touch_point_collection_new (), true) {}
 		internal TouchPointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
+
+	partial class UnmanagedStylusPoint {
+		public UnmanagedStylusPoint () : base (SafeNativeMethods.unmanaged_stylus_point_new (), true) {}
+		internal UnmanagedStylusPoint (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
 }
 
 namespace System.Windows.Media {

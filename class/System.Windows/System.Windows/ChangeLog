@@ -1,3 +1,9 @@
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.g.cs: StylusPoint is a DO in native and a
+	  struct in managed, so give it the same magic marshalling
+	  treatment that Matrix gets.
+
 2010-03-29  Alan McGovern  <amcgovern@novell.com>
 
 	* SystemColors.cs: Move the SystemColor enum out of the

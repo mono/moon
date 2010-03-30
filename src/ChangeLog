@@ -1,5 +1,11 @@
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
+	* stylus.h: StylusPoint is a DO in native and a struct in
+	  managed, so give it the same magic marshalling treatment
+	  that Matrix gets.
+
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
 	* stylus.h: Fix the default value of
 	  StylusInfo.DeviceTypeProperty so that it has the correct
 	  enum type.

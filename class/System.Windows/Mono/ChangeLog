@@ -1,5 +1,12 @@
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
+	* Value.cs:
+	* NativeDependencyObjectHelper.cs: StylusPoint is a DO in
+	  native and a struct in managed, so give it the same magic
+	  marshalling treatment that Matrix gets.
+
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
 	* Types.cs: Make System.Enum be the base type of all enums so
 	  we can have a typesafe Value::AsEnum () method in native.
 

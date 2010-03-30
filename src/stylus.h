@@ -25,7 +25,7 @@ class StylusInfo : public DependencyObject {
 	virtual ~StylusInfo () {}
 	
  public:
-	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse,Type::TABLETDEVICETYPE,GenerateAccessors */
+	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
 	const static int DeviceTypeProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsInvertedProperty;
@@ -81,6 +81,16 @@ class StylusPoint : public DependencyObject {
 	double GetY ();
 };
 
+/* @Namespace=System.Windows.Input */
+class UnmanagedStylusPoint : public StylusPoint {
+
+ protected:
+	virtual ~UnmanagedStylusPoint () {}
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	UnmanagedStylusPoint () {  SetObjectType (Type::UNMANAGEDSTYLUSPOINT); }
+};
 
 /* @Namespace=System.Windows.Input */
 class StylusPointCollection : public DependencyObjectCollection {
