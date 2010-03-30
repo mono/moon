@@ -292,8 +292,8 @@ MouseEventArgs::GetStylusInfo ()
 
 	StylusInfo *info = new StylusInfo ();
 
-	info->SetValue (StylusInfo::DeviceTypeProperty, Value (type));
-	info->SetValue (StylusInfo::IsInvertedProperty, Value (is_inverted));
+	info->SetDeviceType (type);
+	info->SetIsInverted (is_inverted);
 
 	return info;
 }

@@ -1,5 +1,11 @@
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
+	* eventargs.cpp: Use the setter method instead of directly
+	  calling SetValue so that the Value* created from the enum
+	  has the correct Type::Kind.
+
+2010-03-30  Alan McGovern  <amcgovern@novell.com>
+
 	* stylus.h: StylusPoint is a DO in native and a struct in
 	  managed, so give it the same magic marshalling treatment
 	  that Matrix gets.
