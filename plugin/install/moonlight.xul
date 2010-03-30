@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://moonlight/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
 <!DOCTYPE window [
 <!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
@@ -11,13 +12,12 @@
 ]>
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-  xmlns:html="http://www.w3.org/1999/xhtml" onload="ApplicationStartup()" onclose="return true;"
+  onload="ApplicationStartup()" onclose="return true;"
   id="MoonlightWindow">
 
   <script type="application/x-javascript" src="application.js"/>
 
-  <html:body>
-    <html:iframe id="MoonlightIFrame" width="100%" height="100%">
-    </html:iframe>
-  </html:body>
+  <vbox flex="1"> <!-- we need this or else there's no background for the window -->
+    <iframe id="MoonlightIFrame" flex="1"/>
+  </vbox>
 </window>

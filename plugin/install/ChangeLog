@@ -1,3 +1,19 @@
+2010-03-29  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.xul: we don't need to use any html here, as xul has
+	its own <iframe>.  wrap the iframe in a vbox because otherwise we
+	don't seem to get a background.
+
+	* application.js (ApplicationStartup): since we're passing an
+	nsIArray, we can access nsIURI/width/height via array indices.
+	Also use .spec instead of .path when dealing with the array, or
+	else firefox will resolve it relative to the chrome:// scheme and
+	fail to find it.
+
+	* moonlight.js (openWindow): create an nsIArray (well, an
+	nsIMutableArray) to pass the args (uri, width, height) to the
+	window.
+
 2010-03-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* application.js: Turns out the arg[0] is a nsIURI, so get that

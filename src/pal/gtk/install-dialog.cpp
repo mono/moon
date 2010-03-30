@@ -493,7 +493,7 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	
 	fprintf (fp, "#!/bin/sh\n\n");
 #if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
-	fprintf (fp, "firefox -moonlight \"file:%s/index.html\"\n", app_dir);
+	fprintf (fp, "firefox -moonapp \"file:%s/index.html\" -moonwidth %d -moonheight %d\n", app_dir, width, height);
 #else
 	fprintf (fp, "google-chrome --app=\"file:%s/index.html\"\n", app_dir);
 #endif

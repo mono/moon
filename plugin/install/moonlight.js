@@ -6,6 +6,9 @@ const nsICommandLineHandler = Components.interfaces.nsICommandLineHandler;
 const nsIFactory            = Components.interfaces.nsIFactory;
 const nsIModule             = Components.interfaces.nsIModule;
 const nsIWindowWatcher      = Components.interfaces.nsIWindowWatcher;
+const nsIConsoleService     = Components.interfaces.nsIConsoleService;
+const nsIMutableArray       = Components.interfaces.nsIMutableArray;
+const nsIWritableVariant    = Components.interfaces.nsIWritableVariant;
 
 // the chrome URI of our extension
 const CHROME_URI = "chrome://moonlight/content/";
@@ -24,20 +27,38 @@ const clh_category = "m-moonlight";
  * Utility functions
  */
 
+function myDump(aMessage) {
+  var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
+                                 .getService(nsIConsoleService);
+  consoleService.logStringMessage("Moonlight: " + aMessage);
+}
+
 /**
  * Opens a chrome window.
  * @param aChromeURISpec a string specifying the URI of the window to open.
  * @param aArgument an argument to pass to the window (may be null)
  */
-function openWindow(aChromeURISpec, aArgument)
+function openWindow(aChromeURISpec)
 {
-  var ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"].
-    getService(Components.interfaces.nsIWindowWatcher);
+  var array = Components.classes["@mozilla.org/array;1"]
+                          .createInstance(nsIMutableArray);
+  for (var i=1; i<arguments.length; i++)
+  {
+    myDump ("arguments[" + i + "] = " + arguments[i]);
+
+    var variant = Components.classes["@mozilla.org/variant;1"]
+		    .createInstance(nsIWritableVariant);
+    variant.setFromVariant(arguments[i]);
+    array.appendElement(variant, false);
+  }
+
+  var ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+	     .getService(nsIWindowWatcher);
   ww.openWindow(null, aChromeURISpec, "_blank",
-                "chrome,resizable,dialog=no",
-                aArgument);
+		"chrome,resizable,dialog=no",
+		array);
 }
- 
+
 /**
  * The XPCOM component that implements nsICommandLineHandler.
  * It also implements nsIFactory to serve as its own singleton factory.
@@ -60,16 +81,31 @@ const moonlightHandler = {
   {
     try {
       // command line flag that takes an argument
-      var uristr = cmdLine.handleFlagWithParam("moonlight", false);
-      if (uristr) {
-        // convert uristr to an nsIURI
-        var uri = cmdLine.resolveURI(uristr);
-        openWindow(CHROME_URI, uri);
-        cmdLine.preventDefault = true;
-      }
+      var uristr = cmdLine.handleFlagWithParam("moonapp", false);
+      var width = cmdLine.handleFlagWithParam("moonwidth", false);
+      var height = cmdLine.handleFlagWithParam("moonheight", false);
+
+      // only open a window if they supply an app for us to load.
+      if (!uristr)
+	return;
+
+      myDump ("opening uri " + uristr + ", width = " + width + ", height = " + height);
+
+      // convert uristr to an nsIURI
+      var uri = cmdLine.resolveURI(uristr);
+
+      width = parseInt (width);
+      if (isNaN (width)) width = 500;
+
+      height = parseInt (height);
+      if (isNaN (height)) height = 500;
+
+      openWindow(CHROME_URI, uri, width, height);
+      cmdLine.preventDefault = true;
     }
     catch (e) {
-      Components.utils.reportError("incorrect parameter passed to -moonlight on the command line.");
+      Components.utils.reportError("incorrect parameter passed to -moonapp on the command line.");
+      Components.utils.reportError(e);
     }
   },
 
@@ -79,8 +115,10 @@ const moonlightHandler = {
   // character 24, and lines should be wrapped at
   // 72 characters with embedded newlines,
   // and finally, the string should end with a newline
-  helpInfo : "  -moonlight <uri>     Open the specified Silverlight application\n" +
-             "                       in Out-of-Browser mode.\n",
+  helpInfo : "  -moonapp <uri>       Open the specified Silverlight application\n" +
+             "                       in Out-of-Browser mode.\n" +
+	     "  -moonwidth <int>     Specifies the width of the Out-of-Browser window.\n" +
+	     "  -moonheight <int>    Specifies the height of the Out-of-Browser window.\n",
 
   /* nsIFactory */
 

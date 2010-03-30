@@ -1,5 +1,11 @@
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* pal/gtk/install-dialog.cpp (install_launcher_script):
+	s/-moonlight/-moonapp, and also pass -moonwidth and -moonheight to
+	pass the width/height to the oob stuff.
+
+2010-03-29  Chris Toshok  <toshok@ximian.com>
+
 	* pal/gtk/install-dialog.h/cpp: fix
 	InstallDialogPrivate/_InstallDialogPrivate such that the generator
 	can deal with this header.
