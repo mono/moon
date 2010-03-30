@@ -1,0 +1,5 @@
+Makefile
+Makefile.in
+curlbuild.h
+curlver.h.dist
+stamp-*

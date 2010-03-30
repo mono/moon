@@ -138,7 +138,11 @@ if test -d $srcdir/cairo; then
   echo Done running cairo/autogen.sh ...
 fi
 
-
+if test -d $srcdir/curl; then
+  echo Running curl/buildconf ...
+  (cd $srcdir/curl ; ./buildconf )
+  echo Done running curl/buildconf ...
+fi
 build_mono=1
 for arg in $*; do
   case "$arg" in
