@@ -1,3 +1,8 @@
+2010-03-30  David Reveman  <davidr@novell.com>
+
+	* projection.cpp: Add minimal clipping to projection bounds
+	calculations.
+
 2010-03-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/install-dialog.cpp (install_dialog_new): Create a

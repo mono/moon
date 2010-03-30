@@ -323,6 +323,118 @@ Projection::GetTransform (double *value)
 	}
 }
 
+static void
+lerp (double *fdst, double t, const double *fin, const double *fout)
+{
+	double tin = t;
+	double tout = 1.0 - t;
+
+	fdst[0] = tin * fin[0] + tout * fout[0];
+	fdst[1] = tin * fin[1] + tout * fout[1];
+	fdst[2] = tin * fin[2] + tout * fout[2];
+	fdst[3] = tin * fin[3] + tout * fout[3];
+}
+
+static double
+dot4 (const double *a, const double *b)
+{
+	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+}
+
+static unsigned
+clipmask (const double *clip)
+{
+	unsigned mask = 0;
+
+	if (-clip[2] + clip[3] < 0) mask |= (1 << 0);
+	if ( clip[2] + clip[3] < 0) mask |= (1 << 1);
+
+	return mask;
+}
+
+#define MAX_CLIPPED_VERTICES ((2 * 2) + 1)
+
+static Rect
+ExtendBoundsTo (Rect     bounds,
+		double   *p1,
+		double   *p2,
+		double   *p3,
+		unsigned clipmask)
+{
+	double *a[MAX_CLIPPED_VERTICES];
+	double *b[MAX_CLIPPED_VERTICES];
+	double **inlist = a;
+	double **outlist = b;
+	unsigned tmpnr = 0;
+	double tmp0[4], tmp1[4], tmp2[4], tmp3[4];
+	double *tmp_vert[] = { tmp0, tmp1, tmp2, tmp3 };
+	double plane0[] = { 0.0, 0.0, -1.0, 1.0 };
+	double plane1[] = { 0.0, 0.0, 1.0, 1.0 };
+	double *clip_plane[] = { plane0, plane1 };
+	unsigned n = 3;
+	unsigned i;
+
+	inlist[0] = p1;
+	inlist[1] = p2;
+	inlist[2] = p3;
+
+	while (clipmask && n >= 3) {
+		const unsigned plane_idx = ffs (clipmask) - 1;
+		const double *plane = clip_plane[plane_idx];
+		double *vert_prev = inlist[0];
+		double dp_prev = dot4 (vert_prev, plane);
+		unsigned outcount = 0;
+
+		clipmask &= ~(1 << plane_idx);
+
+		inlist[n] = inlist[0];
+
+		for (i = 1; i <= n; i++) {
+			double *vert = inlist[i];
+			double dp = dot4 (vert, plane);
+
+			if (dp_prev >= 0.0)
+				outlist[outcount++] = vert_prev;
+
+			if (dp * dp_prev <= 0.0 && dp - dp_prev != 0.0) {
+				double *new_vert = tmp_vert[tmpnr++];
+				outlist[outcount++] = new_vert;
+
+				if (dp < 0.0) {
+					double t = dp / (dp - dp_prev);
+					lerp (new_vert, t, vert_prev, vert);
+				}
+				else {
+					double t = dp_prev / (dp_prev - dp);
+					lerp (new_vert, t, vert, vert_prev);
+				}
+			}
+
+			vert_prev = vert;
+			dp_prev = dp;
+		}
+
+		/* swap in/out lists */
+		{
+			double **tmp = inlist;
+			inlist = outlist;
+			outlist = tmp;
+			n = outcount;
+		}
+	}
+
+	if (n >= 3) {
+		for (i = 0; i < n; i++) {
+			double *v = inlist[i];
+			double w = 1.0 / v[3];
+
+			bounds = bounds.ExtendTo (v[0] * w, v[1] * w);
+		}
+	}
+
+	return bounds;
+}
+
 Rect
 Projection::ProjectBounds (Rect bounds)
 {
@@ -332,6 +444,10 @@ Projection::ProjectBounds (Rect bounds)
 	double   p3[4] = { r.width, r.height, 0.0, 1.0 };
 	double   p4[4] = { 0.0, r.height, 0.0, 1.0 };
 	double   m[16];
+	unsigned cm1;
+	unsigned cm2;
+	unsigned cm3;
+	unsigned cm4;
 
 	SetObjectSize (r.width, r.height);
 
@@ -342,25 +458,36 @@ Projection::ProjectBounds (Rect bounds)
 	Matrix3D::TransformPoint (p3, m, p3);
 	Matrix3D::TransformPoint (p4, m, p4);
 
-	if (p1[3] == 0.0 || p2[3] == 0.0 || p3[3] == 0.0 || p4[3] == 0.0)
-		return bounds;
+	cm1 = clipmask (p1);
+	cm2 = clipmask (p2);
+	cm3 = clipmask (p3);
+	cm4 = clipmask (p4);
 
-	p1[0] /= p1[3];
-	p1[1] /= p1[3];
+	if ((cm1 | cm2 | cm3 | cm4) != 0) {
+		bounds = Rect ();
+		if ((cm1 & cm2 & cm3 & cm4) == 0) {
+			bounds = ExtendBoundsTo (bounds, p1, p2, p3, cm1 | cm2 | cm3);
+			bounds = ExtendBoundsTo (bounds, p1, p3, p4, cm1 | cm3 | cm4);
+		}
+	}
+	else {
+		p1[0] /= p1[3];
+		p1[1] /= p1[3];
 
-	p2[0] /= p2[3];
-	p2[1] /= p2[3];
+		p2[0] /= p2[3];
+		p2[1] /= p2[3];
 
-	p3[0] /= p3[3];
-	p3[1] /= p3[3];
+		p3[0] /= p3[3];
+		p3[1] /= p3[3];
 
-	p4[0] /= p4[3];
-	p4[1] /= p4[3];
+		p4[0] /= p4[3];
+		p4[1] /= p4[3];
 
-	bounds = Rect (p1[0], p1[1], 0, 0);
-	bounds = bounds.ExtendTo (p2[0], p2[1]);
-	bounds = bounds.ExtendTo (p3[0], p3[1]);
-	bounds = bounds.ExtendTo (p4[0], p4[1]);
+		bounds = Rect (p1[0], p1[1], 0, 0);
+		bounds = bounds.ExtendTo (p2[0], p2[1]);
+		bounds = bounds.ExtendTo (p3[0], p3[1]);
+		bounds = bounds.ExtendTo (p4[0], p4[1]);
+	}
 
 	bounds.x += r.x;
 	bounds.y += r.y;
