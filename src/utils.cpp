@@ -266,7 +266,7 @@ g_ptr_array_insert (GPtrArray *array, guint index, void *item)
 }
 
 int
-write_all (int fd, char *buf, size_t len)
+write_all (int fd, const char *buf, size_t len)
 {
 	size_t nwritten = 0;
 	ssize_t n;

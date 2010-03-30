@@ -24,6 +24,8 @@
 
 #include "install-dialog.h"
 #include "application.h"
+#include "downloader.h"
+#include "timesource.h"
 #include "runtime.h"
 #include "utils.h"
 #include "uri.h"
@@ -37,8 +39,11 @@ typedef struct {
 struct _InstallDialogPrivate {
 	Application *application;
 	Deployment *deployment;
+	Downloader *downloader;
+	TimeSpan download_start;
 	GPtrArray *loaders;
 	GList *icon_list;
+	GByteArray *xap;
 	
 	char *install_dir;
 	bool installed;
@@ -46,6 +51,7 @@ struct _InstallDialogPrivate {
 	GtkToggleButton *start_menu;
 	GtkToggleButton *desktop;
 	GtkLabel *primary_text;
+	GtkWidget *ok_button;
 	GtkImage *icon;
 };
 
@@ -171,7 +177,7 @@ install_dialog_init (InstallDialog *dialog)
 	/* Add OK and Cancel buttons */
 	gtk_dialog_set_has_separator ((GtkDialog *) dialog, false);
 	gtk_dialog_add_button ((GtkDialog *) dialog, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
-	gtk_dialog_add_button ((GtkDialog *) dialog, GTK_STOCK_OK, GTK_RESPONSE_OK);
+	priv->ok_button = gtk_dialog_add_button ((GtkDialog *) dialog, "_Install ...", GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response ((GtkDialog *) dialog, GTK_RESPONSE_CANCEL);
 }
 
@@ -182,6 +188,15 @@ install_dialog_finalize (GObject *obj)
 	InstallDialogPrivate *priv = dialog->priv;
 	IconLoader *loader;
 	guint i;
+	
+	if (priv->downloader) {
+		if (!priv->downloader->Completed ())
+			priv->downloader->Abort ();
+		priv->downloader->unref ();
+	}
+	
+	if (priv->xap)
+		g_byte_array_free (priv->xap, true);
 	
 	if (!priv->installed)
 		RemoveDir (priv->install_dir);
@@ -266,6 +281,94 @@ icon_loader_write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
 	}
 }
 
+static void
+downloader_completed (EventObject *sender, EventArgs *args, gpointer user_data)
+{
+	InstallDialog *installer = (InstallDialog *) user_data;
+	InstallDialogPrivate *priv = installer->priv;
+	
+	gtk_button_set_label ((GtkButton *) priv->ok_button, "_Install Now");
+	gtk_widget_set_sensitive (priv->ok_button, true);
+}
+
+static void
+error_dialog_response (GtkDialog *dialog, int response_id, gpointer user_data)
+{
+	GtkDialog *installer = (GtkDialog *) user_data;
+	
+	// cancel the install dialog
+	gtk_dialog_response (installer, GTK_RESPONSE_CANCEL);
+	
+	// destroy the error dialog
+	gtk_widget_destroy ((GtkWidget *) dialog);
+}
+
+static void
+downloader_failed (EventObject *sender, EventArgs *args, gpointer user_data)
+{
+	InstallDialog *installer = (InstallDialog *) user_data;
+	InstallDialogPrivate *priv = installer->priv;
+	GtkWidget *dialog;
+	
+	dialog = gtk_message_dialog_new ((GtkWindow *) installer,
+					 (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
+					 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s",
+					 priv->downloader->GetFailedMessage ());
+	
+	gtk_window_set_title ((GtkWindow *) dialog, "Install Error");
+	
+	gtk_message_dialog_format_secondary_text ((GtkMessageDialog *) dialog,
+						  "Failed to download application from %s",
+						  priv->deployment->GetXapLocation ());
+	
+	g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response), installer);
+	
+	gtk_widget_show (dialog);
+}
+
+static void
+downloader_notify_size (gint64 size, gpointer user_data)
+{
+	InstallDialog *installer = (InstallDialog *) user_data;
+	InstallDialogPrivate *priv = installer->priv;
+	
+	g_byte_array_set_size (priv->xap, (guint) size);
+	priv->download_start = get_now ();
+}
+
+static void
+downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data)
+{
+	InstallDialog *installer = (InstallDialog *) user_data;
+	InstallDialogPrivate *priv = installer->priv;
+	double elapsed, bps;
+	char *label;
+	guint left;
+	
+	g_byte_array_append (priv->xap, (guint8 *) buf, n);
+	
+	// calculate number of bytes remaining
+	left = priv->xap->len - (offset + n);
+	
+	if (left > 0) {
+		// calculate elapsed time
+		elapsed = TimeSpan_ToSecondsFloat (get_now () - priv->download_start);
+		
+		// calculate download speed
+		bps = (offset + n) / elapsed;
+		
+		// calculate time remaining
+		left = (guint) (left / bps);
+		
+		label = g_strdup_printf ("_Install (%d)", left);
+		gtk_button_set_label ((GtkButton *) priv->ok_button, label);
+		g_free (label);
+	} else {
+		gtk_button_set_label ((GtkButton *) priv->ok_button, "_Install Now");
+		gtk_widget_set_sensitive (priv->ok_button, true);
+	}
+}
+
 GtkDialog *
 install_dialog_new (GtkWindow *parent, Deployment *deployment)
 {
@@ -302,6 +405,18 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment)
 	g_free (markup);
 	
 	priv->install_dir = install_utils_get_install_dir (settings);
+	
+	/* desensitize the OK button until the downloader is complete */
+	gtk_widget_set_sensitive (priv->ok_button, false);
+	
+	/* spin up a downloader for the xap */
+	priv->downloader = deployment->GetSurface ()->CreateDownloader ();
+	priv->downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, dialog);
+	priv->downloader->AddHandler (Downloader::CompletedEvent, downloader_completed, dialog);
+	priv->downloader->Open ("GET", deployment->GetXapLocation (), XamlPolicy);
+	priv->downloader->SetStreamFunctions (downloader_write, downloader_notify_size, dialog);
+	priv->xap = g_byte_array_new ();
+	priv->downloader->Send ();
 	
 	/* load the icons */
 	if (icons && (count = icons->GetCount ()) > 0) {
@@ -347,10 +462,10 @@ install_dialog_get_install_to_desktop (InstallDialog *dialog)
 }
 
 static bool
-install_xap (Deployment *deployment, const char *app_dir)
+install_xap (GByteArray *xap, const char *app_dir)
 {
 	char *filename;
-	int fd;
+	int fd, rv;
 	
 	filename = g_build_filename (app_dir, "Application.xap", NULL);
 	if ((fd = open (filename, O_CREAT | O_EXCL | O_WRONLY, 0666)) == -1) {
@@ -360,10 +475,10 @@ install_xap (Deployment *deployment, const char *app_dir)
 	
 	g_free (filename);
 	
-	if (CopyFileTo (deployment->GetXapFilename (), fd) == -1)
-		return false;
+	rv = write_all (fd, (const char *) xap->data, xap->len);
+	close (fd);
 	
-	return true;
+	return rv != -1;
 }
 
 static bool
@@ -575,7 +690,7 @@ install_dialog_install (InstallDialog *dialog)
 		return false;
 	
 	/* install the XAP */
-	if (!install_xap (priv->deployment, priv->install_dir)) {
+	if (!install_xap (priv->xap, priv->install_dir)) {
 		RemoveDir (priv->install_dir);
 		return false;
 	}
