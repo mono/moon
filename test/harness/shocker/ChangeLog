@@ -1,5 +1,10 @@
 2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shocker.cpp:
+	* logging.cpp|h: Added p/invokable TestHost_GetTestDirectory.
+
+2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* image-capture.cpp: CompareImages: some drts are right and some are wrong
 	about master/comparison file order. Add some AI to detect the correct answer.
 

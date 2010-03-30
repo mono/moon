@@ -60,6 +60,7 @@ public:
 
 	void LogResult (TestResult result);
 	char *GetTestDefinition (bool isJson);
+	const char *GetTestDirectory ();
 	char *GetRuntimePropertyValue (const char *propertyName);
 	void SetRuntimePropertyValue (const char *propertyName, const char *value);
 
@@ -93,6 +94,8 @@ void TestLogger_LogWarning (const char *message);
 void TestLogger_GetTestDefinition (bool isJson, gunichar2 **result);
 void TestLogger_GetRuntimePropertyValue (const char *propertyName, gunichar2 **value);
 void TestLogger_SetRuntimePropertyValue (const char *propertyName, const char *value);
+
+void TestHost_GetTestDirectory (gunichar2 **result);
 
 G_END_DECLS
 

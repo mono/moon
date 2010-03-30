@@ -143,6 +143,19 @@ LogProvider::Log (const char* level, const char* msg)
 	printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);
 }
 
+const char *
+LogProvider::GetTestDirectory ()
+{
+	const char* dir = getenv ("MOONLIGHT_HARNESS_TESTDIRECTORY");
+
+	if (!dir) {
+		printf ("[shocker] LogProvider::GetTestDirectory (): MOONLIGHT_HARNESS_TESTDIRECTORY is not set, using /tmp instead.\n");
+		dir = "/tmp";
+	}
+
+	return dir;
+}
+
 char *
 LogProvider::GetTestDefinition (bool isJson)
 {
@@ -304,6 +317,15 @@ void TestLogger_SetRuntimePropertyValue (const char *propertyName, const char *v
 	LogProvider::GetInstance ()->SetRuntimePropertyValue (propertyName, value);
 }
 
+void TestHost_GetTestDirectory (gunichar2 **result)
+{
+	const char *utf8 = LogProvider::GetInstance ()->GetTestDirectory ();
+	if (utf8 != NULL) {
+			*result = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
+	} else {
+			*result = NULL;
+	}
+}
 
 
 
