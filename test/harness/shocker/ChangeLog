@@ -1,3 +1,11 @@
+2010-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* image-capture.cpp:
+	* logging.cpp:
+	* harness.cpp|h: The harness now sends a 4-byte header with the size of the
+	data it is sending. Change harness_send_message to allocate the memory instead
+	of reading into a pre-allocated buffer.
+
 2010-03-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* harness.cpp (send_all): New convenience function.

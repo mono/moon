@@ -22,7 +22,7 @@
  * Author:
  *   Rolf Bjarne Kvinge
  *
- * Copyright 2009 Novell, Inc. (http://www.novell.com)
+ * Copyright 2009-2010 Novell, Inc. (http://www.novell.com)
  *
  *
  * harness.h: Interface with our test harness
@@ -41,49 +41,54 @@
 
 #include "harness.h"
 
-static ssize_t
-send_all (int sockfd, const char *buf, size_t n, int flags)
+bool
+send_all (int sockfd, const char *buffer, guint32 length)
 {
-	size_t nwritten = 0;
-	ssize_t w;
+	guint32 written = 0;
+	ssize_t result;
 	
 	do {
 		do {
-			w = send (sockfd, buf + nwritten, n - nwritten, flags);
-		} while (w == -1 && errno == EINTR);
+			result = send (sockfd, buffer + written, length - written, MSG_NOSIGNAL);
+		} while (result == -1 && errno == EINTR);
 		
-		if (w == -1)
-			return -1;
+		if (result == -1) {
+			printf ("[Shocker]: send failed, returned %i (%i %s)\n", (int) result, errno, strerror (errno));
+			return false;
+		}
 		
-		nwritten += w;
-	} while (nwritten < n);
+		written += result;
+	} while (written < length);
 	
-	return nwritten;
-}
-
-static ssize_t
-recv_all (int sockfd, char *buf, size_t n, int flags)
-{
-	size_t nread = 0;
-	ssize_t r;
-	
-	do {
-		do {
-			r = recv (sockfd, buf + nread, n - nread, flags);
-		} while (r == -1 && errno == EINTR);
-		
-		if (r == -1)
-			return -1;
-		
-		nread += r;
-	} while (nread < n);
-	
-	return nread;
+	return true;
 }
 
 bool
-send_harness_message (const char *msg, guint8 *buffer, guint32 buffer_length, guint32 *output_length)
+recv_all (int sockfd, guint8 *buffer, guint32 length)
 {
+	guint32 read = 0;
+	ssize_t result;
+
+	do {
+		do {
+			result = recv (sockfd, buffer + read, length - read, MSG_WAITALL);
+		} while (result == -1 && errno == EINTR);
+
+		if (result == -1) {
+			printf ("[Shocker]: receive failed, returned %i (%i %s)\n", (int) result, errno, strerror (errno));
+			return false;
+		}
+
+		read += result;
+	} while (read < length);
+
+	return true;
+}
+
+bool
+send_harness_message (const char *msg, guint8 **buffer, guint32 *output_length)
+{
+	char *tmp;
 	int sockfd;
 	int result;
 	sockaddr_in addr;
@@ -91,18 +96,18 @@ send_harness_message (const char *msg, guint8 *buffer, guint32 buffer_length, gu
 	int port;
 
 	*output_length = 0;
+	*buffer = NULL;
 
 	// get and validate port
 	strport = getenv ("MOONLIGHT_HARNESS_LISTENER_PORT");
 	if (strport == NULL || strport [0] == 0) {
-		printf ("[Shocker]: MOONLIGHT_HARNESS_LISTENER_PORT is not set.\n");
-		return false;
-	}
-
-	port = atoi (strport);
-	if (port < 1024) {
-		printf ("[Shocker]: The port MOONLIGHT_HARNESS_LISTENER_PORT (%s) is invalid, it must be >= 1024.\n", strport);
-		return false;
+		printf ("[Shocker]: MOONLIGHT_HARNESS_LISTENER_PORT is not set, assuming a default value of 1234\n");
+		port = 1234;
+	} else {
+		port = atoi (strport);
+		if (port < 1024) {
+			printf ("[Shocker]: The port MOONLIGHT_HARNESS_LISTENER_PORT (%s) is probably invalid, it should be >= 1024.\n", strport);
+		}
 	}
 
 	// create the socket
@@ -122,17 +127,36 @@ send_harness_message (const char *msg, guint8 *buffer, guint32 buffer_length, gu
 
 	if (result == -1) {
 		printf ("[Shocker]: Could not connect to localhost:%i (%i %s)\n", port, errno, strerror (errno));
-	} else {
-		if ((result = send_all (sockfd, msg, strlen (msg), MSG_NOSIGNAL)) != -1) {
-			if ((result = recv_all (sockfd, (char *) buffer, buffer_length, MSG_WAITALL)) == -1)
-				printf ("[Shocker]: receive failed (%i %s)\n", errno, strerror (errno));
-			else
-				*output_length = result;
-		} else {
-			printf ("[Shocker]: send failed (%i %s)\n", errno, strerror (errno));
-		}
+		goto cleanup;
+	} 
+
+	// send request
+	tmp = g_strdup_printf ("v2|%s", msg);
+	if (!send_all (sockfd, tmp, strlen (tmp))) {
+		g_free (tmp);
+		result = -1;
+		goto cleanup;
+	}
+	g_free (tmp);
+
+	// First 4 bytes is the size
+	if (!recv_all (sockfd, (guint8 *) output_length, 4)) {
+		result = -1;
+		goto cleanup;
 	}
 
+	// printf ("[shocker] receiving %i bytes...\n", *output_length);
+
+	// Then the response
+	*buffer = (guint8 *) g_malloc0 (*output_length + 1 /* any missing null terminator */);
+	if (!recv_all (sockfd, *buffer, *output_length)) {
+		g_free (*buffer);
+		*buffer = NULL;
+		result = -1;
+		goto cleanup;
+	}
+
+cleanup:
 	close (sockfd);
 
 	return result != -1;
