@@ -28,6 +28,8 @@ run-unit-tests-harness:
 dist-hook:
 	cp -a $(srcdir)/xaml $(distdir)/xaml
 	find $(distdir)/xaml -name .svn | xargs rm -rf
+	cp -a $(srcdir)/media $(distdir)/media
+	find $(distdir)/media -name .svn | xargs rm -rf
 
 noinst_PROGRAMS = uris effects
 

@@ -63,6 +63,7 @@ libmoon_include_headers = 	\
 	media.h			\
 	mediaelement.h		\
 	mediaplayer.h		\
+	messaging.h		\
 	mms-downloader.h	\
 	moon-curves.h		\
 	moonlightconfiguration.h\
@@ -279,6 +280,8 @@ libmoon_la_SOURCES += audio-pulse.cpp audio-pulse.h
 endif
 
 EXTRA_DIST = \
+	type.h.in \
+	value.h.in \
 	alpha-premul-table.inc \
 	morton-layout-table.inc \
 	fullscreen.xaml \

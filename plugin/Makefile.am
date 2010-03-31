@@ -94,7 +94,7 @@ untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonplugin.so
 	-rm -rf ~/.mozilla/plugins/libmoonloader.so
 
-EXTRA_DIST=moon.config silverlight-versions.h.in
+EXTRA_DIST=moon.config silverlight-versions.h.in plugin-class.h.in plugin-class.g.cpp.in
 
 DISTCLEANFILES= silverlight-version.h
 
