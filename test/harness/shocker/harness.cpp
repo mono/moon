@@ -41,6 +41,46 @@
 
 #include "harness.h"
 
+static ssize_t
+send_all (int sockfd, const char *buf, size_t n, int flags)
+{
+	size_t nwritten = 0;
+	ssize_t w;
+	
+	do {
+		do {
+			w = send (sockfd, buf + nwritten, n - nwritten, flags);
+		} while (w == -1 && errno == EINTR);
+		
+		if (w == -1)
+			return -1;
+		
+		nwritten += w;
+	} while (nwritten < n);
+	
+	return nwritten;
+}
+
+static ssize_t
+recv_all (int sockfd, char *buf, size_t n, int flags)
+{
+	size_t nread;
+	ssize_t r;
+	
+	do {
+		do {
+			r = recv (sockfd, buf, n, flags);
+		} while (r == -1 && errno == EINTR);
+		
+		if (r == -1)
+			return -1;
+		
+		nread += r;
+	} while (nread < n);
+	
+	return nread;
+}
+
 bool
 send_harness_message (const char *msg, guint8 *buffer, guint32 buffer_length, guint32 *output_length)
 {
@@ -83,19 +123,13 @@ send_harness_message (const char *msg, guint8 *buffer, guint32 buffer_length, gu
 	if (result == -1) {
 		printf ("[Shocker]: Could not connect to localhost:%i (%i %s)\n", port, errno, strerror (errno));
 	} else {
-		result = send (sockfd, msg, strlen (msg), MSG_NOSIGNAL);
-		if (result > 0) {
-			do {
-				result = recv (sockfd, buffer, buffer_length, MSG_WAITALL);
-			} while (result == -1 && errno == EINTR);
-			
-			if (result < 0) {
-				printf ("[Shocker]: receive failed, returned %i (%i %s)\n", result, errno, strerror (errno));
-			} else {
+		if ((result = send_all (sockfd, msg, strlen (msg), MSG_NOSIGNAL)) != -1) {
+			if ((result = recv_all (sockfd, (char *) buffer, buffer_length, MSG_WAITALL)) == -1)
+				printf ("[Shocker]: receive failed (%i %s)\n", errno, strerror (errno));
+			else
 				*output_length = result;
-			}
 		} else {
-			printf ("[Shocker]: send failed, returned %i (%i %s)\n", result, errno, strerror (errno));
+			printf ("[Shocker]: send failed (%i %s)\n", errno, strerror (errno));
 		}
 	}
 

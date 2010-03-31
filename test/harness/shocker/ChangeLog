@@ -1,3 +1,10 @@
+2010-03-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* harness.cpp (send_all): New convenience function.
+	(recv_all): Same.
+	(send_harness_message): Use the new convenience functions to
+	send/recv all requested data.
+
 2010-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.cpp:
