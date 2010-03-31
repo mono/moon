@@ -161,7 +161,7 @@ LogProvider::GetTestDefinition (bool isJson)
 {
 	char *test_definition;
 	const char *msg;
-	int buffer_length = 16000;/* test definitions can be pretty huge */
+	guint32 buffer_length = 16000;/* test definitions can be pretty huge */
 	guint8 *buffer = NULL;
 	guint32 output_length;
 

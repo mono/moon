@@ -1,3 +1,7 @@
+2010-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* logging.cpp: Fix warnings.
+
 2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.cpp: CompareImages take 5 arguments, not 6.
