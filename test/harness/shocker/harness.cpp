@@ -64,12 +64,12 @@ send_all (int sockfd, const char *buf, size_t n, int flags)
 static ssize_t
 recv_all (int sockfd, char *buf, size_t n, int flags)
 {
-	size_t nread;
+	size_t nread = 0;
 	ssize_t r;
 	
 	do {
 		do {
-			r = recv (sockfd, buf, n, flags);
+			r = recv (sockfd, buf + nread, n - nread, flags);
 		} while (r == -1 && errno == EINTR);
 		
 		if (r == -1)
