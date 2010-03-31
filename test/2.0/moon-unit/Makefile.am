@@ -151,7 +151,8 @@ EXTRA_DIST = 			\
 	$(srcdir)/*xaml		\
 	$(srcdir)/*/*xaml	\
 	$(srcdir)/*/*/*xaml	\
-	$(srcdir)/*/*.cs
+	$(srcdir)/*/*.cs	\
+	$(srcdir)/mono-logo.png
 
 test: copy-xap-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \

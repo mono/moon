@@ -79,7 +79,17 @@ class MemberInfo {
 			if (Header == null || Header == string.Empty)
 				return false;
 
-			return Path.GetFileName (Path.GetDirectoryName (Header)) == "plugin";
+			string path = Header;
+
+			while (path != Environment.CurrentDirectory) {
+				if (Path.GetFileName (Path.GetDirectoryName (path)) == "plugin")
+					return true;
+				path = Path.GetDirectoryName (path);
+				if (path == Path.GetDirectoryName (path))
+					throw new Exception ("Could not find the base directory of the moon module.");
+			}
+
+			return false;
 		}
 	}
 
@@ -88,7 +98,17 @@ class MemberInfo {
 			if (Header == null || Header == string.Empty)
 				return false;
 
-			return Header.Contains (Path.DirectorySeparatorChar + "moon" + Path.DirectorySeparatorChar + "src" + Path.DirectorySeparatorChar);
+			string path = Header;
+
+			while (path != Environment.CurrentDirectory) {
+				if (Path.GetFileName (Path.GetDirectoryName (path)) == "src")
+					return true;
+				path = Path.GetDirectoryName (path);
+				if (path == Path.GetDirectoryName (path))
+					throw new Exception ("Could not find the base directory of the moon module.");
+			}
+
+			return false;
 		}
 	}
 
