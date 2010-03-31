@@ -63,6 +63,8 @@ public:
 	const char *GetTestDirectory ();
 	char *GetRuntimePropertyValue (const char *propertyName);
 	void SetRuntimePropertyValue (const char *propertyName, const char *value);
+	const char *GetPlatformName ();
+	const char *GetPlatformVersion ();
 
 	void SetTestName (const char *test_name);
 	void StartLog ();
@@ -72,6 +74,8 @@ private:
 	void Log (const char* level, const char* msg);
 	
 	char *test_name;
+	char *platform_version;
+	char *platform_name;
 	GHashTable *runtime_properties;
 };
 

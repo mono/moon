@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include <sys/utsname.h>
+
 #include "logging.h"
 #include "harness.h"
 
@@ -61,12 +63,16 @@ LogProvider::GetInstance ()
 LogProvider::LogProvider ()
 {
 	this->test_name = NULL;
+	this->platform_version = NULL;
+	this->platform_name = NULL;
 	runtime_properties = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 }
 
 LogProvider::~LogProvider ()
 {
 	g_free (test_name);
+	g_free (platform_version);
+	g_free (platform_name);
 	g_hash_table_destroy (runtime_properties);
 }
 
@@ -217,6 +223,37 @@ void
 LogProvider::EndLog ()
 {
 	g_warning ("[shocker] LogProvider::EndLog (): Not implemented\n");
+}
+
+const char *
+LogProvider::GetPlatformName ()
+{
+	if (platform_name == NULL)
+		GetPlatformVersion ();
+
+	printf ("[shocker] LogProvider::GetPlatformName (): Returning '%s', which may cause failures.\n", platform_name);
+
+	return platform_name;
+}
+
+const char *
+LogProvider::GetPlatformVersion ()
+{
+	utsname name;
+
+	if (platform_version == NULL) {
+		if (uname (&name) >= 0) {
+			platform_name = g_strdup (name.sysname);
+			platform_version = g_strdup (name.release);
+			printf ("[shocker] LogProvider::GetPlatformVersion (): Returning '%s', which may cause failures.\n", platform_version);
+		} else {
+			platform_name = g_strdup ("");
+			platform_version = g_strdup ("");
+			printf ("[shocker] LogProvider::GetPlatformVersion (): Could not get platform name/version: %s\n", strerror (errno));
+		}
+	}
+
+	return platform_version;
 }
 
 void 

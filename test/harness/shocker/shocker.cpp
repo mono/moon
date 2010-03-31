@@ -501,15 +501,17 @@ UninitializePerfProvider (ShockerScriptableControlObject* obj, char* name, const
 static void
 GetPlatformName (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] GetPlatformName (): Returning 'Linux', which may cause failures.\n");
-	STRINGZ_TO_NPVARIANT (strdup ("Linux"), *result);
+	char *retval;
+	retval = NPN_strdup (LogProvider::GetInstance ()->GetPlatformName ());
+	STRINGZ_TO_NPVARIANT (retval, *result);
 }
 
 static void
 GetPlatformVersion (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] GetPlatformVersion (): Not implemented\n");
-	BOOLEAN_TO_NPVARIANT (true, *result);
+	char *retval;
+	retval = NPN_strdup (LogProvider::GetInstance ()->GetPlatformVersion ());
+	STRINGZ_TO_NPVARIANT (retval, *result);
 }
 
 static void

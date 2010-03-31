@@ -1,5 +1,10 @@
 2010-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shocker.cpp:
+	* logging.cpp|h: Implement GetPlatformVersion and GetPlatformName.
+
+2010-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* logging.cpp: Fix warnings.
 
 2010-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
