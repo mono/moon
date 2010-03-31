@@ -25,7 +25,6 @@
 #include "install-dialog.h"
 #include "application.h"
 #include "downloader.h"
-#include "timesource.h"
 #include "runtime.h"
 #include "utils.h"
 #include "uri.h"
@@ -40,7 +39,6 @@ struct _InstallDialogPrivate {
 	Application *application;
 	Deployment *deployment;
 	Downloader *downloader;
-	TimeSpan download_start;
 	GPtrArray *loaders;
 	GList *icon_list;
 	GByteArray *xap;
@@ -51,6 +49,7 @@ struct _InstallDialogPrivate {
 	GtkToggleButton *start_menu;
 	GtkToggleButton *desktop;
 	GtkLabel *primary_text;
+	GtkProgressBar *progress;
 	GtkWidget *ok_button;
 	GtkImage *icon;
 };
@@ -136,6 +135,10 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_toggle_button_set_active (priv->desktop, false);
 	gtk_widget_show ((GtkWidget *) priv->desktop);
 	
+	priv->progress = (GtkProgressBar *) gtk_progress_bar_new ();
+	gtk_progress_bar_set_fraction (priv->progress, 0.0);
+	gtk_widget_show ((GtkWidget *) priv->progress);
+	
 	vbox = gtk_vbox_new (false, 2);
 	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->start_menu, false, false, 0);
 	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->desktop, false, false, 0);
@@ -149,6 +152,7 @@ install_dialog_init (InstallDialog *dialog)
 	vbox = gtk_vbox_new (false, 6);
 	gtk_box_pack_start ((GtkBox *) vbox, label, false, false, 0);
 	gtk_box_pack_start ((GtkBox *) vbox, checkboxes, false, false, 0);
+	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->progress, false, false, 0);
 	gtk_widget_show (vbox);
 	
 	primary = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
@@ -177,7 +181,7 @@ install_dialog_init (InstallDialog *dialog)
 	/* Add OK and Cancel buttons */
 	gtk_dialog_set_has_separator ((GtkDialog *) dialog, false);
 	gtk_dialog_add_button ((GtkDialog *) dialog, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
-	priv->ok_button = gtk_dialog_add_button ((GtkDialog *) dialog, "_Install ...", GTK_RESPONSE_OK);
+	priv->ok_button = gtk_dialog_add_button ((GtkDialog *) dialog, "_Install Now", GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response ((GtkDialog *) dialog, GTK_RESPONSE_CANCEL);
 }
 
@@ -287,8 +291,8 @@ downloader_completed (EventObject *sender, EventArgs *args, gpointer user_data)
 	InstallDialog *installer = (InstallDialog *) user_data;
 	InstallDialogPrivate *priv = installer->priv;
 	
-	gtk_button_set_label ((GtkButton *) priv->ok_button, "_Install Now");
 	gtk_widget_set_sensitive (priv->ok_button, true);
+	gtk_widget_hide ((GtkWidget *) priv->progress);
 }
 
 static void
@@ -333,7 +337,6 @@ downloader_notify_size (gint64 size, gpointer user_data)
 	InstallDialogPrivate *priv = installer->priv;
 	
 	g_byte_array_set_size (priv->xap, (guint) size);
-	priv->download_start = get_now ();
 }
 
 static void
@@ -341,32 +344,17 @@ downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data)
 {
 	InstallDialog *installer = (InstallDialog *) user_data;
 	InstallDialogPrivate *priv = installer->priv;
-	double elapsed, bps;
+	char *dest = (char *) priv->xap->data;
+	double fraction;
 	char *label;
-	guint left;
 	
-	g_byte_array_append (priv->xap, (guint8 *) buf, n);
+	memcpy (dest + offset, buf, n);
 	
-	// calculate number of bytes remaining
-	left = priv->xap->len - (offset + n);
-	
-	if (left > 0) {
-		// calculate elapsed time
-		elapsed = TimeSpan_ToSecondsFloat (get_now () - priv->download_start);
-		
-		// calculate download speed
-		bps = (offset + n) / elapsed;
-		
-		// calculate time remaining
-		left = (guint) (left / bps);
-		
-		label = g_strdup_printf ("_Install (%d)", left);
-		gtk_button_set_label ((GtkButton *) priv->ok_button, label);
-		g_free (label);
-	} else {
-		gtk_button_set_label ((GtkButton *) priv->ok_button, "_Install Now");
-		gtk_widget_set_sensitive (priv->ok_button, true);
-	}
+	fraction = (double) (offset + n) / priv->xap->len;
+	label = g_strdup_printf ("Downloading... %d%%", (int) (fraction * 100));
+	gtk_progress_bar_set_fraction (priv->progress, fraction);
+	gtk_progress_bar_set_text (priv->progress, label);
+	g_free (label);
 }
 
 GtkDialog *

@@ -1,3 +1,14 @@
+2010-03-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_dialog_init): Create a
+	GtkProgressBar to display .xap download progress information to
+	the user.
+	(downloader_completed): Hide the progress bar.
+	(downloader_write): Fixed to memcpy() the data into
+	place. gtk_byte_array_append() was appending it to the end of an
+	array of null bytes (oops). Also, update the progress on the
+	progress bar.
+
 2010-03-30  David Reveman  <davidr@novell.com>
 
 	* projection.cpp: Add minimal clipping to projection bounds
