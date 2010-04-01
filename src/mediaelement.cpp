@@ -82,7 +82,7 @@ MediaElement::MediaElement ()
 	playlist = NULL;
 	error_args = NULL;
 	flags = UseMediaWidth | UseMediaHeight;
-	detached_state = MediaStateClosed; 
+	detached_state = MediaElementStateClosed; 
 		
 	marker_timeout = 0;
 	mplayer = NULL;
@@ -120,9 +120,9 @@ MediaElement::ShuttingDownHandler (Deployment *sender, EventArgs *args)
 }
 
 const char *
-MediaElement::GetStateName (MediaState state)
+MediaElement::GetStateName (MediaElementState state)
 {
-	return enums_int_to_str ("MediaState", state);
+	return enums_int_to_str ("MediaElementState", state);
 }
 
 
@@ -469,7 +469,7 @@ MediaElement::SetIsAttached (bool value)
 	
 	if (value) {
 		LOG_MEDIAELEMENT ("MediaElement reattached, detached state: %s state: %s\n", GetStateName (detached_state), GetStateName (state));
-		if (detached_state == MediaStatePlaying) {
+		if (detached_state == MediaElementStatePlaying) {
 			Play ();
 		}
 	}
@@ -505,8 +505,8 @@ MediaElement::Reinitialize ()
 	flags &= (PlayRequested | UseMediaHeight | UseMediaWidth);
 	flags |= RecalculateMatrix;
 	
-	prev_state = MediaStateClosed;
-	state = MediaStateClosed;
+	prev_state = MediaElementStateClosed;
+	state = MediaElementStateClosed;
 	
 	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
@@ -865,7 +865,7 @@ MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 	flags |= PlayRequested;
 	SetBufferingProgress (0.0);
 	Emit (BufferingProgressChangedEvent);
-	SetState (MediaStateBuffering);
+	SetState (MediaElementStateBuffering);
 	mplayer->Pause ();
 	/* We need to inform the Media instance that we want more BufferingProgressChanged events.
 	 * With a small BufferingTime the Media instance might already have refilled
@@ -888,7 +888,7 @@ MediaElement::EmitStateChanged (EventObject *obj)
 }
 
 void
-MediaElement::SetState (MediaState state)
+MediaElement::SetState (MediaElementState state)
 {
 	bool emit = false;
 	
@@ -964,7 +964,7 @@ MediaElement::OpeningHandler (PlaylistRoot *playlist, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	flags &= ~Initializing;
-	SetState (MediaStateOpening);
+	SetState (MediaElementStateOpening);
 }
 
 void
@@ -1127,7 +1127,7 @@ MediaElement::PlayHandler (PlaylistRoot *playlist, EventArgs *args)
 	
 	SetMarkerTimeout (true);
 	
-	SetState (MediaStatePlaying);
+	SetState (MediaElementStatePlaying);
 }
 
 void
@@ -1138,7 +1138,7 @@ MediaElement::PauseHandler (PlaylistRoot *playlist, EventArgs *args)
 	
 	SetMarkerTimeout (false);
 	
-	SetState (MediaStatePaused);
+	SetState (MediaElementStatePaused);
 }
 
 void
@@ -1161,7 +1161,7 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 	SetMarkerTimeout (false);
 	CheckMarkers (); // check one last time.
 	
-	SetState (MediaStateStopped);
+	SetState (MediaElementStateStopped);
 }
 
 void
@@ -1177,7 +1177,7 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL);
 	VERIFY_MAIN_THREAD;
 	
-	if (state == MediaStateClosed && !(flags & Initializing))
+	if (state == MediaElementStateClosed && !(flags & Initializing))
 		return;
 	
 	// TODO: Should ClearValue be called on these instead?
@@ -1196,7 +1196,7 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	InvalidateMeasure ();
 	InvalidateArrange ();
 
-	SetState (MediaStateClosed);
+	SetState (MediaElementStateClosed);
 	
 	if (args)
 		args->ref ();
@@ -1217,7 +1217,7 @@ MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 	
 	CheckMarkers ();
 	paused_position = GetNaturalDuration ()->GetTimeSpan ();
-	SetState (MediaStatePaused);
+	SetState (MediaElementStatePaused);
 	Emit (MediaEndedEvent);
 }
 
@@ -1246,13 +1246,13 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 	g_return_if_fail (pea != NULL);
 
 	if (GetBufferingProgress () < pea->progress) {
-		if (state == MediaStatePlaying || state == MediaStatePaused) {
-			if (state == MediaStatePlaying)
+		if (state == MediaElementStatePlaying || state == MediaElementStatePaused) {
+			if (state == MediaElementStatePlaying)
 				flags |= PlayRequested;
 			/* this is wrong when the user calls Play while we're still buffering because we'd jump back to the buffering state later (but we'd continue playing) */
 			/* if we set this earlier though (SeekCompletedHandler) MS DRT #115 fails */
 			if (!(flags & BufferingDisabled)) {
-				SetState (MediaStateBuffering);
+				SetState (MediaElementStateBuffering);
 			}
 		}
 		SetBufferingProgress (pea->progress);
@@ -1261,7 +1261,7 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 	}
 	
 	if (pea->progress >= 1.0) {
-		if (GetState () == MediaStateBuffering) {
+		if (GetState () == MediaElementStateBuffering) {
 			LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");
 			PlayOrStop ();
 		} else if (flags & PlayRequested) {
@@ -1395,19 +1395,19 @@ MediaElement::PlayOrStop ()
 	
 	if (!GetCanPause ()) {
 		// If we can't pause, we play
-		SetState (MediaStatePlaying);
+		SetState (MediaElementStatePlaying);
 		playlist->PlayAsync ();
 	} else if (flags & PlayRequested) {
 		// A Play has already been requested.
-		SetState (MediaStatePlaying);
+		SetState (MediaElementStatePlaying);
 		playlist->PlayAsync ();
 	} else if (GetAutoPlay () && !(flags & AutoPlayed)) {
 		// Autoplay us.
 		flags |= AutoPlayed;
-		SetState (MediaStatePlaying);
+		SetState (MediaElementStatePlaying);
 		playlist->PlayAsync ();
 	} else {
-		SetState (MediaStatePaused);
+		SetState (MediaElementStatePaused);
 	}
 }
 
@@ -1421,22 +1421,22 @@ MediaElement::Pause ()
 		return;
 	
 	switch (state) {
-	case MediaStateOpening:// docs: No specified behaviour
+	case MediaElementStateOpening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
 		return;
-	case MediaStateClosed: // docs: No specified behaviour
+	case MediaElementStateClosed: // docs: No specified behaviour
 		return;
-	case MediaStatePaused:// docs: no-op
-	case MediaStateBuffering:
-	case MediaStatePlaying:
-	case MediaStateStopped: // docs: pause
+	case MediaElementStatePaused:// docs: no-op
+	case MediaElementStateBuffering:
+	case MediaElementStatePlaying:
+	case MediaElementStateStopped: // docs: pause
 		flags &= ~PlayRequested;
 		paused_position = GetPosition ();
-		SetState (MediaStatePaused);
+		SetState (MediaElementStatePaused);
 		playlist->PauseAsync ();
 		break;
-	case MediaStateIndividualizing:
-	case MediaStateAcquiringLicense:
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
 		g_warning ("MediaElement: Invalid state.");
 		return;
 	}
@@ -1454,19 +1454,19 @@ MediaElement::Play ()
 	}
 	
 	switch (state) {
-	case MediaStateClosed: // docs: No specified behaviour
-	case MediaStateOpening:// docs: No specified behaviour
+	case MediaElementStateClosed: // docs: No specified behaviour
+	case MediaElementStateOpening:// docs: No specified behaviour
 		flags |= PlayRequested;
 		break;
-	case MediaStatePlaying:// docs: no-op
-	case MediaStateBuffering:
-	case MediaStatePaused:
-	case MediaStateStopped:
-		SetState (MediaStatePlaying);
+	case MediaElementStatePlaying:// docs: no-op
+	case MediaElementStateBuffering:
+	case MediaElementStatePaused:
+	case MediaElementStateStopped:
+		SetState (MediaElementStatePlaying);
 		playlist->PlayAsync ();
 		break;
-	case MediaStateIndividualizing:
-	case MediaStateAcquiringLicense:
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
 		g_warning ("MediaElement: Invalid state.");
 		return;
 	}
@@ -1482,15 +1482,15 @@ MediaElement::Stop ()
 		return;
 
 	switch (state) {
-	case MediaStateOpening:// docs: No specified behaviour
+	case MediaElementStateOpening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
 		return;
-	case MediaStateClosed: // docs: No specified behaviour
-	case MediaStateStopped:// docs: no-op
+	case MediaElementStateClosed: // docs: No specified behaviour
+	case MediaElementStateStopped:// docs: no-op
 		return;
-	case MediaStateBuffering:
-	case MediaStatePlaying:
-	case MediaStatePaused: // docs: stop
+	case MediaElementStateBuffering:
+	case MediaElementStatePlaying:
+	case MediaElementStatePaused: // docs: stop
 		flags &= ~PlayRequested;
 
 		LOG_MEDIAELEMENT ("MediaElement::Stop (): state: %s, IsSingleFile: %i\n", GetStateName (state), playlist->IsSingleFile ());
@@ -1498,11 +1498,11 @@ MediaElement::Stop ()
 		if (!playlist->IsSingleFile ())
 			flags &= ~MediaOpenedEmitted; // for playlists we must re-emit MediaOpened when the first entry/media has been re-loaded (even though we stop the first entry).
 		
-		SetState (MediaStateStopped);
+		SetState (MediaElementStateStopped);
 		playlist->StopAsync ();
 		break;
-	case MediaStateIndividualizing:
-	case MediaStateAcquiringLicense:
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
 		g_warning ("MediaElement: Invalid state.");
 		return;
 	}
@@ -1525,19 +1525,19 @@ MediaElement::Seek (TimeSpan to, bool force)
 	}
 	
 	switch (state) {
-	case MediaStateIndividualizing:
-	case MediaStateAcquiringLicense:
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
 		g_warning ("MediaElement:Seek (): Invalid state %s\n", GetStateName (state));
 		// Fall through
-	case MediaStateOpening:
-	case MediaStateClosed:
+	case MediaElementStateOpening:
+	case MediaElementStateClosed:
 		if (!force)
 			return;
 		/* fall through */
-	case MediaStateBuffering:
-	case MediaStatePlaying:
-	case MediaStatePaused:
-	case MediaStateStopped:
+	case MediaElementStateBuffering:
+	case MediaElementStatePlaying:
+	case MediaElementStatePaused:
+	case MediaElementStateStopped:
 		Duration *duration = GetNaturalDuration ();
 		
 		if (duration->HasTimeSpan () && to > duration->GetTimeSpan ())
@@ -1563,7 +1563,7 @@ MediaElement::Seek (TimeSpan to, bool force)
 		seeked_to_position = to;
 		paused_position = to;
 
-		if (state == MediaStatePlaying)
+		if (state == MediaElementStatePlaying)
 			flags |= PlayRequested;
 
 		mplayer->NotifySeek (TimeSpan_ToPts (to));
@@ -1793,7 +1793,7 @@ MediaElementPropertyValueProvider::GetCurrentState ()
 	MediaElement *element = (MediaElement *) obj;
 
 	delete current_state;
-	current_state = new Value (element->IsAttached () ? element->state : element->detached_state, Type::MEDIASTATE);
+	current_state = new Value (element->IsAttached () ? element->state : element->detached_state, Type::MEDIAELEMENTSTATE);
 	
 	return current_state;
 }
@@ -1810,22 +1810,22 @@ MediaElementPropertyValueProvider::GetPosition ()
 	this->position = NULL;
 	
 	switch (element->state) {
-	case MediaStateIndividualizing:
-	case MediaStateAcquiringLicense:
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
 		g_warning ("MediaElementPropertyValueProvider::GetPosition (): Invalid state.\n");
 		// Fall through
-	case MediaStateOpening:
-	case MediaStateClosed:
+	case MediaElementStateOpening:
+	case MediaElementStateClosed:
 		use_mplayer = false;
 		break;
-	case MediaStateStopped:
+	case MediaElementStateStopped:
 		position = 0;
 		break;
-	case MediaStateBuffering:
-	case MediaStatePlaying:
+	case MediaElementStateBuffering:
+	case MediaElementStatePlaying:
 		use_mplayer = true;
 		break;
-	case MediaStatePaused:
+	case MediaElementStatePaused:
 		use_pause = true;
 		break;
 	}

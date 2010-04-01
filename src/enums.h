@@ -146,15 +146,16 @@ enum InstallState {
 };
 
 /* @IncludeInKinds */
-enum MediaState {
-	MediaStateClosed,
-	MediaStateOpening,
-	MediaStateBuffering,
-	MediaStatePlaying,
-	MediaStatePaused,
-	MediaStateStopped,
-	MediaStateIndividualizing,
-	MediaStateAcquiringLicense,
+/* @Namespace=System.Windows.Media */
+enum MediaElementState {
+	MediaElementStateClosed,
+	MediaElementStateOpening,
+	MediaElementStateBuffering,
+	MediaElementStatePlaying,
+	MediaElementStatePaused,
+	MediaElementStateStopped,
+	MediaElementStateIndividualizing,
+	MediaElementStateAcquiringLicense,
 };
 
 /* @IncludeInKinds */

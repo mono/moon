@@ -187,14 +187,14 @@ static enum_map_t keyboard_navigation_mode_map [] = {
 };
 
 static enum_map_t media_element_state_map [] = {
-	MAP_ENUM (MediaState, Closed),
-	MAP_ENUM (MediaState, Opening),
-	MAP_ENUM (MediaState, Buffering),
-	MAP_ENUM (MediaState, Playing),
-	MAP_ENUM (MediaState, Paused),
-	MAP_ENUM (MediaState, Stopped),
-	MAP_ENUM (MediaState, Individualizing),
-	MAP_ENUM (MediaState, AcquiringLicense),
+	MAP_ENUM (MediaElementState, Closed),
+	MAP_ENUM (MediaElementState, Opening),
+	MAP_ENUM (MediaElementState, Buffering),
+	MAP_ENUM (MediaElementState, Playing),
+	MAP_ENUM (MediaElementState, Paused),
+	MAP_ENUM (MediaElementState, Stopped),
+	MAP_ENUM (MediaElementState, Individualizing),
+	MAP_ENUM (MediaElementState, AcquiringLicense),
 	END_MAPPING
 };
 
@@ -440,7 +440,7 @@ initialize_enums (void)
 
 	g_hash_table_insert (enum_map, (char *) "KeyboardNavigationMode", keyboard_navigation_mode_map);
 
-	g_hash_table_insert (enum_map, (char *) "MediaState", media_element_state_map);
+	g_hash_table_insert (enum_map, (char *) "MediaElementState", media_element_state_map);
 	g_hash_table_insert (enum_map, (char *) "GridUnitType", grid_unit_type_map);
 
 	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);

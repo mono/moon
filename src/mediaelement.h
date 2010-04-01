@@ -35,7 +35,7 @@ class MediaElement : public FrameworkElement {
 	cairo_matrix_t matrix;
 	int quality_level; // higher number = better quality, starts out at 0.
 	guint64 last_quality_level_change_position; // the pts of the position the last time the quality changed. Used to not change quality too often.
-	MediaState detached_state;
+	MediaElementState detached_state;
 	
 	MediaPlayer *mplayer;
 	PlaylistRoot *playlist;
@@ -61,10 +61,10 @@ class MediaElement : public FrameworkElement {
 	int buffering_mode; // if we're in [3] or not: 0 = unknown, 1 = [1], etc.
 	
 	// this is used to know what to do after a Buffering state finishes
-	MediaState prev_state;
+	MediaElementState prev_state;
 	
 	// The current state of the media element.
-	MediaState state;
+	MediaElementState state;
 	
 	guint32 flags;
 		
@@ -157,7 +157,7 @@ class MediaElement : public FrameworkElement {
 	const static int CanSeekProperty;
  	/* @PropertyType=double,ReadOnly,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
- 	/* @PropertyType=MediaState,ReadOnly,ManagedPropertyType=MediaElementState,DefaultValue=MediaStateClosed,GenerateAccessors */
+ 	/* @PropertyType=MediaElementState,ReadOnly,ManagedPropertyType=MediaElementState,DefaultValue=MediaElementStateClosed,GenerateAccessors */
 	const static int CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsMutedProperty;
@@ -251,26 +251,26 @@ class MediaElement : public FrameworkElement {
 	void ReportErrorOccurred (const char *args); // Thread safe
 	
 	// State methods
-	bool IsClosed () { return state == MediaStateClosed; }
-	bool IsOpening () { return state == MediaStateOpening; }
-	bool IsBuffering () { return state == MediaStateBuffering; }
-	bool IsPlaying () { return state == MediaStatePlaying; }
-	bool IsPaused () { return state == MediaStatePaused; }
-	bool IsStopped () { return state == MediaStateStopped; }
+	bool IsClosed () { return state == MediaElementStateClosed; }
+	bool IsOpening () { return state == MediaElementStateOpening; }
+	bool IsBuffering () { return state == MediaElementStateBuffering; }
+	bool IsPlaying () { return state == MediaElementStatePlaying; }
+	bool IsPaused () { return state == MediaElementStatePaused; }
+	bool IsStopped () { return state == MediaElementStateStopped; }
 	
 	bool IsMissingCodecs (); // Not thread-safe
 	
 	void SetPlayRequested (); // Not thread-safe
 	
-	static const char *GetStateName (MediaState state); // Thread-safe
+	static const char *GetStateName (MediaElementState state); // Thread-safe
 	static const char *GetFlagNames (guint32 flags); // Not thread-safe.
 	
 	PlaylistRoot *GetPlaylist () { return playlist; }
 	
 	int GetFlags () { return flags; }
-	MediaState GetState () { return state; } // Thread-safe
-	MediaState GetDetachedState () { return detached_state; }
-	void SetState (MediaState state); // Thread-safe
+	MediaElementState GetState () { return state; } // Thread-safe
+	MediaElementState GetDetachedState () { return detached_state; }
+	void SetState (MediaElementState state); // Thread-safe
 	
 	virtual bool EnableAntiAlias ();
 	int GetQualityLevel (int min, int max); /* returns a quality level between min and max */
@@ -301,8 +301,8 @@ class MediaElement : public FrameworkElement {
 	bool GetCanPause ();
 	bool GetCanSeek ();
 	
-	void SetCurrentState (MediaState state);
-	MediaState GetCurrentState ();
+	void SetCurrentState (MediaElementState state);
+	MediaElementState GetCurrentState ();
 	
 	void SetIsMuted (bool set);
 	bool GetIsMuted ();

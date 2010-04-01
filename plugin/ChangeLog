@@ -1,5 +1,11 @@
 2010-04-01  Alan McGovern  <amcgovern@novell.com>
 
+	* plugin-class.cpp: Rename MediaState to MediaElementState so
+	  that our managed->native interop doesn't require a special
+	  case for this enum.
+
+2010-04-01  Alan McGovern  <amcgovern@novell.com>
+
 	* plugin-class.cpp: MediaElement::CurrentState is an enum as
 	  we can't call ->AsInt32 () on it anymore.
 

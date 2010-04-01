@@ -3040,7 +3040,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			// Javascript applications use strings, while managed use an enum
 			// FIXME: Casting to gint32 here instead of gint64.
 			int enum_value = (int) dob->GetValue (prop)->AsEnum ();
-			const char *name = enums_int_to_str ("MediaState", enum_value);
+			const char *name = enums_int_to_str ("MediaElementState", enum_value);
 			string_to_npvariant (name, result);
 			return true;
 		} else {
