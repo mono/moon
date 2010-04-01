@@ -1793,7 +1793,7 @@ MediaElementPropertyValueProvider::GetCurrentState ()
 	MediaElement *element = (MediaElement *) obj;
 
 	delete current_state;
-	current_state = new Value (element->IsAttached () ? element->state : element->detached_state);
+	current_state = new Value (element->IsAttached () ? element->state : element->detached_state, Type::MEDIASTATE);
 	
 	return current_state;
 }

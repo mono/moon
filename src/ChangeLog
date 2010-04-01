@@ -1,3 +1,7 @@
+2010-04-01  Alan McGovern  <amcgovern@novell.com>
+
+	* mediaelement.cpp: Value needs to be of Type::MEDIASTATE
+
 2010-04-01  Jackson Harper  <jackson@ximian.com>
 
 	* playlist.cpp: Make the internal asx parser the default parser.
