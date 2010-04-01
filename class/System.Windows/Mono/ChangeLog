@@ -1,3 +1,9 @@
+2010-04-01  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: Add handling for the '{}' escape
+	  string in MarkupExpressionParser. Also add parser support
+	  for the new SL4 binding types.
+
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs:

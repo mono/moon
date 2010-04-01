@@ -98,6 +98,9 @@ namespace Mono.Xaml {
 
 		public object ParseExpression (ref string expression)
 		{
+			if (expression.StartsWith ("{}"))
+				return expression.Substring (2);
+
 			object result = null;
 			bool rv = false;
 
@@ -288,7 +291,6 @@ namespace Mono.Xaml {
 
 			if (remaining.StartsWith ("{")) {
 				value = ParseExpression (ref remaining);
-
 				remaining = remaining.TrimStart ();
 
 				if (remaining.Length > 0 && remaining[0] == ',')
@@ -302,6 +304,9 @@ namespace Mono.Xaml {
 			}
 
 			switch (prop) {
+			case "FallbackValue":
+				b.FallbackValue = value ?? str_value;
+				break;
 			case "Mode":
 				if (str_value == null)
 					throw new XamlParseException (String.Format ("Invalid type '{0}' for Mode.", value == null ? "null" : value.GetType ().ToString ()));
@@ -317,6 +322,9 @@ namespace Mono.Xaml {
 				// If the expression was  Source="5" then 'str_value' will be populated.
 				b.Source = value ?? str_value;
 				break;
+			case "StringFormat":
+				b.StringFormat = (string) value ?? str_value;
+				break;
 			case "Converter":
 				IValueConverter value_converter = value as IValueConverter;
 				if (value_converter == null && value != null)
@@ -324,16 +332,16 @@ namespace Mono.Xaml {
 				b.Converter = value_converter;
 				break;
 			case "ConverterParameter":
-				if (value == null)
-					b.ConverterParameter = str_value;
-				else
-					b.ConverterParameter = value;
+				b.ConverterParameter = value ?? str_value;
 				break;
-			case "NotifyValidationOnError":
+			case "NotifyOnValidationError":
 				bool bl;
 				if (!Boolean.TryParse (str_value, out bl))
 					throw new Exception (String.Format ("Invalid value {0} for NotifyValidationOnError.", str_value));
 				b.NotifyOnValidationError = bl;
+				break;
+			case "TargetNullValue":
+				b.TargetNullValue = value ?? str_value;
 				break;
 			case "ValidatesOnExceptions":
 				if (!Boolean.TryParse (str_value, out bl))
@@ -347,7 +355,7 @@ namespace Mono.Xaml {
 				 b.RelativeSource = rs;
 				break;
 			case "ElementName":
-				b.ElementName = str_value;
+				b.ElementName = (string) value ?? str_value;
 				break;
 			case "UpdateSourceTrigger":
 				b.UpdateSourceTrigger = (UpdateSourceTrigger) Enum.Parse (typeof (UpdateSourceTrigger), str_value, true);
