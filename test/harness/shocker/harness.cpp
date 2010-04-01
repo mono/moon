@@ -120,7 +120,7 @@ send_harness_message (const char *msg, guint8 **buffer, guint32 *output_length)
 
 	// connect
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons (1234);
+	addr.sin_port = htons (port);
 	memset (addr.sin_zero, 0, sizeof (addr.sin_zero));
 	result = inet_pton (AF_INET, "127.0.0.1", &addr.sin_addr);
 	result = connect (sockfd, (struct sockaddr *) &addr, sizeof (addr));
