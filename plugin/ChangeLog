@@ -1,3 +1,8 @@
+2010-04-01  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin-class.cpp: MediaElement::CurrentState is an enum as
+	  we can't call ->AsInt32 () on it anymore.
+
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* plugin-class.cpp: Update
