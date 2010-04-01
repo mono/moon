@@ -1,3 +1,8 @@
+2010-04-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/messaging/glib/pal-glib-msg.cpp (do_write): Fixed compile
+	warning.
+
 2010-04-01  Alan McGovern  <amcgovern@novell.com>
 
 	* enums.h:
