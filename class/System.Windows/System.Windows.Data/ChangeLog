@@ -1,3 +1,21 @@
+2010-04-01  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: 1) Add support for
+	  Binding.StringFormat
+	2) When the value we've databound to changes, Invalidate the
+	  binding and reseat it by calling SetValue (Property, this)
+	  rather than SetValue (Property, newValue), This means we
+	  have one codepath for setting values which handles all the
+	  type converting we might/might not have to do. Previously we
+	  would skip the type converting step.
+	3) Raise the BindingValidationError event properly if an error
+	  occurs.
+
+	* Binding.cs:
+	* BindingBase.cs: Implement BindingBase and move call support
+	  code for 'IsSealed' to BindingBase to conform with the new
+	  SL4 api.
+
 2010-03-24  Alan McGovern  <amcgovern@novell.com>
 
 	* CollectionViewGroup.cs: Implement CollectionViewGroup enough

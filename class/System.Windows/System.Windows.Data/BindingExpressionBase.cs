@@ -48,6 +48,10 @@ namespace System.Windows.Data {
 			get; private set;
 		}
 		
+		ValidationError LastError {
+			get; set;
+		}
+		
 		FrameworkElement Target {
 			get; set;
 		}
@@ -189,6 +193,14 @@ namespace System.Windows.Data {
 			                           Binding.ConverterParameter,
 			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			}
+
+			string format = Binding.StringFormat;
+			if (!string.IsNullOrEmpty (format)) {
+				if (!format.Contains ("{0"))
+					format = "{0:" + format + "}";
+				value = string.Format (format, value);
+			}
+
 			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
 		}
 
@@ -199,6 +211,7 @@ namespace System.Windows.Data {
 
 		void PropertyPathValueChanged (object o, EventArgs EventArgs)
 		{
+			Exception exception = null;
 			// If we detach the binding, we set the Source of the PropertyPathWalker to null
 			// and emit a ValueChanged event which tries to update the target. We need to ignore this.
 			if (!Attached)
@@ -207,13 +220,33 @@ namespace System.Windows.Data {
 			try {
 				Updating = true;
 				Invalidate ();
-				object value = PropertyPathWalker.IsPathBroken ? Property.GetDefaultValue (Target) : PropertyPathWalker.Value;
-				value = ConvertToType (Property, value);
-				Target.SetValueImpl (Property, value);
-			} catch {
-				//Type conversion exceptions are silently swallowed
+				Target.SetValueImpl (Property, this);
+			} catch (Exception ex) {
+				if (ex is TargetInvocationException)
+					ex = ex.InnerException;
+				exception = ex;
 			} finally {
 				Updating = false;
+			}
+			MaybeEmitError (exception);
+		}
+
+		void MaybeEmitError (Exception exception)
+		{
+			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError)
+				return;
+
+			ValidationErrorEventArgs args;
+			if (LastError != null) {
+				args = new ValidationErrorEventArgs (ValidationErrorEventAction.Removed, LastError);
+				Target.RaiseBindingValidationError (args);
+				LastError = null;
+			}
+
+			if (exception != null) {
+				LastError = new ValidationError (exception);
+				args = new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError);
+				Target.RaiseBindingValidationError (args);
 			}
 		}
 
@@ -230,6 +263,7 @@ namespace System.Windows.Data {
 
 		internal void UpdateSourceObject (object value)
 		{
+			Exception exception = null;
 			try {
 				// TextBox.Text only updates a two way binding if it is *not* focused.
 				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
@@ -260,13 +294,15 @@ namespace System.Windows.Data {
 				node.SetValue (value);
 				cachedValue = value;
 			} catch (Exception ex) {
-				if (Binding.NotifyOnValidationError && Binding.ValidatesOnExceptions) {
-					Target.RaiseBindingValidationError (new ValidationErrorEventArgs (ValidationErrorEventAction.Added, new ValidationError (ex)));
-				}
+				if (ex is TargetInvocationException)
+					ex = ex.InnerException;
+				exception = ex;
 			}
 			finally {
 				Updating = false;
 			}
+
+			MaybeEmitError (exception);
 		}
 	}
 }

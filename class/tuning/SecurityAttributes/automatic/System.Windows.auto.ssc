@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 542 methods
+# 541 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -317,7 +317,6 @@
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnAttached(System.Windows.FrameworkElement)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnDetached(System.Windows.FrameworkElement)
 +SSC-M: System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
-+SSC-M: System.Void System.Windows.Data.BindingExpressionBase::PropertyPathValueChanged(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)

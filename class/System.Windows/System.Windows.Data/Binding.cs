@@ -43,7 +43,6 @@ namespace System.Windows.Data {
 		BindingMode mode;
 		bool notifyonerror;
 		bool validatesonex;
-		bool issealed;
 		object source;
 		UpdateSourceTrigger trigger;
 		RelativeSource relative_source;
@@ -128,15 +127,6 @@ namespace System.Windows.Data {
 			}
 		}
 
-		internal bool Sealed {
-			get {
-				return issealed;
-			}
-			private set {
-				issealed = value;
-			}
-		}
-		
 		public object Source {
 			get { return source; }
 			set {
@@ -196,20 +186,6 @@ namespace System.Windows.Data {
 			Mode = BindingMode.OneWay;
 			Path = new PropertyPath (path);
 			trigger = UpdateSourceTrigger.Default;
-		}
-
-		void CheckSealed ()
-		{
-			if (Sealed)
-				throw new InvalidOperationException ("The Binding cannot be changed after it has been used");
-		}
-
-		internal void Seal ()
-		{
-			if (Sealed)
-				return;
-			
-			Sealed = true;
 		}
 	}
 }

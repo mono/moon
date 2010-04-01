@@ -35,6 +35,45 @@ using Mono;
 
 namespace System.Windows.Data {
 	public abstract class BindingBase {
+
+		object fallbackValue;
+		bool issealed;
+		string stringFormat;
+		object targetNullValue;
+
+		public object FallbackValue {
+			get {  return fallbackValue; }
+			set {
+				CheckSealed ();
+				fallbackValue = value;
+			}
+		}
+
+		internal bool Sealed {
+			get {
+				return issealed;
+			}
+			private set {
+				issealed = value;
+			}
+		}
+
+		public string StringFormat {
+			get { return stringFormat; }
+			set {
+				CheckSealed ();
+				stringFormat = value;
+			}
+		}
+
+		public object TargetNullValue {
+			get {  return targetNullValue; }
+			set {
+				CheckSealed ();
+				targetNullValue = value;
+			}
+		}
+
 		protected BindingBase ()
 		{
 			
@@ -42,41 +81,13 @@ namespace System.Windows.Data {
 
 		protected void CheckSealed ()
 		{
-			Console.WriteLine ("System.Windows.Data.BindingBase.CheckSealed: NIEX");
-			throw new NotImplementedException ();			
-		}
-		
-		public object FallbackValue {
-			get {
-				Console.WriteLine ("System.Windows.Data.BindingBase.get_FallbackValue: NIEX");
-				throw new NotImplementedException ();
-			}
-			set {
-				Console.WriteLine ("System.Windows.Data.BindingBase.set_FallbackValue: NIEX");
-				throw new NotImplementedException ();
-			}
+			if (Sealed)
+				throw new InvalidOperationException ("The Binding cannot be changed after it has been used");
 		}
 
-		public string StringFormat {
-			get {
-				Console.WriteLine ("System.Windows.Data.BindingBase.get_StringFormat: NIEX");
-				throw new NotImplementedException ();
-			}
-			set {
-				Console.WriteLine ("System.Windows.Data.BindingBase.set_StringFormat: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
-		public object TargetNullValue {
-			get {
-				Console.WriteLine ("System.Windows.Data.BindingBase.get_TargetNullValue: NIEX");
-				throw new NotImplementedException ();
-			}
-			set {
-				Console.WriteLine ("System.Windows.Data.BindingBase.set_TargetNullValue: NIEX");
-				throw new NotImplementedException ();
-			}
+		internal void Seal ()
+		{
+			Sealed = true;
 		}
 	}
 }
