@@ -1,3 +1,9 @@
+2010-04-01  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: RaiseBindingValidationError is a
+	  bubbling event - so recurse up the visual tree when invoking
+	  it.
+
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.g.cs: StylusPoint is a DO in native and a

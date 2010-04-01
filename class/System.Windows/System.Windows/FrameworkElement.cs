@@ -317,9 +317,15 @@ namespace System.Windows {
 		
 		internal void RaiseBindingValidationError (ValidationErrorEventArgs e)
 		{
-			EventHandler <ValidationErrorEventArgs> h = BindingValidationError;
-			if (h != null)
-				h (this, e);
+			FrameworkElement element = this;
+			e.OriginalSource = this;
+			
+			while (element != null) {
+				EventHandler <ValidationErrorEventArgs> h = element.BindingValidationError;
+				if (h != null)
+					h (element, e);
+				element = VisualTreeHelper.GetParent (element) as FrameworkElement;
+			}
 		}
 
 		void RemoveExpression (DependencyProperty dp)
