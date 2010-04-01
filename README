@@ -109,6 +109,16 @@ Runtime Options
         	buffering, asf, playlist, playlist-warn, text, xaml
 
 
+	Moonlight currently contains two ASX parsers. The default
+	parser is a custom parser that accounts for some of ASX's
+	oddities such as quotes in attribute strings and non case
+	sensitive element names (ie <foo></FOO>). The older parser
+	uses a true xml parser, so will not handle these oddities
+	well, however it has been more heavily tested. To use the
+	older expat based playlist parser set the env variable
+	MOONLIGHT_USE_EXPAT_ASXPARSER=1.
+
+
 Licensing
 =========
 

@@ -1668,7 +1668,7 @@ PlaylistParser::PlaylistParser (PlaylistRoot *root, MemoryBuffer *source)
 	this->current_text = NULL;
 	this->error_args = NULL;
 
-	this->use_internal_asxparser = getenv ("MOONLIGHT_USE_INTERNAL_ASXPARSER") != NULL;
+	this->use_internal_asxparser = getenv ("MOONLIGHT_USE_EXPAT_ASXPARSER") == NULL;
 }
 
 void
