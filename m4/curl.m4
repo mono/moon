@@ -23,7 +23,7 @@ AC_DEFUN([MOONLIGHT_CHECK_CURL],
 		if test x$has_curl = xyes; then
 			AC_DEFINE([HAVE_CURL], [1], [curl support for the bridge])
 		else
-			with_curl=no
+			AC_MSG_ERROR(system curl build requires curl devel package)
 		fi
 	else
 		with_curl=no
