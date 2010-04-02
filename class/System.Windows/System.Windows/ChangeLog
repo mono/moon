@@ -1,3 +1,8 @@
+2010-04-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Deployment.cs: Accept anything newer than 2.0.30524 (but not
+	30524 itself). Fix another failure in DRT#355
+
 2010-04-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Fix NRE if EmitError is called before the

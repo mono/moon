@@ -210,7 +210,7 @@ namespace System.Windows {
 						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
 
 				if (version_strings.Length > 2)
-					if (versions[2] < 30524)
+					if (versions[2] <= 30524)
 						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
 			}
 			else if (versions[0] == 3) {
