@@ -11,12 +11,12 @@ AC_DEFUN([MOONLIGHT_CHECK_CHROME_CRX],
 	chrome_extension="yes"
 
 	AC_PATH_PROG(PYTHON, python, no)
-	if test "x$PYTHON = "xno" ; then
+	if test "x$PYTHON" = "xno" ; then
 	   chrome_extension="no"
 	   chrome_reason="no python executable"
 	fi
 
-	if test "x$with_curl = "xno" ; then
+	if test "x$with_curl" = "xno" ; then
 	   chrome_extension="no"
 	   chrome_reason="chrome support requires the curl bridge"
 	fi
