@@ -483,7 +483,7 @@ namespace System.Windows {
 		{
 			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
 			INativeDependencyObjectWrapper app = Application.Current;
-			if (app.CheckAccess ()) {
+			if ((app == null) || app.CheckAccess ()) {
 				NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
 			} else {
 				Dispatcher.BeginInvoke (() => {
