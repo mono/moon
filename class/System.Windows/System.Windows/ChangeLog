@@ -1,3 +1,8 @@
+2010-04-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* StartupEventArgs.cs: Fix duplicate entry (replace) and allow
+	entries with empty values. Fix DRT#199
+
 2010-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Rework error handling, reduce code duplication

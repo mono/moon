@@ -53,7 +53,11 @@ namespace System.Windows {
 								string k = val.Substring (0, split).Trim ();
 								string v = val.Substring (split + 1).Trim ();
 								if (k.Length > 0)
-									init_params.Add (k, v);
+									init_params [k] = v;
+							} else {
+								string s = val.Trim ();
+								if (!String.IsNullOrEmpty (s))
+									init_params [s] = String.Empty;
 							}
 						}
 					}
