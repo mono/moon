@@ -31,6 +31,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Security;
 using System.Threading;
 using System.Collections.Generic;
 using System.Windows;
@@ -336,21 +337,11 @@ namespace System.Windows {
 						// a global long term cache but simply make sure we load them for now
 						Console.WriteLine ("Attempting To Load ExternalPart {0}", ext.Source);
 
-						Uri uri = ext.Source;
+						DownloadAssembly (ext.Source, 2152);
 
-						if (!uri.IsAbsoluteUri) {
-							string xap = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
-							uri = new Uri (new Uri (xap), uri);
-						}
-
-						HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
-						req.BeginGetResponse (AssemblyGetResponse, req);
-						
 						pending_assemblies++;
 					} catch (Exception e) {
-						// FIXME this is probably not the right exception id and message 
-						// but at least pass it up
-						throw new MoonException (2105, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
+						throw new MoonException (2152, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
 					}
 				}
 			}
@@ -380,15 +371,7 @@ namespace System.Windows {
 					if (!try_downloading)
 						continue;
 
-					Uri uri = new Uri (source, UriKind.RelativeOrAbsolute);
-					// WebClient deals with relative URI but HttpWebRequest does not
-					// but we need the later to detect redirection
-					if (!uri.IsAbsoluteUri) {
-						string xap = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
-						uri = new Uri (new Uri (xap), uri);
-					}
-					HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
-					req.BeginGetResponse (AssemblyGetResponse, req);
+					DownloadAssembly (new Uri (source, UriKind.RelativeOrAbsolute), 2105);
 				} catch (Exception e) {
 					throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", source, e.Message));
 				}
@@ -398,20 +381,39 @@ namespace System.Windows {
 			return pending_assemblies == 0 ? CreateApplication () : true;
 		}
 
+		void DownloadAssembly (Uri uri, int errorCode)
+		{
+			Uri xap = new Uri (NativeMethods.plugin_instance_get_source_location (PluginHost.Handle));
+			// WebClient deals with relative URI but HttpWebRequest does not
+			// but we need the later to detect redirection
+			if (!uri.IsAbsoluteUri) {
+				uri = new Uri (xap, uri);
+			} else if (xap.Scheme != uri.Scheme) {
+				throw new SecurityException ("Cross scheme URI downloading " + uri.ToString ());
+			}
+			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
+			req.BeginGetResponse (AssemblyGetResponse, new object[] { req, errorCode });
+		}
+
 		// note: throwing MoonException from here is NOT ok since this code is called async
 		// and the exception won't be reported, directly, to the caller
 		void AssemblyGetResponse (IAsyncResult result)
 		{
+			object[] tuple = (object []) result.AsyncState;
+			WebRequest wreq = (WebRequest) tuple [0];
+			int error_code = (int) tuple [1];
 			try {
-				WebRequest wreq = (WebRequest) result.AsyncState;
 				HttpWebResponse wresp = (HttpWebResponse) wreq.EndGetResponse (result);
+
 				if (wresp.StatusCode != HttpStatusCode.OK) {
-					EmitError (2105, String.Format ("Error while downloading the '{0}'.", wreq.RequestUri));
+					wresp.Close ();
+					EmitError (error_code, String.Format ("Error while downloading the '{0}'.", wreq.RequestUri));
 					return;
 				}
 
 				if (wresp.ResponseUri != wreq.RequestUri) {
-					EmitError (2105, "Redirection not allowed to download assemblies.");
+					wresp.Close ();
+					EmitError (error_code, "Redirection not allowed to download assemblies.");
 					return;
 				}
 
@@ -422,45 +424,40 @@ namespace System.Windows {
 
 				if (asm == null) {
 					// it's not a valid assembly, try to unzip it.
-					MemoryStream ms = new MemoryStream ();
-					ManagedStreamCallbacks source_cb;
-					ManagedStreamCallbacks dest_cb;
-					StreamWrapper source_wrapper;
-					StreamWrapper dest_wrapper;
+					using (MemoryStream ms = new MemoryStream ()) {
+						ManagedStreamCallbacks source_cb;
+						ManagedStreamCallbacks dest_cb;
+						StreamWrapper source_wrapper;
+						StreamWrapper dest_wrapper;
 
-					responseStream.Seek (0, SeekOrigin.Begin);
+						responseStream.Seek (0, SeekOrigin.Begin);
 
-					source_wrapper = new StreamWrapper (responseStream);
-					dest_wrapper = new StreamWrapper (ms);
+						source_wrapper = new StreamWrapper (responseStream);
+						dest_wrapper = new StreamWrapper (ms);
 
-					source_cb = source_wrapper.GetCallbacks ();
-					dest_cb = dest_wrapper.GetCallbacks ();
+						source_cb = source_wrapper.GetCallbacks ();
+						dest_cb = dest_wrapper.GetCallbacks ();
 
-					// the zip files I've come across have a single file in them, the
-					// dll.  so we assume that any/every zip file will contain a single
-					// file, and just get the first one from the zip file directory.
-					if (NativeMethods.managed_unzip_stream_to_stream_first_file (ref source_cb, ref dest_cb)) {
-						ms.Seek (0, SeekOrigin.Begin);
-						asm = a.Load (ms);
-
-						if (asm == null) {
-							// if we still fail after treating it like a zip, give up
-							EmitError (2105, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
+						// the zip files I've come across have a single file in them, the
+						// dll.  so we assume that any/every zip file will contain a single
+						// file, and just get the first one from the zip file directory.
+						if (NativeMethods.managed_unzip_stream_to_stream_first_file (ref source_cb, ref dest_cb)) {
+							ms.Seek (0, SeekOrigin.Begin);
+							asm = a.Load (ms);
 						}
-
-						ms.Close ();
 					}
 				}
+
 				wresp.Close ();
 
 				if (asm != null)
 					Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
+				else
+					EmitError (2153, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
 			}
 			catch (Exception e) {
 				// we need to report everything since any error means CreateApplication won't be called
-				Dispatcher.BeginInvoke (() => {
-					EmitError (2103, e.ToString ());
-				});
+				EmitError (error_code, e.ToString ());
 			}
 		}
 
@@ -483,7 +480,7 @@ namespace System.Windows {
 		{
 			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
 			INativeDependencyObjectWrapper app = Application.Current;
-			if ((app == null) || app.CheckAccess ()) {
+			if (Thread.CurrentThread == DependencyObject.moonlight_thread) {
 				NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
 			} else {
 				Dispatcher.BeginInvoke (() => {

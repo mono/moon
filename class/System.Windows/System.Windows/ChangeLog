@@ -1,3 +1,9 @@
+2010-04-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Rework error handling, reduce code duplication
+	and release resources (MemoryStream and WebResponse). Fix 
+	remaining issues in DRT#355
+
 2010-04-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Deployment.cs: Accept anything newer than 2.0.30524 (but not
