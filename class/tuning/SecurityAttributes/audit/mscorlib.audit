@@ -90,6 +90,10 @@ System.Boolean System.MonoCustomAttrs::IsDefined(System.Reflection.ICustomAttrib
 System.Boolean System.MonoType::IsArrayImpl()
 	r142142		spouliot - call Type.IsArrayImpl (icall) on (non-null) 'this'
 
+!SSC-22C815D71375100455C740F21192FECD
+System.Boolean System.Reflection.Emit.CustomAttributeBuilder::IsValidType(System.Type)
+	r154423		spouliot - call Assembly.GetName() [SecurityCritical] to compare Name property with "mscorlib"
+
 !SSC-10AE4526620A10A068575015E894855E
 System.Boolean System.Reflection.Emit.TypeBuilder::get_IsGenericParameter()
 	r144558		spouliot - visible icall. parameter-less (instance)
@@ -669,8 +673,9 @@ System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.String)
 System.Int32 System.Reflection.MemberInfo::get_MetadataToken()
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
-!SSC-6265F9DB1D8BCDE13FC98657324FDB59
+!SSC-95839221910244E7A8093AA2BFE6FBEF
 System.Int32 System.Reflection.Module::get_MetadataToken()
+	r154595		spouliot - not an icall anymore, call new icall "get_MetadataToken (Module module)" using 'this' (code moved to MonoModule.cs file)
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
 !SSC-75C6365925F1D68B3CEA2B1A8EFFC850
@@ -1452,6 +1457,11 @@ System.Threading.Thread System.Threading.Thread::get_CurrentThread()
 !SSC-80634AB6A451333C634C7E0FA1FAB94A
 System.Threading.ThreadState System.Threading.Thread::get_ThreadState()
 	r142661		spouliot - call GetState(System.Threading.InternalThread) [SecurityCritical]
+
+!SSC-8FEE25B9B7A315E18D68663960DD32A3
+System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
+	r154478		spouliot - moved from System.Core.dll to mscorlib.dll in SL4
+	r142142		spouliot - added SC to set_TimeZoneDirectory so filename cannot be manipulated by users
 
 !SSC-331E6EE2AA9F6E0E2CDAC7A97DBE77F1
 System.Type System.Enum::GetUnderlyingType(System.Type)

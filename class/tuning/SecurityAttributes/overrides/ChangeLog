@@ -1,3 +1,9 @@
+2010-04-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Add [SC] Deployment::DownloadAssembly,
+	since it's called only from critical code. Remove [SSC] on
+	ClientHttpWebResponse::.ctor since it's auto-detected.
+
 2010-03-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Fix inheritance rules.

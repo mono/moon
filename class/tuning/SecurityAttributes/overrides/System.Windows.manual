@@ -21,7 +21,6 @@
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::Abort()
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::EndCallback(System.IAsyncResult)
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.cctor()
-+SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.Object)
 
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
@@ -97,6 +96,7 @@
 +SC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()
 +SC-M: System.Void System.Windows.Deployment::AssemblyRegister(System.Reflection.Assembly)
 +SC-M: System.Void System.Windows.Deployment::AssemblyGetResponse(System.IAsyncResult)
++SC-M: System.Void System.Windows.Deployment::DownloadAssembly(System.Uri,System.Int32)
 +SC-M: System.Void System.Windows.Deployment::ExtractXap(System.String)
 +SC-M: System.Void System.Windows.Deployment::ReadManifest()
 +SC-M: System.Void System.Windows.Deployment::set_Current(System.Windows.Deployment)
