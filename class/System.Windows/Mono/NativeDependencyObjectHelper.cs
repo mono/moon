@@ -392,6 +392,7 @@ namespace Mono {
 			case Kind.SPLINEPOINTKEYFRAME: return new SplinePointKeyFrame (raw, false);
 			case Kind.STORYBOARD: return new Storyboard (raw, false);
 			case Kind.STROKE_COLLECTION: return new StrokeCollection (raw, false);
+			case Kind.STROKE: return new Stroke (raw, false);
 			case Kind.STYLE: return new Style (raw, false);
 			case Kind.STYLUSINFO: return new StylusInfo (raw, false);
 			case Kind.STYLUSPOINT_COLLECTION: return new StylusPointCollection (raw, false);

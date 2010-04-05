@@ -1,3 +1,8 @@
+2009-04-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* NativeDependencyObjectHelper.cs: Add missing Stroke to the 
+	switch/case. Progress on DRT#649
+
 2010-04-01  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: Add handling for the '{}' escape
