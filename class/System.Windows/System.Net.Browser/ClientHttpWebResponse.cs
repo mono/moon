@@ -82,7 +82,7 @@ namespace System.Net.Browser {
 		private WebHeaderCollection headers;
 		private Stream stream;
 
-		internal ClientHttpWebResponse (object response)
+		internal ClientHttpWebResponse (HttpWebRequest request, object response)
 		{
 			try {
 				content_length = (long) get_content_length.Invoke (response, null);
@@ -105,7 +105,7 @@ namespace System.Net.Browser {
 				using (Stream response_stream = (Stream) get_response_stream.Invoke (response, null)) {
 					MemoryStream ms = new MemoryStream ();
 					response_stream.CopyTo (ms);
-					stream = new InternalWebResponseStreamWrapper (ms);
+					stream = new InternalWebResponseStreamWrapper (ms, request.AllowReadStreamBuffering);
 				}
 
 				(response as IDisposable).Dispose ();

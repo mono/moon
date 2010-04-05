@@ -21,7 +21,7 @@
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::Abort()
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::EndCallback(System.IAsyncResult)
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.cctor()
-+SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Object)
++SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.Object)
 
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods

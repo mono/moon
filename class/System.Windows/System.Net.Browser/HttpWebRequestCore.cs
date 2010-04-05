@@ -38,6 +38,7 @@ namespace System.Net.Browser {
 		private Uri uri;
 		private string method;
 		private WebHeaderCollection headers;
+		private bool allow_read_buffering;
 
 		public HttpWebRequestCore (HttpWebRequest parent, Uri uri)
 		{
@@ -47,11 +48,18 @@ namespace System.Net.Browser {
 			this.uri = uri;
 			if (parent == null) {
 				// special case used for policy
+				allow_read_buffering = true;
 				method = "GET";
 			} else {
+				allow_read_buffering = parent.AllowReadStreamBuffering;
 				method = parent.Method;
 				headers = parent.Headers;
 			}
+		}
+
+		public override bool AllowReadStreamBuffering {
+			get { return allow_read_buffering; }
+			set { ; }
 		}
 
 		public override WebHeaderCollection Headers {

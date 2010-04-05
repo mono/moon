@@ -1,3 +1,13 @@
+2010-04-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebResponse.cs: Adjust for API change
+	* ClientHttpWebRequestInternal.cs: Adjust for API change
+	* ClientHttpWebResponse.cs: Initialize stream depending on
+	AllowReadStreamBuffering value.
+	* HttpWebRequestCore.cs: Correctly set AllowReadStreamBuffering
+	* InternalWebResponseStreamWrapper.cs: Moved from System.Net.dll
+	so it can be aware of AllowReadStreamBuffering value.
+
 2010-03-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ClientHttpWebRequestInternal.cs: Remove unused code

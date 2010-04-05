@@ -40,6 +40,7 @@ namespace System.Net.Browser {
 		HttpWebRequest request;
 		Stream response;
 		bool aborted;
+		bool progressive;
 
 		GCHandle handle;
 		bool disposed;
@@ -49,6 +50,7 @@ namespace System.Net.Browser {
 			this.request = request;
 			this.response = new MemoryStream ();
 			this.aborted = false;
+			progressive = request.AllowReadStreamBuffering;
 			Headers = new WebHeaderCollection ();
 			SetMethod (request.Method);
 
@@ -112,7 +114,7 @@ namespace System.Net.Browser {
 		{
 			response.Seek (0, SeekOrigin.Begin);
 			// the stream we return must be read-only, so we wrap arround our MemoryStream
-			return new InternalWebResponseStreamWrapper (response);
+			return new InternalWebResponseStreamWrapper (response, progressive);
 		}
 
 		public override long ContentLength {

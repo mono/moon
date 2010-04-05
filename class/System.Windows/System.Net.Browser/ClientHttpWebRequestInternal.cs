@@ -188,7 +188,7 @@ namespace System.Net.Browser {
 					throw async_result.Exception;
 
 				try {
-					return new ClientHttpWebResponse (response);
+					return new ClientHttpWebResponse (this, response);
 				}
 				catch (TargetInvocationException tie) {
 					throw tie.InnerException;
