@@ -119,6 +119,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Net.Browser/HttpWebAsyncResult.cs			\
 	$(srcdir)/System.Net.Browser/HttpWebRequestCore.cs			\
 	$(srcdir)/System.Net.Browser/HttpWebResponseCore.cs			\
+	$(srcdir)/System.Net.Browser/InternalWebResponseStreamWrapper.cs	\
 	$(srcdir)/System.Net.Browser/PolicyBasedHttpWebRequest.cs			\
 	$(srcdir)/System.Net.Browser/WebRequestCreator.cs			\
 	$(srcdir)/System.Windows.Automation/AutomationElementIdentifiers.cs		\
