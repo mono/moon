@@ -29,7 +29,7 @@ namespace System.Net.Browser {
 
 		public override bool CanRead {
 			get {
-				 return InnerStream.CanRead;
+				 return stream.CanRead;
 			}
 		}
 
@@ -53,7 +53,7 @@ namespace System.Net.Browser {
 
 		public override long Length {
 			get {
-				 return InnerStream.Length;
+				 return stream.Length;
 			}
 		}
 
@@ -107,7 +107,7 @@ namespace System.Net.Browser {
 
 		internal Stream InnerStream {
 			get {
-				if (CheckAccess ())
+				if (!progressive && CheckAccess ())
 					throw new NotSupportedException ();
 				return stream;
 			}
