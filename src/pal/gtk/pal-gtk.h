@@ -20,9 +20,6 @@ public:
 
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx);
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx);
-	virtual bool ShowInstallDialog ();
-	
-	virtual bool CheckInstalled ();
 	
 	virtual Color *GetSystemColor (SystemColor id);
 	
@@ -50,4 +47,13 @@ private:
 	bool RunningOnNvidia ();
 };
 
-#endif
+class MoonInstallerServiceGtk : public MoonInstallerService {
+public:
+	MoonInstallerServiceGtk () {}
+	virtual ~MoonInstallerServiceGtk () {}
+	
+	virtual bool CheckInstalled (Deployment *deployment);
+	virtual bool Install (Deployment *deployment);
+};
+
+#endif /* MOON_PAL_GTK_H */

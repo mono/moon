@@ -76,6 +76,7 @@ bool Surface::main_thread_inited = false;
 pthread_t Surface::main_thread = 0;
 
 static MoonWindowingSystem *windowing_system = NULL;
+static MoonInstallerService *installer_service = NULL;
 static MoonMessagingService *messaging_service = NULL;
 static MoonCaptureService *capture_service = NULL;
 
@@ -2691,6 +2692,8 @@ get_runtime_options (RuntimeInitFlag def)
 void
 runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 {
+	const char *env;
+	
 	if (inited)
 		return;
 
@@ -2707,7 +2710,12 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 	debug_flags_ex = get_debug_options ("MOONLIGHT_DEBUG", debug_extras);
 	debug_flags = get_debug_options ("MOONLIGHT_DEBUG", debugs);
 #endif
-
+	
+	if ((env = g_getenv ("MOONLIGHT_OUT_OF_BROWSER"))) {
+		if (!strcmp (env, "true") || !strcmp (env, "1"))
+			flags = (RuntimeInitFlag) (flags | RUNTIME_INIT_OUT_OF_BROWSER);
+	}
+	
 	inited = true;
 
 	if (!g_type_inited) {
@@ -2720,6 +2728,7 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 	// FIXME add some ifdefs + runtime checks here
 #if PAL_GTK_WINDOWING
 	windowing_system = new MoonWindowingSystemGtk ();
+	installer_service = new MoonInstallerServiceGtk ();
 #else
 #error "no PAL windowing system defined"
 #endif
@@ -2748,6 +2757,12 @@ MoonWindowingSystem *
 runtime_get_windowing_system ()
 {
 	return windowing_system;
+}
+
+MoonInstallerService *
+runtime_get_installer_service ()
+{
+	return installer_service;
 }
 
 MoonMessagingService *

@@ -398,7 +398,9 @@ InstallState
 Application::GetInstallState ()
 {
 	if (install_state == InstallStateUnknown) {
-		if (runtime_get_windowing_system ()->CheckInstalled ())
+		MoonInstallerService *installer = runtime_get_installer_service ();
+		
+		if (installer->CheckInstalled (Deployment::GetCurrent ()))
 			install_state = InstallStateInstalled;
 		else
 			install_state = InstallStateNotInstalled;
@@ -421,6 +423,8 @@ Application::IsInstallable ()
 bool
 Application::InstallWithError (MoonError *error)
 {
+	MoonInstallerService *installer = runtime_get_installer_service ();
+	
 	if (!IsInstallable ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Applications may only be installed from http, https or file URLs");
 		return false;
@@ -433,7 +437,7 @@ Application::InstallWithError (MoonError *error)
 	
 	SetInstallState (InstallStateInstalling);
 	
-	if (runtime_get_windowing_system ()->ShowInstallDialog ()) {
+	if (installer->Install (Deployment::GetCurrent ())) {
 		SetInstallState (InstallStateInstalled);
 		return true;
 	}

@@ -1,3 +1,19 @@
+2010-04-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/pal-gtk.cpp (CheckInstalled): Moved to the new InstallerService.
+	(Install): Same. Also fixed to launch the oob version of the app
+	after a successful install.
+
+	* pal/pal.h (class MoonInstallerService): New service class.
+
+	* pal/gtk/install-dialog.cpp (install_launcher_script): Export the
+	MOONLIGHT_OUT_OF_BROWSER environment variable before launching
+	firefox.
+
+	* runtime.cpp (runtime_init): Check the MOONLIGHT_OUT_OF_BROWSER
+	environment variable. Also create an InstallerService.
+	(runtime_get_installer_service): New function.
+
 2010-04-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/messaging/glib/pal-glib-msg.cpp (do_write): Fixed compile

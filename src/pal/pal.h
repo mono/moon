@@ -26,6 +26,7 @@
 
 class Surface;
 class UIElement;
+class Deployment;
 class PluginInstance;
 
 class MoonEvent;
@@ -211,10 +212,6 @@ public:
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx) = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool ShowInstallDialog () = 0;
-	
-	virtual bool CheckInstalled () = 0;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Color *GetSystemColor (SystemColor id) = 0;
@@ -234,6 +231,16 @@ public:
 
 private:
 	MoonWindowlessCtor windowless_ctor;
+};
+
+/* @Version=2 */
+class MoonInstallerService {
+public:
+	MoonInstallerService () {}
+	virtual ~MoonInstallerService () {}
+	
+	virtual bool CheckInstalled (Deployment *deployment) = 0;
+	virtual bool Install (Deployment *deployment) = 0;
 };
 
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.

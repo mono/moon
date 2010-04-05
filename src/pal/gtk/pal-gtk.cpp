@@ -779,56 +779,6 @@ MoonWindowingSystemGtk::ShowSaveFileDialog (const char *title, const char *filte
 	return ret;
 }
 
-bool
-MoonWindowingSystemGtk::CheckInstalled ()
-{
-	Deployment *deployment = Deployment::GetCurrent ();
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	char *install_dir;
-	struct stat st;
-	
-	if (!settings)
-		return false;
-	
-	if (!(install_dir = install_utils_get_install_dir (settings)))
-		return false;
-	
-	if (stat (install_dir, &st) == -1 || !S_ISDIR (st.st_mode)) {
-		g_free (install_dir);
-		return false;
-	}
-	
-	g_free (install_dir);
-	
-	return true;
-}
-
-bool
-MoonWindowingSystemGtk::ShowInstallDialog ()
-{
-	Deployment *deployment = Deployment::GetCurrent ();
-	GtkWidget *parent = NULL;
-	bool installed = false;
-	MoonWindow *window;
-	GtkDialog *dialog;
-	GtkWidget *widget;
-	Surface *surface;
-	
-	if ((surface = deployment->GetSurface ()) && (window = surface->GetWindow ())) {
-		widget = ((MoonWindowGtk *) window)->GetWidget ();
-		parent = gtk_widget_get_toplevel (widget);
-	}
-	
-	dialog = install_dialog_new ((GtkWindow *) parent, deployment);
-	
-	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK)
-		installed = install_dialog_install ((InstallDialog *) dialog);
-	
-	gtk_widget_destroy ((GtkWidget *) dialog);
-	
-	return installed;
-}
-
 void
 MoonWindowingSystemGtk::RegisterWindow (MoonWindow *window)
 {
@@ -1057,4 +1007,66 @@ MoonWindowingSystemGtk::RunningOnNvidia ()
 	XCloseDisplay (display);
 
 	return result;
+}
+
+
+bool
+MoonInstallerServiceGtk::CheckInstalled (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	char *install_dir;
+	struct stat st;
+	
+	if (!settings)
+		return false;
+	
+	if (!(install_dir = install_utils_get_install_dir (settings)))
+		return false;
+	
+	if (stat (install_dir, &st) == -1 || !S_ISDIR (st.st_mode)) {
+		g_free (install_dir);
+		return false;
+	}
+	
+	g_free (install_dir);
+	
+	return true;
+}
+
+bool
+MoonInstallerServiceGtk::Install (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	GtkWidget *parent = NULL;
+	bool installed = false;
+	MoonWindow *window;
+	GdkScreen *screen;
+	GtkDialog *dialog;
+	GtkWidget *widget;
+	Surface *surface;
+	char *argv[2];
+	int pid;
+	
+	if ((surface = deployment->GetSurface ()) && (window = surface->GetWindow ())) {
+		widget = ((MoonWindowGtk *) window)->GetWidget ();
+		parent = gtk_widget_get_toplevel (widget);
+	}
+	
+	dialog = install_dialog_new ((GtkWindow *) parent, deployment);
+	
+	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK)
+		installed = install_dialog_install ((InstallDialog *) dialog);
+	
+	gtk_widget_destroy ((GtkWidget *) dialog);
+	
+	argv[1] = NULL;
+	if (installed && (argv[0] = install_utils_get_launcher_script (settings))) {
+		screen = gtk_widget_get_screen (parent);
+		gdk_spawn_on_screen (screen, NULL, argv, NULL,
+				     (GSpawnFlags) (G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL),
+				     NULL, NULL, &pid, NULL);
+		g_free (argv[0]);
+	}
+	
+	return installed;
 }
