@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 427 methods needs to be decorated.
+# 428 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -369,6 +369,9 @@
 
 # internal call
 +SC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::getUSIndex(System.Reflection.Emit.ModuleBuilder,System.String)
+
+# internal call
++SC-M: System.Int32 System.Reflection.Module::get_MetadataToken(System.Reflection.Module)
 
 # internal call
 +SC-M: System.Int32 System.Reflection.ParameterInfo::GetMetadataToken()

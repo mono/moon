@@ -251,7 +251,7 @@
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebResponse::Write(System.IntPtr,System.Int32)
 +SSC-M: System.IAsyncResult System.Net.Browser.ClientHttpWebRequestInternal::BeginGetResponse(System.AsyncCallback,System.Object)
-+SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Object)
++SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.Object)
 +SSC-M: System.Void System.Windows.Application::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.Application::Free()
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()

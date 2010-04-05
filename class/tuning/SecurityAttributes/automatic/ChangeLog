@@ -1,3 +1,7 @@
+2010-04-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.ssc: : Update mono/mcs requirement to 154790
+
 2010-04-01  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: regen
