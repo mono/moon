@@ -1,5 +1,11 @@
 2010-04-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/MultiwayBindings.cs: These tests should
+	  not rely on the current culture, they need to explicitly
+	  test for en-US currency formatting.
+
+2010-04-06  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Update the handling of
 	  indexed binding expressions to SL4 compatibility. It no
 	  longer throws exceptions on negative indices or indices

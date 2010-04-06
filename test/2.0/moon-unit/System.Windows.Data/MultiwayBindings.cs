@@ -20,8 +20,9 @@ namespace MoonTest.System.Windows.Data
 			TextBlock child2;
 			Create(out source, out child1, out child2);
 
-			Assert.AreEqual(string.Format("{0:C}", 10), child1.Text, "#1");
-			Assert.AreEqual(string.Format("{0:C}", 10), child2.Text, "#2");
+			// NOTE: We use en-US by default not the system culture. A dollar sign is expected
+			Assert.AreEqual("$10.00", child1.Text, "#1");
+			Assert.AreEqual("$10.00", child2.Text, "#2");
 			Assert.AreEqual(10, source.Age, "#3");
 		}
 
@@ -35,8 +36,9 @@ namespace MoonTest.System.Windows.Data
 
 			// Altering 'Age' updates both listeners
 			source.Age = 15;
-			Assert.AreEqual(string.Format("{0:C}", 15), child1.Text, "#1");
-			Assert.AreEqual(string.Format("{0:C}", 15), child2.Text, "#2");
+			// NOTE: We use en-US by default not the system culture. A dollar sign is expected
+			Assert.AreEqual("$15.00", child1.Text, "#1");
+			Assert.AreEqual("$15.00", child2.Text, "#2");
 			Assert.AreEqual(15, source.Age, "#3");
 		}
 
@@ -50,8 +52,9 @@ namespace MoonTest.System.Windows.Data
 
 			// Altering a listener updates the source and the other listener
 			child1.Text = "15";
-			Assert.AreEqual(string.Format("{0:C}", 15), child1.Text, "#1");
-			Assert.AreEqual(string.Format("{0:C}", 15), child2.Text, "#2");
+			// NOTE: We use en-US by default not the system culture. A dollar sign is expected
+			Assert.AreEqual("$15.00", child1.Text, "#1");
+			Assert.AreEqual("$15.00", child2.Text, "#2");
 			Assert.AreEqual(15, source.Age, "#3");
 		}
 
@@ -67,7 +70,8 @@ namespace MoonTest.System.Windows.Data
 			// nothing happening
 			child1.Text = "invalid";
 			Assert.AreEqual("invalid", child1.Text, "#1");
-			Assert.AreEqual(string.Format("{0:C}", 10), child2.Text, "#2");
+			// NOTE: We use en-US by default not the system culture. A dollar sign is expected
+			Assert.AreEqual("$10.00", child2.Text, "#2");
 			Assert.AreEqual(10, source.Age, "#3");
 		}
 
@@ -81,7 +85,8 @@ namespace MoonTest.System.Windows.Data
 
 			child1.Text = "";
 			Assert.AreEqual("", child1.Text, "#1");
-			Assert.AreEqual(string.Format("{0:C}", 10), child2.Text, "#1");
+			// NOTE: We use en-US by default not the system culture. A dollar sign is expected
+			Assert.AreEqual("$10.00", child2.Text, "#1");
 			Assert.AreEqual (10, source.Age, "#3");
 		}
 
