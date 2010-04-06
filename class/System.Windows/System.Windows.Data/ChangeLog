@@ -1,3 +1,9 @@
+2010-04-06  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: Add property support for
+	  Binding.FallbackValue and Binding.TargetNullValue. Passes
+	  the relevant sections of drt 232 and also the new moonunits.
+
 2010-04-01  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: 1) Add support for

@@ -1,3 +1,12 @@
+2010-04-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/MultiwayBindings.cs: Add some new tests
+	  for when multiple objects are twoway databound to the same
+	  property on the same datasource
+
+	* moon-unit.mdp: add new file to the mdp
+
 2010-03-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System/AppDomainTest.cs: SL4 test for IsCompatibilitySwitchSet

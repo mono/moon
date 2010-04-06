@@ -339,6 +339,7 @@ namespace System.Windows {
 		
 		internal override void SetValueImpl (DependencyProperty dp, object value)
 		{
+			bool updateTwoWay = false;
 			bool addingExpression = false;
 			Expression existing;
 			Expression expression = value as Expression;
@@ -369,8 +370,7 @@ namespace System.Windows {
 					BindingExpressionBase beb = (BindingExpressionBase)existing;
 
 					if (beb.Binding.Mode == BindingMode.TwoWay) {
-						if (!(dp is CustomDependencyProperty))
-							beb.TryUpdateSourceObject (value);
+						updateTwoWay = !(dp is CustomDependencyProperty);
 					} else if (!beb.Updating || beb.Binding.Mode == BindingMode.OneTime) {
 						RemoveExpression (dp);
 					}
@@ -382,12 +382,16 @@ namespace System.Windows {
 			
 			try {
 				base.SetValueImpl (dp, value);
+				if (updateTwoWay)
+					((BindingExpressionBase)existing).TryUpdateSourceObject (value);
 			} catch {
-
 				if (!addingExpression)
 					throw;
-				else
+				else {
 					base.SetValueImpl (dp, dp.GetDefaultValue (this));
+					if (updateTwoWay)
+						((BindingExpressionBase)existing).TryUpdateSourceObject (value);
+				}
 			}
 		}
 

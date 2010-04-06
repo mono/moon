@@ -168,7 +168,7 @@ namespace MoonTest.System.Windows.Data
 	}
 
 	[TestClass]
-	public class BindingTest : SilverlightTest
+	public partial class BindingTest : SilverlightTest
 	{
 		class CustomControl : UserControl
 		{

@@ -130,7 +130,8 @@ namespace System.Windows.Data {
 
 			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
 				updateDataSourceCallback = delegate {
-					TryUpdateSourceObject (Target.GetValue (Property));
+					if (!Updating)
+						TryUpdateSourceObject (Target.GetValue (Property));
 				};
 				Target.AddPropertyChangedHandler (Property, updateDataSourceCallback);
 			}
@@ -170,8 +171,13 @@ namespace System.Windows.Data {
 				cachedValue = DataSource;
 			}	
 			else if (PropertyPathWalker.IsPathBroken) {
-				cachedValue = dp.GetDefaultValue (Target);
-				return cachedValue;
+				// If it the path is broken, don't call the converter unless we use the fallback.
+				// FIXME: Add an explicit test on this.
+				if (Binding.FallbackValue == null) {
+					cachedValue = dp.GetDefaultValue (Target);
+					return cachedValue;
+				}
+				cachedValue = Binding.FallbackValue;
 			}
 			else {
 				cachedValue = PropertyPathWalker.Value;
@@ -194,14 +200,22 @@ namespace System.Windows.Data {
 			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			}
 
-			string format = Binding.StringFormat;
-			if (!string.IsNullOrEmpty (format)) {
-				if (!format.Contains ("{0"))
-					format = "{0:" + format + "}";
-				value = string.Format (format, value);
+			if (value == null) {
+				value = Binding.TargetNullValue;
+			} else {
+				string format = Binding.StringFormat;
+				if (!string.IsNullOrEmpty (format)) {
+					if (!format.Contains ("{0"))
+						format = "{0:" + format + "}";
+					value = string.Format (format, value);
+				}
 			}
 
-			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
+			try {
+				return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
+			} catch {
+				return MoonlightTypeConverter.ConvertObject (dp, Binding.FallbackValue, Target.GetType (), true);
+			}
 		}
 
 		void TextBoxLostFocus (object sender, RoutedEventArgs e)
@@ -217,6 +231,7 @@ namespace System.Windows.Data {
 			if (!Attached)
 				return;
 
+			bool oldUpdating = Updating;
 			try {
 				Updating = true;
 				Invalidate ();
@@ -225,8 +240,9 @@ namespace System.Windows.Data {
 				if (ex is TargetInvocationException)
 					ex = ex.InnerException;
 				exception = ex;
-			} finally {
-				Updating = false;
+			}
+			finally {
+				Updating = oldUpdating;
 			}
 			MaybeEmitError (exception);
 		}
@@ -252,7 +268,7 @@ namespace System.Windows.Data {
 
 		internal void TryUpdateSourceObject (object value)
 		{
-			if (Binding.Mode == BindingMode.TwoWay && Binding.UpdateSourceTrigger == UpdateSourceTrigger.Default)
+			if (!Updating && Binding.Mode == BindingMode.TwoWay && Binding.UpdateSourceTrigger == UpdateSourceTrigger.Default)
 				UpdateSourceObject (value);
 		}
 
@@ -264,12 +280,13 @@ namespace System.Windows.Data {
 		internal void UpdateSourceObject (object value)
 		{
 			Exception exception = null;
+			bool oldUpdating = Updating;
 			try {
 				// TextBox.Text only updates a two way binding if it is *not* focused.
 				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
 					return;
 				
-				if (Updating || PropertyPathWalker.IsPathBroken) {
+				if (PropertyPathWalker.IsPathBroken) {
 					return;
 				}
 				
@@ -280,7 +297,16 @@ namespace System.Windows.Data {
 					                                       Binding.ConverterParameter,
 					                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
 				
-				value = MoonlightTypeConverter.ConvertObject (node.PropertyInfo, value, Target.GetType ());
+				try {
+					if (Binding.TargetNullValue != null) {
+						var v = MoonlightTypeConverter.ConvertObject (Property, Binding.TargetNullValue, Target.GetType (), true);
+						if (object.Equals (v, value))
+							value = null;
+					}
+					value = MoonlightTypeConverter.ConvertObject (node.PropertyInfo, value, Target.GetType ());
+				} catch {
+					return;
+				}
 				if (cachedValue == null) {
 					if (value == null) {
 						return;
@@ -299,7 +325,7 @@ namespace System.Windows.Data {
 				exception = ex;
 			}
 			finally {
-				Updating = false;
+				Updating = oldUpdating;
 			}
 
 			MaybeEmitError (exception);

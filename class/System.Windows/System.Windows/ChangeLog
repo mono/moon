@@ -1,3 +1,10 @@
+2010-04-06  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: For two way bindings, only update the
+	  binding after base.SetValueImpl has been executed so that we
+	  get the correct value if we call GetValue () on the FE
+	  inside UpdateSourceObject.
+
 2010-04-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* StartupEventArgs.cs: Fix duplicate entry (replace) and allow
