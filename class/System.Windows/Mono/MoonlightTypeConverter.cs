@@ -39,6 +39,7 @@ using System.Reflection;
 namespace Mono {
 
 	internal sealed class MoonlightTypeConverter : TypeConverter {
+		bool nullableDestination;
 		Kind destinationKind;
 		Type destinationType;
 		string propertyName;
@@ -51,6 +52,12 @@ namespace Mono {
 			destinationKind = Deployment.Current.Types.TypeToKind (destinationType);
 			if (destinationKind == Kind.INVALID)
 				throw new InvalidOperationException (string.Format ("Cannot convert to type {0} (property {1})", destinationType, propertyName));
+
+			var nullable = Nullable.GetUnderlyingType (destinationType);
+			if (nullable != null) {
+				this.destinationType = nullable;
+				nullableDestination = true;
+			}
 		}
 
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
@@ -89,6 +96,9 @@ namespace Mono {
 					else
 						return new GridLength (double.Parse (str_val), GridUnitType.Pixel);
 				}
+
+				if (destinationType == typeof (int))
+					return int.Parse (str_val, NumberStyles.Any, null);
 
 				if (destinationType == typeof (TimeSpan))
 					return TimeSpan.Parse (str_val);

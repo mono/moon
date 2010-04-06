@@ -1,3 +1,9 @@
+2010-04-06  Alan McGovern  <amcgovern@novell.com>
+
+	* MoonlightTypeConverter.cs: Add enough support for nullable
+	  types in MoonlightTypeConverter so that it doesn't blow up
+	  completely when it encounters them.
+
 2009-04-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* NativeDependencyObjectHelper.cs: Add missing Stroke to the 
