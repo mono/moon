@@ -39,25 +39,29 @@ namespace System.Windows.Data
 			get; private set;
 		}
 
-		public IndexedPropertyPathNode (int index)
+		public IndexedPropertyPathNode (string index)
 		{
-			Index = index;
+			int val;
+			if (int.TryParse (index, out val))
+				Index = val;
+			else
+				Index = -1;
 		}
 
-		bool GetIndexer ()
+		void GetIndexer ()
 		{
-			var members = Source.GetType ().GetDefaultMembers ();
-			if (members.Length == 1  && members [0] is PropertyInfo) {
-				PropertyInfo = (PropertyInfo) members [0];
-				return true;
+			PropertyInfo = null;
+			if (Source != null) {
+				var members = Source.GetType ().GetDefaultMembers ();
+				if (members.Length == 1  && members [0] is PropertyInfo)
+					PropertyInfo = (PropertyInfo) members [0];
 			}
-			return false;
 		}
 
 		void OnCollectionChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
 			IList source = (IList) Source;
-			if (Index >= source.Count)
+			if (Index >= source.Count || Index < 0 || PropertyInfo == null)
 				return;
 
 			object newVal = PropertyInfo.GetValue (source, new object [] { Index });
@@ -78,14 +82,14 @@ namespace System.Windows.Data
 				((INotifyCollectionChanged) newSource).CollectionChanged += OnCollectionChanged;
 
 			IList source = Source as IList;
-			if (source == null || !GetIndexer ()) {
-				PropertyInfo = null;
+			GetIndexer ();
+
+			if (source == null || PropertyInfo == null || Index < 0 || Index >= source.Count) {
 				ValueType = null;
 				Value = null;
 			} else {
 				ValueType = PropertyInfo.PropertyType;
-				if (Index < source.Count)
-					Value = PropertyInfo.GetValue (source, new object [] { Index });
+				Value = PropertyInfo.GetValue (source, new object [] { Index });
 			}
 		}
 

@@ -1068,40 +1068,37 @@ namespace MoonTest.System.Windows.Data
 		[TestMethod]
 		public void IndexerOnIndexableProperty_IndexNegative ()
 		{
-			bool fail = false;
 			var data = new Data { };
 			data.DoubleList.AddRange (new double [] { 0, 1, 2, 3, 4 });
 
 			var rect = new Rectangle { DataContext = data };
-			try {
-				rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[-20]"));
-				fail = true;
-			} catch (Exception ex) {
-				bool oor = ex is ArgumentOutOfRangeException || ex.InnerException is ArgumentOutOfRangeException;
-				Assert.IsTrue (oor, "#OOR exception");
-			}
-			if (fail)
-				Assert.Fail ("#3 An exception should have been thrown");
+			rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[-20]"));
+
+			Assert.IsTrue(double.IsNaN(rect.Width), "#1");
 		}
 
 		[TestMethod]
 		public void IndexerOnIndexableProperty_IndexNegative_ExactException ()
 		{
-			bool fail = false;
 			var data = new Data { };
 			data.DoubleList.AddRange (new double [] { 0, 1, 2, 3, 4 });
 
 			var rect = new Rectangle { DataContext = data };
-			try {
-				rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[-20]"));
-				fail = true;
-			} catch (Exception ex) {
-				Assert.IsInstanceOfType<TargetInvocationException> (ex, "#1");
-				Assert.IsInstanceOfType<ArgumentOutOfRangeException> (ex.InnerException, "#2");
-			}
+			rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[-20]"));
 
-			if (fail)
-				Assert.Fail ("#3 An exception should have been thrown");
+			Assert.IsTrue(double.IsNaN(rect.Width), "#1");
+		}
+
+		[TestMethod]
+		public void ___IndexerOnIndexableProperty_InvalidIndex()
+		{
+			var data = new Data { };
+			data.DoubleList.AddRange (new double[] { 0, 1, 2, 3, 4 });
+
+			var rect = new Rectangle { DataContext = data };
+			rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[HAHAHAHH]"));
+
+			Assert.IsTrue (double.IsNaN (rect.Width), "#1");
 		}
 
 		[TestMethod]

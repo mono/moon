@@ -81,7 +81,7 @@ namespace System.Windows.Data
 					node = new StandardPropertyPathNode (typeName, propertyName);
 					break;
 				case PropertyNodeType.Indexed:
-					node = new IndexedPropertyPathNode (int.Parse (index));
+					node = new IndexedPropertyPathNode (index);
 					break;
 				default:
 					throw new Exception ("Unsupported node type");

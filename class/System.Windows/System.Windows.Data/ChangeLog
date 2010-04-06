@@ -1,5 +1,13 @@
 2010-04-06  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPathWalker.cs:
+	* IndexedPropertyPathNode.cs: Update the handling of indexed
+	  binding expressions to SL4 compatibility. It no longer
+	  throws exceptions on negative indices or indices which
+	  cannot be converted to an integer.
+
+2010-04-06  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: Add property support for
 	  Binding.FallbackValue and Binding.TargetNullValue. Passes
 	  the relevant sections of drt 232 and also the new moonunits.
