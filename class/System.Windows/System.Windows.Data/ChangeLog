@@ -1,5 +1,11 @@
 2010-04-06  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: Use the Binding.ConverterCulture
+	  if it's supplied, otherwise use the one in
+	  FrameworkElement.Language, finally fall back to the default.
+
+2010-04-06  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPathWalker.cs:
 	* IndexedPropertyPathNode.cs: Update the handling of indexed
 	  binding expressions to SL4 compatibility. It no longer

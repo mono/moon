@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 
 using Mono;
+using System.Globalization;
 
 namespace System.Windows.Data {
 
@@ -155,7 +156,16 @@ namespace System.Windows.Data {
 			cached = false;
 			cachedValue = null;
 		}
-		
+
+		CultureInfo GetConverterCulture ()
+		{
+			if (Binding.ConverterCulture != null)
+				return Binding.ConverterCulture;
+			if (Target != null && Target.Language != null)
+				return new CultureInfo (Target.Language.IetfLanguageTag);
+			return Helper.DefaultCulture;
+		}
+
 		internal override object GetValue (DependencyProperty dp)
 		{
 			if (cached)
@@ -197,7 +207,7 @@ namespace System.Windows.Data {
 				value = Binding.Converter.Convert (value,
 			                           Property.PropertyType,
 			                           Binding.ConverterParameter,
-			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
+			                           GetConverterCulture ());
 			}
 
 			if (value == null) {
@@ -207,7 +217,7 @@ namespace System.Windows.Data {
 				if (!string.IsNullOrEmpty (format)) {
 					if (!format.Contains ("{0"))
 						format = "{0:" + format + "}";
-					value = string.Format (format, value);
+					value = string.Format (GetConverterCulture (), format, value);
 				}
 			}
 
@@ -295,7 +305,7 @@ namespace System.Windows.Data {
 					value = Binding.Converter.ConvertBack (value,
 					                                       node.ValueType,
 					                                       Binding.ConverterParameter,
-					                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
+					                                       GetConverterCulture ());
 				
 				try {
 					if (Binding.TargetNullValue != null) {
