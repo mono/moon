@@ -594,7 +594,6 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	app_name = install_utils_get_app_safe_name (settings);
 	
 	fprintf (fp, "#!/bin/sh\n\n");
-	fprintf (fp, "export MOONLIGHT_OUT_OF_BROWSER=true\n");
 #if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
 	fprintf (fp, "firefox -moonapp \"file://%s/index.html\" -moonwidth %d -moonheight %d -moontitle \"%s\"\n", app_dir, width, height, settings->GetShortName());
 #else

@@ -1,5 +1,8 @@
 2010-04-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pal/gtk/install-dialog.cpp (install_launcher_script): Don't need
+	to set an environment variable anymore.
+
 	* application.cpp (IsRunningOutOfBrowser): Use the
 	InstallerService to determine if we are running OutOfBrowser or
 	not.
