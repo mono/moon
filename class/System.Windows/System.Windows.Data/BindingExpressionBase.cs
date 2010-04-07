@@ -40,6 +40,10 @@ namespace System.Windows.Data {
 
 	public abstract class BindingExpressionBase : Expression
 	{
+		static readonly Type [] fullParseParams = new Type [] { typeof (string), typeof (NumberStyles), typeof (IFormatProvider) };
+		static readonly Type [] midParseParams = new Type [] { typeof (string), typeof (IFormatProvider) };
+		static readonly Type [] simpleParseParams = new Type [] { typeof (string) };
+
 		internal bool cached;
 		object cachedValue;
 		
@@ -282,6 +286,19 @@ namespace System.Windows.Data {
 				UpdateSourceObject (value);
 		}
 
+		internal bool TryUseParseMethod (string value, Type target, ref object result)
+		{
+			MethodInfo method;
+			if ((method = target.GetMethod ("Parse", fullParseParams)) != null)
+				result = method.Invoke (null, new object [] { value, NumberStyles.Any, GetConverterCulture () });
+			else if ((method = target.GetMethod ("Parse", midParseParams)) != null)
+				result = method.Invoke (null, new object [] { value, GetConverterCulture () });
+			else if ((method = target.GetMethod ("Parse", simpleParseParams)) != null)
+			    result = method.Invoke (null, new object [] { value });
+
+			return method != null;
+		}
+
 		internal void UpdateSourceObject ()
 		{
 			UpdateSourceObject (Target.GetValue (Property));
@@ -301,6 +318,10 @@ namespace System.Windows.Data {
 				}
 				
 				var node = PropertyPathWalker.FinalNode;
+				if (value is string) {
+					TryUseParseMethod ((string) value, node.PropertyInfo.PropertyType, ref value);
+				}
+				
 				if (Binding.Converter != null)
 					value = Binding.Converter.ConvertBack (value,
 					                                       node.ValueType,
