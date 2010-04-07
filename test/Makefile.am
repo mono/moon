@@ -43,5 +43,5 @@ effects_SOURCES= effect-test.cpp
 
 effects_LDADD = $(MOON_PROG_LIBS)
 
-effects_CPPFLAGS = -I$(top_srcdir)/cairo/src $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/ -I$(top_srcdir)/src/asf
+effects_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/ -I$(top_srcdir)/src/asf
 
