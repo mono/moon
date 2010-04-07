@@ -1,5 +1,11 @@
 2010-04-07  Andreia Gaita  <avidigal@novell.com>
 
+	* configure.ac: update the mono build information
+	* README: add the flags that we're currently using to build a
+	minimal version of mono
+
+2010-04-07  Andreia Gaita  <avidigal@novell.com>
+
 	* configure.ac: link with libmono-moon convenience library
 	* README: bump to 154976. Add build tips
 	* autogen.sh: remove fpic and fix the mono build flags

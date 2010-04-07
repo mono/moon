@@ -262,7 +262,8 @@ if test x$with_manual_mono = xyes; then
 cat <<EOF
 	Building mono: no
 		Warning: you'll need to build mono yourself with at least the following flags:
-		--with-moonlight=yes --with-profile4=no CXXFLAGS=-fPIC CFLAGS=-fPIC CPPFLAGS=-fPIC
+		--with-moonlight=yes
+		Check the README for more information
 EOF
 else
 cat <<EOF

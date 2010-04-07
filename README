@@ -30,7 +30,11 @@ Requirements
                 make && make install
 
 	This will configure your Mono source tree with the minimum options required
-	to build it for Moonlight.
+	to build it for Moonlight. At the moment, these are:
+
+		--with-moonlight=yes --enable-minimal=aot,interpreter --with-ikvm-native=no
+		--with-mcs-docs=no --disable-nls --disable-mono-debugger
+
 
 	If you already have an up to date Mono source tree and you want to build Mono
 	separately, you'll need to:
