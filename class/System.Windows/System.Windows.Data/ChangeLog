@@ -1,5 +1,11 @@
 2010-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* IndexedPropertyPathNode.cs: If the getter for an Indexed
+	  node throws an exception, we treat the node as being broken.
+	  Fixes more of DRT 232.
+
+2010-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: Attach the event handler even if
 	  it's a one-time binding otherwise we'll never read the value
 	  from the PropertyPathWalker.

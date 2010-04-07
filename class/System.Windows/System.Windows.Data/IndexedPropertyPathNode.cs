@@ -36,6 +36,13 @@ namespace System.Windows.Data
 {
 	class IndexedPropertyPathNode : PropertyPathNode {
 
+		bool isBroken;
+		public override bool IsBroken {
+			get {
+				return isBroken || base.IsBroken;
+			}
+		}
+
 		public object Index {
 			get; private set;
 		}
@@ -107,6 +114,7 @@ namespace System.Windows.Data
 
 		public override void UpdateValue ()
 		{
+			isBroken = true;
 			if (PropertyInfo == null) {
 				ValueType = null;
 				Value = null;
@@ -115,12 +123,14 @@ namespace System.Windows.Data
 
 			try {
 				object newVal = PropertyInfo.GetValue (Source, new object [] { Index });
+				isBroken = false;
 				if (Value != newVal) {
 					ValueType = newVal == null ? null : newVal.GetType ();
 					Value = newVal;
 				}
 			} catch {
-				// Ignore
+				ValueType = null;
+				Value = null;
 			}
 		}
 	}
