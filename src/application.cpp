@@ -380,7 +380,10 @@ Application::GetResourceRoot ()
 bool
 Application::IsRunningOutOfBrowser ()
 {
-	return runtime_is_running_out_of_browser ();
+	MoonInstallerService *installer = runtime_get_installer_service ();
+	Deployment *deployment = Deployment::GetCurrent ();
+	
+	return installer->IsRunningOutOfBrowser (deployment);
 }
 
 void

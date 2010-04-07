@@ -1011,6 +1011,37 @@ MoonWindowingSystemGtk::RunningOnNvidia ()
 
 
 bool
+MoonInstallerServiceGtk::IsRunningOutOfBrowser (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	const char *xap_path = deployment->GetXapLocation ();
+	bool is_oob = false;
+	char *oob_path;
+	size_t n;
+	
+	// First, make sure we are dealing with a locally run app
+	if (!xap_path || strncmp (xap_path, "file://", 7) != 0)
+		return false;
+	
+	xap_path += 7;
+	
+	n = strlen (xap_path);
+	
+	// Make sure the Xap filename is Application.xap
+	if (n < 16 || strcmp (xap_path + n - 16, "/Application.xap") != 0)
+		return false;
+	
+	n -= 16;
+	
+	// If the Xap path matches the OOB path, then we are running OOB
+	oob_path = install_utils_get_install_dir (settings);
+	is_oob = strlen (oob_path) == n && !strncmp (xap_path, oob_path, n);
+	g_free (oob_path);
+	
+	return is_oob;
+}
+
+bool
 MoonInstallerServiceGtk::CheckInstalled (Deployment *deployment)
 {
 	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();

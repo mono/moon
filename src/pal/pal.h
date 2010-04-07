@@ -239,6 +239,7 @@ public:
 	MoonInstallerService () {}
 	virtual ~MoonInstallerService () {}
 	
+	virtual bool IsRunningOutOfBrowser (Deployment *deployment) = 0;
 	virtual bool CheckInstalled (Deployment *deployment) = 0;
 	virtual bool Install (Deployment *deployment) = 0;
 };

@@ -52,6 +52,7 @@ public:
 	MoonInstallerServiceGtk () {}
 	virtual ~MoonInstallerServiceGtk () {}
 	
+	virtual bool IsRunningOutOfBrowser (Deployment *deployment);
 	virtual bool CheckInstalled (Deployment *deployment);
 	virtual bool Install (Deployment *deployment);
 };

@@ -1,3 +1,17 @@
+2010-04-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* application.cpp (IsRunningOutOfBrowser): Use the
+	InstallerService to determine if we are running OutOfBrowser or
+	not.
+
+	* pal/gtk/pal-gtk.cpp
+	(MoonInstalelrServiceGtk::IsRunningOutOfBrowser): New method to
+	determine if the Xap Uri is an OOB Uri.
+
+	* runtime.cpp (runtime_is_running_out_of_browser): Removed.
+	(runtime_init): Don't check an environment variable for OOB mode,
+	this doesn't work as well as we'd hoped.
+
 2010-04-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/pal-gtk.cpp (CheckInstalled): Moved to the new InstallerService.
