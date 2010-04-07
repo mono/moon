@@ -52,7 +52,7 @@ namespace MoonTest.Security {
 
 			public Headers Headers { get; private set; }
 
-			public override bool IsAllowed (Uri uri, params string [] headerKeys)
+			public override bool IsAllowed (WebRequest request)
 			{
 				throw new NotImplementedException ();
 			}

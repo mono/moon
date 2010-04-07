@@ -1,3 +1,9 @@
+2010-04-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/WebBasePolicyTest.cs:
+	* security/WebSilverlightPolicyTest.cs:
+		Adjust for API changes
+
 2010-04-06  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/MultiwayBindings.cs: These tests should
