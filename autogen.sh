@@ -144,21 +144,22 @@ if test -d $srcdir/curl; then
   echo Done running curl/buildconf ...
 fi
 build_mono=1
-for arg in $*; do
+mcs_path=../mcs
+for arg; do
   case "$arg" in
     --with-manual-mono=yes | --with-manual-mono )
       build_mono=0 ;;
+    --with-mcs-path* )
+      mcs_path=$(echo $arg|sed -e 's,.*=,,')
   esac
 done
 
 if [ $build_mono -eq 1 ] ; then
-	if test -d $srcdir/../mono; then
-	  echo Running ../mono/autogen.sh ...
-	  # reflection_emit_save : smcs requires it
-	  # profiler: soft debugging requires it this
-	  (cd $srcdir/../mono ; ./autogen.sh "$@" --with-moonlight=yes --with-profile4=no --enable-minimal=aot,com,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --enable-static --disable-mono-debugger CXXFLAGS=-fPIC CFLAGS=-fPIC CPPFLAGS=-fPIC)
-	  echo Done running ../mono/autogen.sh ...
-	fi
+  if test -d $mcs_path/../mono; then
+    echo Running $mcs_path/../mono/autogen.sh ...
+    (cd $mcs_path/../mono ; ./autogen.sh "$@" --with-moonlight=yes --with-profile4=no --enable-minimal=aot,com,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --enable-static --disable-mono-debugger CXXFLAGS=-fPIC CFLAGS=-fPIC CPPFLAGS=-fPIC)
+    echo Done running $mcs_path/../mono/autogen.sh ...
+  fi
 fi
 
 conf_flags="--enable-maintainer-mode --enable-compile-warnings --with-sanity-checks" #--enable-iso-c

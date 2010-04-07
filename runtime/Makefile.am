@@ -1,5 +1,5 @@
 all all-local clean-local:
-	$(MAKE) -C $(srcdir)/../../mono $@
+	$(MAKE) -C $(MCS_PATH)/../mono $@
 
 install:
 	@:
