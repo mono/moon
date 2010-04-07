@@ -316,6 +316,16 @@ namespace System.Windows.Data {
 				}
 				
 				var node = PropertyPathWalker.FinalNode;
+				if (Binding.TargetNullValue != null) {
+					try {
+						var v = MoonlightTypeConverter.ConvertObject (Property, Binding.TargetNullValue, Target.GetType (), true);
+						if (object.Equals (v, value))
+							value = null;
+					} catch {
+						// FIXME: I'm fairly sure we ignore this, but we need a test to be 100% sure.
+					}
+				}
+				
 				if (Binding.Converter != null)
 					value = Binding.Converter.ConvertBack (value,
 					                                       node.ValueType,
@@ -326,11 +336,6 @@ namespace System.Windows.Data {
 				}
 				
 				try {
-					if (Binding.TargetNullValue != null) {
-						var v = MoonlightTypeConverter.ConvertObject (Property, Binding.TargetNullValue, Target.GetType (), true);
-						if (object.Equals (v, value))
-							value = null;
-					}
 					value = MoonlightTypeConverter.ConvertObject (node.PropertyInfo, value, Target.GetType ());
 				} catch {
 					return;

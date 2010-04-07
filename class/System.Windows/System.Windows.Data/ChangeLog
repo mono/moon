@@ -1,5 +1,11 @@
 2010-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: When updating the source of a two
+	  way binding, we need to process TargetNullValue before
+	  calling the binding converter. Fixes more of 232.
+
+2010-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* IndexedPropertyPathNode.cs: If the getter for an Indexed
 	  node throws an exception, we treat the node as being broken.
 	  Fixes more of DRT 232.
