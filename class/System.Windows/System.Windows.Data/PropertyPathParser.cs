@@ -44,6 +44,10 @@ namespace System.Windows
 				propertyName = null;
 				index = Path.Substring (1, end - 1);
 				Path = Path.Substring (end + 1);
+				// You can do stuff like: [someIndex].SomeProp
+				// as well as: [SomeIndex]SomeProp
+				if (Path.StartsWith ("."))
+					Path = Path.Substring (1);
 			} else {
 				type = PropertyNodeType.Property;
 				end = Path.IndexOfAny (new char [] { '.', '[' });

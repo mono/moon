@@ -1,5 +1,10 @@
 2010-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPathParser.cs: Fix a bug parsing property paths like
+	  [index].Property
+
+2010-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: I tell a lie, we need to use the
 	  TryParse method after the call to Binding.Converter. Fixes a
 	  regression in moon-unit.
