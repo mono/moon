@@ -1,5 +1,11 @@
 2010-04-07  Andreia Gaita  <avidigal@novell.com>
 
+	* configure.ac: link with libmono-moon convenience library
+	* README: bump to 154976. Add build tips
+	* autogen.sh: remove fpic and fix the mono build flags
+
+2010-04-07  Andreia Gaita  <avidigal@novell.com>
+
 	* autogen.sh: use --with-mcs-path to locate mono.
 
 2010-03-30  Andreia Gaita  <avidigal@novell.com>
