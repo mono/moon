@@ -30,12 +30,13 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace System.Windows.Data
 {
 	class IndexedPropertyPathNode : PropertyPathNode {
 
-		public int Index {
+		public object Index {
 			get; private set;
 		}
 
@@ -45,7 +46,7 @@ namespace System.Windows.Data
 			if (int.TryParse (index, out val))
 				Index = val;
 			else
-				Index = -1;
+				Index = index;
 		}
 
 		void GetIndexer ()
@@ -53,23 +54,32 @@ namespace System.Windows.Data
 			PropertyInfo = null;
 			if (Source != null) {
 				var members = Source.GetType ().GetDefaultMembers ();
-				if (members.Length == 1  && members [0] is PropertyInfo)
-					PropertyInfo = (PropertyInfo) members [0];
+				foreach (PropertyInfo member in members) {
+					var param = member.GetIndexParameters ();
+					if (param.Length == 1) {
+						if (Index is int && param[0].ParameterType == typeof (int)) {
+							PropertyInfo = member;
+							return;
+						} else if (param [0].ParameterType == typeof (string)) {
+							PropertyInfo = member;
+						}
+					}
+				}
 			}
 		}
 
 		void OnCollectionChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
-			IList source = (IList) Source;
-			if (Index >= source.Count || Index < 0 || PropertyInfo == null)
-				return;
+			UpdateValue ();
+			if (Next != null)
+				Next.SetSource (Value);
+		}
 
-			object newVal = PropertyInfo.GetValue (source, new object [] { Index });
-			if (Value != newVal) {
-				Value = newVal;
-				if (Next != null)
-					Next.SetSource (Value);
-			}
+		void OnPropertyChanged (object o, PropertyChangedEventArgs e)
+		{
+			UpdateValue ();
+			if (Next != null)
+				Next.SetSource (Value);
 		}
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
@@ -81,22 +91,37 @@ namespace System.Windows.Data
 			if (newSource is INotifyCollectionChanged)
 				((INotifyCollectionChanged) newSource).CollectionChanged += OnCollectionChanged;
 
-			IList source = Source as IList;
+			if (oldSource is INotifyPropertyChanged)
+				((INotifyPropertyChanged) oldSource).PropertyChanged -= OnPropertyChanged;
+			if (newSource is INotifyPropertyChanged)
+				((INotifyPropertyChanged) newSource).PropertyChanged += OnPropertyChanged;
+			
 			GetIndexer ();
-
-			if (source == null || PropertyInfo == null || Index < 0 || Index >= source.Count) {
-				ValueType = null;
-				Value = null;
-			} else {
-				ValueType = PropertyInfo.PropertyType;
-				Value = PropertyInfo.GetValue (source, new object [] { Index });
-			}
 		}
 
 		public override void SetValue (object value)
 		{
 			if (PropertyInfo != null)
-				((IList) Source)[Index] = value;
+				PropertyInfo.SetValue (Source, value, new object[] { Index });
+		}
+
+		public override void UpdateValue ()
+		{
+			if (PropertyInfo == null) {
+				ValueType = null;
+				Value = null;
+				return;
+			}
+
+			try {
+				object newVal = PropertyInfo.GetValue (Source, new object [] { Index });
+				if (Value != newVal) {
+					ValueType = newVal == null ? null : newVal.GetType ();
+					Value = newVal;
+				}
+			} catch {
+				// Ignore
+			}
 		}
 	}
 }

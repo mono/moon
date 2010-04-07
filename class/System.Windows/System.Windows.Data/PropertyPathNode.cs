@@ -66,7 +66,7 @@ namespace System.Windows.Data
 		public object Value {
 			get { return value; }
 			protected set {
-				if (this.value != value) {
+				if (!object.Equals (value, this.value)) {
 					this.value = value;
 					var h = ValueChanged;
 					if (h != null && this.Next == null)
@@ -107,9 +107,12 @@ namespace System.Windows.Data
 					((INotifyPropertyChanged) Source).PropertyChanged += OnSourcePropertyChanged;
 
 				OnSourceChanged (oldSource, Source);
+				UpdateValue ();
 				if (Next != null)
 					Next.SetSource (Value);
 			}
 		}
+
+		public abstract void UpdateValue ();
 	}
 }

@@ -1,3 +1,8 @@
+2010-04-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.manual: Add an explicit SSC override to
+	  StandardPropertyPathNode::UpdateValue.
+
 2010-04-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Add [SC] Deployment::DownloadAssembly,

@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
+using Mono;
 
 namespace System.Windows.Data
 {
@@ -79,31 +80,24 @@ namespace System.Windows.Data
 				DependencyProperty prop;
 				if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
 					DependencyProperty = prop;
-					dpChanged = delegate {
-						Value = new_do.GetValue (DependencyProperty);
-						if (Next != null)
-						Next.SetSource (Value);
-					};
+					dpChanged = DPChanged;
+						
 					new_do.AddPropertyChangedHandler (DependencyProperty, dpChanged);
 				}
 			}
+		}
 
-			if (PropertyInfo != null) {
-				ValueType = PropertyInfo.PropertyType;
-				Value = PropertyInfo.GetValue (Source, null);
-			} else if (DependencyProperty != null) {
-				ValueType = DependencyProperty.PropertyType;
-				Value = new_do.GetValue (DependencyProperty);
-			} else {
-				ValueType = null;
-				Value = null;
-			}
+		void DPChanged (IntPtr dependency_object, IntPtr property_changed_event_args, ref MoonError error, IntPtr closure)
+		{
+			UpdateValue ();
+			if (Next != null)
+				Next.SetSource (Value);
 		}
 
 		protected override void OnSourcePropertyChanged (object o, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == PropertyName && PropertyInfo != null) {
-				Value = PropertyInfo.GetValue (Source, null);
+				UpdateValue ();
 				if (Next != null)
 					Next.SetSource (Value);
 			}
@@ -115,6 +109,20 @@ namespace System.Windows.Data
 				((DependencyObject) Source).SetValue (DependencyProperty, value);
 			else if (PropertyInfo != null)
 				PropertyInfo.SetValue (Source, value, null);
+		}
+
+		public override void UpdateValue ()
+		{
+			if (PropertyInfo != null) {
+				ValueType = PropertyInfo.PropertyType;
+				Value = PropertyInfo.GetValue (Source, null);
+			} else if (DependencyProperty != null) {
+				ValueType = DependencyProperty.PropertyType;
+				Value = ((DependencyObject) Source).GetValue (DependencyProperty);
+			} else {
+				ValueType = null;
+				Value = null;
+			}
 		}
 	}
 }

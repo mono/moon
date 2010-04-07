@@ -1,5 +1,21 @@
 2010-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: Attach the event handler even if
+	  it's a one-time binding otherwise we'll never read the value
+	  from the PropertyPathWalker.
+
+	* PropertyPathNode.cs:
+	* StandardPropertyPathNode.cs: Add an 'UpdateValue' method so
+	  that there's one clear concise way of updating the value for
+	  PropertyPathNodes.
+
+	* IndexedPropertyPathNode.cs: If the index in a PropertyPath
+	  can be converted to an int and there's an indexer property
+	  which takes an int, we use that indexer. Otherwise we look
+	  for an indexer which accepts a string and use that.
+
+2010-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPathParser.cs: Fix a bug parsing property paths like
 	  [index].Property
 
