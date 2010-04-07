@@ -170,7 +170,7 @@ namespace System.Windows {
 
 		public bool IsRunningOutOfBrowser {
 			get {
-				return NativeMethods.runtime_is_running_out_of_browser ();
+				return NativeMethods.application_is_running_out_of_browser (NativeHandle);
 			}
 		}
 
