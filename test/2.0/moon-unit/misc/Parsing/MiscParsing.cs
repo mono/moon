@@ -248,6 +248,19 @@ namespace MoonTest.Misc.Parsing
 		}
 	}
 
+	public class CustomControl : FrameworkElement
+	{
+		
+	}
+
+	public class Person
+	{
+		public double Left {
+			get { return 100; }
+			set { }
+		}
+	}
+
 	[TestClass]
 	public class MiscParsingTest : SilverlightTest
 	{
@@ -406,6 +419,25 @@ namespace MoonTest.Misc.Parsing
 			// The rectangle should not be parented already, so this won't throw an exception
 			new Canvas ().Children.Add (list[0]);
 			Assert.IsNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should not be findable");
+		}
+
+		[TestMethod]
+		[MoonlightBug (@"Instead of hitting the TrySetExpression case we end up in TrySetAttachedProperty
+						where we do: Canvas.SetLeft (customcontrol, binding) which throws an exception as
+						'binding' is not a double")]
+		public void AttachedPropWithManagedNamespace_NoTemplateOwner()
+		{
+			string xaml =
+@"<DataTemplate 
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' 
+	xmlns:local='clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit'>
+	<local:CustomControl local:Canvas.Left='{Binding Left}'/>
+</DataTemplate>";
+			var template = (DataTemplate)XamlReader.Load(xaml);
+
+			var child = (CustomControl)template.LoadContent();
+			child.DataContext = new Person();
+			Assert.AreEqual(100.0, child.GetValue(Canvas.LeftProperty), "#1");
 		}
 
 		[TestMethod]

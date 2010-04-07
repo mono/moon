@@ -1,3 +1,8 @@
+2010-04-07  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/Parsing/MiscParsing.cs: Add test for a parser issue
+	  setting a binding on an attached property.
+
 2010-04-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/WebBasePolicyTest.cs:
