@@ -1,5 +1,11 @@
 2010-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: I tell a lie, we need to use the
+	  TryParse method after the call to Binding.Converter. Fixes a
+	  regression in moon-unit.
+
+2010-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: When bindings are updating we need
 	  to check if the destination type has any static Parse ()
 	  methods. If so, we need to invoke them before invoking the

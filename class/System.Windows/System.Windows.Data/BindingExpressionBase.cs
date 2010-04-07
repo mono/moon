@@ -318,15 +318,14 @@ namespace System.Windows.Data {
 				}
 				
 				var node = PropertyPathWalker.FinalNode;
-				if (value is string) {
-					TryUseParseMethod ((string) value, node.PropertyInfo.PropertyType, ref value);
-				}
-				
 				if (Binding.Converter != null)
 					value = Binding.Converter.ConvertBack (value,
 					                                       node.ValueType,
 					                                       Binding.ConverterParameter,
 					                                       GetConverterCulture ());
+				if (value is string) {
+					TryUseParseMethod ((string) value, node.PropertyInfo.PropertyType, ref value);
+				}
 				
 				try {
 					if (Binding.TargetNullValue != null) {
