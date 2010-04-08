@@ -143,6 +143,9 @@ namespace System.Windows {
 			if ((default_value == DependencyProperty.UnsetValue) && propertyType.IsValueType && !is_nullable)
 				default_value = Activator.CreateInstance (propertyType);
 
+			if (default_value != null && default_value != UnsetValue && !propertyType.IsAssignableFrom (default_value.GetType ()))
+				throw new ArgumentException (string.Format ("DefaultValue is of type {0} which is not compatible with type {1}", default_value.GetType (), propertyType));
+
 			if (property_changed_callback != null)
 				handler = UnmanagedPropertyChangedCallbackSafe;
 

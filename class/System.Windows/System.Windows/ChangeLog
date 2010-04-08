@@ -1,3 +1,8 @@
+2010-04-08  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: Verify that the supplied default
+	  value is the correct type before using it.
+
 2010-04-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Application.cs (IsOutOfBrowser): Updated to use the native
