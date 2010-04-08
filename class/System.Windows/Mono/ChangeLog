@@ -1,3 +1,9 @@
+2010-04-08  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: Add support for some new SL4
+	  binding properties to the parser and also ensure we throw an
+	  exception for bindings which do not end in '}'
+
 2010-04-06  Alan McGovern  <amcgovern@novell.com>
 
 	* MoonlightTypeConverter.cs: Add enough support for nullable

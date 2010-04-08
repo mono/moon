@@ -178,7 +178,9 @@ namespace Mono.Xaml {
 				return false;
 			}
 
-			expression = expression.Substring (len);
+			expression = expression.Substring (len).TrimStart ();
+			if (expression.Length == 0)
+				throw new Exception ("Expression did not end in '}'");
 			result = handler (ref expression);
 			return true;
 		}
@@ -201,14 +203,9 @@ namespace Mono.Xaml {
 			else
 				binding.Path = new PropertyPath (piece);
 
-			do {
-				piece = GetNextPiece (ref remaining, out next);
-
-				if (piece == null)
-					break;
-
+			while ((piece = GetNextPiece (ref remaining, out next)) != null) {
 				HandleProperty (binding, piece, ref remaining);
-			} while (true);
+			};
 
 			parsingBinding = false;
 			return binding;
@@ -348,6 +345,16 @@ namespace Mono.Xaml {
 					throw new Exception (String.Format ("Invalid value {0} for ValidatesOnExceptions.", str_value));
 				b.ValidatesOnExceptions = bl;
 				break;
+			case "ValidatesOnDataErrors":
+				if (!bool.TryParse (str_value, out bl))
+					throw new Exception (string.Format ("Invalid value {0} for ValidatesOnDataErrors", str_value));
+				b.ValidatesOnDataErrors = bl;
+				break;
+			case "ValidatesOnNotifyDataErrors":
+				if (!bool.TryParse (str_value, out bl))
+					throw new Exception (string.Format ("Invalid value {0} for ValidatesOnNotifyDataErrors", str_value));
+				b.ValidatesOnNotifyDataErrors = bl;
+				break;
 			case "RelativeSource":
 				RelativeSource rs = value as RelativeSource;
 				if (rs == null)
@@ -371,9 +378,13 @@ namespace Mono.Xaml {
 			bool inString = false;
 			int end = 0;
 			remaining = remaining.TrimStart ();
+			if (remaining.Length == 0) {
+				next = Char.MaxValue;
+				return null;
+			}
+
 			piece = piece ?? new StringBuilder ();
 			piece.Length = 0;
-
 			// If we're inside a quoted string we append all chars to our piece until we hit the ending quote.
 			while (end < remaining.Length && (inString || (remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '='))) {
 				if (remaining [end] == '\'')
@@ -388,6 +399,9 @@ namespace Mono.Xaml {
 				piece.Append (remaining [end]);
 				end++;
 			}
+
+			if (end == remaining.Length && !remaining.EndsWith ("}"))
+				throw new Exception  ("Binding did not end with '}'");
 
 			if (end == 0) {
 				next = Char.MaxValue;
