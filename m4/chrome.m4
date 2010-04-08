@@ -5,7 +5,7 @@ AC_DEFUN([MOONLIGHT_CHECK_CHROME_CRX],
 	dnl for our previews, so we convert from, e.g. 2.99.0.3.99 to 2.99.0.399
 	dnl for the chrome version.
 
-	CHROME_VERSION=`echo $VERSION | sed -e s/\.99$/99/ -e s/\.\([1-9]\)$/\.\100/`
+	CHROME_VERSION=`echo $VERSION | sed -e 's/\.99$/99/' -e 's/\.\([1-9]\)$/\.\100/'`
 	AC_SUBST(CHROME_VERSION)
 
 	chrome_extension="yes"
