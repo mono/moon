@@ -1,5 +1,10 @@
 2010-04-07  Andreia Gaita  <avidigal@novell.com>
 
+	* autogen.sh: don't build the 4.0 profile automatically
+	* README: update mono build flags
+
+2010-04-07  Andreia Gaita  <avidigal@novell.com>
+
 	* configure.ac: update the mono build information
 	* README: add the flags that we're currently using to build a
 	minimal version of mono
