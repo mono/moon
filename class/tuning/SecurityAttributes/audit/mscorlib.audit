@@ -54,20 +54,24 @@ System.Boolean System.Globalization.CompareInfo::IsSuffix(System.String,System.S
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
 	r142142		spouliot - call construct_internal_locale_from_current_locale (icall in locales.c)
 
-!SSC-DBCF48F647DEA10BC4BAF5966F3DA008
-System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator1::MoveNext()
+!SSC-8019F0294AC13C5F9B4692FBA5F2001F
+System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator0::MoveNext()
+	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
 	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
 
-!SSC-60ED1FE404983B4B2EA4C177C9703A25
-System.Boolean System.IO.DirectoryInfo/<EnumerateDirectories>c__Iterator2::MoveNext()
+!SSC-0FC005B4C8E5A4BDBE4D9C45041FD922
+System.Boolean System.IO.DirectoryInfo/<EnumerateDirectories>c__Iterator1::MoveNext()
+	r155069		spouliot - compiler renamed symbol c__Iterator2 -> c__Iterator1
 	r153896		spouliot - compiler generated code used by EnumerateDirectories [SecurityCritical]
 
-!SSC-142427D810AC4DAB4B0F4B7F3E9F6A65
-System.Boolean System.IO.DirectoryInfo/<EnumerateFiles>c__Iterator3::MoveNext()
+!SSC-A2E0A23614AF35702493FEB522D29574
+System.Boolean System.IO.DirectoryInfo/<EnumerateFiles>c__Iterator2::MoveNext()
+	r155069		spouliot - compiler renamed symbol c__Iterator3 -> c__Iterator2
 	r153896		spouliot - compiler generated code used by EnumerateFiles [SecurityCritical]
 
-!SSC-6B35CBF90924B3959AEE0DD95ADC1399
-System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator4::MoveNext()
+!SSC-B9195C794666243F8C78ECB2610983F6
+System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::MoveNext()
+	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
 
 !SSC-3E6B14C829A106DEA4BCBCD32C14E375
@@ -1714,12 +1718,14 @@ System.Void System.Globalization.RegionInfo::.ctor(System.String)
 System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
-!SSC-E6F17DD81016E418E83EBF81FAE4741D
-System.Void System.IO.Directory/<EnumerateKind>c__Iterator1::Dispose()
+!SSC-8041E7DBB147424B54276D8511EF7573
+System.Void System.IO.Directory/<EnumerateKind>c__Iterator0::Dispose()
+	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
 	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
 
-!SSC-DCC4C7B761AFD08208F493D60024A4E8
-System.Void System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator4::Dispose()
+!SSC-06FF10845CE470042477C05BFE3F37A3
+System.Void System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::Dispose()
+	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
 
 !SSC-6E17BC57D81D448074EA657FEA23F214

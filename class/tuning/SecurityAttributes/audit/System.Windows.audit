@@ -1230,8 +1230,9 @@ System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependency
 System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 	r143068		spouliot - call dependency_object_read_local_value [SecurityCritical] using native handles from parameters
 
-!SSC-5A9B3B69A1DE491E5F365C584D070543
+!SSC-7DA25AADB83B3493B3E8802875745FB8
 System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
+	r154857		spouliot - check Binding.FallbackValue if PropertyPathWalker.IsPathBroken
 	r154053		spouliot - call GetDefaultValue(Target) instead of dp.DefaultValue
 	r150626		spouliot - two changes to use PropertyPathWalker - critical parts untouched
 	r145953		spouliot - internal, call ConvertToType [SecurityCritical] with parameter 'dp' and 'cachedValue' (local)
@@ -1604,8 +1605,9 @@ System.Void System.Windows.Data.BindingExpressionBase::OnDetached(System.Windows
 	r151736		spouliot - renamed from Dispose() and now calls base OnDetached method (with parameter)
 	r151115		spouliot - call DependencyObject.RemovePropertyChangedHandler [SecurityCritical] if a callback was registered by the constructor
 
-!SSC-EFC68904B00CB074220C8E532D76ABB2
+!SSC-DAA0FEAD62AC8980EF5AF52D4294AB8D
 System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
+	r154968		spouliot - move convertion if Binding.TargetNullValue == null
 	r154628		spouliot - change exception handling (use InnerException) if it's a TargetInvocationException and call [Transparent] MaybeEmitError with the exception
 	r150645		spouliot - use node.ValueType in ConvertBack and node.SetValue (instead of SetPropertyValue)
 	r149398		spouliot - logic moved from SetValue
@@ -1617,6 +1619,10 @@ System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System
 	r151115		spouliot - call base and remove CWL (not a critical change)
 	r150884		spouliot - pinvoke into dependency_object_remove_property_change_handler (if dpChanged is non-null) and dependency_object_add_property_change_handler (if Source and dp are not null)
 	r115028		spouliot - pinvoke removed. call Deployment.Current.Types [SecurityCritical] to get the kind
+
+!SSC-F738D8652E87421D106BD277DB06DCA2
+System.Void System.Windows.Data.StandardPropertyPathNode::UpdateValue()
+	r154963		spouliot - new override, code moved from OnSourceChanged. Manual SSC since it can, indirectly, create a delegate on private/internal methods
 
 !SSC-0F85FEE5577C02990F53112EC27045F2
 System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
@@ -1637,10 +1643,6 @@ System.Void System.Windows.DependencyObject::UnregisterEvent(System.Int32,System
 !SSC-A7CD64086FFE82923E073B42FB2465CD
 System.Void System.Windows.DependencyPropertyChangedEventArgs::.ctor(System.IntPtr)
 	r142747		spouliot - pinvoke into property_changed_event_args_get_property, property_changed_event_args_get_old_value and property_changed_event_args_get_new_value
-
-!SSC-2B35AFC714B436315BB608CF5DFDC237
-System.Void System.Windows.Deployment::DownloadAssembly(System.Uri,System.Int32)
-	r154755		spouliot - new shared code - pinvoke into plugin_instance_get_source_location using PluginHost.Handle to get the base XAP URL
 
 !SSC-A14B10F5F2918C27A60F2BEA0E4BF69B
 System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
@@ -2109,8 +2111,9 @@ System.Windows.DependencyObject System.Windows.UIElement::get_TemplateOwner()
 System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(Mono.Kind,System.String,System.Type,System.Boolean)
 	r152055		spouliot - calls Types [SecurityCritical] KindToType method to format an exception string
 
-!SSC-E3210F1FAEE1071C9E90F14CF92FD8DF
+!SSC-A44ECD63A033EAEDDB6030ABCFA2F411
 System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
+	r155062		spouliot - extra check, throw ArgumentException if the DefaultValue type is not compatible with the property type
 	r154093		spouliot - optimization, call Deployment.Current.Types only once (instead of 3 times)
 	r154053		spouliot - don't set the CustomDependencyProperty DefaultValue property but track the metadata PropertyChangedCallback (if assigned)
 	r152675		spouliot - new logic for DefaultValue calling Activator.CreateInstance but without providing [SecurityCritical]-type instance creation (unit tests added)
