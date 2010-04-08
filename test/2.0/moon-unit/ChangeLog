@@ -1,3 +1,10 @@
+2010-04-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: We shouldn't attach the
+	  handler if it's a OneTime binding. I mis-interpreted the
+	  test result in drt 232. The bug exposed there is that our
+	  OnLoaded handling is synchronous instead of async.
+
 2010-04-07  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/Parsing/MiscParsing.cs: Add test for a parser issue

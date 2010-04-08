@@ -121,7 +121,8 @@ namespace System.Windows.Data {
 
 			if (!string.IsNullOrEmpty (Binding.Path.Path)) {
 				PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path);
-				PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
+				if (Binding.Mode != BindingMode.OneTime)
+					PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 			}
 		}
 

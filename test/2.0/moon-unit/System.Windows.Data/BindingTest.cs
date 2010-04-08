@@ -1090,7 +1090,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void ___IndexerOnIndexableProperty_InvalidIndex()
+		public void IndexerOnIndexableProperty_InvalidIndex()
 		{
 			var data = new Data { };
 			data.DoubleList.AddRange (new double[] { 0, 1, 2, 3, 4 });
@@ -1603,6 +1603,68 @@ namespace MoonTest.System.Windows.Data
 					Assert.AreEqual (6.0, r.Height, "#2");
 				}
 			);
+		}
+
+		[TestMethod]
+		public void TestOnceOffBinding3()
+		{
+			var source = new Rectangle { Width = 100 };
+			var dest = new Rectangle();
+
+			dest.SetBinding(Rectangle.WidthProperty, new Binding("Width") {
+				Mode = BindingMode.OneTime,
+				Source = source,
+			});
+
+			Assert.AreEqual(100, dest.Width, "#1");
+			Assert.IsInstanceOfType<BindingExpressionBase>(dest.ReadLocalValue(Rectangle.WidthProperty), "#a");
+			source.Width = 200;
+			Assert.AreEqual(100, dest.Width, "#2");
+			Assert.IsInstanceOfType<BindingExpressionBase>(dest.ReadLocalValue(Rectangle.WidthProperty), "#b");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void TestOnceOffBinding_SourceName ()
+		{
+			var source = new Rectangle { Name = "Element", Width = 100 };
+			var dest = new Rectangle();
+
+			dest.SetBinding(Rectangle.WidthProperty, new Binding("Width") {
+				Mode = BindingMode.OneTime,
+				ElementName = "Element"
+			});
+			TestPanel.Children.Add(source);
+			TestPanel.Children.Add(dest);
+			Assert.IsTrue (double.IsNaN (dest.Width), "#1");
+			Enqueue(() => {
+				Assert.AreEqual (100, dest.Width, "#2");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TestOnceOffBinding_SourceName_2 ()
+		{
+			var source = new Rectangle { Name = "Element", Width = 100 };
+			var dest = new Rectangle();
+
+			TestPanel.Children.Add(source);
+			TestPanel.Children.Add(dest);
+			dest.SetBinding(Rectangle.WidthProperty, new Binding("Width")  {
+				Mode = BindingMode.OneTime,
+				ElementName = "Element"
+			});
+
+			Assert.AreEqual(100, dest.Width, "#1");
+			source.Width = 200;
+			Assert.AreEqual(100, dest.Width, "#2");
+			Enqueue(() => {
+				Assert.AreEqual(100, dest.Width, "#3");
+			});
+			EnqueueTestComplete();
 		}
 
 		[TestMethod]
