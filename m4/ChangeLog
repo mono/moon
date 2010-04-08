@@ -1,3 +1,9 @@
+2010-04-08  Chris Toshok  <toshok@ximian.com>
+
+	* chrome.m4: check for more chrome executables, and remove the
+	python check since we aren't using python to sign crx files
+	anymore.
+
 2010-03-30  Andreia Gaita  <avidigal@novell.com>
 
 	* m4/curl.m4: move CUSTOM_SUBDIR_OPTION to utilities.m4

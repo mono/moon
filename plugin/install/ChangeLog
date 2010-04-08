@@ -1,3 +1,8 @@
+2010-04-08  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (novell-moonlight.crx): use chrome to pack/sign the
+	extension instead of python+openssl.
+
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.js: pass the -moontitle to the window in its args as

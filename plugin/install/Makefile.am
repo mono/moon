@@ -118,36 +118,38 @@ endif INCLUDE_BROWSER_MANAGED_CODE
 	cd .xpinstall/ && zip -r9 ../$@ *
 	./check_xpi.sh $@
 
+if CHROME_INSTALL
+CRXDIR=novell-moonlight
+
 novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) $(CURL_BRIDGE) Makefile
 	rm -f $@
 	rm -f novell-moonlight.crx.unsigned
-	rm -rf .crxinstall/
-	mkdir -p .crxinstall/moonlight/
-	cp -L $(srcdir)/manifest.json .crxinstall/
-	cp -L $(srcdir)/icon48.png .crxinstall/
-	cp -L $(srcdir)/icon128.png .crxinstall/
-	cp -L ../.libs/libmoonloaderxpi.so .crxinstall/
-	cp -L ../.libs/libmoonpluginxpi.so .crxinstall/moonlight/
+	rm -rf $(CRXDIR)
+	mkdir -p $(CRXDIR)/moonlight/
+	cp -L $(srcdir)/manifest.json $(CRXDIR)/
+	cp -L $(srcdir)/icon48.png $(CRXDIR)/
+	cp -L $(srcdir)/icon128.png $(CRXDIR)/
+	cp -L ../.libs/libmoonloaderxpi.so $(CRXDIR)/
+	cp -L ../.libs/libmoonpluginxpi.so $(CRXDIR)/moonlight/
 
-if HAVE_CURL
 # Rename the bridge to the original name
-	cp -L ../curl/.libs/libmoonpluginxpi-curlbridge.so .crxinstall/moonlight/libmoonplugin-curlbridge.so
-endif HAVE_CURL
+# no if HAVE_CURL here since curl is required for chrome
+	cp -L ../curl/.libs/libmoonpluginxpi-curlbridge.so $(CRXDIR)/moonlight/libmoonplugin-curlbridge.so
 
 if INCLUDE_FFMPEG
-	cp -L $(avutil_libdir)/libavutil.so .crxinstall/moonlight/
-	cp -L $(avcodec_libdir)/libavcodec.so .crxinstall/moonlight/
+	cp -L $(avutil_libdir)/libavutil.so $(CRXDIR)/moonlight/
+	cp -L $(avcodec_libdir)/libavcodec.so $(CRXDIR)/moonlight/
 endif INCLUDE_FFMPEG
 
 if INCLUDE_BROWSER_MANAGED_CODE
-	cp -L $(top_builddir)/class/lib/2.1/*.dll .crxinstall/moonlight
+	cp -L $(top_builddir)/class/lib/2.1/*.dll $(CRXDIR)/moonlight
 
-	cd .crxinstall/moonlight && rm -f $(SDK_DLLS)
+	cd $(CRXDIR)/moonlight && rm -f $(SDK_DLLS)
 endif
-	cd .crxinstall && zip -9 -r ../novell-moonlight.crx.unsigned *
-	python ./make-crx.py novell-moonlight.crx.unsigned novell-moonlight.pem novell-moonlight.crx
-	rm -rf novell-moonlight.crx.unsigned .crxinstall
 
+	$(CHROME) --pack-extension=$(CRXDIR) --pack-extension-key=novell-moonlight.pem
+	rm -rf $(CRXDIR)
+endif
 
 clean-local:
 	-rm -rf .xpinstall
