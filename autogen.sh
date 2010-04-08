@@ -143,21 +143,27 @@ if test -d $srcdir/curl; then
   (cd $srcdir/curl ; ./buildconf )
   echo Done running curl/buildconf ...
 fi
+
+configure_mono=1
 build_mono=1
 mcs_path=../mcs
 for arg; do
   case "$arg" in
     --with-manual-mono=yes | --with-manual-mono )
-      build_mono=0 ;;
+      build_mono=0
+      configure_mono=0 ;;
+    --with-manual-mono=build )
+      build_mono=1
+      configure_mono=0 ;;
     --with-mcs-path* )
-      mcs_path=$(echo $arg|sed -e 's,.*=,,')
+      mcs_path=$(echo $arg|sed -e 's,.*=,,') ;;
   esac
 done
 
-if [ $build_mono -eq 1 ] ; then
+if [ $configure_mono -eq 1 ] ; then
   if test -d $mcs_path/../mono; then
     echo Running $mcs_path/../mono/autogen.sh ...
-    (cd $mcs_path/../mono ; ./autogen.sh "$@" --with-moonlight=yes --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger)
+    (cd $mcs_path/../mono ; ./autogen.sh "$@" --with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger)
     echo Done running $mcs_path/../mono/autogen.sh ...
   fi
 fi

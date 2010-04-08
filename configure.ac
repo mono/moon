@@ -261,9 +261,16 @@ fi
 if test x$with_manual_mono = xyes; then
 cat <<EOF
 	Building mono: no
-		Warning: you'll need to build mono yourself with at least the following flags:
-		--with-moonlight=yes
+		For manual and build only modes, make sure mono is configured with --with-moonlight=yes
+		Warning: you'll need to build mono yourself. Check the README for more information
+
+EOF
+elif test x$with_manual_mono = xbuild; then
+cat <<EOF
+	Building mono: yes, build only
+		For manual and build only modes, make sure mono is configured with --with-moonlight=yes
 		Check the README for more information
+
 EOF
 else
 cat <<EOF

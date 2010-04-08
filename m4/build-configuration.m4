@@ -63,10 +63,11 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	dnl build mono with moon
 	dnl
 
-	AC_ARG_WITH(manual-mono, AC_HELP_STRING([--with-manual-mono=yes|no],
-		[If you want to build mono automatically (default=yes)]),
+	AC_ARG_WITH(manual-mono, AC_HELP_STRING([--with-manual-mono=yes|no|build], [If you want to build mono yourself. Check the README for more information (default=no)]),
 		[], [with_manual_mono=no])
 
-	AM_CONDITIONAL(BUILD_MONO,test x$with_manual_mono = xno)
+	AM_CONDITIONAL(BUILD_MONO,test x$with_manual_mono != xyes)
+
+	AM_CONDITIONAL(ONLY_BUILD_MONO,test x$with_manual_mono = xbuild)
 ])
 

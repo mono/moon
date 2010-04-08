@@ -1,3 +1,9 @@
+2010-04-08  Andreia Gaita  <avidigal@novell.com>
+
+	* README: update build options documentation. Bump to 155093
+	* autogen.sh: use --with-moonlight=only on automatic mono builds
+	* configure.ac: update mono build options
+
 2010-04-07  Andreia Gaita  <avidigal@novell.com>
 
 	* autogen.sh: don't build the 4.0 profile automatically

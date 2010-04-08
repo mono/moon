@@ -14,45 +14,77 @@ Requirements
 
 	At this time, Moonlight trunk (this release) requires you to use
 	Mono trunk. To build Moonlight, you need to get the mono, mcs and
-	mono-basic modules from trunk at the following revison: 154976
+	mono-basic modules from trunk at the following revison: 155093
 
 	Do this like this:
             svn co http://anonsvn.mono-project.com/source/trunk/moon
-            svn co -r 154976 http://anonsvn.mono-project.com/source/trunk/mono
-            svn co -r 154976 http://anonsvn.mono-project.com/source/trunk/mcs
-            svn co -r 154976 http://anonsvn.mono-project.com/source/trunk/mono-basic
+            svn co -r 155093 http://anonsvn.mono-project.com/source/trunk/mono
+            svn co -r 155093 http://anonsvn.mono-project.com/source/trunk/mcs
+            svn co -r 155093 http://anonsvn.mono-project.com/source/trunk/mono-basic
 
-	You don't have to build mono before building moon, so to build
-	moonlight just do:
+
+Compiling Mono for Moonlight
+============================
+
+	Automatic Mode (recommended)
+	==============
+
+	This is recommended if you haven't built Mono before. This is also recommended if you
+	have clean mono and mcs checkouts that you are going to use just for Moonlight.
+
+	In this mode, you don't have to build Mono before building Moonlight, so you just do
 
                 cd moon
                 ./autogen.sh
                 make && make install
 
+
 	This will configure your Mono source tree with the minimum options required
 	to build it for Moonlight. At the moment, these are:
 
-		--with-moonlight=yes --with-profile4=no --enable-minimal=aot,interpreter
+		--with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter
 		--with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger
 
+	This Mono configuration will not be suitable for anything except Moonlight.
 
-	If you already have an up to date Mono source tree and you want to build Mono
-	separately, you'll need to:
 
-		1) configure Mono with --with-moonlight=yes
-		2) configure Moonlight with --with-manual-mono=yes
+	Build only Mode (advanced)
+	==========================
+
+	This is recommended if you have built Mono before and you would like Moonlight to use
+	your existing Mono source tree. This is for advanced users only - make sure you know
+	what you're doing.
+
+	In this mode, Moonlight will not touch your existing Mono configuration, it will build
+	the parts it needs. Since it doesn't do a full build of mono+mcs, it's faster than a
+	normal mono+mcs build.
+
+	Before building moon, you need to make sure your mono configuration includes the
+	following options:
+
+		--with-moonlight=yes
+
+	To build moon in this mode, configure it with the following options:
+
+		--with-manual-mono=build
+
+
+	Manual Mode (really advanced)
+	=============================
+
+	On this mode, moon will not configure or build mono, you have to do it yourself.
+	To activate this mode, configure moon with --with-manual-mono=yes
+
+
+
+Configuration options
+=====================
 
 	If your mono/mcs checkout is not in the same place where you have your moon
 	source, you can configure moon with:
 
 		--with-mcs-path=/path/to/mcs
 
-	If you want to test your newly installed Moonlight, do this:
-
-		make test-plugin
-
-	This will install it into your ~/.mozilla/plugins which will let 
-	both Firefox and Chrome pick it.
 
 	To build Moonlight with pixel shader support, you need to get the mesa
 	module from freedesktop.org. Last known revision to work is
@@ -66,6 +98,17 @@ Requirements
                 ./autogen.sh --with-driver=xlib && cd src/gallium && make
 
 	There is no need to do a make install this.
+
+
+Installing and Testing
+======================
+
+	If you want to test your newly installed Moonlight, do this:
+
+		make test-plugin
+
+	This will install it into your ~/.mozilla/plugins which will let
+	both Firefox and Chrome pick it.
 
 
 Runtime Options
