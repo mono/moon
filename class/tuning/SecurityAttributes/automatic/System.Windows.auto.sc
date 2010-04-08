@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 420 methods needs to be decorated.
+# 419 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -120,9 +120,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::routed_event_args_get_handled(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::runtime_is_running_out_of_browser()
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::storyboard_begin_with_error_(System.IntPtr,Mono.MoonError&)
