@@ -35,6 +35,8 @@ using Mono;
 
 namespace System.Windows.Data {
 	public class Binding : BindingBase {
+
+		bool bindsDirectlyToSource;
 		IValueConverter converter;
 		CultureInfo converterCulture;
 		object converterParameter;
@@ -46,10 +48,16 @@ namespace System.Windows.Data {
 		object source;
 		UpdateSourceTrigger trigger;
 		RelativeSource relative_source;
-		
+		bool validatesOnDataErrors;
+		bool validatesOnNotifyDataErrors;
+
 		[MonoTODO]
 		public bool BindsDirectlyToSource {
-			get; set;
+			get { return bindsDirectlyToSource; }
+			set {
+				CheckSealed ();
+				bindsDirectlyToSource = value;
+			}
 		}
 		
 		public IValueConverter Converter {
@@ -139,7 +147,10 @@ namespace System.Windows.Data {
 
 		public UpdateSourceTrigger UpdateSourceTrigger {
 			get { return trigger; }
-			set { trigger = value; }
+			set {
+				CheckSealed ();
+				trigger = value;
+			}
 		}
 		
 		public bool ValidatesOnExceptions {
@@ -151,24 +162,18 @@ namespace System.Windows.Data {
 		}
 		
 		public bool ValidatesOnDataErrors {
-			get {
-				Console.WriteLine ("System.Windows.Data.Binding.get_ValidatesOnDataErrors: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return validatesOnDataErrors; }
 			set {
-				Console.WriteLine ("System.Windows.Data.Binding.set_ValidatesOnDataErrors: NIEX");
-				throw new NotImplementedException ();				
+				CheckSealed ();
+				validatesOnDataErrors = value;
 			}
 		}
 		
 		public bool ValidatesOnNotifyDataErrors {
-			get {
-				Console.WriteLine ("System.Windows.Data.Binding.get_ValidatesOnNotifyDataErrors: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return validatesOnNotifyDataErrors; }
 			set {
-				Console.WriteLine ("System.Windows.Data.Binding.set_ValidatesOnNotifyDataErrors: NIEX");
-				throw new NotImplementedException ();				
+				CheckSealed ();
+				validatesOnNotifyDataErrors = value;
 			}
 		}
 		
@@ -185,7 +190,7 @@ namespace System.Windows.Data {
 			
 			Mode = BindingMode.OneWay;
 			Path = new PropertyPath (path);
-			trigger = UpdateSourceTrigger.Default;
+			UpdateSourceTrigger = UpdateSourceTrigger.Default;
 		}
 	}
 }

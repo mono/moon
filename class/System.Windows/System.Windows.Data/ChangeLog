@@ -1,5 +1,9 @@
 2010-04-08  Alan McGovern  <amcgovern@novell.com>
 
+	* Binding.cs: Implement some new SL4 binding properties.
+
+2010-04-08  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: We shouldn't attach the handler if
 	  it's a OneTime binding. I mis-interpreted the test result in
 	  drt 232. The bug exposed there is that our OnLoaded handling
