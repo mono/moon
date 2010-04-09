@@ -1,3 +1,11 @@
+2010-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* CheckAndDownloadUpdateCompletedEventArgs.cs: Implemented.
+
+	* Application.cs (CheckAndDownloadUpdateAsync): Implemented. Also
+	fixed to propagate InstallStateChanged and
+	CheckANdDownloadUpdateCompleted events.
+
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: If ClearValue is called with a ReadOnly

@@ -382,7 +382,7 @@ namespace System.Windows.Documents {
 	}
 
 	partial class BlockCollection {
-		public BlockCollection () : base (SafeNativeMethods.block_collection_new (), true) {}
+		internal BlockCollection () : base (SafeNativeMethods.block_collection_new (), true) {}
 		internal BlockCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 

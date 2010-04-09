@@ -73,6 +73,12 @@ namespace Mono {
 		{
 			return (sender, calldata, closure) => SafeAction (() => handler (sender, calldata, closure));
 		}
+
+		public static UnmanagedEventHandler CreateCheckAndDownloadUpdateCompletedEventHandlerDispatcher (object sender, CheckAndDownloadUpdateCompletedEventHandler handler)
+		{
+			return SafeDispatcher ( (_sender, calldata, closure) 
+						=> handler (sender, new CheckAndDownloadUpdateCompletedEventArgs (calldata)) );
+		}
 		
 		public static UnmanagedEventHandler CreateLogReadyRoutedEventHandlerDispatcher (LogReadyRoutedEventHandler handler)
 		{

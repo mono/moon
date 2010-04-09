@@ -26,8 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#pragma warning disable 67 // "The event 'E' is never used" shown for CheckAndDownloadUpdateCompleted, InstallStateChanged
-
 using Mono;
 using Mono.Xaml;
 using System;
@@ -53,6 +51,7 @@ namespace System.Windows {
 		//
 		// Application instance fields
 		//
+		Mono.EventHandlerList event_list;
 		UIElement root_visual;
 		SilverlightHost host;
 
@@ -156,7 +155,35 @@ namespace System.Windows {
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 			}
 		}
+		
+		internal Mono.EventHandlerList EventList {
+			get {
+				if (event_list == null)
+					event_list = new Mono.EventHandlerList ();
+				return event_list;
+			}
+		}
+		
+		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
+		{
+			if (managedHandler == null)
+				return;
+			
+			int token = Events.AddHandler (this, eventId, nativeHandler);
+			
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+		}
 
+		internal void UnregisterEvent (int eventId, Delegate managedHandler)
+		{
+			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+			
+			if (nativeHandler == null)
+				return;
+			
+			Events.RemoveHandler (this, eventId, nativeHandler);
+		}
+		
 		static void ReinitializeStaticData ()
 		{
 			// reinitialize these static lists so we don't inherit things from the previous application
@@ -294,7 +321,7 @@ namespace System.Windows {
 
 		public void CheckAndDownloadUpdateAsync ()
 		{
-
+			NativeMethods.application_check_and_download_update_async (NativeHandle);
 		}
 
 		internal Style GetGenericXamlStyleFor (Type type)
@@ -614,12 +641,30 @@ namespace System.Windows {
 		internal event EventHandler UIARootVisualSet;
 		internal static event EventHandler UIANewApplication;
 
-		public event EventHandler InstallStateChanged;
 		public event EventHandler Exit;
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
-		public event CheckAndDownloadUpdateCompletedEventHandler CheckAndDownloadUpdateCompleted;
-
+		
+		public event CheckAndDownloadUpdateCompletedEventHandler CheckAndDownloadUpdateCompleted {
+			add {
+				RegisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value,
+					       Events.CreateCheckAndDownloadUpdateCompletedEventHandlerDispatcher (this, value));
+			}
+			remove {
+				UnregisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value);
+			}
+		}
+		
+		public event EventHandler InstallStateChanged {
+			add {
+				RegisterEvent (EventIds.Application_InstallStateChangedEvent, value,
+					       Events.CreateEventHandlerDispatcher (value));
+			}
+			remove {
+				UnregisterEvent (EventIds.Application_InstallStateChangedEvent, value);
+			}
+		}
+		
 		internal void OnStartup (StartupEventArgs e) {
 			// FIXME: should we be sharing the
 			// Dictionary<string,string> for each call to

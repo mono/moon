@@ -23,26 +23,35 @@
 
 
 using System;
+using Mono;
 
 namespace System.Windows {
-
 	public sealed class CheckAndDownloadUpdateCompletedEventArgs : EventArgs {
-
-		public Exception Error {
-			get; private set;
-		}
-
-		public bool UpdateAvailable {
-			get; private set;
-		}
-
-		internal CheckAndDownloadUpdateCompletedEventArgs (Exception error, bool updateAvailable)
+		IntPtr NativeHandle;
+		Exception ex;
+		
+		internal CheckAndDownloadUpdateCompletedEventArgs (IntPtr raw)
 		{
-			Error = error;
-			UpdateAvailable = updateAvailable;
+			NativeHandle = raw;
+		}
+		
+		public bool UpdateAvailable {
+			get {
+				return (bool) NativeMethods.check_and_download_update_completed_event_args_get_update_available (NativeHandle);
+			}
+		}
+		
+		public Exception Error {
+			get {
+				if (ex == null) {
+					string str = NativeMethods.check_and_download_update_completed_event_args_get_error (NativeHandle);
+					
+					if (str != null)
+						ex = new Exception (str);
+				}
+				
+				return ex;
+			}
 		}
 	}
 }
-
-
-
