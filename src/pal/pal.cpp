@@ -108,6 +108,9 @@ MoonInstallerService::UpdaterCompleted ()
 	int err = 0;
 	FILE *fp;
 	
+	// FIXME: Check if the content of the xap has changed and only set
+	// UpdateAvailable to true if it has.
+	
 	if ((fp = fopen (tmp, "wb"))) {
 		// write to the temporary file
 		if (fwrite (xap->data, 1, xap->len, fp) == xap->len)
@@ -160,6 +163,7 @@ MoonInstallerService::CheckAndDownloadUpdateAsync (Deployment *deployment, Updat
 	path = GetXapFilename (deployment);
 	tmp = GetTmpFilename (deployment);
 	
+	// FIXME: Use the If-Modified-Since: <date> header in our request
 	downloader = deployment->GetSurface ()->CreateDownloader ();
 	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 	downloader->AddHandler (Downloader::CompletedEvent, downloader_completed, this);
