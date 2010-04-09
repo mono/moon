@@ -1,5 +1,10 @@
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
 
+	* canvas.h: Don't make a public managed field for
+	  Canvas.ZProperty.
+
+2010-04-09  Alan McGovern  <amcgovern@novell.com>
+
 	* validators.h:
 	* validators.cpp:
 	* frameworkelement.h: Add a validator for
