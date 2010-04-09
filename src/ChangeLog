@@ -1,3 +1,11 @@
+2010-04-09  Alan McGovern  <amcgovern@novell.com>
+
+	* validators.h:
+	* validators.cpp:
+	* frameworkelement.h: Add a validator for
+	  FrameworkElement::Style which looks for circular references
+	  in the Style::BasedOn tree.
+
 2010-04-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/install-dialog.cpp (install_launcher_script): Don't need

@@ -334,3 +334,26 @@ Validators::FloatValidator (DependencyObject *instance, DependencyProperty *prop
 	
 	return true;
 }
+
+bool
+Validators::StyleValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	Style *s;
+	Style *root;
+
+	if (!Value::IsNull (value)) {
+		root = value->AsStyle ();
+		while (root) {
+			s = root;
+			while ((s = s->GetBasedOn ())) {
+				if (s == root) {
+					MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Circular reference in Style.BasedOn");
+					return false;
+				}
+			}
+			root = root->GetBasedOn ();
+		}
+	}
+
+	return true;
+}
