@@ -1010,6 +1010,40 @@ MoonWindowingSystemGtk::RunningOnNvidia ()
 }
 
 
+char *
+MoonInstallerServiceGtk::GetUpdateUri (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	
+	return install_utils_get_update_uri (settings);
+}
+
+char *
+MoonInstallerServiceGtk::GetTmpFilename (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	char *install_dir, *path;
+	
+	install_dir = install_utils_get_install_dir (settings);
+	path = g_build_filename (install_dir, ".#Application.xap~", NULL);
+	g_free (install_dir);
+	
+	return path;
+}
+
+char *
+MoonInstallerServiceGtk::GetXapFilename (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	char *install_dir, *path;
+	
+	install_dir = install_utils_get_install_dir (settings);
+	path = g_build_filename (install_dir, "Application.xap", NULL);
+	g_free (install_dir);
+	
+	return path;
+}
+
 bool
 MoonInstallerServiceGtk::IsRunningOutOfBrowser (Deployment *deployment)
 {

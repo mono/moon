@@ -463,4 +463,23 @@ class TimelineMarkerRoutedEventArgs : public RoutedEventArgs {
 	TimelineMarker *GetMarker () { return marker; }
 };
 
+/* @Namespace=None */
+class CheckAndDownloadUpdateCompletedEventArgs : public EventArgs {
+	bool updated;
+	char *error;
+	
+ protected:
+	virtual ~CheckAndDownloadUpdateCompletedEventArgs ();
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	CheckAndDownloadUpdateCompletedEventArgs (bool updated, const char *error);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetUpdateAvailable () { return updated; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetError () { return error; }
+};
+
 #endif /* __EVENTARGS_H__ */

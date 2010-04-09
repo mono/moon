@@ -615,24 +615,39 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 }
 
 static bool
+install_update_uri (Deployment *deployment, OutOfBrowserSettings *settings, const char *app_dir)
+{
+	const char *uri = deployment->GetXapLocation ();
+	gboolean rv;
+	char *path;
+	
+	path = g_build_filename (app_dir, "update-uri", NULL);
+	rv = g_file_set_contents (path, uri, strlen (uri), NULL);
+	g_free (path);
+	
+	return rv ? true : false;
+}
+
+static bool
 install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, const char *filename)
 {
 	char *dirname, *icon_name, *quoted, *launcher;
 	struct stat st;
+	FILE *fp;
+	int fd;
 	
 	dirname = g_path_get_dirname (filename);
 	g_mkdir_with_parents (dirname, 0777);
 	g_free (dirname);
-
-	int fd = open (filename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (fd == -1)
+	
+	if ((fd = open (filename, O_WRONLY | O_CREAT | O_TRUNC, 0777)) == -1)
 		return false;
-
-	FILE *fp = fdopen (fd, "wt");
-	if (fp == NULL) {
+	
+	if (!(fp = fdopen (fd, "wt"))) {
 		close (fd); 
 		return false;
 	}
+	
 	fprintf (fp, "[Desktop Entry]\n");
 	fprintf (fp, "Type=Application\n");
 	fprintf (fp, "Encoding=UTF-8\n");
@@ -691,6 +706,12 @@ install_dialog_install (InstallDialog *dialog)
 	
 	/* install the launcher script */
 	if (!install_launcher_script (settings, priv->install_dir)) {
+		RemoveDir (priv->install_dir);
+		return false;
+	}
+	
+	/* install the update uri */
+	if (!install_update_uri (priv->deployment, settings, priv->install_dir)) {
 		RemoveDir (priv->install_dir);
 		return false;
 	}
@@ -783,4 +804,33 @@ install_utils_get_launcher_script (OutOfBrowserSettings *settings)
 	g_free (app_dir);
 	
 	return launcher;
+}
+
+char *
+install_utils_get_update_uri (OutOfBrowserSettings *settings)
+{
+	char *app_dir, *path, *uri, buf[1024];
+	GString *content;
+	FILE *fp;
+	
+	app_dir = install_utils_get_install_dir (settings);
+	path = g_build_filename (app_dir, "update-uri", NULL);
+	g_free (app_dir);
+	
+	if (!(fp = fopen (path, "rt"))) {
+		g_free (path);
+		return NULL;
+	}
+	
+	content = g_string_new ("");
+	while (fgets (buf, sizeof (buf), fp))
+		g_string_append (content, buf);
+	
+	fclose (fp);
+	
+	uri = content->str;
+	g_string_free (content, false);
+	g_strstrip (uri);
+	
+	return uri;
 }

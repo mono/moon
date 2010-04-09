@@ -27,6 +27,9 @@
 class Surface;
 class UIElement;
 class Deployment;
+class Downloader;
+class EventObject;
+class EventArgs;
 class PluginInstance;
 
 class MoonEvent;
@@ -233,15 +236,42 @@ private:
 	MoonWindowlessCtor windowless_ctor;
 };
 
+typedef void (* UpdateCompletedCallback) (bool updated, const char *error, gpointer user_data);
+
 /* @Version=2 */
 class MoonInstallerService {
+	UpdateCompletedCallback completed;
+	Downloader *downloader;
+	gpointer user_data;
+	char *path, *tmp;
+	GByteArray *xap;
+	
+	void CloseDownloader (bool abort);
+	
+	static void downloader_notify_size (gint64 size, gpointer user_data);
+	static void downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data);
+	static void downloader_completed (EventObject *sender, EventArgs *args, gpointer user_data);
+	static void downloader_failed (EventObject *sender, EventArgs *args, gpointer user_data);
+	
+protected:
+	virtual char *GetUpdateUri (Deployment *deployment) = 0;
+	virtual char *GetTmpFilename (Deployment *deployment) = 0;
+	virtual char *GetXapFilename (Deployment *deployment) = 0;
+	
 public:
-	MoonInstallerService () {}
-	virtual ~MoonInstallerService () {}
+	MoonInstallerService ();
+	virtual ~MoonInstallerService ();
+	
+	void CheckAndDownloadUpdateAsync (Deployment *deployment, UpdateCompletedCallback completed, gpointer user_data);
 	
 	virtual bool IsRunningOutOfBrowser (Deployment *deployment) = 0;
 	virtual bool CheckInstalled (Deployment *deployment) = 0;
 	virtual bool Install (Deployment *deployment) = 0;
+	
+	void UpdaterNotifySize (gint64 size);
+	void UpdaterWrite (void *buf, gint32 offset, gint32 n);
+	void UpdaterCompleted ();
+	void UpdaterFailed ();
 };
 
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.

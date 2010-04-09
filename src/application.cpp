@@ -377,6 +377,31 @@ Application::GetResourceRoot ()
 	return resource_root;
 }
 
+void
+Application::UpdateComplete (bool updated, const char *error)
+{
+	CheckAndDownloadUpdateCompletedEventArgs *args;
+	
+	args = new CheckAndDownloadUpdateCompletedEventArgs (updated, error);
+	
+	Emit (Application::CheckAndDownloadUpdateCompletedEvent, args);
+}
+
+void
+Application::update_complete (bool updated, const char *error, gpointer user_data)
+{
+	((Application *) user_data)->UpdateComplete (updated, error);
+}
+
+void
+Application::CheckAndDownloadUpdateAsync ()
+{
+	MoonInstallerService *installer = runtime_get_installer_service ();
+	Deployment *deployment = Deployment::GetCurrent ();
+	
+	installer->CheckAndDownloadUpdateAsync (deployment, Application::update_complete, this);
+}
+
 bool
 Application::IsRunningOutOfBrowser ()
 {
@@ -392,9 +417,9 @@ Application::SetInstallState (InstallState state)
 	if (install_state == state)
 		return;
 	
-	// FIXME: emit InstallStateChangedEvent...
-	
 	install_state = state;
+	
+	Emit (Application::InstallStateChangedEvent, NULL);
 }
 
 InstallState

@@ -55,6 +55,11 @@ public:
 	const char *GetResourceRoot ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
+	void CheckAndDownloadUpdateAsync ();
+	
+	void UpdateComplete (bool updated, const char *error);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsRunningOutOfBrowser ();
 	
 	void SetInstallState (InstallState state);
@@ -79,6 +84,7 @@ public:
 	ResourceDictionary *GetResources ();
 	
 	const static int InstallStateChangedEvent;
+	const static int CheckAndDownloadUpdateCompletedEvent;
 	
 protected:
 	virtual ~Application ();
@@ -90,6 +96,8 @@ private:
 	GetResourceCallback get_resource_cb;
 	InstallState install_state;
 	char *resource_root;
+	
+	static void update_complete (bool updated, const char *error, gpointer user_data);
 };
 
 #endif /* __APPLICATION_H__ */

@@ -1,3 +1,16 @@
+2010-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/pal-gtk.cpp: Implemented new required methods for the
+	InstallerService.
+
+	* pal/pal.cpp (CheckAndDownloadUpdateAsync): New method to check
+	for and download any updates.
+
+	* application.cpp (CheckAndDownloadUpdateAsync): Implemented.
+	(SetInstallState): Emit the InstallStateChanged event.
+
+	* eventargs.cpp|h: Added CheckAndDownloadUpdateCompletedEventArgs.
+
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
 
 	* textblock.h: Hide the field and setter for

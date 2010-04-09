@@ -530,3 +530,19 @@ TimelineMarkerRoutedEventArgs::~TimelineMarkerRoutedEventArgs ()
 	if (marker)
 		marker->unref ();
 }
+
+
+//
+// CheckAndDownloadUpdateAsyncCompletedEventArgs
+//
+
+CheckAndDownloadUpdateCompletedEventArgs::CheckAndDownloadUpdateCompletedEventArgs (bool updated, const char *error)
+{
+	this->updated = updated;
+	this->error = g_strdup (error);
+}
+
+CheckAndDownloadUpdateCompletedEventArgs::~CheckAndDownloadUpdateCompletedEventArgs ()
+{
+	g_free (error);
+}
