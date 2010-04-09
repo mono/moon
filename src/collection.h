@@ -348,7 +348,7 @@ protected:
 	virtual ~BlockCollection () {}
  
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	BlockCollection () {}
  
 	virtual Type::Kind GetElementType () { return Type::BLOCK; }

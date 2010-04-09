@@ -1,5 +1,9 @@
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
 
+	* collection.h: BlockCollection has no public ctor.
+
+2010-04-09  Alan McGovern  <amcgovern@novell.com>
+
 	* canvas.h: Don't make a public managed field for
 	  Canvas.ZProperty.
 
