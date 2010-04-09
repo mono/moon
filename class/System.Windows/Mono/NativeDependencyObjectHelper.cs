@@ -136,6 +136,9 @@ namespace Mono {
 
 		public static object ReadLocalValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
+			if (dp == null)
+				throw new ArgumentNullException ("dp");
+
 			IntPtr val = NativeMethods.dependency_object_read_local_value (wrapper.NativeHandle, dp.Native);
 			if (val == IntPtr.Zero) {
 				return DependencyProperty.UnsetValue;
@@ -153,6 +156,8 @@ namespace Mono {
 
 		public static void ClearValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
+			if (dp == null)
+				throw new ArgumentNullException ("dp");
 			NativeMethods.dependency_object_clear_value (wrapper.NativeHandle, dp.Native, true);
 		}
 #endregion

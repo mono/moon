@@ -1,5 +1,10 @@
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
 
+	* NativeDependencyObjectHelper.cs: Add in proper null checks
+	  for for ReadLocalValue and ClearValue
+
+2010-04-09  Alan McGovern  <amcgovern@novell.com>
+
 	* MarkupExpressionParser.cs: We need to trim both double
 	  quotes and single quotes from the string. Fixes part of drt
 	  349.
