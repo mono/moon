@@ -38,10 +38,10 @@ this feature (1.8 and later).
 
 </para>
 
-@scaled_font:
-@cr:
-@extents:
-@Returns:
+@scaled_font: 
+@cr: 
+@extents: 
+@Returns: 
 
 
 <!-- ##### USER_FUNCTION cairo_user_scaled_font_render_glyph_func_t ##### -->
@@ -49,11 +49,11 @@ this feature (1.8 and later).
 
 </para>
 
-@scaled_font:
-@glyph:
-@cr:
-@extents:
-@Returns:
+@scaled_font: 
+@glyph: 
+@cr: 
+@extents: 
+@Returns: 
 
 
 <!-- ##### USER_FUNCTION cairo_user_scaled_font_text_to_glyphs_func_t ##### -->
@@ -61,15 +61,15 @@ this feature (1.8 and later).
 
 </para>
 
-@scaled_font:
-@utf8:
-@utf8_len:
-@glyphs:
-@num_glyphs:
-@clusters:
-@num_clusters:
-@cluster_flags:
-@Returns:
+@scaled_font: 
+@utf8: 
+@utf8_len: 
+@glyphs: 
+@num_glyphs: 
+@clusters: 
+@num_clusters: 
+@cluster_flags: 
+@Returns: 
 
 
 <!-- ##### USER_FUNCTION cairo_user_scaled_font_unicode_to_glyph_func_t ##### -->
@@ -77,10 +77,10 @@ this feature (1.8 and later).
 
 </para>
 
-@scaled_font:
-@unicode:
-@glyph_index:
-@Returns:
+@scaled_font: 
+@unicode: 
+@glyph_index: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_create ##### -->
@@ -88,7 +88,7 @@ this feature (1.8 and later).
 
 </para>
 
-@Returns:
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_set_init_func ##### -->
@@ -96,8 +96,8 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@init_func:
+@font_face: 
+@init_func: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_get_init_func ##### -->
@@ -105,8 +105,8 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@Returns:
+@font_face: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_set_render_glyph_func ##### -->
@@ -114,8 +114,8 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@render_glyph_func:
+@font_face: 
+@render_glyph_func: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_get_render_glyph_func ##### -->
@@ -123,8 +123,8 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@Returns:
+@font_face: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_set_unicode_to_glyph_func ##### -->
@@ -132,8 +132,8 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@unicode_to_glyph_func:
+@font_face: 
+@unicode_to_glyph_func: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_get_unicode_to_glyph_func ##### -->
@@ -141,8 +141,8 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@Returns:
+@font_face: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_set_text_to_glyphs_func ##### -->
@@ -150,8 +150,8 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@text_to_glyphs_func:
+@font_face: 
+@text_to_glyphs_func: 
 
 
 <!-- ##### FUNCTION cairo_user_font_face_get_text_to_glyphs_func ##### -->
@@ -159,7 +159,7 @@ this feature (1.8 and later).
 
 </para>
 
-@font_face:
-@Returns:
+@font_face: 
+@Returns: 
 
 

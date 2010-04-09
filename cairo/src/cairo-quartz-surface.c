@@ -682,13 +682,19 @@ ComputeGradientValue (void *info, const float *in, float *out)
 static CGFunctionRef
 CreateGradientFunction (cairo_gradient_pattern_t *gpat)
 {
+    cairo_pattern_t *pat;
     float input_value_range[2] = { 0.f, 1.f };
     float output_value_ranges[8] = { 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f };
     CGFunctionCallbacks callbacks = {
 	0, ComputeGradientValue, (CGFunctionReleaseInfoCallback) cairo_pattern_destroy
     };
 
-    return CGFunctionCreate (gpat,
+    if (_cairo_pattern_create_copy (&pat, &gpat->base))
+	/* quartz doesn't deal very well with malloc failing, so there's
+	 * not much point in us trying either */
+	return NULL;
+
+    return CGFunctionCreate (pat,
 			     1,
 			     input_value_range,
 			     4,
@@ -702,6 +708,7 @@ CreateRepeatingGradientFunction (cairo_quartz_surface_t *surface,
 				 CGPoint *start, CGPoint *end,
 				 CGAffineTransform matrix)
 {
+    cairo_pattern_t *pat;
     float input_value_range[2];
     float output_value_ranges[8] = { 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f };
     CGFunctionCallbacks callbacks = {
@@ -766,7 +773,12 @@ CreateRepeatingGradientFunction (cairo_quartz_surface_t *surface,
     input_value_range[0] = 0.0 - 1.0 * rep_start;
     input_value_range[1] = 1.0 + 1.0 * rep_end;
 
-    return CGFunctionCreate (gpat,
+    if (_cairo_pattern_create_copy (&pat, &gpat->base))
+	/* quartz doesn't deal very well with malloc failing, so there's
+	 * not much point in us trying either */
+	return NULL;
+
+    return CGFunctionCreate (pat,
 			     1,
 			     input_value_range,
 			     4,

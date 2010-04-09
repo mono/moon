@@ -145,7 +145,7 @@ AC_DEFUN([_CAIRO_ENABLE],
 				) cr_feature_name[ feature could not be enabled])
 		])dnl
 	],dnl
-	[dnl
+	[dnl	
 		AC_MSG_ERROR([invalid argument passed to --enable-]cr_feature_arg[: `$use_$1', should be one of @<:@no/auto/yes@:>@])
 	])dnl
 
@@ -198,7 +198,7 @@ AC_DEFUN([CAIRO_FEATURE_VARS_REGISTER],
 
 dnl
 dnl CAIRO_FEATURE_VARS_FOREACH(VAR, COMMANDS)
-dnl
+dnl 
 dnl Run COMMANDS for each registered feature variable.
 dnl Defines VAR to the variable being processed.
 dnl
@@ -330,7 +330,7 @@ AC_DEFUN([CAIRO_ACCUMULATE_UNQUOTED_BEFORE],
 
 dnl
 dnl CAIRO_ACCUMULATORS_FOREACH(VAR, COMMANDS)
-dnl
+dnl 
 dnl Run COMMANDS for each registered accumulator.
 dnl Defines VAR to the accumulator being processed.
 dnl
@@ -361,7 +361,7 @@ AC_DEFUN([CAIRO_ACCUMULATED_FEATURE_VARS_REGISTER],
 
 dnl
 dnl CAIRO_ACCUMULATED_FEATURE_VARS_FOREACH(VAR, COMMANDS)
-dnl
+dnl 
 dnl Run COMMANDS for each registered accumulated feature variable.
 dnl Defines VAR to the variable being processed.
 dnl

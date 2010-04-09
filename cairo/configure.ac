@@ -172,11 +172,11 @@ CAIRO_ENABLE_FUNCTIONS(png, PNG, yes, [
     use_png=yes
   fi
 
-  if test "x$use_png" = "xyes" ; then
+  if test "x$use_png" = "xyes" ; then 
     PKG_CHECK_MODULES(png, $png_REQUIRES, , AC_MSG_RESULT(no))
   else
     AC_MSG_WARN([Could not find libpng in the pkg-config search path])
-  fi
+  fi    
 ])
 
 dnl ===========================================================================
@@ -260,11 +260,11 @@ CAIRO_ENABLE_FONT_BACKEND(ft, FreeType, auto, [
                       [freetype_pkgconfig=yes],
 		      [AC_MSG_RESULT(no)
 		       freetype_pkgconfig=no])
-
+  
     if test "x$freetype_pkgconfig" = "xyes"; then
       ft_REQUIRES="freetype2 >= $FREETYPE_MIN_VERSION $ft_REQUIRES"
     else
-
+  
       if test -z "$FREETYPE_CONFIG"; then
         AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
       fi
@@ -435,10 +435,7 @@ dnl XXX make this a private feature?
 CAIRO_ENABLE(test_surfaces, test surfaces, no)
 
 dnl ===========================================================================
-pixman_CFLAGS='-I$(top_srcdir)/../pixman/pixman'
-pixman_LIBS='$(top_builddir)/../pixman/pixman/libpixman-1.la'
-AC_SUBST(pixman_CFLAGS)
-AC_SUBST(pixman_LIBS)
+
 CAIRO_ENABLE_SURFACE_BACKEND(image, image, always, [
   pixman_REQUIRES="pixman-1 >= 0.12.0"
   PKG_CHECK_MODULES(pixman, $pixman_REQUIRES, , [AC_MSG_RESULT(no)
@@ -487,11 +484,17 @@ dnl ===========================================================================
 # We use GTK+ for some utility/debugging tools
 PKG_CHECK_MODULES(gtk, "gtk+-2.0",, AC_MSG_RESULT(no))
 
-AC_DEFINE([NDEBUG], 1, [I will not assert in platform code.  I will not assert in platform code.  I will not assert in platform code.])
-
 AC_CONFIG_FILES([
 Makefile
+boilerplate/Makefile
 src/Makefile
+test/Makefile
+test/pdiff/Makefile
+perf/Makefile
+util/Makefile
+doc/Makefile
+doc/public/Makefile
 ])
 
 AC_OUTPUT
+CAIRO_REPORT

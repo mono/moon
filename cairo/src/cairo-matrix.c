@@ -485,9 +485,33 @@ _cairo_matrix_compute_adjoint (cairo_matrix_t *matrix)
 cairo_status_t
 cairo_matrix_invert (cairo_matrix_t *matrix)
 {
-    /* inv (A) = 1/det (A) * adj (A) */
     double det;
 
+    /* Simple scaling|translation matrices are quite common... */
+    if (matrix->xy == 0. && matrix->yx == 0.) {
+	matrix->x0 = -matrix->x0;
+	matrix->y0 = -matrix->y0;
+
+	if (matrix->xx != 1.) {
+	    if (matrix->xx == 0.)
+		return _cairo_error (CAIRO_STATUS_INVALID_MATRIX);
+
+	    matrix->xx = 1. / matrix->xx;
+	    matrix->x0 *= matrix->xx;
+	}
+
+	if (matrix->yy != 1.) {
+	    if (matrix->yy == 0.)
+		return _cairo_error (CAIRO_STATUS_INVALID_MATRIX);
+
+	    matrix->yy = 1. / matrix->yy;
+	    matrix->y0 *= matrix->yy;
+	}
+
+	return CAIRO_STATUS_SUCCESS;
+    }
+
+    /* inv (A) = 1/det (A) * adj (A) */
     det = _cairo_matrix_compute_determinant (matrix);
 
     if (! ISFINITE (det))

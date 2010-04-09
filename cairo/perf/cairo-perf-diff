@@ -89,7 +89,7 @@ fi
 
 git_setup() {
     SUBDIRECTORY_OK='Yes'
-    . git-sh-setup
+    . "$(git --exec-path)/git-sh-setup"
     CAIRO_DIR=`dirname $GIT_DIR`
     if [ "$CAIRO_DIR" = "." ]; then
 	CAIRO_DIR=`pwd`

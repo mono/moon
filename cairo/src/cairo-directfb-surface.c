@@ -549,6 +549,7 @@ _cairo_directfb_surface_release_source_image (void                  *abstract_su
                                               cairo_image_surface_t *image,
                                               void                  *image_extra)
 {
+    cairo_directfb_surface_t *surface = abstract_surface;
     IDirectFBSurface *buffer = image_extra;
 
     D_DEBUG_AT (CairoDFB_Acquire,

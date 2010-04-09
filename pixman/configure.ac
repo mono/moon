@@ -26,12 +26,12 @@ AC_PREREQ([2.57])
 #
 #   - The version in git has an odd MICRO version number
 #
-#   - Released versions both development and stable have an even MICRO
+#   - Released versions both development and stable have an even MICRO 
 #     version number
 #
 #   - Released development versions have an odd MINOR number
 #
-#   - Released stable versions have an event MINOR number
+#   - Released stable versions have an even MINOR number
 #
 #   - Versions that break ABI must have a new MAJOR number
 #
@@ -53,21 +53,46 @@ AC_PREREQ([2.57])
 #
 
 m4_define([pixman_major], 0)
-m4_define([pixman_minor], 12)
+m4_define([pixman_minor], 18)
 m4_define([pixman_micro], 0)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
-AC_INIT(pixman, pixman_version, "sandmann@daimi.au.dk", pixman)
-AM_INIT_AUTOMAKE([dist-bzip2])
+AC_INIT(pixman, pixman_version, "pixman@lists.freedesktop.org", pixman)
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
+
+# Suppress verbose compile lines
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AM_CONFIG_HEADER(config.h)
 
+AC_CANONICAL_HOST
+
+test_CFLAGS=${CFLAGS+set} # We may override autoconf default CFLAGS.
+
 AC_PROG_CC
+AM_PROG_AS
 AC_PROG_LIBTOOL
 AC_CHECK_FUNCS([getisax])
 AC_C_BIGENDIAN
 AC_C_INLINE
+
+AC_CHECK_SIZEOF(long)
+
+# Checks for Sun Studio compilers
+AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
+AC_CHECK_DECL([__amd64], [AMD64_ABI="yes"], [AMD64_ABI="no"])
+
+# Default CFLAGS to -O -g rather than just the -g from AC_PROG_CC
+# if we're using Sun Studio and neither the user nor a config.site
+# has set CFLAGS.
+if test $SUNCC = yes &&			\
+   test "$test_CFLAGS" == "" &&		\
+   test "$CFLAGS" = "-g"
+then
+  CFLAGS="-O -g"
+fi
+
 # 
 # We ignore pixman_major in the version here because the major version should
 # always be encoded in the actual library name. Ie., the soname is:
@@ -94,10 +119,18 @@ AC_SUBST(LT_VERSION_INFO)
 
 changequote(,)dnl
 if test "x$GCC" = "xyes"; then
+
   case " $CFLAGS " in
   *[\ \	]-Wall[\ \	]*) ;;
   *) CFLAGS="$CFLAGS -Wall" ;;
-  esac fi changequote([,])dnl
+  esac 
+
+  case " $CFLAGS " in
+  *[\ \	]-fno-strict-aliasing[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -fno-strict-aliasing" ;;
+  esac
+
+fi changequote([,])dnl
 
 AC_PATH_PROG(PERL, perl, no)
 if test "x$PERL" = xno; then
@@ -130,7 +163,7 @@ AC_COMPILE_IFELSE([
 #else
 error Need Sun Studio 8 for visibility
 #endif
-int main () { return 0; }
+int main () { return 0; } 
 ], have_sunstudio8=yes)
 
 if test "x$have_sunstudio8" = "xyes"; then
@@ -141,12 +174,23 @@ AC_MSG_RESULT($have_sunstudio8)
 dnl ===========================================================================
 dnl Check for MMX
 
-MMX_CFLAGS="-mmmx -Winline"
+if test "x$MMX_CFLAGS" = "x" ; then
+   if test "x$SUNCC" = "xyes"; then
+      # Sun Studio doesn't have an -xarch=mmx flag, so we have to use sse
+      # but if we're building 64-bit, mmx & sse support is on by default and
+      # -xarch=sse throws an error instead
+      if test "$AMD64_ABI" = "no" ; then
+         MMX_CFLAGS="-xarch=sse"
+      fi
+   else
+      MMX_CFLAGS="-mmmx -Winline"
+   fi
+fi
 
 have_mmx_intrinsics=no
 AC_MSG_CHECKING(whether to use MMX intrinsics)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS $MMX_CFLAGS"
+CFLAGS="$MMX_CFLAGS $CFLAGS"
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
 error "Need GCC >= 3.4 for MMX intrinsics"
@@ -183,12 +227,21 @@ AM_CONDITIONAL(USE_MMX, test $have_mmx_intrinsics = yes)
 dnl ===========================================================================
 dnl Check for SSE2
 
-SSE2_CFLAGS="-mmmx -msse2 -Winline"
+if test "x$SSE2_CFLAGS" = "x" ; then
+   if test "x$SUNCC" = "xyes"; then
+      # SSE2 is enabled by default in the Sun Studio 64-bit environment
+      if test "$AMD64_ABI" = "no" ; then
+         SSE2_CFLAGS="-xarch=sse2"
+      fi
+   else
+      SSE2_CFLAGS="-mmmx -msse2 -Winline"
+   fi
+fi
 
 have_sse2_intrinsics=no
 AC_MSG_CHECKING(whether to use SSE2 intrinsics)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS -msse2 $SSE2_CFLAGS"
+CFLAGS="$SSE2_CFLAGS $CFLAGS"
 
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 2))
@@ -200,7 +253,7 @@ AC_COMPILE_IFELSE([
 #include <xmmintrin.h>
 #include <emmintrin.h>
 int main () {
-    __m128i a, b, c;
+    __m128i a = _mm_set1_epi32 (0), b = _mm_set1_epi32 (0), c;
 	c = _mm_xor_si128 (a, b);
     return 0;
 }], have_sse2_intrinsics=yes)
@@ -226,10 +279,41 @@ fi
 
 AM_CONDITIONAL(USE_SSE2, test $have_sse2_intrinsics = yes)
 
-dnl ========================================================
-AC_SUBST(MMX_CFLAGS)
-AC_SUBST(SSE2_CFLAGS)
+dnl ===========================================================================
+dnl Other special flags needed when building code using MMX or SSE instructions
+case $host_os in
+   solaris*)
+      # When building 32-bit binaries, apply a mapfile to ensure that the
+      # binaries aren't flagged as only able to run on MMX+SSE capable CPUs
+      # since they check at runtime before using those instructions.
+      # Not all linkers grok the mapfile format so we check for that first.
+      if test "$AMD64_ABI" = "no" ; then
+	 use_hwcap_mapfile=no
+	 AC_MSG_CHECKING(whether to use a hardware capability map file)
+	 hwcap_save_LDFLAGS="$LDFLAGS"
+	 HWCAP_LDFLAGS='-Wl,-M,$(srcdir)/solaris-hwcap.mapfile'
+	 LDFLAGS="$LDFLAGS -Wl,-M,pixman/solaris-hwcap.mapfile"
+	 AC_LINK_IFELSE([int main() { return 0; }],
+			use_hwcap_mapfile=yes,
+			HWCAP_LDFLAGS="")
+	 LDFLAGS="$hwcap_save_LDFLAGS"
+	 AC_MSG_RESULT($use_hwcap_mapfile)
+      fi
+      if test "x$MMX_LDFLAGS" = "x" ; then
+         MMX_LDFLAGS="$HWCAP_LDFLAGS"
+      fi
+      if test "x$SSE2_LDFLAGS" = "x" ; then
+	 SSE2_LDFLAGS="$HWCAP_LDFLAGS"
+      fi
+      ;;
+esac
 
+AC_SUBST(MMX_CFLAGS)
+AC_SUBST(MMX_LDFLAGS)
+AC_SUBST(SSE2_CFLAGS)
+AC_SUBST(SSE2_LDFLAGS)
+
+dnl ===========================================================================
 dnl Check for VMX/Altivec
 if test -n "`$CC -v 2>&1 | grep version | grep Apple`"; then
     VMX_CFLAGS="-faltivec"
@@ -240,7 +324,7 @@ fi
 have_vmx_intrinsics=no
 AC_MSG_CHECKING(whether to use VMX/Altivec intrinsics)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS $VMX_CFLAGS"
+CFLAGS="$VMX_CFLAGS $CFLAGS"
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
 error "Need GCC >= 3.4 for sane altivec support"
@@ -277,6 +361,134 @@ AC_SUBST(VMX_CFLAGS)
 
 AM_CONDITIONAL(USE_VMX, test $have_vmx_intrinsics = yes)
 
+dnl ==========================================================================
+dnl Check if assembler is gas compatible and supports ARM SIMD instructions
+have_arm_simd=no
+AC_MSG_CHECKING(whether to use ARM SIMD assembler)
+xserver_save_CFLAGS=$CFLAGS
+CFLAGS="-x assembler-with-cpp $CFLAGS"
+AC_COMPILE_IFELSE([[
+.text
+.arch armv6
+.object_arch armv4
+.arm
+.altmacro
+#ifndef __ARM_EABI__
+#error EABI is required (to be sure that calling conventions are compatible)
+#endif
+pld [r0]
+uqadd8 r0, r0, r0]], have_arm_simd=yes)
+CFLAGS=$xserver_save_CFLAGS
+
+AC_ARG_ENABLE(arm-simd,
+   [AC_HELP_STRING([--disable-arm-simd],
+                   [disable ARM SIMD fast paths])],
+   [enable_arm_simd=$enableval], [enable_arm_simd=auto])
+
+if test $enable_arm_simd = no ; then
+   have_arm_simd=disabled
+fi
+
+if test $have_arm_simd = yes ; then
+   AC_DEFINE(USE_ARM_SIMD, 1, [use ARM SIMD assembly optimizations])
+fi
+
+AM_CONDITIONAL(USE_ARM_SIMD, test $have_arm_simd = yes)
+
+AC_MSG_RESULT($have_arm_simd)
+if test $enable_arm_simd = yes && test $have_arm_simd = no ; then
+   AC_MSG_ERROR([ARM SIMD intrinsics not detected])
+fi
+
+dnl ==========================================================================
+dnl Check if assembler is gas compatible and supports NEON instructions
+have_arm_neon=no
+AC_MSG_CHECKING(whether to use ARM NEON assembler)
+xserver_save_CFLAGS=$CFLAGS
+CFLAGS="-x assembler-with-cpp $CFLAGS"
+AC_COMPILE_IFELSE([[
+.text
+.fpu neon
+.arch armv7a
+.object_arch armv4
+.eabi_attribute 10, 0
+.arm
+.altmacro
+#ifndef __ARM_EABI__
+#error EABI is required (to be sure that calling conventions are compatible)
+#endif
+pld [r0]
+vmovn.u16 d0, q0]], have_arm_neon=yes)
+CFLAGS=$xserver_save_CFLAGS
+
+AC_ARG_ENABLE(arm-neon,
+   [AC_HELP_STRING([--disable-arm-neon],
+                   [disable ARM NEON fast paths])],
+   [enable_arm_neon=$enableval], [enable_arm_neon=auto])
+
+if test $enable_arm_neon = no ; then
+   have_arm_neon=disabled
+fi
+
+if test $have_arm_neon = yes ; then
+   AC_DEFINE(USE_ARM_NEON, 1, [use ARM NEON assembly optimizations])
+fi
+
+AM_CONDITIONAL(USE_ARM_NEON, test $have_arm_neon = yes)
+
+AC_MSG_RESULT($have_arm_neon)
+if test $enable_arm_neon = yes && test $have_arm_neon = no ; then
+   AC_MSG_ERROR([ARM NEON intrinsics not detected])
+fi
+
+dnl =========================================================================================
+dnl Check for GNU-style inline assembly support
+
+have_gcc_inline_asm=no
+AC_MSG_CHECKING(whether to use GNU-style inline assembler)
+AC_COMPILE_IFELSE([
+int main () {
+    /* Most modern architectures have a NOP instruction, so this is a fairly generic test. */
+	asm volatile ( "\tnop\n" : : : "cc", "memory" );
+    return 0;
+}], have_gcc_inline_asm=yes)
+
+AC_ARG_ENABLE(gcc-inline-asm,
+   [AC_HELP_STRING([--disable-gcc-inline-asm],
+                   [disable GNU-style inline assembler])],
+   [enable_gcc_inline_asm=$enableval], [enable_gcc_inline_asm=auto])
+
+if test $enable_gcc_inline_asm = no ; then
+   have_gcc_inline_asm=disabled
+fi
+
+if test $have_gcc_inline_asm = yes ; then
+   AC_DEFINE(USE_GCC_INLINE_ASM, 1, [use GNU-style inline assembler])
+fi
+
+AC_MSG_RESULT($have_gcc_inline_asm)
+if test $enable_gcc_inline_asm = yes && test $have_gcc_inline_asm = no ; then
+   AC_MSG_ERROR([GNU-style inline assembler not detected])
+fi
+
+AM_CONDITIONAL(USE_GCC_INLINE_ASM, test $have_gcc_inline_asm = yes)
+
+dnl ==============================================
+dnl Timers
+
+AC_ARG_ENABLE(timers,
+   [AC_HELP_STRING([--enable-timers],
+		   [enable TIMER_BEGIN and TIMER_END macros [default=no]])],
+   [enable_timers=$enableval], [enable_timers=no])
+
+if test $enable_timers = yes ; then 
+   AC_DEFINE(PIXMAN_TIMERS, 1, [enable TIMER_BEGIN/TIMER_END macros])
+fi
+AC_SUBST(PIXMAN_TIMERS)
+
+dnl ===================================
+dnl GTK+
+
 AC_ARG_ENABLE(gtk,
    [AC_HELP_STRING([--enable-gtk],
                    [enable tests using GTK+ [default=auto]])],
@@ -296,7 +508,95 @@ AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 AC_SUBST(DEP_CFLAGS)
 AC_SUBST(DEP_LIBS)
-		  
+
+dnl =====================================
+dnl posix_memalign 
+
+AC_CHECK_FUNC(posix_memalign, have_posix_memalign=yes, have_posix_memalign=no)
+if test x$have_posix_memalign = xyes; then
+   AC_DEFINE(HAVE_POSIX_MEMALIGN, 1, [Whether we have posix_memalign()])
+fi
+
+dnl =====================================
+dnl Thread local storage
+
+support_for__thread=no
+
+AC_MSG_CHECKING(for __thread)
+AC_COMPILE_IFELSE([
+__thread int x ;
+int main () { return 0; }
+], support_for__thread=yes)
+
+if test $support_for__thread = yes; then 
+   AC_DEFINE([TOOLCHAIN_SUPPORTS__THREAD],[],[Whether the tool chain supports __thread])
+fi
+
+AC_MSG_RESULT($support_for__thread)
+
+dnl posix tls
+
+if test $support_for__thread = no; then
+
+support_for_pthread_setspecific=no
+   
+AC_MSG_CHECKING(for pthread_setspecific)
+
+save_LDFLAGS=$LDFLAGS
+
+LDFLAGS="-pthread"
+
+AC_LINK_IFELSE([
+#include <pthread.h>
+
+#include <stdlib.h>
+#include <pthread.h>
+
+static pthread_once_t once_control = PTHREAD_ONCE_INIT;
+static pthread_key_t key;
+
+static void
+make_key (void)
+{
+    pthread_key_create (&key, NULL);
+}
+
+int
+main ()
+{
+    void *value = NULL;
+    
+    if (pthread_once (&once_control, make_key) != 0)
+    {
+	value = NULL;
+    }
+    else
+    {
+	value = pthread_getspecific (key);
+	if (!value)
+	{
+	    value = malloc (100);
+	    pthread_setspecific (key, value);
+	}
+    }
+}
+], support_for_pthread_setspecific=yes);
+
+LDFLAGS=$save_LDFLAGS
+
+if test $support_for_pthread_setspecific = yes; then
+   PTHREAD_LDFLAGS="-pthread"
+   AC_DEFINE([HAVE_PTHREAD_SETSPECIFIC], [], [Whether pthread_setspecific() is supported])
+fi
+
+AC_MSG_RESULT($support_for_pthread_setspecific);
+
+fi
+
+AC_SUBST(TOOLCHAIN_SUPPORTS__THREAD)
+AC_SUBST(HAVE_PTHREAD_SETSPECIFIC)
+AC_SUBST(PTHREAD_LDFLAGS)
+
 AC_OUTPUT([pixman-1.pc
            pixman-1-uninstalled.pc
            Makefile

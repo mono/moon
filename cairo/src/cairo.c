@@ -471,11 +471,6 @@ cairo_push_group_with_content (cairo_t *cr, cairo_content_t content)
                                      parent_surface->device_transform.x0 - extents.x,
                                      parent_surface->device_transform.y0 - extents.y);
 
-    /* If we have a current path, we need to adjust it to compensate for
-     * the device offset just applied. */
-    _cairo_path_fixed_transform (cr->path,
-				 &group_surface->device_transform);
-
     /* create a new gstate for the redirect */
     cairo_save (cr);
     if (cr->status)
@@ -558,11 +553,6 @@ cairo_pop_group (cairo_t *cr)
     } else {
 	cairo_pattern_set_matrix (group_pattern, &group_matrix);
     }
-
-    /* If we have a current path, we need to adjust it to compensate for
-     * the device offset just removed. */
-    _cairo_path_fixed_transform (cr->path,
-				 &group_surface->device_transform_inverse);
 
 done:
     cairo_surface_destroy (group_surface);

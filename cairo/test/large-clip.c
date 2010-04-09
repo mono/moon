@@ -44,7 +44,7 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_rectangle (cr, 0, 0, 65536 + 25, 65536 + 25);
     cairo_clip (cr);
-
+    
     cairo_set_source_rgb (cr, 1, 0, 0);
     cairo_paint (cr);
 

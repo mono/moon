@@ -1,3 +1,53 @@
+Release 1.8.6 (2008-12-13 Chris Wilson <chris@chris-wilson.co.uk>)
+=========================================================
+The cairo community is pleased to announce the 1.8.6 release of the
+cairo graphics library. This is the third update to cairo's stable
+1.8 series and contains a small number of bug fixes (in particular a
+few fixes for failures of cairo 1.8.4 on Quartz and PDF, and build fixes for
+a couple of backends). This is being released just under a month after
+cairo 1.8.4.
+
+We recommend that everyone using cairo upgrade to 1.8.6.
+
+-Chris
+
+Build fixes
+-----------
+Fix build of DirectFB backend with debugging enabled:
+
+   Bug in _cairo_directfb_surface_release_source_image function
+   http://bugs.freedesktop.org/show_bug.cgi?id=18322
+
+Fix build on OS/2.
+
+Bug fixes
+---------
+Workaround a mis-compilation of cairo_matrix_invert() that generated invalid
+matrices and triggered assertion failures later. The issue was reported by
+Peter Hercek.
+
+Invalid computation of the modulus:
+
+   https://bugzilla.mozilla.org/show_bug.cgi?id=466258
+
+Invalid referencing of patterns in the Quartz backend:
+
+   Failed assertion `CAIRO_REFERENCE_COUNT_HAS_REFERENCE
+   (&pattern->ref_count)' when using cairo quartz backend
+   http://bugs.freedesktop.org/show_bug.cgi?id=18632
+
+Invalid references to glyphs after early culling, causing segmentation faults
+in the PDF backend:
+
+   http://lists.cairographics.org/archives/cairo/2008-December/015976.html
+
+Check for XRender in the XCB backend, or else we may attempt an invalid memory
+access:
+
+    XCB backend fails with missing render.
+    https://bugs.freedesktop.org/show_bug.cgi?id=18588
+
+
 Release 1.8.4 (2008-11-14 Carl Worth <cworth@cworth.org>)
 =========================================================
 The cairo community is pleased to announce the 1.8.4 release of the

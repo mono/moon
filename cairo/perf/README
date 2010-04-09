@@ -188,16 +188,16 @@ environment such as MSYS (distributed as part of MinGW).
  1. From your Mingw32 window, be sure to have all of your MSVC environ-
     ment variables set up for proper compilation using 'make'
 
- 2. Add the %GitBaseDir%/Git/bin path to your environment, replacing the
+ 2. Add the %GitBaseDir%/Git/bin path to your environment, replacing the 
     %GitBaseDir% by whatever directory your Git version is installed to.
 
- 3. Comment out the "UNSET CDPATH" line in the git-sh-setup script
-    (located inside the ...Git/bin directory) by putting a "#" at the
+ 3. Comment out the "UNSET CDPATH" line in the git-sh-setup script 
+    (located inside the ...Git/bin directory) by putting a "#" at the 
     beginning of the line.
 
 you should be ready to go !
 
-From your mingw32 window, go to your cairo/perf directory and run the
+From your mingw32 window, go to your cairo/perf directory and run the 
 cairo-perf-diff script with the right arguments.
 
 Thanks for your contributions and have fun with cairo!

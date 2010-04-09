@@ -124,17 +124,17 @@ size and transformation and a certain set of font options.
 
 </para>
 
-@scaled_font:
-@x:
-@y:
-@utf8:
-@utf8_len:
-@glyphs:
-@num_glyphs:
-@clusters:
-@num_clusters:
-@cluster_flags:
-@Returns:
+@scaled_font: 
+@x: 
+@y: 
+@utf8: 
+@utf8_len: 
+@glyphs: 
+@num_glyphs: 
+@clusters: 
+@num_clusters: 
+@cluster_flags: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_scaled_font_get_font_face ##### -->
@@ -178,8 +178,8 @@ size and transformation and a certain set of font options.
 
 </para>
 
-@scaled_font:
-@scale_matrix:
+@scaled_font: 
+@scale_matrix: 
 
 
 <!-- ##### FUNCTION cairo_scaled_font_get_type ##### -->

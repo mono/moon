@@ -169,9 +169,9 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 
 </para>
 
-@surface:
-@x_pixels_per_inch:
-@y_pixels_per_inch:
+@surface: 
+@x_pixels_per_inch: 
+@y_pixels_per_inch: 
 
 
 <!-- ##### ENUM cairo_surface_type_t ##### -->
@@ -255,7 +255,7 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 
 </para>
 
-@surface:
-@Returns:
+@surface: 
+@Returns: 
 
 

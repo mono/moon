@@ -37,7 +37,7 @@ $(srcdir)/ChangeLog:
 	@if test -d "$(srcdir)/.git"; then \
 		version=$(CURR_CHANGELOG_VERSION); \
 		prev=$(PREV_CHANGELOG_VERSION).0; \
-		nearest_tag=`git-describe | sed 's/-.*//'`; \
+		nearest_tag=`git describe | sed 's/-.*//'`; \
 		before=$(srcdir)/ChangeLog.cache-$$prev..$$nearest_tag; \
 		after=$(srcdir)/ChangeLog.cache-$$nearest_tag..; \
 		$(MAKE) $(AM_MAKEFLAGS) $$before $$after && \
@@ -71,7 +71,7 @@ $(srcdir)/ChangeLog.cache-% $(srcdir)/ChangeLog.pre-%:
 		test "x$$from" = xinitial || from=$$from.0; \
 		spec=$$from..$$to; \
 	  fi; \
-	  $(srcdir)/build/missing --run git-log --stat "$$spec") > $@.tmp \
+	  $(srcdir)/build/missing --run git log --stat "$$spec") > $@.tmp \
 	  && mv -f $@.tmp $@ \
 	  || ($(RM) $@.tmp; \
 	      echo Failed to generate $@, your $@ may be outdated >&2); \

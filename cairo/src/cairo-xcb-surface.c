@@ -1732,7 +1732,8 @@ _cairo_xcb_surface_create_internal (xcb_connection_t	     *dpy,
 				    int			      depth)
 {
     cairo_xcb_surface_t *surface;
-    const xcb_render_query_version_reply_t *r;
+    const xcb_query_extension_reply_t *er;
+    const xcb_render_query_version_reply_t *r = NULL;
 
     surface = malloc (sizeof (cairo_xcb_surface_t));
     if (surface == NULL)
@@ -1764,7 +1765,10 @@ _cairo_xcb_surface_create_internal (xcb_connection_t	     *dpy,
 	;
     }
 
-    r = xcb_render_util_query_version(dpy);
+    er = xcb_get_extension_data(dpy, &xcb_render_id);
+    if(er && er->present) {
+	r = xcb_render_util_query_version(dpy);
+    }
     if (r) {
 	surface->render_major = r->major_version;
 	surface->render_minor = r->minor_version;
@@ -2415,6 +2419,9 @@ _cairo_xcb_surface_emit_glyphs (cairo_xcb_surface_t *dst,
 	    return status;
 	}
     }
+
+    /* We wouldn't want to leak memory, would we? */
+    free(output_glyphs);
 
     return CAIRO_STATUS_SUCCESS;
 }

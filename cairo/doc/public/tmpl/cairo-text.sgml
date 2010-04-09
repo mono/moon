@@ -50,7 +50,7 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@index:
+@index: 
 @x: 
 @y: 
 
@@ -76,15 +76,15 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@num_bytes:
-@num_glyphs:
+@num_bytes: 
+@num_glyphs: 
 
 <!-- ##### ENUM cairo_text_cluster_flags_t ##### -->
 <para>
 
 </para>
 
-@CAIRO_TEXT_CLUSTER_FLAG_BACKWARD:
+@CAIRO_TEXT_CLUSTER_FLAG_BACKWARD: 
 
 <!-- ##### FUNCTION cairo_select_font_face ##### -->
 <para>
@@ -202,14 +202,14 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@cr:
-@utf8:
-@utf8_len:
-@glyphs:
-@num_glyphs:
-@clusters:
-@num_clusters:
-@cluster_flags:
+@cr: 
+@utf8: 
+@utf8_len: 
+@glyphs: 
+@num_glyphs: 
+@clusters: 
+@num_clusters: 
+@cluster_flags: 
 
 
 <!-- ##### FUNCTION cairo_font_extents ##### -->
@@ -247,10 +247,10 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@family:
-@slant:
-@weight:
-@Returns:
+@family: 
+@slant: 
+@weight: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_toy_font_face_get_family ##### -->
@@ -258,8 +258,8 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@font_face:
-@Returns:
+@font_face: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_toy_font_face_get_slant ##### -->
@@ -267,8 +267,8 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@font_face:
-@Returns:
+@font_face: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_toy_font_face_get_weight ##### -->
@@ -276,8 +276,8 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@font_face:
-@Returns:
+@font_face: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_glyph_allocate ##### -->
@@ -285,8 +285,8 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@num_glyphs:
-@Returns:
+@num_glyphs: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_glyph_free ##### -->
@@ -294,7 +294,7 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@glyphs:
+@glyphs: 
 
 
 <!-- ##### FUNCTION cairo_text_cluster_allocate ##### -->
@@ -302,8 +302,8 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@num_clusters:
-@Returns:
+@num_clusters: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_text_cluster_free ##### -->
@@ -311,6 +311,6 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
-@clusters:
+@clusters: 
 
 

@@ -16,6 +16,7 @@ Steve Chaplin <stevech1097@yahoo.com.au> Bug fixes for PNG reading
 Tomasz Cholewo <cholewo@ieee-cis.org> Bug fixes
 Manu Cornet <manu@manucornet.net> SVG build fix
 Frederic Crozat <fcrozat@mandriva.com> Fix test suite for OPD platforms (IA64 or PPC64)
+Julien Danjou <julien@danjou.info> XCB fixes
 Radek Doulík <rodo@novell.com> Bug report and test case
 John Ehresman <jpe@wingide.com> Build fixes for win32
 John Ellson <ellson@research.att.com> First font/glyph extents functions

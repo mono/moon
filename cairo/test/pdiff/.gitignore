@@ -1,4 +1,3 @@
-/.deps
-/.libs
-/Makefile.in
-/Makefile
+TAGS
+tags
+perceptualdiff

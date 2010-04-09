@@ -1314,7 +1314,7 @@ _cairo_xlib_surface_set_matrix (cairo_xlib_surface_t *surface,
 
     if (!surface->src_picture)
 	return CAIRO_STATUS_SUCCESS;
-
+    
     /* Casting between pixman_transform_t and XTransform is safe because
      * they happen to be the exact same type.
      */
@@ -1325,7 +1325,7 @@ _cairo_xlib_surface_set_matrix (cairo_xlib_surface_t *surface,
 
     if (!CAIRO_SURFACE_RENDER_HAS_PICTURE_TRANSFORM (surface))
 	return CAIRO_INT_STATUS_UNSUPPORTED;
-
+    
     XRenderSetPictureTransform (surface->dpy, surface->src_picture, &xtransform);
     surface->xtransform = xtransform;
 

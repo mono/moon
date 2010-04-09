@@ -26,7 +26,7 @@ AC_DEFUN([CAIRO_BIGENDIAN],
 #endif
 ])
 		;;
-		*)
+		*) 
 	AC_C_BIGENDIAN
 	AX_C_FLOAT_WORDS_BIGENDIAN
 		;;
@@ -38,7 +38,7 @@ dnl                              [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl Like AC_CHECK_FUNCS but with additional CFLAGS and LIBS
 dnl --------------------------------------------------------------------
 AC_DEFUN([CAIRO_CHECK_FUNCS_WITH_FLAGS],
-[dnl
+[dnl 
 	_save_cflags="$CFLAGS"
 	_save_libs="$LIBS"
 	CFLAGS="$CFLAGS $2"

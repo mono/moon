@@ -797,7 +797,7 @@ _cairo_path_fixed_is_empty (cairo_path_fixed_t *path)
     return FALSE;
 }
 
-/**
+/*
  * Check whether the given path contains a single rectangle.
  */
 cairo_bool_t

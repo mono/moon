@@ -19,7 +19,7 @@ dist-clear-sticky-bits:
 
 snapshot:
 	distdir="$(distdir)-`date '+%Y%m%d'`"; \
-	test -d "$(srcdir)/.git" && distdir=$$distdir-`cd "$(srcdir)" && git-rev-parse HEAD | cut -c 1-6`; \
+	test -d "$(srcdir)/.git" && distdir=$$distdir-`cd "$(srcdir)" && git rev-parse HEAD | cut -c 1-6`; \
 	TAR_OPTIONS="$(TAR_OPTIONS)" $(MAKE) $(AM_MAKEFLAGS) distdir="$$distdir" snapshot-dist
 
 snapshot-dist: dist
@@ -49,7 +49,7 @@ $(sha1_file): $(tar_file)
 
 $(gpg_file): $(sha1_file)
 	@echo "Please enter your GPG password to sign the checksum."
-	gpg --armor --sign $^
+	gpg --armor --sign $^ 
 
 release-verify-sane-changelogs: changelogs
 	@echo -n "Checking that the ChangeLog files are sane..."
@@ -99,7 +99,7 @@ release-upload: $(tar_file) $(sha1_file) $(gpg_file)
 	scp $(tar_file) $(sha1_file) $(gpg_file) $(RELEASE_UPLOAD_HOST):$(RELEASE_UPLOAD_DIR)
 	mv $(tar_file) $(sha1_file) $(gpg_file) releases
 	ssh $(RELEASE_UPLOAD_HOST) "rm -f $(RELEASE_UPLOAD_DIR)/LATEST-$(PACKAGE)-[0-9]* && ln -s $(tar_file) $(RELEASE_UPLOAD_DIR)/LATEST-$(PACKAGE)-$(VERSION)"
-	git-tag -s  -m "cairo $(CAIRO_VERSION_MAJOR).$(CAIRO_VERSION_MINOR).$(CAIRO_VERSION_MICRO) release" $(CAIRO_VERSION_MAJOR).$(CAIRO_VERSION_MINOR).$(CAIRO_VERSION_MICRO)
+	git tag -s  -m "cairo $(CAIRO_VERSION_MAJOR).$(CAIRO_VERSION_MINOR).$(CAIRO_VERSION_MICRO) release" $(CAIRO_VERSION_MAJOR).$(CAIRO_VERSION_MINOR).$(CAIRO_VERSION_MICRO)
 
 release-publish-message: releases/$(sha1_file)
 	@echo "Please follow the instructions in RELEASING to push stuff out and"

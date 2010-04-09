@@ -1,5 +1,6 @@
 /*
  * Copyright © 2000 SuSE, Inc.
+ * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -24,370 +25,28 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "pixman-private.h"
-#include "pixman-mmx.h"
-
-PIXMAN_EXPORT pixman_bool_t
-pixman_transform_point_3d (pixman_transform_t *transform,
-			   pixman_vector_t *vector)
-{
-    pixman_vector_t		result;
-    int				i, j;
-    pixman_fixed_32_32_t	partial;
-    pixman_fixed_48_16_t	v;
-
-    for (j = 0; j < 3; j++)
-    {
-	v = 0;
-	for (i = 0; i < 3; i++)
-	{
-	    partial = ((pixman_fixed_48_16_t) transform->matrix[j][i] *
-		       (pixman_fixed_48_16_t) vector->vector[i]);
-	    v += partial >> 16;
-	}
-
-	if (v > pixman_max_fixed_48_16 || v < pixman_min_fixed_48_16)
-	    return FALSE;
-
-	result.vector[j] = (pixman_fixed_48_16_t) v;
-    }
-
-    if (!result.vector[2])
-	return FALSE;
-
-    *vector = result;
-    return TRUE;
-}
-
-PIXMAN_EXPORT pixman_bool_t
-pixman_blt (uint32_t *src_bits,
-	    uint32_t *dst_bits,
-	    int src_stride,
-	    int dst_stride,
-	    int src_bpp,
-	    int dst_bpp,
-	    int src_x, int src_y,
-	    int dst_x, int dst_y,
-	    int width, int height)
-{
-#ifdef USE_MMX
-    if (pixman_have_mmx())
-    {
-	return pixman_blt_mmx (src_bits, dst_bits, src_stride, dst_stride, src_bpp, dst_bpp,
-			       src_x, src_y, dst_x, dst_y, width, height);
-    }
-    else
-#endif
-	return FALSE;
-}
-
-static void
-pixman_fill8 (uint32_t  *bits,
-	      int	stride,
-	      int	x,
-	      int	y,
-	      int	width,
-	      int	height,
-	      uint32_t  xor)
-{
-    int byte_stride = stride * (int) sizeof (uint32_t);
-    uint8_t *dst = (uint8_t *) bits;
-    uint8_t v = xor & 0xff;
-    int i;
-
-    dst = dst + y * byte_stride + x;
-
-    while (height--)
-    {
-	for (i = 0; i < width; ++i)
-	    dst[i] = v;
-
-	dst += byte_stride;
-    }
-}
-
-static void
-pixman_fill16 (uint32_t *bits,
-	       int       stride,
-	       int       x,
-	       int       y,
-	       int       width,
-	       int       height,
-	       uint32_t  xor)
-{
-    int short_stride = (stride * (int) sizeof (uint32_t)) / (int) sizeof (uint16_t);
-    uint16_t *dst = (uint16_t *)bits;
-    uint16_t v = xor & 0xffff;
-    int i;
-
-    dst = dst + y * short_stride + x;
-
-    while (height--)
-    {
-	for (i = 0; i < width; ++i)
-	    dst[i] = v;
-
-	dst += short_stride;
-    }
-}
-
-static void
-pixman_fill32 (uint32_t *bits,
-	       int       stride,
-	       int       x,
-	       int       y,
-	       int       width,
-	       int       height,
-	       uint32_t  xor)
-{
-    int i;
-
-    bits = bits + y * stride + x;
-
-    while (height--)
-    {
-	for (i = 0; i < width; ++i)
-	    bits[i] = xor;
-
-	bits += stride;
-    }
-}
-
-PIXMAN_EXPORT pixman_bool_t
-pixman_fill (uint32_t *bits,
-	     int stride,
-	     int bpp,
-	     int x,
-	     int y,
-	     int width,
-	     int height,
-	     uint32_t xor)
-{
-#if 0
-    printf ("filling: %d %d %d %d (stride: %d, bpp: %d)   pixel: %x\n",
-	    x, y, width, height, stride, bpp, xor);
-#endif
-
-#ifdef USE_MMX
-    if (!pixman_have_mmx() || !pixman_fill_mmx (bits, stride, bpp, x, y, width, height, xor))
-#endif
-    {
-	switch (bpp)
-	{
-	case 8:
-	    pixman_fill8 (bits, stride, x, y, width, height, xor);
-	    break;
-
-	case 16:
-	    pixman_fill16 (bits, stride, x, y, width, height, xor);
-	    break;
-
-	case 32:
-	    pixman_fill32 (bits, stride, x, y, width, height, xor);
-	    break;
-
-	default:
-	    return FALSE;
-	    break;
-	}
-    }
-
-    return TRUE;
-}
-
-
-/*
- * Compute the smallest value no less than y which is on a
- * grid row
- */
-
-PIXMAN_EXPORT pixman_fixed_t
-pixman_sample_ceil_y (pixman_fixed_t y, int n)
-{
-    pixman_fixed_t   f = pixman_fixed_frac(y);
-    pixman_fixed_t   i = pixman_fixed_floor(y);
-
-    f = ((f + Y_FRAC_FIRST(n)) / STEP_Y_SMALL(n)) * STEP_Y_SMALL(n) + Y_FRAC_FIRST(n);
-    if (f > Y_FRAC_LAST(n))
-    {
-	f = Y_FRAC_FIRST(n);
-	i += pixman_fixed_1;
-    }
-    return (i | f);
-}
-
-#define _div(a,b)    ((a) >= 0 ? (a) / (b) : -((-(a) + (b) - 1) / (b)))
-
-/*
- * Compute the largest value no greater than y which is on a
- * grid row
- */
-PIXMAN_EXPORT pixman_fixed_t
-pixman_sample_floor_y (pixman_fixed_t y, int n)
-{
-    pixman_fixed_t   f = pixman_fixed_frac(y);
-    pixman_fixed_t   i = pixman_fixed_floor (y);
-
-    f = _div(f - Y_FRAC_FIRST(n), STEP_Y_SMALL(n)) * STEP_Y_SMALL(n) + Y_FRAC_FIRST(n);
-    if (f < Y_FRAC_FIRST(n))
-    {
-	f = Y_FRAC_LAST(n);
-	i -= pixman_fixed_1;
-    }
-    return (i | f);
-}
-
-/*
- * Step an edge by any amount (including negative values)
- */
-PIXMAN_EXPORT void
-pixman_edge_step (pixman_edge_t *e, int n)
-{
-    pixman_fixed_48_16_t	ne;
-
-    e->x += n * e->stepx;
-
-    ne = e->e + n * (pixman_fixed_48_16_t) e->dx;
-
-    if (n >= 0)
-    {
-	if (ne > 0)
-	{
-	    int nx = (ne + e->dy - 1) / e->dy;
-	    e->e = ne - nx * (pixman_fixed_48_16_t) e->dy;
-	    e->x += nx * e->signdx;
-	}
-    }
-    else
-    {
-	if (ne <= -e->dy)
-	{
-	    int nx = (-ne) / e->dy;
-	    e->e = ne + nx * (pixman_fixed_48_16_t) e->dy;
-	    e->x -= nx * e->signdx;
-	}
-    }
-}
-
-/*
- * A private routine to initialize the multi-step
- * elements of an edge structure
- */
-static void
-_pixman_edge_tMultiInit (pixman_edge_t *e, int n, pixman_fixed_t *stepx_p, pixman_fixed_t *dx_p)
-{
-    pixman_fixed_t	stepx;
-    pixman_fixed_48_16_t	ne;
-
-    ne = n * (pixman_fixed_48_16_t) e->dx;
-    stepx = n * e->stepx;
-    if (ne > 0)
-    {
-	int nx = ne / e->dy;
-	ne -= nx * e->dy;
-	stepx += nx * e->signdx;
-    }
-    *dx_p = ne;
-    *stepx_p = stepx;
-}
-
-/*
- * Initialize one edge structure given the line endpoints and a
- * starting y value
- */
-PIXMAN_EXPORT void
-pixman_edge_init (pixman_edge_t	*e,
-		  int		n,
-		  pixman_fixed_t		y_start,
-		  pixman_fixed_t		x_top,
-		  pixman_fixed_t		y_top,
-		  pixman_fixed_t		x_bot,
-		  pixman_fixed_t		y_bot)
-{
-    pixman_fixed_t	dx, dy;
-
-    e->x = x_top;
-    e->e = 0;
-    dx = x_bot - x_top;
-    dy = y_bot - y_top;
-    e->dy = dy;
-    e->dx = 0;
-    if (dy)
-    {
-	if (dx >= 0)
-	{
-	    e->signdx = 1;
-	    e->stepx = dx / dy;
-	    e->dx = dx % dy;
-	    e->e = -dy;
-	}
-	else
-	{
-	    e->signdx = -1;
-	    e->stepx = -(-dx / dy);
-	    e->dx = -dx % dy;
-	    e->e = 0;
-	}
-
-	_pixman_edge_tMultiInit (e, STEP_Y_SMALL(n), &e->stepx_small, &e->dx_small);
-	_pixman_edge_tMultiInit (e, STEP_Y_BIG(n), &e->stepx_big, &e->dx_big);
-    }
-    pixman_edge_step (e, y_start - y_top);
-}
-
-/*
- * Initialize one edge structure given a line, starting y value
- * and a pixel offset for the line
- */
-PIXMAN_EXPORT void
-pixman_line_fixed_edge_init (pixman_edge_t *e,
-			     int	    n,
-			     pixman_fixed_t	    y,
-			     const pixman_line_fixed_t *line,
-			     int	    x_off,
-			     int	    y_off)
-{
-    pixman_fixed_t	x_off_fixed = pixman_int_to_fixed(x_off);
-    pixman_fixed_t	y_off_fixed = pixman_int_to_fixed(y_off);
-    const pixman_point_fixed_t *top, *bot;
-
-    if (line->p1.y <= line->p2.y)
-    {
-	top = &line->p1;
-	bot = &line->p2;
-    }
-    else
-    {
-	top = &line->p2;
-	bot = &line->p1;
-    }
-    pixman_edge_init (e, n, y,
-		    top->x + x_off_fixed,
-		    top->y + y_off_fixed,
-		    bot->x + x_off_fixed,
-		    bot->y + y_off_fixed);
-}
 
 pixman_bool_t
 pixman_multiply_overflows_int (unsigned int a,
-		               unsigned int b)
+                               unsigned int b)
 {
     return a >= INT32_MAX / b;
 }
 
 pixman_bool_t
 pixman_addition_overflows_int (unsigned int a,
-		               unsigned int b)
+                               unsigned int b)
 {
     return a > INT32_MAX - b;
 }
 
 void *
-pixman_malloc_ab(unsigned int a,
-		 unsigned int b)
+pixman_malloc_ab (unsigned int a,
+                  unsigned int b)
 {
     if (a >= INT32_MAX / b)
 	return NULL;
@@ -397,8 +56,8 @@ pixman_malloc_ab(unsigned int a,
 
 void *
 pixman_malloc_abc (unsigned int a,
-		   unsigned int b,
-		   unsigned int c)
+                   unsigned int b,
+                   unsigned int c)
 {
     if (a >= INT32_MAX / b)
 	return NULL;
@@ -408,186 +67,192 @@ pixman_malloc_abc (unsigned int a,
 	return malloc (a * b * c);
 }
 
-
-/**
- * pixman_version:
- *
- * Returns the version of the pixman library encoded in a single
- * integer as per %PIXMAN_VERSION_ENCODE. The encoding ensures that
- * later versions compare greater than earlier versions.
- *
- * A run-time comparison to check that pixman's version is greater than
- * or equal to version X.Y.Z could be performed as follows:
- *
- * <informalexample><programlisting>
- * if (pixman_version() >= PIXMAN_VERSION_ENCODE(X,Y,Z)) {...}
- * </programlisting></informalexample>
- *
- * See also pixman_version_string() as well as the compile-time
- * equivalents %PIXMAN_VERSION and %PIXMAN_VERSION_STRING.
- *
- * Return value: the encoded version.
- **/
-PIXMAN_EXPORT int
-pixman_version (void)
+/*
+ * Helper routine to expand a color component from 0 < n <= 8 bits to 16
+ * bits by replication.
+ */
+static inline uint64_t
+expand16 (const uint8_t val, int nbits)
 {
-    return PIXMAN_VERSION;
+    /* Start out with the high bit of val in the high bit of result. */
+    uint16_t result = (uint16_t)val << (16 - nbits);
+
+    if (nbits == 0)
+	return 0;
+
+    /* Copy the bits in result, doubling the number of bits each time, until
+     * we fill all 16 bits.
+     */
+    while (nbits < 16)
+    {
+	result |= result >> nbits;
+	nbits *= 2;
+    }
+
+    return result;
 }
 
-/**
- * pixman_version_string:
- *
- * Returns the version of the pixman library as a human-readable string
- * of the form "X.Y.Z".
- *
- * See also pixman_version() as well as the compile-time equivalents
- * %PIXMAN_VERSION_STRING and %PIXMAN_VERSION.
- *
- * Return value: a string containing the version.
- **/
-PIXMAN_EXPORT const char*
-pixman_version_string (void)
+/*
+ * This function expands images from ARGB8 format to ARGB16.  To preserve
+ * precision, it needs to know the original source format.  For example, if the
+ * source was PIXMAN_x1r5g5b5 and the red component contained bits 12345, then
+ * the expanded value is 12345123.  To correctly expand this to 16 bits, it
+ * should be 1234512345123451 and not 1234512312345123.
+ */
+void
+pixman_expand (uint64_t *           dst,
+               const uint32_t *     src,
+               pixman_format_code_t format,
+               int                  width)
 {
-    return PIXMAN_VERSION_STRING;
-}
+    /*
+     * Determine the sizes of each component and the masks and shifts
+     * required to extract them from the source pixel.
+     */
+    const int a_size = PIXMAN_FORMAT_A (format),
+              r_size = PIXMAN_FORMAT_R (format),
+              g_size = PIXMAN_FORMAT_G (format),
+              b_size = PIXMAN_FORMAT_B (format);
+    const int a_shift = 32 - a_size,
+              r_shift = 24 - r_size,
+              g_shift = 16 - g_size,
+              b_shift =  8 - b_size;
+    const uint8_t a_mask = ~(~0 << a_size),
+                  r_mask = ~(~0 << r_size),
+                  g_mask = ~(~0 << g_size),
+                  b_mask = ~(~0 << b_size);
+    int i;
 
-/**
- * pixman_format_supported_destination:
- * @format: A pixman_format_code_t format
- * 
- * Return value: whether the provided format code is a supported
- * format for a pixman surface used as a destination in
- * rendering.
- *
- * Currently, all pixman_format_code_t values are supported
- * except for the YUV formats.
- **/
-PIXMAN_EXPORT pixman_bool_t
-pixman_format_supported_destination (pixman_format_code_t format)
-{
-    switch (format) {
-    /* 32 bpp formats */
-    case PIXMAN_a2b10g10r10:
-    case PIXMAN_x2b10g10r10:
-    case PIXMAN_a8r8g8b8:
-    case PIXMAN_x8r8g8b8:
-    case PIXMAN_a8b8g8r8:
-    case PIXMAN_x8b8g8r8:
-    case PIXMAN_r8g8b8:
-    case PIXMAN_b8g8r8:
-    case PIXMAN_r5g6b5:
-    case PIXMAN_b5g6r5:
-    /* 16 bpp formats */
-    case PIXMAN_a1r5g5b5:
-    case PIXMAN_x1r5g5b5:
-    case PIXMAN_a1b5g5r5:
-    case PIXMAN_x1b5g5r5:
-    case PIXMAN_a4r4g4b4:
-    case PIXMAN_x4r4g4b4:
-    case PIXMAN_a4b4g4r4:
-    case PIXMAN_x4b4g4r4:
-    /* 8bpp formats */
-    case PIXMAN_a8:
-    case PIXMAN_r3g3b2:
-    case PIXMAN_b2g3r3:
-    case PIXMAN_a2r2g2b2:
-    case PIXMAN_a2b2g2r2:
-    case PIXMAN_c8:
-    case PIXMAN_g8:
-    case PIXMAN_x4a4:
-    /* Collides with PIXMAN_c8
-    case PIXMAN_x4c4:
-    */
-    /* Collides with PIXMAN_g8
-    case PIXMAN_x4g4:
-    */
-    /* 4bpp formats */
-    case PIXMAN_a4:
-    case PIXMAN_r1g2b1:
-    case PIXMAN_b1g2r1:
-    case PIXMAN_a1r1g1b1:
-    case PIXMAN_a1b1g1r1:
-    case PIXMAN_c4:
-    case PIXMAN_g4:
-    /* 1bpp formats */
-    case PIXMAN_a1:
-    case PIXMAN_g1:
-	return TRUE;
-	
-    /* YUV formats */
-    case PIXMAN_yuy2:
-    case PIXMAN_yv12:
-    default:
-	return FALSE;
+    /* Start at the end so that we can do the expansion in place
+     * when src == dst
+     */
+    for (i = width - 1; i >= 0; i--)
+    {
+	const uint32_t pixel = src[i];
+	const uint8_t a = (pixel >> a_shift) & a_mask,
+	              r = (pixel >> r_shift) & r_mask,
+	              g = (pixel >> g_shift) & g_mask,
+	              b = (pixel >> b_shift) & b_mask;
+	const uint64_t a16 = a_size ? expand16 (a, a_size) : 0xffff,
+	               r16 = expand16 (r, r_size),
+	               g16 = expand16 (g, g_size),
+	               b16 = expand16 (b, b_size);
+
+	dst[i] = a16 << 48 | r16 << 32 | g16 << 16 | b16;
     }
 }
 
-/**
- * pixman_format_supported_source:
- * @format: A pixman_format_code_t format
- * 
- * Return value: whether the provided format code is a supported
- * format for a pixman surface used as a source in
- * rendering.
- *
- * Currently, all pixman_format_code_t values are supported.
- **/
-PIXMAN_EXPORT pixman_bool_t
-pixman_format_supported_source (pixman_format_code_t format)
+/*
+ * Contracting is easier than expanding.  We just need to truncate the
+ * components.
+ */
+void
+pixman_contract (uint32_t *      dst,
+                 const uint64_t *src,
+                 int             width)
 {
-    switch (format) {
-    /* 32 bpp formats */
-    case PIXMAN_a2b10g10r10:
-    case PIXMAN_x2b10g10r10:
-    case PIXMAN_a8r8g8b8:
-    case PIXMAN_x8r8g8b8:
-    case PIXMAN_a8b8g8r8:
-    case PIXMAN_x8b8g8r8:
-    case PIXMAN_r8g8b8:
-    case PIXMAN_b8g8r8:
-    case PIXMAN_r5g6b5:
-    case PIXMAN_b5g6r5:
-    /* 16 bpp formats */
-    case PIXMAN_a1r5g5b5:
-    case PIXMAN_x1r5g5b5:
-    case PIXMAN_a1b5g5r5:
-    case PIXMAN_x1b5g5r5:
-    case PIXMAN_a4r4g4b4:
-    case PIXMAN_x4r4g4b4:
-    case PIXMAN_a4b4g4r4:
-    case PIXMAN_x4b4g4r4:
-    /* 8bpp formats */
-    case PIXMAN_a8:
-    case PIXMAN_r3g3b2:
-    case PIXMAN_b2g3r3:
-    case PIXMAN_a2r2g2b2:
-    case PIXMAN_a2b2g2r2:
-    case PIXMAN_c8:
-    case PIXMAN_g8:
-    case PIXMAN_x4a4:
-    /* Collides with PIXMAN_c8
-    case PIXMAN_x4c4:
-    */
-    /* Collides with PIXMAN_g8
-    case PIXMAN_x4g4:
-    */
-    /* 4bpp formats */
-    case PIXMAN_a4:
-    case PIXMAN_r1g2b1:
-    case PIXMAN_b1g2r1:
-    case PIXMAN_a1r1g1b1:
-    case PIXMAN_a1b1g1r1:
-    case PIXMAN_c4:
-    case PIXMAN_g4:
-    /* 1bpp formats */
-    case PIXMAN_a1:
-    case PIXMAN_g1:
-    /* YUV formats */
-    case PIXMAN_yuy2:
-    case PIXMAN_yv12:
-	return TRUE;
+    int i;
 
-    default:
-	return FALSE;
+    /* Start at the beginning so that we can do the contraction in
+     * place when src == dst
+     */
+    for (i = 0; i < width; i++)
+    {
+	const uint8_t a = src[i] >> 56,
+	              r = src[i] >> 40,
+	              g = src[i] >> 24,
+	              b = src[i] >> 8;
+
+	dst[i] = a << 24 | r << 16 | g << 8 | b;
     }
 }
+
+#define N_TMP_BOXES (16)
+
+pixman_bool_t
+pixman_region16_copy_from_region32 (pixman_region16_t *dst,
+                                    pixman_region32_t *src)
+{
+    int n_boxes, i;
+    pixman_box32_t *boxes32;
+    pixman_box16_t *boxes16;
+    pixman_bool_t retval;
+
+    boxes32 = pixman_region32_rectangles (src, &n_boxes);
+
+    boxes16 = pixman_malloc_ab (n_boxes, sizeof (pixman_box16_t));
+
+    if (!boxes16)
+	return FALSE;
+
+    for (i = 0; i < n_boxes; ++i)
+    {
+	boxes16[i].x1 = boxes32[i].x1;
+	boxes16[i].y1 = boxes32[i].y1;
+	boxes16[i].x2 = boxes32[i].x2;
+	boxes16[i].y2 = boxes32[i].y2;
+    }
+
+    pixman_region_fini (dst);
+    retval = pixman_region_init_rects (dst, boxes16, n_boxes);
+    free (boxes16);
+    return retval;
+}
+
+pixman_bool_t
+pixman_region32_copy_from_region16 (pixman_region32_t *dst,
+                                    pixman_region16_t *src)
+{
+    int n_boxes, i;
+    pixman_box16_t *boxes16;
+    pixman_box32_t *boxes32;
+    pixman_box32_t tmp_boxes[N_TMP_BOXES];
+    pixman_bool_t retval;
+
+    boxes16 = pixman_region_rectangles (src, &n_boxes);
+
+    if (n_boxes > N_TMP_BOXES)
+	boxes32 = pixman_malloc_ab (n_boxes, sizeof (pixman_box32_t));
+    else
+	boxes32 = tmp_boxes;
+
+    if (!boxes32)
+	return FALSE;
+
+    for (i = 0; i < n_boxes; ++i)
+    {
+	boxes32[i].x1 = boxes16[i].x1;
+	boxes32[i].y1 = boxes16[i].y1;
+	boxes32[i].x2 = boxes16[i].x2;
+	boxes32[i].y2 = boxes16[i].y2;
+    }
+
+    pixman_region32_fini (dst);
+    retval = pixman_region32_init_rects (dst, boxes32, n_boxes);
+
+    if (boxes32 != tmp_boxes)
+	free (boxes32);
+
+    return retval;
+}
+
+#ifdef DEBUG
+
+void
+_pixman_log_error (const char *function, const char *message)
+{
+    static int n_messages = 0;
+
+    if (n_messages < 10)
+    {
+	fprintf (stderr,
+		 "*** BUG ***\n"
+		 "In %s: %s\n"
+		 "Set a breakpoint on '_pixman_log_error' to debug\n\n",
+                 function, message);
+
+	n_messages++;
+    }
+}
+
+#endif
