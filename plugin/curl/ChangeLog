@@ -1,3 +1,8 @@
+2010-04-09  Andreia Gaita  <avidigal@novell.com>
+
+	* curl-bridge.[h|cpp]: use a Queue to store work handles, so it
+	takes advantage of the Queue's locking facilities
+
 2010-03-22  Andreia Gaita  <avidigal@novell.com>
 
 	* curl-bridge.[h|cpp]: added IsDataThread helper method
