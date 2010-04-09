@@ -1,3 +1,8 @@
+2010-04-09  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.cs: If ClearValue is called with a ReadOnly
+	  dp, throw an ArgumentException.
+
 2010-04-08  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.cs: Verify that the supplied default
