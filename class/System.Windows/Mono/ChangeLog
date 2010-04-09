@@ -1,3 +1,9 @@
+2010-04-09  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: We need to trim both double
+	  quotes and single quotes from the string. Fixes part of drt
+	  349.
+
 2010-04-08  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: Add support for some new SL4
