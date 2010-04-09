@@ -495,13 +495,13 @@ public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	RichTextArea () {}
 
-	/* @PropertyType=bool,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;
 
-	/* @PropertyType=TextWrapping,GenerateAccessors */
+	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
 
-	/* @PropertyType=Collection,ManagedPropertyType=BlockCollection */
+	/* @PropertyType=Collection,ManagedPropertyType=BlockCollection,AutoCreateValue,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
 
 	bool GetIsReadOnly ();

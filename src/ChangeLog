@@ -1,5 +1,11 @@
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
 
+	* textblock.h: Hide the field and setter for
+	  RichTextElement.BlocksProperty and add in missing default
+	  values.
+
+2010-04-09  Alan McGovern  <amcgovern@novell.com>
+
 	* collection.h: BlockCollection has no public ctor.
 
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
