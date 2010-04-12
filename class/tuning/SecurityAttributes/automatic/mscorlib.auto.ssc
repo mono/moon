@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 440 methods
+# 439 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -248,7 +248,6 @@
 +SSC-M: System.Reflection.Emit.FieldBuilder System.Reflection.Emit.TypeBuilder::DefineField(System.String,System.Type,System.Type[],System.Type[],System.Reflection.FieldAttributes)
 +SSC-M: System.Type System.Reflection.Emit.TypeBuilder::CreateType()
 +SSC-M: System.Reflection.EventInfo[] System.Reflection.Emit.TypeBuilder::GetEvents_internal(System.Reflection.BindingFlags)
-+SSC-M: System.Boolean System.Reflection.Emit.TypeBuilder::IsValueTypeImpl()
 +SSC-M: System.Void System.Reflection.Emit.TypeBuilder::SetParent(System.Type)
 +SSC-M: System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.TypeBuilder::DefineGenericParameters(System.String[])
 +SSC-M: System.Reflection.FieldInfo System.Reflection.FieldInfo::GetFieldFromHandle(System.RuntimeFieldHandle)

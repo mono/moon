@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 541 methods
+# 546 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -254,11 +254,14 @@
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.Object)
 +SSC-M: System.Void System.Windows.Application::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.Application::Free()
++SSC-M: System.Void System.Windows.Application::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
++SSC-M: System.Void System.Windows.Application::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
 +SSC-M: System.Windows.InstallState System.Windows.Application::get_InstallState()
 +SSC-M: System.Boolean System.Windows.Application::Install()
 +SSC-M: System.IntPtr System.Windows.Application::get_default_style_cb(System.IntPtr)
 +SSC-M: System.Void System.Windows.Application::convert_setter_values_cb(System.IntPtr)
++SSC-M: System.Void System.Windows.Application::CheckAndDownloadUpdateAsync()
 +SSC-M: System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Uri)
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Windows.Resources.StreamResourceInfo,System.Uri)
@@ -266,6 +269,8 @@
 +SSC-M: System.Boolean System.Windows.Application::get_IsCurrentSet()
 +SSC-M: System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
++SSC-M: System.Boolean System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_UpdateAvailable()
++SSC-M: System.Exception System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_Error()
 +SSC-M: System.Void System.Windows.Controls.ContentControl::content_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.ContentControl::Initialize()
 +SSC-M: System.Void System.Windows.Controls.ContentPresenter::ClearRoot()

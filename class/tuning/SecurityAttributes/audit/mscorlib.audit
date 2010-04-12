@@ -26,6 +26,10 @@ System.Boolean System.Delegate::IsTransparentProxy()
 System.Boolean System.Diagnostics.Debugger::get_IsAttached()
 	r142142		spouliot - call IsAttached_internal (icall)
 
+!SSC-28A6AE5CB7AEC47DFAB246627020615A
+System.Boolean System.Diagnostics.StackFrame::get_frame_info(System.Int32,System.Boolean,System.Reflection.MethodBase&,System.Int32&,System.Int32&,System.String&,System.Int32&,System.Int32&)
+	r155239		spouliot - internal static icall. call ves_icall_get_frame_info (mini-exceptions.c)
+
 !SSC-41BE53BD0A4AC34B642F85BFAC47698F
 System.Boolean System.Double::Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Boolean,System.Double&,System.Exception&)
 	r142142		spouliot - call, from an unsafe block, ParseImpl (icall named mono_double_ParseImpl)
@@ -90,9 +94,29 @@ System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::IncreaseQuotaTo(Sy
 System.Boolean System.MonoCustomAttrs::IsDefined(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
 	r142142		spouliot - validate parameters. call IsDefinedInternal (icall named custom_attrs_defined_internal) and GetPseudoCustomAttributes [SecurityCritical] to recursively (bool) find if the attribute 'attributeType' is defined on 'obj'
 
+!SSC-E7D58313265590DC568B1E963F6B081D
+System.Boolean System.MonoType::get_IsGenericParameter()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_IsGenericParameter (icall.c)
+
 !SSC-B2BF863503AD6C6190098E03C01E3E08
 System.Boolean System.MonoType::IsArrayImpl()
 	r142142		spouliot - call Type.IsArrayImpl (icall) on (non-null) 'this'
+
+!SSC-20028B82425E593836C74A8963802DC9
+System.Boolean System.MonoType::IsByRefImpl()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_type_isbyref (icall.c)
+
+!SSC-B37B7A6249A92A8B42D207B675886227
+System.Boolean System.MonoType::IsCOMObjectImpl()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_type_iscomobject (icall.c)
+
+!SSC-8498C9D4F4E3457A344A29E4B62CE935
+System.Boolean System.MonoType::IsPointerImpl()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_type_ispointer (icall.c)
+
+!SSC-6D3C037E08F615EEF559F008508D63BA
+System.Boolean System.MonoType::IsPrimitiveImpl()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_type_isprimitive (icall.c)
 
 !SSC-22C815D71375100455C740F21192FECD
 System.Boolean System.Reflection.Emit.CustomAttributeBuilder::IsValidType(System.Type)
@@ -102,9 +126,13 @@ System.Boolean System.Reflection.Emit.CustomAttributeBuilder::IsValidType(System
 System.Boolean System.Reflection.Emit.TypeBuilder::get_IsGenericParameter()
 	r144558		spouliot - visible icall. parameter-less (instance)
 
-!SSC-A2CC81044F0E9DEC17465CA0986375B4
-System.Boolean System.Reflection.Emit.TypeBuilder::IsValueTypeImpl()
-	r142142		spouliot - call type_is_subtype_of (icall) for ValueType and Enum
+!SSC-B6C8A319476D539C7E32E304BAC63C54
+System.Boolean System.Reflection.MonoMethod::get_IsGenericMethod()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoMethod_get_IsGenericMethod (icall.c)
+
+!SSC-28FF0F2FE9B5C718CD95FC5C3F72BA04
+System.Boolean System.Reflection.MonoMethod::get_IsGenericMethodDefinition()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoMethod_get_IsGenericMethodDefinition (icall.c)
 
 !SSC-A4026DF218AA0FD9868E0EE6552EE9D4
 System.Boolean System.Threading.EventWaitHandle::Reset()
@@ -653,6 +681,10 @@ System.Int32 System.IO.UnmanagedMemoryStream::Read(System.Byte[],System.Int32,Sy
 System.Int32 System.IO.UnmanagedMemoryStream::ReadByte()
 	r143653		spouliot - unsafe code, call Marshal.ReadByte (SecurityCritical) after parameter validations
 
+!SSC-D1A13F52BEC84C8186B0E342DA33FCB0
+System.Int32 System.MonoType::GetArrayRank()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_GetArrayRank (icall.c)
+
 !SSC-AD5BB05E75E4281A341DB24B69695E0B
 System.Int32 System.Object::GetHashCode()
 	r142142		spouliot - call InternalGetHashCode (icall)
@@ -681,6 +713,10 @@ System.Int32 System.Reflection.MemberInfo::get_MetadataToken()
 System.Int32 System.Reflection.Module::get_MetadataToken()
 	r154595		spouliot - not an icall anymore, call new icall "get_MetadataToken (Module module)" using 'this' (code moved to MonoModule.cs file)
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
+
+!SSC-BD7E9B1BE604C606760A82E41A521BA3
+System.Int32 System.Reflection.MonoField::GetFieldOffset()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoField_GetFieldOffset (icall.c)
 
 !SSC-75C6365925F1D68B3CEA2B1A8EFFC850
 System.Int32 System.Reflection.ParameterInfo::get_MetadataToken()
@@ -899,6 +935,10 @@ System.Object System.Object::MemberwiseClone()
 System.Object System.Reflection.MonoCMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
 	r145113		spouliot - call InternalInvoke (icall named ves_icall_InternalInvoke) with potentially-null 'obj' and validated/converted 'parameters'
 
+!SSC-CDD859CADD0A41EE45CB1AC02AE74A38
+System.Object System.Reflection.MonoField::GetRawConstantValue()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoField_GetRawConstantValue (icall.c)
+
 !SSC-643276BCFB390C3DBD12CBE3D4FCDCEF
 System.Object System.Reflection.MonoField::GetValue(System.Object)
 	r142142		spouliot - call GetValueInternal (icall) with potentially null value (for static fields)
@@ -943,6 +983,10 @@ System.Object[] System.Reflection.MonoMethod::GetPseudoCustomAttributes()
 !SSC-818EB29CA8CE41E13F2560A8BE445DE9
 System.OperatingSystem System.Environment::get_OSVersion()
 	r142142		spouliot - call GetOSVersionString (icall) and Platform (icall)
+
+!SSC-6802E0800C5A97A0EAF08A05F9092527
+System.Reflection.Assembly System.MonoType::get_Assembly()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_Assembly
 
 !SSC-724486D6F43BBD1B3DBAA8B3D14DA752
 System.Reflection.Assembly System.Reflection.Assembly::GetCallingAssembly()
@@ -1023,6 +1067,10 @@ System.Reflection.EventInfo[] System.MonoType::GetEvents(System.Reflection.Bindi
 System.Reflection.EventInfo[] System.Reflection.Emit.TypeBuilder::GetEvents_internal(System.Reflection.BindingFlags)
 	r142142		spouliot - call get_event_info (icall) on each EventBuilder (note: do not confuse with icall of the same name used by MonoType)
 
+!SSC-3872F605157A2761C01694121D597FEB
+System.Reflection.FieldInfo System.MonoType::GetField(System.String,System.Reflection.BindingFlags)
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_Type_GetField (icall.c) with 'name' and 'bindingAttr' parameters (checked in unmanaged code)
+
 !SSC-E91F160981C173FFC2DB8B2B61698683
 System.Reflection.FieldInfo System.Reflection.FieldInfo::GetFieldFromHandle(System.RuntimeFieldHandle)
 	r142142		spouliot - call internal_from_handle_type with, non-zero, handle.Value
@@ -1046,6 +1094,10 @@ System.Reflection.GenericParameterAttributes System.Type::get_GenericParameterAt
 !SSC-66EBBAF25EB1EA04B0314FC904C01F5D
 System.Reflection.InterfaceMapping System.Type::GetInterfaceMap(System.Type)
 	r142142		spouliot - call GetInterfaceMapData (icall)
+
+!SSC-C87E75B8F19D0F9592A5B202CA9A2AC5
+System.Reflection.MethodBase System.MonoType::get_DeclaringMethod()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_DeclaringMethod (icall.c)
 
 !SSC-99567BD1F323D81936D95F770DA5A3A2
 System.Reflection.MethodBase System.Reflection.MethodBase::GetCurrentMethod()
@@ -1100,9 +1152,17 @@ System.Reflection.MethodInfo[] System.MonoType::GetMethods(System.Reflection.Bin
 System.Reflection.MethodInfo[] System.Reflection.MonoGenericClass::GetMethods(System.Reflection.BindingFlags)
 	r142142		spouliot - call MonoType.GetMethodsByName (icall) with 'null', 'bindingAttr', 'false' (ignoreCase) and 'this'
 
+!SSC-08A935C2897BFD654ABF3BD6EB501CD4
+System.Reflection.Module System.MonoType::get_Module()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_Module (icall.c)
+
 !SSC-B615168E5230415014AB0BBA18ADD38F
 System.Reflection.Module System.Reflection.Assembly::GetManifestModule()
 	r142142		spouliot - call GetManifestModuleInternal (icall). Virtual method used by ManifestModule property (user visible)
+
+!SSC-C277F28725FAEBC3471E1497F2A65D17
+System.Reflection.Module[] System.Reflection.Assembly::GetModulesInternal()
+	r155239		spouliot - non-visible instance icall. call ves_icall_System_Reflection_Assembly_GetModulesInternal (icall.c)
 
 !SSC-ADB6CDCECE1639B2205CD0CD0148AEC5
 System.Reflection.MonoEventInfo System.Reflection.MonoEventInfo::GetEventInfo(System.Reflection.MonoEvent)
@@ -1207,6 +1267,14 @@ System.String System.MonoType::get_AssemblyQualifiedName()
 !SSC-7B055CC4499F97B7D91C5ADB0FFCA3E1
 System.String System.MonoType::get_FullName()
 	r142142		spouliot - call getFullName (icall) with true+false
+
+!SSC-11318829EFE12CBB337E3A76C6120EDF
+System.String System.MonoType::get_Name()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_Name (icall.c)
+
+!SSC-BF61C2437278FF9522D9C1D2DC28B16F
+System.String System.MonoType::get_Namespace()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_Namespace (icall.c)
 
 !SSC-2592395AA49A388B482845B06BAF7CF1
 System.String System.MonoType::ToString()
@@ -1471,9 +1539,25 @@ System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.Str
 System.Type System.Enum::GetUnderlyingType(System.Type)
 	r142142		spouliot - call get_underlying_type on non-null, enum, type
 
+!SSC-84224ADBB51A18E9E1F609DD15A45B48
+System.Type System.MonoType::get_BaseType()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_get_type_parent (icall.c)
+
+!SSC-27B9EFCCB078F4F7E05EBD11E69C53DE
+System.Type System.MonoType::get_DeclaringType()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_DeclaringType (icall.c)
+
+!SSC-D0D74ED9C17E545318BB4483D7E4473F
+System.Type System.MonoType::GetElementType()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_GetElementType (icall.c)
+
 !SSC-34850B92561B4B8803C83A8391116827
 System.Type System.MonoType::GetGenericTypeDefinition()
 	r142142		spouliot - call GetGenericTypeDefinition_impl (icall) on (non-null) instance
+
+!SSC-646E37635A7341D1A242177D1428B108
+System.Type System.MonoType::GetNestedType(System.String,System.Reflection.BindingFlags)
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_Type_GetNestedType (icall.c) with 'name' and 'bflags' (validated in unmanaged code)
 
 !SSC-C44A44B08210F81CA8B410B44249AC17
 System.Type System.Object::GetType()
@@ -1495,6 +1579,10 @@ System.Type System.Reflection.Emit.ModuleBuilder::GetType(System.String,System.B
 System.Type System.Reflection.Emit.TypeBuilder::CreateType()
 	r142142		spouliot - call create_generic_class (icall in reflection.c, parameter-less instance). call AppDomain.DoTypeResolve on fields where FieldType is a TypeBuilder (as parameter). call create_runtime_class (icall) on 'this'
 
+!SSC-A82D32CD29B07D5D1E384F6A70910D29
+System.Type System.Reflection.Module::GetGlobalType()
+	r155239		spouliot - non-visible instance icall. call ves_icall_System_Reflection_Module_GetGlobalType (icall.c)
+
 !SSC-CE56B82AF49F1F8FB267A0DAB371213F
 System.Type System.Reflection.Module::GetType(System.String,System.Boolean,System.Boolean)
 	r142142		spouliot - call assembly.InternalGetType (instance icall) with this and the validated (string) parameters
@@ -1510,6 +1598,14 @@ System.Type System.Reflection.MonoField::get_DeclaringType()
 !SSC-570483006502F5741EF861753F4BC86A
 System.Type System.Reflection.MonoField::get_ReflectedType()
 	r142142		spouliot - call GetParentType (icall) with 'false'
+
+!SSC-2B7B2F3A1503BA37E4CCF23B2D593106
+System.Type System.Reflection.MonoGenericCMethod::get_ReflectedType()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoGenericMethod_get_ReflectedType (icall.c)
+
+!SSC-6E90ECAA2FF0F4AC652C1FCD62E0A664
+System.Type System.Reflection.MonoGenericMethod::get_ReflectedType()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoGenericMethod_get_ReflectedType (icall.c)
 
 !SSC-A2D3DD91FDAE1A4A7BF3F90016D9E23E
 System.Type System.Type::GetType(System.String)
@@ -1548,9 +1644,29 @@ System.Type System.Type::MakePointerType()
 	r146014		spouliot - now a managed method calling a new icall with 'this' after validation (!IsSystemType)
 	r144558		spouliot - visible icall (instance, no parameter)
 
+!SSC-0B2CCC8B4FBEA6B76037E2B9058B0C74
+System.Type[] System.MonoType::GetGenericArguments()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_GetGenericArguments (icall.c)
+
+!SSC-C594AC9F717E602A4694E88B1C139948
+System.Type[] System.MonoType::GetInterfaces()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_Type_GetInterfaces (icall.c)
+
+!SSC-0E922B23326E31226539E2DD7AE6CA69
+System.Type[] System.MonoType::GetNestedTypes(System.Reflection.BindingFlags)
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_Type_GetNestedTypes (icall.c) using 'bflags'
+
+!SSC-1E0B9B2D95D83F421E2EF5EE3BB71BED
+System.Type[] System.Reflection.Assembly::GetTypes(System.Boolean)
+	r155239		spouliot - internal icall. call ves_icall_System_Reflection_Assembly_GetTypes (icall.c) with boolean 'exportedOnly' parameter
+
 !SSC-BAA07B3B544BB4070AF2869386A011A7
 System.Type[] System.Reflection.Module::GetTypes()
 	r142142		spouliot - call InternalGetTypes (icall) on self (instance)
+
+!SSC-FC6461C4057C1A65EAE165002C8EB6E4
+System.Type[] System.Reflection.MonoMethod::GetGenericArguments()
+	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoMethod_GetGenericArguments (icall.c)
 
 !SSC-72E9DD287BED874AB00833743A2DAA23
 System.Type[] System.Type::GetGenericParameterConstraints()
@@ -1817,8 +1933,9 @@ System.Void System.IO.Path::.cctor()
 System.Void System.IO.UnmanagedMemoryStream::Write(System.Byte[],System.Int32,System.Int32)
 	r143653		spouliot - unsafe code, call Marshal.WriteByte (SecurityCritical) after parameter validations
 
-!SSC-A52BD2B600DD13896AB78A5B149F6DB5
+!SSC-C9DFA7AE30876546CE520F50811F3C93
 System.Void System.MonoEnumInfo::GetInfo(System.Type,System.MonoEnumInfo&)
+	r155002		spouliot - changed to call Enum.GetUnderlyingType instead of using array types
 	r142142		spouliot - call get_enum_info (icall) with non-null 'enumType' value (checked by Hashtable.ContainsKey)
 
 !SSC-D825296AF049D727B0F05CB038272159

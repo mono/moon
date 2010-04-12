@@ -182,9 +182,9 @@ class Program {
 
 	static bool NeedReview (MethodDefinition method)
 	{
-		// visible icall (mostly public) are considered safe (even without the attribute) but needs to be reviewed anyway
+		// report all icalls that are not SC (visible or not)
 		if (method.IsInternalCall)
-			return (!method.IsSecurityCritical () && method.IsVisible ());
+			return !method.IsSecurityCritical ();
 		// is it SSC ?
 		return method.IsSecuritySafeCritical ();
 	}
