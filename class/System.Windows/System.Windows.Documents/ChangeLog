@@ -1,3 +1,8 @@
+2010-04-12  Alan McGovern  <amcgovern@novell.com>
+
+	* Inline.cs: These DPs need to be re-exposed in Inline even
+	  though they are actually declared on TextElement. 
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Block.cs:

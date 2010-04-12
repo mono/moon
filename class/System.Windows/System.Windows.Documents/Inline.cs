@@ -33,7 +33,16 @@ using System.Windows.Markup;
 
 namespace System.Windows.Documents {
 	public abstract partial class Inline : TextElement {
-		
+
+		public static DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty;
+		public static DependencyProperty FontSizeProperty = TextElement.FontSizeProperty;
+		public static DependencyProperty FontStretchProperty = TextElement.FontStretchProperty;
+		public static DependencyProperty FontStyleProperty = TextElement.FontStyleProperty;
+		public static DependencyProperty FontWeightProperty = TextElement.FontWeightProperty;
+		public static DependencyProperty ForegroundProperty = TextElement.ForegroundProperty;
+		public static DependencyProperty TextDecorationsProperty = TextElement.TextDecorationsProperty;
+		public static DependencyProperty LanguageProperty = TextElement.LanguageProperty;
+
 		public object FindName (string name)
 		{
 			return DepObjectFindName (name);

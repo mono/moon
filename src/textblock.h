@@ -105,25 +105,9 @@ class Inline : public TextElement, public ITextAttributes {
 	virtual ~Inline ();
 	
  public:
- 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
-	const static int FontFamilyProperty;
- 	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
-	const static int FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
-	const static int FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
-	const static int FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
-	const static int FontWeightProperty;
- 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
-	const static int ForegroundProperty;
- 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
-	const static int TextDecorationsProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator,GenerateAccessors */
-	const static int LanguageProperty;
 	
 	// internal properties to inherit the FontSource between inlines and textblocks
- 	/* @PropertyType=FontSource,GenerateManagedDP=false,GenerateAccessors */
+	/* @PropertyType=FontSource,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontSourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -134,35 +118,8 @@ class Inline : public TextElement, public ITextAttributes {
 	
 	virtual bool PermitsMultipleParents () { return false; }
 	
-	//
-	// Property Accessors
-	//
-	void SetFontFamily (FontFamily *value);
-	FontFamily *GetFontFamily ();
-	
-	void SetLanguage (const char *lang);
-	const char *GetLanguage ();
-	
-	void SetFontSize (double value);
-	double GetFontSize ();
-	
-	void SetFontStretch (FontStretch *value);
-	FontStretch *GetFontStretch ();
-	
-	void SetFontStyle (FontStyle *value);
-	FontStyle *GetFontStyle ();
-	
-	void SetFontWeight (FontWeight *value);
-	FontWeight *GetFontWeight ();
-	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
-	
-	void SetForeground (Brush *value);
-	Brush *GetForeground ();
-	
-	void SetTextDecorations (TextDecorations decorations);
-	TextDecorations GetTextDecorations ();
 	
 	//
 	// Non-DependencyProperty Accessors
@@ -389,7 +346,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	Block () {}
+	Block () { SetObjectType (Type::BLOCK); }
 
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
@@ -406,9 +363,9 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Paragraph () {}
+	Paragraph () { SetObjectType (Type::PARAGRAPH); }
 
-	/* @PropertyType=InlineCollection,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
 
 	InlineCollection *GetInlines ();
@@ -423,9 +380,9 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Span () {}
+	Span () { SetObjectType (Type::SPAN); }
 
-	/* @PropertyType=InlineCollection,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
 
 	InlineCollection *GetInlines ();
@@ -439,13 +396,13 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Bold () {}
+	Bold ();
 };
 
 /* @Namespace=System.Windows.Documents */
 class Italic : public Span {
 protected:
-	virtual ~Italic () {}
+	virtual ~Italic () { SetObjectType (Type::ITALIC); }
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
@@ -455,7 +412,7 @@ public:
 /* @Namespace=System.Windows.Documents */
 class Underline : public Span {
 protected:
-	virtual ~Underline () {}
+	virtual ~Underline () { SetObjectType (Type::UNDERLINE); }
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
@@ -469,7 +426,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	Hyperlink () {}
+	Hyperlink () { SetObjectType (Type::HYPERLINK); }
 
 	/* @PropertyType=object */
 	const static int CommandParameterProperty;
@@ -493,7 +450,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	RichTextArea () {}
+	RichTextArea () { SetObjectType (Type::RICHTEXTAREA); }
 
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;

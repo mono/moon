@@ -35,6 +35,15 @@ static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
 #define utf8_linebreak_len 3
 
 
+Bold::Bold ()
+{
+	SetObjectType (Type::BOLD);
+
+	// Yes, this is supposed to be locally set in the ctor.
+	FontWeight w (FontWeightsBold);
+	SetFontWeight (&w);
+}
+
 //
 // Inline
 //

@@ -462,7 +462,7 @@ public:
 	const static int VisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int UseLayoutRoundingProperty;
-	/* @PropertyType=bool,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int AllowDropProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement

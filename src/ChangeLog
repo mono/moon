@@ -1,5 +1,14 @@
 2010-04-12  Alan McGovern  <amcgovern@novell.com>
 
+	* textblock.h:
+	* textblock.cpp: Add a bunch of missing SetObjectType calls to
+	  some new classes. Remove a bunch of DPs declared on Inline
+	  as they are now declared on TextElement.
+
+	* uielement.h: Add missing defaultvalues.
+
+2010-04-12  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.h: Add a missing DefaultValue.
 
 2010-04-09  Jeffrey Stedfast  <fejj@novell.com>
