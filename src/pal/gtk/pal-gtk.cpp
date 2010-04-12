@@ -1018,6 +1018,14 @@ MoonInstallerServiceGtk::GetUpdateUri (Deployment *deployment)
 	return install_utils_get_update_uri (settings);
 }
 
+time_t
+MoonInstallerServiceGtk::GetLastModified (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	
+	return install_utils_get_last_modified (settings);
+}
+
 char *
 MoonInstallerServiceGtk::GetTmpFilename (Deployment *deployment)
 {

@@ -15,6 +15,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <time.h>
 
 #include "deployment.h"
 #include "downloader.h"
@@ -56,5 +57,6 @@ char *install_utils_get_desktop_shortcut (OutOfBrowserSettings *settings);
 char *install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings);
 char *install_utils_get_launcher_script (OutOfBrowserSettings *settings);
 char *install_utils_get_update_uri (OutOfBrowserSettings *settings);
+time_t install_utils_get_last_modified (OutOfBrowserSettings *settings);
 
 #endif /* MOON_INSTALL_DIALOG_H */

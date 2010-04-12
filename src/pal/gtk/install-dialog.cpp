@@ -618,20 +618,31 @@ static bool
 install_update_uri (Deployment *deployment, OutOfBrowserSettings *settings, const char *app_dir)
 {
 	const char *uri = deployment->GetXapLocation ();
-	gboolean rv;
+	bool error = false;
 	char *path;
+	FILE *fp;
 	
 	path = g_build_filename (app_dir, "update-uri", NULL);
-	rv = g_file_set_contents (path, uri, strlen (uri), NULL);
+	if (!(fp = fopen (path, "wt"))) {
+		g_free (path);
+		return false;
+	}
+	
 	g_free (path);
 	
-	return rv ? true : false;
+	if (fprintf (fp, "%s\n", uri) < 0)
+		error = true;
+	
+	fclose (fp);
+	
+	return !error;
 }
 
 static bool
 install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, const char *filename)
 {
 	char *dirname, *icon_name, *quoted, *launcher;
+	bool error = false;
 	struct stat st;
 	FILE *fp;
 	int fd;
@@ -648,31 +659,43 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 		return false;
 	}
 	
-	fprintf (fp, "[Desktop Entry]\n");
-	fprintf (fp, "Type=Application\n");
-	fprintf (fp, "Encoding=UTF-8\n");
-	fprintf (fp, "Version=1.0\n");
-	fprintf (fp, "Terminal=false\n");
-	fprintf (fp, "Categories=Application;Utility;\n");
-	fprintf (fp, "Name=%s\n", settings->GetShortName ());
+	if (fprintf (fp, "[Desktop Entry]\n") < 0)
+		error = true;
+	if (fprintf (fp, "Type=Application\n") < 0)
+		error = true;
+	if (fprintf (fp, "Encoding=UTF-8\n") < 0)
+		error = true;
+	if (fprintf (fp, "Version=1.0\n") < 0)
+		error = true;
+	if (fprintf (fp, "Terminal=false\n") < 0)
+		error = true;
+	if (fprintf (fp, "Categories=Application;Utility;\n") < 0)
+		error = true;
+	if (fprintf (fp, "Name=%s\n", settings->GetShortName ()) < 0)
+		error = true;
 	
-	if (settings->GetBlurb ())
-		fprintf (fp, "Comment=%s\n", settings->GetBlurb ());
+	if (settings->GetBlurb ()) {
+		if (fprintf (fp, "Comment=%s\n", settings->GetBlurb ()) < 0)
+			error = true;
+	}
 	
 	icon_name = g_build_filename (app_dir, "icons", "48x48.png", NULL);
-	if (stat (icon_name, &st) != -1 && S_ISREG (st.st_mode))
-		fprintf (fp, "Icon=%s\n", icon_name);
+	if (stat (icon_name, &st) != -1 && S_ISREG (st.st_mode)) {
+		if (fprintf (fp, "Icon=%s\n", icon_name) < 0)
+			error = true;
+	}
 	g_free (icon_name);
 	
 	launcher = g_build_filename (app_dir, "lunar-launcher", NULL);
 	quoted = g_shell_quote (launcher);
-	fprintf (fp, "Exec=%s\n", quoted);
+	if (fprintf (fp, "Exec=%s\n", quoted) < 0)
+		error = true;
 	g_free (launcher);
 	g_free (quoted);
 	
 	fclose (fp);
 	
-	return true;
+	return !error;
 }
 
 bool
@@ -833,4 +856,24 @@ install_utils_get_update_uri (OutOfBrowserSettings *settings)
 	g_strstrip (uri);
 	
 	return uri;
+}
+
+time_t
+install_utils_get_last_modified (OutOfBrowserSettings *settings)
+{
+	char *app_dir, *path;
+	struct stat st;
+	
+	app_dir = install_utils_get_install_dir (settings);
+	path = g_build_filename (app_dir, "Application.xap", NULL);
+	g_free (app_dir);
+	
+	if (stat (path, &st) == -1) {
+		g_free (path);
+		return 0;
+	}
+	
+	g_free (path);
+	
+	return st.st_ctime;
 }

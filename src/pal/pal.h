@@ -4,6 +4,7 @@
 #define MOON_PAL_H
 
 #include <glib.h>
+#include <time.h>
 
 #include "enums.h"
 #include "cairo.h"
@@ -255,6 +256,7 @@ class MoonInstallerService {
 	
 protected:
 	virtual char *GetUpdateUri (Deployment *deployment) = 0;
+	virtual time_t GetLastModified (Deployment *deployment) = 0;
 	virtual char *GetTmpFilename (Deployment *deployment) = 0;
 	virtual char *GetXapFilename (Deployment *deployment) = 0;
 	

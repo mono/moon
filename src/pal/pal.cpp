@@ -108,9 +108,6 @@ MoonInstallerService::UpdaterCompleted ()
 	int err = 0;
 	FILE *fp;
 	
-	// FIXME: Check if the content of the xap has changed and only set
-	// UpdateAvailable to true if it has.
-	
 	if ((fp = fopen (tmp, "wb"))) {
 		// write to the temporary file
 		if (fwrite (xap->data, 1, xap->len, fp) == xap->len)
@@ -151,23 +148,41 @@ MoonInstallerService::downloader_failed (EventObject *sender, EventArgs *args, g
 	((MoonInstallerService *) user_data)->UpdaterFailed ();
 }
 
+static char *tm_months[] = {
+	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+
+static char *tm_days[] = {
+	"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+};
+
 void
 MoonInstallerService::CheckAndDownloadUpdateAsync (Deployment *deployment, UpdateCompletedCallback completed, gpointer user_data)
 {
-	char *uri;
+	char mtime[128], *uri;
+	struct tm tm;
+	time_t when;
 	
 	if (downloader)
 		return;
 	
 	uri = GetUpdateUri (deployment);
+	when = GetLastModified (deployment);
 	path = GetXapFilename (deployment);
 	tmp = GetTmpFilename (deployment);
 	
-	// FIXME: Use the If-Modified-Since: <date> header in our request
+	gmtime_r (&when, &tm);
+	
+	snprintf (mtime, sizeof (mtime), "%s, %02d %s %04d %02d:%02d:%02d GMT",
+		  tm_days[tm.tm_wday], tm.tm_mday, tm_months[tm.tm_mon],
+		  tm.tm_year + 1900, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	
 	downloader = deployment->GetSurface ()->CreateDownloader ();
 	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 	downloader->AddHandler (Downloader::CompletedEvent, downloader_completed, this);
 	downloader->SetStreamFunctions (downloader_write, downloader_notify_size, this);
+	downloader->InternalSetHeader ("If-Modified-Since", mtime);
 	downloader->Open ("GET", uri, XamlPolicy);
 	xap = g_byte_array_new ();
 	downloader->Send ();

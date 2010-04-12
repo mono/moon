@@ -1,3 +1,14 @@
+2010-04-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/pal.cpp (CheckAndDownloadUpdateAsync): Use the LastModified
+	time so that we don't download the xap if it hasn't been updated.
+
+	* pal/gtk/pal-gtk.cpp (GetLastModified): New method to get the
+	LastModified time of the xap.
+
+	* pal/gtk/install-dialog.cpp (install_utils_get_last_modified):
+	Get the LastModified time for the xap.
+
 2010-04-12  Alan McGovern  <amcgovern@novell.com>
 
 	* textblock.h:

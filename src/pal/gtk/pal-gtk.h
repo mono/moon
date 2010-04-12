@@ -50,6 +50,7 @@ private:
 class MoonInstallerServiceGtk : public MoonInstallerService {
 protected:
 	virtual char *GetUpdateUri (Deployment *deployment);
+	virtual time_t GetLastModified (Deployment *deployment);
 	virtual char *GetTmpFilename (Deployment *deployment);
 	virtual char *GetXapFilename (Deployment *deployment);
 	
