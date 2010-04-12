@@ -134,7 +134,14 @@ fi
 
 if test -d $srcdir/cairo; then
   echo Running cairo/autogen.sh ...
+  tmp_pkg=$PKG_CONFIG_PATH
+  if test -n $PKG_CONFIG_PATH; then
+      PKG_CONFIG_PATH=$srcdir/pixman:$PKG_CONFIG_PATH
+  else
+      PKG_CONFIG_PATH=$srcdir/pixman
+  fi
   (cd $srcdir/cairo ; ./autogen.sh "$@")
+  PKG_CONFIG_PATH=$tmp_pkg
   echo Done running cairo/autogen.sh ...
 fi
 
