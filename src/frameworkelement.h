@@ -59,7 +59,7 @@ public:
 	const static int VerticalAlignmentProperty;
 	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
 	const static int StyleProperty;
-	/* @PropertyType=FlowDirection,GenerateAccessors */
+	/* @PropertyType=FlowDirection,DefaultValue=FlowDirectionLeftToRight,GenerateAccessors */
 	const static int FlowDirectionProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
