@@ -1440,7 +1440,6 @@ class Generator {
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
 
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("TextDecorationCollection", "TEXTDECORATION_COLLECTION", "OBJECT", true, true));
 
 		// Set IncludeInKinds for all types which inherit from EventObject
 		foreach (MemberInfo member in all.Children.Values) {

@@ -1,3 +1,24 @@
+2010-04-13  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h: When instantiating DOs as default values, we need
+	  to use an AutoCreator attribute, not the normal DefaultValue
+	  attribute.
+
+	* printing.h:
+	* mediaelement.h: Use 'string', not char* as the property type
+
+	* provider.cpp: Freeze the autocreated solid colour brush.
+
+	* provider.h: Add an autocreator for the black brush.
+
+	* textblock.h: When instantiating DOs as default values, we
+	  need to use an AutoCreator attribute, not the normal
+	  DefaultValue attribute. Also add in some more missing
+	  default values.
+
+	* brush.h:
+	* brush.cpp: Added in missing default values.
+
 2010-04-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/pal.cpp (CheckAndDownloadUpdateAsync): Use the LastModified

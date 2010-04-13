@@ -31,9 +31,9 @@ class Brush : public DependencyObject {
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int OpacityProperty;
-	/* @PropertyType=Transform,AutoCreator=Brush::CreateDefaultMatrixTransform,GenerateAccessors */
+	/* @PropertyType=Transform,AutoCreator=Brush::CreateDefaultMatrixTransform,HiddenDefaultValue,GenerateAccessors */
 	const static int RelativeTransformProperty;
-	/* @PropertyType=Transform,AutoCreator=Brush::CreateDefaultMatrixTransform,GenerateAccessors */
+	/* @PropertyType=Transform,AutoCreator=Brush::CreateDefaultMatrixTransform,HiddenDefaultValue,GenerateAccessors */
 	const static int TransformProperty;
 	
 	// internal property - generic brush property change
@@ -297,7 +297,7 @@ public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	HtmlBrush () : TileBrush (Type::HTMLBRUSH) { }
 
-	/* @PropertyType=string */
+	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int SourceNameProperty;
 };
 

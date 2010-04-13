@@ -122,6 +122,7 @@ public:
 	static AutoCreator default_autocreator;
 
 	static AutoCreator CreateDefaultFontSize;
+	static AutoCreator CreateBlackBrush;
 };
 
 class AutoCreatePropertyValueProvider : public PropertyValueProvider {

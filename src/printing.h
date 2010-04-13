@@ -24,7 +24,7 @@ public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	PrintDocument () {}
 
-	/* @PropertyType=char*,GenerateAccessors */
+	/* @PropertyType=string,GenerateAccessors */
 	const static int DocumentNameProperty;
 
 	/* @DelegateType=EventHandler<EndPrintEventArgs> */

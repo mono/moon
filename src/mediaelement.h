@@ -397,7 +397,7 @@ public:
 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
 	CaptureDevice () {}
 
-	/* @PropertyType=char*,GenerateAccessors */
+	/* @PropertyType=string,GenerateAccessors */
 	const static int FriendlyNameProperty;
 
 	/* @PropertyType=bool,GenerateAccessors */

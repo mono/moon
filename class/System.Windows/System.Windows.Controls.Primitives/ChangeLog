@@ -1,3 +1,7 @@
+2010-04-13  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Added in missing default values.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Selector: Update to SL4 beta API.

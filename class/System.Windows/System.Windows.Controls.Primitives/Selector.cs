@@ -47,7 +47,7 @@ namespace System.Windows.Controls.Primitives {
 			DependencyProperty.Register ("SelectedValue", typeof (object), typeof (Selector), new PropertyMetadata (null, OnSelectedValueChanged));
 		
 		public static readonly DependencyProperty SelectedValuePathProperty = 
-			DependencyProperty.Register ("SelectedValuePath", typeof (string), typeof (Selector), new PropertyMetadata (null, OnSelectedValuePathChanged));
+			DependencyProperty.Register ("SelectedValuePath", typeof (string), typeof (Selector), new PropertyMetadata ("", OnSelectedValuePathChanged));
 		
 		
 		static void OnIsSynchronizedWithCurrentItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)

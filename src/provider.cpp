@@ -606,6 +606,14 @@ AutoCreators::CreateDefaultFontSize (Type::Kind kind, DependencyProperty *proper
 	return new Value (XAML_FONT_SIZE);
 }
 
+Value *
+AutoCreators::CreateBlackBrush (Type::Kind kind, DependencyProperty *property)
+{
+	SolidColorBrush *brush = new SolidColorBrush ("black");
+	brush->Freeze ();
+	return Value::CreateUnrefPtr (brush);
+}
+
 InheritedDataContextValueProvider::InheritedDataContextValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
 	: PropertyValueProvider (obj, precedence)
 {

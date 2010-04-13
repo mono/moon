@@ -1,3 +1,8 @@
+2010-04-13  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: TextDecorationCollection does not need to be
+	  in our type system.
+
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: Make System.Enum be the base type of all enums

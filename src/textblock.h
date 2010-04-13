@@ -54,11 +54,11 @@ public:
 	const static int FontStyleProperty;
 	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
-	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
+	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush,GenerateAccessors */
 	const static int ForegroundProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=NonNullExceptionValidator,GenerateAccessors */
 	const static int LanguageProperty;
-	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
+	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsUnderline,HiddenDefaultValue,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;
 
 	void SetFontFamily (FontFamily *family);
@@ -251,7 +251,7 @@ class TextBlock : public FrameworkElement {
 	const static int FontWeightProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
 	const static int FontSourceProperty;
-	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
+	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush,GenerateAccessors */
 	const static int ForegroundProperty;
 	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int InlinesProperty;
@@ -432,13 +432,13 @@ public:
 	const static int CommandParameterProperty;
 	/* @PropertyType=object,ManagedPropertyType=ICommand */
 	const static int CommandProperty;
-	/* @PropertyType=Brush */
+	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush */
 	const static int MouseOverForegroundProperty;
-	/* @PropertyType=TextDecorationCollection */
+	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsUnderline,ManagedPropertyType=TextDecorationCollection */
 	const static int MouseOverTextDecorationsProperty;
-	/* @PropertyType=Uri */
+	/* @PropertyType=Uri,DefaultValue=Uri() */
 	const static int NavigateUriProperty;
-	/* @PropertyType=char* */
+	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int TargetNameProperty;
 };
 
