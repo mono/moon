@@ -19,7 +19,7 @@ Requirements
 	Do this like this:
             svn co http://anonsvn.mono-project.com/source/trunk/moon
             svn co -r 155239 http://anonsvn.mono-project.com/source/trunk/mono
-            svn co -r 155239 http://anonsvn.mono-project.com/source/trunk/mcs
+            svn co -r 155283 http://anonsvn.mono-project.com/source/trunk/mcs
             svn co -r 155239 http://anonsvn.mono-project.com/source/trunk/mono-basic
 
 
