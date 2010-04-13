@@ -274,7 +274,142 @@
 				FlashDefault (path);
 			}
 			break;
-
+		case "flash-24.moonlight.test":
+			// Description:	bad Content-Type "application/msword"
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "application/msword";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-25.moonlight.test":
+			// Description:	bad Content-Type "application/xml"
+			// Result:	OK
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "application/xml";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-26.moonlight.test":
+			// Description:	bad Content-Type "application/xml; charset=utf-8"
+			// Result:	OK
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "application/xml; charset=utf-8";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-27.moonlight.test":
+			// Description:	bad Content-Type "unknown/xml"
+			// Result:	OK
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "unknown/xml";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-28.moonlight.test":
+			// Description:	Content-Type "text/plain"
+			// Result:	Ok
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "text/plain";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-29.moonlight.test":
+			// Description:	Content-Type "text/xml; charset=utf-8"
+			// Result:	Ok
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "text/xml; charset=utf-8";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-30.moonlight.test":
+			// Description:	Content-Type "text/html; charset=utf-8"
+			// Result:	Ok
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "text/html; charset=utf-8";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-31.moonlight.test":
+			// Description:	Content-Type "text/html; some=thing"
+			// Result:	Ok
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "text/html; some=thing";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-32.moonlight.test":
+			// Description:	Content-Type "text/unknown; charset=unknown"
+			// Result:	Ok
+			if (path == "crossdomain.xml") {
+				Response.ContentType = "text/unknown; charset=unknown";
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-33.moonlight.test":
+			// Description:	Two policies (<cross-domain-policy>) - both valid, but invalid XML (2 roots)
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+				Response.Write ("<cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-34.moonlight.test":
+			// Description:	Extra (invalid) attribute in <cross-domain-policy>
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy key='value'><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-35.moonlight.test":
+			// Description:	Extra (invalid) attribute in <allow-access-from>
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*' key='value'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-36.moonlight.test":
+			// Description:	Extra (invalid) attribute in <allow-http-request-headers-from>
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-http-request-headers-from domain='*' key='value'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "flash-37.moonlight.test":
+			// Description:	Extra (invalid) attribute in <site-control>
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><site-control permitted-cross-domain-policies='all' key='value'/><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
 
 		case "silverlight-1.moonlight.test":
 			// Description:	simplest, allow everything, silverlight policy
@@ -675,6 +810,192 @@
 					<allow-from><domain uri='http://*.moonlight.test/file?query'/></allow-from>
 					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
 				</policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-24.moonlight.test":
+			// Description:	bad Content-Type "application/msword"
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "application/msword";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-25.moonlight.test":
+			// Description:	bad Content-Type "application/xml"
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "application/xml";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-26.moonlight.test":
+			// Description:	bad Content-Type "application/xml; charset=utf-8"
+			// Result:	OK
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "application/xml; charset=utf-8";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-27.moonlight.test":
+			// Description:	bad Content-Type "unknown/xml"
+			// Result:	OK
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "unknown/xml";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-28.moonlight.test":
+			// Description:	Content-Type "text/plain"
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "text/plain";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-29.moonlight.test":
+			// Description:	Content-Type "text/xml; charset=utf-8"
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "text/xml; charset=utf-8";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-30.moonlight.test":
+			// Description:	Content-Type "text/html; charset=utf-8"
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "text/html; charset=utf-8";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-31.moonlight.test":
+			// Description:	Content-Type "text/html; some=thing"
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "text/html; some=thing";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-32.moonlight.test":
+			// Description:	Content-Type "text/unknown; charset=unknown"
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.ContentType = "text/unknown; charset=unknown";
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-33.moonlight.test":
+			// Description:	Two policies (<access-policy>) - both valid, but invalid XML (2 roots)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+				Response.Write (@"<access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-34.moonlight.test":
+			// Description:	Extra (valid) attribute in <access-policy>
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy key='value'><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-35.moonlight.test":
+			// Description:	Extra (valid) attribute in <cross-domain-access>
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access key='value'><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-36.moonlight.test":
+			// Description:	Extra (invalid) attribute in <policy>
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy key='value'><allow-from>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else if (path == "crossdomain.xml") {
+				// valid flash policy that should not be reached
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-37.moonlight.test":
+			// Description:	Extra (invalid) attribute in <allow-from>
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from key='value'>
+					<domain uri='*'/></allow-from><grant-to><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else if (path == "crossdomain.xml") {
+				// valid flash policy that should not be reached
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-38.moonlight.test":
+			// Description:	Extra (invalid) attribute in <grant-to>
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy><allow-from>
+					<domain uri='*'/></allow-from><grant-to key='value'><resource path='/' include-subpaths='true'/>
+					</grant-to></policy></cross-domain-access></access-policy>");
+			} else if (path == "crossdomain.xml") {
+				// valid flash policy that should not be reached
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
 			} else {
 				Default (path);
 			}

@@ -1,3 +1,9 @@
+2010-04-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Global.asax: Add more hosts / policies with different 
+	ContentType and invalid XML
+	* Page.xaml.cs: Call the new hosts to check policy results
+
 2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Page.xaml[.cs]: Add option to use either the browser stack or

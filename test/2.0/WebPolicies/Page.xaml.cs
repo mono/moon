@@ -108,6 +108,23 @@ namespace WebPolicies {
 			// another test where we check Domain!="*" using policy-client
 			{ "http://flash-22.moonlight.test/test/allow-caller-domain-policy-client", CheckSecurityException },	// fully named
 			{ "http://flash-23.moonlight.test/test/allow-caller-domain-wildcard", CheckSecurityException },		// using wildcard *
+			// Content-Type
+			{ "http://flash-24.moonlight.test/", CheckSecurityException },	// application/msword
+			{ "http://flash-25.moonlight.test/", CheckOk },			// application/xml
+			{ "http://flash-26.moonlight.test/", CheckOk },			// application/xml; charset=utf-8
+			{ "http://flash-27.moonlight.test/", CheckSecurityException },	// unknown/xml
+			{ "http://flash-28.moonlight.test/", CheckOk },			// text/plain
+			{ "http://flash-29.moonlight.test/", CheckOk },			// text/xml; charset=utf-8
+			{ "http://flash-30.moonlight.test/", CheckOk },			// text/html; charset=utf-8
+			{ "http://flash-31.moonlight.test/", CheckOk },			// text/html; some=thing
+			{ "http://flash-32.moonlight.test/", CheckOk },			// text/unknown; charset=unknown
+			// Two policies
+			{ "http://flash-33.moonlight.test/", CheckSecurityException },	// two valid policies (invalid xml)
+			// Invalid attributes
+			{ "http://flash-34.moonlight.test/", CheckSecurityException },	// <cross-domain-policy>
+			{ "http://flash-35.moonlight.test/", CheckSecurityException },	// <allow-access-from>
+			{ "http://flash-36.moonlight.test/", CheckSecurityException },	// <allow-http-request-headers-from>
+			{ "http://flash-37.moonlight.test/", CheckSecurityException },	// <site-control>
 
 			// add no policy test
 			// add redirection test (not allowed on policy files)
@@ -177,12 +194,30 @@ namespace WebPolicies {
 			{ "http://silverlight-17.moonlight.test:80/test/file", CheckOk },		// http://*.moonlight.test:80/ == OK
 			{ "http://silverlight-17.moonlight.test:8080/", CheckSecurityException },	// http://*.moonlight.test:8080/ is invalid
 			{ "http://silverlight-18.moonlight.test/", CheckSecurityException },		// http://policy-client.*.test/ is invalid
-			{ "http://silverlight-19.moonlight.test/", CheckSecurityException },		// http://policy-client.moonlight.*/ is invalid
+			{ "http://silverlight-19.moonlight.test/", CheckSecurityException },		// http://policy-client.moonlight.* is invalid
 			{ "http://silverlight-20.moonlight.test/", CheckSecurityException },		// http://*-client.moonlight.test/ is invalid
 			{ "http://silverlight-21.moonlight.test/", CheckSecurityException },		// http://*.moonlight.test/test/file is invalid
 			{ "http://silverlight-21.moonlight.test/test/file", CheckSecurityException },	// http://*.moonlight.test/test/file is invalid
 			{ "http://silverlight-22.moonlight.test/file#fragment", CheckSecurityException },	// wildcard with fragment
 			{ "http://silverlight-23.moonlight.test/file?query", CheckSecurityException },		// wildcard with query
+			// Content-Type
+			{ "http://silverlight-24.moonlight.test/", CheckSecurityException },	// application/msword
+			{ "http://silverlight-25.moonlight.test/", CheckOk },			// application/xml
+			{ "http://silverlight-26.moonlight.test/", CheckOk },			// application/xml; charset=utf-8
+			{ "http://silverlight-27.moonlight.test/", CheckSecurityException },	// unknown/xml
+			{ "http://silverlight-28.moonlight.test/", CheckOk },			// text/plain
+			{ "http://silverlight-29.moonlight.test/", CheckOk },			// text/xml; charset=utf-8
+			{ "http://silverlight-30.moonlight.test/", CheckOk },			// text/html; some=thing
+			{ "http://silverlight-31.moonlight.test/", CheckOk },			// text/html; charset=utf-8
+			{ "http://silverlight-32.moonlight.test/", CheckOk },			// text/unknown; charset=unknown
+			// Two policies
+			{ "http://silverlight-33.moonlight.test/", CheckSecurityException },	// two valid policies (invalid xml)
+			// extra attributes
+			{ "http://silverlight-34.moonlight.test/", CheckOk },			// <access-policy>
+			{ "http://silverlight-35.moonlight.test/", CheckOk },			// <cross-domain-access>
+			{ "http://silverlight-36.moonlight.test/", CheckSecurityException },	// <policy>
+			{ "http://silverlight-37.moonlight.test/", CheckSecurityException },	// <allow-from>
+			{ "http://silverlight-38.moonlight.test/", CheckSecurityException },	// <grant-to>
 
 			// add redirection test (not allowed on policy files)
 			// return some binary file
