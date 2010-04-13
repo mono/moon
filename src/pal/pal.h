@@ -268,7 +268,7 @@ public:
 	
 	virtual bool IsRunningOutOfBrowser (Deployment *deployment) = 0;
 	virtual bool CheckInstalled (Deployment *deployment) = 0;
-	virtual bool Uninstall (Deployment *deployment) = 0;
+	virtual void Uninstall (Deployment *deployment) = 0;
 	virtual bool Install (Deployment *deployment) = 0;
 	
 	void UpdaterNotifySize (gint64 size);

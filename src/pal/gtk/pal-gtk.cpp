@@ -8,6 +8,9 @@
 #include "install-dialog.h"
 #include "im-gtk.h"
 
+#include <glib.h>
+#include <glib/gstdio.h>
+
 #define Visual _XxVisual
 #define Region _XxRegion
 #define Window _XxWindow
@@ -1109,7 +1112,6 @@ MoonInstallerServiceGtk::CheckInstalled (Deployment *deployment)
 bool
 MoonInstallerServiceGtk::Install (Deployment *deployment)
 {
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
 	GtkWidget *parent = NULL;
 	bool installed = false;
 	MoonWindow *window;
