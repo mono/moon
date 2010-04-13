@@ -479,7 +479,7 @@ Surface::SetRuntimeOptions (guint32 flags)
 {
 	surface_flags = flags;
 	for (int i = 0; i < 32; i ++)
-		SetRuntimeOption ((RuntimeInitFlag)i, (flags & (1 << i)) != 0);
+		SetRuntimeOption ((RuntimeInitFlag)(1 << i), (flags & (1 << i)) != 0);
 }
 
 bool
