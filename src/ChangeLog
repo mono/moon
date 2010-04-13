@@ -1,3 +1,19 @@
+2010-04-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* application.cpp (Uninstall): New method.
+
+	* pal/gtk/pal-gtk.cpp (Install): Updated.
+	(Uninstall): Implemented.
+
+	* pal/gtk/window-gtk.cpp (uninstall_application): Call
+	Application->Uninstall() instead of doing things ourself.
+
+	* pal/pal.h (MoonInstallerService): Added an Uninstall() method.
+
+	* pal/gtk/install-dialog.cpp (install_dialog_get_launcher_script):
+	Moved to be a method acting on an InstallDialog. This doesn't need
+	to be a general install-utils function.
+
 2010-04-13  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h: When instantiating DOs as default values, we need

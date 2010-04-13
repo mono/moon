@@ -482,3 +482,14 @@ Application::Install ()
 	
 	return InstallWithError (&err);
 }
+
+void
+Application::Uninstall ()
+{
+	MoonInstallerService *installer = runtime_get_installer_service ();
+	Deployment *deployment = Deployment::GetCurrent ();
+	
+	installer->Uninstall (deployment);
+	
+	SetInstallState (InstallStateNotInstalled);
+}

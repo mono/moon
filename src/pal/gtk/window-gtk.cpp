@@ -933,22 +933,8 @@ MoonWindowGtk::uninstall_application (MoonWindowGtk *window)
 {
 	Deployment *deployment = Deployment::GetCurrent ();
 	Application *application = deployment->GetCurrentApplication ();
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	char *install_dir, *shortcut;
 	
-	shortcut = install_utils_get_start_menu_shortcut (settings);
-	g_unlink (shortcut);
-	g_free (shortcut);
-	
-	shortcut = install_utils_get_desktop_shortcut (settings);
-	g_unlink (shortcut);
-	g_free (shortcut);
-	
-	install_dir = install_utils_get_install_dir (settings);
-	RemoveDir (install_dir);
-	g_free (install_dir);
-	
-	application->SetInstallState (InstallStateNotInstalled);
+	application->Uninstall ();
 }
 
 void

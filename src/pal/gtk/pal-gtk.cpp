@@ -1120,6 +1120,9 @@ MoonInstallerServiceGtk::Install (Deployment *deployment)
 	char *argv[2];
 	int pid;
 	
+	argv[0] = NULL;
+	argv[1] = NULL;
+	
 	if ((surface = deployment->GetSurface ()) && (window = surface->GetWindow ())) {
 		widget = ((MoonWindowGtk *) window)->GetWidget ();
 		parent = gtk_widget_get_toplevel (widget);
@@ -1127,13 +1130,14 @@ MoonInstallerServiceGtk::Install (Deployment *deployment)
 	
 	dialog = install_dialog_new ((GtkWindow *) parent, deployment);
 	
-	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK)
-		installed = install_dialog_install ((InstallDialog *) dialog);
+	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
+		if ((installed = install_dialog_install ((InstallDialog *) dialog)))
+			argv[0] = install_dialog_get_launcher_script ((InstallDialog *) dialog);
+	}
 	
 	gtk_widget_destroy ((GtkWidget *) dialog);
 	
-	argv[1] = NULL;
-	if (installed && (argv[0] = install_utils_get_launcher_script (settings))) {
+	if (installed && argv[0]) {
 		screen = gtk_widget_get_screen (parent);
 		gdk_spawn_on_screen (screen, NULL, argv, NULL,
 				     (GSpawnFlags) (G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL),
@@ -1142,4 +1146,23 @@ MoonInstallerServiceGtk::Install (Deployment *deployment)
 	}
 	
 	return installed;
+}
+
+void
+MoonInstallerServiceGtk::Uninstall (Deployment *deployment)
+{
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	char *install_dir, *shortcut;
+	
+	shortcut = install_utils_get_start_menu_shortcut (settings);
+	g_unlink (shortcut);
+	g_free (shortcut);
+	
+	shortcut = install_utils_get_desktop_shortcut (settings);
+	g_unlink (shortcut);
+	g_free (shortcut);
+	
+	install_dir = install_utils_get_install_dir (settings);
+	RemoveDir (install_dir);
+	g_free (install_dir);
 }

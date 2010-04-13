@@ -50,12 +50,13 @@ bool install_dialog_get_install_to_desktop (InstallDialog *dialog);
 
 bool install_dialog_install (InstallDialog *dialog);
 
+char *install_dialog_get_launcher_script (InstallDialog *dialog);
+
 /* utility functions useful outside of the dialog */
 char *install_utils_get_app_safe_name (OutOfBrowserSettings *settings);
 char *install_utils_get_install_dir (OutOfBrowserSettings *settings);
 char *install_utils_get_desktop_shortcut (OutOfBrowserSettings *settings);
 char *install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings);
-char *install_utils_get_launcher_script (OutOfBrowserSettings *settings);
 char *install_utils_get_update_uri (OutOfBrowserSettings *settings);
 time_t install_utils_get_last_modified (OutOfBrowserSettings *settings);
 

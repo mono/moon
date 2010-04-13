@@ -762,6 +762,19 @@ install_dialog_install (InstallDialog *dialog)
 }
 
 char *
+install_dialog_get_launcher_script (InstallDialog *dialog)
+{
+	InstallDialogPrivate *priv = dialog->priv;
+	
+	g_return_val_if_fail (IS_INSTALL_DIALOG (dialog), NULL);
+	
+	if (priv->installed)
+		return g_build_filename (priv->install_dir, "lunar-launcher", NULL);
+	
+	return NULL;
+}
+
+char *
 install_utils_get_app_safe_name (OutOfBrowserSettings *settings)
 {
 	const char *s, *name = settings->GetShortName ();
@@ -815,18 +828,6 @@ install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings)
 	g_free (shortcut);
 	
 	return path;
-}
-
-char *
-install_utils_get_launcher_script (OutOfBrowserSettings *settings)
-{
-	char *app_dir, *launcher;
-	
-	app_dir = install_utils_get_install_dir (settings);
-	launcher = g_build_filename (app_dir, "lunar-launcher", NULL);
-	g_free (app_dir);
-	
-	return launcher;
 }
 
 char *

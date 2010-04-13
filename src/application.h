@@ -70,6 +70,7 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool InstallWithError (MoonError *error);
+	void Uninstall ();
 	bool Install ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
