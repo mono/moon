@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media
 {
 	[TestClass]
-	public partial class _____ImageBrushTest
+	public partial class ImageBrushTest
 	{
 		[TestMethod]
 		public void SetBitmapBrush ()
