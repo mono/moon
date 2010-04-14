@@ -1,3 +1,7 @@
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* DefaultValues/App.xaml.cs: Make formatting use the en-US locale.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* FakeA11yBridge/Makefile.am: smcs needs to be executed using the
