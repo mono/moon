@@ -1141,9 +1141,7 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	
 	if (installed && argv[0]) {
 		screen = gtk_widget_get_screen (parent);
-		gdk_spawn_on_screen (screen, NULL, argv, NULL,
-				     (GSpawnFlags) (G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL),
-				     NULL, NULL, &pid, NULL);
+		gdk_spawn_on_screen (screen, NULL, argv, NULL, (GSpawnFlags) 0, NULL, NULL, &pid, NULL);
 		g_free (argv[0]);
 	}
 	

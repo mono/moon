@@ -1,5 +1,10 @@
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pal/gtk/pal-gtk.cpp: Don't swallow terminal output from oob process, it
+	makes our best debugger useless.
+
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pal/gtk/install-dialog.cpp: Ensure we don't end up with a border when
 	running out of browser. It matches SL behaviour, and the borders also make
 	screenshots wrong.
