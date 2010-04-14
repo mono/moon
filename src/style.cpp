@@ -31,6 +31,24 @@ Style::~Style ()
 }
 
 void
+Style::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty ()->GetOwnerType() != Type::STYLE) {
+		DependencyObject::OnPropertyChanged (args, error);
+		return;
+	}
+
+	if (args->GetId () == Style::BasedOnProperty) {
+		if (GetIsSealed ()) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot change BasedOn on a sealed style");
+			return; 
+		}
+	}
+	
+	NotifyListenersOfPropertyChange (args, error);
+}
+
+void
 Style::Seal ()
 {
 	Style *s = GetBasedOn ();

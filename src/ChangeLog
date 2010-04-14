@@ -1,5 +1,11 @@
 2010-04-14  Alan McGovern  <amcgovern@novell.com>
 
+	* style.h:
+	* style.cpp: When a style is sealed, make it impossible to
+	  change Style::BasedOn.
+
+2010-04-14  Alan McGovern  <amcgovern@novell.com>
+
 	* animation.h:
 	* collection.h:
 	* animation.cpp:

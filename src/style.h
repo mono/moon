@@ -38,6 +38,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Seal ();
 	
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	
 	//
 	// Property Accessors
 	//
