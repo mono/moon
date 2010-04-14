@@ -504,6 +504,11 @@ install_html (OutOfBrowserSettings *settings, const char *app_dir)
 		fprintf (fp, "        window.resizeTo (%d, %d);\n", width, height);
 	fprintf (fp, "      }\n");
 	fprintf (fp, "    </script>\n");
+	fprintf (fp, "    <style type='text/css'>");
+	fprintf (fp, "      html, body { height: 100%%; overflow: auto; }");
+	fprintf (fp, "      body { padding: 0; margin: 0; }");
+	fprintf (fp, "      #MoonlightControl { height: 100%%; }");
+	fprintf (fp, "    </style>");
 	fprintf (fp, "  </head>\n");
 	fprintf (fp, "  <body>\n");
 	fprintf (fp, "    <div id=\"MoonlightControl\">\n");

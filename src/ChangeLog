@@ -1,3 +1,9 @@
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/gtk/install-dialog.cpp: Ensure we don't end up with a border when
+	running out of browser. It matches SL behaviour, and the borders also make
+	screenshots wrong.
+
 2010-04-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* glyphs.cpp (Glyphs): Init downloader's part_name to NULL.
