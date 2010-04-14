@@ -1,3 +1,8 @@
+2010-04-14  Alan McGovern  <amcgovern@novell.com>
+
+	* MoonlightTypeConverter.cs: Correctly parse gridlengths like
+	  "5.3*" in our type converter.
+
 2010-04-09  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeDependencyObjectHelper.cs: Add in proper null checks

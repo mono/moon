@@ -91,10 +91,16 @@ namespace Mono {
 				if (destinationType == typeof (GridLength)) {
 					if (str_val == "Auto")
 						return new GridLength (1, GridUnitType.Auto);
-					else if (str_val == "*")
-						return new GridLength (1, GridUnitType.Star);
-					else
-						return new GridLength (double.Parse (str_val), GridUnitType.Pixel);
+					else {
+						var length = 1.0;
+						var type = str_val.EndsWith ("*") ? GridUnitType.Star : GridUnitType.Pixel;
+						if (type == GridUnitType.Star)
+							str_val = str_val.Substring (0, str_val.Length - 1);
+						if (str_val.Length > 0)
+							length = double.Parse (str_val);
+
+						return new GridLength (length, type);
+					}
 				}
 
 				if (destinationType == typeof (int))
