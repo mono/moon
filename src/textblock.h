@@ -58,7 +58,7 @@ public:
 	const static int ForegroundProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=NonNullExceptionValidator,GenerateAccessors */
 	const static int LanguageProperty;
-	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsUnderline,HiddenDefaultValue,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
+	/* @PropertyType=TextDecorations,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;
 
 	void SetFontFamily (FontFamily *family);
@@ -412,11 +412,11 @@ public:
 /* @Namespace=System.Windows.Documents */
 class Underline : public Span {
 protected:
-	virtual ~Underline () { SetObjectType (Type::UNDERLINE); }
+	virtual ~Underline () {}
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Underline () {}
+	Underline () { SetObjectType (Type::UNDERLINE); SetTextDecorations (TextDecorationsUnderline); }
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -426,7 +426,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	Hyperlink () { SetObjectType (Type::HYPERLINK); }
+	Hyperlink () { SetObjectType (Type::HYPERLINK); SetTextDecorations (TextDecorationsUnderline); }
 
 	/* @PropertyType=object */
 	const static int CommandParameterProperty;

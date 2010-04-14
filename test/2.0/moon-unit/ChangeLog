@@ -1,3 +1,8 @@
+2010-04-14  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/DefaultValues.cs: Update the default value tests to SL
+	  4.0 compatibility.
+
 2010-04-08  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: We shouldn't attach the
