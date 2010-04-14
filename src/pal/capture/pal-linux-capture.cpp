@@ -24,14 +24,14 @@ MoonCaptureServiceLinux::MoonCaptureServiceLinux ()
 #if PAL_V4L2_VIDEO_CAPTURE
 	video_service = new MoonVideoCaptureServiceV4L2 ();
 #else
-	g_warning ("no video capture service available");
+	printf ("Moonlight: no video capture service available\n");
 	video_service = NULL;
 #endif
 
 #if PAL_PULSE_AUDIO_CAPTURE
 	audio_service = new MoonAudioCaptureServicePulse ();
 #else
-	g_warning ("no audio capture service available");
+	printf ("Moonlight: no audio capture service available\n");
 	audio_service = NULL;
 #endif
 }

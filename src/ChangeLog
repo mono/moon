@@ -1,3 +1,8 @@
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/capture/pal-linux-capture.cpp: Use printf instead of g_warning to make
+	breakpoints on g_log less annoying.
+
 2010-04-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* notificationwindow.h: Add @CallInitialize to NotificationWindow
