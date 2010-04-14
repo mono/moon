@@ -148,12 +148,12 @@ MoonInstallerService::downloader_failed (EventObject *sender, EventArgs *args, g
 	((MoonInstallerService *) user_data)->UpdaterFailed ();
 }
 
-static char *tm_months[] = {
+static const char *tm_months[] = {
 	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
-static char *tm_days[] = {
+static const char *tm_days[] = {
 	"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 };
 
