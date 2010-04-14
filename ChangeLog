@@ -1,3 +1,10 @@
+2010-04-14  Larry Ewing  <lewing@novell.com>
+
+	* autogen.sh: confuse the cairo build a little more
+
+	* cairo: us the pixman-1-uninstalled.pc just to make sure we are
+	picking up the right version and not the installed version.
+
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* README: Add information about required ffmpeg version and remove outdated
