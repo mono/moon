@@ -1,5 +1,10 @@
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shutdown-manager.cpp|h: Add another p/invokable signature. Send Alt-F4 too
+	when trying to shut down, since ctrl+q won't work with oob apps.
+
+2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp: Chrome doesn't support !xembed.
 
 2010-04-01  Alan McGovern  <amcgovern@novell.com>

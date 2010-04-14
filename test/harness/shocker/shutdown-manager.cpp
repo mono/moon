@@ -73,6 +73,33 @@ force_shutdown (gpointer data)
 	return false;
 }
 
+static gboolean
+send_alt_f4 (gpointer dummy)
+{
+	printf ("[%i shocker] sending Alt+F4 to firefox...\n", getpid ());
+	InputProvider *input = InputProvider::GetInstance ();
+	// send alt-f4
+	input->SendKeyInput (VK_MENU, true, false, false);
+	input->SendKeyInput (VK_F4, true, false, false);
+	input->SendKeyInput (VK_F4, false, false, false);
+	input->SendKeyInput (VK_MENU, false, false, false);
+	return false;
+}
+
+static gboolean
+send_ctrl_q (gpointer dummy)
+{
+	printf ("[%i shocker] sending Ctrl-Q to firefox...\n", getpid ());
+	// This doesn't work with oob - there is no menu so nothing handles ctrl-q
+	InputProvider *input = InputProvider::GetInstance ();
+	// send ctrl-q
+	input->SendKeyInput (VK_CONTROL, true, false, false);
+	input->SendKeyInput (VK_Q, true, false, false);
+	input->SendKeyInput (VK_Q, false, false, false);
+	input->SendKeyInput (VK_CONTROL, false, false, false);
+	return false;
+}
+
 static void
 execute_shutdown ()
 {
@@ -101,14 +128,12 @@ execute_shutdown ()
 		XCloseDisplay (display);
 		
 		PluginObject::browser_app_context = 0;
+
+		// have a backup, since the above doesn't work with oob
+		g_timeout_add (1000, send_alt_f4, NULL);
 	} else {
-		printf ("[shocker] sending Ctrl-Q to firefox...\n");
-		InputProvider *input = InputProvider::GetInstance ();
-		// send ctrl-q
-		input->SendKeyInput (VK_CONTROL, true, false, false);
-		input->SendKeyInput (VK_Q, true, false, false);
-		input->SendKeyInput (VK_Q, false, false, false);
-		input->SendKeyInput (VK_CONTROL, false, false, false);
+		send_ctrl_q (NULL); // this doesn't work for oob apps
+		send_alt_f4 (NULL); // this doesn't work if there is no window manager (inside xvfb while running tests for instance)
 	}
 	
 	// Have a backup in case the above fails.
@@ -148,4 +173,10 @@ void
 SignalShutdown (const char *window_name)
 {
 	shutdown_manager_queue_shutdown ();
+}
+
+void
+TestHost_SignalShutdown (const char *window_name)
+{
+	SignalShutdown (window_name);
 }

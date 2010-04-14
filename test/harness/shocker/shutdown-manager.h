@@ -39,6 +39,7 @@ void shutdown_manager_queue_shutdown ();
 G_BEGIN_DECLS
 
 void SignalShutdown (const char *window_name);
+void TestHost_SignalShutdown (const char *window_name);
 
 G_END_DECLS
 
