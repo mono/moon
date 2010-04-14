@@ -1,3 +1,7 @@
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Chrome doesn't support !xembed.
+
 2010-04-01  Alan McGovern  <amcgovern@novell.com>
 
 	* harness.cpp: Use the correct listen port in the shocker

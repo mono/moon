@@ -124,6 +124,9 @@ PluginObject::GetValue (NPPVariable variable, void *value)
 	NPError err = NPERR_NO_ERROR;
 
 	switch (variable) {
+	case NPPVpluginNeedsXEmbed:
+		*((NPBool *)value) = true;
+		break;
 	case NPPVpluginNameString:
 		*((char **) value) = (char *) PLUGIN_NAME;
 		break;
