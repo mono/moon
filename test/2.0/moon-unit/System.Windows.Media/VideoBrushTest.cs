@@ -40,13 +40,9 @@ namespace MoonTest.System.Windows.Media {
 	public partial class VideoBrushTest {
 
 		[TestMethod]
-		public void DefaultCtor ()
+		public void NullSource ()
 		{
 			VideoBrush vb = new VideoBrush ();
-			Assert.AreEqual (String.Empty, vb.SourceName, "SourceName");
-			// VideoBrush's Transforms are non-null by default (false)
-			TileBrushTest.CheckDefaults (vb, false);
-
 			Assert.Throws<NullReferenceException> (delegate {
 				vb.SetSource ((MediaElement) null);
 			}, "null");

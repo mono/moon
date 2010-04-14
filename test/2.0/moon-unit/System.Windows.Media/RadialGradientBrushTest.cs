@@ -39,17 +39,9 @@ namespace MoonTest.System.Windows.Media {
 	public partial class RadialGradientBrushTest {
 
 		[TestMethod]
-		public void DefaultCtor ()
-		{
-			RadialGradientBrush rgb = new RadialGradientBrush ();
-			CheckDefaults (rgb, 0);
-		}
-
-		[TestMethod]
 		public void ColorsCtor ()
 		{
 			RadialGradientBrush rgb = new RadialGradientBrush (Colors.Black, Colors.White);
-			CheckDefaults (rgb, 2);
 
 			GradientStop gs1 = rgb.GradientStops [0];
 			Assert.AreEqual ("#FF000000", gs1.Color.ToString (), "1.Color");
@@ -64,7 +56,6 @@ namespace MoonTest.System.Windows.Media {
 		public void CollectionCtorNull ()
 		{
 			RadialGradientBrush rgb = new RadialGradientBrush (null);
-			CheckDefaults (rgb, 0);
 		}
 
 		[TestMethod]
@@ -72,7 +63,6 @@ namespace MoonTest.System.Windows.Media {
 		{
 			GradientStopCollection gsc = new GradientStopCollection ();
 			RadialGradientBrush rgb = new RadialGradientBrush (gsc);
-			CheckDefaults (rgb, 0);
 			Assert.IsTrue (Object.ReferenceEquals (gsc, rgb.GradientStops), "Same GradientStops");
 		}
 
@@ -82,23 +72,11 @@ namespace MoonTest.System.Windows.Media {
 			GradientStopCollection gsc = new GradientStopCollection ();
 			gsc.Add (new GradientStop ());
 			RadialGradientBrush rgb = new RadialGradientBrush (gsc);
-			CheckDefaults (rgb, 1);
 			Assert.IsTrue (Object.ReferenceEquals (gsc, rgb.GradientStops), "Same GradientStops");
 
 			GradientStop gs1 = rgb.GradientStops [0];
 			Assert.AreEqual ("#00000000", gs1.Color.ToString (), "1.Color");
 			Assert.AreEqual (0.0, gs1.Offset, "1.Offset");
-		}
-
-		static public void CheckDefaults (RadialGradientBrush rgb, int count)
-		{
-			Assert.AreEqual (0.5d, rgb.Center.X, "Center.X");
-			Assert.AreEqual (0.5d, rgb.Center.Y, "Center.Y");
-			Assert.AreEqual (0.5d, rgb.GradientOrigin.X, "GradientOrigin.X");
-			Assert.AreEqual (0.5d, rgb.GradientOrigin.Y, "GradientOrigin.Y");
-			Assert.AreEqual (0.5d, rgb.RadiusX, "RadiusX");
-			Assert.AreEqual (0.5d, rgb.RadiusY, "RadiusY");
-			GradientBrushTest.CheckDefaults (rgb, count);
 		}
 
 		[TestMethod]

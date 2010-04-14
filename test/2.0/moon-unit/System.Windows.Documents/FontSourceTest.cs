@@ -41,7 +41,7 @@ namespace MoonTest.System.Windows.Documents {
 		[TestMethod]
 		public void Constructor ()
 		{
-			Assert.IsNotNull (new FontSource (null), "null");
+			Assert.IsNotNull (new FontSource ((Stream)null), "null");
 			Assert.IsNotNull (new FontSource (Stream.Null), "Stream.Null");
 		}
 	}

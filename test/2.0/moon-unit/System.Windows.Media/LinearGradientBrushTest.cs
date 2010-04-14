@@ -39,24 +39,12 @@ namespace MoonTest.System.Windows.Media {
 	public partial class LinearGradientBrushTest {
 
 		[TestMethod]
-		public void DefaultCtor ()
-		{
-			LinearGradientBrush lgb = new LinearGradientBrush ();
-
-			Assert.AreEqual (1.0d, lgb.EndPoint.X, "EndPoint.X");
-			Assert.AreEqual (1.0d, lgb.EndPoint.Y, "EndPoint.Y");
-
-			CheckDefaults (lgb, 0);
-		}
-
-		[TestMethod]
 		public void AngleCtor ()
 		{
 			for (int i=0; i <= 360; i++) {
 				LinearGradientBrush lgb = new LinearGradientBrush (null, i);
 				Assert.IsTrue (Math.Abs (Math.Cos (i * Math.PI / 180) - lgb.EndPoint.X) < 0.0001, i.ToString () + "-EndPoint.X");
 				Assert.IsTrue (Math.Abs (Math.Sin (i * Math.PI / 180) - lgb.EndPoint.Y) < 0.0001, i.ToString () + "-EndPoint.Y");
-				CheckDefaults (lgb, 0);
 			}
 		}
 
@@ -66,19 +54,11 @@ namespace MoonTest.System.Windows.Media {
 			GradientStopCollection gsc = new GradientStopCollection ();
 			gsc.Add (new GradientStop ());
 			LinearGradientBrush rgb = new LinearGradientBrush (gsc, 0.0d);
-			CheckDefaults (rgb, 1);
 			Assert.IsTrue (Object.ReferenceEquals (gsc, rgb.GradientStops), "Same GradientStops");
 
 			GradientStop gs1 = rgb.GradientStops [0];
 			Assert.AreEqual ("#00000000", gs1.Color.ToString (), "1.Color");
 			Assert.AreEqual (0.0, gs1.Offset, "1.Offset");
-		}
-
-		static public void CheckDefaults (LinearGradientBrush lgb, int count)
-		{
-			Assert.AreEqual (0.0d, lgb.StartPoint.X, "Start.X");
-			Assert.AreEqual (0.0d, lgb.StartPoint.Y, "Start.Y");
-			GradientBrushTest.CheckDefaults (lgb, count);
 		}
 
 		[TestMethod]

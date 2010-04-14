@@ -38,22 +38,6 @@ namespace MoonTest.System.Windows.Media {
 	[TestClass]
 	public class BrushTest {
 
-		static public void CheckDefaults (Brush b, bool nullTransforms)
-		{
-			Assert.AreEqual (1.0d, b.Opacity, "Opacity");
-			// In general default values don't changes in inherited types
-			// but it does in this case
-			if (nullTransforms) {
-				// e.g. ImageBrush
-				Assert.IsNull (b.RelativeTransform, "RelativeTransform");
-				Assert.IsNull (b.Transform, "Transform");
-			} else {
-				// SolidColorBrush, GradientBrush (i.e. LinearGradientBrush and RadialGradiantBrush), VideoBrush
-				MatrixTest.CheckIdentity ((b.RelativeTransform as MatrixTransform).Matrix, "RelativeTransform");
-				MatrixTest.CheckIdentity ((b.Transform as MatrixTransform).Matrix, "Transform");
-			}
-		}
-
 		public class ConcreteBrush : Brush {
 		}
 

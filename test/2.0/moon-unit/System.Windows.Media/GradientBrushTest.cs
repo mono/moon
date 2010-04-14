@@ -38,14 +38,5 @@ namespace MoonTest.System.Windows.Media {
 	[TestClass]
 	public class GradientBrushTest {
 
-		static public void CheckDefaults (GradientBrush gb, int count)
-		{
-			Assert.AreEqual (ColorInterpolationMode.SRgbLinearInterpolation, gb.ColorInterpolationMode, "ColorInterpolationMode");
-			Assert.AreEqual (count, gb.GradientStops.Count, "GradientStops");
-			Assert.AreEqual (BrushMappingMode.RelativeToBoundingBox, gb.MappingMode, "MappingMode");
-			Assert.AreEqual (GradientSpreadMethod.Pad, gb.SpreadMethod, "SpreadMethod");
-			// GradientBrush's Transforms are non-null by default (false)
-			BrushTest.CheckDefaults (gb, false);
-		}
 	}
 }

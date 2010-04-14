@@ -37,12 +37,5 @@ namespace MoonTest.System.Windows.Media {
 
 	public class TileBrushTest {
 
-		static public void CheckDefaults (TileBrush tb, bool nullTransforms)
-		{
-			Assert.AreEqual (AlignmentX.Center, tb.AlignmentX, "AlignmentX");
-			Assert.AreEqual (AlignmentY.Center, tb.AlignmentY, "AlignmentY");
-			Assert.AreEqual (Stretch.Fill, tb.Stretch, "Stretch");
-			BrushTest.CheckDefaults (tb, nullTransforms);
-		}
 	}
 }

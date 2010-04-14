@@ -18,26 +18,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media
 {
 	[TestClass]
-	public partial class ImageBrushTest
+	public partial class _____ImageBrushTest
 	{
-		[TestMethod]
-		public void DefaultCtor ()
-		{
-			ImageBrush ib = new ImageBrush ();
-			Assert.IsTrue (ib.ImageSource is BitmapImage, "ImageSource");
-			// ImageBrush's Transforms are null by default (true)
-			TileBrushTest.CheckDefaults (ib, true);
-		}
-
-		[TestMethod]
-		public void EmptyUri ()
-		{
-			ImageBrush ib = new ImageBrush ();
-			Assert.IsNotNull (ib.ImageSource, "ImageSource");
-			// I don't think we can (normally) create such an Uri (an exception is thrown)
-			Assert.AreEqual (String.Empty, (ib.ImageSource as BitmapImage).UriSource.OriginalString, "UriSource.OriginalString");
-		}
-
 		[TestMethod]
 		public void SetBitmapBrush ()
 		{

@@ -39,15 +39,6 @@ namespace MoonTest.System.Windows.Media {
 	public partial class SolidColorBrushTest {
 
 		[TestMethod]
-		public void DefaultCtor ()
-		{
-			SolidColorBrush scb = new SolidColorBrush ();
-			Assert.AreEqual ("#00000000", scb.Color.ToString (), "Color");
-			// SolidColorBrush's Transforms are non-null by default (false)
-			BrushTest.CheckDefaults (scb, false);
-		}
-
-		[TestMethod]
 		public void EnsureNotFrozen ()
 		{
 			SolidColorBrush scb = new SolidColorBrush ();
