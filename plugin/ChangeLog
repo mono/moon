@@ -1,3 +1,8 @@
+2010-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightGlyphsInvoke): Implemented js binding
+	for setFontSource().
+
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.mdp: Update with new files.

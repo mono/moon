@@ -947,6 +947,23 @@ struct MoonlightDownloaderObject : MoonlightDependencyObjectObject {
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
+/*** MoonlightGlyphs ***************************************************/
+
+struct MoonlightGlyphsType : MoonlightUIElementType {
+	MoonlightGlyphsType ();
+};
+
+
+struct MoonlightGlyphsObject : MoonlightUIElementObject {
+	MoonlightGlyphsObject (NPP instance) : MoonlightUIElementObject (instance)
+	{
+		moonlight_type = Type::GLYPHS;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
+};
+
 /*** MoonlightTextBlock ***************************************************/
 
 struct MoonlightTextBlockType : MoonlightUIElementType {

@@ -325,6 +325,7 @@ enum DependencyObjectClassNames {
 	STROKE_CLASS,
 	TEXT_BOX_CLASS,
 	PASSWORD_BOX_CLASS,
+	GLYPHS_CLASS,
 	TEXT_BLOCK_CLASS,
 	EVENT_ARGS_CLASS,
 	ROUTED_EVENT_ARGS_CLASS,
@@ -3375,6 +3376,9 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 	case Type::IMAGEBRUSH:
 		np_class = dependency_object_classes [IMAGE_BRUSH_CLASS];
 		break;
+	case Type::GLYPHS:
+		np_class = dependency_object_classes [GLYPHS_CLASS];
+		break;
 	case Type::TEXTBLOCK:
 		np_class = dependency_object_classes [TEXT_BLOCK_CLASS];
 		break;
@@ -4254,6 +4258,59 @@ MoonlightPasswordBoxType::MoonlightPasswordBoxType ()
 	AddMapping (moonlight_password_box_mapping, G_N_ELEMENTS (moonlight_password_box_mapping));
 
 	allocate = moonlight_password_box_allocate;
+}
+
+/*** MoonlightGlyphsClass ***************************************************/
+
+static NPObject *
+moonlight_glyphs_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightGlyphsObject (instance);
+}
+
+
+static const MoonNameIdMapping moonlight_glyphs_mapping[] = {
+	{ "setfontsource", MoonId_SetFontSource }
+};
+
+
+bool
+MoonlightGlyphsObject::Invoke (int id, NPIdentifier name,
+			       const NPVariant *args, guint32 argCount,
+			       NPVariant *result)
+{
+	Glyphs *glyphs = (Glyphs *) GetDependencyObject ();
+	DependencyObject *downloader = NULL;
+	char *part_name = NULL;
+	
+	switch (id) {
+	case MoonId_SetFontSource:
+		if (!check_arg_list ("(no)(ns)", argCount, args) && (!NPVARIANT_IS_NULL(args[0]) || !npvariant_is_downloader (args[0])))
+			THROW_JS_EXCEPTION ("setFontSource");
+		
+		if (NPVARIANT_IS_OBJECT (args[0])) {
+			downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
+			
+			if (NPVARIANT_IS_STRING (args[1]))
+				part_name = STRDUP_FROM_VARIANT (args[1]);
+		}
+		
+		glyphs->SetFontSource ((Downloader *) downloader, part_name);
+		g_free (part_name);
+		
+		VOID_TO_NPVARIANT (*result);
+		
+		return true;
+	default:
+		return MoonlightUIElementObject::Invoke (id, name, args, argCount, result);
+	}
+}
+
+MoonlightGlyphsType::MoonlightGlyphsType ()
+{
+	AddMapping (moonlight_glyphs_mapping, G_N_ELEMENTS (moonlight_glyphs_mapping));
+
+	allocate = moonlight_glyphs_allocate;
 }
 
 
@@ -5243,6 +5300,7 @@ plugin_init_classes (void)
 	dependency_object_classes [STYLUS_POINT_COLLECTION_CLASS] = new MoonlightStylusPointCollectionType ();
 	dependency_object_classes [STROKE_COLLECTION_CLASS] = new MoonlightStrokeCollectionType ();
 	dependency_object_classes [STROKE_CLASS] = new MoonlightStrokeType ();
+	dependency_object_classes [GLYPHS_CLASS] = new MoonlightGlyphsType ();
 	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
 	dependency_object_classes [UI_ELEMENT_CLASS] = new MoonlightUIElementType ();
 	dependency_object_classes [CONTROL_CLASS] = new MoonlightControlType ();
