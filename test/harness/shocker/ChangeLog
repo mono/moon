@@ -1,5 +1,17 @@
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* input.cpp|h:
+	* plugin.cpp|h:
+	* shocker.cpp|h:
+	* logging.cpp|h:
+	* browser.cpp|h:
+	* harness.cpp|h:
+	* netscape.cpp|h:
+	* image-capture.cpp|h:
+	* shutdown-manager.cpp|h: Add missing licenses and unify all of them.
+
+2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shutdown-manager.cpp|h: Add another p/invokable signature. Send Alt-F4 too
 	when trying to shut down, since ctrl+q won't work with oob apps.
 

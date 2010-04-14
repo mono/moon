@@ -1,5 +1,15 @@
-
-
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * plugin.h
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2007-2010 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ *
+ */
 
 #ifndef __PLUGIN_H__
 #define __PLUGIN_H__
@@ -13,7 +23,6 @@ class PluginObject;
 
 #include "netscape.h"
 #include "shocker.h"
-
 
 class PluginObject {
 

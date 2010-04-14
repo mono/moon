@@ -1,9 +1,20 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * browser.h:
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2007-2010 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ *
+ */
 
 #ifndef __BROWSER_H__
 #define __BROWSER_H__
 
 #include "netscape.h"
-
 
 //
 // Browser is a somewhat evil Singleton.  It is completely useless before Initialize has
