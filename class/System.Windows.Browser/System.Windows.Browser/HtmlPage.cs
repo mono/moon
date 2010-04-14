@@ -70,11 +70,9 @@ namespace System.Windows.Browser {
 			}
 		}
 		
-		[MonoTODO ("This property should return false when we're not running in a browser")]
 		public static bool IsEnabled {		
 			get {
-				// FIXME: add condition for out-of-browser
-				return Application.Current.Host.Settings.EnableHTMLAccess;
+				return !Application.Current.IsRunningOutOfBrowser && Application.Current.Host.Settings.EnableHTMLAccess;
 			}
 		}
 		

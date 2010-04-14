@@ -1,3 +1,7 @@
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlPage.cs: IsEnabled: return false in when running out of browser.
+
 2010-03-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ScriptObject.cs: Refactor constructors to avoid the default 
