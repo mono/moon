@@ -31,6 +31,7 @@
 /* @Namespace=System.Windows.Documents */
 class Glyphs : public FrameworkElement {
 	Downloader *downloader;
+	char *part_name;
 	
 	moon_path *path;
 	TextFont *font;
@@ -95,6 +96,8 @@ class Glyphs : public FrameworkElement {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
+	void SetFontSource (Downloader *downloader, const char *part_name);
+	
 	//
 	// Property Accessors
 	//
@@ -105,7 +108,7 @@ class Glyphs : public FrameworkElement {
 	double GetFontRenderingEmSize ();
 	
 	void SetFontUri (Uri *uri);
-	Uri* GetFontUri ();
+	Uri *GetFontUri ();
 	
 	void SetIndices (const char *indices);
 	const char *GetIndices ();

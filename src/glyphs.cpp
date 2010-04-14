@@ -75,6 +75,7 @@ Glyphs::Glyphs ()
 	SetObjectType (Type::GLYPHS);
 	
 	downloader = NULL;
+	part_name = NULL;
 	
 	fill = NULL;
 	path = NULL;
@@ -115,7 +116,9 @@ Glyphs::CleanupDownloader ()
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->Abort ();
 		downloader->unref ();
+		g_free (part_name);
 		downloader = NULL;
+		part_name = NULL;
 	}
 }
 
@@ -513,7 +516,7 @@ Glyphs::DownloaderComplete ()
 	font = NULL;
 	
 	// get the downloaded file path
-	if (!(filename = downloader->GetDownloadedFilename (NULL))) {
+	if (!(filename = downloader->GetDownloadedFilename (part_name))) {
 		UpdateBounds (true);
 		Invalidate ();
 		dirty = true;
@@ -549,7 +552,7 @@ Glyphs::SetIndicesInternal (const char *in)
 	GlyphAttr *glyph;
 	double value = 0;
 	char *end;
-	uint bit;
+	guint bit;
 	int n;
 	
 	attrs->Clear (true);
@@ -640,7 +643,7 @@ Glyphs::SetIndicesInternal (const char *in)
 				inptr++;
 		}
 		
-		bit = (uint) Advance;
+		bit = (guint) Advance;
 		n = 0;
 		
 		while (*inptr == ',' && n < 3) {
@@ -747,6 +750,25 @@ Glyphs::SetFontResource (const Uri *uri)
 	g_free (path);
 	
 	return true;
+}
+
+void
+Glyphs::SetFontSource (Downloader *downloader, const char *part_name)
+{
+	CleanupDownloader ();
+	
+	this->part_name = g_strdup (part_name);
+	this->downloader = downloader;
+	downloader->ref ();
+	
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	if (downloader->Started () || downloader->Completed ()) {
+		if (downloader->Completed ())
+			DownloaderComplete ();
+	} else {
+		// This is what actually triggers the download
+		downloader->Send ();
+	}
 }
 
 void

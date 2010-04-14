@@ -1,3 +1,11 @@
+2010-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (Glyphs): Init downloader's part_name to NULL.
+	(CleanupDownloader): Free the part_name and reset it back to NULL.
+	(DownloaderComplete): Use the part_name when grabbing the font
+	from the downloader.
+	(SetFontSource): New undocumented js method for Glyphs. Yay.
+
 2010-04-14  Alan McGovern  <amcgovern@novell.com>
 
 	* style.h:
