@@ -351,6 +351,11 @@ AnimationClock::DetachStorage ()
 	storage = NULL;
 }
 
+Animation::Animation ()
+{
+	SetObjectType (Type::ANIMATION);
+}
+
 Clock*
 Animation::AllocateClock()
 {

@@ -35,6 +35,15 @@ BlockCollection::BlockCollection ()
 }
 
 //
+// TextElementCollection
+//
+
+TextElementCollection::TextElementCollection ()
+{
+	SetObjectType (Type::TEXTELEMENT_COLLECTION);
+}
+
+//
 // Collection
 //
 

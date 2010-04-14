@@ -137,7 +137,7 @@ class AnimationClock;
 class Animation : public Timeline {
 public:
 
-	Animation () { };
+	Animation ();
 	
 	virtual Clock *AllocateClock ();
 

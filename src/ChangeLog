@@ -1,5 +1,15 @@
 2010-04-14  Alan McGovern  <amcgovern@novell.com>
 
+	* animation.h:
+	* collection.h:
+	* animation.cpp:
+	* collection.cpp:
+	* notificationwindow.h:
+	* notificationwindow.cpp: This should be the last of the
+	  obvious cases which are missing SetObjectType calls.
+
+2010-04-14  Alan McGovern  <amcgovern@novell.com>
+
 	* viewbox.h:
 	* printing.h:
 	* viewbox.cpp:

@@ -337,7 +337,7 @@ protected:
  
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	TextElementCollection () {}
+	TextElementCollection ();
 
 	virtual Type::Kind GetElementType () { return Type::TEXTELEMENT; }
 };

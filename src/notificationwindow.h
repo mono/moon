@@ -22,7 +22,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	Window () {}
+	Window ();
 	
 	/* @PropertyType=double,ManagedFieldAccess=Internal */
 	const static int HeightProperty;

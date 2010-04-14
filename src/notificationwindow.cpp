@@ -18,3 +18,8 @@ NotificationWindow::NotificationWindow ()
 {
 	SetObjectType (Type::NOTIFICATIONWINDOW);
 }
+
+Window::Window ()
+{
+	SetObjectType (Type::WINDOW);
+}
