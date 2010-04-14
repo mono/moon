@@ -123,6 +123,8 @@ class PluginInstance
 	NPP GetInstance ();
 	NPWindow *GetWindow ();
 	/* @GenerateCBinding,GeneratePInvoke */
+	void *GetNPWindow () { return GetWindow (); }
+	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface () { return surface; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
