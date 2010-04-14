@@ -45,6 +45,7 @@ struct _InstallDialogPrivate {
 	
 	char *install_dir;
 	bool installed;
+	bool unattended;
 	
 	GtkToggleButton *start_menu;
 	GtkToggleButton *desktop;
@@ -293,6 +294,8 @@ downloader_completed (EventObject *sender, EventArgs *args, gpointer user_data)
 	
 	gtk_widget_set_sensitive (priv->ok_button, true);
 	gtk_widget_hide ((GtkWidget *) priv->progress);
+	if (priv->unattended)
+		gtk_button_clicked ((GtkButton *) priv->ok_button);
 }
 
 static void
@@ -358,7 +361,7 @@ downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data)
 }
 
 GtkDialog *
-install_dialog_new (GtkWindow *parent, Deployment *deployment)
+install_dialog_new (GtkWindow *parent, Deployment *deployment, bool unattended)
 {
 	InstallDialog *dialog = (InstallDialog *) g_object_new (INSTALL_DIALOG_TYPE, NULL);
 	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
@@ -393,6 +396,7 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment)
 	g_free (markup);
 	
 	priv->install_dir = install_utils_get_install_dir (settings);
+	priv->unattended = unattended;
 	
 	/* desensitize the OK button until the downloader is complete */
 	gtk_widget_set_sensitive (priv->ok_button, false);

@@ -209,7 +209,7 @@ namespace System.Windows {
 
 		public bool Install ()
 		{
-			return NativeMethods.application_install (NativeHandle);
+			return NativeMethods.application_install (NativeHandle, false);
 		}
 
 		public IList ApplicationLifetimeObjects {

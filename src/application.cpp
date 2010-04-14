@@ -449,7 +449,7 @@ Application::IsInstallable ()
 }
 
 bool
-Application::InstallWithError (MoonError *error)
+Application::InstallWithError (MoonError *error, bool unattended)
 {
 	MoonInstallerService *installer = runtime_get_installer_service ();
 	
@@ -465,7 +465,7 @@ Application::InstallWithError (MoonError *error)
 	
 	SetInstallState (InstallStateInstalling);
 	
-	if (installer->Install (Deployment::GetCurrent ())) {
+	if (installer->Install (Deployment::GetCurrent (), unattended)) {
 		SetInstallState (InstallStateInstalled);
 		return true;
 	}
@@ -480,7 +480,7 @@ Application::Install ()
 {
 	MoonError err;
 	
-	return InstallWithError (&err);
+	return InstallWithError (&err, false);
 }
 
 void

@@ -61,7 +61,7 @@ public:
 	virtual bool IsRunningOutOfBrowser (Deployment *deployment);
 	virtual bool CheckInstalled (Deployment *deployment);
 	virtual void Uninstall (Deployment *deployment);
-	virtual bool Install (Deployment *deployment);
+	virtual bool Install (Deployment *deployment, bool unattended);
 };
 
 #endif /* MOON_PAL_GTK_H */

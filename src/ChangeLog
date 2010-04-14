@@ -1,5 +1,14 @@
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pal/pal.h:
+	* application.cpp|h:
+	* pal/gtk/pal-gtk.cpp|h:
+	* pal/gtk/install-dialog.cpp|h: Add an 'unattended' parameter to Install,
+	so that the application can be installed without interaction from the user
+	- this is required for some DRTs.
+
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* src.mdp: Updated with new files.
 
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>

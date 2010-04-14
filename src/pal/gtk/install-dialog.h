@@ -43,7 +43,7 @@ struct _InstallDialogClass {
 
 GType install_dialog_get_type (void);
 
-GtkDialog *install_dialog_new (GtkWindow *parent, Deployment *deployment);
+GtkDialog *install_dialog_new (GtkWindow *parent, Deployment *deployment, bool unattended);
 
 bool install_dialog_get_install_to_start_menu (InstallDialog *dialog);
 bool install_dialog_get_install_to_desktop (InstallDialog *dialog);

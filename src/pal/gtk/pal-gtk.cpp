@@ -1110,7 +1110,7 @@ MoonInstallerServiceGtk::CheckInstalled (Deployment *deployment)
 }
 
 bool
-MoonInstallerServiceGtk::Install (Deployment *deployment)
+MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 {
 	GtkWidget *parent = NULL;
 	bool installed = false;
@@ -1130,7 +1130,7 @@ MoonInstallerServiceGtk::Install (Deployment *deployment)
 		parent = gtk_widget_get_toplevel (widget);
 	}
 	
-	dialog = install_dialog_new ((GtkWindow *) parent, deployment);
+	dialog = install_dialog_new ((GtkWindow *) parent, deployment, unattended);
 	
 	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
 		if ((installed = install_dialog_install ((InstallDialog *) dialog)))
