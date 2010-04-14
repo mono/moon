@@ -1,5 +1,9 @@
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp: Updated with new files.
+
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pal/capture/pal-linux-capture.cpp: Use printf instead of g_warning to make
 	breakpoints on g_log less annoying.
 

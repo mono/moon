@@ -323,6 +323,8 @@
     <File subtype="Code" buildaction="Nothing" name="pal/capture/pal-linux-capture.h" />
     <File subtype="Code" buildaction="Compile" name="pal/messaging/glib/pal-glib-msg.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/messaging/glib/pal-glib-msg.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/install-dialog.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
