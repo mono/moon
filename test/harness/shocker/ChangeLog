@@ -1,5 +1,9 @@
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shocker.h: Remove unused method definition.
+
+2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp:
 	* harness.cpp:
 	* netscape.cpp:

@@ -21,14 +21,11 @@ struct ShockerScriptableControlObject;
 #include "input.h"
 
 struct ShockerScriptableControlType : NPClass {
-
 	ShockerScriptableControlType ();
 	~ShockerScriptableControlType () {}
-
 };
+
 extern ShockerScriptableControlType* ShockerScriptableControlClass;
-
-
 
 struct ShockerScriptableControlObject : public NPObject
 {
@@ -44,19 +41,17 @@ struct ShockerScriptableControlObject : public NPObject
 	LogProvider* GetLogProvider ();
 	PluginObject *GetPluginObject () { return (PluginObject *) instance->pdata; }
 	
-        //
+	//
 	// Wrappers around some JS functions
 	//
 	char*         GetTestPath ();
-	void          SetJsStatus (const char* status);
+
 private:
 	NPP instance;
 	char* test_path;
 
 	ImageCaptureProvider* image_capture;
 };
-
-
 
 bool Shocker_Initialize (void);
 void Shocker_Shutdown (void);
