@@ -1,3 +1,7 @@
+2010-04-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* notificationwindow.h: Add @CallInitialize to NotificationWindow
+
 2010-04-13  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (SetRuntimeOptions): pass the flag, not the index.

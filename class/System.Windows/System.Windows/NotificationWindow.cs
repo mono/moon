@@ -29,6 +29,13 @@
 using System;
 namespace System.Windows {
 	public sealed partial class NotificationWindow : DependencyObject {
+
+		private new void Initialize ()
+		{
+			if (!Application.Current.IsRunningOutOfBrowser)
+				throw new InvalidOperationException ("Feature enabled only when executed out-of-browser");
+		}
+
 		public bool Visible {
 			get {
 				Console.WriteLine ("System.Windows.NotificationWindow.get_Visible: NIEX");

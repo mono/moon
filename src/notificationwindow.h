@@ -41,6 +41,7 @@ public:
 };
 
 /* @Namespace=System.Windows */
+/* @CallInitialize */
 class NotificationWindow : public DependencyObject {
 protected:
 	virtual ~NotificationWindow () {}

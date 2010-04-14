@@ -104,8 +104,14 @@ namespace System.Windows {
 	}
 
 	partial class NotificationWindow {
-		public NotificationWindow () : base (SafeNativeMethods.notification_window_new (), true) {}
-		internal NotificationWindow (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public NotificationWindow () : base (SafeNativeMethods.notification_window_new (), true)
+		{
+			Initialize ();
+		}
+		internal NotificationWindow (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class OutOfBrowserSettings {

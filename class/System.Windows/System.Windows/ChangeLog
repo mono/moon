@@ -1,3 +1,10 @@
+2010-04-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyObject.g.cs: Regenerated
+	* NotificationWindow.cs: Add Initialize method and throw an
+	InvalidOperationException if the application is not running
+	out of the browser
+
 2010-04-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* CheckAndDownloadUpdateCompletedEventArgs.cs: Implemented.
