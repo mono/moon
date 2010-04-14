@@ -19,3 +19,4 @@ Makefile.win32.features
 *~
 .*.sw?
 check-link
+.deps
