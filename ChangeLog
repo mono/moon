@@ -1,3 +1,8 @@
+2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Add information about required ffmpeg version and remove outdated
+	testing information.
+
 2010-04-13  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: disable perf for now.

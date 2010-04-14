@@ -99,6 +99,9 @@ Configuration options
 
 	There is no need to do a make install this.
 
+	If you want to use ffmpeg with Moonlight, you need at least r20911 of ffmpeg and r30099 of libswscale:
+
+		svn co -r 20911 svn://svn.mplayerhq.hu/ffmpeg/trunk && cd trunk/libswscale && svn up -r 30099
 
 Installing and Testing
 ======================
@@ -210,17 +213,6 @@ Test Suite
 	To run the test suite, make sure that the output from
 	configure indicates that the tests will be run.  Once this is
 	done, you can run the tests like this:
-
-	To run the Novell tests:
-
-	        cd moon/tests
-		./make-xephyr run-tests
-
-	To run the Microsoft tests (you need the moonlight-ms module
-	as a peer of moon):
-
-		cd moon/test
-		./make-xephyr run-ms-tests
 
 	To run the Moonlight Unit Tests:
 
