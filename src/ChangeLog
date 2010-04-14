@@ -1,3 +1,20 @@
+2010-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (Glyphs): Init new face index state variable to 0.
+	(LoadFont): Don't parse the face index from the uri anymore as
+	it's already been parsed. Also, now that SetFontSource() exists
+	where the developer can specify a part_name, we need to combine
+	the part_name into the resource name so that multiple fonts in the
+	same zip won't conflict.
+	(DownloaderComplete): Instead of using the FontUri property, use
+	the downloader's Uri property since SetFontSource() doesn't set
+	the FontUri property.
+	(SetFontResource): Parse the face index from the uri.
+	(DownloadFont): Parse the face index from the uri.
+	(SetFontSource): If a part_name has been specified, parse the face
+	index. If the downloader is NULL, clear the current font and
+	invalidate.
+
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/pal-gtk.cpp: Don't swallow terminal output from oob process, it

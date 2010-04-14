@@ -76,6 +76,7 @@ Glyphs::Glyphs ()
 	
 	downloader = NULL;
 	part_name = NULL;
+	index = 0;
 	
 	fill = NULL;
 	path = NULL;
@@ -119,6 +120,7 @@ Glyphs::CleanupDownloader ()
 		g_free (part_name);
 		downloader = NULL;
 		part_name = NULL;
+		index = 0;
 	}
 }
 
@@ -484,17 +486,16 @@ Glyphs::LoadFont (const Uri *uri, const char *path)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	StyleSimulations simulate = GetStyleSimulations ();
 	double size = GetFontRenderingEmSize ();
-	char *resource;
-	int index;
-	
-	if (uri->GetFragment ()) {
-		if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == G_MAXINT)
-			index = 0;
-	} else {
-		index = 0;
-	}
+	char *resource, *tmp;
 	
 	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideFragment | UriHideQuery));
+	
+	if (part_name) {
+		tmp = g_strdup_printf ("%s#%s", resource, part_name);
+		g_free (resource);
+		resource = tmp;
+	}
+	
 	manager->AddResource (resource, path);
 	font = TextFont::Load (resource, index, size, simulate);
 	g_free (resource);
@@ -509,7 +510,7 @@ Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer 
 void
 Glyphs::DownloaderComplete ()
 {
-	Uri *uri = GetFontUri ();
+	Uri *uri = downloader->GetUri ();
 	char *filename;
 	
 	delete font;
@@ -717,6 +718,13 @@ Glyphs::DownloadFont (Uri *uri, MoonError *error)
 		downloader->Open ("GET", str, FontPolicy);
 		g_free (str);
 		
+		if (uri->GetFragment ()) {
+			if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == G_MAXINT)
+				index = 0;
+		} else {
+			index = 0;
+		}
+		
 		if (downloader->GetFailedMessage () != NULL) {
 			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1000, downloader->GetFailedMessage ());
 			downloader->unref ();
@@ -746,6 +754,13 @@ Glyphs::SetFontResource (const Uri *uri)
 	if (!application || !(path = application->GetResourceAsPath (GetResourceBase(), uri)))
 		return false;
 	
+	if (uri->GetFragment ()) {
+		if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == G_MAXINT)
+			index = 0;
+	} else {
+		index = 0;
+	}
+	
 	LoadFont (uri, path);
 	g_free (path);
 	
@@ -755,9 +770,32 @@ Glyphs::SetFontResource (const Uri *uri)
 void
 Glyphs::SetFontSource (Downloader *downloader, const char *part_name)
 {
+	const char *hash;
+	
 	CleanupDownloader ();
 	
-	this->part_name = g_strdup (part_name);
+	if (!downloader) {
+		delete font;
+		font = NULL;
+		UpdateBounds (true);
+		Invalidate ();
+		dirty = true;
+		return;
+	}
+	
+	// extract the face index from the part_name
+	if (part_name && *part_name) {
+		if ((hash = strchr (part_name, '#'))) {
+			if (hash > part_name)
+				this->part_name = g_strndup (part_name, hash - part_name);
+			
+			if ((index = strtol (hash + 1, NULL, 10)) < 0 || index == G_MAXINT)
+				index = 0;
+		} else {
+			this->part_name = g_strdup (part_name);
+		}
+	}
+	
 	this->downloader = downloader;
 	downloader->ref ();
 	

@@ -32,6 +32,7 @@
 class Glyphs : public FrameworkElement {
 	Downloader *downloader;
 	char *part_name;
+	int index;
 	
 	moon_path *path;
 	TextFont *font;
