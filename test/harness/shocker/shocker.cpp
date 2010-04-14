@@ -14,6 +14,8 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "netscape.h"
 #include "shocker.h"
@@ -335,7 +337,7 @@ Plugin_CompareImages (ShockerScriptableControlObject* obj, char* name, const NPV
 static void
 GetActiveInputLocaleId (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] GetActiveInputLocaleId: Not implemented\n");
+	printf ("[%i shocker] GetActiveInputLocaleId: Not implemented\n", getpid ());
 	print_stack_trace ();
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
@@ -343,7 +345,7 @@ GetActiveInputLocaleId (ShockerScriptableControlObject* obj, char* name, const N
 static void
 ActivateKeyboardLayout (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] ActivateKeyboardLayout: Not implemented\n");
+	printf ("[%i shocker] ActivateKeyboardLayout: Not implemented\n", getpid ());
 	print_stack_trace ();
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
@@ -351,7 +353,7 @@ ActivateKeyboardLayout (ShockerScriptableControlObject* obj, char* name, const N
 static void
 IsInputLocaleInstalled (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] IsInputLocaleInstalled: Not implemented\n");
+	printf ("[%i shocker] IsInputLocaleInstalled: Not implemented\n", getpid ());
 	print_stack_trace ();
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
@@ -398,28 +400,28 @@ GetTestDefinition (ShockerScriptableControlObject* obj, char* name, const NPVari
 static void
 GetRuntimePropertyValue (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] GetRuntimePropertyValue: Not implemented\n");
+	printf ("[%i shocker] GetRuntimePropertyValue: Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void 
 SetRuntimePropertyValue (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] SetRuntimePropertyValue: Not implemented\n");
+	printf ("[%i shocker] SetRuntimePropertyValue: Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 CleanDRM (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] CleanDRM: Not implemented\n");
+	printf ("[%i shocker] CleanDRM: Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 SwitchToHighContrastScheme (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] SwitchToHighContrastScheme: Not implemented\n");
+	printf ("[%i shocker] SwitchToHighContrastScheme: Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
@@ -440,42 +442,42 @@ EndLog (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, 
 static void
 MouseWheel (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] mouseWheel (): Not implemented\n");
+	g_error ("[%i shocker] mouseWheel (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 EnablePrivacyPrompts (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] EnablePrivacyPrompts (): Not implemented\n");
+	g_error ("[%i shocker] EnablePrivacyPrompts (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 GetRenderDataCapturer (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] GetRenderDataCapturer (): Not implemented\n");
+	g_error ("[%i shocker] GetRenderDataCapturer (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 LogPerfEvent (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] LogPerfEvent (): Not implemented\n");
+	g_error ("[%i shocker] LogPerfEvent (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 InitializePerfProvider (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] InitializePerfProvider (): Not implemented\n");
+	g_error ("[%i shocker] InitializePerfProvider (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 UninitializePerfProvider (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] UninitializePerfProvider (): Not implemented\n");
+	g_error ("[%i shocker] UninitializePerfProvider (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
@@ -498,14 +500,14 @@ GetPlatformVersion (ShockerScriptableControlObject* obj, char* name, const NPVar
 static void
 StartWebCamWriter (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] StartWebCamWriter (): Not implemented\n");
+	g_error ("[%i shocker] StartWebCamWriter (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
 StopWebCamWriter (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	g_error ("[shocker] StopWebCamWriter (): Not implemented\n");
+	g_error ("[%i shocker] StopWebCamWriter (): Not implemented\n", getpid ());
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
@@ -690,7 +692,7 @@ shocker_scriptable_control_get_property (NPObject *npobj, NPIdentifier id, NPVar
 	PluginObject *plugin = ssco->GetPluginObject ();
 
 #if SHOCKER_DEBUG
-	printf ("[Shocker] shocker_scriptable_control_get_property ('%s') x: %i, y: %i\n", name, plugin->GetX (), plugin->GetY ());
+	printf ("[%i shocker] shocker_scriptable_control_get_property ('%s') x: %i, y: %i\n", getpid (), name, plugin->GetX (), plugin->GetY ());
 #endif
 
 	if (!strcmp (name, "X")) {

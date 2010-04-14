@@ -53,11 +53,11 @@ ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* fil
 {
 	char *image_path;
 #ifdef SHOCKER_DEBUG
-	printf ("CaptureSingleImage (%s, %s, %d, %d, %d, %d)\n", image_dir, file_name, x, y, width, height);
+	printf ("[%i shocker] CaptureSingleImage (%s, %s, %d, %d, %d, %d)\n", getpid (), image_dir, file_name, x, y, width, height);
 #endif
 
 	if (!(image_dir == NULL || image_dir [0] == 0))
-		printf ("[Shocker]: CaptureSingleImage ('%s', '%s', %d, %d, %d, %d): Should not be called with an image dir.\n", image_dir, file_name, x, y, width, height);
+		printf ("[%i shocker]: CaptureSingleImage ('%s', '%s', %d, %d, %d, %d): Should not be called with an image dir.\n", getpid (), image_dir, file_name, x, y, width, height);
 	
 	// get the directory where to put the images.
 	if (moonlight_harness_output_dir == NULL) {
@@ -170,7 +170,7 @@ void
 ImageCaptureProvider::CaptureMultipleImages (const char* file_name, int x, int y, int width, int height, int count, int interval, int initial_delay)
 {
 #ifdef SHOCKER_DEBUG
-	printf ("CaptureMultipleImages (%s, %d, %d, %d, %d, %d, %d, %d)\n", file_name, x, y, width, height, count, interval, initial_delay);
+	printf ("[%i shocker] CaptureMultipleImages (%s, %d, %d, %d, %d, %d, %d, %d)\n", getpid (), file_name, x, y, width, height, count, interval, initial_delay);
 #endif
 	capture_multiple_images_data_t* cmid = new capture_multiple_images_data ();
 
@@ -317,9 +317,9 @@ void
 CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay)
 {
 	if (directory != NULL && directory [0] != 0)
-		printf ("[shocker] CaptureSingleImage: a directory was specified, it will not be respected.\n");
+		printf ("[%i shocker] CaptureSingleImage: a directory was specified, it will not be respected.\n", getpid ());
 	if (delay != 0)
-		printf ("[shocker] CaptureSingleImage: a non-zero delay was specified, it will not be respected.\n"); // FIXME: implement delay
+		printf ("[%i shocker] CaptureSingleImage: a non-zero delay was specified, it will not be respected.\n", getpid ()); // FIXME: implement delay
 	
 	shocker_capture_image (filename, x, y, width, height);
 }

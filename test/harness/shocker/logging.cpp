@@ -16,7 +16,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-
+#include <sys/types.h>
+#include <unistd.h>
 #include <sys/utsname.h>
 
 #include "logging.h"
@@ -137,7 +138,7 @@ LogProvider::GetTestDirectory ()
 	const char* dir = getenv ("MOONLIGHT_HARNESS_TESTDIRECTORY");
 
 	if (!dir) {
-		printf ("[shocker] LogProvider::GetTestDirectory (): MOONLIGHT_HARNESS_TESTDIRECTORY is not set, using /tmp instead.\n");
+		printf ("[%i shocker] LogProvider::GetTestDirectory (): MOONLIGHT_HARNESS_TESTDIRECTORY is not set, using /tmp instead.\n", getpid ());
 		dir = "/tmp";
 	}
 
@@ -166,7 +167,7 @@ LogProvider::GetTestDefinition (bool isJson)
 		//printf (test_definition);
 		//printf ("\n");
 	} else {
-		printf ("[shocker] LogProvider::GetTestDefinition (): Could not get test definition: %s\n", strerror (errno));
+		printf ("[%i shocker] LogProvider::GetTestDefinition (): Could not get test definition: %s\n", getpid (), strerror (errno));
 		test_definition = NULL;
 	}
 
@@ -188,13 +189,13 @@ LogProvider::SetRuntimePropertyValue (const char *propertyName, const char *valu
 void
 LogProvider::StartLog ()
 {
-	g_warning ("[shocker] LogProvider::StartLog (): Not implemented\n");
+	g_warning ("[%i shocker] LogProvider::StartLog (): Not implemented\n", getpid ());
 }
 
 void
 LogProvider::EndLog ()
 {
-	g_warning ("[shocker] LogProvider::EndLog (): Not implemented\n");
+	g_warning ("[%i shocker] LogProvider::EndLog (): Not implemented\n", getpid ());
 }
 
 const char *
@@ -203,7 +204,7 @@ LogProvider::GetPlatformName ()
 	if (platform_name == NULL)
 		GetPlatformVersion ();
 
-	printf ("[shocker] LogProvider::GetPlatformName (): Returning '%s', which may cause failures.\n", platform_name);
+	printf ("[%i ishocker] LogProvider::GetPlatformName (): Returning '%s', which may cause failures.\n", getpid (), platform_name);
 
 	return platform_name;
 }
@@ -217,11 +218,11 @@ LogProvider::GetPlatformVersion ()
 		if (uname (&name) >= 0) {
 			platform_name = g_strdup (name.sysname);
 			platform_version = g_strdup (name.release);
-			printf ("[shocker] LogProvider::GetPlatformVersion (): Returning '%s', which may cause failures.\n", platform_version);
+			printf ("[%i shocker] LogProvider::GetPlatformVersion (): Returning '%s', which may cause failures.\n", getpid (), platform_version);
 		} else {
 			platform_name = g_strdup ("");
 			platform_version = g_strdup ("");
-			printf ("[shocker] LogProvider::GetPlatformVersion (): Could not get platform name/version: %s\n", strerror (errno));
+			printf ("[%i shocker] LogProvider::GetPlatformVersion (): Could not get platform name/version: %s\n", getpid (), strerror (errno));
 		}
 	}
 
@@ -261,7 +262,7 @@ void LogWarning (const char *message)
 
 void GetTestDefinition (char **result)
 {
-	g_error ("[shocker] GetTestDefinition: Not implemented\n");
+	g_error ("[%i shocker] GetTestDefinition: Not implemented\n", getpid ());
 }
 
 void TestLogger_StartLog (const char *message, const char *testDefinitionXml, const char *filePath)

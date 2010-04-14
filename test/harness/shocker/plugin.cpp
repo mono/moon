@@ -149,7 +149,7 @@ PluginObject::UpdateXY ()
 	XCloseDisplay (display);
 
 #if SHOCKER_DEBUG
-	printf ("[Shocker] PluginObject::SetWindow (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", window->window, window->x, window->y, window->width, window->height, x, y);
+	printf ("[%i shocker] PluginObject::SetWindow (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);
 #endif
 }
 

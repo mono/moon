@@ -12,6 +12,8 @@
  */
 
 #include <dlfcn.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "netscape.h"
 #include "shocker.h"
@@ -36,9 +38,9 @@ NP_Initialize (NPNetscapeFuncs* mozilla_funcs, NPPluginFuncs* plugin_funcs)
 	if (dladdr ((void *) &NP_Initialize, &dl_info) != 0) {
 		void *handle = dlopen (dl_info.dli_fname, RTLD_LAZY | RTLD_NOLOAD);
 		if (handle == NULL)
-			printf ("[shocker] tried to open a handle to libshocker.so, but: '%s' (rare crashes might occur).\n", dlerror ());
+			printf ("[%i shocker] tried to open a handle to libshocker.so, but: '%s' (rare crashes might occur).\n", getpid (), dlerror ());
 	} else {
-		printf ("[shocker] could not get path of libshocker.so: '%s' (rare crashes might occur).\n", dlerror ());
+		printf ("[%i shocker] could not get path of libshocker.so: '%s' (rare crashes might occur).\n", getpid (), dlerror ());
 	}
 	
 	Browser_Initialize (mozilla_funcs);

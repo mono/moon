@@ -57,7 +57,7 @@ recv_all (int sockfd, guint8 *buffer, guint32 length)
 		} while (result == -1 && errno == EINTR);
 
 		if (result == -1) {
-			printf ("[Shocker]: receive failed, returned %i (%i %s)\n", (int) result, errno, strerror (errno));
+			printf ("[%i shocker]: receive failed, returned %i (%i %s)\n", getpid (), (int) result, errno, strerror (errno));
 			return false;
 		}
 
@@ -83,12 +83,12 @@ send_harness_message (const char *msg, guint8 **buffer, guint32 *output_length)
 	// get and validate port
 	strport = getenv ("MOONLIGHT_HARNESS_LISTENER_PORT");
 	if (strport == NULL || strport [0] == 0) {
-		printf ("[Shocker]: MOONLIGHT_HARNESS_LISTENER_PORT is not set, assuming a default value of 1234\n");
+		printf ("[%i shocker]: MOONLIGHT_HARNESS_LISTENER_PORT is not set, assuming a default value of 1234\n", getpid ());
 		port = 1234;
 	} else {
 		port = atoi (strport);
 		if (port < 1024) {
-			printf ("[Shocker]: The port MOONLIGHT_HARNESS_LISTENER_PORT (%s) is probably invalid, it should be >= 1024.\n", strport);
+			printf ("[%i shocker]: The port MOONLIGHT_HARNESS_LISTENER_PORT (%s) is probably invalid, it should be >= 1024.\n", getpid (), strport);
 		}
 	}
 
@@ -96,7 +96,7 @@ send_harness_message (const char *msg, guint8 **buffer, guint32 *output_length)
 	sockfd = socket (PF_INET, SOCK_STREAM, 0);
 
 	if (sockfd == -1) {
-		printf ("[Shocker]: Failed to open socket: %i (%s)\n", errno, strerror (errno));
+		printf ("[%i shocker]: Failed to open socket: %i (%s)\n", getpid (), errno, strerror (errno));
 		return false;
 	}
 
@@ -108,7 +108,7 @@ send_harness_message (const char *msg, guint8 **buffer, guint32 *output_length)
 	result = connect (sockfd, (struct sockaddr *) &addr, sizeof (addr));
 
 	if (result == -1) {
-		printf ("[Shocker]: Could not connect to localhost:%i (%i %s)\n", port, errno, strerror (errno));
+		printf ("[%i shocker]: Could not connect to localhost:%i (%i %s)\n", getpid (), port, errno, strerror (errno));
 		goto cleanup;
 	} 
 

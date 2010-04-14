@@ -1,5 +1,16 @@
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp:
+	* harness.cpp:
+	* netscape.cpp:
+	* shocker.cpp:
+	* netscape.cpp:
+	* image-capture.cpp:
+	* shutdown-manager.cpp: Add the pid to all printfs, to make output less
+	confusing when there are multiple processes involved.
+
+2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* input.cpp|h:
 	* plugin.cpp|h:
 	* shocker.cpp|h:

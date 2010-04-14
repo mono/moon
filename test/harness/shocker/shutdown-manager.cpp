@@ -44,10 +44,10 @@ static gboolean
 force_shutdown (gpointer data)
 {
 	if (getenv ("MOONLIGHT_SHOCKER_DONT_EXIT") == NULL) {
-		printf ("[shocker] Could not shutdown nicely, exiting the process.\n");
+		printf ("[%i shocker] Could not shutdown nicely, exiting the process.\n", getpid ());
 		exit (0);
 	} else {
-		printf ("[shocker] Could not shutdown nicely, but won't exit process since MOONLIGHT_SHOCKER_DONT_EXIT is set.\n");
+		printf ("[%i shocker] Could not shutdown nicely, but won't exit process since MOONLIGHT_SHOCKER_DONT_EXIT is set.\n", getpid ());
 	}
 	return false;
 }
@@ -89,7 +89,7 @@ execute_shutdown ()
 	g_type_init ();
 
 	if (PluginObject::browser_app_context != 0) {
-		printf ("[shocker] shutting down firefox...\n");
+		printf ("[%i shocker] shutting down firefox...\n", getpid ());
 
 		Display *display = XOpenDisplay (NULL);
 		Atom WM_PROTOCOLS = XInternAtom (display, "WM_PROTOCOLS", False);
@@ -140,10 +140,10 @@ shutdown_manager_queue_shutdown ()
 	if (g_atomic_int_get (&wait_count) == 0)
 		return execute_shutdown ();
 
-	printf ("[shocker] Unable to execute shutdown immediately (pending screenshots), attempting a clean shutdown.\n");
+	printf ("[%i shocker] Unable to execute shutdown immediately (pending screenshots), attempting a clean shutdown.\n", getpid ());
 	
 	if (!g_timeout_add (100, attempt_clean_shutdown, NULL)) {
-		printf ("[shocker] Unable to create timeout for queued shutdown, executing immediate shutdown.\n");
+		printf ("[%i shocker] Unable to create timeout for queued shutdown, executing immediate shutdown.\n", getpid ());
 		execute_shutdown ();
 	}
 }
