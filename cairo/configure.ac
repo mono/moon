@@ -435,6 +435,10 @@ dnl XXX make this a private feature?
 CAIRO_ENABLE(test_surfaces, test surfaces, no)
 
 dnl ===========================================================================
+pixman_CFLAGS='-I$(top_srcdir)/../pixman/pixman'
+pixman_LIBS='$(top_builddir)/../pixman/pixman/libpixman-1.la'
+AC_SUBST(pixman_CFLAGS)
+AC_SUBST(pixman_LIBS)
 
 CAIRO_ENABLE_SURFACE_BACKEND(image, image, always, [
   pixman_REQUIRES="pixman-1-uninstalled >= 0.12.0"

@@ -1,5 +1,13 @@
 2010-04-14  Larry Ewing  <lewing@novell.com>
 
+	* cairo/configure.ac: add the pixman flags that somehow got lost
+	in the update.
+
+	* autogen.sh: don't clear the PKG_CONFIG_PATH it is needed in the
+	configure step.
+	
+2010-04-14  Larry Ewing  <lewing@novell.com>
+
 	* autogen.sh: confuse the cairo build a little more
 
 	* cairo: us the pixman-1-uninstalled.pc just to make sure we are

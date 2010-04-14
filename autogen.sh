@@ -134,21 +134,19 @@ fi
 
 if test -d $srcdir/cairo; then
   echo Running cairo/autogen.sh ...
-
   pixmandir=`readlink -f $0`
   pixmandir=`dirname $pixmandir`/pixman
 
   old_pkg=$PKG_CONFIG_PATH
+  PKG_CONFIG_PATH=$pixmandir
+  export PKG_CONFIG_PATH
 
   if test -n "$old_pkg"; then 
-      export PKG_CONFIG_PATH=$pixmandir:$tmp_pkg
-      (cd $srcdir/cairo ; ./autogen.sh "$@")
-      export PKG_CONFIG_PATH=$old_pkg
-  else
-      export PKG_CONFIG_PATH=$pixmandir
-      (cd $srcdir/cairo ; ./autogen.sh "$@")
-      unset PKG_CONFIG_PATH
+      PKG_CONFIG_PATH=$pixmandir:$old_pkg
+      export PKG_CONFIG_PATH
   fi
+
+  (cd $srcdir/cairo ; ./autogen.sh "$@")
 
   echo Done running cairo/autogen.sh ...
 fi
