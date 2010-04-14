@@ -35,6 +35,11 @@ static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
 #define utf8_linebreak_len 3
 
 
+Block::Block ()
+{
+	SetObjectType (Type::BLOCK);
+}
+
 Bold::Bold ()
 {
 	SetObjectType (Type::BOLD);
@@ -44,6 +49,41 @@ Bold::Bold ()
 	SetFontWeight (&w);
 }
 
+Hyperlink::Hyperlink ()
+{
+	SetObjectType (Type::HYPERLINK);
+	SetTextDecorations (TextDecorationsUnderline);
+}
+
+Italic::Italic ()
+{
+	SetObjectType (Type::ITALIC);
+}
+
+LineBreak::LineBreak ()
+{
+	SetObjectType (Type::LINEBREAK);
+}
+
+Paragraph::Paragraph ()
+{
+	SetObjectType (Type::PARAGRAPH);
+}
+
+RichTextArea::RichTextArea ()
+{
+	SetObjectType (Type::RICHTEXTAREA);
+}
+Span::Span ()
+{
+	SetObjectType (Type::SPAN);
+}
+
+Underline::Underline ()
+{
+	SetObjectType (Type::UNDERLINE);
+	SetTextDecorations (TextDecorationsUnderline);
+}
 //
 // Inline
 //
@@ -292,6 +332,11 @@ Inline::DownloaderComplete (Downloader *downloader)
 // Run
 //
 
+Run::Run ()
+{
+	SetObjectType (Type::RUN);
+}
+ 
 bool
 Run::Equals (Inline *item)
 {

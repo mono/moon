@@ -1,5 +1,11 @@
 2010-04-14  Alan McGovern  <amcgovern@novell.com>
 
+	* textblock.h:
+	* textblock.cpp: Move constructor bodies from the .h to the
+	  .cpp
+
+2010-04-14  Alan McGovern  <amcgovern@novell.com>
+
 	* textblock.h: Fix some default value issues.
 
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>

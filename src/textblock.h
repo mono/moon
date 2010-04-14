@@ -169,7 +169,7 @@ class LineBreak : public Inline {
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	LineBreak () { SetObjectType (Type::LINEBREAK); }
+	LineBreak ();
 };
 
 
@@ -184,7 +184,7 @@ class Run : public Inline {
 	const static int TextProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Run () { SetObjectType (Type::RUN); }
+	Run ();
 	
 	virtual bool Equals (Inline *item);
 	
@@ -346,7 +346,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	Block () { SetObjectType (Type::BLOCK); }
+	Block ();
 
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
@@ -363,7 +363,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Paragraph () { SetObjectType (Type::PARAGRAPH); }
+	Paragraph ();
 
 	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
@@ -380,7 +380,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Span () { SetObjectType (Type::SPAN); }
+	Span ();
 
 	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
@@ -402,11 +402,11 @@ public:
 /* @Namespace=System.Windows.Documents */
 class Italic : public Span {
 protected:
-	virtual ~Italic () { SetObjectType (Type::ITALIC); }
+	virtual ~Italic () {}
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Italic () {}
+	Italic ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -416,7 +416,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Underline () { SetObjectType (Type::UNDERLINE); SetTextDecorations (TextDecorationsUnderline); }
+	Underline ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -426,7 +426,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	Hyperlink () { SetObjectType (Type::HYPERLINK); SetTextDecorations (TextDecorationsUnderline); }
+	Hyperlink ();
 
 	/* @PropertyType=object */
 	const static int CommandParameterProperty;
@@ -450,7 +450,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	RichTextArea () { SetObjectType (Type::RICHTEXTAREA); }
+	RichTextArea ();
 
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;
