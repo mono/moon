@@ -14,7 +14,7 @@
 +SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::application_is_running_out_of_browser(System.IntPtr)

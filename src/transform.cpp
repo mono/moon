@@ -18,6 +18,15 @@
 
 
 //
+// Composite Transform
+//
+
+CompositeTransform::CompositeTransform ()
+{
+	SetObjectType (Type::COMPOSITETRANSFORM);
+}
+
+//
 // GeneralTransform
 //
 

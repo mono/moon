@@ -95,7 +95,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	CompositeTransform () {}
+	CompositeTransform ();
 
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int CenterXProperty;

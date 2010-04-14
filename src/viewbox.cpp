@@ -14,3 +14,8 @@
 #include <config.h>
 
 #include "viewbox.h"
+
+Viewbox::Viewbox ()
+{
+	SetObjectType (Type::VIEWBOX);
+}

@@ -23,7 +23,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	Viewbox () {}
+	Viewbox ();
 
 	/* @PropertyType=UIElement,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int ChildProperty;

@@ -349,7 +349,7 @@ protected:
  
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	BlockCollection () {}
+	BlockCollection ();
  
 	virtual Type::Kind GetElementType () { return Type::BLOCK; }
 };

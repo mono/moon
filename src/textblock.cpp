@@ -55,6 +55,11 @@ Hyperlink::Hyperlink ()
 	SetTextDecorations (TextDecorationsUnderline);
 }
 
+InlineUIContainer::InlineUIContainer ()
+{
+	SetObjectType (Type::INLINEUICONTAINER);
+}
+
 Italic::Italic ()
 {
 	SetObjectType (Type::ITALIC);
@@ -79,11 +84,17 @@ Span::Span ()
 	SetObjectType (Type::SPAN);
 }
 
+TextElement::TextElement ()
+{
+	SetObjectType (Type::TEXTELEMENT);
+}
+
 Underline::Underline ()
 {
 	SetObjectType (Type::UNDERLINE);
 	SetTextDecorations (TextDecorationsUnderline);
 }
+
 //
 // Inline
 //

@@ -13,3 +13,8 @@
 #include <config.h>
 
 #include "printing.h"
+
+PrintDocument::PrintDocument ()
+{
+	SetObjectType (Type::PRINTDOCUMENT);
+}

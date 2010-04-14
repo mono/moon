@@ -66,6 +66,42 @@ enum MediaElementFlags {
 };
 
 /*
+ * AudioCaptureDevice
+ */
+
+AudioCaptureDevice::AudioCaptureDevice ()
+{
+	SetObjectType (Type::AUDIOCAPTUREDEVICE);
+}
+
+/*
+ * CaptureDevice
+ */
+
+CaptureDevice::CaptureDevice ()
+{
+	SetObjectType (Type::CAPTUREDEVICE);
+}
+
+/*
+ * CaptureSource
+ */
+
+CaptureSource::CaptureSource ()
+{
+	SetObjectType (Type::CAPTURESOURCE);
+}
+
+/*
+ * VideoCaptureDevice
+ */
+
+VideoCaptureDevice::VideoCaptureDevice ()
+{
+	SetObjectType (Type::VIDEOCAPTUREDEVICE);
+}
+
+/*
  * MediaElement
  */
 

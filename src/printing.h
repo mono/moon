@@ -22,7 +22,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	PrintDocument () {}
+	PrintDocument ();
 
 	/* @PropertyType=string,GenerateAccessors */
 	const static int DocumentNameProperty;

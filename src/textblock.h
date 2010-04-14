@@ -42,7 +42,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding,ManagedAccess=Protected */
-	TextElement () {};
+	TextElement ();
 
 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
@@ -153,7 +153,7 @@ protected:
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	InlineUIContainer () {}
+	InlineUIContainer ();
 
 	/* @PropertyType=UIElement,GenerateAccessors */
 	const static int ChildProperty;

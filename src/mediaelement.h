@@ -370,7 +370,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	CaptureSource () {}
+	CaptureSource ();
 
 	/* @PropertyType=AudioCaptureDevice,GenerateAccessors */
 	const static int AudioCaptureDeviceProperty;
@@ -395,7 +395,7 @@ protected:
 
 public:
 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	CaptureDevice () {}
+	CaptureDevice ();
 
 	/* @PropertyType=string,GenerateAccessors */
 	const static int FriendlyNameProperty;
@@ -417,7 +417,7 @@ protected:
 
 public:
 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	AudioCaptureDevice () {}
+	AudioCaptureDevice ();
 
 	/* @PropertyType=gint32,GenerateAccessors */
 	const static int AudioFrameSizeProperty;
@@ -433,7 +433,7 @@ protected:
 
 public:
 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	VideoCaptureDevice () {}
+	VideoCaptureDevice ();
 };
 
 #endif /* __MEDIAELEMENT_H__ */

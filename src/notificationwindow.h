@@ -48,7 +48,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	NotificationWindow () {}
+	NotificationWindow ();
 
 	/* @PropertyType=FrameworkElement */
 	const static int ContentProperty;

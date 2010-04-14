@@ -22,7 +22,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	WebBrowser () {}
+	WebBrowser ();
 
 	/* @PropertyType=Uri */
 	const static int SourceProperty;

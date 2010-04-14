@@ -26,6 +26,15 @@
 #include "multiscalesubimage.h"
 
 //
+// BlockCollection
+//
+
+BlockCollection::BlockCollection ()
+{
+	SetObjectType (Type::BLOCK_COLLECTION);
+}
+
+//
 // Collection
 //
 

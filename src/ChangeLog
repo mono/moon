@@ -1,5 +1,25 @@
 2010-04-14  Alan McGovern  <amcgovern@novell.com>
 
+	* viewbox.h:
+	* printing.h:
+	* viewbox.cpp:
+	* textblock.h:
+	* transform.h:
+	* collection.h:
+	* webbrowser.h:
+	* printing.cpp:
+	* transform.cpp:
+	* textblock.cpp:
+	* mediaelement.h:
+	* webbrowser.cpp:
+	* collection.cpp:
+	* mediaelement.cpp:
+	* notificationwindow.h:
+	* notificationwindow.cpp: Add a bunch of missing SetObjectType
+	  calls.
+
+2010-04-14  Alan McGovern  <amcgovern@novell.com>
+
 	* textblock.h:
 	* textblock.cpp: Move constructor bodies from the .h to the
 	  .cpp

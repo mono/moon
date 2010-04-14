@@ -13,4 +13,8 @@
  #include <config.h>
  
  #include "notificationwindow.h"
- 
+
+NotificationWindow::NotificationWindow ()
+{
+	SetObjectType (Type::NOTIFICATIONWINDOW);
+}

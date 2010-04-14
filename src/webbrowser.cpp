@@ -14,4 +14,7 @@
 
 #include "webbrowser.h"
 
-
+WebBrowser::WebBrowser ()
+{
+	SetObjectType (Type::WEBBROWSER);
+}
