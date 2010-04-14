@@ -7,6 +7,11 @@
 
 	* Makefile.am: disable perf for now.
 
+2010-04-14  Larry Ewing  <lewing@novell.com>
+
+	* pixman/Makefile.am (pkgconfigdir): don't install the embedded pc
+	file.  Should fix the build problems some people were seeing.
+
 2010-04-13  Andreia Gaita  <avidigal@novell.com>
 
 	* README: Bump mcs to r155283 (olympics fix)
