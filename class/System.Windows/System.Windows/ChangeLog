@@ -1,3 +1,9 @@
+2010-04-14  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.cs: Back out the recent ClearValue on
+	  readonly properties change as this doesn't actually apply to
+	  all DPs
+
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Application.cs: Update call to application_install according to API change.

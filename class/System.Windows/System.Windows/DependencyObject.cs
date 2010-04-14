@@ -171,10 +171,6 @@ namespace System.Windows {
 		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public void ClearValue (DependencyProperty dp)
 		{
-			if (dp == null)
-				throw new ArgumentNullException ("dp");
-			if (dp.IsReadOnly)
-				throw new ArgumentException ("Property is read only", "dp");
 			ClearValueImpl (dp);
 		}
 
@@ -197,7 +193,7 @@ namespace System.Windows {
 			if (dp == null)
 				throw new ArgumentNullException ("property");
 			if (dp.IsReadOnly)
-				throw new ArgumentException ("Property is read only", "dp");
+				throw new InvalidOperationException ();
 			SetValueImpl (dp, value);
 		}
 
