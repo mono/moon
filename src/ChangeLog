@@ -1,3 +1,8 @@
+2010-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: OpenCompletedHandler: We need to re-check consistency
+	after emitting any events (drm error in this case).
+
 2010-04-15  Alan McGovern  <amcgovern@novell.com>
 
 	* xaml.cpp:

@@ -1050,6 +1050,12 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	demuxer->unref ();
 	demuxer = NULL;
 
+	// We need to check again since we might have emitted an event earlier (drm error message)
+	if (playlist == NULL || mplayer == NULL)  {
+		LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler (): open cancelled somehow\n");
+		return;
+	}
+
 	// check if we're missing the codecs *and* if they are not installed 
 	// since we could already have downloaded/installed them without refreshing the browser (leading to a crash)
 	if ((flags & MissingCodecs) && !Media::IsMSCodecsInstalled ())
