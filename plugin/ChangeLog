@@ -1,5 +1,11 @@
 2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-class.cpp|h.in: Handle a call to TransformXY and print a warning
+	about non-implemented method. Otherwise we'll get a hard to track down html
+	bridge exception later on.
+
+2010-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.h: Add P/Invoke to get the NPWindow - this is used by oob tests to
 	p/invoke libshocker to get the screen location of the oob application.
 
