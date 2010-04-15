@@ -42,11 +42,13 @@ public:
 	
 	static Window browser_app_context;
 	
+	static void GetXY (NPWindow *window, guint32 *x, guint32 *y);
+
 private:	  
 	NPP instance;
 	NPWindow *window;
 	AutoCapture* auto_capture;
-	int x, y;
+	guint32 x, y;
 	
 	ShockerScriptableControlObject* shocker_control;
 	ShockerScriptableControlObject* GetShockerControl ();
@@ -62,6 +64,10 @@ void Plugin_Initialize (NPPluginFuncs* npp_funcs);
 //
 char* Plugin_GetMIMEDescription (void);
 NPError Plugin_GetValue (NPP instance, NPPVariable variable, void *value);
+
+G_BEGIN_DECLS
+void TestPlugin_GetXY (NPWindow *window, guint32 *x, guint32 *y);
+G_END_DECLS
 
 #endif  // __PLUGIN_H__
 

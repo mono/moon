@@ -350,7 +350,7 @@ void CompareImages (const char *imageFile1, const char *imageFile2, guint8 toler
 		imageFile1, imageFile2, tolerance, 
 		"", diffFileName, copySourceFiles);
 	
-	if (send_harness_message (msg, &output, &output_length))
+	if (Harness::SendMessage (msg, &output, &output_length))
 		res = output [0] == 0;
 	g_free (output);
 	g_free (msg);

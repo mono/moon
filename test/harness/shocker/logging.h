@@ -43,8 +43,6 @@ public:
 	void LogResult (TestResult result);
 	char *GetTestDefinition (bool isJson);
 	const char *GetTestDirectory ();
-	char *GetRuntimePropertyValue (const char *propertyName);
-	void SetRuntimePropertyValue (const char *propertyName, const char *value);
 	const char *GetPlatformName ();
 	const char *GetPlatformVersion ();
 
@@ -58,7 +56,6 @@ private:
 	char *test_name;
 	char *platform_version;
 	char *platform_name;
-	GHashTable *runtime_properties;
 };
 
 G_BEGIN_DECLS

@@ -25,12 +25,32 @@
 
 Window PluginObject::browser_app_context = 0;
 
+void
+TestPlugin_GetXY (NPWindow *window, guint32 *x, guint32 *y)
+{
+	PluginObject::GetXY (window, x, y);
+}
+
+void
+PluginObject::GetXY (NPWindow *window, guint32 *x, guint32 *y)
+{
+	Display *display = XOpenDisplay (NULL);
+	Window root = XDefaultRootWindow (display);
+	Window src = (Window) window->window;
+	Window dummy;
+	XTranslateCoordinates (display, src, root, -window->x, -window->y, (int*) x, (int*) y, &dummy);
+	XCloseDisplay (display);
+
+#if SHOCKER_DEBUG
+	printf ("[%i shocker] PluginObject::GetXY (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);
+#endif
+}
+
 char*
 Plugin_GetMIMEDescription (void)
 {
 	return (char *) MIME_TYPES_DESCRIPTION;
 }
-
 
 PluginObject::PluginObject (NPP npp, int argc, char *argn[], char *argv[])
 {
@@ -141,12 +161,7 @@ PluginObject::GetY ()
 void
 PluginObject::UpdateXY ()
 {
-	Display *display = XOpenDisplay (NULL);
-	Window root = XDefaultRootWindow (display);
-	Window src = (Window) window->window;
-	Window dummy;
-	XTranslateCoordinates (display, src, root, -window->x, -window->y, &x, &y, &dummy);
-	XCloseDisplay (display);
+	GetXY (window, &x, &y);
 
 #if SHOCKER_DEBUG
 	printf ("[%i shocker] PluginObject::SetWindow (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);

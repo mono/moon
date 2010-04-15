@@ -48,7 +48,6 @@ LogProvider::LogProvider ()
 	this->test_name = NULL;
 	this->platform_version = NULL;
 	this->platform_name = NULL;
-	runtime_properties = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 }
 
 LogProvider::~LogProvider ()
@@ -56,7 +55,6 @@ LogProvider::~LogProvider ()
 	g_free (test_name);
 	g_free (platform_version);
 	g_free (platform_name);
-	g_hash_table_destroy (runtime_properties);
 }
 
 void
@@ -159,7 +157,7 @@ LogProvider::GetTestDefinition (bool isJson)
 		msg = "TestDefinition.GetTestDefinition";
 	}
 
-	if (send_harness_message (msg, &buffer, &output_length)) {
+	if (Harness::SendMessage (msg, &buffer, &output_length)) {
 		test_definition = (char *) buffer;
 		buffer = NULL;
 
@@ -172,18 +170,6 @@ LogProvider::GetTestDefinition (bool isJson)
 	}
 
 	return test_definition;
-}
-
-char *
-LogProvider::GetRuntimePropertyValue (const char *propertyName)
-{
-	return g_strdup ((gchar *) g_hash_table_lookup (runtime_properties, propertyName));
-}
-
-void
-LogProvider::SetRuntimePropertyValue (const char *propertyName, const char *value)
-{
-	g_hash_table_insert (runtime_properties, g_strdup (propertyName), g_strdup (value));
 }
 
 void
@@ -313,7 +299,7 @@ void TestLogger_GetTestDefinition (bool isJson, gunichar2 **result)
 
 void TestLogger_GetRuntimePropertyValue (const char *propertyName, gunichar2 **value)
 {
-	char *utf8 = LogProvider::GetInstance ()->GetRuntimePropertyValue (propertyName);
+	char *utf8 = Harness::GetRuntimePropertyValue (propertyName);
 	if (utf8 != NULL) {
 		*value = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
 	} else {
@@ -324,7 +310,7 @@ void TestLogger_GetRuntimePropertyValue (const char *propertyName, gunichar2 **v
 
 void TestLogger_SetRuntimePropertyValue (const char *propertyName, const char *value)
 {
-	LogProvider::GetInstance ()->SetRuntimePropertyValue (propertyName, value);
+	Harness::SetRuntimePropertyValue (propertyName, value);
 }
 
 void TestHost_GetTestDirectory (gunichar2 **result)

@@ -1,3 +1,17 @@
+2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Add a pinvokable method to get the location of the test
+	plugin.
+
+	* logging.cpp|h: Updated according to API changes. Remove runtime property
+	storage, it's stored in the test harness now (since there might be several
+	processes involved, and we need to store it in one place for all processes).
+
+	* image-capture.cpp: Updated according to API changes.
+
+	* harness.cpp|h: Added new window and process management methods. Put it all
+	in a C++ class.
+
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.h: Remove unused method definition.
