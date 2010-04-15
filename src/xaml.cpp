@@ -4581,7 +4581,7 @@ XamlElementInfoImportedManaged::CreatePropertyElementInstance (XamlParserInfo *p
 /// Add Child funcs
 ///
 
-static const char*
+static const char *
 get_key_from_child (XamlElementInstance *child)
 {
 	const char *key = child->GetKey ();
@@ -4597,7 +4597,7 @@ get_key_from_child (XamlElementInstance *child)
 
 		if (Type::IsSubclassOf (c->GetDeployment (), Type::STYLE, child->info->GetKind ())) {
 			Value *v = c->GetValue (Style::TargetTypeProperty);
-			if (v && v->GetKind () == Type::MANAGEDTYPEINFO)
+			if (!Value::IsNull (v))
 				key = v->AsManagedTypeInfo ()->full_name;
 
 			if (key)

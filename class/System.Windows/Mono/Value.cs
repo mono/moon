@@ -130,8 +130,8 @@ namespace Mono {
 
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct ManagedTypeInfo {
-		public IntPtr assembly_name;
 		public IntPtr full_name;
+		public Kind Kind;
 	}
 	
 	[StructLayout(LayoutKind.Explicit)]
@@ -358,18 +358,9 @@ namespace Mono {
 
 			case Kind.MANAGEDTYPEINFO: {
 				ManagedTypeInfo *type_info = (ManagedTypeInfo *) value->u.p;
-
 				if (type_info == null)
 					return null;
-
-				string assembly_name = Marshal.PtrToStringAuto (type_info->assembly_name);
-				string full_name = Marshal.PtrToStringAuto (type_info->full_name);
-
-				Assembly asm = Application.GetAssembly (assembly_name);
-				if (asm != null)
-					return asm.GetType (full_name);
-
-				return null;
+				return Deployment.Current.Types.KindToType (type_info->Kind);
 			}
 			default:
 				Type tt = Deployment.Current.Types.KindToType (value->k);
@@ -636,9 +627,8 @@ namespace Mono {
 				else if (v is Type) {
 					Type t = v as Type;
 					ManagedTypeInfo mti = new ManagedTypeInfo ();
-
-					mti.assembly_name = StringToIntPtr (t.Assembly.GetName ().Name);
 					mti.full_name = StringToIntPtr (t.FullName);
+					mti.Kind = Deployment.Current.Types.TypeToKind (t);
 
 					value.k = Kind.MANAGEDTYPEINFO;
 					value.u.p = Marshal.AllocHGlobal (sizeof (ManagedTypeInfo));

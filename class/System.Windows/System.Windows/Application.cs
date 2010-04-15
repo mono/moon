@@ -281,19 +281,10 @@ namespace System.Windows {
 			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
 			Type type = null;
 
-			string assembly_name = Marshal.PtrToStringAuto (type_info.assembly_name);
-			string full_name = Marshal.PtrToStringAuto (type_info.full_name);
-
-			Assembly asm = Application.GetAssembly (assembly_name);
-			if (asm == null) {
-				Console.Error.WriteLine ("failed to lookup assembly_name {0} while applying style", assembly_name);
-				return IntPtr.Zero;
-			}
-
-			type = asm.GetType (full_name);
+			type = Deployment.Current.Types.KindToType (type_info.Kind);
 
 			if (type == null) {
-				Console.Error.WriteLine ("failed to lookup type {0} in assembly {1} while applying style", full_name, assembly_name);
+				Console.Error.WriteLine ("failed to lookup native kind {0}", type_info.Kind);
 				return IntPtr.Zero;
 			}
 

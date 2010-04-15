@@ -1,3 +1,10 @@
+2010-04-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs: ManagedTypeInfo needs to contain the
+	  Type::Kind for the type. This allows us figure out if one
+	  ManagedPropertyInfo is subclass/superclass of another which
+	  was not possible before.
+
 2010-04-14  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: Back out the recent ClearValue on

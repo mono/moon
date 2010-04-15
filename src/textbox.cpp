@@ -554,10 +554,10 @@ GetClipboard (TextBoxBase *textbox, MoonClipboardType clipboardType)
 void
 TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 {
-	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
-	type_info->Initialize ("System.Windows", type_name);
-	
 	SetObjectType (type);
+
+	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
+	type_info->Initialize (GetObjectType (), type_name);
 	SetDefaultStyleKey (type_info);
 	ManagedTypeInfo::Free (type_info);
 	

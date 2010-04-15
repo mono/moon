@@ -11,15 +11,17 @@
 #ifndef __MANAGEDTYPEINFO_H__
 #define __MANAGEDTYPEINFO_H__
 
+#include "type.h"
+
 /* @IncludeInKinds */
 struct ManagedTypeInfo {
-	char *assembly_name;
 	char *full_name;
+	Type::Kind kind;
 	
 	ManagedTypeInfo (const ManagedTypeInfo& v);
 	~ManagedTypeInfo ();
 
-	void Initialize (const char *assembly_name, const char *full_name);
+	void Initialize (Type::Kind kind, const char *full_name);
 
 	bool operator == (const ManagedTypeInfo &v);
 	bool operator != (const ManagedTypeInfo &v);

@@ -718,7 +718,7 @@ Value::operator== (const Value &v) const
 	case Type::CORNERRADIUS:
 		return *u.corner == *v.u.corner;
 	case Type::MANAGEDTYPEINFO:
-		return *u.type_info == *v.u.type_info;
+		return u.type_info->kind == v.u.type_info->kind;
 	case Type::URI:
 		if (!u.uri)
 			return !v.u.uri;
