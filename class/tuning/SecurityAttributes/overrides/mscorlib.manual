@@ -1,9 +1,12 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# fix inheritance rules wrt default .ctor
-+SC-M: System.Void System.IO.FileSystemInfo::.ctor()
-+SC-M: System.Void System.IO.FileInfo::.ctor()
-+SC-M: System.Void System.IO.DirectoryInfo::.ctor()
+# fix inheritance rules wrt default .ctor (SSC now for SL4 elevated trust)
++SSC-M: System.Void System.IO.FileSystemInfo::.ctor()
++SSC-M: System.Void System.IO.FileInfo::.ctor()
++SSC-M: System.Void System.IO.DirectoryInfo::.ctor()
+
+# can't touch this
++SC-M: System.Void System.Security.SecurityManager::set_HasElevatedPermissions(System.Boolean)
 
 # available on SL2 (even if it returns an IntPtr that cannot be cast back to a GCHandle)
 -SC-M: System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
@@ -179,8 +182,6 @@
 +SC-M: System.Globalization.SortKey System.Globalization.CompareInfo::GetSortKey(System.String)
 +SC-M: System.Void System.IO.FileStream::Lock(System.Int64,System.Int64)
 +SC-M: System.Void System.IO.FileStream::Unlock(System.Int64,System.Int64)
-+SC-M: System.IO.FileAttributes System.IO.File::GetAttributes(System.String)
-+SC-M: System.Byte[] System.IO.File::ReadAllBytes(System.String)
 +SC-M: System.String System.Environment::get_CommandLine()
 +SC-M: System.String System.Environment::get_UserDomainName()
 +SC-M: System.String System.Environment::GetEnvironmentVariable(System.String)
@@ -389,7 +390,6 @@
 +SC-M: System.Void System.IO.FileStream::WriteInternal(System.Byte[],System.Int32,System.Int32)
 +SC-M: System.Void System.IO.FileStream::RefillBuffer()
 +SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::set_Quota(System.Int64)
-+SC-M: System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
 
 # Mono.CompilerServices.SymbolWriter is embedded into mscorlib.dll 2.1
 +SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolFile::CreateSymbolFile(System.Guid,System.IO.FileStream)
@@ -401,9 +401,14 @@
 +SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()
 
 #
-+SC-M: System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SC-M: System.String System.IO.Directory::ValidateDirectoryListing(System.String,System.String,System.Boolean&)
-+SC-M: System.Void System.IO.Directory::ValidatePath(System.String)
-+SC-M: System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateKind(System.String,System.String,System.IO.SearchOption,System.IO.FileAttributes)
-+SC-M: System.Collections.Generic.IEnumerable`1<System.IO.FileSystemInfo> System.IO.DirectoryInfo::EnumerateFileSystemInfos(System.String,System.String,System.IO.SearchOption)
+
+# needs to be SSC because they can be called by user code and are calling elevated permission code
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.IO.IsolatedStorage.IsolatedStorageFile)
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.IsolatedStorage.IsolatedStorageFile)
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFileStream::.ctor(System.String,System.IO.FileMode,System.IO.IsolatedStorage.IsolatedStorageFile)
++SSC-M: System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames(System.String)
+
+# create instance of [SecurityCritical] RuntimeResourceSet
++SSC-M: System.Resources.ResourceSet System.Resources.ResourceManager::InternalGetResourceSet(System.Globalization.CultureInfo,System.Boolean,System.Boolean)
 

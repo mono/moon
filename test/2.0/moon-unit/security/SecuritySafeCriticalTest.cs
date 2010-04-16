@@ -43,6 +43,13 @@ namespace MoonTest.Security {
 		// misc tests to validate some behaviours around SSC code
 
 		[TestMethod]
+		public void Environment_ ()
+		{
+			// ProcessorCount was [SecurityCritical] before SL4
+			Assert.IsTrue (Environment.ProcessorCount > 0, "ProcessorCount");
+		}
+
+		[TestMethod]
 		public void Encoding_ ()
 		{
 			Assert.IsNotNull (Encoding.BigEndianUnicode, "BigEndianUnicode");
@@ -80,7 +87,6 @@ namespace MoonTest.Security {
 			Assert.AreSame (sc1, sc2, "same");
 		}
 
-#if false // TimeZoneInfo is internal in SL4
 		[TestMethod]
 		public void TimeZoneInfo_ ()
 		{
@@ -88,7 +94,6 @@ namespace MoonTest.Security {
 			// this one requires file access (/etc/locatime and such) for ML
 			Assert.IsNotNull (TimeZoneInfo.Local, "Local");
 		}
-#endif
 	}
 }
 

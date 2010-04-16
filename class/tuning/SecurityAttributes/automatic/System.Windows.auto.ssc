@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 546 methods
+# 545 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -305,7 +305,6 @@
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::SelectAll()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::Initialize()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::OnOpened()
-+SSC-M: System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()
 +SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDialog()
 +SSC-M: System.Void System.Windows.Controls.TextBlock::.cctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::.cctor()

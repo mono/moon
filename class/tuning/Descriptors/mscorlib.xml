@@ -7,6 +7,8 @@
 		<type fullname="System.IO.File">
 			<method signature="System.Byte[] ReadAllBytes(System.String)" />
 		</type>
+		<type fullname="System.IO.FileSystemInfo" preserve="all">
+		</type>
 		<type fullname="System.Environment">
 			<method name="get_StackTrace" />
 		</type>

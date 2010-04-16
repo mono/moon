@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -187,6 +187,41 @@ namespace MoonTest.Security {
 		}
 
 		[TestMethod]
+		public void System_AppDomain_MonitoringIsEnabled ()
+		{
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.IsFalse (AppDomain.MonitoringIsEnabled);
+			}, "get_MonitoringIsEnabled"); // new in SL4
+			Assert.Throws<MethodAccessException> (delegate {
+				AppDomain.MonitoringIsEnabled = true;
+			}, "set_MonitoringIsEnabled"); // new in SL4
+		}
+
+		[TestMethod]
+		public void System_AppDomain_MonitoringSurvivedMemorySize ()
+		{
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.AreEqual (0, AppDomain.CurrentDomain.MonitoringSurvivedMemorySize);
+			}, "MonitoringSurvivedMemorySize"); // new in SL4
+		}
+
+		[TestMethod]
+		public void System_AppDomain_MonitoringTotalAllocatedMemorySize ()
+		{
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.AreEqual (0, AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize);
+			}, "MonitoringTotalAllocatedMemorySize"); // new in SL4
+		}
+
+		[TestMethod]
+		public void System_AppDomain_MonitoringTotalProcessorTime ()
+		{
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.IsNotNull (AppDomain.CurrentDomain.MonitoringTotalProcessorTime);
+			}, "MonitoringTotalProcessorTime"); // new in SL4
+		}
+
+		[TestMethod]
 		public void System_AppDomain_UnhandledException ()
 		{
 			// UnhandledExceptionEventHandler is [SecurityCritical] too so we avoid to use it here
@@ -210,6 +245,9 @@ namespace MoonTest.Security {
 			// System.AppDomain.DomainManager() property where
 			// the getter (no setter exists) is [SecurityCritical]
 		}
+
+		// System.AppDomainManager::InitializeNewDomain(System.AppDomainSetup) is decorated as
+		// [SecurityCritcal] but the System.AppDomainManager type is already decorated as such
 
 		[TestMethod]
 		public void System_AppDomainSetup_ApplicationBase ()
@@ -305,137 +343,21 @@ namespace MoonTest.Security {
 		[TestMethod]
 		public void System_Environment_CurrentDirectory ()
 		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Environment.CurrentDirectory);
-			}, "get_CurrentDirectory");
+			// get_CurrentDirectory is not [SecurityCritical] in SL4 (because it can work in elevated trust)
 			Assert.Throws<MethodAccessException> (delegate {
 				Environment.CurrentDirectory = String.Empty;
 			}, "set_CurrentDirectory");
 		}
 
 		[TestMethod]
-		public void System_Environment_GetFolderPath ()
+		public void System_Environment_FailFast ()
 		{
 			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData));
-			}, "GetFolderPath");
-		}
-
-		[TestMethod]
-		public void System_Environment_ProcessorCount ()
-		{
+				Environment.FailFast ("");
+			}, "FailFast(string)");
 			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Environment.ProcessorCount);
-			}, "get_ProcessorCount");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_CreateDirectory ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.CreateDirectory (String.Empty));
-			}, "CreateDirectory");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_Delete ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Directory.Delete (String.Empty);
-			}, "Delete(string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				Directory.Delete (String.Empty, true);
-			}, "Delete(string,bool)");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_Exists ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsFalse (Directory.Exists ("/"));
-			}, "Exists");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_GetCurrentDirectory ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetCurrentDirectory ());
-			}, "GetCurrentDirectory");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_GetCreationTime ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetCreationTime ("/"));
-			}, "GetCreationTime");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_GetDirectoryRoot ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetDirectoryRoot (String.Empty));
-			}, "GetDirectoryRoot");
-		}
-
-#if false
-		[TestMethod]
-		public void System_IO_Directory_GetDirectories ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetDirectories (String.Empty));
-			}, "GetDirectories(string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetDirectories (String.Empty, String.Empty));
-			}, "GetDirectories(string,string)");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_GetFiles ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetFiles (String.Empty));
-			}, "GetFiles(string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetFiles (String.Empty, String.Empty));
-			}, "GetFiles(string,string)");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_GetFileSystemEntries ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetFileSystemEntries (String.Empty));
-			}, "GetFileSystemEntries(string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetFileSystemEntries (String.Empty, String.Empty));
-			}, "GetFileSystemEntries(string,string)");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_GetLastAccessTime ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetLastAccessTime ("/"));
-			}, "GetLastAccessTime");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_GetLastWriteTime ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Directory.GetLastWriteTime ("/"));
-			}, "GetLastWriteTime");
-		}
-
-		[TestMethod]
-		public void System_IO_Directory_Move ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Directory.Move (String.Empty, String.Empty);
-			}, "Move");
+				Environment.FailFast ("", null);
+			}, "FailFast(string,Exception)"); // new in SL4
 		}
 
 		[TestMethod]
@@ -444,145 +366,6 @@ namespace MoonTest.Security {
 			Assert.Throws<MethodAccessException> (delegate {
 				Directory.SetCurrentDirectory (String.Empty);
 			}, "SetCurrentDirectory");
-		}
-#endif
-		// note: I could not find an API that returns a usable DirectoryInfo instance
-		// so it's unclear why the DirectoryInfo type itself was not made [SecurityCritical]
-		// Every visible API is [SecurityCritical] except for:
-		// - get_Name property
-		// - get_Exists property
-		// - ToString()
-
-		[TestMethod]
-		public void System_IO_DirectoryInfo_ctor ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				new DirectoryInfo (String.Empty);
-			}, "ctor");
-		}
-
-		[TestMethod]
-		public void System_IO_File_AppendText ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.AppendText (String.Empty));
-			}, "AppendText(string)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_Copy ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				File.Copy (String.Empty, String.Empty);
-			}, "Copy(string,string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				File.Copy (String.Empty, String.Empty, false);
-			}, "Copy(string,string,bool)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_Create ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.Create (String.Empty));
-			}, "Create(string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.Create (String.Empty, 0));
-			}, "Create(string,int)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_CreateText ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.CreateText (String.Empty));
-			}, "CreateText(string)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_Delete ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				File.Delete (String.Empty);
-			}, "Delete(string)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_Exists ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsFalse (File.Exists (String.Empty));
-			}, "Exists");
-		}
-
-		[TestMethod]
-		public void System_IO_File_GetCreationTime ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.GetCreationTime (String.Empty));
-			}, "GetCreationTime");
-		}
-
-		[TestMethod]
-		public void System_IO_File_GetLastAccessTime ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.GetLastAccessTime (String.Empty));
-			}, "GetLastAccessTime");
-		}
-
-		[TestMethod]
-		public void System_IO_File_GetLastWriteTime ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.GetLastWriteTime (String.Empty));
-			}, "GetLastWriteTime");
-		}
-
-		[TestMethod]
-		public void System_IO_File_Move ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				File.Move (String.Empty, String.Empty);
-			}, "Move(string,string)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_Open ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.Open (String.Empty, FileMode.Open));
-			}, "Open(string,FileMode)");
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.Open (String.Empty, FileMode.Open, FileAccess.Read));
-			}, "Open(string,FileMode,FileAccess)");
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.Open (String.Empty, FileMode.Open, FileAccess.Read, FileShare.None));
-			}, "Open(string,FileMode,FileAccess,FileShare)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_OpenRead ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.OpenRead (String.Empty));
-			}, "OpenRead(string)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_OpenText ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.OpenText (String.Empty));
-			}, "OpenText(string)");
-		}
-
-		[TestMethod]
-		public void System_IO_File_OpenWrite ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (File.OpenWrite (String.Empty));
-			}, "OpenWrite(string)");
 		}
 
 		[TestMethod]
@@ -593,43 +376,9 @@ namespace MoonTest.Security {
 			}, "SetAttributes");
 		}
 
-		[TestMethod]
-		public void System_IO_FileStream_ctor ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				new FileStream (String.Empty, FileMode.Open);
-			}, ".ctor(string,FileMode)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new FileStream (String.Empty, FileMode.Open, FileAccess.Read);
-			}, ".ctor(string,FileMode,FileAccess)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new FileStream (String.Empty, FileMode.Open, FileAccess.Read, FileShare.None);
-			}, ".ctor(string,FileMode,FileAccess,FileShare)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new FileStream (String.Empty, FileMode.Open, FileAccess.Read, FileShare.None, -1);
-			}, ".ctor(string,FileMode,FileAccess,FileShare,int)");
-		}
-
-		[TestMethod]
-		public void System_IO_FileStream_Name ()
-		{
-			using (FileStream fs = new IsolatedStorageFileStream ("a", FileMode.OpenOrCreate, IsolatedStorageFile.GetUserStoreForApplication ())) {
-				Assert.Throws<MethodAccessException> (delegate {
-					Assert.IsNotNull (fs.Name);
-				}, "get_Name");
-			}
-		}
-
 		// note: the only way to get FileInfo instances are from OpenFileDialog.
 		// Sadly it's not easy to test since it requires an GUI intervention
 
-		[TestMethod]
-		public void System_IO_FileInfo_ctor ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				new FileInfo (String.Empty);
-			}, "ctor");
-		}
 
 		// don't ask the user many times for a FileInfo
 		static FileInfo fi_cache;
@@ -735,6 +484,28 @@ namespace MoonTest.Security {
 			}
 		}
 
+		class ConcreteFileSystemInfoNoDefaultCtor : FileSystemInfo {
+
+			public ConcreteFileSystemInfoNoDefaultCtor (string s)
+			{
+			}
+
+			public override void Delete ()
+			{
+				throw new NotImplementedException ();
+			}
+
+			public override bool Exists
+			{
+				get { throw new NotImplementedException (); }
+			}
+
+			public override string Name
+			{
+				get { throw new NotImplementedException (); }
+			}
+		}
+
 		// note: the only way to get FileSystemInfo instances are from OpenFileDialog
 		// (which will return a FileInfo)
 		// Sadly it's not easy to test since it requires an GUI intervention
@@ -745,6 +516,11 @@ namespace MoonTest.Security {
 			Assert.Throws<TypeLoadException> (delegate {
 				// this transparent ctor calls into the base [SecurityCritical] ctor
 				new ConcreteFileSystemInfo ();
+			}, "ctor");
+
+			Assert.Throws<TypeLoadException> (delegate {
+				// this transparent ctor calls into the base [SecurityCritical] ctor
+				new ConcreteFileSystemInfoNoDefaultCtor ("string");
 			}, "ctor");
 		}
 
@@ -790,77 +566,6 @@ namespace MoonTest.Security {
 			Assert.Throws<MethodAccessException> (delegate {
 				Assert.IsNotNull (fsi.LastWriteTime);
 			}, "get_LastWriteTime");
-		}
-
-		[TestMethod]
-		public void System_IO_Path_GetFullPath ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Path.GetFullPath (String.Empty));
-			}, "GetFullPath");
-		}
-
-		[TestMethod]
-		public void System_IO_Path_GetTempFileName ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Path.GetTempFileName ());
-			}, "GetTempFileName");
-		}
-
-		[TestMethod]
-		public void System_IO_Path_GetTempPath ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Assert.IsNotNull (Path.GetTempPath ());
-			}, "GetTempPath");
-		}
-
-		[TestMethod]
-		public void System_IO_StreamReader_ctor ()
-		{
-			Assert.IsNotNull (new StreamReader (Stream.Null));
-			Assert.IsNotNull (new StreamReader (Stream.Null, true));
-			Assert.IsNotNull (new StreamReader (Stream.Null, Encoding.UTF8));
-			Assert.IsNotNull (new StreamReader (Stream.Null, Encoding.BigEndianUnicode, false));
-			Assert.IsNotNull (new StreamReader (Stream.Null, Encoding.Unicode, false, 1024));
-
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamReader (String.Empty);
-			}, ".ctor(string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamReader (String.Empty, false);
-			}, ".ctor(string,bool)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamReader (String.Empty, Encoding.Unicode);
-			}, ".ctor(string,Encoding)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamReader (String.Empty, Encoding.UTF8, true);
-			}, ".ctor(string,Encoding,bool)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamReader (String.Empty, Encoding.BigEndianUnicode, true, -1);
-			}, ".ctor(string,Encoding,bool)");
-		}
-
-		[TestMethod]
-		public void System_IO_StreamWriter_ctor ()
-		{
-			Assert.IsNotNull (new StreamWriter (Stream.Null));
-			Assert.IsNotNull (new StreamWriter (Stream.Null, Encoding.UTF8));
-			Assert.IsNotNull (new StreamWriter (Stream.Null, Encoding.Unicode, 1024));
-
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamWriter (String.Empty);
-			}, ".ctor(string)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamWriter (String.Empty, false);
-			}, ".ctor(string,bool)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamWriter (String.Empty, true, Encoding.Unicode);
-			}, ".ctor(string,bool,Encoding)");
-			Assert.Throws<MethodAccessException> (delegate {
-				new StreamWriter (String.Empty, false, Encoding.UTF8, -1);
-			}, ".ctor(string,bool,Encoding,int)");
 		}
 
 		[TestMethod]
@@ -1000,6 +705,15 @@ namespace MoonTest.Security {
 			Assert.Throws<MethodAccessException> (delegate {
 				ab.GetFiles (true);
 			}, "GetFiles");
+		}
+
+		[TestMethod]
+		public void System_Reflection_Emit_AssemblyBuilder_GetName ()
+		{
+			AssemblyBuilder ab = GetAssemblyBuilder ();
+			Assert.Throws<MethodAccessException> (delegate {
+				ab.GetName (true);
+			}, "GetName"); // new SC in SL4
 		}
 
 		[TestMethod]
@@ -1399,6 +1113,26 @@ namespace MoonTest.Security {
 		}
 
 		[TestMethod]
+		public void System_RuntimeFieldHandle_Value ()
+		{
+			RuntimeFieldHandle handle = new RuntimeFieldHandle ();
+			Assert.IsNotNull (handle, ".ctor");
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.IsNotNull (handle.Value);
+			}, "RuntimeFieldHandle.Value"); // new SC in SL4
+		}
+
+		[TestMethod]
+		public void System_RuntimeMethodHandle_Value ()
+		{
+			RuntimeMethodHandle handle = new RuntimeMethodHandle ();
+			Assert.IsNotNull (handle, ".ctor");
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.IsNotNull (handle.Value);
+			}, "RuntimeMethodHandle.Value"); // new SC in SL4
+		}
+
+		[TestMethod]
 		public void System_Runtime_InteropServices_CriticalHandle ()
 		{
 			// whole type is decorated with [SecurityCritical]
@@ -1716,17 +1450,8 @@ namespace MoonTest.Security {
 				SynchronizationContext.SetSynchronizationContext (null);
 			}, "SetSynchronizationContext");
 		}
-#if false
+
 		[TestMethod]
-		public void System_Threading_SynchronizationContext_SetThreadStaticContext ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				SynchronizationContext.SetThreadStaticContext (null);
-			}, "SetThreadStaticContext");
-		}
-#endif
-		[TestMethod]
-		[Ignore ("this will freeze the browser until coreclr is enabled")]
 		public void System_Threading_Thread_Abort ()
 		{
 			Assert.Throws<MethodAccessException> (delegate {
@@ -1786,6 +1511,22 @@ namespace MoonTest.Security {
 		// note: Microsoft.Internal.IManagedFrameworkInternalHelper::SetContextEx
 		// cannot be unit tested since we CANNOT inherit from an internal with
 		// [SecurityCritical] members (at least not in application code)
+
+		[TestMethod]
+		public void System_ComponentModel_DesignerProperties_RefreshOnlyXmlnsDefinitionsOnAssemblyReplace ()
+		{
+			Assert.Throws<MethodAccessException> (delegate {
+				DesignerProperties.RefreshOnlyXmlnsDefinitionsOnAssemblyReplace = true;
+			}, "RefreshOnlyXmlnsDefinitionsOnAssemblyReplace"); // new in SL4
+		}
+
+		[TestMethod]
+		public void System_Windows_Application_HasElevatedPermissions ()
+		{
+			Assert.Throws<MethodAccessException> (delegate {
+				Application.Current.HasElevatedPermissions = true;
+			}, "HasElevatedPermissions"); // new in SL4
+		}
 
 		[TestMethod]
 		public void System_Windows_Deployment_RegisterAssembly ()

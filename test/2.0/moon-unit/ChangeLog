@@ -1,3 +1,15 @@
+2010-04-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ElevatedTrustTest.cs: New. Add test cases to validate
+	API that requires elevated trust - they (mostly) throw a
+	SecurityException (instead of a MethodAccessException)
+	* security/SecurityCriticalTest.cs: Remove test cases that now, as
+	of SL4, requires elevated trust. Add new test cases for new
+	[SecurityCritical] API added in SL4
+	* security/SecuritySafeCriticalTest.cs: Test Environment.
+	ProcessorCount (was SC before SL4) and uncomment TimeZoneInfo
+	(which moved from System.Core.dll to mscorlib.dll)
+
 2010-04-14  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs: Update the default value tests to SL

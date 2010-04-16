@@ -2,15 +2,14 @@
 <assemblies>
   <assembly name="System.Core" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
-      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Diagnostics.DebuggableAttribute" />
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
       <attribute name="System.Runtime.CompilerServices.ExtensionAttribute" />
       <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
       <attribute name="System.CLSCompliantAttribute" />
@@ -24,36 +23,11 @@
       <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
       <attribute name="System.Resources.SatelliteContractVersionAttribute" />
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
+      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
     </attributes>
     <namespaces>
       <namespace name="System">
         <classes>
-          <class name="Action" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="callback" position="0" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="1" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke()" attrib="454" virtual="true" returntype="System.Void">
-                <parameters />
-              </method>
-            </methods>
-          </class>
           <class name="Action`10" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
             <constructors>
               <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
@@ -520,166 +494,6 @@
                   <parameter name="arg2" position="1" attrib="0" type="T2" />
                   <parameter name="arg3" position="2" attrib="0" type="T3" />
                   <parameter name="arg4" position="3" attrib="0" type="T4" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Action`5" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="callback" position="5" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="6" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Action`6" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, T6, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="callback" position="6" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="7" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5, T6)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Action`7" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, T6, T7, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                  <parameter name="callback" position="7" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="8" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5, T6, T7)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Action`8" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, T6, T7, T8, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                  <parameter name="arg8" position="7" attrib="0" type="T8" />
-                  <parameter name="callback" position="8" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="9" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5, T6, T7, T8)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                  <parameter name="arg8" position="7" attrib="0" type="T8" />
                 </parameters>
               </method>
             </methods>
@@ -1295,166 +1109,6 @@
                   <parameter name="arg2" position="1" attrib="0" type="T2" />
                   <parameter name="arg3" position="2" attrib="0" type="T3" />
                   <parameter name="arg4" position="3" attrib="0" type="T4" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Func`6" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="callback" position="5" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="6" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Func`7" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, T6, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="callback" position="6" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="7" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5, T6)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Func`8" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, T6, T7, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                  <parameter name="callback" position="7" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="8" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5, T6, T7)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="Func`9" type="delegate" base="System.MulticastDelegate" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.Object, System.IntPtr)" attrib="6278">
-                <parameters>
-                  <parameter name="object" position="0" attrib="0" type="System.Object" />
-                  <parameter name="method" position="1" attrib="0" type="System.IntPtr" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="BeginInvoke(T1, T2, T3, T4, T5, T6, T7, T8, System.AsyncCallback, System.Object)" attrib="454" virtual="true" returntype="System.IAsyncResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                  <parameter name="arg8" position="7" attrib="0" type="T8" />
-                  <parameter name="callback" position="8" attrib="0" type="System.AsyncCallback" />
-                  <parameter name="object" position="9" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="EndInvoke(System.IAsyncResult)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
-                </parameters>
-              </method>
-              <method name="Invoke(T1, T2, T3, T4, T5, T6, T7, T8)" attrib="454" virtual="true" returntype="TResult">
-                <parameters>
-                  <parameter name="arg1" position="0" attrib="0" type="T1" />
-                  <parameter name="arg2" position="1" attrib="0" type="T2" />
-                  <parameter name="arg3" position="2" attrib="0" type="T3" />
-                  <parameter name="arg4" position="3" attrib="0" type="T4" />
-                  <parameter name="arg5" position="4" attrib="0" type="T5" />
-                  <parameter name="arg6" position="5" attrib="0" type="T6" />
-                  <parameter name="arg7" position="6" attrib="0" type="T7" />
-                  <parameter name="arg8" position="7" attrib="0" type="T8" />
                 </parameters>
               </method>
             </methods>
@@ -9848,8 +9502,8 @@
               </method>
               <method name="ClearMatch(System.Runtime.CompilerServices.CallSite)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
                   <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
+                  <attribute name="System.ObsoleteAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="site" position="0" attrib="0" type="System.Runtime.CompilerServices.CallSite" />
@@ -9902,8 +9556,8 @@
               </method>
               <method name="MoveRule(System.Runtime.CompilerServices.RuleCache`1[T], T, System.Int32)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
                   <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
+                  <attribute name="System.ObsoleteAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="cache" position="0" attrib="0" type="System.Runtime.CompilerServices.RuleCache`1[T]" />
@@ -9922,8 +9576,8 @@
               </method>
               <method name="UpdateRules(System.Runtime.CompilerServices.CallSite`1[T], System.Int32)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
                   <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
+                  <attribute name="System.ObsoleteAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="this" position="0" attrib="0" type="System.Runtime.CompilerServices.CallSite`1[T]" />
@@ -9934,8 +9588,8 @@
           </class>
           <class name="Closure" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
               <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+              <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
             </attributes>
             <fields>
               <field name="Constants" attrib="38" fieldtype="System.Object[]" />
@@ -9992,6 +9646,33 @@
                 </methods>
               </property>
             </properties>
+          </class>
+          <class name="ExecutionScope" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.ObsoleteAttribute" />
+            </attributes>
+            <fields>
+              <field name="Globals" attrib="6" fieldtype="System.Object[]" />
+              <field name="Locals" attrib="6" fieldtype="System.Object[]" />
+              <field name="Parent" attrib="6" fieldtype="System.Runtime.CompilerServices.ExecutionScope" />
+            </fields>
+            <methods>
+              <method name="CreateDelegate(System.Int32, System.Object[])" attrib="134" returntype="System.Delegate">
+                <parameters>
+                  <parameter name="indexLambda" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="locals" position="1" attrib="0" type="System.Object[]" />
+                </parameters>
+              </method>
+              <method name="CreateHoistedLocals()" attrib="134" returntype="System.Object[]">
+                <parameters />
+              </method>
+              <method name="IsolateExpression(System.Linq.Expressions.Expression, System.Object[])" attrib="134" returntype="System.Linq.Expressions.Expression">
+                <parameters>
+                  <parameter name="expression" position="0" attrib="0" type="System.Linq.Expressions.Expression" />
+                  <parameter name="locals" position="1" attrib="0" type="System.Object[]" />
+                </parameters>
+              </method>
+            </methods>
           </class>
           <class name="ExtensionAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
@@ -10174,20 +9855,20 @@
           </class>
           <class name="RuleCache`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
               <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
+              <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
             </attributes>
           </class>
           <class name="RuntimeOps" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
               <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+              <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
             </attributes>
             <methods>
               <method name="CreateRuntimeVariables(System.Object[], System.Int64[])" attrib="150" static="true" returntype="System.Runtime.CompilerServices.IRuntimeVariables">
                 <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                   <attribute name="System.ObsoleteAttribute" />
+                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="data" position="0" attrib="0" type="System.Object[]" />
@@ -10237,8 +9918,8 @@
               </method>
               <method name="ExpandoTryGetValue(System.Dynamic.ExpandoObject, System.Object, System.Int32, System.String, System.Boolean, out System.Object&amp;)" attrib="150" static="true" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                   <attribute name="System.ObsoleteAttribute" />
+                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="expando" position="0" attrib="0" type="System.Dynamic.ExpandoObject" />
@@ -10265,8 +9946,8 @@
               </method>
               <method name="MergeRuntimeVariables(System.Runtime.CompilerServices.IRuntimeVariables, System.Runtime.CompilerServices.IRuntimeVariables, System.Int32[])" attrib="150" static="true" returntype="System.Runtime.CompilerServices.IRuntimeVariables">
                 <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
                   <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
+                  <attribute name="System.ObsoleteAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="first" position="0" attrib="0" type="System.Runtime.CompilerServices.IRuntimeVariables" />

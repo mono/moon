@@ -1,3 +1,9 @@
+2010-04-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: regenerated wrt 155643
+	* mscorlib.auto.ssc: regenerated wrt 155643
+	* System.Windows.auto.ssc: regenerated wrt 155643
+
 2010-04-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Regenerated

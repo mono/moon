@@ -104,6 +104,9 @@
 +SC-M: System.Boolean System.IO.MonoIO::SetFileAttributes(System.String,System.IO.FileAttributes,System.IO.MonoIOError&)
 
 # internal call
++SC-M: System.Boolean System.IO.MonoIO::SetFileTime(System.IntPtr,System.Int64,System.Int64,System.Int64,System.IO.MonoIOError&)
+
+# internal call
 +SC-M: System.Boolean System.IO.MonoIO::SetLength(System.IntPtr,System.Int64,System.IO.MonoIOError&)
 
 # internal call
@@ -123,6 +126,9 @@
 
 # internal call
 +SC-M: System.Boolean System.Security.Cryptography.RNGCryptoServiceProvider::RngOpen()
+
+# internal call
++SC-M: System.Boolean System.Security.SecurityManager::get_RequiresElevatedPermissions()
 
 # internal call
 +SC-M: System.Boolean System.Security.SecurityManager::get_SecurityEnabled()
@@ -1068,12 +1074,6 @@
 
 # using 'System.Void*' as a parameter type
 +SC-M: System.Void System.Globalization.TextInfo::.ctor(System.Globalization.CultureInfo,System.Int32,System.Void*,System.Boolean)
-
-# [VISIBLE] overrides 'System.Void System.IO.FileSystemInfo::Delete()'.
-+SC-M: System.Void System.IO.DirectoryInfo::Delete()
-
-# [VISIBLE] overrides 'System.Void System.IO.FileSystemInfo::Delete()'.
-+SC-M: System.Void System.IO.FileInfo::Delete()
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.IO.UnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)
