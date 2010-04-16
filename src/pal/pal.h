@@ -237,17 +237,70 @@ private:
 	MoonWindowlessCtor windowless_ctor;
 };
 
+struct MoonAppRecord {
+	char *origin;
+	time_t mtime;
+	char *uid;
+	
+	MoonAppRecord ();
+	~MoonAppRecord ();
+	
+	bool Equal (const MoonAppRecord *app) const;
+	bool Save (FILE *db) const;
+};
+
+class MoonAppRecordIterator {
+	char *inptr, *inend;
+	char buf[4097];
+	FILE *db;
+	
+	char *ParseOrigin ();
+	time_t ParseMTime ();
+	char *ParseUid ();
+	
+	bool EatSpaces ();
+	char NextToken ();
+	bool Fill ();
+	
+public:
+	MoonAppRecordIterator (FILE *db);
+	~MoonAppRecordIterator () {}
+	
+	MoonAppRecord *Next ();
+};
+
+class MoonAppDatabase {
+	char *base_dir;
+	char *path;
+	
+public:
+	MoonAppDatabase (const char *base_dir);
+	~MoonAppDatabase ();
+	
+	MoonAppRecord *CreateAppRecord (const char *origin);
+	
+	bool AddAppRecord (MoonAppRecord *record);
+	bool SyncAppRecord (const MoonAppRecord *record);
+	bool RemoveAppRecord (const MoonAppRecord *record);
+	
+	MoonAppRecord *GetAppRecordByOrigin (const char *origin);
+	MoonAppRecord *GetAppRecordByUid (const char *uid);
+};
+
 typedef void (* UpdateCompletedCallback) (bool updated, const char *error, gpointer user_data);
 
 /* @Version=2 */
 class MoonInstallerService {
 	UpdateCompletedCallback completed;
 	Downloader *downloader;
+	MoonAppDatabase *db;
 	gpointer user_data;
-	char *path, *tmp;
+	MoonAppRecord *app;
 	GByteArray *xap;
 	
+	MoonAppRecord *GetAppRecord (Deployment *deployment);
 	void CloseDownloader (bool abort);
+	bool InitDatabase ();
 	
 	static void downloader_notify_size (gint64 size, gpointer user_data);
 	static void downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data);
@@ -255,10 +308,9 @@ class MoonInstallerService {
 	static void downloader_failed (EventObject *sender, EventArgs *args, gpointer user_data);
 	
 protected:
-	virtual char *GetUpdateUri (Deployment *deployment) = 0;
-	virtual time_t GetLastModified (Deployment *deployment) = 0;
-	virtual char *GetTmpFilename (Deployment *deployment) = 0;
-	virtual char *GetXapFilename (Deployment *deployment) = 0;
+	virtual const char *GetBaseInstallDir () = 0;
+	
+	MoonAppRecord *CreateAppRecord (const char *origin);
 	
 public:
 	MoonInstallerService ();
@@ -266,10 +318,11 @@ public:
 	
 	void CheckAndDownloadUpdateAsync (Deployment *deployment, UpdateCompletedCallback completed, gpointer user_data);
 	
-	virtual bool IsRunningOutOfBrowser (Deployment *deployment) = 0;
-	virtual bool CheckInstalled (Deployment *deployment) = 0;
-	virtual void Uninstall (Deployment *deployment) = 0;
 	virtual bool Install (Deployment *deployment, bool unattended) = 0;
+	virtual bool Uninstall (Deployment *deployment);
+	
+	bool IsRunningOutOfBrowser (Deployment *deployment);
+	bool CheckInstalled (Deployment *deployment);
 	
 	void UpdaterNotifySize (gint64 size);
 	void UpdaterWrite (void *buf, gint32 offset, gint32 n);

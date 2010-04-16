@@ -48,20 +48,17 @@ private:
 };
 
 class MoonInstallerServiceGtk : public MoonInstallerService {
+	char *base_install_dir;
+	
 protected:
-	virtual char *GetUpdateUri (Deployment *deployment);
-	virtual time_t GetLastModified (Deployment *deployment);
-	virtual char *GetTmpFilename (Deployment *deployment);
-	virtual char *GetXapFilename (Deployment *deployment);
+	virtual const char *GetBaseInstallDir ();
 	
 public:
-	MoonInstallerServiceGtk () {}
-	virtual ~MoonInstallerServiceGtk () {}
+	MoonInstallerServiceGtk ();
+	virtual ~MoonInstallerServiceGtk ();
 	
-	virtual bool IsRunningOutOfBrowser (Deployment *deployment);
-	virtual bool CheckInstalled (Deployment *deployment);
-	virtual void Uninstall (Deployment *deployment);
 	virtual bool Install (Deployment *deployment, bool unattended);
+	virtual bool Uninstall (Deployment *deployment);
 };
 
 #endif /* MOON_PAL_GTK_H */

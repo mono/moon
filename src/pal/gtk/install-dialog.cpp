@@ -203,8 +203,11 @@ install_dialog_finalize (GObject *obj)
 	if (priv->xap)
 		g_byte_array_free (priv->xap, true);
 	
-	if (!priv->installed)
+	if (!priv->installed) {
+		// FIXME: use the InstallerService to uninstall so we don't
+		// leave dummy records in the database...
 		RemoveDir (priv->install_dir);
+	}
 	
 	g_free (priv->install_dir);
 	
@@ -361,7 +364,7 @@ downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data)
 }
 
 GtkDialog *
-install_dialog_new (GtkWindow *parent, Deployment *deployment, bool unattended)
+install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *install_dir, bool unattended)
 {
 	InstallDialog *dialog = (InstallDialog *) g_object_new (INSTALL_DIALOG_TYPE, NULL);
 	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
@@ -395,7 +398,7 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, bool unattended)
 	g_free (location);
 	g_free (markup);
 	
-	priv->install_dir = install_utils_get_install_dir (settings);
+	priv->install_dir = g_strdup (install_dir);
 	priv->unattended = unattended;
 	
 	/* desensitize the OK button until the downloader is complete */
@@ -591,7 +594,7 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	WindowSettings *window = settings->GetWindowSettings ();
 	int height = (int) window->GetHeight ();
 	int width = (int) window->GetWidth ();
-	char *filename, *app_name;
+	char *filename;
 	FILE *fp;
 	
 	filename = g_build_filename (app_dir, "lunar-launcher", NULL);
@@ -600,8 +603,6 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 		return false;
 	}
 	
-	app_name = install_utils_get_app_safe_name (settings);
-	
 	fprintf (fp, "#!/bin/sh\n\n");
 #if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
 	fprintf (fp, "firefox -moonapp \"file://%s/index.html\" -moonwidth %d -moonheight %d -moontitle \"%s\"\n", app_dir, width, height, settings->GetShortName());
@@ -609,8 +610,6 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	fprintf (fp, "google-chrome --app=\"file://%s/index.html\"\n", app_dir);
 #endif
 	fclose (fp);
-	
-	g_free (app_name);
 	
 	if (chmod (filename, 0777) == -1) {
 		unlink (filename);
@@ -721,7 +720,7 @@ install_dialog_install (InstallDialog *dialog)
 	
 	settings = priv->deployment->GetOutOfBrowserSettings ();
 	
-	if (g_mkdir_with_parents (priv->install_dir, 0777) == -1)
+	if (g_mkdir_with_parents (priv->install_dir, 0777) == -1 && errno != EEXIST)
 		return false;
 	
 	/* install the XAP */
@@ -784,38 +783,6 @@ install_dialog_get_launcher_script (InstallDialog *dialog)
 }
 
 char *
-install_utils_get_app_safe_name (OutOfBrowserSettings *settings)
-{
-	const char *s, *name = settings->GetShortName ();
-	char *app_name, *d;
-	
-	d = app_name = (char *) g_malloc (strlen (name) + 1);
-	s = name;
-	
-	while (*s != '\0') {
-		if (!strchr ("`~!#$%^&*\\|;:'\"/ ", *s))
-			*d++ = *s;
-		s++;
-	}
-	
-	*d = '\0';
-	
-	return app_name;
-}
-
-char *
-install_utils_get_install_dir (OutOfBrowserSettings *settings)
-{
-	char *app_name, *install_dir;
-	
-	app_name = install_utils_get_app_safe_name (settings);
-	install_dir = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", app_name, NULL);
-	g_free (app_name);
-	
-	return install_dir;
-}
-
-char *
 install_utils_get_desktop_shortcut (OutOfBrowserSettings *settings)
 {
 	char *shortcut, *path;
@@ -837,53 +804,4 @@ install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings)
 	g_free (shortcut);
 	
 	return path;
-}
-
-char *
-install_utils_get_update_uri (OutOfBrowserSettings *settings)
-{
-	char *app_dir, *path, *uri, buf[1024];
-	GString *content;
-	FILE *fp;
-	
-	app_dir = install_utils_get_install_dir (settings);
-	path = g_build_filename (app_dir, "update-uri", NULL);
-	g_free (app_dir);
-	
-	if (!(fp = fopen (path, "rt"))) {
-		g_free (path);
-		return NULL;
-	}
-	
-	content = g_string_new ("");
-	while (fgets (buf, sizeof (buf), fp))
-		g_string_append (content, buf);
-	
-	fclose (fp);
-	
-	uri = content->str;
-	g_string_free (content, false);
-	g_strstrip (uri);
-	
-	return uri;
-}
-
-time_t
-install_utils_get_last_modified (OutOfBrowserSettings *settings)
-{
-	char *app_dir, *path;
-	struct stat st;
-	
-	app_dir = install_utils_get_install_dir (settings);
-	path = g_build_filename (app_dir, "Application.xap", NULL);
-	g_free (app_dir);
-	
-	if (stat (path, &st) == -1) {
-		g_free (path);
-		return 0;
-	}
-	
-	g_free (path);
-	
-	return st.st_ctime;
 }

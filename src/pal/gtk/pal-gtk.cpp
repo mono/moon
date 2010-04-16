@@ -1013,100 +1013,20 @@ MoonWindowingSystemGtk::RunningOnNvidia ()
 }
 
 
-char *
-MoonInstallerServiceGtk::GetUpdateUri (Deployment *deployment)
+MoonInstallerServiceGtk::MoonInstallerServiceGtk ()
 {
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	
-	return install_utils_get_update_uri (settings);
+	base_install_dir = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", NULL);
 }
 
-time_t
-MoonInstallerServiceGtk::GetLastModified (Deployment *deployment)
+MoonInstallerServiceGtk::~MoonInstallerServiceGtk ()
 {
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	
-	return install_utils_get_last_modified (settings);
+	g_free (base_install_dir);
 }
 
-char *
-MoonInstallerServiceGtk::GetTmpFilename (Deployment *deployment)
+const char *
+MoonInstallerServiceGtk::GetBaseInstallDir ()
 {
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	char *install_dir, *path;
-	
-	install_dir = install_utils_get_install_dir (settings);
-	path = g_build_filename (install_dir, ".#Application.xap~", NULL);
-	g_free (install_dir);
-	
-	return path;
-}
-
-char *
-MoonInstallerServiceGtk::GetXapFilename (Deployment *deployment)
-{
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	char *install_dir, *path;
-	
-	install_dir = install_utils_get_install_dir (settings);
-	path = g_build_filename (install_dir, "Application.xap", NULL);
-	g_free (install_dir);
-	
-	return path;
-}
-
-bool
-MoonInstallerServiceGtk::IsRunningOutOfBrowser (Deployment *deployment)
-{
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	const char *xap_path = deployment->GetXapLocation ();
-	bool is_oob = false;
-	char *oob_path;
-	size_t n;
-	
-	// First, make sure we are dealing with a locally run app
-	if (!xap_path || strncmp (xap_path, "file://", 7) != 0)
-		return false;
-	
-	xap_path += 7;
-	
-	n = strlen (xap_path);
-	
-	// Make sure the Xap filename is Application.xap
-	if (n < 16 || strcmp (xap_path + n - 16, "/Application.xap") != 0)
-		return false;
-	
-	n -= 16;
-	
-	// If the Xap path matches the OOB path, then we are running OOB
-	oob_path = install_utils_get_install_dir (settings);
-	is_oob = strlen (oob_path) == n && !strncmp (xap_path, oob_path, n);
-	g_free (oob_path);
-	
-	return is_oob;
-}
-
-bool
-MoonInstallerServiceGtk::CheckInstalled (Deployment *deployment)
-{
-	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	char *install_dir;
-	struct stat st;
-	
-	if (!settings)
-		return false;
-	
-	if (!(install_dir = install_utils_get_install_dir (settings)))
-		return false;
-	
-	if (stat (install_dir, &st) == -1 || !S_ISDIR (st.st_mode)) {
-		g_free (install_dir);
-		return false;
-	}
-	
-	g_free (install_dir);
-	
-	return true;
+	return base_install_dir;
 }
 
 bool
@@ -1114,10 +1034,12 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 {
 	GtkWidget *parent = NULL;
 	bool installed = false;
+	MoonAppRecord *app;
 	MoonWindow *window;
 	GdkScreen *screen;
 	GtkDialog *dialog;
 	GtkWidget *widget;
+	char *install_dir;
 	Surface *surface;
 	char *argv[2];
 	int pid;
@@ -1125,12 +1047,19 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	argv[0] = NULL;
 	argv[1] = NULL;
 	
+	if (!(app = CreateAppRecord (deployment->GetXapLocation ())))
+		return false;
+	
+	install_dir = g_build_filename (base_install_dir, app->uid, NULL);
+	delete app;
+	
 	if ((surface = deployment->GetSurface ()) && (window = surface->GetWindow ())) {
 		widget = ((MoonWindowGtk *) window)->GetWidget ();
 		parent = gtk_widget_get_toplevel (widget);
 	}
 	
-	dialog = install_dialog_new ((GtkWindow *) parent, deployment, unattended);
+	dialog = install_dialog_new ((GtkWindow *) parent, deployment, install_dir, unattended);
+	g_free (install_dir);
 	
 	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
 		if ((installed = install_dialog_install ((InstallDialog *) dialog)))
@@ -1148,12 +1077,17 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	return installed;
 }
 
-void
+bool
 MoonInstallerServiceGtk::Uninstall (Deployment *deployment)
 {
 	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
-	char *install_dir, *shortcut;
+	char *shortcut;
 	
+	// first uninstall the actuall application...
+	if (!MoonInstallerService::Uninstall (deployment))
+		return false;
+	
+	// then uninstall the shortcuts
 	shortcut = install_utils_get_start_menu_shortcut (settings);
 	g_unlink (shortcut);
 	g_free (shortcut);
@@ -1162,7 +1096,5 @@ MoonInstallerServiceGtk::Uninstall (Deployment *deployment)
 	g_unlink (shortcut);
 	g_free (shortcut);
 	
-	install_dir = install_utils_get_install_dir (settings);
-	RemoveDir (install_dir);
-	g_free (install_dir);
+	return true;
 }

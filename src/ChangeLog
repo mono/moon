@@ -1,3 +1,59 @@
+2010-04-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_dialog_new): Now takes an
+	install_dir argument.
+	(install_utils_get_safe_app_name): Removed.
+	(install_utils_get_install_dir): Removed.
+	(install_utils_get_update_uri): Removed.
+	(install_utils_get_last_modified): Removed.
+
+	* pal/gtk/pal-gtk.cpp (MoonInstallerServiceGtk::.ctor): Init our
+	base_install_dir string.
+	(MoonInstallerServiceGtk::.dtor): Free it.
+	(MoonInstallerServiceGtk::GetBaseInstallDir): Return our
+	base_install_dir string.
+	(MoonInstallerServiceGtk::Install): Modified to use the new
+	AppDatabase stuff.
+	(MoonInstallerServiceGtk::GetLastModified): Removed.
+	(MoonInstallerServiceGtk::GetXapFilename): Removed.
+	(MoonInstallerServiceGtk::GetTmpFilename): Removed.
+	(MoonInstallerServiceGtk::GetUpdateUri): Removed.
+	(MoonInstallerServiceGtk::IsRunningOutOfBrowser): Removed.
+	(MoonInstallerServiceGtk::CheckInstalled): Removed.
+	(MoonInstallerServiceGtk::Uninstall): Let the base class do all
+	the heavy lifting. Just remove the shortcuts.
+
+	* pal/pal.cpp (MoonAppRecord): New class representing an installed
+	app.
+	(MoonAppRecordIterator): New class to iterate thru the app
+	database records.
+	(MoonAppDatabase): New class representing the installed app
+	database.
+	(MoonInstallerService::InitDatabase): New method to initialize our
+	installed app database.
+	(MoonInstallerService::CreateAppRecord): Create a new AppRecord
+	for an app we are about to install.
+	(MoonInstallerService::GetAppRecord): Lookup an AppRecord based on
+	the Deployment.
+	(MoonInstallerService::UpdaterCompleted): Use the ApPRecord to get
+	the file paths to use for saving the xap content to disk and also
+	check that the xap has changed before saving and calling the
+	callback to tell it an update is available.
+	(MoonInstallerService::CheckAndDownloadUpdateAsync): Vastly
+	simplified by using the AppDatabase/AppRecord. We no longer need
+	to use a bunch of virtual methods to get the info we need.
+	(MoonInstallerService::GetLastModified): Removed.
+	(MoonInstallerService::GetXapFilename): Removed.
+	(MoonInstallerService::GetTmpFilename): Removed.
+	(MoonInstallerService::GetUpdateUri): Removed.
+	(MoonInstallerService::IsRunningOutOfBrowser): No longer
+	virtual/abstract.
+	(MoonInstallerService::CheckInstalled): Same.
+	(MoonInstallerService::Uninstall): Now handles removal of the
+	application from the database as well as the
+	filesystem. Subclasses will need to subclass this method to remove
+	any shortcuts it installs.
+
 2010-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: OpenCompletedHandler: We need to re-check consistency
