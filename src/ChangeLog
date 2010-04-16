@@ -1,5 +1,8 @@
 2010-04-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pal/pal.cpp (IsRunningOutOfBrowser): Also check that the n'th
+	character is a directory separator.
+
 	* pal/gtk/install-dialog.cpp (install_dialog_new): Now takes an
 	install_dir argument.
 	(install_utils_get_safe_app_name): Removed.

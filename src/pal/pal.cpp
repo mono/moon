@@ -829,7 +829,7 @@ MoonInstallerService::IsRunningOutOfBrowser (Deployment *deployment)
 	
 	// If the paths match for the first n characters, then this app is
 	// running out-of-browser.
-	return !strncmp (xap_path, base_dir, n);
+	return !strncmp (xap_path, base_dir, n) && xap_path[n] == G_DIR_SEPARATOR;
 }
 
 
