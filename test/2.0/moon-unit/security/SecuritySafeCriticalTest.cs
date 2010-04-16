@@ -92,7 +92,15 @@ namespace MoonTest.Security {
 		{
 			Assert.IsNotNull (TimeZoneInfo.Utc, "Utc");
 			// this one requires file access (/etc/locatime and such) for ML
-			Assert.IsNotNull (TimeZoneInfo.Local, "Local");
+			try {
+				Assert.IsNotNull (TimeZoneInfo.Local, "Local");
+			}
+			catch (Exception e) {
+				// ignore (internal) TimeZoneNotFoundException since
+				// it is unrelated to [SecuritySafeCritical] testing
+				if (e.GetType ().Name != "TimeZoneNotFoundException")
+					throw;
+			}
 		}
 	}
 }

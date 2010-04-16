@@ -1,3 +1,8 @@
+2010-04-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* security/SecuritySafeCriticalTest.cs: Work around a limitation
+	wrt TimeZoneInfo (unrelated to [SecuritySafeCritical] testing)
+
 2010-04-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/ElevatedTrustTest.cs: New. Add test cases to validate
