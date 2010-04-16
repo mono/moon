@@ -53,5 +53,9 @@ namespace System.ComponentModel {
 			get { return false; }
 			set { }
 		}
+
+		public static bool RefreshOnlyXmlnsDefinitionsOnAssemblyReplace {
+			get; set;
+		}
 	}
 }
