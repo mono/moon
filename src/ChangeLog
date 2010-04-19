@@ -1,5 +1,12 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* style.cpp:
+	* validators.cpp: Each style should convert its setter values
+	  when it's sealed. Fixes a regression in my last commit where
+	  BasedOn styles were not sealed.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* style.h:
 	* style.cpp: Nuke Style::Validate as it is unnecessary now
 	  that we have a StyleValidator.

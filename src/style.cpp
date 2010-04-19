@@ -54,6 +54,7 @@ Style::Seal ()
 	if (GetIsSealed ())
 		return;
 
+	Application::GetCurrent ()->ConvertSetterValues (this);
 	SetIsSealed (true);
 	GetSetters ()->Seal ();
 
