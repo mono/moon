@@ -389,6 +389,8 @@ namespace Mono.Xaml
 					if (IsAttachedProperty (full_name))
 						GetNameForAttachedProperty (xmlns, prop_xmlns, full_name, out type_name, out full_type_name);
 					prop = LookupDependencyPropertyForBinding (data, dob, full_type_name, name);
+					if (prop == null && IsAttachedProperty (full_name))
+						prop = LookupDependencyPropertyForBinding (data, dob, full_name.Split ('.')[0], name);
 				}
 
 				// If it's null we should look for a regular CLR property

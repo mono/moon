@@ -1,5 +1,16 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* ManagedXamlLoader.cs: If an attached property is referenced
+	  in xaml with a clr namespace prefix, the DP lookup will fail
+	  when we use full_type_name as we end up looking up:
+	  "Some.Namespace.SomeClass.Canvas" and "Left" instead of
+	  "Canvas" and "Left". If our DP lookup fails the first time,
+	  do a second lookup with "Canvas" and "Left" to see if that
+	  works. It's possible that multiple places can be affected by
+	  this.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* MoonlightTypeConverter.cs: If we can't find the correct
 	  property when looking for typeconverters then just ignore it
 	  instead of throwing an exception. Fixes part of DRT 997.
