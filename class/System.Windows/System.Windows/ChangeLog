@@ -1,5 +1,12 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyObject.cs: Different exceptions are thrown when
+	  you call SetValue () or ClearValue() with a readonly DP
+	  depending on whether it's a custom dp or core dp. Fixes one
+	  moon-unit and part of drt 539
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* FrameworkElement.cs: Nuke the managed style validator. It's
 	  all handled in the native ValueValidator now.
 

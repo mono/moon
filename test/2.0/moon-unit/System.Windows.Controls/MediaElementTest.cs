@@ -415,7 +415,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug ("other readonly properties are throwing InvalidOperationException instead of ArgumentException")]
 		public void CheckReadOnlyProperties ()
 		{
 			MediaElement m = new MediaElement ();

@@ -1,5 +1,13 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/MediaElementTest.cs: Different
+	  exceptions are thrown when you call SetValue () or
+	  ClearValue() with a readonly DP depending on whether it's a
+	  custom dp or core dp. Fixes one moon-unit and part of drt
+	  539
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/SetterTest.cs: Update the SetterTests to SL4
 	  compatibility.
 
