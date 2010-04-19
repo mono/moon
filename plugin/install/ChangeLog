@@ -1,3 +1,7 @@
+2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Put lunar-launcher in the xpi/crx.
+
 2010-04-08  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (novell-moonlight.crx): use chrome to pack/sign the

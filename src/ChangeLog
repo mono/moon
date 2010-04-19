@@ -1,5 +1,13 @@
 2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pal/gtk/install-dialog.cpp: Calculate path to lunar-launcher using
+	platform_dir.
+
+	* deployment.cpp|h: Store platform_dir and make it available to the rest
+	of moonlight.
+
+2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp|h: Make the oob executable configurable at runtime.
 
 	* pal/gtk/install-dialog.cpp: We can't call the oob execution script

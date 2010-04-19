@@ -53,6 +53,7 @@ GHashTable* Deployment::current_hash = NULL;
 MonoDomain* Deployment::root_domain = NULL;
 Deployment *Deployment::desktop_deployment = NULL;
 gint32 Deployment::deployment_count = 0;
+char *Deployment::platform_dir = NULL;
 
 class IDownloaderNode : public List::Node {
 public:
@@ -100,6 +101,7 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		return true;
 
 	initialized = true;
+	Deployment::platform_dir = g_strdup (platform_dir);
 
 	current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 	pthread_key_create (&tls_key, NULL);
@@ -646,6 +648,7 @@ accumulate_last_n (gpointer key,
 Deployment::~Deployment()
 {
 	g_free (xap_location);
+	g_free (platform_dir);
 	
 	delete font_manager;
 	

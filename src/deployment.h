@@ -351,6 +351,7 @@ public:
 	void TrackPath (char *path);
 
 	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */
+	static const char *GetPlatformDir () { return platform_dir; }
 
 #if DEBUG
 	struct moon_source : List::Node {
@@ -431,6 +432,8 @@ private:
 	// xap filename, for use in installing apps
 	char *xap_filename;
 
+	// platform dir
+	static char *platform_dir;
 #if GLIB_CHECK_VERSION(2,10,0)
 	volatile gpointer pending_unrefs;
 #else

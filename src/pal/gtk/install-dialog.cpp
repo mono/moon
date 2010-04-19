@@ -605,11 +605,28 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	
 	fprintf (fp, "#!/bin/sh\n\n");
 #if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
-	const char *oob_launcher = "lunar-launcher";
+	char *oob_launcher = NULL;
 	if (moonlight_flags & RUNTIME_INIT_OOB_LAUNCHER_FIREFOX) {
-		oob_launcher = "firefox";
+		oob_launcher = g_strdup ("firefox");
+	} else {
+		const char *platform_dir = Deployment::GetPlatformDir ();
+		printf ("OOB platform_dir: %s\n", platform_dir);
+		char *launcher;
+		/* We first want to check if we have a lunar-launcher executable next to our platform dir,
+		 * since if we're a plugin we need the full path to the lunar-launcher executable, it won't be in PATH */
+		if (platform_dir != NULL) {
+			launcher = g_build_filename (platform_dir, "lunar-launcher", NULL);
+			if (g_file_test (launcher, (GFileTest) (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))) {
+				oob_launcher = launcher;
+			} else {
+				g_free (launcher);
+			}
+		}
+		if (oob_launcher == NULL)
+			oob_launcher = g_strdup ("lunar-launcher");
 	}
 	fprintf (fp, "%s -moonapp \"file://%s/index.html\" -moonwidth %d -moonheight %d -moontitle \"%s\"\n", oob_launcher, app_dir, width, height, settings->GetShortName());
+	g_free (oob_launcher);
 #else
 	fprintf (fp, "google-chrome --app=\"file://%s/index.html\"\n", app_dir);
 #endif
