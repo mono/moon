@@ -125,7 +125,7 @@ namespace MoonTest.System.Windows
 			Rectangle r = new Rectangle ();
 			r.Style = s;
 			Assert.IsTrue (s.IsSealed, "IsSealed-3");
-			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-3"); // Fails in Silverlight 3
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-3");
 		}
 
 		[TestMethod]
