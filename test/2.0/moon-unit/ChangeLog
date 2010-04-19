@@ -1,5 +1,10 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/SetterTest.cs: Update the SetterTests to SL4
+	  compatibility.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/SetterBaseCollectionTest.cs: Remove outdated
 	  comment
 

@@ -45,11 +45,12 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug ("We're supposed to do type conversion when retrieving the 'Value' property it seems")]
 		public void TypeMismatch ()
 		{
 			Setter s = new Setter (UIElement.OpacityProperty, "does this work?");
 			Assert.AreEqual (UIElement.OpacityProperty, s.Property, "Property");
-			Assert.AreEqual ("does this work?", s.Value, "Value");
+			Assert.Throws <Exception> (() => { object o = s.Value; }, "Value");
 		}
 
 		[TestMethod]
@@ -61,12 +62,11 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[Ignore ("Throws ExecutionEngineException and abort the process")]
 		public void Parse ()
 		{
-			Setter s = (Setter)XamlReader.Load ("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"IsEnabled\" Value=\"hi\" />");
-			Assert.IsNull (s.Property);
-			Assert.AreEqual ("hi", s.Value);
+			Assert.Throws<XamlParseException>(() =>
+				XamlReader.Load("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"IsEnabled\" Value=\"hi\" />")
+			);
 		}
 
 		[TestMethod]
@@ -82,8 +82,8 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (typeof (Control), style.TargetType, "Style.TargetType");
 
 			Setter s = (Setter) style.Setters [0];
-			Assert.IsNull (s.Property, "Property");
-			Assert.AreEqual ("hi", s.Value, "Value");
+			Assert.AreSame (Control.IsEnabledProperty, s.Property, "Property");
+			Assert.Throws<Exception>(() => { object o = s.Value; }, "Value");
 			Assert.IsTrue (s.IsSealed, "IsSealed");
 		}
 
@@ -106,8 +106,8 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (typeof (Control), style.TargetType, "Style.TargetType");
 
 			Setter s = (Setter) style.Setters [0];
-			Assert.IsNull (s.Property, "Property");
-			Assert.AreEqual ("hi", s.Value, "Value");
+			Assert.AreSame (Control.IsEnabledProperty, s.Property, "Property");
+			Assert.Throws<Exception>(() => { object o = s.Value; }, "Value");
 			Assert.IsTrue (s.IsSealed, "IsSealed");
 		}
 
@@ -116,7 +116,7 @@ namespace MoonTest.System.Windows
 		{
 			Style style = (Style) XamlReader.Load (@"
 <Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Control"">
-	<Setter Property=""IsEnabled"" Value=""hi"" />
+	<Setter Property=""IsEnabled"" Value=""false"" />
 </Style>");
 			Setter s = (Setter) style.Setters [0];
 			Assert.IsTrue (s.IsSealed, "IsSealed");
@@ -126,38 +126,22 @@ namespace MoonTest.System.Windows
 			}, "UIElement.OpacityProperty");
 
 			Assert.Throws<UnauthorizedAccessException> (delegate {
-				s.Value = s.Value;
+				s.Value = true;
 			}, "self");
 		}
 
 		[TestMethod]
-		[Ignore ("Throws ExecutionEngineException and abort the process")]
 		public void ParseAndAddToStyle ()
 		{
-			Setter s = (Setter)XamlReader.Load ("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"Width\" Value=\"5.0\" />");
-
-			Assert.IsNull (s.Property);
-			Assert.AreEqual ("5.0", s.Value);
-
-			Style style = new Style(typeof (Rectangle));
-			style.Setters.Add (s);
-
-			Assert.IsNull (s.Property);
-			Assert.AreEqual ("5.0", s.Value);
-
-			Rectangle r = new Rectangle ();
-			r.Style = style;
-
-			Assert.IsNull (s.Property);
-			Assert.AreEqual ("5.0", s.Value);
-			Assert.IsTrue (Double.IsNaN(r.Width));
+			Assert.Throws<XamlParseException>(() =>
+				XamlReader.Load("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"Width\" Value=\"5.0\" />")
+			, "#1");
 		}
 
 		[TestMethod]
 		[MoonlightBug ("unsure why SL2 Property is null")]
 		public void ParseAndAddToStyle_WithinStyle ()
 		{
-			// Fails in Silverlight 3
 			Style style = (Style) XamlReader.Load (@"
 <Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Control"">
 	<Setter Property=""Width"" Value=""5.0"" />
@@ -167,8 +151,8 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (typeof (Control), style.TargetType, "Style.TargetType");
 
 			Setter s = (Setter) style.Setters [0];
-			Assert.IsNull (s.Property);
-			Assert.AreEqual ("5.0", s.Value);
+			Assert.AreSame (Control.WidthProperty, s.Property, "#same property");
+			Assert.AreEqual (5.0, s.Value, "#same value");
 		}
 
 		[TestMethod]
