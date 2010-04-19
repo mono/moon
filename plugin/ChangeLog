@@ -1,3 +1,8 @@
+2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp:
+	* Makefile.am: Build lunar-launcher too.
+
 2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp|h.in: Handle a call to TransformXY and print a warning

@@ -157,6 +157,11 @@ SHOCKER_LIBS="$GTK_LIBS $IMAGEMAGICK_LIBS $XTST_LIBS $UNWIND_LIBS"
 AC_SUBST(SHOCKER_CFLAGS)
 AC_SUBST(SHOCKER_LIBS)
 
+LUNAR_LAUNCHER_CFLAGS="$GTK_CFLAGS $XULRUNNER_CFLAGS"
+LUNAR_LAUNCHER_LIBS="$GTK_LIBS $XULRUNNER_LIBS"
+AC_SUBST(LUNAR_LAUNCHER_CFLAGS)
+AC_SUBST(LUNAR_LAUNCHER_LIBS)
+
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 
@@ -231,6 +236,7 @@ plugin/install/install.rdf
 plugin/install/manifest.json
 plugin/test/Makefile
 plugin/samples/Makefile
+plugin/lunar-launcher/Makefile
 perf/Makefile
 sdk/Makefile
 generators/Makefile

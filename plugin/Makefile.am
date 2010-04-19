@@ -1,4 +1,4 @@
-SUBDIRS = . test samples firefox
+SUBDIRS = . test samples firefox lunar-launcher
 
 if HAVE_CURL
 SUBDIRS += curl

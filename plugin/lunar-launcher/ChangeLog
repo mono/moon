@@ -1,0 +1,5 @@
+2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* lunar-launcher.cpp|h: Added. Based heavily on agviewer.
+

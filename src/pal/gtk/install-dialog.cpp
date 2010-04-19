@@ -597,7 +597,7 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	char *filename;
 	FILE *fp;
 	
-	filename = g_build_filename (app_dir, "lunar-launcher", NULL);
+	filename = g_build_filename (app_dir, "launch", NULL);
 	if (!(fp = fopen (filename, "wt"))) {
 		g_free (filename);
 		return false;
@@ -605,7 +605,11 @@ install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
 	
 	fprintf (fp, "#!/bin/sh\n\n");
 #if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
-	fprintf (fp, "firefox -moonapp \"file://%s/index.html\" -moonwidth %d -moonheight %d -moontitle \"%s\"\n", app_dir, width, height, settings->GetShortName());
+	const char *oob_launcher = "lunar-launcher";
+	if (moonlight_flags & RUNTIME_INIT_OOB_LAUNCHER_FIREFOX) {
+		oob_launcher = "firefox";
+	}
+	fprintf (fp, "%s -moonapp \"file://%s/index.html\" -moonwidth %d -moonheight %d -moontitle \"%s\"\n", oob_launcher, app_dir, width, height, settings->GetShortName());
 #else
 	fprintf (fp, "google-chrome --app=\"file://%s/index.html\"\n", app_dir);
 #endif
@@ -694,7 +698,7 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 	}
 	g_free (icon_name);
 	
-	launcher = g_build_filename (app_dir, "lunar-launcher", NULL);
+	launcher = g_build_filename (app_dir, "launch", NULL);
 	quoted = g_shell_quote (launcher);
 	if (fprintf (fp, "Exec=%s\n", quoted) < 0)
 		error = true;
@@ -777,7 +781,7 @@ install_dialog_get_launcher_script (InstallDialog *dialog)
 	g_return_val_if_fail (IS_INSTALL_DIALOG (dialog), NULL);
 	
 	if (priv->installed)
-		return g_build_filename (priv->install_dir, "lunar-launcher", NULL);
+		return g_build_filename (priv->install_dir, "launch", NULL);
 	
 	return NULL;
 }

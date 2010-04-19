@@ -117,6 +117,7 @@ static MoonlightRuntimeOption options [] = {
 	{ RUNTIME_INIT_ENABLE_EFFECTS,        "effects",           "yes",        "no",     true,            "Enable Pixel Effects" },
 	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",        "yes",        "no",     true,            "Prefer Curl bridge" },
 	{ RUNTIME_INIT_ENABLE_TOGGLEREFS,     "togglerefs",        "yes",        "no" },
+	{ RUNTIME_INIT_OOB_LAUNCHER_FIREFOX,  "ooblauncher",       "firefox",    "default" , true,          "Use firefox to execute out-of-browser applications" },
 	{ (RuntimeInitFlag)0 }
 
 };

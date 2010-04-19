@@ -1,3 +1,11 @@
+2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp|h: Make the oob executable configurable at runtime.
+
+	* pal/gtk/install-dialog.cpp: We can't call the oob execution script
+	'lunar-launcher', since we now executing with our own lunar-launcher
+	executable instead of firefox. It'll end up launching itself recursively.
+
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
 	* dependencyobject.h:
