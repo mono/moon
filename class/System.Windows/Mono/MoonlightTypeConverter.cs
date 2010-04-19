@@ -245,17 +245,13 @@ namespace Mono {
 			if (dp.IsAttached) {
 				tc = Helper.GetConverterFor (GetGetterMethodForAttachedDP (dp, val), dp.PropertyType);
 			}
-			else if (objectType != null) {
-				PropertyInfo pi = objectType.GetProperty (dp.Name);
-				if (pi == null) {
-					Console.WriteLine ("+ failed to look up CLR property wrapper");
-					Console.WriteLine ("+ TargetType = {0}, property = {1}.{2}", objectType, dp.DeclaringType, dp.Name);
-					throw new Exception ("foo3");
+			else {
+				PropertyInfo pi = dp.DeclaringType.GetProperty (dp.Name);
+				if (pi != null) {
+					tc = Helper.GetConverterFor (pi, pi.PropertyType);
+					if (tc == null)
+						tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
 				}
-				
-				tc = Helper.GetConverterFor (pi, pi.PropertyType);
-				if (tc == null)
-					tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
 			}
 			
 			if (tc == null)
