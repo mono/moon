@@ -24,7 +24,7 @@
 /* @Namespace=System.Windows */
 class Style : public DependencyObject {
 public:
-	/* @PropertyType=Style,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=Style,GenerateAccessors,ManagedFieldAccess=Internal,Validator=BasedOnValidator */
 	const static int BasedOnProperty;
 	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int IsSealedProperty;

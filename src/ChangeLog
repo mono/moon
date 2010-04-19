@@ -1,5 +1,13 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* style.h:
+	* validators.h:
+	* validators.cpp: Throw the correct kind of exception when
+	  there's a cycle in the Style.BasedOn tree and add validation
+	  for Style::BasedOn.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* xaml.cpp: If we encounter a '{' which is not part of the
 	  '{}' escape sequence, we need to pass that to managed land
 	  regardless of whether there is a closing brace or not. Fixes

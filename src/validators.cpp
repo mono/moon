@@ -337,6 +337,18 @@ Validators::FloatValidator (DependencyObject *instance, DependencyProperty *prop
 }
 
 bool
+Validators::BasedOnValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	// You can't do Style s = new Style (); s.BasedOn = s;
+	if (!Value::IsNull (value) && value->AsStyle () == instance) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "A Style cannot be based on itself.");
+		return false;
+	}
+
+	return true;
+}
+
+bool
 Validators::StyleValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	Type::Kind target_kind;
@@ -355,7 +367,7 @@ Validators::StyleValidator (DependencyObject *instance, DependencyProperty *prop
 		root = style;
 		while (root) {
 			if (g_hash_table_lookup (cycles, root)) {
-				MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Circular reference in Style.BasedOn");
+				MoonError::FillIn (error, MoonError::INVALID_OPERATION, 1001, "Circular reference in Style.BasedOn");
 				g_hash_table_destroy (cycles);
 				return false;
 			}

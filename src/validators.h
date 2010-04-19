@@ -45,6 +45,7 @@ public:
 	static ValueValidator CrossDomainValidator;
 	static ValueValidator VolumeValidator;
 	static ValueValidator BalanceValidator;
+	static ValueValidator BasedOnValidator;
 	static ValueValidator StyleValidator;
 };
 
