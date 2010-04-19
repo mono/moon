@@ -1,5 +1,10 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* ManagedXamlLoader.cs: Correctly handle setting bindings on
+	  attached properties through xaml.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* ManagedXamlLoader.cs: If an attached property is referenced
 	  in xaml with a clr namespace prefix, the DP lookup will fail
 	  when we use full_type_name as we end up looking up:

@@ -492,6 +492,12 @@ namespace Mono.Xaml
 			string full_type_name = null;
 
 			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name, out full_type_name);
+			var fwe = target as FrameworkElement;
+			if (fwe != null && o_value is Binding) {
+				var dp = LookupDependencyPropertyForBinding (data, fwe, full_type_name, name);
+				((FrameworkElement) target).SetBinding (dp, (Binding) o_value);
+				return true;
+			}
 
 			if (name == null)
 				return false;
