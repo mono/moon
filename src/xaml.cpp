@@ -5047,8 +5047,8 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 					char *nv = attr_value;
 					attr_value = g_strdup (attr_value + 2);
 					g_free (nv);
-				}
-				else if (attr[i+1][strlen(attr[i+1]) - 1] == '}') {
+				} else {
+					// Don't check for the ending brace so invalid bindings like: '{Binding ' hit the managed code path
 					need_managed = true; 
 				}
 			}

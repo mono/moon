@@ -1,5 +1,12 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* xaml.cpp: If we encounter a '{' which is not part of the
+	  '{}' escape sequence, we need to pass that to managed land
+	  regardless of whether there is a closing brace or not. Fixes
+	  part of drt 232.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* style.cpp:
 	* validators.cpp: Each style should convert its setter values
 	  when it's sealed. Fixes a regression in my last commit where
