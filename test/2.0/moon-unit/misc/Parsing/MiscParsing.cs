@@ -422,9 +422,6 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		[MoonlightBug (@"Instead of hitting the TrySetExpression case we end up in TrySetAttachedProperty
-						where we do: Canvas.SetLeft (customcontrol, binding) which throws an exception as
-						'binding' is not a double")]
 		public void AttachedPropWithManagedNamespace_NoTemplateOwner()
 		{
 			string xaml =

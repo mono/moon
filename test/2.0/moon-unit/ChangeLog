@@ -1,5 +1,9 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/Parsing/MiscParsing.cs: This test passes now.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media/BrushTest.cs: Add some FindName tests
 	  to DOs which can have multiple parents. We currently
 	  register their names when we shouldn't.
