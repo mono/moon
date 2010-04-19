@@ -31,7 +31,7 @@ using System;
 using System.IO;
 using System.Xml;
 using PerfSuiteLib;
-using Mono.GetOptions;
+using Mono.Options;
 
 namespace PerfSuiteRunner {
 
@@ -122,7 +122,14 @@ namespace PerfSuiteRunner {
 		public static int Main (string [] args)
 		{
 			Options opts = new Options ();
-			opts.ProcessArgs (args);
+
+			try {
+				opts.ProcessArgs (args);
+			}
+			catch (OptionException e) {
+				Console.Write ("perfsuiterunner: {0}", e.Message);
+				return;
+			}
 
 			if (opts.TestId != String.Empty)
 				return SingleTestMode (opts);

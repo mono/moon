@@ -11,11 +11,10 @@ perf_tool_SOURCES =					\
 
 perf_tool_LDADD = $(PERF_TOOL_LIBS) $(MOON_PROG_LIBS)
 
-MCS = gmcs
+MCS = dmcs
 RUNTIME = mono
-MCS_COMMON_FLAGS = -r:Mono.GetOptions
 
-MCS_LIB_FLAGS = -r:Mono.Data.SqliteClient -r:System.Data
+MCS_LIB_FLAGS = -r:Mono.Data.Sqlite -r:System.Data
 MCS_RUNNER_FLAGS = -r:perf-suite-lib.dll
 MCS_GENERATOR_FLAGS = -r:perf-suite-lib.dll -r:Mono.Cairo
 
@@ -31,6 +30,7 @@ perf_suite_runner_sources = \
 	$(srcdir)/perf-suite-runner/DrtItem.cs			\
 	$(srcdir)/perf-suite-runner/PerfSuiteRunner.cs		\
 	$(srcdir)/perf-suite-runner/DrtResult.cs		\
+	$(srcdir)/perf-suite-runner/MonoOptions.cs		\
 	$(srcdir)/perf-suite-runner/Options.cs			\
 	$(srcdir)/perf-suite-runner/AssemblyInfo.cs
 

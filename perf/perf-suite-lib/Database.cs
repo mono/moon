@@ -31,7 +31,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
-using Mono.Data.SqliteClient;
+using Mono.Data.Sqlite;
 using System.Data;
 
 namespace PerfSuiteLib {

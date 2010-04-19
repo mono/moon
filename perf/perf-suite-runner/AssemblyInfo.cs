@@ -1,4 +1,3 @@
-using Mono.GetOptions;
 using System.Reflection;
 
 [assembly: AssemblyTitle ("perf-suite-runner.exe")]

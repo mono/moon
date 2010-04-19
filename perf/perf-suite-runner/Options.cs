@@ -31,11 +31,11 @@ using System;
 using System.IO;
 using System.Xml;
 using PerfSuiteLib;
-using Mono.GetOptions;
+using Mono.Options
 
 namespace PerfSuiteRunner {
 
-	public class Options : Mono.GetOptions.Options {
+	public class Options {
 
 		[Option ("A test run short name (ie. revision number)", 'n', "short-name")]
 		public string ShortName = "Unknown";
@@ -54,14 +54,34 @@ namespace PerfSuiteRunner {
 
 		public Options ()
 		{
-			base.ParsingMode = OptionsParsingMode.Both;
-
 			/* Try getting defaults from env vars */
 			ShortName = GetEnvVarIfPresentOrDefault ("PERF_SHORT_NAME", ShortName);
 			Author = GetEnvVarIfPresentOrDefault ("PERF_AUTHOR", Author);
 			ChangeLog = GetEnvVarIfPresentOrDefault ("PERF_CHANGE_LOG", ChangeLog);
 			DatabaseFile = GetEnvVarIfPresentOrDefault ("PERF_DATABASE_FILE", DatabaseFile);
 			TestId = GetEnvVarIfPresentOrDefault ("PERF_TEST_ID", TestId);
+		}
+
+		public void ProcessArgs (string[] args)
+		{
+			var p = new OptionSet () {
+				{ "n|short-name=", "A test run short name (ie. revision number)",
+				  v => ShortName = v },
+
+				{ "a|author=", "Author of the commit (or last change)",
+				  v => Author = v },
+
+				{ "c|changelog=", "Changelog entry related to this pass",
+				  v => ChangeLog = v },
+
+				{ "d|database=", "Location of the file with the database",
+				  v => DatabaseFile = v },
+
+				{ "i|id=", "Test id to run (forces single-test mode)",
+				  v => TestId = v },
+			};
+
+			p.Parse (args);
 		}
 
 		private string GetEnvVarIfPresentOrDefault (string var, string def)
