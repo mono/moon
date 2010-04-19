@@ -1,3 +1,8 @@
+2010-04-19  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: disable build parallelization just here, fixes
+	parallel builds
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Build cecil and friends in the basic profile instead
