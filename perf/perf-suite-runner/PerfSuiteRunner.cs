@@ -128,7 +128,7 @@ namespace PerfSuiteRunner {
 			}
 			catch (OptionException e) {
 				Console.Write ("perfsuiterunner: {0}", e.Message);
-				return;
+				return 0;
 			}
 
 			if (opts.TestId != String.Empty)

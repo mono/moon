@@ -76,7 +76,7 @@ namespace PerfSuiteLib {
 			entry.CreateCommand (ref cmd);
 
 			cmd.ExecuteNonQuery ();
-			entry.GiveId (connection.LastInsertRowId);
+			//			entry.GiveId (connection.LastInsertRowId);
 		}
 
 		public static List <ItemDbEntry> GetAllItemEntries ()

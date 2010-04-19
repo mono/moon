@@ -19,6 +19,7 @@ MCS_RUNNER_FLAGS = -r:perf-suite-lib.dll
 MCS_GENERATOR_FLAGS = -r:perf-suite-lib.dll -r:Mono.Cairo
 
 perf_suite_lib_sources = \
+	$(srcdir)/perf-suite-lib/MonoOptions.cs			\
 	$(srcdir)/perf-suite-lib/Database.cs			\
 	$(srcdir)/perf-suite-lib/DbEntry.cs			\
 	$(srcdir)/perf-suite-lib/PassDbEntry.cs			\
@@ -30,7 +31,6 @@ perf_suite_runner_sources = \
 	$(srcdir)/perf-suite-runner/DrtItem.cs			\
 	$(srcdir)/perf-suite-runner/PerfSuiteRunner.cs		\
 	$(srcdir)/perf-suite-runner/DrtResult.cs		\
-	$(srcdir)/perf-suite-runner/MonoOptions.cs		\
 	$(srcdir)/perf-suite-runner/Options.cs			\
 	$(srcdir)/perf-suite-runner/AssemblyInfo.cs
 

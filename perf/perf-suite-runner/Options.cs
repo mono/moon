@@ -31,25 +31,25 @@ using System;
 using System.IO;
 using System.Xml;
 using PerfSuiteLib;
-using Mono.Options
+using Mono.Options;
 
 namespace PerfSuiteRunner {
 
 	public class Options {
 
-		[Option ("A test run short name (ie. revision number)", 'n', "short-name")]
+		//[Option ("A test run short name (ie. revision number)", 'n', "short-name")]
 		public string ShortName = "Unknown";
 
-		[Option ("Author of the commit (or last change)", 'a', "author")]
+		//[Option ("Author of the commit (or last change)", 'a', "author")]
 		public string Author = String.Empty;
 
-		[Option ("Changelog entry related to this pass", 'c', "changelog")]
+		//[Option ("Changelog entry related to this pass", 'c', "changelog")]
 		public string ChangeLog = String.Empty;
 
-		[Option ("Location of the file with the database", 'd', "database")]
+		//[Option ("Location of the file with the database", 'd', "database")]
 		public string DatabaseFile = "perf-results.db";
 
-		[Option ("Test id to run (forces single-test mode)", 'i', "id")]
+		//[Option ("Test id to run (forces single-test mode)", 'i', "id")]
 		public string TestId = "";
 
 		public Options ()

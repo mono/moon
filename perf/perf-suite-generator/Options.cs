@@ -31,23 +31,32 @@ using System;
 using System.IO;
 using System.Xml;
 using PerfSuiteLib;
-using Mono.GetOptions;
+using Mono.Options;
 
 namespace PerfSuiteGenerator {
 
-	public class Options : Mono.GetOptions.Options {
+	public class Options {
 
-		[Option ("Location of the file with the database", 'd', "database")]
+		//[Option ("Location of the file with the database", 'd', "database")]
 		public string DatabaseFile = "perf-results.db";
 
 		public Options ()
 		{
-			base.ParsingMode = OptionsParsingMode.Both;
-
 			/* Try getting defaults from env vars */
 			DatabaseFile = GetEnvVarIfPresentOrDefault ("PERF_DATABASE_FILE", DatabaseFile);
 		}
 
+		public void ProcessArgs (string[] args)
+		{
+			var p = new OptionSet () {
+				{ "d|database=", "Location of the file with the database",
+				  v => DatabaseFile = v }
+			};
+
+
+			p.Parse (args);
+		}
+					 
 		private string GetEnvVarIfPresentOrDefault (string var, string def)
 		{
 			string val = Environment.GetEnvironmentVariable (var);
