@@ -479,6 +479,7 @@ private:
 	bool is_frozen;
 	bool is_hydrated;
 	bool is_being_parsed;
+	bool registering_names;
 	
 	const char *resource_base;
 };

@@ -1,5 +1,14 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* dependencyobject.h:
+	* dependencyobject.cpp: Use a flag (registering_names) to mark
+	  elements which are inside a call to
+	  [Un]RegisterAllNamesRootedAt so that we can handle the case
+	  where there's a cycle in local values. Fixes the last of drt
+	  997.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* provider.cpp: When calling RecomputePropertyValue for the
 	  StyleProvider we cannot call obj->GetStyle (). If we do
 	  this, the default style provider will end up with values

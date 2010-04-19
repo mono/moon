@@ -1609,9 +1609,10 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 {
 	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	
-	if (error->number)
+	if (error->number || registering_names)
 		return;
 
+	registering_names = true;
 	bool merge_namescope = false;
 	bool register_name = false;
 	bool recurse = false;
@@ -1664,6 +1665,8 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 	
 		g_hash_table_foreach (local_values, register_depobj_names, &closure);
 	}
+
+	registering_names = false;
 }
 
 static void
@@ -1684,6 +1687,9 @@ unregister_depobj_names (gpointer  key,
 void
 DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 {
+	if (registering_names)
+		return;
+	registering_names = true;
 	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 
 	NameScope *this_ns = NameScope::GetNameScope(this);
@@ -1696,13 +1702,16 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 			from_ns->UnregisterName (n);
 	}
 
-	if (this_ns && !this_ns->GetTemporary())
+	if (this_ns && !this_ns->GetTemporary()) {
+		registering_names = false;
 		return;
+	}
 	
 	if (autocreate)
 		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_names, from_ns);
 	
 	g_hash_table_foreach (local_values, unregister_depobj_names, from_ns);
+	registering_names = false;
 }
 
 bool
@@ -2266,6 +2275,7 @@ DependencyObject::Initialize ()
 	is_frozen = false;
 	is_being_parsed = false;
 	resource_base = NULL;
+	registering_names = false;
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	hash_lookups_per_property = g_hash_table_new (g_direct_hash, g_direct_equal);
 	get_values_per_property = g_hash_table_new (g_direct_hash, g_direct_equal);
