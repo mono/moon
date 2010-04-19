@@ -3,39 +3,40 @@
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="shocker" />
       <Build debugmode="True" target="SharedLibrary" />
-      <Execution runwithwarnings="True" consolepause="True" />
-      <EnvironmentVariables />
+      <Execution consolepause="True" runwithwarnings="True" />
       <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP" />
     </Configuration>
     <Configuration name="Release" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Release" output="shocker" />
       <Build debugmode="False" target="SharedLibrary" />
-      <Execution runwithwarnings="True" consolepause="True" />
+      <Execution consolepause="True" runwithwarnings="True" />
       <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="3" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="MONODEVELOP" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="." subtype="Directory" buildaction="Nothing" />
-    <File name="browser.cpp" subtype="Code" buildaction="Compile" />
-    <File name="browser.h" subtype="Code" buildaction="Nothing" />
-    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="image-capture.cpp" subtype="Code" buildaction="Compile" />
-    <File name="image-capture.h" subtype="Code" buildaction="Nothing" />
-    <File name="input.cpp" subtype="Code" buildaction="Compile" />
-    <File name="input.h" subtype="Code" buildaction="Nothing" />
-    <File name="logging.cpp" subtype="Code" buildaction="Compile" />
-    <File name="logging.h" subtype="Code" buildaction="Nothing" />
-    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="netscape.cpp" subtype="Code" buildaction="Compile" />
-    <File name="netscape.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin.cpp" subtype="Code" buildaction="Compile" />
-    <File name="plugin.h" subtype="Code" buildaction="Nothing" />
-    <File name="shocker.cpp" subtype="Code" buildaction="Compile" />
-    <File name="shocker.h" subtype="Code" buildaction="Nothing" />
-    <File name="shutdown-manager.cpp" subtype="Code" buildaction="Compile" />
-    <File name="shutdown-manager.h" subtype="Code" buildaction="Nothing" />
-    <File name="harness.cpp" subtype="Code" buildaction="Compile" />
-    <File name="harness.h" subtype="Code" buildaction="Nothing" />
+    <File subtype="Directory" buildaction="Nothing" name="." />
+    <File subtype="Code" buildaction="Compile" name="browser.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="browser.h" />
+    <File subtype="Code" buildaction="Nothing" name="ChangeLog" />
+    <File subtype="Code" buildaction="Compile" name="image-capture.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="image-capture.h" />
+    <File subtype="Code" buildaction="Compile" name="input.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="input.h" />
+    <File subtype="Code" buildaction="Compile" name="logging.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="logging.h" />
+    <File subtype="Code" buildaction="Nothing" name="Makefile.am" />
+    <File subtype="Code" buildaction="Compile" name="netscape.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="netscape.h" />
+    <File subtype="Code" buildaction="Compile" name="plugin.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin.h" />
+    <File subtype="Code" buildaction="Compile" name="shocker.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="shocker.h" />
+    <File subtype="Code" buildaction="Compile" name="shutdown-manager.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="shutdown-manager.h" />
+    <File subtype="Code" buildaction="Compile" name="harness.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="harness.h" />
+    <File subtype="Code" buildaction="Nothing" name="debug.h" />
+    <File subtype="Code" buildaction="Compile" name="debug.cpp" />
   </Contents>
   <compiler ctype="GppCompiler" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">

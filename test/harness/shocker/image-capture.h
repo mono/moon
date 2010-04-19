@@ -55,7 +55,6 @@ public:
 			int count, int capture_interval, int initial_delay);
 };
 
-
 class AutoCapture {
 
 public:

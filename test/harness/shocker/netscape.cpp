@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "debug.h"
 #include "netscape.h"
 #include "shocker.h"
 #include "plugin.h"
@@ -29,9 +30,7 @@
 NPError
 NP_Initialize (NPNetscapeFuncs* mozilla_funcs, NPPluginFuncs* plugin_funcs)
 {
-#ifdef SHOCKER_DEBUG
-	printf ("NP_Initialize\n");
-#endif
+	LOG_PLUGIN ("[%i shocker] NP_Initialize\n", getpid ());
 
 	Dl_info dl_info;
 	// Prevent firefox from unloading us
@@ -53,9 +52,7 @@ NP_Initialize (NPNetscapeFuncs* mozilla_funcs, NPPluginFuncs* plugin_funcs)
 NPError
 NP_Shutdown (void)
 {
-#ifdef SHOCKER_DEBUG
-    printf ("NP_Shutdown\n");
-#endif
+	LOG_PLUGIN ("[%i shocker] NP_Shutdown\n", getpid ());
 
     Shocker_Shutdown ();
     
@@ -65,9 +62,7 @@ NP_Shutdown (void)
 char *
 NP_GetMIMEDescription (void)
 {
-#ifdef SHOCKER_DEBUG
-	printf ("NP_GetMIMEDescription\n");
-#endif
+	LOG_PLUGIN ("[%i shocker] NP_GetMIMEDescription\n", getpid ());
 
 	return Plugin_GetMIMEDescription ();
 }
@@ -75,9 +70,7 @@ NP_GetMIMEDescription (void)
 NPError
 NP_GetValue (void *future, NPPVariable variable, void *value)
 {
-#ifdef SHOCKER_DEBUG
-	printf ("NP_GetValue\n");
-#endif
+	LOG_PLUGIN ("[%i shocker] NP_GetValue (%i)\n", getpid (), variable);
 
 	return Plugin_GetValue ((NPP) future, variable, value);
 }

@@ -22,9 +22,9 @@
 
 #include <gdk/gdk.h>
 
+#include "debug.h"
+#include "shocker.h"
 #include "input.h"
-
-#define LOG_INPUT(...)// printf (__VA_ARGS__);
 
 #define XSCREEN_OF_POINTER -1
 
@@ -322,7 +322,7 @@ void
 InputProvider::MouseWheel (guint16 clicks)
 {
 	LOG_INPUT ("InputProvider::MouseWheel (%u)\n", clicks);
-	g_error ("InputProvider::MouseWheel (): not implemented\n");
+	Shocker_FailTestFast ("InputProvider::MouseWheel (): not implemented");
 }
 
 void

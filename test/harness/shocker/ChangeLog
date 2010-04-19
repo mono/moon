@@ -1,3 +1,25 @@
+2010-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp|h: Use new logging framework, and fail the current test
+	instead of aborting when api that hasn't been implemented is called. Rewrite
+	the shocker np object to be more c++-ish, so that most of the code can be
+	reused in the newly implemented renderdatacapturer np object.
+
+	* input.cpp:
+	* netscape.cpp:
+	* plugin.cpp|h:
+	* harness.cpp|h:
+	* logging.cpp|h:
+	* image-capture.cpp|h:
+	* shutdown-manager.cpp: Use new logging framework, and fail the current test
+	instead of aborting when api that hasn't been implemented is called.
+
+	* shocker.mdp:
+	* Makefile.am: Updated with new files.
+
+	* debug.cpp|h: Added, implements logging macros that can be controlled with an
+	environment variable.
+
 2010-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp|h: Add a pinvokable method to get the location of the test

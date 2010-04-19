@@ -5,6 +5,8 @@ lib_LTLIBRARIES = libshocker.la
 INCLUDES = -I$(top_srcdir)/plugin/moz-sdk $(SHOCKER_CFLAGS) -Wall -DDBUS_ENABLED
 
 libshocker_la_SOURCES = 	\
+	debug.cpp			\
+	debug.h				\
 	shocker.cpp  		\
 	shocker.h		\
 	plugin.h		\

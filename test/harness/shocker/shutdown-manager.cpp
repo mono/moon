@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "debug.h"
 #include "shutdown-manager.h"
 #include "input.h"
 #include "plugin.h"
@@ -82,6 +83,8 @@ send_ctrl_q (gpointer dummy)
 static void
 execute_shutdown ()
 {
+	LOG_SHUTDOWN ("[%i shocker] execute_shutdown\n", getpid ())
+
 	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
 	if (dont_die != NULL && dont_die [0] != 0)
 		return;
@@ -122,6 +125,8 @@ execute_shutdown ()
 static gboolean
 attempt_clean_shutdown (gpointer data)
 {
+	LOG_SHUTDOWN ("[%i shocker] attempt_clean_shutdown\n", getpid ())
+
 	bool ready_for_shutdown = false;
 
 	ready_for_shutdown = g_atomic_int_get (&wait_count) <= 0;
@@ -137,6 +142,8 @@ attempt_clean_shutdown (gpointer data)
 void
 shutdown_manager_queue_shutdown ()
 {
+	LOG_SHUTDOWN ("[%i shocker] shutdown_manager_queue_shutdown\n", getpid ())
+
 	if (g_atomic_int_get (&wait_count) == 0)
 		return execute_shutdown ();
 
@@ -151,11 +158,13 @@ shutdown_manager_queue_shutdown ()
 void
 SignalShutdown (const char *window_name)
 {
+	LOG_SHUTDOWN ("[%i shocker] SignalShutdown\n", getpid ())
 	shutdown_manager_queue_shutdown ();
 }
 
 void
 TestHost_SignalShutdown (const char *window_name)
 {
+	LOG_SHUTDOWN ("[%i shocker] TestHost_SignalShutdown\n", getpid ())
 	SignalShutdown (window_name);
 }

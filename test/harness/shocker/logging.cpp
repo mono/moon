@@ -20,6 +20,8 @@
 #include <unistd.h>
 #include <sys/utsname.h>
 
+#include "debug.h"
+#include "shocker.h"
 #include "logging.h"
 #include "harness.h"
 
@@ -161,9 +163,11 @@ LogProvider::GetTestDefinition (bool isJson)
 		test_definition = (char *) buffer;
 		buffer = NULL;
 
-		//printf ("[shocker] LogProvider::GetTestDefinition (isJson: %i)\n", isJson);
-		//printf (test_definition);
-		//printf ("\n");
+		if (shocker_flags & SHOCKER_DEBUG_HARNESS) {
+			printf ("[%i shocker] LogProvider::GetTestDefinition (isJson: %i):\n", getpid (), isJson);
+			printf (test_definition);
+			printf ("\n");
+		}
 	} else {
 		printf ("[%i shocker] LogProvider::GetTestDefinition (): Could not get test definition: %s\n", getpid (), strerror (errno));
 		test_definition = NULL;
@@ -190,7 +194,7 @@ LogProvider::GetPlatformName ()
 	if (platform_name == NULL)
 		GetPlatformVersion ();
 
-	printf ("[%i ishocker] LogProvider::GetPlatformName (): Returning '%s', which may cause failures.\n", getpid (), platform_name);
+	printf ("[%i shocker] LogProvider::GetPlatformName (): Returning '%s', which may cause failures.\n", getpid (), platform_name);
 
 	return platform_name;
 }
@@ -248,7 +252,7 @@ void LogWarning (const char *message)
 
 void GetTestDefinition (char **result)
 {
-	g_error ("[%i shocker] GetTestDefinition: Not implemented\n", getpid ());
+	Shocker_FailTestFast ("GetTestDefinition: Not implemented");
 }
 
 void TestLogger_StartLog (const char *message, const char *testDefinitionXml, const char *filePath)

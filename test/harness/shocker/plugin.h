@@ -58,7 +58,6 @@ private:
 
 void Plugin_Initialize (NPPluginFuncs* npp_funcs);
 
-
 //
 // Make some plugin metadata available to the world
 //

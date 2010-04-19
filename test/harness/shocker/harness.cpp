@@ -22,6 +22,7 @@
 #include <errno.h>
 #include <arpa/inet.h>
 
+#include "debug.h"
 #include "harness.h"
 #include "plugin.h"
 
@@ -117,7 +118,7 @@ Harness::SendMessage (const char *msg, guint8 **buffer, guint32 *output_length)
 	} 
 
 	result = getsockname (sockfd, (struct sockaddr *) &peer, &peer_length);
-	// printf ("[%i shocker]: Connected to port %i\n", getpid (), ntohs (peer.sin_port));
+	LOG_HARNESS ("[%i shocker]: Connected to port %i\n", getpid (), ntohs (peer.sin_port));
 
 	// send request
 	tmp = g_strdup_printf ("v2|%s", msg);
@@ -134,7 +135,7 @@ Harness::SendMessage (const char *msg, guint8 **buffer, guint32 *output_length)
 		goto cleanup;
 	}
 
-	// printf ("[%i shocker]: receiving %i bytes...\n", getpid (), *output_length);
+	LOG_HARNESS ("[%i shocker]: receiving %i bytes...\n", getpid (), *output_length);
 
 	// Then the response
 	*buffer = (guint8 *) g_malloc0 (*output_length + 1 /* any missing null terminator */);
@@ -144,7 +145,8 @@ Harness::SendMessage (const char *msg, guint8 **buffer, guint32 *output_length)
 		result = -1;
 		goto cleanup;
 	}
-	// printf ("[%i shocker]: received %i bytes from port %i\n", getpid (), *output_length, ntohs (peer.sin_port));
+
+	LOG_HARNESS ("[%i shocker]: received %i bytes from port %i\n", getpid (), *output_length, ntohs (peer.sin_port));
 
 cleanup:
 	close (sockfd);
@@ -160,7 +162,7 @@ Harness::GetRuntimePropertyValue (const char *propertyName)
 	guint8 *response;
 	guint32 response_length;
 
-	// printf ("[%i shocker] Harness::GetRuntimePropertyValue (%s)\n", getpid (), propertyName);
+	LOG_HARNESS ("[%i shocker] Harness::GetRuntimePropertyValue (%s)\n", getpid (), propertyName);
 
 	msg = g_strdup_printf ("TestLogger.GetRuntimePropertyValue %s", propertyName);
 
@@ -172,7 +174,7 @@ Harness::GetRuntimePropertyValue (const char *propertyName)
 	}
 	g_free (msg);
 
-	printf ("[%i shocker] Harness::GetRuntimePropertyValue (%s) => %s\n", getpid (), propertyName, result);
+	LOG_HARNESS ("[%i shocker] Harness::GetRuntimePropertyValue (%s) => %s\n", getpid (), propertyName, result);
 
 	return result;
 }
@@ -184,7 +186,7 @@ Harness::SetRuntimePropertyValue (const char *propertyName, const char *value)
 	guint8 *response;
 	guint32 response_length;
 
-	printf ("[%i shocker] Harness::SetRuntimePropertyValue (%s, %s)\n", getpid (), propertyName, value);
+	LOG_HARNESS ("[%i shocker] Harness::SetRuntimePropertyValue (%s, %s)\n", getpid (), propertyName, value);
 
 	g_assert (strchr (propertyName, '|') == NULL);
 	g_assert (strchr (value, '|') == NULL);
@@ -209,7 +211,7 @@ Harness::StartProcess (const char *exePath, const char *argList, guint32 *id, bo
 	g_assert (strchr (exePath, '|') == NULL);
 	g_assert (strchr (argList, '|') == NULL);
 
-	// printf ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i)\n", getpid (), exePath, argList, isShortcut);
+	LOG_HARNESS ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i)\n", getpid (), exePath, argList, isShortcut);
 
 	msg = g_strdup_printf ("ProcessHelper.StartProcess %s|%s|%i", exePath, argList, isShortcut);
 
@@ -218,13 +220,13 @@ Harness::StartProcess (const char *exePath, const char *argList, guint32 *id, bo
 			if (response_length >= 4) {
 				*id = *(guint32 *) response;
 			}
-			printf ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i): Started, id: %i\n", getpid (), exePath, argList, isShortcut, *id);
+			LOG_HARNESS ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i): Started, id: %i\n", getpid (), exePath, argList, isShortcut, *id);
 		} else {
-			printf ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i): Started (no id returned)\n", getpid (), exePath, argList, isShortcut);
+			LOG_HARNESS ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i): Started (no id returned)\n", getpid (), exePath, argList, isShortcut);
 		}
 		result = 0; /* success */
 	} else {
-		printf ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i): Failed.\n", getpid (), exePath, argList, isShortcut);
+		LOG_HARNESS ("[%i shocker] Harness::StartProcess (exePath: '%s', argList: '%s', isShortcut: %i): Failed.\n", getpid (), exePath, argList, isShortcut);
 	}
 
 	g_free (response);
@@ -242,7 +244,7 @@ Harness::WaitForProcessExit (guint32 processId, int timeoutSec)
 	guint8 *response;
 	guint32 response_length;
 
-	printf ("[%i shocker] Harness::WaitForProcessExit (%i, %i)\n", getpid (), processId, timeoutSec);
+	LOG_HARNESS ("[%i shocker] Harness::WaitForProcessExit (%i, %i)\n", getpid (), processId, timeoutSec);
 
 	msg = g_strdup_printf ("ProcessHelper.WaitForProcessExit %i|%i", processId, timeoutSec);
 
@@ -254,7 +256,7 @@ Harness::WaitForProcessExit (guint32 processId, int timeoutSec)
 	g_free (response);
 	g_free (msg);
 
-	printf ("[%i shocker] Harness::WaitForProcessExit (%i, %i). Wait completed (or timeout was hit)\n", getpid (), processId, timeoutSec);
+	LOG_HARNESS ("[%i shocker] Harness::WaitForProcessExit (%i, %i). Wait completed (or timeout was hit)\n", getpid (), processId, timeoutSec);
 
 	return result;
 }
@@ -270,7 +272,7 @@ Harness::FindProcesses (const char *processName, guint32 **processes, guint32 *p
 
 	g_assert (strchr (processName, '|') == NULL);
 
-	// printf ("[%i shocker] Harness::FindProcesses (%s)\n", getpid (), processName);
+	LOG_HARNESS ("[%i shocker] Harness::FindProcesses (%s)\n", getpid (), processName);
 
 	msg = g_strdup_printf ("ProcessHelper.FindProcesses %s", processName);
 
@@ -282,11 +284,13 @@ Harness::FindProcesses (const char *processName, guint32 **processes, guint32 *p
 		for (unsigned int i = 0; i < *processCount; i++) {
 			(*processes) [i] = *ptr++;
 		}
-		printf ("[%i shocker] Harness::FindProcesses (%s): Found %i processes:", getpid (), processName, *processCount);
-		for (unsigned int i = 0; i < *processCount; i++) {
-			printf ("%s%i", i == 0 ? "" : ", ", (*processes) [i]);
+		if (shocker_flags & SHOCKER_DEBUG_HARNESS) {
+			printf ("[%i shocker] Harness::FindProcesses (%s): Found %i processes:", getpid (), processName, *processCount);
+			for (unsigned int i = 0; i < *processCount; i++) {
+				printf ("%s%i", i == 0 ? "" : ", ", (*processes) [i]);
+			}
+			printf ("\n");
 		}
-		printf ("\n");
 
 		result = 0; /* success */
 	}
@@ -300,7 +304,7 @@ Harness::FindProcesses (const char *processName, guint32 **processes, guint32 *p
 int ProcessHelper_GetCurrentProcessID (guint32 *id)
 {
 	*id = getpid ();
-	printf ("[%i shocker] ProcessHelper_GetCurrentProcessId (): %i\n", getpid (), *id);
+	LOG_HARNESS ("[%i shocker] ProcessHelper_GetCurrentProcessId (): %i\n", getpid (), *id);
 	return 0;
 }
 
@@ -317,7 +321,7 @@ int ProcessHelper_WaitForProcessExit (guint32 processId, guint32 timeoutSec)
 
 int ProcessHelper_BringToFront (guint32 processId)
 {
-	printf ("[%i shocker] ProcessHelper_BringToFront (%i) [NOT IMPLEMENTED, ASSUMING PROCESS IS ALREADY AT FRONT]\n", getpid (), processId);
+	LOG_HARNESS ("[%i shocker] ProcessHelper_BringToFront (%i) [NOT IMPLEMENTED, ASSUMING PROCESS IS ALREADY AT FRONT]\n", getpid (), processId);
 	return 0;
 }
 
@@ -328,15 +332,13 @@ int ProcessHelper_FindProcesses (const char *processName, guint32 **processes, g
 
 int ProcessHelper_KillProcess (guint32 processId)
 {
-	printf ("[%i shocker] ProcessHelper_KillProcess (%i) [NOT IMPLEMENTED]\n", getpid (), processId);
-	g_error ("Not implemented");
+	Shocker_FailTestFast ("ProcessHelper_KillProcess (%i): Not implemented");
 	return -1;
 }
 
 int ProcessHelper_CloseTestWindows ()
 {
-	printf ("[%i shocker] ProcessHelper_CloseTestWindows () [NOT IMPLEMENTED]\n", getpid ());
-	g_error ("Not implemented");
+	Shocker_FailTestFast ("ProcessHelper_CloseTestWindows (): Not implemented");
 	return -1;
 }
 
@@ -446,7 +448,7 @@ int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi)
 	GSList *windows = NULL;
 	GSList *next;
 
-//	printf ("[%i shocker] WindowHelper_GetWindowInfo (%i)\n", getpid (), pid);
+	LOG_HARNESS ("[%i shocker] WindowHelper_GetWindowInfo (%i)\n", getpid (), pid);
 
 	find_window (pid, &windows);
 
@@ -458,18 +460,18 @@ int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi)
 			wix = (WindowInfoEx *) next->data;
 			*wi = wix->wi;
 
-			printf ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found window: %x '%s' [%i,%i %i:%i] Client [%i,%i %i:%i\n",
+			LOG_HARNESS ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found window: %x '%s' [%i,%i %i:%i] Client [%i,%i %i:%i\n",
 				getpid (), pid, (int) wix->window, wi->title, wi->windowLeft, wi->windowTop, wi->windowWidth, wi->windowHeight,
 				wi->clientLeft, wi->clientTop, wi->clientWidth, wi->clientHeight);
 
 			if (found) {
-				printf ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found multiple top-level windows! Last one will prevail\n", getpid (), pid);
+				LOG_HARNESS ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found multiple top-level windows! Last one will prevail\n", getpid (), pid);
 			}
 			found = true;
 			next = next->next;
 		}
 	} else {
-		printf ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found no top-level windows for the specified process!\n", getpid (), pid);
+		LOG_HARNESS ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found no top-level windows for the specified process!\n", getpid (), pid);
 	}
 
 	g_slist_free (windows);
@@ -479,8 +481,7 @@ int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi)
 
 int WindowHelper_GetNotificationWindowInfo (guint32 pid, WindowInfo *wi)
 {
-	printf ("[%i shocker] WindowHelper_GetNotificationWindowInfo (%i) [NOT IMPLEMENTED]\n", getpid (), pid);
-	g_error ("Not implemented");
+	Shocker_FailTestFast ("WindowHelper_GetNotificationWindowInfo (%i): Not implemented");
 	return 0;
 }
 
@@ -488,7 +489,7 @@ int WindowHelper_Maximize (guint32 pid)
 {
 	GSList *windows = NULL;
 
-//	printf ("[%i shocker] WindowHelper_Maximize (%i)\n", getpid (), pid);
+	LOG_HARNESS ("[%i shocker] WindowHelper_Maximize (%i)\n", getpid (), pid);
 
 	find_window (pid, &windows);
 
@@ -508,7 +509,7 @@ int WindowHelper_Maximize (guint32 pid)
 			WindowInfoEx *wix = (WindowInfoEx *) next->data;
 			window = wix->window;
 
-			printf ("[%i shocker] WindowHelper_Maximize (%i): Sending maximize request to: %p\n", getpid (), pid, (void *) window);
+			LOG_HARNESS ("[%i shocker] WindowHelper_Maximize (%i): Sending maximize request to: %p\n", getpid (), pid, (void *) window);
 			xev.xclient.display = display;
 			xev.xclient.type = ClientMessage;
 			xev.xclient.send_event = True;
@@ -525,7 +526,7 @@ int WindowHelper_Maximize (guint32 pid)
 
 		XCloseDisplay (display);
 	} else {
-		printf ("[%i shocker] WindowHelper_Maximize (%i): No toplevel windows found for the specified process.\n", getpid (), pid);
+		LOG_HARNESS ("[%i shocker] WindowHelper_Maximize (%i): No toplevel windows found for the specified process.\n", getpid (), pid);
 	}
 
 	g_slist_free (windows);	
@@ -542,30 +543,27 @@ int WindowHelper_Minimize (guint32 pid)
 
 int WindowHelper_Restore (guint32 pid)
 {
-	printf ("[%i shocker] WindowHelper_Restore (%i) [NOT IMPLEMENTED]\n", getpid (), pid);
-	g_error ("Not implemented");
+	Shocker_FailTestFast ("WindowHelper_Restore: Not implemented");
 	return 0;
 }
 
 int WindowHelper_EnsureOOBWindowIsActive (guint32 active /* 32bit bool */)
 {
-	printf ("[%i shocker] WindowHelper_EnsureOOBWindowIsActive (%i) [NOT IMPLEMENTED]\n", getpid (), active);
-	g_error ("Not implemented");
+	Shocker_FailTestFast ("WindowHelper_EnsureOOBWindowIsActive (): Not implemented");
 	return 0;
 }
 
 int WindowHelper_SetWindowPosition (guint32 left, guint32 top)
 {
-	printf ("[%i shocker] WindowHelper_SetWindowPosition (%i, %i) [NOT IMPLEMENTED]\n", getpid (), left, top);
-	g_error ("Not implemented");
+	Shocker_FailTestFast ("WindowHelper_SetWindowPosition (): Not implemented");
 	return 0;
 }
 
 void WindowHelper_GetPrimaryScreenSize (guint32 *width, guint32 *height)
 {
-	printf ("[%i shocker] WindowHelper_GetPrimaryScreenSize () [NOT IMPLEMENTED]\n", getpid ());
+	LOG_HARNESS ("[%i shocker] WindowHelper_GetPrimaryScreenSize ()\n", getpid ());
 	*width = 0;
 	*height = 0;
-	g_error ("Not implemented");
+	Shocker_FailTestFast ("WindowHelper_GetPrimaryScreenSize: Not implemented");
 }
 

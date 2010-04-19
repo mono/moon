@@ -13,7 +13,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
+#include "debug.h"
 #include "browser.h"
 #include "plugin.h"
 #include "logging.h"
@@ -41,9 +43,7 @@ PluginObject::GetXY (NPWindow *window, guint32 *x, guint32 *y)
 	XTranslateCoordinates (display, src, root, -window->x, -window->y, (int*) x, (int*) y, &dummy);
 	XCloseDisplay (display);
 
-#if SHOCKER_DEBUG
-	printf ("[%i shocker] PluginObject::GetXY (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);
-#endif
+	LOG_PLUGIN ("[%i shocker] PluginObject::GetXY (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);
 }
 
 char*
@@ -63,6 +63,8 @@ PluginObject::PluginObject (NPP npp, int argc, char *argn[], char *argv[])
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL)
 			continue;
+
+		LOG_PLUGIN ("[%i shocker] PluginObject () arg #%i = %s\n", getpid (), i, argn [i]);
 
 		if (!strcasecmp (argn [i], "captureinterval")) {
 			if (!auto_capture)
@@ -120,6 +122,13 @@ PluginObject::Shutdown ()
 }
 
 NPError
+PluginObject::SetValue (NPNVariable variable, void *value)
+{
+	Shocker_FailTestFast ("PluginObject::SetValue (): not implemented");
+	return NPERR_GENERIC_ERROR;
+}
+
+NPError
 PluginObject::GetValue (NPPVariable variable, void *value)
 {
 	NPError err = NPERR_NO_ERROR;
@@ -163,9 +172,7 @@ PluginObject::UpdateXY ()
 {
 	GetXY (window, &x, &y);
 
-#if SHOCKER_DEBUG
-	printf ("[%i shocker] PluginObject::SetWindow (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);
-#endif
+	LOG_PLUGIN ("[%i shocker] PluginObject::SetWindow (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);
 }
 
 NPError
@@ -213,9 +220,7 @@ Plugin_New (NPMIMEType type, NPP instance, guint16 mode, gint16 argc, char* argn
 
 	NPError rv = Browser::Instance ()->GetValue (instance, NPNVnetscapeWindow, (void *) &PluginObject::browser_app_context);
 
-#ifdef SHOCKER_DEBUG
-	printf ("Plugin_New created:   %p\n", plugin);
-#endif
+	LOG_PLUGIN ("[%i shocker] Plugin_New created: %p\n", getpid (), plugin);
 
 	return rv;
 }
@@ -223,9 +228,7 @@ Plugin_New (NPMIMEType type, NPP instance, guint16 mode, gint16 argc, char* argn
 static NPError
 Plugin_Destroy (NPP instance, NPSavedData** save)
 {
-#ifdef SHOCKER_DEBUG
-	printf ("Plugin_Destroy destroying: %p\n", instance->pdata);
-#endif
+	LOG_PLUGIN ("[%i shocker] Plugin_Destroy destroying: %p\n", getpid (), instance->pdata);
 
 	if(instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -256,10 +259,6 @@ Plugin_SetWindow (NPP instance, NPWindow* window)
 	return plugin->SetWindow (window);
 }
 
-
-//
-// This is visible to the world because the browser needs to call it
-//
 NPError
 Plugin_GetValue (NPP instance, NPPVariable variable, void *value)
 {
@@ -285,11 +284,6 @@ Plugin_SetValue (NPP instance, NPNVariable variable, void *value)
 
 	return plugin->SetValue (variable, value);
 }
-
-
-//
-// TODO:  If I just set these as NULL instead of creating stubs, what happens??
-//
 
 static NPError Plugin_NewStream(NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, guint16* stype)
 {

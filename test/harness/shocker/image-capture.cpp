@@ -18,6 +18,7 @@
 #include <list>
 #include <sys/time.h>
 
+#include "debug.h"
 #include "shocker.h"
 #include "shutdown-manager.h"
 #include "string.h"
@@ -52,9 +53,8 @@ void
 ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* file_name, int x, int y, int width, int height)
 {
 	char *image_path;
-#ifdef SHOCKER_DEBUG
-	printf ("[%i shocker] CaptureSingleImage (%s, %s, %d, %d, %d, %d)\n", getpid (), image_dir, file_name, x, y, width, height);
-#endif
+
+	LOG_CAPTURE ("[%i shocker] CaptureSingleImage (%s, %s, %d, %d, %d, %d)\n", getpid (), image_dir, file_name, x, y, width, height);
 
 	if (!(image_dir == NULL || image_dir [0] == 0))
 		printf ("[%i shocker]: CaptureSingleImage ('%s', '%s', %d, %d, %d, %d): Should not be called with an image dir.\n", getpid (), image_dir, file_name, x, y, width, height);
@@ -105,7 +105,7 @@ capture_multiple_images (void* data)
 	gchar **image_paths = (gchar **) g_malloc0 (sizeof (gchar *) * (cmid->count + 1));
 	gchar **image_files = (gchar **) g_malloc0 (sizeof (gchar *) * (cmid->count + 1));
 	
-	// printf ("Moonlight harness: Capture %i screenshots, initial delay: %i ms, interval: %i ms, width: %i, height: %i\n", cmid->count, cmid->initial_delay, cmid->interval, cmid->width, cmid->height);
+	LOG_CAPTURE ("Moonlight harness: Capture %i screenshots, initial delay: %i ms, interval: %i ms, width: %i, height: %i\n", cmid->count, cmid->initial_delay, cmid->interval, cmid->width, cmid->height);
 	
 	usleep (cmid->initial_delay * 1000);
 
@@ -132,7 +132,7 @@ capture_multiple_images (void* data)
 				printf ("\nMoonlight harness: Screen capture can't capture fast enough. Interval %" G_GINT64_FORMAT " ms, time spent taking screenshot: %" G_GINT64_FORMAT " ms\n", (gint64) cmid->interval, (gint64) current - previous);
 		}
 		
-		//printf (" Done in %4llu ms, elapsed: %4lld ms, sleeping %4lld ms\n", current - previous, elapsed, next);
+		LOG_CAPTURE (" Done in %4llu ms, elapsed: %4lld ms, sleeping %4lld ms\n", current - previous, elapsed, next);
 		
 		usleep (next * 1000);
 	}
@@ -160,7 +160,7 @@ capture_multiple_images (void* data)
 	capture_multiple_images_data_free (cmid);
 	shutdown_manager_wait_decrement ();
 
-	// printf ("capture_multiple_images [Done]\n");
+	LOG_CAPTURE ("Moonlight harness: Capture %i screenshots [Done]\n", cmid->count);
 
 	return NULL;
 }
@@ -169,9 +169,8 @@ capture_multiple_images (void* data)
 void
 ImageCaptureProvider::CaptureMultipleImages (const char* file_name, int x, int y, int width, int height, int count, int interval, int initial_delay)
 {
-#ifdef SHOCKER_DEBUG
-	printf ("[%i shocker] CaptureMultipleImages (%s, %d, %d, %d, %d, %d, %d, %d)\n", getpid (), file_name, x, y, width, height, count, interval, initial_delay);
-#endif
+	LOG_CAPTURE ("[%i shocker] CaptureMultipleImages (%s, %d, %d, %d, %d, %d, %d, %d)\n", getpid (), file_name, x, y, width, height, count, interval, initial_delay);
+
 	capture_multiple_images_data_t* cmid = new capture_multiple_images_data ();
 
 	// get the directory where to put the images.
@@ -335,6 +334,9 @@ ImageHelper_CaptureSingleImage (const char *directory, const char *filename, int
 void CompareImages (const char *imageFile1, const char *imageFile2, guint8 tolerance, 
 	const char *diffFileName, bool copySourceFiles, guint8 * result)
 {
+	LOG_HARNESS ("[%i shocker] CompareImages (imageFile1: '%s', imageFile2: '%s', tolerance: %i, diffFileName: '%s' copySourceFiles: %i\n",
+		getpid (), imageFile1, imageFile2, tolerance, diffFileName, copySourceFiles);
+
 	bool res = false;
 	char *msg;
 	guint8 *output = NULL;
