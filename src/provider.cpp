@@ -86,10 +86,6 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Mo
 	Value *new_value = NULL;
 	DependencyProperty *property = NULL;
 
-	Style *style = ((FrameworkElement*)obj)->GetStyle();
-	if (!style)
-		return;
-
 	DeepStyleWalker walker (style);
 	while (Setter *setter = walker.Step ()) {
 		property = setter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();

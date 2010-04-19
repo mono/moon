@@ -1,5 +1,14 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* provider.cpp: When calling RecomputePropertyValue for the
+	  StyleProvider we cannot call obj->GetStyle (). If we do
+	  this, the default style provider will end up with values
+	  from the local style provider thus corrupting state.
+	  StylePropertyValueProvider already stores the current style
+	  locally, so just use that. Fixes part of drt 997.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* style.h:
 	* validators.h:
 	* validators.cpp: Throw the correct kind of exception when
