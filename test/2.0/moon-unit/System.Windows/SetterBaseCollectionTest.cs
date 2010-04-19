@@ -89,9 +89,9 @@ namespace MoonTest.System.Windows
 		{
 			Style s = new Style ();
 			Rectangle r = new Rectangle ();
-			Assert.Throws<NullReferenceException>(delegate {
+			Assert.Throws<InvalidOperationException>(delegate {
 				r.Style = s;
-			}, "Empty Style"); // Fails in Silverlight 3
+			}, "Empty Style");
 		}
 
 		[TestMethod]
@@ -125,7 +125,7 @@ namespace MoonTest.System.Windows
 			Rectangle r = new Rectangle ();
 			r.Style = s;
 			Assert.IsTrue (s.IsSealed, "IsSealed-3");
-			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-3"); // Fails in Silverlight 3
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-3"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
