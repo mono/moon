@@ -32,11 +32,13 @@ using System.Windows.Media;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Controls;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Media {
 
 	[TestClass]
-	public class BrushTest {
+	public class BrushTest : SilverlightTest {
 
 		public class ConcreteBrush : Brush {
 		}
@@ -48,6 +50,46 @@ namespace MoonTest.System.Windows.Media {
 			Assert.Throws<Exception> (delegate {
 				new ConcreteBrush ();
 			}, "we can't inherit from Brush");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void UseTwice()
+		{
+			string name = "SuperSecretBrush";
+			Brush b1 = new SolidColorBrush();
+			b1.SetValue(FrameworkElement.NameProperty, name);
+
+			var g1 = new Grid { Name = "g1", Background = b1 };
+			var g2 = new Grid { Name = "g2", Background = b1 };
+
+			TestPanel.Children.Add(g1);
+			Assert.IsNull(TestPanel.FindName(name), "#1");
+
+			TestPanel.Children.Add(g2);
+			Assert.IsNull(TestPanel.FindName(name), "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void UseTwice_ThenOnce()
+		{
+			string name = "SuperSecretBrush";
+			Brush brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, name);
+
+			var g1 = new Grid { Name = "g1", Background = brush };
+			var g2 = new Grid { Name = "g2", Background = brush };
+
+			TestPanel.Children.Add(g1);
+			Assert.IsNull(TestPanel.FindName(name), "#1");
+
+			g2.Background = null;
+			Assert.IsNull(TestPanel.FindName(name), "#2");
+
+			TestPanel.Children.Clear();
+			TestPanel.Children.Add(g1);
+			Assert.AreSame(brush, TestPanel.FindName(name), "#3");
 		}
 
 		static public void DestructiveRelativeTransform (Brush b)
