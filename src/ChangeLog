@@ -1,5 +1,14 @@
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
+	* style.h:
+	* style.cpp: Nuke Style::Validate as it is unnecessary now
+	  that we have a StyleValidator.
+
+	* validators.cpp: Move the call to
+	  Application::ConvertSetterValues to the StyleValidator.
+
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
 	* src.mdp:
 	* style.h:
 	* style.cpp:

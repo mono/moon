@@ -56,7 +56,6 @@ public:
 	void SetTargetType (ManagedTypeInfo *type_info);
 	ManagedTypeInfo *GetTargetType ();
 	
-	void Validate (Type::Kind subclass, MoonError *error);
 protected:
 	virtual ~Style ();
 };

@@ -398,12 +398,9 @@ Validators::StyleValidator (DependencyObject *instance, DependencyProperty *prop
 			root = root->GetBasedOn ();
 		}
 
-		// Then seal the style and check
-		style->Validate (instance->GetObjectType (), error);
-		if (error->number)
-			return false;
-
-		// Everything is ok, so seal the style now so nothing will ever change on it
+		// 3) Convert all the setter values now and seal the style.
+		// This style is now OK and never needs to be checked again.
+		Application::GetCurrent ()->ConvertSetterValues (style);
 		style->Seal ();
 	}
 

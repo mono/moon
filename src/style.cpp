@@ -62,32 +62,6 @@ Style::Seal ()
 		s->Seal ();
 }
 
-void
-Style::Validate (Type::Kind subclass, MoonError *error)
-{
-	ManagedTypeInfo *target_type = NULL;
-	ManagedTypeInfo *other_type = NULL;
-
-	Value *v = GetValue (TargetTypeProperty);
-	if (Value::IsNull (v)) {
-		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "TargetType cannot be null");
-		return;
-	}
-
-	target_type = v->AsManagedTypeInfo ();
-	if (!GetDeployment ()->GetTypes ()->IsSubclassOf (subclass, target_type->kind)) {
-		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Style.TargetType is of an incompatible type");
-		return;
-	}
-
-	Application::GetCurrent ()->ConvertSetterValues (this);
-
-	Style *basedon = GetBasedOn ();
-	if (basedon)
-		basedon->Validate (target_type->kind, error);
-}
-
-
 //
 // SetterBaseCollection
 //
