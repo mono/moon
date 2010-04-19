@@ -22,6 +22,8 @@
 #include "geometry.h"
 #include "tabnavigationwalker.h"
 #include "deployment.h"
+#include "validators.h"
+#include "style.h"
 
 Control::Control ()
 {
@@ -178,7 +180,12 @@ Control::ApplyDefaultStyle ()
 
 		if (style) {
 			MoonError e;
-			((StylePropertyValueProvider *)providers [PropertyPrecedence_DefaultStyle])->SetStyle (style, &e);
+			DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
+			Value val (style);
+			if (Validators::StyleValidator (this, style_prop, &val, &e))
+				((StylePropertyValueProvider *)providers [PropertyPrecedence_DefaultStyle])->UpdateStyle (style, &e);
+			else
+				printf ("Error in the default style\n");
 		}
 	}
 }

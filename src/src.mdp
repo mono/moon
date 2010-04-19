@@ -1,6 +1,6 @@
 <Project name="src" fileversion="2.0" language="CPP" Target="Bin" ctype="CProject">
   <Policies>
-    <StandardHeader Text="/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */&#xA;/*&#xA; * ${FileName}&#xA; *&#xA; * Contact:&#xA; *   Moonlight List (moonlight-list@lists.ximian.com)&#xA; *&#xA; * Copyright ${Year} Novell, Inc. (http://www.novell.com)&#xA; *&#xA; * See the LICENSE file included with the distribution for details.&#xA; */&#xA;" inheritsSet="MITX11License" />
+    <StandardHeader Text="/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */&#xA;/*&#xA; * ${FileName}&#xA; *&#xA; * Contact:&#xA; *   Moonlight List (moonlight-list@lists.ximian.com)&#xA; *&#xA; * Copyright ${Year} Novell, Inc. (http://www.novell.com)&#xA; *&#xA; * See the LICENSE file included with the distribution for details.&#xA; */&#xA;" inheritsSet="Apache2License" />
   </Policies>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar />
@@ -264,7 +264,6 @@
     <File subtype="Code" buildaction="Nothing" name="tabnavigationwalker.h" />
     <File subtype="Code" buildaction="Compile" name="tabnavigationwalker.cpp" />
     <File subtype="Code" buildaction="Nothing" name="managedtypeinfo.h" />
-    <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
     <File subtype="Code" buildaction="Compile" name="bitmapcache.cpp" />
     <File subtype="Code" buildaction="Nothing" name="bitmapcache.h" />
     <File subtype="Code" buildaction="Compile" name="effect.cpp" />
@@ -325,6 +324,7 @@
     <File subtype="Code" buildaction="Nothing" name="pal/messaging/glib/pal-glib-msg.h" />
     <File subtype="Code" buildaction="Compile" name="pal/gtk/install-dialog.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog.h" />
+    <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

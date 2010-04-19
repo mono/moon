@@ -48,14 +48,12 @@ namespace MoonTest.System.Windows
 	[TestClass]
 	public partial class StyleTest : SilverlightTest
 	{
-		// NOTE: This test must be run first for it to work - do not remove the 'aaa' from the start of its name
 		[TestMethod]
-		[MoonlightBug ("Setter.Property should be null until you create a Setter in code using the same DP")]
 		public void aaaConstructStyleProgrammatically ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
 			Setter setter = (Setter) s.Setters [0];
-			Assert.IsNull (setter.Property, "#1"); // Fails in Silverlight 3
+			Assert.AreSame (Canvas.WidthProperty, setter.Property, "#1");
 			
 			new Setter (Button.WidthProperty, 10);
 			
@@ -140,6 +138,43 @@ namespace MoonTest.System.Windows
 			second.BasedOn = first;
 			rect.Style = first;
 			Assert.AreEqual (10, rect.Width, "#1");
+		}
+
+		[TestMethod]
+		public void BasedOn_FindName_UseOnce()
+		{
+			BasedOn_FindName_Core(false);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("We should not register the name in this case")]
+		public void BasedOn_FindName_UseTwice()
+		{
+			BasedOn_FindName_Core(true);
+		}
+
+		void BasedOn_FindName_Core(bool useTwice)
+		{
+			Style s1 = new Style(typeof(Grid));
+			Style s2 = new Style(typeof(Grid));
+			Style basedon = new Style(typeof(Grid));
+
+			s1.SetValue(FrameworkElement.NameProperty, "s1");
+			s2.SetValue(FrameworkElement.NameProperty, "s2");
+			basedon.SetValue(FrameworkElement.NameProperty, "basedon");
+
+			s1.BasedOn = basedon;
+			if (useTwice)
+				s2.BasedOn = basedon;
+			TestPanel.Children.Add(new Grid { Name = "Grid2", Style = s2 });
+			TestPanel.Children.Add(new Grid { Name = "Grid1", Style = s1 });
+
+			Assert.IsInstanceOfType<Style>(TestPanel.FindName("s1"), "#1");
+			Assert.IsInstanceOfType<Style>(TestPanel.FindName("s2"), "#2");
+			if (useTwice)
+				Assert.IsNull(TestPanel.FindName("basedon"), "#3");
+			else
+				Assert.AreSame(s1.BasedOn, TestPanel.FindName("basedon"), "#4");
 		}
 
 		[TestMethod]
@@ -274,9 +309,10 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual(typeof(Button), s.TargetType, "#0");
 			Setter setter = (Setter)s.Setters[0];
 			Assert.IsNotNull (setter.Property, "#1");
-			Assert.IsNull (setter.Value, "#2");
+			Assert.IsInstanceOfType<double> (setter.Value, "#2");
+			Assert.AreEqual (10.0, setter.Value, "#3");
 
-			Assert.AreEqual (10, b.Width);
+			Assert.AreEqual (10.0, b.Width, "#4");
 		}
 
 		[TestMethod]
@@ -315,9 +351,7 @@ namespace MoonTest.System.Windows
 			Button b = new Button();
 			Style style = new Style(typeof(Button));
 			style.Setters.Add (new Setter(Button.WidthProperty, "this is a string"));
-			Assert.Throws<Exception> (delegate {
-				b.Style = style;
-			});
+			b.Style = style;
 		}
 
 		[TestMethod]
@@ -338,22 +372,22 @@ namespace MoonTest.System.Windows
 			Style style = new Style(typeof(Button));
 			style.Setters.Add (new Setter(FrameworkElement.TagProperty, 10));
 
-			Assert.Throws<ArgumentException>(delegate {
-				b.Style = style;
-			});
+			b.Style = style;
+			Assert.IsNull (b.Tag, "#1");
 
 			b = new Button ();
 			style = new Style (typeof (Button));
 			style.Setters.Add (new Setter(FrameworkElement.TagProperty, new Button()));
 
-			Assert.Throws<ArgumentException>(delegate {
-				b.Style = style;
-			});
-			
+			b.Style = style;
+			Assert.IsNull(b.Tag, "#2");
+
 			b = new Button ();
 			style = new Style (typeof (Button));
 			style.Setters.Add (new Setter (FrameworkElement.TagProperty, "str"));
+
 			b.Style = style;
+			Assert.AreEqual("str", b.Tag, "#3");
 		}
 
 		[TestMethod]
@@ -363,10 +397,8 @@ namespace MoonTest.System.Windows
 			Style style = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Tag""><Setter.Value><Button /></Setter.Value></Setter></Style>");
 
 			Button b = new Button();
-
-			Assert.Throws<ArgumentException>(delegate {
-				b.Style = style;
-			});
+			b.Style = style;
+			Assert.IsNull(b.Tag, "#1");
 		}
 
 		[TestMethod]
@@ -375,10 +407,7 @@ namespace MoonTest.System.Windows
 			Style style = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""this is a string""/></Style>");
 
 			Button b = new Button();
-
-			Assert.Throws<Exception>(delegate {
-				b.Style = style;
-			});
+			b.Style = style;
 		}
 
 		[TestMethod]

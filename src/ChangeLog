@@ -1,3 +1,20 @@
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
+	* src.mdp:
+	* style.h:
+	* style.cpp:
+	* provider.h:
+	* provider.cpp:
+	* validators.cpp:
+	* frameworkelement.cpp: Rewrite Style verification to take
+	  into account Style.BasedOn and changes in behaviour between
+	  SL2/3 and SL4 
+
+	* control.cpp: When applying a default style, we should pass
+	  the Style through the StyleValidator to ensure all
+	  necenssary verification/setup is done before applying the
+	  style.
+
 2010-04-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/pal.cpp (IsRunningOutOfBrowser): Also check that the n'th

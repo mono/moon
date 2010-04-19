@@ -76,10 +76,10 @@ public:
 
 	virtual void RecomputePropertyValue (DependencyProperty *property, MoonError *error);
 
-	void ClearStyle (Style *style, MoonError *error);
-	void SetStyle (Style *style, MoonError *error);
+	void UpdateStyle (Style *Style, MoonError *error);
 
 private:
+	Style *style;
 	GHashTable *style_hash;
 	static void unlink_converted_value (gpointer key, gpointer value, gpointer data);
 };

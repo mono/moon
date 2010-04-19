@@ -15,6 +15,7 @@
 
 #include "dependencyobject.h"
 #include "collection.h"
+#include "managedtypeinfo.h"
 
 //
 // Style
@@ -29,7 +30,7 @@ public:
 	const static int IsSealedProperty;
 	/* @PropertyType=SetterBaseCollection,AutoCreateValue,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
 	const static int SettersProperty;
-	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
+	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -45,13 +46,17 @@ public:
 	//
 	void SetBasedOn (Style *style);
 	Style *GetBasedOn ();
+	
 	void SetSetters (SetterBaseCollection *setters);
 	SetterBaseCollection *GetSetters ();
 	
 	void SetIsSealed (bool sealed);
 	bool GetIsSealed ();
 	
-	void Validate (MoonError *error);
+	void SetTargetType (ManagedTypeInfo *type_info);
+	ManagedTypeInfo *GetTargetType ();
+	
+	void Validate (Type::Kind subclass, MoonError *error);
 protected:
 	virtual ~Style ();
 };
@@ -149,10 +154,10 @@ class DeepStyleWalker {
 	~DeepStyleWalker ();
 	Setter *Step ();
  private:
-	int index;
-	SetterBaseCollection *current;
-	List *styles;
+	int offset;
+	GPtrArray *setter_list;
 	Types *types;
+	static gint SetterComparer (gconstpointer left, gconstpointer right);
 };
 
 #endif /* __MOON_STYLE_H__ */

@@ -48,19 +48,19 @@ LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
 	: PropertyValueProvider (obj, precedence)
 {
+	style = NULL;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
-					    (GDestroyNotify)event_object_unref);
+					    (GDestroyNotify)NULL);
 }
 
 void
 StylePropertyValueProvider::unlink_converted_value (gpointer key, gpointer value, gpointer data)
 {
 	StylePropertyValueProvider *provider = (StylePropertyValueProvider*)data;
-	Setter *s = (Setter*)value;
+	Value *v = (Value*)value;
 
-	Value *v = s->GetValue(Setter::ConvertedValueProperty);
-	if (v && v->Is(s->GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+	if (v && v->Is(Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		if (dob->GetParent() == provider->obj)
 			dob->SetParent(NULL, NULL);
@@ -76,18 +76,12 @@ StylePropertyValueProvider::~StylePropertyValueProvider ()
 Value*
 StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	Setter *setter = (Setter*)g_hash_table_lookup (style_hash, property);
-
-	if (!setter)
-		return NULL;
-	else
-		return setter->GetValue (Setter::ConvertedValueProperty);
+	return (Value *) g_hash_table_lookup (style_hash, property);
 }
 
 void
 StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, MoonError *error)
 {
-	Setter *current_setter = NULL;
 	Value *old_value = NULL;
 	Value *new_value = NULL;
 	DependencyProperty *property = NULL;
@@ -105,10 +99,9 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Mo
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
 
 		setter->ref ();
-		current_setter = (Setter *)g_hash_table_lookup (style_hash, property);
-		old_value = current_setter ? current_setter->GetValue (Setter::ConvertedValueProperty) : NULL;
+		old_value = (Value *) g_hash_table_lookup (style_hash, property);
 
-		g_hash_table_insert (style_hash, property, setter);
+		g_hash_table_insert (style_hash, property, new_value);
 
 		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, true, error);
 		if (error->number)
@@ -117,54 +110,60 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Mo
 }
 
 void
-StylePropertyValueProvider::ClearStyle (Style *style, MoonError *error)
+StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 {
-	Setter *s = NULL;
-	DependencyProperty *property = NULL;
+	Value *oldValue;
+	Value *newValue;
 
-	DeepStyleWalker walker (style);
-	while (Setter *setter = walker.Step ()) {
-		property = setter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
-		s = (Setter *)g_hash_table_lookup (style_hash, property);
-		if (s != setter)
-			continue;
+	DeepStyleWalker oldWalker (this->style);
+	DeepStyleWalker newWalker (style);
 
-		g_hash_table_remove (style_hash, property);
+	Setter *oldSetter = oldWalker.Step ();
+	Setter *newSetter = newWalker.Step ();
 
-		obj->ProviderValueChanged (precedence, property, setter->GetValue (Setter::ConvertedValueProperty), NULL, true, true, false, error);
+	while (oldSetter || newSetter) {
+
+		DependencyProperty *oldProp = NULL;
+		DependencyProperty *newProp = NULL;
+
+		if (oldSetter)
+			oldProp = oldSetter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+		if (newSetter)
+			newProp = newSetter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+		
+		if (oldProp != NULL && (oldProp < newProp || newProp == NULL)) {
+			// this is a property in the old style which is not in the new style
+			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
+			newValue = NULL;
+
+			g_hash_table_remove (style_hash, oldProp);
+			obj->ProviderValueChanged (precedence, oldProp, oldValue, newValue, true, true, false, error);
+
+			oldSetter = oldWalker.Step ();
+		} else if (oldProp == newProp) {
+			// This is a property which is in both styles
+			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
+			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
+
+			g_hash_table_insert (style_hash, oldProp, newValue);
+			obj->ProviderValueChanged (precedence, oldProp, oldValue, newValue, true, true, false, error);
+
+			oldSetter = oldWalker.Step ();
+			newSetter = newWalker.Step ();
+		} else {
+			// This is a property which is only in the new style
+			oldValue = NULL;
+			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
+
+			g_hash_table_insert (style_hash, newProp, newValue);
+			obj->ProviderValueChanged (precedence, newProp, oldValue, newValue, true, true, false, error);
+
+			newSetter = newWalker.Step ();
+		}
 	}
+
+	this->style = style;
 }
-
-void
-StylePropertyValueProvider::SetStyle (Style *style, MoonError *error)
-{
-	style->Seal ();
-	style->Validate (error);
-	if (error->number)
-		return;
-
-	Value *new_value = NULL;
-	DependencyProperty *property = NULL;
-
-	DeepStyleWalker walker (style);
-	while (Setter *setter = walker.Step ()) {
-		property = setter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
-
-		// We have a list of styles with the highest priority style first.
-		// If we already have a value in the hashtable for this DP, then the
-		// value came from a higher priority Style and should not be overwritten.
-		if (g_hash_table_lookup (style_hash, property))
-			continue;
-
-		// the hash holds a ref
-		setter->ref ();
-		new_value = setter->GetValue (Setter::ConvertedValueProperty);
-		g_hash_table_insert (style_hash, property, setter);
-
-		obj->ProviderValueChanged (precedence, property, NULL, new_value, true, true, true, error);
-	}
-}
-
 
 //
 // InheritedPropertyValueProvider

@@ -215,10 +215,8 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		Style *old_style = args->GetOldValue () ? args->GetOldValue ()->AsStyle () : NULL;
 		Style *new_style = args->GetNewValue () ? args->GetNewValue ()->AsStyle () : NULL;
 
-		if (old_style)
-			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->ClearStyle (old_style, error);
-		if (new_style && !error->number)
-			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SetStyle (new_style, error);
+		if (!error->number)
+			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->UpdateStyle (new_style, error);
 
 		if (error->number)
 			return;

@@ -22,6 +22,7 @@
 #include "animation.h"
 #include "propertypath.h"
 #include "namescope.h"
+#include "deployment.h"
 
 bool
 Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
@@ -338,21 +339,72 @@ Validators::FloatValidator (DependencyObject *instance, DependencyProperty *prop
 bool
 Validators::StyleValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	Style *s;
-	Style *root;
+	Type::Kind target_kind;
+	Types *types = instance->GetDeployment ()->GetTypes ();
 
 	if (!Value::IsNull (value)) {
-		root = value->AsStyle ();
+		Style *root = NULL;
+		Style *style = value->AsStyle (types);
+		// 0) Styles are only sealable once they're fully validated and correct
+		// so if it's sealed, we don't need to do any more checking.
+		if (style->GetIsSealed ())
+			return true;
+
+		// 1) Check for circular references in the BasedOn tree
+		GHashTable *cycles = g_hash_table_new (g_direct_hash, g_direct_equal);
+		root = style;
 		while (root) {
-			s = root;
-			while ((s = s->GetBasedOn ())) {
-				if (s == root) {
-					MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Circular reference in Style.BasedOn");
-					return false;
-				}
+			if (g_hash_table_lookup (cycles, root)) {
+				MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Circular reference in Style.BasedOn");
+				g_hash_table_destroy (cycles);
+				return false;
 			}
+			g_hash_table_insert (cycles, root, GINT_TO_POINTER (1));
 			root = root->GetBasedOn ();
 		}
+		g_hash_table_destroy (cycles);
+
+		// 2) Check that the instance is a subclass of Style::TargetType and also all the styles TargetTypes are
+		// subclasses of their BasedOn styles TargetType.
+		root = style;
+		target_kind = instance->GetObjectType ();
+		while (root) {
+			MoonError::ExceptionType exception;
+			char *error_message = NULL;
+			ManagedTypeInfo *target_type = root->GetTargetType ();
+
+			if (root == style) {
+				if (!target_type) {
+					exception = MoonError::INVALID_OPERATION;
+					error_message = g_strdup ("TargetType cannot be null");
+				} else if (!types->IsSubclassOf (target_kind, target_type->kind)) {
+					exception = MoonError::XAML_PARSE_EXCEPTION;
+					error_message = g_strdup_printf ("Style.TargetType ('%s') is not a subclass of ('%s')",
+													types->Find (target_type->kind)->GetName (),
+													types->Find (target_kind)->GetName ());
+				}
+			} else if (!target_type || !types->IsSubclassOf (target_kind, target_type->kind)) {
+				exception = MoonError::INVALID_OPERATION;
+				error_message = g_strdup_printf ("Style.TargetType ('%s') is not a subclass of ('%s')",
+													target_type ? types->Find (target_type->kind)->GetName () : "<Not Specified>",
+													types->Find (target_kind)->GetName ());
+			}
+			if (error_message) {
+				MoonError::FillIn (error, exception, error_message);
+				g_free (error_message);
+				return false;
+			}
+			target_kind = target_type->kind;
+			root = root->GetBasedOn ();
+		}
+
+		// Then seal the style and check
+		style->Validate (instance->GetObjectType (), error);
+		if (error->number)
+			return false;
+
+		// Everything is ok, so seal the style now so nothing will ever change on it
+		style->Seal ();
 	}
 
 	return true;

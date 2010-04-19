@@ -1,3 +1,8 @@
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Update the Style moon-units to
+	  SL4 compatibility.
+
 2010-04-16  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* security/SecuritySafeCriticalTest.cs: Work around a limitation

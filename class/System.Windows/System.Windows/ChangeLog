@@ -1,3 +1,8 @@
+2010-04-19  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Nuke the managed style validator. It's
+	  all handled in the native ValueValidator now.
+
 2010-04-15  Alan McGovern  <amcgovern@novell.com>
 
 	* Application.cs: ManagedTypeInfo needs to contain the

@@ -51,27 +51,40 @@ Style::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 void
 Style::Seal ()
 {
+	if (GetIsSealed ())
+		return;
+
+	SetIsSealed (true);
+	GetSetters ()->Seal ();
+
 	Style *s = GetBasedOn ();
 	if (s)
 		s->Seal ();
-
-	if (!GetIsSealed ()) {
-		SetIsSealed (true);
-		GetSetters ()->Seal ();
-		Application::GetCurrent()->ConvertSetterValues (this);
-	}
 }
 
 void
-Style::Validate (MoonError *error)
+Style::Validate (Type::Kind subclass, MoonError *error)
 {
-	DeepStyleWalker walker (this);
-	while (Setter *setter = walker.Step ()) {
-		if (!setter->GetValue (Setter::ConvertedValueProperty)) {
-			MoonError::FillIn (error, MoonError::EXCEPTION, "");
-			return;
-		}
+	ManagedTypeInfo *target_type = NULL;
+	ManagedTypeInfo *other_type = NULL;
+
+	Value *v = GetValue (TargetTypeProperty);
+	if (Value::IsNull (v)) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "TargetType cannot be null");
+		return;
 	}
+
+	target_type = v->AsManagedTypeInfo ();
+	if (!GetDeployment ()->GetTypes ()->IsSubclassOf (subclass, target_type->kind)) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Style.TargetType is of an incompatible type");
+		return;
+	}
+
+	Application::GetCurrent ()->ConvertSetterValues (this);
+
+	Style *basedon = GetBasedOn ();
+	if (basedon)
+		basedon->Validate (target_type->kind, error);
 }
 
 
@@ -207,44 +220,68 @@ class StyleNode : public List::Node {
 
 DeepStyleWalker::DeepStyleWalker (Style *style, Types *types)
 {
-	this->index = 0;
-	this->current = NULL;
-	this->styles = new List ();
-	this->types = types ? types : style->GetDeployment ()->GetTypes ();
+	// Create a list of all Setters in the style sorted by their DP.
+	// Use the hashtable to ensure that we only take the first setter
+	// declared for each DP (i.e. if the BasedOn style and main style
+	// have setters for the same DP, we ignore the BasedOn one
+	
+	// NOTE: This can be pre-computed and cached as once a style is
+	// sealed it can never be changed.
+
+	this->offset = 0;
+	this->types = types || !style ? types : style->GetDeployment ()->GetTypes ();
+	this->setter_list = g_ptr_array_new ();
+	GHashTable *dps = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	while (style != NULL) {
-		styles->Append (new StyleNode (style));
+		SetterBaseCollection *setters = style->GetSetters ();
+		int count = setters->GetCount ();
+		for (int i = 0; i < count; i++) {
+			Value *v = setters->GetValueAt (i);
+			if (Value::IsNull (v) || !types->IsSubclassOf (v->GetKind (), Type::SETTER))
+				continue;
+
+			Setter *setter = v->AsSetter ();
+			Value* dpVal = setter->GetValue (Setter::PropertyProperty);
+			if (Value::IsNull (dpVal))
+				continue;
+
+			DependencyProperty *prop = dpVal->AsDependencyProperty ();
+			if (!g_hash_table_lookup_extended (dps, prop, NULL, NULL)) {
+				g_hash_table_insert (dps, prop, setter);
+				g_ptr_array_add (setter_list, setter);
+			}
+		}
 		style = style->GetBasedOn ();
 	}
+	
+	g_hash_table_destroy (dps);
+	g_ptr_array_sort (setter_list, SetterComparer);
+}
+
+gint
+DeepStyleWalker::SetterComparer (gconstpointer left, gconstpointer right)
+{
+	Setter *l = *(Setter **)left;
+	Setter *r = *(Setter **)right;
+	
+	DependencyProperty *lprop = l->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+	DependencyProperty *rprop = r->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+	
+	if (lprop == rprop)
+		return 0;
+	return lprop > rprop ? 1 : -1;
 }
 
 DeepStyleWalker::~DeepStyleWalker ()
 {
-	delete styles;
+	g_ptr_array_free (setter_list, true);
 }
 
 Setter *
 DeepStyleWalker::Step ()
 {
-	// Return each setter from each style in the order in which
-	// they should be applied
-	while (styles->Length () > 0 || current) {
-		if (!current) {
-			StyleNode *node = (StyleNode *)styles->First ();
-			index = 0;
-			current = node->style->GetSetters ();
-			styles->Remove (node);
-		}
-		
-		if (index == current->GetCount ()) {
-			current = NULL;
-		} else {
-			Value *v = current->GetValueAt (index ++);
-			if (!v || v->GetIsNull () || !types->IsSubclassOf (v->GetKind (), Type::SETTER))
-				continue;
-			return v->AsSetter ();
-		}
-	}
-
+	if (offset < (int) setter_list->len)
+		return (Setter *) setter_list->pdata [offset ++];
 	return NULL;
 }
