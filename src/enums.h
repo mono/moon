@@ -527,11 +527,11 @@ enum WindowStartupLocation {
 };
 
 /* @IncludeInKinds */
-/* @NameSpace=System.Windows */
+/* @Namespace=System.Windows */
 enum WindowStyle {
-	WindowStyleSingleBorderWindow = 0,
-	WindowStyleNone = 1,
-	WindowStyleBorderlessRoundCornersWindow = 2,
+	WindowStyleSingleBorderWindow,
+	WindowStyleNone,
+	WindowStyleBorderlessRoundCornersWindow,
 };
 
 /* @IncludeInKinds */

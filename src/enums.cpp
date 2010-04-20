@@ -390,6 +390,7 @@ static enum_map_t window_startup_location_map [] = {
 	MAP_ENUM (WindowStartupLocation, Manual),
 	END_MAPPING
 };
+
 static enum_map_t window_style_map [] = {
 	MAP_ENUM (WindowStyle, SingleBorderWindow),
 	MAP_ENUM (WindowStyle, None),
