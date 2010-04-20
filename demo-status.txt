@@ -374,3 +374,15 @@ rating:2
  * seems to be some clipping issues
  * Lots of "EventObject::RemoveHandler (1): no event handlers have been registered." warnings
  
+site:Ecooolight
+url:http://gallery.expression.microsoft.com/en-us/ecooolight/
+rating:0
+ * 4.0
+ * boom: The class System.Runtime.Versioning.TargetFrameworkAttribute could not be loaded, used in ecooolightApp
+
+site:QX Game Engine
+url:http://silverfuture.cn/
+rating:2
+ * 3.0
+ * rendering issues, characters not showing
+
