@@ -53,6 +53,7 @@ libmoon_include_headers = 	\
 	grid.h			\
 	http-streaming.h	\
 	imagesource.h		\
+	inputscope.h		\
 	internal-downloader.h	\
 	keyboard.h		\
 	layout.h		\

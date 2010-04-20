@@ -365,6 +365,11 @@ namespace System.Windows.Controls {
 		public WebBrowser () : base (SafeNativeMethods.web_browser_new (), true) {}
 		internal WebBrowser (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
+
+	partial class WebBrowserBrush {
+		public WebBrowserBrush () : base (SafeNativeMethods.web_browser_brush_new (), true) {}
+		internal WebBrowserBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
 }
 
 namespace System.Windows.Controls.Primitives {
@@ -488,6 +493,11 @@ namespace System.Windows.Input {
 	partial class InputMethod {
 		internal InputMethod () : base (SafeNativeMethods.input_method_new (), true) {}
 		internal InputMethod (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class InputScope {
+		public InputScope () : base (SafeNativeMethods.input_scope_new (), true) {}
+		internal InputScope (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class StylusInfo {

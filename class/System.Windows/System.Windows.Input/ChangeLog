@@ -1,3 +1,8 @@
+2010-04-20  Alan McGovern  <amcgovern@novell.com>
+
+	* InputScope.cs: Add new types and DPs so that the SL4
+	  generated DefaultValue tests can compile.
+
 2010-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* StylusPoint.cs:

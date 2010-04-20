@@ -1,3 +1,20 @@
+2010-04-20  Alan McGovern  <amcgovern@novell.com>
+
+	* brush.h:
+	* enums.h:
+	* src.mdp:
+	* glyphs.h:
+	* enums.cpp:
+	* textbox.h:
+	* printing.h:
+	* Makefile.am:
+	* uielement.h:
+	* textblock.h:
+	* deployment.h:
+	* inputscope.h:
+	* usercontrol.h: Add new types and DPs so that the SL4
+	  generated DefaultValue tests can compile.
+
 2010-04-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Don't free the static platform_dir in the instance dtor.

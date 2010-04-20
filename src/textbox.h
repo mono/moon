@@ -25,6 +25,7 @@
 #include "fonts.h"
 #include "size.h"
 #include "pal.h"
+#include "inputscope.h"
 
 /* @Namespace=System.Windows.Input */
 class InputMethod : public DependencyObject {
@@ -34,10 +35,8 @@ class InputMethod : public DependencyObject {
  public:
 	/* @PropertyType=bool,Attached,DefaultValue=true,Validator=IsInputMethodEnabledValidator */
 	const static int IsInputMethodEnabledProperty;
-	
 	/* @PropertyType=ImeConversionModeValues,Attached,GenerateAccessors */
 	const static int PreferredImeConversionModeProperty;
-
 	/* @PropertyType=InputMethodState,Attached,GenerateAccessors */
 	const static int PreferredImeStateProperty;
 
@@ -382,6 +381,8 @@ class TextBox : public TextBoxBase {
 	const static int FontSourceProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int HorizontalScrollBarVisibilityProperty;
+	/* @PropertyType=InputScope,GenerateAccessors */
+	const static int InputScopeProperty;
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	const static int IsReadOnlyProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
@@ -404,8 +405,10 @@ class TextBox : public TextBoxBase {
 	const static int TextWrappingProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int VerticalScrollBarVisibilityProperty;
-	
+	/* @PropertyType=object,GenerateAccessors */
+	const static int WatermarkProperty;
 	/* @GenerateCBinding,GeneratePInvoke */
+	
 	TextBox ();
 	
 	//
@@ -431,6 +434,9 @@ class TextBox : public TextBoxBase {
 	
 	void SetHorizontalScrollBarVisibility (ScrollBarVisibility visibility);
 	ScrollBarVisibility GetHorizontalScrollBarVisibility ();
+	
+	InputScope *GetInputScope ();
+	void SetInputScope (InputScope *scope);
 	
 	void SetIsReadOnly (bool readOnly);
 	bool GetIsReadOnly ();
@@ -461,6 +467,9 @@ class TextBox : public TextBoxBase {
 	
 	void SetVerticalScrollBarVisibility (ScrollBarVisibility visibility);
 	ScrollBarVisibility GetVerticalScrollBarVisibility ();
+
+	Value *GetWatermark ();
+	void SetWatermark (Value *value);
 	
 	//
 	// Events

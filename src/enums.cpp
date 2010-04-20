@@ -390,6 +390,12 @@ static enum_map_t window_startup_location_map [] = {
 	MAP_ENUM (WindowStartupLocation, Manual),
 	END_MAPPING
 };
+static enum_map_t window_style_map [] = {
+	MAP_ENUM (WindowStyle, SingleBorderWindow),
+	MAP_ENUM (WindowStyle, None),
+	MAP_ENUM (WindowStyle, BorderlessRoundCornersWindow),
+	END_MAPPING
+};
 
 static enum_map_t text_trimming_map [] = {
 	MAP_ENUM (TextTrimming, None),
@@ -452,6 +458,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "InputMethodState", input_method_state_map);
 	g_hash_table_insert (enum_map, (char *) "WindowState", window_state_map);
 	g_hash_table_insert (enum_map, (char *) "WindowStartupLocation", window_startup_location_map);
+	g_hash_table_insert (enum_map, (char *) "WindowStyle", window_style_map);
 
 	g_hash_table_insert (enum_map, (char *) "TextHintingMode", text_hinting_mode_map);
 

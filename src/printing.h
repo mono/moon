@@ -30,6 +30,9 @@ public:
 	/* @DelegateType=EventHandler<EndPrintEventArgs> */
 	const static int EndPrintEvent;
 
+	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
+	const static int PrintedPageCountProperty;
+
 	/* @DelegateType=EventHandler<PrintPageEventArgs> */
 	const static int PrintPageEvent;
 
@@ -39,6 +42,8 @@ public:
 	const char *GetDocumentName ();
 	void SetDocumentName (const char *name);
 	
+	void SetPrintedPageCount (gint32 value);
+	gint32 GetPrintedPageCount ();
 };
 
 #endif /*  __MOON_PRINTING_H__ */

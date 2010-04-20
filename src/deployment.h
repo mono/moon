@@ -112,6 +112,8 @@ public:
 	const static int TopProperty;
 	/* @PropertyType=WindowStartupLocation,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int WindowStartupLocationProperty;
+	/* @PropertyType=WindowStyle,GenerateAccessors */
+	const static int WindowStyleProperty;
 
 	const char *GetTitle ();
 	void SetTitle (const char *title);
@@ -130,6 +132,9 @@ public:
 
 	WindowStartupLocation GetWindowStartupLocation ();
 	void SetWindowStartupLocation (WindowStartupLocation value);
+
+	WindowStyle GetWindowStyle ();
+	void SetWindowStyle (WindowStyle style);
 
 protected:
 	virtual ~WindowSettings ();

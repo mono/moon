@@ -422,6 +422,20 @@ class VisualBrush : public TileBrush {
 	UIElement *GetVisual ();
 };
 
+/* @Namespace=System.Windows.Controls */
+class WebBrowserBrush : public TileBrush {
+ public:
+	/* @PropertyType=string,GenerateAccessors */
+	const static int SourceNameProperty;
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	WebBrowserBrush () { SetObjectType (Type::WEBBROWSERBRUSH); }
+
+	void SetSourceName (const char *name);
+	const char * GetSourceName ();
+ protected:
+	virtual ~WebBrowserBrush () { }
+};
 
 G_BEGIN_DECLS
 

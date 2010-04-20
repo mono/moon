@@ -527,6 +527,14 @@ enum WindowStartupLocation {
 };
 
 /* @IncludeInKinds */
+/* @NameSpace=System.Windows */
+enum WindowStyle {
+	WindowStyleSingleBorderWindow = 0,
+	WindowStyleNone = 1,
+	WindowStyleBorderlessRoundCornersWindow = 2,
+};
+
+/* @IncludeInKinds */
 /* @Namespace=System.Windows */
 enum TextTrimming {
 	TextTrimmingNone = 0,

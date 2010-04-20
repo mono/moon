@@ -466,7 +466,7 @@ public:
 	const static int AllowDropProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
- 	/* @PropertyType=CursorType,DefaultValue=CursorTypeDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors,Validator=CursorValidator */
+ 	/* @PropertyType=CursorType,DefaultValue=CursorTypeDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,GenerateAccessors,Validator=CursorValidator */
 	const static int CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int ResourcesProperty;

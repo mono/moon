@@ -69,6 +69,8 @@ class Glyphs : public FrameworkElement {
 	const static int FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int FontRenderingEmSizeProperty;
+	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int FontSourceProperty;
  	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri(),Validator=NonNullValidator */
 	const static int FontUriProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
@@ -107,6 +109,9 @@ class Glyphs : public FrameworkElement {
 	
 	void SetFontRenderingEmSize (double size);
 	double GetFontRenderingEmSize ();
+	
+	void SetFontSource (FontSource *source);
+	FontSource *GetFontSource ();
 	
 	void SetFontUri (Uri *uri);
 	Uri *GetFontUri ();

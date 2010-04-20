@@ -325,6 +325,7 @@
     <File subtype="Code" buildaction="Compile" name="pal/gtk/install-dialog.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog.h" />
     <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="inputscope.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

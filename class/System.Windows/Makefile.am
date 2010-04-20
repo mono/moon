@@ -260,7 +260,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/VirtualizingPanel.cs			\
 	$(srcdir)/System.Windows.Controls/VirtualizingStackPanel.cs		\
 	$(srcdir)/System.Windows.Controls/VirtualizationMode.cs			\
-	$(srcdir)/System.Windows.Controls/WebBrowser.cs		\
+	$(srcdir)/System.Windows.Controls/WebBrowser.cs				\
+	$(srcdir)/System.Windows.Controls/WebBrowserBrush.cs				\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorDirection.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorPosition.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/IItemContainerGenerator.cs	\
@@ -279,9 +280,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/FocusManager.cs				\
 	$(srcdir)/System.Windows.Input/ICommand.cs				\
-	$(srcdir)/System.Windows.Input/ImeConversionModeValues.cs	\
+	$(srcdir)/System.Windows.Input/ImeConversionModeValues.cs		\
 	$(srcdir)/System.Windows.Input/InputMethod.cs				\
-	$(srcdir)/System.Windows.Input/InputMethodState.cs				\
+	$(srcdir)/System.Windows.Input/InputMethodState.cs			\
+	$(srcdir)/System.Windows.Input/InputScope.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\
 	$(srcdir)/System.Windows.Input/ModifierKeys.cs				\
 	$(srcdir)/System.Windows.Input/StylusInfo.cs				\
@@ -479,24 +481,25 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/VisualState.cs					\
-	$(srcdir)/System.Windows/Window.cs						\
+	$(srcdir)/System.Windows/Window.cs					\
 	$(srcdir)/System.Windows/WindowSettings.cs				\
-	$(srcdir)/System.Windows/WindowStartupLocation.cs		\
+	$(srcdir)/System.Windows/WindowStartupLocation.cs			\
 	$(srcdir)/System.Windows/WindowState.cs					\
+	$(srcdir)/System.Windows/WindowStyle.cs					\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingBase.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Data/BindingOperations.cs			\
-	$(srcdir)/System.Windows.Data/CollectionViewGroup.cs		\
+	$(srcdir)/System.Windows.Data/CollectionViewGroup.cs			\
 	$(srcdir)/System.Windows.Data/CollectionViewSource.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventArgs.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\
 	$(srcdir)/System.Windows.Data/IndexedPropertyPathNode.cs		\
 	$(srcdir)/System.Windows.Data/IPropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
-	$(srcdir)/System.Windows.Data/PropertyGroupDescription.cs	\
+	$(srcdir)/System.Windows.Data/PropertyGroupDescription.cs		\
 	$(srcdir)/System.Windows.Data/PropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/PropertyNodeType.cs			\
 	$(srcdir)/System.Windows.Data/PropertyPathParser.cs			\
@@ -505,22 +508,22 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/RelativeSourceMode.cs 			\
 	$(srcdir)/System.Windows.Data/StandardPropertyPathNode.cs		\
 	$(srcdir)/System.Windows.Data/UpdateSourceTrigger.cs			\
-	$(srcdir)/System.Windows.Documents/Block.cs						\
+	$(srcdir)/System.Windows.Documents/Block.cs				\
 	$(srcdir)/System.Windows.Documents/BlockCollection.cs			\
-	$(srcdir)/System.Windows.Documents/Bold.cs						\
+	$(srcdir)/System.Windows.Documents/Bold.cs				\
 	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Hyperlink.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
 	$(srcdir)/System.Windows.Documents/InlineCollection.cs			\
 	$(srcdir)/System.Windows.Documents/InlineUIContainer.cs			\
-	$(srcdir)/System.Windows.Documents/Italic.cs					\
+	$(srcdir)/System.Windows.Documents/Italic.cs				\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
 	$(srcdir)/System.Windows.Documents/Paragraph.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
-	$(srcdir)/System.Windows.Documents/Span.cs					\
+	$(srcdir)/System.Windows.Documents/Span.cs				\
 	$(srcdir)/System.Windows.Documents/TextElement.cs			\
-	$(srcdir)/System.Windows.Documents/TextElementCollection.cs	\
+	$(srcdir)/System.Windows.Documents/TextElementCollection.cs		\
 	$(srcdir)/System.Windows.Documents/TextSelection.cs			\
 	$(srcdir)/System.Windows.Documents/Underline.cs				\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
@@ -535,17 +538,17 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\
-	$(srcdir)/System.Windows.Media/AudioCaptureDevice.cs				\
+	$(srcdir)/System.Windows.Media/AudioCaptureDevice.cs			\
 	$(srcdir)/System.Windows.Media/AudioCaptureDeviceCollection.cs		\
-	$(srcdir)/System.Windows.Media/AudioFormat.cs						\
-	$(srcdir)/System.Windows.Media/AudioSink.cs							\
+	$(srcdir)/System.Windows.Media/AudioFormat.cs				\
+	$(srcdir)/System.Windows.Media/AudioSink.cs				\
 	$(srcdir)/System.Windows.Media/BitmapCache.cs				\
 	$(srcdir)/System.Windows.Media/BezierSegment.cs				\
 	$(srcdir)/System.Windows.Media/Brush.cs					\
 	$(srcdir)/System.Windows.Media/BrushMappingMode.cs			\
 	$(srcdir)/System.Windows.Media/CacheMode.cs				\
 	$(srcdir)/System.Windows.Media/CaptureDevice.cs				\
-	$(srcdir)/System.Windows.Media/CaptureDeviceConfiguration.cs\
+	$(srcdir)/System.Windows.Media/CaptureDeviceConfiguration.cs		\
 	$(srcdir)/System.Windows.Media/CaptureSource.cs				\
 	$(srcdir)/System.Windows.Media/CaptureState.cs				\
 	$(srcdir)/System.Windows.Media/Color.cs					\
@@ -553,9 +556,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\
 	$(srcdir)/System.Windows.Media/CompositeTransform.cs			\
 	$(srcdir)/System.Windows.Media/CompositionTarget.cs			\
-	$(srcdir)/System.Windows.Media/ContentKeyType.cs				\
+	$(srcdir)/System.Windows.Media/ContentKeyType.cs			\
 	$(srcdir)/System.Windows.Media/DeepZoomImageTileSource.cs		\
-	$(srcdir)/System.Windows.Media/DomainAcquirer.cs				\
+	$(srcdir)/System.Windows.Media/DomainAcquirer.cs			\
 	$(srcdir)/System.Windows.Media/DomainOperationCompletedEventArgs.cs	\
 	$(srcdir)/System.Windows.Media/DoubleCollection.cs			\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
@@ -636,11 +639,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/UnmanagedMatrix.cs			\
 	$(srcdir)/System.Windows.Media/VideoBrush.cs				\
 	$(srcdir)/System.Windows.Media/VideoCaptureDevice.cs			\
-	$(srcdir)/System.Windows.Media/VideoCaptureDeviceCollection.cs	\
-	$(srcdir)/System.Windows.Media/VideoFormat.cs					\
-	$(srcdir)/System.Windows.Media/VideoSink.cs						\
+	$(srcdir)/System.Windows.Media/VideoCaptureDeviceCollection.cs		\
+	$(srcdir)/System.Windows.Media/VideoFormat.cs				\
+	$(srcdir)/System.Windows.Media/VideoSink.cs				\
 	$(srcdir)/System.Windows.Media/VisualTreeHelper.cs			\
-	$(srcdir)/System.Windows.Media/WaveFormatType.cs				\
+	$(srcdir)/System.Windows.Media/WaveFormatType.cs			\
 	$(srcdir)/System.Windows.Media.Animation/BeginStoryboard.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimation.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleAnimation.cs		\
@@ -678,7 +681,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs			\
 	$(srcdir)/System.Windows.Printing/EndPrintEventArgs.cs			\
 	$(srcdir)/System.Windows.Printing/EndPrintEventHandler.cs		\
-	$(srcdir)/System.Windows.Printing/PrintDocument.cs				\
+	$(srcdir)/System.Windows.Printing/PrintDocument.cs			\
 	$(srcdir)/System.Windows.Printing/PrintPageEventArgs.cs			\
 	$(srcdir)/System.Windows.Printing/PrintPageEventHandler.cs		\
 	$(srcdir)/System.Windows.Printing/StartPrintEventArgs.cs		\

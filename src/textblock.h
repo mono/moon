@@ -180,7 +180,9 @@ class Run : public Inline {
 	virtual ~Run () {}
 	
  public:
- 	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=FlowDirection,DefaultValue=FlowDirectionLeftToRight,GenerateAccessors */
+	const static int FlowDirectionProperty;
+	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int TextProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -191,6 +193,10 @@ class Run : public Inline {
 	//
 	// Property Accessors
 	//
+
+	FlowDirection GetFlowDirection ();
+	void SetFlowDirection (FlowDirection value);
+
 	void SetText (const char *text);
 	const char *GetText ();
 };

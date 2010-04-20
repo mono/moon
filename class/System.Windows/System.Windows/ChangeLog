@@ -1,3 +1,10 @@
+2010-04-20  Alan McGovern  <amcgovern@novell.com>
+
+	* WindowStyle.cs:
+	* ExternalPart.cs:
+	* DependencyObject.g.cs: Add new types and DPs so that the SL4
+	  generated DefaultValue tests can compile.
+
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: Different exceptions are thrown when

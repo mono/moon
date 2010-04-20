@@ -1,11 +1,11 @@
-//
-// ExternalPart.cs
-//
+// 
+// WindowStyle.cs
+// 
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
-//
-// Copyright 2008-2009 Novell, Inc.
-//
+// 
+// Copyright 2010 Novell, Inc.
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -24,17 +24,16 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+// 
+
 using System;
-using System.IO;
-using System.Reflection;
-using Mono;
 
 namespace System.Windows {
-	public partial class ExternalPart : DependencyObject {
 
-		public virtual Uri Source {
-			get; set;
-		}
+	public enum WindowStyle {
+		SingleBorderWindow = 0,
+		None = 1,
+		BorderlessRoundCornersWindow = 2,
 	}
 }
+
