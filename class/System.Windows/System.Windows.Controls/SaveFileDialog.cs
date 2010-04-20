@@ -24,9 +24,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Security;
 
 using Mono;
@@ -52,6 +50,11 @@ namespace System.Windows.Controls {
 					default_ext = value;
 				}
 			}
+		}
+
+		// note: required to run MS test suite
+		private FileInfo File {
+			get { return file_info; }
 		}
 
 		public string Filter {
