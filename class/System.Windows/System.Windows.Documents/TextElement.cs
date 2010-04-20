@@ -33,15 +33,11 @@ namespace System.Windows.Documents {
 		
 		public object FindName (string name)
 		{
-			Console.WriteLine ("System.Windows.Documents.TextElement:FindName (): NIEX");
-			throw new NotImplementedException ();
+			return DepObjectFindName (name);
 		}
 
 		public string Name {
-			get {
-				Console.WriteLine ("System.Windows.Documents.TextElement.get_Name: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return (string) GetValue (FrameworkElement.NameProperty); }
 		}
 	}
 }

@@ -1,3 +1,10 @@
+2010-04-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Inline.cs:
+	* TextElement.cs: Inline redeclares DPs which are defined on
+	  TextElement, so mark the ones on Inline as 'new' to remove
+	  compiler warnings.
+
 2010-04-12  Alan McGovern  <amcgovern@novell.com>
 
 	* Inline.cs: These DPs need to be re-exposed in Inline even

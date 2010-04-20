@@ -34,22 +34,13 @@ using System.Windows.Markup;
 namespace System.Windows.Documents {
 	public abstract partial class Inline : TextElement {
 
-		public static DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty;
-		public static DependencyProperty FontSizeProperty = TextElement.FontSizeProperty;
-		public static DependencyProperty FontStretchProperty = TextElement.FontStretchProperty;
-		public static DependencyProperty FontStyleProperty = TextElement.FontStyleProperty;
-		public static DependencyProperty FontWeightProperty = TextElement.FontWeightProperty;
-		public static DependencyProperty ForegroundProperty = TextElement.ForegroundProperty;
-		public static DependencyProperty TextDecorationsProperty = TextElement.TextDecorationsProperty;
-		public static DependencyProperty LanguageProperty = TextElement.LanguageProperty;
-
-		public object FindName (string name)
-		{
-			return DepObjectFindName (name);
-		}
-
-		public string Name {
-			get { return (string) GetValue (FrameworkElement.NameProperty); }
-		}
+		public static new DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty;
+		public static new DependencyProperty FontSizeProperty = TextElement.FontSizeProperty;
+		public static new DependencyProperty FontStretchProperty = TextElement.FontStretchProperty;
+		public static new DependencyProperty FontStyleProperty = TextElement.FontStyleProperty;
+		public static new DependencyProperty FontWeightProperty = TextElement.FontWeightProperty;
+		public static new DependencyProperty ForegroundProperty = TextElement.ForegroundProperty;
+		public static new DependencyProperty TextDecorationsProperty = TextElement.TextDecorationsProperty;
+		public static new DependencyProperty LanguageProperty = TextElement.LanguageProperty;
 	}
 }
