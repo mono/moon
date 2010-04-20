@@ -45,6 +45,7 @@ namespace DefaultValues {
 			sb.AppendLine ("using System.Windows.Media.Media3D;");
 			sb.AppendLine ("using System.Windows.Media.Animation;");
 			sb.AppendLine ("using System.Windows.Media.Imaging;");
+			sb.AppendLine ("using System.Windows.Printing");
 			sb.AppendLine ("using System.Windows.Resources;");
 			sb.AppendLine ("using System.Windows.Shapes;");
 			sb.AppendLine ("using System.Windows.Threading;");

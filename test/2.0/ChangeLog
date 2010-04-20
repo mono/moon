@@ -1,3 +1,8 @@
+2010-04-20  Alan McGovern  <amcgovern@novell.com>
+
+	* DefaultValues/Page.xaml.cs: Add 'System.Windows.Printing' to
+	  the namespaces in the default value tests.
+
 2010-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* DefaultValues/App.xaml.cs: Make formatting use the en-US locale.
