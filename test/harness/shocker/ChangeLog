@@ -1,3 +1,7 @@
+2010-04-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: Remove debug spew.
+
 2010-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.cpp|h: Use new logging framework, and fail the current test

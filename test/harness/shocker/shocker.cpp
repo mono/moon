@@ -218,10 +218,6 @@ ShockerScriptableObject::HasMethod (NPIdentifier id)
 		method++;
 	}
 
-	if (!res) {
-		printf ("[%i shocker] %s::HasMethod (%s): Method not found\n", getpid (), GetTypeName (), name);
-	}
-
 	LOG_PLUGIN ("[%i shocker] %s::HasMethod (%s): %i\n", getpid (), GetTypeName (), name, res);
 
 	free (name);
