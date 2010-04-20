@@ -410,7 +410,7 @@ class Generator {
 
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
 			if (!File.Exists (check_ns))
-				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
+				throw new Exception (string.Format ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns));
 
 			if (previous_namespace != ns) {
 				if (previous_namespace != string.Empty) {
@@ -541,10 +541,8 @@ class Generator {
 			}
 
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), type.ManagedName.Replace ("`1", "") + ".cs");
-			if (!File.Exists (check_ns)) {
-				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
-				continue;
-			}
+			if (!File.Exists (check_ns))
+				throw new Exception (string.Format ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns));
 
 			if (previous_namespace != ns) {
 				if (previous_namespace != string.Empty) {
@@ -712,7 +710,7 @@ class Generator {
 
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
 			if (!File.Exists (check_ns))
-				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
+				throw new Exception (string.Format ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns));
 
 			if (previous_namespace != ns) {
 				if (previous_namespace != string.Empty) {

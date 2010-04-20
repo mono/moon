@@ -1,3 +1,10 @@
+2010-04-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: If a DO subclass is declared and the
+	  corresponding .cs file does not exist, throw an exception.
+	  It took me ages to realise this was the cause of my managed
+	  ctors not being generated.
+
 2010-04-13  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: TextDecorationCollection does not need to be
