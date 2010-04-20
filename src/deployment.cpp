@@ -648,7 +648,6 @@ accumulate_last_n (gpointer key,
 Deployment::~Deployment()
 {
 	g_free (xap_location);
-	g_free (platform_dir);
 	
 	delete font_manager;
 	

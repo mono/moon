@@ -1,3 +1,8 @@
+2010-04-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Don't free the static platform_dir in the instance dtor.
+	Fixes a crash in tests that use >1 plugins.
+
 2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/install-dialog.cpp: Calculate path to lunar-launcher using
