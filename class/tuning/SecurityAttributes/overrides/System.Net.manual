@@ -13,3 +13,6 @@
 # we now have two different copies (type name clash) in System.dll and System.Net.dll
 +SC-T: System.Net.Dns
 
+# Calls Activator.CreateInstance to create IWebRequestCreate instance of the browser and client http stack creators
++SSC-M: System.Void System.Net.WebRequest::.cctor()
+

@@ -1,3 +1,11 @@
+2010-04-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Add SSC to WebRequest.cctor() to initialize
+	both browser/client IWebRequestCreate (coming soon on /mcs trunk)
+	* System.Windows.manual: Keep SaveFileDialog.OpenFile as SSC even
+	if the API does not look to require it (it does otherwise it 
+	would only work in elevated trust).
+
 2010-04-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Update for SL4, mostly related to elevated
