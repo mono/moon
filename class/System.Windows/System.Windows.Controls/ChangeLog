@@ -1,5 +1,10 @@
 2010-04-20  Alan McGovern  <amcgovern@novell.com>
 
+	* Control.cs: Mark Control.ApplyTemplate as 'new' (as it
+	  should be) to get rid of a compiler warning.
+
+2010-04-20  Alan McGovern  <amcgovern@novell.com>
+
 	* WebBrowserBrush.cs: Add new types and DPs so that the SL4
 	  generated DefaultValue tests can compile.
 

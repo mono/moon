@@ -229,7 +229,7 @@ namespace System.Windows.Controls {
 						   "DefaultStyleKey",
 						   typeof (object));
 
-		public bool ApplyTemplate()
+		public new bool ApplyTemplate()
 		{
 			return base.ApplyTemplate ();
 		}
