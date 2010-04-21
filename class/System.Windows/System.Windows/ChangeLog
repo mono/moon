@@ -1,3 +1,8 @@
+2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Remove call to WebRequest.RegisterDefaultStack
+	since the registration is now made by Webrequest itself
+
 2010-04-20  Alan McGovern  <amcgovern@novell.com>
 
 	* WindowStyle.cs:

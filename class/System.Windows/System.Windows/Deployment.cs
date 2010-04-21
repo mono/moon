@@ -39,10 +39,6 @@ using System.Windows.Interop;
 using Mono;
 using Mono.Xaml;
 
-#if NET_2_1
-using System.Net.Browser;
-#endif
-
 namespace System.Windows {
 
 	public sealed partial class Deployment : DependencyObject {
@@ -55,14 +51,6 @@ namespace System.Windows {
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 		
-#if NET_2_1
-		static Deployment ()
-		{
-			// set the default to the browser stack
-			WebRequest.RegisterDefaultStack (WebRequestCreator.BrowserHttp);
-		}
-#endif
-
 		/* thread-safe */
 		internal Surface Surface {
 			get {

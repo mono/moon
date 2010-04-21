@@ -1,3 +1,8 @@
+2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HttpWebResponseCore.cs: Override Headers property since it is
+	now befined in HttpWebResponse in SL4
+
 2010-04-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* InternalWebResponseStreamWrapper.cs: Fix regression in DRT#244
