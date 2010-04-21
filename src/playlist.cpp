@@ -2631,6 +2631,11 @@ PlaylistParser::ParseASX3Internal ()
 				MoonError (MoonError::EXCEPTION, 7031, "wfc: unique attribute spec")));
 		result = false;
 		break;
+	case ASXPARSER_ERROR_QUOTE_EXPECTED:
+		ParsingError (new ErrorEventArgs (MediaError,
+				MoonError (MoonError::EXCEPTION, 7007, "quote expected")));
+		result = false;
+		break;
 	default:
 		char *msg = g_strdup_printf ("%s %d (%d, %d)", 
 				internal->asxparser->GetErrorMessage (),

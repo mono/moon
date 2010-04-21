@@ -1,5 +1,11 @@
 2010-04-21  Jackson Harper  <jackson@ximian.com>
 
+	* playlist.cpp:
+	* asxparser.cpp|h: Raise and handle a new error for unquoted
+	attributes.
+
+2010-04-21  Jackson Harper  <jackson@ximian.com>
+
 	* asxparser.cpp: If we already have an error, return that one
 	before checking for remaining elements on the stack.
 

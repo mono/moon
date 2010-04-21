@@ -666,7 +666,7 @@ AsxParserInternal::parse_attribute ()
 
 	tok = next_non_whitespace_token ();
 	if (tok->get_type () != TOKEN_QUOTED_STRING) {
-		raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid attribute, value not found.\n");
+		raise_error (ASXPARSER_ERROR_QUOTE_EXPECTED, "Invalid attribute, value not found.\n");
 		return false;
 	}
 
