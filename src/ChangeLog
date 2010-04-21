@@ -1,6 +1,11 @@
 2010-04-21  Jackson Harper  <jackson@ximian.com>
 
-	* playlist.cpp: Raise an error if we have elements on the stack at
+	* asxparser.cpp: If we already have an error, return that one
+	before checking for remaining elements on the stack.
+
+2010-04-21  Jackson Harper  <jackson@ximian.com>
+
+	* asxparser.cpp: Raise an error if we have elements on the stack at
 	the end of the stream (ie unclosed elements).
 
 2010-04-21  Jackson Harper  <jackson@ximian.com>

@@ -719,11 +719,11 @@ AsxParserInternal::handle_char_data ()
 void
 AsxParserInternal::raise_error (AsxParserError code, const char* error)
 {
-	if (error_handler)
-		error_handler (parser, code, error);
-
 	this->error_code = code;
 	this->error_message = error;
+
+	if (error_handler)
+		error_handler (parser, code, error);
 }
 
 void
@@ -747,6 +747,9 @@ AsxParserInternal::parse_stream (TextStream *stream)
 		if (stop_parsing)
 			return false;
 	}
+
+	if (error_code != ASXPARSER_ERROR_NONE)
+		return false;
 
 	if (!g_queue_is_empty (element_stack)) {
 		raise_error (ASXPARSER_ERROR_NO_ELEMENTS, "Unexpected end of file found.");
