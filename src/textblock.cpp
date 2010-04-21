@@ -29,6 +29,7 @@
 #include "uri.h"
 #include "geometry.h"
 #include "deployment.h"
+#include "enums.h"
 
 // Unicode Line Separator (\u2028)
 static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
@@ -53,6 +54,8 @@ Hyperlink::Hyperlink ()
 {
 	SetObjectType (Type::HYPERLINK);
 	SetTextDecorations (TextDecorationsUnderline);
+	SetMouseOverForeground (new SolidColorBrush ("black"));
+	SetForeground (new SolidColorBrush ("#FF337CBB"));
 }
 
 InlineUIContainer::InlineUIContainer ()
@@ -63,6 +66,8 @@ InlineUIContainer::InlineUIContainer ()
 Italic::Italic ()
 {
 	SetObjectType (Type::ITALIC);
+	FontStyle style (FontStylesItalic);
+	SetFontStyle (&style);
 }
 
 LineBreak::LineBreak ()

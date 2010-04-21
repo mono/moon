@@ -425,7 +425,7 @@ class VisualBrush : public TileBrush {
 /* @Namespace=System.Windows.Controls */
 class WebBrowserBrush : public TileBrush {
  public:
-	/* @PropertyType=string,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int SourceNameProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -10537,7 +10537,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_Block ()
         {
             Paragraph widget = new Paragraph ();
@@ -11183,7 +11182,6 @@ namespace MoonTest.System.Windows.Documents
     public partial class ItalicTest
     {
         [TestMethod]
-        [MoonlightBug]
         public void Test_ReadLocalValue_Inline ()
         {
             Italic widget = new Italic ();
@@ -11210,7 +11208,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_ReadLocalValue_TextElement ()
         {
             Italic widget = new Italic ();
@@ -11235,7 +11232,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_Inline ()
         {
             Italic widget = new Italic ();
@@ -11310,7 +11306,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_TextElement ()
         {
             Italic widget = new Italic ();
@@ -11380,7 +11375,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_Italic ()
         {
             Italic widget = new Italic ();
@@ -11706,7 +11700,6 @@ namespace MoonTest.System.Windows.Documents
     public partial class HyperlinkTest
     {
         [TestMethod]
-        [MoonlightBug]
         public void Test_ReadLocalValue_Hyperlink ()
         {
             Hyperlink widget = new Hyperlink ();
@@ -11728,7 +11721,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_ReadLocalValue_Inline ()
         {
             Hyperlink widget = new Hyperlink ();
@@ -11756,7 +11748,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_ReadLocalValue_TextElement ()
         {
             Hyperlink widget = new Hyperlink ();
@@ -19176,7 +19167,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_Viewbox ()
         {
             Viewbox widget = new Viewbox ();
@@ -19449,7 +19439,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_Viewbox ()
         {
             Viewbox widget = new Viewbox ();
@@ -21878,7 +21867,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_WebBrowserBrush ()
         {
             WebBrowserBrush widget = new WebBrowserBrush ();
@@ -21960,7 +21948,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_WebBrowserBrush ()
         {
             WebBrowserBrush widget = new WebBrowserBrush ();
@@ -34305,7 +34292,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_ToolTip ()
         {
             ToolTip widget = new ToolTip ();
@@ -34766,7 +34752,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_ToolTip ()
         {
             ToolTip widget = new ToolTip ();

@@ -354,7 +354,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Block ();
 
-	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentCenter,GenerateAccessors */
 	const static int TextAlignmentProperty;
 
 	TextAlignment GetTextAlignment ();
@@ -438,7 +438,7 @@ public:
 	const static int CommandParameterProperty;
 	/* @PropertyType=object,ManagedPropertyType=ICommand */
 	const static int CommandProperty;
-	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush */
+	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush,GenerateAccessors */
 	const static int MouseOverForegroundProperty;
 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsUnderline,ManagedPropertyType=TextDecorationCollection */
 	const static int MouseOverTextDecorationsProperty;
@@ -446,6 +446,9 @@ public:
 	const static int NavigateUriProperty;
 	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int TargetNameProperty;
+	
+	void SetMouseOverForeground (Brush *brush);
+	Brush *GetMouseOverForeground ();
 };
 
 /* @Namespace=System.Windows.Controls */

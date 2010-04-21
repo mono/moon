@@ -114,7 +114,7 @@ namespace System.Windows.Controls
                 "Placement",
                 typeof(PlacementMode),
                 typeof(ToolTip),
-                new PropertyMetadata(new PropertyChangedCallback(OnPlacementPropertyChanged)));
+                new PropertyMetadata(PlacementMode.Mouse, new PropertyChangedCallback(OnPlacementPropertyChanged)));
  
         private static void OnPlacementPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

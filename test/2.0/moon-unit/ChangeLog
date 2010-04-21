@@ -1,5 +1,9 @@
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs: Remove a bunch of MoonlightBugs
+
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
 	* misc/DefaultValues.cs: Yay for SL4 compatible default value
 	  tests. Who wants to fix them now... ;)
 

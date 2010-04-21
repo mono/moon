@@ -1,3 +1,10 @@
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
+	* brush.h:
+	* viewbox.h:
+	* textblock.h:
+	* textblock.cpp: Add in some missing default values.
+
 2010-04-20  Alan McGovern  <amcgovern@novell.com>
 
 	* brush.h:

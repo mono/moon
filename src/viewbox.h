@@ -28,10 +28,10 @@ public:
 	/* @PropertyType=UIElement,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int ChildProperty;
 
-	/* @PropertyType=Stretch,GenerateAccessors */
+	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
 
-	/* @PropertyType=StretchDirection,GenerateAccessors */
+	/* @PropertyType=StretchDirection,DefaultValue=StretchDirectionBoth,GenerateAccessors */
 	const static int StretchDirectionProperty;
 
 	UIElement *GetChild ();
