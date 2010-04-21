@@ -7,6 +7,8 @@
 
 # can't touch this
 +SC-M: System.Void System.Security.SecurityManager::set_HasElevatedPermissions(System.Boolean)
++SC-M: System.Boolean System.Security.SecurityManager::CheckElevatedPermissions()
++SC-M: System.Void System.Security.SecurityManager::EnsureElevatedPermissions()
 
 # available on SL2 (even if it returns an IntPtr that cannot be cast back to a GCHandle)
 -SC-M: System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
@@ -402,6 +404,8 @@
 
 #
 +SC-M: System.String System.IO.Directory::ValidateDirectoryListing(System.String,System.String,System.Boolean&)
++SC-M: System.Boolean System.IO.MonoIO::SetFileTime(System.String,System.Int32,System.Int64,System.Int64,System.Int64,System.DateTime,System.IO.MonoIOError&)
++SC-M: System.Boolean System.IO.MonoIO::SetFileTime(System.String,System.Int64,System.Int64,System.Int64,System.IO.MonoIOError&)
 
 # needs to be SSC because they can be called by user code and are calling elevated permission code
 +SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.IO.IsolatedStorage.IsolatedStorageFile)

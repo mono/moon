@@ -1,3 +1,10 @@
+2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Promote SecurityManager.[Check|Ensure]Elevated
+	Permissions to SC so we can track who's calling them (as SSC) and
+	audit their work. Change MonoIO.SetFileTime overloads to SC (for
+	same reason).
+
 2010-04-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Add SSC to WebRequest.cctor() to initialize

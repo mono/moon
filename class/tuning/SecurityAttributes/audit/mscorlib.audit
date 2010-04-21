@@ -58,25 +58,24 @@ System.Boolean System.Globalization.CompareInfo::IsSuffix(System.String,System.S
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
 	r142142		spouliot - call construct_internal_locale_from_current_locale (icall in locales.c)
 
-!SSC-8019F0294AC13C5F9B4692FBA5F2001F
+!SSC-D18136B75F634FB02FFB3941C4AE961C
 System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator0::MoveNext()
+	r155643		spouliot - validatations splitted outside EnumerateKind (in EnumerateCheck)
 	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
 	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
 
-!SSC-0FC005B4C8E5A4BDBE4D9C45041FD922
-System.Boolean System.IO.DirectoryInfo/<EnumerateDirectories>c__Iterator1::MoveNext()
-	r155069		spouliot - compiler renamed symbol c__Iterator2 -> c__Iterator1
-	r153896		spouliot - compiler generated code used by EnumerateDirectories [SecurityCritical]
-
-!SSC-A2E0A23614AF35702493FEB522D29574
-System.Boolean System.IO.DirectoryInfo/<EnumerateFiles>c__Iterator2::MoveNext()
-	r155069		spouliot - compiler renamed symbol c__Iterator3 -> c__Iterator2
-	r153896		spouliot - compiler generated code used by EnumerateFiles [SecurityCritical]
+!SSC-223C259921202264534A3E6CFF5D93C2
+System.Boolean System.IO.Directory::Exists(System.String)
+	r155643		spouliot - call SecurityManager.CheckElevatedPermissions [SecurityCritical] to return FALSE unless executing under elevated trust (no exception)
 
 !SSC-B9195C794666243F8C78ECB2610983F6
 System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::MoveNext()
 	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
+
+!SSC-81D79062E91F3FD77D4BD1685A70D7FD
+System.Boolean System.IO.File::Exists(System.String)
+	r155643		spouliot - call SecurityManager.CheckElevatedPermissions [SecurityCritical] to return FALSE unless executing under elevated trust (no exception)
 
 !SSC-3E6B14C829A106DEA4BCBCD32C14E375
 System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::DirectoryExists(System.String)
@@ -133,6 +132,22 @@ System.Boolean System.Reflection.MonoMethod::get_IsGenericMethod()
 !SSC-28FF0F2FE9B5C718CD95FC5C3F72BA04
 System.Boolean System.Reflection.MonoMethod::get_IsGenericMethodDefinition()
 	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoMethod_get_IsGenericMethodDefinition (icall.c)
+
+!SSC-F8B28426F85A5FACDAE39A718C0D5564
+System.Boolean System.RuntimeFieldHandle::Equals(System.Object)
+	r155836		spouliot - call Value [SecurityCritical] property to compare instances
+
+!SSC-B5214AFA9A17ECC70CA70347F97B1472
+System.Boolean System.RuntimeFieldHandle::Equals(System.RuntimeFieldHandle)
+	r155836		spouliot - call Value [SecurityCritical] property to compare instances
+
+!SSC-55895E7142F3A29AFD0E318262FDDED4
+System.Boolean System.RuntimeMethodHandle::Equals(System.Object)
+	r155836		spouliot - call Value [SecurityCritical] property to compare instances
+
+!SSC-0438D38BFCF1EAB05B32DA39400FA419
+System.Boolean System.RuntimeMethodHandle::Equals(System.RuntimeMethodHandle)
+	r155836		spouliot - call Value [SecurityCritical] property to compare instances
 
 !SSC-A4026DF218AA0FD9868E0EE6552EE9D4
 System.Boolean System.Threading.EventWaitHandle::Reset()
@@ -323,53 +338,17 @@ System.Char System.BitConverter::ToChar(System.Byte[],System.Int32)
 System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
 	r142142		spouliot - unsafe call to CharCopy after all parameters are validated
 
-!SSC-091729CE6491C9519F657A3543FDC27A
-System.Collections.Generic.IEnumerable`1<System.IO.FileSystemInfo> System.IO.DirectoryInfo::EnumerateFileSystemInfos(System.String,System.IO.SearchOption)
-	r153971		spouliot - call EnumerateFileSystemInfos [SecurityCritical] overload which does validate the FullPath property
-
 !SSC-5F49179CE9D0078A8B37F694C737ADA2
 System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
-
-!SSC-7255D49677D62E73C101C04E1895F781
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String,System.String)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
-
-!SSC-5A6E3B29F9102DFFC2D9766E0EDEC5C7
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateDirectories(System.String,System.String,System.IO.SearchOption)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-88AC8907C26BCD418658BF5A80E1D00D
 System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
-
-!SSC-14F47F716C616EA9DD388F2F7AC2A178
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String,System.String)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
-
-!SSC-20D582594001CE8AC67458D620606B8D
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFiles(System.String,System.String,System.IO.SearchOption)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-EDA96AD13DDBDFC4097D8C3B03A25795
 System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
-
-!SSC-C26465C90EE9CE055E03ED369AD1C7E8
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String,System.String)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
-
-!SSC-CD73B6DE5DE90FA8A6787FAE3999A8F8
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String,System.String,System.IO.SearchOption)
-	r153971		spouliot - call EnumerateKind [SecurityCritical] which does validate the 'path' parameter
-
-!SSC-CBDB15284FF15712026E2523CECA5326
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.File::ReadLines(System.String)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
-
-!SSC-A72833A280DF709E3A2F2204D2C4CCDB
-System.Collections.Generic.IEnumerable`1<System.String> System.IO.File::ReadLines(System.String,System.Text.Encoding)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-D11ED37AED1474CDA3FDF7C08F264FB4
 System.Collections.IEnumerator System.Array::GetEnumerator()
@@ -382,6 +361,18 @@ System.DateTime System.DateTime::get_Now()
 !SSC-434CB1AEE61CE4A69947EB706E765A59
 System.DateTime System.DateTime::get_UtcNow()
 	r142142		spouliot - call GetNow (icall named mono_100ns_datetime inside mono/utils/mono-time.c)
+
+!SSC-6CF4E20B6A82654A20D53926EBB8737A
+System.DateTime System.IO.File::GetCreationTime(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-FE716E23DACB358BFB096C8CB44EEB9E
+System.DateTime System.IO.File::GetLastAccessTime(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-E97A20ADBBAC5BF5D0DBCDE16CE2FD51
+System.DateTime System.IO.File::GetLastWriteTime(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-0319D769FEE4D1099A5D1F72F51A6B0B
 System.Decimal System.Decimal::Add(System.Decimal,System.Decimal)
@@ -629,6 +620,10 @@ System.Int32 System.Enum::GetHashCode()
 System.Int32 System.Environment::get_ExitCode()
 	r144558		spouliot - visible icall (named mono_environment_exitcode_get in mono/metadata/environment.c). return static value
 
+!SSC-0027F79B703C378884729E1C6737030A
+System.Int32 System.Environment::get_ProcessorCount()
+	r155836		spouliot - visible icall (named mono_cpu_count in mono/utils/mono-proclib.c).
+
 !SSC-B9DCE5D3F065E1DCB5056AA680B0DF34
 System.Int32 System.Environment::get_TickCount()
 	r144558		spouliot - visible icall (named mono_msec_ticks in mono/utils/mono-time.c). return monotonic integer value
@@ -871,17 +866,17 @@ System.Int64 System.Threading.Interlocked::Increment(System.Int64&)
 System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
 	r142142		spouliot - return the 'value' (the internal handle) of the GCHandle
 
-!SSC-80849B612E960A10EC6BC3F6D6B6895F
-System.IO.FileStream System.IO.FileInfo::OpenRead()
-	r142142		spouliot - call Open(FileMode.Open,FileAccess.Read,FileShare.Read) [SecurityCritical]. filename cannot be set by user
+!SSC-0E917DCC2BEEB3082B7EADEB8D5C4F00
+System.IO.DirectoryInfo System.IO.Directory::CreateDirectory(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-9561F6D0CE080C0F138DB63F668AC88C
+System.IO.FileAttributes System.IO.File::GetAttributes(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-6FB8E38696014B260A4B02FC558F7E05
 System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
 	r142142		spouliot - added root-path safety check. validate 'name' parameter, call GetManifestResourceInfo (SecurityCritical) then File.Open based on Assembly.Location (SecurityCritical) or call GetManifestResourceInternal (icall) and creates an UnmanagedMemoryStream (internal resources)
-
-!SSC-A6CFBE281A375C995CA0A8503DDC2554
-System.IO.StreamReader System.IO.FileInfo::OpenText()
-	r142142		spouliot - call Open(FileMode.Open,FileAccess.Read) [SecurityCritical]. filename cannot be set by user
 
 !SSC-ED910197152D4597EAB65207F2BB720E
 System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(System.String,System.Globalization.CultureInfo)
@@ -1103,6 +1098,14 @@ System.Reflection.MethodBase System.MonoType::get_DeclaringMethod()
 System.Reflection.MethodBase System.Reflection.MethodBase::GetCurrentMethod()
 	r144558		spouliot - visible icall. parameter-less (static)
 
+!SSC-42545F95D5ADE6CCA27A1C848FEAC35D
+System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandle(System.RuntimeMethodHandle)
+	r155836		spouliot - call RuntimeMethodHandle.get_Value [SecurityCritical]
+
+!SSC-751AD8056AC289E30B56EEC45CDF6B56
+System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandle(System.RuntimeMethodHandle,System.RuntimeTypeHandle)
+	r155836		spouliot - call RuntimeMethodHandle.get_Value [SecurityCritical]
+
 !SSC-B98B1267A4440E3AD55888B729F1096B
 System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromIntPtr(System.IntPtr,System.IntPtr)
 	r144449		spouliot - call GetMethodFromHandleInternalType (icall) with validated input parameters and output value
@@ -1232,6 +1235,10 @@ System.String System.Diagnostics.StackFrame::GetSecureFileName()
 System.String System.Environment::get_NewLine()
 	r144558		spouliot - visible icall - returns "\r\n" string (except on windows)
 
+!SSC-1793D86DC31DD9CBD62FD35518B93585
+System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
+	r155642		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
 !SSC-7EF5BAE06648376C9C9D9F6BD1C05162
 System.String System.Exception::get_StackTrace()
 	r142142		spouliot - call StackTrace(Exception,int,bool,bool) a manual SC which calls get_trace (icall)
@@ -1244,21 +1251,33 @@ System.String System.Globalization.TextInfo::ToLower(System.String)
 System.String System.Globalization.TextInfo::ToUpper(System.String)
 	r142142		spouliot - call String.InternalAllocateStr (icall) and use unsafe loop to convert string to uppercase
 
-!SSC-AE4EB56E4F1FC072575A77EBE1358C69
-System.String System.IO.File::ReadAllText(System.String)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-5C49796B4D337A4D366D2FC80B107E77
+System.String System.IO.Directory::GetCurrentDirectory()
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-0162F8F0FB224A72D1E3EE451EE6CD09
-System.String System.IO.File::ReadAllText(System.String,System.Text.Encoding)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-BAF155A8F06799E6FF9647B468B327AA
+System.String System.IO.Directory::GetDirectoryRoot(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-87946CC50AEAE97E6347A283A06E3511
+System.String System.IO.FileStream::get_Name()
+	r155643		spouliot - call SecurityManager.CheckElevatedPermissions [SecurityCritical] and return "[Unknown]" if not renning on elevated trust
 
 !SSC-1F46C56C543FBA66534941949253718B
 System.String System.IO.IsolatedStorage.IsolatedStorageFileStream::Verify(System.IO.IsolatedStorage.IsolatedStorageFile,System.String)
 	r144307		spouliot - verify both parameters, then call isf.PreCheck (more IsolatedStorageFile checks) and isf.Verify (more filename checks)
 
-!SSC-D47CE3F0B251ED7DB3B4DC76676A1024
-System.String System.IO.Path::GetPathRoot(System.String)
-	r142142		spouliot - on Windows-only it can call Directory.GetCurrentDirectory to get the first two char (drive)
+!SSC-F1B54C88F98FE892CF46A4EE082B30EE
+System.String System.IO.Path::GetFullPath(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-79EB25BF6E0894CFF1B38BA82AB8811B
+System.String System.IO.Path::GetTempFileName()
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-640A63A181F0C28F13CBC7958972C7B8
+System.String System.IO.Path::GetTempPath()
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-4E06E2FBBF038E7B7E602EFAA428A0A4
 System.String System.MonoType::get_AssemblyQualifiedName()
@@ -1450,17 +1469,13 @@ System.String System.Text.UnicodeEncoding::GetString(System.Byte[],System.Int32,
 System.String System.Threading.Thread::get_Name()
 	r142142		spouliot - call GetName_internal (icall in threads.c). parameter-less (instance)
 
-!SSC-E7B9B0A09CFC473AAF13AB415FD89397
-System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames()
-	r142142		spouliot - call Directory.GetDirectories [SecurityCritical] on (non-user) 'basedir' and remove all root path information on each entry
+!SSC-8E2F50E936F6093389B9E896E13F8CFB
+System.String[] System.IO.Directory::GetDirectories(System.String,System.String)
+	r155836		spouliot - call Directory::GetFileSystemEntries [SecurityCritical] with arguments and FileAttributes.Directory, FileAttributes.Directory.
 
-!SSC-5F81ABECFF7CA0F434B685FEBD884964
-System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames(System.String)
-	r142142		spouliot - added validations. call Directory.GetDirectories [SecurityCritical] or DirectoryInfo.GetDirectories [SecurityCritical] on (non-user) 'basedir' and with user (non-null) 'searchPattern'
-
-!SSC-AB0B8FBD46F500B5EF85A5DA8D69C560
-System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames()
-	r142142		spouliot - call Directory.GetFiles [SecurityCritical] on (non-user) 'basedir' and remove all root path information on each entry
+!SSC-9EB0AAA6365DC103DFB4BAB9BA6F9B20
+System.String[] System.IO.Directory::GetFiles(System.String,System.String)
+	r155836		spouliot - call Directory::GetFileSystemEntries [SecurityCritical] with arguments and FileAttributes.Directory and 0
 
 !SSC-A08A848C6B39584E92512CAA4A9DC331
 System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames(System.String)
@@ -1529,11 +1544,6 @@ System.Threading.Thread System.Threading.Thread::get_CurrentThread()
 !SSC-80634AB6A451333C634C7E0FA1FAB94A
 System.Threading.ThreadState System.Threading.Thread::get_ThreadState()
 	r142661		spouliot - call GetState(System.Threading.InternalThread) [SecurityCritical]
-
-!SSC-8FEE25B9B7A315E18D68663960DD32A3
-System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
-	r154478		spouliot - moved from System.Core.dll to mscorlib.dll in SL4
-	r142142		spouliot - added SC to set_TimeZoneDirectory so filename cannot be manipulated by users
 
 !SSC-331E6EE2AA9F6E0E2CDAC7A97DBE77F1
 System.Type System.Enum::GetUnderlyingType(System.Type)
@@ -1839,46 +1849,58 @@ System.Void System.IO.Directory/<EnumerateKind>c__Iterator0::Dispose()
 	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
 	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
 
+!SSC-8AB62048F8C02551CE46170DE7FC4853
+System.Void System.IO.Directory::Delete(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-027C8B45226EA24D81B8BB1F1DBD6469
+System.Void System.IO.Directory::Delete(System.String,System.Boolean)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-1B20BEF7C0D3976A12816194C0388D5F
+System.Void System.IO.Directory::EnumerateCheck(System.String,System.String,System.IO.SearchOption)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
+!SSC-FF0138D8357B1033AF1E12809F211ACC
+System.Void System.IO.Directory::Move(System.String,System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
+
 !SSC-06FF10845CE470042477C05BFE3F37A3
 System.Void System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::Dispose()
 	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
 
-!SSC-6E17BC57D81D448074EA657FEA23F214
-System.Void System.IO.File::AppendAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-5DF60A46868D68AA7D5178530818C127
+System.Void System.IO.DirectoryInfo::.ctor()
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-7F201B396960895BBED3F4B21193B6FF
-System.Void System.IO.File::AppendAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>,System.Text.Encoding)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-34F79B34F3A104561F710EFF349BE216
+System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-22D565A6A2A39EA76DCD150DB5323EFF
-System.Void System.IO.File::AppendAllText(System.String,System.String)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-C109A104118E25C2D14DDA46268B91BC
+System.Void System.IO.File::Copy(System.String,System.String,System.Boolean)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-2BFBF728EBEBEB6B13AA2008A8C51D91
-System.Void System.IO.File::AppendAllText(System.String,System.String,System.Text.Encoding)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-7B57FF83DAC2ACEE49EC536058DF389D
+System.Void System.IO.File::Delete(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-BE5E8C25800991FE5F5C635C1D3EC133
-System.Void System.IO.File::WriteAllBytes(System.String,System.Byte[])
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-10B92F0BD33E93F8176F2E43E3CD3EDD
+System.Void System.IO.File::Move(System.String,System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-16CC809213F75CEF672F212F6360959B
-System.Void System.IO.File::WriteAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-6CD7461FA66358586F05CA8E0B78473A
+System.Void System.IO.FileInfo::.ctor()
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-971CF5ADEB6F73586708CA262731F213
-System.Void System.IO.File::WriteAllLines(System.String,System.Collections.Generic.IEnumerable`1<System.String>,System.Text.Encoding)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
+!SSC-4F2BD6FA9A590F08C0D0F2C441326BFE
+System.Void System.IO.FileInfo::.ctor(System.String)
+	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-A235CAAA70A5DCD4AC92781E7DD43B9A
-System.Void System.IO.File::WriteAllText(System.String,System.String,System.Text.Encoding)
-	r153506		spouliot - call ValidatePath which, for the moment (FIXME), throws a SecurityException on non-DEBUG builds
-
-!SSC-7D6047CAB1EE522D0A118DECAB1A6D1C
-System.Void System.IO.FileInfo::InternalRefresh()
-	r142142		spouliot - call File.Exists [SecurityCritical] on the fullpath to update internal 'exists' state. Not user callable
+!SSC-449CE8C29E2B5A083C91C1B0E8780949
+System.Void System.IO.FileInfo::Delete()
+	r155836		spouliot - call MonoIO.Exists|ExistsDirectory|DeleteFile [SecurityCritical] on 'FullPath' property. FIXME need SecurityManager.EnsureElevatedPermissions check (r155869)
 
 !SSC-B7D028A155686B7756547AFADCC8723B
 System.Void System.IO.FileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.Boolean,System.IO.FileOptions)
@@ -1901,9 +1923,25 @@ System.Void System.IO.FileStream::SetLength(System.Int64)
 System.Void System.IO.FileStream::Write(System.Byte[],System.Int32,System.Int32)
 	r145144		spouliot - validate 'handle' and all parameters then call WriteInternal [SecurityCritical] if 'CanWrite' and not 'async'
 
+!SSC-D3D8AB870987AA1419A6E83E5E29046A
+System.Void System.IO.FileSystemInfo::.ctor()
+	r155836		spouliot - now decorated with SSC to limit inheritance of the type to platform (well SSC/SC) code
+
 !SSC-E9533839CDB45824096AEDF4F9C2CE5B
 System.Void System.IO.FileSystemInfo::Refresh(System.Boolean)
 	r142142		spouliot - call MonoIO.GetFileStat [SecurityCritical] on 'FullPath' to update internal state
+
+!SSC-C1674A2C68A2B8A4F79C574796A1380A
+System.Void System.IO.FileSystemInfo::set_CreationTime(System.DateTime)
+	r155867		spouliot - call MonoIO.SetFileTime [SecurityCritical] - FIXME: call SecurityManager.EnsureElevatedPermissions (r155872)
+
+!SSC-A872E533AC7408578A976BF0127FCCEC
+System.Void System.IO.FileSystemInfo::set_LastAccessTime(System.DateTime)
+	r155867		spouliot - call MonoIO.SetFileTime [SecurityCritical] - FIXME: call SecurityManager.EnsureElevatedPermissions (r155872)
+
+!SSC-EFF552AFEBF2DB7B9C99276F82824A37
+System.Void System.IO.FileSystemInfo::set_LastWriteTime(System.DateTime)
+	r155867		spouliot - call MonoIO.SetFileTime [SecurityCritical] - FIXME: call SecurityManager.EnsureElevatedPermissions (r155872)
 
 !SSC-77B0E4E8894A0EA3986C1AB53DF17316
 System.Void System.IO.IsolatedStorage.IsolatedStorage::.cctor()
@@ -1924,6 +1962,18 @@ System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteFile(System.Str
 !SSC-37FBC38B851830D40EFB4A51A8372C58
 System.Void System.IO.IsolatedStorage.IsolatedStorageFile::Remove()
 	r144307		spouliot - validate instance with 'PreCheck', call IsolatedStorage.Remove [SecurityCritical] with 'basedir'
+
+!SSC-461BCFBCD6AD2C1950EB85B281950B55
+System.Void System.IO.IsolatedStorage.IsolatedStorageFileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.IO.IsolatedStorage.IsolatedStorageFile)
+	r155836		spouliot - promoted to SSC so it can call FileStream API that requires elevated trust (and was previously SC or SSC)
+
+!SSC-95F297207B25581B31845A8C2F44237C
+System.Void System.IO.IsolatedStorage.IsolatedStorageFileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.IsolatedStorage.IsolatedStorageFile)
+	r155836		spouliot - promoted to SSC so it can call FileStream API that requires elevated trust (and was previously SC or SSC)
+
+!SSC-5625C617C5DA76D8A5B4C314B275CF57
+System.Void System.IO.IsolatedStorage.IsolatedStorageFileStream::.ctor(System.String,System.IO.FileMode,System.IO.IsolatedStorage.IsolatedStorageFile)
+	r155836		spouliot - promoted to SSC so it can call FileStream API that requires elevated trust (and was previously SC or SSC)
 
 !SSC-19979DD3EF6D6A65BF35B1561B9E2016
 System.Void System.IO.Path::.cctor()
@@ -1958,6 +2008,10 @@ System.Void System.Reflection.Emit.DynamicMethod::CreateDynMethod()
 System.Void System.Reflection.Emit.DynamicMethod::Finalize()
 	r142142		spouliot - call destroy_dynamic_method (icall named mono_reflection_destroy_dynamic_method in reflection.c) on 'this'
 
+!SSC-E8B6CCBE11DFB9855DA3ED9187E11F6E
+System.Void System.Reflection.Emit.DynamicMethod::RejectIfCreated()
+	r155836		spouliot - call RuntimeMethodHandle.get_Value [SecurityCritical] to compare it with IntPtr.Zero
+
 !SSC-A9BBA57B3670D5537E9F91B185D810E3
 System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.AssemblyBuilder,System.String,System.String,System.Boolean,System.Boolean)
 	r142142		spouliot - call set_wrappers_type (icall) and debugging symbol loading/initialization
@@ -1985,6 +2039,10 @@ System.Void System.Reflection.MonoGenericClass::.ctor(System.Type,System.Type[])
 !SSC-B4A206E08086594ACF279EC3032BD6FD
 System.Void System.Reflection.MonoGenericClass::initialize()
 	r142142		spouliot - call initialize (icall named mono_reflection_generic_class_initialize in mono/metadata/reflection.c)
+
+!SSC-D2747D83A950F786B75D8B9BF67DAA2D
+System.Void System.Reflection.MonoMethod::.ctor(System.RuntimeMethodHandle)
+	r155836		spouliot - internal. call RuntimeMethodHandle.get_Value [SecurityCritical] to initialize it's 'mhandle' field
 
 !SSC-56411658359B48D93E85D300FB2D55AC
 System.Void System.Reflection.MonoProperty::CachePropertyInfo(System.Reflection.PInfo)
@@ -2030,6 +2088,14 @@ System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteOb
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteValue(System.IO.BinaryWriter,System.Type,System.Object)
 	r145200		spouliot - call ObjectIDGenerator [SecurityCritical] GetId
 
+!SSC-D16421AA78B52FA2589E5DAA5CF5670A
+System.Void System.RuntimeFieldHandle::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+	r155836		spouliot - internal. assign 'value' field from the FieldHandle.Value [SecurityCritical] of the MonoField being deserialized
+
+!SSC-77636A6B0D9EDABC952D9C077C9F9D43
+System.Void System.RuntimeMethodHandle::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+	r155836		spouliot - internal. assign 'value' field from the MethodHandle.Value [SecurityCritical] of the MonoMethod being deserialized
+
 !SSC-CC6AAD6CCC1E649C3682E332171240A0
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
 	r142142		spouliot - call RngOpen (icall)
@@ -2049,6 +2115,10 @@ System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetBytes(Syst
 !SSC-16DE708D4377D7F87E911DC99105A9D1
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetNonZeroBytes(System.Byte[])
 	r142142		spouliot - call RngGetBytes (icall)
+
+!SSC-DF0AA4CE5715DA5837A0AA16FC528E9F
+System.Void System.Security.SecurityManager::.cctor()
+	r155633		spouliot - set HasElevatedPermissions [SecurityCritical] based on SecurityEnabled state (for 2,1 code outside the plugin)
 
 !SSC-5F7F5B8405D224AD6A5F561A93988C3D
 System.Void System.String::.cctor()
