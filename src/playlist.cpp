@@ -1744,7 +1744,7 @@ PlaylistParser::on_start_element_internal_asxparser (AsxParser *parser, const ch
 
 	GList *keys = g_hash_table_get_keys (atts);
 	int kl = g_hash_table_size (atts);
-	const char **attr_list = (const char **) g_malloc (sizeof (char *) * kl + 1);
+	const char **attr_list = (const char **) g_malloc (sizeof (char *) * (kl + 1) * 2);
 
 	int i = 0;
 	while (keys) {
