@@ -230,6 +230,7 @@ public:
 		start_element_handler = NULL;
 		end_element_handler = NULL;
 		text_handler = NULL;
+		error_handler = NULL;
 	}
 
 	~AsxParserInternal ();
