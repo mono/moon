@@ -1,5 +1,12 @@
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: If the call to string.Format
+	  throws an exception, we need to use the fallback value, so
+	  wrap that block of code in the try/catch too. Fixes part of
+	  drt 233.
+
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardPropertyPathNode.cs: Call Types.Ensure before
 	  attempting a DP lookup, otherwise it's possible we'd look up
 	  the DP before it's registered. Fixes part of drt 233.

@@ -213,18 +213,19 @@ namespace System.Windows.Data {
 			                           GetConverterCulture ());
 			}
 
-			if (value == null) {
-				value = Binding.TargetNullValue;
-			} else {
-				string format = Binding.StringFormat;
-				if (!string.IsNullOrEmpty (format)) {
-					if (!format.Contains ("{0"))
-						format = "{0:" + format + "}";
-					value = string.Format (GetConverterCulture (), format, value);
-				}
-			}
-
 			try {
+				if (value == null) {
+					value = Binding.TargetNullValue;
+				} else if (value == DependencyProperty.UnsetValue) {
+					value = Binding.FallbackValue;
+				} else {
+					string format = Binding.StringFormat;
+					if (!string.IsNullOrEmpty (format)) {
+						if (!format.Contains ("{0"))
+							format = "{0:" + format + "}";
+						value = string.Format (GetConverterCulture (), format, value);
+					}
+				}
 				return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
 			} catch {
 				return MoonlightTypeConverter.ConvertObject (dp, Binding.FallbackValue, Target.GetType (), true);
