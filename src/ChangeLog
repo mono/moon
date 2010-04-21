@@ -1,3 +1,7 @@
+2010-04-21  Jackson Harper  <jackson@ximian.com>
+
+	* playlist.cpp: Make sure we stop the parser on error.
+
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
 	* textblock.h: Add another missing default value.

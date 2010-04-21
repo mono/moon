@@ -2715,8 +2715,12 @@ void
 PlaylistParser::ParsingError (ErrorEventArgs *args)
 {
 	LOG_PLAYLIST ("PlaylistParser::ParsingError (%s)\n", args->GetErrorMessage());
-	
-	XML_StopParser (internal->parser, false);
+
+	if (use_internal_asxparser)
+		internal->asxparser->Stop ();
+	else
+		XML_StopParser (internal->parser, false);
+
 	if (error_args) {
 		if (args)
 			args->unref ();
