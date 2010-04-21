@@ -1,3 +1,9 @@
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardPropertyPathNode.cs: Call Types.Ensure before
+	  attempting a DP lookup, otherwise it's possible we'd look up
+	  the DP before it's registered. Fixes part of drt 233.
+
 2010-04-08  Alan McGovern  <amcgovern@novell.com>
 
 	* Binding.cs: Implement some new SL4 binding properties.

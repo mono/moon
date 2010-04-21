@@ -76,8 +76,8 @@ namespace System.Windows.Data
 				} else {
 					PropertyInfo = type.GetProperty (PropertyName);
 				}
-
 				DependencyProperty prop;
+				Types.Ensure (type);
 				if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
 					DependencyProperty = prop;
 					dpChanged = DPChanged;
