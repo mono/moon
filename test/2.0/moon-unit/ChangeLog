@@ -1,3 +1,8 @@
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/DefaultValues.cs: Yay for SL4 compatible default value
+	  tests. Who wants to fix them now... ;)
+
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/MediaElementTest.cs: Different

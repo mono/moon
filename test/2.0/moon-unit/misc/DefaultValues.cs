@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Browser;
@@ -125,56 +125,6 @@ namespace MoonTest.System.Windows
 namespace MoonTest.System.Windows
 {
     [TestClass]
-    public partial class ExternalPartTest
-    {
-    }
-}
-namespace MoonTest.System.Windows
-{
-    [TestClass]
-    public partial class ExtensionPartTest
-    {
-        [TestMethod]
-        public void Test_ReadLocalValue_ExtensionPart ()
-        {
-            ExtensionPart widget = new ExtensionPart ();
-            object retval;
-
-            retval = widget.ReadLocalValue(ExtensionPart.SourceProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(ExtensionPart.SourceProperty) should not have a value by default");
-        }
-
-        [TestMethod]
-        public void Test_GetValue_ExtensionPart ()
-        {
-            ExtensionPart widget = new ExtensionPart ();
-            object retval;
-
-            Assert.IsNotNull(ExtensionPart.SourceProperty.GetMetadata (typeof (ExtensionPart)), "#metadata should not be null for: ExtensionPart.SourceProperty.ExtensionPart");
-            retval = ExtensionPart.SourceProperty.GetMetadata (typeof (ExtensionPart)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for ExtensionPart.SourceProperty should be non-null value");
-            Assert.IsInstanceOfType<Uri>(retval, "ExtensionPart.SourceProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("", retval.ToString (), "ExtensionPart.SourceProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(ExtensionPart.SourceProperty);
-            Assert.IsNotNull(retval, "GetValue(ExtensionPart.SourceProperty) should not have returned null");
-            Assert.IsInstanceOfType<Uri>(retval, "GetValue(ExtensionPart.SourceProperty) is not of the correct type");
-            Assert.AreEqual("", retval.ToString (), "GetValue(ExtensionPart.SourceProperty) does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_ExtensionPart ()
-        {
-            ExtensionPart widget = new ExtensionPart ();
-
-            Assert.IsNotNull(widget.Source, "Source should not have returned null");
-            Assert.AreEqual("", widget.Source.ToString (), "Source does not match the default value");
-        }
-
-    }
-}
-namespace MoonTest.System.Windows
-{
-    [TestClass]
     public partial class AssemblyPartCollectionTest
     {
         [TestMethod]
@@ -188,26 +138,6 @@ namespace MoonTest.System.Windows
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsInstanceOfType<AssemblyPartCollection>(widget.SyncRoot, "SyncRoot is not of the correct type");
-        }
-
-    }
-}
-namespace MoonTest.System.Windows
-{
-    [TestClass]
-    public partial class ExternalPartCollectionTest
-    {
-        [TestMethod]
-        public void Test_PropertyGetter_ExternalPartCollection ()
-        {
-            ExternalPartCollection widget = new ExternalPartCollection ();
-
-            Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
-            Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            Assert.AreEqual(0, widget.Count, "Count does not match the default value");
-            Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
-            Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
-            Assert.IsInstanceOfType<ExternalPartCollection>(widget.SyncRoot, "SyncRoot is not of the correct type");
         }
 
     }
@@ -524,6 +454,8 @@ namespace MoonTest.System.Windows
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(WindowSettings.WidthProperty) should not have a value by default");
             retval = widget.ReadLocalValue(WindowSettings.TitleProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(WindowSettings.TitleProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(WindowSettings.WindowStyleProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(WindowSettings.WindowStyleProperty) should not have a value by default");
             retval = widget.ReadLocalValue(WindowSettings.LeftProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(WindowSettings.LeftProperty) should not have a value by default");
             retval = widget.ReadLocalValue(WindowSettings.TopProperty);
@@ -566,6 +498,15 @@ namespace MoonTest.System.Windows
             Assert.IsNotNull(retval, "GetValue(WindowSettings.TitleProperty) should not have returned null");
             Assert.IsInstanceOfType<string>(retval, "GetValue(WindowSettings.TitleProperty) is not of the correct type");
             Assert.AreEqual("", retval, "GetValue(WindowSettings.TitleProperty) does not match the default value");
+            Assert.IsNotNull(WindowSettings.WindowStyleProperty.GetMetadata (typeof (WindowSettings)), "#metadata should not be null for: WindowSettings.WindowStyleProperty.WindowSettings");
+            retval = WindowSettings.WindowStyleProperty.GetMetadata (typeof (WindowSettings)).DefaultValue;
+            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for WindowSettings.WindowStyleProperty should be non-null value");
+            Assert.IsInstanceOfType<WindowStyle>(retval, "WindowSettings.WindowStyleProperty.GetMetadata() is not of the correct type");
+            Assert.AreEqual(WindowStyle.SingleBorderWindow, retval, "WindowSettings.WindowStyleProperty.GetMetadata() does not match the default value");
+            retval = widget.GetValue(WindowSettings.WindowStyleProperty);
+            Assert.IsNotNull(retval, "GetValue(WindowSettings.WindowStyleProperty) should not have returned null");
+            Assert.IsInstanceOfType<WindowStyle>(retval, "GetValue(WindowSettings.WindowStyleProperty) is not of the correct type");
+            Assert.AreEqual(WindowStyle.SingleBorderWindow, retval, "GetValue(WindowSettings.WindowStyleProperty) does not match the default value");
             Assert.IsNotNull(WindowSettings.LeftProperty.GetMetadata (typeof (WindowSettings)), "#metadata should not be null for: WindowSettings.LeftProperty.WindowSettings");
             retval = WindowSettings.LeftProperty.GetMetadata (typeof (WindowSettings)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for WindowSettings.LeftProperty should be non-null value");
@@ -605,6 +546,7 @@ namespace MoonTest.System.Windows
             Assert.AreEqual((double) 800, widget.Width, "Width does not match the default value");
             Assert.IsNotNull(widget.Title, "Title should not have returned null");
             Assert.AreEqual("", widget.Title, "Title does not match the default value");
+            Assert.AreEqual(WindowStyle.SingleBorderWindow, widget.WindowStyle, "WindowStyle does not match the default value");
             Assert.AreEqual((double) 0, widget.Left, "Left does not match the default value");
             Assert.AreEqual((double) 0, widget.Top, "Top does not match the default value");
             Assert.AreEqual(WindowStartupLocation.CenterScreen, widget.WindowStartupLocation, "WindowStartupLocation does not match the default value");
@@ -718,20 +660,29 @@ namespace MoonTest.System.Windows
 namespace MoonTest.System.Windows
 {
     [TestClass]
-    public partial class WindowTest
+    public partial class VisualStateManagerTest
     {
         [TestMethod]
-        public void Test_PropertyGetter_Window ()
+        public void Test_ReadLocalValue_VisualStateManager ()
         {
-            Window widget = new Window ();
+            VisualStateManager widget = new VisualStateManager ();
+            object retval;
 
-            // exception generating test for Height
-            // exception generating test for Width
-            // exception generating test for Left
-            // exception generating test for Top
-            // exception generating test for TopMost
-            // exception generating test for IsActive
-            // exception generating test for WindowState
+            retval = widget.ReadLocalValue(VisualStateManager.CustomVisualStateManagerProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(VisualStateManager.CustomVisualStateManagerProperty) should not have a value by default");
+        }
+
+        [TestMethod]
+        public void Test_GetValue_VisualStateManager ()
+        {
+            VisualStateManager widget = new VisualStateManager ();
+            object retval;
+
+            Assert.IsNotNull(VisualStateManager.CustomVisualStateManagerProperty.GetMetadata (typeof (VisualStateManager)), "#metadata should not be null for: VisualStateManager.CustomVisualStateManagerProperty.VisualStateManager");
+            retval = VisualStateManager.CustomVisualStateManagerProperty.GetMetadata (typeof (VisualStateManager)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for VisualStateManager.CustomVisualStateManagerProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(VisualStateManager.CustomVisualStateManagerProperty);
+            Assert.IsNull(retval, "GetValue(VisualStateManager.CustomVisualStateManagerProperty) should have returned null");
         }
 
     }
@@ -877,8 +828,7 @@ namespace MoonTest.System.Windows.Media
             Assert.AreEqual((double) 0, widget.CenterX, "CenterX does not match the default value");
             Assert.AreEqual((double) 0, widget.CenterY, "CenterY does not match the default value");
             Assert.AreEqual((double) 0, widget.Angle, "Angle does not match the default value");
-            Assert.IsNotNull(widget.Inverse, "Inverse should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.Inverse, "Inverse is not of the correct type");
+            Assert.IsNull(widget.Inverse, "Inverse should have returned null");
         }
 
     }
@@ -958,8 +908,7 @@ namespace MoonTest.System.Windows.Media
             Assert.AreEqual((double) 0, widget.CenterY, "CenterY does not match the default value");
             Assert.AreEqual((double) 1, widget.ScaleX, "ScaleX does not match the default value");
             Assert.AreEqual((double) 1, widget.ScaleY, "ScaleY does not match the default value");
-            Assert.IsNotNull(widget.Inverse, "Inverse should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.Inverse, "Inverse is not of the correct type");
+            Assert.IsNull(widget.Inverse, "Inverse should have returned null");
         }
 
     }
@@ -1039,8 +988,7 @@ namespace MoonTest.System.Windows.Media
             Assert.AreEqual((double) 0, widget.CenterY, "CenterY does not match the default value");
             Assert.AreEqual((double) 0, widget.AngleX, "AngleX does not match the default value");
             Assert.AreEqual((double) 0, widget.AngleY, "AngleY does not match the default value");
-            Assert.IsNotNull(widget.Inverse, "Inverse should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.Inverse, "Inverse is not of the correct type");
+            Assert.IsNull(widget.Inverse, "Inverse should have returned null");
         }
 
     }
@@ -1096,8 +1044,7 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual((double) 0, widget.X, "X does not match the default value");
             Assert.AreEqual((double) 0, widget.Y, "Y does not match the default value");
-            Assert.IsNotNull(widget.Inverse, "Inverse should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.Inverse, "Inverse is not of the correct type");
+            Assert.IsNull(widget.Inverse, "Inverse should have returned null");
         }
 
     }
@@ -1160,8 +1107,7 @@ namespace MoonTest.System.Windows.Media
             Assert.IsNotNull(widget.Children, "Children should not have returned null");
             Assert.IsInstanceOfType<TransformCollection>(widget.Children, "Children is not of the correct type");
             Assert.AreEqual("Identity", widget.Value.ToString (), "Value does not match the default value");
-            Assert.IsNotNull(widget.Inverse, "Inverse should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.Inverse, "Inverse is not of the correct type");
+            Assert.IsNull(widget.Inverse, "Inverse should have returned null");
         }
 
     }
@@ -1205,8 +1151,7 @@ namespace MoonTest.System.Windows.Media
             MatrixTransform widget = new MatrixTransform ();
 
             Assert.AreEqual("Identity", widget.Matrix.ToString (), "Matrix does not match the default value");
-            Assert.IsNotNull(widget.Inverse, "Inverse should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.Inverse, "Inverse is not of the correct type");
+            Assert.IsNull(widget.Inverse, "Inverse should have returned null");
         }
 
     }
@@ -1346,8 +1291,7 @@ namespace MoonTest.System.Windows.Media
             Assert.AreEqual((double) 0, widget.Rotation, "Rotation does not match the default value");
             Assert.AreEqual((double) 0, widget.TranslateX, "TranslateX does not match the default value");
             Assert.AreEqual((double) 0, widget.TranslateY, "TranslateY does not match the default value");
-            Assert.IsNotNull(widget.Inverse, "Inverse should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.Inverse, "Inverse is not of the correct type");
+            Assert.IsNull(widget.Inverse, "Inverse should have returned null");
         }
 
     }
@@ -3536,10 +3480,12 @@ namespace MoonTest.System.Windows.Media
             retval = widget.ReadLocalValue(CaptureSource.VideoCaptureDeviceProperty);
             Assert.IsNull(retval, "ReadLocalValue(CaptureSource.VideoCaptureDeviceProperty) should have returned null");
             retval = widget.ReadLocalValue(CaptureSource.AudioCaptureDeviceProperty);
-            Assert.IsNull(retval, "ReadLocalValue(CaptureSource.AudioCaptureDeviceProperty) should have returned null");
+            Assert.IsNotNull(retval, "ReadLocalValue(CaptureSource.AudioCaptureDeviceProperty) should not have returned null");
+            Assert.IsInstanceOfType<AudioCaptureDevice>(retval, "ReadLocalValue(CaptureSource.AudioCaptureDeviceProperty) is not of the correct type");
         }
 
         [TestMethod]
+        [MoonlightBug]
         public void Test_GetValue_CaptureSource ()
         {
             CaptureSource widget = new CaptureSource ();
@@ -3554,7 +3500,8 @@ namespace MoonTest.System.Windows.Media
             retval = CaptureSource.AudioCaptureDeviceProperty.GetMetadata (typeof (CaptureSource)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for CaptureSource.AudioCaptureDeviceProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(CaptureSource.AudioCaptureDeviceProperty);
-            Assert.IsNull(retval, "GetValue(CaptureSource.AudioCaptureDeviceProperty) should have returned null");
+            Assert.IsNotNull(retval, "GetValue(CaptureSource.AudioCaptureDeviceProperty) should not have returned null");
+            Assert.IsInstanceOfType<AudioCaptureDevice>(retval, "GetValue(CaptureSource.AudioCaptureDeviceProperty) is not of the correct type");
         }
 
         [TestMethod]
@@ -3564,7 +3511,8 @@ namespace MoonTest.System.Windows.Media
             CaptureSource widget = new CaptureSource ();
 
             Assert.IsNull(widget.VideoCaptureDevice, "VideoCaptureDevice should have returned null");
-            Assert.IsNull(widget.AudioCaptureDevice, "AudioCaptureDevice should have returned null");
+            Assert.IsNotNull(widget.AudioCaptureDevice, "AudioCaptureDevice should not have returned null");
+            Assert.IsInstanceOfType<AudioCaptureDevice>(widget.AudioCaptureDevice, "AudioCaptureDevice is not of the correct type");
             Assert.AreEqual(CaptureState.Stopped, widget.State, "State does not match the default value");
         }
 
@@ -6428,6 +6376,8 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -6715,6 +6665,11 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Path)), "#metadata should not be null for: FrameworkElement.CursorProperty.Path");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Path)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Path)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Path");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Path)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -6968,6 +6923,8 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -7242,6 +7199,11 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Ellipse)), "#metadata should not be null for: FrameworkElement.CursorProperty.Ellipse");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Ellipse)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Ellipse)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Ellipse");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Ellipse)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -7510,6 +7472,8 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -7828,6 +7792,11 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Line)), "#metadata should not be null for: FrameworkElement.CursorProperty.Line");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Line)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Line)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Line");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Line)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -8096,6 +8065,8 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -8393,6 +8364,11 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Polygon)), "#metadata should not be null for: FrameworkElement.CursorProperty.Polygon");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Polygon)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Polygon)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Polygon");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Polygon)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -8660,6 +8636,8 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -8957,6 +8935,11 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Polyline)), "#metadata should not be null for: FrameworkElement.CursorProperty.Polyline");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Polyline)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Polyline)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Polyline");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Polyline)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -9224,6 +9207,8 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -9524,6 +9509,11 @@ namespace MoonTest.System.Windows.Shapes
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Rectangle)), "#metadata should not be null for: FrameworkElement.CursorProperty.Rectangle");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Rectangle)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Rectangle)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Rectangle");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Rectangle)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -9772,6 +9762,8 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -9886,6 +9878,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+        [MoonlightBug]
         public void Test_GetValue_FrameworkElement ()
         {
             Glyphs widget = new Glyphs ();
@@ -9908,7 +9901,7 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(FrameworkElement.ActualWidthProperty);
             Assert.IsNotNull(retval, "GetValue(FrameworkElement.ActualWidthProperty) should not have returned null");
             Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.ActualWidthProperty) is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "GetValue(FrameworkElement.ActualWidthProperty) does not match the default value");
+            Assert.AreEqual((double) 1.65436122510606E-24, retval, "GetValue(FrameworkElement.ActualWidthProperty) does not match the default value");
             Assert.IsNotNull(FrameworkElement.ActualHeightProperty.GetMetadata (typeof (Glyphs)), "#metadata should not be null for: FrameworkElement.ActualHeightProperty.Glyphs");
             retval = FrameworkElement.ActualHeightProperty.GetMetadata (typeof (Glyphs)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.ActualHeightProperty should be non-null value");
@@ -10027,6 +10020,11 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Glyphs)), "#metadata should not be null for: FrameworkElement.CursorProperty.Glyphs");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Glyphs)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Glyphs)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Glyphs");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Glyphs)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -10143,11 +10141,12 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual((double) -3.40282346638529E+38, widget.OriginX, "OriginX does not match the default value");
             Assert.AreEqual((double) -3.40282346638529E+38, widget.OriginY, "OriginY does not match the default value");
             Assert.IsNull(widget.Fill, "Fill should have returned null");
+            Assert.IsNull(widget.FontSource, "FontSource should have returned null");
             Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
             Assert.IsInstanceOfType<TriggerCollection>(widget.Triggers, "Triggers is not of the correct type");
             Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
             Assert.IsInstanceOfType<ResourceDictionary>(widget.Resources, "Resources is not of the correct type");
-            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 1.65436122510606E-24, widget.ActualWidth, "ActualWidth does not match the default value");
             Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
             Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
             Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
@@ -10235,11 +10234,23 @@ namespace MoonTest.System.Windows.Documents
     public partial class RunTest
     {
         [TestMethod]
+        public void Test_ReadLocalValue_Run ()
+        {
+            Run widget = new Run ();
+            object retval;
+
+            retval = widget.ReadLocalValue(Run.FlowDirectionProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Run.FlowDirectionProperty) should not have a value by default");
+        }
+
+        [TestMethod]
         public void Test_ReadLocalValue_Inline ()
         {
             Run widget = new Run ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -10252,8 +10263,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -10276,10 +10285,25 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
+        }
+
+        [TestMethod]
+        public void Test_GetValue_Run ()
+        {
+            Run widget = new Run ();
+            object retval;
+
+            Assert.IsNotNull(Run.FlowDirectionProperty.GetMetadata (typeof (Run)), "#metadata should not be null for: Run.FlowDirectionProperty.Run");
+            retval = Run.FlowDirectionProperty.GetMetadata (typeof (Run)).DefaultValue;
+            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Run.FlowDirectionProperty should be non-null value");
+            Assert.IsInstanceOfType<FlowDirection>(retval, "Run.FlowDirectionProperty.GetMetadata() is not of the correct type");
+            Assert.AreEqual(FlowDirection.LeftToRight, retval, "Run.FlowDirectionProperty.GetMetadata() does not match the default value");
+            retval = widget.GetValue(Run.FlowDirectionProperty);
+            Assert.IsNotNull(retval, "GetValue(Run.FlowDirectionProperty) should not have returned null");
+            Assert.IsInstanceOfType<FlowDirection>(retval, "GetValue(Run.FlowDirectionProperty) is not of the correct type");
+            Assert.AreEqual(FlowDirection.LeftToRight, retval, "GetValue(Run.FlowDirectionProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -10288,6 +10312,11 @@ namespace MoonTest.System.Windows.Documents
             Run widget = new Run ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Run)), "#metadata should not be null for: Inline.TextDecorationsProperty.Run");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Run)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (Run)), "#metadata should not be null for: Inline.FontSizeProperty.Run");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (Run)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -10340,11 +10369,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Run)), "#metadata should not be null for: Inline.TextDecorationsProperty.Run");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Run)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (Run)), "#metadata should not be null for: Inline.LanguageProperty.Run");
             retval = Inline.LanguageProperty.GetMetadata (typeof (Run)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -10414,11 +10438,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (Run)), "#metadata should not be null for: TextElement.TextDecorationsProperty.Run");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (Run)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(TextElement.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (Run)), "#metadata should not be null for: TextElement.LanguageProperty.Run");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (Run)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -10431,13 +10450,13 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_Run ()
         {
             Run widget = new Run ();
 
-            Assert.IsNotNull(widget.Text, "Text should not have returned null");
-            Assert.AreEqual("", widget.Text, "Text does not match the default value");
+            Assert.AreEqual(FlowDirection.LeftToRight, widget.FlowDirection, "FlowDirection does not match the default value");
+            Assert.IsNull(widget.Text, "Text should have returned null");
+            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -10446,11 +10465,36 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            Run widget = new Run ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            Run widget = new Run ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -10488,8 +10532,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -10570,11 +10612,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (Paragraph)), "#metadata should not be null for: TextElement.TextDecorationsProperty.Paragraph");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (Paragraph)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(TextElement.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (Paragraph)), "#metadata should not be null for: TextElement.LanguageProperty.Paragraph");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (Paragraph)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -10587,7 +10624,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_Paragraph ()
         {
             Paragraph widget = new Paragraph ();
@@ -10603,11 +10639,36 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Block ()
+        {
+            Paragraph widget = new Paragraph ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            Paragraph widget = new Paragraph ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -10623,6 +10684,8 @@ namespace MoonTest.System.Windows.Documents
             Span widget = new Span ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -10635,8 +10698,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -10659,8 +10720,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -10671,6 +10730,11 @@ namespace MoonTest.System.Windows.Documents
             Span widget = new Span ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Span)), "#metadata should not be null for: Inline.TextDecorationsProperty.Span");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Span)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (Span)), "#metadata should not be null for: Inline.FontSizeProperty.Span");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (Span)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -10723,11 +10787,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Span)), "#metadata should not be null for: Inline.TextDecorationsProperty.Span");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Span)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (Span)), "#metadata should not be null for: Inline.LanguageProperty.Span");
             retval = Inline.LanguageProperty.GetMetadata (typeof (Span)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -10797,11 +10856,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (Span)), "#metadata should not be null for: TextElement.TextDecorationsProperty.Span");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (Span)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(TextElement.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (Span)), "#metadata should not be null for: TextElement.LanguageProperty.Span");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (Span)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -10820,6 +10874,7 @@ namespace MoonTest.System.Windows.Documents
 
             Assert.IsNotNull(widget.Inlines, "Inlines should not have returned null");
             Assert.IsInstanceOfType<InlineCollection>(widget.Inlines, "Inlines is not of the correct type");
+            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -10828,11 +10883,36 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            Span widget = new Span ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            Span widget = new Span ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -10848,6 +10928,10 @@ namespace MoonTest.System.Windows.Documents
             Underline widget = new Underline ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.IsNotNull(retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have returned null");
+            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "ReadLocalValue(Inline.TextDecorationsProperty) is not of the correct type");
+            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "ReadLocalValue(Inline.TextDecorationsProperty) does not match the default value");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -10860,10 +10944,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "ReadLocalValue(Inline.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "ReadLocalValue(Inline.TextDecorationsProperty) does not match the default value");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -10886,10 +10966,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "ReadLocalValue(TextElement.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "ReadLocalValue(TextElement.TextDecorationsProperty) does not match the default value");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -10900,6 +10976,13 @@ namespace MoonTest.System.Windows.Documents
             Underline widget = new Underline ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Underline)), "#metadata should not be null for: Inline.TextDecorationsProperty.Underline");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Underline)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNotNull(retval, "GetValue(Inline.TextDecorationsProperty) should not have returned null");
+            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "GetValue(Inline.TextDecorationsProperty) is not of the correct type");
+            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "GetValue(Inline.TextDecorationsProperty) does not match the default value");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (Underline)), "#metadata should not be null for: Inline.FontSizeProperty.Underline");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (Underline)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -10952,13 +11035,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Underline)), "#metadata should not be null for: Inline.TextDecorationsProperty.Underline");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Underline)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "GetValue(Inline.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "GetValue(Inline.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "GetValue(Inline.TextDecorationsProperty) does not match the default value");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (Underline)), "#metadata should not be null for: Inline.LanguageProperty.Underline");
             retval = Inline.LanguageProperty.GetMetadata (typeof (Underline)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -11028,13 +11104,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (Underline)), "#metadata should not be null for: TextElement.TextDecorationsProperty.Underline");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (Underline)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "GetValue(TextElement.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "GetValue(TextElement.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "GetValue(TextElement.TextDecorationsProperty) does not match the default value");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (Underline)), "#metadata should not be null for: TextElement.LanguageProperty.Underline");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (Underline)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -11053,6 +11122,8 @@ namespace MoonTest.System.Windows.Documents
 
             Assert.IsNotNull(widget.Inlines, "Inlines should not have returned null");
             Assert.IsInstanceOfType<InlineCollection>(widget.Inlines, "Inlines is not of the correct type");
+            Assert.IsNotNull(widget.TextDecorations, "TextDecorations should not have returned null");
+            Assert.AreEqual("System.Windows.TextDecorationCollection", widget.TextDecorations.ToString (), "TextDecorations does not match the default value");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -11061,12 +11132,47 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNotNull(widget.TextDecorations, "TextDecorations should not have returned null");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", widget.TextDecorations.ToString (), "TextDecorations does not match the default value");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Span ()
+        {
+            Underline widget = new Underline ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            Underline widget = new Underline ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            Underline widget = new Underline ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -11083,6 +11189,8 @@ namespace MoonTest.System.Windows.Documents
             Italic widget = new Italic ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -11097,8 +11205,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -11124,8 +11230,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -11137,6 +11241,11 @@ namespace MoonTest.System.Windows.Documents
             Italic widget = new Italic ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Italic)), "#metadata should not be null for: Inline.TextDecorationsProperty.Italic");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Italic)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (Italic)), "#metadata should not be null for: Inline.FontSizeProperty.Italic");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (Italic)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -11189,11 +11298,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Italic)), "#metadata should not be null for: Inline.TextDecorationsProperty.Italic");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Italic)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (Italic)), "#metadata should not be null for: Inline.LanguageProperty.Italic");
             retval = Inline.LanguageProperty.GetMetadata (typeof (Italic)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -11264,11 +11368,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (Italic)), "#metadata should not be null for: TextElement.TextDecorationsProperty.Italic");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (Italic)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(TextElement.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (Italic)), "#metadata should not be null for: TextElement.LanguageProperty.Italic");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (Italic)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -11288,6 +11387,7 @@ namespace MoonTest.System.Windows.Documents
 
             Assert.IsNotNull(widget.Inlines, "Inlines should not have returned null");
             Assert.IsInstanceOfType<InlineCollection>(widget.Inlines, "Inlines is not of the correct type");
+            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -11296,11 +11396,47 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Span ()
+        {
+            Italic widget = new Italic ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            Italic widget = new Italic ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            Italic widget = new Italic ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -11316,6 +11452,8 @@ namespace MoonTest.System.Windows.Documents
             Bold widget = new Bold ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -11330,8 +11468,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -11356,8 +11492,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -11368,6 +11502,11 @@ namespace MoonTest.System.Windows.Documents
             Bold widget = new Bold ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Bold)), "#metadata should not be null for: Inline.TextDecorationsProperty.Bold");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Bold)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (Bold)), "#metadata should not be null for: Inline.FontSizeProperty.Bold");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (Bold)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -11420,11 +11559,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Bold)), "#metadata should not be null for: Inline.TextDecorationsProperty.Bold");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Bold)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (Bold)), "#metadata should not be null for: Inline.LanguageProperty.Bold");
             retval = Inline.LanguageProperty.GetMetadata (typeof (Bold)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -11494,11 +11628,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (Bold)), "#metadata should not be null for: TextElement.TextDecorationsProperty.Bold");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (Bold)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(TextElement.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (Bold)), "#metadata should not be null for: TextElement.LanguageProperty.Bold");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (Bold)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -11517,6 +11646,7 @@ namespace MoonTest.System.Windows.Documents
 
             Assert.IsNotNull(widget.Inlines, "Inlines should not have returned null");
             Assert.IsInstanceOfType<InlineCollection>(widget.Inlines, "Inlines is not of the correct type");
+            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -11525,11 +11655,47 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Span ()
+        {
+            Bold widget = new Bold ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            Bold widget = new Bold ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            Bold widget = new Bold ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -11568,6 +11734,10 @@ namespace MoonTest.System.Windows.Documents
             Hyperlink widget = new Hyperlink ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.IsNotNull(retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have returned null");
+            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "ReadLocalValue(Inline.TextDecorationsProperty) is not of the correct type");
+            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "ReadLocalValue(Inline.TextDecorationsProperty) does not match the default value");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -11581,10 +11751,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "ReadLocalValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "ReadLocalValue(Inline.ForegroundProperty) is not of the correct type");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "ReadLocalValue(Inline.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "ReadLocalValue(Inline.TextDecorationsProperty) does not match the default value");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -11609,10 +11775,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "ReadLocalValue(TextElement.ForegroundProperty) is not of the correct type");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "ReadLocalValue(TextElement.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "ReadLocalValue(TextElement.TextDecorationsProperty) does not match the default value");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -11675,6 +11837,13 @@ namespace MoonTest.System.Windows.Documents
             Hyperlink widget = new Hyperlink ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Hyperlink)), "#metadata should not be null for: Inline.TextDecorationsProperty.Hyperlink");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Hyperlink)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNotNull(retval, "GetValue(Inline.TextDecorationsProperty) should not have returned null");
+            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "GetValue(Inline.TextDecorationsProperty) is not of the correct type");
+            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "GetValue(Inline.TextDecorationsProperty) does not match the default value");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (Hyperlink)), "#metadata should not be null for: Inline.FontSizeProperty.Hyperlink");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (Hyperlink)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -11727,13 +11896,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (Hyperlink)), "#metadata should not be null for: Inline.TextDecorationsProperty.Hyperlink");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (Hyperlink)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "GetValue(Inline.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "GetValue(Inline.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "GetValue(Inline.TextDecorationsProperty) does not match the default value");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (Hyperlink)), "#metadata should not be null for: Inline.LanguageProperty.Hyperlink");
             retval = Inline.LanguageProperty.GetMetadata (typeof (Hyperlink)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -11803,13 +11965,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (Hyperlink)), "#metadata should not be null for: TextElement.TextDecorationsProperty.Hyperlink");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (Hyperlink)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNotNull(retval, "GetValue(TextElement.TextDecorationsProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextDecorationCollection>(retval, "GetValue(TextElement.TextDecorationsProperty) is not of the correct type");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", retval.ToString (), "GetValue(TextElement.TextDecorationsProperty) does not match the default value");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (Hyperlink)), "#metadata should not be null for: TextElement.LanguageProperty.Hyperlink");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (Hyperlink)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -11838,6 +11993,8 @@ namespace MoonTest.System.Windows.Documents
             Assert.IsNull(widget.CommandParameter, "CommandParameter should have returned null");
             Assert.IsNotNull(widget.Inlines, "Inlines should not have returned null");
             Assert.IsInstanceOfType<InlineCollection>(widget.Inlines, "Inlines is not of the correct type");
+            Assert.IsNotNull(widget.TextDecorations, "TextDecorations should not have returned null");
+            Assert.AreEqual("System.Windows.TextDecorationCollection", widget.TextDecorations.ToString (), "TextDecorations does not match the default value");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -11846,12 +12003,47 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNotNull(widget.TextDecorations, "TextDecorations should not have returned null");
-            Assert.AreEqual("System.Windows.TextDecorationCollection", widget.TextDecorations.ToString (), "TextDecorations does not match the default value");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Span ()
+        {
+            Hyperlink widget = new Hyperlink ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            Hyperlink widget = new Hyperlink ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            Hyperlink widget = new Hyperlink ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
         [TestMethod]
@@ -11884,6 +12076,8 @@ namespace MoonTest.System.Windows.Documents
             LineBreak widget = new LineBreak ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -11896,8 +12090,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -11920,8 +12112,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -11932,6 +12122,11 @@ namespace MoonTest.System.Windows.Documents
             LineBreak widget = new LineBreak ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (LineBreak)), "#metadata should not be null for: Inline.TextDecorationsProperty.LineBreak");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (LineBreak)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (LineBreak)), "#metadata should not be null for: Inline.FontSizeProperty.LineBreak");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (LineBreak)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -11984,11 +12179,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (LineBreak)), "#metadata should not be null for: Inline.TextDecorationsProperty.LineBreak");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (LineBreak)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (LineBreak)), "#metadata should not be null for: Inline.LanguageProperty.LineBreak");
             retval = Inline.LanguageProperty.GetMetadata (typeof (LineBreak)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -12058,11 +12248,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (LineBreak)), "#metadata should not be null for: TextElement.TextDecorationsProperty.LineBreak");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (LineBreak)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(TextElement.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (LineBreak)), "#metadata should not be null for: TextElement.LanguageProperty.LineBreak");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (LineBreak)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -12079,6 +12264,7 @@ namespace MoonTest.System.Windows.Documents
         {
             LineBreak widget = new LineBreak ();
 
+            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -12087,11 +12273,36 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            LineBreak widget = new LineBreak ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            LineBreak widget = new LineBreak ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -12107,6 +12318,8 @@ namespace MoonTest.System.Windows.Documents
             InlineUIContainer widget = new InlineUIContainer ();
             object retval;
 
+            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontSizeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontSizeProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.FontFamilyProperty);
@@ -12119,8 +12332,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Inline.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(Inline.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Inline.LanguageProperty) should not have a value by default");
         }
@@ -12143,8 +12354,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.FontStretchProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.ForegroundProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(TextElement.TextDecorationsProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.TextDecorationsProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextElement.LanguageProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextElement.LanguageProperty) should not have a value by default");
         }
@@ -12155,6 +12364,11 @@ namespace MoonTest.System.Windows.Documents
             InlineUIContainer widget = new InlineUIContainer ();
             object retval;
 
+            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (InlineUIContainer)), "#metadata should not be null for: Inline.TextDecorationsProperty.InlineUIContainer");
+            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (InlineUIContainer)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(Inline.TextDecorationsProperty);
+            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.FontSizeProperty.GetMetadata (typeof (InlineUIContainer)), "#metadata should not be null for: Inline.FontSizeProperty.InlineUIContainer");
             retval = Inline.FontSizeProperty.GetMetadata (typeof (InlineUIContainer)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.FontSizeProperty should be non-null value");
@@ -12207,11 +12421,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Inline.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(Inline.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Inline.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Inline.TextDecorationsProperty.GetMetadata (typeof (InlineUIContainer)), "#metadata should not be null for: Inline.TextDecorationsProperty.InlineUIContainer");
-            retval = Inline.TextDecorationsProperty.GetMetadata (typeof (InlineUIContainer)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Inline.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Inline.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(Inline.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(Inline.LanguageProperty.GetMetadata (typeof (InlineUIContainer)), "#metadata should not be null for: Inline.LanguageProperty.InlineUIContainer");
             retval = Inline.LanguageProperty.GetMetadata (typeof (InlineUIContainer)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Inline.LanguageProperty should be non-null value");
@@ -12281,11 +12490,6 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(TextElement.ForegroundProperty);
             Assert.IsNotNull(retval, "GetValue(TextElement.ForegroundProperty) should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(TextElement.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(TextElement.TextDecorationsProperty.GetMetadata (typeof (InlineUIContainer)), "#metadata should not be null for: TextElement.TextDecorationsProperty.InlineUIContainer");
-            retval = TextElement.TextDecorationsProperty.GetMetadata (typeof (InlineUIContainer)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextElement.TextDecorationsProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(TextElement.TextDecorationsProperty);
-            Assert.IsNull(retval, "GetValue(TextElement.TextDecorationsProperty) should have returned null");
             Assert.IsNotNull(TextElement.LanguageProperty.GetMetadata (typeof (InlineUIContainer)), "#metadata should not be null for: TextElement.LanguageProperty.InlineUIContainer");
             retval = TextElement.LanguageProperty.GetMetadata (typeof (InlineUIContainer)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TextElement.LanguageProperty should be non-null value");
@@ -12303,6 +12507,7 @@ namespace MoonTest.System.Windows.Documents
             InlineUIContainer widget = new InlineUIContainer ();
 
             Assert.IsNull(widget.Child, "Child should have returned null");
+            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
             Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
             Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
@@ -12311,11 +12516,36 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
             Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
             Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
             Assert.IsNotNull(widget.Name, "Name should not have returned null");
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_Inline ()
+        {
+            InlineUIContainer widget = new InlineUIContainer ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_TextElement ()
+        {
+            InlineUIContainer widget = new InlineUIContainer ();
+
+            // exception generating test for ContentStart
+            // exception generating test for ContentEnd
+            // exception generating test for ElementStart
+            // exception generating test for ElementEnd
         }
 
     }
@@ -12375,6 +12605,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -12575,6 +12807,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Image)), "#metadata should not be null for: FrameworkElement.CursorProperty.Image");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Image)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Image)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Image");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Image)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -12813,6 +13050,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -13048,6 +13287,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Canvas)), "#metadata should not be null for: FrameworkElement.CursorProperty.Canvas");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Canvas)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Canvas)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Canvas");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Canvas)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -13296,6 +13540,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -13601,6 +13847,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (TextBlock)), "#metadata should not be null for: FrameworkElement.CursorProperty.TextBlock");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (TextBlock)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (TextBlock)), "#metadata should not be null for: FrameworkElement.DataContextProperty.TextBlock");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (TextBlock)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -13904,6 +14155,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -14277,6 +14530,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (MediaElement)), "#metadata should not be null for: FrameworkElement.CursorProperty.MediaElement");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (MediaElement)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (MediaElement)), "#metadata should not be null for: FrameworkElement.DataContextProperty.MediaElement");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (MediaElement)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -14547,6 +14805,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -14796,6 +15056,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (InkPresenter)), "#metadata should not be null for: FrameworkElement.CursorProperty.InkPresenter");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (InkPresenter)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (InkPresenter)), "#metadata should not be null for: FrameworkElement.DataContextProperty.InkPresenter");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (InkPresenter)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -15038,6 +15303,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -15307,6 +15574,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (MultiScaleImage)), "#metadata should not be null for: FrameworkElement.CursorProperty.MultiScaleImage");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (MultiScaleImage)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (MultiScaleImage)), "#metadata should not be null for: FrameworkElement.DataContextProperty.MultiScaleImage");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (MultiScaleImage)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -15638,6 +15910,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -15855,6 +16129,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (StackPanel)), "#metadata should not be null for: FrameworkElement.CursorProperty.StackPanel");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (StackPanel)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (StackPanel)), "#metadata should not be null for: FrameworkElement.DataContextProperty.StackPanel");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (StackPanel)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -16054,6 +16333,10 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextBox.TextWrappingProperty) should not have a value by default");
             retval = widget.ReadLocalValue(TextBox.CaretBrushProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextBox.CaretBrushProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(TextBox.InputScopeProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextBox.InputScopeProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(TextBox.WatermarkProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextBox.WatermarkProperty) should not have a value by default");
         }
 
         [TestMethod]
@@ -16136,6 +16419,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -16248,6 +16533,16 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextBox.CaretBrushProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(TextBox.CaretBrushProperty);
             Assert.IsNull(retval, "GetValue(TextBox.CaretBrushProperty) should have returned null");
+            Assert.IsNotNull(TextBox.InputScopeProperty.GetMetadata (typeof (TextBox)), "#metadata should not be null for: TextBox.InputScopeProperty.TextBox");
+            retval = TextBox.InputScopeProperty.GetMetadata (typeof (TextBox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextBox.InputScopeProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(TextBox.InputScopeProperty);
+            Assert.IsNull(retval, "GetValue(TextBox.InputScopeProperty) should have returned null");
+            Assert.IsNotNull(TextBox.WatermarkProperty.GetMetadata (typeof (TextBox)), "#metadata should not be null for: TextBox.WatermarkProperty.TextBox");
+            retval = TextBox.WatermarkProperty.GetMetadata (typeof (TextBox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for TextBox.WatermarkProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(TextBox.WatermarkProperty);
+            Assert.IsNull(retval, "GetValue(TextBox.WatermarkProperty) should have returned null");
         }
 
         [TestMethod]
@@ -16539,6 +16834,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (TextBox)), "#metadata should not be null for: FrameworkElement.CursorProperty.TextBox");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (TextBox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (TextBox)), "#metadata should not be null for: FrameworkElement.DataContextProperty.TextBox");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (TextBox)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -16651,6 +16951,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(TextAlignment.Left, widget.TextAlignment, "TextAlignment does not match the default value");
             Assert.AreEqual(TextWrapping.NoWrap, widget.TextWrapping, "TextWrapping does not match the default value");
             Assert.IsNull(widget.CaretBrush, "CaretBrush should have returned null");
+            // exception generating test for InputScope
+            // exception generating test for Watermark
             Assert.IsNull(widget.FontSource, "FontSource should have returned null");
             Assert.IsNotNull(widget.Text, "Text should not have returned null");
             Assert.AreEqual("", widget.Text, "Text does not match the default value");
@@ -16724,7 +17026,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
+	[MoonlightBug]
         public void Test_SetStringValue_TextBox ()
         {
             TextBox widget = new TextBox ();
@@ -16741,652 +17043,10 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
+	[MoonlightBug]
         public void Test_SetStringValue_FrameworkElement ()
         {
             TextBox widget = new TextBox ();
-            object retval;
-
-            widget.SetValue(FrameworkElement.NameProperty, "some text");
-            retval = widget.GetValue(FrameworkElement.NameProperty);
-            Assert.AreEqual("some text", retval, "GetValue(FrameworkElement.NameProperty) should have returned 'some text'");
-            widget.SetValue(FrameworkElement.NameProperty, null);
-            retval = widget.GetValue(FrameworkElement.NameProperty);
-            Assert.AreEqual(String.Empty, retval, "GetValue(FrameworkElement.NameProperty) should have returned String.Empty");
-            retval = widget.ReadLocalValue(FrameworkElement.NameProperty);
-            Assert.AreEqual(String.Empty, retval, "ReadLocalValue(FrameworkElement.NameProperty) should have returned String.Empty");
-        }
-
-    }
-}
-namespace MoonTest.System.Windows.Controls
-{
-    [TestClass]
-    public partial class RichTextAreaTest
-    {
-        [TestMethod]
-        public void Test_ReadLocalValue_RichTextArea ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            retval = widget.ReadLocalValue(RichTextArea.IsReadOnlyProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(RichTextArea.IsReadOnlyProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(RichTextArea.TextWrappingProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(RichTextArea.TextWrappingProperty) should not have a value by default");
-        }
-
-        [TestMethod]
-        public void Test_ReadLocalValue_Control ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            retval = widget.ReadLocalValue(Control.IsTabStopProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.IsTabStopProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.TabIndexProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.TabIndexProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.TemplateProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.TemplateProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.TabNavigationProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.TabNavigationProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.PaddingProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.PaddingProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.HorizontalContentAlignmentProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.HorizontalContentAlignmentProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.VerticalContentAlignmentProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.VerticalContentAlignmentProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.BackgroundProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.BackgroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.BorderBrushProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.BorderBrushProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.BorderThicknessProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.BorderThicknessProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.FontSizeProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.FontSizeProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.FontFamilyProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.FontFamilyProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.ForegroundProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.ForegroundProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.FontWeightProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.FontWeightProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.FontStyleProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.FontStyleProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.FontStretchProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.FontStretchProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(Control.IsEnabledProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(Control.IsEnabledProperty) should not have a value by default");
-        }
-
-        [TestMethod]
-        public void Test_ReadLocalValue_FrameworkElement ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            retval = widget.ReadLocalValue(FrameworkElement.LanguageProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.LanguageProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.ActualWidthProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.ActualWidthProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.ActualHeightProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.ActualHeightProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.WidthProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.WidthProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.HeightProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.HeightProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.MinWidthProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.MinWidthProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.MaxWidthProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.MaxWidthProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.MinHeightProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.MinHeightProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.MaxHeightProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.MaxHeightProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.HorizontalAlignmentProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.HorizontalAlignmentProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.VerticalAlignmentProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.VerticalAlignmentProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.MarginProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.MarginProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.StyleProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.StyleProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.FlowDirectionProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.FlowDirectionProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.NameProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
-        }
-
-        [TestMethod]
-        public void Test_ReadLocalValue_UIElement ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            retval = widget.ReadLocalValue(UIElement.AllowDropProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.AllowDropProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.OpacityProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.OpacityProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.ClipProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.ClipProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.RenderTransformProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.RenderTransformProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.EffectProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.EffectProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.ProjectionProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.ProjectionProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.OpacityMaskProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.OpacityMaskProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.RenderTransformOriginProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.RenderTransformOriginProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.IsHitTestVisibleProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.IsHitTestVisibleProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.VisibilityProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.VisibilityProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.UseLayoutRoundingProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.UseLayoutRoundingProperty) should not have a value by default");
-            retval = widget.ReadLocalValue(UIElement.CacheModeProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.CacheModeProperty) should not have a value by default");
-        }
-
-        [TestMethod]
-        public void Test_GetValue_RichTextArea ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            Assert.IsNotNull(RichTextArea.IsReadOnlyProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: RichTextArea.IsReadOnlyProperty.RichTextArea");
-            retval = RichTextArea.IsReadOnlyProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for RichTextArea.IsReadOnlyProperty should be non-null value");
-            Assert.IsInstanceOfType<bool>(retval, "RichTextArea.IsReadOnlyProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(false, retval, "RichTextArea.IsReadOnlyProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(RichTextArea.IsReadOnlyProperty);
-            Assert.IsNotNull(retval, "GetValue(RichTextArea.IsReadOnlyProperty) should not have returned null");
-            Assert.IsInstanceOfType<bool>(retval, "GetValue(RichTextArea.IsReadOnlyProperty) is not of the correct type");
-            Assert.AreEqual(false, retval, "GetValue(RichTextArea.IsReadOnlyProperty) does not match the default value");
-            Assert.IsNotNull(RichTextArea.TextWrappingProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: RichTextArea.TextWrappingProperty.RichTextArea");
-            retval = RichTextArea.TextWrappingProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for RichTextArea.TextWrappingProperty should be non-null value");
-            Assert.IsInstanceOfType<TextWrapping>(retval, "RichTextArea.TextWrappingProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(TextWrapping.NoWrap, retval, "RichTextArea.TextWrappingProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(RichTextArea.TextWrappingProperty);
-            Assert.IsNotNull(retval, "GetValue(RichTextArea.TextWrappingProperty) should not have returned null");
-            Assert.IsInstanceOfType<TextWrapping>(retval, "GetValue(RichTextArea.TextWrappingProperty) is not of the correct type");
-            Assert.AreEqual(TextWrapping.NoWrap, retval, "GetValue(RichTextArea.TextWrappingProperty) does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_GetValue_Control ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            Assert.IsNotNull(Control.IsTabStopProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.IsTabStopProperty.RichTextArea");
-            retval = Control.IsTabStopProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.IsTabStopProperty should be non-null value");
-            Assert.IsInstanceOfType<bool>(retval, "Control.IsTabStopProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(true, retval, "Control.IsTabStopProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.IsTabStopProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.IsTabStopProperty) should not have returned null");
-            Assert.IsInstanceOfType<bool>(retval, "GetValue(Control.IsTabStopProperty) is not of the correct type");
-            Assert.AreEqual(true, retval, "GetValue(Control.IsTabStopProperty) does not match the default value");
-            Assert.IsNotNull(Control.TabIndexProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.TabIndexProperty.RichTextArea");
-            retval = Control.TabIndexProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.TabIndexProperty should be non-null value");
-            Assert.IsInstanceOfType<int>(retval, "Control.TabIndexProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(2147483647, retval, "Control.TabIndexProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.TabIndexProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.TabIndexProperty) should not have returned null");
-            Assert.IsInstanceOfType<int>(retval, "GetValue(Control.TabIndexProperty) is not of the correct type");
-            Assert.AreEqual(2147483647, retval, "GetValue(Control.TabIndexProperty) does not match the default value");
-            Assert.IsNotNull(Control.TemplateProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.TemplateProperty.RichTextArea");
-            retval = Control.TemplateProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Control.TemplateProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Control.TemplateProperty);
-            Assert.IsNull(retval, "GetValue(Control.TemplateProperty) should have returned null");
-            Assert.IsNotNull(Control.TabNavigationProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.TabNavigationProperty.RichTextArea");
-            retval = Control.TabNavigationProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.TabNavigationProperty should be non-null value");
-            Assert.IsInstanceOfType<KeyboardNavigationMode>(retval, "Control.TabNavigationProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(KeyboardNavigationMode.Local, retval, "Control.TabNavigationProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.TabNavigationProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.TabNavigationProperty) should not have returned null");
-            Assert.IsInstanceOfType<KeyboardNavigationMode>(retval, "GetValue(Control.TabNavigationProperty) is not of the correct type");
-            Assert.AreEqual(KeyboardNavigationMode.Local, retval, "GetValue(Control.TabNavigationProperty) does not match the default value");
-            Assert.IsNotNull(Control.PaddingProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.PaddingProperty.RichTextArea");
-            retval = Control.PaddingProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.PaddingProperty should be non-null value");
-            Assert.IsInstanceOfType<Thickness>(retval, "Control.PaddingProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("0,0,0,0", retval.ToString (), "Control.PaddingProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.PaddingProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.PaddingProperty) should not have returned null");
-            Assert.IsInstanceOfType<Thickness>(retval, "GetValue(Control.PaddingProperty) is not of the correct type");
-            Assert.AreEqual("0,0,0,0", retval.ToString (), "GetValue(Control.PaddingProperty) does not match the default value");
-            Assert.IsNotNull(Control.HorizontalContentAlignmentProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.HorizontalContentAlignmentProperty.RichTextArea");
-            retval = Control.HorizontalContentAlignmentProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.HorizontalContentAlignmentProperty should be non-null value");
-            Assert.IsInstanceOfType<HorizontalAlignment>(retval, "Control.HorizontalContentAlignmentProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(HorizontalAlignment.Center, retval, "Control.HorizontalContentAlignmentProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.HorizontalContentAlignmentProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.HorizontalContentAlignmentProperty) should not have returned null");
-            Assert.IsInstanceOfType<HorizontalAlignment>(retval, "GetValue(Control.HorizontalContentAlignmentProperty) is not of the correct type");
-            Assert.AreEqual(HorizontalAlignment.Center, retval, "GetValue(Control.HorizontalContentAlignmentProperty) does not match the default value");
-            Assert.IsNotNull(Control.VerticalContentAlignmentProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.VerticalContentAlignmentProperty.RichTextArea");
-            retval = Control.VerticalContentAlignmentProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.VerticalContentAlignmentProperty should be non-null value");
-            Assert.IsInstanceOfType<VerticalAlignment>(retval, "Control.VerticalContentAlignmentProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(VerticalAlignment.Center, retval, "Control.VerticalContentAlignmentProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.VerticalContentAlignmentProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.VerticalContentAlignmentProperty) should not have returned null");
-            Assert.IsInstanceOfType<VerticalAlignment>(retval, "GetValue(Control.VerticalContentAlignmentProperty) is not of the correct type");
-            Assert.AreEqual(VerticalAlignment.Center, retval, "GetValue(Control.VerticalContentAlignmentProperty) does not match the default value");
-            Assert.IsNotNull(Control.BackgroundProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.BackgroundProperty.RichTextArea");
-            retval = Control.BackgroundProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Control.BackgroundProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Control.BackgroundProperty);
-            Assert.IsNull(retval, "GetValue(Control.BackgroundProperty) should have returned null");
-            Assert.IsNotNull(Control.BorderBrushProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.BorderBrushProperty.RichTextArea");
-            retval = Control.BorderBrushProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Control.BorderBrushProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(Control.BorderBrushProperty);
-            Assert.IsNull(retval, "GetValue(Control.BorderBrushProperty) should have returned null");
-            Assert.IsNotNull(Control.BorderThicknessProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.BorderThicknessProperty.RichTextArea");
-            retval = Control.BorderThicknessProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.BorderThicknessProperty should be non-null value");
-            Assert.IsInstanceOfType<Thickness>(retval, "Control.BorderThicknessProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("0,0,0,0", retval.ToString (), "Control.BorderThicknessProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.BorderThicknessProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.BorderThicknessProperty) should not have returned null");
-            Assert.IsInstanceOfType<Thickness>(retval, "GetValue(Control.BorderThicknessProperty) is not of the correct type");
-            Assert.AreEqual("0,0,0,0", retval.ToString (), "GetValue(Control.BorderThicknessProperty) does not match the default value");
-            Assert.IsNotNull(Control.FontSizeProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.FontSizeProperty.RichTextArea");
-            retval = Control.FontSizeProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.FontSizeProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "Control.FontSizeProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual((double) 11, retval, "Control.FontSizeProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.FontSizeProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.FontSizeProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(Control.FontSizeProperty) is not of the correct type");
-            Assert.AreEqual((double) 11, retval, "GetValue(Control.FontSizeProperty) does not match the default value");
-            Assert.IsNotNull(Control.FontFamilyProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.FontFamilyProperty.RichTextArea");
-            retval = Control.FontFamilyProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.FontFamilyProperty should be non-null value");
-            Assert.IsInstanceOfType<FontFamily>(retval, "Control.FontFamilyProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("Portable User Interface", retval.ToString (), "Control.FontFamilyProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.FontFamilyProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.FontFamilyProperty) should not have returned null");
-            Assert.IsInstanceOfType<FontFamily>(retval, "GetValue(Control.FontFamilyProperty) is not of the correct type");
-            Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
-            Assert.IsNotNull(Control.ForegroundProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.ForegroundProperty.RichTextArea");
-            retval = Control.ForegroundProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.ForegroundProperty should be non-null value");
-            Assert.IsInstanceOfType<SolidColorBrush>(retval, "Control.ForegroundProperty.GetMetadata() is not of the correct type");
-            retval = widget.GetValue(Control.ForegroundProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-            Assert.IsInstanceOfType<SolidColorBrush>(retval, "GetValue(Control.ForegroundProperty) is not of the correct type");
-            Assert.IsNotNull(Control.FontWeightProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.FontWeightProperty.RichTextArea");
-            retval = Control.FontWeightProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.FontWeightProperty should be non-null value");
-            Assert.IsInstanceOfType<FontWeight>(retval, "Control.FontWeightProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("Normal", retval.ToString (), "Control.FontWeightProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.FontWeightProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
-            Assert.IsInstanceOfType<FontWeight>(retval, "GetValue(Control.FontWeightProperty) is not of the correct type");
-            Assert.AreEqual("Normal", retval.ToString (), "GetValue(Control.FontWeightProperty) does not match the default value");
-            Assert.IsNotNull(Control.FontStyleProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.FontStyleProperty.RichTextArea");
-            retval = Control.FontStyleProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.FontStyleProperty should be non-null value");
-            Assert.IsInstanceOfType<FontStyle>(retval, "Control.FontStyleProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("Normal", retval.ToString (), "Control.FontStyleProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.FontStyleProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.FontStyleProperty) should not have returned null");
-            Assert.IsInstanceOfType<FontStyle>(retval, "GetValue(Control.FontStyleProperty) is not of the correct type");
-            Assert.AreEqual("Normal", retval.ToString (), "GetValue(Control.FontStyleProperty) does not match the default value");
-            Assert.IsNotNull(Control.FontStretchProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.FontStretchProperty.RichTextArea");
-            retval = Control.FontStretchProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.FontStretchProperty should be non-null value");
-            Assert.IsInstanceOfType<FontStretch>(retval, "Control.FontStretchProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("Normal", retval.ToString (), "Control.FontStretchProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.FontStretchProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.FontStretchProperty) should not have returned null");
-            Assert.IsInstanceOfType<FontStretch>(retval, "GetValue(Control.FontStretchProperty) is not of the correct type");
-            Assert.AreEqual("Normal", retval.ToString (), "GetValue(Control.FontStretchProperty) does not match the default value");
-            Assert.IsNotNull(Control.IsEnabledProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: Control.IsEnabledProperty.RichTextArea");
-            retval = Control.IsEnabledProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Control.IsEnabledProperty should be non-null value");
-            Assert.IsInstanceOfType<bool>(retval, "Control.IsEnabledProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(true, retval, "Control.IsEnabledProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(Control.IsEnabledProperty);
-            Assert.IsNotNull(retval, "GetValue(Control.IsEnabledProperty) should not have returned null");
-            Assert.IsInstanceOfType<bool>(retval, "GetValue(Control.IsEnabledProperty) is not of the correct type");
-            Assert.AreEqual(true, retval, "GetValue(Control.IsEnabledProperty) does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_GetValue_FrameworkElement ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            Assert.IsNotNull(FrameworkElement.LanguageProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.LanguageProperty.RichTextArea");
-            retval = FrameworkElement.LanguageProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.LanguageProperty should be non-null value");
-            Assert.IsInstanceOfType<XmlLanguage>(retval, "FrameworkElement.LanguageProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("en-us", ((XmlLanguage) retval).IetfLanguageTag, "FrameworkElement.LanguageProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.LanguageProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.LanguageProperty) should not have returned null");
-            Assert.IsInstanceOfType<XmlLanguage>(retval, "GetValue(FrameworkElement.LanguageProperty) is not of the correct type");
-            Assert.AreEqual("en-us", ((XmlLanguage) retval).IetfLanguageTag, "GetValue(FrameworkElement.LanguageProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.ActualWidthProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.ActualWidthProperty.RichTextArea");
-            retval = FrameworkElement.ActualWidthProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.ActualWidthProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.ActualWidthProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "FrameworkElement.ActualWidthProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.ActualWidthProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.ActualWidthProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.ActualWidthProperty) is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "GetValue(FrameworkElement.ActualWidthProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.ActualHeightProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.ActualHeightProperty.RichTextArea");
-            retval = FrameworkElement.ActualHeightProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.ActualHeightProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.ActualHeightProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "FrameworkElement.ActualHeightProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.ActualHeightProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.ActualHeightProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.ActualHeightProperty) is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "GetValue(FrameworkElement.ActualHeightProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.WidthProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.WidthProperty.RichTextArea");
-            retval = FrameworkElement.WidthProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.WidthProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.WidthProperty.GetMetadata() is not of the correct type");
-            Assert.IsTrue(Double.IsNaN((double) retval), "FrameworkElement.WidthProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.WidthProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.WidthProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.WidthProperty) is not of the correct type");
-            Assert.IsTrue(Double.IsNaN((double) retval), "GetValue(FrameworkElement.WidthProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.HeightProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.HeightProperty.RichTextArea");
-            retval = FrameworkElement.HeightProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.HeightProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.HeightProperty.GetMetadata() is not of the correct type");
-            Assert.IsTrue(Double.IsNaN((double) retval), "FrameworkElement.HeightProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.HeightProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.HeightProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.HeightProperty) is not of the correct type");
-            Assert.IsTrue(Double.IsNaN((double) retval), "GetValue(FrameworkElement.HeightProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.MinWidthProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.MinWidthProperty.RichTextArea");
-            retval = FrameworkElement.MinWidthProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.MinWidthProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.MinWidthProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "FrameworkElement.MinWidthProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.MinWidthProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.MinWidthProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.MinWidthProperty) is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "GetValue(FrameworkElement.MinWidthProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.MaxWidthProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.MaxWidthProperty.RichTextArea");
-            retval = FrameworkElement.MaxWidthProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.MaxWidthProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.MaxWidthProperty.GetMetadata() is not of the correct type");
-            Assert.IsTrue(Double.IsPositiveInfinity((double) retval), "FrameworkElement.MaxWidthProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.MaxWidthProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.MaxWidthProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.MaxWidthProperty) is not of the correct type");
-            Assert.IsTrue(Double.IsPositiveInfinity((double) retval), "GetValue(FrameworkElement.MaxWidthProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.MinHeightProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.MinHeightProperty.RichTextArea");
-            retval = FrameworkElement.MinHeightProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.MinHeightProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.MinHeightProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "FrameworkElement.MinHeightProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.MinHeightProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.MinHeightProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.MinHeightProperty) is not of the correct type");
-            Assert.AreEqual((double) 0, retval, "GetValue(FrameworkElement.MinHeightProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.MaxHeightProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.MaxHeightProperty.RichTextArea");
-            retval = FrameworkElement.MaxHeightProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.MaxHeightProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "FrameworkElement.MaxHeightProperty.GetMetadata() is not of the correct type");
-            Assert.IsTrue(Double.IsPositiveInfinity((double) retval), "FrameworkElement.MaxHeightProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.MaxHeightProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.MaxHeightProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.MaxHeightProperty) is not of the correct type");
-            Assert.IsTrue(Double.IsPositiveInfinity((double) retval), "GetValue(FrameworkElement.MaxHeightProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.HorizontalAlignmentProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.HorizontalAlignmentProperty.RichTextArea");
-            retval = FrameworkElement.HorizontalAlignmentProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.HorizontalAlignmentProperty should be non-null value");
-            Assert.IsInstanceOfType<HorizontalAlignment>(retval, "FrameworkElement.HorizontalAlignmentProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(HorizontalAlignment.Stretch, retval, "FrameworkElement.HorizontalAlignmentProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.HorizontalAlignmentProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.HorizontalAlignmentProperty) should not have returned null");
-            Assert.IsInstanceOfType<HorizontalAlignment>(retval, "GetValue(FrameworkElement.HorizontalAlignmentProperty) is not of the correct type");
-            Assert.AreEqual(HorizontalAlignment.Stretch, retval, "GetValue(FrameworkElement.HorizontalAlignmentProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.VerticalAlignmentProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.VerticalAlignmentProperty.RichTextArea");
-            retval = FrameworkElement.VerticalAlignmentProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.VerticalAlignmentProperty should be non-null value");
-            Assert.IsInstanceOfType<VerticalAlignment>(retval, "FrameworkElement.VerticalAlignmentProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(VerticalAlignment.Stretch, retval, "FrameworkElement.VerticalAlignmentProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.VerticalAlignmentProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.VerticalAlignmentProperty) should not have returned null");
-            Assert.IsInstanceOfType<VerticalAlignment>(retval, "GetValue(FrameworkElement.VerticalAlignmentProperty) is not of the correct type");
-            Assert.AreEqual(VerticalAlignment.Stretch, retval, "GetValue(FrameworkElement.VerticalAlignmentProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.MarginProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.MarginProperty.RichTextArea");
-            retval = FrameworkElement.MarginProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.MarginProperty should be non-null value");
-            Assert.IsInstanceOfType<Thickness>(retval, "FrameworkElement.MarginProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("0,0,0,0", retval.ToString (), "FrameworkElement.MarginProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.MarginProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.MarginProperty) should not have returned null");
-            Assert.IsInstanceOfType<Thickness>(retval, "GetValue(FrameworkElement.MarginProperty) is not of the correct type");
-            Assert.AreEqual("0,0,0,0", retval.ToString (), "GetValue(FrameworkElement.MarginProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.StyleProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.StyleProperty.RichTextArea");
-            retval = FrameworkElement.StyleProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.StyleProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(FrameworkElement.StyleProperty);
-            Assert.IsNull(retval, "GetValue(FrameworkElement.StyleProperty) should have returned null");
-            Assert.IsNotNull(FrameworkElement.FlowDirectionProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.FlowDirectionProperty.RichTextArea");
-            retval = FrameworkElement.FlowDirectionProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.FlowDirectionProperty should be non-null value");
-            Assert.IsInstanceOfType<FlowDirection>(retval, "FrameworkElement.FlowDirectionProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(FlowDirection.LeftToRight, retval, "FrameworkElement.FlowDirectionProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.FlowDirectionProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.FlowDirectionProperty) should not have returned null");
-            Assert.IsInstanceOfType<FlowDirection>(retval, "GetValue(FrameworkElement.FlowDirectionProperty) is not of the correct type");
-            Assert.AreEqual(FlowDirection.LeftToRight, retval, "GetValue(FrameworkElement.FlowDirectionProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.NameProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.NameProperty.RichTextArea");
-            retval = FrameworkElement.NameProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.NameProperty should be non-null value");
-            Assert.IsInstanceOfType<string>(retval, "FrameworkElement.NameProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("", retval, "FrameworkElement.NameProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(FrameworkElement.NameProperty);
-            Assert.IsNotNull(retval, "GetValue(FrameworkElement.NameProperty) should not have returned null");
-            Assert.IsInstanceOfType<string>(retval, "GetValue(FrameworkElement.NameProperty) is not of the correct type");
-            Assert.AreEqual("", retval, "GetValue(FrameworkElement.NameProperty) does not match the default value");
-            Assert.IsNotNull(FrameworkElement.TagProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.TagProperty.RichTextArea");
-            retval = FrameworkElement.TagProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(FrameworkElement.TagProperty);
-            Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
-            Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: FrameworkElement.DataContextProperty.RichTextArea");
-            retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(FrameworkElement.DataContextProperty);
-            Assert.IsNull(retval, "GetValue(FrameworkElement.DataContextProperty) should have returned null");
-        }
-
-        [TestMethod]
-        public void Test_GetValue_UIElement ()
-        {
-            RichTextArea widget = new RichTextArea ();
-            object retval;
-
-            Assert.IsNotNull(UIElement.AllowDropProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.AllowDropProperty.RichTextArea");
-            retval = UIElement.AllowDropProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for UIElement.AllowDropProperty should be non-null value");
-            Assert.IsInstanceOfType<bool>(retval, "UIElement.AllowDropProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(false, retval, "UIElement.AllowDropProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(UIElement.AllowDropProperty);
-            Assert.IsNotNull(retval, "GetValue(UIElement.AllowDropProperty) should not have returned null");
-            Assert.IsInstanceOfType<bool>(retval, "GetValue(UIElement.AllowDropProperty) is not of the correct type");
-            Assert.AreEqual(false, retval, "GetValue(UIElement.AllowDropProperty) does not match the default value");
-            Assert.IsNotNull(UIElement.OpacityProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.OpacityProperty.RichTextArea");
-            retval = UIElement.OpacityProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for UIElement.OpacityProperty should be non-null value");
-            Assert.IsInstanceOfType<double>(retval, "UIElement.OpacityProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual((double) 1, retval, "UIElement.OpacityProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(UIElement.OpacityProperty);
-            Assert.IsNotNull(retval, "GetValue(UIElement.OpacityProperty) should not have returned null");
-            Assert.IsInstanceOfType<double>(retval, "GetValue(UIElement.OpacityProperty) is not of the correct type");
-            Assert.AreEqual((double) 1, retval, "GetValue(UIElement.OpacityProperty) does not match the default value");
-            Assert.IsNotNull(UIElement.ClipProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.ClipProperty.RichTextArea");
-            retval = UIElement.ClipProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for UIElement.ClipProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(UIElement.ClipProperty);
-            Assert.IsNull(retval, "GetValue(UIElement.ClipProperty) should have returned null");
-            Assert.IsNotNull(UIElement.RenderTransformProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.RenderTransformProperty.RichTextArea");
-            retval = UIElement.RenderTransformProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for UIElement.RenderTransformProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(UIElement.RenderTransformProperty);
-            Assert.IsNull(retval, "GetValue(UIElement.RenderTransformProperty) should have returned null");
-            Assert.IsNotNull(UIElement.EffectProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.EffectProperty.RichTextArea");
-            retval = UIElement.EffectProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for UIElement.EffectProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(UIElement.EffectProperty);
-            Assert.IsNull(retval, "GetValue(UIElement.EffectProperty) should have returned null");
-            Assert.IsNotNull(UIElement.ProjectionProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.ProjectionProperty.RichTextArea");
-            retval = UIElement.ProjectionProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for UIElement.ProjectionProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(UIElement.ProjectionProperty);
-            Assert.IsNull(retval, "GetValue(UIElement.ProjectionProperty) should have returned null");
-            Assert.IsNotNull(UIElement.OpacityMaskProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.OpacityMaskProperty.RichTextArea");
-            retval = UIElement.OpacityMaskProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for UIElement.OpacityMaskProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(UIElement.OpacityMaskProperty);
-            Assert.IsNull(retval, "GetValue(UIElement.OpacityMaskProperty) should have returned null");
-            Assert.IsNotNull(UIElement.RenderTransformOriginProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.RenderTransformOriginProperty.RichTextArea");
-            retval = UIElement.RenderTransformOriginProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for UIElement.RenderTransformOriginProperty should be non-null value");
-            Assert.IsInstanceOfType<Point>(retval, "UIElement.RenderTransformOriginProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("0,0", retval.ToString (), "UIElement.RenderTransformOriginProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(UIElement.RenderTransformOriginProperty);
-            Assert.IsNotNull(retval, "GetValue(UIElement.RenderTransformOriginProperty) should not have returned null");
-            Assert.IsInstanceOfType<Point>(retval, "GetValue(UIElement.RenderTransformOriginProperty) is not of the correct type");
-            Assert.AreEqual("0,0", retval.ToString (), "GetValue(UIElement.RenderTransformOriginProperty) does not match the default value");
-            Assert.IsNotNull(UIElement.IsHitTestVisibleProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.IsHitTestVisibleProperty.RichTextArea");
-            retval = UIElement.IsHitTestVisibleProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for UIElement.IsHitTestVisibleProperty should be non-null value");
-            Assert.IsInstanceOfType<bool>(retval, "UIElement.IsHitTestVisibleProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(true, retval, "UIElement.IsHitTestVisibleProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(UIElement.IsHitTestVisibleProperty);
-            Assert.IsNotNull(retval, "GetValue(UIElement.IsHitTestVisibleProperty) should not have returned null");
-            Assert.IsInstanceOfType<bool>(retval, "GetValue(UIElement.IsHitTestVisibleProperty) is not of the correct type");
-            Assert.AreEqual(true, retval, "GetValue(UIElement.IsHitTestVisibleProperty) does not match the default value");
-            Assert.IsNotNull(UIElement.VisibilityProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.VisibilityProperty.RichTextArea");
-            retval = UIElement.VisibilityProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for UIElement.VisibilityProperty should be non-null value");
-            Assert.IsInstanceOfType<Visibility>(retval, "UIElement.VisibilityProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(Visibility.Visible, retval, "UIElement.VisibilityProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(UIElement.VisibilityProperty);
-            Assert.IsNotNull(retval, "GetValue(UIElement.VisibilityProperty) should not have returned null");
-            Assert.IsInstanceOfType<Visibility>(retval, "GetValue(UIElement.VisibilityProperty) is not of the correct type");
-            Assert.AreEqual(Visibility.Visible, retval, "GetValue(UIElement.VisibilityProperty) does not match the default value");
-            Assert.IsNotNull(UIElement.UseLayoutRoundingProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.UseLayoutRoundingProperty.RichTextArea");
-            retval = UIElement.UseLayoutRoundingProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for UIElement.UseLayoutRoundingProperty should be non-null value");
-            Assert.IsInstanceOfType<bool>(retval, "UIElement.UseLayoutRoundingProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual(true, retval, "UIElement.UseLayoutRoundingProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(UIElement.UseLayoutRoundingProperty);
-            Assert.IsNotNull(retval, "GetValue(UIElement.UseLayoutRoundingProperty) should not have returned null");
-            Assert.IsInstanceOfType<bool>(retval, "GetValue(UIElement.UseLayoutRoundingProperty) is not of the correct type");
-            Assert.AreEqual(true, retval, "GetValue(UIElement.UseLayoutRoundingProperty) does not match the default value");
-            Assert.IsNotNull(UIElement.CacheModeProperty.GetMetadata (typeof (RichTextArea)), "#metadata should not be null for: UIElement.CacheModeProperty.RichTextArea");
-            retval = UIElement.CacheModeProperty.GetMetadata (typeof (RichTextArea)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for UIElement.CacheModeProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(UIElement.CacheModeProperty);
-            Assert.IsNull(retval, "GetValue(UIElement.CacheModeProperty) should have returned null");
-        }
-
-        [TestMethod]
-        [MoonlightBug]
-        public void Test_PropertyGetter_RichTextArea ()
-        {
-            RichTextArea widget = new RichTextArea ();
-
-            Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            Assert.AreEqual(TextWrapping.NoWrap, widget.TextWrapping, "TextWrapping does not match the default value");
-            Assert.IsNotNull(widget.Selection, "Selection should not have returned null");
-            Assert.AreEqual("System.Windows.Documents.TextSelection", widget.Selection.ToString (), "Selection does not match the default value");
-            Assert.IsNotNull(widget.Blocks, "Blocks should not have returned null");
-            Assert.IsInstanceOfType<BlockCollection>(widget.Blocks, "Blocks is not of the correct type");
-            Assert.AreEqual(ScrollBarVisibility.Hidden, widget.HorizontalScrollBarVisibility, "HorizontalScrollBarVisibility does not match the default value");
-            Assert.AreEqual(ScrollBarVisibility.Hidden, widget.VerticalScrollBarVisibility, "VerticalScrollBarVisibility does not match the default value");
-            Assert.AreEqual((double) 0, widget.BaselineOffset, "BaselineOffset does not match the default value");
-            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
-            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
-            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
-            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
-            Assert.IsNull(widget.Template, "Template should have returned null");
-            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
-            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
-            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
-            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
-            Assert.IsNull(widget.Background, "Background should have returned null");
-            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
-            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
-            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
-            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
-            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
-            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
-            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
-            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-            Assert.IsInstanceOfType<SolidColorBrush>(widget.Foreground, "Foreground is not of the correct type");
-            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
-            Assert.IsInstanceOfType<TriggerCollection>(widget.Triggers, "Triggers is not of the correct type");
-            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
-            Assert.IsInstanceOfType<ResourceDictionary>(widget.Resources, "Resources is not of the correct type");
-            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
-            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
-            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
-            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
-            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
-            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
-            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
-            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
-            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
-            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
-            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
-            Assert.IsNull(widget.Style, "Style should have returned null");
-            Assert.IsNull(widget.Parent, "Parent should have returned null");
-            Assert.AreEqual(FlowDirection.LeftToRight, widget.FlowDirection, "FlowDirection does not match the default value");
-            Assert.IsNotNull(widget.Name, "Name should not have returned null");
-            Assert.AreEqual("", widget.Name, "Name does not match the default value");
-            Assert.IsNull(widget.Tag, "Tag should have returned null");
-            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
-            Assert.IsNotNull(widget.Language, "Language should not have returned null");
-            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
-            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
-            Assert.AreEqual(false, widget.AllowDrop, "AllowDrop does not match the default value");
-            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
-            Assert.IsNull(widget.Clip, "Clip should have returned null");
-            Assert.IsNull(widget.Effect, "Effect should have returned null");
-            Assert.IsNull(widget.Projection, "Projection should have returned null");
-            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
-            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
-            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
-            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
-            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
-            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
-            Assert.IsNull(widget.CacheMode, "CacheMode should have returned null");
-            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
-            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
-            Assert.IsInstanceOfType<MatrixTransform>(widget.RenderTransform, "RenderTransform is not of the correct type");
-        }
-
-        [TestMethod]
-        [MoonlightBug]
-        public void Test_SetStringValue_FrameworkElement ()
-        {
-            RichTextArea widget = new RichTextArea ();
             object retval;
 
             widget.SetValue(FrameworkElement.NameProperty, "some text");
@@ -17506,6 +17166,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -17881,6 +17543,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (PasswordBox)), "#metadata should not be null for: FrameworkElement.CursorProperty.PasswordBox");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (PasswordBox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (PasswordBox)), "#metadata should not be null for: FrameworkElement.DataContextProperty.PasswordBox");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (PasswordBox)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -18299,6 +17966,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -18552,6 +18221,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Grid)), "#metadata should not be null for: FrameworkElement.CursorProperty.Grid");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Grid)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Grid)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Grid");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Grid)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -18842,6 +18516,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -19195,6 +18871,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ItemsControl)), "#metadata should not be null for: FrameworkElement.CursorProperty.ItemsControl");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ItemsControl)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ItemsControl)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ItemsControl");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ItemsControl)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -19456,6 +19137,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -19499,10 +19182,20 @@ namespace MoonTest.System.Windows.Controls
             Viewbox widget = new Viewbox ();
             object retval;
 
+            Assert.IsNotNull(Viewbox.StretchProperty.GetMetadata (typeof (Viewbox)), "#metadata should not be null for: Viewbox.StretchProperty.Viewbox");
+            retval = Viewbox.StretchProperty.GetMetadata (typeof (Viewbox)).DefaultValue;
+            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Viewbox.StretchProperty should be non-null value");
+            Assert.IsInstanceOfType<Stretch>(retval, "Viewbox.StretchProperty.GetMetadata() is not of the correct type");
+            Assert.AreEqual(Stretch.Uniform, retval, "Viewbox.StretchProperty.GetMetadata() does not match the default value");
             retval = widget.GetValue(Viewbox.StretchProperty);
             Assert.IsNotNull(retval, "GetValue(Viewbox.StretchProperty) should not have returned null");
             Assert.IsInstanceOfType<Stretch>(retval, "GetValue(Viewbox.StretchProperty) is not of the correct type");
             Assert.AreEqual(Stretch.Uniform, retval, "GetValue(Viewbox.StretchProperty) does not match the default value");
+            Assert.IsNotNull(Viewbox.StretchDirectionProperty.GetMetadata (typeof (Viewbox)), "#metadata should not be null for: Viewbox.StretchDirectionProperty.Viewbox");
+            retval = Viewbox.StretchDirectionProperty.GetMetadata (typeof (Viewbox)).DefaultValue;
+            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Viewbox.StretchDirectionProperty should be non-null value");
+            Assert.IsInstanceOfType<StretchDirection>(retval, "Viewbox.StretchDirectionProperty.GetMetadata() is not of the correct type");
+            Assert.AreEqual(StretchDirection.Both, retval, "Viewbox.StretchDirectionProperty.GetMetadata() does not match the default value");
             retval = widget.GetValue(Viewbox.StretchDirectionProperty);
             Assert.IsNotNull(retval, "GetValue(Viewbox.StretchDirectionProperty) should not have returned null");
             Assert.IsInstanceOfType<StretchDirection>(retval, "GetValue(Viewbox.StretchDirectionProperty) is not of the correct type");
@@ -19651,6 +19344,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Viewbox)), "#metadata should not be null for: FrameworkElement.CursorProperty.Viewbox");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Viewbox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Viewbox)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Viewbox");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Viewbox)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -19881,6 +19579,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -20104,6 +19804,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Border)), "#metadata should not be null for: FrameworkElement.CursorProperty.Border");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Border)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Border)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Border");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Border)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -20372,6 +20077,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -20715,6 +20422,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ContentControl)), "#metadata should not be null for: FrameworkElement.CursorProperty.ContentControl");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ContentControl)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ContentControl)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ContentControl");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ContentControl)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -20956,6 +20668,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -21152,6 +20866,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ContentPresenter)), "#metadata should not be null for: FrameworkElement.CursorProperty.ContentPresenter");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ContentPresenter)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ContentPresenter)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ContentPresenter");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ContentPresenter)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -21369,6 +21088,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -21547,6 +21268,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ItemsPresenter)), "#metadata should not be null for: FrameworkElement.CursorProperty.ItemsPresenter");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ItemsPresenter)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ItemsPresenter)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ItemsPresenter");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ItemsPresenter)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -21755,6 +21481,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -21933,6 +21661,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (WebBrowser)), "#metadata should not be null for: FrameworkElement.CursorProperty.WebBrowser");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (WebBrowser)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (WebBrowser)), "#metadata should not be null for: FrameworkElement.DataContextProperty.WebBrowser");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (WebBrowser)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -22104,22 +21837,22 @@ namespace MoonTest.System.Windows.Controls
 namespace MoonTest.System.Windows.Controls
 {
     [TestClass]
-    public partial class HtmlBrushTest
+    public partial class WebBrowserBrushTest
     {
         [TestMethod]
-        public void Test_ReadLocalValue_HtmlBrush ()
+        public void Test_ReadLocalValue_WebBrowserBrush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
             object retval;
 
-            retval = widget.ReadLocalValue(HtmlBrush.SourceNameProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(HtmlBrush.SourceNameProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(WebBrowserBrush.SourceNameProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(WebBrowserBrush.SourceNameProperty) should not have a value by default");
         }
 
         [TestMethod]
         public void Test_ReadLocalValue_TileBrush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
             object retval;
 
             retval = widget.ReadLocalValue(TileBrush.AlignmentXProperty);
@@ -22133,7 +21866,7 @@ namespace MoonTest.System.Windows.Controls
         [TestMethod]
         public void Test_ReadLocalValue_Brush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
             object retval;
 
             retval = widget.ReadLocalValue(Brush.OpacityProperty);
@@ -22145,30 +21878,31 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_GetValue_HtmlBrush ()
+        [MoonlightBug]
+        public void Test_GetValue_WebBrowserBrush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
             object retval;
 
-            Assert.IsNotNull(HtmlBrush.SourceNameProperty.GetMetadata (typeof (HtmlBrush)), "#metadata should not be null for: HtmlBrush.SourceNameProperty.HtmlBrush");
-            retval = HtmlBrush.SourceNameProperty.GetMetadata (typeof (HtmlBrush)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for HtmlBrush.SourceNameProperty should be non-null value");
-            Assert.IsInstanceOfType<string>(retval, "HtmlBrush.SourceNameProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("", retval, "HtmlBrush.SourceNameProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(HtmlBrush.SourceNameProperty);
-            Assert.IsNotNull(retval, "GetValue(HtmlBrush.SourceNameProperty) should not have returned null");
-            Assert.IsInstanceOfType<string>(retval, "GetValue(HtmlBrush.SourceNameProperty) is not of the correct type");
-            Assert.AreEqual("", retval, "GetValue(HtmlBrush.SourceNameProperty) does not match the default value");
+            Assert.IsNotNull(WebBrowserBrush.SourceNameProperty.GetMetadata (typeof (WebBrowserBrush)), "#metadata should not be null for: WebBrowserBrush.SourceNameProperty.WebBrowserBrush");
+            retval = WebBrowserBrush.SourceNameProperty.GetMetadata (typeof (WebBrowserBrush)).DefaultValue;
+            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for WebBrowserBrush.SourceNameProperty should be non-null value");
+            Assert.IsInstanceOfType<string>(retval, "WebBrowserBrush.SourceNameProperty.GetMetadata() is not of the correct type");
+            Assert.AreEqual("", retval, "WebBrowserBrush.SourceNameProperty.GetMetadata() does not match the default value");
+            retval = widget.GetValue(WebBrowserBrush.SourceNameProperty);
+            Assert.IsNotNull(retval, "GetValue(WebBrowserBrush.SourceNameProperty) should not have returned null");
+            Assert.IsInstanceOfType<string>(retval, "GetValue(WebBrowserBrush.SourceNameProperty) is not of the correct type");
+            Assert.AreEqual("", retval, "GetValue(WebBrowserBrush.SourceNameProperty) does not match the default value");
         }
 
         [TestMethod]
         public void Test_GetValue_TileBrush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
             object retval;
 
-            Assert.IsNotNull(TileBrush.AlignmentXProperty.GetMetadata (typeof (HtmlBrush)), "#metadata should not be null for: TileBrush.AlignmentXProperty.HtmlBrush");
-            retval = TileBrush.AlignmentXProperty.GetMetadata (typeof (HtmlBrush)).DefaultValue;
+            Assert.IsNotNull(TileBrush.AlignmentXProperty.GetMetadata (typeof (WebBrowserBrush)), "#metadata should not be null for: TileBrush.AlignmentXProperty.WebBrowserBrush");
+            retval = TileBrush.AlignmentXProperty.GetMetadata (typeof (WebBrowserBrush)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TileBrush.AlignmentXProperty should be non-null value");
             Assert.IsInstanceOfType<AlignmentX>(retval, "TileBrush.AlignmentXProperty.GetMetadata() is not of the correct type");
             Assert.AreEqual(AlignmentX.Center, retval, "TileBrush.AlignmentXProperty.GetMetadata() does not match the default value");
@@ -22176,8 +21910,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.IsNotNull(retval, "GetValue(TileBrush.AlignmentXProperty) should not have returned null");
             Assert.IsInstanceOfType<AlignmentX>(retval, "GetValue(TileBrush.AlignmentXProperty) is not of the correct type");
             Assert.AreEqual(AlignmentX.Center, retval, "GetValue(TileBrush.AlignmentXProperty) does not match the default value");
-            Assert.IsNotNull(TileBrush.AlignmentYProperty.GetMetadata (typeof (HtmlBrush)), "#metadata should not be null for: TileBrush.AlignmentYProperty.HtmlBrush");
-            retval = TileBrush.AlignmentYProperty.GetMetadata (typeof (HtmlBrush)).DefaultValue;
+            Assert.IsNotNull(TileBrush.AlignmentYProperty.GetMetadata (typeof (WebBrowserBrush)), "#metadata should not be null for: TileBrush.AlignmentYProperty.WebBrowserBrush");
+            retval = TileBrush.AlignmentYProperty.GetMetadata (typeof (WebBrowserBrush)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TileBrush.AlignmentYProperty should be non-null value");
             Assert.IsInstanceOfType<AlignmentY>(retval, "TileBrush.AlignmentYProperty.GetMetadata() is not of the correct type");
             Assert.AreEqual(AlignmentY.Center, retval, "TileBrush.AlignmentYProperty.GetMetadata() does not match the default value");
@@ -22185,8 +21919,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.IsNotNull(retval, "GetValue(TileBrush.AlignmentYProperty) should not have returned null");
             Assert.IsInstanceOfType<AlignmentY>(retval, "GetValue(TileBrush.AlignmentYProperty) is not of the correct type");
             Assert.AreEqual(AlignmentY.Center, retval, "GetValue(TileBrush.AlignmentYProperty) does not match the default value");
-            Assert.IsNotNull(TileBrush.StretchProperty.GetMetadata (typeof (HtmlBrush)), "#metadata should not be null for: TileBrush.StretchProperty.HtmlBrush");
-            retval = TileBrush.StretchProperty.GetMetadata (typeof (HtmlBrush)).DefaultValue;
+            Assert.IsNotNull(TileBrush.StretchProperty.GetMetadata (typeof (WebBrowserBrush)), "#metadata should not be null for: TileBrush.StretchProperty.WebBrowserBrush");
+            retval = TileBrush.StretchProperty.GetMetadata (typeof (WebBrowserBrush)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for TileBrush.StretchProperty should be non-null value");
             Assert.IsInstanceOfType<Stretch>(retval, "TileBrush.StretchProperty.GetMetadata() is not of the correct type");
             Assert.AreEqual(Stretch.Fill, retval, "TileBrush.StretchProperty.GetMetadata() does not match the default value");
@@ -22199,11 +21933,11 @@ namespace MoonTest.System.Windows.Controls
         [TestMethod]
         public void Test_GetValue_Brush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
             object retval;
 
-            Assert.IsNotNull(Brush.OpacityProperty.GetMetadata (typeof (HtmlBrush)), "#metadata should not be null for: Brush.OpacityProperty.HtmlBrush");
-            retval = Brush.OpacityProperty.GetMetadata (typeof (HtmlBrush)).DefaultValue;
+            Assert.IsNotNull(Brush.OpacityProperty.GetMetadata (typeof (WebBrowserBrush)), "#metadata should not be null for: Brush.OpacityProperty.WebBrowserBrush");
+            retval = Brush.OpacityProperty.GetMetadata (typeof (WebBrowserBrush)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for Brush.OpacityProperty should be non-null value");
             Assert.IsInstanceOfType<double>(retval, "Brush.OpacityProperty.GetMetadata() is not of the correct type");
             Assert.AreEqual((double) 1, retval, "Brush.OpacityProperty.GetMetadata() does not match the default value");
@@ -22211,14 +21945,14 @@ namespace MoonTest.System.Windows.Controls
             Assert.IsNotNull(retval, "GetValue(Brush.OpacityProperty) should not have returned null");
             Assert.IsInstanceOfType<double>(retval, "GetValue(Brush.OpacityProperty) is not of the correct type");
             Assert.AreEqual((double) 1, retval, "GetValue(Brush.OpacityProperty) does not match the default value");
-            Assert.IsNotNull(Brush.TransformProperty.GetMetadata (typeof (HtmlBrush)), "#metadata should not be null for: Brush.TransformProperty.HtmlBrush");
-            retval = Brush.TransformProperty.GetMetadata (typeof (HtmlBrush)).DefaultValue;
+            Assert.IsNotNull(Brush.TransformProperty.GetMetadata (typeof (WebBrowserBrush)), "#metadata should not be null for: Brush.TransformProperty.WebBrowserBrush");
+            retval = Brush.TransformProperty.GetMetadata (typeof (WebBrowserBrush)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Brush.TransformProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(Brush.TransformProperty);
             Assert.IsNotNull(retval, "GetValue(Brush.TransformProperty) should not have returned null");
             Assert.IsInstanceOfType<MatrixTransform>(retval, "GetValue(Brush.TransformProperty) is not of the correct type");
-            Assert.IsNotNull(Brush.RelativeTransformProperty.GetMetadata (typeof (HtmlBrush)), "#metadata should not be null for: Brush.RelativeTransformProperty.HtmlBrush");
-            retval = Brush.RelativeTransformProperty.GetMetadata (typeof (HtmlBrush)).DefaultValue;
+            Assert.IsNotNull(Brush.RelativeTransformProperty.GetMetadata (typeof (WebBrowserBrush)), "#metadata should not be null for: Brush.RelativeTransformProperty.WebBrowserBrush");
+            retval = Brush.RelativeTransformProperty.GetMetadata (typeof (WebBrowserBrush)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for Brush.RelativeTransformProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(Brush.RelativeTransformProperty);
             Assert.IsNotNull(retval, "GetValue(Brush.RelativeTransformProperty) should not have returned null");
@@ -22226,9 +21960,10 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_HtmlBrush ()
+        [MoonlightBug]
+        public void Test_PropertyGetter_WebBrowserBrush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
 
             Assert.IsNotNull(widget.SourceName, "SourceName should not have returned null");
             Assert.AreEqual("", widget.SourceName, "SourceName does not match the default value");
@@ -22244,19 +21979,19 @@ namespace MoonTest.System.Windows.Controls
 
         [TestMethod]
         [MoonlightBug]
-        public void Test_SetStringValue_HtmlBrush ()
+        public void Test_SetStringValue_WebBrowserBrush ()
         {
-            HtmlBrush widget = new HtmlBrush ();
+            WebBrowserBrush widget = new WebBrowserBrush ();
             object retval;
 
-            widget.SetValue(HtmlBrush.SourceNameProperty, "some text");
-            retval = widget.GetValue(HtmlBrush.SourceNameProperty);
-            Assert.AreEqual("some text", retval, "GetValue(HtmlBrush.SourceNameProperty) should have returned 'some text'");
-            widget.SetValue(HtmlBrush.SourceNameProperty, null);
-            retval = widget.GetValue(HtmlBrush.SourceNameProperty);
-            Assert.AreEqual(String.Empty, retval, "GetValue(HtmlBrush.SourceNameProperty) should have returned String.Empty");
-            retval = widget.ReadLocalValue(HtmlBrush.SourceNameProperty);
-            Assert.AreEqual(String.Empty, retval, "ReadLocalValue(HtmlBrush.SourceNameProperty) should have returned String.Empty");
+            widget.SetValue(WebBrowserBrush.SourceNameProperty, "some text");
+            retval = widget.GetValue(WebBrowserBrush.SourceNameProperty);
+            Assert.AreEqual("some text", retval, "GetValue(WebBrowserBrush.SourceNameProperty) should have returned 'some text'");
+            widget.SetValue(WebBrowserBrush.SourceNameProperty, null);
+            retval = widget.GetValue(WebBrowserBrush.SourceNameProperty);
+            Assert.AreEqual(String.Empty, retval, "GetValue(WebBrowserBrush.SourceNameProperty) should have returned String.Empty");
+            retval = widget.ReadLocalValue(WebBrowserBrush.SourceNameProperty);
+            Assert.AreEqual(String.Empty, retval, "ReadLocalValue(WebBrowserBrush.SourceNameProperty) should have returned String.Empty");
         }
 
     }
@@ -22350,8 +22085,8 @@ namespace MoonTest.System.Windows.Media.Imaging
             Assert.AreEqual(BitmapCreateOptions.DelayCreation, widget.CreateOptions, "CreateOptions does not match the default value");
             Assert.IsNotNull(widget.UriSource, "UriSource should not have returned null");
             Assert.AreEqual("", widget.UriSource.ToString (), "UriSource does not match the default value");
-            Assert.AreEqual(0, widget.PixelWidth, "PixelWidth does not match the default value");
             Assert.AreEqual(0, widget.PixelHeight, "PixelHeight does not match the default value");
+            Assert.AreEqual(0, widget.PixelWidth, "PixelWidth does not match the default value");
         }
 
     }
@@ -22415,6 +22150,8 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -22633,6 +22370,11 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Popup)), "#metadata should not be null for: FrameworkElement.CursorProperty.Popup");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Popup)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Popup)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Popup");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Popup)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -22988,53 +22730,33 @@ namespace MoonTest.System.Windows.Printing
             PrintDocument widget = new PrintDocument ();
             object retval;
 
-            retval = widget.ReadLocalValue(PrintDocument.DocumentNameProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(PrintDocument.DocumentNameProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(PrintDocument.PrintedPageCountProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(PrintDocument.PrintedPageCountProperty) should not have a value by default");
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_PrintDocument ()
         {
             PrintDocument widget = new PrintDocument ();
             object retval;
 
-            Assert.IsNotNull(PrintDocument.DocumentNameProperty.GetMetadata (typeof (PrintDocument)), "#metadata should not be null for: PrintDocument.DocumentNameProperty.PrintDocument");
-            retval = PrintDocument.DocumentNameProperty.GetMetadata (typeof (PrintDocument)).DefaultValue;
-            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for PrintDocument.DocumentNameProperty should be non-null value");
-            Assert.IsInstanceOfType<string>(retval, "PrintDocument.DocumentNameProperty.GetMetadata() is not of the correct type");
-            Assert.AreEqual("", retval, "PrintDocument.DocumentNameProperty.GetMetadata() does not match the default value");
-            retval = widget.GetValue(PrintDocument.DocumentNameProperty);
-            Assert.IsNotNull(retval, "GetValue(PrintDocument.DocumentNameProperty) should not have returned null");
-            Assert.IsInstanceOfType<string>(retval, "GetValue(PrintDocument.DocumentNameProperty) is not of the correct type");
-            Assert.AreEqual("", retval, "GetValue(PrintDocument.DocumentNameProperty) does not match the default value");
+            Assert.IsNotNull(PrintDocument.PrintedPageCountProperty.GetMetadata (typeof (PrintDocument)), "#metadata should not be null for: PrintDocument.PrintedPageCountProperty.PrintDocument");
+            retval = PrintDocument.PrintedPageCountProperty.GetMetadata (typeof (PrintDocument)).DefaultValue;
+            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for PrintDocument.PrintedPageCountProperty should be non-null value");
+            Assert.IsInstanceOfType<int>(retval, "PrintDocument.PrintedPageCountProperty.GetMetadata() is not of the correct type");
+            Assert.AreEqual(0, retval, "PrintDocument.PrintedPageCountProperty.GetMetadata() does not match the default value");
+            retval = widget.GetValue(PrintDocument.PrintedPageCountProperty);
+            Assert.IsNotNull(retval, "GetValue(PrintDocument.PrintedPageCountProperty) should not have returned null");
+            Assert.IsInstanceOfType<int>(retval, "GetValue(PrintDocument.PrintedPageCountProperty) is not of the correct type");
+            Assert.AreEqual(0, retval, "GetValue(PrintDocument.PrintedPageCountProperty) does not match the default value");
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_PrintDocument ()
         {
             PrintDocument widget = new PrintDocument ();
 
-            Assert.IsNotNull(widget.DocumentName, "DocumentName should not have returned null");
-            Assert.AreEqual("", widget.DocumentName, "DocumentName does not match the default value");
-        }
-
-        [TestMethod]
-        [MoonlightBug]
-        public void Test_SetStringValue_PrintDocument ()
-        {
-            PrintDocument widget = new PrintDocument ();
-            object retval;
-
-            widget.SetValue(PrintDocument.DocumentNameProperty, "some text");
-            retval = widget.GetValue(PrintDocument.DocumentNameProperty);
-            Assert.AreEqual("some text", retval, "GetValue(PrintDocument.DocumentNameProperty) should have returned 'some text'");
-            widget.SetValue(PrintDocument.DocumentNameProperty, null);
-            retval = widget.GetValue(PrintDocument.DocumentNameProperty);
-            Assert.AreEqual(String.Empty, retval, "GetValue(PrintDocument.DocumentNameProperty) should have returned String.Empty");
-            retval = widget.ReadLocalValue(PrintDocument.DocumentNameProperty);
-            Assert.AreEqual(String.Empty, retval, "ReadLocalValue(PrintDocument.DocumentNameProperty) should have returned String.Empty");
+            Assert.AreEqual(0, widget.PrintedPageCount, "PrintedPageCount does not match the default value");
         }
 
     }
@@ -23044,6 +22766,16 @@ namespace MoonTest.System.Windows.Controls
     [TestClass]
     public partial class UserControlTest
     {
+        [TestMethod]
+        public void Test_ReadLocalValue_UserControl ()
+        {
+            UserControl widget = new UserControl ();
+            object retval;
+
+            retval = widget.ReadLocalValue(UserControl.ContentProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UserControl.ContentProperty) should not have a value by default");
+        }
+
         [TestMethod]
         public void Test_ReadLocalValue_Control ()
         {
@@ -23124,6 +22856,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -23158,6 +22892,19 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.UseLayoutRoundingProperty) should not have a value by default");
             retval = widget.ReadLocalValue(UIElement.CacheModeProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(UIElement.CacheModeProperty) should not have a value by default");
+        }
+
+        [TestMethod]
+        public void Test_GetValue_UserControl ()
+        {
+            UserControl widget = new UserControl ();
+            object retval;
+
+            Assert.IsNotNull(UserControl.ContentProperty.GetMetadata (typeof (UserControl)), "#metadata should not be null for: UserControl.ContentProperty.UserControl");
+            retval = UserControl.ContentProperty.GetMetadata (typeof (UserControl)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for UserControl.ContentProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(UserControl.ContentProperty);
+            Assert.IsNull(retval, "GetValue(UserControl.ContentProperty) should have returned null");
         }
 
         [TestMethod]
@@ -23449,6 +23196,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (UserControl)), "#metadata should not be null for: FrameworkElement.CursorProperty.UserControl");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (UserControl)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (UserControl)), "#metadata should not be null for: FrameworkElement.DataContextProperty.UserControl");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (UserControl)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -23553,6 +23305,7 @@ namespace MoonTest.System.Windows.Controls
         {
             UserControl widget = new UserControl ();
 
+            Assert.IsNull(widget.Content, "Content should have returned null");
             Assert.AreEqual(false, widget.IsTabStop, "IsTabStop does not match the default value");
             Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
             Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
@@ -23750,6 +23503,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -24147,6 +23902,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Button)), "#metadata should not be null for: FrameworkElement.CursorProperty.Button");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Button)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Button)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Button");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Button)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -24468,6 +24228,8 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -24891,6 +24653,11 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ToggleButton)), "#metadata should not be null for: FrameworkElement.CursorProperty.ToggleButton");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ToggleButton)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ToggleButton)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ToggleButton");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ToggleButton)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -25214,6 +24981,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -25637,6 +25406,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (CheckBox)), "#metadata should not be null for: FrameworkElement.CursorProperty.CheckBox");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (CheckBox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (CheckBox)), "#metadata should not be null for: FrameworkElement.DataContextProperty.CheckBox");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (CheckBox)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -25966,6 +25740,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -26400,6 +26176,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ComboBox)), "#metadata should not be null for: FrameworkElement.CursorProperty.ComboBox");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ComboBox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ComboBox)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ComboBox");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ComboBox)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -26741,6 +26522,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -27101,6 +26884,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ListBoxItem)), "#metadata should not be null for: FrameworkElement.CursorProperty.ListBoxItem");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ListBoxItem)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ListBoxItem)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ListBoxItem");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ListBoxItem)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -27395,6 +27183,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -27755,6 +27545,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ComboBoxItem)), "#metadata should not be null for: FrameworkElement.CursorProperty.ComboBoxItem");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ComboBoxItem)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ComboBoxItem)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ComboBoxItem");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ComboBoxItem)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -28071,6 +27866,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -28486,6 +28283,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (HyperlinkButton)), "#metadata should not be null for: FrameworkElement.CursorProperty.HyperlinkButton");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (HyperlinkButton)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (HyperlinkButton)), "#metadata should not be null for: FrameworkElement.DataContextProperty.HyperlinkButton");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (HyperlinkButton)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -28827,6 +28629,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -29252,6 +29056,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ListBox)), "#metadata should not be null for: FrameworkElement.CursorProperty.ListBox");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ListBox)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ListBox)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ListBox");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ListBox)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -29613,6 +29422,8 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -30036,6 +29847,11 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (RepeatButton)), "#metadata should not be null for: FrameworkElement.CursorProperty.RepeatButton");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (RepeatButton)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (RepeatButton)), "#metadata should not be null for: FrameworkElement.DataContextProperty.RepeatButton");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (RepeatButton)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -30345,6 +30161,8 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -30749,6 +30567,11 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ScrollBar)), "#metadata should not be null for: FrameworkElement.CursorProperty.ScrollBar");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ScrollBar)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ScrollBar)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ScrollBar");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ScrollBar)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -31037,6 +30860,8 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -31388,6 +31213,11 @@ namespace MoonTest.System.Windows.Controls.Primitives
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Thumb)), "#metadata should not be null for: FrameworkElement.CursorProperty.Thumb");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Thumb)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Thumb)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Thumb");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Thumb)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -31713,6 +31543,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -32149,6 +31981,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (RadioButton)), "#metadata should not be null for: FrameworkElement.CursorProperty.RadioButton");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (RadioButton)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (RadioButton)), "#metadata should not be null for: FrameworkElement.DataContextProperty.RadioButton");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (RadioButton)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -32413,6 +32250,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -32609,6 +32448,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ScrollContentPresenter)), "#metadata should not be null for: FrameworkElement.CursorProperty.ScrollContentPresenter");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ScrollContentPresenter)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ScrollContentPresenter)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ScrollContentPresenter");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ScrollContentPresenter)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -32914,6 +32758,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -33373,6 +33219,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ScrollViewer)), "#metadata should not be null for: FrameworkElement.CursorProperty.ScrollViewer");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ScrollViewer)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ScrollViewer)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ScrollViewer");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ScrollViewer)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -33688,6 +33539,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -34101,6 +33954,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (Slider)), "#metadata should not be null for: FrameworkElement.CursorProperty.Slider");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (Slider)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (Slider)), "#metadata should not be null for: FrameworkElement.DataContextProperty.Slider");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (Slider)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -34408,6 +34266,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -34801,6 +34661,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ToolTip)), "#metadata should not be null for: FrameworkElement.CursorProperty.ToolTip");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ToolTip)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ToolTip)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ToolTip");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ToolTip)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -35062,6 +34927,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -35297,6 +35164,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (VirtualizingStackPanel)), "#metadata should not be null for: FrameworkElement.CursorProperty.VirtualizingStackPanel");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (VirtualizingStackPanel)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (VirtualizingStackPanel)), "#metadata should not be null for: FrameworkElement.DataContextProperty.VirtualizingStackPanel");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (VirtualizingStackPanel)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -35598,6 +35470,8 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.NameProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.TagProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.TagProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(FrameworkElement.CursorProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.CursorProperty) should not have a value by default");
             retval = widget.ReadLocalValue(FrameworkElement.DataContextProperty);
             Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(FrameworkElement.DataContextProperty) should not have a value by default");
         }
@@ -35993,6 +35867,11 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.TagProperty should be DP.UnsetValue but was '{0}'", retval);
             retval = widget.GetValue(FrameworkElement.TagProperty);
             Assert.IsNull(retval, "GetValue(FrameworkElement.TagProperty) should have returned null");
+            Assert.IsNotNull(FrameworkElement.CursorProperty.GetMetadata (typeof (ProgressBar)), "#metadata should not be null for: FrameworkElement.CursorProperty.ProgressBar");
+            retval = FrameworkElement.CursorProperty.GetMetadata (typeof (ProgressBar)).DefaultValue;
+            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.CursorProperty should be DP.UnsetValue but was '{0}'", retval);
+            retval = widget.GetValue(FrameworkElement.CursorProperty);
+            Assert.IsNull(retval, "GetValue(FrameworkElement.CursorProperty) should have returned null");
             Assert.IsNotNull(FrameworkElement.DataContextProperty.GetMetadata (typeof (ProgressBar)), "#metadata should not be null for: FrameworkElement.DataContextProperty.ProgressBar");
             retval = FrameworkElement.DataContextProperty.GetMetadata (typeof (ProgressBar)).DefaultValue;
             Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for FrameworkElement.DataContextProperty should be DP.UnsetValue but was '{0}'", retval);
@@ -36237,29 +36116,77 @@ namespace MoonTest.System.Windows.Data
 namespace MoonTest.System.Windows
 {
     [TestClass]
-    public partial class VisualStateManagerTest
+    public partial class ExternalPartTest
     {
         [TestMethod]
-        public void Test_ReadLocalValue_VisualStateManager ()
+        public void Test_PropertyGetter_ExternalPart ()
         {
-            VisualStateManager widget = new VisualStateManager ();
+            ExternalPart widget = new ExternalPart ();
+
+            Assert.IsNull(widget.Source, "Source should have returned null");
+        }
+
+    }
+}
+namespace MoonTest.System.Windows
+{
+    [TestClass]
+    public partial class ExtensionPartTest
+    {
+        [TestMethod]
+        public void Test_ReadLocalValue_ExtensionPart ()
+        {
+            ExtensionPart widget = new ExtensionPart ();
             object retval;
 
-            retval = widget.ReadLocalValue(VisualStateManager.CustomVisualStateManagerProperty);
-            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(VisualStateManager.CustomVisualStateManagerProperty) should not have a value by default");
+            retval = widget.ReadLocalValue(ExtensionPart.SourceProperty);
+            Assert.AreEqual(DependencyProperty.UnsetValue, retval, "ReadLocalValue(ExtensionPart.SourceProperty) should not have a value by default");
         }
 
         [TestMethod]
-        public void Test_GetValue_VisualStateManager ()
+        public void Test_GetValue_ExtensionPart ()
         {
-            VisualStateManager widget = new VisualStateManager ();
+            ExtensionPart widget = new ExtensionPart ();
             object retval;
 
-            Assert.IsNotNull(VisualStateManager.CustomVisualStateManagerProperty.GetMetadata (typeof (VisualStateManager)), "#metadata should not be null for: VisualStateManager.CustomVisualStateManagerProperty.VisualStateManager");
-            retval = VisualStateManager.CustomVisualStateManagerProperty.GetMetadata (typeof (VisualStateManager)).DefaultValue;
-            Assert.AreSame(retval, DependencyProperty.UnsetValue, "PropertyMetadata.DefaultValue for VisualStateManager.CustomVisualStateManagerProperty should be DP.UnsetValue but was '{0}'", retval);
-            retval = widget.GetValue(VisualStateManager.CustomVisualStateManagerProperty);
-            Assert.IsNull(retval, "GetValue(VisualStateManager.CustomVisualStateManagerProperty) should have returned null");
+            Assert.IsNotNull(ExtensionPart.SourceProperty.GetMetadata (typeof (ExtensionPart)), "#metadata should not be null for: ExtensionPart.SourceProperty.ExtensionPart");
+            retval = ExtensionPart.SourceProperty.GetMetadata (typeof (ExtensionPart)).DefaultValue;
+            Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for ExtensionPart.SourceProperty should be non-null value");
+            Assert.IsInstanceOfType<Uri>(retval, "ExtensionPart.SourceProperty.GetMetadata() is not of the correct type");
+            Assert.AreEqual("", retval.ToString (), "ExtensionPart.SourceProperty.GetMetadata() does not match the default value");
+            retval = widget.GetValue(ExtensionPart.SourceProperty);
+            Assert.IsNotNull(retval, "GetValue(ExtensionPart.SourceProperty) should not have returned null");
+            Assert.IsInstanceOfType<Uri>(retval, "GetValue(ExtensionPart.SourceProperty) is not of the correct type");
+            Assert.AreEqual("", retval.ToString (), "GetValue(ExtensionPart.SourceProperty) does not match the default value");
+        }
+
+        [TestMethod]
+        public void Test_PropertyGetter_ExtensionPart ()
+        {
+            ExtensionPart widget = new ExtensionPart ();
+
+            Assert.IsNotNull(widget.Source, "Source should not have returned null");
+            Assert.AreEqual("", widget.Source.ToString (), "Source does not match the default value");
+        }
+
+    }
+}
+namespace MoonTest.System.Windows
+{
+    [TestClass]
+    public partial class ExternalPartCollectionTest
+    {
+        [TestMethod]
+        public void Test_PropertyGetter_ExternalPartCollection ()
+        {
+            ExternalPartCollection widget = new ExternalPartCollection ();
+
+            Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
+            Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
+            Assert.AreEqual(0, widget.Count, "Count does not match the default value");
+            Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
+            Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
+            Assert.IsInstanceOfType<ExternalPartCollection>(widget.SyncRoot, "SyncRoot is not of the correct type");
         }
 
     }
@@ -36348,3 +36275,4 @@ namespace MoonTest.System.Windows
 
     }
 }
+
