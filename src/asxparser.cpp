@@ -747,6 +747,11 @@ AsxParserInternal::parse_stream (TextStream *stream)
 			return false;
 	}
 
+	if (!g_queue_is_empty (element_stack)) {
+		raise_error (ASXPARSER_ERROR_NO_ELEMENTS, "Unexpected end of file found.");
+		return false;
+	}
+
 	return true;
 }
 

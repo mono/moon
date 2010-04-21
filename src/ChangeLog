@@ -1,5 +1,10 @@
 2010-04-21  Jackson Harper  <jackson@ximian.com>
 
+	* playlist.cpp: Raise an error if we have elements on the stack at
+	the end of the stream (ie unclosed elements).
+
+2010-04-21  Jackson Harper  <jackson@ximian.com>
+
 	* playlist.cpp: Make sure we stop the parser on error.
 
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
