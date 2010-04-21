@@ -1,5 +1,10 @@
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs: Add in some more missing default
+	  values.
+
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
 	* misc/DefaultValues.cs: Remove a bunch of MoonlightBugs
 
 2010-04-21  Alan McGovern  <amcgovern@novell.com>

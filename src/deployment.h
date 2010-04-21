@@ -110,9 +110,9 @@ public:
 	const static int LeftProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int TopProperty;
-	/* @PropertyType=WindowStartupLocation,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=WindowStartupLocation,DefaultValue=WindowStartupLocationCenterScreen,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int WindowStartupLocationProperty;
-	/* @PropertyType=WindowStyle,GenerateAccessors */
+	/* @PropertyType=WindowStyle,DefaultValue=WindowStyleSingleBorderWindow,GenerateAccessors */
 	const static int WindowStyleProperty;
 
 	const char *GetTitle ();

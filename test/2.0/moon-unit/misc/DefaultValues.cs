@@ -465,7 +465,6 @@ namespace MoonTest.System.Windows
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_WindowSettings ()
         {
             WindowSettings widget = new WindowSettings ();
@@ -537,7 +536,6 @@ namespace MoonTest.System.Windows
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_WindowSettings ()
         {
             WindowSettings widget = new WindowSettings ();

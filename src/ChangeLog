@@ -1,5 +1,9 @@
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
+	* deployment.h: Add in some more missing default values.
+
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
 	* brush.h:
 	* viewbox.h:
 	* textblock.h:
