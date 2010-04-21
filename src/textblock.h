@@ -275,7 +275,7 @@ class TextBlock : public FrameworkElement {
 	const static int TextDecorationsProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
-	/* @PropertyType=TextTrimming */
+	/* @PropertyType=TextTrimming,DefaultValue=TextTrimmingNone */
 	const static int TextTrimmingProperty;	
 	
 	/* @GenerateCBinding,GeneratePInvoke */

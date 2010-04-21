@@ -1,3 +1,7 @@
+2010-04-21  Alan McGovern  <amcgovern@novell.com>
+
+	* textblock.h: Add another missing default value.
+
 2010-04-21  Jackson Harper  <jackson@ximian.com>
 
 	* playlist.cpp: Fix typo so we allocate the correct amount of
