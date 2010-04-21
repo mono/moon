@@ -1,3 +1,8 @@
+2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Don't link with libmoon.la - this Makefile.am was
+	likely copy-pasted from the other bridges before r153003
+
 2010-04-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* curl-bridge.cpp (getdata_callback): Need to return something
