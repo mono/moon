@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -47,13 +47,27 @@ namespace MoonTest.System.Net.Sockets {
 			Assert.IsNull (e.Buffer, "Buffer");
 			Assert.IsNull (e.BufferList, "BufferList");
 			Assert.AreEqual (0, e.BytesTransferred, "BytesTransferred");
+			Assert.IsNull (e.ConnectByNameError, "ConnectByNameError");
 			Assert.IsNull (e.ConnectSocket, "ConnectSocket");
 			Assert.AreEqual (0, e.Count, "Count");
 			Assert.AreEqual (SocketAsyncOperation.None, e.LastOperation, "LastOperation");
-			Assert.AreEqual (0, e.Offset, "Count");
+			Assert.AreEqual (0, e.Offset, "Offset");
 			Assert.IsNull (e.RemoteEndPoint, "RemoteEndPoint");
+			Assert.AreEqual (SocketClientAccessPolicyProtocol.Tcp, e.SocketClientAccessPolicyProtocol, "SocketClientAccessPolicyProtocol");
 			Assert.AreEqual (SocketError.Success, e.SocketError, "SocketError");
 			Assert.IsNull (e.UserToken, "UserToken");
+		}
+
+		[TestMethod]
+		public void ClientAccessPolicyProtocol ()
+		{
+			SocketAsyncEventArgs e = new SocketAsyncEventArgs ();
+			Assert.AreEqual (SocketClientAccessPolicyProtocol.Tcp, e.SocketClientAccessPolicyProtocol, "default-tcp");
+			e.SocketClientAccessPolicyProtocol = SocketClientAccessPolicyProtocol.Http;
+			Assert.AreEqual (SocketClientAccessPolicyProtocol.Http, e.SocketClientAccessPolicyProtocol, "http");
+			Assert.Throws<ArgumentException> (delegate {
+				e.SocketClientAccessPolicyProtocol = (SocketClientAccessPolicyProtocol) Int32.MinValue;
+			}, "invalid");
 		}
 	}
 }

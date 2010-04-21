@@ -239,6 +239,10 @@ namespace MoonTest.System.Net {
 			Assert.Throws<UriFormatException> (delegate {
 				WebRequest.Create ("/myfile");
 			}, "relative");
+
+			WebRequest wr = WebRequest.Create ("http://localhost/");
+			Assert.AreEqual ("http://localhost/", wr.RequestUri.OriginalString, "RequestUri");
+			Assert.AreEqual ("System.Net.Browser.BrowserHttpWebRequestCreator", wr.CreatorInstance.GetType ().ToString (), "CreatorInstance");
 		}
 
 		[TestMethod]
@@ -257,6 +261,54 @@ namespace MoonTest.System.Net {
 			Assert.Throws<InvalidOperationException> (delegate {
 				WebRequest.Create (uri);
 			}, "relative");
+
+			WebRequest wr = WebRequest.Create (new Uri ("http://localhost/"));
+			Assert.AreEqual ("http://localhost/", wr.RequestUri.OriginalString, "RequestUri");
+			Assert.AreEqual ("System.Net.Browser.BrowserHttpWebRequestCreator", wr.CreatorInstance.GetType ().ToString (), "CreatorInstance");
+		}
+
+		[TestMethod]
+		public void CreateHttp_String ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				WebRequest.CreateHttp ((string) null);
+			}, "string-null");
+
+			Assert.Throws<NotSupportedException> (delegate {
+				WebRequest.CreateHttp ("unknown://localhost/");
+			}, "unknown");
+
+			Assert.Throws<UriFormatException> (delegate {
+				WebRequest.CreateHttp ("/myfile");
+			}, "relative");
+
+			HttpWebRequest wr = WebRequest.CreateHttp ("http://localhost/");
+			Assert.AreEqual ("http://localhost/", wr.RequestUri.OriginalString, "RequestUri");
+			// XXX undocumented but the client http stack is used by default 
+			Assert.AreEqual ("System.Net.Browser.ClientHttpWebRequestCreator", wr.CreatorInstance.GetType ().ToString (), "CreatorInstance");
+		}
+
+		[TestMethod]
+		public void CreateHttp_Uri ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				WebRequest.CreateHttp ((Uri) null);
+			}, "Uri-null");
+
+			Uri uri = new Uri ("unknown://localhost/");
+			Assert.Throws<NotSupportedException> (delegate {
+				WebRequest.CreateHttp (uri);
+			}, "unknown");
+
+			uri = new Uri ("/myfile", UriKind.Relative);
+			Assert.Throws<InvalidOperationException> (delegate {
+				WebRequest.CreateHttp (uri);
+			}, "relative");
+
+			HttpWebRequest wr = WebRequest.CreateHttp (new Uri ("http://localhost/"));
+			Assert.AreEqual ("http://localhost/", wr.RequestUri.OriginalString, "RequestUri");
+			// XXX undocumented but the client http stack is used by default 
+			Assert.AreEqual ("System.Net.Browser.ClientHttpWebRequestCreator", wr.CreatorInstance.GetType ().ToString (), "CreatorInstance");
 		}
 
 		[TestMethod]
@@ -266,9 +318,14 @@ namespace MoonTest.System.Net {
 			Assert.IsTrue (WebRequest.RegisterPrefix ("httpx", creator), "httpx-1");
 			Assert.IsFalse (WebRequest.RegisterPrefix ("httpx", creator), "httpx-2");
 
-			WebRequest wr = WebRequest.Create (new Uri ("httpx://localhost/x"));
+			Uri httpx = new Uri ("httpx://localhost/x");
+			WebRequest wr = WebRequest.Create (httpx);
 			Assert.AreEqual ("httpx://localhost/x", wr.RequestUri.OriginalString, "RequestUri");
 			Assert.IsTrue (wr is ConcreteWebRequest, "ConcreteWebRequest");
+
+			Assert.Throws<NotSupportedException> (delegate {
+				WebRequest.CreateHttp (httpx);
+			}, "httpx");
 		}
 
 		[TestMethod]
@@ -283,9 +340,16 @@ namespace MoonTest.System.Net {
 			// but you can't register twice (like any other)
 			Assert.IsFalse (WebRequest.RegisterPrefix ("http://", creator));
 
-			WebRequest wr = WebRequest.Create (new Uri ("http://localhost/"));
+			Uri uri = new Uri ("http://localhost/");
+			WebRequest wr = WebRequest.Create (uri);
 			Assert.AreEqual ("http://localhost/", wr.RequestUri.OriginalString, "RequestUri");
 			Assert.IsTrue (wr is ConcreteWebRequest, "ConcreteWebRequest");
+			Assert.IsNull (wr.CreatorInstance, "CreatorInstance");
+
+			// CreateHttp is unaffected by the RegisterPrefix method
+			HttpWebRequest hwr = WebRequest.CreateHttp (uri);
+			Assert.AreEqual ("http://localhost/", hwr.RequestUri.OriginalString, "CreateHttp-RequestUri");
+			Assert.AreEqual ("System.Net.Browser.ClientHttpWebRequestCreator", hwr.CreatorInstance.GetType ().ToString (), "CreateHttp-CreatorInstance");
 		}
 
 		[TestMethod]

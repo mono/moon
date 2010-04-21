@@ -1,5 +1,5 @@
 //
-// Unit tests for System.Net.HttpWebResponse
+// Unit tests for System.Net.WebResponse
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -35,12 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Net {
 
-	class ConcreteHttpWebResponse : HttpWebResponse {
-
-		public override void Close ()
-		{
-			throw new NotImplementedException ();
-		}
+	class ConcreteWebResponse : WebResponse {
 
 		public override long ContentLength {
 			get { throw new NotImplementedException (); }
@@ -50,61 +45,55 @@ namespace MoonTest.System.Net {
 			get { throw new NotImplementedException (); }
 		}
 
-		public override Stream GetResponseStream ()
+		public override Uri ResponseUri	{
+			get { throw new NotImplementedException (); }
+		}
+
+		public override void Close ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public override Uri ResponseUri	{
-			get { throw new NotImplementedException (); }
+		public override Stream GetResponseStream ()
+		{
+			throw new NotImplementedException ();
 		}
 	}
 
 	[TestClass]
-	public class HttpWebResponseTest {
+	public class WebResponseTest {
 
 		[TestMethod]
 		public void Defaults ()
 		{
-			ConcreteHttpWebResponse hwr = new ConcreteHttpWebResponse ();
+			ConcreteWebResponse wr = new ConcreteWebResponse ();
 
 			Assert.Throws<NotImplementedException> (delegate {
-				Assert.IsNull (hwr.ContentLength);
+				Assert.IsNull (wr.ContentLength);
 			}, "ContentLength-get");
 
 			Assert.Throws<NotImplementedException> (delegate {
-				Assert.IsNull (hwr.ContentType);
+				Assert.IsNull (wr.ContentType);
 			}, "ContentType-get");
 
 			Assert.Throws<NotImplementedException> (delegate {
-				Assert.IsNull (hwr.Cookies);
-			}, "Cookies-get");
-
-			Assert.Throws<NotImplementedException> (delegate {
-				Assert.IsNull (hwr.Method);
-			}, "Method-get");
-
-			Assert.Throws<NotImplementedException> (delegate {
-				Assert.IsNull (hwr.ResponseUri);
+				Assert.IsNull (wr.ResponseUri);
 			}, "ResponseUri-get");
 
 			Assert.Throws<NotImplementedException> (delegate {
-				Assert.IsNull (hwr.StatusCode);
-			}, "StatusCode-get");
-
-			Assert.Throws<NotImplementedException> (delegate {
-				Assert.IsNull (hwr.StatusDescription);
-			}, "StatusDescription-get");
-
-
-			Assert.Throws<NotImplementedException> (delegate {
-				hwr.Close ();
+				wr.Close ();
 			}, "Close");
 
 			Assert.Throws<NotImplementedException> (delegate {
-				hwr.GetResponseStream ();
+				wr.GetResponseStream ();
 			}, "GetResponseStream");
+
+			Assert.Throws<NotImplementedException> (delegate {
+				Assert.IsNotNull (wr.Headers);
+			}, "Headers");
+			Assert.IsFalse (wr.SupportsHeaders, "SupportsHeaders");
 		}
 	}
 }
+
 

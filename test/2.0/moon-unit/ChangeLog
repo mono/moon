@@ -1,3 +1,13 @@
+2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/HttpWebResponseTest.cs: Remove properties that does
+	not need to be overriden anymore (SL4 API)
+	* System.Net/WebRequestTest.cs: Add test cases for CreateHttp
+	* System.Net/WebResponseTest.cs: New. Test default behavior of
+	the abstract class.
+	* System.Net.Sockets/SocketAyncEventArgsTest.cs: Add test
+	cases for SocketClientAccessPolicyProtocol
+
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs: Add in some more missing default
