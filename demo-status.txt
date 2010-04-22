@@ -386,3 +386,14 @@ rating:2
  * 3.0
  * rendering issues, characters not showing
 
+site:Avatar Mosaic
+url:http://adamkinney.com/labs/avatarmosaic/
+rating:0
+ * 4.0
+ * boom: The class System.Runtime.Versioning.TargetFrameworkAttribute could not be loaded
+
+site:Audiochard Make
+url:http://www.audioorchard.com/Make
+rating:0
+ * 4.0
+ * boom: The class System.Runtime.Versioning.TargetFrameworkAttribute could not be loaded
