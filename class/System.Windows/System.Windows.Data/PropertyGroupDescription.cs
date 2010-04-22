@@ -32,82 +32,91 @@ using System.Globalization;
 
 namespace System.Windows.Data {
 	public class PropertyGroupDescription : GroupDescription {
-		public PropertyGroupDescription ()
-		{
-			Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:.ctor: NIEX");
-			throw new NotImplementedException ();
-		}
 
-		public PropertyGroupDescription (string propertyName)
-		{
-			Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:.ctor: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public PropertyGroupDescription (string propertyName, IValueConverter converter)
-		{
-			Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:.ctor: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public PropertyGroupDescription (string propertyName, IValueConverter converter, StringComparison stringComparison)
-		{
-			Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:.ctor: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public override object GroupNameFromItem (object item, int level, CultureInfo culture)
-		{
-			Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:GroupNameFromItem: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public override bool NamesMatch (object groupName, object itemName)
-		{
-			Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:NamesMatch: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		private void OnPropertyChanged (string propertyName)
-		{
-			Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:OnPropertyChanged: NIEX");
-			throw new NotImplementedException ();
-		}
+		IValueConverter converter;
+		string propertyName;
+		StringComparison stringComparison;
 
 		[DefaultValue ((string) null)]
 		public IValueConverter Converter {
-			get {
-				Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:get_Converter: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return converter; }
 			set {
-				Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:set_Converter: NIEX");
-				throw new NotImplementedException ();
+				if (converter != value) {
+					converter = value;
+					OnPropertyChanged (new PropertyChangedEventArgs ("Converter"));
+				}
 			}
 		}
 
 		[DefaultValue ((string) null)]
 		public string PropertyName {
-			get {
-				Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:get_PropertyName: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return propertyName; }
 			set {
-				Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:set_PropertyName: NIEX");
-				throw new NotImplementedException ();
+				if (propertyName != value) {
+					propertyName = value;
+					OnPropertyChanged (new PropertyChangedEventArgs ("PropertyName"));
+				}
 			}
+		}
+
+		PropertyPathWalker PropertyPathWalker {
+			get; set;
 		}
 
 		[DefaultValue (StringComparison.Ordinal)]
 		public StringComparison StringComparison {
-			get {
-				Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:get_StringComparison: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return stringComparison; }
 			set {
-				Console.WriteLine ("System.Windows.Data.PropertyGroupDescription:set_StringComparison: NIEX");
-				throw new NotImplementedException ();
+				if (stringComparison != value) {
+					stringComparison = value;
+					OnPropertyChanged (new PropertyChangedEventArgs ("StringComparison"));
+				}
 			}
+		}
+
+		public PropertyGroupDescription ()
+			: this (null)
+		{
+		}
+
+		public PropertyGroupDescription (string propertyName)
+			: this (propertyName, null)
+		{
+		}
+
+		public PropertyGroupDescription (string propertyName, IValueConverter converter)
+			: this (propertyName, converter, StringComparison.Ordinal)
+		{
+		}
+
+		public PropertyGroupDescription (string propertyName, IValueConverter converter, StringComparison stringComparison)
+		{
+			this.propertyName = propertyName;
+			this.converter = converter;
+			this.stringComparison = stringComparison;
+		}
+
+		public override object GroupNameFromItem (object item, int level, CultureInfo culture)
+		{
+			if (string.IsNullOrEmpty (PropertyName)) {
+				return item;
+			}
+			PropertyPathWalker = PropertyPathWalker ?? new PropertyPathWalker (PropertyName);
+			PropertyPathWalker.Update (item);
+
+			var value = PropertyPathWalker.IsPathBroken ? null : PropertyPathWalker.Value;
+			if (converter != null)
+				value = converter.Convert (value, typeof (object), level, culture);
+			return value;
+		}
+
+		public override bool NamesMatch (object groupName, object itemName)
+		{
+			var s1 = groupName as string;
+			var s2 = groupName as string;
+			if (s1 == null || s2 == null)
+				return base.NamesMatch (groupName, itemName);
+			return string.Equals (s1, s2, StringComparison);
 		}
 	}
 }

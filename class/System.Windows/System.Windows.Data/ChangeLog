@@ -1,3 +1,14 @@
+2010-04-22  Alan McGovern  <amcgovern@novell.com>
+
+	* UpdateDeferrer.cs: Create the 'UpdateDeferrer' class to
+	  implement CollectionViewSource.DeferRefresh ()
+
+	* PropertyGroupDescription.cs: Implement
+	  PropertyGroupDescription with tests.
+
+	* CollectionViewSource.cs: Partially implement
+	  CollectionViewSource.
+
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: If the call to string.Format

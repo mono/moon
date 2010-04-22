@@ -1,3 +1,16 @@
+2010-04-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.ComponentModel/GroupDescriptionTest.cs: Implement
+	  GroupDescription with tests.
+
+	* System.Windows.Data/PropertyGroupDescriptionTest.cs:
+	  Implement PropertyGroupDescription with tests.
+
+	* misc/DefaultValues.cs: Remove MoonlightBug from a passing
+	  default value test.
+
+	* moon-unit.mdp: update build files.
+
 2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/HttpWebResponseTest.cs: Remove properties that does

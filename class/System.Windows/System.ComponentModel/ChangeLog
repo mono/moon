@@ -1,3 +1,7 @@
+2010-04-22  Alan McGovern  <amcgovern@novell.com>
+
+	* GroupDescription.cs: Implement GroupDescription with tests.
+
 2010-04-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DesignerProperties.cs: Added new SL4 RefreshOnlyXmlnsDefinitions

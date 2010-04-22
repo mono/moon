@@ -37,66 +37,67 @@ using System.Globalization;
 using System.Windows;
 
 namespace System.Windows.Data {
-	public class CollectionViewSource : DependencyObject {
+
+	public partial class CollectionViewSource : DependencyObject {
 		public static readonly DependencyProperty SourceProperty =
 			DependencyProperty.RegisterCore ("SourceProperty", typeof (object), typeof (CollectionViewSource),
-							 new PropertyMetadata (null, new PropertyChangedCallback (SourceChanged)));
-		
-		public static readonly DependencyProperty ViewProperty =
-			DependencyProperty.RegisterReadOnlyCore ("ViewProperty", typeof (ICollectionView), typeof (CollectionViewSource), null);
-		
-		SortDescriptionCollection sortDescriptions;
-		
-		public CollectionViewSource ()
-		{
-			sortDescriptions = new SortDescriptionCollection ();
-		}
-		
-		public CultureInfo Culture {
-			get; set;
-		}
-		
-		public ObservableCollection<GroupDescription> GroupDescriptions {
-			get { throw new NotSupportedException (); }
-		}
-		
-		public SortDescriptionCollection SortDescriptions {
-			get { return sortDescriptions; }
-		}
-		
-		public object Source {
-			get { return (object) GetValue (SourceProperty); }
-			set { SetValue (SourceProperty, value); }
-		}
-		
-		public ICollectionView View {
-			get { return (ICollectionView) GetValue (ViewProperty); }
-		}
-		
-		[MonoTODO ("implement this")]
-		public IDisposable DeferRefresh ()
-		{
-			throw new NotImplementedException ();
-		}
-		
-		[MonoTODO ("when does this get invoked?")]
-		protected virtual void OnCollectionViewTypeChanged (Type oldCollectionViewType, Type newCollectionViewType)
-		{
-			
-		}
-		
-		[MonoTODO ("should this do anything?")]
-		protected virtual void OnSourceChanged (object oldSource, object newSource)
-		{
-			
-		}
-		
+							 new PropertyMetadata (null, SourceChanged));
+
 		static void SourceChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			((CollectionViewSource) o).OnSourceChanged (e.OldValue, e.NewValue);
 		}
-		
-		[MonoTODO ("when do we emit this event?")]
+
+		public static readonly DependencyProperty ViewProperty =
+			DependencyProperty.RegisterReadOnlyCore ("ViewProperty", typeof (ICollectionView), typeof (CollectionViewSource), null);
+
 		public event FilterEventHandler Filter;
+
+		public CultureInfo Culture {
+			get; set;
+		}
+
+		internal bool Deferring {
+			get; set;
+		}
+
+		public ObservableCollection<GroupDescription> GroupDescriptions {
+			get; private set;
+		}
+
+		public SortDescriptionCollection SortDescriptions {
+			get; private set;
+		}
+
+		public object Source {
+			get { return (object) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
+
+		public ICollectionView View {
+			get { return (ICollectionView) GetValue (ViewProperty); }
+			private set { SetValueImpl (ViewProperty, value); }
+		}
+
+		public CollectionViewSource ()
+		{
+			SortDescriptions = new SortDescriptionCollection ();
+			GroupDescriptions = new ObservableCollection<GroupDescription> ();
+		}
+
+		public IDisposable DeferRefresh ()
+		{
+			return new Deferrer (this);
+		}
+
+		protected virtual void OnCollectionViewTypeChanged (Type oldCollectionViewType, Type newCollectionViewType)
+		{
+			
+		}
+
+		protected virtual void OnSourceChanged (object oldSource, object newSource)
+		{
+			
+		}
 	}
 }

@@ -31,15 +31,6 @@ namespace System.ComponentModel {
 
 	public abstract class GroupDescription : INotifyPropertyChanged
 	{
-		protected GroupDescription ()
-		{
-			throw new NotImplementedException ();
-		}
-
-		public ObservableCollection<object> GroupNames {
-			get { throw new NotImplementedException (); }
-		}
-
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
 			add { PropertyChanged += value; }
 			remove { PropertyChanged -= value; }
@@ -47,14 +38,32 @@ namespace System.ComponentModel {
 
 		protected virtual event PropertyChangedEventHandler PropertyChanged;
 
+		public ObservableCollection<object> GroupNames {
+			get; private set;
+		}
+
+		protected GroupDescription ()
+		{
+			GroupNames = new ObservableCollection<object> ();
+
+			// FIXME: Write test on this
+			GroupNames.CollectionChanged += delegate {
+				OnPropertyChanged (new PropertyChangedEventArgs ("GroupNames"));
+			};
+		}
+
+		public abstract object GroupNameFromItem (object item, int level, CultureInfo culture);
+
 		public virtual bool NamesMatch (object groupName, object itemName)
 		{
-			throw new NotImplementedException ();
+			return object.Equals (groupName, itemName);
 		}
 
 		protected virtual void OnPropertyChanged (PropertyChangedEventArgs e)
 		{
-			throw new NotImplementedException ();
+			var h = PropertyChanged;
+			if (h != null)
+				h (this, e);
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
@@ -62,9 +71,5 @@ namespace System.ComponentModel {
 		{
 			throw new NotImplementedException ();
 		}
-
-		public abstract object GroupNameFromItem (object item, int level, CultureInfo culture);
-
 	}
-
 }

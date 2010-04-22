@@ -36081,7 +36081,6 @@ namespace MoonTest.System.Windows.Data
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_CollectionViewSource ()
         {
             CollectionViewSource widget = new CollectionViewSource ();
