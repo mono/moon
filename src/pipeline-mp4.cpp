@@ -1135,7 +1135,7 @@ Mp4Demuxer::OpenMoov ()
 		return false;
 	}
 
-	streams = (IMediaStream **) g_malloc (sizeof (IMediaStream *) * moov->trak_count);
+	streams = (IMediaStream **) g_malloc0 (sizeof (IMediaStream *) * moov->trak_count);
 	for (guint32 i = 0; i < moov->trak_count; i++) {
 		TrakBox *trak = moov->trak [i];
 		HdlrBox *hdlr = trak->mdia->hdlr;

@@ -1,3 +1,7 @@
+2010-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-mp4.cpp: Zero-initialize the streams array. Fixes a crash in #1005.
+
 2010-04-21  Jackson Harper  <jackson@ximian.com>
 
 	* playlist.cpp:
