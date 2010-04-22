@@ -1,5 +1,5 @@
 //
-// GroupDescription Unit Tests
+// CollectionViewSource Unit Tests
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -27,76 +27,50 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Globalization;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
-namespace MoonTest.System.ComponentModel {
+namespace MoonTest.System.Windows.Data {
 
 	[TestClass]
-	public class GroupDescriptionTest {
+	public partial class CollectionViewSourceTest {
+		List<int> Source = new List<int> () { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 		[TestMethod]
-		public void NamesMatch_BoxedValueTypes ()
+		[MoonlightBug]
+		public void ChangeSourceRecreatesView ()
 		{
-			Assert.IsTrue (new ConcreteGroupDescription ().NamesMatch (1, 1), "#1");
+			// If we change the source, we create a new View
+			var source = new CollectionViewSource { Source = this.Source };
+			var view = source.View;
+			source.Source = new List<double> () { 1.5, 2.5, 3.5, 4.5 };
+			Assert.AreNotSame (view, source.View, "#1");
 		}
 
 		[TestMethod]
-		public void NamesMatch_Strings ()
+		[MoonlightBug]
+		public void ViewIsReadOnly ()
 		{
-			Assert.IsTrue (new ConcreteGroupDescription ().NamesMatch (new string ('c', 1), new string ('c', 1)), "#1");
-		}
+			var source = new CollectionViewSource { Source = this.Source };
+			var view = source.View;
+			Assert.IsNotNull (view, "#1");
 
-		[TestMethod]
-		public void GroupNames_PropertyChanged ()
-		{
-			var gd = new ConcreteGroupDescription ();
-
-			Assert.AreEqual (0, gd.PropertyChangedFired.Count, "#1");
-			gd.GroupNames.Add ("test");
-			Assert.AreEqual (1, gd.PropertyChangedFired.Count, "#2");
-			Assert.AreEqual ("GroupNames", gd.PropertyChangedFired[0], "#3");
-		}
-	}
-
-	class ConcreteGroupDescription : GroupDescription {
-
-		public List<string> OnPropertyChangedCalled = new List<string> ();
-		public List<string> PropertyChangedFired = new List<string> ();
-
-		public ConcreteGroupDescription ()
-		{
-			PropertyChanged += (o, e) => {
-				PropertyChangedFired.Add (e.PropertyName);
-			};
-		}
-
-		public override object GroupNameFromItem (object item, int level, CultureInfo culture)
-		{
-			return "SomeName";
-		}
-
-		public override bool NamesMatch (object groupName, object itemName)
-		{
-			return base.NamesMatch (groupName, itemName);
-		}
-
-		protected override void OnPropertyChanged (PropertyChangedEventArgs e)
-		{
-			OnPropertyChangedCalled.Add (e.PropertyName);
-			base.OnPropertyChanged (e);
+			// We can clear the View even though it has no setter.
+			source.ClearValue (CollectionViewSource.ViewProperty);
+			Assert.IsNull (source.View, "#2");
 		}
 	}
 }

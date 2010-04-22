@@ -1,5 +1,10 @@
 2010-04-22  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewSource.cs: These DPs should not be core or
+	  readonly.
+
+2010-04-22  Alan McGovern  <amcgovern@novell.com>
+
 	* UpdateDeferrer.cs: Create the 'UpdateDeferrer' class to
 	  implement CollectionViewSource.DeferRefresh ()
 

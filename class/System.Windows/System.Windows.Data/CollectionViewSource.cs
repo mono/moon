@@ -40,7 +40,7 @@ namespace System.Windows.Data {
 
 	public partial class CollectionViewSource : DependencyObject {
 		public static readonly DependencyProperty SourceProperty =
-			DependencyProperty.RegisterCore ("SourceProperty", typeof (object), typeof (CollectionViewSource),
+			DependencyProperty.Register ("SourceProperty", typeof (object), typeof (CollectionViewSource),
 							 new PropertyMetadata (null, SourceChanged));
 
 		static void SourceChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -49,7 +49,7 @@ namespace System.Windows.Data {
 		}
 
 		public static readonly DependencyProperty ViewProperty =
-			DependencyProperty.RegisterReadOnlyCore ("ViewProperty", typeof (ICollectionView), typeof (CollectionViewSource), null);
+			DependencyProperty.Register ("ViewProperty", typeof (ICollectionView), typeof (CollectionViewSource), null);
 
 		public event FilterEventHandler Filter;
 

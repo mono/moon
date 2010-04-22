@@ -1,5 +1,19 @@
 2010-04-22  Alan McGovern  <amcgovern@novell.com>
 
+	* System.ComponentModel/GroupDescriptionTest.cs: spaces ->
+	  tabs on the new file.
+
+	* System.Windows.Data/CollectionViewGroupTest.cs:
+	* System.Windows.Data/CollectionViewSourceTest.cs: Add tests
+	  for CollectionView[Group|Source]
+
+	* System.Windows.Data/PropertyGroupDescriptionTest.cs: Add
+	  missing license header.
+
+	* moon-unit.mdp: update build files.
+
+2010-04-22  Alan McGovern  <amcgovern@novell.com>
+
 	* System.ComponentModel/GroupDescriptionTest.cs: Implement
 	  GroupDescription with tests.
 
