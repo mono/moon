@@ -1,3 +1,10 @@
+2010-04-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Report 4004 if a MethodAccessException is thrown
+	when loading code (see DRT1003)
+	* ExtensionPart.cs: Remove empty static ctor and unneeded using
+	clauses.
+
 2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Remove call to WebRequest.RegisterDefaultStack

@@ -329,7 +329,8 @@ namespace System.Windows {
 
 						pending_assemblies++;
 					} catch (Exception e) {
-						throw new MoonException (2152, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
+						int error = (e is MethodAccessException) ? 4004 : 2152;
+						throw new MoonException (error, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
 					}
 				}
 			}
@@ -361,7 +362,8 @@ namespace System.Windows {
 
 					DownloadAssembly (new Uri (source, UriKind.RelativeOrAbsolute), 2105);
 				} catch (Exception e) {
-					throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", source, e.Message));
+					int error = (e is MethodAccessException) ? 4004 : 2105;
+					throw new MoonException (error, string.Format ("Error while loading the '{0}' assembly : {1}", source, e.Message));
 				}
 			}
 

@@ -25,16 +25,9 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System;
-using System.IO;
-using System.Reflection;
-using Mono;
 
 namespace System.Windows {
 
 	public sealed partial class ExtensionPart : ExternalPart {
-		static ExtensionPart ()
-		{
-		}
 	}
 }
