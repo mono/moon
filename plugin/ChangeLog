@@ -1,3 +1,8 @@
+2010-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Fix boolean condition to fail parameter validation if any
+	validation fails. Fixes a crash with txd39CC.
+
 2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.mdp:
