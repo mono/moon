@@ -213,6 +213,9 @@ namespace Mono.Xaml {
 
 		public object ParseStaticResource (ref string expression)
 		{
+			if (!expression.EndsWith ("}"))
+				throw new Exception ("Whitespace is not allowed after the end of the expression");
+
 			char next;
 			string name = GetNextPiece (ref expression, out next);
 

@@ -1,3 +1,9 @@
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ResourceDictionaryTest.cs: Split a test up
+	  into a part which executes fine on SL4 and a part which
+	  corrupts memory. Mark the second part with [Ignore]
+
 2010-04-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.ComponentModel/GroupDescriptionTest.cs: spaces ->

@@ -1,3 +1,9 @@
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: {StaticResource} expressions are
+	  not allowed end in whitespace according to the moon-units.
+	  Fixes a regression in the tests.
+
 2010-04-19  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs: Correctly handle setting bindings on
