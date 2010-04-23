@@ -1,3 +1,8 @@
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/CollectionViewGroupTest.cs: Add tests
+	  for CollectionViewGroup. We already passed them all, yay!
+
 2010-04-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser/BrowserInformationTest.cs: New. Test
