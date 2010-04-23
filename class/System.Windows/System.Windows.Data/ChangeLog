@@ -1,3 +1,8 @@
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyGroupDescription.cs: Fix a stupid typo where I used
+	  the incorrect string.
+
 2010-04-22  Alan McGovern  <amcgovern@novell.com>
 
 	* CollectionViewSource.cs: These DPs should not be core or

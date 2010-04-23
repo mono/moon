@@ -54,7 +54,13 @@ namespace MoonTest.System.ComponentModel {
 		}
 
 		[TestMethod]
-		public void NamesMatch_Strings ()
+		public void NamesMatch_DifferentStrings ()
+		{
+			Assert.IsFalse (new ConcreteGroupDescription ().NamesMatch ("c", "d"), "#1");
+		}
+
+		[TestMethod]
+		public void NamesMatch_SameStrings ()
 		{
 			Assert.IsTrue (new ConcreteGroupDescription ().NamesMatch (new string ('c', 1), new string ('c', 1)), "#1");
 		}

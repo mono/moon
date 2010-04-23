@@ -113,7 +113,7 @@ namespace System.Windows.Data {
 		public override bool NamesMatch (object groupName, object itemName)
 		{
 			var s1 = groupName as string;
-			var s2 = groupName as string;
+			var s2 = itemName as string;
 			if (s1 == null || s2 == null)
 				return base.NamesMatch (groupName, itemName);
 			return string.Equals (s1, s2, StringComparison);

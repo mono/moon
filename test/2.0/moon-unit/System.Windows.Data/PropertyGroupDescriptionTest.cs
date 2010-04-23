@@ -46,7 +46,7 @@ using System.Globalization;
 namespace MoonTest.System.Windows.Data {
 
     [TestClass]
-    public class PropertyGroupDescriptionTest {
+    public class ____PropertyGroupDescriptionTest {
 
         [TestMethod]
         public void Constructor_1 ()
@@ -177,6 +177,13 @@ namespace MoonTest.System.Windows.Data {
             o.Add ("test", "result");
             var p = new ConcretePropertyGroupDescription ("[test]");
             Assert.AreEqual ("result", p.GroupNameFromItem (o, 0, null));
+        }
+
+        [TestMethod]
+        public void NamesMatch_DifferentStrings ()
+        {
+            var p = new PropertyGroupDescription (null, null, StringComparison.OrdinalIgnoreCase);
+            Assert.IsFalse (p.NamesMatch ("a", "B"), "#1");
         }
 
         [TestMethod]

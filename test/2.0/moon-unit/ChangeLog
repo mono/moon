@@ -1,5 +1,11 @@
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
+	* System.ComponentModel/GroupDescriptionTest.cs:
+	* System.Windows.Data/PropertyGroupDescriptionTest.cs: Add
+	  some extra tests for [Property]GroupDescription.NamesMatch
+
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
 	* System.ComponentModel/GroupDescriptionTest.cs: Implement
 	  GroupDescription.ShouldSerializeGroupNames.
 
