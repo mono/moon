@@ -46,7 +46,7 @@ using System.Globalization;
 namespace MoonTest.System.Windows.Data {
 
     [TestClass]
-    public class ____PropertyGroupDescriptionTest {
+    public class PropertyGroupDescriptionTest {
 
         [TestMethod]
         public void Constructor_1 ()

@@ -1,6 +1,12 @@
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.ComponentModel/GroupDescriptionTest.cs:
+	* System.Windows.Data/PropertyGroupDescriptionTest.cs: Rename
+	  the tests correctly. whoops.
+
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.ComponentModel/GroupDescriptionTest.cs:
 	* System.Windows.Data/PropertyGroupDescriptionTest.cs: Add
 	  some extra tests for [Property]GroupDescription.NamesMatch
 

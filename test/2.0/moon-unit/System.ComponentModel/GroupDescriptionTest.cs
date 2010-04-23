@@ -45,7 +45,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.ComponentModel {
 
 	[TestClass]
-	public class ____GroupDescriptionTest {
+	public class GroupDescriptionTest {
 
 		[TestMethod]
 		public void NamesMatch_BoxedValueTypes ()
