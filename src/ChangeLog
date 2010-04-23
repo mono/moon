@@ -1,3 +1,8 @@
+2010-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* template.cpp: ShuttingDownEventHandler: make sure we don't get destroyed
+	during the call to ClearXamlBuffer. Fixes a crash in #642RT.
+
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
 	* textblock.h: The correct default value really does seem to

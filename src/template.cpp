@@ -81,7 +81,13 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 void
 FrameworkTemplate::ShuttingDownEventHandler (Deployment *sender, EventArgs *args)
 {
+	// The simple act of clearing the xaml buffer may end up with our destruction,
+	// so make sure we don't get destructed during cleanup, since we'll crash. Note
+	// that we're detaching from the ShuttingDownEvent in ClearXamlBuffer, so we're
+	// losing the ref our caller has.
+	ref ();
 	ClearXamlBuffer ();
+	unref ();
 }
 
 ControlTemplate::ControlTemplate ()
