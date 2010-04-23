@@ -1,5 +1,10 @@
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
+	* System.ComponentModel/GroupDescriptionTest.cs: Implement
+	  GroupDescription.ShouldSerializeGroupNames.
+
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
 	* misc/DefaultValues.cs: Add a moonlight bug to a test i can't
 	  fix.
 

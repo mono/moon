@@ -69,7 +69,7 @@ namespace System.ComponentModel {
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		public bool ShouldSerializeGroupNames ()
 		{
-			throw new NotImplementedException ();
+			return GroupNames.Count != 0;
 		}
 	}
 }

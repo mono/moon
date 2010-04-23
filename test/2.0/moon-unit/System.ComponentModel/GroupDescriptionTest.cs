@@ -45,7 +45,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.ComponentModel {
 
 	[TestClass]
-	public class GroupDescriptionTest {
+	public class ____GroupDescriptionTest {
 
 		[TestMethod]
 		public void NamesMatch_BoxedValueTypes ()
@@ -68,6 +68,21 @@ namespace MoonTest.System.ComponentModel {
 			gd.GroupNames.Add ("test");
 			Assert.AreEqual (1, gd.PropertyChangedFired.Count, "#2");
 			Assert.AreEqual ("GroupNames", gd.PropertyChangedFired[0], "#3");
+		}
+
+		[TestMethod]
+		public void ShouldSerializeGroupNames ()
+		{
+			var g = new ConcreteGroupDescription ();
+			g.GroupNames.Add ("name");
+			Assert.IsTrue (g.ShouldSerializeGroupNames (), "#1");
+		}
+
+		[TestMethod]
+		public void ShouldSerializeGroupNames_Empty ()
+		{
+			var g = new ConcreteGroupDescription ();
+			Assert.IsFalse (g.ShouldSerializeGroupNames (), "#1");
 		}
 	}
 
