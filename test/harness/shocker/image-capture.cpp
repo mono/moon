@@ -132,7 +132,7 @@ capture_multiple_images (void* data)
 				printf ("\nMoonlight harness: Screen capture can't capture fast enough. Interval %" G_GINT64_FORMAT " ms, time spent taking screenshot: %" G_GINT64_FORMAT " ms\n", (gint64) cmid->interval, (gint64) current - previous);
 		}
 		
-		LOG_CAPTURE (" Done in %4llu ms, elapsed: %4lld ms, sleeping %4lld ms\n", current - previous, elapsed, next);
+		LOG_CAPTURE (" Done in %4" G_GINT64_FORMAT " ms, elapsed: %4" G_GINT64_FORMAT " ms, sleeping %4" G_GINT64_FORMAT " ms\n", current - previous, elapsed, next);
 		
 		usleep (next * 1000);
 	}
