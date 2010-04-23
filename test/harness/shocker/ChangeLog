@@ -1,5 +1,9 @@
 2010-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* image-capture.cpp: Master files don't have to be in plural.
+
+2010-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* image-capture.cpp: Fix a few warnings.
 
 2010-04-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>

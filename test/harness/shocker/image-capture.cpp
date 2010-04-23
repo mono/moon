@@ -342,8 +342,9 @@ void CompareImages (const char *imageFile1, const char *imageFile2, guint8 toler
 	guint8 *output = NULL;
 	guint32 output_length;
 	
-	if (strstr (imageFile1, "Masters") > 0) {
+	if (strstr (imageFile1, "Master") > 0) {
 		/* Reverse master/comparison paths, somebody at MS got mixed up at some point */
+		LOG_HARNESS ("[%i shocker] CompareImages: reversing comparison/master files\n", getpid ());
 		const char *d = imageFile2;
 		imageFile2 = imageFile1;
 		imageFile1 = d;
