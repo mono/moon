@@ -1,3 +1,7 @@
+2010-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Bump to r155983 to get System.Lazy included.
+
 2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* configure.ac: Add lunar-launcher.
