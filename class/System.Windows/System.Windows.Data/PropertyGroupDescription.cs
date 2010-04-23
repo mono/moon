@@ -105,6 +105,7 @@ namespace System.Windows.Data {
 			PropertyPathWalker.Update (item);
 
 			var value = PropertyPathWalker.IsPathBroken ? null : PropertyPathWalker.Value;
+			PropertyPathWalker.Update (null);
 			if (converter != null)
 				value = converter.Convert (value, typeof (object), level, culture);
 			return value;
