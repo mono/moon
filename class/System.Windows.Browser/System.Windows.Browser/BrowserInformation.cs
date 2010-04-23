@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007, 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007, 2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,14 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Mono;
-
 namespace System.Windows.Browser {
 
 	public sealed class BrowserInformation {
 
 		HtmlElement navigator;
 		Version version;
+		string user_agent, product_name, product_version;
 
 		public Version BrowserVersion {
 			get {
@@ -55,8 +54,28 @@ namespace System.Windows.Browser {
 			get { return GetNavigatorProperty<string> ("platform"); }
 		}
 
+		public string ProductName {
+			get {
+				if (product_name == null)
+					GetProduct ();
+				return product_name;
+			}
+		}
+
+		public string ProductVersion {
+			get {
+				if (product_version == null)
+					GetProduct ();
+				return product_version;
+			}
+		}
+
 		public string UserAgent {
-			get { return GetNavigatorProperty<string> ("userAgent"); }
+			get {
+				if (user_agent == null)
+					user_agent = GetNavigatorProperty<string> ("userAgent");
+				return user_agent;
+			}
 		}
 
 		internal BrowserInformation (HtmlWindow window)
@@ -83,6 +102,34 @@ namespace System.Windows.Browser {
 		T GetNavigatorProperty<T> (string name)
 		{
 			return navigator.GetPropertyInternal<T> (name);
+		}
+
+		// according to documentation ProductName and ProductVersion properties are extracted from userAgent
+		// cover UA like:
+		//	Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.9) Gecko/20100317 SUSE/3.5.9-0.1.1 Firefox/3.5.9
+		//	Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/533.3 (KHTML, like Gecko) Chrome/5.0.353.0 Safari/533.3
+		//	Mozilla/5.0 (X11; U; Linux i686; en; rv:1.9) Gecko/2008062113 Iceweasel/3.0
+
+		bool CheckFor (string browser)
+		{
+			int pos = UserAgent.IndexOf (browser + "/");
+			if (pos == -1)
+				return false;
+
+			pos += browser.Length + 1;
+			product_name = browser;
+			int p2 = UserAgent.IndexOf (" ", pos);
+			product_version = (p2 == -1) ? UserAgent.Substring (pos) : UserAgent.Substring (pos, p2 - pos);
+			return true;
+		}
+
+		void GetProduct ()
+		{
+			if (!CheckFor ("Firefox")) {
+				if (!CheckFor ("Chrome")) {
+					CheckFor ("Iceweasel");
+				}
+			}
 		}
 	}
 }

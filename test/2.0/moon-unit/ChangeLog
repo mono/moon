@@ -1,3 +1,8 @@
+2010-04-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser/BrowserInformationTest.cs: New. Test
+	that Product[Name|Version] are subsets of UserAgent
+
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.ComponentModel/GroupDescriptionTest.cs:
