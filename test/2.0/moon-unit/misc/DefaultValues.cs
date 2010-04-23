@@ -10535,6 +10535,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+        [MoonlightBug ("If you check new Paragraph ().TextAlignment it is a non-locally set value of 'Left'. The PropertyMetadata is the only place 'Center' shows up, so it looks like a SL bug")]
         public void Test_GetValue_Block ()
         {
             Paragraph widget = new Paragraph ();

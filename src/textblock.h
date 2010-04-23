@@ -354,7 +354,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Block ();
 
-	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentCenter,GenerateAccessors */
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
 
 	TextAlignment GetTextAlignment ();

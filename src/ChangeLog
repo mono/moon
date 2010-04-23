@@ -1,3 +1,11 @@
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
+	* textblock.h: The correct default value really does seem to
+	  be 'Left' as opposed to 'Center'. The only place using
+	  'Center' is TextAlignmentProperty.GetMetadata (typeof
+	  (Paragraph)).DefaultValue. If you use typeof (Block) you get
+	  'Left' aswell.
+
 2010-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* glyphs.cpp: Render: if we have no fill, just return. Fixes a crash in

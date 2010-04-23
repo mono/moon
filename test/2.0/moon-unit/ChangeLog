@@ -1,5 +1,10 @@
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs: Add a moonlight bug to a test i can't
+	  fix.
+
+2010-04-23  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/ResourceDictionaryTest.cs: Split a test up
 	  into a part which executes fine on SL4 and a part which
 	  corrupts memory. Mark the second part with [Ignore]
