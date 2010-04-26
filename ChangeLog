@@ -1,3 +1,7 @@
+2010-04-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Fixed LUNAR_LAUNCHER_CFLAGS/LIBS
+
 2010-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* README: Bump to r155983 to get System.Lazy included.
@@ -13,7 +17,7 @@
 
 	* autogen.sh: don't clear the PKG_CONFIG_PATH it is needed in the
 	configure step.
-	
+
 2010-04-14  Larry Ewing  <lewing@novell.com>
 
 	* autogen.sh: confuse the cairo build a little more
