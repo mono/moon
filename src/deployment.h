@@ -69,7 +69,7 @@ protected:
 /* @Namespace=System.Windows */
 class ExtensionPart : public ExternalPart {
 public:
-	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
+	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,GenerateManagedAccessors=false,DefaultValue=Uri() */
 	const static int SourceProperty;
 
 	void SetSource (Uri *value);

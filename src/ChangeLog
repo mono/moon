@@ -1,3 +1,8 @@
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
+	* deployment.h: Make ExtensionPart correctly override
+	  ExternalPart.Source.
+
 2010-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* template.cpp: ShuttingDownEventHandler: make sure we don't get destroyed

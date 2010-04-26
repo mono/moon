@@ -1,3 +1,8 @@
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ExtensionPart.cs: Make ExtensionPart correctly override
+	  ExternalPart.Source.
+
 2010-04-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Report 4004 if a MethodAccessException is thrown

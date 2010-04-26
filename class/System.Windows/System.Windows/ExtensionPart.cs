@@ -29,5 +29,10 @@
 namespace System.Windows {
 
 	public sealed partial class ExtensionPart : ExternalPart {
+
+		public override Uri Source {
+			get { return (Uri) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
 	}
 }
