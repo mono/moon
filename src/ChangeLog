@@ -1,5 +1,15 @@
 2010-04-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pal/gtk/pal-gtk.cpp (Install): Directly invoke lunar-launcher.
+
+	* pal/gtk/install-dialog.cpp (install_launcher_script): Removed,
+	no longer necessary.
+	(install_gnome_desktop): Make the .desktop files directly invoke
+	lunar-launcher instead of a shell script.
+	(install_dialog_get_launcher_script): Removed.
+
+2010-04-26  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pal/gtk/window-gtk.cpp (InitializeNormal): Need to set visible
 	to true, not false.
 

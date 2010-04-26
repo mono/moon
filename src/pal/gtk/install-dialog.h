@@ -50,8 +50,6 @@ bool install_dialog_get_install_to_desktop (InstallDialog *dialog);
 
 bool install_dialog_install (InstallDialog *dialog);
 
-char *install_dialog_get_launcher_script (InstallDialog *dialog);
-
 /* utility functions useful outside of the dialog */
 char *install_utils_get_desktop_shortcut (OutOfBrowserSettings *settings);
 char *install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings);

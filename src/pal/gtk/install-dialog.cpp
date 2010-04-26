@@ -589,61 +589,6 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 }
 
 static bool
-install_launcher_script (OutOfBrowserSettings *settings, const char *app_dir)
-{
-	WindowSettings *window = settings->GetWindowSettings ();
-	int height = (int) window->GetHeight ();
-	int width = (int) window->GetWidth ();
-	char *filename;
-	FILE *fp;
-	
-	filename = g_build_filename (app_dir, "launch", NULL);
-	if (!(fp = fopen (filename, "wt"))) {
-		g_free (filename);
-		return false;
-	}
-	
-	fprintf (fp, "#!/bin/sh\n\n");
-#if 1  // FIXME: in the future, we'll probably want to detect the user's preferred browser?
-	char *oob_launcher = NULL;
-	if (moonlight_flags & RUNTIME_INIT_OOB_LAUNCHER_FIREFOX) {
-		oob_launcher = g_strdup ("firefox");
-	} else {
-		const char *platform_dir = Deployment::GetPlatformDir ();
-		printf ("OOB platform_dir: %s\n", platform_dir);
-		char *launcher;
-		/* We first want to check if we have a lunar-launcher executable next to our platform dir,
-		 * since if we're a plugin we need the full path to the lunar-launcher executable, it won't be in PATH */
-		if (platform_dir != NULL) {
-			launcher = g_build_filename (platform_dir, "lunar-launcher", NULL);
-			if (g_file_test (launcher, (GFileTest) (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))) {
-				oob_launcher = launcher;
-			} else {
-				g_free (launcher);
-			}
-		}
-		if (oob_launcher == NULL)
-			oob_launcher = g_strdup ("lunar-launcher");
-	}
-	fprintf (fp, "%s -moonapp \"file://%s/index.html\" -moonwidth %d -moonheight %d -moontitle \"%s\"\n", oob_launcher, app_dir, width, height, settings->GetShortName());
-	g_free (oob_launcher);
-#else
-	fprintf (fp, "google-chrome --app=\"file://%s/index.html\"\n", app_dir);
-#endif
-	fclose (fp);
-	
-	if (chmod (filename, 0777) == -1) {
-		unlink (filename);
-		g_free (filename);
-		return false;
-	}
-	
-	g_free (filename);
-	
-	return true;
-}
-
-static bool
 install_update_uri (Deployment *deployment, OutOfBrowserSettings *settings, const char *app_dir)
 {
 	const char *uri = deployment->GetXapLocation ();
@@ -671,10 +616,16 @@ static bool
 install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, const char *filename)
 {
 	char *dirname, *icon_name, *quoted, *launcher;
+	const char *platform_dir, *app_id;
 	bool error = false;
 	struct stat st;
 	FILE *fp;
 	int fd;
+	
+	if (!(app_id = strrchr (app_dir, G_DIR_SEPARATOR)))
+		return false;
+	
+	app_id++;
 	
 	dirname = g_path_get_dirname (filename);
 	g_mkdir_with_parents (dirname, 0777);
@@ -713,11 +664,17 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 		if (fprintf (fp, "Icon=%s\n", icon_name) < 0)
 			error = true;
 	}
+	
 	g_free (icon_name);
 	
-	launcher = g_build_filename (app_dir, "launch", NULL);
+	if ((platform_dir = Deployment::GetPlatformDir ()))
+		launcher = g_build_filename (platform_dir, "lunar-launcher", NULL);
+	else
+		launcher = g_strdup ("lunar-launcher");
+	
 	quoted = g_shell_quote (launcher);
-	if (fprintf (fp, "Exec=%s\n", quoted) < 0)
+	
+	if (fprintf (fp, "Exec=%s %s\n", quoted, app_id) < 0)
 		error = true;
 	g_free (launcher);
 	g_free (quoted);
@@ -756,12 +713,6 @@ install_dialog_install (InstallDialog *dialog)
 		return false;
 	}
 	
-	/* install the launcher script */
-	if (!install_launcher_script (settings, priv->install_dir)) {
-		RemoveDir (priv->install_dir);
-		return false;
-	}
-	
 	/* install the update uri */
 	if (!install_update_uri (priv->deployment, settings, priv->install_dir)) {
 		RemoveDir (priv->install_dir);
@@ -788,19 +739,6 @@ install_dialog_install (InstallDialog *dialog)
 	}
 	
 	return true;
-}
-
-char *
-install_dialog_get_launcher_script (InstallDialog *dialog)
-{
-	InstallDialogPrivate *priv = dialog->priv;
-	
-	g_return_val_if_fail (IS_INSTALL_DIALOG (dialog), NULL);
-	
-	if (priv->installed)
-		return g_build_filename (priv->install_dir, "launch", NULL);
-	
-	return NULL;
 }
 
 char *

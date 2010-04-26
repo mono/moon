@@ -1032,6 +1032,7 @@ MoonInstallerServiceGtk::GetBaseInstallDir ()
 bool
 MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 {
+	const char *platform_dir;
 	GtkWidget *parent = NULL;
 	bool installed = false;
 	MoonAppRecord *app;
@@ -1041,17 +1042,17 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	GtkWidget *widget;
 	char *install_dir;
 	Surface *surface;
-	char *argv[2];
+	char *argv[3];
 	int pid;
 	
 	argv[0] = NULL;
 	argv[1] = NULL;
+	argv[2] = NULL;
 	
 	if (!(app = CreateAppRecord (deployment->GetXapLocation ())))
 		return false;
 	
 	install_dir = g_build_filename (base_install_dir, app->uid, NULL);
-	delete app;
 	
 	if ((surface = deployment->GetSurface ()) && (window = surface->GetWindow ())) {
 		widget = ((MoonWindowGtk *) window)->GetWidget ();
@@ -1062,17 +1063,25 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	g_free (install_dir);
 	
 	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
-		if ((installed = install_dialog_install ((InstallDialog *) dialog)))
-			argv[0] = install_dialog_get_launcher_script ((InstallDialog *) dialog);
+		if ((installed = install_dialog_install ((InstallDialog *) dialog))) {
+			if ((platform_dir = Deployment::GetPlatformDir ()))
+				argv[0] = g_build_filename (platform_dir, "lunar-launcher", NULL);
+			else
+				argv[0] = g_strdup ("lunar-launcher");
+			
+			argv[1] = app->uid;
+		}
 	}
 	
 	gtk_widget_destroy ((GtkWidget *) dialog);
 	
-	if (installed && argv[0]) {
+	if (installed) {
 		screen = gtk_widget_get_screen (parent);
 		gdk_spawn_on_screen (screen, NULL, argv, NULL, (GSpawnFlags) 0, NULL, NULL, &pid, NULL);
 		g_free (argv[0]);
 	}
+	
+	delete app;
 	
 	return installed;
 }
