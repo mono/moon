@@ -43,6 +43,9 @@ class GeneralTransform : public DependencyObject {
 	Matrix* GetMatrix ();
 	
 	Point Transform (Point point);
+
+	/* @GenerateJSBinding=TransformXY,Version=3.0 */
+	Point* TransformXYWithError (int x, int y, MoonError *error);
 };
 
 

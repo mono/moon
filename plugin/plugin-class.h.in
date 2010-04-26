@@ -145,7 +145,6 @@ enum PluginPropertyId {
 #if DEBUG_JAVASCRIPT
 	MoonId_Printf,
 	MoonId_DumpNameScope,
-	MoonId_TransformXY,
 #endif
 	MoonId_Add,
 	MoonId_Remove,

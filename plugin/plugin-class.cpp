@@ -335,6 +335,7 @@ enum DependencyObjectClassNames {
 	MOUSE_EVENT_ARGS_CLASS,
 	DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS,
 	MULTI_SCALE_IMAGE_CLASS,
+	GENERAL_TRANSFORM_CLASS,
 
 	DEPENDENCY_OBJECT_CLASS_NAMES_LAST
 };
@@ -2859,9 +2860,6 @@ moonlight_dependency_object_mapping [] = {
 #endif
 	{ "removeeventlistener", MoonId_RemoveEventListener },
 	{ "setvalue", MoonId_SetValue },
-#if DEBUG_JAVASCRIPT
-	{ "transformxy", MoonId_TransformXY },
-#endif
 };
 
 static NPObject *
@@ -3153,13 +3151,6 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		}
 		return true;
 	}
-	case MoonId_TransformXY: {
-		// This method is here just to print a decent error message for all the tests that run into this instead of some
-		// obscure javascript/html bridge error.
-		// Search for TransformXY in jtr.js to find where/how it is used in order to implemented it.
-		g_warning ("TransformXY () has been called, this is an undocumented javascript api. The test will now fail. You need to implement this (undocumented) method for the test to get further.\n");
-		return false;
-	}
 #endif
 	case MoonId_Equals: {
 		if (!check_arg_list ("o", argCount, args))
@@ -3442,6 +3433,9 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 	case Type::UIELEMENT:
 		np_class = dependency_object_classes [UI_ELEMENT_CLASS];
 		break;
+	case Type::GENERALTRANSFORM:
+		np_class = dependency_object_classes [GENERAL_TRANSFORM_CLASS];
+		break;
 	default:
 		if (Type::Find (plugin->GetDeployment (), kind)->IsSubclassOf (Type::CONTROL))
 			np_class = dependency_object_classes [CONTROL_CLASS];
@@ -3451,6 +3445,8 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 			np_class = dependency_object_classes [COLLECTION_CLASS];
 		else if (Type::Find (plugin->GetDeployment (), kind)->IsSubclassOf (Type::EVENTARGS)) 
 			np_class = dependency_object_classes [EVENT_ARGS_CLASS];
+		else if (Type::Find (plugin->GetDeployment (), kind)->IsSubclassOf (Type::GENERALTRANSFORM))
+			np_class = dependency_object_classes [GENERAL_TRANSFORM_CLASS];
 		else
 			np_class = dependency_object_classes [DEPENDENCY_OBJECT_CLASS];
 	}
@@ -5317,6 +5313,8 @@ plugin_init_classes (void)
 	dependency_object_classes [TEXT_BOX_CLASS] = new MoonlightTextBoxType ();
 	dependency_object_classes [PASSWORD_BOX_CLASS] = new MoonlightPasswordBoxType ();
 	dependency_object_classes [MULTI_SCALE_IMAGE_CLASS] = new MoonlightMultiScaleImageType ();
+	dependency_object_classes [GENERAL_TRANSFORM_CLASS] = new MoonlightGeneralTransformType ();
+
 	/* Event Arg Types */
 	dependency_object_classes [EVENT_ARGS_CLASS] = new MoonlightEventArgsType ();
 	dependency_object_classes [ROUTED_EVENT_ARGS_CLASS] = new MoonlightRoutedEventArgsType ();

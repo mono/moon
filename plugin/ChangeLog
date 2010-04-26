@@ -1,3 +1,9 @@
+2010-04-26  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.h.in: remove dummy TransformXY entry
+	* plugin-class.cpp: Add GeneralTransform to the list of scriptable
+	  classes
+
 2010-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: Fix boolean condition to fail parameter validation if any

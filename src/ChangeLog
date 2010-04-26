@@ -1,3 +1,8 @@
+2010-04-26  Andreia Gaita  <avidigal@novell.com>
+
+	* transform.[h|cpp]: Add TransformXY method (scriptable only).
+	  fixes drt 323 (and any others using this)
+
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
 	* textblock.h: The block ctor should be protected and the
