@@ -396,7 +396,7 @@ class MonoOpen {
 	{
 		//
 		// Here:
-		//    implement loading the DLL or executanle, search in path perhaps?
+		//    implement loading the DLL or executable, search in path perhaps?
 		//
 		if (file.EndsWith (".dll"))
 			return 1;
