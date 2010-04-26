@@ -85,10 +85,32 @@ class TypeReference {
 		get { return Value[Value.Length - 1] == '*'; }
 	}
 
+	public bool IsMoonNpType {
+		get {
+			switch (GetPlainType()) {
+				case "Point":
+				case "Rect":
+					return true;
+				break;
+				default:
+					return false;
+				break;
+			}
+		}
+	}
+
 	public string GetPrettyType ()
 	{
 		if (IsPointer)
 			return Value.Substring (0, Value.Length - 1) + " *";
+
+		return Value;
+	}
+
+	public string GetPlainType ()
+	{
+		if (IsPointer)
+			return Value.Substring (0, Value.Length - 1);
 
 		return Value;
 	}

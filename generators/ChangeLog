@@ -1,3 +1,9 @@
+2010-04-26  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs, TypeReference.cs: Add support for generating scriptable
+	  methods returning Moonlight*Type objects that don't derive from
+	  EventObject
+
 2010-04-20  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: If a DO subclass is declared and the
