@@ -13,7 +13,7 @@ novell_moonlight_xpi_CONTENTS =		\
 				$(srcdir)/moonlight.xul \
 				$(srcdir)/moonlight.js	\
 				$(srcdir)/application.js \
-				$(top_builddir)/plugin/lunar-launcher/lunar-launcher \
+				$(top_builddir)/plugin/lunar-launcher/.libs/lunar-launcher \
 				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
 				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
 				$(top_builddir)/src/.libs/libmoonxpi.so
@@ -87,7 +87,7 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) $(BRIDGES) Makefile
 	cp -L $(srcdir)/moonlight.js .xpinstall/components/
 	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
 	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
-	cp -L ../lunar-launcher/lunar-launcher .xpinstall/plugins/moonlight/
+	cp -L ../lunar-launcher/.libs/lunar-launcher .xpinstall/plugins/moonlight/
 
 if HAVE_GECKO_1_8
 # Rename the bridges to the original names
@@ -137,7 +137,7 @@ novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) $(CURL_BRIDGE) Makefile
 	cp -L $(srcdir)/icon128.png $(CRXDIR)/
 	cp -L ../.libs/libmoonloaderxpi.so $(CRXDIR)/
 	cp -L ../.libs/libmoonpluginxpi.so $(CRXDIR)/moonlight/
-	cp -L ../lunar-launcher/lunar-launcher $(CRXDIR)/moonlight/
+	cp -L ../lunar-launcher/.libs/lunar-launcher $(CRXDIR)/moonlight/
 
 # Rename the bridge to the original name
 # no if HAVE_CURL here since curl is required for chrome
