@@ -79,3 +79,7 @@ System.Void System.Net.Sockets.SocketException::.ctor()
 System.Void System.Net.WebClient::.ctor()
 	r142142		spouliot - get "xap_uri" by calling (critical) AppDomain.GetData
 
+!SSC-BC3DAE3AB2CA2BE20A7424AD3E610C44
+System.Void System.Net.WebRequest::.cctor()
+	r155874		spouliot - Activator.CreateInstance is useb to create both IWebCreator instances for the browser and client http stack (from System.Windows.dll)
+
