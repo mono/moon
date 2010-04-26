@@ -1,5 +1,11 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyObject.g.cs: The block ctor should be protected
+	  and the TextDecorations property should be declared on
+	  Inline, not TextElement
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
 	* NotificationWindow.cs: Update NotificationWindow to SL4
 	  compatibility.
 

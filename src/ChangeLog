@@ -1,5 +1,11 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
+	* textblock.h: The block ctor should be protected and the
+	  TextDecorations property should be declared on Inline, not
+	  TextElement
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
 	* enums.h:
 	* enums.cpp:
 	* security.h: ElevatedPermissions is an enum not a gint32, so

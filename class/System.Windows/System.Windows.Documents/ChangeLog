@@ -1,5 +1,11 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
+	* Inline.cs: The block ctor should be protected and the
+	  TextDecorations property should be declared on Inline, not
+	  TextElement
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
 	* Inline.cs: Mark these DPs as readonly.
 
 2010-04-20  Alan McGovern  <amcgovern@novell.com>

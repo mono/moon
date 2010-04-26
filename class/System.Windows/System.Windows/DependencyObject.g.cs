@@ -388,7 +388,7 @@ namespace System.Windows.Controls.Primitives {
 
 namespace System.Windows.Documents {
 	partial class Block {
-		public Block () : base (SafeNativeMethods.block_new (), true) {}
+		protected Block () : base (SafeNativeMethods.block_new (), true) {}
 		internal Block (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
