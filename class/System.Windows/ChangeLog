@@ -1,6 +1,11 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:
+	* System.Windows.mdp: Add a missing enum and a missing class.
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
 	* System.Windows.mdp: Stub out the missing 'Section' class.
 
 2010-04-22  Alan McGovern  <amcgovern@novell.com>
