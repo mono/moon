@@ -528,6 +528,8 @@ public:
 
 	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler,GenerateManagedEventField=true */
 	const static int LoadedEvent;
+	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler */
+	const static int UnloadedEvent;
 	/* @DelegateType=MouseEventHandler */
 	const static int MouseMoveEvent;
 	/* @DelegateType=MouseButtonEventHandler,GenerateManagedEventField=true */

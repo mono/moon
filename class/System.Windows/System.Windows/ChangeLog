@@ -1,5 +1,10 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
+	* NotificationWindow.cs: Update NotificationWindow to SL4
+	  compatibility.
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
 	* ExtensionPart.cs: Make ExtensionPart correctly override
 	  ExternalPart.Source.
 

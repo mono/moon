@@ -28,11 +28,11 @@ public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	SecuritySettings () {}
 
-	/* @PropertyType=gint32,ManagedPropertyType=ElevatedPermissions,GenerateAccessors */
+	/* @PropertyType=ElevatedPermissions,DefaultValue=ElevatedPermissionsNone,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int ElevatedPermissionsProperty;
 
-	gint32 GetElevatedPermissions ();
-	void SetElevatedPermissions (gint32 value);
+	ElevatedPermissions GetElevatedPermissions ();
+	void SetElevatedPermissions (ElevatedPermissions value);
 };
 
 G_BEGIN_DECLS

@@ -54,6 +54,13 @@ enum GradientSpreadMethod {
 
 /* @IncludeInKinds */
 /* @Namespace=System.Windows */
+enum ElevatedPermissions {
+	ElevatedPermissionsNone,
+	ElevatedPermissionsRequired
+};
+
+/* @IncludeInKinds */
+/* @Namespace=System.Windows */
 enum SystemColor {
 	ActiveBorderColor,
 	ActiveCaptionColor,

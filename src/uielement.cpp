@@ -887,6 +887,7 @@ UIElement::ClearLoaded ()
 	ClearWalkedForLoaded ();
 
 	flags &= ~UIElement::IS_LOADED;
+	Emit (UIElement::UnloadedEvent);
 }
 
 bool

@@ -54,11 +54,16 @@ public:
 	const static int ContentProperty;
 	/* @PropertyType=double */
 	const static int HeightProperty;
+	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal*/
+	const static int VisibilityProperty;
 	/* @PropertyType=double */
 	const static int WidthProperty;
 
-	/* @DelegateType=EventHandler<EventArgs> */
+	/* @DelegateType=EventHandler */
 	const static int ClosedEvent;
+
+	void SetVisibility (Visibility value);
+	Visibility GetVisibility ();
 };
 
 #endif /* __MOON_NOTIFICATION_WINDOW_H__ */

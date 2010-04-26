@@ -84,6 +84,12 @@ static enum_map_t cursors_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t elevated_permissions_map [] = {
+	MAP_ENUM (ElevatedPermissions, None),
+	MAP_ENUM (ElevatedPermissions, Required),
+	END_MAPPING
+};
+
 static enum_map_t error_type_map [] = {
 	MAP_NAME (NoError),
 	MAP_NAME (UnknownError),
@@ -468,6 +474,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "MoonPixelFormat", moon_pixel_format_map);
 	g_hash_table_insert (enum_map, (char *) "InstallState", install_state_map);
 	g_hash_table_insert (enum_map, (char *) "TextTrimming", text_trimming_map);
+	g_hash_table_insert (enum_map, (char *) "ElevatedPermissions", elevated_permissions_map);
 }
 
 static int

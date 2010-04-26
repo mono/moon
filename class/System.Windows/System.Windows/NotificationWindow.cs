@@ -36,13 +36,6 @@ namespace System.Windows {
 				throw new InvalidOperationException ("Feature enabled only when executed out-of-browser");
 		}
 
-		public bool Visible {
-			get {
-				Console.WriteLine ("System.Windows.NotificationWindow.get_Visible: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
 		public void Show (int durationInMilliseconds)
 		{
 			Console.WriteLine ("System.Windows.NotificationWindow.Show (int): NIEX");

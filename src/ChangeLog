@@ -1,5 +1,19 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
+	* enums.h:
+	* enums.cpp:
+	* security.h: ElevatedPermissions is an enum not a gint32, so
+	  fix up the native DP.
+
+	* notificationwindow.h: Update NotificationWindow to SL4 API
+	  compatibility.
+
+	* uielement.h:
+	* uielement.cpp: Add FrameworkElement::UnloadedEvent and emit
+	  it when we clear the loaded flag.
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
 	* deployment.h: Make ExtensionPart correctly override
 	  ExternalPart.Source.
 
