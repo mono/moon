@@ -34,13 +34,13 @@ using System.Windows.Markup;
 namespace System.Windows.Documents {
 	public abstract partial class Inline : TextElement {
 
-		public static new DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty;
-		public static new DependencyProperty FontSizeProperty = TextElement.FontSizeProperty;
-		public static new DependencyProperty FontStretchProperty = TextElement.FontStretchProperty;
-		public static new DependencyProperty FontStyleProperty = TextElement.FontStyleProperty;
-		public static new DependencyProperty FontWeightProperty = TextElement.FontWeightProperty;
-		public static new DependencyProperty ForegroundProperty = TextElement.ForegroundProperty;
-		public static new DependencyProperty TextDecorationsProperty = TextElement.TextDecorationsProperty;
-		public static new DependencyProperty LanguageProperty = TextElement.LanguageProperty;
+		public static readonly new DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty;
+		public static readonly new DependencyProperty FontSizeProperty = TextElement.FontSizeProperty;
+		public static readonly new DependencyProperty FontStretchProperty = TextElement.FontStretchProperty;
+		public static readonly new DependencyProperty FontStyleProperty = TextElement.FontStyleProperty;
+		public static readonly new DependencyProperty FontWeightProperty = TextElement.FontWeightProperty;
+		public static readonly new DependencyProperty ForegroundProperty = TextElement.ForegroundProperty;
+		public static readonly new DependencyProperty TextDecorationsProperty = TextElement.TextDecorationsProperty;
+		public static readonly new DependencyProperty LanguageProperty = TextElement.LanguageProperty;
 	}
 }
