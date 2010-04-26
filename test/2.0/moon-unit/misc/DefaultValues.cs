@@ -589,7 +589,6 @@ namespace MoonTest.System.Windows
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_SecuritySettings ()
         {
             SecuritySettings widget = new SecuritySettings ();
@@ -607,7 +606,6 @@ namespace MoonTest.System.Windows
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_SecuritySettings ()
         {
             SecuritySettings widget = new SecuritySettings ();
