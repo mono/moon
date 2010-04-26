@@ -84,14 +84,14 @@ gtk_silver_init (GtkSilver *silver)
 	GtkWidget *widget;
 	
 	priv = silver->priv = g_new0 (GtkSilverPrivate, 1);
-	priv->window = winsys->CreateWindow (false, 0, 0, NULL, NULL);
+	priv->window = winsys->CreateWindow (false);
 	priv->surface = new Surface (priv->window);
 	
 	deployment->SetSurface (priv->surface);
 	priv->window->SetSurface (priv->surface);
 	
 	widget = ((MoonWindowGtk *) priv->window)->GetWidget ();
-	g_signal_connect_after (widget, "size-allocate", G_CALLBACK (size_allocated), priv->surface);
+	g_signal_connect (widget, "size-allocate", G_CALLBACK (size_allocated), priv->surface);
 	gtk_widget_show (widget);
 	
 	gtk_container_add ((GtkContainer *) silver, widget);
