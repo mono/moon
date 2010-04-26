@@ -1,5 +1,9 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
+	* textblock.h: Make the DP field internal.
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
 	* textblock.h: Remove publicly callable setters where there
 	  should be none.
 

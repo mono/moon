@@ -155,7 +155,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	InlineUIContainer ();
 
-	/* @PropertyType=UIElement,GenerateAccessors */
+	/* @PropertyType=UIElement,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int ChildProperty;
 
 	void SetChild (UIElement *child);
