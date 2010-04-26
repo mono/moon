@@ -31,7 +31,7 @@ using System.Windows.Markup;
 
 namespace System.Windows.Documents {
 
-	public partial class Section : Block {
+	public sealed partial class Section : Block {
 		
 	}
 }

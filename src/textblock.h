@@ -371,7 +371,7 @@ public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	Paragraph ();
 
-	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
 
 	InlineCollection *GetInlines ();
@@ -390,7 +390,7 @@ class Section : public Block {
 
 	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal*/
 	const static int BlocksProperty;
-	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors,*/
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int HasTrailingParagraphBreakOnPasteProperty;
 
 	void SetBlocks (BlockCollection *value);

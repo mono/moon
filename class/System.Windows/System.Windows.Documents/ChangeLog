@@ -1,5 +1,10 @@
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
+	* Section.cs: Remove publicly callable setters where there
+	  should be none.
+
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
 	* Section.cs: Stub out the missing 'Section' class.
 
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
