@@ -105,6 +105,64 @@ load_window_icons (GtkWindow *window, Deployment *deployment, IconCollection *ic
 	}
 }
 
+static GtkWidget *
+create_window (Deployment *deployment, const char *geometry, const char *app_id)
+{
+	GtkWidget *widget, *window;
+	OutOfBrowserSettings *oob;
+	WindowSettings *settings;
+	char *xap_path;
+	
+	xap_path = g_strdup_printf ("%s/.local/share/moonlight/applications/%s/Application.xap", g_get_home_dir (), app_id);
+	widget = gtk_silver_new ();
+	gtk_silver_load_xap ((GtkSilver *) widget, xap_path);
+	gtk_widget_show (widget);
+	g_free (xap_path);
+	
+	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_widget_set_app_paintable (window, true);
+	g_signal_connect_after (window, "delete-event", G_CALLBACK (gtk_main_quit), NULL);
+	gtk_container_add ((GtkContainer *) window, widget);
+	
+	if ((oob = deployment->GetOutOfBrowserSettings ())) {
+		load_window_icons ((GtkWindow *) window, deployment, oob->GetIcons ());
+		settings = oob->GetWindowSettings ();
+	} else
+		settings = NULL;
+	
+	if (settings != NULL) {
+		gtk_window_set_title ((GtkWindow *) window, settings->GetTitle ());
+		
+		if (geometry == NULL) {
+			gtk_window_resize ((GtkWindow *) window, settings->GetWidth (), settings->GetHeight ());
+			
+			if (settings->GetWindowStartupLocation () == WindowStartupLocationManual)
+				gtk_window_move ((GtkWindow *) window, settings->GetLeft (), settings->GetTop ());
+		}
+		
+		switch (settings->GetWindowStyle ()) {
+		case WindowStyleBorderlessRoundCornersWindow:
+		case WindowStyleNone:
+			gtk_window_set_decorated ((GtkWindow *) window, false);
+			break;
+		default:
+			/* by default, gtk enables window decorations */
+			break;
+		}
+	} else if (oob != NULL) {
+		gtk_window_set_title ((GtkWindow *) window, oob->GetShortName ());
+	} else {
+		gtk_window_set_title ((GtkWindow *) window, "Moonlight");
+	}
+	
+	if (geometry != NULL) {
+		/* override WindowSettings' dimensions */
+		gtk_window_parse_geometry ((GtkWindow *) window, geometry);
+	}
+	
+	return window;
+}
+
 class FileDownloadState {
 	Downloader *downloader;
 	char *uri;
@@ -250,13 +308,10 @@ static GetOptsOption options[] = {
 
 int main (int argc, char **argv)
 {
-	GtkWidget *window, *widget;
-	OutOfBrowserSettings *oob;
-	WindowSettings *settings;
 	Deployment *deployment;
 	GetOptsContext *ctx;
 	const char **args;
-	char *xap_path;
+	GtkWidget *window;
 	int n;
 	
 	gtk_init (&argc, &argv);
@@ -288,57 +343,11 @@ int main (int argc, char **argv)
 	Deployment::SetCurrent (deployment);
 	
 	if (!deployment->InitializeAppDomain ()) {
-		g_warning ("Moonlight: Couldn't initialize the AppDomain");
+		g_warning ("Couldn't initialize the AppDomain");
 		return EXIT_FAILURE;
 	}
 	
-	xap_path = g_strdup_printf ("%s/.local/share/moonlight/applications/%s/Application.xap", g_get_home_dir (), args[0]);
-	widget = gtk_silver_new ();
-	gtk_silver_load_xap ((GtkSilver *) widget, xap_path);
-	gtk_widget_show (widget);
-	g_free (xap_path);
-	
-	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	//gtk_widget_set_app_paintable (window, true);
-	g_signal_connect_after (window, "delete-event", G_CALLBACK (gtk_main_quit), NULL);
-	gtk_container_add ((GtkContainer *) window, widget);
-	
-	if ((oob = deployment->GetOutOfBrowserSettings ())) {
-		load_window_icons ((GtkWindow *) window, deployment, oob->GetIcons ());
-		settings = oob->GetWindowSettings ();
-	} else
-		settings = NULL;
-	
-	if (settings != NULL) {
-		gtk_window_set_title ((GtkWindow *) window, settings->GetTitle ());
-		
-		if (geometry == NULL) {
-			gtk_window_resize ((GtkWindow *) window, settings->GetWidth (), settings->GetHeight ());
-			
-			if (settings->GetWindowStartupLocation () == WindowStartupLocationManual)
-				gtk_window_move ((GtkWindow *) window, settings->GetLeft (), settings->GetTop ());
-		}
-		
-		switch (settings->GetWindowStyle ()) {
-		case WindowStyleBorderlessRoundCornersWindow:
-		case WindowStyleNone:
-			gtk_window_set_decorated ((GtkWindow *) window, false);
-			break;
-		default:
-			/* by default, gtk enables window decorations */
-			break;
-		}
-	} else if (oob != NULL) {
-		gtk_window_set_title ((GtkWindow *) window, oob->GetShortName ());
-	} else {
-		gtk_window_set_title ((GtkWindow *) window, "Moonlight");
-	}
-	
-	if (geometry != NULL) {
-		/* override WindowSettings' dimensions */
-		gtk_window_parse_geometry ((GtkWindow *) window, geometry);
-	}
-	
+	window = create_window (deployment, geometry, args[0]);
 	gtk_widget_show (window);
 	
 	gtk_main ();
