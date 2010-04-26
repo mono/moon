@@ -1,3 +1,5 @@
+.NOTPARALLEL:
+
 xapname=moon-unit
 BROWSER_NAME=firefox
 BROWSER_OPTS=-P MoonTest --no-remote

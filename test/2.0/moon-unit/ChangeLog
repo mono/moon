@@ -1,3 +1,7 @@
+2010-04-26  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: fix parallel builds
+
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewGroupTest.cs: Add tests
