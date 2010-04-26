@@ -373,6 +373,7 @@ int main (int argc, char **argv)
 	GetOptsContext *ctx;
 	const char **args;
 	GtkWidget *window;
+	char *plugin_dir;
 	int n;
 	
 	gtk_init (&argc, &argv);
@@ -386,8 +387,10 @@ int main (int argc, char **argv)
 	if (n != 1)
 		display_help (ctx, NULL, NULL, NULL);
 	
-	// FIXME: need to get the plugin dir somehow
-	runtime_init_browser ("/home/fejj/.mozilla/firefox/3ocwu648.default/extensions/moonlight@novell.com/plugins/moonlight");
+	/* expects to be run from the xpi plugin dir */
+	plugin_dir = g_path_get_dirname (argv[0]);
+	runtime_init_browser (plugin_dir);
+	g_free (plugin_dir);
 	
 	Downloader::SetFunctions (downloader_create_state,
 				  downloader_destroy_state,
