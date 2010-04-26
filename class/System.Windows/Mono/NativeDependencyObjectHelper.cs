@@ -319,7 +319,7 @@ namespace Mono {
 			case Kind.GLYPHS: return new Glyphs (raw, false);
 			case Kind.GRADIENTSTOP_COLLECTION: return new GradientStopCollection (raw, false);
 			case Kind.GRADIENTSTOP: return new GradientStop (raw, false);
-			case Kind.GRID : return new Grid (raw, false);
+			case Kind.GRID: return new Grid (raw, false);
 			case Kind.ICON: return new Icon (raw, false);
 			case Kind.ICON_COLLECTION: return new IconCollection (raw, false);
 			case Kind.IMAGEBRUSH: return new ImageBrush (raw, false);
