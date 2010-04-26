@@ -1,3 +1,10 @@
+2010-04-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/window-gtk.cpp (InitializeNormal): Need to set visible
+	to true, not false.
+
+	* pal/pal.h (MoonInstallerService): Made some APIs public.
+
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
 	* textblock.h: Make the DP field internal.

@@ -308,8 +308,6 @@ class MoonInstallerService {
 	static void downloader_failed (EventObject *sender, EventArgs *args, gpointer user_data);
 	
 protected:
-	virtual const char *GetBaseInstallDir () = 0;
-	
 	MoonAppRecord *CreateAppRecord (const char *origin);
 	
 public:
@@ -320,6 +318,10 @@ public:
 	
 	virtual bool Install (Deployment *deployment, bool unattended) = 0;
 	virtual bool Uninstall (Deployment *deployment);
+	
+	virtual const char *GetBaseInstallDir () = 0;
+	
+	MoonAppRecord *GetAppRecord (const char *uid);
 	
 	bool IsRunningOutOfBrowser (Deployment *deployment);
 	bool CheckInstalled (Deployment *deployment);

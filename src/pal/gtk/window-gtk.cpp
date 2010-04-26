@@ -156,7 +156,7 @@ MoonWindowGtk::InitializeNormal ()
 
 	widget = gtk_event_box_new ();
 
-	gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
+	gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), true);
 
 	InitializeCommon ();
 

@@ -275,7 +275,7 @@ Deployment::GetCurrent()
 				mismatch = false;
 			} else {
 				/* something is very wrong, I can't see how this can happen */
-				//g_warning ("Deployment::GetCurrent (): Domain mismatch, but the current domain is the root domain?\n");
+				//g_warning ("Deployment::GetCurrent (): Domain mismatch, but the current domain is the root domain?");
 				mismatch = false;
 			}
 		} else {
@@ -525,13 +525,13 @@ Deployment::InitializeAppDomain ()
 		
 		app_launcher = mono_class_from_name (system_windows_image, "Mono", "ApplicationLauncher");
 		if (!app_launcher) {
-			g_warning ("could not find ApplicationLauncher type");
+			g_warning ("Could not find ApplicationLauncher type.");
 			return false;
 		}
 
 		moon_exception = mono_class_from_name (system_windows_image, "Mono", "MoonException");
 		if (!moon_exception) {
-			g_warning ("could not find MoonException type");
+			g_warning ("Could not find MoonException type.");
 			return false;
 		}
 		
@@ -541,7 +541,7 @@ Deployment::InitializeAppDomain ()
 		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
 		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
-			g_warning ("lookup for ApplicationLauncher methods failed");
+			g_warning ("Lookup of ApplicationLauncher methods failed.");
 			result = false;
 		}
 
@@ -549,11 +549,11 @@ Deployment::InitializeAppDomain ()
 		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
 
 		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
-			g_warning ("lookup for MoonException properties failed");
+			g_warning ("Lookup of MoonException properties failed.");
 			result = false;
 		}
 	} else {
-		printf ("Moonlight: Plugin AppDomain Creation: could not find System.Windows.dll.\n");
+		g_warning ("Plugin AppDomain Creation: could not find System.Windows.dll.");
 	}
 
 	printf ("Moonlight: Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
@@ -600,7 +600,7 @@ Deployment::MonoGetMethodFromName (MonoClass *klass, const char *name, int narg)
 	method = mono_class_get_method_from_name (klass, name, narg);
 
 	if (!method)
-		printf ("Warning could not find method %s\n", name);
+		g_warning ("Could not find method: %s", name);
 
 	return method;
 }
@@ -612,7 +612,7 @@ Deployment::MonoGetPropertyFromName (MonoClass *klass, const char *name)
 	property = mono_class_get_property_from_name (klass, name);
 
 	if (!property)
-		printf ("Warning could not find property %s\n", name);
+		g_warning ("Could not find property: %s", name);
 
 	return property;
 }
@@ -655,9 +655,9 @@ Deployment::~Deployment()
 
 #if SANITY
 	if (pending_unrefs != NULL)
-		g_warning ("Deployment::~Deployment (): There are still pending unrefs.\n");
+		g_warning ("Deployment::~Deployment (): There are still pending unrefs.");
 	if (medias != NULL)
-		g_warning ("Deployment::~Deployment (): There are still medias waiting to get disposed.\n");
+		g_warning ("Deployment::~Deployment (): There are still medias waiting to get disposed.");
 #endif
 
 #if OBJECT_TRACKING
@@ -1424,9 +1424,9 @@ Deployment::UnrefDelayed (EventObject *obj)
 		
 #if SANITY
 	if (Deployment::GetCurrent () != this)
-		g_warning ("Deployment::UnrefDelayed (%p): The current deployment (%p) should be %p.\n", obj, Deployment::GetCurrent (), this);
+		g_warning ("Deployment::UnrefDelayed (%p): The current deployment (%p) should be %p.", obj, Deployment::GetCurrent (), this);
 	if (obj->GetObjectType () != Type::DEPLOYMENT &&  obj->GetUnsafeDeployment () != this && obj->GetUnsafeDeployment () != NULL)
-		g_warning ("Deployment::UnrefDelayed (%p): obj's deployment %p should be %p. type: %s\n", obj, obj->GetUnsafeDeployment (), this, obj->GetTypeName ());
+		g_warning ("Deployment::UnrefDelayed (%p): obj's deployment %p should be %p. type: %s", obj, obj->GetUnsafeDeployment (), this, obj->GetTypeName ());
 #endif
 
 	// Create the new list item

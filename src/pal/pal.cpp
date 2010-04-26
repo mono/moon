@@ -665,6 +665,15 @@ MoonInstallerService::GetAppRecord (Deployment *deployment)
 	return app;
 }
 
+MoonAppRecord *
+MoonInstallerService::GetAppRecord (const char *uid)
+{
+	if (!InitDatabase ())
+		return NULL;
+	
+	return db->GetAppRecordByUid (uid);
+}
+
 void
 MoonInstallerService::UpdaterNotifySize (gint64 size)
 {
