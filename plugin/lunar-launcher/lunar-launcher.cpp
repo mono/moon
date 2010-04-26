@@ -163,7 +163,7 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	winsys = runtime_get_windowing_system ();
 	
 	/* create the moonlight widget */
-	moon_window = winsys->CreateWindow (false, width, height);
+	moon_window = winsys->CreateWindow (false, 0, 0);
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
