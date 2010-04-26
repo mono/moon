@@ -379,6 +379,28 @@ public:
 };
 
 /* @Namespace=System.Windows.Documents */
+/* @ContentProperty=Blocks */
+class Section : public Block {
+ protected:
+	virtual ~Section () {}
+
+ public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Section ();
+
+	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal*/
+	const static int BlocksProperty;
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors,*/
+	const static int HasTrailingParagraphBreakOnPasteProperty;
+
+	void SetBlocks (BlockCollection *value);
+	BlockCollection *GetBlocks ();
+	
+	void SetHasTrailingParagraphBreakOnPaste (bool value);
+	bool GetHasTrailingParagraphBreakOnPaste ();
+};
+
+/* @Namespace=System.Windows.Documents */
 /* @ContentProperty=Inlines */
 class Span : public Inline {
 protected:

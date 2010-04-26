@@ -522,6 +522,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
 	$(srcdir)/System.Windows.Documents/Paragraph.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
+	$(srcdir)/System.Windows.Documents/Section.cs				\
 	$(srcdir)/System.Windows.Documents/Span.cs				\
 	$(srcdir)/System.Windows.Documents/TextElement.cs			\
 	$(srcdir)/System.Windows.Documents/TextElementCollection.cs		\

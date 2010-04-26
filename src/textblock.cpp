@@ -100,6 +100,11 @@ Underline::Underline ()
 	SetTextDecorations (TextDecorationsUnderline);
 }
 
+Section::Section ()
+{
+	SetObjectType (Type::SECTION);
+}
+
 //
 // Inline
 //

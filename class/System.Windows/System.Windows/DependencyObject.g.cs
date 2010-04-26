@@ -450,6 +450,12 @@ namespace System.Windows.Documents {
 		internal Run (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	[ContentProperty ("Blocks")]
+	partial class Section {
+		public Section () : base (SafeNativeMethods.section_new (), true) {}
+		internal Section (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	[ContentProperty ("Inlines")]
 	partial class Span {
 		public Span () : base (SafeNativeMethods.span_new (), true) {}

@@ -1,3 +1,8 @@
+2010-04-26  Alan McGovern  <amcgovern@novell.com>
+
+	* textblock.h:
+	* textblock.cpp: Stub out the missing 'Section' class.
+
 2010-04-26  Andreia Gaita  <avidigal@novell.com>
 
 	* transform.[h|cpp]: Add TransformXY method (scriptable only).
