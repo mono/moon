@@ -1,5 +1,9 @@
 2010-04-27  Alan McGovern  <amcgovern@novell.com>
 
+	* notificationwindow.h: Add back in the SL4 beta 'Visible' DP.
+
+2010-04-27  Alan McGovern  <amcgovern@novell.com>
+
 	* textblock.h: Put TextDecorationsProperty back on TextElement
 	  to stop the DRTs from breaking.
 
