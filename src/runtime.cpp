@@ -75,14 +75,14 @@
 bool Surface::main_thread_inited = false;
 pthread_t Surface::main_thread = 0;
 
-static MoonWindowingSystem *windowing_system = NULL;
-static MoonInstallerService *installer_service = NULL;
-static MoonMessagingService *messaging_service = NULL;
-static MoonCaptureService *capture_service = NULL;
+MoonWindowingSystem *windowing_system = NULL;
+MoonInstallerService *installer_service = NULL;
+MoonMessagingService *messaging_service = NULL;
+MoonCaptureService *capture_service = NULL;
 
-static bool inited = false;
-static bool g_type_inited = false;
-static GList* surface_list = NULL;
+bool inited = false;
+bool g_type_inited = false;
+GList* surface_list = NULL;
 guint32 moonlight_flags = 0;
 #if DEBUG || LOGGING
 guint32 debug_flags_ex = 0;

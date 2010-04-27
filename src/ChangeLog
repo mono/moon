@@ -1,3 +1,9 @@
+2010-04-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Do not use static variables since they are 
+	different in when loaded from libmoonplugin and libmoon (as loaded
+	and remapped by libmono's pinvoke loader). Final fix for DRT2062
+
 2010-04-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/pal-gtk.cpp (Install): Directly invoke lunar-launcher.
