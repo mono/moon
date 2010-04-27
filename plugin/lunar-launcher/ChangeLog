@@ -1,5 +1,13 @@
 2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* lunar-downloader.cpp|h: New source files for wrapping the curl
+	downloader.
+
+	* lunar-launcher.cpp: Get rid of the FileDownloadState and load
+	the curl bridge instead.
+
+2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* lunar-launcher.cpp (create_window): Add an event handler for
 	Surface::ErrorEvent so that we can get some sort of error printed
 	to the console when something fails.

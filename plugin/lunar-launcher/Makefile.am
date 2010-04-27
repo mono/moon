@@ -5,10 +5,13 @@ INCLUDES = $(LUNAR_LAUNCHER_CFLAGS) \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/pal \
 	-I$(top_srcdir)/src/zip \
+	-I$(top_srcdir)/plugin	\
 	-I/usr/include/X11 \
 	-Wall
 
 lunar_launcher_SOURCES = 	\
+	lunar-downloader.cpp	\
+	lunar-downloader.h	\
 	lunar-launcher.cpp	\
 	getopts.cpp		\
 	getopts.h

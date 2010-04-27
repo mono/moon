@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dlfcn.h>
 
 #include "runtime.h"
 #include "deployment.h"
@@ -29,8 +30,10 @@
 #include "gtk/window-gtk.h"
 #include "gtk/pal-gtk.h"
 
+#include "lunar-downloader.h"
 #include "getopts.h"
 
+static BrowserBridge *bridge = NULL;
 static const char *geometry = NULL;
 
 typedef struct {
@@ -124,6 +127,37 @@ error_handler (EventObject *sender, EventArgs *args, gpointer user_data)
 	exit (EXIT_FAILURE);
 }
 
+typedef BrowserBridge * (* create_bridge_func) (void);
+
+static bool
+load_bridge (const char *plugin_dir)
+{
+	create_bridge_func create_browser_bridge;
+	char *bridge_path;
+	void *handle;
+	
+	bridge_path = g_build_filename (plugin_dir, "libmoonplugin-curlbridge.so", NULL);
+	
+	handle = dlopen (bridge_path, RTLD_LAZY);
+	g_free (bridge_path);
+	
+	if (handle == NULL) {
+		g_warning ("Could not load curl bridge: %s.", dlerror ());
+		return false;
+	}
+	
+	if (!(create_browser_bridge = (create_bridge_func) dlsym (handle, "CreateBrowserBridge"))) {
+		g_warning ("Could not locate CreateBrowserBridge symbol: %s.", dlerror ());
+		return false;
+	}
+	
+	bridge = create_browser_bridge ();
+	
+	LunarDownloader::SetBridge (bridge);
+	
+	return true;
+}
+
 static bool
 load_app (Deployment *deployment, const char *app_id)
 {
@@ -177,6 +211,7 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
+	bridge->SetSurface (surface);
 	
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	
@@ -236,118 +271,7 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	return window;
 }
 
-class FileDownloadState {
-	Downloader *downloader;
-	char *uri;
-	
- public:
-	
-	FileDownloadState (Downloader *dl)
-	{
-		downloader = dl;
-		uri = NULL;
-	}
-	
-	~FileDownloadState ()
-	{
-		Close ();
-	}
-	
-	void Abort ()
-	{
-		Close ();
-	}
-	
-	char *GetResponseText (char *fname, char *PartName)
-	{
-		return NULL;
-	}
-	
-	void Open (const char *verb, const char *uri)
-	{
-		this->uri = g_strdup (uri);
-	}
-	
-	void Send ()
-	{
-		int n, offset = 0;
-		struct stat st;
-		char buf[4096];
-		FILE *fp;
-		
-		if (stat (uri, &st) == -1 || !S_ISREG (st.st_mode)
-		    || !(fp = fopen (uri, "rb"))) {
-			downloader->NotifyFailed ("File does not exist");
-			return;
-		}
-		
-		downloader->NotifySize (st.st_size);
-		
-		offset = 0;
-		while ((n = fread (buf, 1, sizeof (buf), fp)) > 0) {
-			downloader->Write (buf, offset, n);
-			offset += n;
-		}
-		
-		fclose (fp);
-		
-		downloader->NotifyFinished (uri);
-	}
-	
-	void Close ()
-	{
-		g_free (uri);
-		uri = NULL;
-	}
-};
 
-static gpointer
-downloader_create_state (Downloader *dl)
-{
-	return new FileDownloadState (dl);
-}
-
-static void
-downloader_destroy_state (gpointer data)
-{
-	delete ((FileDownloadState *) data);
-}
-
-static void
-downloader_open (gpointer state, const char *verb, const char *uri, bool streaming, bool disable_cache)
-{
-	((FileDownloadState *) state)->Open (verb, uri);
-}
-
-static void
-downloader_send (gpointer state)
-{
-	((FileDownloadState *) state)->Send ();
-}
-
-static void
-downloader_abort (gpointer state)
-{
-	((FileDownloadState *) state)->Abort ();
-}
-
-static void
-downloader_header (gpointer state, const char *header, const char *value)
-{
-	//g_assert_not_reached ();
-}
-
-static void
-downloader_body (gpointer state, void *body, guint32 length)
-{
-	//g_assert_not_reached ();
-}
-
-static void *
-downloader_request (const char *method, const char *uri, gpointer context)
-{
-	g_assert_not_reached ();
-}
 
 static int
 display_help (GetOptsContext *ctx, GetOptsOption *opt, const char *arg, void *valuep)
@@ -402,18 +326,10 @@ int main (int argc, char **argv)
 	/* expects to be run from the xpi plugin dir */
 	plugin_dir = g_path_get_dirname (argv[0]);
 	runtime_init_browser (plugin_dir);
+	load_bridge (plugin_dir);
 	g_free (plugin_dir);
 	
-	Downloader::SetFunctions (downloader_create_state,
-				  downloader_destroy_state,
-				  downloader_open,
-				  downloader_send,
-				  downloader_abort,
-				  downloader_header,
-				  downloader_body,
-				  downloader_request,
-				  NULL,
-				  NULL);
+	lunar_downloader_init ();
 	
 	deployment = new Deployment ();
 	Deployment::SetCurrent (deployment);
@@ -431,6 +347,7 @@ int main (int argc, char **argv)
 	gtk_main ();
 	
 	getopts_context_free (ctx, true);
+	lunar_downloader_shutdown ();
 	deployment->Shutdown ();
 	runtime_shutdown ();
 	
