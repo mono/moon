@@ -1,3 +1,9 @@
+2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* lunar-launcher.cpp (create_window): Add an event handler for
+	Surface::ErrorEvent so that we can get some sort of error printed
+	to the console when something fails.
+
 2010-04-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* lunar-launcher.cpp: Rewritten to not use gtkmozembed at all.

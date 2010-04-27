@@ -114,6 +114,16 @@ resize_surface (GtkWidget *widget, GtkAllocation *allocated, Surface *surface)
 	surface->Resize (allocated->width, allocated->height);
 }
 
+static void
+error_handler (EventObject *sender, EventArgs *args, gpointer user_data)
+{
+	ErrorEventArgs *err = (ErrorEventArgs *) args;
+	
+	fprintf (stderr, "LunarLauncher Error: %s\n", err->GetErrorMessage ());
+	
+	exit (EXIT_FAILURE);
+}
+
 static bool
 load_app (Deployment *deployment, const char *app_id)
 {
@@ -167,6 +177,8 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
+	
+	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	
 	if (!load_app (deployment, app_id))
 		return NULL;
@@ -407,7 +419,7 @@ int main (int argc, char **argv)
 	Deployment::SetCurrent (deployment);
 	
 	if (!deployment->InitializeAppDomain ()) {
-		g_warning ("Couldn't initialize the AppDomain");
+		g_warning ("Could not initialize the AppDomain.");
 		return EXIT_FAILURE;
 	}
 	
