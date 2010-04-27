@@ -97,7 +97,7 @@ namespace System.Windows.Data {
 
 		protected virtual void OnSourceChanged (object oldSource, object newSource)
 		{
-			
+			View = new StandardCollectionView ((IList) newSource);
 		}
 	}
 }

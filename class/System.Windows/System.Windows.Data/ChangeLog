@@ -1,3 +1,9 @@
+2010-04-27  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionViewSource.cs:
+	* StandardCollectionView.cs: Add the beginnings of a default
+	  implementation of ICollectionView.
+
 2010-04-23  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyGroupDescription.cs: Once we walk the property path,
