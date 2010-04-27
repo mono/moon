@@ -58,6 +58,8 @@ public:
 	const static int ForegroundProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=NonNullExceptionValidator,GenerateAccessors */
 	const static int LanguageProperty;
+	/* @PropertyType=TextDecorations,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
+	const static int TextDecorationsProperty;
 
 	void SetFontFamily (FontFamily *family);
 	FontFamily *GetFontFamily ();
@@ -79,6 +81,10 @@ public:
 	
 	void SetLanguage (const char *language);
 	const char *GetLanguage ();
+	
+	// FIXME: This should be on Inline, not TextElement
+	void SetTextDecorations (TextDecorations decorations);
+	TextDecorations GetTextDecorations ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -104,8 +110,6 @@ class Inline : public TextElement, public ITextAttributes {
 	// internal properties to inherit the FontSource between inlines and textblocks
 	/* @PropertyType=FontSource,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontSourceProperty;
-	/* @PropertyType=TextDecorations,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
-	const static int TextDecorationsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
@@ -139,8 +143,6 @@ class Inline : public TextElement, public ITextAttributes {
 	
 	virtual bool Equals (Inline *item);
 	
-	void SetTextDecorations (TextDecorations decorations);
-	TextDecorations GetTextDecorations ();
 };
 
 

@@ -1,3 +1,8 @@
+2010-04-27  Alan McGovern  <amcgovern@novell.com>
+
+	* textblock.h: Put TextDecorationsProperty back on TextElement
+	  to stop the DRTs from breaking.
+
 2010-04-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp: Do not use static variables since they are 

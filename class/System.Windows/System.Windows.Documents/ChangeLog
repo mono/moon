@@ -1,3 +1,8 @@
+2010-04-27  Alan McGovern  <amcgovern@novell.com>
+
+	* Inline.cs: Put TextDecorationsProperty back on TextElement
+	  to stop the DRTs from breaking.
+
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
 	* TextPointer.cs:
