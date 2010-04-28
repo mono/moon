@@ -48,7 +48,7 @@ class LunarDownloader {
 	void Started ();
 	void Finished (bool success, gpointer data, const char *uri);
 	
-	void SetHttpHeader (const char *header, const char *value);
+	void SetHttpHeader (const char *header, const char *value, bool disable_folding);
 	void SetBody (void *body, guint32 length);
 	
 	void SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context);

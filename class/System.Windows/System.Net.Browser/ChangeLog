@@ -1,3 +1,8 @@
+2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebRequestInternal.cs: Update according to DownloaderRequest
+	api changes.
+
 2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* HttpWebResponseCore.cs: Override Headers property since it is

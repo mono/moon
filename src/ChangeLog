@@ -1,3 +1,8 @@
+2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* downloader.cpp|h: Change DownloaderRequest api to allow the user to disable
+	http header folding on a header-by-header basis.
+
 2010-04-27  Alan McGovern  <amcgovern@novell.com>
 
 	* notificationwindow.h: Add back in the SL4 beta 'Visible' DP.

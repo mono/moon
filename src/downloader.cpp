@@ -493,15 +493,27 @@ Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 void
 Downloader::InternalSetHeader (const char *header, const char *value)
 {
-	LOG_DOWNLOADER ("Downloader::InternalSetHeader (%s, %s)\n", header, value);
+	InternalSetHeader (header, value, false);
+}
+
+void
+Downloader::InternalSetHeader (const char *header, const char *value, bool disable_folding)
+{
+	LOG_DOWNLOADER ("Downloader::InternalSetHeader (%s, %s, %i)\n", header, value, disable_folding);
 	
-	header_func (downloader_state, header, value);
+	header_func (downloader_state, header, value, disable_folding);
 }
 
 void
 Downloader::InternalSetHeaderFormatted (const char *header, char *value)
 {
-	InternalSetHeader (header, (const char *) value);
+	InternalSetHeaderFormatted (header, value, false);
+}
+
+void
+Downloader::InternalSetHeaderFormatted (const char *header, char *value, bool disable_folding)
+{
+	InternalSetHeader (header, (const char *) value, disable_folding);
 	g_free (value);
 }
 
@@ -912,7 +924,7 @@ dummy_downloader_abort (gpointer state)
 }
 
 static void
-dummy_downloader_header (gpointer state, const char *header, const char *value)
+dummy_downloader_header (gpointer state, const char *header, const char *value, bool disable_folding)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }

@@ -92,7 +92,7 @@ NPStreamRequest::GetResponse (DownloaderResponseStartedHandler started, Download
 }
 
 void
-NPStreamRequest::SetHttpHeader (const char *name, const char *value)
+NPStreamRequest::SetHttpHeader (const char *name, const char *value, bool disable_folding)
 {
 	g_warning ("NPStream does not support SetHttpHeader");
 }

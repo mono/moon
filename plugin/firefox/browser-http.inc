@@ -111,6 +111,7 @@ class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
  private:
 	bool disable_cache;
 	nsCOMPtr<nsIChannel> channel;
+	GString *headers;
 
 	void CreateChannel ();
 
@@ -118,17 +119,20 @@ class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
 	GECKO_SYM(DownloaderRequest) (const char *method, const char *uri, bool disable_cache)
 	    : DownloaderRequest (method, uri)
 	{
+		headers = NULL;
 		this->disable_cache = disable_cache;
 		CreateChannel ();
 	}
 
 	~GECKO_SYM(DownloaderRequest) ()
 	{
+		if (headers != NULL)
+			g_string_free (headers, true);
 	}
 
 	DownloaderResponse *GetResponse ();
 	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
-	void SetHttpHeader (const char *name, const char *value);
+	void SetHttpHeader (const char *name, const char *value, bool disable_folding);
 	void SetBody (void *body, int size);
 	
 	void Abort ();
@@ -284,6 +288,9 @@ GECKO_SYM(DownloaderRequest)::GetResponse (DownloaderResponseStartedHandler star
 	GECKO_SYM(DownloaderResponse) *response;
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 
+	if (headers != NULL && headers->len > 0)
+		SetBody (NULL, 0); /* flush */
+
 	response = new GECKO_SYM(DownloaderResponse) (channel, started, available, finished, context);
 	response->SetDownloaderRequest (this);
 	if (disable_cache)
@@ -296,8 +303,21 @@ GECKO_SYM(DownloaderRequest)::GetResponse (DownloaderResponseStartedHandler star
 }
 
 void
-GECKO_SYM(DownloaderRequest)::SetHttpHeader (const char *name, const char *value)
+GECKO_SYM(DownloaderRequest)::SetHttpHeader (const char *name, const char *value, bool disable_folding)
 {
+	if (disable_folding) {
+		if (headers == NULL) {
+			headers = g_string_new ("");
+		} else if (headers->len == 0) {
+#if DEBUG
+			printf ("DownloaderRequest::SetHttpHeader (): setting header after body, header will be ignored\n");
+#endif
+		}
+
+		g_string_append_printf (headers, "%s: %s\r\n", name, value);
+		return;
+	}
+
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 	if (!httpchannel)
 		return;
@@ -330,8 +350,16 @@ GECKO_SYM(DownloaderRequest)::SetBody (void *body, int size)
 	storage->GetOutputStream (0, getter_AddRefs (output));
 
 	PRUint32 written;
-	output->Write ("\n", 1, &written);
-	output->Write ((const char *)body, size, &written);
+	if (headers != NULL && headers->len > 0) {
+		output->Write (headers->str, headers->len, &written);
+		g_string_set_size (headers, 0);
+	}
+	if (size > 0) {
+		output->Write ("\n", 1, &written);
+		output->Write ((const char *)body, size, &written);
+	} else {
+		output->Write ("\r\n", 2, &written);
+	}
 	output->Close ();
 
 	nsCOMPtr<nsIInputStream> input;

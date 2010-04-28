@@ -1,3 +1,9 @@
+2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* browser-http.inc: Update according to DownloaderRequest api changes. This
+	involves moving the workaround for firefox folding http headers into the
+	bridge.
+
 2010-03-03  Andreia Gaita  <avidigal@novell.com>
 
 	* browser-http.inc: add a newline to the body data, because

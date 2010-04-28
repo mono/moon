@@ -49,7 +49,7 @@ typedef void     (* DownloaderSendFunc) (gpointer state);
 /* @CBindingRequisite */
 typedef void     (* DownloaderAbortFunc) (gpointer state);
 /* @CBindingRequisite */
-typedef void     (* DownloaderHeaderFunc) (gpointer state, const char *header, const char *value);
+typedef void     (* DownloaderHeaderFunc) (gpointer state, const char *header, const char *value, bool disable_folding);
 /* @CBindingRequisite */
 typedef void     (* DownloaderBodyFunc) (gpointer state, void *body, guint32 length);
 /* @CBindingRequisite */
@@ -161,7 +161,9 @@ class Downloader : public DependencyObject {
 	void InternalWrite (void *buf, gint32 offset, gint32 n);
 	void InternalOpen (const char *verb, const char *uri);
 	void InternalSetHeader (const char *header, const char *value);
+	void InternalSetHeader (const char *header, const char *value, bool disable_folding);
 	void InternalSetHeaderFormatted (const char *header, char *value); // calls g_free on the value
+	void InternalSetHeaderFormatted (const char *header, char *value, bool disable_folding); // calls g_free on the value
 	void InternalSetBody (void *body, guint32 length);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -313,7 +315,7 @@ class DownloaderRequest : public IDownloader {
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual const bool IsAborted () { return this->aborted; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual void SetHttpHeader (const char *name, const char *value) = 0;
+	virtual void SetHttpHeader (const char *name, const char *value, bool disable_folding) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void SetBody (/* @MarshalAs=byte[] */ void *body, int size) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */

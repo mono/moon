@@ -1,3 +1,7 @@
+2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* curl-http.cpp|h: Update according to DownloaderRequest api changes.
+
 2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Don't link with libmoon.la - this Makefile.am was

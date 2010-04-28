@@ -155,10 +155,10 @@ LunarDownloader::Finished (bool success, gpointer data, const char *uri)
 }
 
 void
-LunarDownloader::SetHttpHeader (const char *header, const char *value)
+LunarDownloader::SetHttpHeader (const char *header, const char *value, bool disable_folding)
 {
 	if (request != NULL)
-		request->SetHttpHeader (header, value);
+		request->SetHttpHeader (header, value, disable_folding);
 }
 
 void
@@ -232,9 +232,9 @@ downloader_abort (gpointer state)
 }
 
 static void
-downloader_set_header (gpointer state, const char *header, const char *value)
+downloader_set_header (gpointer state, const char *header, const char *value, bool disable_folding)
 {
-	((LunarDownloader *) state)->SetHttpHeader (header, value);
+	((LunarDownloader *) state)->SetHttpHeader (header, value, disable_folding);
 }
 
 static void

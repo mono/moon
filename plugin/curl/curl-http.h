@@ -56,7 +56,7 @@ class CurlDownloaderRequest : public DownloaderRequest {
 		return state == ABORTED;
 	}
 	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
-	void SetHttpHeader (const char *name, const char *value);
+	void SetHttpHeader (const char *name, const char *value, bool disable_folding);
 	void SetBody (void *ptr, int size);
 
 	bool isPost () { return strstr (method, "POST"); }

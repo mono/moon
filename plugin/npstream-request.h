@@ -36,7 +36,7 @@ class NPStreamRequest : public DownloaderRequest {
 	virtual void Abort ();
 	virtual bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 	virtual const bool IsAborted ();
-	virtual void SetHttpHeader (const char *name, const char *value);
+	virtual void SetHttpHeader (const char *name, const char *value, bool disable_folding);
 	virtual void SetBody (void *body, int size);
 	
 	void StreamDestroyed ();

@@ -237,7 +237,7 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlBrowserBridge *bridge, const c
 }
 
 
-void CurlDownloaderRequest::SetHttpHeader (const char *name, const char *value)
+void CurlDownloaderRequest::SetHttpHeader (const char *name, const char *value, bool disable_folding)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::SetHttpHeader %p - %s:%s\n", this, name, value));
 	char *header = g_strdup_printf ("%s: %s", name, value);

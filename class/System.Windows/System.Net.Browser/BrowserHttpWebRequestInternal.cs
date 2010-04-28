@@ -276,7 +276,7 @@ namespace System.Net.Browser {
 			}
 
 			foreach (string header in Headers.AllKeys)
-				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
+				NativeMethods.downloader_request_set_http_header (native, header, Headers [header], false);
 
 			if (request_length > 1) {
 				NativeMethods.downloader_request_set_body (native, body, body.Length);

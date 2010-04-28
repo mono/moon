@@ -110,13 +110,13 @@ plugin_downloader_set_body (gpointer state, void *body, guint32 length)
 }
 
 static void
-plugin_downloader_set_header (gpointer state, const char *header, const char *value)
+plugin_downloader_set_header (gpointer state, const char *header, const char *value, bool disable_folding)
 {
 	d (printf ("plugin_downloader_set_header (%p)\n", state));
 	
 	PluginDownloader *pd = (PluginDownloader *) state;
 
-	pd->SetHttpHeader (header, value);
+	pd->SetHttpHeader (header, value, disable_folding);
 }
 
 static void
@@ -319,12 +319,12 @@ PluginDownloader::Finished (bool success, gpointer data, const char *uri)
 }
 	
 void
-PluginDownloader::SetHttpHeader (const char *header, const char *value)
+PluginDownloader::SetHttpHeader (const char *header, const char *value, bool disable_folding)
 {
 	d (printf ("PluginDownloader::SetHttpHeader (), this: %p, dl: %p\n", this, dl));
 	
 	if (request != NULL)
-		request->SetHttpHeader (header, value);
+		request->SetHttpHeader (header, value, disable_folding);
 }
 
 void
