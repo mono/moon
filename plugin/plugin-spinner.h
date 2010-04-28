@@ -4,7 +4,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2009 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -154,6 +154,13 @@
 	"</TransformGroup>" \
       "</Rectangle.RenderTransform>" \
     "</Rectangle>" \
+    "<TextBlock x:Name=\"progressTextBlock\" Text=\"0%\">" \
+      "<TextBlock.RenderTransform>" \
+	"<TransformGroup>" \
+	  "<TranslateTransform Y=\"-10\" X=\"-9\"/>" \
+        "</TransformGroup>" \
+      "</TextBlock.RenderTransform>" \
+    "</TextBlock>" \
   "</Canvas>" \
   "</Grid>" \
 "</Grid>" \

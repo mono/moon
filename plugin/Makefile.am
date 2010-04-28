@@ -68,6 +68,8 @@ libmoonplugin_la_SOURCES = \
 	../src/pal/gtk/windowless-gtk.h
 
 
+plugin-spinner.h: plugin-spinner.xaml ../src/xaml-to-header.exe
+	$(SYSTEM_MONO) ../src/xaml-to-header.exe plugin-spinner.xaml PLUGIN_SPINNER
 
 #--- libmoonpluginxpi ----------------------
 libmoonpluginxpi_la_LDFLAGS = $(libmoonplugin_la_LDFLAGS) -rpath /nowhere
