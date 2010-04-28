@@ -148,6 +148,7 @@ class Downloader : public DependencyObject {
 	char *GetDownloadedFilename (const char *partname);
 	void Open (const char *verb, const char *uri, DownloaderAccessPolicy policy);
 	void Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy);
+	void Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy, InternalDownloader *internal_downloader);
 	void SendInternal ();
 	void Send ();
 	void SendNow ();
@@ -239,6 +240,13 @@ class Downloader : public DependencyObject {
 	
 	void SetUri (Uri *uri);
 	Uri *GetUri ();
+
+	class Node : public List::Node {
+	public:
+		Downloader *downloader;
+		Node (Downloader *dl) { downloader = dl; downloader->ref (); }
+		~Node () { downloader->unref (); }
+	};
 };
 
 class DownloaderResponse;

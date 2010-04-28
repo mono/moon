@@ -35,9 +35,45 @@ class MmsPlaylistEntry;
 class WaveFormatEx;
 class WaveFormatExtensible;
 
+#include "list.h"
+#include "dependencyobject.h"
+#include "downloader.h"
 #include "pipeline.h"
 #include "mms-downloader.h"
 #include "mutex.h"
+#include "http-streaming.h"
+
+class ContentDescriptionList {
+public:
+	List list;
+	bool Parse (const char *input, gint32 length);
+};
+
+class ContentDescription : public List::Node {
+public:
+	enum ValueType {
+		VT_BOOL   = 11,
+		VT_BSTR   =  8,
+		VT_CY     =  6,
+		VT_ERROR  = 10,
+		VT_I1     = 16,
+		VT_I2     =  2,
+		VT_I4     =  3,
+		VT_INT    = 22,
+		VT_LPWSTR = 31,
+		VT_UI1    = 17,
+		VT_UI2    = 18,
+		VT_UI4    = 19,
+		VT_UINT   = 23,
+	};
+
+public:
+	virtual ~ContentDescription ();
+	char *name;
+	ValueType value_type;
+	void *value;
+	int value_length;
+};
 
 /*
  * Mms:
@@ -51,10 +87,8 @@ class WaveFormatExtensible;
  *     - Media is created, with an mms:// uri
  *
  *       Media::Initialize ():
- *       - Media creates a downloader for the uri and opens it
- *         - MmsDownloader sends a DESCRIBE request for the uri, also requesting a packet pair experiment
- *       - Media creates an MmsSource for the downloader (which is an MmsDownloader)
- *         - MmsSource creates the first MmsPlaylistEntry for the first entry (which will be the only one if the mms uri isn't a server-side playlist)
+ *       - Media creates an MmsSource for the uri and opens it
+ *         - MmsSource sends a DESCRIBE request for the uri, also requesting a packet pair experiment
  *
  *       Media::Open ():
  *         Media::SelectDemuxer ():
@@ -64,73 +98,139 @@ class WaveFormatExtensible;
  *         OpenCompletedEvent is raised:
  *          - The current PlaylistEntry will replace itself with the playlist the MmsDemuxer returns
  *
- *     NOTE: We rely on the fact that mozilla needs a tick to start downloading something,
- *           after the DESCRIBE request everything has been done sync up till now
- *
- *      (ticks)
- *
- *     - MmsDownloader may receive P (packet pair) responses
- *     - MmsDownloader may receive an M (metadata) response
+ *     - MmsSource may receive P (packet pair) responses
+ *     - MmsSource may receive an M (metadata) response
  *       - MmsSource::SetMmsMetadata is called and fills in the given the metadata (playlist-gen-id, broadcast-id, features)
- *     - MmsDownloader will receive an H (header) response
- *       - MmsSource::ParseHeader is called
+ *       - if we're getting a describe response, or if a stream switch has happened, create a new MmsPlaylistEntry
+ *     - MmsSource will receive an H (header) response
+ *       - If there is no current playlist entry (normally set with the M response, which is optional), then create a playlist entry
+ *       - MmsSource::ParseHeader is called, which will create and open the ASFDemuxer.
+ *     - ASFDemuxer raises it's opened event:
+ *       - if it's the initial entry, send a PLAY request with the selected streams. We'll get M + H packets again, they're ignored.
+ *       - otherwise (we've gotten a stream switch), send a SELECTSTREAM request. Note that the server will start sending
+ *         D responses after a stream switch even if no SELECTSTREAM request has been sent, so we may have a few moments of
+ *         playback with streams we didn't want.
+ *
+ *     - MmsSource receives D (data) responses
  *
  *     then optionally repeat this:
- *     - MmsDownloader receives a C (stream change) response
+ *     - MmsSource may receive an E (stream ended) response, with reason = 1 (still playlist entries to be transmitted)
+ *     - MmsSource receives a C (stream change/switch) response
  *       MmsSource::ReportStreamChange change is called
- *       - MmsSource creates a new MmsPlaylistEntry
- *     - MmsDownloader may receive a M (metadata) response
- *       - MmsSource::SetMmsMetadata is called and fills in the given the metadata (playlist-gen-id, broadcast-id, features)
- *     - MmsDownloader receives an H (header) response
+ *     - MmsSource may receive a M (metadata) response
+ *       - MmsSource::SetMmsMetadata is called and fills in the given the metadata (playlist-gen-id, broadcast-id, features),
+ *         and creates a new MmsPlaylistEntry
+ *     - MmsSource receives an H (header) response
+ *     - MmsSource receives D (data) responses
  *
+ *     finally:
+ *     - MmsSource receives an E (stream ended) response, with reason = 0 (no more data will be sent)
  */
 
+struct MmsHeader {
+	char b:1;
+	char frame:7;
+	guint8 id;
+	guint16 length;
+};
+
+struct MmsHeaderReason {
+	char b:1;
+	char frame:7;
+	guint8 id;
+	guint16 length;
+	guint32 reason;
+};
+
+struct MmsDataPacket {
+	guint32 id;
+	guint8 incarnation;
+	guint8 flags;
+	guint16 size;
+};
+
+struct MmsPacket {
+	union {
+		guint32 reason;
+		MmsDataPacket data;
+	} packet;
+};
 
 /*
  * MmsSource
  */
 class MmsSource : public IMediaSource {
 private:
+	enum MmsWaitingState {
+		MmsInitialization,
+		MmsDescribeResponse,
+		MmsPlayResponse,
+		MmsStreamSwitchResponse,
+	};
+
+	char *uri; /* write in ctor only: thread-safe */
+	char *request_uri; /* write in ctor only: thread-safe */
+	char *client_id; /* must use locking to be thread-safe */
 	bool finished;
 	bool is_sspl;
-	guint64 write_count;
-	guint64 max_bitrate;
-	Downloader *downloader;
+	bool failure_reported;
+	guint64 max_bitrate; /* must use locking to be thread-safe */
+	MmsDownloader *mms_dl; /* must use locking to be thread-safe (unrefs are done on the media thread in Dispose) */
+	Downloader *dl; /* must use locking to be thread-safe (unrefs are done on the media thread in Dispose) */
+	char *buffer; /* write in ctor/dtor, rw in main thread: thread-safe, no locks required */
+	guint32 buffer_size; /* write in ctor/dtor, rw in main thread: thread-safe, no locks required */
+	guint32 buffer_used; /* write in ctor/dtor, rw in main thread: thread-safe, no locks required */
+	guint64 requested_pts; /* must be thread-safe */
+	MmsWaitingState waiting_state; /* write in ctor, rw in main thread: thread-safe, no locks required */
+	List *temporary_downloaders; /* must be thread-safe, unrefs are done on the media thread */
+
+	/* Packet pair experiment data */
+	TimeSpan p_packet_times[3]; /* write in ctor, rw in main thread: thread-safe, no locks required */
+	gint32 p_packet_sizes[3]; /* write in ctor, rw in main thread: thread-safe, no locks required */
+	guint8 p_packet_count; /* write in ctor, rw in main thread: thread-safe, no locks required */
+
 	// this is the current entry being downloaded (not necessarily played).
 	MmsPlaylistEntry *current;
 	MmsDemuxer *demuxer;
 
 	EVENTHANDLER (MmsSource, DownloadFailed, Downloader, EventArgs); // Main thread only
 	EVENTHANDLER (MmsSource, DownloadComplete, Downloader, EventArgs); // Main thread only
-	
-protected:
-	virtual void Dispose (); // Thread safe
-	virtual void ReadAsyncInternal (MediaReadClosure *closure);
+	EVENTHANDLER (MmsSource, Opened, IMediaDemuxer, EventArgs);
+	EVENTHANDLER (MmsSource, MediaError, Media, EventArgs);
 
-public:	
-	MmsSource (Media *media, Downloader *downloader);
+	static void SendDescribeRequestCallback (EventObject *obj) { ((MmsSource *) obj)->SendDescribeRequest (); }  /* Main thread only */
+	static void SendPlayRequestCallback (EventObject *obj) { ((MmsSource *) obj)->SendPlayRequest (); } /* Main thread only */
+	void SendDescribeRequest (); /* Main thread only */
+	void SendPlayRequest ();/* Main thread only */
+	void SendSelectStreamRequest (); /* Main thread only */
+	void SendLogRequest ();/* Main thread only */
 
-	void NotifyFinished (guint32 reason); // called by the MmsDownloader when we get the END packet. Main thread only.
+	static void ProcessResponseHeaderCallback (gpointer context, const char *header, const char *value); /* Main thread only */
+	void ProcessResponseHeader (const char *header, const char *value); /* Main thread only */
 
-	virtual MediaResult Initialize (); // main thread only
+	HttpStreamingFeatures GetCurrentStreamingFeatures (); /* thread-safe */
+	char *GetCurrentPlaylistGenId (); // thread safe, returns a duped string, must be freed with g_free
+	char *GetCurrentBroadcastId (); // thread safe, returns a duped string, must be freed with g_free
+	char *GetClientId (); // thread safe, returns a duped string, must be freed with g_free
 
-	virtual bool CanSeek () { return true; }
-	virtual bool Eof (); // thread safe
+	bool ProcessPacket             (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
+	bool ProcessDataPacket         (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
+	bool ProcessHeaderPacket       (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
+	bool ProcessMetadataPacket     (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
+	bool ProcessPairPacket         (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
+	bool ProcessStreamSwitchPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
+	bool ProcessEndPacket          (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
 
-	virtual bool CanSeekToPts () { return true; }
-	virtual MediaResult SeekToPts (guint64 pts);  // thread safe
+	void CreateDownloaders (const char *method); /* Thread-safe since it doesn't touch any instance fields */
+	void CreateDownloaders (const char *method, Downloader **downloader, MmsDownloader **mms_downloader); /* Main thread only */
+	void SetStreamSelectionHeaders (Downloader *dl); /* Main thread only */
+	Downloader *GetDownloaderReffed (); /* Thread-safe */
 
-	virtual IMediaDemuxer *CreateDemuxer (Media *media, MemoryBuffer *initial_buffer); // thread safe
+	bool RemoveTemporaryDownloader (Downloader *dl); /* main thread only */
+	/* Creates the current entry if it doesn't exist, otherwise the already existing current entry is returned. Caller must unref the entry */
+	MmsPlaylistEntry *CreateCurrentEntry (); /* thread-safe */
 
-	bool IsFinished () { return finished; } // If the server sent the MMS_END packet.
-
-	Downloader *GetDownloaderReffed (); // thread safe
-	MmsDemuxer *GetDemuxerReffed (); // thread safe
-
-	bool IsSSPL () { return is_sspl; }
-
-	void SetMaxBitRate (guint64 value);
-	guint64 GetMaxBitRate () { return max_bitrate; }
+	void SetMaxBitRate (guint64 value); /* thread-safe */
 
 	void WritePacket (void *buf, gint32 n); // forwards to the current entry. Main thread only
 	MmsPlaylistEntry *GetCurrentReffed (); // thread safe
@@ -140,12 +240,32 @@ public:
 	void ReportStreamChange (gint32 reason); // called by the MmsDownloader when we get a C (stream change) packet. Main thread only.
 	void ReportDownloadFailure (); // called by the MmsDownloader when the download fails (404 for instance). Main thread only.
 
-	// returns the MmsDownloader for the Downloader
-	// you must own a ref to the downloader (since this method must be thread safe, 
-	// that's the only way to ensure the downloader isn't deleted at any time)
-	// and the returned MmsDownloader is only valid as long as you have a ref to 
-	// the downloader.
-	static MmsDownloader *GetMmsDownloader (Downloader *dl); // thread safe
+	void NotifyFinished (guint32 reason); // called when we get the END packet. Main thread only.
+
+protected:
+	virtual ~MmsSource ();
+	virtual void Dispose (); // Thread safe
+	virtual void ReadAsyncInternal (MediaReadClosure *closure);
+
+public:
+	MmsSource (Media *media, const char *uri);
+
+	virtual MediaResult Initialize (); // media thread only
+
+	virtual bool CanSeek ();
+	virtual bool Eof (); // thread safe
+
+	virtual bool CanSeekToPts () { return true; }
+	virtual MediaResult SeekToPts (guint64 pts);  // thread safe
+
+	virtual IMediaDemuxer *CreateDemuxer (Media *media, MemoryBuffer *initial_buffer); // thread safe
+
+	MmsDemuxer *GetDemuxerReffed (); // thread safe
+
+	bool IsSSPL () { return is_sspl; }
+
+	void Write (void *buf, gint32 off, gint32 n); /* main thread only */
+	guint64 GetMaxBitRate (); /* thread-safe */
 };
 
 /*
@@ -153,10 +273,12 @@ public:
  */
 class MmsPlaylistEntry : public IMediaSource {
 private:
+	List *buffers; /* list of memory buffers we haven't passed to the demuxer yet since it hasn't opened yet. media thread only */
 	bool finished;
 	MmsSource *parent;
 	guint64 write_count; /* just for statistics */
 	ASFDemuxer *demuxer;
+	bool opened;
 
 	// mms metadata
 	char *playlist_gen_id;
@@ -170,6 +292,7 @@ private:
 
 	void ParseHeader (MediaClosure *closure); /* media thread */
 
+	EVENTHANDLER (MmsPlaylistEntry, Opened, IMediaDemuxer, EventArgs); /* media thread */
 protected:
 	virtual void Dispose (); // thread safe
 	/* We completely ignore any read requests, mms streams push data to the demuxer instead when we get it */

@@ -19,6 +19,7 @@
 #include "debug.h"
 #include "playlist.h"
 #include "clock.h"
+#include "timesource.h"
 
 // according to http://msdn.microsoft.com/en-us/library/cc307965(VS.85).aspx the maximum size is 10 MB
 #define ASF_OBJECT_MAX_SIZE (10 * 1024 * 1024)
@@ -33,6 +34,17 @@
 		LOG_ASF ("%s: unexpected end of stream\n", __func__); \
 		return false;	\
 	}
+
+#define CLIENT_GUID "{c77e7400-738a-11d2-9add-0020af0a3278}"
+#define CLIENT_SUPPORTED "com.microsoft.wm.srvppair, com.microsoft.wm.sswitch, com.microsoft.wm.startupprofile, com.microsoft.wm.predstrm"
+#define CLIENT_USER_AGENT "NSPlayer/11.08.0005.0000"
+
+#define MMS_DATA      0x44
+#define MMS_HEADER    0x48
+#define MMS_METADATA  0x4D
+#define MMS_STREAM_C  0x43
+#define MMS_END       0x45
+#define MMS_PAIR_P    0x50
 
 /*
  * ASFDemuxer
@@ -328,12 +340,18 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 {
 	LOG_ASF ("ASFDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT ")\n", pts);
 
-	ResetAll ();
-
 	if (source == NULL) {
 		/* disposed? */
 		return;
 	}
+
+	if (!source->CanSeek ()) {
+		LOG_ASF ("ASFDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT "): Source can't seek, so we'll skip seeking.\n", pts);
+		ReportSeekCompleted (pts);
+		return;
+	}
+
+	ResetAll ();
 
 	if (source->CanSeekToPts ()) {
 		if (!MEDIA_SUCCEEDED (source->SeekToPts (pts))) {
@@ -1389,93 +1407,1187 @@ ASFDemuxerInfo::Create (Media *media, IMediaSource *source, MemoryBuffer *initia
 }
 
 /*
+ * ContentDescriptionList
+ */
+
+bool
+ContentDescriptionList::Parse (const char *input, gint32 length)
+{
+	bool result = false;
+	char *str;
+	char *duped;
+	int str_length = length;
+	char *end;
+
+	//LOG_MMS ("ContentDescriptionList::Parse ('%*s', %i)\n", (int) length, input, length);
+
+	// our input may contain embedded nulls or it may not have nulls at all
+	// (not even one at the end).
+	// since we use string parsing functions on the input, add a null at the 
+	// end to not overrun anything.
+
+	str = (char *) g_malloc (str_length + 1);
+	memcpy (str, input, str_length);
+	str [str_length] = 0; // null terminate
+	duped = str; // save a copy of the allocated memory to free it later
+	end = str + str_length;
+
+	/*
+	 * The format is:
+	 *  <name length>,<name>,<value type>,<value length>,<value>
+	 */
+
+	char *str_name_length;
+	char *str_name;
+	char *str_value_type;
+	char *str_value_length;
+	void *value;
+	char *comma;
+
+	gint64 name_length;
+	gint64 value_type;
+	gint64 value_length;
+
+	do {
+		// name length
+		comma = strchr (str, ',');
+		if (comma == NULL)
+			goto cleanup;
+
+		*comma = 0; // null terminate
+		str_name_length = str;
+		str = comma + 1;
+
+		name_length = strtoull (str_name_length, NULL, 10);
+
+		if (name_length < 0 || name_length > G_MAXINT32)
+			goto cleanup;
+
+		if (end - str < name_length + 1)
+			goto cleanup;
+
+		// name
+		str_name = str;
+		str_name [name_length] = 0; // null terminate
+		str += name_length + 1;
+
+		// value type
+		comma = strchr (str, ',');
+		if (comma == NULL)
+			goto cleanup;
+
+		*comma = 0; // null terminate
+		str_value_type = str;
+		str = comma + 1;
+
+		value_type = strtoull (str_value_type, NULL, 10);
+
+		if (value_type < 0 || value_type > G_MAXINT32)
+			goto cleanup;
+
+		// value length
+		comma = strchr (str, ',');
+		if (comma == NULL)
+			goto cleanup;
+
+		*comma = 0; // null terminate
+		str_value_length = str;
+		str = comma + 1;
+
+		value_length = strtoull (str_value_length, NULL, 10);
+
+		if (value_length < 0 || value_length > G_MAXINT32)
+			goto cleanup;
+
+		if (end - str < value_length)
+			goto cleanup;
+
+		value = str; // can't null terminate, we don't necessarily have a string
+
+		str += value_length;
+
+		ContentDescription *cd = new ContentDescription ();
+		cd->name = g_strndup (str_name, name_length);
+		cd->value_type = (ContentDescription::ValueType) value_type;
+		cd->value = g_malloc (value_length + 1);
+		memcpy (cd->value, value, value_length);
+		((char *) cd->value) [value_length] = 0;
+		cd->value_length = value_length;
+		list.Append (cd);
+
+		// printf ("parsed: %*s = %*s\n", (int) name_length, str_name, (int) cd->value_length, (char *) cd->value);
+
+		// trailing commas
+		if (*str == ',') {
+			str++;
+		} else {
+			break;
+		}
+	} while (str < end);
+
+	result = true;
+
+cleanup:
+
+	g_free (duped);
+
+	return result;
+}
+
+/*
+ * ContentDescription
+ */
+ 
+ContentDescription::~ContentDescription ()
+{
+	g_free (name);
+	g_free (value);
+}
+
+/*
  * MmsSource
  */
  
-MmsSource::MmsSource (Media *media, Downloader *downloader)
+MmsSource::MmsSource (Media *media, const char *uri)
 	: IMediaSource (Type::MMSSOURCE, media)
 {
+	int offset = 0;
+
 	finished = false;
 	is_sspl = false;
-	write_count = 0;
+	failure_reported = false;
 	max_bitrate = 0;
-	this->downloader = NULL;
+	this->uri = g_strdup (uri);
+	request_uri = NULL;
+	client_id = NULL;
+	mms_dl = NULL;
+	dl = NULL;
 	current = NULL;
 	demuxer = NULL;
-	
-	g_return_if_fail (downloader != NULL);
-	g_return_if_fail (downloader->GetInternalDownloader () != NULL);
-	g_return_if_fail (downloader->GetInternalDownloader ()->GetObjectType () == Type::MMSDOWNLOADER);
-	
-	this->downloader = downloader;
-	this->downloader->ref ();
-	
-	ReportStreamChange (0); // create the initial MmsPlaylistEntry
+	buffer = NULL;
+	buffer_size = 0;
+	buffer_used = 0;
+	waiting_state = MmsInitialization;
+	requested_pts = G_MAXUINT64;
+	temporary_downloaders = NULL;
+
+	p_packet_count = 0;
+	p_packet_times [0] = 0;
+	p_packet_times [1] = 0;
+	p_packet_times [2] = 0;
+	p_packet_sizes [0] = 0;
+	p_packet_sizes [1] = 0;
+	p_packet_sizes [2] = 0;
+
+	/* Replace mms|rtsp|rtsps with http to not confuse lower layers */
+	if (strncmp (uri, "mms://", 6) == 0) {
+		offset = 6;
+	} else if (strncmp (uri, "rtsp://", 7) == 0) {
+		offset = 7;
+	} else if (strncmp (uri, "rtsps://", 8) == 0) {
+		offset = 8;
+	} else {
+		/* The error is raised in Initialize. We calculate request_uri here to ensure
+		 * that both uri and request_uri are readonly fields (until destruction - which
+		 * means no locking required) */
+	}
+	if (offset > 0)
+		request_uri = g_strdup_printf ("http://%s", uri + offset);
+}
+
+MmsSource::~MmsSource ()
+{
+	g_free (uri);
+	g_free (request_uri);
+	delete temporary_downloaders;
 }
 
 void
 MmsSource::Dispose ()
 {
 	// thread safe method
-	
-	MmsPlaylistEntry *entry;
-	IMediaDemuxer *demux;
+	MmsPlaylistEntry *current;
+	IMediaDemuxer *demuxer;
 	Downloader *dl;
-		
+	MmsDownloader *mms_dl;
+	List *temporary_downloaders;
+
 	// don't lock during unref, only while nulling out the local field
 	Lock ();
-	entry = this->current;
+	current = this->current;
 	this->current = NULL;
-	dl = this->downloader;
-	this->downloader = NULL;
-	demux = this->demuxer;
+	dl = this->dl;
+	this->dl = NULL;
+	demuxer = this->demuxer;
 	this->demuxer = NULL;
+	mms_dl = this->mms_dl;
+	this->mms_dl = NULL;
+	temporary_downloaders = this->temporary_downloaders;
+	this->temporary_downloaders = NULL;
 	Unlock ();
 	
 	if (dl) {
 		dl->RemoveAllHandlers (this);
 		dl->unref ();
+		dl = NULL;
 	}
-	
-	if (entry)
-		entry->unref ();
-		
-	if (demux)
-		demux->unref ();
-	
+
+	if (mms_dl) {
+		mms_dl->unref ();
+		mms_dl = NULL;
+	}
+
+	if (current) {
+		current->unref ();
+		current = NULL;
+	}
+
+	if (demuxer) {
+		demuxer->unref ();
+		demuxer = NULL;
+	}
+
+	delete temporary_downloaders;
+	temporary_downloaders = NULL;
+
 	IMediaSource::Dispose ();
 }
 
 MediaResult
 MmsSource::Initialize ()
 {
-	Downloader *dl;
-	MmsDownloader *mms_dl;
-	
 	VERIFY_MAIN_THREAD;
-	
-	dl = GetDownloaderReffed ();
-	
-	g_return_val_if_fail (dl != NULL, MEDIA_FAIL);
-	g_return_val_if_fail (!dl->Started (), MEDIA_FAIL);
-	
-	// We must call MmsDownloader::SetSource before the downloader
-	// has actually received any data. Here we rely on the fact that
-	// firefox needs a tick before returning any data.
-	mms_dl = GetMmsDownloader (dl);
-	if (mms_dl != NULL) {
-		mms_dl->SetSource (this);
-	} else {
-		printf ("MmsSource::Initialize (): Could not get the MmsDownloader. Media won't play.\n");
+
+	if (request_uri == NULL) {
+		char *msg = g_strdup_printf ("Streaming scheme must be either mms, rtsp or rtsps, got uri: %s\n", uri);
+		ReportErrorOccurred (msg);
+		g_free (msg);
+		return MEDIA_FAIL;
 	}
-	
+
+	AddTickCall (SendDescribeRequestCallback);
+
+	return MEDIA_SUCCESS;
+}
+
+void
+MmsSource::CreateDownloaders (const char *method, Downloader **downloader, MmsDownloader **mms_downloader)
+{
+	/* Thread-safe since it doesn't touch any instance fields */
+	Downloader *dl;
+	char *id;
+	Uri *url = NULL;
+
+	*downloader = NULL;
+	*mms_downloader = NULL;
+
+	url = new Uri ();
+	if (!url->Parse (uri)) {
+		char *msg = g_strdup_printf ("Could not parse uri '%s'", request_uri);
+		ReportErrorOccurred (msg);
+		g_free (msg);
+		goto cleanup;
+	}
+
+	dl = Surface::CreateDownloader (this);
+	*downloader = dl;
+	if (dl == NULL) {
+		ReportErrorOccurred ("Couldn't create downloader.");
+		goto cleanup;
+	}
+
+	*mms_downloader = new MmsDownloader (dl, this);
+
+	dl->Open (method, url, StreamingPolicy, *mms_downloader);
+	dl->SetRequireCustomHeaderSupport (true);
+	dl->SetDisableCache (true);
+	dl->InternalOpen (method, request_uri);
+	dl->InternalSetHeader ("User-Agent", CLIENT_USER_AGENT, false);
+	dl->InternalSetHeader ("Pragma", "no-cache", true);
+	dl->InternalSetHeader ("Pragma", "xClientGUID=" CLIENT_GUID, true);
+	dl->InternalSetHeader ("Supported", CLIENT_SUPPORTED, false);
+	id = GetCurrentPlaylistGenId ();
+	if (id != NULL) {
+		dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("playlist-gen-id=%s", id), true);
+		g_free (id);
+	}
+	id = GetClientId ();
+	if (id != NULL) {
+		dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("client-id=%s", id), true);
+		g_free (id);
+	}
+
+	if (dl->GetFailedMessage () != NULL) {
+		ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
+		goto cleanup;
+	}
 	dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedCallback, this);
 	dl->AddHandler (Downloader::CompletedEvent, DownloadCompleteCallback, this);
+
+cleanup:
+	delete url;
+}
+
+void
+MmsSource::CreateDownloaders (const char *method)
+{
+	Downloader *dl = NULL;
+	MmsDownloader *mms_dl = NULL;
+
+	LOG_MMS ("MmsSource::CreateDownloaders ('%s')\n", method);
+	VERIFY_MAIN_THREAD;
+
+	Lock ();
+	mms_dl = this->mms_dl;
+	this->mms_dl = NULL;
+	dl = this->dl;
+	this->dl = NULL;
+	Unlock ();
+
+	/* Clean up any old downloaders */
+	if (mms_dl != NULL) {
+		mms_dl->ClearSource (); /* To prevent it from giving us more data */
+		mms_dl->unref ();
+		mms_dl = NULL;
+	}
+
+	if (dl != NULL) {
+		dl->RemoveAllHandlers (this);
+		dl->Abort ();
+		dl->unref ();
+		dl = NULL;
+	}
+
+	/* Clean up old buffers */
+	g_free (buffer);
+	buffer = NULL;
+	buffer_size = 0;
+	buffer_used = 0;
+
+	CreateDownloaders (method, &dl, &mms_dl);
+
+	g_return_if_fail (dl != NULL && mms_dl != NULL);
+
+	dl->SetResponseHeaderCallback (ProcessResponseHeaderCallback, this);
+
+	Lock ();
+	this->dl = dl;
+	this->mms_dl = mms_dl;
+	Unlock ();
+}
+
+void
+MmsSource::SendDescribeRequest ()
+{
+	LOG_MMS ("MmsSource::SendDescribeRequest () uri: %s request_uri: %s state: %i\n", uri, request_uri, waiting_state);
+	VERIFY_MAIN_THREAD;
+	Downloader *dl;
+
+	g_return_if_fail (waiting_state == MmsInitialization);
+
+	waiting_state = MmsDescribeResponse;
+
+	CreateDownloaders ("GET");
+
+	dl = GetDownloaderReffed ();
+	g_return_if_fail (dl != NULL);
+
+	dl->InternalSetHeader ("Pragma", "packet-pair-experiment=1", true);
 	dl->Send ();
-	
 	dl->unref ();
+}
+
+void
+MmsSource::SendPlayRequest ()
+{
+	Downloader *dl;
+	guint64 pts;
+
+	LOG_MMS ("MmsSource::SendPlayRequest () uri: %s request_uri: %s waiting_state: %i\n", uri, request_uri, waiting_state);
+	VERIFY_MAIN_THREAD;
+
+	waiting_state = MmsPlayResponse;
+
+	Lock ();
+	pts = requested_pts;
+	requested_pts = G_MAXUINT64;
+	Unlock ();
+
+	if (pts == G_MAXUINT64)
+		pts = 0;
+
+	CreateDownloaders ("GET");
+
+	dl = GetDownloaderReffed ();
+	g_return_if_fail (dl != NULL);
+
+	dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0", false);
+	dl->InternalSetHeader ("Pragma", "xPlayStrm=1", false);
+	dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647", false);
+	dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295", pts / 10000), false);
+	SetStreamSelectionHeaders (dl);
+
+	dl->Send ();
+	dl->unref ();
+}
+
+void
+MmsSource::SendSelectStreamRequest ()
+{
+	Downloader *dl;
+	MmsDownloader *mms_dl;
+
+	LOG_MMS ("MmsSource::SendSelectStreamRequest ()\n");
+	VERIFY_MAIN_THREAD;
+
+	CreateDownloaders ("POST", &dl, &mms_dl);
+
+	g_return_if_fail (this->mms_dl != mms_dl);
+	g_return_if_fail (this->dl != dl);
+	g_return_if_fail (dl != NULL);
+
+	Lock ();
+	if (temporary_downloaders == NULL)
+		temporary_downloaders = new List ();
+	temporary_downloaders->Append (new Downloader::Node (dl));
+	Unlock ();
+
+	SetStreamSelectionHeaders (dl);
+	dl->Send ();
+
+	dl->unref ();
+	mms_dl->unref ();
+}
+
+void
+MmsSource::SendLogRequest ()
+{
+//	Downloader *dl;
+//	MmsDownloader *mms_dl;
+
+	LOG_MMS ("MmsSource::SendLogRequest ()\n");
+	VERIFY_MAIN_THREAD;
+
+	printf ("MmsSource::SendLogRequest (): Not implemented\n");
+
+//	CreateDownloaders ("POST", &dl, &mms_dl);
+//
+//	g_return_if_fail (this->mms_dl != mms_dl);
+//	g_return_if_fail (this->dl != dl);
+//	g_return_if_fail (dl != NULL);
+//
+//	Lock ();
+//	if (temporary_downloaders == NULL)
+//		temporary_downloaders = new List ();
+//	temporary_downloaders->Append (new Downloader::Node (dl));
+//	Unlock ();
+//
+////
+//// POST /SSPLDrtOnDemandTest HTTP/1.0
+//// Host: moonlightmedia
+//// Content-Length: 2203
+//// User-Agent: NSPlayer/11.08.0005.0000
+//// Accept: * / *
+//// Accept-Language: en-us, *;q=0.1
+//// Connection: Keep-Alive
+//// Content-Type: application/x-wms-Logstats
+//// Pragma: client-id=3375607867
+//// Pragma: playlist-gen-id=2769
+//// Pragma: xClientGuid={00000000-0000-0000-0000-000000000000}
+//// Supported: com.microsoft.wm.srvppair, com.microsoft.wm.sswitch, com.microsoft.wm.startupprofile, com.microsoft.wm.predstrm
+//// 
+//
+//	dl->InternalSetHeader ("Content-Type", "application/x-wms-Logstats");
+//
+//	GString *all = g_string_new (NULL);
+//	GString *xml = g_string_new (NULL);
+//	GString *summary = g_string_new (NULL);
+//
+//	// "<c-ip>0.0.0.0</c-ip>"
+//	g_string_append (summary, "0.0.0.0 ");
+//	g_string_append (xml, "<c-ip>0.0.0.0</c-ip>");
+//
+//	// "<date>%.4i-%.2i-%.2i</date>" // yyyy-MM-dd
+//	tm now;
+//	time_t time_now = time (NULL);
+//	gmtime_r (&time_now, &now);
+//	g_string_append_printf (summary, "%.4i-%.2i-%.2i ", now.tm_year + 1900, now.tm_mon + 1, now.tm_mday);
+//	g_string_append_printf (xml, "<date>%.4i-%.2i-%.2i</date>", now.tm_year + 1900, now.tm_mon + 1, now.tm_mday);
+//
+//	// "<time>%.2i:%.2i:%.2i</time>" // HH:mm:ss
+//	g_string_append_printf (summary, "%.2i:%.2i:%.2i ", now.tm_hour, now.tm_min, now.tm_sec);
+//	g_string_append_printf (xml, "<time>%.2i:%.2i:%.2i</time>", now.tm_hour, now.tm_min, now.tm_sec);
+//
+//	// "<c-dns>-</c-dns>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-dns>-</c-dns>");
+//
+//	// "<cs-uri-stem>-</cs-uri-stem>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<cs-uri-stem>-</cs-uri-stem>");
+//
+//	// "<c-starttime>0</c-starttime>"
+//	g_string_append_printf (summary, "0 ");
+//	g_string_append_printf (xml, "<c-starttime>0</c-starttime>");
+//
+//	// "<x-duration>0</x-duration>"
+//	g_string_append_printf (summary, "0 ");
+//	g_string_append_printf (xml, "<x-duration>0</x-duration>");
+//
+//	//"<c-rate>-</c-rate>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-rate>-</c-rate>");
+//
+//	//"<c-status>200</c-status>"
+//	g_string_append_printf (summary, "200 ");
+//	g_string_append_printf (xml, "<c-status>200</c-status>");
+//
+//	// "<c-playerid>" CLIENT_GUID "</c-playerid>"
+//	g_string_append_printf (summary, "%s ", CLIENT_GUID);
+//	g_string_append_printf (xml, "<c-playerid>%s</c-playerid>", CLIENT_GUID);
+//
+//	// "<c-playerversion>-</c-playerversion>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-playerversion>-</c-playerversion>");
+//
+//	// "<c-playerlanguage>-</c-playerlanguage>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-playerlanguage>-</c-playerlanguage>");
+//
+//	// "<cs-User-Agent>%s</cs-User-Agent>"
+//	const char *user_agent = "Mozilla/5.0_(Windows;_U;_Windows_NT_5.1;_en-GB;_rv:1.9.0.9)_Gecko/2009040821_Firefox/3.0.9_(.NET_CLR_3.5.30729)_NSPlayer/11.08.0005.0000_Silverlight/2.0.40115.0"; //"Firefox";
+//	g_string_append_printf (summary, "%s ", user_agent);
+//	g_string_append_printf (xml, "<cs-User-Agent>%s</cs-User-Agent>", user_agent);
+//
+//	// "<cs-Referer>%s</cs-Referer>"
+//	const char *referrer = "http://192.168.1.4:8080/media/video/test-server-side-playlist.html";//"http://example.com/";
+//	g_string_append_printf (summary, "%s ", referrer);
+//	g_string_append_printf (xml, "<cs-Referer>%s</cs-Referer>", referrer);
+//
+//	// "<c-hostexe>-</c-hostexe>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-hostexe>-</c-hostexe>");
+//
+//	// "<c-hostexever>-</c-hostexever>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-hostexever>-</c-hostexever>");
+//
+//	// "<c-os>Linux</c-os>"
+//	g_string_append_printf (summary, "Windows_XP ");
+//	g_string_append_printf (xml, "<c-os>Windows_XP</c-os>");
+//
+//	// "<c-osversion>-</c-osversion>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-osversion>-</c-osversion>");
+//
+//	// "<c-cpu>-</c-cpu>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-cpu>-</c-cpu>");
+//
+//	// "<filelength>-</filelength>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<filelength>-</filelength>");
+//
+//	// "<filesize>-</filesize>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<filesize>-</filesize>");
+//
+//	// "<avgbandwidth>-</avgbandwidth>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<avgbandwidth>-</avgbandwidth>");
+//
+//	// "<protocol>http</protocol>"
+//	g_string_append_printf (summary, "http ");
+//	g_string_append_printf (xml, "<protocol>http</protocol>");
+//
+//	// "<transport>TCP</transport>"
+//	g_string_append_printf (summary, "TCP ");
+//	g_string_append_printf (xml, "<transport>TCP</transport>");
+//
+//	// "<audiocodec>-</audiocodec>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<audiocodec>-</audiocodec>");
+//
+//	// "<videocodec>-</videocodec>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<videocodec>-</videocodec>");
+//
+//	// "<c-channelURL>-</c-channelURL>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-channelURL>-</c-channelURL>");
+//
+//	// "<sc-bytes>-</sc-bytes>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<sc-bytes>-</sc-bytes>");
+//
+//	// "<c-bytes>-</c-bytes>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-bytes>-</c-bytes>");
+//
+//	// "<s-pkts-sent>-</s-pkts-sent>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<s-pkts-sent>-</s-pkts-sent>");
+//
+//	// "<c-pkts-received>-</c-pkts-received>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-pkts-received>-</c-pkts-received>");
+//
+//	// "<c-pkts-lost-client>-</c-pkts-lost-client>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-pkts-lost-client>-</c-pkts-lost-client>");
+//
+//	// "<c-pkts-lost-net>-</c-pkts-lost-net>"+
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-pkts-lost-net>-</c-pkts-lost-net>");
+//
+//	// "<c-pkts-lost-cont-net>-</c-pkts-lost-cont-net>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-pkts-lost-cont-net>-</c-pkts-lost-cont-net>");
+//
+//	// "<c-resendreqs>-</c-resendreqs>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-resendreqs>-</c-resendreqs>");
+//
+//	// "<c-pkts-recovered-ECC>-</c-pkts-recovered-ECC>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-pkts-recovered-ECC>-</c-pkts-recovered-ECC>");
+//
+//	// "<c-pkts-recovered-resent>-</c-pkts-recovered-resent>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-pkts-recovered-resent>-</c-pkts-recovered-resent>");
+//
+//	// "<c-buffercount>-</c-buffercount>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-buffercount>-</c-buffercount>");
+//
+//	// "<c-totalbuffertime>-</c-totalbuffertime>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-totalbuffertime>-</c-totalbuffertime>");
+//
+//	// "<c-quality>-</c-quality>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<c-quality>-</c-quality>");
+//
+//	// "<s-ip>-</s-ip><s-dns>-</s-dns>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<s-ip>-</s-ip><s-dns>-</s-dns>");
+//
+//	// "<s-totalclients>-</s-totalclients>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<s-totalclients>-</s-totalclients>");
+//
+//	// "<s-cpu-util>-</s-cpu-util>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<s-cpu-util>-</s-cpu-util>");
+//
+//	// "<cs-url>%s</cs-url>"
+//	g_string_append_printf (summary, "%s ", uri);
+//	g_string_append_printf (xml, "<cs-url>%s</cs-url>", uri);
+//
+//	// "<cs-media-name>-</cs-media-name>"
+//	g_string_append_printf (summary, "- ");
+//	g_string_append_printf (xml, "<cs-media-name>-</cs-media-name>");
+//
+//	// "<cs-media-role>-</cs-media-role>"
+//	g_string_append_printf (summary, "-"); // skip the last space
+//	g_string_append_printf (xml, "<cs-media-role>-</cs-media-role>");
+//
+//	g_string_append_printf (header, "Content-Length: %i\r\n", summary->len + xml->len + 11  + 19); // length of <XML></XML>  + <Summary/> 
+//
+//	g_string_append_printf (header, "\r\n"); // end of header
+//
+//	g_string_append (all, header->str);
+//	g_string_append (all, "<XML><Summary>");
+//	g_string_append (all, summary->str);
+//	g_string_append (all, "</Summary>");
+//	g_string_append (all, xml->str);
+//	g_string_append (all, "</XML>");
+//
+//	dl->InternalSetBody (all->str, all->len);
+//
+//	g_string_free (all, true);
+//	g_string_free (xml, true);
+//	g_string_free (summary, true);
+//	g_string_free (header, true);
+//
+//	dl->Send ();
+//
+//	LOG_MMS ("MmsDownloader: sent log.\n");
+}
+
+void
+MmsSource::SetStreamSelectionHeaders (Downloader *dl)
+{
+	MmsPlaylistEntry *entry;
+	gint8 streams [128];
+	int count = 0;
+	GString *line;
+
+	VERIFY_MAIN_THREAD;
+
+	entry = GetCurrentReffed ();
+
+	g_return_if_fail (entry != NULL);
+
+	entry->GetSelectedStreams (streams);
+
+	line = g_string_new ("stream-switch-entry=");
+	for (int i = 1; i < 128; i++) {
+		switch (streams [i]) {
+		case -1: // invalid stream
+			break;
+		case 0: // not selected
+			count++;
+			g_string_append_printf (line, "%i:ffff:0 ", i);
+			break;
+		case 1: // selected
+			count++;
+			g_string_append_printf (line, "ffff:%i:0 ", i);
+			break;
+		default: // ?
+			printf ("MmsDownloader: invalid stream selection value (%i).\n", streams [i]);
+			break;
+		}
+	}
+
+	/* stream-switch-count && stream-switch-entry need to be on their own pragma lines */
+	dl->InternalSetHeader ("Pragma", line->str, true);
+	dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("stream-switch-count=%i", count), true);
+
+	g_string_free (line, true);
+	entry->unref ();
+}
+
+void
+MmsSource::ProcessResponseHeaderCallback (gpointer context, const char *header, const char *value)
+{
+	VERIFY_MAIN_THREAD;
+	((MmsSource *) context)->SetCurrentDeployment ();
+	((MmsSource *) context)->ProcessResponseHeader (header, value);
+}
+
+void
+MmsSource::ProcessResponseHeader (const char *header, const char *value)
+{
+	Downloader *dl = NULL;
+	char *h = NULL;
+	char *duped = NULL;
+
+	VERIFY_MAIN_THREAD;
+	LOG_MMS ("MmsSource::ProcessResponseHeader ('%s', '%s')\n", header, value);
+
+	if (failure_reported)
+		return;
+
+	dl = GetDownloaderReffed ();
+	g_return_if_fail (dl != NULL);
+
+	// check response code
+	DownloaderResponse *response = dl->GetResponse ();
+	if (response != NULL && response->GetResponseStatus () != 200) {
+		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri, response->GetResponseStatus ());
+		ReportDownloadFailure ();
+		goto cleanup;
+	}
+
+	g_return_if_fail (header != NULL);
+	g_return_if_fail (value != NULL);
+
+	// we're only interested in the 'Pragma' header(s)
+
+	if (strcmp (header, "Pragma") != 0)
+		goto cleanup;
+
+	h = g_strdup (value);
+	duped = h;
+
+	while (h != NULL && *h != 0) {
+		char *key = NULL;
+		char *val = NULL;
+		char c;
+		char *left;
+
+		key = parse_rfc_1945_token (h, &c, &left);
+
+		if (key == NULL)
+			break;
+
+		h = left;
+
+		if (key [0] == 0)
+			continue;
+
+		if (c == '=' && h != NULL) {
+			if (*h == '"') {
+				val = parse_rfc_1945_quoted_string (h + 1, &c, &left);
+				h = left;
+			} else if (*h != 0) {
+				val = parse_rfc_1945_token (h, &c, &left);
+				h = left;
+			}
+		}
+
+		// printf ("MmsDownloader::ResponseHeader (). processing 'Pragma', key='%s', value='%s'\n", key, val);
+
+		if (strcmp (key, "client-id") == 0) {
+			Lock ();
+			if (client_id != NULL)
+				g_free (client_id);
+			client_id = g_strdup (val);
+			Unlock ();
+		}
+	}
+
+cleanup:
+	if (dl != NULL)
+		dl->unref ();
+	g_free (duped);
+}
+
+Downloader *
+MmsSource::GetDownloaderReffed ()
+{
+	Downloader *result;
+	Lock ();
+	result = dl;
+	if (result != NULL)
+		result->ref ();
+	Unlock ();
+	return result;
+}
+
+void
+MmsSource::Write (void *buf, gint32 off, gint32 n)
+{
+	LOG_MMS_EX ("MmsSource::Write (%p, %i, %i)\n", buf, off, n);
+	VERIFY_MAIN_THREAD;
+
+	MmsHeader *header;
+	MmsPacket *packet;
+	char *payload;
+	guint32 offset = 0;
+	bool is_valid = false;
+	Downloader *dl;
+
+	// Make sure our internal buffer is big enough
+	if (buffer_size < buffer_used + n) {
+		buffer_size = buffer_used + n;
+		buffer = (char *) g_realloc (buffer, buffer_size);
+	}
+
+	// Populate the data into the buffer
+	memcpy (buffer + buffer_used, buf, n);
+	buffer_used += n;
+
+	// Check  we have an entire packet available.
+	while (buffer_used >= sizeof (MmsHeader)) {
+		header = (MmsHeader *) buffer;
+
+		switch (header->id) {
+		case MMS_DATA:
+		case MMS_HEADER:
+		case MMS_METADATA:
+		case MMS_STREAM_C:
+		case MMS_END:
+		case MMS_PAIR_P:
+			is_valid = true;
+			break;
+		default:
+			is_valid = false;
+			break;
+		}
+
+		if (!is_valid) {
+			LOG_MMS ("MmsDownloader::Write (): invalid mms header: %i = %c\n%*s\n", header->id, header->id, n, (char *) buf);
+			dl = GetDownloaderReffed ();
+			if (dl != NULL) {
+				dl->Abort ();
+				dl->NotifyFailed ("invalid mms source");
+				dl->unref ();
+			}
+			return;
+		}
+
+		if (buffer_used < (header->length + sizeof (MmsHeader)))
+			return;
+
+		packet = (MmsPacket *) (buffer + sizeof (MmsHeader));
+		payload = (buffer + sizeof (MmsHeader) + sizeof (MmsDataPacket));
+
+		if (!ProcessPacket (header, packet, payload, &offset)) {
+			LOG_MMS ("MmsDownloader::Write (): packet processing failed\n");
+			break;
+		}
+
+		if (buffer_used > offset) {
+			memmove (buffer, buffer + offset, buffer_used - offset);
+			buffer_used -= offset;
+		} else {
+			buffer_used = 0;
+		}
+	}
+}
+
+bool
+MmsSource::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
+{
+	LOG_MMS_EX ("MmsSource::ProcessPacket (%p, %p, %p, %p) '%c' length: %i\n", header, packet, payload, offset, header->id, header->length);
 	
-	return MEDIA_SUCCESS;
+	*offset = (header->length + sizeof (MmsHeader));
+ 
+ 	switch (header->id) {
+	case MMS_HEADER:
+		return ProcessHeaderPacket (header, packet, payload, offset);
+	case MMS_METADATA:
+		return ProcessMetadataPacket (header, packet, payload, offset);
+	case MMS_PAIR_P:
+		return ProcessPairPacket (header, packet, payload, offset);
+	case MMS_DATA:
+		return ProcessDataPacket (header, packet, payload, offset);
+	case MMS_END:
+		return ProcessEndPacket (header, packet, payload, offset);
+	case MMS_STREAM_C:
+		return ProcessStreamSwitchPacket (header, packet, payload, offset);
+	}
+
+	printf ("MmsSource::ProcessPacket received a unknown packet type %i.", (int) header->id);
+
+	return false;
+}
+
+bool
+MmsSource::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
+{
+	guint64 max_bitrate;
+
+	LOG_MMS ("MmsDownloader::ProcessPairPacket () p_packet_count: %i\n", p_packet_count);
+	VERIFY_MAIN_THREAD;
+	
+	if (p_packet_times [p_packet_count] == 0)
+		p_packet_times [p_packet_count] = get_now ();
+
+	// NOTE: If this is the 3rd $P packet, we need to increase the size reported in the header by
+	// the value in the reason field.  This is a break from the normal behaviour of MMS packets
+	// so we need to guard against this occurance here and ensure we actually have enough data
+	// buffered to consume
+	if (p_packet_count == 2 && buffer_used < (header->length + sizeof (MmsHeader) + packet->packet.reason))
+		return false;
+
+	// NOTE: We also need to account for the size of the reason field manually with our packet massaging.
+	*offset += 4;
+
+	// NOTE: If this is the first $P packet we've seen the reason is actually the amount of data
+	// that the header claims is in the payload, but is in fact not.
+	if (p_packet_count == 0) {
+		*offset -= packet->packet.reason;
+	}
+
+	// NOTE: If this is the third $P packet we've seen, reason is an amount of data that the packet
+	// is actually larger than the advertised packet size
+	if (p_packet_count == 2)
+		*offset += packet->packet.reason;
+
+	p_packet_sizes [p_packet_count] = *offset;
+
+	++p_packet_count;
+
+	if (p_packet_times [0] == p_packet_times [2]) {
+		max_bitrate = 0; // prevent /0
+	} else {
+		max_bitrate = (gint64) (((p_packet_sizes [1] + p_packet_sizes [2]) * 8) / ((double) ((p_packet_times [2] - p_packet_times [0]) / (double) 10000000)));
+	}
+
+	SetMaxBitRate (max_bitrate);
+
+	return true;
+}
+
+bool
+MmsSource::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
+{
+	const char *playlist_gen_id = NULL;
+	const char *broadcast_id = NULL;
+	HttpStreamingFeatures features = HttpStreamingFeaturesNone;
+
+	char *start = payload;
+	char *key = NULL, *value = NULL;
+	char *state = NULL;
+
+	LOG_MMS ("MmsDownloader::ProcessMetadataPacket (%p, %p, %s, %p)\n", header, packet, payload, offset);
+
+	VERIFY_MAIN_THREAD;
+
+
+	// format: key=value,key=value\0
+	// example:
+	// playlist-gen-id=1,broadcast-id=2,features="broadcast,seekable"\0
+	
+	// Make sure payload is null-terminated
+	for (int i = 0; i < packet->packet.data.size; i++) {
+		if (payload [i] == 0)
+			break;
+		if (i == packet->packet.data.size - 1)
+			payload [i] = NULL;
+	}
+
+#if 0
+	// content description list
+	ContentDescriptionList *content_descriptions = NULL;
+	int payload_strlen = strlen (payload);
+	const char *cdl_start = NULL;
+	int cdl_length;
+
+	if (packet->packet.data.size > payload_strlen + 1) {
+		cdl_start = payload + payload_strlen + 1;
+		cdl_length = packet->packet.data.size - payload_strlen - 2;
+
+		// parse content description list
+		content_descriptions = new ContentDescriptionList ();
+		if (!content_descriptions->Parse (cdl_start, cdl_length)) {
+			delete content_descriptions;
+			content_descriptions = NULL;
+		}
+	}
+	delete content_descriptions;
+#endif
+
+	do {
+		key = strtok_r (start, "=", &state);
+		start = NULL;
+		
+		if (key == NULL)
+			break;
+			
+		if (key [0] == ' ')
+			key++;
+		
+		if (!strcmp (key, "features")) {
+			value = strtok_r (NULL, "\"", &state);
+		} else {
+			value = strtok_r (NULL, ",", &state);
+		}
+		
+		if (value == NULL)
+			break;
+			
+		LOG_MMS ("MmsDownloader::ProcessMetadataPacket (): %s=%s\n", key, value);
+		
+		if (!strcmp (key, "playlist-gen-id")) {
+			playlist_gen_id = value;
+		} else if (!strcmp (key, "broadcast-id")) {
+			broadcast_id = value;
+		} else if (!strcmp (key, "features")) {
+			features = parse_http_streaming_features (value);
+		} else {
+			LOG_MMS ("MmsDownloader::ProcessMetadataPacket (): Unexpected metadata: %s=%s\n", key, value);
+		}
+	} while (true);
+
+	SetMmsMetadata (playlist_gen_id, broadcast_id, features);
+
+	LOG_MMS ("MmsDownloader::ProcessMetadataPacket (): playlist_gen_id: '%s', broadcast_id: '%s', features: %i\n", playlist_gen_id, broadcast_id, features);
+
+	return true;
+}
+
+bool
+MmsSource::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
+{
+	MmsPlaylistEntry *entry;
+	Media *media;
+
+	LOG_MMS ("MmsSource::ProcessHeaderPacket () state: %i\n", waiting_state);
+	VERIFY_MAIN_THREAD;
+
+	entry = CreateCurrentEntry ();
+
+	g_return_val_if_fail (entry != NULL, false);
+
+	if (!entry->IsHeaderParsed ()) {
+		media = entry->GetMediaReffed ();
+		if (media != NULL) {
+			media->AddSafeHandler (Media::MediaErrorEvent, MediaErrorCallback, this);
+			media->unref ();
+			entry->ParseHeaderAsync (payload, header->length - sizeof (MmsDataPacket), this, OpenedCallback);
+		} else {
+			/* Disposed? don't do anything */
+		}
+	} else {
+		// We've already parsed this header (in the Describe request).
+		// TODO: handle the xResetStream when the playlist changes
+		// TODO: can this be another header??
+	}
+
+	entry->unref ();
+
+	return true;
+}
+
+bool
+MmsSource::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
+{
+	WritePacket (payload, header->length - sizeof (MmsDataPacket));
+	
+	return true;
+}
+
+bool
+MmsSource::ProcessStreamSwitchPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
+{
+	LOG_MMS ("MmsSource::ProcessStreamSwitchPacket ()\n");
+	VERIFY_MAIN_THREAD;
+
+	MmsHeaderReason *hr = (MmsHeaderReason *) header;
+
+	ReportStreamChange (hr->reason);
+	waiting_state = MmsStreamSwitchResponse;
+
+	return true;
+}
+
+bool
+MmsSource::ProcessEndPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
+{
+	LOG_MMS ("MmsDownloader::ProcessEndPacket ()\n");
+	VERIFY_MAIN_THREAD;
+
+	MmsHeaderReason *hr = (MmsHeaderReason *) header;
+
+	NotifyFinished (hr->reason);
+
+	// TODO: send log
+
+	return true;
+}
+
+void
+MmsSource::OpenedHandler (IMediaDemuxer *demuxer, EventArgs *args)
+{
+	LOG_MMS ("MmsSource::OpenedHandler () state: %i\n", waiting_state);
+	VERIFY_MAIN_THREAD;
+
+	switch (waiting_state) {
+	case MmsDescribeResponse:
+		if (!CanSeek ()) {
+			/* We've gotten the describe response now, and parsed it successfully. Time to start playing */
+			SendPlayRequest ();
+		} else {
+			/* The MediaPlayer will seek to the start of the media, which will end up with a play request */
+		}
+		break;
+	case MmsStreamSwitchResponse:
+		SendSelectStreamRequest ();
+		break;
+	default:
+		break;
+	}
+}
+
+void
+MmsSource::MediaErrorHandler (Media *media, EventArgs *args)
+{
+	LOG_MMS ("MmsSource::MediaErrorHandler ()\n");
+	/* Anything to do here? */
 }
 
 MmsDemuxer *
@@ -1486,18 +2598,6 @@ MmsSource::GetDemuxerReffed ()
 	result = demuxer;
 	if (result)
 		result->ref ();
-	Unlock ();
-	return result;
-}
-
-Downloader *
-MmsSource::GetDownloaderReffed ()
-{
-	Downloader *result;
-	Lock ();
-	result = downloader;
-	if (downloader)
-		downloader->ref ();
 	Unlock ();
 	return result;
 }
@@ -1522,7 +2622,19 @@ void
 MmsSource::SetMaxBitRate (guint64 value)
 {
 	LOG_MMS ("MmsSource::SetMaxBitRate (%" G_GUINT64_FORMAT ")\n", value);
+	Lock ();
 	max_bitrate = value;
+	Unlock ();
+}
+
+guint64
+MmsSource::GetMaxBitRate ()
+{
+	guint64 result;
+	Lock ();
+	result = max_bitrate;
+	Unlock ();
+	return result;
 }
 
 void
@@ -1542,7 +2654,7 @@ MmsSource::ReportDownloadFailure ()
 	media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
-	
+	failure_reported = true;
 	media->ReportErrorOccurred ("MmsDownloader failed");
 	media->unref ();
 }
@@ -1550,67 +2662,119 @@ MmsSource::ReportDownloadFailure ()
 void
 MmsSource::ReportStreamChange (gint32 reason)
 {
-	Media *media;
-	PlaylistRoot *root;
-	Media *entry_media;
-	
 	LOG_MMS ("MmsSource::ReportStreamChange (reason: %i)\n", reason);
-	
 	VERIFY_MAIN_THREAD;
-	
-	media = GetMediaReffed ();
-	
-	g_return_if_fail (media != NULL);
-	
-	root = media->GetPlaylistRoot ();
 
-	if (root != NULL) {
-		Lock ();
-		if (current != NULL) {
-			current->NotifyFinished ();
-			current->unref ();
-		}
-			
+	NotifyFinished (1 /* the current playlist entry has finished, but more will come */);
+}
+
+MmsPlaylistEntry *
+MmsSource::CreateCurrentEntry ()
+{
+	Media *media;
+	Media *entry_media;
+	PlaylistRoot *root;
+	MmsPlaylistEntry *result = NULL;
+
+	LOG_MMS ("MmsSource::CreateCurrentEntry (): current: %p\n", current);
+
+	media = GetMediaReffed ();
+	if (media == NULL)
+		goto cleanup;
+
+	root = media->GetPlaylistRoot ();
+	if (root == NULL)
+		goto cleanup;
+
+	Lock ();
+	if (current == NULL) {
 		entry_media = new Media (root);
-		current = new MmsPlaylistEntry (entry_media, this);
+		this->current = new MmsPlaylistEntry (entry_media, this);
 		entry_media->unref ();
-		Unlock ();
 	}
-	
-	media->unref ();
+	result = this->current;
+	result->ref ();
+	Unlock ();
+
+cleanup:
+	if (media != NULL)
+		media->unref ();
+
+	LOG_MMS ("MmsSource::CreateCurrentEntry (): result: %p\n", result);
+
+	return result;
 }
 
 void
 MmsSource::SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id, HttpStreamingFeatures features)
 {
-	MmsPlaylistEntry *entry;
-	Media *media;
+	MmsPlaylistEntry *entry = NULL;
+	Media *media = NULL;
 	PlaylistRoot *root = NULL;
-	
+
 	LOG_MMS ("MmsSource::SetMmsMetadata ('%s', '%s', %i)\n", playlist_gen_id, broadcast_id, (int) features);
-	
+
 	VERIFY_MAIN_THREAD;
-	
-	entry = GetCurrentReffed ();
-	
-	g_return_if_fail (entry != NULL);
-	
+
+	media = GetMediaReffed ();
+	if (media == NULL)
+		goto cleanup;
+
+	root = media->GetPlaylistRoot ();
+	if (root == NULL)
+		goto cleanup;
+
+	entry = CreateCurrentEntry ();
+	if (entry == NULL)
+		goto cleanup;
+
 	entry->SetPlaylistGenId (playlist_gen_id);
 	entry->SetBroadcastId (broadcast_id);
 	entry->SetHttpStreamingFeatures (features);
 
 	if (features & HttpStreamingPlaylist) {
 		is_sspl = true;
-		media = GetMediaReffed ();
-		if (media != NULL) {
-			root = media->GetPlaylistRoot ();
-			if (root != NULL)
-				root->SetIsDynamic ();
-			media->unref ();
-		}
+		root->SetIsDynamic ();
 	}
 
-	entry->unref ();
+	LOG_MMS ("MmsSource::SetMmsMetadata ('%s', '%s', %i)\n", playlist_gen_id, broadcast_id, (int) features);
+
+cleanup:
+	if (media != NULL)
+		media->unref ();
+	if (entry != NULL)
+		entry->unref ();
+}
+
+bool
+MmsSource::RemoveTemporaryDownloader (Downloader *dl)
+{
+	Downloader::Node *node;
+	Downloader::Node *found = NULL;
+
+	VERIFY_MAIN_THREAD;
+
+	Lock ();
+	if (temporary_downloaders != NULL) {
+		node = (Downloader::Node *) temporary_downloaders->First ();
+		while (node != NULL) {
+			if (node->downloader == dl) {
+				found = node;
+				temporary_downloaders->Unlink (node);
+				break;
+			}
+			node = (Downloader::Node *) node->next;
+		}
+	}
+	Unlock ();
+
+	/* Don't delete the node/unref the dl in a lock */
+	if (found != NULL) {
+		dl->RemoveAllHandlers (this);
+		delete node;
+	}
+
+	return false;
 }
 
 void
@@ -1618,8 +2782,14 @@ MmsSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
 {
 	Media *media = GetMediaReffed ();
 	ErrorEventArgs *eea;
+
+	LOG_MMS ("MmsSource::DownloadFailedHandler ()\n");
+
 	VERIFY_MAIN_THREAD;
-	
+
+	if (RemoveTemporaryDownloader (dl))
+		return; /* Nothing more to do here, don't report failures for temporary downloaders */
+
 	g_return_if_fail (media != NULL);
 	eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
 	media->RetryHttp (eea);
@@ -1630,7 +2800,11 @@ MmsSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
 void
 MmsSource::DownloadCompleteHandler (Downloader *dl, EventArgs *args)
 {
+	LOG_MMS ("MmsSource::DownloadCompleteHandler ()\n");
+	
 	VERIFY_MAIN_THREAD;
+
+	RemoveTemporaryDownloader (dl);
 }
 
 void
@@ -1667,9 +2841,17 @@ MmsSource::NotifyFinished (guint32 reason)
 		// entries still remain to be streamed. The server will transmit a stream change packet
 		// when it switches to the next entry.
 		entry = GetCurrentReffed ();
-		entry->NotifyFinished ();
-		entry->unref ();
-		WritePacket (NULL, 0);
+		if (entry != NULL) {
+			entry->NotifyFinished ();
+			WritePacket (NULL, 0);
+			Lock ();
+			if (current != NULL) {
+				current->unref ();
+				current = NULL;
+			}
+			Unlock ();
+			entry->unref ();
+		}
 		break;
 	default:
 		// ?
@@ -1679,51 +2861,35 @@ MmsSource::NotifyFinished (guint32 reason)
 	LOG_MMS ("MmsSource::NotifyFinished (%i): eof: %i\n", reason, Eof ());
 }
 
+bool
+MmsSource::CanSeek ()
+{
+	/* We can only seek if we're not a server-side playlist and not a live streaming source */
+	return !is_sspl && ((GetCurrentStreamingFeatures () & HttpStreamingBroadcast) == 0);
+}
+
 MediaResult
 MmsSource::SeekToPts (guint64 pts)
 {
-	// thread safe
-	MediaResult result = true;
-	Downloader *dl;
-	MmsDownloader *mms_dl;
+	/* Thread safe */
+	bool add_tick_call = false;
 	
-	LOG_ASF ("MmsSource::SeekToPts (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_MMS ("MmsSource::SeekToPts (%" G_GUINT64_FORMAT ") CanSeek: %i\n", pts, CanSeek ());
 
-	dl = GetDownloaderReffed ();
-	
-	g_return_val_if_fail (dl != NULL, MEDIA_FAIL);
+	if (!CanSeek ())
+		return MEDIA_SUCCESS;
 
-	mms_dl = GetMmsDownloader (dl);
-	
-	if (mms_dl) {
-		mms_dl->SetRequestedPts (pts);
-		finished = false;
-		result = MEDIA_SUCCESS;
-	} else {
-		result = MEDIA_FAIL;
-	}
-	
-	dl->unref ();
-	
-	return result;
-}
+	/* We may get several seek requests before any of them has been processed,
+	 * in which case just enqueue 1 play request for the main thread */
+	Lock ();
+	add_tick_call = requested_pts == G_MAXUINT64;
+	requested_pts = pts;
+	Unlock ();
 
-MmsDownloader *
-MmsSource::GetMmsDownloader (Downloader *dl)
-{
-	InternalDownloader *idl;
-	
-	g_return_val_if_fail (dl != NULL, NULL);
-	
-	idl = dl->GetInternalDownloader ();
-	
-	if (idl == NULL)
-		return NULL;
-	
-	if (idl->GetObjectType () != Type::MMSDOWNLOADER)
-		return NULL;
-	
-	return (MmsDownloader *) idl;
+	if (add_tick_call)
+		AddTickCall (SendPlayRequestCallback);
+
+	return MEDIA_SUCCESS;
 }
 
 IMediaDemuxer *
@@ -1782,6 +2948,61 @@ MmsSource::Eof ()
 	return result;
 }
 
+char *
+MmsSource::GetCurrentPlaylistGenId ()
+{
+	char *result = NULL;
+	MmsPlaylistEntry *entry;
+
+	entry = GetCurrentReffed ();
+	if (entry != NULL) {
+		result = entry->GetPlaylistGenId ();
+		entry->unref ();
+	}
+
+	return result;
+}
+
+char *
+MmsSource::GetCurrentBroadcastId ()
+{
+	char *result = NULL;
+	MmsPlaylistEntry *entry;
+
+	entry = GetCurrentReffed ();
+	if (entry != NULL) {
+		result = entry->GetBroadcastId ();
+		entry->unref ();
+	}
+
+	return result;
+}
+
+HttpStreamingFeatures
+MmsSource::GetCurrentStreamingFeatures ()
+{
+	HttpStreamingFeatures result = HttpStreamingFeaturesNone;
+	MmsPlaylistEntry *entry;
+
+	entry = GetCurrentReffed ();
+	if (entry != NULL) {
+		result = entry->GetHttpStreamingFeatures ();
+		entry->unref ();
+	}
+
+	return result;
+}
+
+char *
+MmsSource::GetClientId ()
+{
+	char *result;
+	Lock ();
+	result = g_strdup_printf (client_id);
+	Unlock ();
+	return result;
+}
+
 /*
  * ParseHeaderClosure
  */
@@ -1815,12 +3036,14 @@ MmsPlaylistEntry::MmsPlaylistEntry (Media *media, MmsSource *source)
 	: IMediaSource (Type::MMSPLAYLISTENTRY, media)
 {
 	finished = false;
+	opened = false;
 	parent = source;
 	write_count = 0;
 	demuxer = NULL;
 	playlist_gen_id = NULL;
 	broadcast_id = NULL;
 	features = HttpStreamingFeaturesNone;
+	buffers = NULL;
 	
 	g_return_if_fail (parent != NULL);
 	parent->ref ();
@@ -1838,6 +3061,7 @@ MmsPlaylistEntry::Dispose ()
 	// thread safe
 	MmsSource *mms_source;
 	IMediaDemuxer *demux;
+	List *buffers;
 
 	Lock ();
 	mms_source = this->parent;
@@ -1848,6 +3072,8 @@ MmsPlaylistEntry::Dispose ()
 	playlist_gen_id = NULL;
 	g_free (broadcast_id);
 	broadcast_id = NULL;
+	buffers = this->buffers;
+	this->buffers = NULL;
 	Unlock ();
 
 	if (mms_source != NULL)
@@ -1855,6 +3081,8 @@ MmsPlaylistEntry::Dispose ()
 
 	if (demux != NULL)
 		demux->unref ();
+
+	delete buffers;
 
 	// This is a bit weird - in certain
 	// we can end up with a circular dependency between
@@ -2145,6 +3373,12 @@ MmsPlaylistEntry::AddEntryCallback (EventObject *obj)
 void
 MmsPlaylistEntry::AddEntry ()
 {
+	Media *media = NULL;
+	PlaylistRoot *root;
+	Playlist *playlist;
+	PlaylistEntry *entry = NULL;
+	MmsDemuxer *mms_demuxer = NULL;
+
 	LOG_MMS ("MmsPlaylistEntry::AddEntry (): InMainThread: %i\n", Surface::InMainThread ());
 
 	if (!Surface::InMainThread ()) {
@@ -2152,12 +3386,7 @@ MmsPlaylistEntry::AddEntry ()
 		return;
 	}
 	
-	Media *media = GetMediaReffed ();
-	PlaylistRoot *root;
-	Playlist *playlist;
-	PlaylistEntry *entry;
-	MmsDemuxer *mms_demuxer = NULL;
-	
+	media = GetMediaReffed ();
 	g_return_if_fail (media != NULL);
 	
 	if (parent == NULL)
@@ -2221,6 +3450,35 @@ MmsPlaylistEntry::ParseHeaderAsync (void *buffer, gint32 size, EventObject *open
 }
 
 void
+MmsPlaylistEntry::OpenedHandler (IMediaDemuxer *sender, EventArgs *ea)
+{
+	MediaClosure::Node *node;
+	gint8 dummy [128];
+	List *buffers;
+
+	LOG_MMS ("MmsPlaylistEntry::OpenedHandler (): demuxer has been opened, rewriting %i packets\n", buffers == NULL ? 0 : buffers->Length ());
+	VERIFY_MEDIA_THREAD;
+
+	GetSelectedStreams (dummy);
+
+	Lock ();
+	buffers = this->buffers;
+	this->buffers = NULL;
+	opened = true;
+	Unlock ();
+
+	if (buffers != NULL) {
+		node = (MediaClosure::Node *) buffers->First ();
+		while (node != NULL) {
+			WritePacketCallback (node->closure);
+			node = (MediaClosure::Node *) node->next;
+		}
+		delete buffers;
+		buffers = NULL;
+	}
+}
+
+void
 MmsPlaylistEntry::ParseHeader (MediaClosure *c)
 {
 	VERIFY_MEDIA_THREAD;
@@ -2234,7 +3492,6 @@ MmsPlaylistEntry::ParseHeader (MediaClosure *c)
 	guint32 required_size = 0;
 	ParseHeaderClosure *closure = (ParseHeaderClosure *) c;
 	MemoryBuffer *buffer = closure->buffer;
-	gint8 dummy [128];
 
 	// this method shouldn't get called more than once
 	g_return_if_fail (demuxer == NULL);
@@ -2246,20 +3503,17 @@ MmsPlaylistEntry::ParseHeader (MediaClosure *c)
 	
 	asf_demuxer = new ASFDemuxer (media, parent, buffer, this);
 	asf_demuxer->AddSafeHandler (IMediaDemuxer::OpenedEvent, closure->opened_handler, closure->opened_handler_obj, true);
+	asf_demuxer->AddSafeHandler (IMediaDemuxer::OpenedEvent, OpenedCallback, this, false);
 	result = asf_demuxer->ReadHeaderObject (buffer, &error_message, &required_size);
 	media->unref ();
 
 	if (result) {
-		/* Calling GetSelectedStreams will also select the streams we want, we need to do this asap,
-		 * the server might pre-select and start serving streams before we get a chance to tell it
-		 * which streams we want */
-		GetSelectedStreams (dummy);
-
 		Lock ();
 		if (this->demuxer)
 			this->demuxer->unref ();
 		this->demuxer = asf_demuxer;
 		Unlock ();
+
 		AddEntry ();
 	} else {
 		if (error_message != NULL) {
@@ -2281,10 +3535,18 @@ MmsPlaylistEntry::WritePacketCallback (MediaClosure *c)
 	MmsPlaylistEntry *mpe = (MmsPlaylistEntry *) closure->GetContext ();
 	ASFDemuxer *demuxer;
 
-	demuxer = mpe->GetDemuxerReffed ();
-	if (demuxer) {
-		demuxer->DeliverData (closure->GetOffset (), closure->GetData ());
-		demuxer->unref ();
+	VERIFY_MEDIA_THREAD;
+
+	if (mpe->opened) {
+		demuxer = mpe->GetDemuxerReffed ();
+		if (demuxer) {
+			demuxer->DeliverData (closure->GetOffset (), closure->GetData ());
+			demuxer->unref ();
+		}
+	} else {
+		if (mpe->buffers == NULL)
+			mpe->buffers = new List ();
+		mpe->buffers->Append (new MediaClosure::Node (closure));
 	}
 
 	return MEDIA_SUCCESS;

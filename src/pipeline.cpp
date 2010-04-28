@@ -654,19 +654,11 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 	}
 	
 	if (file == NULL) {
-		InternalDownloader *idl = downloader->GetInternalDownloader ();
-		MmsDownloader *mms_dl = (idl && idl->GetObjectType () == Type::MMSDOWNLOADER) ? (MmsDownloader *) idl : NULL;
-		
-		if (mms_dl == NULL) {
-			ReportErrorOccurred ("We don't support using downloaders which haven't started yet.");
-			return;
-		}
-		
-		source = new MmsSource (this, downloader);
-	} else {
-		source = new FileSource (this, file);
+		ReportErrorOccurred ("We don't support using downloaders for mms streams.");
+		return;
 	}
-	
+
+	source = new FileSource (this, file);
 	Initialize (source);
 	source->unref ();
 }
@@ -696,7 +688,6 @@ Media::Initialize (IMediaSource *source)
 void
 Media::Initialize (const char *uri)
 {
-	Downloader *dl;
 	IMediaSource *source = NULL;
 	
 	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", uri, GET_OBJ_ID (this));	
@@ -713,27 +704,11 @@ Media::Initialize (const char *uri)
 	
 	
 	if (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://")  || g_str_has_prefix (uri, "rtsps://")) {
-		dl = Surface::CreateDownloader (this);
-		if (dl == NULL) {
-			ReportErrorOccurred ("Couldn't create downloader.");
-			return;
-		}
-		
-		dl->Open ("GET", uri, StreamingPolicy);
-		
-		if (dl->GetFailedMessage () == NULL) {
-			Initialize (dl, NULL);
-		} else {
-			ReportErrorOccurred (new ErrorEventArgs (MediaError,
-								 MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
-		}
-			
-		dl->unref ();
-		
-		return;
+		source = new MmsSource (this, uri);
+	} else {
+		source = new ProgressiveSource (this, uri);
 	}
-	
-	source = new ProgressiveSource (this, uri);
+
 	Initialize (source);
 	source->unref ();
 }

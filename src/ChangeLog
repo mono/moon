@@ -1,5 +1,17 @@
 2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp|h:
+	* pipeline.cpp|h:
+	* mms-downloader.cpp|h: Move most of the MmsDownloader into MmsSource - this
+	allows easier usage of multiple MmsDownloaders at the same time, as well as
+	making the code a bit easier to understand and maintain.
+
+	* downloader.cpp|h: Add an Open overload that takes an internal downloader.
+	Needed by mms, so that mms can establish the link between the mms downloader
+	and the mms source before receiving any data.
+
+2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* downloader.cpp|h: Change DownloaderRequest api to allow the user to disable
 	http header folding on a header-by-header basis.
 

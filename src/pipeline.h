@@ -132,6 +132,13 @@ public:
 	Media *GetMedia () { return media; }
 	EventObject *GetContext () { return context; }
 	const char *GetDescription () { return description != NULL ? description : GetTypeName (); }
+
+	class Node : public List::Node {
+	public:
+		MediaClosure *closure;
+		Node (MediaClosure *c) { closure = c; closure->ref (); }
+		~Node () { closure->unref (); }
+	};
 };
 
 class MediaReadClosure : public MediaClosure {

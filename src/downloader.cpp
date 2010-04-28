@@ -44,7 +44,6 @@
 
 #include "downloader.h"
 #include "file-downloader.h"
-#include "mms-downloader.h"
 #include "runtime.h"
 #include "deployment.h"
 #include "utils.h"
@@ -440,11 +439,20 @@ Downloader::ValidateDownloadPolicy (const char *source_location, Uri *uri, Downl
 void
 Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 {
+	Open (verb, uri, policy, NULL);
+}
+
+void
+Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy, InternalDownloader *internal_downloader)
+{
 	const char *source_location;
 	Uri *src_uri = NULL;
 	Uri *url = uri;
 	char *str;
 	
+	// StreamingPolicy (mms) needs to pass the internal MmsDownloader, other policies must not pass an internal downloader
+	g_return_if_fail ((policy != StreamingPolicy) == (internal_downloader == NULL));
+
 	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, uri);
 	
 	OpenInitialize ();
@@ -473,8 +481,9 @@ Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 		url = src_uri;
 	}
 	
-	if (policy == StreamingPolicy) {
-		internal_dl = (InternalDownloader *) new MmsDownloader (this);
+	if (internal_downloader != NULL) {
+		internal_dl = internal_downloader;
+		internal_dl->ref ();
 	} else {
 		internal_dl = (InternalDownloader *) new FileDownloader (this);
 	}
