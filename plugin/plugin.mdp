@@ -53,13 +53,11 @@
     <File subtype="Code" buildaction="Nothing" name="browser-bridge.h" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-bridge.cpp" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-bridge.h" />
-    <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-dom.cpp" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-http.cpp" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff3/Makefile.am" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ChangeLog" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-bridge.cpp" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-bridge.h" />
-    <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-dom.cpp" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-http.cpp" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff2/Makefile.am" />
     <File subtype="Code" buildaction="Nothing" name="firefox/Makefile.am" />
@@ -90,6 +88,10 @@
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/lunar-launcher.cpp" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/lunar-launcher.h" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/Makefile.am" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/ff36-bridge.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/ff36-bridge.h" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/ff36-http.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/Makefile.am" />
   </Contents>
   <compiler ctype="GccCompiler" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
