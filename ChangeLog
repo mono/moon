@@ -1,3 +1,7 @@
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: remove ff36 bridge
+
 2010-04-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Fixed LUNAR_LAUNCHER_CFLAGS/LIBS

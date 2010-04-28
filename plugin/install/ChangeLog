@@ -1,3 +1,7 @@
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: remove ff36 bridge.
+
 2010-04-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Put lunar-launcher in the xpi/crx.

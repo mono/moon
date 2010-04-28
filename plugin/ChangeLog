@@ -1,3 +1,7 @@
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am, plugin.cpp: remove ff36 bridge.
+
 2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.mdp: Updated with new files.
