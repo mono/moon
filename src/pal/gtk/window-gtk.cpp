@@ -16,19 +16,13 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include "authors.h"
-
 #include "window-gtk.h"
 #include "clipboard-gtk.h"
+#include "config-dialog-gtk.h"
 #include "install-dialog.h"
 #include "deployment.h"
 #include "timemanager.h"
 #include "enums.h"
-
-#include "pipeline.h"
-#include "pipeline-ui.h"
-
-#include "debug-ui.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -881,46 +875,6 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 }
 
 void
-MoonWindowGtk::show_about (MoonWindowGtk *window)
-{
-	GtkAboutDialog *about = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
-
-	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
-	gtk_about_dialog_set_version (about, VERSION);
-
-	gtk_about_dialog_set_copyright (about, "Copyright 2007-2010 Novell, Inc. (http://www.novell.com/)");
-#if FINAL_RELEASE
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/");
-#else
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Beta");
-#endif
-
-	gtk_about_dialog_set_website_label (about, "Project Website");
-
-	gtk_about_dialog_set_authors (about, moonlight_authors);
-
-	/* Newer gtk+ versions require this for the close button to work */
-	g_signal_connect_swapped (about,
-				  "response",
-				  G_CALLBACK (gtk_widget_destroy),
-				  about);
-
-	gtk_dialog_run (GTK_DIALOG (about));
-}
-
-void
-MoonWindowGtk::install_media_pack (MoonWindowGtk *window)
-{
-	CodecDownloader::ShowUI (window->GetSurface(), true);
-}
-
-void
-MoonWindowGtk::show_properties (MoonWindowGtk *window)
-{
-	window->Properties ();
-}
-
-void
 MoonWindowGtk::install_application (MoonWindowGtk *window)
 {
 	Application *app = Application::GetCurrent ();
@@ -935,6 +889,28 @@ MoonWindowGtk::uninstall_application (MoonWindowGtk *window)
 	Application *application = deployment->GetCurrentApplication ();
 	
 	application->Uninstall ();
+}
+
+
+void
+MoonWindowGtk::ShowMoonlightDialog ()
+{
+	if (!surface)
+		return;
+
+	SetCurrentDeployment();
+	
+	Deployment *deployment = Deployment::GetCurrent();
+	
+	MoonConfigDialogGtk *dialog = new MoonConfigDialogGtk (this, surface, deployment);
+
+	dialog->Show ();
+}
+
+void
+MoonWindowGtk::show_moonlight_dialog (MoonWindowGtk *window)
+{
+	window->ShowMoonlightDialog ();
 }
 
 void
@@ -953,24 +929,8 @@ MoonWindowGtk::RightClickMenu ()
 	g_free (name);
 
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (show_about), this);
+	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (show_moonlight_dialog), this);
 
-	menu_item = gtk_menu_item_new_with_label ("Properties");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (MoonWindowGtk::show_properties), this);
-
-	if (!Media::IsMSCodecsInstalled ()) {
-		menu_item = gtk_menu_item_new_with_label ("Install Microsoft Media Pack");
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (install_media_pack), this);
-#if DEBUG
-	} else {
-		menu_item = gtk_menu_item_new_with_label ("Reinstall Microsoft Media Pack");
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (install_media_pack), this);
-#endif
-	}
-	
 	if (deployment && (settings = deployment->GetOutOfBrowserSettings ())) {
 		Application *application = deployment->GetCurrentApplication ();
 		
@@ -993,26 +953,6 @@ MoonWindowGtk::RightClickMenu ()
 			break;
 		}
 	}
-	
-#ifdef DEBUG
-	menu_item = gtk_menu_item_new_with_label ("Show XAML Hierarchy");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (show_debug), this);
-	
-	menu_item = gtk_menu_item_new_with_label ("Sources");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (show_sources), this);
-	
-	menu_item = gtk_menu_item_new_with_label ("Debug Info");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug_info), this);
-	
-#if OBJECT_TRACKING
-	menu_item = gtk_menu_item_new_with_label ("Media Debugging");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug_media), this);
-#endif
-#endif
 
 	gtk_widget_show_all (menu);
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
@@ -1029,239 +969,4 @@ MoonWindowGtk::container_button_press_callback (GtkWidget *widget, GdkEventButto
 	}
 
 	return FALSE;
-}
-
-static void
-table_add (GtkWidget *table, int row, const char *label, const char *value)
-{
-	GtkWidget *l = gtk_label_new (label);
-	GtkWidget *v = gtk_label_new (value);
-
-	gtk_label_set_selectable (GTK_LABEL (v), TRUE);
-
-	gtk_misc_set_alignment (GTK_MISC (l), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), l, 0, 1, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-
-	gtk_misc_set_alignment (GTK_MISC (v), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), v, 1, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-}
-
-static GtkWidget *
-title (const char *txt)
-{
-	char *fmt = g_strdup_printf ("<b>%s</b>", txt);
-	GtkWidget *label = gtk_label_new (NULL);
-
-	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-	gtk_label_set_markup (GTK_LABEL (label), fmt);
-	g_free (fmt);
-
-	return label;
-}
-
-void
-MoonWindowGtk::properties_dialog_response (GtkWidget *dialog, int response, MoonWindowGtk *window)
-{
-	window->properties_fps_label = NULL;
-	window->properties_cache_label = NULL;
-	gtk_widget_destroy (dialog);
-}
-
-enum OptionColumn {
-	OPTION_COLUMN_TOGGLE,
-	OPTION_COLUMN_NAME,
-	OPTION_COLUMN_FLAG,
-	OPTION_COLUMN_SURFACE
-};
-
-static void
-option_cell_toggled (GtkCellRendererToggle *cell_renderer,
-		     gchar *path,
-		     GtkTreeModel *model) 
-{
-	GtkTreeIter iter;
-	GtkTreePath *tree_path;
-	gboolean set;
-	guint32 flag;
-	Surface *surface;
-
-	tree_path = gtk_tree_path_new_from_string (path);
-
-	if (!gtk_tree_model_get_iter (model,
-				      &iter,
-				      tree_path)) {
-		gtk_tree_path_free (tree_path);
-		return;
-	}
-
-	gtk_tree_path_free (tree_path);
-
-	gtk_tree_model_get (model,
-			    &iter,
-			    OPTION_COLUMN_TOGGLE, &set,
-			    OPTION_COLUMN_FLAG, &flag,
-			    OPTION_COLUMN_SURFACE, &surface,
-			    -1);
-
-	// we're toggling here
-	set = !set;
-
-	surface->SetCurrentDeployment ();
-
-	// toggle the debug state for moonlight
-	surface->SetRuntimeOption ((RuntimeInitFlag)flag, set);
-
-	// and reflect the change in the UI
-	gtk_list_store_set (GTK_LIST_STORE (model),
-			    &iter,
-			    OPTION_COLUMN_TOGGLE, set,
-			    -1);
-}
-
-static GtkWidget*
-create_option_treeview (Surface *surface)
-{
-	GtkListStore *model;
-	GtkTreeIter iter;
-	GtkTreeViewColumn *column;
-	GtkCellRenderer *renderer;
-	GtkTreeView *treeview;
-	GtkWidget *scrolled;
-
-	const MoonlightRuntimeOption *options;
-
-	model = gtk_list_store_new (4,
-				    /* OPTION_COLUMN_TOGGLE  */ G_TYPE_BOOLEAN,
-				    /* OPTION_COLUMN_NAME    */ G_TYPE_STRING,
-				    /* OPTION_COLUMN_FLAG    */ G_TYPE_INT,
-				    /* OPTION_COLUMN_SURFACE */ G_TYPE_POINTER);
-
-	options = moonlight_get_runtime_options ();
-	
-	for (int i = 0; options [i].name != NULL; i++) {
-		if (!options[i].runtime_changeable)
-			continue;
-		gtk_list_store_append (model, &iter);
-		gtk_list_store_set (model, &iter,
-				    OPTION_COLUMN_TOGGLE, surface->GetRuntimeOption (options[i].flag),
-				    OPTION_COLUMN_NAME, options [i].description,
-				    OPTION_COLUMN_FLAG, options [i].flag,
-				    OPTION_COLUMN_SURFACE, surface,
-				    -1);
-	}
-
-	scrolled = gtk_scrolled_window_new (NULL, NULL);
-	
-	treeview = GTK_TREE_VIEW (gtk_tree_view_new_with_model (GTK_TREE_MODEL (model)));
-
-	gtk_tree_view_set_headers_visible (treeview, FALSE);
-
-	g_object_unref (model);
-
-	column = gtk_tree_view_column_new ();
-	renderer = gtk_cell_renderer_toggle_new ();
-	gtk_tree_view_column_pack_start (column, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (column, renderer, "active", 0);
-	gtk_signal_connect (GTK_OBJECT(renderer), "toggled", G_CALLBACK (option_cell_toggled), model);
-	gtk_tree_view_append_column (treeview, column);
-
-	column = gtk_tree_view_column_new ();
-	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_column_pack_start (column, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (column, renderer, "text", 1);
-	gtk_tree_view_append_column (treeview, column);
-
-	scrolled = gtk_scrolled_window_new (NULL, NULL);
-	
-	gtk_container_add (GTK_CONTAINER (scrolled), GTK_WIDGET (treeview));
-
-	return scrolled;
-}
-
-void
-MoonWindowGtk::Properties ()
-{
-	GtkWidget *dialog, *table, *treeview;
-	char buffer[60];
-	GtkBox *vbox;
-	int row = 0;
-
-	if (!surface)
-		return;
-
-	SetCurrentDeployment();
-	
-	Deployment *deployment = Deployment::GetCurrent();
-
-	dialog = gtk_dialog_new_with_buttons ("Moonlight Properties", NULL, (GtkDialogFlags)
-					      GTK_DIALOG_NO_SEPARATOR,
-					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
-	
-	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
-	
-	// Silverlight Application properties
-	gtk_box_pack_start (vbox, title ("Properties"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
-	
-	table = gtk_table_new (11, 2, FALSE);
-	gtk_box_pack_start (vbox, table, FALSE, FALSE, 0);
-
-	table_add (table, row++, "Source", deployment->GetXapLocation());
-
-	snprintf (buffer, sizeof (buffer), "%dpx", GetWidth ());
-	table_add (table, row++, "Width:", buffer);
-
-	snprintf (buffer, sizeof (buffer), "%dpx", GetHeight ());
-	table_add (table, row++, "Height:", buffer);
-
-	table_add (table, row++, "Background:", ""/*XXX fix - problem, it's from the plugin..*/);
-
-	table_add (table, row++, "RuntimeVersion:", deployment->GetRuntimeVersion() ? deployment->GetRuntimeVersion() : "(Unknown)");
-	table_add (table, row++, "Windowless:", GetWidget() == NULL ? "yes" : "no");
-
-	snprintf (buffer, sizeof (buffer), "%i", surface->GetTimeManager()->GetMaximumRefreshRate());
-	table_add (table, row++, "MaxFrameRate:", buffer);
-
-	table_add (table, row++, "Codecs:",
-		   Media::IsMSCodecsInstalled () ? "ms-codecs" :
-#if INCLUDE_FFMPEG
-		   "ffmpeg");
-#else
-		   "none");
-#endif
-
-	int size = 0;
-#if DEBUG
-	size = snprintf (buffer, sizeof (buffer), "debug");
-#else
-	size = snprintf (buffer, sizeof (buffer), "release");
-#endif
-#if SANITY
-	size += snprintf (buffer + size, sizeof (buffer) - size, ", sanity checks");
-#endif
-#if OBJECT_TRACKING
-	size += snprintf (buffer + size, sizeof (buffer) - size, ", object tracking");
-#endif
-	table_add (table, row++, "Build configuration:", buffer);
-
-	properties_fps_label = gtk_label_new ("");
-	gtk_misc_set_alignment (GTK_MISC (properties_fps_label), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), properties_fps_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-
-	row++;
-	properties_cache_label = gtk_label_new ("");
-	gtk_misc_set_alignment (GTK_MISC (properties_cache_label), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), properties_cache_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-
-	// Runtime debug options
-	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
-
-	treeview = create_option_treeview (surface);
-
-	gtk_box_pack_start (vbox, treeview, TRUE, TRUE, 0);
-
-	g_signal_connect (dialog, "response", G_CALLBACK (MoonWindowGtk::properties_dialog_response), this);
-	gtk_widget_show_all (dialog);
 }

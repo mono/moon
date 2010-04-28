@@ -98,17 +98,11 @@ private:
 	void InitializeCommon ();
 
 	void RightClickMenu ();
-	void Properties ();
+	void ShowMoonlightDialog ();
 
-	static void install_media_pack (MoonWindowGtk *window);
-	static void show_about (MoonWindowGtk *window);
-	static void show_properties (MoonWindowGtk *window);
-	static void properties_dialog_response (GtkWidget *dialog, int response, MoonWindowGtk *window);
+	static void show_moonlight_dialog (MoonWindowGtk *window);
 	static void uninstall_application (MoonWindowGtk *window);
 	static void install_application (MoonWindowGtk *window);
-	
-	GtkWidget *properties_fps_label;
-	GtkWidget *properties_cache_label;
 };
 
 #endif /* __MOON_WINDOW_GTK_H__ */

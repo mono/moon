@@ -17,9 +17,9 @@ G_BEGIN_DECLS
 
 void show_debug (MoonWindowGtk *window);
 void show_sources (MoonWindowGtk *window);
-void plugin_debug_info (MoonWindowGtk *window);
+void debug_info (MoonWindowGtk *window);
 #if OBJECT_TRACKING
-void plugin_debug_media (MoonWindowGtk *window);
+void debug_media (MoonWindowGtk *window);
 #endif
 
 G_END_DECLS

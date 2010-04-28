@@ -872,7 +872,7 @@ create_debug_treeview (gboolean is_ex)
 }
 
 void
-plugin_debug_info (MoonWindowGtk *window)
+debug_info (MoonWindowGtk *window)
 {
 	GtkWidget *dialog;
 	GtkWidget *table;
@@ -1132,7 +1132,7 @@ debug_media_dialog_response (GtkWidget *dialog, int response, debug_media_data *
 }
 
 void
-plugin_debug_media (MoonWindowGtk *window)
+debug_media (MoonWindowGtk *window)
 {
 	GtkBox *vbox;
 	Deployment *deployment = window->GetSurface ()->GetDeployment ();

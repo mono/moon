@@ -81,6 +81,7 @@ libmoon_include_headers = 	\
 	pal/capture/pal-linux-capture.h	\
 	pal/capture/v4l2/pal-v4l2-video-capture.h	\
 	pal/gtk/clipboard-gtk.h	\
+	pal/gtk/config-dialog-gtk.h\
 	pal/gtk/im-gtk.h	\
 	pal/gtk/install-dialog.h\
 	pal/gtk/pal-gtk.h	\
@@ -204,6 +205,7 @@ libmoon_la_SOURCES = 		\
 	pal/capture/pal-linux-capture.cpp	\
 	pal/capture/v4l2/pal-v4l2-video-capture.cpp	\
 	pal/gtk/clipboard-gtk.cpp	\
+	pal/gtk/config-dialog-gtk.cpp\
 	pal/gtk/im-gtk.cpp	\
 	pal/gtk/install-dialog.cpp\
 	pal/gtk/pal-gtk.cpp	\
