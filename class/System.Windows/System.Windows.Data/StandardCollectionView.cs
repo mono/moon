@@ -57,15 +57,19 @@ namespace System.Windows.Data {
 		}
 
 		public bool IsCurrentAfterLast {
-			get; private set;
+			get { return CurrentPosition == list.Count; }
 		}
 
 		public bool IsCurrentBeforeFirst {
-			get; private set;
+			get { return CurrentPosition == -1; }
 		}
 
 		public bool IsEmpty {
 			get; private set;
+		}
+
+		bool IsValidSelection {
+			get { return CurrentPosition >= 0 && CurrentPosition < list.Count; }
 		}
 
 		public SortDescriptionCollection SortDescriptions {
@@ -84,6 +88,9 @@ namespace System.Windows.Data {
 			groups = new ObservableCollection<object> ();
 			Groups = new  ReadOnlyObservableCollection<object>(groups);
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
+
+			CurrentPosition = -1;
+			MoveCurrentToPosition (0);
 		}
 
 		public bool Contains (object item)
@@ -109,11 +116,24 @@ namespace System.Windows.Data {
 		bool MoveCurrentTo (int position)
 		{
 			if (CurrentPosition == position)
-				return false;
-			
-			CurrentItem = list [position];
+				return IsValidSelection;
+
+			var h = CurrentChanging;
+			if (h != null) {
+				CurrentChangingEventArgs e = new CurrentChangingEventArgs (true);
+				h (this, e);
+				if (e.Cancel)
+					return true;
+			}
+
+			CurrentItem = position < 0 || position >= list.Count ? null : list [position];
 			CurrentPosition = position;
-			return true;
+
+			var h2 = CurrentChanged;
+			if (h2 != null)
+				h2 (this, EventArgs.Empty);
+
+			return IsValidSelection;
 		}
 
 		public bool MoveCurrentToFirst ()
@@ -128,7 +148,7 @@ namespace System.Windows.Data {
 
 		public bool MoveCurrentToNext ()
 		{
-			return MoveCurrentTo (CurrentPosition + 1);
+			return CurrentPosition != list.Count && MoveCurrentTo (CurrentPosition + 1);
 		}
 
 		public bool MoveCurrentToPosition (int position)
@@ -138,7 +158,7 @@ namespace System.Windows.Data {
 
 		public bool MoveCurrentToPrevious ()
 		{
-			return MoveCurrentTo (CurrentPosition - 1);
+			return CurrentPosition != -1 && MoveCurrentTo (CurrentPosition - 1);
 		}
 
 		public void Refresh ()

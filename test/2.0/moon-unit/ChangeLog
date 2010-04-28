@@ -1,3 +1,10 @@
+2010-04-28  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Data/CollectionViewTest.cs: Add tests for the
+	  default implementation of ICollectionView and make them
+	  pass.
+
 2010-04-26  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs: These tests are passing now
