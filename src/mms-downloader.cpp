@@ -66,7 +66,6 @@ void
 MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 {
 	LOG_MMS_EX ("MmsDownloader::Write (%p, %i, %i) this: %p id: %i\n", buf, off, n, this, GET_OBJ_ID (this));
-	g_return_if_fail (source != NULL);
 	mutex.Lock ();
 	if (source != NULL)
 		source->Write (buf, off, n);

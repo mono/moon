@@ -1,3 +1,8 @@
+2010-04-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp: Don't accept data from temporary downloaders.
+	* mms-downloader.cpp: Remove debug spew.
+
 2010-04-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fonts.cpp (IsValidLang): New function to validate a language

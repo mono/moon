@@ -1846,6 +1846,7 @@ MmsSource::SendSelectStreamRequest ()
 	g_return_if_fail (this->dl != dl);
 	g_return_if_fail (dl != NULL);
 
+	mms_dl->ClearSource (); /* We don't want any data from this mms downloader */
 	Lock ();
 	if (temporary_downloaders == NULL)
 		temporary_downloaders = new List ();
@@ -1876,6 +1877,7 @@ MmsSource::SendLogRequest ()
 //	g_return_if_fail (this->dl != dl);
 //	g_return_if_fail (dl != NULL);
 //
+//	mms_dl->ClearSource (); /* We don't want any data from this mms downloader */
 //	Lock ();
 //	if (temporary_downloaders == NULL)
 //		temporary_downloaders = new List ();
