@@ -23,6 +23,7 @@
 #include "propertypath.h"
 #include "namescope.h"
 #include "deployment.h"
+#include "fonts.h"
 
 bool
 Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
@@ -171,6 +172,20 @@ Validators::TemplateValidator (DependencyObject* instance, DependencyProperty *p
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, 1001, "Cannot set the template property on a UserControl");
 		return false;
 	}
+	return true;
+}
+
+bool
+Validators::LanguageValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	const char *lang = value ? value->AsString () : NULL;
+	
+	if (!lang || !IsValidLang (lang)) {
+		// FIXME: is 2203 the correct error number?
+		MoonError::FillIn (error, MoonError::EXCEPTION, 2203, "Language");
+		return false;
+	}
+	
 	return true;
 }
 

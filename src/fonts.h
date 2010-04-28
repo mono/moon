@@ -21,6 +21,8 @@
 
 #define GLYPH_CACHE_SIZE 256
 
+bool IsValidLang (const char *lang);
+
 class TextFontDescription;
 
 class TextFont {

@@ -41,6 +41,7 @@ public:
 	static ValueValidator StoryboardTargetPropertyValidator;
 	static ValueValidator IsSetterSealedValidator;
 	static ValueValidator ContentControlContentValidator;
+	static ValueValidator LanguageValidator;
 	static ValueValidator NameValidator;
 	static ValueValidator CrossDomainValidator;
 	static ValueValidator VolumeValidator;

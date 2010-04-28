@@ -1,3 +1,11 @@
+2010-04-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (IsValidLang): New function to validate a language
+	code.
+
+	* validators.cpp (LanguageValidator): New validator for XmlLang
+	properties.
+
 2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp|h:

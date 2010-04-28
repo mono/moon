@@ -56,7 +56,7 @@ public:
 	const static int FontWeightProperty;
 	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush,GenerateAccessors */
 	const static int ForegroundProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=NonNullExceptionValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=LanguageValidator,GenerateAccessors */
 	const static int LanguageProperty;
 	/* @PropertyType=TextDecorations,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;

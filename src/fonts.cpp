@@ -131,6 +131,43 @@ static const char lang_table[256] = {
 	'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
 };
 
+bool
+IsValidLang (const char *lang)
+{
+	const char *inptr = lang;
+	int dashes = 0;
+	int len = 0;
+	char c = 0;
+	
+	while (*inptr) {
+		if (!(c = lang_table[(unsigned char) *inptr]))
+			return false;
+		
+		if (c == '-') {
+			if (len < 2 || dashes == 2)
+				return false;
+			dashes++;
+			len = 0;
+		} else if (c >= '0' && c <= '9') {
+			if (dashes < 2)
+				return false;
+			len++;
+		} else {
+			len++;
+		}
+		
+		if (len > 3)
+			return false;
+		
+		inptr++;
+	}
+	
+	if (c == '-')
+		return false;
+	
+	return true;
+}
+
 static char *
 canon_lang (const char *lang)
 {
