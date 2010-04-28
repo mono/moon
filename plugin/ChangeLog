@@ -1,5 +1,9 @@
 2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.mdp: Updated with new files.
+
+2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* npstream-request.cpp|h:
 	* plugin-downloader.cpp|h: Update according to DownloaderRequest api changes.
 
