@@ -1,11 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Web Developer Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moon-unit", "moon-unit.csproj", "{7DEE9C1F-5D4B-4944-8654-1698B707B28E}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "site", "site\", "{FC2F8A15-354E-4B3C-AACF-9EBAD4537BAD}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		Debug.AspNetCompiler.VirtualPath = "/site"
 		Debug.AspNetCompiler.PhysicalPath = "site\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\site\"
