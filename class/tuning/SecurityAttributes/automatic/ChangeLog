@@ -1,3 +1,7 @@
+2010-04-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: regenerated for 156297
+
 2010-04-27  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: regen.

@@ -857,7 +857,7 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_request_set_body(System.IntPtr,System.Byte[],System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_request_set_http_header(System.IntPtr,System.String,System.String)
++SC-M: System.Void Mono.NativeMethods::downloader_request_set_http_header(System.IntPtr,System.String,System.String,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_response_abort(System.IntPtr)
