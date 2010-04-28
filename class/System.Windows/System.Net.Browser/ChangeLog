@@ -1,3 +1,8 @@
+2010-04-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientHttpWebRequest.cs: Ensure 'request' is creating before 
+	using it
+
 2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebRequestInternal.cs: Update according to DownloaderRequest

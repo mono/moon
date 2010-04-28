@@ -79,20 +79,21 @@ namespace System.Net.Browser {
 
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
 		{
-			return request.BeginGetRequestStream (callback, state);
+			return GetHttpWebRequest (RequestUri).BeginGetRequestStream (callback, state);
 		}
 
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
 		{
 			if (stream == null)
-				stream = request.EndGetRequestStream (asyncResult);
+				stream = GetHttpWebRequest (RequestUri).EndGetRequestStream (asyncResult);
 
 			return stream;
 		}
 
 		protected override HttpWebRequest GetHttpWebRequest (Uri uri)
 		{
-			request = new ClientHttpWebRequestInternal (this, uri);
+			if (request == null)
+				request = new ClientHttpWebRequestInternal (this, uri);
 			return request;
 		}
 
