@@ -117,8 +117,6 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	is_reentrant_mess = false;
 	has_shutdown = false;
 
-	progress_changed_token = -1;
-
 	bridge = NULL;
 
 	// MSDN says the default is 24: http://msdn2.microsoft.com/en-us/library/bb979688.aspx
@@ -874,9 +872,6 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 		instance->UpdateSourceByReference (pos+1);
 
 	instance->GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
-	if (instance->progress_changed_token != -1)
-		instance->GetSurface ()->RemoveHandler (Surface::SourceDownloadProgressChangedEvent,
-							instance->progress_changed_token);
 	instance->GetSurface ()->EmitSourceDownloadComplete ();
 	return FALSE;
 }
@@ -1362,9 +1357,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		}
 
 		GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
-		if (progress_changed_token != -1)
-			GetSurface ()->RemoveHandler (Surface::SourceDownloadProgressChangedEvent,
-						      progress_changed_token);
 		GetSurface ()->EmitSourceDownloadComplete ();
 
 		delete uri;
@@ -1624,31 +1616,10 @@ PluginInstance::LoadSplash ()
 		if (!LoadXAML ())
 			return false;
 		FlushSplash ();
-
-		TextBlock *progress_textblock = (TextBlock*)GetSurface ()->GetToplevel ()->FindName ("progressTextBlock");
-
-		if (progress_textblock)
-			progress_changed_token = GetSurface ()->AddHandler (Surface::SourceDownloadProgressChangedEvent,
-									    PluginInstance::progress_changed_handler,
-									    progress_textblock);
-
 		UpdateSource ();
 	}
 	
 	return true;
-}
-
-void
-PluginInstance::progress_changed_handler (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	DownloadProgressEventArgs *download_args = (DownloadProgressEventArgs*)args;
-	TextBlock *tb = (TextBlock*)closure;
-
-	char *text = g_strdup_printf ("%d %%\n", (int)(download_args->GetProgress() * 100));
-
-	tb->SetText (text);
-
-	g_free (text);
 }
 
 void

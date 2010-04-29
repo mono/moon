@@ -30,7 +30,11 @@ typedef void callback_dom_event (gpointer context, char *name, int client_x, int
 
 class PluginInstance
 {
-public:
+ private:
+	~PluginInstance ();
+	
+	void Recreate (const char *source);	
+ public:
 	PluginInstance (NPP instance, guint16 mode);
 	
 	void ref ();
@@ -138,6 +142,22 @@ public:
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
 
+ private:
+	// Gtk controls
+	bool connected_to_container;
+ 	Surface *surface;      // plugin surface object
+	MoonWindow *moon_window;
+
+	GSList *timers;
+
+  	guint16 mode;          // NP_EMBED, NP_FULL, or NP_BACKGROUND
+	NPWindow *window;      // Mozilla window object
+	NPP instance;          // Mozilla instance object
+	MoonlightScriptControlObject *rootobject;  // Mozilla jscript object wrapper
+	guint32 xembed_supported; // XEmbed Extension supported
+
+	GHashTable *wrapped_objects; // wrapped object cache
+
 	/*
 	 * Mozilla has a slightly different view on refcounting when dealing with
 	 * NPObjects: normal refcounting until NPP_Destroy is called, after
@@ -171,33 +191,11 @@ public:
 	 *
 	 */
 
+public:	
 	bool IsShuttingDown (); /* Not thread-safe */
 	bool HasShutdown (); /* It is not safe to access any NPObjects when this returns true. Not thread-safe. */
 
-
 private:
-	static void progress_changed_handler (EventObject *sender, EventArgs *args, gpointer closure);
-	int progress_changed_token;
-
-	~PluginInstance ();
-	
-	void Recreate (const char *source);	
-
-	// Gtk controls
-	bool connected_to_container;
- 	Surface *surface;      // plugin surface object
-	MoonWindow *moon_window;
-
-	GSList *timers;
-
-  	guint16 mode;          // NP_EMBED, NP_FULL, or NP_BACKGROUND
-	NPWindow *window;      // Mozilla window object
-	NPP instance;          // Mozilla instance object
-	MoonlightScriptControlObject *rootobject;  // Mozilla jscript object wrapper
-	guint32 xembed_supported; // XEmbed Extension supported
-
-	GHashTable *wrapped_objects; // wrapped object cache
-
 	bool is_shutting_down;
 	bool has_shutdown;
 	gint32 refcount;
