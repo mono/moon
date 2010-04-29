@@ -1,5 +1,9 @@
 2010-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pal/pal.cpp (MoonAppRecordIterator::Next): Need to eat the
+	terminating \n after the closing }. Also might as well eat all
+	leading whitespace to be a little more forgiving.
+
 	* fonts.cpp (GetGlyphInfo): Compare glyph indices, not
 	unichars. Fixes drt 177.
 

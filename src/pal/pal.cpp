@@ -114,11 +114,16 @@ MoonAppRecordIterator::Fill ()
 }
 
 bool
-MoonAppRecordIterator::EatSpaces ()
+MoonAppRecordIterator::EatWhiteSpace (bool lf)
 {
+	char lwsp[4] = { ' ', '\t', '\n', '\0' };
+	
+	if (!lf)
+		lwsp[2] = '\0';
+	
 	do {
 		*inend = '\0';
-		while (*inptr == ' ' || *inptr == '\t')
+		while (strchr (lwsp, *inptr))
 			inptr++;
 		
 		if (inptr < inend)
@@ -131,7 +136,7 @@ MoonAppRecordIterator::EatSpaces ()
 char
 MoonAppRecordIterator::NextToken ()
 {
-	if (!EatSpaces ())
+	if (!EatWhiteSpace (false))
 		return '\0';
 	
 	return *inptr;
@@ -143,7 +148,7 @@ MoonAppRecordIterator::ParseUid ()
 	char *start, *str;
 	GString *uid;
 	
-	if (!EatSpaces ())
+	if (!EatWhiteSpace (false))
 		return NULL;
 	
 	uid = g_string_new ("");
@@ -173,7 +178,7 @@ MoonAppRecordIterator::ParseOrigin ()
 	char *start, *str;
 	GString *origin;
 	
-	if (!EatSpaces ())
+	if (!EatWhiteSpace (false))
 		return NULL;
 	
 	// the rest of this line is our origin value...
@@ -234,6 +239,9 @@ MoonAppRecordIterator::Next ()
 	char c;
 	
 	if (inptr == inend && !Fill ())
+		return NULL;
+	
+	if (!EatWhiteSpace (true))
 		return NULL;
 	
 	// first, try decoding the uid
@@ -328,6 +336,13 @@ MoonAppRecordIterator::Next ()
 			goto error;
 		}
 	}
+	
+	inptr++;
+	
+	if (NextToken () != '\n')
+		goto error;
+	
+	inptr++;
 	
 	app = new MoonAppRecord ();
 	app->origin = origin;

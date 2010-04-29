@@ -258,7 +258,7 @@ class MoonAppRecordIterator {
 	time_t ParseMTime ();
 	char *ParseUid ();
 	
-	bool EatSpaces ();
+	bool EatWhiteSpace (bool lf);
 	char NextToken ();
 	bool Fill ();
 	
