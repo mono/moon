@@ -1,3 +1,7 @@
+2010-04-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: CompareImages: report the correct result back to js.
+
 2010-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* image-capture.cpp: Master files don't have to be in plural.

@@ -656,8 +656,7 @@ ShockerScriptableControlObject::SetKeyboardInputSpeed (const NPVariant *args, ui
 void
 ShockerScriptableControlObject::CompareImages (const NPVariant *args, uint32_t arg_count, NPVariant *result)
 {
-	bool res = false;
-	guint8 output = 0;
+	guint8 res = false;
 
 	g_assert (arg_count >= 5);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
@@ -672,11 +671,9 @@ ShockerScriptableControlObject::CompareImages (const NPVariant *args, uint32_t a
 
 
 	::CompareImages (STR_FROM_VARIANT (args [0]), STR_FROM_VARIANT (args [1]), NUMBER_TO_INT32 (args [2]),
-		STR_FROM_VARIANT (args [3]), NPVARIANT_TO_BOOLEAN (args [4]), &output);
+		STR_FROM_VARIANT (args [3]), NPVARIANT_TO_BOOLEAN (args [4]), &res);
 	
-	res = output == 0;
-	
-	BOOLEAN_TO_NPVARIANT (res, *result);
+	BOOLEAN_TO_NPVARIANT ((bool) res, *result);
 }
 
 void
