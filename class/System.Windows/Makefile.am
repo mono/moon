@@ -391,10 +391,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
-	$(srcdir)/System.Windows/DependencyObject.g.cs				\
 	$(srcdir)/System.Windows/DependencyObjectCollection.cs		\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
-	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventHandler.cs	\
 	$(srcdir)/System.Windows/DragEventArgs.cs					\
@@ -408,7 +406,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ExtensionPart.cs				\
 	$(srcdir)/System.Windows/ExternalPart.cs				\
 	$(srcdir)/System.Windows/ExternalPartCollection.cs			\
-	$(srcdir)/System.Windows/Events.g.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
 	$(srcdir)/System.Windows/FlowDirection.cs				\
 	$(srcdir)/System.Windows/FontStretch.cs					\
@@ -692,6 +689,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Printing/PrintPageEventHandler.cs		\
 	$(srcdir)/System.Windows.Printing/StartPrintEventArgs.cs		\
 	$(srcdir)/System.Windows.Printing/StartPrintEventHandler.cs		\
+	$(srcdir)/System.Windows/DependencyObject.g.cs				\
+	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
+	$(srcdir)/System.Windows/Events.g.cs					\
 \
 	$(WPFTOOLKIT)/VSM/System/Windows/TemplateVisualStateAttribute.cs	\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateGroup.cs			\
