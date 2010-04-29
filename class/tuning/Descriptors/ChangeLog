@@ -1,3 +1,9 @@
+2010-04-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.xml: Compiler/runtime changes on trunk requires a few
+	more ctors to be available. Remove File.ReadAllBytes entry since
+	it is part of SL4 definitions.
+
 2010-03-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.xml: Preserve some internal types that are used, via 

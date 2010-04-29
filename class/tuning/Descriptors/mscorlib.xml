@@ -4,15 +4,20 @@
 		<type fullname="System.AppDomain" preserve="all">
 			<method name="get_SetupInformationNoCopy" />
 		</type>
-		<type fullname="System.IO.File">
-			<method signature="System.Byte[] ReadAllBytes(System.String)" />
-		</type>
-		<type fullname="System.IO.FileSystemInfo" preserve="all">
-		</type>
+		<type fullname="System.IO.FileSystemInfo" preserve="all" />
 		<type fullname="System.Environment">
 			<method name="get_StackTrace" />
 		</type>
 		<type fullname="System.Reflection.Assembly" preserve="all" />
+		<type fullname="System.Reflection.CustomAttributeData">
+			<method signature="System.Void .ctor(System.Reflection.ConstructorInfo,System.Object[],System.Object[])" />
+		</type>
+		<type fullname="System.Reflection.CustomAttributeNamedArgument">
+			<method signature="System.Void .ctor(System.Reflection.MemberInfo,System.Object)" />
+		</type>
+		<type fullname="System.Reflection.CustomAttributeTypedArgument">
+			<method signature="System.Void .ctor(System.Type,System.Object)" />
+		</type>
 		<type fullname="System.Resources.RuntimeResourceSet" preserve="all" />
 		<type fullname="System.Runtime.InteropServices.Marshal" />
 		<type fullname="System.Security.SecurityCriticalAttribute" preserve="all" />
