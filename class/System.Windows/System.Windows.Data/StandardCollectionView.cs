@@ -57,11 +57,11 @@ namespace System.Windows.Data {
 		}
 
 		public bool IsCurrentAfterLast {
-			get { return CurrentPosition == list.Count; }
+			get { return CurrentPosition == list.Count || Count == 0; }
 		}
 
 		public bool IsCurrentBeforeFirst {
-			get { return CurrentPosition == -1; }
+			get { return CurrentPosition == -1 || Count == 0; }
 		}
 
 		public bool IsEmpty {
@@ -167,4 +167,3 @@ namespace System.Windows.Data {
 		}
 	}
 }
-

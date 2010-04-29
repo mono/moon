@@ -50,7 +50,6 @@ namespace MoonTest.System.Windows.Data {
 		List<int> Source = new List<int> () { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ChangeSourceRecreatesView ()
 		{
 			// If we change the source, we create a new View
@@ -61,7 +60,6 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ViewIsReadOnly ()
 		{
 			var source = new CollectionViewSource { Source = this.Source };

@@ -33,11 +33,12 @@ using System.Linq;
 using System.Windows.Data;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Data {
 
 	[TestClass]
-	public class CollectionViewTest {
+	public class _____CollectionViewTest {
 
 		public int CurrentChanged { get; set; }
 		public int CurrentChanging { get; set; }
@@ -74,6 +75,59 @@ namespace MoonTest.System.Windows.Data {
 				CurrentChanging++;
 			};
 			View.CollectionChanged += (o, e) => CollectionChanged.Add (e);
+		}
+
+		[TestMethod]
+		public void EmptyList ()
+		{
+			View = new CollectionViewSource { Source = new object [0] }.View;
+			Assert.IsTrue (View.IsCurrentBeforeFirst, "#1");
+			Assert.IsTrue (View.IsCurrentAfterLast, "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void FilterAll ()
+		{
+			Check (Items [0], 0, false, false, "#1");
+			View.Filter = o => false;
+			Check (null, -1, true, true, "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void FilterSome_LowerHalf ()
+		{
+			Check (Items [0], 0, false, false, "#1");
+			View.Filter = o => Items.IndexOf (o) >= 2;
+			Check (Items [2], 0, false, false, "#2");
+
+		}
+		[TestMethod]
+		public void FilterSome_UpperHalf ()
+		{
+			Check (Items [0], 0, false, false, "#1");
+			View.Filter = o => Items.IndexOf (o) < 2;
+			Check (Items[0], 0, false, false, "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MoveTo_LowerFiltered ()
+		{
+			Check (Items [0], 0, false, false, "#1");
+			View.Filter = o => Items.IndexOf (o) >= 2;
+			View.MoveCurrentToPosition (1);
+			Check (Items [3], 1, false, false, "#2");
+
+		}
+		[TestMethod]
+		public void MoveTo_UpperFiltered ()
+		{
+			Check (Items [0], 0, false, false, "#1");
+			View.Filter = o => Items.IndexOf (o) < 2;
+			View.MoveCurrentToPosition (1);
+			Check (Items [1], 1, false, false, "#2");
 		}
 
 		[TestMethod]
