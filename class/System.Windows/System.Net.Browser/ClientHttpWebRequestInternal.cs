@@ -47,6 +47,7 @@ namespace System.Net.Browser {
 		static MethodInfo begin_get_response;
 		static MethodInfo end_get_response;
 		static MethodInfo set_method;
+		static MethodInfo set_content_type;
 		static MethodInfo get_headers;
 		static MethodInfo set_headers;
 		static MethodInfo set_credentials;
@@ -68,6 +69,7 @@ namespace System.Net.Browser {
 			end_get_response = web_request.GetMethod ("EndGetResponse");
 
 			set_method = web_request.GetProperty ("Method").GetSetMethod ();
+			set_content_type = web_request.GetProperty ("ContentType").GetSetMethod ();
 			get_headers = web_request.GetProperty ("Headers").GetGetMethod ();
 			set_headers = web_request.GetProperty ("Headers").GetSetMethod ();
 
@@ -133,10 +135,17 @@ namespace System.Net.Browser {
 						ClientReflectionHelper.SetHeader (headers, "Cookie", cookieHeader);
 				}
 
+				if (ContentType != null) {
+					set_content_type.Invoke (request, new object [] { ContentType } );
+				}
+
 				if (Headers.Count > 0) {
 					string [] keys = Headers.AllKeys;
-					foreach (string key in keys)
-						ClientReflectionHelper.SetHeader (headers, key, Headers [key]);
+					foreach (string key in keys) {
+						// we cannot set "Content-Type" using the headers
+						if (String.Compare (key, "content-type", StringComparison.OrdinalIgnoreCase) != 0)
+							ClientReflectionHelper.SetHeader (headers, key, Headers [key]);
+					}
 				}
 
 				IAsyncResult async_result = new HttpWebAsyncResult (callback, state);
