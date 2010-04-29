@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -38,18 +39,28 @@ using Mono.Moonlight.UnitTesting;
 namespace MoonTest.System.Windows.Data {
 
 	[TestClass]
-	public class _____CollectionViewTest {
+	public class CollectionViewTest {
 
 		public int CurrentChanged { get; set; }
 		public int CurrentChanging { get; set; }
 		public List<NotifyCollectionChangedEventArgs> CollectionChanged;
 
-		public List<object> Items {
-			get; set;
+		public List<object> Items
+		{
+			get;
+			set;
 		}
 
-		public ICollectionView View {
-			get; set;
+		public CollectionViewSource Source
+		{
+			get;
+			set;
+		}
+
+		public ICollectionView View
+		{
+			get;
+			set;
 		}
 
 		[TestInitialize]
@@ -67,7 +78,8 @@ namespace MoonTest.System.Windows.Data {
 			CurrentChanging = 0;
 			CollectionChanged = new List<NotifyCollectionChangedEventArgs> ();
 
-			View = new CollectionViewSource { Source = Items }.View;
+			Source = new CollectionViewSource { Source = Items };
+			View = Source.View;
 			View.CurrentChanged += (o, e) => {
 				CurrentChanged++;
 			};
@@ -78,11 +90,90 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void ChangingGroupsClearsFilter ()
+		{
+			View.Filter = o => true;
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
+			Assert.IsNull (View.Filter, "#1");
+
+			View.Filter = o => true;
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription ("Test"));
+			Assert.IsNull (View.Filter, "#2");
+		}
+
+		[TestMethod]
+		public void ChangeGroupsOnSource_EventsOnView ()
+		{
+			var list = new List<NotifyCollectionChangedEventArgs> ();
+			View.GroupDescriptions.CollectionChanged += (o, e) => list.Add (e);
+
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription ());
+			Assert.AreEqual (2, list.Count, "#1");
+			Assert.AreEqual (NotifyCollectionChangedAction.Reset, list [0].Action, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, list [1].Action, "#3");
+
+			list.Clear ();
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription ());
+			Assert.AreEqual (3, list.Count, "#4");
+			Assert.AreEqual (NotifyCollectionChangedAction.Reset, list [0].Action, "#5");
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, list [1].Action, "#6");
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, list [2].Action, "#7");
+		}
+
+		[TestMethod]
+		public void DeferAndAddGroup ()
+		{
+			using (View.DeferRefresh ()) {
+				View.GroupDescriptions.Add (new ConcretePropertyGroupDescription ());
+				Assert.IsNull (View.Groups, "#1");
+			}
+			Assert.IsNotNull (View.Groups, "#2");
+		}
+
+		[TestMethod]
+		public void DeferTwiceAndAddGroup ()
+		{
+			using (View.DeferRefresh ()) {
+				using (View.DeferRefresh ()) {
+					View.GroupDescriptions.Add (new ConcretePropertyGroupDescription ());
+					Assert.IsNull (View.Groups, "#1");
+				}
+				Assert.IsNull (View.Groups, "#2");
+			}
+			Assert.IsNotNull (View.Groups, "#3");
+		}
+
+		[TestMethod]
+		public void DeferSameOneTwiceAndAddGroup ()
+		{
+			using (var deferrer = View.DeferRefresh ()) {
+				using (View.DeferRefresh ()) {
+					deferrer.Dispose ();
+					deferrer.Dispose ();
+					deferrer.Dispose ();
+					deferrer.Dispose ();
+					View.GroupDescriptions.Add (new ConcretePropertyGroupDescription ());
+					Assert.IsNull (View.Groups, "#1");
+				}
+				Assert.IsNotNull (View.Groups, "#3");
+			}
+		}
+
+		[TestMethod]
 		public void EmptyList ()
 		{
 			View = new CollectionViewSource { Source = new object [0] }.View;
 			Assert.IsTrue (View.IsCurrentBeforeFirst, "#1");
 			Assert.IsTrue (View.IsCurrentAfterLast, "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void FilterAndGroup_FilterUpper_GroupBySelf ()
+		{
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
+			View.Filter = o => Items.IndexOf (o) < 2;
+			Assert.AreEqual (Items.Count - 3, View.Groups.Count, "#1");
 		}
 
 		[TestMethod]
@@ -103,12 +194,84 @@ namespace MoonTest.System.Windows.Data {
 			Check (Items [2], 0, false, false, "#2");
 
 		}
+
 		[TestMethod]
 		public void FilterSome_UpperHalf ()
 		{
 			Check (Items [0], 0, false, false, "#1");
 			View.Filter = o => Items.IndexOf (o) < 2;
-			Check (Items[0], 0, false, false, "#2");
+			Check (Items [0], 0, false, false, "#2");
+		}
+
+		[TestMethod]
+		public void Group_TwoDescriptions_CanGroup ()
+		{
+			Assert.IsTrue (View.CanGroup, "#1");
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
+			Assert.IsTrue (View.CanGroup, "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void Group_GroupBySelf ()
+		{
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
+			Assert.AreEqual (Items.Count, View.Groups.Count, "#1");
+			for (int i = 0; i < View.Groups.Count; i++) {
+				var g = (CollectionViewGroup) View.Groups [i];
+				Assert.AreEqual (1, g.ItemCount, "#2." + i);
+				Assert.IsTrue (g.IsBottomLevel, "#3." + i);
+				Assert.AreSame (Items [i], g.Name, "#5." + i);
+			}
+		}
+
+		[TestMethod]
+		public void GroupDescriptions_SourceForwardsToView ()
+		{
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
+			Assert.AreEqual (1, View.GroupDescriptions.Count, "#1");
+			Assert.AreSame (Source.GroupDescriptions [0], View.GroupDescriptions [0], "#2");
+
+			View.GroupDescriptions.Add (new ConcretePropertyGroupDescription ("Test"));
+			Assert.AreEqual (1, Source.GroupDescriptions.Count, "#3");
+
+			View.GroupDescriptions.Clear ();
+			Assert.AreEqual (1, Source.GroupDescriptions.Count, "#4");
+
+			View.GroupDescriptions.Add (new ConcretePropertyGroupDescription ("aaa"));
+			Source.GroupDescriptions.Clear ();
+			Assert.AreEqual (0, View.GroupDescriptions.Count, "#5");
+		}
+
+		[TestMethod]
+		public void GroupsIsSameCollection ()
+		{
+			Assert.IsNull (View.Groups, "#1");
+
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
+			Assert.IsNotNull (View.Groups, "#2");
+
+			var g = View.Groups;
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription ("Tester"));
+			Assert.AreSame (g, View.Groups, "#3");
+
+			Source.GroupDescriptions.Clear ();
+			Assert.IsNull (View.Groups, "#4");
+
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription ());
+			Assert.AreSame (g, View.Groups, "#5");
+		}
+
+		[TestMethod]
+		public void ImplicitGroupDoesNotExist ()
+		{
+			Assert.IsNull (View.Groups, "#1");
+		}
+
+		[TestMethod]
+		public void DifferentGroupDescriptions ()
+		{
+			Assert.AreNotSame (View.GroupDescriptions, Source.GroupDescriptions, "#1");
 		}
 
 		[TestMethod]
@@ -121,6 +284,7 @@ namespace MoonTest.System.Windows.Data {
 			Check (Items [3], 1, false, false, "#2");
 
 		}
+
 		[TestMethod]
 		public void MoveTo_UpperFiltered ()
 		{
@@ -222,7 +386,7 @@ namespace MoonTest.System.Windows.Data {
 		{
 			Check (Items [0], 0, false, false, "#1");
 			Assert.IsTrue (View.MoveCurrentToLast (), "#a");
-			Check (Items.Last (), Items.Count - 1,false, false, "#2");
+			Check (Items.Last (), Items.Count - 1, false, false, "#2");
 		}
 
 		[TestMethod]
@@ -230,7 +394,7 @@ namespace MoonTest.System.Windows.Data {
 		{
 			Check (Items [0], 0, false, false, "#1");
 			Assert.IsTrue (View.MoveCurrentTo (Items [2]), "#a");
-			Check (Items[2], 2, false, false,"#2");
+			Check (Items [2], 2, false, false, "#2");
 		}
 
 		[TestMethod]

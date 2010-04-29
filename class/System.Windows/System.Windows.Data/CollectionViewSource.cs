@@ -32,13 +32,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 
 namespace System.Windows.Data {
 
-	public partial class CollectionViewSource : DependencyObject {
+	public partial class CollectionViewSource : DependencyObject, IDeferRefresh {
 		public static readonly DependencyProperty SourceProperty =
 			DependencyProperty.Register ("SourceProperty", typeof (object), typeof (CollectionViewSource),
 							 new PropertyMetadata (null, SourceChanged));
@@ -57,7 +58,7 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		internal bool Deferring {
+		int IDeferRefresh.DeferLevel {
 			get; set;
 		}
 
@@ -83,6 +84,8 @@ namespace System.Windows.Data {
 		{
 			SortDescriptions = new SortDescriptionCollection ();
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
+
+			GroupDescriptions.CollectionChanged += UpdateViewGroupDescriptions;
 		}
 
 		public IDisposable DeferRefresh ()
@@ -98,6 +101,23 @@ namespace System.Windows.Data {
 		protected virtual void OnSourceChanged (object oldSource, object newSource)
 		{
 			View = new StandardCollectionView ((IList) newSource);
+		}
+
+		void IDeferRefresh.Refresh ()
+		{
+			// FIXME: What does deferring a CollectionViewSource do?
+		}
+
+		void UpdateViewGroupDescriptions (object sender, NotifyCollectionChangedEventArgs e)
+		{
+			using (View.DeferRefresh ()) {
+				View.GroupDescriptions.Clear ();
+				for (int i = 0; i < GroupDescriptions.Count; i++)
+					View.GroupDescriptions.Add (GroupDescriptions [i]);
+	
+				// FIXME: This is what the tests say but I must be missing something. This is crazy.
+				View.Filter = null;
+			}
 		}
 	}
 }

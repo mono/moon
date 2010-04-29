@@ -7,21 +7,22 @@ using System.Collections;
 
 namespace System.Windows.Data {
 
-	class StandardCollectionView : ICollectionView {
+	sealed class StandardCollectionView : ICollectionView, IDeferRefresh {
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		public event EventHandler CurrentChanged;
 		public event CurrentChangingEventHandler CurrentChanging;
 
 		IList list;
-		ObservableCollection<object> groups;
+		ObservableCollection <object> groups;
+		ReadOnlyObservableCollection <object> groupsReadOnly;
 
 		public bool CanFilter {
 			get; private set;
 		}
 
 		public bool CanGroup {
-			get; private set;
+			get { return true; }
 		}
 
 		public bool CanSort {
@@ -42,6 +43,10 @@ namespace System.Windows.Data {
 
 		public int CurrentPosition {
 			get; private set;
+		}
+
+		int IDeferRefresh.DeferLevel {
+			get; set;
 		}
 
 		public Predicate<object> Filter {
@@ -85,8 +90,6 @@ namespace System.Windows.Data {
 			this.list = list;
 			SourceCollection = list;
 			SortDescriptions = new SortDescriptionCollection ();
-			groups = new ObservableCollection<object> ();
-			Groups = new  ReadOnlyObservableCollection<object>(groups);
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
 			CurrentPosition = -1;
@@ -100,7 +103,7 @@ namespace System.Windows.Data {
 
 		public IDisposable DeferRefresh ()
 		{
-			throw new System.NotImplementedException();
+			return new Deferrer (this);
 		}
 
 		public IEnumerator GetEnumerator ()
@@ -163,7 +166,20 @@ namespace System.Windows.Data {
 
 		public void Refresh ()
 		{
-			throw new System.NotImplementedException();
+			if (((IDeferRefresh) this).DeferLevel != 0)
+				return;
+
+			if (groups == null) {
+				groups = new ObservableCollection <object> ();
+				groupsReadOnly = new ReadOnlyObservableCollection <object> (groups);
+			}
+
+			groups.Clear ();
+			if (GroupDescriptions.Count == 0) {
+				Groups = null;
+			} else {
+				Groups = groupsReadOnly;
+			}
 		}
 	}
 }

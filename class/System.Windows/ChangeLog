@@ -1,3 +1,12 @@
+2010-04-29  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am: Add an IDeferRefresh interface which is
+	  implemented by the default CollectionView implementation and
+	  CollectionViewSource. This allows both classes to use the
+	  same machinery for their DeferRefresh calls.
+
+	* System.Windows.mdp: Update build files
+
 2010-04-27  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:

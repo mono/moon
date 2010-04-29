@@ -1,5 +1,22 @@
 2010-04-29  Alan McGovern  <amcgovern@novell.com>
 
+	* IDeferRefresh.cs:
+	* UpdateDeferrer.cs: Create an IDeferRefresh interface to
+	  simplify the implementation of DeferRefresh for classes
+	  which support this. Refactor Deferrer to use this interface.
+
+	* CollectionViewSource.cs: Implement DeferRefresh using the
+	  IDeferRefresh machinery. Propagate of the GroupDescriptions
+	  to View.GroupDescriptions.
+
+	* StandardCollectionView.cs: Implement DeferRefresh using the
+	  IDeferRefresh machinery.
+
+	* StandardCollectionViewGroup.cs: Add a basic implementation
+	  of CollectionViewGroup for internal use.
+
+2010-04-29  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Add some new tests for the
 	  default CollectionView implementation, make some of them
 	  pass.

@@ -30,23 +30,26 @@ using System;
 
 namespace System.Windows.Data {
 
-	public partial class CollectionViewSource {
+	class Deferrer : IDisposable {
+		IDeferRefresh Source {
+			get; set;
+		}
 
-		class Deferrer : IDisposable
+		public Deferrer (IDeferRefresh source)
 		{
-			CollectionViewSource Source {
-				get; set;
-			}
+			Source = source;
+			Source.DeferLevel ++;
+		}
 
-			public Deferrer (CollectionViewSource source)
-			{
-				Source = source;
-				Source.Deferring = true;
-			}
+		public void Dispose ()
+		{
+			if (Source != null) {
+				var s = Source;
+				Source = null;
 
-			public void Dispose ()
-			{
-				Source.Deferring = false;
+				s.DeferLevel--;
+				if (s.DeferLevel == 0)
+					s.Refresh ();
 			}
 		}
 	}
