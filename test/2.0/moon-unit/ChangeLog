@@ -1,5 +1,10 @@
 2010-04-29  Alan McGovern  <amcgovern@novell.com>
 
+	* site/Web.config: Revert the web.config changes in r156320 to
+	  see if it fixes the buildbot output.
+
+2010-04-29  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewTest.cs: Add some new
 	  tests for the default CollectionView implementation, make
 	  some of them pass.
