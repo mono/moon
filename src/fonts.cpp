@@ -461,7 +461,7 @@ TextFont::GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index)
 	int i;
 	
 	for (i = 0; i < n_glyphs; i++) {
-		if (glyphs[i].unichar == unichar) {
+		if (glyphs[i].index == index) {
 			slot = &glyphs[i];
 			slot->atime = now;
 			return slot;

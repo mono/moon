@@ -1,3 +1,8 @@
+2010-04-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (GetGlyphInfo): Compare glyph indices, not
+	unichars. Fixes drt 177.
+
 2010-04-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp: Don't accept data from temporary downloaders.
