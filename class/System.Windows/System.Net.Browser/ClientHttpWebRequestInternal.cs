@@ -80,6 +80,7 @@ namespace System.Net.Browser {
 			Credentials = wreq.Credentials;
 			request = create.Invoke (null, new object [] { uri });
 			headers = get_headers.Invoke (request, null);
+			set_method.Invoke (request, new object [] { Method } );
 		}
 
 		public override CookieContainer CookieContainer {
@@ -120,8 +121,6 @@ namespace System.Net.Browser {
 			// copy Method, Cookies and Headers to System.dll's HttpWebRequest
 
 			try {
-				set_method.Invoke (request, new object [] { Method } );
-
 				if (Credentials != null) {
 					NetworkCredential nc = Credentials.GetCredential (RequestUri, String.Empty);
 					set_credentials.Invoke (request, 

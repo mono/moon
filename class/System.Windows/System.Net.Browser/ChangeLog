@@ -1,3 +1,8 @@
+2010-04-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientHttpWebRequestInternal.cs: Set the method earlier to cover the
+	case where BeginGetRequestStream is called (e.g. POST)
+
 2010-04-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ClientHttpWebRequest.cs: Ensure 'request' is creating before 
