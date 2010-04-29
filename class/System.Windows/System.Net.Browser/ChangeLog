@@ -1,3 +1,8 @@
+2010-04-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PolicyBasedHttpWebRequest.cs: Handle exceptions that occurs 
+	inside the internal EndGetResponse
+
 2010-04-29  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* ClientHttpWebRequestInternal.cs: Set ContentType separately (i.e.

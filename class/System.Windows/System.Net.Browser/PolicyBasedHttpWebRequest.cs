@@ -200,32 +200,37 @@ namespace System.Net.Browser {
 		private void EndCallback (IAsyncResult result)
 		{
 			WebRequest wreq = (result.AsyncState as WebRequest);
-			HttpWebResponseCore wres = (HttpWebResponseCore) wreq.EndGetResponse (result);
-
-			//			Redirection	Error
-			// Normal Request	allowed		throw
-			// Policy Request	throw		ignore (no policy)
-			if (IsRedirection (wres)) {
-				if (IsDownloadingPolicy ()) {
-					// redirection is NOT allowed for policy files
-					async_result.Exception = new SecurityException ("Cannot redirect policy files");
-					async_result.SetComplete ();
+			try {
+				HttpWebResponseCore wres = (HttpWebResponseCore) wreq.EndGetResponse (result);
+				//			Redirection	Error
+				// Normal Request	allowed		throw
+				// Policy Request	throw		ignore (no policy)
+				if (IsRedirection (wres)) {
+					if (IsDownloadingPolicy ()) {
+						// redirection is NOT allowed for policy files
+						async_result.Exception = new SecurityException ("Cannot redirect policy files");
+						async_result.SetComplete ();
+					} else {
+						string location = wres.Headers ["Location"];
+						GetResponse (Method, new Uri (location));
+					}
+				} else if (wres.StatusCode != HttpStatusCode.OK) {
+					// policy file could be missing, but then it means no policy
+					if (!IsDownloadingPolicy ()) {
+						async_result.Response = wres;
+						async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.Success, wres);
+						async_result.SetComplete ();
+					} else {
+						async_result.SetComplete ();
+					}
 				} else {
-					string location = wres.Headers ["Location"];
-					GetResponse (Method, new Uri (location));
-				}
-			} else if (wres.StatusCode != HttpStatusCode.OK) {
-				// policy file could be missing, but then it means no policy
-				if (!IsDownloadingPolicy ()) {
+					wres.SetMethod (Method);
 					async_result.Response = wres;
-					async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.Success, wres);
-					async_result.SetComplete ();
-				} else {
 					async_result.SetComplete ();
 				}
-			} else {
-				wres.SetMethod (Method);
-				async_result.Response = wres;
+			}
+			catch (Exception e) {
+				async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.UnknownError, null);
 				async_result.SetComplete ();
 			}
 		}
