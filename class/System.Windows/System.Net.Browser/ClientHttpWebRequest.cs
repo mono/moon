@@ -126,7 +126,7 @@ namespace System.Net.Browser {
 			}
 		}
 
-		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires", "Content-Type" };
+		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires" };
 
 		protected override void CheckProtocolViolation ()
 		{

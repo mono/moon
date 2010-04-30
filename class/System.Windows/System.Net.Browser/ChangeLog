@@ -1,3 +1,8 @@
+2010-04-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientHttpWebRequest.cs: Don't check for Content-Type when
+	receiving a response (it's done earlier).
+
 2010-04-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* PolicyBasedHttpWebRequest.cs: Handle exceptions that occurs 
