@@ -41,6 +41,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -84,6 +85,112 @@ namespace MoonTest.System.Windows.Data {
 			Assert.AreEqual ("ItemCount", g.OnPropertyChangedCalled [0], "#2");
 			Assert.AreEqual (1, g.ProtectedItemCount, "#3");
 			Assert.AreEqual (1, g.ItemCount, "#4");
+		}
+
+
+		[TestMethod]
+		public void GroupsAreRecreated ()
+		{
+			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
+			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+
+			var desc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+
+			var source = new CollectionViewSource { Source = new [] { 0, 1, 2, 3, 4, 5 } };
+			source.GroupDescriptions.Add (desc);
+
+			var groups = source.View.Groups;
+			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
+			var upperGroup = (CollectionViewGroup) source.View.Groups [1];
+
+
+			using (source.DeferRefresh ())
+			using (source.View.DeferRefresh ()) {
+				source.GroupDescriptions.Clear ();
+				source.GroupDescriptions.Add (desc);
+			}
+
+			Assert.AreSame (groups, source.View.Groups, "#1");
+			Assert.AreNotSame (lowerGroup, source.View.Groups [0], "#2");
+			Assert.AreNotSame (upperGroup, source.View.Groups [1], "#3");
+		}
+
+		[TestMethod]
+		public void OneGroupDesciption ()
+		{
+			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
+			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+
+			var desc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+
+			var source = new CollectionViewSource { Source = new [] { 0, 1, 2, 3, 4, 5 } };
+			using (source.View.DeferRefresh ()) {
+				source.GroupDescriptions.Add (desc);
+			}
+			Assert.AreEqual (2, source.View.Groups.Count, "#1");
+			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
+			var upperGroup = (CollectionViewGroup) source.View.Groups [1];
+
+			Assert.AreEqual ("Lower0", lowerGroup.Name, "#2");
+			Assert.AreEqual ("Upper0", upperGroup.Name, "#3");
+
+			Assert.IsTrue (lowerGroup.IsBottomLevel, "#4");
+			Assert.IsTrue (upperGroup.IsBottomLevel, "#5");
+
+			Assert.AreEqual (3, lowerGroup.ItemCount, "#6");
+			Assert.AreEqual (3, upperGroup.ItemCount, "#7");
+
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i, (int) lowerGroup.Items [i], "#8." + i);
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i + 3, (int) upperGroup.Items [i], "#9." + i);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		[Ignore ("Test not completed yet")]
+		public void TwoGroupDesciptions ()
+		{
+			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
+			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+
+			var lowerDesc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+			var upperDesc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+
+			var source = new CollectionViewSource { Source = new [] { 0, 1, 2, 3, 4, 5 } };
+			using (source.View.DeferRefresh ()) {
+				source.GroupDescriptions.Add (lowerDesc);
+				source.GroupDescriptions.Add (upperDesc);
+			}
+			Assert.AreEqual (2, source.View.Groups.Count, "#1");
+			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
+			var upperGroup = (CollectionViewGroup) source.View.Groups [1];
+
+			Assert.AreEqual ("Lower0", lowerGroup.Name, "#2");
+			Assert.AreEqual ("Upper0", upperGroup.Name, "#3");
+
+			Assert.IsFalse (lowerGroup.IsBottomLevel, "#4");
+			Assert.IsFalse (upperGroup.IsBottomLevel, "#5");
+
+			Assert.AreEqual (3, lowerGroup.ItemCount, "#6");
+			Assert.AreEqual (3, upperGroup.ItemCount, "#7");
+
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i, (int) lowerGroup.Items [i], "#8." + i);
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i + 3, (int) upperGroup.Items [i], "#9." + i);
 		}
 	}
 
