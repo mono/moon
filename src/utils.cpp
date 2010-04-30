@@ -488,10 +488,7 @@ rmdir_real (GString *path)
 		g_string_truncate (path, len);
 		g_string_append (path, dirname);
 		
-		if (g_lstat (path->str, &st) == -1)
-			continue;
-		
-		if (S_ISDIR (st.st_mode))
+		if (g_lstat (path->str, &st) == 0 && S_ISDIR (st.st_mode))
 			rmdir_real (path);
 		else
 			g_unlink (path->str);

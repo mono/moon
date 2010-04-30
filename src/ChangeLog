@@ -1,5 +1,8 @@
 2010-04-30  Jeffrey Stedfast  <fejj@novell.com>
 
+	* utils.cpp (rmdir_real): Don't forget to unlink the file even if
+	lstat fails.
+
 	* fonts.cpp (IsValidLang): Adjusted to work for drt952, altho it
 	is still not really correct. Will have to add a managed callback
 	later since that code should have a list of possible language
