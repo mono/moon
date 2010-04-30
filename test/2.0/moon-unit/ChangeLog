@@ -1,5 +1,11 @@
 2010-04-30  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/PropertyGroupDescriptionTest.cs: Remove
+	  a MoonlightBug from a passing test and add another test
+	  (which passes now).
+
+2010-04-30  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/PropertyGroupDescriptionTest.cs: spaces
 	  -> tabs on the new file.
 

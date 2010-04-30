@@ -14,8 +14,6 @@ namespace System.Windows.Data {
 		public event CurrentChangingEventHandler CurrentChanging;
 
 		IList list;
-		ObservableCollection <object> groups;
-		ReadOnlyObservableCollection <object> groupsReadOnly;
 
 		public bool CanFilter {
 			get; private set;
@@ -75,6 +73,10 @@ namespace System.Windows.Data {
 
 		bool IsValidSelection {
 			get { return CurrentPosition >= 0 && CurrentPosition < list.Count; }
+		}
+
+		StandardCollectionViewGroup RootGroup {
+			get; set;
 		}
 
 		public SortDescriptionCollection SortDescriptions {
@@ -169,16 +171,40 @@ namespace System.Windows.Data {
 			if (((IDeferRefresh) this).DeferLevel != 0)
 				return;
 
-			if (groups == null) {
-				groups = new ObservableCollection <object> ();
-				groupsReadOnly = new ReadOnlyObservableCollection <object> (groups);
-			}
+			if (RootGroup == null)
+				RootGroup = new StandardCollectionViewGroup (null);
 
-			groups.Clear ();
+			RootGroup.ClearItems ();
 			if (GroupDescriptions.Count == 0) {
 				Groups = null;
 			} else {
-				Groups = groupsReadOnly;
+				Groups = RootGroup.Items;
+				foreach (var item in list) {
+					AppendToGroup (item, 0, RootGroup);
+				}
+			}
+		}
+
+		void AppendToGroup (object item, int depth, StandardCollectionViewGroup group)
+		{
+			if (depth < GroupDescriptions.Count) {
+				var desc = GroupDescriptions [depth];
+				var name = desc.GroupNameFromItem (item, depth, null);
+				StandardCollectionViewGroup subGroup = null;
+				foreach (StandardCollectionViewGroup g in group.Items) {
+					if (desc.NamesMatch (g.Name, name)) {
+						subGroup = g;
+						break;
+					}
+				}
+				if (subGroup == null) {
+					subGroup = new StandardCollectionViewGroup (name, depth == (GroupDescriptions.Count - 1));
+					group.AddItem (subGroup);
+				}
+
+				AppendToGroup (item, depth + 1, subGroup);
+			} else {
+				group.AddItem (item);
 			}
 		}
 	}

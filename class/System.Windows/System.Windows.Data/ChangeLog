@@ -1,3 +1,11 @@
+2010-04-30  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardCollectionViewGroup.cs: Implement the rest of the
+	  default implementation of the CollectionViewGroup.
+
+	* StandardCollectionView.cs: Implement the logic to create the
+	  CollectionViewGroups from the GroupDescriptions.
+
 2010-04-29  Alan McGovern  <amcgovern@novell.com>
 
 	* IDeferRefresh.cs:

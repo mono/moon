@@ -188,7 +188,36 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		public void GroupsAreRecreated ()
+		{
+			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
+			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+
+			var desc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+
+			var source = new CollectionViewSource { Source = new [] { 0, 1, 2, 3, 4, 5 } };
+			source.GroupDescriptions.Add (desc);
+
+			var groups = source.View.Groups;
+			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
+			var upperGroup = (CollectionViewGroup) source.View.Groups [1];
+
+
+			using (source.DeferRefresh ())
+			using (source.View.DeferRefresh ()) {
+				source.GroupDescriptions.Clear ();
+				source.GroupDescriptions.Add (desc);
+			}
+
+			Assert.AreSame (groups, source.View.Groups, "#1");
+			Assert.AreNotSame (lowerGroup, source.View.Groups [0], "#2");
+			Assert.AreNotSame (upperGroup, source.View.Groups [1], "#3");
+		}
+
+		[TestMethod]
 		public void OneGroupDesciption ()
 		{
 			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
