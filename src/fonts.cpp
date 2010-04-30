@@ -131,6 +131,15 @@ static const char lang_table[256] = {
 	'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
 };
 
+//
+// IsValidLang:
+//   lang: string representing the language code
+//
+// Returns false if the string is illegally formed or true otherwise.
+//
+// Notes: Typical language codes will be in the form en-US, en-GB, ja-JP,
+// ko-KR, etc. However, it must also accept strings like zh-Hans.
+//
 bool
 IsValidLang (const char *lang)
 {
@@ -144,19 +153,21 @@ IsValidLang (const char *lang)
 			return false;
 		
 		if (c == '-') {
-			if (len < 2 || dashes == 2)
+			if (len != 2 || dashes == 2)
 				return false;
+			
 			dashes++;
 			len = 0;
 		} else if (c >= '0' && c <= '9') {
 			if (dashes < 2)
 				return false;
+			
 			len++;
 		} else {
 			len++;
 		}
 		
-		if (len > 3)
+		if (len > 4)
 			return false;
 		
 		inptr++;
