@@ -186,6 +186,82 @@ namespace MoonTest.System.Windows.Data {
             Assert.IsFalse (p.NamesMatch ("a", "B"), "#1");
         }
 
+		[TestMethod]
+		[MoonlightBug]
+		public void OneGroupDesciption ()
+		{
+			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
+			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+
+			var desc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+
+			var source = new CollectionViewSource { Source = new [] { 0, 1, 2, 3, 4, 5 } };
+			using (source.View.DeferRefresh ()) {
+				source.GroupDescriptions.Add (desc);
+			}
+			Assert.AreEqual (2, source.View.Groups.Count, "#1");
+			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
+			var upperGroup = (CollectionViewGroup) source.View.Groups [1];
+
+			Assert.AreEqual ("Lower0", lowerGroup.Name, "#2");
+			Assert.AreEqual ("Upper0", upperGroup.Name, "#3");
+
+			Assert.IsTrue (lowerGroup.IsBottomLevel, "#4");
+			Assert.IsTrue (upperGroup.IsBottomLevel, "#5");
+
+			Assert.AreEqual (3, lowerGroup.ItemCount, "#6");
+			Assert.AreEqual (3, upperGroup.ItemCount, "#7");
+
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i, (int) lowerGroup.Items [i], "#8." + i);
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i + 3, (int) upperGroup.Items [i], "#9." + i);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		[Ignore ("Test not completed yet")]
+		public void TwoGroupDesciptions ()
+		{
+			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
+			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+
+			var lowerDesc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+			var upperDesc = new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = nameCreator,
+				NamesMatchFunc = nameMatcher
+			};
+
+			var source = new CollectionViewSource { Source = new [] { 0, 1, 2, 3, 4, 5 } };
+			using (source.View.DeferRefresh ()) {
+				source.GroupDescriptions.Add (lowerDesc);
+				source.GroupDescriptions.Add (upperDesc);
+			}
+			Assert.AreEqual (2, source.View.Groups.Count, "#1");
+			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
+			var upperGroup = (CollectionViewGroup) source.View.Groups [1];
+
+			Assert.AreEqual ("Lower0", lowerGroup.Name, "#2");
+			Assert.AreEqual ("Upper0", upperGroup.Name, "#3");
+
+			Assert.IsFalse (lowerGroup.IsBottomLevel, "#4");
+			Assert.IsFalse (upperGroup.IsBottomLevel, "#5");
+
+			Assert.AreEqual (3, lowerGroup.ItemCount, "#6");
+			Assert.AreEqual (3, upperGroup.ItemCount, "#7");
+
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i, (int) lowerGroup.Items [i], "#8." + i);
+			for (int i = 0; i < 3; i++)
+				Assert.AreEqual (i + 3, (int) upperGroup.Items [i], "#9." + i);
+		}
+
         [TestMethod]
         public void NamesMatch_IgnoreCase ()
         {
@@ -227,6 +303,9 @@ namespace MoonTest.System.Windows.Data {
     class ConcretePropertyGroupDescription : PropertyGroupDescription {
         public List<string> OnPropertyChangedCalled = new List<string> ();
         public List<string> PropertyChangedFired = new List<string> ();
+		public Func<object, object, bool> NamesMatchFunc { get; set; }
+		public Func<object, int, object> GroupNameFromItemFunc { get; set; }
+		public string Name { get; set; }
 
         public ConcretePropertyGroupDescription ()
             : this (null)
@@ -241,6 +320,20 @@ namespace MoonTest.System.Windows.Data {
                 PropertyChangedFired.Add (e.PropertyName);
             };
         }
+
+		public override object GroupNameFromItem (object item, int level, CultureInfo culture)
+		{
+			if (GroupNameFromItemFunc != null)
+				return GroupNameFromItemFunc (item, level);
+			return base.GroupNameFromItem (item, level, culture);
+		}
+
+		public override bool NamesMatch (object groupName, object itemName)
+		{
+			if (NamesMatchFunc != null)
+				return NamesMatchFunc (groupName, itemName);
+			return base.NamesMatch (groupName, itemName);
+		}
 
         protected override void OnPropertyChanged (PropertyChangedEventArgs e)
         {

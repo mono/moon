@@ -1,3 +1,9 @@
+2010-04-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/PropertyGroupDescriptionTest.cs: Add
+	  more tests to see how PropertyGroupDescriptions expand into
+	  CollectionViewGroups.
+
 2010-04-29  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewTest.cs: Add a bunch of
