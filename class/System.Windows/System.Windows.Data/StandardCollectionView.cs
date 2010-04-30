@@ -198,7 +198,7 @@ namespace System.Windows.Data {
 					}
 				}
 				if (subGroup == null) {
-					subGroup = new StandardCollectionViewGroup (name, depth == (GroupDescriptions.Count - 1));
+					subGroup = new StandardCollectionViewGroup (group, name, depth == (GroupDescriptions.Count - 1));
 					group.AddItem (subGroup);
 				}
 

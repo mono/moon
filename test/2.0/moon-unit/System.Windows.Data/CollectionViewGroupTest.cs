@@ -87,7 +87,6 @@ namespace MoonTest.System.Windows.Data {
 			Assert.AreEqual (1, g.ItemCount, "#4");
 		}
 
-
 		[TestMethod]
 		public void GroupsAreRecreated ()
 		{
@@ -153,26 +152,34 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		[Ignore ("Test not completed yet")]
 		public void TwoGroupDesciptions ()
 		{
+			/* This test generates two subgroups giving this hierarchy:
+			 * Root
+			 *     Lower0
+			 *         Lower1 [Will contain (0, 1, 2)]
+			 *         Upper1
+			 *     Upper0
+			 *        Lower1
+			 *        Upper1 [Will contain (3, 4, 5)]
+			 */
+
 			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
 			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
 
-			var lowerDesc = new ConcretePropertyGroupDescription () {
+			var level0 = new ConcretePropertyGroupDescription () {
 				GroupNameFromItemFunc = nameCreator,
 				NamesMatchFunc = nameMatcher
 			};
-			var upperDesc = new ConcretePropertyGroupDescription () {
+			var level1 = new ConcretePropertyGroupDescription () {
 				GroupNameFromItemFunc = nameCreator,
 				NamesMatchFunc = nameMatcher
 			};
 
 			var source = new CollectionViewSource { Source = new [] { 0, 1, 2, 3, 4, 5 } };
 			using (source.View.DeferRefresh ()) {
-				source.GroupDescriptions.Add (lowerDesc);
-				source.GroupDescriptions.Add (upperDesc);
+				source.GroupDescriptions.Add (level0);
+				source.GroupDescriptions.Add (level1);
 			}
 			Assert.AreEqual (2, source.View.Groups.Count, "#1");
 			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
@@ -187,10 +194,22 @@ namespace MoonTest.System.Windows.Data {
 			Assert.AreEqual (3, lowerGroup.ItemCount, "#6");
 			Assert.AreEqual (3, upperGroup.ItemCount, "#7");
 
-			for (int i = 0; i < 3; i++)
-				Assert.AreEqual (i, (int) lowerGroup.Items [i], "#8." + i);
-			for (int i = 0; i < 3; i++)
-				Assert.AreEqual (i + 3, (int) upperGroup.Items [i], "#9." + i);
+			Assert.AreEqual (1, lowerGroup.Items.Count, "#8");
+			Assert.AreEqual (1, upperGroup.Items.Count, "#9");
+
+			// Check the contents of Lower0
+			var lower = (CollectionViewGroup) lowerGroup.Items [0];
+			Assert.AreEqual ("Lower1", lower.Name, "#10");
+			Assert.IsTrue (lower.IsBottomLevel, "#12");
+			Assert.AreEqual (3, lower.ItemCount, "#14");
+			Assert.AreEqual (3, lower.Items.Count, "#16");
+
+			// Check the contents of Upper0
+			var upper = (CollectionViewGroup) upperGroup.Items [0];
+			Assert.AreEqual ("Upper1", upper.Name, "#11");
+			Assert.IsTrue (upper.IsBottomLevel, "#13");
+			Assert.AreEqual (3, upper.ItemCount, "#15");
+			Assert.AreEqual (3, upper.Items.Count, "#17");
 		}
 	}
 

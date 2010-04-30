@@ -9,22 +9,34 @@ namespace System.Windows.Data {
 			get { return isBottomLevel; }
 		}
 
+		StandardCollectionViewGroup Parent {
+			get; set;
+		}
+
 		public StandardCollectionViewGroup (object name)
-			: this (name, false)
+			: this (null, name)
 		{
 			
 		}
-		
-		public StandardCollectionViewGroup (object name, bool isBottomLevel)
+
+		public StandardCollectionViewGroup (StandardCollectionViewGroup parent, object name)
+			: this (parent, name, false)
+		{
+			
+		}
+
+		public StandardCollectionViewGroup (StandardCollectionViewGroup parent, object name, bool isBottomLevel)
 			: base (name)
 		{
 			this.isBottomLevel = isBottomLevel;
+			Parent = parent;
 		}
 
 		internal void AddItem (object item)
 		{
 			ProtectedItems.Add (item);
-			ProtectedItemCount ++;
+			if (!(item is StandardCollectionViewGroup))
+				IncrementCount ();
 		}
 
 		internal void ClearItems ()
@@ -32,10 +44,25 @@ namespace System.Windows.Data {
 			ProtectedItems.Clear ();
 		}
 
+		internal void DecrementCount ()
+		{
+			ProtectedItemCount --;
+			if (Parent != null)
+				Parent.DecrementCount ();
+		}
+
+		internal void IncrementCount ()
+		{
+			ProtectedItemCount ++;
+			if (Parent != null)
+				Parent.IncrementCount ();
+		}
+
 		internal void RemoveItem (object item)
 		{
 			if (ProtectedItems.Remove (item))
-				ProtectedItemCount --;
+				if (!(item is StandardCollectionViewGroup))
+					DecrementCount ();
 		}
 	}
 }
