@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,13 +28,15 @@
 
 using System;
 using System.Windows;
+using System.Threading;
 
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class MessageBoxTest {
+	public class MessageBoxTest : SilverlightTest {
 
 		[TestMethod]
 		public void InvalidValues ()
@@ -59,6 +61,29 @@ namespace MoonTest.System.Windows.Controls {
 		public void NoUserEvent ()
 		{
 			MessageBox.Show ("uho");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UserThread ()
+		{
+			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						MessageBox.Show ("nope", "non-ui thread", MessageBoxButton.OK);
+					}, "MessageBox.Show");
+				}
+				finally {
+					complete = true;
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
 		}
 	}
 }

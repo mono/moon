@@ -1,3 +1,11 @@
+2010-05-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/MessageBoxTest.cs: Add non-main thread test case
+	* System.Windows.Controls/SaveFileDialogTest.cs: Add non-main 
+	thread test case
+	* System.Windows.Controls/OpenFileDialogTest.cs: Add non-main 
+	thread test case
+
 2010-04-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewGroupTest.cs: The

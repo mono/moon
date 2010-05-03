@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008, 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -31,13 +31,15 @@ using System.IO;
 using System.Security;
 using System.Windows;
 using System.Windows.Controls;
+using System.Threading;
 
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class OpenFileDialogTest {
+	public class OpenFileDialogTest : SilverlightTest {
 
 		[TestMethod]
 		public void DefaultProperties ()
@@ -143,6 +145,61 @@ namespace MoonTest.System.Windows.Controls {
 			catch (MethodAccessException) {
 				// SecurityCritical
 			}
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UserThread ()
+		{
+			OpenFileDialog ofd = new OpenFileDialog ();
+
+			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+
+					Assert.Throws<InvalidOperationException> (delegate {
+						new OpenFileDialog ();
+					}, "new");
+
+					Assert.Throws<InvalidOperationException> (delegate {
+						ofd.ShowDialog ();
+					}, "ShowDialog");
+
+					Assert.Throws<InvalidOperationException> (delegate {
+						Assert.IsNull (ofd.File);
+					}, "get_File");
+					Assert.Throws<InvalidOperationException> (delegate {
+						Assert.IsNull (ofd.Files);
+					}, "get_Files");
+					Assert.Throws<InvalidOperationException> (delegate {
+						Assert.AreEqual (String.Empty, ofd.Filter);
+					}, "get_Filter");
+					Assert.Throws<InvalidOperationException> (delegate {
+						Assert.AreEqual (0, ofd.FilterIndex);
+					}, "get_FilterIndex");
+					Assert.Throws<InvalidOperationException> (delegate {
+						Assert.IsFalse (ofd.Multiselect);
+					}, "get_Multiselect");
+
+					Assert.Throws<InvalidOperationException> (delegate {
+						ofd.Filter = null;
+					}, "set_Filter");
+					Assert.Throws<InvalidOperationException> (delegate {
+						ofd.FilterIndex = 1;
+					}, "set_FilterIndex");
+					Assert.Throws<InvalidOperationException> (delegate {
+						ofd.Multiselect = true;
+					}, "set_Multiselect");
+				}
+				finally {
+					complete = true;
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
 		}
 	}
 }
