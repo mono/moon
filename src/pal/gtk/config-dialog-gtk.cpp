@@ -107,42 +107,152 @@ AboutConfigDialogPage::~AboutConfigDialogPage ()
 }
 
 static void
-show_about ()
+bug_report_info (AboutConfigDialogPage *page)
 {
-	GtkAboutDialog *about = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
+	Surface *surface = page->GetDialog()->GetSurface();
+	Deployment *deployment = page->GetDialog()->GetDeployment();
+	MoonWindowGtk *window = page->GetDialog()->GetWindow();
 
-	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
-	gtk_about_dialog_set_version (about, VERSION);
+	GtkWidget *dlg = gtk_dialog_new_with_buttons ("But Report Info",
+						      NULL /* FIXME parent */,
+						      (GtkDialogFlags)(GTK_DIALOG_NO_SEPARATOR | GTK_DIALOG_DESTROY_WITH_PARENT),
+						      "Close", GTK_RESPONSE_CLOSE,
+						      NULL);
 
-	gtk_about_dialog_set_copyright (about, "Copyright 2007-2010 Novell, Inc. (http://www.novell.com/)");
-#if FINAL_RELEASE
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/");
+	GtkWidget *vbox = GTK_DIALOG (dlg)->vbox;
+
+	GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
+	GtkWidget *image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
+						     GTK_ICON_SIZE_BUTTON);
+	GtkWidget *label = gtk_label_new ("Cut and paste the information below into your bug report.  "
+					  "Be aware this contains information about the current silverlight "
+					  "application you are viewing.");
+	GtkWidget *textview;
+	GtkTextBuffer *buffer = gtk_text_buffer_new (NULL);
+	GString *str = g_string_new ("");
+
+	g_string_append_printf (str, "Source: %s\n", deployment->GetXapLocation());
+	g_string_append_printf (str, "Width: %dpx\n", window->GetWidth ());
+	g_string_append_printf (str, "Height: %dpx\n", window->GetHeight ());
+	g_string_append_printf (str, "Background: %s\n", color_to_string (surface->GetBackgroundColor ()));
+	g_string_append_printf (str, "RuntimeVersion: %s\n", deployment->GetRuntimeVersion() ? deployment->GetRuntimeVersion() : "(Unknown)");
+	g_string_append_printf (str, "Windowless: %s\n", window->GetWidget() == NULL ? "yes" : "no");
+	g_string_append_printf (str, "MaxFrameRate: %i\n", surface->GetTimeManager()->GetMaximumRefreshRate());
+
+	g_string_append_printf (str, "Codecs: %s\n",
+				Media::IsMSCodecsInstalled () ? "ms-codecs" :
+#if INCLUDE_FFMPEG
+				"ffmpeg"
 #else
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Beta");
+				"none"
+#endif
+				);
+
+
+	g_string_append (str, "Build configuration: ");
+
+#if DEBUG
+	g_string_append (str, "debug");
+#else
+	g_string_append (str, "release");
+#endif
+#if SANITY
+	g_string_append (str, ", sanity checks");
+#endif
+#if OBJECT_TRACKING
+	g_string_append (str, ", object tracking");
 #endif
 
-	gtk_about_dialog_set_website_label (about, "Project Website");
+	g_string_append (str, "\n");
 
-	gtk_about_dialog_set_authors (about, moonlight_authors);
+	gtk_text_buffer_set_text (buffer, str->str, str->len);
 
-	/* Newer gtk+ versions require this for the close button to work */
-	g_signal_connect_swapped (about,
-				  "response",
-				  G_CALLBACK (gtk_widget_destroy),
-				  about);
+	textview = gtk_text_view_new_with_buffer (buffer);
 
-	gtk_dialog_run (GTK_DIALOG (about));
+	g_string_free (str, TRUE);
+
+	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+
+	GtkWidget *image_align = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (image_align), image);
+
+	gtk_box_pack_start (GTK_BOX (hbox), image_align, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
+
+	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+	gtk_box_pack_start (GTK_BOX (vbox), textview, TRUE, TRUE, 0);
+
+	gtk_widget_show_all (vbox);
+
+	if (GTK_RESPONSE_CLOSE == gtk_dialog_run (GTK_DIALOG (dlg)))
+		gtk_widget_destroy (dlg);
 }
-
 
 GtkWidget*
 AboutConfigDialogPage::GetContentWidget ()
 {
-	GtkWidget *button = gtk_button_new_with_label ("About Moonlight...");
+	GtkWidget *label, *linkbutton, *vbox, *align, *image, *button;
+	GtkTable *table = GTK_TABLE (gtk_table_new (3, 3, false));
 
-	g_signal_connect (button, "clicked", G_CALLBACK (show_about), NULL);
+	image = gtk_label_new ("IMAGEIMAGE\nIMAGEIMAGE\nIMAGEIMAGE\nIMAGEIMAGE\nIMAGEIMAGE");
 
-	return button;
+	align = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), image);
+
+	gtk_table_attach (table, align, 0, 1, 0, 1,
+			  (GtkAttachOptions)0,
+			  (GtkAttachOptions)0,
+			  0, 0);
+
+	vbox = gtk_vbox_new (FALSE, 0);
+
+	label = gtk_label_new ("");
+
+	gtk_label_set_markup (GTK_LABEL (label),
+			      "<span size=\"xx-large\" weight=\"bold\">" PLUGIN_OURNAME " " VERSION "</span>\n"
+			      "<span size=\"small\">Copyright 2007-2010 Novell, Inc. (http://www.novell.com/)</span>");
+
+	gtk_label_set_justify (GTK_LABEL (label),
+			       GTK_JUSTIFY_LEFT);
+
+	align = gtk_alignment_new (0.0, 0.0, 0.0, 1.0);
+	gtk_container_add (GTK_CONTAINER (align), label);
+
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (align), FALSE, FALSE, 0);
+
+
+	linkbutton = gtk_link_button_new_with_label (
+#if FINAL_RELEASE
+						     "http://moonlight-project.com/",
+#else
+						     "http://moonlight-project.com/Beta",
+#endif
+						     "Project Web site");
+
+	align = gtk_alignment_new (0.0, 0.0, 0.0, 1.0);
+	gtk_container_add (GTK_CONTAINER (align), linkbutton);
+
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (align), FALSE, FALSE, 0);
+
+	gtk_table_attach (table, vbox, 1, 2, 0, 1,
+			  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			  0, 0);
+
+	button = gtk_button_new_with_label ("Bug Report Info...");
+
+	g_signal_connect_swapped (button, "clicked", G_CALLBACK (bug_report_info), this);
+
+	align = gtk_alignment_new (0.0, 1.0, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), button);
+
+	gtk_table_attach (table, align, 2, 3, 2, 3,
+			  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			  0, 0);
+	
+	return GTK_WIDGET (table);
 }
 
 
@@ -164,26 +274,39 @@ PlaybackConfigDialogPage::install_media_pack (PlaybackConfigDialogPage *page)
 GtkWidget*
 PlaybackConfigDialogPage::GetContentWidget ()
 {
-	GtkWidget *vbox, *button;
-	const char *label = "Install Microsoft Media Pack";
+	GtkWidget *vbox, *button, *label, *align;
+	const char *button_str = "Install Microsoft Media Pack";
 	gboolean sensitive = TRUE;
 
 	vbox = gtk_vbox_new (FALSE, 2);
 
 	if (Media::IsMSCodecsInstalled ()) {
 #if DEBUG
-		label = "Reinstall Microsoft Media Pack";
+		button_str = "Reinstall Microsoft Media Pack";
 #else
 		sensitive = FALSE;
 #endif
 	}
 
-	button = gtk_button_new_with_label (label);
+	label = gtk_label_new ("Moonlight requires the Microsoft Media Pack to play many types of content, such as VC-1 for video and MP3 for audio.");
+	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+
+	align = gtk_alignment_new (0.0, 0.0, 1.0, 1.0);
+
+	gtk_container_add (GTK_CONTAINER (align), label);
+
+	gtk_box_pack_start (GTK_BOX (vbox), align, FALSE, FALSE, 0);
+
+	button = gtk_button_new_with_label (button_str);
 	gtk_widget_set_sensitive (button, sensitive);
 
 	g_signal_connect_swapped (G_OBJECT(button), "clicked", G_CALLBACK (install_media_pack), this);
 
-	gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 0);
+	align = gtk_alignment_new (0.5, 0.0, 0.0, 1.0);
+
+	gtk_container_add (GTK_CONTAINER (align), button);
+
+	gtk_box_pack_start (GTK_BOX (vbox), align, FALSE, FALSE, 0);
 
 	return vbox;
 }
@@ -452,10 +575,17 @@ DebugConfigDialogPage::~DebugConfigDialogPage ()
 GtkWidget*
 DebugConfigDialogPage::GetContentWidget ()
 {
-	GtkBox *vbox;
+	GtkBox *vbox, *hbox, *label;
 	GtkWidget *button;
+	GtkWidget *align;
+
+	align = gtk_alignment_new (0.5, 0.0, 0.0, 1.0);
+	hbox = GTK_BOX (gtk_hbox_new (TRUE, 0));
+	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (hbox));
 
 	vbox = GTK_BOX (gtk_vbox_new (TRUE, 4));
+
+	gtk_box_pack_start (hbox, GTK_WIDGET (vbox), FALSE, FALSE, 0);
 
 #if DEBUG
 	button = gtk_button_new_with_label ("Show XAML Hierarchy");
@@ -477,7 +607,7 @@ DebugConfigDialogPage::GetContentWidget ()
 #endif
 #endif
 
-	return GTK_WIDGET (vbox);
+	return GTK_WIDGET (align);
 }
 
 ////// Advanced page
@@ -632,63 +762,12 @@ create_option_treeview (Surface *surface)
 GtkWidget*
 AdvancedConfigDialogPage::GetContentWidget ()
 {
-	GtkWidget *table, *treeview;
-	char buffer[60];
+	GtkWidget *treeview;
 	GtkBox *vbox;
-	int row = 0;
 
 	Surface *surface = GetDialog()->GetSurface();
-	Deployment *deployment = GetDialog()->GetDeployment();
-	MoonWindowGtk *window = GetDialog()->GetWindow();
 
 	vbox = GTK_BOX (gtk_vbox_new (FALSE, 0));
-	
-	// Silverlight Application properties
-	gtk_box_pack_start (vbox, title ("Properties"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
-	
-	table = gtk_table_new (11, 2, FALSE);
-	gtk_box_pack_start (vbox, table, FALSE, FALSE, 0);
-
-	table_add (table, row++, "Source", deployment->GetXapLocation());
-
-	snprintf (buffer, sizeof (buffer), "%dpx", window->GetWidth ());
-	table_add (table, row++, "Width:", buffer);
-
-	snprintf (buffer, sizeof (buffer), "%dpx", window->GetHeight ());
-	table_add (table, row++, "Height:", buffer);
-
-	const char *color_str = color_to_string (surface->GetBackgroundColor ());
-	table_add (table, row++, "Background:", color_str);
-
-	table_add (table, row++, "RuntimeVersion:", deployment->GetRuntimeVersion() ? deployment->GetRuntimeVersion() : "(Unknown)");
-	table_add (table, row++, "Windowless:", window->GetWidget() == NULL ? "yes" : "no");
-
-	snprintf (buffer, sizeof (buffer), "%i", surface->GetTimeManager()->GetMaximumRefreshRate());
-	table_add (table, row++, "MaxFrameRate:", buffer);
-
-	table_add (table, row++, "Codecs:",
-		   Media::IsMSCodecsInstalled () ? "ms-codecs" :
-#if INCLUDE_FFMPEG
-		   "ffmpeg"
-#else
-		   "none"
-#endif
-		   );
-
-	int size = 0;
-#if DEBUG
-	size = snprintf (buffer, sizeof (buffer), "debug");
-#else
-	size = snprintf (buffer, sizeof (buffer), "release");
-#endif
-#if SANITY
-	size += snprintf (buffer + size, sizeof (buffer) - size, ", sanity checks");
-#endif
-#if OBJECT_TRACKING
-	size += snprintf (buffer + size, sizeof (buffer) - size, ", object tracking");
-#endif
-	table_add (table, row++, "Build configuration:", buffer);
 
 	// Runtime debug options
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
