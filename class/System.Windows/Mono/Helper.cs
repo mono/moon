@@ -5,7 +5,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007, 2009 Novell, Inc.
+// Copyright 2007, 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -152,6 +152,11 @@ namespace Mono {
 			CanonicalizeName (sb, resource, resource.Length);
 			
 			return sb.ToString ();
+		}
+
+		public static bool CheckAccess ()
+		{
+			return Thread.CurrentThread == DependencyObject.moonlight_thread;
 		}
 
 #if DEBUG
