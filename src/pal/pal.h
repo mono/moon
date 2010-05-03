@@ -249,26 +249,6 @@ struct MoonAppRecord {
 	bool Save (FILE *db) const;
 };
 
-class MoonAppRecordIterator {
-	char *inptr, *inend;
-	char buf[4097];
-	FILE *db;
-	
-	char *ParseOrigin ();
-	time_t ParseMTime ();
-	char *ParseUid ();
-	
-	bool EatWhiteSpace (bool lf);
-	char NextToken ();
-	bool Fill ();
-	
-public:
-	MoonAppRecordIterator (FILE *db);
-	~MoonAppRecordIterator () {}
-	
-	MoonAppRecord *Next ();
-};
-
 class MoonAppDatabase {
 	char *base_dir;
 	char *path;

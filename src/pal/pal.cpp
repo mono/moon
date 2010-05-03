@@ -79,6 +79,26 @@ MoonAppRecord::Save (FILE *db) const
 // MoonAppRecordIterator
 //
 
+class MoonAppRecordIterator {
+	char *inptr, *inend;
+	char buf[4097];
+	FILE *db;
+	
+	char *ParseOrigin ();
+	time_t ParseMTime ();
+	char *ParseUid ();
+	
+	bool EatWhiteSpace (bool lf);
+	char NextToken ();
+	bool Fill ();
+	
+public:
+	MoonAppRecordIterator (FILE *db);
+	~MoonAppRecordIterator () {}
+	
+	MoonAppRecord *Next ();
+};
+
 MoonAppRecordIterator::MoonAppRecordIterator (FILE *db)
 {
 	inptr = inend = buf;

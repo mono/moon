@@ -1,3 +1,7 @@
+2010-05-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/pal.cpp (MoonAppRecordIterator): Moved out of pal.h.
+
 2010-04-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* utils.cpp (rmdir_real): Don't forget to unlink the file even if
