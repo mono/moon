@@ -204,6 +204,7 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("original link is now redirected - need another test case")]
 		public void DownloadStringAsync_Gzip ()
 		{
 			int tid = Thread.CurrentThread.ManagedThreadId;

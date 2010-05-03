@@ -1,5 +1,7 @@
-2010-05-03  Sebastien Pouliot  <sebastien@ximian.com>
+2010-05-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
+	* System.Net/WebClientTest.cs: Ignore a test where the URL is not
+	valid anymore
 	* System.Windows/MessageBoxTest.cs: Add non-main thread test case
 	* System.Windows.Controls/SaveFileDialogTest.cs: Add non-main 
 	thread test case
