@@ -1,3 +1,10 @@
+2010-05-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* OpenFileDialog.cs: Ensure that everything gets called from the
+	main UI thread
+	* SaveFileDialog.cs: Ensure that everything gets called from the
+	main UI thread
+
 2010-04-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SaveFileDialog.cs: Add private File property so MS test suite

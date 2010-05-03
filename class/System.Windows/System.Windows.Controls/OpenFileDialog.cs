@@ -2,7 +2,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007-2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007-2008, 2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -46,11 +46,14 @@ namespace System.Windows.Controls
 		
 		public OpenFileDialog ()
 		{
+			EnsureMainThread ();
 		}
 
 		// it's not clear from doc or tests when this can return null
 		public bool? ShowDialog ()
 		{
+			EnsureMainThread ();
+
 			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
 			IntPtr result = NativeMethods.moon_windowing_system_show_open_file_dialog (windowing_system,
 				"Open",
@@ -82,24 +85,38 @@ namespace System.Windows.Controls
 
 		public FileInfo File {
 			get {
+				EnsureMainThread ();
 				return ((files == null) || (files.Length == 0)) ? null : files [0];
 			}
 		}
 
 		public IEnumerable<FileInfo> Files {
-			get { return files; }
+			get { 
+				EnsureMainThread ();
+				return files;
+			}
 		}
 
 		// dialog options
 
 		public bool Multiselect {
-			get { return allow_multiple_selection; }
-			set { allow_multiple_selection = value; }
+			get {
+				EnsureMainThread ();
+				return allow_multiple_selection;
+			}
+			set {
+				EnsureMainThread ();
+				allow_multiple_selection = value;
+			}
 		}
 
 		public string Filter {
-			get { return filter; }
+			get { 
+				EnsureMainThread ();
+				return filter;
+			}
 			set {
+				EnsureMainThread ();
 				if (String.IsNullOrEmpty (value)) {
 					filter = String.Empty;
 				} else {
@@ -117,13 +134,23 @@ namespace System.Windows.Controls
 		}
 
 		public int FilterIndex {
-			get { return filter_index; }
+			get {
+				EnsureMainThread ();
+				return filter_index;
+			}
 			set {
+				EnsureMainThread ();
 				// note: the value isn't semi-validated (no maximum check wrt filters)
 				if (value <= 0)
 					throw new ArgumentOutOfRangeException ("FilterIndex");
 				filter_index = value;
 			}
+		}
+
+		static void EnsureMainThread ()
+		{
+			if (!Helper.CheckAccess ())
+				throw new InvalidOperationException ("Must be called from the main thread");
 		}
 	}
 }

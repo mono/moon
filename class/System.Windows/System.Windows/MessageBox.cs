@@ -28,6 +28,8 @@ namespace System.Windows {
 				throw new ArgumentNullException ("caption");
 			if ((button < MessageBoxButton.OK) || (button > MessageBoxButton.OKCancel))
 				throw new ArgumentException ("button");
+			if (!Helper.CheckAccess ())
+				throw new UnauthorizedAccessException ("Must be called from the main thread");
 
 			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
 			return (MessageBoxResult) NativeMethods.moon_windowing_system_show_message_box (windowing_system, caption, messageBoxText, (int) button);

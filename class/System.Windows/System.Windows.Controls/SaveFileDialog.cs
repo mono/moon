@@ -2,7 +2,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -39,9 +39,18 @@ namespace System.Windows.Controls {
 		FileInfo file_info;
 		string safe_file_name = String.Empty;
 
+		public SaveFileDialog ()
+		{
+			EnsureMainThread ();
+		}
+
 		public string DefaultExt {
-			get { return default_ext; }
+			get { 
+				EnsureMainThread ();
+				return default_ext;
+			}
 			set {
+				EnsureMainThread ();
 				if (String.IsNullOrEmpty (value)) {
 					default_ext = String.Empty;
 				} else if (value [0] == '.') {
@@ -54,12 +63,19 @@ namespace System.Windows.Controls {
 
 		// note: required to run MS test suite
 		private FileInfo File {
-			get { return file_info; }
+			get {
+				EnsureMainThread ();
+				return file_info;
+			}
 		}
 
 		public string Filter {
-			get { return filter; }
+			get {
+				EnsureMainThread ();
+				return filter;
+			}
 			set {
+				EnsureMainThread ();
 				if (String.IsNullOrEmpty (value)) {
 					filter = String.Empty;
 				} else {
@@ -77,8 +93,12 @@ namespace System.Windows.Controls {
 		}
 
 		public int FilterIndex {
-			get { return filter_index; }
+			get {
+				EnsureMainThread ();
+				return filter_index;
+			}
 			set {
+				EnsureMainThread ();
 				// note: the value isn't semi-validated (no maximum check wrt filters)
 				if (value <= 0)
 					throw new ArgumentOutOfRangeException ("FilterIndex");
@@ -88,6 +108,8 @@ namespace System.Windows.Controls {
 
 		public Stream OpenFile ()
 		{
+			EnsureMainThread ();
+
 			if (file_info == null)
 				throw new InvalidOperationException ();
 
@@ -95,11 +117,16 @@ namespace System.Windows.Controls {
 		}
 
 		public string SafeFileName {
-			get { return safe_file_name; }
+			get {
+				EnsureMainThread ();
+				return safe_file_name;
+			}
 		}
 
 		public bool? ShowDialog ()
 		{
+			EnsureMainThread ();
+
 			// the dialog is displayed only if the action leading to this call was initiated directly from the user
 			if (!NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native))
 				throw new SecurityException ("Action was not initiated by the user");
@@ -121,6 +148,12 @@ namespace System.Windows.Controls {
 			safe_file_name = Path.GetFileName (result);
 			
 			return true;
+		}
+
+		static void EnsureMainThread ()
+		{
+			if (!Helper.CheckAccess ())
+				throw new InvalidOperationException ("Must be called from the main thread");
 		}
 	}
 }
