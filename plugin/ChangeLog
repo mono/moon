@@ -1,3 +1,18 @@
+2010-05-03  Brad Taylor  <brad@getcoded.net>
+
+	* plugin.h:
+	* plugin.cpp:
+	* moz-sdk/npapi.h: Add support for retrieving accessibles via
+	NPP_GetValue(NPPVpluginNativeAccessibilityAtkPlugId).
+
+	* Makefile.am:
+	* plugin-accessibility-bridge.h:
+	* plugin-accessibility-bridge.cpp: Port A11yHelper to C++, load the
+	atk-bridge, fully support new NPPVpluginNativeAccessibilityAtkPlugId
+	specification.
+
+	r:jstedfast
+
 2010-04-30  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: set the surface on the bridge
