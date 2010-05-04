@@ -1,3 +1,13 @@
+2010-05-04  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardCollectionViewGroup.cs: When clearing the items we
+	  need to set the ItemCount to zero.
+
+	* StandardCollectionView.cs: StandardCollectionView needs to
+	  store a filtered copy of source collection. This makes it
+	  easy to move forward/backward in the collection and provide
+	  the correct indices for objects.
+
 2010-04-30  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs:

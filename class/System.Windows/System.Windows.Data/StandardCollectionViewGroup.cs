@@ -42,6 +42,7 @@ namespace System.Windows.Data {
 		internal void ClearItems ()
 		{
 			ProtectedItems.Clear ();
+			ProtectedItemCount = 0;
 		}
 
 		internal void DecrementCount ()

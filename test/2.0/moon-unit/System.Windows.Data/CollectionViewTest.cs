@@ -168,7 +168,6 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void FilterAndGroup_FilterUpper_GroupBySelf ()
 		{
 			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
@@ -177,7 +176,6 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void FilterAll ()
 		{
 			Check (Items [0], 0, false, false, "#1");
@@ -186,13 +184,11 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void FilterSome_LowerHalf ()
 		{
 			Check (Items [0], 0, false, false, "#1");
 			View.Filter = o => Items.IndexOf (o) >= 2;
 			Check (Items [2], 0, false, false, "#2");
-
 		}
 
 		[TestMethod]
@@ -212,7 +208,6 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Group_GroupBySelf ()
 		{
 			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));
@@ -275,14 +270,12 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MoveTo_LowerFiltered ()
 		{
 			Check (Items [0], 0, false, false, "#1");
 			View.Filter = o => Items.IndexOf (o) >= 2;
 			View.MoveCurrentToPosition (1);
 			Check (Items [3], 1, false, false, "#2");
-
 		}
 
 		[TestMethod]
@@ -407,7 +400,7 @@ namespace MoonTest.System.Windows.Data {
 
 		void Check (object item, int position, bool beforeFirst, bool afterLast, string message)
 		{
-			Assert.AreSame (item, View.CurrentItem, message + ".1");
+			Assert.AreEqual (item, View.CurrentItem, message + ".1");
 			Assert.AreEqual (position, View.CurrentPosition, message + ".2");
 			Assert.AreEqual (beforeFirst, View.IsCurrentBeforeFirst, message + ".3");
 			Assert.AreEqual (afterLast, View.IsCurrentAfterLast, message + ".4");

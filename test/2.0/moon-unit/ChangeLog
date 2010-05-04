@@ -1,3 +1,8 @@
+2010-05-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/CollectionViewTest.cs: Remove
+	  MoonlightBugs from tests which are passing now.
+
 2010-05-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net/WebClientTest.cs: Ignore a test where the URL is not

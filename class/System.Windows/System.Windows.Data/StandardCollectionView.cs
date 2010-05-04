@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Collections.ObjectModel;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace System.Windows.Data {
 
@@ -13,7 +15,8 @@ namespace System.Windows.Data {
 		public event EventHandler CurrentChanged;
 		public event CurrentChangingEventHandler CurrentChanging;
 
-		IList list;
+		Predicate<object> filter;
+		IList filteredList;
 
 		public bool CanFilter {
 			get; private set;
@@ -28,7 +31,7 @@ namespace System.Windows.Data {
 		}
 
 		int Count {
-			get { return list.Count; }
+			get { return filteredList.Count; }
 		}
 
 		public CultureInfo Culture {
@@ -48,7 +51,11 @@ namespace System.Windows.Data {
 		}
 
 		public Predicate<object> Filter {
-			get; set;
+			get { return filter; }
+			set {
+				using (DeferRefresh ())
+					filter = value;
+			}
 		}
 
 		public ObservableCollection<GroupDescription> GroupDescriptions {
@@ -60,7 +67,7 @@ namespace System.Windows.Data {
 		}
 
 		public bool IsCurrentAfterLast {
-			get { return CurrentPosition == list.Count || Count == 0; }
+			get { return CurrentPosition == filteredList.Count || Count == 0; }
 		}
 
 		public bool IsCurrentBeforeFirst {
@@ -72,7 +79,7 @@ namespace System.Windows.Data {
 		}
 
 		bool IsValidSelection {
-			get { return CurrentPosition >= 0 && CurrentPosition < list.Count; }
+			get { return CurrentPosition >= 0 && CurrentPosition < filteredList.Count; }
 		}
 
 		StandardCollectionViewGroup RootGroup {
@@ -89,18 +96,18 @@ namespace System.Windows.Data {
 
 		public StandardCollectionView (IList list)
 		{
-			this.list = list;
 			SourceCollection = list;
 			SortDescriptions = new SortDescriptionCollection ();
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
+			filteredList = new List <object> (list.Cast <object> ());
 			CurrentPosition = -1;
 			MoveCurrentToPosition (0);
 		}
 
 		public bool Contains (object item)
 		{
-			return list.Contains (item);
+			return filteredList.Contains (item);
 		}
 
 		public IDisposable DeferRefresh ()
@@ -110,17 +117,22 @@ namespace System.Windows.Data {
 
 		public IEnumerator GetEnumerator ()
 		{
-			return list.GetEnumerator ();
+			return filteredList.GetEnumerator ();
 		}
 
 		public bool MoveCurrentTo (object item)
 		{
-			return MoveCurrentTo (list.IndexOf (item));
+			return MoveCurrentTo (filteredList.IndexOf (item));
 		}
 
 		bool MoveCurrentTo (int position)
 		{
-			if (CurrentPosition == position)
+			return MoveCurrentTo (position, false);
+		}
+
+		bool MoveCurrentTo (int position, bool force)
+		{
+			if (CurrentPosition == position && !force)
 				return IsValidSelection;
 
 			var h = CurrentChanging;
@@ -131,7 +143,7 @@ namespace System.Windows.Data {
 					return true;
 			}
 
-			CurrentItem = position < 0 || position >= list.Count ? null : list [position];
+			CurrentItem = position < 0 || position >= filteredList.Count ? null : filteredList [position];
 			CurrentPosition = position;
 
 			var h2 = CurrentChanged;
@@ -148,12 +160,12 @@ namespace System.Windows.Data {
 
 		public bool MoveCurrentToLast ()
 		{
-			return MoveCurrentTo (list.Count - 1);
+			return MoveCurrentTo (filteredList.Count - 1);
 		}
 
 		public bool MoveCurrentToNext ()
 		{
-			return CurrentPosition != list.Count && MoveCurrentTo (CurrentPosition + 1);
+			return CurrentPosition != filteredList.Count && MoveCurrentTo (CurrentPosition + 1);
 		}
 
 		public bool MoveCurrentToPosition (int position)
@@ -174,14 +186,23 @@ namespace System.Windows.Data {
 			if (RootGroup == null)
 				RootGroup = new StandardCollectionViewGroup (null);
 
+			filteredList.Clear ();
+			foreach (var item in SourceCollection)
+				if (filter == null || Filter (item))
+					filteredList.Add (item);
+
+			Groups = null;
 			RootGroup.ClearItems ();
-			if (GroupDescriptions.Count == 0) {
-				Groups = null;
-			} else {
-				Groups = RootGroup.Items;
-				foreach (var item in list) {
+			if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
+				foreach (var item in filteredList)
 					AppendToGroup (item, 0, RootGroup);
-				}
+				Groups = RootGroup.Items;
+			}
+
+			if (filteredList.Count > 0) {
+				MoveCurrentTo (CurrentPosition, true);
+			} else {
+				MoveCurrentTo (-1);
 			}
 		}
 
