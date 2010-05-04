@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 551 methods
+# 550 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -272,7 +272,6 @@
 +SSC-M: System.Boolean System.Windows.Application::get_IsCurrentSet()
 +SSC-M: System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
-+SSC-M: System.Boolean System.Windows.Automation.Peers.AutomationSingleton::get_AccessibilityEnabled()
 +SSC-M: System.Boolean System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_UpdateAvailable()
 +SSC-M: System.Exception System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_Error()
 +SSC-M: System.Void System.Windows.Controls.ContentControl::content_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)

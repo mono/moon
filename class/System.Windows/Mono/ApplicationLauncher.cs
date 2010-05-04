@@ -44,6 +44,11 @@ namespace Mono {
 	/// </summary>	
 	static class ApplicationLauncher {
 
+		static ApplicationLauncher ()
+		{
+			A11yHelper.Initialize ();
+		}
+
 		/// <summary>
 		///   Creates a new Loader for a XAML file.
 		/// </summary>
@@ -72,6 +77,8 @@ namespace Mono {
 		/// </summary>
 		public static void DestroyApplication (IntPtr plugin)
 		{
+			A11yHelper.Shutdown ();
+
 			if (Application.Current != null)
 				Application.Current.Terminate ();
 		}

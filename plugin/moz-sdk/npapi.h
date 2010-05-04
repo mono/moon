@@ -334,17 +334,9 @@ typedef enum {
   /* Checks if the plugin is interested in receiving the http body of
    * all http requests (including failed ones, http status != 200).
    */
-  NPPVpluginWantsAllNetworkStreams = 18
+  NPPVpluginWantsAllNetworkStreams = 18,
 
-#ifdef MOZ_X11
-  /* Get a native accessible for the plugin on Linux.
-   * This is expected to be an AtkObject.
-   * Introduced in Gecko 1.9.2.4.
-   */
-  , NPPVpluginNativeAccessibleAtkPlugId = 19
-#endif
-
-  , NPPVcursor = 9999
+  NPPVcursor = 19
 
 #ifdef XP_MACOSX
   /* Used for negotiating drawing models */

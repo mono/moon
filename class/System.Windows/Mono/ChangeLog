@@ -1,11 +1,3 @@
-2010-05-03  Brad Taylor  <brad@getcoded.net>
-
-	* A11yHelper.cs:
-	* ApplicationLauncher.cs: Deprecate A11yHelper class in favor of
-	AccessibilityBridge in C++.
-
-	r:jstedfast
-
 2010-05-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Helper.cs: Add CheckAccess helper for class that inherit

@@ -1,10 +1,3 @@
-2010-05-03  Brad Taylor  <brad@getcoded.net>
-
-	* various.m4: Add atk dependency for Accessibility support.  This
-	shouldn't be a problem as GTK+ has an ATK dependency anyway.
-
-	r:jstedfast
-
 2010-04-28  Andreia Gaita  <avidigal@novell.com>
 
 	* mozilla.m4: remove ff36 bridge.

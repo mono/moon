@@ -14,7 +14,6 @@
 #ifndef MOON_PLUGIN
 #define MOON_PLUGIN
 
-#include "plugin-accessibility-bridge.h"
 #include "moonlight.h"
 
 class MoonlightScriptControlObject;
@@ -28,7 +27,6 @@ typedef void callback_dom_event (gpointer context, char *name, int client_x, int
 				 gboolean ctrl_key, gboolean shift_key, int mouse_button,
 				 int key_code, int char_code,
 				 gpointer domEvent);
-
 
 class PluginInstance
 {
@@ -44,14 +42,7 @@ class PluginInstance
 
 	void Initialize (int argc, char * argn[], char * argv[]);
 	void Shutdown ();
-
-#if PAL_GTK_WINDOWING
-	AtkObject* GetRootAccessible ();
-#endif
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	AccessibilityBridge* GetAccessibilityBridge ();
-
+	
 	// Mozilla plugin related methods
 	NPError GetValue (NPPVariable variable, void *result);
 	NPError SetValue (NPNVariable variable, void *value);
@@ -276,8 +267,6 @@ private:
 	static void splashscreen_error_tickcall (EventObject *data);
 	
 	EVENTHANDLER (PluginInstance, AppDomainUnloadedEvent, Deployment, EventArgs);
-
-	AccessibilityBridge *accessibility_bridge;
 };
 
 extern GSList *plugin_instances;
