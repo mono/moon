@@ -1,3 +1,8 @@
+2010-05-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Controls/Src/Common/NullableBoolConverter.cs: Handle null values properly.
+	Fixes a stack overflow in drt #PPC.NullableBoolConverterTest.
+
 2010-04-21  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ToolTip/ToolTip.cs: Add in some missing default

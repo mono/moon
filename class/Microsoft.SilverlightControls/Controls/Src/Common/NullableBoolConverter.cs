@@ -56,14 +56,15 @@ namespace System.Windows
 #endif
         public object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
+            string text;
+
             if (value is bool) 
             {
                 return (bool?) value;
             } 
-            if (value is string)
+            text = value as string;
+            if (text != null || value == null)
             {
-                string text = (string) value;
-
                 return (!string.IsNullOrEmpty(text)) ?
                     (bool?) bool.Parse(text) : 
                     null; 
