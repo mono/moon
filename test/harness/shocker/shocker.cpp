@@ -479,7 +479,7 @@ ShockerScriptableControlObject::LogError (const NPVariant *args, uint32_t arg_co
 	LOG_PLUGIN ("[%i shocker] ShockerScriptableControlObject::LogError ('%s')\n", getpid (), STR_FROM_VARIANT (args [0]));
 
 #if DEBUG_ERROR_GECKO == 1
-	findRealErrorOnStack (obj);
+	findRealErrorOnStack (this);
 #endif
 	GetLogProvider ()->LogError (STR_FROM_VARIANT (args [0]));
 	BOOLEAN_TO_NPVARIANT (true, *result);

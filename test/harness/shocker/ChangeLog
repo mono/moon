@@ -1,3 +1,7 @@
+2010-05-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: LogError: fix compile error.
+
 2010-04-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.cpp: CompareImages: report the correct result back to js.
