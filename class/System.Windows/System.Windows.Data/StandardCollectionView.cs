@@ -53,8 +53,8 @@ namespace System.Windows.Data {
 		public Predicate<object> Filter {
 			get { return filter; }
 			set {
-				using (DeferRefresh ())
-					filter = value;
+				filter = value;
+				Refresh ();
 			}
 		}
 

@@ -1,5 +1,13 @@
 2010-05-04  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewSource.cs:
+	* StandardCollectionView.cs: CollectionViewSource passes a
+	  Predicate<object> to its CollectionView so that the view can
+	  invoke the event handlers attached to the
+	  CollectionViewSource.Filter event.
+
+2010-05-04  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionViewGroup.cs: When clearing the items we
 	  need to set the ItemCount to zero.
 

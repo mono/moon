@@ -60,6 +60,32 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void SourceFilterIsPropagated ()
+		{
+			FilterEventHandler h = (o, e) => { };
+			var source = new CollectionViewSource { Source = this.Source };
+			Assert.IsNull (source.View.Filter, "#1");
+			
+			source.Filter += h;
+			Assert.IsNotNull (source.View.Filter, "#2");
+
+			source.Filter -= h;
+			Assert.IsNull (source.View.Filter, "#3");
+		}
+
+		[TestMethod]
+		public void FilterUsedImmediately ()
+		{
+			bool called = false;
+			FilterEventHandler h = (o, e) => { called = true; };
+
+			var source = new CollectionViewSource { Source = this.Source };
+			source.Filter += h;
+
+			Assert.IsTrue (called, "#1");
+		}
+
+		[TestMethod]
 		public void ViewIsReadOnly ()
 		{
 			var source = new CollectionViewSource { Source = this.Source };
