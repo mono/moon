@@ -49,9 +49,11 @@ namespace System.Windows.Browser {
 		{
 			scriptableTypes = new Dictionary<string, Type> ();
 
-			// we don't call RegisterScriptableObject since we're registering a private type
-			ScriptObject services = new ManagedObject (HostServices.Services);
-			NativeMethods.moonlight_scriptable_object_register (PluginHost.Handle, "services", services.Handle);
+			if (PluginHost.Handle != IntPtr.Zero) {
+				// we don't call RegisterScriptableObject since we're registering a private type
+				ScriptObject services = new ManagedObject (HostServices.Services);
+				NativeMethods.moonlight_scriptable_object_register (PluginHost.Handle, "services", services.Handle);
+			}
 		}
 
 		static internal Dictionary<string, Type> ScriptableTypes {

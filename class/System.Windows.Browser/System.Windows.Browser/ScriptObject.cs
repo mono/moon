@@ -80,9 +80,14 @@ namespace System.Windows.Browser {
 
 		void SetDefaultHandle ()
 		{
-			handleIsScriptableNPObject = true;
-			Handle = NativeMethods.moonlight_scriptable_object_create (PluginHost.Handle,
-				invalidate_handle, has_method, has_property, invoke, set_prop, get_prop);
+			if (PluginHost.Handle != IntPtr.Zero) {
+				handleIsScriptableNPObject = true;
+				Handle = NativeMethods.moonlight_scriptable_object_create (PluginHost.Handle, invalidate_handle,
+											   has_method, has_property, invoke,
+											   set_prop, get_prop);
+			} else {
+				Handle = IntPtr.Zero;
+			}
 		}
 
 		internal IntPtr Handle {

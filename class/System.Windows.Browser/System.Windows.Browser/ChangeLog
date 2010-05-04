@@ -1,3 +1,11 @@
+2010-05-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* HtmlPage.cs (.ctor): Don't call
+	moonlight_scriptable_object_register() with a null PluginHost.
+
+	* ScriptObject.cs (SetDefaultHandle): Don't call
+	moonlight_scriptable_object_create() with a null PluginHost.
+
 2010-04-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserInformation.cs: Add new Product[Name|Version] properties
