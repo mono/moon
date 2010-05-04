@@ -1,5 +1,10 @@
 2010-05-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/CollectionViewTest.cs: Add tests for
+	  CollectionViewSource.SortDescriptions which we now pass.
+
+2010-05-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewSourceTest.cs:
 	  CollectionViewSource passes a Predicate<object> to its
 	  CollectionView so that the view can invoke the event

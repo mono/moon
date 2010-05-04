@@ -101,6 +101,7 @@ namespace System.Windows.Data {
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
 			GroupDescriptions.CollectionChanged += (o, e) => Refresh ();
+			((INotifyCollectionChanged)SortDescriptions).CollectionChanged += (o, e) => Refresh ();
 			FilterCallback = (o) => {
 				var h = filter;
 				if (h != null) {
@@ -136,6 +137,11 @@ namespace System.Windows.Data {
 				View.GroupDescriptions.Clear ();
 				for (int i = 0; i < GroupDescriptions.Count; i++)
 					View.GroupDescriptions.Add (GroupDescriptions [i]);
+
+				View.SortDescriptions.Clear ();
+				for (int i = 0; i < SortDescriptions.Count; i++)
+					View.SortDescriptions.Add (SortDescriptions [i]);
+
 				View.Filter = (filter == null) ? null : FilterCallback;
 			}
 		}

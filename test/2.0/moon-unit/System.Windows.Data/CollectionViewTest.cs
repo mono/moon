@@ -35,6 +35,7 @@ using System.Windows.Data;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
+using System.Windows.Shapes;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -396,6 +397,68 @@ namespace MoonTest.System.Windows.Data {
 			Check (Items [0], 0, false, false, "#1");
 			Assert.IsFalse (View.MoveCurrentTo (new object ()), "#a");
 			Check (null, -1, true, false, "#2");
+		}
+
+		[TestMethod]
+		public void Sort_OneDescription ()
+		{
+			Source.Source = new [] { 1, 2, 3, 4, 5 };
+			Source.SortDescriptions.Add (new SortDescription ("", ListSortDirection.Descending));
+
+			Source.View.MoveCurrentToFirst ();
+			Assert.AreEqual (5, (int) Source.View.CurrentItem, "#1");
+
+			Source.View.MoveCurrentToLast ();
+			Assert.AreEqual (1, (int) Source.View.CurrentItem, "#2");
+		}
+
+		[TestMethod]
+		public void Sort_TwoDescription ()
+		{
+			Source.Source = new [] { 1, 2, 3, 4, 5 };
+			
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription { GroupNameFromItemFunc = (item, level) => (int) item < 3 ? "A" : "B" });
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription { GroupNameFromItemFunc = (item, level) => (int) item < 3 ? "A" : "B" });
+			
+			Source.SortDescriptions.Add (new SortDescription ("", ListSortDirection.Descending));
+			Source.SortDescriptions.Add (new SortDescription ("", ListSortDirection.Ascending));
+
+			Source.View.MoveCurrentToFirst ();
+			Assert.AreEqual (5, (int) Source.View.CurrentItem, "#1");
+
+			Source.View.MoveCurrentToLast ();
+			Assert.AreEqual (1, (int) Source.View.CurrentItem, "#2");
+		}
+
+		[TestMethod]
+		public void Sort_TwoDescription_ActualProperties ()
+		{
+			List<Rectangle> rects = new List<Rectangle> {
+				new Rectangle { Width = 10, Height = 10 },
+				new Rectangle { Width = 10, Height = 20 },
+				new Rectangle { Width = 20, Height = 10 },
+				new Rectangle { Width = 20, Height = 20 }
+			};
+
+			using (Source.DeferRefresh ()) {
+				Source.Source = rects;
+				Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription {
+					GroupNameFromItemFunc = (item, level) => rects.IndexOf ((Rectangle)item) < 2 ? "A" : "B"
+				});
+
+				Source.SortDescriptions.Add (new SortDescription ("Width", ListSortDirection.Descending));
+				Source.SortDescriptions.Add (new SortDescription ("Height", ListSortDirection.Ascending));
+			}
+
+			// Check the first group
+			var group = (CollectionViewGroup) Source.View.Groups [0];
+			Assert.AreSame (rects [2], group.Items [0], "#1");
+			Assert.AreSame (rects [3], group.Items [1], "#2");
+			
+			// Check the second group
+			group = (CollectionViewGroup) Source.View.Groups [1];
+			Assert.AreSame (rects [0], group.Items [0], "#3");
+			Assert.AreSame (rects [1], group.Items [1], "#4");
 		}
 
 		void Check (object item, int position, bool beforeFirst, bool afterLast, string message)

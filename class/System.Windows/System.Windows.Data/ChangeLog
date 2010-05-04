@@ -1,5 +1,19 @@
 2010-05-04  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyComparer.cs: Implement a Comparer which can follow
+	  PropertyPaths and compare the objects at the end of the
+	  path. 
+
+	* StandardCollectionView.cs: When refreshing the view we now
+	  use the SortDescriptions to properly sort the objects before
+	  grouping them.
+
+	* CollectionViewSource.cs: We need to propagate changes to the
+	  SortDescriptions to the View the same as we do for
+	  GroupDescriptions.
+
+2010-05-04  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewSource.cs:
 	* StandardCollectionView.cs: CollectionViewSource passes a
 	  Predicate<object> to its CollectionView so that the view can

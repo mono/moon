@@ -497,6 +497,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/IndexedPropertyPathNode.cs		\
 	$(srcdir)/System.Windows.Data/IPropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
+	$(srcdir)/System.Windows.Data/PropertyComparer.cs			\
 	$(srcdir)/System.Windows.Data/PropertyGroupDescription.cs		\
 	$(srcdir)/System.Windows.Data/PropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/PropertyNodeType.cs			\

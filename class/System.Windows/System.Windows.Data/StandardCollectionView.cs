@@ -16,7 +16,7 @@ namespace System.Windows.Data {
 		public event CurrentChangingEventHandler CurrentChanging;
 
 		Predicate<object> filter;
-		IList filteredList;
+		List <object> filteredList;
 
 		public bool CanFilter {
 			get; private set;
@@ -190,6 +190,9 @@ namespace System.Windows.Data {
 			foreach (var item in SourceCollection)
 				if (filter == null || Filter (item))
 					filteredList.Add (item);
+
+			if (SortDescriptions.Count > 0)
+				filteredList.Sort (new PropertyComparer (SortDescriptions));
 
 			Groups = null;
 			RootGroup.ClearItems ();
