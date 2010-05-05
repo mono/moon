@@ -177,7 +177,7 @@ MoonWindowGtk::InitializeCommon ()
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
 			       GDK_BUTTON_RELEASE_MASK |
-			       ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) != 0 ? GDK_SCROLL_MASK : 0) |
+			       GDK_SCROLL_MASK |
 			       GDK_FOCUS_CHANGE_MASK);
 	
 	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);

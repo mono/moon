@@ -1,3 +1,7 @@
+2010-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/gtk/window-gtk.cpp: Mouse wheel isn't desktop-only anymore.
+
 2010-05-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/pal.cpp (MoonAppRecordIterator): Moved out of pal.h.
