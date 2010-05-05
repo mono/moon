@@ -321,8 +321,23 @@ InputProvider::GetCursorPos (int &x, int &y)
 void
 InputProvider::MouseWheel (guint16 clicks)
 {
+	int button;
+	
 	LOG_INPUT ("InputProvider::MouseWheel (%u)\n", clicks);
-	Shocker_FailTestFast ("InputProvider::MouseWheel (): not implemented");
+
+	g_assert (display);
+
+	if (clicks == 0)
+		return;
+
+	// positive clicks: scroll up, negative clicks: scroll down
+	// xlib: button 4: scroll up, button 5: scroll down
+	button = clicks > 0 ? 4 : 5;
+	
+	for (int i = 0; i < abs (clicks); i++) {
+		XTestFakeButtonEvent (display, button, true, CurrentTime);
+		XTestFakeButtonEvent (display, button, false, CurrentTime);
+	}
 }
 
 void

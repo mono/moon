@@ -1,3 +1,7 @@
+2010-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* input.cpp: Implement fake mouse wheel input.
+
 2010-05-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.cpp: LogError: fix compile error.
