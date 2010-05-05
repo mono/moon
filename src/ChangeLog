@@ -1,3 +1,12 @@
+2010-05-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (GlyphTypeface): New class representing a
+	GlyphTypeface (only accessible via js).
+	(GlyphTypefaceCollection): New Collection subclass for
+	GlyphTypefaces.
+	(FontManager::GetSystemGlyphTypefaces): New method to return a
+	collection of system typefaces for use with the js API.
+
 2010-05-05  Chris Toshok  <toshok@ximian.com>
 
 	* pal/network/dbus/pal-dbus-network.h,

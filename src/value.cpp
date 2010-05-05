@@ -30,6 +30,7 @@
 #include "grid.h"
 #include "cornerradius.h"
 #include "mono/metadata/object.h"
+#include "fontmanager.h"
 #include "fontsource.h"
 #include "transform.h"
 #include "utils.h"
@@ -376,6 +377,14 @@ Value::Value (CornerRadius corner)
 	SetIsNull (false);
 }
 
+Value::Value (GlyphTypeface *typeface)
+{
+	Init ();
+	k = Type::GLYPHTYPEFACE;
+	u.typeface = new GlyphTypeface (typeface);
+	SetIsNull (false);
+}
+
 Value::Value (ManagedTypeInfo type_info)
 {
 	Init ();
@@ -506,6 +515,12 @@ Value::Copy (const Value& v)
 			*u.corner = *v.u.corner;
 		}
 		break;
+	case Type::GLYPHTYPEFACE:
+		if (v.u.typeface)
+			u.typeface = new GlyphTypeface (v.u.typeface);
+		else
+			u.typeface = NULL;
+		break;
 	case Type::MANAGEDTYPEINFO:
 		if (v.u.type_info) {
 			u.type_info = g_new0 (ManagedTypeInfo, 1);
@@ -591,6 +606,9 @@ Value::FreeValue ()
 		break;
 	case Type::CORNERRADIUS:
 		g_free (u.corner);
+		break;
+	case Type::GLYPHTYPEFACE:
+		delete u.typeface;
 		break;
 	case Type::MANAGEDTYPEINFO:
 		ManagedTypeInfo::Free (u.type_info);
@@ -725,6 +743,12 @@ Value::operator== (const Value &v) const
 		if (!v.u.uri)
 			return false;
 		return *u.uri == *v.u.uri;
+	case Type::GLYPHTYPEFACE:
+		if (!u.typeface)
+			return !v.u.typeface;
+		if (!v.u.typeface)
+			return false;
+		return u.typeface == v.u.typeface;
 	case Type::DOUBLE:
 		return fabs (u.d - v.u.d) < DBL_EPSILON;
 	case Type::FLOAT:

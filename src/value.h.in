@@ -96,6 +96,7 @@ public:
 	Value (GridLength grid_length);
 	Value (Thickness thickness);
 	Value (CornerRadius radius);
+	Value (GlyphTypeface *typeface);
 	Value (ManagedTypeInfo type_info);
 	Value (const char *s, bool take = false);
 	Value (Type::Kind, void *npobj);
@@ -207,6 +208,7 @@ public:
 		GridLength *grid_length;
 		Thickness *thickness;
 		CornerRadius *corner;
+		GlyphTypeface *typeface;
 		ManagedTypeInfo *type_info;
 		void *managed_object;
 		void *npobj;

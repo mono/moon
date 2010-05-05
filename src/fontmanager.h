@@ -18,6 +18,7 @@
 #include FT_FREETYPE_H
 
 #include "moon-path.h"
+#include "collection.h"
 #include "enums.h"
 
 struct ManagedStreamCallbacks;
@@ -69,6 +70,9 @@ class FontFace {
 	const char *GetFamilyName ();
 	const char *GetStyleName ();
 	
+	int GetMajorVersion ();
+	int GetMinorVersion ();
+	
 	bool IsScalable ();
 	bool IsItalic ();
 	bool IsBold ();
@@ -80,6 +84,42 @@ class FontFace {
 	void GetExtents (double size, bool gapless, FontFaceExtents *extents);
 	double Kerning (double size, guint32 left, guint32 right);
 	bool LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations simulate = StyleSimulationsNone);
+};
+
+/* @IncludeInKinds */
+/* @Namespace=None */
+class GlyphTypeface {
+	char *resource;
+	int ver_major;
+	int ver_minor;
+	
+ public:
+	GlyphTypeface (const char *path, int index, int major, int minor);
+	GlyphTypeface (const GlyphTypeface *typeface);
+	~GlyphTypeface ();
+	
+	const char *GetFontResource () { return resource; }
+	
+	//
+	// Public Accessors
+	//
+	int GetMajorVersion () { return ver_major; }
+	int GetMinorVersion () { return ver_minor; }
+	const char *GetFontUri ();
+	
+	bool operator== (const GlyphTypeface &v) const;
+};
+
+/* @IncludeInKinds */
+/* @Namespace=None */
+class GlyphTypefaceCollection : public Collection {
+ protected:
+	virtual ~GlyphTypefaceCollection () { }
+	
+ public:
+	GlyphTypefaceCollection ();
+	
+	virtual Type::Kind GetElementType () { return Type::GLYPHTYPEFACE; }
 };
 
 class FontManager {
@@ -105,6 +145,8 @@ class FontManager {
 	
 	FontFace *OpenFont (const char *name, FontStretches stretch, FontWeights weight, FontStyles style);
 	FontFace *OpenFont (const char *name, int index);
+	
+	GlyphTypefaceCollection *GetSystemGlyphTypefaces ();
 };
 
 #endif /* __FONT_MANAGER_H__ */

@@ -703,6 +703,57 @@ font_index_destroy (gpointer user_data)
 
 
 //
+// GlyphTypeface
+//
+
+GlyphTypeface::GlyphTypeface (const char *path, int index, int major, int minor)
+{
+	resource = g_strdup_printf ("%s%c%d", path, index > 0 ? '#' : '\0', index);
+	ver_major = major;
+	ver_minor = minor;
+}
+
+GlyphTypeface::GlyphTypeface (const GlyphTypeface *typeface)
+{
+	resource = g_strdup (typeface->resource);
+	ver_major = typeface->ver_major;
+	ver_minor = typeface->ver_minor;
+}
+
+GlyphTypeface::~GlyphTypeface ()
+{
+	g_free (resource);
+}
+
+const char *
+GlyphTypeface::GetFontUri ()
+{
+	const char *uri;
+	
+	if ((uri = strrchr (resource, '/')))
+		return uri + 1;
+	
+	return resource;
+}
+
+bool
+GlyphTypeface::operator== (const GlyphTypeface &v) const
+{
+	return !strcmp (v.resource, resource);
+}
+
+
+//
+// GlyphTypefaceCollection
+//
+
+GlyphTypefaceCollection::GlyphTypefaceCollection ()
+{
+	SetObjectType (Type::GLYPHTYPEFACE_COLLECTION);
+}
+
+
+//
 // FontFace
 //
 
@@ -755,6 +806,30 @@ const char *
 FontFace::GetStyleName ()
 {
 	return face->style_name;
+}
+
+int
+FontFace::GetMajorVersion ()
+{
+	if (FT_IS_SFNT (face)) {
+		TT_HoriHeader *hhea = (TT_HoriHeader *) FT_Get_Sfnt_Table (face, ft_sfnt_hhea);
+		
+		return (hhea->Version >> 16) & 0xffff;
+	} else {
+		return -1;
+	}
+}
+
+int
+FontFace::GetMinorVersion ()
+{
+	if (FT_IS_SFNT (face)) {
+		TT_HoriHeader *hhea = (TT_HoriHeader *) FT_Get_Sfnt_Table (face, ft_sfnt_hhea);
+		
+		return hhea->Version & 0xffff;
+	} else {
+		return -1;
+	}
 }
 
 bool
@@ -1646,4 +1721,71 @@ FontFace *
 FontManager::OpenFont (const char *name, int index)
 {
 	return OpenFontResource (name, NULL, index, FontStretchesNormal, FontWeightsNormal, FontStylesNormal);
+}
+
+static const char *typeface_extensions[] = {
+	".ttf", ".ttc"
+};
+
+static bool
+is_allowable_typeface (const char *path)
+{
+	const char *ext;
+	guint i;
+	
+	if (!(ext = strrchr (path, '.')))
+		return false;
+	
+	for (i = 0; i < G_N_ELEMENTS (typeface_extensions); i++) {
+		if (!g_ascii_strcasecmp (typeface_extensions[i], ext))
+			return true;
+	}
+	
+	return false;
+}
+
+GlyphTypefaceCollection *
+FontManager::GetSystemGlyphTypefaces ()
+{
+	GlyphTypefaceCollection *typefaces;
+	GlyphTypeface *typeface;
+	FcObjectSet *objects;
+	FcPattern *pattern;
+	FcFontSet *fonts;
+	FontFace *face;
+	
+	typefaces = new GlyphTypefaceCollection ();
+	
+	objects = FcObjectSetBuild (FC_FILE, FC_INDEX, NULL);
+	pattern = FcPatternCreate ();
+	
+	fonts = FcFontList (NULL, pattern, objects);
+	FcObjectSetDestroy (objects);
+	FcPatternDestroy (pattern);
+	
+	for (int i = 0; i < fonts->nfont; i++) {
+		const char *path;
+		int index;
+		
+		if (FcPatternGetString (fonts->fonts[i], FC_FILE, 0, (FcChar8 **) &path) != FcResultMatch)
+			continue;
+		
+		if (!is_allowable_typeface (path))
+			continue;
+		
+		if (FcPatternGetInteger (fonts->fonts[i], FC_INDEX, 0, &index) != FcResultMatch)
+			continue;
+		
+		if (!(face = OpenFontFace (path, NULL, index)))
+			continue;
+		
+		typeface = new GlyphTypeface (path, index, face->GetMajorVersion (), face->GetMinorVersion ());
+		typefaces->Add (Value (typeface));
+		delete typeface;
+		face->unref ();
+	}
+	
+	FcFontSetDestroy (fonts);
+	
+	return typefaces;
 }
