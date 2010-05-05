@@ -1,3 +1,22 @@
+2010-05-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (value_to_variant): Add support for
+	GlyphTypefaces.
+	(npvariant_is_moonlight_object): Added
+	MoonlightGlyphTypefaceClass.
+	(MoonlightGlyphTypeface): Implemented.
+	(MoonlightGlyphTypefaceType): Implemented.
+	(MoonlightGlyphTypefaceCollectionObject): Implemented.
+	(MoonlightGlyphTypefaceCollectionType): Implemented.
+	(moonlight_settings_mapping): Added "getsystemglyphtypefaces"
+	which is a new method in 3.0
+	(MoonlightSettingsObject::Invoke): Added support for the
+	GetSystemGlyphTypefaces method.
+	(EventObjectCreateWrapper): Added mapping to
+	GlyphTypefaceCollection.
+	(plugin_init_classes): Init mappings for GlyphTypeface[Collection].
+	(plugin_destroy_classes): Destroy the mapping for GlyphTypeface.
+
 2010-04-30  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: set the surface on the bridge

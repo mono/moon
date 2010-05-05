@@ -193,6 +193,12 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		OBJECT_TO_NPVARIANT (timespan, *result);
 		break;
 	}
+	case Type::GLYPHTYPEFACE: {
+		MoonlightGlyphTypeface *typeface = (MoonlightGlyphTypeface *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightGlyphTypefaceClass);
+		typeface->typeface = v->AsGlyphTypeface ();
+		OBJECT_TO_NPVARIANT (typeface, *result);
+		break;
+	}
 	case Type::GRIDLENGTH: {
 		MoonlightGridLength *gridlength = (MoonlightGridLength *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightGridLengthClass);
 		gridlength->SetParentInfo (parent_obj, parent_property);
@@ -326,6 +332,7 @@ enum DependencyObjectClassNames {
 	TEXT_BOX_CLASS,
 	PASSWORD_BOX_CLASS,
 	GLYPHS_CLASS,
+	GLYPH_TYPEFACE_COLLECTION_CLASS,
 	TEXT_BLOCK_CLASS,
 	EVENT_ARGS_CLASS,
 	ROUTED_EVENT_ARGS_CLASS,
@@ -390,7 +397,8 @@ npvariant_is_moonlight_object (NPVariant var)
 		MoonlightScriptableObjectClass,
 		MoonlightScriptControlClass,
 		MoonlightSettingsClass,
-		MoonlightTimeSpanClass
+		MoonlightTimeSpanClass,
+		MoonlightGlyphTypefaceClass,
 	};
 	NPObject *obj;
 	guint i;
@@ -805,6 +813,99 @@ MoonlightErrorEventArgsType::MoonlightErrorEventArgsType ()
 }
 
 MoonlightErrorEventArgsType *MoonlightErrorEventArgsClass;
+
+/*** Typefaces ***/
+static NPObject *
+moonlight_glyph_typeface_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightGlyphTypeface (instance);
+}
+
+static const MoonNameIdMapping
+glyph_typeface_mapping[] = {
+	{ "majorversion", MoonId_MajorVersion },
+	{ "minorversion", MoonId_MinorVersion },
+	{ "fonturi", MoonId_FontUri },
+};
+
+bool
+MoonlightGlyphTypeface::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	switch (id) {
+	case MoonId_MajorVersion:
+		INT32_TO_NPVARIANT (typeface->GetMajorVersion (), *result);
+		return true;
+	case MoonId_MinorVersion:
+		INT32_TO_NPVARIANT (typeface->GetMinorVersion (), *result);
+		return true;
+	case MoonId_FontUri:
+		string_to_npvariant (typeface->GetFontUri (), result);
+		return true;
+	default:
+		return MoonlightObject::GetProperty (id, name, result);
+	}
+}
+
+bool
+MoonlightGlyphTypeface::SetProperty (int id, NPIdentifier name, const NPVariant *value)
+{
+	return MoonlightObject::SetProperty (id, name, value);
+}
+
+MoonlightGlyphTypefaceType::MoonlightGlyphTypefaceType ()
+{
+	AddMapping (glyph_typeface_mapping, G_N_ELEMENTS (glyph_typeface_mapping));
+	
+	allocate = moonlight_glyph_typeface_allocate;
+}
+
+MoonlightGlyphTypefaceType *MoonlightGlyphTypefaceClass;
+
+/*** MoonlightGlyphTypefaceCollectionClass ****************************************/
+
+static NPObject *
+moonlight_glyph_typeface_collection_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightGlyphTypefaceCollectionObject (instance);
+}
+
+bool
+MoonlightGlyphTypefaceCollectionObject::Invoke (int id, NPIdentifier name, const NPVariant *args, guint32 argCount, NPVariant *result)
+{
+	GlyphTypefaceCollection *typefaces = (GlyphTypefaceCollection *) GetDependencyObject ();
+	MoonlightGlyphTypeface *wrapper;
+	GlyphTypeface *typeface;
+	int index;
+	
+	switch (id) {
+	case MoonId_GetItem:
+		if (!check_arg_list ("i", argCount, args))
+			THROW_JS_EXCEPTION ("getItem");
+		
+		if ((index = NPVARIANT_TO_INT32 (args[0])) < 0)
+			THROW_JS_EXCEPTION ("getItem");
+		
+		if (index >= typefaces->GetCount ()) {
+			NULL_TO_NPVARIANT (*result);
+			return true;
+		}
+		
+		typeface = typefaces->GetValueAt (index)->AsGlyphTypeface ();
+		wrapper = (MoonlightGlyphTypeface *) MOON_NPN_CreateObject (GetInstance (), MoonlightGlyphTypefaceClass);
+		wrapper->typeface = typeface;
+		
+		OBJECT_TO_NPVARIANT (wrapper, *result);
+		
+		return true;
+	default:
+		return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
+	}
+}
+
+MoonlightGlyphTypefaceCollectionType::MoonlightGlyphTypefaceCollectionType ()
+{
+	allocate = moonlight_glyph_typeface_collection_allocate;
+}
 
 /*** Points ***/
 static NPObject *
@@ -2404,6 +2505,7 @@ moonlight_settings_mapping [] = {
 	{ "enableframeratecounter", MoonId_EnableFramerateCounter },
 	{ "enablehtmlaccess", MoonId_EnableHtmlAccess },
 	{ "enableredrawregions", MoonId_EnableRedrawRegions },
+	{ "getsystemglyphtypefaces", MoonId_GetSystemGlyphTypefaces },
 	{ "maxframerate", MoonId_MaxFrameRate },
 	{ "version", MoonId_Version },
 	{ "windowless", MoonId_Windowless }
@@ -2413,7 +2515,7 @@ bool
 MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	PluginInstance *plugin = GetPlugin ();
-
+	
 	switch (id) {
 	case MoonId_Background:
 		string_to_npvariant (plugin->GetBackground (), result);
@@ -2495,7 +2597,15 @@ bool
 MoonlightSettingsObject::Invoke (int id, NPIdentifier name,
 				 const NPVariant *args, guint32 argCount, NPVariant *result)
 {
+	MoonlightEventObjectObject *wrapper;
+	GlyphTypefaceCollection *typefaces;
+	
 	switch (id) {
+	case MoonId_GetSystemGlyphTypefaces:
+		typefaces = plugin->GetDeployment ()->GetFontManager ()->GetSystemGlyphTypefaces ();
+		wrapper = EventObjectCreateWrapper (plugin, typefaces);
+		OBJECT_TO_NPVARIANT (wrapper, *result);
+		return true;
 	case MoonId_ToString:
 		if (argCount != 0)
 			return false;
@@ -3379,6 +3489,9 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 		break;
 	case Type::GLYPHS:
 		np_class = dependency_object_classes [GLYPHS_CLASS];
+		break;
+	case Type::GLYPHTYPEFACE_COLLECTION:
+		np_class = dependency_object_classes [GLYPH_TYPEFACE_COLLECTION_CLASS];
 		break;
 	case Type::TEXTBLOCK:
 		np_class = dependency_object_classes [TEXT_BLOCK_CLASS];
@@ -5307,6 +5420,7 @@ plugin_init_classes (void)
 	dependency_object_classes [STROKE_COLLECTION_CLASS] = new MoonlightStrokeCollectionType ();
 	dependency_object_classes [STROKE_CLASS] = new MoonlightStrokeType ();
 	dependency_object_classes [GLYPHS_CLASS] = new MoonlightGlyphsType ();
+	dependency_object_classes [GLYPH_TYPEFACE_COLLECTION_CLASS] = new MoonlightGlyphTypefaceCollectionType ();
 	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
 	dependency_object_classes [UI_ELEMENT_CLASS] = new MoonlightUIElementType ();
 	dependency_object_classes [CONTROL_CLASS] = new MoonlightControlType ();
@@ -5334,6 +5448,7 @@ plugin_init_classes (void)
 	MoonlightScriptControlClass = new MoonlightScriptControlType ();
 	MoonlightSettingsClass = new MoonlightSettingsType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
+	MoonlightGlyphTypefaceClass = new MoonlightGlyphTypefaceType ();
 	MoonlightKeyTimeClass = new MoonlightKeyTimeType ();
 	MoonlightThicknessClass = new MoonlightThicknessType ();
 	MoonlightCornerRadiusClass = new MoonlightCornerRadiusType ();
@@ -5362,6 +5477,7 @@ plugin_destroy_classes (void)
 	delete MoonlightPointClass; MoonlightPointClass = NULL;
 	delete MoonlightDurationClass; MoonlightDurationClass = NULL;
 	delete MoonlightTimeSpanClass; MoonlightTimeSpanClass = NULL;
+	delete MoonlightGlyphTypefaceClass; MoonlightGlyphTypefaceClass = NULL;
 	delete MoonlightKeyTimeClass; MoonlightKeyTimeClass = NULL;
 	delete MoonlightThicknessClass; MoonlightThicknessClass = NULL;
 	delete MoonlightCornerRadiusClass; MoonlightCornerRadiusClass = NULL;

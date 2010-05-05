@@ -81,6 +81,8 @@ enum PluginPropertyId {
 	MoonId_EnableHtmlAccess,
 	MoonId_MaxFrameRate,
 	MoonId_Version,
+	MoonId_MajorVersion,
+	MoonId_MinorVersion,
 	MoonId_Windowless,
 	MoonId_ActualHeight,
 	MoonId_ActualWidth,
@@ -91,6 +93,7 @@ enum PluginPropertyId {
 	MoonId_DeviceType,
 	MoonId_IsInverted,
 	MoonId_Handled,
+	MoonId_FontUri,
 	MoonId_GridUnitType,
 	MoonId_Value,
 	MoonId_Accessibility,
@@ -135,6 +138,7 @@ enum PluginPropertyId {
 	MoonId_GetParent,
 	MoonId_GetStylusInfo,
 	MoonId_GetStylusPoints,
+	MoonId_GetSystemGlyphTypefaces,
 	MoonId_CaptureMouse,
 	MoonId_ReleaseMouseCapture,
 	MoonId_AddEventListener,
@@ -958,6 +962,43 @@ struct MoonlightGlyphsObject : MoonlightUIElementObject {
 	MoonlightGlyphsObject (NPP instance) : MoonlightUIElementObject (instance)
 	{
 		moonlight_type = Type::GLYPHS;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
+};
+
+/*** MoonlightGlyphTypefaceClass  **************************************************************/
+struct MoonlightGlyphTypefaceType : MoonlightObjectType {
+	MoonlightGlyphTypefaceType ();
+};
+
+extern MoonlightGlyphTypefaceType *MoonlightGlyphTypefaceClass;
+
+struct MoonlightGlyphTypeface : MoonlightObject {
+	MoonlightGlyphTypeface (NPP instance) : MoonlightObject(instance)
+	{
+		moonlight_type = Type::GLYPHTYPEFACE;
+		typeface = NULL;
+	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	GlyphTypeface *typeface;
+};
+
+/*** MoonlightGlyphTypefaceCollectionType *************************************/
+
+struct MoonlightGlyphTypefaceCollectionType : MoonlightCollectionType {
+	MoonlightGlyphTypefaceCollectionType ();
+};
+
+
+struct MoonlightGlyphTypefaceCollectionObject : MoonlightCollectionObject {
+	MoonlightGlyphTypefaceCollectionObject (NPP instance) : MoonlightCollectionObject (instance)
+	{
+		moonlight_type = Type::GLYPHTYPEFACE_COLLECTION;
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
