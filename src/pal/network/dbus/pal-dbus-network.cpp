@@ -88,7 +88,7 @@ bool
 MoonNetworkServiceDbus::GetIsNetworkAvailable ()
 {
 	GValue state = {0, };
-	bool rv;
+	bool rv = false;
 	GError *error = NULL;
 
 
