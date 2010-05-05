@@ -1,3 +1,7 @@
+2010-05-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mxap.cs: Fix v3 version number and add v4 support
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mxap.cs: smcs needs to be executed using the moonlight mono.

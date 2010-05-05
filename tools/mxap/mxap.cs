@@ -33,7 +33,8 @@ namespace Moonlight {
 		private bool in_place = true;
 		
 		const string RuntimeVersion2 = "2.0.31005.0";
-		const string RuntimeVersion3 = "3.0.40624.0";
+		const string RuntimeVersion3 = "3.0.40818.0";
+		const string RuntimeVersion4 = "4.0.50401.0";
 
 		private string RuntimeVersion = RuntimeVersion2;
 
@@ -560,6 +561,9 @@ namespace Moonlight {
 				break;
 			case "3":
 				RuntimeVersion = RuntimeVersion3;
+				break;
+			case "4":
+				RuntimeVersion = RuntimeVersion4;
 				break;
 			default:
 				RuntimeVersion = v;
