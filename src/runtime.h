@@ -552,6 +552,8 @@ MoonWindowingSystem *runtime_get_windowing_system ();
 MoonInstallerService *runtime_get_installer_service ();
 MoonMessagingService *runtime_get_messaging_service ();
 MoonCaptureService *runtime_get_capture_service ();
+/* @GeneratePInvoke */
+MoonNetworkService *runtime_get_network_service ();
 
 void     runtime_shutdown (void);
 

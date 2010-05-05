@@ -10,6 +10,9 @@ AC_DEFUN([MOONLIGHT_CHECK_PAL],
 	AC_DEFINE([PAL_GLIB_MESSAGING],1,[Hack in support for the pal-glib so we can start using it.])
 	pal_messaging="glib+unix (hardcoded)"
 
+	AC_DEFINE([PAL_DBUS_NETWORKAVAILABILITY],1,[Hack in support for the dbus-glib so we can start using it.])
+	pal_networking="dbus-glib (hardcoded)"
+
 	AC_DEFINE([PAL_LINUX_CAPTURE],1,[Hack in support for the linux capture container])
 	pal_capture="linux (hardcoded)"
 

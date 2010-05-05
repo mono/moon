@@ -472,4 +472,20 @@ public:
 	virtual bool RequestSystemAccess () = 0;
 };
 
+class MoonNetworkService {
+public:
+	MoonNetworkService () {};
+	virtual ~MoonNetworkService () {};
+
+	// registers a callback with the service which should be invoked any time a state change happens:
+	// 1. network address changed
+	// 2. network up/down
+	// 3. etc...
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual void SetNetworkStateChangedCallback (MoonCallback callback, gpointer data) = 0;
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual bool GetIsNetworkAvailable () = 0;
+};
+
 #endif /* MOON_PAL_H */

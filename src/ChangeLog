@@ -1,3 +1,18 @@
+2010-05-05  Chris Toshok  <toshok@ximian.com>
+
+	* pal/network/dbus/pal-dbus-network.h,
+	pal/network/dbus/pal-dbus-network.cpp: new files, implement the
+	MoonNetworkService api using dbus.
+
+	* runtime.h, runtime.cpp: add/implement
+	runtime_get_network_service.
+
+	* pal/pal.h (MoonNetworkService): add new abstract service class
+	for network availability.
+
+	* Makefile.am (libmoon_include_headers): add pal-dbus-network.h
+	(libmoon_la_SOURCES): add pal-dbus-network.cpp
+
 2010-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: Deployment mismatches are very bad, so let's print

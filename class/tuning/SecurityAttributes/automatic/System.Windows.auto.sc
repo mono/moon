@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 424 methods needs to be decorated.
+# 426 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -87,6 +87,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream_first_file(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::moon_network_service_get_is_network_available(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_window_get_transparent(System.IntPtr)
@@ -603,6 +606,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::routed_event_args_get_source(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::runtime_get_network_service()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::runtime_get_windowing_system()

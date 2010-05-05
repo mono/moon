@@ -16,3 +16,5 @@
 # Calls Activator.CreateInstance to create IWebRequestCreate instance of the browser and client http stack creators
 +SSC-M: System.Void System.Net.WebRequest::.cctor()
 
+# makes a pinvoke into libmoon
++SC-M: System.Void System.Net.NetworkInformation.NetworkChange::.cctor()

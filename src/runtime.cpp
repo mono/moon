@@ -59,6 +59,10 @@
 #if PAL_LINUX_CAPTURE
 #include "pal/capture/pal-linux-capture.h"
 #endif
+#if PAL_DBUS_NETWORKAVAILABILITY
+#include "pal/network/dbus/pal-dbus-network.h"
+#endif
+
 #include "pipeline.h"
 #include "effect.h"
 
@@ -75,10 +79,11 @@
 bool Surface::main_thread_inited = false;
 pthread_t Surface::main_thread = 0;
 
-MoonWindowingSystem *windowing_system = NULL;
-MoonInstallerService *installer_service = NULL;
-MoonMessagingService *messaging_service = NULL;
-MoonCaptureService *capture_service = NULL;
+static MoonWindowingSystem *windowing_system = NULL;
+static MoonInstallerService *installer_service = NULL;
+static MoonMessagingService *messaging_service = NULL;
+static MoonCaptureService *capture_service = NULL;
+static MoonNetworkService *network_service = NULL;
 
 bool inited = false;
 bool g_type_inited = false;
@@ -2726,13 +2731,19 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 #if PAL_GLIB_MESSAGING
 	messaging_service = new MoonMessagingServiceGlib ();
 #else
-#error "no PAL windowing service defined"
+#error "no PAL messaging service defined"
 #endif
 
 #if PAL_LINUX_CAPTURE
 	capture_service = new MoonCaptureServiceLinux ();
 #else
 #error "no PAL capture service defined"
+#endif
+
+#if PAL_DBUS_NETWORKAVAILABILITY
+	network_service = new MoonNetworkServiceDbus ();
+#else
+#error "no PAL network availability service defined"
 #endif
 
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
@@ -2765,6 +2776,12 @@ MoonCaptureService *
 runtime_get_capture_service ()
 {
 	return capture_service;
+}
+
+MoonNetworkService *
+runtime_get_network_service ()
+{
+	return network_service;
 }
 
 void
