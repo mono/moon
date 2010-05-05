@@ -1,5 +1,10 @@
 2010-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Deployment mismatches are very bad, so let's print
+	stack traces whenever it happens to fix them asap.
+
+2010-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pal/gtk/window-gtk.cpp: Mouse wheel isn't desktop-only anymore.
 
 2010-05-03  Jeffrey Stedfast  <fejj@novell.com>
