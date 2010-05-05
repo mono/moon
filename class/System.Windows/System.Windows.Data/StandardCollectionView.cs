@@ -213,7 +213,7 @@ namespace System.Windows.Data {
 		{
 			if (depth < GroupDescriptions.Count) {
 				var desc = GroupDescriptions [depth];
-				var name = desc.GroupNameFromItem (item, depth, null);
+				var name = desc.GroupNameFromItem (item, depth, Culture);
 				StandardCollectionViewGroup subGroup = null;
 				foreach (StandardCollectionViewGroup g in group.Items) {
 					if (desc.NamesMatch (g.Name, name)) {

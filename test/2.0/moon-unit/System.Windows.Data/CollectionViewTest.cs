@@ -36,6 +36,7 @@ using System.Windows.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
 using System.Windows.Shapes;
+using System.Globalization;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -120,6 +121,27 @@ namespace MoonTest.System.Windows.Data {
 			Assert.AreEqual (NotifyCollectionChangedAction.Add, list [1].Action, "#6");
 			Assert.AreEqual (NotifyCollectionChangedAction.Add, list [2].Action, "#7");
 		}
+
+
+		[TestMethod]
+		public void CulturePropagatesToDescriptions ()
+		{
+			CultureInfo culture = null;
+			Source.Culture = CultureInfo.InvariantCulture;
+			Assert.AreSame (Source.Culture, Source.View.Culture, "#1");
+
+			var group = new ConcretePropertyGroupDescription {
+				GroupNameFromItemFunc = (item, level, cult) => {
+					culture = cult;
+					return "A";
+				}
+			};
+
+			// Verify that the method was called and we passed in the right cultureinfo
+			Source.GroupDescriptions.Add (group);
+			Assert.AreSame (Source.Culture, culture, "#2");
+		}
+
 
 		[TestMethod]
 		public void DeferAndAddGroup ()
@@ -417,8 +439,8 @@ namespace MoonTest.System.Windows.Data {
 		{
 			Source.Source = new [] { 1, 2, 3, 4, 5 };
 			
-			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription { GroupNameFromItemFunc = (item, level) => (int) item < 3 ? "A" : "B" });
-			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription { GroupNameFromItemFunc = (item, level) => (int) item < 3 ? "A" : "B" });
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription { GroupNameFromItemFunc = (item, level, culture) => (int) item < 3 ? "A" : "B" });
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription { GroupNameFromItemFunc = (item, level, culture) => (int) item < 3 ? "A" : "B" });
 			
 			Source.SortDescriptions.Add (new SortDescription ("", ListSortDirection.Descending));
 			Source.SortDescriptions.Add (new SortDescription ("", ListSortDirection.Ascending));
@@ -443,7 +465,7 @@ namespace MoonTest.System.Windows.Data {
 			using (Source.DeferRefresh ()) {
 				Source.Source = rects;
 				Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription {
-					GroupNameFromItemFunc = (item, level) => rects.IndexOf ((Rectangle)item) < 2 ? "A" : "B"
+					GroupNameFromItemFunc = (item, level, culture) => rects.IndexOf ((Rectangle)item) < 2 ? "A" : "B"
 				});
 
 				Source.SortDescriptions.Add (new SortDescription ("Width", ListSortDirection.Descending));

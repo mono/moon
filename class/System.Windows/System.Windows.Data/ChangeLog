@@ -1,3 +1,12 @@
+2010-05-05  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionViewSource.cs: Propagate
+	  CollectionViewSource.Culture to the View.
+
+	* StandardCollectionView.cs: Correctly use
+	  CollectionView.Culture when calling
+	  GroupDescription.GroupNameFromItem.
+
 2010-05-04  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyComparer.cs: Implement a Comparer which can follow

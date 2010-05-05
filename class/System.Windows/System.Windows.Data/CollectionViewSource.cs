@@ -52,6 +52,7 @@ namespace System.Windows.Data {
 		public static readonly DependencyProperty ViewProperty =
 			DependencyProperty.Register ("ViewProperty", typeof (ICollectionView), typeof (CollectionViewSource), null);
 
+		CultureInfo culture;
 		FilterEventHandler filter;
 
 		public event FilterEventHandler Filter {
@@ -66,7 +67,11 @@ namespace System.Windows.Data {
 		}
 
 		public CultureInfo Culture {
-			get; set;
+			get { return culture; }
+			set {
+				culture = value;
+				Refresh ();
+			}
 		}
 
 		int IDeferRefresh.DeferLevel {
@@ -134,6 +139,7 @@ namespace System.Windows.Data {
 				return;
 
 			using (View.DeferRefresh ()) {
+				View.Culture = Culture;
 				View.GroupDescriptions.Clear ();
 				for (int i = 0; i < GroupDescriptions.Count; i++)
 					View.GroupDescriptions.Add (GroupDescriptions [i]);

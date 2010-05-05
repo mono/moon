@@ -42,6 +42,7 @@ using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
+using System.Globalization;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -91,7 +92,7 @@ namespace MoonTest.System.Windows.Data {
 		public void GroupsAreRecreated ()
 		{
 			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
-			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+			Func<object, int, CultureInfo, object> nameCreator = (item, level, culture) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
 
 			var desc = new ConcretePropertyGroupDescription () {
 				GroupNameFromItemFunc = nameCreator,
@@ -121,7 +122,7 @@ namespace MoonTest.System.Windows.Data {
 		public void OneGroupDesciption ()
 		{
 			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
-			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+			Func<object, int, CultureInfo, object> nameCreator = (item, level, culture) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
 
 			var desc = new ConcretePropertyGroupDescription () {
 				GroupNameFromItemFunc = nameCreator,
@@ -165,7 +166,7 @@ namespace MoonTest.System.Windows.Data {
 			 */
 
 			Func<object, object, bool> nameMatcher = (groupName, itemName) => (string) groupName == (string) itemName;
-			Func<object, int, object> nameCreator = (item, level) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
+			Func<object, int, CultureInfo, object> nameCreator = (item, level, culture) => ((int) item <= 2 ? "Lower" : "Upper") + level.ToString ();
 
 			var level0 = new ConcretePropertyGroupDescription () {
 				GroupNameFromItemFunc = nameCreator,

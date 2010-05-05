@@ -229,7 +229,7 @@ namespace MoonTest.System.Windows.Data {
 		public List<string> OnPropertyChangedCalled = new List<string> ();
 		public List<string> PropertyChangedFired = new List<string> ();
 		public Func<object, object, bool> NamesMatchFunc { get; set; }
-		public Func<object, int, object> GroupNameFromItemFunc { get; set; }
+		public Func<object, int, CultureInfo, object> GroupNameFromItemFunc { get; set; }
 		public string Name { get; set; }
 
 		public ConcretePropertyGroupDescription ()
@@ -249,7 +249,7 @@ namespace MoonTest.System.Windows.Data {
 		public override object GroupNameFromItem (object item, int level, CultureInfo culture)
 		{
 			if (GroupNameFromItemFunc != null)
-				return GroupNameFromItemFunc (item, level);
+				return GroupNameFromItemFunc (item, level, culture);
 			return base.GroupNameFromItem (item, level, culture);
 		}
 
