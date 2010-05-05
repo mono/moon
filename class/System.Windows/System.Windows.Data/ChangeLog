@@ -1,5 +1,14 @@
 2010-05-05  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPathWalker.cs:
+	* CollectionViewNode.cs:
+	* BindingExpressionBase.cs: Implement support for using
+	  CollectionViewSources as the datasource in bindings. This
+	  allows us to support Binding.BindsDirectlyToSource properly
+	  now.
+
+2010-05-05  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewSource.cs: Propagate
 	  CollectionViewSource.Culture to the View.
 

@@ -66,6 +66,12 @@ namespace System.Windows.Data
 		}
 
 		public PropertyPathWalker (string path)
+			: this (path, true)
+		{
+
+		}
+
+		public PropertyPathWalker (string path, bool bindDirectlyToSource)
 		{
 			string index;
 			string propertyName;
@@ -73,6 +79,7 @@ namespace System.Windows.Data
 			PropertyNodeType type;
 
 			var parser = new PropertyPathParser (path);
+			Node = new CollectionViewNode (bindDirectlyToSource);
 			while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
 				IPropertyPathNode node;
 				switch (type) {
@@ -86,10 +93,7 @@ namespace System.Windows.Data
 				default:
 					throw new Exception ("Unsupported node type");
 				}
-				if (Node == null)
-					Node = node;
-				else
-					FinalNode.Next = node;
+				FinalNode.Next = node;
 			}
 
 			FinalNode.ValueChanged += delegate (object o, EventArgs e) {

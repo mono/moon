@@ -120,7 +120,7 @@ namespace System.Windows.Data {
 			Property = property;
 
 			if (!string.IsNullOrEmpty (Binding.Path.Path)) {
-				PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path);
+				PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource);
 				if (Binding.Mode != BindingMode.OneTime)
 					PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 			}

@@ -490,6 +490,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Data/BindingOperations.cs			\
 	$(srcdir)/System.Windows.Data/CollectionViewGroup.cs			\
+	$(srcdir)/System.Windows.Data/CollectionViewNode.cs			\
 	$(srcdir)/System.Windows.Data/CollectionViewSource.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventArgs.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\

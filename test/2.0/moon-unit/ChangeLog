@@ -1,5 +1,12 @@
 2010-05-05  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp:
+	* System.Windows.Data/BindingTest_CollectionView.cs: Add tests
+	  for BindingExpressions which have a CollectionViewSource as
+	  their datasource.
+
+2010-05-05  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewGroupTest.cs:
 	* System.Windows.Data/PropertyGroupDescriptionTest.cs: Update
 	  tests.
