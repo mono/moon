@@ -34,12 +34,12 @@ namespace System.Windows.Media {
 	internal partial class UnmanagedMatrix : DependencyObject {
 
 		// FIXME: introduce a private DP that allows us to set all values in a single SetValue call
-		public static readonly DependencyProperty M11Property = DependencyProperty.Lookup (Kind.MATRIX, "M11", typeof (double));
-		public static readonly DependencyProperty M12Property = DependencyProperty.Lookup (Kind.MATRIX, "M12", typeof (double));
-		public static readonly DependencyProperty M21Property = DependencyProperty.Lookup (Kind.MATRIX, "M21", typeof (double));
-		public static readonly DependencyProperty M22Property = DependencyProperty.Lookup (Kind.MATRIX, "M22", typeof (double));
-		public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Lookup (Kind.MATRIX, "OffsetX", typeof (double));
-		public static readonly DependencyProperty OffsetYProperty = DependencyProperty.Lookup (Kind.MATRIX, "OffsetY", typeof (double));
+		public static readonly DependencyProperty M11Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX, "M11", typeof (double));
+		public static readonly DependencyProperty M12Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX, "M12", typeof (double));
+		public static readonly DependencyProperty M21Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX, "M21", typeof (double));
+		public static readonly DependencyProperty M22Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX, "M22", typeof (double));
+		public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX, "OffsetX", typeof (double));
+		public static readonly DependencyProperty OffsetYProperty = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX, "OffsetY", typeof (double));
 
 		public UnmanagedMatrix (Matrix m) :
 			this ()
