@@ -34,10 +34,13 @@ using Mono;
 namespace System.Windows.Media.Animation {
 
 	public sealed partial class Storyboard : Timeline {
-		// FIXME For TargetName and TargetProperty
-		// FIXME Exception if setting on running
-		// This check needs to go in native co
-		private static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.TIMELINEGROUP, "Children", typeof (TimelineCollection));
+		// FIXME this is kinda gross, as the property is
+		// actually on Kind.TIMELINEGROUP, but since it has no
+		// managed counterpart,
+		// DependencyProperty.DeclaringType ends up being null
+		// (which causes all manner of bad things), so we use
+		// Kind.STORYBOARD instead.
+		private static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "Children", typeof (TimelineCollection));
 
 		static Storyboard ()
 		{

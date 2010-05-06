@@ -1,3 +1,9 @@
+2010-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* Storyboard.cs: make sure ChildrenProperty.DeclaringType gets
+	filled in properly (look it up on Kind.STORYBOARD instead of
+	Kind.TIMELINEGROUP).
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* KeyTime.cs:

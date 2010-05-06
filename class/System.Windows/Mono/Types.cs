@@ -53,6 +53,13 @@ namespace Mono
 		{
 			native = raw;
 			CreateNativeTypes ();
+
+			// FIXME: this hack shouldn't be necessary but
+			// our StylusPoint/UnmanagedStylusPoint
+			// classes require a bit of finesse.  Is there
+			// a more general way to do this?
+			Type t = typeof (System.Windows.Input.StylusPoint); 
+			types.Add (t, new ManagedType (t, Kind.STYLUSPOINT));
 		}
 		
 #if notyet
@@ -159,7 +166,7 @@ namespace Mono
 					return type.type;
 				}
 			}
-			return null;
+			throw new ExecutionEngineException (string.Format ("KindToType returning null for Kind {0}", kind));
 		}
 		
 		public Kind TypeToKind (Type type)

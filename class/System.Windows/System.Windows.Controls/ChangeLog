@@ -1,3 +1,8 @@
+2010-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* Image.cs: no need to manually add Stretch here, since we moved
+	the unmanaged property and things get generated properly now.
+
 2010-05-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* OpenFileDialog.cs: Ensure that everything gets called from the

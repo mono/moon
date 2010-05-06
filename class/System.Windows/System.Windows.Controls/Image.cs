@@ -32,14 +32,6 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public sealed partial class Image : FrameworkElement {
-		public static readonly DependencyProperty StretchProperty =
-			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
-				
-		public Stretch Stretch {
-			get { return (Stretch) GetValue (StretchProperty); }
-			set { SetValue (StretchProperty, value); }
-		}
-		
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
 			return new ImageAutomationPeer (this);

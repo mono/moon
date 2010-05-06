@@ -491,7 +491,7 @@ public:
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
 
-	/* @PropertyType=Collection,ManagedPropertyType=BlockCollection,AutoCreateValue,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	/* @PropertyType=Collection,ManagedPropertyType=BlockCollection,AutoCreator=RichTextArea::CreateDefaultBlockCollection,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
 
 	bool GetIsReadOnly ();
@@ -502,6 +502,8 @@ public:
 
 	/* @DelegateType=RoutedEventHandler */
 	const static int SelectionChangedEvent;
+
+	static Value* CreateDefaultBlockCollection (Type::Kind type, DependencyProperty *property);
 };
 
 #endif /* __TEXTBLOCK_H__ */

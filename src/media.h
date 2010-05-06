@@ -119,8 +119,6 @@ class MediaBase : public FrameworkElement {
  public:
  	/* @PropertyType=string,AlwaysChange,GenerateAccessors */
 	const static int SourceProperty;
- 	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
-	const static int StretchProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
 	
@@ -147,9 +145,6 @@ class MediaBase : public FrameworkElement {
 	double GetDownloadProgress ();
 	
 	const char *GetSource ();
-	
-	void SetStretch (Stretch stretch);
-	Stretch GetStretch ();
 };
 
 
@@ -178,6 +173,9 @@ class Image : public MediaBase {
 
 	/* @DelegateType=EventHandler<RoutedEventArgs> */
 	const static int ImageOpenedEvent;
+
+ 	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
+	const static int StretchProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
@@ -205,6 +203,9 @@ class Image : public MediaBase {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource (ImageSource *source);
 	ImageSource *GetSource ();
+
+	void SetStretch (Stretch stretch);
+	Stretch GetStretch ();
 
 	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
 };

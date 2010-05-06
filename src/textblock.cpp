@@ -84,6 +84,12 @@ RichTextArea::RichTextArea ()
 {
 	SetObjectType (Type::RICHTEXTAREA);
 }
+Value *
+RichTextArea::CreateDefaultBlockCollection (Type::Kind type, DependencyProperty *property)
+{
+	return Value::CreateUnrefPtr (new BlockCollection());
+}
+
 Span::Span ()
 {
 	SetObjectType (Type::SPAN);

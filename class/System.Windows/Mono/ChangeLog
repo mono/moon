@@ -1,3 +1,10 @@
+2010-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* Types.cs: add hack to register StylusPoint = Kind.STYLUSPOINT,
+	and also throw an exception when KindToType would have previously
+	returned null since it's actually an error (and a rather insidious
+	one at that)
+
 2010-05-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Helper.cs: Add CheckAccess helper for class that inherit

@@ -1,3 +1,12 @@
+2010-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* media.h: move StretchProperty from MediaBase to Image to fix DP
+	lookups.
+
+	* textblock.h,textblock.cpp (RichTextArea): BlocksProperty
+	requires a BlockCollection autocreate value, so add an autocreator
+	for it.
+
 2010-05-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (GlyphTypeface): New class representing a
