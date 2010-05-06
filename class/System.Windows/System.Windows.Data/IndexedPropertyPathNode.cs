@@ -35,6 +35,7 @@ using System.ComponentModel;
 namespace System.Windows.Data
 {
 	class IndexedPropertyPathNode : PropertyPathNode {
+		static readonly PropertyInfo IListIndexer = GetIndexer (true, typeof (IList));
 
 		bool isBroken;
 		public override bool IsBroken {
@@ -60,19 +61,29 @@ namespace System.Windows.Data
 		{
 			PropertyInfo = null;
 			if (Source != null) {
-				var members = Source.GetType ().GetDefaultMembers ();
-				foreach (PropertyInfo member in members) {
-					var param = member.GetIndexParameters ();
-					if (param.Length == 1) {
-						if (Index is int && param[0].ParameterType == typeof (int)) {
-							PropertyInfo = member;
-							return;
-						} else if (param [0].ParameterType == typeof (string)) {
-							PropertyInfo = member;
-						}
+				PropertyInfo = GetIndexer (Index is int, Source.GetType ());
+				if (PropertyInfo == null && Source is IList)
+					PropertyInfo = IListIndexer;
+			}
+		}
+
+		static PropertyInfo GetIndexer (bool allowIntIndexer, Type type)
+		{
+			PropertyInfo propInfo = null;
+			var members = type.GetDefaultMembers ();
+			foreach (PropertyInfo member in members) {
+				var param = member.GetIndexParameters ();
+				if (param.Length == 1) {
+					if (allowIntIndexer && param[0].ParameterType == typeof (int)) {
+						propInfo = member;
+						break;
+					} else if (param [0].ParameterType == typeof (string)) {
+						propInfo = member;
 					}
 				}
 			}
+
+			return propInfo;
 		}
 
 		void OnCollectionChanged (object o, NotifyCollectionChangedEventArgs e)

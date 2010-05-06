@@ -1,5 +1,12 @@
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
+	* IndexedPropertyPathNode.cs: For cases where the Source is an
+	  IList we should just use the IList Indexer. This fixes the
+	  case where we index into an array as opposed to a List<T>.
+	  Allows more of drt 232 to pass.
+
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: The default implementation of
 	  CollectionView needs to be INPC. Allows more of drt 232 to
 	  pass.
