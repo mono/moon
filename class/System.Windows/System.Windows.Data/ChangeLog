@@ -1,5 +1,17 @@
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewNode.cs: 'BindsDirectlyToSource' actually
+	  means 'binds directly to an ICollectionView if it can be
+	  found'. Fixes more of DRT 232.
+
+	* PropertyPathWalker.cs: We bind directly to source if the
+	  property we're binding to exists on ICollectionView. i.e. if
+	  we try to bind to 'CurrentPosition' we will bind to the
+	  property on ICollectionView as opposed to the
+	  'CurrentPosition' property on the 'CurrentItem'.
+
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewNode.cs: If we have a CollectionViewSource, we
 	  use the View from that as our datasource. If we have a
 	  CollectionView, we use that directly. Allows more of DRT 232

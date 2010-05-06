@@ -29,10 +29,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
+using System.ComponentModel;
 
 namespace System.Windows.Data
 {
 	class PropertyPathWalker {
+		static readonly PropertyInfo[] CollectionViewProperties = typeof (ICollectionView).GetProperties ();
 
 		public event EventHandler ValueChanged;
 
@@ -79,9 +82,9 @@ namespace System.Windows.Data
 			PropertyNodeType type;
 
 			var parser = new PropertyPathParser (path);
-			Node = new CollectionViewNode (bindDirectlyToSource);
 			while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
-				IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource);
+				bool maybeBind = CollectionViewProperties.Any (prop => prop.Name == propertyName);
+				IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource || maybeBind);
 				switch (type) {
 				case PropertyNodeType.AttachedProperty:
 				case PropertyNodeType.Property:

@@ -18,7 +18,7 @@ namespace MoonTest.System.Windows.Data {
 	[TestClass]
 	public class BindingTest_CollectionView {
 
-		List<object> Data {
+		List<Human> Data {
 			get; set;
 		}
 
@@ -37,7 +37,7 @@ namespace MoonTest.System.Windows.Data {
 		[TestInitialize]
 		public void Setup ()
 		{
-			Data = new List<object> {
+			Data = new List<Human> {
 				new Human { Name="1", Age = 1 },
 				new Human { Name="2", Age = 2 },
 				new Human { Name="3", Age = 3 },
@@ -99,11 +99,38 @@ namespace MoonTest.System.Windows.Data {
 			});
 			Assert.AreEqual (0, Target.Width, "#1");
 		}
+
+		[TestMethod]
+		public void PropertyOnCollectionViewTakesPriority_CollectionView ()
+		{
+			// As 'CurrentPosition' exists on CollectionViewSource, we bind to that directly
+			// instead of binding to the current item.
+			Data [0].CurrentPosition = 1000;
+			Target.SetBinding (Rectangle.WidthProperty, new Binding ("CurrentPosition") {
+				Source = Source.View,
+			});
+
+			Assert.AreEqual (0, Target.Width, "#1");
+		}
+
+		[TestMethod]
+		public void PropertyOnCollectionViewTakesPriority_CollectionViewSource ()
+		{
+			// As 'CurrentPosition' exists on CollectionViewSource, we bind to that directly
+			// instead of binding to the current item.
+			Data[0].CurrentPosition = 1000;
+			Target.SetBinding (Rectangle.WidthProperty, new Binding ("CurrentPosition") {
+				Source = Source,
+			});
+
+			Assert.AreEqual (0, Target.Width, "#1");
+		}
 	}
 
 	public class Human {
 		public double Age { get; set; }
 		public string Name { get; set; }
+		public double CurrentPosition { get; set; }
 
 		public override string ToString ()
 		{

@@ -74,6 +74,11 @@ namespace System.Windows.Data {
 
 		public override void UpdateValue ()
 		{
+			// If the source is a CollectionViewSource we use its View property,
+			// if it is a CollectionView we use that directly. If we are binding
+			// directly to the source, this means we need to bind to the CollectionView
+			// object directly if it exists as opposed to CollectionView.CurrentItem.
+
 			ICollectionView view = null;
 			if (Source is CollectionViewSource)
 				view = ((CollectionViewSource) Source).View;
@@ -81,8 +86,11 @@ namespace System.Windows.Data {
 				view = (ICollectionView) Source;
 
 			if (view == null || BindsDirectlyToSource) {
-				ValueType = Source == null ? null : Source.GetType ();
-				Value = Source;
+				// If our source object is not (or does not have) an ICollectionView, then we
+				// fall back to using the Source object directly.
+				object o = view ?? Source;
+				ValueType = o == null ? null : o.GetType ();
+				Value = o;
 			} else {
 				ValueType = view.CurrentItem == null ? null : view.CurrentItem.GetType ();
 				Value = view.CurrentItem;

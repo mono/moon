@@ -1,3 +1,9 @@
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest_CollectionView.cs: Add tests
+	  to ensure we bind to the correct properties when using
+	  ICollectionViews.
+
 2010-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* moon-unit.mdp:
