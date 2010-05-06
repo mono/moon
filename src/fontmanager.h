@@ -89,16 +89,27 @@ class FontFace {
 /* @IncludeInKinds */
 /* @Namespace=None */
 class GlyphTypeface {
+	char *family_name;
+	FontStretches stretch;
+	FontWeights weight;
+	FontStyles style;
 	char *resource;
 	int ver_major;
 	int ver_minor;
 	
  public:
-	GlyphTypeface (const char *path, int index, int major, int minor);
+	GlyphTypeface (const char *path, int index, FontFace *face);
 	GlyphTypeface (const GlyphTypeface *typeface);
 	~GlyphTypeface ();
 	
-	const char *GetFontResource () { return resource; }
+	//
+	// Accessors meant for FontManager's use
+	//
+	const char *GetFontResource () const { return resource; }
+	const char *GetFamilyName () const { return family_name; }
+	FontStretches GetFontStretch () const { return stretch; }
+	FontWeights GetFontWeight () const { return weight; }
+	FontStyles GetFontStyle () const { return style; }
 	
 	//
 	// Public Accessors
@@ -145,6 +156,7 @@ class FontManager {
 	
 	FontFace *OpenFont (const char *name, FontStretches stretch, FontWeights weight, FontStyles style);
 	FontFace *OpenFont (const char *name, int index);
+	FontFace *OpenFont (const GlyphTypeface *typeface);
 	
 	GlyphTypefaceCollection *GetSystemGlyphTypefaces ();
 };

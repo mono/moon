@@ -1,3 +1,17 @@
+2010-05-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (SetFontSource): New method to set a font source to a
+	GlyphTypeface.
+
+	* fonts.cpp (TextFont::Load): New method to load a TextFont given
+	a GlyphTypeface.
+
+	* fontmanager.cpp (GlyphTypeface::.ctor): Now takes the FontFace
+	so we can get all the info we need (we now keep track of
+	family_name, stretch, weight, and slant).
+	(FontManager::OpenFont): New method to open a FontFace given a
+	GlyphTypeface.
+
 2010-05-06  Chris Toshok  <toshok@ximian.com>
 
 	* media.h: move StretchProperty from MediaBase to Image to fix DP

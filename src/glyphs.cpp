@@ -770,6 +770,25 @@ Glyphs::SetFontResource (const Uri *uri)
 }
 
 void
+Glyphs::SetFontSource (GlyphTypeface *typeface, const char *part_name)
+{
+	StyleSimulations simulate = GetStyleSimulations ();
+	double size = GetFontRenderingEmSize ();
+	
+	CleanupDownloader ();
+	delete font;
+	
+	if (typeface)
+		font = TextFont::Load (typeface, size, simulate);
+	else
+		font = NULL;
+	
+	UpdateBounds (true);
+	Invalidate ();
+	dirty = true;
+}
+
+void
 Glyphs::SetFontSource (Downloader *downloader, const char *part_name)
 {
 	const char *hash;

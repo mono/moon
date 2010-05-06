@@ -87,6 +87,25 @@ TextFont::Load (const char *resource, int index, double size, StyleSimulations s
 	return font;
 }
 
+TextFont *
+TextFont::Load (const GlyphTypeface *typeface, double size, StyleSimulations simulate)
+{
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	FontFace **faces;
+	TextFont *font;
+	
+	faces = g_new (FontFace *, 1);
+	if (!(faces[0] = manager->OpenFont (typeface))) {
+		g_free (faces);
+		return NULL;
+	}
+	
+	font = new TextFont (faces, 1, 0, false, size);
+	font->simulate = simulate;
+	
+	return font;
+}
+
 #define lowercase(x) (((x) >= 'A' && (x) <= 'Z') ? (x) - 'A' + 'a' : (x))
 
 static int

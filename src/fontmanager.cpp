@@ -706,22 +706,45 @@ font_index_destroy (gpointer user_data)
 // GlyphTypeface
 //
 
-GlyphTypeface::GlyphTypeface (const char *path, int index, int major, int minor)
+GlyphTypeface::GlyphTypeface (const char *path, int index, FontFace *face)
 {
+	FontStyleInfo info;
+	
+	info.width = FontStretchesNormal;
+	info.weight = FontWeightsNormal;
+	info.slant = FontStylesNormal;
+	info.family_name = NULL;
+	info.set = 0;
+	
+	// extract whatever little style info we can from the family name
+	style_info_parse (face->GetFamilyName (), &info, true);
+	
+	// style info parsed from style_name overrides anything we got from family_name
+	style_info_parse (face->GetStyleName (), &info, false);
+	
 	resource = g_strdup_printf ("%s%c%d", path, index > 0 ? '#' : '\0', index);
-	ver_major = major;
-	ver_minor = minor;
+	ver_major = face->GetMajorVersion ();
+	ver_minor = face->GetMinorVersion ();
+	family_name = info.family_name;
+	stretch = info.width;
+	weight = info.weight;
+	style = info.slant;
 }
 
 GlyphTypeface::GlyphTypeface (const GlyphTypeface *typeface)
 {
+	family_name = g_strdup (typeface->family_name);
 	resource = g_strdup (typeface->resource);
 	ver_major = typeface->ver_major;
 	ver_minor = typeface->ver_minor;
+	stretch = typeface->stretch;
+	weight = typeface->weight;
+	style = typeface->style;
 }
 
 GlyphTypeface::~GlyphTypeface ()
 {
+	g_free (family_name);
 	g_free (resource);
 }
 
@@ -1723,6 +1746,49 @@ FontManager::OpenFont (const char *name, int index)
 	return OpenFontResource (name, NULL, index, FontStretchesNormal, FontWeightsNormal, FontStylesNormal);
 }
 
+FontFace *
+FontManager::OpenFont (const GlyphTypeface *typeface)
+{
+	const char *hash, *path;
+	char *key, *buf = NULL;
+	FontFace *face;
+	int index = 0;
+	
+	// first check to see if this typeface is already cached...
+	key = g_strdup_printf ("%s:%d:%d:%d", typeface->GetFamilyName (), typeface->GetFontStretch (),
+			       typeface->GetFontWeight (), typeface->GetFontStyle ());
+	if ((face = (FontFace *) g_hash_table_lookup (system_faces, key))) {
+		face->ref ();
+		g_free (key);
+		return face;
+	}
+	
+	// not in the cache, extract the path and index from the resource string
+	path = typeface->GetFontResource ();
+	if ((hash = strchr (path, '#'))) {
+		if ((index = strtol (hash + 1, NULL, 10)) < 0 || index == G_MAXINT)
+			index = 0;
+		
+		buf = g_strndup (path, hash - path);
+		path = buf;
+	}
+	
+	if (!(face = OpenFontFace (path, NULL, index))) {
+		// font file removed post-scan of the system typefaces?
+		g_free (key);
+		g_free (buf);
+		return NULL;
+	}
+	
+	g_free (buf);
+	
+	// add this typeface to the cache
+	g_hash_table_insert (system_faces, key, face); // the key is freed when the hash table is destroyed
+	face->ref ();
+	
+	return face;
+}
+
 static const char *typeface_extensions[] = {
 	".ttf", ".ttc"
 };
@@ -1779,7 +1845,7 @@ FontManager::GetSystemGlyphTypefaces ()
 		if (!(face = OpenFontFace (path, NULL, index)))
 			continue;
 		
-		typeface = new GlyphTypeface (path, index, face->GetMajorVersion (), face->GetMinorVersion ());
+		typeface = new GlyphTypeface (path, index, face);
 		typefaces->Add (Value (typeface));
 		delete typeface;
 		face->unref ();

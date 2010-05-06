@@ -48,6 +48,7 @@ class TextFont {
 	~TextFont ();
 	
 	static TextFont *Load (const char *resource, int index, double size, StyleSimulations simulate);
+	static TextFont *Load (const GlyphTypeface *typeface, double size, StyleSimulations simulate);
 	static TextFont *Load (const TextFontDescription *desc);
 	
 	bool SetStyleSimulations (StyleSimulations simulate);
