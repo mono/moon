@@ -1,5 +1,11 @@
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: If the GroupDescriptions or
+	  SortDescriptions are modified we need to refresh the view.
+	  Allows more of 232 to succeed.
+
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
 	* IndexedPropertyPathNode.cs: For cases where the Source is an
 	  IList we should just use the IList Indexer. This fixes the
 	  case where we index into an array as opposed to a List<T>.

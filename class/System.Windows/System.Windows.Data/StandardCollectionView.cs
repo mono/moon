@@ -140,9 +140,11 @@ namespace System.Windows.Data {
 			CurrentPosition = -1;
 			MoveCurrentToPosition (0);
 
-			if (list is INotifyCollectionChanged) {
+			if (list is INotifyCollectionChanged)
 				((INotifyCollectionChanged) list).CollectionChanged += (o, e) => Refresh ();
-			}
+
+			GroupDescriptions.CollectionChanged += (o, e) => Refresh ();
+			((INotifyCollectionChanged) SortDescriptions).CollectionChanged += (o, e) => Refresh ();
 		}
 
 		public bool Contains (object item)
