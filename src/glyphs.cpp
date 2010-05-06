@@ -770,7 +770,7 @@ Glyphs::SetFontResource (const Uri *uri)
 }
 
 void
-Glyphs::SetFontSource (GlyphTypeface *typeface, const char *part_name)
+Glyphs::SetFontSource (GlyphTypeface *typeface)
 {
 	StyleSimulations simulate = GetStyleSimulations ();
 	double size = GetFontRenderingEmSize ();

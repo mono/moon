@@ -99,8 +99,8 @@ class Glyphs : public FrameworkElement {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
-	void SetFontSource (GlyphTypeface *typeface, const char *part_name);
 	void SetFontSource (Downloader *downloader, const char *part_name);
+	void SetFontSource (GlyphTypeface *typeface);
 	
 	//
 	// Property Accessors
