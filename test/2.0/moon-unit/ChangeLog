@@ -1,3 +1,9 @@
+2010-05-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/MiscTest.cs: Comment block as a temporary workaround
+	to bug #601157 so Moonlight, with a few other fixes, can update
+	to HEAD
+
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest_CollectionView.cs: Add tests

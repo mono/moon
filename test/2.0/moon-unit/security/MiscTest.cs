@@ -36,6 +36,9 @@ using System.Windows;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+// newer SMCS cannot compile this correctly - since the compiler prefers the version its compiling rather than the one in mscorlib.dll
+// -> error CS0656: The compiler required member `System.Runtime.CompilerServices.RuntimeHelpers.InitializeArray(System.Array, System.RuntimeFieldHandle)' could not be found or is inaccessible
+#if false
 // this icall exists on both mono and sl
 // note: CSC prefer this type when compiling this assembly, while SMCS prefers the original type from mscorlib.dll
 namespace System.Runtime.CompilerServices {
@@ -45,6 +48,7 @@ namespace System.Runtime.CompilerServices {
 		public static extern object GetObjectValue (object obj);
 	}
 }
+#endif
 
 namespace MoonTest.Security {
 
