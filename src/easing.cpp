@@ -98,8 +98,30 @@ BounceEase::~BounceEase ()
 double
 BounceEase::EaseInCore (double normalizedTime)
 {
-	g_warning ("BounceEase::EaseInCore not implemented");
-	return EasingFunctionBase::EaseInCore (normalizedTime);
+	double t = 1 - normalizedTime;
+	double val = 0;
+	int bounces = GetBounces ();
+	double iness = GetBounciness ();
+	double r = 1;
+
+	for (int i = 0; i < bounces; i++)
+		r += pow (iness,-i);
+
+	double step = 2;
+	double x1 = - 1.0;
+	double x2 = 0;
+	double r_sq = r*r;
+	val = 100;
+
+	while (val > 0.0) {
+		x2 = x1 + step;
+		val = r_sq * (t - x1/r) * (t - x2/r);
+
+		step /= 2;
+		x1 = x2;
+	}
+
+	return - val;
 }
 
 // Circle
