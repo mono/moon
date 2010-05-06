@@ -81,19 +81,22 @@ namespace System.Windows.Data
 			var parser = new PropertyPathParser (path);
 			Node = new CollectionViewNode (bindDirectlyToSource);
 			while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
-				IPropertyPathNode node;
+				IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource);
 				switch (type) {
 				case PropertyNodeType.AttachedProperty:
 				case PropertyNodeType.Property:
-					node = new StandardPropertyPathNode (typeName, propertyName);
+					node.Next = new StandardPropertyPathNode (typeName, propertyName);
 					break;
 				case PropertyNodeType.Indexed:
-					node = new IndexedPropertyPathNode (index);
+					node.Next = new IndexedPropertyPathNode (index);
 					break;
 				default:
 					throw new Exception ("Unsupported node type");
 				}
-				FinalNode.Next = node;
+				if (Node == null)
+					Node = node;
+				else
+					FinalNode.Next = node;
 			}
 
 			FinalNode.ValueChanged += delegate (object o, EventArgs e) {

@@ -1,3 +1,15 @@
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionViewNode.cs: If we have a CollectionViewSource, we
+	  use the View from that as our datasource. If we have a
+	  CollectionView, we use that directly. Allows more of DRT 232
+	  to pass.
+
+	* PropertyPathWalker.cs: We need to put a CollectionViewNode
+	  before each Standard or Indexed node as we need to be able
+	  to support CollectionViewNodes at any depth in the property
+	  path. Allows more of DRT 232 to pass.
+
 2010-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPathWalker.cs:

@@ -74,14 +74,18 @@ namespace System.Windows.Data {
 
 		public override void UpdateValue ()
 		{
-			var oldValue = Value;
-			var s = Source as CollectionViewSource;
-			if (s == null || BindsDirectlyToSource) {
+			ICollectionView view = null;
+			if (Source is CollectionViewSource)
+				view = ((CollectionViewSource) Source).View;
+			else if (Source is ICollectionView)
+				view = (ICollectionView) Source;
+
+			if (view == null || BindsDirectlyToSource) {
 				ValueType = Source == null ? null : Source.GetType ();
 				Value = Source;
 			} else {
-				ValueType = s.View.CurrentItem == null ? null : s.View.CurrentItem.GetType ();
-				Value = s.View.CurrentItem;
+				ValueType = view.CurrentItem == null ? null : view.CurrentItem.GetType ();
+				Value = view.CurrentItem;
 			}
 		}
 	}

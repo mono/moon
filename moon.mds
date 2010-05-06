@@ -5,6 +5,11 @@
     <VersionControlPolicy inheritsSet="Mono">
       <CommitMessageStyle Header="${Date:yyyy-MM-dd}  ${AuthorName}  &lt;${AuthorEmail}&gt;&#xA;&#xA;" Indent="	" />
     </VersionControlPolicy>
+    <TextStylePolicy inheritsSet="null" scope="text/x-chdr" />
+    <TextStylePolicy FileWidth="120" TabWidth="4" RemoveTrailingWhitespace="True" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
+    <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+    <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+    <StandardHeader Text="" inheritsSet="Apache2License" />
   </Policies>
   <Configurations active="Default">
     <Configuration name="Debug" ctype="CombineConfiguration">
