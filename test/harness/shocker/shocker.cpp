@@ -785,7 +785,13 @@ ShockerScriptableControlObject::EndLog (const NPVariant *args, uint32_t arg_coun
 void
 ShockerScriptableControlObject::MouseWheel (const NPVariant *args, uint32_t arg_count, NPVariant *result)
 {
-	Shocker_FailTestFast ("MouseWheel (): Not implemented");
+        unsigned int clicks = 0;
+        if (arg_count >= 1) {
+                g_assert (NPVARIANT_IS_NUMBER (args [0]));
+                clicks = NUMBER_TO_INT32 (args [0]);
+        }
+
+        GetInputProvider ()->MouseWheel (clicks);
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
