@@ -369,6 +369,19 @@ npvariant_is_dependency_object (NPVariant var)
 }
 
 static bool
+npvariant_is_typeface (NPVariant var)
+{
+	NPObject *obj;
+	
+	if (!NPVARIANT_IS_OBJECT (var))
+		return false;
+	
+	obj = NPVARIANT_TO_OBJECT (var);
+	
+	return obj->_class == MoonlightGlyphTypefaceClass;
+}
+
+static bool
 npvariant_is_object_class (NPVariant var, int type)
 {
 	NPObject *obj;
@@ -4400,21 +4413,31 @@ MoonlightGlyphsObject::Invoke (int id, NPIdentifier name,
 {
 	Glyphs *glyphs = (Glyphs *) GetDependencyObject ();
 	DependencyObject *downloader = NULL;
+	GlyphTypeface *typeface = NULL;
 	char *part_name = NULL;
 	
 	switch (id) {
 	case MoonId_SetFontSource:
-		if (!check_arg_list ("(no)(ns)", argCount, args) || (!NPVARIANT_IS_NULL(args[0]) || !npvariant_is_downloader (args[0])))
+		if (!check_arg_list ("(no)(ns)", argCount, args))
 			THROW_JS_EXCEPTION ("setFontSource");
 		
 		if (NPVARIANT_IS_OBJECT (args[0])) {
-			downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
+			if (npvariant_is_downloader (args[0]))
+				downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
+			else if (npvariant_is_typeface (args[0]))
+				typeface = ((MoonlightGlyphTypeface *) NPVARIANT_TO_OBJECT (args[0]))->typeface;
+			else
+				THROW_JS_EXCEPTION ("setFontSource");
 			
 			if (NPVARIANT_IS_STRING (args[1]))
 				part_name = STRDUP_FROM_VARIANT (args[1]);
 		}
 		
-		glyphs->SetFontSource ((Downloader *) downloader, part_name);
+		if (downloader)
+			glyphs->SetFontSource ((Downloader *) downloader, part_name);
+		else
+			glyphs->SetFontSource (typeface);
+		
 		g_free (part_name);
 		
 		VOID_TO_NPVARIANT (*result);

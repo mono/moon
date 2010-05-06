@@ -1,3 +1,12 @@
+2010-05-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (npvariant_is_typeface): New helper function to
+	determine if an NPVariant is a GlyphTypeface or not.
+	(MoonlightGlyphsObject::Invoke): Allow the first arg to
+	setFontSource() to also be a GlyphTypeface and call the
+	appropriate Glyphs::SetFontSource() method depending on what the
+	user passes in.
+
 2010-05-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (value_to_variant): Add support for
