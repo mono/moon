@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 428 methods needs to be decorated.
+# 430 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -676,6 +676,9 @@
 # internal call
 +SC-M: System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors_internal(System.Reflection.BindingFlags,System.Type)
 
+# internal call
++SC-M: System.Reflection.CustomAttributeData[] System.MonoCustomAttrs::GetCustomAttributesDataInternal(System.Reflection.ICustomAttributeProvider)
+
 # overrides 'System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::get_UMarshal()'.
 +SC-M: System.Reflection.Emit.UnmanagedMarshal System.Reflection.Emit.FieldBuilder::get_UMarshal()
 
@@ -966,6 +969,9 @@
 
 # internal call
 +SC-M: System.Type System.Type::MakePointerType(System.Type)
+
+# internal call
++SC-M: System.Type[] System.Reflection.FieldInfo::GetTypeModifiers(System.Boolean)
 
 # internal call
 +SC-M: System.Type[] System.Reflection.Module::InternalGetTypes()

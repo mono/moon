@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 448 methods
+# 449 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -195,6 +195,7 @@
 +SSC-M: System.Double System.Math::Round(System.Double,System.Int32)
 +SSC-M: System.Object[] System.MonoCustomAttrs::GetCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
 +SSC-M: System.Object[] System.MonoCustomAttrs::GetCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Boolean)
++SSC-M: System.Collections.Generic.IList`1<System.Reflection.CustomAttributeData> System.MonoCustomAttrs::GetCustomAttributesData(System.Reflection.ICustomAttributeProvider)
 +SSC-M: System.Boolean System.MonoCustomAttrs::IsDefined(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
 +SSC-M: System.Void System.MonoEnumInfo::GetInfo(System.Type,System.MonoEnumInfo&)
 +SSC-M: System.Reflection.TypeAttributes System.MonoType::GetAttributeFlagsImpl()

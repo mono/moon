@@ -1,3 +1,8 @@
+2010-05-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.s[s]c: regenerated for 156790
+	* System.Net.auto.sc: regenerated for 156790
+
 2010-04-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: regenerated
