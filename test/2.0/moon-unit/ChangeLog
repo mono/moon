@@ -1,3 +1,9 @@
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/CollectionViewTest.cs: Add tests for
+	  INPC properties in the default implementation of
+	  CollectionView.
+
 2010-05-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/MiscTest.cs: Comment block as a temporary workaround

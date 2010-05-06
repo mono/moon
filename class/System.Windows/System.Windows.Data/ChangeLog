@@ -1,5 +1,16 @@
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: The default implementation of
+	  CollectionView needs to be INPC. Allows more of drt 232 to
+	  pass.
+
+	* CollectionViewSource.cs: I no longer rely on the source
+	  collection being an IList internally and tests show we need
+	  to support IEnumerable, so lets support it! Allows more of
+	  drt 232 to pass.
+
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewNode.cs: 'BindsDirectlyToSource' actually
 	  means 'binds directly to an ICollectionView if it can be
 	  found'. Fixes more of DRT 232.

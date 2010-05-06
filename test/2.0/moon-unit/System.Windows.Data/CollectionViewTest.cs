@@ -142,6 +142,46 @@ namespace MoonTest.System.Windows.Data {
 			Assert.AreSame (Source.Culture, culture, "#2");
 		}
 
+		[TestMethod]
+		public void DefaultImplIsINPC ()
+		{
+			Assert.IsTrue (View is INotifyPropertyChanged, "#1");
+		}
+
+		[TestMethod]
+		public void INPCEvents ()
+		{
+			INotifyPropertyChanged source = (INotifyPropertyChanged)View;
+			VerifyPropertyChanged ("#1", source, () => View.Culture = CultureInfo.InvariantCulture, "Culture");
+			VerifyPropertyChanged ("#3", source, () => View.MoveCurrentToNext (), "CurrentPosition", "CurrentItem");
+
+			View.MoveCurrentToFirst ();
+			VerifyPropertyChanged ("#4", source, () => View.MoveCurrentToPrevious (), "IsCurrentBeforeFirst", "CurrentPosition", "CurrentItem");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("wtf?!")]
+		public void HiddenINPCEvents ()
+		{
+			// These INPC events don't have publicly visible properties so I don't know why/how they're being raised.
+			INotifyPropertyChanged source = (INotifyPropertyChanged)View;
+			VerifyPropertyChanged ("#2", source, () => View.Filter = delegate { return true; }, "Count");
+		}
+
+		void VerifyPropertyChanged (string message, INotifyPropertyChanged source, Action action, params string[] expectedProperties)
+		{
+			List<string> props = new List<string> (expectedProperties);
+			PropertyChangedEventHandler h = (o, e) => {
+				Assert.AreEqual (props.First (), e.PropertyName, message + ": Incorrect property name received");
+				props.RemoveAt (0);
+			};
+
+			source.PropertyChanged += h;
+			action ();
+			source.PropertyChanged -= h;
+
+			Assert.AreEqual (0, props.Count, message + ": All expected PropertyChanged events were not raised for");
+		}
 
 		[TestMethod]
 		public void DeferAndAddGroup ()

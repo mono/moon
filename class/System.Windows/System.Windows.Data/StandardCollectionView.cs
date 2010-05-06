@@ -9,14 +9,20 @@ using System.Linq;
 
 namespace System.Windows.Data {
 
-	sealed class StandardCollectionView : ICollectionView, IDeferRefresh {
+	sealed class StandardCollectionView : ICollectionView, INotifyPropertyChanged, IDeferRefresh {
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		public event EventHandler CurrentChanged;
 		public event CurrentChangingEventHandler CurrentChanging;
+		public event PropertyChangedEventHandler PropertyChanged;
 
+		CultureInfo culture;
+		object currentItem;
+		int currentPosition;
 		Predicate<object> filter;
 		List <object> filteredList;
+		bool isCurrentAfterLast;
+		bool isCurrentBeforeFirst;
 
 		public bool CanFilter {
 			get; private set;
@@ -35,15 +41,33 @@ namespace System.Windows.Data {
 		}
 
 		public CultureInfo Culture {
-			get; set;
+			get { return culture; }
+			set {
+				if (culture != value) {
+					culture = value;
+					RaisePropertyChanged ("Culture");
+				}
+			}
 		}
 
 		public object CurrentItem {
-			get; private set;
+			get { return currentItem; }
+			set {
+				if (currentItem != value) {
+					currentItem = value;
+					RaisePropertyChanged ("CurrentItem");
+				}
+			}
 		}
 
 		public int CurrentPosition {
-			get; private set;
+			get { return currentPosition; }
+			set {
+				if (currentPosition != value) {
+					currentPosition = value;
+					RaisePropertyChanged ("CurrentPosition");
+				}
+			}
 		}
 
 		int IDeferRefresh.DeferLevel {
@@ -67,11 +91,23 @@ namespace System.Windows.Data {
 		}
 
 		public bool IsCurrentAfterLast {
-			get { return CurrentPosition == filteredList.Count || Count == 0; }
+			get { return isCurrentAfterLast; }
+			private set {
+				if (isCurrentAfterLast != value) {
+					isCurrentAfterLast = value;
+					RaisePropertyChanged ("IsCurrentAfterLast");
+				}
+			}
 		}
 
 		public bool IsCurrentBeforeFirst {
-			get { return CurrentPosition == -1 || Count == 0; }
+			get { return isCurrentBeforeFirst; }
+			private set {
+				if (isCurrentBeforeFirst != value) {
+					isCurrentBeforeFirst = value;
+					RaisePropertyChanged ("IsCurrentBeforeFirst");
+				}
+			}
 		}
 
 		public bool IsEmpty {
@@ -94,7 +130,7 @@ namespace System.Windows.Data {
 			get; private set;
 		}
 
-		public StandardCollectionView (IList list)
+		public StandardCollectionView (IEnumerable list)
 		{
 			SourceCollection = list;
 			SortDescriptions = new SortDescriptionCollection ();
@@ -103,6 +139,10 @@ namespace System.Windows.Data {
 			filteredList = new List <object> (list.Cast <object> ());
 			CurrentPosition = -1;
 			MoveCurrentToPosition (0);
+
+			if (list is INotifyCollectionChanged) {
+				((INotifyCollectionChanged) list).CollectionChanged += (o, e) => Refresh ();
+			}
 		}
 
 		public bool Contains (object item)
@@ -143,8 +183,10 @@ namespace System.Windows.Data {
 					return true;
 			}
 
-			CurrentItem = position < 0 || position >= filteredList.Count ? null : filteredList [position];
+			IsCurrentAfterLast = position == filteredList.Count || Count == 0;
+			IsCurrentBeforeFirst = position == -1 || Count == 0;
 			CurrentPosition = position;
+			CurrentItem = position < 0 || position >= filteredList.Count ? null : filteredList [position];
 
 			var h2 = CurrentChanged;
 			if (h2 != null)
@@ -176,6 +218,13 @@ namespace System.Windows.Data {
 		public bool MoveCurrentToPrevious ()
 		{
 			return CurrentPosition != -1 && MoveCurrentTo (CurrentPosition - 1);
+		}
+
+		void RaisePropertyChanged (string propertyName)
+		{
+			var h = PropertyChanged;
+			if (h != null)
+				h (this, new PropertyChangedEventArgs (propertyName));
 		}
 
 		public void Refresh ()
