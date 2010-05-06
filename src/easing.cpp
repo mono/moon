@@ -102,22 +102,21 @@ BounceEase::EaseInCore (double normalizedTime)
 	double val = 0;
 	int bounces = GetBounces ();
 	double iness = GetBounciness ();
-	double r = 1;
+	double r = -1;
+	double period = 2;
 
-	for (int i = 0; i < bounces; i++)
-		r += pow (iness,-i);
+	for (int i = 0; i <= bounces; i++)
+		r += period * pow (1 + (iness / 2),-i);
 
-	double step = 2;
 	double x1 = - 1.0;
 	double x2 = 0;
 	double r_sq = r*r;
 	val = 100;
+	double p = 0;
 
 	while (val > 0.0) {
-		x2 = x1 + step;
+		x2 = x1 + period * pow (1 + (iness / 2), -p++);
 		val = r_sq * (t - x1/r) * (t - x2/r);
-
-		step /= 2;
 		x1 = x2;
 	}
 
