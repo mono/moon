@@ -1,5 +1,11 @@
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
+	* README: Bump mono/mcs to gain an eglib fix so that everyone
+	  using a manual mono build doesn't end up with a broken
+	  plugin.
+
+2010-05-06  Alan McGovern  <amcgovern@novell.com>
+
 	* moon.mds: Update bhe build files.
 
 2010-05-05  Chris Toshok  <toshok@ximian.com>
