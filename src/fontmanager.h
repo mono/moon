@@ -70,8 +70,7 @@ class FontFace {
 	const char *GetFamilyName ();
 	const char *GetStyleName ();
 	
-	int GetMajorVersion ();
-	int GetMinorVersion ();
+	bool GetVersion (int *major, int *minor);
 	
 	bool IsScalable ();
 	bool IsItalic ();

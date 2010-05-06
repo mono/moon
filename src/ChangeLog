@@ -1,5 +1,11 @@
 2010-05-06  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fontmanager.cpp (FontFace::GetVersion): New method that replaces
+	the old non-working GetMajorVersion()/GetMinorVersion() methods.
+	(GlyphTypeface::.ctor): Use the new GetVersion() function.
+
+2010-05-06  Jeffrey Stedfast  <fejj@novell.com>
+
 	* glyphs.cpp (SetFontSource): New method to set a font source to a
 	GlyphTypeface.
 

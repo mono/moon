@@ -26,6 +26,8 @@
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
 #include FT_TRUETYPE_TABLES_H
+#include FT_TRUETYPE_IDS_H
+#include FT_SFNT_NAMES_H
 #include FT_OUTLINE_H
 #include FT_SYSTEM_H
 #include FT_GLYPH_H
@@ -723,8 +725,11 @@ GlyphTypeface::GlyphTypeface (const char *path, int index, FontFace *face)
 	style_info_parse (face->GetStyleName (), &info, false);
 	
 	resource = g_strdup_printf ("%s%c%d", path, index > 0 ? '#' : '\0', index);
-	ver_major = face->GetMajorVersion ();
-	ver_minor = face->GetMinorVersion ();
+	if (!face->GetVersion (&ver_major, &ver_minor)) {
+		ver_major = 1;
+		ver_minor = 0;
+	}
+	
 	family_name = info.family_name;
 	stretch = info.width;
 	weight = info.weight;
@@ -831,28 +836,99 @@ FontFace::GetStyleName ()
 	return face->style_name;
 }
 
-int
-FontFace::GetMajorVersion ()
+static bool
+utf16be_parse_int (guint16 **in, int *inleft, int *retval)
 {
-	if (FT_IS_SFNT (face)) {
-		TT_HoriHeader *hhea = (TT_HoriHeader *) FT_Get_Sfnt_Table (face, ft_sfnt_hhea);
+	guint16 *start, *inptr, c;
+	int digit, val, left;
+	
+	start = inptr = *in;
+	left = *inleft;
+	val = 0;
+	
+	while (left > 0) {
+		c = GUINT16_FROM_BE (*inptr);
+		if (c < '0' || c > '9')
+			break;
 		
-		return (hhea->Version >> 16) & 0xffff;
-	} else {
-		return -1;
+		digit = (c - '0');
+		
+		if (val > (LONG_MAX / 10))
+			return false;
+		
+		if (val == (LONG_MAX / 10) && digit > (LONG_MAX % 10))
+			return false;
+		
+		val = (val * 10) + digit;
+		
+		inptr++;
+		left--;
 	}
+	
+	if (inptr == start)
+		return false;
+	
+	*retval = val;
+	*inleft = left;
+	*in = inptr;
+	
+	return true;
 }
 
-int
-FontFace::GetMinorVersion ()
+bool
+FontFace::GetVersion (int *major, int *minor)
 {
 	if (FT_IS_SFNT (face)) {
-		TT_HoriHeader *hhea = (TT_HoriHeader *) FT_Get_Sfnt_Table (face, ft_sfnt_hhea);
+		guint16 *unicode, c;
+		FT_SfntName name;
+		int count, i;
+		int left;
 		
-		return hhea->Version & 0xffff;
-	} else {
-		return -1;
+		count = FT_Get_Sfnt_Name_Count (face);
+		for (i = 0; i < count; i++) {
+			if (FT_Get_Sfnt_Name (face, i, &name) != 0)
+				continue;
+			
+			if (name.name_id != TT_NAME_ID_VERSION_STRING)
+				continue;
+			
+			/* only handle the unicode names for US langid */
+			if (!(name.platform_id == TT_PLATFORM_MICROSOFT &&
+			      name.encoding_id == TT_MS_ID_UNICODE_CS &&
+			      name.language_id == TT_MS_LANGID_ENGLISH_UNITED_STATES))
+				continue;
+			
+			unicode = (guint16 *) name.string;
+			left = name.string_len / 2;
+			
+			// skip over "Version " or whatever other prefix might exist
+			while (left > 0) {
+				c = GUINT16_FROM_BE (*unicode);
+				if (c >= '0' && c <= '9')
+					break;
+				unicode++;
+				left--;
+			}
+			
+			// parse the major version
+			if (!utf16be_parse_int (&unicode, &left, major))
+				return false;
+			
+			if (GUINT16_FROM_BE (*unicode) != '.')
+				return false;
+			
+			unicode++;
+			left--;
+			
+			// parse the minor version
+			if (!utf16be_parse_int (&unicode, &left, minor))
+				return false;
+			
+			return true;
+		}
 	}
+	
+	return false;
 }
 
 bool
