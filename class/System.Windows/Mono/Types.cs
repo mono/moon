@@ -53,13 +53,6 @@ namespace Mono
 		{
 			native = raw;
 			CreateNativeTypes ();
-
-			// FIXME: this hack shouldn't be necessary but
-			// our StylusPoint/UnmanagedStylusPoint
-			// classes require a bit of finesse.  Is there
-			// a more general way to do this?
-			Type t = typeof (System.Windows.Input.StylusPoint); 
-			types.Add (t, new ManagedType (t, Kind.STYLUSPOINT));
 		}
 		
 #if notyet

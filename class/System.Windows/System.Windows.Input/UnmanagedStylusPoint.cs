@@ -33,9 +33,9 @@ namespace System.Windows.Input {
 	// the unmanaged StylusPoint is a DependencyObject so we can set it's value from JScript
 	internal partial class UnmanagedStylusPoint : DependencyObject {
 
-		internal static readonly DependencyProperty PressureFactorProperty = DependencyProperty.Lookup (Kind.STYLUSPOINT, "PressureFactor", typeof (double));
-		internal static readonly DependencyProperty XProperty = DependencyProperty.Lookup (Kind.STYLUSPOINT, "X", typeof (double));
-		internal static readonly DependencyProperty YProperty = DependencyProperty.Lookup (Kind.STYLUSPOINT, "Y", typeof (double));
+		internal static readonly DependencyProperty PressureFactorProperty = DependencyProperty.Lookup (Kind.UNMANAGEDSTYLUSPOINT, "PressureFactor", typeof (double));
+		internal static readonly DependencyProperty XProperty = DependencyProperty.Lookup (Kind.UNMANAGEDSTYLUSPOINT, "X", typeof (double));
+		internal static readonly DependencyProperty YProperty = DependencyProperty.Lookup (Kind.UNMANAGEDSTYLUSPOINT, "Y", typeof (double));
 
 		public UnmanagedStylusPoint (StylusPoint p)
 			: this ()
