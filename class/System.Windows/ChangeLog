@@ -1,6 +1,12 @@
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:
+	* System.Windows.mdp: Add support for enumerating over the
+	  Groups if the CollectionView has been grouped.
+
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
 	* System.Windows.mdp: Add a helper class to simplify
 	  implementing INotifyPropertyChanged class.
 

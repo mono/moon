@@ -223,6 +223,8 @@ namespace System.Windows.Data {
 
 		public IEnumerator GetEnumerator ()
 		{
+			if (GroupDescriptions.Count > 0 && RootGroup != null)
+				return new GroupEnumerator (RootGroup);
 			return filteredList.GetEnumerator ();
 		}
 
