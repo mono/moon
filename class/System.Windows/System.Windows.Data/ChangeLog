@@ -1,5 +1,10 @@
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Add support for IEditableObject
+	  which fixes yet more of drt 232.
+
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* GroupEnumerator.cs:
 	* StandardCollectionView.cs: Add support for enumerating over
 	  the Groups if the CollectionView has been grouped.

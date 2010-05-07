@@ -41,7 +41,10 @@ namespace System.Windows.Data {
 
 		public bool CanCancelEdit {
 			get { return canCancelEdit.Value; }
-			private set { canCancelEdit.Value = value;}
+			private set {
+				if (CanCancelEdit != value)
+					canCancelEdit.Value = value;
+			}
 		}
 
 		public bool CanRemove {
@@ -369,8 +372,12 @@ namespace System.Windows.Data {
 		public void CancelEdit ()
 		{
 			if (IsEditingItem) {
+				if (CanCancelEdit) {
+					((IEditableObject) CurrentEditItem).CancelEdit ();
+				}
 				CurrentEditItem = null;
 				IsEditingItem = false;
+				CanCancelEdit = false;
 			}
 		}
 
@@ -386,8 +393,12 @@ namespace System.Windows.Data {
 		public void CommitEdit ()
 		{
 			if (IsEditingItem) {
+				if (CanCancelEdit) {
+					((IEditableObject) CurrentEditItem).EndEdit ();
+				}
 				CurrentEditItem = null;
 				IsEditingItem = false;
+				CanCancelEdit = false;
 			}
 		}
 
@@ -404,6 +415,10 @@ namespace System.Windows.Data {
 			CommitEdit ();
 			CurrentEditItem = item;
 			IsEditingItem = true;
+			if (item is IEditableObject) {
+				CanCancelEdit = true;
+				((IEditableObject) item).BeginEdit ();
+			}
 		}
 
 		public void Remove (object item)
