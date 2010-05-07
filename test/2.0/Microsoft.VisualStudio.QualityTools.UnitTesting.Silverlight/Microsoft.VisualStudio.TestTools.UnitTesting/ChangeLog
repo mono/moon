@@ -1,3 +1,7 @@
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* Assert.cs: Add Assert.IsNotInstanceOf.
+
 2010-03-18  Alan McGovern  <amcgovern@novell.com>
 
 	* TestClassAttribute.cs: 1) Regenerate the default value tests

@@ -416,6 +416,35 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			IsInstanceOfType (value, expectedType, string.Format (message, parameters));
 		}
 
+		public static void IsNotInstanceOfType<T> (object value)
+		{
+			IsNotInstanceOfType (value, typeof (T));
+		}
+
+		public static void IsNotInstanceOfType (object value, Type expectedType)
+		{
+			IsNotInstanceOfType (value, expectedType, null);
+		}
+
+		public static void IsNotInstanceOfType<T> (object value, string message)
+		{
+			IsNotInstanceOfType (value, typeof (T), message);
+		}
+
+		public static void IsNotInstanceOfType (object value, Type expectedType, string message)
+		{
+			message = string.Format ("Item {1} should not be instance of '{0}'", expectedType.Name, value == null ? "<null>" : value.GetType ().Name, message);
+			if (value == null)
+				throw new AssertFailedException (message);
+			else if (value.GetType () == expectedType || value.GetType ().IsSubclassOf (expectedType))
+				throw new AssertFailedException (message);
+		}
+
+		public static void IsNotInstanceOfType (object value, Type expectedType, string message, params object [] parameters)
+		{
+			IsNotInstanceOfType (value, expectedType, string.Format (message, parameters));
+		}
+
 		public static void Fail ()
 		{
 			throw new AssertFailedException (string.Empty);
