@@ -9,20 +9,59 @@ using System.Linq;
 
 namespace System.Windows.Data {
 
-	sealed class StandardCollectionView : ICollectionView, INotifyPropertyChanged, IDeferRefresh {
+	sealed class StandardCollectionView : ICollectionView, IEditableCollectionView, INotifyPropertyChanged, IDeferRefresh {
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		public event EventHandler CurrentChanged;
 		public event CurrentChangingEventHandler CurrentChanging;
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		CultureInfo culture;
+		INPCProperty<bool> canAddNew;
+		INPCProperty<bool> canCancelEdit;
+		INPCProperty<bool> canRemove;
+		INPCProperty<object> currentAddItem;
+		INPCProperty<object> currentEditItem;
+		INPCProperty<bool> isAddingNew;
+		INPCProperty<bool> isEditingItem;
+		INPCProperty<NewItemPlaceholderPosition> newItemPlaceholderPosition;
+
+		INPCProperty<CultureInfo> culture;
 		object currentItem;
 		int currentPosition;
 		Predicate<object> filter;
 		List <object> filteredList;
 		bool isCurrentAfterLast;
 		bool isCurrentBeforeFirst;
+
+		public bool CanAddNew {
+			get { return canAddNew.Value; }
+			private set { canAddNew.Value = value;}
+		}
+
+		public bool CanCancelEdit {
+			get { return canCancelEdit.Value; }
+			private set { canCancelEdit.Value = value;}
+		}
+
+		public bool CanRemove {
+			get { return canRemove.Value; }
+			private set { canRemove.Value = value;}
+		}
+
+		public bool IsAddingNew {
+			get { return isAddingNew.Value; }
+			private set { isAddingNew.Value = value;}
+		}
+
+		public bool IsEditingItem {
+			get { return isEditingItem.Value; }
+			private set { isEditingItem.Value = value;}
+		}
+
+		public NewItemPlaceholderPosition NewItemPlaceholderPosition {
+			get { return newItemPlaceholderPosition.Value; }
+			set { newItemPlaceholderPosition.Value = value;}
+		}
 
 		public bool CanFilter {
 			get; private set;
@@ -41,13 +80,18 @@ namespace System.Windows.Data {
 		}
 
 		public CultureInfo Culture {
-			get { return culture; }
-			set {
-				if (culture != value) {
-					culture = value;
-					RaisePropertyChanged ("Culture");
-				}
-			}
+			get { return culture.Value; }
+			set { culture.Value = value; }
+		}
+
+		public object CurrentAddItem {
+			get { return currentAddItem.Value; }
+			private set { currentAddItem.Value = value; }
+		}
+
+		public object CurrentEditItem {
+			get { return currentEditItem.Value; }
+			private set { currentEditItem.Value = value; }
 		}
 
 		public object CurrentItem {
@@ -132,6 +176,19 @@ namespace System.Windows.Data {
 
 		public StandardCollectionView (IEnumerable list)
 		{
+			Func<PropertyChangedEventHandler> changed = () => PropertyChanged;
+
+			canAddNew = INPCProperty.Create (() => CanAddNew, changed);
+			canCancelEdit = INPCProperty.Create (() => CanCancelEdit, changed);
+			canRemove = INPCProperty.Create (() => CanRemove, changed);
+			culture = INPCProperty.Create (() => Culture, changed);
+			currentAddItem = INPCProperty.Create (() => CurrentAddItem, changed);
+			currentEditItem = INPCProperty.Create (() => CurrentEditItem, changed);
+			isAddingNew = INPCProperty.Create (() => IsAddingNew, changed);
+			isEditingItem = INPCProperty.Create (() => IsEditingItem, changed);
+			newItemPlaceholderPosition = INPCProperty.Create (() => NewItemPlaceholderPosition, changed);
+
+			CanAddNew = true;
 			SourceCollection = list;
 			SortDescriptions = new SortDescriptionCollection ();
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
@@ -281,6 +338,49 @@ namespace System.Windows.Data {
 			} else {
 				group.AddItem (item);
 			}
+		}
+
+		public object AddNew ()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void CancelEdit ()
+		{
+			CurrentEditItem = null;
+			IsEditingItem = false;
+		}
+
+		public void CancelNew ()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void CommitEdit ()
+		{
+			CurrentEditItem = null;
+			IsEditingItem = false;
+		}
+
+		public void CommitNew ()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void EditItem (object item)
+		{
+			CurrentEditItem = item;
+			IsEditingItem = true;
+		}
+
+		public void Remove (object item)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void RemoveAt (int index)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }

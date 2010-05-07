@@ -496,6 +496,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\
 	$(srcdir)/System.Windows.Data/IDeferRefresh.cs				\
 	$(srcdir)/System.Windows.Data/IndexedPropertyPathNode.cs		\
+	$(srcdir)/System.Windows.Data/INPCProperty.cs				\
 	$(srcdir)/System.Windows.Data/IPropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
 	$(srcdir)/System.Windows.Data/PropertyComparer.cs			\

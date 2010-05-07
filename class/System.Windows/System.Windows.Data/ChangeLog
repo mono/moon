@@ -1,3 +1,13 @@
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* INPCProperty.cs: Add a helper class to simplify implementing
+	  INotifyPropertyChanged class.
+
+	* StandardCollectionView.cs: The default implementation of
+	  ICollectionView is also an IEditableCollectionView.
+	  Implement parts of this interface. Allows more of 232 to
+	  pass.
+
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs: If the GroupDescriptions or
