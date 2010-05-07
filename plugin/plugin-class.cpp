@@ -4412,8 +4412,8 @@ MoonlightGlyphsObject::Invoke (int id, NPIdentifier name,
 			       NPVariant *result)
 {
 	Glyphs *glyphs = (Glyphs *) GetDependencyObject ();
-	DependencyObject *downloader = NULL;
 	GlyphTypeface *typeface = NULL;
+	Downloader *downloader = NULL;
 	char *part_name = NULL;
 	
 	switch (id) {
@@ -4423,7 +4423,7 @@ MoonlightGlyphsObject::Invoke (int id, NPIdentifier name,
 		
 		if (NPVARIANT_IS_OBJECT (args[0])) {
 			if (npvariant_is_downloader (args[0]))
-				downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
+				downloader = (Downloader *) DEPENDENCY_OBJECT_FROM_VARIANT (args[0]);
 			else if (npvariant_is_typeface (args[0]))
 				typeface = ((MoonlightGlyphTypeface *) NPVARIANT_TO_OBJECT (args[0]))->typeface;
 			else
@@ -4434,7 +4434,7 @@ MoonlightGlyphsObject::Invoke (int id, NPIdentifier name,
 		}
 		
 		if (downloader)
-			glyphs->SetFontSource ((Downloader *) downloader, part_name);
+			glyphs->SetFontSource (downloader, part_name);
 		else
 			glyphs->SetFontSource (typeface);
 		
