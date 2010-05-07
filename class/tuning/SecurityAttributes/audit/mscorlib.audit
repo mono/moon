@@ -350,6 +350,10 @@ System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::Enu
 System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
+!SSC-C1420CCC249AEA3FFBCC987F35CD0518
+System.Collections.Generic.IList`1<System.Reflection.CustomAttributeData> System.MonoCustomAttrs::GetCustomAttributesData(System.Reflection.ICustomAttributeProvider)
+	r156891		spouliot - old code now required (and tuned). call GetCustomAttributesDataInternal (icall) with validated (non-null) parameter. Return results as a readonly IList<CustomAttributeData>
+
 !SSC-D11ED37AED1474CDA3FDF7C08F264FB4
 System.Collections.IEnumerator System.Array::GetEnumerator()
 	r144307		spouliot - create a new instance of internal SimpleEnumerator (SecurityCritical type)
@@ -1271,8 +1275,9 @@ System.String System.IO.IsolatedStorage.IsolatedStorageFileStream::Verify(System
 System.String System.IO.Path::GetFullPath(System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-79EB25BF6E0894CFF1B38BA82AB8811B
+!SSC-88E7BC4A3CE62500C1F877BD76BFD943
 System.String System.IO.Path::GetTempFileName()
+	r156704		spouliot - catch DirectoryNotFoundException in case TMPDIR does not exists (causing infinite loop)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-640A63A181F0C28F13CBC7958972C7B8
@@ -2047,6 +2052,14 @@ System.Void System.Reflection.MonoMethod::.ctor(System.RuntimeMethodHandle)
 !SSC-56411658359B48D93E85D300FB2D55AC
 System.Void System.Reflection.MonoProperty::CachePropertyInfo(System.Reflection.PInfo)
 	r144449		spouliot - call get_property_info (icall) using 'this' and valid (non-user defined) 'flags'
+
+!SSC-E824BD503EA1C83C9897ADAC788416D2
+System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::.ctor()
+	r156851		spouliot - new implementation. calls GC.register_ephemeron_array (icall) on a (field) array of Ephemeron
+
+!SSC-D23ABA542C6BB91EF135F3A891D5D1B5
+System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::Add(TKey,TValue)
+	r156851		spouliot - calls GC.register_ephemeron_array (icall) on a (field) resized array of Ephemeron
 
 !SSC-CD0076691FD2A903A2C718A3047D0832
 System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)

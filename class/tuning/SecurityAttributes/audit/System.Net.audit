@@ -1,3 +1,7 @@
+!SSC-B41D67FB352505CCB8D810DA1B15FE49
+System.Boolean System.Net.NetworkInformation.NetworkInterface::GetIsNetworkAvailable()
+	r156737		spouliot - pinvoke into NetworkChange.runtime_get_network_service and NetworkChange.moon_network_service_get_is_network_available (libmoon)
+
 !SSC-CC91F24BA9CBB12B8031140E25BB879B
 System.Boolean System.Net.Sockets.Socket::get_NoDelay()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
