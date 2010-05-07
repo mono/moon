@@ -1,3 +1,11 @@
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Data/CollectionViewTest_IEditable.cs:
+	  Implement IEditableCollectionView on StandardCollectionView
+	  and add a bunch of tests covering the implementation. drt
+	  232 gets even further now!
+
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewTest.cs: Add tests for

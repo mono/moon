@@ -1,5 +1,11 @@
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Implement IEditableCollectionView
+	  on StandardCollectionView and add a bunch of tests covering
+	  the implementation. drt 232 gets even further now!
+
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* INPCProperty.cs: Add a helper class to simplify implementing
 	  INotifyPropertyChanged class.
 

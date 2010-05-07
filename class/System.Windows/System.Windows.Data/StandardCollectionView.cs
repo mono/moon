@@ -21,17 +21,18 @@ namespace System.Windows.Data {
 		INPCProperty<bool> canRemove;
 		INPCProperty<object> currentAddItem;
 		INPCProperty<object> currentEditItem;
+		INPCProperty<object> currentItem;
+		INPCProperty<int> currentPosition;
 		INPCProperty<bool> isAddingNew;
+		INPCProperty<bool> isCurrentAfterLast;
+		INPCProperty<bool> isCurrentBeforeFirst;
 		INPCProperty<bool> isEditingItem;
 		INPCProperty<NewItemPlaceholderPosition> newItemPlaceholderPosition;
 
 		INPCProperty<CultureInfo> culture;
-		object currentItem;
-		int currentPosition;
 		Predicate<object> filter;
-		List <object> filteredList;
-		bool isCurrentAfterLast;
-		bool isCurrentBeforeFirst;
+		List<object> filteredList;
+
 
 		public bool CanAddNew {
 			get { return canAddNew.Value; }
@@ -95,22 +96,18 @@ namespace System.Windows.Data {
 		}
 
 		public object CurrentItem {
-			get { return currentItem; }
+			get { return currentItem.Value; }
 			set {
-				if (currentItem != value) {
-					currentItem = value;
-					RaisePropertyChanged ("CurrentItem");
-				}
+				if (CurrentItem != value)
+					currentItem.Value = value;
 			}
 		}
 
 		public int CurrentPosition {
-			get { return currentPosition; }
+			get { return currentPosition.Value; }
 			set {
-				if (currentPosition != value) {
-					currentPosition = value;
-					RaisePropertyChanged ("CurrentPosition");
-				}
+				if (CurrentPosition != value)
+					currentPosition.Value = value;
 			}
 		}
 
@@ -135,22 +132,18 @@ namespace System.Windows.Data {
 		}
 
 		public bool IsCurrentAfterLast {
-			get { return isCurrentAfterLast; }
+			get { return isCurrentAfterLast.Value; }
 			private set {
-				if (isCurrentAfterLast != value) {
-					isCurrentAfterLast = value;
-					RaisePropertyChanged ("IsCurrentAfterLast");
-				}
+				if (IsCurrentAfterLast != value)
+					isCurrentAfterLast.Value = value;
 			}
 		}
 
 		public bool IsCurrentBeforeFirst {
-			get { return isCurrentBeforeFirst; }
+			get { return isCurrentBeforeFirst.Value; }
 			private set {
-				if (isCurrentBeforeFirst != value) {
-					isCurrentBeforeFirst = value;
-					RaisePropertyChanged ("IsCurrentBeforeFirst");
-				}
+				if (IsCurrentBeforeFirst != value)
+					isCurrentBeforeFirst.Value = value;
 			}
 		}
 
@@ -160,6 +153,10 @@ namespace System.Windows.Data {
 
 		bool IsValidSelection {
 			get { return CurrentPosition >= 0 && CurrentPosition < filteredList.Count; }
+		}
+
+		Type ItemType {
+			get; set;
 		}
 
 		StandardCollectionViewGroup RootGroup {
@@ -184,15 +181,25 @@ namespace System.Windows.Data {
 			culture = INPCProperty.Create (() => Culture, changed);
 			currentAddItem = INPCProperty.Create (() => CurrentAddItem, changed);
 			currentEditItem = INPCProperty.Create (() => CurrentEditItem, changed);
+			currentItem = INPCProperty.Create (() => CurrentItem, changed);
+			currentPosition = INPCProperty.Create (() => CurrentPosition, changed);
 			isAddingNew = INPCProperty.Create (() => IsAddingNew, changed);
+			isCurrentAfterLast = INPCProperty.Create (() => IsCurrentAfterLast, changed);
+			isCurrentBeforeFirst = INPCProperty.Create (() => IsCurrentBeforeFirst, changed);
 			isEditingItem = INPCProperty.Create (() => IsEditingItem, changed);
 			newItemPlaceholderPosition = INPCProperty.Create (() => NewItemPlaceholderPosition, changed);
 
-			CanAddNew = true;
 			SourceCollection = list;
 			SortDescriptions = new SortDescriptionCollection ();
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
+			var interfaces = list.GetType ().GetInterfaces ();
+			foreach (var t in interfaces)
+				if (t.IsGenericType && t.GetGenericTypeDefinition () == typeof (IList<>))
+					ItemType = t.GetGenericArguments () [0];
+
+			CanAddNew = ItemType != null && list is IList && !((IList)list).IsFixedSize;;
+			CanRemove = list is IList && !((IList)list).IsFixedSize;
 			filteredList = new List <object> (list.Cast <object> ());
 			CurrentPosition = -1;
 			MoveCurrentToPosition (0);
@@ -342,33 +349,57 @@ namespace System.Windows.Data {
 
 		public object AddNew ()
 		{
-			throw new System.NotImplementedException();
+			if (ItemType == null)
+				throw new InvalidOperationException ("The underlying collection does not support adding new items");
+
+			if (((IList) SourceCollection).IsFixedSize)
+				throw new InvalidOperationException ("The source collection is of fixed size");
+
+			// If there's an existing AddNew, we commit it
+			CommitNew ();
+			var newObject = Activator.CreateInstance (ItemType);
+			((IList) SourceCollection).Add (newObject);
+			CurrentAddItem = newObject;
+			IsAddingNew = true;
+			return newObject;
 		}
 
 		public void CancelEdit ()
 		{
-			CurrentEditItem = null;
-			IsEditingItem = false;
+			if (IsEditingItem) {
+				CurrentEditItem = null;
+				IsEditingItem = false;
+			}
 		}
 
 		public void CancelNew ()
 		{
-			throw new System.NotImplementedException();
+			if (IsAddingNew) {
+				((IList) SourceCollection).Remove (CurrentAddItem);
+				CurrentAddItem = null;
+				IsAddingNew = false;
+			}
 		}
 
 		public void CommitEdit ()
 		{
-			CurrentEditItem = null;
-			IsEditingItem = false;
+			if (IsEditingItem) {
+				CurrentEditItem = null;
+				IsEditingItem = false;
+			}
 		}
 
 		public void CommitNew ()
 		{
-			throw new System.NotImplementedException();
+			if (IsAddingNew) {
+				CurrentAddItem = null;
+				IsAddingNew = false;
+			}
 		}
 
 		public void EditItem (object item)
 		{
+			CommitEdit ();
 			CurrentEditItem = item;
 			IsEditingItem = true;
 		}
