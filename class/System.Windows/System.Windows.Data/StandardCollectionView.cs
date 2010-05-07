@@ -406,12 +406,12 @@ namespace System.Windows.Data {
 
 		public void Remove (object item)
 		{
-			throw new System.NotImplementedException();
+			((IList) SourceCollection).Remove (item);
 		}
 
 		public void RemoveAt (int index)
 		{
-			throw new System.NotImplementedException();
+			((IList) SourceCollection).RemoveAt (index);
 		}
 	}
 }

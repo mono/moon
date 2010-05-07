@@ -1,5 +1,10 @@
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Implement support for 'Remove'
+	  and 'RemoveAt'. Fixes another drt 232 subtest.
+
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Implement IEditableCollectionView
 	  on StandardCollectionView and add a bunch of tests covering
 	  the implementation. drt 232 gets even further now!
