@@ -37,6 +37,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
 using System.Windows.Shapes;
 using System.Globalization;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -89,6 +91,66 @@ namespace MoonTest.System.Windows.Data {
 				CurrentChanging++;
 			};
 			View.CollectionChanged += (o, e) => CollectionChanged.Add (e);
+		}
+
+		[TestMethod]
+		public void BindDirectlyToCVS_ICVProperty ()
+		{
+			var HostPanel = new StackPanel ();
+			var collection = new ObservableCollection<int> () { 1, 2, 5, 0 };
+			var cvs = new CollectionViewSource () { Source = collection };
+			var binding = new Binding ("IsCurrentAfterLast") {
+				Source = cvs,
+				BindsDirectlyToSource = true
+			};
+
+			HostPanel.SetBinding (Panel.TagProperty, binding);
+			Assert.IsNull (HostPanel.Tag, "#1");
+		}
+
+		[TestMethod]
+		public void BindDirectlyToICV_ICVProperty ()
+		{
+			var HostPanel = new StackPanel ();
+			var collection = new ObservableCollection<int> () { 1, 2, 5, 0 };
+			var cvs = new CollectionViewSource () { Source = collection };
+			var binding = new Binding ("IsCurrentAfterLast") {
+				Source = cvs.View,
+				BindsDirectlyToSource = true
+			};
+
+			HostPanel.SetBinding (Panel.TagProperty, binding);
+			Assert.IsNotNull (HostPanel.Tag, "#2");
+		}
+
+		[TestMethod]
+		public void BindToCVS_ICVProperty ()
+		{
+			var HostPanel = new StackPanel ();
+			var collection = new ObservableCollection<int> () { 1, 2, 5, 0 };
+			var cvs = new CollectionViewSource () { Source = collection };
+			var binding = new Binding ("IsCurrentAfterLast") {
+				Source = cvs,
+				BindsDirectlyToSource = false
+			};
+
+			HostPanel.SetBinding (Panel.TagProperty, binding);
+			Assert.IsNotNull (HostPanel.Tag, "#3");
+		}
+
+		[TestMethod]
+		public void BindToICV__ICVProperty ()
+		{
+			var HostPanel = new StackPanel ();
+			var collection = new ObservableCollection<int> () { 1, 2, 5, 0 };
+			var cvs = new CollectionViewSource () { Source = collection };
+			var binding = new Binding ("IsCurrentAfterLast") {
+				Source = cvs.View,
+				BindsDirectlyToSource = false
+			};
+
+			HostPanel.SetBinding (Panel.TagProperty, binding);
+			Assert.IsNotNull (HostPanel.Tag, "#4");
 		}
 
 		[TestMethod]

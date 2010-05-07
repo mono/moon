@@ -1,5 +1,13 @@
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPathWalker.cs:
+	* CollectionViewNode.cs: Fix how we handle binding to
+	  properties which exist on ICollectionView so that it doesn't
+	  break BindsDirectlyToSource. yada yada drt 232 works better.
+
+
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Add support for IEditableObject
 	  which fixes yet more of drt 232.
 

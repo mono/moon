@@ -41,9 +41,14 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		public CollectionViewNode (bool bindsDirectlyToSource)
+		bool IsViewProperty {
+			get; set;
+		}
+
+		public CollectionViewNode (bool bindsDirectlyToSource, bool isViewProperty)
 		{
 			BindsDirectlyToSource = bindsDirectlyToSource;
+			IsViewProperty = isViewProperty;
 		}
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
@@ -74,26 +79,32 @@ namespace System.Windows.Data {
 
 		public override void UpdateValue ()
 		{
-			// If the source is a CollectionViewSource we use its View property,
-			// if it is a CollectionView we use that directly. If we are binding
-			// directly to the source, this means we need to bind to the CollectionView
-			// object directly if it exists as opposed to CollectionView.CurrentItem.
-
-			ICollectionView view = null;
-			if (Source is CollectionViewSource)
-				view = ((CollectionViewSource) Source).View;
-			else if (Source is ICollectionView)
-				view = (ICollectionView) Source;
-
-			if (view == null || BindsDirectlyToSource) {
-				// If our source object is not (or does not have) an ICollectionView, then we
-				// fall back to using the Source object directly.
-				object o = view ?? Source;
-				ValueType = o == null ? null : o.GetType ();
-				Value = o;
+			// The simple case - we use the source object directly, whatever it is.
+			if (BindsDirectlyToSource) {
+				ValueType = Source == null ? null : Source.GetType ();
+				Value = Source;
 			} else {
-				ValueType = view.CurrentItem == null ? null : view.CurrentItem.GetType ();
-				Value = view.CurrentItem;
+				ICollectionView view = null;
+				if (Source is CollectionViewSource)
+					view = ((CollectionViewSource) Source).View;
+				else if (Source is ICollectionView)
+					view = (ICollectionView) Source;
+
+				// If we have no ICollectionView, then use the Source directly.
+				if (view == null) {
+					ValueType = Source == null ? null : Source.GetType ();
+					Value = Source;
+				} else {
+					// If we have an ICollectionView and the property we're binding to exists
+					// on ICollectionView, we bind to the view. Otherwise we bind to its CurrentItem.
+					if (IsViewProperty) {
+						ValueType = view.GetType ();
+						Value = view;
+					} else {
+						ValueType = view.CurrentItem == null ? null : view.CurrentItem.GetType ();
+						Value = view.CurrentItem;
+					}
+				}
 			}
 		}
 	}

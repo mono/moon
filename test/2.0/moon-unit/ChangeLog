@@ -1,5 +1,12 @@
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/CollectionViewTest.cs: Fix how we handle
+	  binding to properties which exist on ICollectionView so that
+	  it doesn't break BindsDirectlyToSource. yada yada drt 232
+	  works better. 
+
+2010-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp:
 	* System.Windows.Data/CollectionViewTest_IEditable.cs:
 	  Implement IEditableCollectionView on StandardCollectionView

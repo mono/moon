@@ -83,8 +83,8 @@ namespace System.Windows.Data
 
 			var parser = new PropertyPathParser (path);
 			while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
-				bool maybeBind = CollectionViewProperties.Any (prop => prop.Name == propertyName);
-				IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource || maybeBind);
+				bool isViewProperty = CollectionViewProperties.Any (prop => prop.Name == propertyName);
+				IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource, isViewProperty);
 				switch (type) {
 				case PropertyNodeType.AttachedProperty:
 				case PropertyNodeType.Property:
