@@ -278,6 +278,7 @@ namespace Mono {
 				// case Kind.BINDINGEXPRESSION: return new BindingExpression (raw, false);
 			case Kind.BITMAPCACHE: return new BitmapCache (raw, false);
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw, false);
+			case Kind.BLOCK_COLLECTION: return new BlockCollection (raw, false);
 			case Kind.BLUREFFECT: return new BlurEffect (raw, false);
 			case Kind.BOUNCEEASE: return new BounceEase (raw, false);
 			case Kind.BORDER: return new Border (raw, false);
