@@ -1886,15 +1886,25 @@ is_allowable_typeface (const char *path)
 	return false;
 }
 
+static void
+typeface_free (gpointer typeface)
+{
+	delete (GlyphTypeface *) typeface;
+}
+
 GlyphTypefaceCollection *
 FontManager::GetSystemGlyphTypefaces ()
 {
 	GlyphTypefaceCollection *typefaces;
 	GlyphTypeface *typeface;
+	const char *path, *name;
 	FcObjectSet *objects;
 	FcPattern *pattern;
+	GHashTable *hash;
 	FcFontSet *fonts;
 	FontFace *face;
+	int index, i;
+	char *key;
 	
 	typefaces = new GlyphTypefaceCollection ();
 	
@@ -1905,10 +1915,9 @@ FontManager::GetSystemGlyphTypefaces ()
 	FcObjectSetDestroy (objects);
 	FcPatternDestroy (pattern);
 	
-	for (int i = 0; i < fonts->nfont; i++) {
-		const char *path;
-		int index;
-		
+	hash = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, typeface_free);
+	
+	for (i = 0; i < fonts->nfont; i++) {
 		if (FcPatternGetString (fonts->fonts[i], FC_FILE, 0, (FcChar8 **) &path) != FcResultMatch)
 			continue;
 		
@@ -1918,15 +1927,33 @@ FontManager::GetSystemGlyphTypefaces ()
 		if (FcPatternGetInteger (fonts->fonts[i], FC_INDEX, 0, &index) != FcResultMatch)
 			continue;
 		
+		// Note: avoid adding duplicate entries - FontConfig *should*
+		// be giving us a list of fonts in priority order, so fonts of
+		// the same name that come up first should be the preferred
+		// versions, at least theoretically. If we later find this to
+		// be untrue, we'll have to compare versions or something.
+		if (!(name = strrchr (path, '/')))
+			name = path;
+		else
+			name++;
+		
+		key = g_strdup_printf ("%s%c%d", name, index > 0 ? '#' : '\0', index);
+		typeface = (GlyphTypeface *) g_hash_table_lookup (hash, key);
+		g_free (key);
+		
+		if (typeface != NULL)
+			continue;
+		
 		if (!(face = OpenFontFace (path, NULL, index)))
 			continue;
 		
 		typeface = new GlyphTypeface (path, index, face);
+		g_hash_table_insert (hash, (void *) typeface->GetFontUri (), typeface);
 		typefaces->Add (Value (typeface));
-		delete typeface;
 		face->unref ();
 	}
 	
+	g_hash_table_destroy (hash);
 	FcFontSetDestroy (fonts);
 	
 	return typefaces;

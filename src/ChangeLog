@@ -1,3 +1,8 @@
+2010-05-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (GetSystemGlyphTypefaces): Avoid adding
+	"duplicate" entries to the typeface collection.
+
 2010-05-06  Larry Ewing  <lewing@novell.com>
 
 	* easing.cpp (EaseInCore): initial implementation of bounce ease.
