@@ -1020,7 +1020,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 	if (events->lists [event_id].event_list->IsEmpty () && events->lists [event_id].onevent == NULL) {
 		if (calldata) {
 #if DEBUG
-			printf ("EMIT CALLED WITH NO LISTENERS AND NON-NULL CALLDATA\n");
+			printf ("EMIT OF EVENT %d ON OBJECT %s CALLED WITH NO LISTENERS AND NON-NULL CALLDATA\n", event_id, GetTypeName());
 #endif
 			calldata->unref ();
 		}
