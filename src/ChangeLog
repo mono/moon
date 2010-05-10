@@ -1,5 +1,9 @@
 2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Don't try to destroy a null hash table.
+
+2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Don't clear the debug sources if we didn't get any.
 
 2010-05-07  Alan McGovern  <amcgovern@novell.com>

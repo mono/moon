@@ -672,7 +672,8 @@ Deployment::~Deployment()
 
 #if OBJECT_TRACKING
 	pthread_mutex_destroy (&objects_alive_mutex);
-	g_hash_table_destroy (objects_alive);
+	if (objects_alive != NULL)
+		g_hash_table_destroy (objects_alive);
 #endif
 
 	if (types != NULL) {
