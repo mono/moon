@@ -1,3 +1,9 @@
+2010-05-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/install-dialog.cpp (install_dialog_new): Use SendNow()
+	for now until we figure out the problem in some of the drts where
+	Send()'s async tick callback never gets called.
+
 2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Don't try to destroy a null hash table.

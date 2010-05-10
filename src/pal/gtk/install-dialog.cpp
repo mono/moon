@@ -411,7 +411,9 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 	priv->downloader->Open ("GET", deployment->GetXapLocation (), XamlPolicy);
 	priv->downloader->SetStreamFunctions (downloader_write, downloader_notify_size, dialog);
 	priv->xap = g_byte_array_new ();
-	priv->downloader->Send ();
+	// FIXME: find out why some of the drts fail to work with
+	// Send() vs SendNow().
+	priv->downloader->SendNow ();
 	
 	/* load the icons */
 	if (icons && (count = icons->GetCount ()) > 0) {
