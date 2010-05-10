@@ -328,6 +328,7 @@ namespace Mono {
 			case Kind.IMAGEBRUSH: return new ImageBrush (raw, false);
 			case Kind.IMAGE: return new Image (raw, false);
 			case Kind.INLINE_COLLECTION: return new InlineCollection (raw, false);
+			case Kind.INLINEUICONTAINER: return new InlineUIContainer (raw, false);
 			case Kind.INKPRESENTER: return new InkPresenter (raw, false);
 			case Kind.INPUTMETHOD: return new InputMethod (raw, false);
 			case Kind.ITALIC: return new Italic (raw, false);
