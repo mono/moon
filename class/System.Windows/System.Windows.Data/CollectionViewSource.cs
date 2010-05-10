@@ -134,6 +134,7 @@ namespace System.Windows.Data {
 				View = null;
 			else
 				View = new StandardCollectionView ((IEnumerable) newSource);
+			Refresh ();
 		}
 
 		void Refresh ()

@@ -1,5 +1,10 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewSource.cs: When the view changes we need to
+	  refresh it immediately so that it gets filtered/sorted.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewNode.cs: Listen for changes to
 	  CollectionViewSource.View
 
