@@ -6,6 +6,10 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using System.Xml;
+using System.Xml.XPath;
+
+
 namespace Moonlight {
 
 	public class MXap {
@@ -16,6 +20,7 @@ namespace Moonlight {
 		private List<string> mdb_files;
 		private List<string> csharp_files;
 		private List<string> xaml_files;
+		private List<string> external_parts;
 		private List<string> defines;
 		private Dictionary<string, string> resources;
 		private Dictionary<string, string> assembly_resources;
@@ -143,6 +148,14 @@ namespace Moonlight {
 			}
 		}
 
+		public List<string> ExternalPartManifests {
+			get {
+				if (external_parts == null)
+					external_parts = new List<string> ();
+				return external_parts;
+			}
+		}
+
 		public List<string> Defines {
 			get {
 				if (defines == null)
@@ -221,6 +234,16 @@ namespace Moonlight {
 			foreach (string assembly in ReferenceAssemblies) {
 				manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}\" />\n", Path.GetFileNameWithoutExtension (assembly), Path.GetFileName (assembly));
 			}
+
+			if (external_parts != null) {
+				manifest.AppendFormat ("  <Deployment.ExternalParts>");
+				foreach (string ext_part in ExternalPartManifests) {
+					if (!CreateExternalPartsFromManifest (ext_part, manifest))
+						return false;
+				}
+				manifest.AppendFormat ("  </Deployment.ExternalParts>");
+			}
+
 			manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}.dll\" />\n", ApplicationName, ApplicationName);
 			
 			manifest.AppendLine ("  </Deployment.Parts>");
@@ -229,6 +252,89 @@ namespace Moonlight {
 			File.WriteAllText (AppManifest_Filename, manifest.ToString ());
 
 			return true;
+		}
+
+		// Creates an extension part package, and adds the extension part
+		// definitions to the assembly manifest.
+		public bool CreateExternalPartsFromManifest (string path, StringBuilder manifest)
+		{
+			XPathDocument doc = new XPathDocument (path);
+			XPathNavigator nav = doc.CreateNavigator ();
+			XPathNodeIterator assemblies = nav.Select ("/manifest/assembly");
+
+			if (assemblies == null) {
+				ExternalPartError ("No assembly elements found found.");
+				return false;
+			}
+
+			while (assemblies.MoveNext ()) {
+				CreateExternalPart (path, assemblies.Current, manifest);
+			}
+			
+			return true;
+		}
+
+		public bool CreateExternalPart (string path, XPathNavigator assembly, StringBuilder manifest)
+		{
+			string name;
+			string version;
+			string publickeytoken;
+			string relpath;
+			string source;
+
+			XPathNavigator nav = assembly.SelectSingleNode ("name");
+			if (nav == null) {
+				ExternalPartError (path, "Invalid assembly element, no name specified.");
+				return false;
+			}
+			name = nav.Value;
+
+			nav = assembly.SelectSingleNode ("version");
+			if (nav == null) {
+				ExternalPartError (path, "Invalid assembly element, no version specified.");
+				return false;
+			}
+			version = nav.Value;
+				
+			nav = assembly.SelectSingleNode ("publickeytoken");
+			if (nav == null) {
+				ExternalPartError (path, "Invalid assembly element, no publickeytoken specified.");
+				return false;
+			}
+			publickeytoken = nav.Value;
+
+			nav = assembly.SelectSingleNode ("relpath");
+			if (nav == null) {
+				ExternalPartError (path, "Invalid assembly element, no relpath specified.");
+				return false;
+			}
+			relpath = nav.Value;
+
+			nav = assembly.SelectSingleNode ("extension/@downloadUri");
+			if (nav == null) {
+				ExternalPartError (path, "Invalid assembly element, no extension source specified.");
+				return false;
+			}
+			source = nav.Value;
+
+			manifest.AppendFormat ("<ExtensionPart Source=\"{0}\" />", source);
+
+			// If its an absolute URI we don't add it to the package
+			Uri dummy = null;
+			if (Uri.TryCreate (source, UriKind.Absolute, out dummy))
+				return true;
+
+			if (!File.Exists (relpath)) {
+				ExternalPartError (path, String.Format ("Invalid assembly element, unable to find assembly {0}.", source));
+				return false;
+			}
+
+			return RunProcess ("zip", String.Format (" {0} {1}", source, relpath));
+		}
+
+		private void ExternalPartError (string path, string error)
+		{
+			Console.Error.WriteLine ("Invalid external part manifest '{0}'. {1}", path, error);
 		}
 
 		public bool CreateCodeBehind ()
@@ -723,6 +829,8 @@ namespace Moonlight {
 
 			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.dll"));
 			mxap.XamlFiles.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.xaml"));
+			mxap.ExternalPartManifests.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.extmap.xml"));
+
 			if (mxap.CSSources == null) {
 				mxap.CSharpFiles.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.cs"));
 			} else {
