@@ -1022,8 +1022,11 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p) notify: %p url: %s\n", type, stream, seekable, stype, notify, stream->url));
 
-	if (notify == NULL)
-	 	return NPERR_GENERIC_ERROR;
+	if (notify == NULL) {
+		/* We'll automatically get a stream for the src attribute on the embed tag */
+		*stype = NP_NORMAL;
+		return NPERR_NO_ERROR;
+	}
 
 	if (is_reentrant_mess && notify->type != StreamNotify::DOWNLOADER) {
 		if (source_location == NULL) {

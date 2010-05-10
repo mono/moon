@@ -1,5 +1,11 @@
 2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp: It's not an error to have a stream with no StreamNotify data.
+	Firefox will automatically create a stream for any src attribute on the embed
+	tag.
+
+2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp|h: Rework the file downloading to only use the streaming NPAPI
 	interface. We can't trust that the file we get from firefox otherwise is
 	complete, the file might be truncated if it didn't fit in firefox' cache.
