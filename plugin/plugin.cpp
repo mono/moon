@@ -17,6 +17,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <dlfcn.h>
+#include <errno.h>
 
 #include "plugin.h"
 #include "plugin-spinner.h"
@@ -147,6 +148,7 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	
 	/* back pointer to us */
 	instance->pdata = this;
+	download_dir = NULL;
 }
 
 void
@@ -363,6 +365,13 @@ PluginInstance::Shutdown ()
 	onError = NULL;
 	g_free (onResize);
 	onResize = NULL;
+
+	/* Remove temporary files */
+	if (download_dir != NULL) {
+		RemoveDir (download_dir);
+		g_free (download_dir);
+		download_dir = NULL;
+	}
 }
 
 static bool
@@ -1001,15 +1010,22 @@ PluginInstance::SetPageURL ()
 	}
 }
 
-
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, guint16 *stype)
 {
-	Deployment::SetCurrent (deployment);
-	
-	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
+	StreamNotify *notify;
+	char *templ;
 
-	if (is_reentrant_mess && !IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
+	Deployment::SetCurrent (deployment);
+
+	notify = (StreamNotify *) stream->notifyData;
+
+	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p) notify: %p url: %s\n", type, stream, seekable, stype, notify, stream->url));
+
+	if (notify == NULL)
+	 	return NPERR_GENERIC_ERROR;
+
+	if (is_reentrant_mess && notify->type != StreamNotify::DOWNLOADER) {
 		if (source_location == NULL) {
 			SetPageURL ();
 			bool success = LoadSplash ();
@@ -1019,13 +1035,44 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 			}
 		}
 	}
-	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
+
+	/*
+	 * We can't use neither NP_FILE nor NP_FILEONLY.
+	 * If the downloaded file is >50% of the firefox' cache, or >64 mb (hard limit, cache size doesn't matter),
+	 * the file we get from firefox will be truncated. So we use the streaming interface and save to a temp
+	 * file of our own.
+	 *
+	 * DRT #425 has a xap with a size of 71mb.
+	 */
+
+	/* create tmp file */
+	const char *dir = GetDownloadDir ();
+	if (dir == NULL)
+		return NPERR_GENERIC_ERROR;
+
+	templ = g_build_filename (dir, "XXXXXX", NULL);
+	notify->tmpfile_fd = g_mkstemp (templ);
+	if (notify->tmpfile_fd == -1) {
+		printf ("Moonlight: Could not create temporary download file %s for url %s\n", templ, stream->url);
+		g_free (templ);
+		return NPERR_GENERIC_ERROR;
+	}
+
+	notify->tmpfile = templ;
+	/* We need to store the stream url since we don't have access to the NPStream in UrlNotify */
+	notify->stream_url = g_strdup (stream->url);
+	*stype = NP_NORMAL;
+
+#if DEBUG
+	deployment->AddSource (notify->stream_url, notify->tmpfile);
+#endif
+
+	switch (notify->type) {
+	case StreamNotify::SPLASHSOURCE:
 		SetPageURL ();
 
-		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
-	}
-	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
+	case StreamNotify::SOURCE:
 		// See http://developer.mozilla.org/En/Getting_the_page_URL_in_NPAPI_plugin
 		//
 		// but don't call GetProperty inside SetWindow because it breaks opera by
@@ -1034,12 +1081,8 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		// this->source_location = g_strdup (stream->url);
 		SetPageURL ();
 
-		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
-	}
-
-	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
-		StreamNotify *notify = (StreamNotify *) stream->notifyData;
+	case StreamNotify::DOWNLOADER: {
 		Downloader *dl = (Downloader *) notify->pdata;
 		// check if (a) it's a redirection and (b) if it is allowed for the current downloader policy
 
@@ -1047,13 +1090,13 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 			return NPERR_INVALID_URL;
 
 		NPStreamRequest::SetStreamData (dl, instance, stream);
-		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	}
+	default:
+		/* This shouldn't happen */
+		return NPERR_GENERIC_ERROR;
+	}
 
-	*stype = NP_NORMAL;
-
-	return NPERR_NO_ERROR;
 }
 
 NPError
@@ -1323,52 +1366,9 @@ is_xap (const char *fname)
 void
 PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
-	nps (printf ("PluginInstance::StreamAsFile (%p, %s)\n", stream, fname));
-	/* 
-	 * FIXOPERA we dup the string here incase one of these calls
-	 * reenters and the url is reused out from under us
-	 */
-	char *url = g_strdup (stream->url);
-	
 	Deployment::SetCurrent (deployment);
-#if DEBUG
-	deployment->AddSource (url, fname);
-#endif
-	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
-		xaml_loader = PluginXamlLoader::FromFilename (url, fname, this, surface);
-		loading_splash = true;
-		surface->SetSourceLocation (url);
-		LoadXAML ();
-		FlushSplash ();
 
-		CrossDomainApplicationCheck (source);
-		SetPageURL ();
-	} else if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-		delete xaml_loader;
-		xaml_loader = NULL;
-		
-		CrossDomainApplicationCheck (url);
-
-		Uri *uri = new Uri ();
-
-		if (uri->Parse (url, false) && is_xap (fname)) {
-			LoadXAP (url, fname);
-		} else {
-			xaml_loader = PluginXamlLoader::FromFilename (url, fname, this, surface);
-			LoadXAML ();
-		}
-
-		GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
-		GetSurface ()->EmitSourceDownloadComplete ();
-
-		delete uri;
-	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
-		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
-		
-		dl->SetFilename (fname);
-	}
-
-	g_free (url);
+	/* Since we don't use NP_FILE nor NP_FILEONLY anymore, we shouldn't get here */
 }
 
 gint32
@@ -1378,19 +1378,20 @@ PluginInstance::WriteReady (NPStream *stream)
 	
 	Deployment::SetCurrent (deployment);
 
-	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
-	
-	if (notify && notify->pdata) {
-		if (IS_NOTIFY_DOWNLOADER (notify)) {
-			Downloader *dl = (Downloader *) notify->pdata;
-		
-			dl->NotifySize (stream->end);
-		
+	StreamNotify *notify = (StreamNotify *) stream->notifyData;
+
+	if (notify) {
+		switch (notify->type) {
+		case StreamNotify::DOWNLOADER: {
+			Downloader *dl = (Downloader *) notify->dob;
+			if (dl != NULL)
+				dl->NotifySize (stream->end);
 			return MAX_STREAM_SIZE;
 		}
-		if (IS_NOTIFY_SOURCE (notify)) {
+		case StreamNotify::SOURCE:
 			source_size = stream->end;
-
+			return MAX_STREAM_SIZE;
+		case StreamNotify::SPLASHSOURCE:
 			return MAX_STREAM_SIZE;
 		}
 	}
@@ -1403,28 +1404,59 @@ PluginInstance::WriteReady (NPStream *stream)
 gint32
 PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer)
 {
-	nps (printf ("PluginInstance::Write (%p, %i, %i, %p)\n", stream, offset, len, buffer));
+	nps (printf ("PluginInstance::Write (%p, %i/%i, %i, %p)\n", stream, offset, stream->end, len, buffer));
 	
 	Deployment::SetCurrent (deployment);
 
-	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
+	StreamNotify *notify = (StreamNotify *) stream->notifyData;
 	
 	if (notify && notify->pdata) {
-		if (IS_NOTIFY_DOWNLOADER (notify)) {
-			Downloader *dl = (Downloader *) notify->pdata;
-		
-			dl->Write (buffer, offset, len);
-		} else if (IS_NOTIFY_SOURCE (notify)) {
+		/* write to tmp file */
+		if (lseek (notify->tmpfile_fd, offset, SEEK_SET) == -1) {
+			printf ("Moonlight: error while seeking to %i in temporary file '%s': %s\n", offset, notify->tmpfile, strerror (errno));
+		} else if (write (notify->tmpfile_fd, buffer, len) == -1) {
+			printf ("Moonlight: error while writing to temporary file '%s': %s\n", notify->tmpfile, strerror (errno));
+		}
+
+		switch (notify->type) {
+		case StreamNotify::DOWNLOADER: {
+			Downloader *dl = (Downloader *) notify->dob;
+
+			if (dl != NULL)
+				dl->Write (buffer, offset, len);
+			break;
+		}
+		case StreamNotify::SOURCE:
 			if (source_size > 0) {
 				float progress = (offset+len)/(float)source_size;
 				if (GetSurface ()->GetToplevel () != NULL) {
 					GetSurface ()->EmitSourceDownloadProgressChanged (progress);
 				}
 			}
+			break;
+		default:
+			/* Do nothing */
+			break;
 		}
 	}
-	
+
 	return len;
+}
+
+const char *
+PluginInstance::GetDownloadDir ()
+{
+	if (download_dir == NULL) {
+		char *buf = g_build_filename (g_get_tmp_dir (), "moonlight-plugin.XXXXXX", NULL);
+		// create a root temp directory for all files
+		download_dir = MakeTempDir (buf);
+		if (download_dir == NULL) {
+			g_free (buf);
+			printf ("Moonlight: Could not create temporary download directory.\n");
+		}
+	}
+
+	return download_dir;
 }
 
 class PluginClosure : public EventObject {
@@ -1474,7 +1506,7 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 {
 	nps (printf ("PluginInstance::UrlNotify (%s, %i, %p)\n", url, reason, notifyData));
 	
-	StreamNotify *notify = STREAM_NOTIFY (notifyData);
+	StreamNotify *notify = (StreamNotify *) notifyData;
 	
 	Deployment::SetCurrent (deployment);
 	
@@ -1482,35 +1514,82 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 		d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
 			  reason == NPRES_USER_BREAK ? "user break" :
 			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
-		if (IS_NOTIFY_SOURCE (notify))
-			GetSurface()->GetTimeManager()->AddTickCall (network_error_tickcall,
-								     new PluginClosure (this));
 	}
-	
-	if (notify && notify->pdata) {
-		if (IS_NOTIFY_DOWNLOADER (notify)) {
+
+	if (notify) {
+		switch (notify->type) {
+		case StreamNotify::DOWNLOADER: {
 			Downloader *dl = (Downloader *) notify->pdata;
-			if (reason != NPRES_DONE) {
-				switch (reason) {
-				case NPRES_USER_BREAK:
-					dl->NotifyFailed ("user break");
-					break;
-				case NPRES_NETWORK_ERR:
-					dl->NotifyFailed ("network error");
-					break;
-				default:
-					dl->NotifyFailed ("unknown error");
-					break;
-				}
-			} else {
+			if (dl == NULL)
+				break;
+
+			switch (reason) {
+			case NPRES_DONE:
+				dl->SetFilename (notify->tmpfile);
 				dl->NotifyFinished (url);
+				break;
+			case NPRES_USER_BREAK:
+				dl->NotifyFailed ("user break");
+				break;
+			case NPRES_NETWORK_ERR:
+				dl->NotifyFailed ("network error");
+				break;
+			default:
+				dl->NotifyFailed ("unknown error");
+				break;
 			}
-		} else if (IS_NOTIFY_SPLASHSOURCE (notify)) {
-			if (reason == NPRES_NETWORK_ERR)
-				GetSurface()->GetTimeManager()->AddTickCall (splashscreen_error_tickcall,
-									     new PluginClosure (this));
-			else
+			break;
+		}
+		case StreamNotify::SPLASHSOURCE:
+			switch (reason) {
+			case NPRES_DONE:
+				xaml_loader = PluginXamlLoader::FromFilename (notify->stream_url, notify->tmpfile, this, surface);
+				loading_splash = true;
+				surface->SetSourceLocation (url);
+				LoadXAML ();
+				FlushSplash ();
+
+				CrossDomainApplicationCheck (source);
+				SetPageURL ();
 				UpdateSource ();
+				break;
+			case NPRES_USER_BREAK:
+			case NPRES_NETWORK_ERR:
+			default:
+				GetSurface()->GetTimeManager()->AddTickCall (splashscreen_error_tickcall, new PluginClosure (this));
+				break;
+			}
+			break;
+		case StreamNotify::SOURCE:
+			switch (reason) {
+			case NPRES_DONE: {
+				delete xaml_loader;
+				xaml_loader = NULL;
+		
+				CrossDomainApplicationCheck (url);
+		
+				Uri *uri = new Uri ();
+		
+				if (uri->Parse (notify->stream_url, false) && is_xap (notify->tmpfile)) {
+					LoadXAP (notify->stream_url, notify->tmpfile);
+				} else {
+					xaml_loader = PluginXamlLoader::FromFilename (notify->stream_url, notify->tmpfile, this, surface);
+					LoadXAML ();
+				}
+		
+				GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
+				GetSurface ()->EmitSourceDownloadComplete ();
+		
+				delete uri;
+				break;
+			}
+			case NPRES_USER_BREAK:
+			case NPRES_NETWORK_ERR:
+			default:
+				GetSurface()->GetTimeManager()->AddTickCall (network_error_tickcall, new PluginClosure (this));
+				break;
+			}
+			break;
 		}
 	}
 	

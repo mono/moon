@@ -21,6 +21,7 @@ class PluginXamlLoader;
 class PluginInstance;
 class BrowserBridge;
 class Xap;
+class StreamNotify;
 
 char *NPN_strdup (const char *val);
 typedef void callback_dom_event (gpointer context, char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
@@ -239,6 +240,9 @@ private:
 
 	BrowserBridge *bridge;
 
+	// The directory where we place all downloaded files
+	char *download_dir;
+
 	//
 	// The XAML loader, contains a handle to a MonoObject *
 	//
@@ -257,6 +261,8 @@ private:
 	void CrossDomainApplicationCheck (const char *source);
 	
 	void TryLoadBridge (const char *prefix);
+
+	const char *GetDownloadDir ();
 	
 	static gboolean IdleUpdateSourceByReference (gpointer data);
 
@@ -276,24 +282,10 @@ extern GSList *plugin_instances;
 #define STRDUP_FROM_VARIANT(v) (g_strndup ((char *) NPVARIANT_TO_STRING (v).utf8characters, NPVARIANT_TO_STRING (v).utf8length))
 #define STRLEN_FROM_VARIANT(v) ((size_t) NPVARIANT_TO_STRING (v).utf8length)
 
-#define STREAM_NOTIFY(x) ((StreamNotify*) x)
-
-#define STREAM_NOTIFY_DATA(x) ((StreamNotify*) x)->pdata
-
-#define IS_NOTIFY_SOURCE(x) \
-	(!x ? false : (((StreamNotify*) x)->type == StreamNotify::SOURCE))
-
-#define IS_NOTIFY_SPLASHSOURCE(x) \
-	(!x ? false : (((StreamNotify*) x)->type == StreamNotify::SPLASHSOURCE))
-
-#define IS_NOTIFY_DOWNLOADER(x) \
-	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::DOWNLOADER))
-
 class StreamNotify
 {
  public:
 	enum StreamNotifyFlags {
-		NONE = 0,
 		SOURCE = 1,
 		SPLASHSOURCE = 2,
 		DOWNLOADER = 3,
@@ -301,12 +293,18 @@ class StreamNotify
 	
 	StreamNotifyFlags type;
 	void *pdata;
-	
-	StreamNotify () : type (NONE), pdata (NULL) {};
-	StreamNotify (void *data) : type (NONE), pdata (data) {};
-	StreamNotify (StreamNotifyFlags type) : type (type), pdata (NULL) {};
-	StreamNotify (StreamNotifyFlags type, void *data) : type (type), pdata (data) {};
-	StreamNotify (StreamNotifyFlags type, DependencyObject *dob) : type (type), pdata (dob)
+	DependencyObject *dob;
+	char *tmpfile;
+	int tmpfile_fd;
+	char *stream_url;
+
+	StreamNotify (StreamNotifyFlags type, void *data)
+		: type (type), pdata (data), dob (NULL), tmpfile (NULL), tmpfile_fd (-1), stream_url (NULL)
+	{
+	}
+
+	StreamNotify (StreamNotifyFlags type, DependencyObject *data)
+		: type (type), pdata (data), dob (data), tmpfile (NULL), tmpfile_fd (-1), stream_url (NULL)
 	{
 		if (dob)
 			dob->ref ();
@@ -314,8 +312,12 @@ class StreamNotify
 	
 	~StreamNotify ()
 	{
-		if (type == DOWNLOADER && pdata)
-			((DependencyObject *) pdata)->unref ();
+		if (dob)
+			dob->unref ();
+		if (tmpfile_fd != -1)
+			close (tmpfile_fd);
+		g_free (stream_url);
+		g_free (tmpfile);
 	}
 };
 

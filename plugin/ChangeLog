@@ -1,3 +1,13 @@
+2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Rework the file downloading to only use the streaming NPAPI
+	interface. We can't trust that the file we get from firefox otherwise is
+	complete, the file might be truncated if it didn't fit in firefox' cache.
+	Also clean up StreamNotify a bit, remove unused ctors and make the code
+	look more like the rest of moonlight.
+
+	This makes DRT #425 load.
+
 2010-05-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (npvariant_is_typeface): New helper function to
