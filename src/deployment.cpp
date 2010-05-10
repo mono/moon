@@ -803,7 +803,8 @@ Deployment::Reinitialize ()
 	SetParts (parts);
 	parts->unref ();
 #if DEBUG
-	moon_sources->Clear (true);
+	if (moon_sources)
+		moon_sources->Clear (true);
 #endif
 }
 
