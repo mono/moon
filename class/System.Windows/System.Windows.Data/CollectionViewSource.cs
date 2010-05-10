@@ -135,7 +135,7 @@ namespace System.Windows.Data {
 
 		void Refresh ()
 		{
-			if (((IDeferRefresh) this).DeferLevel != 0)
+			if (((IDeferRefresh) this).DeferLevel != 0 || View == null)
 				return;
 
 			using (View.DeferRefresh ()) {

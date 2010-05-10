@@ -1,3 +1,8 @@
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionViewSource.cs: If the view is null there's no need
+	  to refresh. Fixes a null deref in drt 232.
+
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPathWalker.cs:
