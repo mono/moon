@@ -1,5 +1,13 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewNode.cs:
+	* PropertyPathWalker.cs:
+	* BindingExpressionBase.cs: We bind directly to the View
+	  instead of the CurrentItem when the type of the DP is
+	  IEnumerable or ICollectionView.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Raise the Reset CollectionChanged
 	  event when the filtered items change so that listeners are
 	  informed of the modifications.

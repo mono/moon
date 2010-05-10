@@ -69,12 +69,12 @@ namespace System.Windows.Data
 		}
 
 		public PropertyPathWalker (string path)
-			: this (path, true)
+			: this (path, true, false)
 		{
 
 		}
 
-		public PropertyPathWalker (string path, bool bindDirectlyToSource)
+		public PropertyPathWalker (string path, bool bindDirectlyToSource, bool bindsToView)
 		{
 			string index;
 			string propertyName;
@@ -84,12 +84,12 @@ namespace System.Windows.Data
 			if (string.IsNullOrEmpty (path)) {
 				// If the property path is null or empty, we still need to add a CollectionViewNode
 				// to handle the case where we bind diretly to a CollectionViewSource. i.e. new Binding () { Source = cvs }
-				Node = new CollectionViewNode (bindDirectlyToSource, false);
+				Node = new CollectionViewNode (bindDirectlyToSource, bindsToView);
 			} else {
 				var parser = new PropertyPathParser (path);
 				while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
 					bool isViewProperty = CollectionViewProperties.Any (prop => prop.Name == propertyName);
-					IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource, isViewProperty);
+					IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource, isViewProperty || bindsToView);
 					switch (type) {
 					case PropertyNodeType.AttachedProperty:
 					case PropertyNodeType.Property:

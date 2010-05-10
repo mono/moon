@@ -1,5 +1,11 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest_CollectionView.cs: Add tests
+	  to figure out when we bind to the View and when we bind to
+	  View.CurrentItem.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs:
 	  INotifyCollectionChanged.Reset really means "Refresh me
 	  please", not "Collection has been cleared"

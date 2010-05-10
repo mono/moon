@@ -42,7 +42,7 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		bool IsViewProperty {
+		bool BindsToView {
 			get; set;
 		}
 
@@ -50,10 +50,10 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		public CollectionViewNode (bool bindsDirectlyToSource, bool isViewProperty)
+		public CollectionViewNode (bool bindsDirectlyToSource, bool bindsToView)
 		{
 			BindsDirectlyToSource = bindsDirectlyToSource;
-			IsViewProperty = isViewProperty;
+			BindsToView = bindsToView;
 			ViewChangedHandler = ViewChanged;
 		}
 
@@ -133,7 +133,7 @@ namespace System.Windows.Data {
 				} else {
 					// If we have an ICollectionView and the property we're binding to exists
 					// on ICollectionView, we bind to the view. Otherwise we bind to its CurrentItem.
-					if (IsViewProperty) {
+					if (BindsToView) {
 						ValueType = view.GetType ();
 						Value = view;
 					} else {

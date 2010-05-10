@@ -120,7 +120,8 @@ namespace System.Windows.Data {
 			Target = target;
 			Property = property;
 
-			PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource);
+			bool bindsToView = property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
+			PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource, bindsToView);
 			if (Binding.Mode != BindingMode.OneTime)
 				PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 		}

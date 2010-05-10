@@ -53,13 +53,43 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		public void StandardBinding ()
+		public void StandardBinding_CVS ()
 		{
 			// We bind to the CurrentItem of the CollectionView
 			Target.SetBinding (Rectangle.WidthProperty, new Binding ("Age") {
 				Source = Source,
 			});
 			Assert.AreEqual (1, Target.Width, "#1");
+		}
+
+		[TestMethod]
+		public void StandardBinding_ICV ()
+		{
+			// We bind to the CurrentItem of the CollectionView
+			Target.SetBinding (Rectangle.WidthProperty, new Binding ("Age") {
+				Source = Source.View,
+			});
+			Assert.AreEqual (1, Target.Width, "#1");
+		}
+
+		[TestMethod]
+		public void BindToEnumerable_CVS ()
+		{
+			var target = new ListBox ();
+			target.SetBinding (ListBox.ItemsSourceProperty, new Binding {
+				Source = Source
+			});
+			Assert.AreSame (Source.View, target.ItemsSource, "#1");
+		}
+
+		[TestMethod]
+		public void BindToEnumerable_ICV ()
+		{
+			var target = new ListBox ();
+			target.SetBinding (ListBox.ItemsSourceProperty, new Binding {
+				Source = Source.View
+			});
+			Assert.AreSame (Source.View, target.ItemsSource, "#1");
 		}
 
 		[TestMethod]
