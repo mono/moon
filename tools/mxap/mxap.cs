@@ -236,6 +236,9 @@ namespace Moonlight {
 				manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}\" />\n", Path.GetFileNameWithoutExtension (assembly), Path.GetFileName (assembly));
 			}
 
+			manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}.dll\" />\n", ApplicationName, ApplicationName);			
+			manifest.AppendLine ("  </Deployment.Parts>");
+
 			if (external_parts != null && external_parts.Count > 0) {
 				manifest.AppendFormat ("  <Deployment.ExternalParts>");
 				foreach (string ext_part in ExternalPartManifests) {
@@ -245,9 +248,6 @@ namespace Moonlight {
 				manifest.AppendFormat ("  </Deployment.ExternalParts>");
 			}
 
-			manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}.dll\" />\n", ApplicationName, ApplicationName);
-			
-			manifest.AppendLine ("  </Deployment.Parts>");
 			manifest.AppendLine ("</Deployment>");
 
 			File.WriteAllText (AppManifest_Filename, manifest.ToString ());
