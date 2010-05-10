@@ -1,3 +1,7 @@
+2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: Implement minor bits of ActivateKeyboardLayout.
+
 2010-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* input.cpp: Implement fake mouse wheel input.

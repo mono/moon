@@ -686,8 +686,23 @@ ShockerScriptableControlObject::GetActiveInputLocaleId (const NPVariant *args, u
 void
 ShockerScriptableControlObject::ActivateKeyboardLayout (const NPVariant *args, uint32_t arg_count, NPVariant *result)
 {
+	const char *friendlyName;
+	int x, y;
+	guint8 res = false;
+
+	g_assert (arg_count >= 3);
+	g_assert (NPVARIANT_IS_STRING (args [0]));
+	g_assert (NPVARIANT_IS_NUMBER (args [1]));
+	g_assert (NPVARIANT_IS_NUMBER (args [2]));
+
+	friendlyName = STR_FROM_VARIANT (args [0]);
+	x = NUMBER_TO_INT32 (args [1]);
+	y = NUMBER_TO_INT32 (args [2]);
+
+	printf ("[%i shocker] ShockerScriptableControlObject::ActivateKeyboardLayout (friendlyName: '%s' x: %i y: %i)\n", getpid (), friendlyName, x, y);
+
 	Shocker_FailTestFast ("ActivateKeyboardLayout: Not implemented");
-	BOOLEAN_TO_NPVARIANT (true, *result);
+	BOOLEAN_TO_NPVARIANT (res != 0, *result);
 }
 
 void
