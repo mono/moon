@@ -1,5 +1,11 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Raise the Reset CollectionChanged
+	  event when the filtered items change so that listeners are
+	  informed of the modifications.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewSource.cs: When the view changes we need to
 	  refresh it immediately so that it gets filtered/sorted.
 

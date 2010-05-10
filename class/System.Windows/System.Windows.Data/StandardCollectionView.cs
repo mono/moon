@@ -327,6 +327,10 @@ namespace System.Windows.Data {
 			} else {
 				MoveCurrentTo (-1);
 			}
+
+			var h = CollectionChanged;
+			if (h != null)
+				h (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
 		void AppendToGroup (object item, int depth, StandardCollectionViewGroup group)
