@@ -42,6 +42,7 @@ using Microsoft.Silverlight.Testing;
 using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -734,6 +735,22 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void ItemsSource_ResetEvent ()
+		{
+			var list = new ManualINCC ();
+			CurrentControl.ItemsSource = list;
+			CreateAsyncTest ((FrameworkElement) CurrentControl,
+				() => CurrentControl.ApplyTemplate (),
+				() => {
+					list.AddRange (new [] { new object (), new object () });
+					list.RaiseINCC (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+					Assert.AreEqual (2, CurrentControl.Items.Count, "#1");
+				}
+			);
+		}
+
+		[TestMethod]
 		public void ItemsSource_ObservableCollection ()
 		{
 			ItemsControl ic = new ItemsControl ();
@@ -804,6 +821,18 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.IsNotNull (poker.LastPreparedContainer, "#2");
 				}
 			);
+		}
+	}
+
+	public class ManualINCC : List<object>, INotifyCollectionChanged {
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		public void RaiseINCC (NotifyCollectionChangedEventArgs e)
+		{
+			var h = CollectionChanged;
+			if (h != null)
+				h (this, e);
 		}
 	}
 }

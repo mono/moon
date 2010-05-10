@@ -164,6 +164,8 @@ namespace System.Windows.Controls {
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				Items.ClearImpl ();
+				foreach (var v in ItemsSource)
+					Items.AddImpl (v);
 				break;
 			}
 		}

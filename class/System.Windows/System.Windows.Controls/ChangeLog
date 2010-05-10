@@ -1,3 +1,8 @@
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: INotifyCollectionChanged.Reset really means
+	  "Refresh me please", not "Collection has been cleared".
+
 2010-05-06  Chris Toshok  <toshok@ximian.com>
 
 	* Image.cs: no need to manually add Stretch here, since we moved
