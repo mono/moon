@@ -49,7 +49,6 @@ namespace System.Windows.Data {
 					walker.Update (null);
 				}
 
-				Console.WriteLine ("Comparing: {0} to {1}. {2} to {3}", x, y, left, right);
 				int result = Comparer.Default.Compare (left, right);
 				if (result != 0)
 					return Directions [i] == ListSortDirection.Ascending ? result : -result;

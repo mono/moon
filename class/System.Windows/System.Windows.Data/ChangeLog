@@ -1,5 +1,9 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyComparer.cs: Nuke a CWL.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewNode.cs:
 	* PropertyPathWalker.cs:
 	* BindingExpressionBase.cs: We bind directly to the View
