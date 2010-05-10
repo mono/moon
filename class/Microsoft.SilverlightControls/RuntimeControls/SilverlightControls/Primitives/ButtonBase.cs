@@ -38,30 +38,6 @@ namespace System.Windows.Controls.Primitives
                 typeof(ButtonBase),
                 new PropertyMetadata(OnClickModePropertyChanged)); 
 
-        public static readonly DependencyProperty CommandParameterProperty = 
-            DependencyProperty.RegisterCore(
-                "CommandParameter",
-                typeof (object),
-                typeof (ButtonBase),
-                new PropertyMetadata (null));
-		
-        public object CommandParameter {
-            get { return GetValue (CommandParameterProperty); }
-            set { SetValue (CommandParameterProperty, value); }
-        }
-		
-        public static readonly DependencyProperty CommandProperty = 
-            DependencyProperty.RegisterCore(
-                "Command",
-                typeof (ICommand),
-                typeof (ButtonBase),
-                new PropertyMetadata (null));
-
-        public ICommand Command {
-            get { return (ICommand) GetValue (CommandProperty); }
-            set { SetValue (CommandProperty, value); }
-        }
-
         /// <summary>
         /// ClickModeProperty property changed handler. 
         /// </summary> 
@@ -84,7 +60,83 @@ namespace System.Windows.Controls.Primitives
             } 
         } 
         #endregion ClickMode
+
+	#region Command
+        public static readonly DependencyProperty CommandProperty = 
+            DependencyProperty.RegisterCore(
+                "Command",
+                typeof (ICommand),
+                typeof (ButtonBase),
+                new PropertyMetadata (OnCommandPropertyChanged));
+
+        public ICommand Command {
+            get { return (ICommand) GetValue (CommandProperty); }
+            set { SetValue (CommandProperty, value); }
+        }
+
+        private static void OnCommandPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        { 
+            ButtonBase source = d as ButtonBase;
+            Debug.Assert(source != null,
+                "The source is not an instance of ButtonBase!"); 
  
+	    source.CommandPropertyChanged (e);
+	}
+
+	private void CommandPropertyChanged (DependencyPropertyChangedEventArgs e)
+	{
+	    ICommand command;
+
+	    command = e.OldValue as ICommand;
+	    if (command != null)
+		    command.CanExecuteChanged -= OnCommandCanExecuteChanged;
+
+	    command = e.NewValue as ICommand;
+	    if (command != null) {
+		    command.CanExecuteChanged += OnCommandCanExecuteChanged;
+
+		    IsEnabled = command.CanExecute (CommandParameter);
+	    }
+	}
+
+	private void OnCommandCanExecuteChanged (object sender, EventArgs e)
+	{
+		IsEnabled = Command.CanExecute (CommandParameter);
+	}
+	#endregion
+
+	#region CommandParameter
+        public static readonly DependencyProperty CommandParameterProperty = 
+            DependencyProperty.RegisterCore(
+                "CommandParameter",
+                typeof (object),
+                typeof (ButtonBase),
+                new PropertyMetadata (OnCommandParameterPropertyChanged));
+		
+        public object CommandParameter {
+            get { return GetValue (CommandParameterProperty); }
+            set { SetValue (CommandParameterProperty, value); }
+        }
+
+        private static void OnCommandParameterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        { 
+		ButtonBase source = d as ButtonBase;
+		Debug.Assert(source != null,
+			     "The source is not an instance of ButtonBase!"); 
+ 
+		source.CommandParameterPropertyChanged (e);
+	}
+
+	private void CommandParameterPropertyChanged (DependencyPropertyChangedEventArgs e)
+	{
+		ICommand command = Command;
+		if (command == null)
+			return;
+
+		IsEnabled = command.CanExecute (e.NewValue);
+	}
+	#endregion
+
         #region IsFocused
         /// <summary>
         /// Gets a value that determines whether this element has logical focus. 
@@ -339,6 +391,10 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         protected virtual void OnClick()
         {
+	    ICommand command = Command;
+	    if (command != null && command.CanExecute (CommandParameter))
+		command.Execute (CommandParameter);
+
             RoutedEventHandler handler = Click; 
             if (handler != null)
             {
