@@ -1,5 +1,11 @@
 2010-05-10  Jackson Harper  <jackson@ximian.com>
 
+	* mxap.cs: Fix another typo.
+	- The parts list always gets inited, so don't add anything unless
+	we have some.
+
+2010-05-10  Jackson Harper  <jackson@ximian.com>
+
 	* mxap.cs: Add assembly verification.  We still don't do key token
 	verification though.
 

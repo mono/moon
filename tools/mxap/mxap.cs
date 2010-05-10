@@ -236,7 +236,7 @@ namespace Moonlight {
 				manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}\" />\n", Path.GetFileNameWithoutExtension (assembly), Path.GetFileName (assembly));
 			}
 
-			if (external_parts != null) {
+			if (external_parts != null && external_parts.Count > 0) {
 				manifest.AppendFormat ("  <Deployment.ExternalParts>");
 				foreach (string ext_part in ExternalPartManifests) {
 					if (!CreateExternalPartsFromManifest (ext_part, manifest))
@@ -264,7 +264,7 @@ namespace Moonlight {
 			XPathNodeIterator assemblies = nav.Select ("/manifest/assembly");
 
 			if (assemblies == null) {
-				ExternalPartError (path, "No assembly elements found found.");
+				ExternalPartError (path, "No assembly elements found.");
 				return false;
 			}
 
