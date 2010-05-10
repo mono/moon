@@ -800,7 +800,7 @@ ShockerScriptableControlObject::EndLog (const NPVariant *args, uint32_t arg_coun
 void
 ShockerScriptableControlObject::MouseWheel (const NPVariant *args, uint32_t arg_count, NPVariant *result)
 {
-        unsigned int clicks = 0;
+        int clicks = 0;
         if (arg_count >= 1) {
                 g_assert (NPVARIANT_IS_NUMBER (args [0]));
                 clicks = NUMBER_TO_INT32 (args [0]);

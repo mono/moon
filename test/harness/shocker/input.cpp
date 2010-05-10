@@ -319,7 +319,7 @@ InputProvider::GetCursorPos (int &x, int &y)
 }
 
 void
-InputProvider::MouseWheel (guint16 clicks)
+InputProvider::MouseWheel (gint16 clicks)
 {
 	int button;
 	
@@ -551,7 +551,7 @@ int InputHelper_MouseLeftButtonDown (unsigned int delay)
 	return 0;
 }
 
-int InputHelper_MouseWheel (guint16 clicks)
+int InputHelper_MouseWheel (gint16 clicks)
 {
 	InputProvider::GetInstance ()->MouseWheel (clicks);
 	return 0;

@@ -175,7 +175,7 @@ public:
 	void MouseRightClick (unsigned int delay);
 	void MouseLeftButtonDown (unsigned int delay);
 	void MouseLeftButtonUp (unsigned int delay);
-	void MouseWheel (guint16 clicks);
+	void MouseWheel (gint16 clicks);
 	bool MouseIsAtPosition (int x, int y);
 	void SendKeyInput (guint32 key_code, bool key_down, bool extended, bool unicode);
 	void SetKeyboardInputSpeed (unsigned int keyboard_input_speed);
@@ -206,7 +206,7 @@ int InputHelper_MouseRightClick (unsigned int delay);
 int InputHelper_MouseDoubleClick (unsigned int delay);
 int InputHelper_MouseLeftButtonUp (unsigned int delay);
 int InputHelper_MouseLeftButtonDown (unsigned int delay);
-int InputHelper_MouseWheel (guint16 clicks);
+int InputHelper_MouseWheel (gint16 clicks);
 int InputHelper_MouseIsAtPosition (int x, int y, guint8 *result);
 int InputHelper_SendKeyInput (int vkey, bool down, bool extended, bool unicode);
 int InputHelper_SetKeyboardInputSpeed (unsigned int keyboardInputSpeed);

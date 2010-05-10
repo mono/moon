@@ -1,3 +1,13 @@
+2010-05-07  Chris Toshok  <toshok@ximian.com>
+
+	* shocker.cpp (ShockerScriptableControlObject::MouseWheel): don't
+	cast clicks to an unsigned type, we need to support negative
+	values.
+
+	* input.cpp,h (InputProvider::MouseWheel): the clicks parameter
+	needs to be signed.
+	(InputHelper_MouseWheel): same.
+
 2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.cpp: Implement minor bits of ActivateKeyboardLayout.
