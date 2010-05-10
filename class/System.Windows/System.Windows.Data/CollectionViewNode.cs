@@ -57,11 +57,11 @@ namespace System.Windows.Data {
 			base.OnSourceChanged (oldSource, newSource);
 
 			source = oldSource as CollectionViewSource;
-			if (source != null)
+			if (source != null && source.View != null)
 				source.View.CurrentChanged -= HandleSourceViewCurrentChanged;
 
 			source = newSource as CollectionViewSource;
-			if (source != null)
+			if (source != null && source.View != null)
 				source.View.CurrentChanged += HandleSourceViewCurrentChanged;
 		}
 

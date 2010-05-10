@@ -1,5 +1,10 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewNode.cs: Don't try to access the view if it's
+	  null.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewSource.cs: If the view is null there's no need
 	  to refresh. Fixes a null deref in drt 232.
 
