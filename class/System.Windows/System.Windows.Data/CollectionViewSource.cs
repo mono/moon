@@ -130,7 +130,10 @@ namespace System.Windows.Data {
 
 		protected virtual void OnSourceChanged (object oldSource, object newSource)
 		{
-			View = new StandardCollectionView ((IEnumerable) newSource);
+			if (newSource == null)
+				View = null;
+			else
+				View = new StandardCollectionView ((IEnumerable) newSource);
 		}
 
 		void Refresh ()
