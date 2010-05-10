@@ -226,6 +226,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 				INHERIT_CTI_CTI (FontSizeProperty);
 
 				INHERIT_F_F (LanguageProperty);
+				INHERIT_F_F (FlowDirectionProperty);
 				
 				INHERIT_U_U (UseLayoutRoundingProperty);
 
@@ -296,6 +297,7 @@ InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
 	PROP_U (UseLayoutRoundingProperty);
 
 	PROP_F (LanguageProperty);
+	PROP_F (FlowDirectionProperty);
 
 	PROP_I (LanguageProperty);
 	PROP_I (TextDecorationsProperty);
@@ -350,7 +352,8 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 
 	if (types->IsSubclassOf (property->GetOwnerType(), Type::FRAMEWORKELEMENT)) {
 		if (types->IsSubclassOf (descendantKind, Type::FRAMEWORKELEMENT)) {
-			if (property->GetId() == FrameworkElement::LanguageProperty)
+			if (property->GetId() == FrameworkElement::LanguageProperty ||
+			    property->GetId() == FrameworkElement::FlowDirectionProperty)
 				return property;
 		}
 	}
@@ -428,6 +431,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 #define FONTWEIGHT_PROP     (1<<4)
 #define FONTSIZE_PROP       (1<<5)
 #define LANGUAGE_PROP       (1<<6)
+#define FLOWDIRECTION_PROP  (1<<7)
 #define LAYOUTROUNDING_PROP (1<<8)
 
 #define HAS_SEEN(s,p)  (((s) & (p))!=0)
@@ -471,6 +475,7 @@ walk_tree (Types *types, UIElement *element, guint32 seen)
 
 	if (types->IsSubclassOf (element->GetObjectType (), Type::FRAMEWORKELEMENT)) {
 		PROP_ADD (FrameworkElement::LanguageProperty, LANGUAGE_PROP);
+		PROP_ADD (FrameworkElement::FlowDirectionProperty, FLOWDIRECTION_PROP);
 	}
 
 	
