@@ -253,6 +253,7 @@ TextLayout::TextLayout ()
 	strategy = LineStackingStrategyMaxHeight;
 	alignment = TextAlignmentLeft;
 	wrapping = TextWrappingNoWrap;
+	trimming = TextTrimmingNone;
 	selection_length = 0;
 	selection_start = 0;
 	avail_width = INFINITY;
@@ -334,6 +335,19 @@ TextLayout::SetTextAlignment (TextAlignment align)
 	alignment = align;
 	
 	return false;
+}
+
+bool
+TextLayout::SetTextTrimming (TextTrimming trim)
+{
+	if (trimming == trim)
+		return false;
+	
+	trimming = trim;
+	
+	ResetState ();
+	
+	return true;
 }
 
 bool
@@ -1472,6 +1486,7 @@ validate_attrs (List *attributes)
 void
 TextLayout::Layout ()
 {
+	// FIXME: take text trimming into consideration...
 	TextLayoutAttributes *attrs, *nattrs;
 	LayoutWordCallback layout_word;
 	const char *inptr, *inend;

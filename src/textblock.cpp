@@ -20,364 +20,20 @@
 #include <errno.h>
 
 #include "file-downloader.h"
+#include "deployment.h"
 #include "textblock.h"
+#include "geometry.h"
 #include "control.h"
 #include "runtime.h"
 #include "color.h"
 #include "utils.h"
 #include "debug.h"
-#include "uri.h"
-#include "geometry.h"
-#include "deployment.h"
 #include "enums.h"
+#include "uri.h"
 
 // Unicode Line Separator (\u2028)
 static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
 #define utf8_linebreak_len 3
-
-
-Block::Block ()
-{
-	SetObjectType (Type::BLOCK);
-}
-
-Bold::Bold ()
-{
-	SetObjectType (Type::BOLD);
-
-	// Yes, this is supposed to be locally set in the ctor.
-	FontWeight w (FontWeightsBold);
-	SetFontWeight (&w);
-}
-
-Hyperlink::Hyperlink ()
-{
-	SetObjectType (Type::HYPERLINK);
-	SetTextDecorations (TextDecorationsUnderline);
-	SetMouseOverForeground (new SolidColorBrush ("black"));
-	SetForeground (new SolidColorBrush ("#FF337CBB"));
-}
-
-InlineUIContainer::InlineUIContainer ()
-{
-	SetObjectType (Type::INLINEUICONTAINER);
-}
-
-Italic::Italic ()
-{
-	SetObjectType (Type::ITALIC);
-	FontStyle style (FontStylesItalic);
-	SetFontStyle (&style);
-}
-
-LineBreak::LineBreak ()
-{
-	SetObjectType (Type::LINEBREAK);
-}
-
-Paragraph::Paragraph ()
-{
-	SetObjectType (Type::PARAGRAPH);
-}
-
-RichTextArea::RichTextArea ()
-{
-	SetObjectType (Type::RICHTEXTAREA);
-}
-
-Span::Span ()
-{
-	SetObjectType (Type::SPAN);
-}
-
-TextElement::TextElement ()
-{
-	SetObjectType (Type::TEXTELEMENT);
-}
-
-Underline::Underline ()
-{
-	SetObjectType (Type::UNDERLINE);
-	SetTextDecorations (TextDecorationsUnderline);
-}
-
-Section::Section ()
-{
-	SetObjectType (Type::SECTION);
-}
-
-//
-// Inline
-//
-
-Inline::Inline ()
-{
-	SetObjectType (Type::INLINE);
-	font = new TextFontDescription ();
-	downloaders = g_ptr_array_new ();
-	autogen = false;
-}
-
-Inline::~Inline ()
-{
-	CleanupDownloaders ();
-	g_ptr_array_free (downloaders, true);
-	delete font;
-}
-
-void
-Inline::CleanupDownloaders ()
-{
-	Downloader *downloader;
-	guint i;
-	
-	for (i = 0; i < downloaders->len; i++) {
-		downloader = (Downloader *) downloaders->pdata[i];
-		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
-		downloader->Abort ();
-		downloader->unref ();
-	}
-	
-	g_ptr_array_set_size (downloaders, 0);
-}
-
-void
-Inline::AddFontSource (Downloader *downloader)
-{
-	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-	g_ptr_array_add (downloaders, downloader);
-	downloader->ref ();
-	
-	if (downloader->Started () || downloader->Completed ()) {
-		if (downloader->Completed ())
-			DownloaderComplete (downloader);
-	} else {
-		// This is what actually triggers the download
-		downloader->Send ();
-	}
-}
-
-void
-Inline::AddFontResource (const char *resource)
-{
-	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
-	Application *application = Application::GetCurrent ();
-	Downloader *downloader;
-	char *path;
-	Uri *uri;
-	
-	uri = new Uri ();
-	
-	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
-			downloader->Open ("GET", resource, FontPolicy);
-			AddFontSource (downloader);
-			downloader->unref ();
-		}
-		
-		delete uri;
-		
-		return;
-	}
-	
-	manager->AddResource (resource, path);
-	g_free (path);
-	delete uri;
-}
-
-void
-Inline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
-{
-	if (args->GetProperty ()->GetOwnerType () != Type::INLINE) {
-		DependencyObject::OnPropertyChanged (args, error);
-		return;
-	}
-	
-	if (args->GetId () == Inline::FontFamilyProperty) {
-		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
-		char **families, *fragment;
-		int i;
-		
-		CleanupDownloaders ();
-		
-		if (family && family->source) {
-			families = g_strsplit (family->source, ",", -1);
-			for (i = 0; families[i]; i++) {
-				g_strstrip (families[i]);
-				if ((fragment = strchr (families[i], '#'))) {
-					// the first portion of this string is the resource name...
-					*fragment = '\0';
-					AddFontResource (families[i]);
-				}
-			}
-			g_strfreev (families);
-		}
-	}
-	
-	NotifyListenersOfPropertyChange (args, error);
-}
-
-void
-Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	if (prop && prop->GetId () == Inline::ForegroundProperty) {
-		// this isn't exactly what we want, I don't
-		// think... but it'll have to do.
-		NotifyListenersOfPropertyChange (prop, NULL);
-	} else {
-		DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
-	}
-}
-
-bool
-Inline::Equals (Inline *item)
-{
-	const char *lang0, *lang1;
-	
-	if (item->GetObjectType () != GetObjectType ())
-		return false;
-	
-	if (*item->GetFontFamily () != *GetFontFamily ())
-		return false;
-	
-	if (item->GetFontSize () != GetFontSize ())
-		return false;
-	
-	if (item->GetFontStyle () != GetFontStyle ())
-		return false;
-	
-	if (item->GetFontWeight () != GetFontWeight ())
-		return false;
-	
-	if (item->GetFontStretch () != GetFontStretch ())
-		return false;
-	
-	if (item->GetTextDecorations () != GetTextDecorations ())
-		return false;
-	
-	lang0 = item->GetLanguage ();
-	lang1 = GetLanguage ();
-	
-	if ((lang0 && !lang1) || (!lang0 && lang1))
-		return false;
-	
-	if (lang0 && lang1 && strcmp (lang0, lang1) != 0)
-		return false;
-	
-	// this isn't really correct - we should be checking
-	// the innards of the foreground brushes, but we're
-	// guaranteed to never have a false positive here.
-	if (item->GetForeground () != GetForeground ())
-		return false;
-	
-	// OK, as best we can tell - they are equal
-	return true;
-}
-
-bool
-Inline::UpdateFontDescription (const char *source, bool force)
-{
-	FontFamily *family = GetFontFamily ();
-	bool changed = false;
-	
-	if (font->SetSource (source))
-		changed = true;
-	
-	if (font->SetFamily (family ? family->source : NULL))
-		changed = true;
-	
-	if (font->SetStretch (GetFontStretch ()->stretch))
-		changed = true;
-	
-	if (font->SetWeight (GetFontWeight ()->weight))
-		changed = true;
-	
-	if (font->SetStyle (GetFontStyle ()->style))
-		changed = true;
-	
-	if (font->SetSize (GetFontSize ()))
-		changed = true;
-	
-	if (font->SetLanguage (GetLanguage ()))
-		changed = true;
-	
-	if (force) {
-		font->Reload ();
-		return true;
-	}
-	
-	return changed;
-}
-
-void
-Inline::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	((Inline *) closure)->DownloaderComplete ((Downloader *) sender);
-}
-
-void
-Inline::DownloaderComplete (Downloader *downloader)
-{
-	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
-	char *resource, *filename;
-	InternalDownloader *idl;
-	const char *path;
-	Uri *uri;
-	
-	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
-	if (!(filename = downloader->GetDownloadedFilename (NULL)))
-		return;
-	
-	g_free (filename);
-	
-	if (!(idl = downloader->GetInternalDownloader ()))
-		return;
-	
-	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
-		return;
-	
-	uri = downloader->GetUri ();
-	
-	// If the downloaded file was a zip file, this'll get the path to the
-	// extracted zip directory, else it will simply be the path to the
-	// downloaded file.
-	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
-		return;
-	
-	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-	manager->AddResource (resource, path);
-	g_free (resource);
-}
-
-
-//
-// Run
-//
-
-Run::Run ()
-{
-	SetObjectType (Type::RUN);
-}
- 
-bool
-Run::Equals (Inline *item)
-{
-	const char *text, *itext;
-	
-	if (!Inline::Equals (item))
-		return false;
-	
-	itext = ((Run *) item)->GetText ();
-	text = GetText ();
-	
-	// compare the text
-	if (text && itext && strcmp (text, itext) != 0)
-		return false;
-	else if ((text && !itext) || (!text && itext))
-		return false;
-	
-	return true;
-}
 
 
 //
@@ -949,10 +605,6 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			UpdateLayoutAttributes ();
 			invalidate = false;
 		}
-	} else if (args->GetId () == TextBlock::TextDecorationsProperty) {
-		dirty = true;
-	} else if (args->GetId () == TextBlock::TextWrappingProperty) {
-		dirty = layout->SetTextWrapping (args->GetNewValue()->AsTextWrapping ());
 	} else if (args->GetId () == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
@@ -973,8 +625,14 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		dirty = layout->SetLineStackingStrategy (args->GetNewValue()->AsLineStackingStrategy ());
 	} else if (args->GetId () == TextBlock::LineHeightProperty) {
 		dirty = layout->SetLineHeight (args->GetNewValue()->AsDouble ());
+	} else if (args->GetId () == TextBlock::TextDecorationsProperty) {
+		dirty = true;
 	} else if (args->GetId () == TextBlock::TextAlignmentProperty) {
 		dirty = layout->SetTextAlignment (args->GetNewValue()->AsTextAlignment ());
+	} else if (args->GetId () == TextBlock::TextTrimmingProperty) {
+		dirty = layout->SetTextTrimming (args->GetNewValue()->AsTextTrimming ());
+	} else if (args->GetId () == TextBlock::TextWrappingProperty) {
+		dirty = layout->SetTextWrapping (args->GetNewValue()->AsTextWrapping ());
 	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontSourceProperty) {

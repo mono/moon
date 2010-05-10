@@ -1,5 +1,18 @@
 2010-05-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textelement.cpp|h: New source files for TextElement and
+	subclasses like Inline, Run, and all the new ones for RichTextBox.
+
+	* richtextbox.cpp|h: New source files for the RichTextBox
+	implementation.
+
+	* textblock.cpp (TextBlock::OnPropertyChanged): Update the
+	layout's TextTrimming mode.
+
+	* layout.cpp (SetTextTrimming): Implemented.
+
+2010-05-10  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pal/gtk/install-dialog.cpp (install_dialog_new): Use SendNow()
 	for now until we figure out the problem in some of the drts where
 	Send()'s async tick callback never gets called.

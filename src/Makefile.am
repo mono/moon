@@ -95,7 +95,7 @@ libmoon_include_headers = 	\
 	pipeline-asf.h		\
 	pipeline-ui.h		\
 	pipeline-nocodec-ui.h	\
-	pipeline-mp4.h	\
+	pipeline-mp4.h		\
 	playlist.h		\
 	point.h			\
 	popup.h			\
@@ -107,6 +107,7 @@ libmoon_include_headers = 	\
 	rect.h			\
 	region.h		\
 	resources.h		\
+	richtextbox.h		\
 	runtime.h		\
 	security.h		\
 	shape.h			\
@@ -117,9 +118,9 @@ libmoon_include_headers = 	\
 	template.h		\
 	textblock.h		\
 	textbox.h		\
+	textelement.h		\
 	textoptions.h		\
 	thickness.h		\
-	textoptions.h		\
 	tilesource.h		\
 	timeline.h		\
 	timemanager.h		\
@@ -134,7 +135,7 @@ libmoon_include_headers = 	\
 	validators.h		\
 	value.h			\
 	viewbox.h		\
-	webbrowser.h	\
+	webbrowser.h		\
 	writeablebitmap.h	\
 	xaml.h			\
 	xap.h			\
@@ -223,12 +224,13 @@ libmoon_la_SOURCES = 		\
 	playlist.cpp		\
 	point.cpp		\
 	popup.cpp		\
-	printing.cpp	\
+	printing.cpp		\
 	projection.cpp		\
 	provider.cpp		\
 	rect.cpp		\
 	region.cpp		\
 	resources.cpp		\
+	richtextbox.cpp		\
 	runtime.cpp		\
 	security.cpp		\
 	shape.cpp		\
@@ -239,6 +241,7 @@ libmoon_la_SOURCES = 		\
 	template.cpp		\
 	textblock.cpp		\
 	textbox.cpp		\
+	textelement.cpp		\
 	thickness.cpp		\
 	tilesource.cpp		\
 	timeline.cpp		\
@@ -255,7 +258,7 @@ libmoon_la_SOURCES = 		\
 	validators.cpp		\
 	value.cpp		\
 	viewbox.cpp		\
-	webbrowser.cpp	\
+	webbrowser.cpp		\
 	writeablebitmap.cpp	\
 	xaml.cpp		\
 	xap.cpp			\

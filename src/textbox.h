@@ -407,8 +407,8 @@ class TextBox : public TextBoxBase {
 	const static int VerticalScrollBarVisibilityProperty;
 	/* @PropertyType=object,GenerateAccessors */
 	const static int WatermarkProperty;
-	/* @GenerateCBinding,GeneratePInvoke */
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	TextBox ();
 	
 	//

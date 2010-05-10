@@ -113,6 +113,7 @@ struct TextLayoutRun {
 class TextLayout {
 	LineStackingStrategy strategy;
 	TextAlignment alignment;
+	TextTrimming trimming;
 	TextWrapping wrapping;
 	int selection_length;
 	int selection_start;
@@ -162,6 +163,9 @@ class TextLayout {
 	
 	TextAlignment GetTextAlignment () { return alignment; }
 	bool SetTextAlignment (TextAlignment align);
+	
+	TextTrimming GetTextTrimming () { return trimming; }
+	bool SetTextTrimming (TextTrimming trim);
 	
 	TextWrapping GetTextWrapping () { return wrapping; }
 	bool SetTextWrapping (TextWrapping mode);
