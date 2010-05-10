@@ -1,6 +1,11 @@
 2010-05-10  Jackson Harper  <jackson@ximian.com>
 
-	* mxap.cs: Add support for external part manifests.
+	* mxap.cs: Add assembly verification.  We still don't do key token
+	verification though.
+
+2010-05-10  Jackson Harper  <jackson@ximian.com>
+
+	* mxap.cs: Add support for external part manifests.<
 
 2010-05-05  Sebastien Pouliot  <sebastien@ximian.com>
 

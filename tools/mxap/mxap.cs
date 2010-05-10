@@ -3,6 +3,7 @@ using NDesk.Options;
 using System;
 using System.IO;
 using System.Text;
+using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -329,7 +330,30 @@ namespace Moonlight {
 				return false;
 			}
 
+			if (!VerifyExternalPartAssembly (path, name, version, publickeytoken, relpath))
+				return false;
+
 			return RunProcess ("zip", String.Format (" {0} {1}", source, relpath));
+		}
+
+		private bool VerifyExternalPartAssembly (string path, string name, string version, string publickeytoken, string relpath)
+		{
+			Assembly asm = Assembly.ReflectionOnlyLoadFrom (relpath);
+			AssemblyName aname = asm.GetName ();
+
+			if (aname.Name != name) {
+				ExternalPartError (path, String.Format ("Assembly verification failed, names did not match ({0}, {1}).", aname.Name, name));
+				return false;
+			}
+
+			if (aname.Version.ToString () != version) {
+				ExternalPartError (path, String.Format ("Assembly verification failed, versions did not match ({0}, {1}).", aname.Version, version));
+				return false;
+			}
+
+			// TODO: How do i check the public key token?
+			
+			return true;
 		}
 
 		private void ExternalPartError (string path, string error)
