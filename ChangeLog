@@ -1,3 +1,9 @@
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
+	* autogen.sh: Remove --with-glib=system from our autogen so
+	  that we use the default value (eglib). Lets see what blows
+	  up now...
+
 2010-05-06  Alan McGovern  <amcgovern@novell.com>
 
 	* README: Bump mono/mcs to gain an eglib fix so that everyone

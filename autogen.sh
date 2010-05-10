@@ -176,7 +176,7 @@ done
 if [ $configure_mono -eq 1 ] ; then
   if test -d $mcs_path/../mono; then
     echo Running $mcs_path/../mono/autogen.sh ...
-    (cd $mcs_path/../mono ; ./autogen.sh "$@" --with-moonlight=only --with-glib=system --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger)
+    (cd $mcs_path/../mono ; ./autogen.sh "$@" --with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger)
     echo Done running $mcs_path/../mono/autogen.sh ...
   fi
 fi
