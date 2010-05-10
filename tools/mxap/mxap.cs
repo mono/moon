@@ -263,7 +263,7 @@ namespace Moonlight {
 			XPathNodeIterator assemblies = nav.Select ("/manifest/assembly");
 
 			if (assemblies == null) {
-				ExternalPartError ("No assembly elements found found.");
+				ExternalPartError (path, "No assembly elements found found.");
 				return false;
 			}
 
