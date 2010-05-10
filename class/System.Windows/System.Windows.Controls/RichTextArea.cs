@@ -49,28 +49,6 @@ namespace System.Windows.Controls {
 			}
 		}
 
-		public ScrollBarVisibility HorizontalScrollBarVisibility {
-			get {
-				Console.WriteLine ("System.Windows.Controls.RichTextArea.get_HorizontalScrollBarVisibility: NIEX");
-				throw new NotImplementedException ();
-			}
-			set {
-				Console.WriteLine ("System.Windows.Controls.RichTextArea.set_HorizontalScrollBarVisibility: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
-		public ScrollBarVisibility VerticalScrollBarVisibility {
-			get {
-				Console.WriteLine ("System.Windows.Controls.RichTextArea.get_VerticalScrollBarVisibility: NIEX");
-				throw new NotImplementedException ();
-			}
-			set {
-				Console.WriteLine ("System.Windows.Controls.RichTextArea.set_VerticalScrollBarVisibility: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
 		public TextSelection Selection {
 			get {
 				Console.WriteLine ("System.Windows.Controls.RichTextArea.get_Selection (): NIEX");

@@ -497,10 +497,10 @@ public:
 	/* @PropertyType=BlockCollection,AutoCreateValue,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
 
-	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto */
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto,ManagedFieldAccess=Private */
 	const static int HorizontalScrollBarVisibilityProperty;
 
-	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto */
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto,ManagedFieldAccess=Private */
 	const static int VerticalScrollBarVisibilityProperty;
 
 	bool GetIsReadOnly ();
