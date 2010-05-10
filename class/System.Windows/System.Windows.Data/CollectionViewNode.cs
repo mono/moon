@@ -28,6 +28,7 @@
 
 using System;
 using System.ComponentModel;
+using Mono;
 
 namespace System.Windows.Data {
 
@@ -45,10 +46,15 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
+		UnmanagedPropertyChangeHandler ViewChangedHandler {
+			get; set;
+		}
+
 		public CollectionViewNode (bool bindsDirectlyToSource, bool isViewProperty)
 		{
 			BindsDirectlyToSource = bindsDirectlyToSource;
 			IsViewProperty = isViewProperty;
+			ViewChangedHandler = ViewChanged;
 		}
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
@@ -57,12 +63,39 @@ namespace System.Windows.Data {
 			base.OnSourceChanged (oldSource, newSource);
 
 			source = oldSource as CollectionViewSource;
-			if (source != null && source.View != null)
-				source.View.CurrentChanged -= HandleSourceViewCurrentChanged;
+			if (source != null) {
+				source.RemovePropertyChangedHandler (CollectionViewSource.ViewProperty, ViewChangedHandler);
+				DisconnectViewHandlers (source.View);
+			}
 
 			source = newSource as CollectionViewSource;
-			if (source != null && source.View != null)
-				source.View.CurrentChanged += HandleSourceViewCurrentChanged;
+			if (source != null) {
+				source.AddPropertyChangedHandler (CollectionViewSource.ViewProperty, ViewChangedHandler);
+				ConnectViewHandlers (source.View);
+			}
+		}
+
+		void ConnectViewHandlers (ICollectionView view)
+		{
+			if (view != null)
+				view.CurrentChanged += HandleSourceViewCurrentChanged;
+		}
+
+		void DisconnectViewHandlers (ICollectionView view)
+		{
+			if (view != null)
+				view.CurrentChanged -= HandleSourceViewCurrentChanged;
+		}
+
+		void ViewChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
+		{
+			var oldValue = Mono.Value.ToObject (null, NativeMethods.property_changed_event_args_get_old_value (propertyChangedEventArgs));
+			var newValue = Mono.Value.ToObject (null, NativeMethods.property_changed_event_args_get_new_value (propertyChangedEventArgs));
+
+			DisconnectViewHandlers ((ICollectionView) oldValue);
+			ConnectViewHandlers ((ICollectionView) newValue);
+
+			HandleSourceViewCurrentChanged (this, EventArgs.Empty);
 		}
 
 		void HandleSourceViewCurrentChanged (object sender, EventArgs e)
@@ -84,16 +117,19 @@ namespace System.Windows.Data {
 				ValueType = Source == null ? null : Source.GetType ();
 				Value = Source;
 			} else {
+				var usableSource = Source;
 				ICollectionView view = null;
-				if (Source is CollectionViewSource)
+				if (Source is CollectionViewSource) {
+					usableSource = null;
 					view = ((CollectionViewSource) Source).View;
-				else if (Source is ICollectionView)
+				} else if (Source is ICollectionView) {
 					view = (ICollectionView) Source;
+				}
 
 				// If we have no ICollectionView, then use the Source directly.
 				if (view == null) {
-					ValueType = Source == null ? null : Source.GetType ();
-					Value = Source;
+					ValueType = usableSource == null ? null : usableSource.GetType ();
+					Value = usableSource;
 				} else {
 					// If we have an ICollectionView and the property we're binding to exists
 					// on ICollectionView, we bind to the view. Otherwise we bind to its CurrentItem.

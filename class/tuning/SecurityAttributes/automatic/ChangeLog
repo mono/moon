@@ -1,5 +1,9 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.auto.ssc: regen
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* mscorlib.auto.sc:
 	* System.Windows.auto.ssc: regen.
 

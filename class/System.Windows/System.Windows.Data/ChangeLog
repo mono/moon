@@ -1,5 +1,10 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewNode.cs: Listen for changes to
+	  CollectionViewSource.View
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewSource.cs: If CollectionViewSource.Source is
 	  set to null we need to null the View.
 

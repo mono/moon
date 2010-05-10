@@ -77,6 +77,34 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void SourceNotSet ()
+		{
+			try {
+			Source.Source = null;
+			Target.SetBinding (Rectangle.TagProperty, new Binding ("Age") {
+				Source = Source
+			});
+			Assert.IsNull (Target.Tag, "#1");
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				Console.ReadLine ();
+				throw;
+			}
+		}
+
+		[TestMethod]
+		public void SourceSet_AfterBinding ()
+		{
+			Source.Source = null;
+			Target.SetBinding (Rectangle.TagProperty, new Binding ("Age") {
+				Source = Source
+			});
+			Source.Source = Data;
+			Assert.IsInstanceOfType<double>(Target.Tag, "#1");
+			Assert.AreEqual(1.0, (double) Target.Tag, "#2");
+		}
+
+		[TestMethod]
 		public void StandardBinding_BindsDirectlyToSource ()
 		{
 			// We bind directly to the CollectionViewSource instead of the CurrentItem

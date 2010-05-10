@@ -1,5 +1,11 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest_CollectionView.cs: Add tests
+	  to show we listen for changes to the View property on
+	  CollectionViewSource.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Add tests for
 	  databinding to DependencyObject properties.
 
