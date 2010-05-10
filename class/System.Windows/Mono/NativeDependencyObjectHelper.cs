@@ -280,6 +280,7 @@ namespace Mono {
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw, false);
 			case Kind.BLOCK_COLLECTION: return new BlockCollection (raw, false);
 			case Kind.BLUREFFECT: return new BlurEffect (raw, false);
+			case Kind.BOLD: return new Bold (raw, false);
 			case Kind.BOUNCEEASE: return new BounceEase (raw, false);
 			case Kind.BORDER: return new Border (raw, false);
 			case Kind.CANVAS: return new Canvas (raw, false);
@@ -321,6 +322,7 @@ namespace Mono {
 			case Kind.GRADIENTSTOP_COLLECTION: return new GradientStopCollection (raw, false);
 			case Kind.GRADIENTSTOP: return new GradientStop (raw, false);
 			case Kind.GRID: return new Grid (raw, false);
+			case Kind.HYPERLINK: return new Hyperlink (raw, false);
 			case Kind.ICON: return new Icon (raw, false);
 			case Kind.ICON_COLLECTION: return new IconCollection (raw, false);
 			case Kind.IMAGEBRUSH: return new ImageBrush (raw, false);
@@ -328,6 +330,7 @@ namespace Mono {
 			case Kind.INLINE_COLLECTION: return new InlineCollection (raw, false);
 			case Kind.INKPRESENTER: return new InkPresenter (raw, false);
 			case Kind.INPUTMETHOD: return new InputMethod (raw, false);
+			case Kind.ITALIC: return new Italic (raw, false);
 			case Kind.KEYEVENTARGS: return new KeyEventArgs(raw);
 			case Kind.KEYSPLINE: return new KeySpline(raw, false);
 			case Kind.LINEARGRADIENTBRUSH: return new LinearGradientBrush (raw, false);
@@ -353,6 +356,7 @@ namespace Mono {
 			case Kind.OBJECTANIMATIONUSINGKEYFRAMES: return new ObjectAnimationUsingKeyFrames (raw, false);
 			case Kind.OBJECTKEYFRAME_COLLECTION : return new ObjectKeyFrameCollection (raw, false);
 			case Kind.OUTOFBROWSERSETTINGS: return new OutOfBrowserSettings (raw, false);
+			case Kind.PARAGRAPH: return new Paragraph (raw, false);
 			case Kind.PASSWORDBOX: return new PasswordBox (raw, false);
 			case Kind.PATHFIGURE_COLLECTION: return new PathFigureCollection (raw, false);
 			case Kind.PATHFIGURE: return new PathFigure (raw, false);
@@ -387,6 +391,7 @@ namespace Mono {
 			case Kind.ROWDEFINITION: return new RowDefinition (raw, false);
 			case Kind.ROWDEFINITION_COLLECTION: return new RowDefinitionCollection (raw, false);
 			case Kind.RUN: return new Run (raw, false);
+			case Kind.SECTION: return new Section (raw, false);
 			case Kind.SETTERBASE_COLLECTION: return new SetterBaseCollection (raw, false);
 			case Kind.SETTER: return new Setter (raw, false);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw, false);
@@ -394,6 +399,7 @@ namespace Mono {
 			case Kind.SIZECHANGEDEVENTARGS: return new SizeChangedEventArgs (raw);
 			case Kind.SKEWTRANSFORM: return new SkewTransform (raw, false);
 			case Kind.SOLIDCOLORBRUSH: return new SolidColorBrush (raw, false);
+			case Kind.SPAN: return new Span (raw, false);
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw, false);
 			case Kind.SPLINEDOUBLEKEYFRAME: return new SplineDoubleKeyFrame (raw, false);
 			case Kind.SPLINEPOINTKEYFRAME: return new SplinePointKeyFrame (raw, false);
@@ -417,6 +423,7 @@ namespace Mono {
 			case Kind.TRIGGERACTION_COLLECTION: return new TriggerActionCollection (raw, false);
 			case Kind.TRIGGER_COLLECTION: return new TriggerCollection (raw, false);
 			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw, false);
+			case Kind.UNDERLINE: return new Underline (raw, false);
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
 			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);

@@ -491,14 +491,26 @@ public:
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
 
+	/* @PropertyType=TextAlignment,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
+	const static int TextAlignmentLeft;
+
 	/* @PropertyType=BlockCollection,AutoCreateValue,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
+
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto */
+	const static int HorizontalScrollBarVisibilityProperty;
+
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto */
+	const static int VerticalScrollBarVisibilityProperty;
 
 	bool GetIsReadOnly ();
 	void SetIsReadOnly (bool value);
 
 	TextWrapping GetTextWrapping ();
 	void SetTextWrapping (TextWrapping value);
+
+	TextAlignment GetTextAlignment ();
+	void SetTextAlignment (TextAlignment value);
 
 	/* @DelegateType=RoutedEventHandler */
 	const static int SelectionChangedEvent;
