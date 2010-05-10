@@ -1,5 +1,13 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add tests for
+	  databinding to DependencyObject properties.
+
+	* System.Windows.Data/BindingOperationsTest.cs: Update the
+	  BindingOperations tests to SL4 compatibility.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewTest_IEditable.cs: Add two
 	  more tests to see what happens if you try to cancel or
 	  commit a new item without calling Add.

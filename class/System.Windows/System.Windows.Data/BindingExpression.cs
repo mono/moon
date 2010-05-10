@@ -44,7 +44,7 @@ namespace System.Windows.Data
 			get { return DataSource; }
 		}
 
-		internal BindingExpression(Binding binding, FrameworkElement target, DependencyProperty property)
+		internal BindingExpression(Binding binding, DependencyObject target, DependencyProperty property)
 			: base (binding, target, property)
 		{
 		}

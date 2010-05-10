@@ -1037,6 +1037,44 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void DOBinding_Basic ()
+		{
+			var source = new SolidColorBrush (Colors.Red);
+			var target = new SolidColorBrush ();
+			BindingOperations.SetBinding (target, SolidColorBrush.ColorProperty, new Binding ("Color") {
+				Source = source,
+				Mode=BindingMode.TwoWay,
+			});
+			Assert.AreEqual (Colors.Red.ToString (), target.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		public void DOBinding_OneWay ()
+		{
+			var source = new SolidColorBrush (Colors.Red);
+			var target = new SolidColorBrush ();
+			BindingOperations.SetBinding (target, SolidColorBrush.ColorProperty, new Binding ("Color") {
+				Source = source,
+				Mode = BindingMode.TwoWay,
+			});
+			source.Color = Colors.Blue;
+			Assert.AreEqual (Colors.Blue.ToString (), target.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		public void DOBinding_TwoWay ()
+		{
+			var source = new SolidColorBrush (Colors.Red);
+			var target = new SolidColorBrush ();
+			BindingOperations.SetBinding (target, SolidColorBrush.ColorProperty, new Binding ("Color") {
+				Source = source,
+				Mode = BindingMode.TwoWay,
+			});
+			target.Color = Colors.Blue;
+			Assert.AreEqual (Colors.Blue.ToString (), source.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
 		public void IncompletePath ()
 		{
 			Data data = new Data { Brush = null };
@@ -1958,6 +1996,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("This blows up Silverlight")]
 		public void TemplateBindingOnTooltip ()
 		{
 			var control = (ContentControl) XamlReader.Load (
@@ -2630,6 +2669,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 							
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("This blows up silverlight")]
 		public void XamlTemplateBinding ()
 		{
 			ContentControl c = (ContentControl)XamlReader.Load (@"

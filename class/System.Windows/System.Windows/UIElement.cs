@@ -148,14 +148,6 @@ namespace System.Windows {
 			}
 		}
 		
-		internal DependencyObject TemplateOwner {
-			get { return (DependencyObject) NativeDependencyObjectHelper.Lookup (Mono.NativeMethods.dependency_object_get_template_owner (native)); }
-			set {
-				IntPtr owner = value == null ? IntPtr.Zero : value.native;
-				Mono.NativeMethods.dependency_object_set_template_owner (native, owner);
-			}
-		}
-
 		public void AddHandler (RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
 		{
 			// FIXME: we don't handle handledEventsToo

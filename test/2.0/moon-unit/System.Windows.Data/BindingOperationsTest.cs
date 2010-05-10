@@ -32,6 +32,7 @@ using System.Windows.Data;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Data
 {
@@ -53,13 +54,14 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MoonlightBug ("We need to throw exception is we use Rectangle Dps on non-rectangles etc")]
 		public void InvalidArguments ()
 		{
 			var target = new Rectangle ();
 			var property = Rectangle.WidthProperty;
 			var binding = new Binding ();
 
-			Assert.Throws<ArgumentException> (() =>
+			Assert.Throws<Exception> (() =>
 				BindingOperations.SetBinding (new Storyboard (), property, binding)
 			, "#1");
 		}

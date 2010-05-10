@@ -81,25 +81,31 @@ namespace System.Windows.Data
 			string typeName;
 			PropertyNodeType type;
 
-			var parser = new PropertyPathParser (path);
-			while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
-				bool isViewProperty = CollectionViewProperties.Any (prop => prop.Name == propertyName);
-				IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource, isViewProperty);
-				switch (type) {
-				case PropertyNodeType.AttachedProperty:
-				case PropertyNodeType.Property:
-					node.Next = new StandardPropertyPathNode (typeName, propertyName);
-					break;
-				case PropertyNodeType.Indexed:
-					node.Next = new IndexedPropertyPathNode (index);
-					break;
-				default:
-					throw new Exception ("Unsupported node type");
+			if (string.IsNullOrEmpty (path)) {
+				// If the property path is null or empty, we still need to add a CollectionViewNode
+				// to handle the case where we bind diretly to a CollectionViewSource. i.e. new Binding () { Source = cvs }
+				Node = new CollectionViewNode (bindDirectlyToSource, false);
+			} else {
+				var parser = new PropertyPathParser (path);
+				while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
+					bool isViewProperty = CollectionViewProperties.Any (prop => prop.Name == propertyName);
+					IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource, isViewProperty);
+					switch (type) {
+					case PropertyNodeType.AttachedProperty:
+					case PropertyNodeType.Property:
+						node.Next = new StandardPropertyPathNode (typeName, propertyName);
+						break;
+					case PropertyNodeType.Indexed:
+						node.Next = new IndexedPropertyPathNode (index);
+						break;
+					default:
+						throw new Exception ("Unsupported node type");
+					}
+					if (Node == null)
+						Node = node;
+					else
+						FinalNode.Next = node;
 				}
-				if (Node == null)
-					Node = node;
-				else
-					FinalNode.Next = node;
 			}
 
 			FinalNode.ValueChanged += delegate (object o, EventArgs e) {

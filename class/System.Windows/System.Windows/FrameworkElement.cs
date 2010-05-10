@@ -58,45 +58,10 @@ namespace System.Windows {
 			InvalidateSubtreeBindings ();
 		}
 
-		void InvalidateSubtreeBindings ()
-		{
-			for (int c = 0; c < VisualTreeHelper.GetChildrenCount (this); c++) {
-				FrameworkElement obj = VisualTreeHelper.GetChild (this, c) as FrameworkElement;
-				if (obj == null)
-					continue;
-				obj.InvalidateLocalBindings ();
-				obj.InvalidateSubtreeBindings ();
-			}
-		}
-
-		bool invalidatingLocalBindings;
-
-		void InvalidateLocalBindings ()
-		{
-			if (expressions.Count == 0)
-				return;
-
-			if (invalidatingLocalBindings)
-				return;
-
-			invalidatingLocalBindings = true;
-
-			foreach (var keypair in expressions) {
-				if (keypair.Value is BindingExpressionBase) {
-					BindingExpressionBase beb = (BindingExpressionBase) keypair.Value;
-					beb.Invalidate ();
-					SetValue (keypair.Key, beb);
-				}
-			}
-
-			invalidatingLocalBindings = false;
-		}
-
 		public event EventHandler LayoutUpdated {
 			add { Deployment.Current.LayoutUpdated += value; }
 			remove { Deployment.Current.LayoutUpdated -= value; }
 		}
-
 
 		/* 
 		 * XXX these are marked internal because making them private seems
@@ -106,8 +71,6 @@ namespace System.Windows {
 		internal ArrangeOverrideCallback arrange_cb;
 		internal GetDefaultTemplateCallback get_default_template_cb;
 		internal LoadedCallback loaded_hook_cb;
-
-		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
 		private static bool UseNativeLayoutMethod (Type type)
 		{
@@ -170,9 +133,9 @@ namespace System.Windows {
 			return NativeMethods.framework_element_apply_template (native);
 		}
 
-		public object FindName (string name)
+		public new object FindName (string name)
 		{
-			return DepObjectFindName (name);
+			return base.FindName (name);
 		}
 
 		internal void SetTemplateBinding (DependencyProperty dp, TemplateBindingExpression tb)
@@ -186,15 +149,7 @@ namespace System.Windows {
 
 		public BindingExpressionBase SetBinding (DependencyProperty dp, Binding binding)
 		{
-			if (dp == null)
-				throw new ArgumentNullException ("dp");
-			if (binding == null)
-				throw new ArgumentNullException ("binding");
-
-			BindingExpression e = new BindingExpression (binding, this, dp);
-			binding.Seal ();
-			SetValue (dp, e);
-			return e;
+			return BindingOperations.SetBinding (this, dp, binding);
 		}
 
 		protected virtual Size MeasureOverride (Size availableSize)
@@ -301,12 +256,6 @@ namespace System.Windows {
 			// to Control/ContentPresenter and is defined here for WPF compatibility
 		}
 
-		internal override void ClearValueImpl (DependencyProperty dp)
-		{
-			RemoveExpression (dp);
-			base.ClearValueImpl (dp);
-		}
-		
 		internal void RaiseBindingValidationError (ValidationErrorEventArgs e)
 		{
 			FrameworkElement element = this;
@@ -318,81 +267,6 @@ namespace System.Windows {
 					h (element, e);
 				element = VisualTreeHelper.GetParent (element) as FrameworkElement;
 			}
-		}
-
-		void RemoveExpression (DependencyProperty dp)
-		{
-			Expression e;
-			if (expressions.TryGetValue (dp, out e)) {
-				expressions.Remove (dp);
-				e.OnDetached (this);
-			}
-		}
-		
-		internal override void SetValueImpl (DependencyProperty dp, object value)
-		{
-			bool updateTwoWay = false;
-			bool addingExpression = false;
-			Expression existing;
-			Expression expression = value as Expression;
-			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
-			
-			if (bindingExpression != null) {
-				if (string.IsNullOrEmpty (bindingExpression.Binding.Path.Path) &&
-				    bindingExpression.Binding.Mode == BindingMode.TwoWay)
-					throw new ArgumentException ("TwoWay bindings require a non-empty Path");
-			}
-
-			expressions.TryGetValue (dp, out existing);
-			
-			if (expression != null) {
-				if (existing != expression) {
-					if (expression.Attached)
-						throw new ArgumentException ("Cannot attach the same Expression to multiple FrameworkElements");
-
-					if (existing != null)
-						RemoveExpression (dp);
-					expressions.Add (dp, expression);
-					expression.OnAttached (this);
-				}
-				addingExpression = true;
-				value = expression.GetValue (dp);
-			} else if (existing != null) {
-				if (existing is BindingExpressionBase) {
-					BindingExpressionBase beb = (BindingExpressionBase)existing;
-
-					if (beb.Binding.Mode == BindingMode.TwoWay) {
-						updateTwoWay = !(dp is CustomDependencyProperty);
-					} else if (!beb.Updating || beb.Binding.Mode == BindingMode.OneTime) {
-						RemoveExpression (dp);
-					}
-				}
-				else if (!existing.Updating) {
-					RemoveExpression (dp);
-				}
-			}
-			
-			try {
-				base.SetValueImpl (dp, value);
-				if (updateTwoWay)
-					((BindingExpressionBase)existing).TryUpdateSourceObject (value);
-			} catch {
-				if (!addingExpression)
-					throw;
-				else {
-					base.SetValueImpl (dp, dp.GetDefaultValue (this));
-					if (updateTwoWay)
-						((BindingExpressionBase)existing).TryUpdateSourceObject (value);
-				}
-			}
-		}
-
-		internal override object ReadLocalValueImpl (DependencyProperty dp)
-		{
-			Expression expression;
-			if (expressions.TryGetValue (dp, out expression))
-				return expression;
-			return base.ReadLocalValueImpl (dp);
 		}
 
 		public BindingExpression GetBindingExpression (DependencyProperty dp)

@@ -48,12 +48,12 @@ namespace System.Windows
 
 		internal abstract object GetValue (DependencyProperty dp);
 
-		internal virtual void OnAttached (FrameworkElement element)
+		internal virtual void OnAttached (DependencyObject element)
 		{
 			Attached = true;
 		}
 
-		internal virtual void OnDetached (FrameworkElement element)
+		internal virtual void OnDetached (DependencyObject element)
 		{
 			Attached = false;
 		}

@@ -31,9 +31,9 @@ using System;
 namespace System.Windows.Documents {
 	public abstract partial class TextElement : DependencyObject {
 		
-		public object FindName (string name)
+		public new object FindName (string name)
 		{
-			return DepObjectFindName (name);
+			return base.FindName (name);
 		}
 
 		public string Name {

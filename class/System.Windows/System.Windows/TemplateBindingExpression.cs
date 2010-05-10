@@ -71,7 +71,7 @@ namespace System.Windows {
 			return MoonlightTypeConverter.ConvertObject (TargetProperty, Source.GetValue (SourceProperty), Target.GetType (), false);
 		}
 
-		internal override void OnAttached (FrameworkElement element)
+		internal override void OnAttached (DependencyObject element)
 		{
 			base.OnAttached (element);
 			if (change_handler == null)
@@ -85,7 +85,7 @@ namespace System.Windows {
 			Source.AddPropertyChangedHandler (SourceProperty, change_handler);
 		}
 
-		internal override void OnDetached (FrameworkElement element)
+		internal override void OnDetached (DependencyObject element)
 		{
 			base.OnDetached (element);
 			if (change_handler == null)

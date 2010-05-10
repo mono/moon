@@ -41,10 +41,15 @@ namespace System.Windows.Data {
 			if (binding == null)
 				throw new ArgumentNullException ("binding");
 
-			FrameworkElement fe = target as FrameworkElement;
-			if (fe == null)
-				throw new ArgumentException ("value must be a FrameworkElement subclass", "target");
-			return fe.SetBinding (dp, (Binding) binding);
+
+			if (dp == null)
+				throw new ArgumentNullException ("dp");
+			if (binding == null)
+				throw new ArgumentNullException ("binding");
+
+			BindingExpression e = new BindingExpression ((Binding) binding, target, dp);
+			target.SetValue (dp, e);
+			return e;
 		}
 	}
 }

@@ -57,7 +57,7 @@ namespace System.Windows.Data {
 			get; set;
 		}
 		
-		FrameworkElement Target {
+		DependencyObject Target {
 			get; set;
 		}
 		
@@ -99,12 +99,12 @@ namespace System.Windows.Data {
 				// If DataContext is bound, then we need to read the parents datacontext or use null
 				if (source == null && Target != null) {
 					if (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty) {
-						FrameworkElement e = Target.Parent as FrameworkElement;
+						FrameworkElement e = ((FrameworkElement) Target).Parent as FrameworkElement;
 						if (e != null) {
 							source = e.DataContext;
 						}
 					} else {
-						source = Target.DataContext;
+						source = ((FrameworkElement) Target).DataContext;
 					}
 				}
 				if (PropertyPathWalker != null)
@@ -113,20 +113,19 @@ namespace System.Windows.Data {
 			}
 		}
 
-		internal BindingExpressionBase (Binding binding, FrameworkElement target, DependencyProperty property)
+		internal BindingExpressionBase (Binding binding, DependencyObject target, DependencyProperty property)
 		{
+			binding.Seal ();
 			Binding = binding;
 			Target = target;
 			Property = property;
 
-			if (!string.IsNullOrEmpty (Binding.Path.Path)) {
-				PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource);
-				if (Binding.Mode != BindingMode.OneTime)
-					PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
-			}
+			PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource);
+			if (Binding.Mode != BindingMode.OneTime)
+				PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 		}
 
-		internal override void OnAttached (FrameworkElement element)
+		internal override void OnAttached (DependencyObject element)
 		{
 			base.OnAttached (element);
 			if (TwoWayTextBoxText)
@@ -141,7 +140,7 @@ namespace System.Windows.Data {
 			}
 		}
 
-		internal override void OnDetached (FrameworkElement element)
+		internal override void OnDetached (DependencyObject element)
 		{
 			base.OnDetached (element);
 			if (TwoWayTextBoxText)
@@ -150,8 +149,7 @@ namespace System.Windows.Data {
 			if (updateDataSourceCallback != null)
 				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
 
-			if (PropertyPathWalker != null)
-				PropertyPathWalker.Update (null);
+			PropertyPathWalker.Update (null);
 		}
 
 		internal void Invalidate ()
@@ -164,8 +162,8 @@ namespace System.Windows.Data {
 		{
 			if (Binding.ConverterCulture != null)
 				return Binding.ConverterCulture;
-			if (Target != null && Target.Language != null)
-				return new CultureInfo (Target.Language.IetfLanguageTag);
+			if (Target is FrameworkElement && ((FrameworkElement) Target).Language != null)
+				return new CultureInfo (((FrameworkElement) Target).Language.IetfLanguageTag);
 			return Helper.DefaultCulture;
 		}
 
@@ -179,10 +177,6 @@ namespace System.Windows.Data {
 				cachedValue = dp.GetDefaultValue (Target);
 				return cachedValue;
 			}
-			else if (string.IsNullOrEmpty (Binding.Path.Path)) {
-				// If the path is empty, return the active DataSource
-				cachedValue = DataSource;
-			}	
 			else if (PropertyPathWalker.IsPathBroken) {
 				// If it the path is broken, don't call the converter unless we use the fallback.
 				// FIXME: Add an explicit test on this.
@@ -263,20 +257,21 @@ namespace System.Windows.Data {
 
 		void MaybeEmitError (Exception exception)
 		{
-			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError)
+			var fe = Target as FrameworkElement;
+			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError || fe == null)
 				return;
 
 			ValidationErrorEventArgs args;
 			if (LastError != null) {
 				args = new ValidationErrorEventArgs (ValidationErrorEventAction.Removed, LastError);
-				Target.RaiseBindingValidationError (args);
+				fe.RaiseBindingValidationError (args);
 				LastError = null;
 			}
 
 			if (exception != null) {
 				LastError = new ValidationError (exception);
 				args = new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError);
-				Target.RaiseBindingValidationError (args);
+				fe.RaiseBindingValidationError (args);
 			}
 		}
 

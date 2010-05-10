@@ -1,3 +1,14 @@
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
+	* UIElement.cs: Move TemplateOwner to DependencyObject
+
+	* Expression.cs:
+	* FrameworkElement.cs:
+	* DependencyObject.cs:
+	* TemplateBindingExpression.cs: Move the Expression handling
+	  code from FrameworkElement to DependencyObject so that we
+	  can support the new SL4 databinding capabilities.
+
 2010-05-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* MessageBox.cs: Throw UnauthorizedAccessException is called

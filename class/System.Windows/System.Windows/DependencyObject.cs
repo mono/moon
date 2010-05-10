@@ -36,6 +36,8 @@ using System.Windows;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using System.Threading;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace System.Windows {
 	public abstract partial class DependencyObject : INativeDependencyObjectWrapper {
@@ -57,6 +59,9 @@ namespace System.Windows {
 			set { native = value; }
 		}
 
+		bool invalidatingLocalBindings;
+		internal Dictionary<DependencyProperty, Expression> expressions;
+
 		internal IntPtr native {
 			get {
 				return _native;
@@ -71,7 +76,15 @@ namespace System.Windows {
 				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
-		
+
+		internal DependencyObject TemplateOwner {
+			get { return (DependencyObject) NativeDependencyObjectHelper.Lookup (Mono.NativeMethods.dependency_object_get_template_owner (native)); }
+			set {
+				IntPtr owner = value == null ? IntPtr.Zero : value.native;
+				Mono.NativeMethods.dependency_object_set_template_owner (native, owner);
+			}
+		}
+
 		static DependencyObject ()
 		{
 			moonlight_thread = Thread.CurrentThread;
@@ -86,6 +99,7 @@ namespace System.Windows {
 		internal DependencyObject (IntPtr raw, bool dropref)
 		{
 			native = raw;
+			expressions = new Dictionary<DependencyProperty, Expression> ();
 			NativeMethods.event_object_set_object_type (native, GetKind ());
 			// Objects created on the managed side have a normal managed lifetime,
 			// so drop the native ref hold
@@ -165,6 +179,9 @@ namespace System.Windows {
 
 		internal virtual object ReadLocalValueImpl (DependencyProperty dp)
 		{
+			Expression expression;
+			if (expressions.TryGetValue (dp, out expression))
+				return expression;
 			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
 		}
 		
@@ -181,6 +198,7 @@ namespace System.Windows {
 
 		internal virtual void ClearValueImpl (DependencyProperty dp)
 		{
+			RemoveExpression (dp);
 			NativeDependencyObjectHelper.ClearValue (this, dp);
 		}
 		
@@ -208,10 +226,63 @@ namespace System.Windows {
 
 		internal virtual void SetValueImpl (DependencyProperty dp, object value)
 		{
-			NativeDependencyObjectHelper.SetValue (this, dp, value);
+			bool updateTwoWay = false;
+			bool addingExpression = false;
+			Expression existing;
+			Expression expression = value as Expression;
+			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
+			
+			if (bindingExpression != null) {
+				if (string.IsNullOrEmpty (bindingExpression.Binding.Path.Path) &&
+				    bindingExpression.Binding.Mode == BindingMode.TwoWay)
+					throw new ArgumentException ("TwoWay bindings require a non-empty Path");
+			}
+
+			expressions.TryGetValue (dp, out existing);
+			
+			if (expression != null) {
+				if (existing != expression) {
+					if (expression.Attached)
+						throw new ArgumentException ("Cannot attach the same Expression to multiple FrameworkElements");
+
+					if (existing != null)
+						RemoveExpression (dp);
+					expressions.Add (dp, expression);
+					expression.OnAttached (this);
+				}
+				addingExpression = true;
+				value = expression.GetValue (dp);
+			} else if (existing != null) {
+				if (existing is BindingExpressionBase) {
+					BindingExpressionBase beb = (BindingExpressionBase)existing;
+
+					if (beb.Binding.Mode == BindingMode.TwoWay) {
+						updateTwoWay = !(dp is CustomDependencyProperty);
+					} else if (!beb.Updating || beb.Binding.Mode == BindingMode.OneTime) {
+						RemoveExpression (dp);
+					}
+				}
+				else if (!existing.Updating) {
+					RemoveExpression (dp);
+				}
+			}
+
+			try {
+				NativeDependencyObjectHelper.SetValue (this, dp, value);
+				if (updateTwoWay)
+					((BindingExpressionBase)existing).TryUpdateSourceObject (value);
+			} catch {
+				if (!addingExpression)
+					throw;
+				else {
+					NativeDependencyObjectHelper.SetValue (this, dp, dp.GetDefaultValue (this));
+					if (updateTwoWay)
+						((BindingExpressionBase)existing).TryUpdateSourceObject (value);
+				}
+			}
 		}
 
-		internal DependencyObject DepObjectFindName (string name)
+		internal DependencyObject FindName (string name)
 		{
 			if (name == null)
 				throw new ArgumentNullException ("name");
@@ -245,6 +316,47 @@ namespace System.Windows {
 		{
 			// Here just to ensure that the static ctor is executed and
 			// runtime init is initialized from some entry points
+		}
+
+		internal void InvalidateSubtreeBindings ()
+		{
+			for (int c = 0; c < VisualTreeHelper.GetChildrenCount (this); c++) {
+				FrameworkElement obj = VisualTreeHelper.GetChild (this, c) as FrameworkElement;
+				if (obj == null)
+					continue;
+				obj.InvalidateLocalBindings ();
+				obj.InvalidateSubtreeBindings ();
+			}
+		}
+
+		internal void InvalidateLocalBindings ()
+		{
+			if (expressions.Count == 0)
+				return;
+
+			if (invalidatingLocalBindings)
+				return;
+
+			invalidatingLocalBindings = true;
+
+			foreach (var keypair in expressions) {
+				if (keypair.Value is BindingExpressionBase) {
+					BindingExpressionBase beb = (BindingExpressionBase) keypair.Value;
+					beb.Invalidate ();
+					SetValue (keypair.Key, beb);
+				}
+			}
+
+			invalidatingLocalBindings = false;
+		}
+
+		void RemoveExpression (DependencyProperty dp)
+		{
+			Expression e;
+			if (expressions.TryGetValue (dp, out e)) {
+				expressions.Remove (dp);
+				e.OnDetached (this);
+			}
 		}
 	}
 }

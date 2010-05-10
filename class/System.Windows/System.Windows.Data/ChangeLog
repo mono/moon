@@ -1,5 +1,18 @@
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpression.cs:
+	* BindingOperations.cs:
+	* BindingExpressionBase.cs: Move the Expression handling code
+	  from FrameworkElement to DependencyObject so that we can
+	  support the new SL4 databinding capabilities.
+
+	* PropertyPathWalker.cs: If the property path is null or empty
+	  we still need to use a CollectionViewNode so we can handle
+	  cases where the source of your binding is an ICollectionView
+	  object and no path has been specified.
+
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewNode.cs: Don't try to access the view if it's
 	  null.
 

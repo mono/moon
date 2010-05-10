@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 430 methods needs to be decorated.
+# 431 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -1071,6 +1071,9 @@
 
 # internal call
 +SC-M: System.Void System.GC::RecordPressure(System.Int64)
+
+# internal call
++SC-M: System.Void System.GC::register_ephemeron_array(System.Runtime.CompilerServices.Ephemeron[])
 
 # internal call
 +SC-M: System.Void System.Globalization.CultureInfo::construct_datetime_format()
