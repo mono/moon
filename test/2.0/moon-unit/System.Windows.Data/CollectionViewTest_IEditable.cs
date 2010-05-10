@@ -154,6 +154,20 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void CommitNew_NoAdd ()
+		{
+			// This has no effect if there's no add new
+			Editable.CommitNew ();
+		}
+
+		[TestMethod]
+		public void CancelNew_NoAdd ()
+		{
+			// This has no effect if there's no add new
+			Editable.CancelNew ();
+		}
+
+		[TestMethod]
 		public void SourceIsEnumerable ()
 		{
 			// Raw enumerables are not editable and have their own

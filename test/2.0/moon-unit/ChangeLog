@@ -1,3 +1,9 @@
+2010-05-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/CollectionViewTest_IEditable.cs: Add two
+	  more tests to see what happens if you try to cancel or
+	  commit a new item without calling Add.
+
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewTest.cs: Fix how we handle
