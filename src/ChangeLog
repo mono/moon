@@ -1,5 +1,9 @@
 2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* provider.cpp: Fixed inherited macros to reference the
+	TextElement property ids rather than the Inline property ids,
+	since they've been moved.
+
 	* contentcontrol.cpp|h (ContentControlChangedEventArgs): Renamed
 	from ContentChangedEventArgs since it conflicts with the new SL4
 	public ContentChangedEventArgs type.

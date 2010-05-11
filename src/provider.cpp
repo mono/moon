@@ -180,7 +180,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	G_STMT_START {							\
 	if (property->GetId () == Control::p ||				\
 	    property->GetId () == TextBlock::p ||			\
-	    property->GetId () == Inline::p) {				\
+	    property->GetId () == TextElement::p) {		       	\
 									\
 		if (types->IsSubclassOf (parent->GetObjectType(), Type::CONTROL)) \
 			parentPropertyId = Control::p;			\
@@ -192,7 +192,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 #define INHERIT_I_T(p) \
 	G_STMT_START {							\
-	if (property->GetId () == Inline::p) {				\
+	if (property->GetId () == TextElement::p) {		       	\
 		parentPropertyId = TextBlock::p;			\
 	}								\
 	} G_STMT_END
@@ -261,7 +261,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 			return parent->GetValue (parentPropertyId);
 		}
 	}
-	  
+	
 	return NULL;
 }
 
@@ -272,7 +272,7 @@ InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
 #define PROP_CTI(p) G_STMT_START { \
 	if (propertyId == Control::p) return true; \
 	if (propertyId == TextBlock::p) return true; \
-	if (propertyId == Inline::p) return true; \
+	if (propertyId == TextElement::p) return true;  \
 	} G_STMT_END
 		
 #define PROP_F(p) G_STMT_START { \
@@ -284,7 +284,7 @@ InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
         } G_STMT_END
 
 #define PROP_I(p) G_STMT_START { \
-	if (propertyId == Inline::p) return true; \
+	if (propertyId == TextElement::p) return true; \
 	} G_STMT_END
 
 	PROP_CTI (ForegroundProperty);
@@ -323,7 +323,7 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 		if (property->GetId() == TextBlock::p) {		\
 			/* we don't need the check here since we can do it once above all the PROPAGATE_I below */ \
 			/*if (types->IsSubclassOf (descendantKind, Type::INLINE))*/ \
-				return types->GetProperty (Inline::p); \
+				return types->GetProperty (TextElement::p); \
 		}							\
 	} G_STMT_END
 
