@@ -458,7 +458,11 @@ int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi)
 		next = windows;
 		while (next != NULL) {
 			wix = (WindowInfoEx *) next->data;
-			*wi = wix->wi;
+			if (!strncmp (wi->title, "IWANTEX", sizeof ("IWANTEX"))) {
+				*(WindowInfoEx *) wi = *wix;
+			} else {
+				*wi = wix->wi;
+			}
 
 			LOG_HARNESS ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found window: %x '%s' [%i,%i %i:%i] Client [%i,%i %i:%i\n",
 				getpid (), pid, (int) wix->window, wi->title, wi->windowLeft, wi->windowTop, wi->windowWidth, wi->windowHeight,

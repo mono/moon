@@ -18,11 +18,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "debug.h"
 #include "shutdown-manager.h"
 #include "input.h"
 #include "plugin.h"
+#include "harness.h"
 
 static gint wait_count = 0;
 
@@ -80,6 +82,26 @@ send_ctrl_q (gpointer dummy)
 	return false;
 }
 
+static void send_wm_delete (Window window)
+{
+	printf ("[%i shocker] sending WM_DELETE_WINDOW event\n", getpid ());
+
+	Display *display = XOpenDisplay (NULL);
+	Atom WM_PROTOCOLS = XInternAtom (display, "WM_PROTOCOLS", False);
+	Atom WM_DELETE_WINDOW = XInternAtom (display, "WM_DELETE_WINDOW", False);
+	XClientMessageEvent ev;
+	
+	ev.type = ClientMessage;
+	ev.window = window;
+	ev.message_type = WM_PROTOCOLS;
+	ev.format = 32;
+	ev.data.l [0] = WM_DELETE_WINDOW;
+	ev.data.l [1] = 0;
+
+	XSendEvent (display, ev.window, False, 0, (XEvent*) &ev);
+	XCloseDisplay (display);
+}
+
 static void
 execute_shutdown ()
 {
@@ -94,28 +116,23 @@ execute_shutdown ()
 	if (PluginObject::browser_app_context != 0) {
 		printf ("[%i shocker] shutting down firefox...\n", getpid ());
 
-		Display *display = XOpenDisplay (NULL);
-		Atom WM_PROTOCOLS = XInternAtom (display, "WM_PROTOCOLS", False);
-		Atom WM_DELETE_WINDOW = XInternAtom (display, "WM_DELETE_WINDOW", False);
-		XClientMessageEvent ev;
-		
-		ev.type = ClientMessage;
-		ev.window = PluginObject::browser_app_context;
-		ev.message_type = WM_PROTOCOLS;
-		ev.format = 32;
-		ev.data.l [0] = WM_DELETE_WINDOW;
-		ev.data.l [1] = 0;
-		
-		XSendEvent (display, ev.window, False, 0, (XEvent*) &ev);
-		XCloseDisplay (display);
-		
+		send_wm_delete (PluginObject::browser_app_context);
 		PluginObject::browser_app_context = 0;
 
 		// have a backup, since the above doesn't work with oob
+		// note that this is racy: the current process might not be the one with the focus.
 		g_timeout_add (1000, send_alt_f4, NULL);
 	} else {
-		send_ctrl_q (NULL); // this doesn't work for oob apps
-		send_alt_f4 (NULL); // this doesn't work if there is no window manager (inside xvfb while running tests for instance)
+		WindowInfoEx ex;
+		memcpy (ex.wi.title, "IWANTEX", sizeof ("IWANTEX"));
+		if (WindowHelper_GetWindowInfo (getpid (), (WindowInfo *) &ex) == 0) {
+			send_wm_delete (ex.window);
+		}
+
+		// have a backup
+		// note that this is racy: the current process might not be the one with the focus.
+		g_timeout_add (5000, send_ctrl_q, NULL); // this doesn't work for oob apps
+		g_timeout_add (5000, send_alt_f4, NULL); // this doesn't work if there is no window manager (inside xvfb while running tests for instance)
 	}
 	
 	// Have a backup in case the above fails.

@@ -1,3 +1,11 @@
+2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* harness.cpp: GetWindowInfo: Add a hack to get the Window handle.
+
+	* shutdown-manager.cpp: Use the above hack to send a WM_DELETE_WINDOW message
+	to oob apps instead of alt+f4/ctrl+q, which goes to the focused window - not
+	necessarily where we want it to go.
+
 2010-05-07  Chris Toshok  <toshok@ximian.com>
 
 	* shocker.cpp (ShockerScriptableControlObject::MouseWheel): don't
