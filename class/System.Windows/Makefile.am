@@ -206,6 +206,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Border.cs				\
 	$(srcdir)/System.Windows.Controls/ComboBox.cs				\
 	$(srcdir)/System.Windows.Controls/ComboBoxItem.cs			\
+	$(srcdir)/System.Windows.Controls/ContentChangedEventArgs.cs		\
+	$(srcdir)/System.Windows.Controls/ContentChangedEventHandler.cs		\
 	$(srcdir)/System.Windows.Controls/ContentControl.cs			\
 	$(srcdir)/System.Windows.Controls/ContentPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\

@@ -1,3 +1,13 @@
+2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ContentChangedEventHandler.cs: Added
+
+	* ContentChangedEventArgs.cs: Added
+
+	* ContentControl.cs: Updated for event name change.
+
+	* RichTextArea.cs: Updated.
+
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: INotifyCollectionChanged.Reset really means

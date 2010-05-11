@@ -42,20 +42,6 @@ namespace System.Windows.Controls {
 	[TemplateVisualState (Name = "Disabled", GroupName = "CommonStates")]
 	[TemplateVisualState (Name = "Normal", GroupName = "CommonStates")]
 	public partial class RichTextArea : Control {
-		public double BaselineOffset {
-			get {
-				Console.WriteLine ("System.Windows.Controls.RichTextArea.get_BaselineOffset: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
-		public TextSelection Selection {
-			get {
-				Console.WriteLine ("System.Windows.Controls.RichTextArea.get_Selection (): NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
 			base.OnGotFocus (e);

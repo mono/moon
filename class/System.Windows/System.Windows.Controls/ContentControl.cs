@@ -33,16 +33,16 @@ namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
 		static UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
 		
-		internal sealed class ContentChangedEventArgs : EventArgs {
+		internal sealed class ContentControlChangedEventArgs : EventArgs {
 			internal IntPtr native;
 			
-			internal ContentChangedEventArgs (IntPtr raw)
+			internal ContentControlChangedEventArgs (IntPtr raw)
 			{
 				native = raw;
 				NativeMethods.event_object_ref (native);
 			}
 			
-			~ContentChangedEventArgs ()
+			~ContentControlChangedEventArgs ()
 			{
 				if (native != IntPtr.Zero) {
 					NativeMethods.event_object_unref (native);
@@ -52,7 +52,7 @@ namespace System.Windows.Controls {
 			
 			public object OldContent {
 				get {
-					IntPtr result = NativeMethods.content_changed_event_args_get_old_content (native);
+					IntPtr result = NativeMethods.content_control_changed_event_args_get_old_content (native);
 					
 					if (result == IntPtr.Zero)
 						return null;
@@ -63,7 +63,7 @@ namespace System.Windows.Controls {
 			
 			public object NewContent {
 				get {
-					IntPtr result = NativeMethods.content_changed_event_args_get_new_content (native);
+					IntPtr result = NativeMethods.content_control_changed_event_args_get_new_content (native);
 					
 					if (result == IntPtr.Zero)
 						return null;
@@ -76,13 +76,13 @@ namespace System.Windows.Controls {
 		static void content_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			ContentControl cc = (ContentControl) NativeDependencyObjectHelper.FromIntPtr (closure);
-			ContentChangedEventArgs args = new ContentChangedEventArgs (calldata);
+			ContentControlChangedEventArgs args = new ContentControlChangedEventArgs (calldata);
 			
 			cc.OnContentChanged (args.OldContent, args.NewContent);
 			cc.RaiseUIAContentChanged (args.OldContent, args.NewContent);
 		}
 
-		// Needed in case OnContentChanged is overwritten in a subclass
+		// Needed in case OnContentControlChanged is overwritten in a subclass
 		internal event Action<object, object> UIAContentChanged;
 
 		internal void RaiseUIAContentChanged (object oldContent, object newContent)
@@ -108,7 +108,7 @@ namespace System.Windows.Controls {
 		
 		private new void Initialize ()
 		{
-			Events.AddHandler (this, EventIds.ContentControl_ContentChangedEvent, content_changed);
+			Events.AddHandler (this, EventIds.ContentControl_ContentControlChangedEvent, content_changed);
 		}
 		
 		internal override UIElement GetDefaultTemplate ()
