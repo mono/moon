@@ -96,5 +96,29 @@ namespace MoonTest.System.Windows.Data {
 			source.ClearValue (CollectionViewSource.ViewProperty);
 			Assert.IsNull (source.View, "#2");
 		}
+
+		[TestMethod]
+		public void ViewsAreReused ()
+		{
+			// If you change the Source collection and then change it back, you
+			// end up re-using the View you had the first time.
+			var cvs = new CollectionViewSource { Source = Source };
+			var view = cvs.View;
+			cvs.Source = new List<object> ();
+			cvs.Source = Source;
+
+			Assert.AreSame (view, cvs.View, "#1");
+		}
+
+		[TestMethod]
+		public void ViewsAreReusedBetweenCVSs ()
+		{
+			// If you use the same collection in multiple CollectionViewSources
+			// they end up with unique View objects
+			var cvs1 = new CollectionViewSource { Source = Source };
+			var cvs2 = new CollectionViewSource { Source = Source };
+
+			Assert.AreNotSame (cvs1.View, cvs2.View, "#1");
+		}
 	}
 }
