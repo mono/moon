@@ -18,6 +18,26 @@
 
 
 //
+// TextPointer
+//
+
+TextPointer::TextPointer ()
+{
+	SetObjectType (Type::TEXTPOINTER);
+}
+
+
+//
+// TextSelection
+//
+
+TextSelection::TextSelection ()
+{
+	SetObjectType (Type::TEXTSELECTION);
+}
+
+
+//
 // RichTextBox
 //
 

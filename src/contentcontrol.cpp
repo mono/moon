@@ -86,34 +86,30 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 			sub->unref ();
 		}
 
-		if (HasHandlers (ContentControl::ContentChangedEvent))
-			Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
+		if (HasHandlers (ContentControl::ContentControlChangedEvent))
+			Emit (ContentControl::ContentControlChangedEvent, new ContentControlChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
 		InvalidateMeasure ();
 	}
 	
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-ContentChangedEventArgs::ContentChangedEventArgs (Value *old_content, Value *new_content)
+ContentControlChangedEventArgs::ContentControlChangedEventArgs (Value *old_content, Value *new_content)
 {
-	SetObjectType (Type::CONTENTCHANGEDEVENTARGS);
+	SetObjectType (Type::CONTENTCONTROLCHANGEDEVENTARGS);
 
 	this->old_content = old_content;
 	this->new_content = new_content;
 }
 
-ContentChangedEventArgs::~ContentChangedEventArgs ()
-{
-}
-
-Value*
-ContentChangedEventArgs::GetOldContent ()
+Value *
+ContentControlChangedEventArgs::GetOldContent ()
 {
 	return old_content;
 }
 
 Value*
-ContentChangedEventArgs::GetNewContent ()
+ContentControlChangedEventArgs::GetNewContent ()
 {
 	return new_content;
 }

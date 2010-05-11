@@ -16,15 +16,15 @@
 
 
 /* @Namespace=None */
-class ContentChangedEventArgs : public EventArgs {
+class ContentControlChangedEventArgs : public EventArgs {
 	Value *old_content;
 	Value *new_content;
 	
  protected:
-	virtual ~ContentChangedEventArgs ();
+	virtual ~ContentControlChangedEventArgs () {}
 	
  public:
-	ContentChangedEventArgs (Value *old_content, Value *new_content);
+	ContentControlChangedEventArgs (Value *old_content, Value *new_content);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetOldContent ();
@@ -69,7 +69,7 @@ class ContentControl : public Control {
 	// Events
 	//
 	/* @GenerateManagedEvent=false */
-	const static int ContentChangedEvent;
+	const static int ContentControlChangedEvent;
 
   private:
 	bool content_sets_parent;

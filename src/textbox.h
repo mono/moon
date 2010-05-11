@@ -468,9 +468,9 @@ class TextBox : public TextBoxBase {
 	
 	void SetVerticalScrollBarVisibility (ScrollBarVisibility visibility);
 	ScrollBarVisibility GetVerticalScrollBarVisibility ();
-
-	Value *GetWatermark ();
+	
 	void SetWatermark (Value *value);
+	Value *GetWatermark ();
 	
 	//
 	// Events

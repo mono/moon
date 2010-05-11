@@ -1,5 +1,15 @@
 2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* contentcontrol.cpp|h (ContentControlChangedEventArgs): Renamed
+	from ContentChangedEventArgs since it conflicts with the new SL4
+	public ContentChangedEventArgs type.
+
+	* richtextbox.h (RoutedEventArgs): Stub out
+	ContentChangedEventArgs, TextPointer and TextSelection and a bunch
+	more DP's for RichTextBox.
+
+2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.h (ITextAttributes): Provide a way to get flow direction.
 
 	* textelement.h (TextElement): Implement new ITextAttributes
