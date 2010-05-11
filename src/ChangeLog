@@ -1,3 +1,8 @@
+2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textelement.cpp: Promote inner workings of Inline to TextElement
+	since all that logic is needed at the higher level now.
+
 2010-05-10  Larry Ewing  <lewing@novell.com>
 
 	* brush.cpp (SetupBrush): add calls to set the color tolerance on

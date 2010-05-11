@@ -26,7 +26,7 @@ class RichTextArea : public Control {
 	virtual ~RichTextArea () {}
 	
  public:
-	/* @PropertyType=BlockCollection,AutoCreateValue,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;
@@ -45,6 +45,9 @@ class RichTextArea : public Control {
 	//
 	// Property Accessors
 	//
+	void SetBlocks (BlockCollection *blocks);
+	BlockCollection *GetBlocks ();
+	
 	void SetIsReadOnly (bool readonly);
 	bool GetIsReadOnly ();
 	

@@ -36,22 +36,11 @@
 TextElement::TextElement ()
 {
 	SetObjectType (Type::TEXTELEMENT);
-}
-
-
-//
-// Inline
-//
-
-Inline::Inline ()
-{
-	SetObjectType (Type::INLINE);
 	font = new TextFontDescription ();
 	downloaders = g_ptr_array_new ();
-	autogen = false;
 }
 
-Inline::~Inline ()
+TextElement::~TextElement ()
 {
 	CleanupDownloaders ();
 	g_ptr_array_free (downloaders, true);
@@ -59,7 +48,7 @@ Inline::~Inline ()
 }
 
 void
-Inline::CleanupDownloaders ()
+TextElement::CleanupDownloaders ()
 {
 	Downloader *downloader;
 	guint i;
@@ -75,7 +64,47 @@ Inline::CleanupDownloaders ()
 }
 
 void
-Inline::AddFontSource (Downloader *downloader)
+TextElement::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((TextElement *) closure)->DownloaderComplete ((Downloader *) sender);
+}
+
+void
+TextElement::DownloaderComplete (Downloader *downloader)
+{
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	char *resource, *filename;
+	InternalDownloader *idl;
+	const char *path;
+	Uri *uri;
+	
+	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
+	if (!(filename = downloader->GetDownloadedFilename (NULL)))
+		return;
+	
+	g_free (filename);
+	
+	if (!(idl = downloader->GetInternalDownloader ()))
+		return;
+	
+	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
+		return;
+	
+	uri = downloader->GetUri ();
+	
+	// If the downloaded file was a zip file, this'll get the path to the
+	// extracted zip directory, else it will simply be the path to the
+	// downloaded file.
+	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
+		return;
+	
+	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+	manager->AddResource (resource, path);
+	g_free (resource);
+}
+
+void
+TextElement::AddFontSource (Downloader *downloader)
 {
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 	g_ptr_array_add (downloaders, downloader);
@@ -91,7 +120,7 @@ Inline::AddFontSource (Downloader *downloader)
 }
 
 void
-Inline::AddFontResource (const char *resource)
+TextElement::AddFontResource (const char *resource)
 {
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
@@ -119,14 +148,14 @@ Inline::AddFontResource (const char *resource)
 }
 
 void
-Inline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+TextElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	if (args->GetProperty ()->GetOwnerType () != Type::INLINE) {
+	if (args->GetProperty ()->GetOwnerType () != Type::TEXTELEMENT) {
 		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 	
-	if (args->GetId () == Inline::FontFamilyProperty) {
+	if (args->GetId () == TextElement::FontFamilyProperty) {
 		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
 		char **families, *fragment;
 		int i;
@@ -151,15 +180,61 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 }
 
 void
-Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+TextElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop && prop->GetId () == Inline::ForegroundProperty) {
+	if (prop && prop->GetId () == TextElement::ForegroundProperty) {
 		// this isn't exactly what we want, I don't
 		// think... but it'll have to do.
 		NotifyListenersOfPropertyChange (prop, NULL);
 	} else {
 		DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 	}
+}
+
+bool
+TextElement::UpdateFontDescription (const char *source, bool force)
+{
+	FontFamily *family = GetFontFamily ();
+	bool changed = false;
+	
+	if (font->SetSource (source))
+		changed = true;
+	
+	if (font->SetFamily (family ? family->source : NULL))
+		changed = true;
+	
+	if (font->SetStretch (GetFontStretch ()->stretch))
+		changed = true;
+	
+	if (font->SetWeight (GetFontWeight ()->weight))
+		changed = true;
+	
+	if (font->SetStyle (GetFontStyle ()->style))
+		changed = true;
+	
+	if (font->SetSize (GetFontSize ()))
+		changed = true;
+	
+	if (font->SetLanguage (GetLanguage ()))
+		changed = true;
+	
+	if (force) {
+		font->Reload ();
+		return true;
+	}
+	
+	return changed;
+}
+
+
+//
+// Inline
+//
+
+Inline::Inline ()
+{
+	SetObjectType (Type::INLINE);
+	autogen = false;
 }
 
 bool
@@ -205,91 +280,6 @@ Inline::Equals (Inline *item)
 	
 	// OK, as best we can tell - they are equal
 	return true;
-}
-
-bool
-Inline::UpdateFontDescription (const char *source, bool force)
-{
-	FontFamily *family = GetFontFamily ();
-	bool changed = false;
-	
-	if (font->SetSource (source))
-		changed = true;
-	
-	if (font->SetFamily (family ? family->source : NULL))
-		changed = true;
-	
-	if (font->SetStretch (GetFontStretch ()->stretch))
-		changed = true;
-	
-	if (font->SetWeight (GetFontWeight ()->weight))
-		changed = true;
-	
-	if (font->SetStyle (GetFontStyle ()->style))
-		changed = true;
-	
-	if (font->SetSize (GetFontSize ()))
-		changed = true;
-	
-	if (font->SetLanguage (GetLanguage ()))
-		changed = true;
-	
-	if (force) {
-		font->Reload ();
-		return true;
-	}
-	
-	return changed;
-}
-
-void
-Inline::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	((Inline *) closure)->DownloaderComplete ((Downloader *) sender);
-}
-
-void
-Inline::DownloaderComplete (Downloader *downloader)
-{
-	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
-	char *resource, *filename;
-	InternalDownloader *idl;
-	const char *path;
-	Uri *uri;
-	
-	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
-	if (!(filename = downloader->GetDownloadedFilename (NULL)))
-		return;
-	
-	g_free (filename);
-	
-	if (!(idl = downloader->GetInternalDownloader ()))
-		return;
-	
-	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
-		return;
-	
-	uri = downloader->GetUri ();
-	
-	// If the downloaded file was a zip file, this'll get the path to the
-	// extracted zip directory, else it will simply be the path to the
-	// downloaded file.
-	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
-		return;
-	
-	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-	manager->AddResource (resource, path);
-	g_free (resource);
-}
-
-
-//
-// InlineUIContainer
-//
-
-InlineUIContainer::InlineUIContainer ()
-{
-	SetObjectType (Type::INLINEUICONTAINER);
 }
 
 
@@ -420,4 +410,14 @@ Hyperlink::Hyperlink ()
 	SetTextDecorations (TextDecorationsUnderline);
 	SetMouseOverForeground (new SolidColorBrush ("black"));
 	SetForeground (new SolidColorBrush ("#FF337CBB"));
+}
+
+
+//
+// InlineUIContainer
+//
+
+InlineUIContainer::InlineUIContainer ()
+{
+	SetObjectType (Type::INLINEUICONTAINER);
 }
