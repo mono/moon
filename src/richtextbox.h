@@ -75,9 +75,9 @@ class RichTextArea : public Control {
 	const static int TextAlignmentProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
-	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto,ManagedFieldAccess=Private */
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto,GenerateAccessors,ManagedFieldAccess=Private */
 	const static int HorizontalScrollBarVisibilityProperty;
-	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto,ManagedFieldAccess=Private */
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto,GenerateAccessors,ManagedFieldAccess=Private */
 	const static int VerticalScrollBarVisibilityProperty;
 	/* @PropertyType=string,GenerateAccessors */
 	const static int XamlProperty;
@@ -99,6 +99,9 @@ class RichTextArea : public Control {
 	void SetCaretBrush (Brush *caret);
 	Brush *GetCaretBrush ();
 	
+	void SetHorizontalScrollBarVisibility (ScrollBarVisibility visibility);
+	ScrollBarVisibility GetHorizontalScrollBarVisibility ();
+	
 	void SetIsReadOnly (bool readonly);
 	bool GetIsReadOnly ();
 	
@@ -109,6 +112,9 @@ class RichTextArea : public Control {
 	
 	void SetTextWrapping (TextWrapping wrapping);
 	TextWrapping GetTextWrapping ();
+	
+	void SetVerticalScrollBarVisibility (ScrollBarVisibility visibility);
+	ScrollBarVisibility GetVerticalScrollBarVisibility ();
 	
 	void SetXaml (const char *xaml);
 	const char *GetXaml ();
