@@ -282,6 +282,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	//
 	virtual TextDecorations Decorations () { return TextDecorationsNone; }
 	virtual TextFontDescription *FontDescription () { return font; }
+	virtual FlowDirection Direction () { return FlowDirectionLeftToRight; }
 	
 	virtual Brush *Background (bool selected)
 	{

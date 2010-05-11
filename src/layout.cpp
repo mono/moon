@@ -1486,7 +1486,7 @@ validate_attrs (List *attributes)
 void
 TextLayout::Layout ()
 {
-	// FIXME: take text trimming into consideration...
+	// FIXME: take text trimming and flow direction into consideration...
 	TextLayoutAttributes *attrs, *nattrs;
 	LayoutWordCallback layout_word;
 	const char *inptr, *inend;

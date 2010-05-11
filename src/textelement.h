@@ -78,8 +78,9 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	//
 	// ITextAttributes Interface Methods
 	//
-	virtual TextDecorations Decorations () { return GetTextDecorations (); }
 	virtual TextFontDescription *FontDescription () { return font; }
+	virtual FlowDirection Direction () { return FlowDirectionLeftToRight; }
+	virtual TextDecorations Decorations () { return GetTextDecorations (); }
 	virtual Brush *Foreground (bool selected) { return GetForeground (); }
 	virtual Brush *Background (bool selected) { return NULL; }
 	
@@ -180,6 +181,11 @@ class Run : public Inline {
 	Run ();
 	
 	virtual bool Equals (Inline *item);
+	
+	//
+	// ITextAttributes Interface Method Overrides
+	//
+	virtual FlowDirection Direction () { return GetFlowDirection (); }
 	
 	//
 	// Property Accessors

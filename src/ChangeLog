@@ -1,5 +1,12 @@
 2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.h (ITextAttributes): Provide a way to get flow direction.
+
+	* textelement.h (TextElement): Implement new ITextAttributes
+	Direction() method.
+
+2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textelement.cpp: Promote inner workings of Inline to TextElement
 	since all that logic is needed at the higher level now.
 

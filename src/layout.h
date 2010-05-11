@@ -28,6 +28,7 @@ class ITextAttributes {
  public:
 	virtual ~ITextAttributes () {};
 	virtual TextFontDescription *FontDescription () = 0;
+	virtual FlowDirection Direction () = 0;
 	virtual TextDecorations Decorations () = 0;
 	virtual Brush *Background (bool selected) = 0;
 	virtual Brush *Foreground (bool selected) = 0;
@@ -57,6 +58,11 @@ class TextLayoutAttributes : public List::Node {
 	TextFont *Font ()
 	{
 		return source->FontDescription ()->GetFont ();
+	}
+	
+	FlowDirection Direction ()
+	{
+		return source->Direction ();
 	}
 	
 	bool IsUnderlined ()
