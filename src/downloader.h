@@ -100,8 +100,6 @@ class Downloader : public DependencyObject {
 	gint64 total;
 	
 	char *filename;
-	char *buffer;
-	
 	char *failed_msg;
 	
 	int send_queued:1;
@@ -182,7 +180,6 @@ class Downloader : public DependencyObject {
 	bool CheckRedirectionPolicy (const char *url);
 
 	void SetFilename (const char *fname);
-	char *GetBuffer () { return buffer; }
 	gint64 GetSize () { return total; }
 	
 	InternalDownloader *GetInternalDownloader () { return internal_dl; }

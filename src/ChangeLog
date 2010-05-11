@@ -1,3 +1,10 @@
+2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* bitmapimage.cpp:
+	* downloader.cpp|h: Remove hacks for mozilla bug #444160, mozilla bug #564806
+	is worse and forces us to use the slower streaming interface in which
+	bug #44160 doesn't manifest itself, so this hack is not needed anymore.
+
 2010-05-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textelement.cpp|h: New source files for TextElement and

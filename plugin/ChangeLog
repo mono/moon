@@ -1,5 +1,9 @@
 2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp: Add link to mozilla bug in comment.
+
+2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp: It's not an error to have a stream with no StreamNotify data.
 	Firefox will automatically create a stream for any src attribute on the embed
 	tag.

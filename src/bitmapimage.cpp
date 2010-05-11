@@ -343,45 +343,32 @@ BitmapImage::DownloaderComplete ()
 	if (downloader && loader == NULL) {
 		char *filename = downloader->GetDownloadedFilename (part_name);
 
-		if (filename == NULL) {
-			guchar *buffer = (guchar *)downloader->GetBuffer ();
+		guchar b[4096];
+		int offset = 0;
+		ssize_t n;
+		int fd;
 
-			if (buffer == NULL) {
-				moon_error = new MoonError (MoonError::EXCEPTION, 4001, "downloader buffer was NULL");
-				goto failed;
-			}
-
-			PixbufWrite (buffer, 0, downloader->GetSize ());
-			if (moon_error)
-				goto failed;
-		} else {
-			guchar b[4096];
-			int offset = 0;
-			ssize_t n;
-			int fd;
-
-			if ((fd = g_open (filename, O_RDONLY)) == -1) {
-				moon_error = new MoonError (MoonError::EXCEPTION, 4001, "failed to open file");
-				goto failed;
-			}
-	
-			do {
-				do {
-					n = read (fd, b, sizeof (b));
-				} while (n == -1 && errno == EINTR);
-
-				if (n == -1) break;
-
-				PixbufWrite (b, offset, n);
-
-				offset += n;
-			} while (n > 0 && !moon_error);
-
-			close (fd);
-
-			if (moon_error)
-				goto failed;
+		if ((fd = g_open (filename, O_RDONLY)) == -1) {
+			moon_error = new MoonError (MoonError::EXCEPTION, 4001, "failed to open file");
+			goto failed;
 		}
+
+		do {
+			do {
+				n = read (fd, b, sizeof (b));
+			} while (n == -1 && errno == EINTR);
+
+			if (n == -1) break;
+
+			PixbufWrite (b, offset, n);
+
+			offset += n;
+		} while (n > 0 && !moon_error);
+
+		close (fd);
+
+		if (moon_error)
+			goto failed;
 	}
 
 	if (downloader) {

@@ -78,7 +78,6 @@ Downloader::Downloader ()
 	total = 0;
 	
 	filename = NULL;
-	buffer = NULL;
 	failed_msg = NULL;
 }
 
@@ -90,7 +89,6 @@ Downloader::~Downloader ()
 	Downloader::destroy_state (downloader_state);
 	
 	g_free (filename);
-	g_free (buffer);
 	g_free (failed_msg);
 
 	// NOTE:
@@ -131,38 +129,7 @@ Downloader::GetDownloadedFilename (const char *partname)
 	LOG_DOWNLOADER ("Downloader::GetDownloadedFilename (%s)\n", filename);
 	
 	g_return_val_if_fail (internal_dl != NULL && internal_dl->Is (Type::FILEDOWNLOADER), NULL);
-	
-	// This is a horrible hack to work around mozilla bug #444160
-	// Basically if a very small file is downloaded (<64KB in mozilla as of Jan5/09
-	// it can be inserted into a shared cache map, and served up to us without ever
-	// giving us the filename for a NP_ASFILE request.
-	if (buffer != NULL) {
-		FileDownloader *fdl = (FileDownloader *) internal_dl;
-		char *tmpfile;
-		int fd;
-		
-		tmpfile = g_build_filename (g_get_tmp_dir (), "mozilla-workaround-XXXXXX", NULL);
-		if ((fd = g_mkstemp (tmpfile)) == -1) {
-			g_free (tmpfile);
-			return NULL;
-		}
-		
-		if (write_all (fd, buffer, (size_t) total) == -1) {
-			unlink (tmpfile);
-			g_free (tmpfile);
-			close (fd);
-			return NULL;
-		}
-		
-		close (fd);
-		
-		fdl->SetFilename (tmpfile);
-		fdl->SetUnlink (true);
-		g_free (tmpfile);
-		g_free (buffer);
-		buffer = NULL;
-	}
-	
+
 	return internal_dl->GetDownloadedFilename (partname);
 }
 
@@ -170,38 +137,6 @@ char *
 Downloader::GetResponseText (const char *PartName, gint64 *size)
 {
 	LOG_DOWNLOADER ("Downloader::GetResponseText (%s, %p)\n", PartName, size);
-
-	// This is a horrible hack to work around mozilla bug #444160
-	// Basically if a very small file is downloaded (<64KB in mozilla as of Jan5/09
-	// it can be inserted into a shared cache map, and served up to us without ever
-	// giving us the filename for a NP_ASFILE request.
-	if (PartName == NULL && buffer != NULL) {
-		char *data;
-		char b[4096];
-		ssize_t nread;
-		GByteArray *buf;
-
-		TextStream *stream = new TextStream ();
-
-		if (!stream->OpenBuffer (buffer, total)) {
-			delete stream;
-			return NULL;
-		}
-
-		buf = g_byte_array_new ();
-		while ((nread = stream->Read (b, sizeof (b))) > 0)
-			g_byte_array_append (buf, (const guint8 *) b, nread);
-
-		*size = buf->len;
-
-		g_byte_array_append (buf, (const guint8 *) "", 1);
-		data = (char *) buf->data;
-
-		g_byte_array_free (buf, false);
-		delete stream;
-
-		return data;
-	}
 
 	return internal_dl->GetResponseText (PartName, size);
 }
@@ -393,10 +328,8 @@ Downloader::OpenInitialize ()
 
 	g_free (failed_msg);
 	g_free (filename);
-	g_free (buffer);
 	failed_msg = NULL;
 	filename = NULL;
-	buffer = NULL;
 }
 
 void
@@ -656,13 +589,6 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 
 	if (writer)
 		writer (buf, offset, n, user_data);
-	
-	// This is a horrible hack to work around mozilla bug #444160
-	// See Downloader::GetResponseText for an explanation
-	if (internal_dl->GetObjectType () == Type::FILEDOWNLOADER && n == total && total < 65536) {
-		buffer = (char *) g_malloc ((size_t) total);
-		memcpy (buffer, buf, (size_t) total);
-	} 
 }
 
 void
@@ -671,9 +597,7 @@ Downloader::SetFilename (const char *fname)
 	LOG_DOWNLOADER ("Downloader::SetFilename (%s)\n", fname);
 	
 	g_free (filename);
-	g_free (buffer);
-	buffer = NULL;
-	
+
 	filename = g_strdup (fname);
 	
 	internal_dl->SetFilename (filename);

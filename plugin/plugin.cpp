@@ -1045,7 +1045,12 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 	 * the file we get from firefox will be truncated. So we use the streaming interface and save to a temp
 	 * file of our own.
 	 *
+	 * https://bugzilla.mozilla.org/show_bug.cgi?id=564806
+	 *
 	 * DRT #425 has a xap with a size of 71mb.
+	 *
+	 * Note that if we ever return to NP_FILE/NP_FILEONLY we need to resurrect the hack/workaround for mozilla's
+	 * bug #444160.
 	 */
 
 	/* create tmp file */
