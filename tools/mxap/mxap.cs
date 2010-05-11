@@ -240,12 +240,12 @@ namespace Moonlight {
 			manifest.AppendLine ("  </Deployment.Parts>");
 
 			if (external_parts != null && external_parts.Count > 0) {
-				manifest.AppendFormat ("  <Deployment.ExternalParts>");
+				manifest.AppendLine ("  <Deployment.ExternalParts>");
 				foreach (string ext_part in ExternalPartManifests) {
 					if (!CreateExternalPartsFromManifest (ext_part, manifest))
 						return false;
 				}
-				manifest.AppendFormat ("  </Deployment.ExternalParts>");
+				manifest.AppendLine ("  </Deployment.ExternalParts>");
 			}
 
 			manifest.AppendLine ("</Deployment>");
@@ -318,7 +318,7 @@ namespace Moonlight {
 			}
 			source = nav.Value;
 
-			manifest.AppendFormat ("<ExtensionPart Source=\"{0}\" />", source);
+			manifest.AppendFormat ("<ExtensionPart Source=\"{0}\" />\n", source);
 
 			// If its an absolute URI we don't add it to the package
 			Uri dummy = null;
