@@ -1,3 +1,7 @@
+2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml-to-header.cs: Update license.
+
 2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* bitmapimage.cpp:
