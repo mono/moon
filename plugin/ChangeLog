@@ -1,3 +1,9 @@
+2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Generate plugin-spinner.h
+
+	* plugin-spinner.h: Removed, it's generated now.
+
 2010-05-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Add link to mozilla bug in comment.

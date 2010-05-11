@@ -63,11 +63,12 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.g.cpp 		\
 	plugin-class.h			\
 	plugin-utils.cpp		\
-	plugin-spinner.h		\
 	../src/pal/gtk/windowless-gtk.cpp	\
 	../src/pal/gtk/windowless-gtk.h
 
 
+plugin-spinner.h: plugin-spinner.xaml ../src/xaml-to-header.exe
+	$(SYSTEM_MONO) ../src/xaml-to-header.exe plugin-spinner.xaml PLUGIN_SPINNER
 
 #--- libmoonpluginxpi ----------------------
 libmoonpluginxpi_la_LDFLAGS = $(libmoonplugin_la_LDFLAGS) -rpath /nowhere
@@ -94,7 +95,12 @@ untest-plugin:
 	-rm -f ~/.mozilla/plugins/libmoonplugin.so
 	-rm -f ~/.mozilla/plugins/libmoonloader.so
 
-EXTRA_DIST=moon.config silverlight-versions.h.in plugin-class.h.in plugin-class.g.cpp.in
+EXTRA_DIST = \
+	moon.config \
+	silverlight-versions.h.in \
+	plugin-class.h.in \
+	plugin-class.g.cpp.in \
+	plugin-spinner.h
 
 DISTCLEANFILES= silverlight-version.h
 
