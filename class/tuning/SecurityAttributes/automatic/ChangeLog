@@ -1,5 +1,9 @@
 2010-05-10  Sebastien Pouliot  <sebastien@ximian.com>
 
+	* System.Windows.auto.ssc: regenerated for overrides
+
+2010-05-10  Sebastien Pouliot  <sebastien@ximian.com>
+
 	* mscorlib.auto.ssc: regenerated for 157066
 
 2010-05-10  Alan McGovern  <amcgovern@novell.com>

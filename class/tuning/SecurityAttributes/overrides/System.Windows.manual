@@ -48,7 +48,7 @@
 # internal types
 +SC-T: System.Windows.PresentationFrameworkCollection`1/CollectionIterator
 +SC-T: System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator
-+SC-T: System.Windows.Controls.ContentControl/ContentChangedEventArgs
++SC-T: System.Windows.Controls.ContentControl/ContentControlChangedEventArgs
 
 +SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
@@ -70,6 +70,8 @@
 +SC-M: System.Void System.Windows.Input.StylusPoint::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Documents.TextPointer::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Documents.TextSelection::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 
 +SC-M: System.Void Mono.Surface::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 

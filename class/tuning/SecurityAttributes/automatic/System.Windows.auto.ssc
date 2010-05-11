@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 566 methods
+# 561 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -277,11 +277,8 @@
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
 +SSC-M: System.Boolean System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_UpdateAvailable()
 +SSC-M: System.Exception System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_Error()
++SSC-M: System.Void System.Windows.Controls.ContentControl::content_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.ContentControl::Initialize()
-+SSC-M: System.Void System.Windows.Controls.ContentControl/ContentControlChangedEventArgs::.ctor(System.IntPtr)
-+SSC-M: System.Void System.Windows.Controls.ContentControl/ContentControlChangedEventArgs::Finalize()
-+SSC-M: System.Object System.Windows.Controls.ContentControl/ContentControlChangedEventArgs::get_OldContent()
-+SSC-M: System.Object System.Windows.Controls.ContentControl/ContentControlChangedEventArgs::get_NewContent()
 +SSC-M: System.Void System.Windows.Controls.ContentPresenter::ClearRoot()
 +SSC-M: System.Void System.Windows.Controls.Control::.cctor()
 +SSC-M: System.Void System.Windows.Controls.Control::Initialize()
@@ -362,11 +359,9 @@
 +SSC-M: System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
 +SSC-M: System.Void System.Windows.Documents.FontSource::.ctor(System.IO.Stream)
 +SSC-M: System.Void System.Windows.Documents.TextPointer::.ctor(System.IntPtr,System.Boolean)
-+SSC-M: System.Void System.Windows.Documents.TextPointer::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 +SSC-M: Mono.Kind System.Windows.Documents.TextPointer::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Void System.Windows.Documents.TextPointer::Free()
 +SSC-M: System.Void System.Windows.Documents.TextSelection::.ctor(System.IntPtr,System.Boolean)
-+SSC-M: System.Void System.Windows.Documents.TextSelection::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 +SSC-M: Mono.Kind System.Windows.Documents.TextSelection::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Void System.Windows.Documents.TextSelection::Free()
 +SSC-M: System.Void System.Windows.ExceptionRoutedEventArgs::.ctor(Mono.MoonError)

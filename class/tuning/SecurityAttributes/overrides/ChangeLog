@@ -1,3 +1,10 @@
+2010-05-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Adjust for the renaming of Content
+	ChangedEventArgs into ContentControlChangedEventArgs. Mark
+	correcly in overrrides of Mono.INativeEventObjectWrapper.
+	set_NativeHandle
+
 2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Promote SecurityManager.[Check|Ensure]Elevated
