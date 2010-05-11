@@ -522,25 +522,25 @@ class PasswordBox : public TextBoxBase {
 	virtual ~PasswordBox ();
 	
  public:
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int MaxLengthProperty;
-	/* @PropertyType=char,DefaultValue=(gunichar) 9679\, Type::CHAR,Version=2.0,GenerateAccessors */
+	/* @PropertyType=char,DefaultValue=(gunichar) 9679\, Type::CHAR,GenerateAccessors */
 	const static int PasswordCharProperty;
-	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,GenerateAccessors,Validator=NonNullValidator */
+	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,GenerateAccessors,Validator=NonNullValidator */
 	const static int PasswordProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedAccess=Internal,GenerateAccessors */
 	const static int SelectedTextProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,GenerateAccessors */
 	const static int SelectionBackgroundProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,GenerateAccessors */
 	const static int SelectionForegroundProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,ManagedAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionLengthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,ManagedAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionStartProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
