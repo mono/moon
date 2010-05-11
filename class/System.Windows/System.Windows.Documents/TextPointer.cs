@@ -27,11 +27,60 @@
 //
 
 using System;
+using Mono;
 
 namespace System.Windows.Documents {
-
-	public class TextPointer {
-
+	public class TextPointer : INativeEventObjectWrapper {
+		bool free_mapping;
+		IntPtr native;
+		
+		internal TextPointer (IntPtr raw, bool dropref)
+		{
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
+		}
+		
+		internal TextPointer () : this (SafeNativeMethods.text_pointer_new (), true)
+		{
+		}
+		
+		internal void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
+		}
+		
+		~TextPointer ()
+		{
+			Free ();
+		}
+		
+		internal IntPtr NativeHandle {
+			get { return native; }
+			set {
+				if (native != IntPtr.Zero) {
+					throw new InvalidOperationException ("TextPointer.native is already set");
+				}
+				
+				native = value;
+				
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+		
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+		
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return NativeMethods.event_object_get_object_type (native);
+		}
+		
 		public bool IsAtInsertionPosition {
 			get; private set;
 		}
@@ -42,11 +91,6 @@ namespace System.Windows.Documents {
 
 		public DependencyObject Parent {
 			get; private set;
-		}
-
-		TextPointer ()
-		{
-			
 		}
 
 		public int CompareTo (TextPointer position)
@@ -70,4 +114,3 @@ namespace System.Windows.Documents {
 		}
 	}
 }
-

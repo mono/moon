@@ -1,3 +1,9 @@
+2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextPointer.cs: Fixed to subclass INativeEventObjectWrapper.
+
+	* TextSelection.cs: Same.
+
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
 	* TextElement.cs: Move the Expression handling code from

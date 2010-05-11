@@ -27,15 +27,60 @@
 // 
 
 using System;
+using Mono;
 
 namespace System.Windows.Documents {
-	public sealed class TextSelection {
-		internal TextSelection ()
+	public sealed class TextSelection : INativeEventObjectWrapper {
+		bool free_mapping;
+		IntPtr native;
+		
+		internal TextSelection (IntPtr raw, bool dropref)
 		{
-			Console.WriteLine ("System.Windows.Documents.TextSelection.ctor: () NIEX");
-			throw new NotImplementedException ();
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
 		}
-
+		
+		internal TextSelection () : this (SafeNativeMethods.text_selection_new (), true)
+		{
+		}
+		
+		internal void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
+		}
+		
+		~TextSelection ()
+		{
+			Free ();
+		}
+		
+		internal IntPtr NativeHandle {
+			get { return native; }
+			set {
+				if (native != IntPtr.Zero) {
+					throw new InvalidOperationException ("TextPointer.native is already set");
+				}
+				
+				native = value;
+				
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+		
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+		
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return NativeMethods.event_object_get_object_type (native);
+		}
+		
 		public bool CanInsert (TextElement element)
 		{
 			Console.WriteLine ("System.Windows.Documents.TextSelection.CanInsert: () NIEX");
@@ -72,4 +117,3 @@ namespace System.Windows.Documents {
 		}
 	}
 }
-
