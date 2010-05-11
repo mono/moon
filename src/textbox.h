@@ -374,37 +374,37 @@ class TextBox : public TextBoxBase {
 	virtual ~TextBox () { }
 	
  public:
-	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int AcceptsReturnProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
-	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int HorizontalScrollBarVisibilityProperty;
 	/* @PropertyType=InputScope,GenerateAccessors */
 	const static int InputScopeProperty;
-	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int MaxLengthProperty;
-	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int SelectedTextProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,GenerateAccessors */
 	const static int SelectionBackgroundProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,GenerateAccessors */
 	const static int SelectionForegroundProperty;
-	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionLengthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionStartProperty;
-	/* @PropertyType=string,Version=2.0,GenerateAccessors,GenerateManagedAccessors=false */
+	/* @PropertyType=string,GenerateAccessors,GenerateManagedAccessors=false */
 	const static int TextProperty;
-	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
-	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,Version=2.0,GenerateAccessors */
+	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
-	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int VerticalScrollBarVisibilityProperty;
 	/* @PropertyType=object,GenerateAccessors */
 	const static int WatermarkProperty;

@@ -59,13 +59,13 @@ class RichTextArea : public Control {
 	virtual ~RichTextArea () {}
 	
  public:
-	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int AcceptsReturnProperty;
-	/* @PropertyType=double,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BaselineOffsetProperty;
 	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;
