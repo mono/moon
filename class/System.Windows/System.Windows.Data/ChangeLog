@@ -1,3 +1,11 @@
+2010-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionViewSource.cs: Cache the views that the
+	  CollectionViewSource creates to allow more of drt 232 to
+	  succeed. Note that we need to use a weak dictionary of some
+	  sort as opposed to a regular Dictionary<K, V> otherwise
+	  we'll never be able to pass 232.
+
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyComparer.cs: Nuke a CWL.

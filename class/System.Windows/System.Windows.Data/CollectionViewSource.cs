@@ -35,6 +35,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 namespace System.Windows.Data {
@@ -64,6 +65,13 @@ namespace System.Windows.Data {
 				filter -= value;
 				Refresh ();
 			}
+		}
+
+		// FIXME: This should be a ConditionalWeakTable. DRT 232 shows that the CollectionViewSource
+		// does not hold strong references to the source collections or the ICollectionViews it caches.
+		// We could fake it with an IDictionary<WeakHandle<K>, WeakHandle<V>> maybe.
+		IDictionary <object, ICollectionView> CachedViews {
+			get; set;
 		}
 
 		public CultureInfo Culture {
@@ -102,6 +110,7 @@ namespace System.Windows.Data {
 
 		public CollectionViewSource ()
 		{
+			CachedViews = new Dictionary<object, ICollectionView> ();
 			SortDescriptions = new SortDescriptionCollection ();
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
@@ -130,10 +139,19 @@ namespace System.Windows.Data {
 
 		protected virtual void OnSourceChanged (object oldSource, object newSource)
 		{
-			if (newSource == null)
+			if (newSource == null) {
 				View = null;
-			else
-				View = new StandardCollectionView ((IEnumerable) newSource);
+			} else {
+				ICollectionView view = null;
+				if (CachedViews.TryGetValue (newSource, out view)) {
+					View = view;
+				} else {
+					view = new StandardCollectionView ((IEnumerable) newSource);
+					CachedViews.Add (newSource, view);
+					View = view;
+				}
+			}
+
 			Refresh ();
 		}
 
