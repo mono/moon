@@ -142,6 +142,13 @@
 	</TransformGroup>
       </Rectangle.RenderTransform>
     </Rectangle>
+    <TextBlock x:Name="progressTextBlock" Text="0%">
+      <TextBlock.RenderTransform>
+        <TransformGroup>
+          <TranslateTransform Y="-10" X="-9"/>
+        </TransformGroup>
+      </TextBlock.RenderTransform>
+    </TextBlock>
   </Canvas>
   </Grid>
 </Grid>

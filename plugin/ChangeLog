@@ -1,5 +1,10 @@
 2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp|h:
+	* plugin-spinner.xaml: Add a progress meter to the default plugin spinner.
+
+2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Generate plugin-spinner.h
 
 	* plugin-spinner.h: Removed, it's generated now.

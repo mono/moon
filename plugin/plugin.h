@@ -142,6 +142,8 @@ class PluginInstance
 
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
+	static void progress_changed_handler (EventObject *sender, EventArgs *args, gpointer closure);
+	int progress_changed_token;
 
  private:
 	// Gtk controls
