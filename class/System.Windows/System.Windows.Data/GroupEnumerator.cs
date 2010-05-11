@@ -46,7 +46,7 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		List<CollectionViewGroup> Groups {
+		List<object> Groups {
 			get; set;
 		}
 
@@ -56,7 +56,7 @@ namespace System.Windows.Data {
 
 		public GroupEnumerator (CollectionViewGroup root)
 		{
-			Groups = new List<CollectionViewGroup> ();
+			Groups = new List<object> ();
 			Root = root;
 			Reset ();
 		}
@@ -74,8 +74,13 @@ namespace System.Windows.Data {
 			}
 
 			while (Groups.Count > 0) {
-				var g = Groups [0];
+				var group = Groups [0];
 				Groups.RemoveAt (0);
+				if (!(group is CollectionViewGroup)) {
+					Current = group;
+					return true;
+				}
+				var g = (CollectionViewGroup) group;
 				if (g.IsBottomLevel && g.Items.Count > 0) {
 					CurrentGroup = g;
 					Current = g.Items [0];
@@ -83,7 +88,7 @@ namespace System.Windows.Data {
 					return true;
 				} else {
 					for (int i = 0; i < g.Items.Count; i ++)
-						Groups.Insert (i, (CollectionViewGroup) g.Items [i]);
+						Groups.Insert (i, g.Items [i]);
 				}
 			}
 

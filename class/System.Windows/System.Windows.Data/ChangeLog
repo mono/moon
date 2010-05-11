@@ -1,5 +1,11 @@
 2010-05-11  Alan McGovern  <amcgovern@novell.com>
 
+	* GroupEnumerator.cs: We aren't guaranteed that items will
+	  only live in leaf elements of the Group tree. Update the
+	  GroupEnumerator to take this into account.
+
+2010-05-11  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionViewGroup.cs: StandardCollectionView has
 	  two distinct ways of adding/removing/clearing the items.
 	  AddItem/RemoveItem/ClearItems do as you'd expect, they
