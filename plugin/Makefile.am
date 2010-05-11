@@ -66,6 +66,7 @@ libmoonplugin_la_SOURCES = \
 	../src/pal/gtk/windowless-gtk.cpp	\
 	../src/pal/gtk/windowless-gtk.h
 
+plugin.lo: plugin-spinner.h
 
 plugin-spinner.h: plugin-spinner.xaml ../src/xaml-to-header.exe
 	$(SYSTEM_MONO) ../src/xaml-to-header.exe plugin-spinner.xaml PLUGIN_SPINNER

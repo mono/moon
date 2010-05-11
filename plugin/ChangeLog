@@ -1,5 +1,9 @@
 2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: Make plugin.cpp depend on plugin-spinner.h.
+
+2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp|h:
 	* plugin-spinner.xaml: Add a progress meter to the default plugin spinner.
 
