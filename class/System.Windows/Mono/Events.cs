@@ -234,6 +234,13 @@ namespace Mono {
 							    new CursorPositionChangedEventArgs (calldata)) );
 		}
 
+		public static UnmanagedEventHandler CreateContentChangedEventHandlerDispatcher (ContentChangedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as ContentChangedEventArgs ?? new ContentChangedEventArgs (calldata)) );
+		}
+
 		public static UnmanagedEventHandler CreateTextChangedEventHandlerDispatcher (TextChangedEventHandler handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)

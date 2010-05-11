@@ -1,3 +1,10 @@
+2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Events.cs: Added safe handler for ContentChangedEventHandler.
+
+	* NativeDependencyObjectHelper.cs: Added mapping to TextPointer
+	and TextSelection.
+
 2010-05-06  Chris Toshok  <toshok@ximian.com>
 
 	* Types.cs: add hack to register StylusPoint = Kind.STYLUSPOINT,
