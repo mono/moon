@@ -3,6 +3,9 @@
 	* provider.cpp: Fixed inherited macros to reference the
 	TextElement property ids rather than the Inline property ids,
 	since they've been moved.
+	(PropagateInheritedProperty): Implemented support for Paragraph
+	and Span and also protected against crashes if the type is
+	unknown.
 
 	* contentcontrol.cpp|h (ContentControlChangedEventArgs): Renamed
 	from ContentChangedEventArgs since it conflicts with the new SL4

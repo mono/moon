@@ -436,8 +436,8 @@ class TextBox : public TextBoxBase {
 	void SetHorizontalScrollBarVisibility (ScrollBarVisibility visibility);
 	ScrollBarVisibility GetHorizontalScrollBarVisibility ();
 	
-	InputScope *GetInputScope ();
 	void SetInputScope (InputScope *scope);
+	InputScope *GetInputScope ();
 	
 	void SetIsReadOnly (bool readOnly);
 	bool GetIsReadOnly ();

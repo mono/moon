@@ -370,10 +370,10 @@ Span::Span ()
 Bold::Bold ()
 {
 	SetObjectType (Type::BOLD);
-
+	
 	// Yes, this is supposed to be locally set in the ctor.
-	FontWeight w (FontWeightsBold);
-	SetFontWeight (&w);
+	FontWeight weight (FontWeightsBold);
+	SetFontWeight (&weight);
 }
 
 
@@ -384,6 +384,7 @@ Bold::Bold ()
 Italic::Italic ()
 {
 	SetObjectType (Type::ITALIC);
+	
 	FontStyle style (FontStylesItalic);
 	SetFontStyle (&style);
 }
@@ -396,6 +397,7 @@ Italic::Italic ()
 Underline::Underline ()
 {
 	SetObjectType (Type::UNDERLINE);
+	
 	SetTextDecorations (TextDecorationsUnderline);
 }
 

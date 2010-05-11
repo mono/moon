@@ -274,7 +274,7 @@ InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
 	if (propertyId == TextBlock::p) return true; \
 	if (propertyId == TextElement::p) return true;  \
 	} G_STMT_END
-		
+
 #define PROP_F(p) G_STMT_START { \
 	if (propertyId == FrameworkElement::p) return true; \
 	} G_STMT_END
@@ -368,36 +368,46 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 	return NULL;
 }
 
+static void
+propagate_to_inlines (InlineCollection *inlines, DependencyProperty *property, Value *old_value, Value *new_value)
+{
+	int count = inlines->GetCount ();
+	
+	for (int i = 0; i < count; i++) {
+		Inline *item = inlines->GetValueAt (i)->AsInline ();
+		MoonError error;
+		
+		item->ProviderValueChanged (PropertyPrecedence_Inherited, property,
+					    old_value, new_value, false, false, false, &error);
+		
+		if (error.number) {
+			// FIXME: what do we do here?  I'm guessing we continue propagating?
+		}
+	}
+}
+
 void
 InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *obj, DependencyProperty *property, Value *old_value, Value *new_value)
 {
 	Types *types = obj->GetDeployment ()->GetTypes ();
 
 	if (types->IsSubclassOf (obj->GetObjectType(), Type::TEXTBLOCK)) {
-		InlineCollection *inlines = ((TextBlock*)obj)->GetInlines();
-
-		// lift this out of the loop since we know all
-		// elements of InlinesProperty will be inlines.
-		DependencyProperty *child_property = MapPropertyToDescendant (types, property, Type::INLINE);
+		DependencyProperty *child_property = MapPropertyToDescendant (types, property, Type::TEXTELEMENT);
 		if (!child_property)
 			return;
-
-		int inlines_count = inlines->GetCount ();
-		for (int i = 0; i < inlines_count; i++) {
-			Inline *item = inlines->GetValueAt (i)->AsInline ();
-
-			MoonError error;
-
-			item->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
-						    old_value, new_value, false, false, false, &error);
-
-			if (error.number) {
-				// FIXME: what do we do here?  I'm guessing we continue propagating?
-			}
-		}
-
-	}
-	else {
+		
+		InlineCollection *inlines = ((TextBlock *) obj)->GetInlines ();
+		
+		propagate_to_inlines (inlines, child_property, old_value, new_value);
+	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::PARAGRAPH)) {
+		InlineCollection *inlines = ((Paragraph *) obj)->GetInlines ();
+		
+		propagate_to_inlines (inlines, property, old_value, new_value);
+	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::SPAN)) {
+		InlineCollection *inlines = ((Span *) obj)->GetInlines ();
+		
+		propagate_to_inlines (inlines, property, old_value, new_value);
+	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::UIELEMENT)) {
 		// for inherited properties, we need to walk down the
 		// subtree and call ProviderValueChanged on all
 		// elements that can inherit the property.
@@ -421,6 +431,8 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 
 			walker.SkipBranch ();
 		}
+	} else {
+		g_warning ("Unhandled inherited property %s.%sProperty", obj->GetTypeName (), property->GetName ());
 	}
 }
 
