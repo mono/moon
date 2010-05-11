@@ -32,6 +32,207 @@
 #include "pixman-private.h"
 #include "pixman-combine32.h"
 
+#define USE_COLOR_LUT_CACHE 1
+
+#if USE_COLOR_LUT_CACHE
+typedef struct lut_cache_entry {
+  char *key;
+  int key_len;
+  uint32_t *lut;
+} lut_cache_entry_t;
+
+#define LUT_CACHE_EXPIRE_SIZE 16
+#define LUT_CACHE_SIZE 2000
+
+static lut_cache_entry_t lut_cache [LUT_CACHE_SIZE];
+static int num_lut_cache_entries = 0;
+
+static inline int
+locate_color_lut (char *key, int key_len)
+{
+  int i;
+  for (i = 0; i < num_lut_cache_entries; i ++)
+    if (key_len == lut_cache[i].key_len &&
+	!memcmp (key, lut_cache[i].key, key_len))
+      return i;
+  return -1;
+}
+
+static inline int
+promote_color_lut (int i)
+{
+  int delta;
+  lut_cache_entry_t t;
+
+  if (i == 0)
+    return 0;
+
+  delta = i == 1 ? 1 : 2;
+
+  t = lut_cache[i];
+  lut_cache[i] = lut_cache[i - delta];
+  lut_cache[i - delta] = t;
+  return i - delta;
+}
+
+static inline uint32_t*
+lookup_color_lut (char *key, int key_len)
+{
+  int i = locate_color_lut (key, key_len);
+  if (i == -1)
+    return NULL;
+  /* printf ("color cache %s cache hit\n", key); */
+  i = promote_color_lut (i);
+  return lut_cache [i].lut;
+}
+
+static inline void
+add_lut_cache (char *key, int key_len, uint32_t *lut)
+{
+  if (num_lut_cache_entries == LUT_CACHE_SIZE-1) {
+    int i;
+    /* printf ("color cache table size exceeded, dropping %d\n", LUT_CACHE_EXPIRE_SIZE); */
+    /* time to expire something */
+    for (i = 0; i < LUT_CACHE_EXPIRE_SIZE; i ++) {
+      free (lut_cache[num_lut_cache_entries-1-i].key);
+      free (lut_cache[num_lut_cache_entries-1-i].lut);
+    }
+    num_lut_cache_entries -= LUT_CACHE_EXPIRE_SIZE;
+  }
+
+  lut_cache[num_lut_cache_entries].key = key;
+  lut_cache[num_lut_cache_entries].key_len = key_len;
+  lut_cache[num_lut_cache_entries].lut = lut;
+  num_lut_cache_entries++;
+  /* printf ("color cache %s added\n", key); */
+}
+#endif
+
+static force_inline int clamp_fixed_to_ffff(pixman_fixed_t x)
+{
+    return x - (x >> 16);
+}
+
+static void
+fill_in_32bit_lut(uint32_t *cache, int index, pixman_color_t c0, pixman_color_t c1,
+		  int count)
+{
+    uint16_t r = c0.red;
+    uint16_t g = c0.green;
+    uint16_t b = c0.blue;
+    uint16_t a = c0.alpha;
+    int16_t dr = (c1.red - r) / (count - 1);
+    int16_t dg = (c1.green - g) / (count - 1);
+    int16_t db = (c1.blue - b) / (count - 1);
+    int16_t da = (c1.alpha - a) / (count - 1);
+
+    char *cb = (char*)(cache + index);
+
+    do {
+        *cb++ = (b >> 8) * (a >> 8) / 255;
+	*cb++ = (g >> 8) * (a >> 8) / 255;
+	*cb++ = (r >> 8) * (a >> 8) / 255;
+	*cb++ = a >> 8;
+
+	a += da;
+	r += dr;
+	g += dg;
+	b += db;
+    } while (--count != 0);
+}
+
+void
+_pixman_gradient_build_32bit_lut (gradient_t *gradient)
+{
+    int cache_size;
+    int i;
+#if USE_COLOR_LUT_CACHE
+    int key_length = (sizeof(int) /* cache_size*/ +
+		      sizeof(int) /* n_stops */ +
+		      gradient->n_stops * (sizeof (pixman_fixed_t) /* stop.x */ +
+					   sizeof (pixman_color_t) /* stop.color */));
+    char *key;
+    char *p;
+#endif
+
+    if (gradient->color_lut_bits == 0)
+    {
+        gradient->color_lut = NULL;
+	return;
+    }
+
+    cache_size = 1 << gradient->color_lut_bits;
+
+#if USE_COLOR_LUT_CACHE
+    key = (char*)malloc (key_length);
+    p = key;
+
+    memcpy (p, &cache_size, sizeof (int)); p += sizeof (int);
+    memcpy (p, &gradient->n_stops, sizeof (int)); p += sizeof (int);
+
+    for (i = 0; i < gradient->n_stops; i ++) {
+      memcpy (p, &gradient->stops[i].x, sizeof (pixman_fixed_t)); p += sizeof (pixman_fixed_t);
+      memcpy (p, &gradient->stops[i].color, sizeof (pixman_color_t)); p += sizeof (pixman_color_t);
+    }
+
+    gradient->color_lut = lookup_color_lut (key, key_length);
+    if (gradient->color_lut) {
+      free (key);
+      return;
+    }
+#endif
+
+    gradient->color_lut = (uint32_t*)pixman_malloc_ab (cache_size, sizeof (uint32_t));
+    if (gradient->color_lut == NULL)
+        return;
+
+    if (gradient->n_stops == 2)
+    {
+        fill_in_32bit_lut (gradient->color_lut, 0, gradient->stops[0].color, gradient->stops[1].color,
+			   cache_size);
+    }
+    else
+    {
+        int prevIndex = 0;
+	if (gradient->stops[0].x != 0) {
+	    int nextIndex = clamp_fixed_to_ffff(gradient->stops[0].x) >> (16 - gradient->color_lut_bits);
+
+	    if (nextIndex > prevIndex)
+	        fill_in_32bit_lut (gradient->color_lut, prevIndex,
+				   gradient->stops[0].color,
+				   gradient->stops[0].color,
+				   nextIndex - prevIndex + 1);
+	    prevIndex = nextIndex;
+	}
+	for (i = 1; i < gradient->n_stops; i++)
+        {
+	    int nextIndex = clamp_fixed_to_ffff(gradient->stops[i].x) >> (16 - gradient->color_lut_bits);
+
+	    if (nextIndex > prevIndex)
+	        fill_in_32bit_lut (gradient->color_lut, prevIndex,
+				   gradient->stops[i-1].color,
+				   gradient->stops[i].color,
+				   nextIndex - prevIndex + 1);
+	    prevIndex = nextIndex;
+	}
+	if (pixman_fixed_1 != gradient->stops[gradient->n_stops - 1].x) {
+	    int nextIndex = clamp_fixed_to_ffff(pixman_fixed_1) >> (16 - gradient->color_lut_bits);
+
+	    if (nextIndex > prevIndex)
+	        fill_in_32bit_lut(gradient->color_lut, prevIndex,
+				  gradient->stops[gradient->n_stops - 1].color,
+				  gradient->stops[gradient->n_stops - 1].color,
+				  nextIndex - prevIndex + 1);
+	    prevIndex = nextIndex;
+	}
+
+    }
+
+#if USE_COLOR_LUT_CACHE
+    add_lut_cache (key, key_length, gradient->color_lut);
+#endif
+}
+
 pixman_bool_t
 _pixman_init_gradient (gradient_t *                  gradient,
                        const pixman_gradient_stop_t *stops,
@@ -48,6 +249,11 @@ _pixman_init_gradient (gradient_t *                  gradient,
     gradient->n_stops = n_stops;
 
     gradient->stop_range = 0xffff;
+
+    gradient->color_tolerance = 0.0;
+    gradient->color_lut_bits = 0;
+    gradient->color_lut = NULL;
+
     gradient->common.class = SOURCE_IMAGE_CLASS_UNKNOWN;
 
     return TRUE;
@@ -292,8 +498,8 @@ source_image_needs_out_of_bounds_workaround (bits_image_t *image)
     return FALSE;
 }
 
-static void
-compute_image_info (pixman_image_t *image)
+void
+_pixman_image_compute_info (pixman_image_t *image)
 {
     pixman_format_code_t code;
     uint32_t flags = 0;
@@ -394,8 +600,10 @@ compute_image_info (pixman_image_t *image)
 	    }
 	}
 
-	if (image->common.repeat != PIXMAN_REPEAT_NONE &&
-	    !PIXMAN_FORMAT_A (image->bits.format))
+	if (image->common.repeat != PIXMAN_REPEAT_NONE				&&
+	    !PIXMAN_FORMAT_A (image->bits.format)				&&
+	    PIXMAN_FORMAT_TYPE (image->bits.format) != PIXMAN_TYPE_GRAY		&&
+	    PIXMAN_FORMAT_TYPE (image->bits.format) != PIXMAN_TYPE_COLOR)
 	{
 	    flags |= FAST_PATH_IS_OPAQUE;
 	}
@@ -428,6 +636,19 @@ compute_image_info (pixman_image_t *image)
 		}
 	    }
 	}
+
+	/* Convert from the color tolerance value to a number of bits
+	 * in the lookup table.  This isn't really the way tolerance
+	 * should work (since it is meant to express a maximum error
+	 * for the rasterized gradient), but we can use it as a hint.
+	 */
+	if (image->gradient.color_tolerance == 0.0)
+	    image->gradient.color_lut_bits = 0;
+	else if (image->gradient.color_tolerance <= 0.5)
+	    image->gradient.color_lut_bits = 9;
+	else if (image->gradient.color_tolerance <= 1.0)
+	    image->gradient.color_lut_bits = 8;
+
 	break;
 
     default:
@@ -450,27 +671,6 @@ compute_image_info (pixman_image_t *image)
 
     image->common.flags = flags;
     image->common.extended_format_code = code;
-}
-
-void
-_pixman_image_validate (pixman_image_t *image)
-{
-    if (image->common.dirty)
-    {
-	compute_image_info (image);
-
-	/* It is important that property_changed is
-	 * called *after* compute_image_info() because
-	 * property_changed() can make use of the flags
-	 * to set up accessors etc.
-	 */
-	image->common.property_changed (image);
-
-	image->common.dirty = FALSE;
-    }
-
-    if (image->common.alpha_map)
-	_pixman_image_validate ((pixman_image_t *)image->common.alpha_map);
 }
 
 PIXMAN_EXPORT pixman_bool_t
@@ -572,6 +772,21 @@ out:
     image_property_changed (image);
 
     return result;
+}
+
+PIXMAN_EXPORT void
+pixman_image_set_color_tolerance (pixman_image_t *image,
+				  double tolerance)
+{
+    if (image->type != LINEAR &&
+	image->type != RADIAL &&
+	image->type != CONICAL)
+      /* color tolerance is only applicable to the gradient types */
+      return;
+
+    image->gradient.color_tolerance = tolerance;
+
+    image_property_changed (image);
 }
 
 PIXMAN_EXPORT void
@@ -739,6 +954,15 @@ pixman_image_get_depth (pixman_image_t *image)
     return 0;
 }
 
+PIXMAN_EXPORT pixman_format_code_t
+pixman_image_get_format (pixman_image_t *image)
+{
+    if (image->type == BITS)
+	return image->bits.format;
+
+    return 0;
+}
+
 uint32_t
 _pixman_image_get_solid (pixman_image_t *     image,
                          pixman_format_code_t format)
@@ -757,4 +981,382 @@ _pixman_image_get_solid (pixman_image_t *     image,
     }
 
     return result;
+}
+
+
+/* linear gradients */
+static source_image_class_t
+linear_gradient_classify (pixman_image_t *image,
+                          int             x,
+                          int             y,
+                          int             width,
+                          int             height)
+{
+    linear_gradient_t *linear = (linear_gradient_t *)image;
+    pixman_vector_t v;
+    pixman_fixed_32_32_t l;
+    pixman_fixed_48_16_t dx, dy, a, b, off;
+    pixman_fixed_48_16_t factors[4];
+    int i;
+
+    image->source.class = SOURCE_IMAGE_CLASS_UNKNOWN;
+
+    dx = linear->p2.x - linear->p1.x;
+    dy = linear->p2.y - linear->p1.y;
+
+    l = dx * dx + dy * dy;
+
+    if (l)
+    {
+	a = (dx << 32) / l;
+	b = (dy << 32) / l;
+    }
+    else
+    {
+	a = b = 0;
+    }
+
+    off = (-a * linear->p1.x
+           -b * linear->p1.y) >> 16;
+
+    for (i = 0; i < 3; i++)
+    {
+	v.vector[0] = pixman_int_to_fixed ((i % 2) * (width  - 1) + x);
+	v.vector[1] = pixman_int_to_fixed ((i / 2) * (height - 1) + y);
+	v.vector[2] = pixman_fixed_1;
+
+	if (image->common.transform)
+	{
+	    if (!pixman_transform_point_3d (image->common.transform, &v))
+	    {
+		image->source.class = SOURCE_IMAGE_CLASS_UNKNOWN;
+
+		return image->source.class;
+	    }
+	}
+
+	factors[i] = ((a * v.vector[0] + b * v.vector[1]) >> 16) + off;
+    }
+
+    if (factors[2] == factors[0])
+	image->source.class = SOURCE_IMAGE_CLASS_HORIZONTAL;
+    else if (factors[1] == factors[0])
+	image->source.class = SOURCE_IMAGE_CLASS_VERTICAL;
+
+    return image->source.class;
+}
+
+
+static void
+linear_gradient_property_changed (pixman_implementation_t *imp, pixman_image_t *image)
+{
+    image->common.get_scanline_32 = imp->get_scanline_fetcher_32 (imp, image);
+    image->common.get_scanline_64 = imp->get_scanline_fetcher_64 (imp, image);
+
+    _pixman_gradient_build_32bit_lut ((gradient_t*)image);
+}
+
+PIXMAN_EXPORT pixman_image_t *
+pixman_image_create_linear_gradient (pixman_point_fixed_t *        p1,
+                                     pixman_point_fixed_t *        p2,
+                                     const pixman_gradient_stop_t *stops,
+                                     int                           n_stops)
+{
+    pixman_image_t *image;
+    linear_gradient_t *linear;
+
+    return_val_if_fail (n_stops >= 2, NULL);
+
+    image = _pixman_image_allocate ();
+
+    if (!image)
+	return NULL;
+
+    linear = &image->linear;
+
+    if (!_pixman_init_gradient (&linear->common, stops, n_stops))
+    {
+	free (image);
+	return NULL;
+    }
+
+    linear->p1 = *p1;
+    linear->p2 = *p2;
+
+    image->type = LINEAR;
+    image->source.class = SOURCE_IMAGE_CLASS_UNKNOWN;
+    image->common.classify = linear_gradient_classify;
+    image->common.property_changed = linear_gradient_property_changed;
+
+    return image;
+}
+
+/* radial gradients */
+
+static void
+radial_gradient_property_changed (pixman_implementation_t *imp, pixman_image_t *image)
+{
+    image->common.get_scanline_32 = imp->get_scanline_fetcher_32 (imp, image);
+    image->common.get_scanline_64 = imp->get_scanline_fetcher_64 (imp, image);
+
+    _pixman_gradient_build_32bit_lut ((gradient_t*)image);
+}
+
+PIXMAN_EXPORT pixman_image_t *
+pixman_image_create_radial_gradient (pixman_point_fixed_t *        inner,
+                                     pixman_point_fixed_t *        outer,
+                                     pixman_fixed_t                inner_radius,
+                                     pixman_fixed_t                outer_radius,
+                                     const pixman_gradient_stop_t *stops,
+                                     int                           n_stops)
+{
+    pixman_image_t *image;
+    radial_gradient_t *radial;
+
+    return_val_if_fail (n_stops >= 2, NULL);
+
+    image = _pixman_image_allocate ();
+
+    if (!image)
+	return NULL;
+
+    radial = &image->radial;
+
+    if (!_pixman_init_gradient (&radial->common, stops, n_stops))
+    {
+	free (image);
+	return NULL;
+    }
+
+    image->type = RADIAL;
+
+    radial->c1.x = inner->x;
+    radial->c1.y = inner->y;
+    radial->c1.radius = inner_radius;
+    radial->c2.x = outer->x;
+    radial->c2.y = outer->y;
+    radial->c2.radius = outer_radius;
+    radial->cdx = (float)pixman_fixed_to_double (radial->c2.x - radial->c1.x);
+    radial->cdy = (float)pixman_fixed_to_double (radial->c2.y - radial->c1.y);
+    radial->dr = (float)pixman_fixed_to_double (radial->c2.radius - radial->c1.radius);
+    radial->A = (radial->cdx * radial->cdx +
+		 radial->cdy * radial->cdy -
+		 radial->dr  * radial->dr);
+
+    image->common.property_changed = radial_gradient_property_changed;
+
+    return image;
+}
+
+/* conical gradients */
+
+static void
+conical_gradient_property_changed (pixman_implementation_t *imp, pixman_image_t *image)
+{
+    image->common.get_scanline_32 = imp->get_scanline_fetcher_32 (imp, image);
+    image->common.get_scanline_64 = imp->get_scanline_fetcher_64 (imp, image);
+
+    _pixman_gradient_build_32bit_lut ((gradient_t*)image);
+}
+
+PIXMAN_EXPORT pixman_image_t *
+pixman_image_create_conical_gradient (pixman_point_fixed_t *        center,
+                                      pixman_fixed_t                angle,
+                                      const pixman_gradient_stop_t *stops,
+                                      int                           n_stops)
+{
+    pixman_image_t *image = _pixman_image_allocate ();
+    conical_gradient_t *conical;
+
+    if (!image)
+	return NULL;
+
+    conical = &image->conical;
+
+    if (!_pixman_init_gradient (&conical->common, stops, n_stops))
+    {
+	free (image);
+	return NULL;
+    }
+
+    image->type = CONICAL;
+    conical->center = *center;
+    conical->angle = angle;
+
+    image->common.property_changed = conical_gradient_property_changed;
+
+    return image;
+}
+
+
+/* solid fill images */
+static source_image_class_t
+solid_fill_classify (pixman_image_t *image,
+                     int             x,
+                     int             y,
+                     int             width,
+                     int             height)
+{
+    return (image->source.class = SOURCE_IMAGE_CLASS_HORIZONTAL);
+}
+
+static void
+solid_fill_property_changed (pixman_implementation_t *imp, pixman_image_t *image)
+{
+    image->common.get_scanline_32 = imp->get_scanline_fetcher_32 (imp, image);
+    image->common.get_scanline_64 = imp->get_scanline_fetcher_64 (imp, image);
+}
+
+static uint32_t
+color_to_uint32 (const pixman_color_t *color)
+{
+    return
+        (color->alpha >> 8 << 24) |
+        (color->red >> 8 << 16) |
+        (color->green & 0xff00) |
+        (color->blue >> 8);
+}
+
+static uint64_t
+color_to_uint64 (const pixman_color_t *color)
+{
+    return
+        ((uint64_t)color->alpha << 48) |
+        ((uint64_t)color->red << 32) |
+        ((uint64_t)color->green << 16) |
+        ((uint64_t)color->blue);
+}
+
+PIXMAN_EXPORT pixman_image_t *
+pixman_image_create_solid_fill (pixman_color_t *color)
+{
+    pixman_image_t *img = _pixman_image_allocate ();
+
+    if (!img)
+	return NULL;
+
+    img->type = SOLID;
+    img->solid.color = *color;
+    img->solid.color_32 = color_to_uint32 (color);
+    img->solid.color_64 = color_to_uint64 (color);
+
+    img->source.class = SOURCE_IMAGE_CLASS_UNKNOWN;
+    img->common.classify = solid_fill_classify;
+    img->common.property_changed = solid_fill_property_changed;
+
+    return img;
+}
+
+
+/* bits images */
+
+static void
+bits_image_property_changed (pixman_implementation_t *imp, pixman_image_t *image)
+{
+    bits_image_t *bits = (bits_image_t *)image;
+
+    _pixman_bits_image_setup_raw_accessors (bits);
+
+    image->common.get_scanline_32 = (*imp->get_scanline_fetcher_32) (imp, image);
+    image->common.get_scanline_64 = (*imp->get_scanline_fetcher_64) (imp, image);
+
+    bits->fetch_pixel_32 = (*imp->get_pixel_fetcher_32) (imp, bits);
+    bits->fetch_pixel_64 = (*imp->get_pixel_fetcher_64) (imp, bits);
+
+    bits->store_scanline_32 = (*imp->get_scanline_storer_32) (imp, bits);
+    bits->store_scanline_64 = (*imp->get_scanline_storer_64) (imp, bits);
+}
+
+static uint32_t *
+create_bits (pixman_format_code_t format,
+             int                  width,
+             int                  height,
+             int *                rowstride_bytes)
+{
+    int stride;
+    int buf_size;
+    int bpp;
+
+    /* what follows is a long-winded way, avoiding any possibility of integer
+     * overflows, of saying:
+     * stride = ((width * bpp + 0x1f) >> 5) * sizeof (uint32_t);
+     */
+
+    bpp = PIXMAN_FORMAT_BPP (format);
+    if (pixman_multiply_overflows_int (width, bpp))
+	return NULL;
+
+    stride = width * bpp;
+    if (pixman_addition_overflows_int (stride, 0x1f))
+	return NULL;
+
+    stride += 0x1f;
+    stride >>= 5;
+
+    stride *= sizeof (uint32_t);
+
+    if (pixman_multiply_overflows_int (height, stride))
+	return NULL;
+
+    buf_size = height * stride;
+
+    if (rowstride_bytes)
+	*rowstride_bytes = stride;
+
+    return calloc (buf_size, 1);
+}
+
+PIXMAN_EXPORT pixman_image_t *
+pixman_image_create_bits (pixman_format_code_t format,
+                          int                  width,
+                          int                  height,
+                          uint32_t *           bits,
+                          int                  rowstride_bytes)
+{
+    pixman_image_t *image;
+    uint32_t *free_me = NULL;
+
+    /* must be a whole number of uint32_t's
+     */
+    return_val_if_fail (
+	bits == NULL || (rowstride_bytes % sizeof (uint32_t)) == 0, NULL);
+
+    return_val_if_fail (PIXMAN_FORMAT_BPP (format) >= PIXMAN_FORMAT_DEPTH (format), NULL);
+
+    if (!bits && width && height)
+    {
+	free_me = bits = create_bits (format, width, height, &rowstride_bytes);
+	if (!bits)
+	    return NULL;
+    }
+
+    image = _pixman_image_allocate ();
+
+    if (!image)
+    {
+	if (free_me)
+	    free (free_me);
+
+	return NULL;
+    }
+
+    image->type = BITS;
+    image->bits.format = format;
+    image->bits.width = width;
+    image->bits.height = height;
+    image->bits.bits = bits;
+    image->bits.free_me = free_me;
+    image->bits.read_func = NULL;
+    image->bits.write_func = NULL;
+
+    /* The rowstride is stored in number of uint32_t */
+    image->bits.rowstride = rowstride_bytes / (int) sizeof (uint32_t);
+
+    image->bits.indexed = NULL;
+
+    image->common.property_changed = bits_image_property_changed;
+
+    _pixman_image_reset_clip_region (image);
+
+    return image;
 }

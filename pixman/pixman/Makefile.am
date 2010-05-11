@@ -8,7 +8,6 @@ libpixman_1_la_SOURCES =			\
 	pixman-access.c				\
 	pixman-access-accessors.c		\
 	pixman-cpu.c				\
-	pixman-gradient-walker.c		\
 	pixman-region16.c			\
 	pixman-region32.c			\
 	pixman-compiler.h			\
@@ -22,11 +21,11 @@ libpixman_1_la_SOURCES =			\
 	pixman-general.c			\
 	pixman.c				\
 	pixman-fast-path.c			\
-	pixman-solid-fill.c			\
-	pixman-conical-gradient.c		\
-	pixman-linear-gradient.c		\
-	pixman-radial-gradient.c		\
-	pixman-bits-image.c			\
+	pixman-general-solid-fill.c		\
+	pixman-general-conical-gradient.c	\
+	pixman-general-linear-gradient.c	\
+	pixman-general-radial-gradient.c	\
+	pixman-general-bits-image.c		\
 	pixman-utils.c				\
 	pixman-edge.c				\
 	pixman-edge-accessors.c			\
@@ -51,7 +50,8 @@ pixman-combine64.h : pixman-combine.h.template make-combine.pl
 	$(PERL) $(srcdir)/make-combine.pl 16 < $(srcdir)/pixman-combine.h.template > $@ || ($(RM) $@; exit 1)
 
 EXTRA_DIST = Makefile.win32 pixman-combine.c.template make-combine.pl pixman-region.c \
-	pixman-combine.h.template solaris-hwcap.mapfile pixman-x64-mmx-emulation.h
+	pixman-combine.h.template solaris-hwcap.mapfile pixman-x64-mmx-emulation.h \
+	pixman-gradient-walker.c
 CLEANFILES = pixman-combine32.c pixman-combine64.c pixman-combine32.h pixman-combine64.h
 
 # mmx code
@@ -84,7 +84,10 @@ endif
 if USE_SSE2
 noinst_LTLIBRARIES += libpixman-sse2.la
 libpixman_sse2_la_SOURCES = \
-	pixman-sse2.c
+	pixman-sse2.c \
+	pixman-sse2-gradient.h \
+	pixman-sse2-radial-gradient.c \
+	pixman-sse2-linear-gradient.c
 libpixman_sse2_la_CFLAGS = $(DEP_CFLAGS) $(SSE2_CFLAGS)
 libpixman_sse2_la_LIBADD = $(DEP_LIBS)
 libpixman_1_la_LDFLAGS += $(SSE2_LDFLAGS)

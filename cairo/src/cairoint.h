@@ -125,7 +125,7 @@ _cairo_win32_tmpfile (void);
  * a bit of a pain, but it should be easy to always catch as long as
  * one adds a new test case to test a trigger of the new status value.
  */
-#define CAIRO_STATUS_LAST_STATUS CAIRO_STATUS_INVALID_WEIGHT
+#define CAIRO_STATUS_LAST_STATUS CAIRO_STATUS_INVALID_COLOR_TOLERANCE
 
 #ifdef __GNUC__
 #define cairo_container_of(ptr, type, member) ({ \
@@ -876,6 +876,7 @@ typedef struct _cairo_gradient_pattern {
     unsigned int	    stops_size;
     cairo_gradient_stop_t  *stops;
     cairo_gradient_stop_t   stops_embedded[2];
+    double                  color_tolerance;
 } cairo_gradient_pattern_t;
 
 typedef struct _cairo_linear_pattern {

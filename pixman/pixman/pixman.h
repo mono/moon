@@ -90,7 +90,8 @@ PIXMAN_BEGIN_DECLS
 
 #if defined (_SVR4) || defined (SVR4) || defined (__OpenBSD__) || defined (_sgi) || defined (__sun) || defined (sun) || defined (__digital__) || defined (__HP_cc)
 #  include <inttypes.h>
-#elif defined (_MSC_VER)
+/* VS 2010 (_MSC_VER 1600) has stdint.h */
+#elif defined (_MSC_VER) && _MSC_VER < 1600
 typedef __int8 int8_t;
 typedef unsigned __int8 uint8_t;
 typedef __int16 int16_t;
@@ -420,7 +421,6 @@ void                    pixman_region_init_from_image    (pixman_region16_t *reg
 void                    pixman_region_fini               (pixman_region16_t *region);
 
 
-
 /* manipulation */
 void                    pixman_region_translate          (pixman_region16_t *region,
 							  int                x,
@@ -434,6 +434,12 @@ pixman_bool_t           pixman_region_union              (pixman_region16_t *new
 							  pixman_region16_t *reg1,
 							  pixman_region16_t *reg2);
 pixman_bool_t           pixman_region_union_rect         (pixman_region16_t *dest,
+							  pixman_region16_t *source,
+							  int                x,
+							  int                y,
+							  unsigned int       width,
+							  unsigned int       height);
+pixman_bool_t		pixman_region_intersect_rect     (pixman_region16_t *dest,
 							  pixman_region16_t *source,
 							  int                x,
 							  int                y,
@@ -521,6 +527,12 @@ pixman_bool_t           pixman_region32_intersect          (pixman_region32_t *n
 pixman_bool_t           pixman_region32_union              (pixman_region32_t *new_reg,
 							    pixman_region32_t *reg1,
 							    pixman_region32_t *reg2);
+pixman_bool_t		pixman_region32_intersect_rect     (pixman_region32_t *dest,
+							    pixman_region32_t *source,
+							    int                x,
+							    int                y,
+							    unsigned int       width,
+							    unsigned int       height);
 pixman_bool_t           pixman_region32_union_rect         (pixman_region32_t *dest,
 							    pixman_region32_t *source,
 							    int                x,
@@ -754,6 +766,8 @@ void		pixman_image_set_has_client_clip     (pixman_image_t               *image,
 						      pixman_bool_t		    clien_clip);
 pixman_bool_t   pixman_image_set_transform           (pixman_image_t               *image,
 						      const pixman_transform_t     *transform);
+void            pixman_image_set_color_tolerance     (pixman_image_t               *image,
+						      double                        tolerance);
 void            pixman_image_set_repeat              (pixman_image_t               *image,
 						      pixman_repeat_t               repeat);
 pixman_bool_t   pixman_image_set_filter              (pixman_image_t               *image,
@@ -778,6 +792,7 @@ int		pixman_image_get_width               (pixman_image_t               *image);
 int             pixman_image_get_height              (pixman_image_t               *image);
 int		pixman_image_get_stride              (pixman_image_t               *image); /* in bytes */
 int		pixman_image_get_depth               (pixman_image_t		   *image);
+pixman_format_code_t pixman_image_get_format	     (pixman_image_t		   *image);
 pixman_bool_t	pixman_image_fill_rectangles	     (pixman_op_t		    op,
 						      pixman_image_t		   *image,
 						      pixman_color_t		   *color,

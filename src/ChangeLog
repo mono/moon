@@ -1,3 +1,8 @@
+2010-05-10  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp (SetupBrush): add calls to set the color tolerance on
+	the patterns we create for gradients.
+
 2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml-to-header.cs: Update license.

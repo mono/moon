@@ -304,6 +304,77 @@ general_fill (pixman_implementation_t *imp,
     return FALSE;
 }
 
+static fetch_scanline_t
+general_get_scanline_fetcher_32 (pixman_implementation_t *imp,
+				 pixman_image_t          *image)
+{
+    switch (image->common.type)
+    {
+    case BITS:
+        return _pixman_general_bits_image_get_scanline_fetcher_32 (imp, image);
+    case LINEAR:
+        return _pixman_general_linear_gradient_get_scanline_32;
+    case CONICAL:
+        return _pixman_general_conical_gradient_get_scanline_32;
+    case RADIAL:
+        return _pixman_general_radial_gradient_get_scanline_32;
+    case SOLID:
+        return _pixman_general_solid_fill_get_scanline_32;
+    default:
+        return NULL;
+    }
+}
+
+static fetch_scanline_t
+general_get_scanline_fetcher_64 (pixman_implementation_t *imp,
+				 pixman_image_t          *image)
+{
+    switch (image->common.type)
+    {
+      case BITS:
+          return _pixman_general_bits_image_get_scanline_fetcher_64 (imp, image);
+      case LINEAR:
+          return _pixman_image_get_scanline_generic_64;
+      case CONICAL:
+          return _pixman_image_get_scanline_generic_64;
+      case RADIAL:
+          return _pixman_image_get_scanline_generic_64;
+      case SOLID:
+          return _pixman_general_solid_fill_get_scanline_64;
+    default:
+        return NULL;
+    }
+}
+
+static fetch_pixel_32_t
+general_get_pixel_fetcher_32 (pixman_implementation_t *imp,
+			      bits_image_t            *image)
+{
+    return image->common.alpha_map ? _pixman_general_bits_image_fetch_pixel_alpha : image->fetch_pixel_raw_32;
+}
+
+static fetch_pixel_64_t
+general_get_pixel_fetcher_64 (pixman_implementation_t *imp,
+			      bits_image_t            *image)
+{
+    return NULL;
+}
+
+static store_scanline_t
+general_get_scanline_storer_32 (pixman_implementation_t *imp,
+				bits_image_t            *image)
+{
+    return _pixman_general_bits_image_store_scanline_32;
+}
+
+static store_scanline_t
+general_get_scanline_storer_64 (pixman_implementation_t *imp,
+				bits_image_t            *image)
+{
+    return _pixman_general_bits_image_store_scanline_64;
+}
+
+
 pixman_implementation_t *
 _pixman_implementation_create_general (void)
 {
@@ -314,6 +385,15 @@ _pixman_implementation_create_general (void)
 
     imp->blt = general_blt;
     imp->fill = general_fill;
+
+    imp->get_scanline_fetcher_32 = general_get_scanline_fetcher_32;
+    imp->get_scanline_fetcher_64 = general_get_scanline_fetcher_64;
+
+    imp->get_pixel_fetcher_32 = general_get_pixel_fetcher_32;
+    imp->get_pixel_fetcher_64 = general_get_pixel_fetcher_64;
+
+    imp->get_scanline_storer_32 = general_get_scanline_storer_32;
+    imp->get_scanline_storer_64 = general_get_scanline_storer_64;
 
     return imp;
 }

@@ -808,13 +808,13 @@ pixman_image_composite32 (pixman_op_t      op,
                           int32_t          width,
                           int32_t          height)
 {
+    if (!imp)
+	imp = _pixman_choose_implementation ();
+
     _pixman_image_validate (src);
     if (mask)
 	_pixman_image_validate (mask);
     _pixman_image_validate (dest);
-
-    if (!imp)
-	imp = _pixman_choose_implementation ();
 
     do_composite (imp, op,
 		  src, mask, dest,
@@ -973,6 +973,9 @@ pixman_image_fill_boxes (pixman_op_t           op,
     pixman_image_t *solid;
     pixman_color_t c;
     int i;
+
+    if (!imp)
+	imp = _pixman_choose_implementation ();
 
     _pixman_image_validate (dest);
     
@@ -1218,4 +1221,28 @@ pixman_compute_composite_region (pixman_region16_t * region,
 
     pixman_region32_fini (&r32);
     return retval;
+}
+
+void
+_pixman_image_validate (pixman_image_t *image)
+{
+    if (!imp)
+	imp = _pixman_choose_implementation ();
+
+    if (image->common.dirty)
+    {
+	_pixman_image_compute_info (image);
+
+	/* It is important that property_changed is
+	 * called *after* compute_image_info() because
+	 * property_changed() can make use of the flags
+	 * to set up accessors etc.
+	 */
+	image->common.property_changed (imp, image);
+
+	image->common.dirty = FALSE;
+    }
+
+    if (image->common.alpha_map)
+	_pixman_image_validate ((pixman_image_t *)image->common.alpha_map);
 }

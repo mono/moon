@@ -1315,27 +1315,31 @@ fast_composite_solid_fill (pixman_implementation_t *imp,
 }
 
 static void
-fast_composite_src_8888_x888 (pixman_implementation_t *imp,
-                              pixman_op_t              op,
-                              pixman_image_t *         src_image,
-                              pixman_image_t *         mask_image,
-                              pixman_image_t *         dst_image,
-                              int32_t                  src_x,
-                              int32_t                  src_y,
-                              int32_t                  mask_x,
-                              int32_t                  mask_y,
-                              int32_t                  dest_x,
-                              int32_t                  dest_y,
-                              int32_t                  width,
-                              int32_t                  height)
+fast_composite_src_memcpy (pixman_implementation_t *imp,
+			   pixman_op_t              op,
+			   pixman_image_t *         src_image,
+			   pixman_image_t *         mask_image,
+			   pixman_image_t *         dst_image,
+			   int32_t                  src_x,
+			   int32_t                  src_y,
+			   int32_t                  mask_x,
+			   int32_t                  mask_y,
+			   int32_t                  dest_x,
+			   int32_t                  dest_y,
+			   int32_t                  width,
+			   int32_t                  height)
 {
-    uint32_t    *dst;
-    uint32_t    *src;
+    int bpp = PIXMAN_FORMAT_BPP (dst_image->bits.format) / 8;
+    uint32_t n_bytes = width * bpp;
     int dst_stride, src_stride;
-    uint32_t n_bytes = width * sizeof (uint32_t);
+    uint8_t    *dst;
+    uint8_t    *src;
 
-    PIXMAN_IMAGE_GET_LINE (src_image, src_x, src_y, uint32_t, src_stride, src, 1);
-    PIXMAN_IMAGE_GET_LINE (dst_image, dest_x, dest_y, uint32_t, dst_stride, dst, 1);
+    src_stride = src_image->bits.rowstride * 4;
+    dst_stride = dst_image->bits.rowstride * 4;
+
+    src = (uint8_t *)src_image->bits.bits + src_y * src_stride + src_x * bpp;
+    dst = (uint8_t *)dst_image->bits.bits + dest_y * dst_stride + dest_x * bpp;
 
     while (height--)
     {
@@ -1792,10 +1796,22 @@ static const pixman_fast_path_t c_fast_paths[] =
     PIXMAN_STD_FAST_PATH (SRC, solid, null, x8b8g8r8, fast_composite_solid_fill),
     PIXMAN_STD_FAST_PATH (SRC, solid, null, a8, fast_composite_solid_fill),
     PIXMAN_STD_FAST_PATH (SRC, solid, null, r5g6b5, fast_composite_solid_fill),
-    PIXMAN_STD_FAST_PATH (SRC, a8r8g8b8, null, x8r8g8b8, fast_composite_src_8888_x888),
-    PIXMAN_STD_FAST_PATH (SRC, x8r8g8b8, null, x8r8g8b8, fast_composite_src_8888_x888),
-    PIXMAN_STD_FAST_PATH (SRC, a8b8g8r8, null, x8b8g8r8, fast_composite_src_8888_x888),
-    PIXMAN_STD_FAST_PATH (SRC, x8b8g8r8, null, x8b8g8r8, fast_composite_src_8888_x888),
+    PIXMAN_STD_FAST_PATH (SRC, a8r8g8b8, null, x8r8g8b8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, a8r8g8b8, null, a8r8g8b8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, x8r8g8b8, null, x8r8g8b8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, a8b8g8r8, null, x8b8g8r8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, a8b8g8r8, null, a8b8g8r8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, x8b8g8r8, null, x8b8g8r8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, b8g8r8a8, null, b8g8r8x8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, b8g8r8a8, null, b8g8r8a8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, b8g8r8x8, null, b8g8r8x8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, r5g6b5, null, r5g6b5, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, b5g6r5, null, b5g6r5, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, r8g8b8, null, r8g8b8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, b8g8r8, null, b8g8r8, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, x1r5g5b5, null, x1r5g5b5, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, a1r5g5b5, null, x1r5g5b5, fast_composite_src_memcpy),
+    PIXMAN_STD_FAST_PATH (SRC, a8, null, a8, fast_composite_src_memcpy),
     PIXMAN_STD_FAST_PATH (SRC, a8r8g8b8, null, r5g6b5, fast_composite_src_x888_0565),
     PIXMAN_STD_FAST_PATH (SRC, x8r8g8b8, null, r5g6b5, fast_composite_src_x888_0565),
     PIXMAN_STD_FAST_PATH (SRC, a8b8g8r8, null, b5g6r5, fast_composite_src_x888_0565),

@@ -33,14 +33,16 @@
 #include <math.h>
 #include "pixman-private.h"
 
-static void
-radial_gradient_get_scanline_32 (pixman_image_t *image,
-                                 int             x,
-                                 int             y,
-                                 int             width,
-                                 uint32_t *      buffer,
-                                 const uint32_t *mask,
-                                 uint32_t        mask_bits)
+#include "pixman-gradient-walker.c"
+
+void
+_pixman_general_radial_gradient_get_scanline_32 (pixman_image_t *image,
+						 int             x,
+						 int             y,
+						 int             width,
+						 uint32_t *      buffer,
+						 const uint32_t *mask,
+						 uint32_t        mask_bits)
 {
     /*
      * In the radial gradient problem we are given two circles (c₁,r₁) and
@@ -225,29 +227,29 @@ radial_gradient_get_scanline_32 (pixman_image_t *image,
 	 * Thus we can replace the full evaluation of B per-pixel (4 multiplies,
 	 * 2 additions) with a single addition.
 	 */
-	double r1   = radial->c1.radius / 65536.;
-	double r1sq = r1 * r1;
-	double pdx  = rx - radial->c1.x / 65536.;
-	double pdy  = ry - radial->c1.y / 65536.;
-	double A = radial->A;
-	double invA = -65536. / (2. * A);
-	double A4 = -4. * A;
-	double B  = -2. * (pdx*radial->cdx + pdy*radial->cdy + r1*radial->dr);
-	double cB = -2. *  (cx*radial->cdx +  cy*radial->cdy);
+	float r1   = radial->c1.radius / 65536.;
+	float r1sq = r1 * r1;
+	float pdx  = rx - radial->c1.x / 65536.;
+	float pdy  = ry - radial->c1.y / 65536.;
+	float A = radial->A;
+	float invA = -65536. / (2. * A);
+	float A4 = -4. * A;
+	float B  = -2. * (pdx*radial->cdx + pdy*radial->cdy + r1*radial->dr);
+	float cB = -2. *  (cx*radial->cdx +  cy*radial->cdy);
 	pixman_bool_t invert = A * radial->dr < 0;
 
 	while (buffer < end)
 	{
 	    if (!mask || *mask++ & mask_bits)
 	    {
-		pixman_fixed_48_16_t t;
+		pixman_fixed_t t;
 		double det = B * B + A4 * (pdx * pdx + pdy * pdy - r1sq);
 		if (det <= 0.)
-		    t = (pixman_fixed_48_16_t) (B * invA);
+		    t = (pixman_fixed_t) (B * invA);
 		else if (invert)
-		    t = (pixman_fixed_48_16_t) ((B + sqrt (det)) * invA);
+		    t = (pixman_fixed_t) ((B + sqrt (det)) * invA);
 		else
-		    t = (pixman_fixed_48_16_t) ((B - sqrt (det)) * invA);
+		    t = (pixman_fixed_t) ((B - sqrt (det)) * invA);
 
 		*buffer = _pixman_gradient_walker_pixel (&walker, t);
 	    }
@@ -311,58 +313,5 @@ radial_gradient_get_scanline_32 (pixman_image_t *image,
 	    rz += cz;
 	}
     }
-}
-
-static void
-radial_gradient_property_changed (pixman_image_t *image)
-{
-    image->common.get_scanline_32 = radial_gradient_get_scanline_32;
-    image->common.get_scanline_64 = _pixman_image_get_scanline_generic_64;
-}
-
-PIXMAN_EXPORT pixman_image_t *
-pixman_image_create_radial_gradient (pixman_point_fixed_t *        inner,
-                                     pixman_point_fixed_t *        outer,
-                                     pixman_fixed_t                inner_radius,
-                                     pixman_fixed_t                outer_radius,
-                                     const pixman_gradient_stop_t *stops,
-                                     int                           n_stops)
-{
-    pixman_image_t *image;
-    radial_gradient_t *radial;
-
-    return_val_if_fail (n_stops >= 2, NULL);
-
-    image = _pixman_image_allocate ();
-
-    if (!image)
-	return NULL;
-
-    radial = &image->radial;
-
-    if (!_pixman_init_gradient (&radial->common, stops, n_stops))
-    {
-	free (image);
-	return NULL;
-    }
-
-    image->type = RADIAL;
-
-    radial->c1.x = inner->x;
-    radial->c1.y = inner->y;
-    radial->c1.radius = inner_radius;
-    radial->c2.x = outer->x;
-    radial->c2.y = outer->y;
-    radial->c2.radius = outer_radius;
-    radial->cdx = pixman_fixed_to_double (radial->c2.x - radial->c1.x);
-    radial->cdy = pixman_fixed_to_double (radial->c2.y - radial->c1.y);
-    radial->dr = pixman_fixed_to_double (radial->c2.radius - radial->c1.radius);
-    radial->A = (radial->cdx * radial->cdx +
-		 radial->cdy * radial->cdy -
-		 radial->dr  * radial->dr);
-
-    image->common.property_changed = radial_gradient_property_changed;
-
-    return image;
 }
 

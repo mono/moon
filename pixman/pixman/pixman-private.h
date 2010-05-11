@@ -19,6 +19,7 @@
 /*
  * Images
  */
+typedef struct pixman_implementation_t pixman_implementation_t;
 typedef struct image_common image_common_t;
 typedef struct source_image source_image_t;
 typedef struct solid_fill solid_fill_t;
@@ -74,7 +75,7 @@ typedef source_image_class_t (*classify_func_t) (pixman_image_t *image,
 						int             y,
 						int             width,
 						int             height);
-typedef void (*property_changed_func_t) (pixman_image_t *image);
+typedef void (*property_changed_func_t) (pixman_implementation_t *imp, pixman_image_t *image);
 
 struct image_common
 {
@@ -130,6 +131,10 @@ struct gradient
     int                     n_stops;
     pixman_gradient_stop_t *stops;
     int                     stop_range;
+
+    double color_tolerance;
+    int color_lut_bits;
+    uint32_t *color_lut;
 };
 
 struct linear_gradient
@@ -152,10 +157,10 @@ struct radial_gradient
 
     circle_t   c1;
     circle_t   c2;
-    double     cdx;
-    double     cdy;
-    double     dr;
-    double     A;
+    float      cdx;
+    float      cdy;
+    float      dr;
+    float      A;
 };
 
 struct conical_gradient
@@ -279,11 +284,18 @@ pixman_bool_t
 _pixman_init_gradient (gradient_t *                  gradient,
                        const pixman_gradient_stop_t *stops,
                        int                           n_stops);
+
+void
+_pixman_gradient_build_32bit_lut (gradient_t *gradient);
+
 void
 _pixman_image_reset_clip_region (pixman_image_t *image);
 
 void
 _pixman_image_validate (pixman_image_t *image);
+
+void
+_pixman_image_compute_info (pixman_image_t *image);
 
 uint32_t
 _pixman_image_get_solid (pixman_image_t *     image,
@@ -302,39 +314,6 @@ _pixman_image_get_solid (pixman_image_t *     image,
 	(line) =							\
 	    ((type *) __bits__) + (out_stride) * (y) + (mul) * (x);	\
     } while (0)
-
-/*
- * Gradient walker
- */
-typedef struct
-{
-    uint32_t                left_ag;
-    uint32_t                left_rb;
-    uint32_t                right_ag;
-    uint32_t                right_rb;
-    int32_t                 left_x;
-    int32_t                 right_x;
-    int32_t                 stepper;
-
-    pixman_gradient_stop_t *stops;
-    int                     num_stops;
-    unsigned int            spread;
-
-    int                     need_reset;
-} pixman_gradient_walker_t;
-
-void
-_pixman_gradient_walker_init (pixman_gradient_walker_t *walker,
-                              gradient_t *              gradient,
-                              unsigned int              spread);
-
-void
-_pixman_gradient_walker_reset (pixman_gradient_walker_t *walker,
-                               pixman_fixed_32_32_t      pos);
-
-uint32_t
-_pixman_gradient_walker_pixel (pixman_gradient_walker_t *walker,
-                               pixman_fixed_32_32_t      x);
 
 /*
  * Edges
@@ -370,8 +349,6 @@ pixman_rasterize_edges_accessors (pixman_image_t *image,
 /*
  * Implementations
  */
-typedef struct pixman_implementation_t pixman_implementation_t;
-
 typedef void (*pixman_combine_32_func_t) (pixman_implementation_t *imp,
 					  pixman_op_t              op,
 					  uint32_t *               dest,
@@ -450,6 +427,13 @@ struct pixman_implementation_t
     pixman_combine_32_func_t	combine_32_ca[PIXMAN_N_OPERATORS];
     pixman_combine_64_func_t	combine_64[PIXMAN_N_OPERATORS];
     pixman_combine_64_func_t	combine_64_ca[PIXMAN_N_OPERATORS];
+
+    fetch_scanline_t (* get_scanline_fetcher_32) (pixman_implementation_t *imp, pixman_image_t *image);
+    fetch_scanline_t (* get_scanline_fetcher_64) (pixman_implementation_t *imp, pixman_image_t *image);
+    fetch_pixel_32_t (* get_pixel_fetcher_32) (pixman_implementation_t *imp, bits_image_t *image);
+    fetch_pixel_64_t (* get_pixel_fetcher_64) (pixman_implementation_t *imp, bits_image_t *image);
+    store_scanline_t (* get_scanline_storer_32) (pixman_implementation_t *imp, bits_image_t *image);
+    store_scanline_t (* get_scanline_storer_64) (pixman_implementation_t *imp, bits_image_t *image);
 };
 
 pixman_implementation_t *
@@ -511,9 +495,102 @@ _pixman_implementation_fill (pixman_implementation_t *imp,
                              int                      height,
                              uint32_t                 xor);
 
+fetch_scanline_t
+_pixman_implementation_get_scanline_fetcher_32 (pixman_implementation_t *imp,
+                                                pixman_image_t          *image);
+
+fetch_scanline_t
+_pixman_implementation_get_scanline_fetcher_64 (pixman_implementation_t *imp,
+                                                pixman_image_t          *image);
+
+fetch_pixel_32_t
+_pixman_implementation_get_pixel_fetcher_32 (pixman_implementation_t  *imp,
+                                             bits_image_t             *image);
+
+fetch_pixel_64_t
+_pixman_implementation_get_pixel_fetcher_64 (pixman_implementation_t  *imp,
+                                             bits_image_t             *image);
+
+store_scanline_t
+_pixman_implementation_get_scanline_storer_32 (pixman_implementation_t  *imp,
+                                               bits_image_t             *image);
+
+store_scanline_t
+_pixman_implementation_get_scanline_storer_64 (pixman_implementation_t *imp,
+                                               bits_image_t            *image);
+
 /* Specific implementations */
 pixman_implementation_t *
 _pixman_implementation_create_general (void);
+
+void
+_pixman_general_linear_gradient_get_scanline_32 (pixman_image_t *image,
+						 int             x,
+						 int             y,
+						 int             width,
+						 uint32_t *      buffer,
+						 const uint32_t *mask,
+						 uint32_t        mask_bits);
+
+void
+_pixman_general_radial_gradient_get_scanline_32 (pixman_image_t *image,
+						 int             x,
+						 int             y,
+						 int             width,
+						 uint32_t *      buffer,
+						 const uint32_t *mask,
+						 uint32_t        mask_bits);
+
+void
+_pixman_general_conical_gradient_get_scanline_32 (pixman_image_t *image,
+						  int             x,
+						  int             y,
+						  int             width,
+						  uint32_t *      buffer,
+						  const uint32_t *mask,
+						  uint32_t        mask_bits);
+
+void
+_pixman_general_solid_fill_get_scanline_32 (pixman_image_t *image,
+					    int             x,
+					    int             y,
+					    int             width,
+					    uint32_t *      buffer,
+					    const uint32_t *mask,
+					    uint32_t        mask_bits);
+
+void
+_pixman_general_solid_fill_get_scanline_64 (pixman_image_t *image,
+					    int             x,
+					    int             y,
+					    int             width,
+					    uint32_t *      buffer,
+					    const uint32_t *mask,
+					    uint32_t        mask_bits);
+
+
+fetch_scanline_t
+_pixman_general_bits_image_get_scanline_fetcher_32 (pixman_implementation_t *imp, pixman_image_t *image);
+
+fetch_scanline_t
+_pixman_general_bits_image_get_scanline_fetcher_64 (pixman_implementation_t *imp, pixman_image_t *image);
+
+uint32_t
+_pixman_general_bits_image_fetch_pixel_alpha (bits_image_t *image, int x, int y);
+
+void
+_pixman_general_bits_image_store_scanline_32 (bits_image_t *  image,
+					      int             x,
+					      int             y,
+					      int             width,
+					      const uint32_t *buffer);
+
+void
+_pixman_general_bits_image_store_scanline_64 (bits_image_t *  image,
+					      int             x,
+					      int             y,
+					      int             width,
+					      const uint32_t *buffer);
 
 pixman_implementation_t *
 _pixman_implementation_create_fast_path (void);
@@ -526,6 +603,24 @@ _pixman_implementation_create_mmx (void);
 #ifdef USE_SSE2
 pixman_implementation_t *
 _pixman_implementation_create_sse2 (void);
+
+void
+_pixman_sse2_linear_gradient_get_scanline_32 (pixman_image_t *image,
+					      int             x,
+					      int             y,
+					      int             width,
+					      uint32_t *      buffer,
+					      const uint32_t *mask,
+					      uint32_t        mask_bits);
+
+void
+_pixman_sse2_radial_gradient_get_scanline_32 (pixman_image_t *image,
+					      int             x,
+					      int             y,
+					      int             width,
+					      uint32_t *      buffer,
+					      const uint32_t *mask,
+					      uint32_t        mask_bits);
 #endif
 
 #ifdef USE_ARM_SIMD

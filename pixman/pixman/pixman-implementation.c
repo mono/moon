@@ -111,6 +111,56 @@ delegate_fill (pixman_implementation_t *imp,
 	imp->delegate, bits, stride, bpp, x, y, width, height, xor);
 }
 
+static fetch_scanline_t
+delegate_get_scanline_fetcher_32 (pixman_implementation_t * imp,
+                                  pixman_image_t *image)
+
+{
+    return _pixman_implementation_get_scanline_fetcher_32 (imp->delegate,
+                                                           image);
+}
+
+static fetch_scanline_t
+delegate_get_scanline_fetcher_64 (pixman_implementation_t * imp,
+                                  pixman_image_t *image)
+
+{
+    return _pixman_implementation_get_scanline_fetcher_64 (imp->delegate,
+                                                           image);
+}
+
+static fetch_pixel_32_t
+delegate_get_pixel_fetcher_32 (pixman_implementation_t * imp,
+                               bits_image_t *image)
+{
+    return _pixman_implementation_get_pixel_fetcher_32 (imp->delegate,
+                                                        image);
+}
+
+static fetch_pixel_64_t
+delegate_get_pixel_fetcher_64 (pixman_implementation_t * imp,
+                               bits_image_t *image)
+{
+    return _pixman_implementation_get_pixel_fetcher_64 (imp->delegate,
+                                                        image);
+}
+
+static store_scanline_t
+delegate_get_scanline_storer_32 (pixman_implementation_t * imp,
+                                 bits_image_t *image)
+{
+    return _pixman_implementation_get_scanline_storer_32 (imp->delegate,
+                                                          image);
+}
+
+static store_scanline_t
+delegate_get_scanline_storer_64 (pixman_implementation_t * imp,
+                                 bits_image_t *image)
+{
+    return _pixman_implementation_get_scanline_storer_64 (imp->delegate,
+                                                          image);
+}
+
 pixman_implementation_t *
 _pixman_implementation_create (pixman_implementation_t *delegate,
 			       const pixman_fast_path_t *fast_paths)
@@ -141,6 +191,13 @@ _pixman_implementation_create (pixman_implementation_t *delegate,
 	imp->combine_32_ca[i] = delegate_combine_32_ca;
 	imp->combine_64_ca[i] = delegate_combine_64_ca;
     }
+
+    imp->get_scanline_fetcher_32 = delegate_get_scanline_fetcher_32;
+    imp->get_scanline_fetcher_64 = delegate_get_scanline_fetcher_64;
+    imp->get_pixel_fetcher_32 = delegate_get_pixel_fetcher_32;
+    imp->get_pixel_fetcher_64 = delegate_get_pixel_fetcher_64;
+    imp->get_scanline_storer_32 = delegate_get_scanline_storer_32;
+    imp->get_scanline_storer_64 = delegate_get_scanline_storer_64;
 
     imp->fast_paths = fast_paths;
     
@@ -225,3 +282,52 @@ _pixman_implementation_fill (pixman_implementation_t *imp,
     return (*imp->fill) (imp, bits, stride, bpp, x, y, width, height, xor);
 }
 
+
+fetch_scanline_t
+_pixman_implementation_get_scanline_fetcher_32 (pixman_implementation_t * imp,
+                                                pixman_image_t *image)
+
+{
+    return (*imp->get_scanline_fetcher_32) (imp, image);
+}
+
+
+fetch_scanline_t
+_pixman_implementation_get_scanline_fetcher_64 (pixman_implementation_t * imp,
+                                                pixman_image_t *image)
+
+{
+    return (*imp->get_scanline_fetcher_64) (imp, image);
+}
+
+fetch_pixel_32_t
+_pixman_implementation_get_pixel_fetcher_32 (pixman_implementation_t * imp,
+                                             bits_image_t *image)
+
+{
+    return (*imp->get_pixel_fetcher_32) (imp, image);
+}
+
+fetch_pixel_64_t
+_pixman_implementation_get_pixel_fetcher_64 (pixman_implementation_t * imp,
+                                             bits_image_t *image)
+
+{
+    return (*imp->get_pixel_fetcher_64) (imp, image);
+}
+
+store_scanline_t
+_pixman_implementation_get_scanline_storer_32 (pixman_implementation_t * imp,
+                                               bits_image_t *image)
+
+{
+    return (*imp->get_scanline_storer_32) (imp, image);
+}
+
+store_scanline_t
+_pixman_implementation_get_scanline_storer_64 (pixman_implementation_t * imp,
+                                               bits_image_t *image)
+
+{
+    return (*imp->get_scanline_storer_64) (imp, image);
+}

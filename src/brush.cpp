@@ -396,6 +396,10 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	}
 
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
+
+#ifdef HAVE_CAIRO_COLOR_TOLERANCE
+	cairo_pattern_set_color_tolerance (pattern, 1.0);
+#endif
 	
 	cairo_matrix_t matrix;
 	cairo_matrix_init_identity (&matrix);
@@ -464,6 +468,10 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	double ry = GetRadiusY ();
 	
 	cairo_pattern_t *pattern = cairo_pattern_create_radial (ox/rx, oy/ry, 0.0, cx/rx, cy/ry, 1);
+
+#ifdef HAVE_CAIRO_COLOR_TOLERANCE
+	cairo_pattern_set_color_tolerance (pattern, 1.0);
+#endif
 
 	cairo_matrix_t matrix;
 	switch (GetMappingMode ()) {
@@ -1169,6 +1177,7 @@ VisualBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	Transform *relative_transform = GetRelativeTransform ();
 	
  	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
+
 	cairo_matrix_t matrix;
  	image_brush_compute_pattern_matrix (&matrix, area.width, area.height,
 					    (int) bounds.width, (int) bounds.height,

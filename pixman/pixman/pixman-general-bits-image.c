@@ -37,12 +37,12 @@
 
 /* Store functions */
 
-static void
-bits_image_store_scanline_32 (bits_image_t *  image,
-                              int             x,
-                              int             y,
-                              int             width,
-                              const uint32_t *buffer)
+void
+_pixman_general_bits_image_store_scanline_32 (bits_image_t *  image,
+					      int             x,
+					      int             y,
+					      int             width,
+					      const uint32_t *buffer)
 {
     image->store_scanline_raw_32 (image, x, y, width, buffer);
 
@@ -51,16 +51,16 @@ bits_image_store_scanline_32 (bits_image_t *  image,
 	x -= image->common.alpha_origin_x;
 	y -= image->common.alpha_origin_y;
 
-	bits_image_store_scanline_32 (image->common.alpha_map, x, y, width, buffer);
+	_pixman_general_bits_image_store_scanline_32 (image->common.alpha_map, x, y, width, buffer);
     }
 }
 
-static void
-bits_image_store_scanline_64 (bits_image_t *  image,
-                              int             x,
-                              int             y,
-                              int             width,
-                              const uint32_t *buffer)
+void
+_pixman_general_bits_image_store_scanline_64 (bits_image_t *  image,
+					      int             x,
+					      int             y,
+					      int             width,
+					      const uint32_t *buffer)
 {
     image->store_scanline_raw_64 (image, x, y, width, buffer);
 
@@ -69,7 +69,7 @@ bits_image_store_scanline_64 (bits_image_t *  image,
 	x -= image->common.alpha_origin_x;
 	y -= image->common.alpha_origin_y;
 
-	bits_image_store_scanline_64 (image->common.alpha_map, x, y, width, buffer);
+	_pixman_general_bits_image_store_scanline_64 (image->common.alpha_map, x, y, width, buffer);
     }
 }
 
@@ -95,8 +95,8 @@ _pixman_image_store_scanline_64 (bits_image_t *  image,
 
 /* Fetch functions */
 
-static uint32_t
-bits_image_fetch_pixel_alpha (bits_image_t *image, int x, int y)
+uint32_t
+_pixman_general_bits_image_fetch_pixel_alpha (bits_image_t *image, int x, int y)
 {
     uint32_t pixel;
     uint32_t pixel_a;
@@ -875,38 +875,27 @@ bits_image_fetch_untransformed_64 (pixman_image_t * image,
     }
 }
 
-static void
-bits_image_property_changed (pixman_image_t *image)
+static fetch_scanline_t
+get_scanline_fetcher (pixman_image_t *image, pixman_bool_t is64)
 {
     bits_image_t *bits = (bits_image_t *)image;
 
-    _pixman_bits_image_setup_raw_accessors (bits);
-
-    image->bits.fetch_pixel_32 = image->bits.fetch_pixel_raw_32;
-
     if (bits->common.alpha_map)
     {
-	image->common.get_scanline_64 =
-	    _pixman_image_get_scanline_generic_64;
-	image->common.get_scanline_32 =
-	    bits_image_fetch_transformed;
-
-	image->bits.fetch_pixel_32 = bits_image_fetch_pixel_alpha;
+        return is64 ? _pixman_image_get_scanline_generic_64 : bits_image_fetch_transformed;
     }
     else if ((bits->common.repeat != PIXMAN_REPEAT_NONE) &&
              bits->width == 1 &&
              bits->height == 1)
     {
-	image->common.get_scanline_64 = bits_image_fetch_solid_64;
-	image->common.get_scanline_32 = bits_image_fetch_solid_32;
+        return is64 ? bits_image_fetch_solid_64 : bits_image_fetch_solid_32;
     }
     else if (!bits->common.transform &&
              bits->common.filter != PIXMAN_FILTER_CONVOLUTION &&
              (bits->common.repeat == PIXMAN_REPEAT_NONE ||
               bits->common.repeat == PIXMAN_REPEAT_NORMAL))
     {
-	image->common.get_scanline_64 = bits_image_fetch_untransformed_64;
-	image->common.get_scanline_32 = bits_image_fetch_untransformed_32;
+        return is64 ? bits_image_fetch_untransformed_64 : bits_image_fetch_untransformed_32;
     }
     else if (bits->common.transform					&&
 	     bits->common.transform->matrix[2][0] == 0			&&
@@ -921,113 +910,22 @@ bits_image_property_changed (pixman_image_t *image)
 	     (bits->format == PIXMAN_a8r8g8b8	||
 	      bits->format == PIXMAN_x8r8g8b8))
     {
-	image->common.get_scanline_64 =
-	    _pixman_image_get_scanline_generic_64;
-	image->common.get_scanline_32 =
-	    bits_image_fetch_bilinear_no_repeat_8888;
+        return is64 ? _pixman_image_get_scanline_generic_64 : bits_image_fetch_bilinear_no_repeat_8888;
     }
     else
     {
-	image->common.get_scanline_64 =
-	    _pixman_image_get_scanline_generic_64;
-	image->common.get_scanline_32 =
-	    bits_image_fetch_transformed;
+        return is64 ? _pixman_image_get_scanline_generic_64 : bits_image_fetch_transformed;
     }
-
-    bits->store_scanline_64 = bits_image_store_scanline_64;
-    bits->store_scanline_32 = bits_image_store_scanline_32;
 }
 
-static uint32_t *
-create_bits (pixman_format_code_t format,
-             int                  width,
-             int                  height,
-             int *                rowstride_bytes)
+fetch_scanline_t
+_pixman_general_bits_image_get_scanline_fetcher_32 (pixman_implementation_t *imp, pixman_image_t *image)
 {
-    int stride;
-    int buf_size;
-    int bpp;
-
-    /* what follows is a long-winded way, avoiding any possibility of integer
-     * overflows, of saying:
-     * stride = ((width * bpp + 0x1f) >> 5) * sizeof (uint32_t);
-     */
-
-    bpp = PIXMAN_FORMAT_BPP (format);
-    if (pixman_multiply_overflows_int (width, bpp))
-	return NULL;
-
-    stride = width * bpp;
-    if (pixman_addition_overflows_int (stride, 0x1f))
-	return NULL;
-
-    stride += 0x1f;
-    stride >>= 5;
-
-    stride *= sizeof (uint32_t);
-
-    if (pixman_multiply_overflows_int (height, stride))
-	return NULL;
-
-    buf_size = height * stride;
-
-    if (rowstride_bytes)
-	*rowstride_bytes = stride;
-
-    return calloc (buf_size, 1);
+    return get_scanline_fetcher (image, FALSE);
 }
 
-PIXMAN_EXPORT pixman_image_t *
-pixman_image_create_bits (pixman_format_code_t format,
-                          int                  width,
-                          int                  height,
-                          uint32_t *           bits,
-                          int                  rowstride_bytes)
+fetch_scanline_t
+_pixman_general_bits_image_get_scanline_fetcher_64 (pixman_implementation_t *imp, pixman_image_t *image)
 {
-    pixman_image_t *image;
-    uint32_t *free_me = NULL;
-
-    /* must be a whole number of uint32_t's
-     */
-    return_val_if_fail (
-	bits == NULL || (rowstride_bytes % sizeof (uint32_t)) == 0, NULL);
-
-    return_val_if_fail (PIXMAN_FORMAT_BPP (format) >= PIXMAN_FORMAT_DEPTH (format), NULL);
-
-    if (!bits && width && height)
-    {
-	free_me = bits = create_bits (format, width, height, &rowstride_bytes);
-	if (!bits)
-	    return NULL;
-    }
-
-    image = _pixman_image_allocate ();
-
-    if (!image)
-    {
-	if (free_me)
-	    free (free_me);
-
-	return NULL;
-    }
-
-    image->type = BITS;
-    image->bits.format = format;
-    image->bits.width = width;
-    image->bits.height = height;
-    image->bits.bits = bits;
-    image->bits.free_me = free_me;
-    image->bits.read_func = NULL;
-    image->bits.write_func = NULL;
-
-    /* The rowstride is stored in number of uint32_t */
-    image->bits.rowstride = rowstride_bytes / (int) sizeof (uint32_t);
-
-    image->bits.indexed = NULL;
-
-    image->common.property_changed = bits_image_property_changed;
-
-    _pixman_image_reset_clip_region (image);
-
-    return image;
+    return get_scanline_fetcher (image, TRUE);
 }

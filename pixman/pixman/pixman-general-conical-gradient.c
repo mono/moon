@@ -23,19 +23,25 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
  * SOFTWARE.
  */
+
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <math.h>
 #include "pixman-private.h"
 
-static void
-conical_gradient_get_scanline_32 (pixman_image_t *image,
-                                  int             x,
-                                  int             y,
-                                  int             width,
-                                  uint32_t *      buffer,
-                                  const uint32_t *mask,
-                                  uint32_t        mask_bits)
+#include "pixman-gradient-walker.c"
+
+void
+_pixman_general_conical_gradient_get_scanline_32 (pixman_image_t *image,
+						  int             x,
+						  int             y,
+						  int             width,
+						  uint32_t *      buffer,
+						  const uint32_t *mask,
+						  uint32_t        mask_bits)
 {
     source_image_t *source = (source_image_t *)image;
     gradient_t *gradient = (gradient_t *)source;
@@ -141,40 +147,3 @@ conical_gradient_get_scanline_32 (pixman_image_t *image,
 	}
     }
 }
-
-static void
-conical_gradient_property_changed (pixman_image_t *image)
-{
-    image->common.get_scanline_32 = conical_gradient_get_scanline_32;
-    image->common.get_scanline_64 = _pixman_image_get_scanline_generic_64;
-}
-
-PIXMAN_EXPORT pixman_image_t *
-pixman_image_create_conical_gradient (pixman_point_fixed_t *        center,
-                                      pixman_fixed_t                angle,
-                                      const pixman_gradient_stop_t *stops,
-                                      int                           n_stops)
-{
-    pixman_image_t *image = _pixman_image_allocate ();
-    conical_gradient_t *conical;
-
-    if (!image)
-	return NULL;
-
-    conical = &image->conical;
-
-    if (!_pixman_init_gradient (&conical->common, stops, n_stops))
-    {
-	free (image);
-	return NULL;
-    }
-
-    image->type = CONICAL;
-    conical->center = *center;
-    conical->angle = angle;
-
-    image->common.property_changed = conical_gradient_property_changed;
-
-    return image;
-}
-
