@@ -106,6 +106,53 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void AddNew_DoesNotRegenerateGroups ()
+		{
+			var groups = View.Groups;
+
+			Editable.AddNew ();
+			Assert.AreSame (groups, View.Groups, "#1");
+
+			Editable.CommitNew ();
+			Assert.AreSame (groups, View.Groups, "#2");
+		}
+
+		[TestMethod]
+		public void AddNew_IsAddedToGroups ()
+		{
+			// If we 'AddNew' the item ends up in a special group it seems
+			View.GroupDescriptions.Add (new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = (item, depth, culture) => Items.IndexOf (item) < 3 ? "First" : "Second"
+			});
+			var groups = View.Groups;
+
+			var added = Editable.AddNew ();
+			Assert.AreEqual (3, View.Groups.Count, "#1");
+			Assert.IsFalse (((CollectionViewGroup) View.Groups [0]).Items.Contains (added), "#2");
+			Assert.IsFalse (((CollectionViewGroup) View.Groups [1]).Items.Contains (added), "#3");
+			Assert.AreSame (added, groups [2], "#4");
+		}
+
+		[TestMethod]
+		public void AddAndCommitNew_IsAddedToGroups ()
+		{
+			// If we 'AddNew' the item ends up in a special group it seems
+			View.GroupDescriptions.Add (new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = (item, depth, culture) => Items.IndexOf (item) < 3 ? "First" : "Second"
+			});
+			var groups = View.Groups;
+
+			var added = Editable.AddNew ();
+			Editable.CommitNew ();
+			Assert.AreEqual (2, groups.Count, "#1");
+
+			Assert.IsFalse (((CollectionViewGroup) groups [0]).Items.Contains (added), "#2");
+			Assert.IsTrue (((CollectionViewGroup) groups [1]).Items.Contains (added), "#3");
+			Assert.AreSame (added, ((CollectionViewGroup) groups [1]).Items.Last (), "#4");
+			Assert.AreSame (groups, View.Groups, "#5");
+		}
+
+		[TestMethod]
 		public void AddNew_MyList_WithInt ()
 		{
 			Source.Source = new MyList { 1, 2, 3 };
@@ -151,6 +198,22 @@ namespace MoonTest.System.Windows.Data {
 			Editable.CancelNew ();
 			Assert.IsTrue (Items.Contains (o1), "#1");
 			Assert.IsFalse (Items.Contains (o2), "#2");
+		}
+
+		[TestMethod]
+		public void AddNew_UpdatesViewImmediately ()
+		{
+			var groups = View.Groups;
+
+			var item = Editable.AddNew ();
+			Assert.AreEqual (item, View.Cast<object> ().Last (), "#1");
+		}
+
+		[TestMethod]
+		public void AddNew_WhileUpdating ()
+		{
+			using (View.DeferRefresh ())
+				Assert.Throws<InvalidOperationException> (() => Editable.AddNew ());
 		}
 
 		[TestMethod]

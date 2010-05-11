@@ -208,10 +208,69 @@ namespace System.Windows.Data {
 			MoveCurrentToPosition (0);
 
 			if (list is INotifyCollectionChanged)
-				((INotifyCollectionChanged) list).CollectionChanged += (o, e) => Refresh ();
+				((INotifyCollectionChanged) list).CollectionChanged += HandleSourceCollectionChanged;
 
 			GroupDescriptions.CollectionChanged += (o, e) => Refresh ();
 			((INotifyCollectionChanged) SortDescriptions).CollectionChanged += (o, e) => Refresh ();
+		}
+
+		void HandleSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		{
+			// FIXME: If i inserted to the middle of the source list it'll be appended at the end
+			// of our filtered list. This is probably not right. Similarly for the rest.
+			switch (e.Action) {
+			case NotifyCollectionChangedAction.Add:
+				foreach (object o in e.NewItems)
+					AddToFilteredAndGroup (o);
+				break;
+
+			case NotifyCollectionChangedAction.Remove:
+				foreach (object o in e.OldItems)
+					RemoveFromFilteredAndGroup (o);
+				break;
+
+			case NotifyCollectionChangedAction.Replace:
+				foreach (object o in e.OldItems)
+					RemoveFromFilteredAndGroup (o);
+				foreach (object o in e.NewItems)
+					AddToFilteredAndGroup (o);
+				break;
+
+			case NotifyCollectionChangedAction.Reset:
+				filteredList.Clear ();
+				RootGroup.ClearSubtree ();
+				foreach (var o in SourceCollection)
+					AddToFilteredAndGroup (o);
+				break;
+			}
+		}
+
+		void AddToFilteredAndGroup (object item)
+		{
+			// If we're adding an item because of a call to the 'AddNew' method, we
+			//
+			if (AddToFiltered (item) && Groups != null && CurrentAddItem == null)
+				RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
+		}
+
+		void RemoveFromFilteredAndGroup (object item)
+		{
+			if (RemoveFromFiltered (item) && Groups != null)
+				RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
+		}
+
+		bool AddToFiltered (object item)
+		{
+			if (Filter == null || Filter (item)) {
+				filteredList.Add (item);
+				return true;
+			}
+			return false;
+		}
+
+		bool RemoveFromFiltered (object item)
+		{
+			return filteredList.Remove (item);
 		}
 
 		public bool Contains (object item)
@@ -304,12 +363,11 @@ namespace System.Windows.Data {
 				return;
 
 			if (RootGroup == null)
-				RootGroup = new StandardCollectionViewGroup (null);
+				RootGroup = new StandardCollectionViewGroup (null, null, 0, false);
 
 			filteredList.Clear ();
 			foreach (var item in SourceCollection)
-				if (filter == null || Filter (item))
-					filteredList.Add (item);
+				AddToFiltered (item);
 
 			if (SortDescriptions.Count > 0)
 				filteredList.Sort (new PropertyComparer (SortDescriptions));
@@ -318,7 +376,7 @@ namespace System.Windows.Data {
 			RootGroup.ClearItems ();
 			if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
 				foreach (var item in filteredList)
-					AppendToGroup (item, 0, RootGroup);
+					RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
 				Groups = RootGroup.Items;
 			}
 
@@ -333,44 +391,48 @@ namespace System.Windows.Data {
 				h (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
-		void AppendToGroup (object item, int depth, StandardCollectionViewGroup group)
-		{
-			if (depth < GroupDescriptions.Count) {
-				var desc = GroupDescriptions [depth];
-				var name = desc.GroupNameFromItem (item, depth, Culture);
-				StandardCollectionViewGroup subGroup = null;
-				foreach (StandardCollectionViewGroup g in group.Items) {
-					if (desc.NamesMatch (g.Name, name)) {
-						subGroup = g;
-						break;
-					}
-				}
-				if (subGroup == null) {
-					subGroup = new StandardCollectionViewGroup (group, name, depth == (GroupDescriptions.Count - 1));
-					group.AddItem (subGroup);
-				}
-
-				AppendToGroup (item, depth + 1, subGroup);
-			} else {
-				group.AddItem (item);
-			}
-		}
-
 		public object AddNew ()
 		{
+			if (((IDeferRefresh) this).DeferLevel != 0)
+				throw new InvalidOperationException ("Cannot add a new item while refresh is deferred");
+
 			if (ItemType == null)
 				throw new InvalidOperationException ("The underlying collection does not support adding new items");
 
 			if (((IList) SourceCollection).IsFixedSize)
 				throw new InvalidOperationException ("The source collection is of fixed size");
 
-			// If there's an existing AddNew, we commit it
+			// If there's an existing AddNew or Edit, we commit it
 			CommitNew ();
+			CommitEdit ();
+
 			var newObject = Activator.CreateInstance (ItemType);
-			((IList) SourceCollection).Add (newObject);
+			// FIXME: I need to check the ordering on the events when the source is INCC
 			CurrentAddItem = newObject;
 			IsAddingNew = true;
+			AddToSourceCollection (newObject);
+			if (Groups != null)
+				RootGroup.AddItem (newObject);
 			return newObject;
+		}
+
+		void AddToSourceCollection (object item)
+		{
+			IList source = (IList) SourceCollection;
+			source.Add (item);
+			if (!(source is INotifyCollectionChanged)) {
+				HandleSourceCollectionChanged (source, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, item, source.Count - 1));
+			}
+		}
+
+		void RemoveFromSourceCollection (object item)
+		{
+			IList source = (IList) SourceCollection;
+			int index = source.IndexOf (item);
+			source.RemoveAt (index);
+			if (!(source is INotifyCollectionChanged)) {
+				HandleSourceCollectionChanged (source, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, item, index));
+			}
 		}
 
 		public void CancelEdit ()
@@ -388,7 +450,10 @@ namespace System.Windows.Data {
 		public void CancelNew ()
 		{
 			if (IsAddingNew) {
-				((IList) SourceCollection).Remove (CurrentAddItem);
+				if (Groups != null) {
+					RootGroup.RemoveItem (CurrentAddItem);
+				}
+				RemoveFromSourceCollection (CurrentAddItem);
 				CurrentAddItem = null;
 				IsAddingNew = false;
 			}
@@ -409,6 +474,12 @@ namespace System.Windows.Data {
 		public void CommitNew ()
 		{
 			if (IsAddingNew) {
+				// When adding a new item, we initially put it in the root group. Once it's committed
+				// we need to place it in the correct subtree group.
+				if (Groups != null) {
+					RootGroup.RemoveItem (CurrentAddItem);
+					RootGroup.AddInSubtree (CurrentAddItem, Culture, GroupDescriptions);
+				}
 				CurrentAddItem = null;
 				IsAddingNew = false;
 			}
@@ -427,12 +498,12 @@ namespace System.Windows.Data {
 
 		public void Remove (object item)
 		{
-			((IList) SourceCollection).Remove (item);
+			RemoveFromSourceCollection (item);
 		}
 
 		public void RemoveAt (int index)
 		{
-			((IList) SourceCollection).RemoveAt (index);
+			RemoveFromSourceCollection (((IList) SourceCollection)[index]);
 		}
 	}
 }

@@ -1,5 +1,11 @@
 2010-05-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/CollectionViewTest_IEditable.cs: Add
+	  more tests to check how items autocreated by the ICV are
+	  added to the groups.
+
+2010-05-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewSourceTest.cs: Add the
 	  tests covering my last commit.
 

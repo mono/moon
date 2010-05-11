@@ -1,5 +1,24 @@
 2010-05-11  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionViewGroup.cs: StandardCollectionView has
+	  two distinct ways of adding/removing/clearing the items.
+	  AddItem/RemoveItem/ClearItems do as you'd expect, they
+	  add/remove/clear the items in that group.
+	  AddInSubtree/RemoveInSubtree recurse through the groups and
+	  add/remove items from the leaf elements of the group.
+	  ClearSubtree clears all the items in the leaf elements but
+	  not the groups themselves.
+
+	* StandardCollectionView.cs: 1) Handle
+	  INotifyCollectionChanged events properly rather than just
+	  calling Refresh () otherwise we'll regenerate the Groups
+	  collection too frequently
+	2) When calling 'AddNew' we now add the new item to the
+	  correct group while it's pending and when it's finally
+	  committed.
+
+2010-05-11  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewSource.cs: Cache the views that the
 	  CollectionViewSource creates to allow more of drt 232 to
 	  succeed. Note that we need to use a weak dictionary of some
