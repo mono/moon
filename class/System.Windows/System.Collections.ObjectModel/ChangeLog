@@ -1,3 +1,8 @@
+2010-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* ObservableCollection_T.cs: Implement the two unimplemented
+	  constructors for ObservableCollection
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ObservableCollection_T.cs: Update to SL4 beta API.

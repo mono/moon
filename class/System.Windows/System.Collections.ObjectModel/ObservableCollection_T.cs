@@ -41,14 +41,14 @@ namespace System.Collections.ObjectModel {
 
 		public ObservableCollection (IEnumerable<T> collection)
 		{
-			Console.WriteLine ("System.Collections.ObjectModel.ObservableCollection.ctor (IEnumerable<T>): NIEX");
-			throw new NotImplementedException ();
+			foreach (var v in collection)
+				base.InsertItem (Count, v);
 		}
 		
 		public ObservableCollection (List<T> list)
 		{
-			Console.WriteLine ("System.Collections.ObjectModel.ObservableCollection.ctor (List<T>): NIEX");
-			throw new NotImplementedException ();
+			foreach (var v in list)
+				base.InsertItem (Count, v);
 		}
 
 		protected override void ClearItems ()
