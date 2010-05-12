@@ -1,3 +1,10 @@
+2010-05-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Line-break the ReportException javascript code so that it can be
+	understood by humans. Add code to detect if we don't have a parent (which may
+	happen if we've been detached from the DOM) and use the window object instead
+	in that case. Fixes #352.
+
 2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Make plugin.cpp depend on plugin-spinner.h.
