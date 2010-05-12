@@ -365,7 +365,7 @@ Emit (void* data)
 CallData::~CallData ()
 {
 	if (buffer)
-		MOON_NPN_MemFree (buffer);
+		g_free (buffer);
 	if (name)
 		g_free ((gpointer) name);
 	if (val)

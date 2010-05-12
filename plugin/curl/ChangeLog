@@ -1,3 +1,13 @@
+2010-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* curl-bridge.cpp (CallData::~CallData): we can't use MOON_NPN_
+	methods in this bridge for memory allocation, since the bridge is
+	used in lunar-launcher.
+
+	* curl-http.cpp (CurlDownloaderRequest::SetBody): same.
+	(CurlDownloaderRequest::Close): same.
+	(CurlDownloaderResponse::DataReceived): same.
+
 2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* curl-http.cpp|h: Update according to DownloaderRequest api changes.
