@@ -416,9 +416,10 @@ namespace System.Windows.Data {
 			if (SourceCollection.IsFixedSize)
 				throw new InvalidOperationException ("The source collection is of fixed size");
 
-			// If there's an existing AddNew or Edit, we commit it
-			CommitNew ();
+			// If there's an existing AddNew or Edit, we commit it. Commit the edit first because
+			// we're not allowed CommitNew if we're in the middle of an edit.
 			CommitEdit ();
+			CommitNew ();
 
 			var newObject = Activator.CreateInstance (ItemType);
 			// FIXME: I need to check the ordering on the events when the source is INCC
@@ -427,6 +428,7 @@ namespace System.Windows.Data {
 			AddToSourceCollection (newObject);
 			if (Groups != null)
 				RootGroup.AddItem (newObject);
+			MoveCurrentTo (newObject);
 			return newObject;
 		}
 
@@ -462,6 +464,8 @@ namespace System.Windows.Data {
 
 		public void CancelNew ()
 		{
+			if (IsEditingItem)
+				throw new InvalidOperationException ("Cannot CancelNew while editing an item");
 			if (IsAddingNew) {
 				if (Groups != null) {
 					RootGroup.RemoveItem (CurrentAddItem);
@@ -487,6 +491,8 @@ namespace System.Windows.Data {
 
 		public void CommitNew ()
 		{
+			if (IsEditingItem)
+				throw new InvalidOperationException ("Cannot CommitNew while editing an item");
 			if (IsAddingNew) {
 				// When adding a new item, we initially put it in the root group. Once it's committed
 				// we need to place it in the correct subtree group.
