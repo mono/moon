@@ -877,6 +877,7 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 void
 MoonWindowGtk::install_application (MoonWindowGtk *window)
 {
+	window->SetCurrentDeployment ();
 	Application *app = Application::GetCurrent ();
 	
 	app->Install ();
@@ -885,6 +886,7 @@ MoonWindowGtk::install_application (MoonWindowGtk *window)
 void
 MoonWindowGtk::uninstall_application (MoonWindowGtk *window)
 {
+	window->SetCurrentDeployment ();
 	Deployment *deployment = Deployment::GetCurrent ();
 	Application *application = deployment->GetCurrentApplication ();
 	

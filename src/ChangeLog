@@ -1,3 +1,8 @@
+2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/gtk/window-gtk.cpp: MoonWindowGtk::[de]install_application:
+	set current deployment.
+
 2010-05-11  Chris Toshok  <toshok@ximian.com>
 
 	* pal/messaging/glib/pal-glib-msg.cpp (StateMachine::do_read): add
