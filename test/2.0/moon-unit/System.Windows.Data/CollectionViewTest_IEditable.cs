@@ -236,6 +236,68 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void AddNew_Sorted ()
+		{
+			var items = new List<Rectangle> () {
+				new Rectangle { Width = 0 },
+				new Rectangle { Width = 1 },
+				new Rectangle { Width = 3 },
+				new Rectangle { Width = 4 },
+			};
+			Source.Source = items;
+			Source.SortDescriptions.Add (new SortDescription ("Width", ListSortDirection.Ascending));
+
+			var rect = Editable.AddNew () as Rectangle;
+			Assert.AreSame (rect, View.Cast<object> ().Last (), "#1");
+			Assert.AreSame (rect, View.CurrentItem, "#2");
+			Assert.AreEqual (4, View.CurrentPosition, "#3");
+
+			rect.Width = 2;
+			Assert.AreSame (rect, View.Cast<object> ().Last (), "#4");
+			Assert.AreSame (rect, View.CurrentItem, "#5");
+			Assert.AreEqual (4, View.CurrentPosition, "#6");
+
+			Editable.CommitNew ();
+			Assert.AreSame (rect, View.Cast<object> ().ElementAt (2), "#7");
+			Assert.AreSame (rect, View.CurrentItem, "#8");
+			Assert.AreEqual (2, View.CurrentPosition, "#9");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Our unstable sort is different to their unstable sort.")]
+		public void AddNew_Sorted_SameKeys ()
+		{
+			var items = new List<Rectangle> () {
+				new Rectangle { Width = 0 },
+				new Rectangle { Width = 2, Height = 1 },
+				new Rectangle { Width = 1 },
+				new Rectangle { Width = 2, Height = 2 },
+				new Rectangle { Width = 3 },
+				new Rectangle { Width = 2, Height = 3 },
+				new Rectangle { Width = 4 },
+				new Rectangle { Width = 2, Height = 4 },
+			};
+
+			Source.Source = items;
+			Source.SortDescriptions.Add (new SortDescription ("Width", ListSortDirection.Ascending));
+
+			var rect = Editable.AddNew () as Rectangle;
+			Assert.AreSame (rect, View.Cast<object> ().Last (), "#1");
+			Assert.AreSame (rect, View.CurrentItem, "#2");
+			Assert.AreEqual (8, View.CurrentPosition, "#3");
+
+			rect.Width = 2;
+			Assert.AreSame (rect, View.Cast<object> ().Last (), "#4");
+			Assert.AreSame (rect, View.CurrentItem, "#5");
+			Assert.AreEqual (8, View.CurrentPosition, "#6");
+
+			Editable.CommitNew ();
+			Assert.AreSame (rect, View.CurrentItem, "#7");
+			Assert.AreEqual (3, View.CurrentPosition, "#8");
+			Assert.AreSame (rect, View.Cast<object> ().ElementAt (3), "#9");
+		}
+
+		[TestMethod]
 		public void AddNew_Twice ()
 		{
 			var o1 = Editable.AddNew ();

@@ -394,8 +394,10 @@ namespace System.Windows.Data {
 				}
 			}
 
-			if (ActiveList.Count > 0) {
-				MoveCurrentTo (CurrentPosition, true);
+			if (IsAddingNew && CurrentItem == CurrentAddItem) {
+				MoveCurrentTo (ActiveList.IndexOf (CurrentAddItem), true);
+			} else if (ActiveList.Count > 0) {
+				MoveCurrentTo (ActiveList.IndexOf (CurrentItem), true);
 			} else {
 				MoveCurrentTo (-1);
 			}
@@ -500,6 +502,7 @@ namespace System.Windows.Data {
 					RootGroup.RemoveItem (CurrentAddItem);
 					RootGroup.AddInSubtree (CurrentAddItem, Culture, GroupDescriptions);
 				}
+				Refresh ();
 				CurrentAddItem = null;
 				IsAddingNew = false;
 			}

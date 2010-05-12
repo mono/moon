@@ -1,5 +1,11 @@
 2010-05-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/CollectionViewTest_IEditable.cs: Add
+	  some tests to verify the exact position of items which are
+	  added to the ICV using AddNew.
+
+2010-05-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewTest_IEditable.cs:
 	  Refactor StandardCollectionView so that we only use the
 	  filtered list when we are grouping, filtering or sorting.

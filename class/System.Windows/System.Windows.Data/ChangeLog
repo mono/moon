@@ -1,5 +1,11 @@
 2010-05-12  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: When we add a new item to the ICV
+	  we need to refresh it. We also need to keep that item
+	  selected after we refresh.
+
+2010-05-12  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: When we call AddNew we need to
 	  select the new item automatically. We also need to throw
 	  exceptions if we try to CommitNew or CancelNew while
