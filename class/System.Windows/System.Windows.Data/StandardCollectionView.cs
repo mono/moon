@@ -397,7 +397,7 @@ namespace System.Windows.Data {
 			if (IsAddingNew && CurrentItem == CurrentAddItem) {
 				MoveCurrentTo (ActiveList.IndexOf (CurrentAddItem), true);
 			} else if (ActiveList.Count > 0) {
-				MoveCurrentTo (ActiveList.IndexOf (CurrentItem), true);
+				MoveCurrentTo (CurrentPosition, true);
 			} else {
 				MoveCurrentTo (-1);
 			}

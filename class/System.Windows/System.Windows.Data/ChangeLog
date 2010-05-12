@@ -1,5 +1,11 @@
 2010-05-12  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: This bit wasn't supposed to be
+	  part of my last commit. Fixes the regressions in moon-unit
+	  and 232 caused by my last commit.
+
+2010-05-12  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: When we add a new item to the ICV
 	  we need to refresh it. We also need to keep that item
 	  selected after we refresh.
