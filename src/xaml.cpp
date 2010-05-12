@@ -1758,7 +1758,9 @@ start_element (void *data, const char *el, const char **attr)
 				return;
 			}
 			
-			if (prop_info && !strcmp (el, "TextBox.Text"))
+			if (prop_info &&
+			    (!strcmp (el, "TextBox.Text") ||
+			     !strcmp (el, "OutOfBrowserSettings.Blurb")))
 				prop_info->SetIsCDataVerbatim (true);
 			
 			if (!p->top_element) {

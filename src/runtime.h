@@ -275,6 +275,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	int GetUserInitiatedCounter () { return user_initiated_monotonic_counter; }
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	const char* GetSourceLocation ();
 	void SetSourceLocation (const char *location);
 	bool FullScreenKeyHandled (MoonKeyEvent *key);

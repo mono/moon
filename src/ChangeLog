@@ -1,3 +1,11 @@
+2010-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (start_element): we need to set IsCDataVerbatim == true
+	for OutOfBrowserSettings.Blurb in order for drt 8001 to pass.
+
+	* runtime.h (Surface::GetSourceLocation): we need a
+	cbinding/pinvoke for this.
+
 2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/window-gtk.cpp: MoonWindowGtk::[de]install_application:
