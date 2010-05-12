@@ -1,3 +1,10 @@
+2010-05-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* curl.m4: Show configure failure reason for embedded curl.
+
+	* chrome.m4: Add parenthesis around failure reasons to make configure output
+	more readable.
+
 2010-05-05  Chris Toshok  <toshok@ximian.com>
 
 	* pal.m4: add hardcoded dbus-glib network service.

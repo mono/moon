@@ -20,12 +20,12 @@ AC_DEFUN([MOONLIGHT_CHECK_CHROME_CRX],
 
 	if test "x$CHROME" = "xno" ; then
 	   chrome_extension="no"
-	   chrome_reason="no chrome executable"
+	   chrome_reason="(no chrome executable)"
 	fi
 
 	if test "x$with_curl" = "xno" ; then
 	   chrome_extension="no"
-	   chrome_reason="chrome support requires the curl bridge"
+	   chrome_reason="(chrome support requires the curl bridge)"
 	fi
 
 	AM_CONDITIONAL(CHROME_INSTALL, [test x$chrome_extension = xyes])

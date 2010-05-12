@@ -338,7 +338,7 @@ fi
 
 cat <<EOF
 	Fallback bridge support:
-          Curl bridge: $with_curl
+          Curl bridge: $with_curl $curl_reason
 EOF
 
 cat <<EOF

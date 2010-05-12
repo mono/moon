@@ -1,3 +1,7 @@
+2010-05-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Show any failure reason for curl.
+
 2010-05-10  Larry Ewing  <lewing@novell.com>
 
 	* cairo/: add cairo_pattern_*_color_tolerance.
