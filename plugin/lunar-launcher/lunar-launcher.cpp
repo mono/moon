@@ -26,6 +26,7 @@
 #include "runtime.h"
 #include "deployment.h"
 #include "downloader.h"
+#include "uri.h"
 
 #include "gtk/window-gtk.h"
 #include "gtk/pal-gtk.h"
@@ -159,29 +160,18 @@ load_bridge (const char *plugin_dir)
 }
 
 static bool
-load_app (Deployment *deployment, const char *app_id)
+load_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
 {
-	MoonInstallerService *installer;
-	const char *base_dir;
-	MoonAppRecord *app;
 	Surface *surface;
 	char *path, *uri;
-	
-	installer = runtime_get_installer_service ();
-	if (!(app = installer->GetAppRecord (app_id))) {
-		g_warning ("Could not find application: %s", app_id);
-		return false;
-	}
 	
 	/* use the App's origin URI as the surface's SourceLocation so that it
 	 * can do proper web download checks */
 	surface = deployment->GetSurface ();
 	surface->SetSourceLocation (app->origin);
-	delete app;
 	
 	/* get the install path/uri for the Xap */
-	base_dir = installer->GetBaseInstallDir ();
-	path = g_build_filename (base_dir, app_id, "Application.xap", NULL);
+	path = g_build_filename (base_dir, app->uid, "Application.xap", NULL);
 	uri = g_strdup_printf ("file://%s", path);
 	
 	deployment->SetXapFilename (path);
@@ -197,26 +187,36 @@ static GtkWidget *
 create_window (Deployment *deployment, const char *geometry, const char *app_id)
 {
 	MoonWindowingSystem *winsys;
+	MoonInstallerService *installer;
+	MoonAppRecord *app;
 	GtkWidget *widget, *window;
 	OutOfBrowserSettings *oob;
 	WindowSettings *settings;
 	MoonWindow *moon_window;
 	int width, height;
 	Surface *surface;
-	
+
+	/* get the pal services we need */
 	winsys = runtime_get_windowing_system ();
-	
+	installer = runtime_get_installer_service ();
+
+	/* fetch the app record */
+	if (!(app = installer->GetAppRecord (app_id))) {
+		g_warning ("Could not find application: %s", app_id);
+		return NULL;
+	}
+
 	/* create the moonlight widget */
 	moon_window = winsys->CreateWindow (false, 0, 0);
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 	bridge->SetSurface (surface);
+
+	if (!load_app (deployment, installer->GetBaseInstallDir (), app))
+		return NULL;
 	
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
-	
-	if (!load_app (deployment, app_id))
-		return NULL;
 	
 	widget = ((MoonWindowGtk *) moon_window)->GetWidget ();
 	g_signal_connect (widget, "size-allocate", G_CALLBACK (resize_surface), surface);
@@ -235,8 +235,23 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 		settings = NULL;
 	
 	if (settings != NULL) {
-		gtk_window_set_title ((GtkWindow *) window, settings->GetTitle ());
-		
+		Uri uri;
+		const char *hostname = NULL;
+
+		if (uri.Parse (app->origin))
+			hostname = uri.GetHost();
+
+		if (!hostname || !*hostname)
+			hostname = "localhost";
+
+		char *window_title = g_strdup_printf ("%s - %s",
+						      settings->GetTitle(),
+						      hostname);
+
+		gtk_window_set_title ((GtkWindow *) window, window_title);
+
+		g_free (window_title);
+
 		if (geometry == NULL) {
 			gtk_window_resize ((GtkWindow *) window, settings->GetWidth (), settings->GetHeight ());
 			
@@ -267,7 +282,9 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	/* resize the moonlight widget */
 	gtk_window_get_size ((GtkWindow *) window, &width, &height);
 	moon_window->Resize (width, height);
-	
+
+	delete app;
+
 	return window;
 }
 
