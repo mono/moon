@@ -112,6 +112,7 @@ namespace System.Net.Browser {
 		//	 i.e. it's not called after each redirection we need to follow
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
 		{
+			// Console.WriteLine ("{0} {1} {2}", GetType (), method, uri);
 			// we're not allowed to reuse an aborted request
 			if (IsAborted)
 				throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
@@ -128,11 +129,11 @@ namespace System.Net.Browser {
 			// this is the "global/total" IAsyncResult, it's also the public one
 			async_result = new HttpWebAsyncResult (callback, state);
 
-			GetResponse (this.Method, uri);
+			GetResponse (this.Method, uri, true);
 			return async_result;
 		}
 
-		private IAsyncResult GetResponse (string method, Uri uri)
+		private IAsyncResult GetResponse (string method, Uri uri, bool sendHeaders)
 		{
 			if ((uri.Scheme != "http") && (uri.Scheme != "https")) {
 				async_result.Exception = new SecurityException ("Bad scheme");
@@ -165,6 +166,8 @@ namespace System.Net.Browser {
 				return async_result;
 			}
 
+			if (!sendHeaders)
+				wreq.Headers.headers.Clear ();
 			wreq.progress = progress;
 
 			return wreq.BeginGetResponse (new AsyncCallback (EndCallback), wreq);
@@ -178,7 +181,7 @@ namespace System.Net.Browser {
 			policy = CrossDomainPolicyManager.BuildSilverlightPolicy (wres);
 			if (policy != null) {
 				// we got our policy so we can proceed with the main request
-				GetResponse (this.Method, uri);
+				GetResponse (this.Method, uri, false);
 			} else {
 				// no policy but we get a second chance to try a Flash policy
 				Uri flash_policy_uri = CrossDomainPolicyManager.GetFlashPolicyUri (wres.ResponseUri);
@@ -194,7 +197,7 @@ namespace System.Net.Browser {
 
 			// we either got a Flash policy or (if none/bad) a NoAccessPolicy, either way we continue...
 			policy = CrossDomainPolicyManager.BuildFlashPolicy (wres);
-			GetResponse (this.Method, uri);
+			GetResponse (this.Method, uri, false);
 		}
 
 		private void EndCallback (IAsyncResult result)
@@ -212,7 +215,15 @@ namespace System.Net.Browser {
 						async_result.SetComplete ();
 					} else {
 						string location = wres.Headers ["Location"];
-						GetResponse (Method, new Uri (location));
+						Uri redirect = new Uri (location);
+						// Silverlight does NOT redirect POST as POST to avoid cross site attacks - see DRT #866 or
+						// http://blogs.msdn.com/jackgr/archive/2010/04/19/silverlight-clients-and-appfabric-access-control.aspx
+						if ((String.Compare (method, "HEAD", StringComparison.OrdinalIgnoreCase) == 0) || 
+							(String.Compare (method, "GET", StringComparison.OrdinalIgnoreCase) == 0)) {
+							GetResponse (method, redirect, true);
+						} else {
+							GetResponse ("GET", redirect, false);
+						}
 					}
 				} else if (wres.StatusCode != HttpStatusCode.OK) {
 					// policy file could be missing, but then it means no policy

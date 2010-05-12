@@ -1,3 +1,9 @@
+2010-05-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PolicyBasedHttpWebRequest.cs: Revert r151713 since there were
+	reasons to redirect using GET instead of POST - based on previous
+	change it will still allow HEAD redirects
+
 2010-04-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ClientHttpWebRequest.cs: Don't check for Content-Type when
