@@ -1,3 +1,7 @@
+2010-05-12  Jackson Harper  <jackson@ximian.com>
+
+	* mxap.cs: Check assembly public key tokens for external parts.
+
 2010-05-10  Jackson Harper  <jackson@ximian.com>
 
 	* mxap.cs: Fix another typo.

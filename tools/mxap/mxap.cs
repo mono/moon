@@ -342,16 +342,20 @@ namespace Moonlight {
 			AssemblyName aname = asm.GetName ();
 
 			if (aname.Name != name) {
-				ExternalPartError (path, String.Format ("Assembly verification failed, names did not match ({0}, {1}).", aname.Name, name));
+				ExternalPartVerificationError (path, String.Format ("Names did not match ({0}, {1}).", aname.Name, name));
 				return false;
 			}
 
 			if (aname.Version.ToString () != version) {
-				ExternalPartError (path, String.Format ("Assembly verification failed, versions did not match ({0}, {1}).", aname.Version, version));
+				ExternalPartVerificationError (path, String.Format ("Versions did not match ({0}, {1}).", aname.Version, version));
 				return false;
 			}
 
-			// TODO: How do i check the public key token?
+			string otoken = BitConverter.ToString (aname.GetPublicKeyToken ()).Replace("-","");
+			if (otoken != publickeytoken.ToUpper ()) {
+				ExternalPartVerificationError (path, String.Format ("Public key tokens do not match ({0}, {1}).", otoken, publickeytoken.ToUpper ()));
+				return false;
+			}
 			
 			return true;
 		}
@@ -360,6 +364,11 @@ namespace Moonlight {
 		{
 			Console.Error.WriteLine ("Invalid external part manifest '{0}'. {1}", path, error);
 		}
+
+		private void ExternalPartVerificationError (string path, string error)
+		{
+			ExternalPartError (path, String.Concat ("Assembly verification failed. ", error));
+		}	
 
 		public bool CreateCodeBehind ()
 		{
