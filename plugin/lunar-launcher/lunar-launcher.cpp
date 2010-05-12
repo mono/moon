@@ -344,12 +344,20 @@ int main (int argc, char **argv)
 	
 	gtk_widget_show (window);
 	
+	gdk_threads_enter ();
 	gtk_main ();
+	gdk_threads_leave ();
 	
 	getopts_context_free (ctx, true);
 	lunar_downloader_shutdown ();
 	deployment->Shutdown ();
 	runtime_shutdown ();
 	
+	/* Our shutdown is async, so keep processing events/timeouts until there is
+	 * nothing more to do */	
+	while (g_main_context_iteration (NULL, false)) {
+		;
+	}
+
 	return EXIT_SUCCESS;
 }

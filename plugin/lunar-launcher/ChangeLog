@@ -1,3 +1,9 @@
+2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* lunar-launcher.cpp: gtk_main needs to be surrounded by
+	gtk_threads_enter/leave, and we also need to keep processing events/timeouts
+	before exiting to do a proper shutdown, since our shutdown sequence is async.
+
 2010-04-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* lunar-downloader.cpp|h: Update according to DownloaderRequest api changes.
