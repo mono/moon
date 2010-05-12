@@ -34,7 +34,8 @@ public:
 		UNAUTHORIZED_ACCESS = 7,
 		EXECUTION_ENGINE_EXCEPTION = 8,
 		GCHANDLE_EXCEPTION = 9,
-		LISTEN_FAILED = 10
+		LISTEN_FAILED = 10,
+		SEND_FAILED = 11,
 	};
 
 	// non-zero if an error occurred.

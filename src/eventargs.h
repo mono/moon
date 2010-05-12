@@ -398,11 +398,22 @@ private:
 /* @Namespace=None,ManagedDependencyProperties=None */
 class SendCompletedEventArgs : public EventArgs {
 public:
-	SendCompletedEventArgs (const char* message,
+	SendCompletedEventArgs (MoonError *error,
+				const char* message,
 				const char *receiverName,
 				const char* receiverDomain,
 				const char *response,
 				gpointer managedUserState);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void GetError (MoonError *error) {
+		if (this->error) {
+			*error = MoonError (*this->error);
+		}
+		else {
+			MoonError::FillIn (error, MoonError::NO_ERROR, "");
+		}
+	}
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetMessage () { return message; }
@@ -424,6 +435,7 @@ protected:
 	virtual ~SendCompletedEventArgs ();
 
 private:
+	MoonError *error;
 	char *message;
 	char *receiverName;
 	char *receiverDomain;

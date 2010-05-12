@@ -34,10 +34,12 @@ namespace System.Windows.Messaging {
 
 	public sealed class SendCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper
 	{
-		internal SendCompletedEventArgs (IntPtr raw, bool dropref)
-			: base (null,
+		internal SendCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
+			: base (exc,
 				false,
-				((GCHandle)NativeMethods.send_completed_event_args_get_managed_user_state (raw)).Target)
+				NativeMethods.send_completed_event_args_get_managed_user_state (raw) == IntPtr.Zero
+				? null
+				: GCHandle.FromIntPtr (NativeMethods.send_completed_event_args_get_managed_user_state (raw)).Target)
 		{
 			NativeHandle = raw;
 			if (dropref)

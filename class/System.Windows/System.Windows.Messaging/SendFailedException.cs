@@ -30,7 +30,8 @@ namespace System.Windows.Messaging {
 
 	public sealed class SendFailedException : Exception
 	{
-		internal SendFailedException ()
+		internal SendFailedException (string msg)
+			: base (msg)
 		{
 		}
 	}

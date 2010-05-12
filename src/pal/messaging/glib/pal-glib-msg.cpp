@@ -100,10 +100,10 @@ protected:
 			  StateMachine::SuccessFunc success)
 	{
 		if (IOCHANNEL_ERROR (condition)) {
+			SetError (g_strdup_printf (COND_HAS (condition, G_IO_HUP) ? "hang up while reading, state = %d" :
+						   COND_HAS (condition, G_IO_NVAL) ? "invalid fd while reading, state = %d" :
+						   /*COND_HAS (condition, G_IO_ERR) */ "poll errorw while reading, state = %d", current_state));
 			current_state = READ_ERROR;
-			SetError (g_strdup (COND_HAS (condition, G_IO_HUP) ? "hang up" :
-					    COND_HAS (condition, G_IO_NVAL) ? "invalid fd" :
-					    /*COND_HAS (condition, G_IO_ERR) */ "poll error"));
 
 			errorCallback (this, callbackData);
 
@@ -162,9 +162,9 @@ protected:
 			int num_written = write (fd, buffer + write_offset, buffer_length - write_offset);
 			if (num_written == -1) {
 				current_state = WRITE_ERROR;
-				SetError (g_strdup (COND_HAS (condition, G_IO_HUP) ? "hang up" :
-						    COND_HAS (condition, G_IO_NVAL) ? "invalid fd" :
-						    /*COND_HAS (condition, G_IO_ERR) */ "poll error"));
+				SetError (g_strdup (COND_HAS (condition, G_IO_HUP) ? "hang up while writing" :
+						    COND_HAS (condition, G_IO_NVAL) ? "invalid fd while writing" :
+						    /*COND_HAS (condition, G_IO_ERR) */ "poll error while writing"));
 
 				errorCallback (this, callbackData);
 
@@ -392,7 +392,6 @@ public:
 		g_io_channel_set_buffered (iochannel, FALSE);
 		g_io_channel_set_close_on_unref (iochannel, TRUE);
 		g_io_channel_set_flags (iochannel, (GIOFlags)(G_IO_FLAG_NONBLOCK | G_IO_FLAG_IS_WRITEABLE | G_IO_FLAG_IS_READABLE), NULL);
-		receiver_machine = NULL;
 	}
 
 	virtual ~MoonMessageListenerGlib ()
@@ -404,8 +403,6 @@ public:
 			g_source_remove (source_id);
 
 		g_io_channel_unref (iochannel);
-
-		delete receiver_machine;
 	}
 	
 	virtual void AddMessageReceivedCallback (MessageReceivedCallback messageReceivedCallback,
@@ -446,12 +443,12 @@ public:
 				return TRUE;
 			}
 
-			receiver_machine = new ReceiverMachine (sender_fd,
-								messageReceivedCallback,
-								data,
-								MoonMessageListenerGlib::machine_finished_callback,
-								MoonMessageListenerGlib::machine_error_callback,
-								this);
+			new ReceiverMachine (sender_fd,
+					     messageReceivedCallback,
+					     data,
+					     MoonMessageListenerGlib::machine_finished_callback,
+					     MoonMessageListenerGlib::machine_error_callback,
+					     this);
 
 			return TRUE;
 		}
@@ -467,25 +464,15 @@ public:
 
 	static void machine_finished_callback (gpointer data, gpointer user_data)
 	{
-		((MoonMessageListenerGlib*)user_data)->MachineFinishedCallback ();
-	}
+	    ReceiverMachine *machine = (ReceiverMachine*)data;
 
-	void MachineFinishedCallback ()
-	{
-		delete receiver_machine;
-		receiver_machine = NULL;
+	    delete machine;
 	}
 
 	static void machine_error_callback (gpointer data, gpointer user_data)
 	{
-		((MoonMessageListenerGlib*)user_data)->MachineErrorCallback ();
-	}
-
-	void MachineErrorCallback ()
-	{
-		g_warning ("ReceiverMachine had an error: %s\n", receiver_machine->GetError());
-		delete receiver_machine;
-		receiver_machine = NULL;
+	    ReceiverMachine *machine = (ReceiverMachine*)data;
+	    delete machine;
 	}
 
 	virtual void RemoveMessageReceivedCallback ()
@@ -500,8 +487,6 @@ private:
 	int fd;
 	GIOChannel *iochannel;
 	guint source_id;
-
-	ReceiverMachine *receiver_machine;
 
 	MessageReceivedCallback messageReceivedCallback;
 	gpointer data;
@@ -608,7 +593,7 @@ public:
 private:
 	void on_finished ()
 	{
-		messageSentCallback (message_contents, response_contents, managedUserState, messageSentCallbackData);
+		messageSentCallback (NULL, message_contents, response_contents, managedUserState, messageSentCallbackData);
 
 		finishedCallback (this, callbackData);
 	}
@@ -839,10 +824,25 @@ private:
 		delete machine;
 	}
 
+	void MachineError (const char *error_msg)
+	{
+		if (messageSentCallback) {
+			MoonError err;
+			MoonError::FillIn (&err, MoonError::SEND_FAILED, error_msg);
+			messageSentCallback (&err, NULL, NULL, NULL, messageSentCallbackData);
+		}
+	}
+	
+
 	static void machine_error_callback (gpointer data, gpointer user_data)
 	{
 		SenderMachine *machine = (SenderMachine*)data;
+		MoonMessageSenderGlib *sender = (MoonMessageSenderGlib*)user_data;
+		
 		g_warning ("SenderMachine had an error: %s\n", machine->GetError());
+
+		sender->MachineError (machine->GetError());
+
 		delete machine;
 	}
 

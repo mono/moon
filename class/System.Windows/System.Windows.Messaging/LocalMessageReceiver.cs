@@ -37,7 +37,7 @@ namespace System.Windows.Messaging {
 
 		public LocalMessageReceiver (string receiverName)
 			: this (receiverName,
-				ReceiverNameScope.Global,
+				ReceiverNameScope.Domain,
 				AnyDomain)
 		{
 		}
@@ -83,13 +83,11 @@ namespace System.Windows.Messaging {
 
 		public void Listen()
 		{
-			Console.WriteLine ("LocalMessageReceiver.Listen");
 			NativeMethods.local_message_receiver_listen (NativeHandle);
 		}
 
 		public void Dispose ()
 		{
-			Console.WriteLine ("LocalMessageReceiver.Dispose");
 			NativeMethods.local_message_receiver_dispose (NativeHandle);
 		}
 

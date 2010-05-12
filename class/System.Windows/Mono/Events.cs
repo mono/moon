@@ -258,8 +258,19 @@ namespace Mono {
 		public static UnmanagedEventHandler CreateSendCompletedEventArgsEventHandlerDispatcher (EventHandler <SendCompletedEventArgs> handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
-						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
-							    new SendCompletedEventArgs (calldata, false)) );
+						=> {
+							Exception exc = null;
+
+							try {
+								NativeMethods.send_completed_event_args_get_error (calldata);
+							}
+							catch (Exception e) {
+								exc = e;
+							}
+
+							handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								 new SendCompletedEventArgs (calldata, exc, false));
+						} );
 		}
 
 		public static UnmanagedEventHandler CreateEndPrintEventArgsEventHandlerDispatcher (EventHandler <EndPrintEventArgs> handler)

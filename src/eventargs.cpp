@@ -462,13 +462,15 @@ MessageReceivedEventArgs::~MessageReceivedEventArgs ()
 // SendCompletedEventArgs
 //
 
-SendCompletedEventArgs::SendCompletedEventArgs (const char* message,
+SendCompletedEventArgs::SendCompletedEventArgs (MoonError *error,
+						const char* message,
 						const char* receiverName,
 						const char* receiverDomain,
 						const char* response,
 						gpointer managedUserState)
 	: EventArgs (Type::SENDCOMPLETEDEVENTARGS)
 {
+	this->error = error ? new MoonError (*error) : NULL;
 	this->message = g_strdup (message);
 	this->receiverName = g_strdup (receiverName);
 	this->receiverDomain = g_strdup (receiverDomain);
@@ -478,6 +480,7 @@ SendCompletedEventArgs::SendCompletedEventArgs (const char* message,
 
 SendCompletedEventArgs::~SendCompletedEventArgs ()
 {
+	delete error;
 	g_free (message);
 	g_free (receiverName);
 	g_free (receiverDomain);

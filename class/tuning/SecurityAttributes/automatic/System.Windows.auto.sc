@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 428 methods needs to be decorated.
+# 429 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1035,6 +1035,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::runtime_init_desktop()
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::send_completed_event_args_get_error_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::shader_effect_update_shader_constant(System.IntPtr,System.Int32,System.Double,System.Double,System.Double,System.Double)

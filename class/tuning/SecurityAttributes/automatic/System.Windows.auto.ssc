@@ -1,7 +1,8 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 561 methods
+# 562 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
++SSC-M: System.Void Mono.Events/<CreateSendCompletedEventArgsEventHandlerDispatcher>c__AnonStorey1C::<>m__1B(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -493,7 +494,7 @@
 +SSC-M: System.String System.Windows.Messaging.MessageReceivedEventArgs::get_Response()
 +SSC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::set_Response(System.String)
 +SSC-M: System.String System.Windows.Messaging.MessageReceivedEventArgs::get_SenderDomain()
-+SSC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::.ctor(System.IntPtr,System.Boolean)
++SSC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::.ctor(System.IntPtr,System.Exception,System.Boolean)
 +SSC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::Free()
 +SSC-M: System.String System.Windows.Messaging.SendCompletedEventArgs::get_Message()
 +SSC-M: System.String System.Windows.Messaging.SendCompletedEventArgs::get_ReceiverDomain()

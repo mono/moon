@@ -1,3 +1,16 @@
+2010-05-11  Chris Toshok  <toshok@ximian.com>
+
+	* SendFailedException.cs: add a string arg to the ctor.
+
+	* SendCompletedEventArgs.cs: add an Exception arg to the ctor, and
+	pass it along to the base class.  Also, make the user state
+	handling more robust.
+
+	* LocalMessageReceiver.cs (ctor): the 1 arg ctor defaults to
+	Domain namescope, not Global.
+	(Listen): remove spew.
+	(Dispose): remove spew.
+
 2010-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* ListenFailedException.cs: make this ctor take a message so we

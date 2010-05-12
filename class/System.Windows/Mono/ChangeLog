@@ -1,3 +1,13 @@
+2010-05-11  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs (CreateManagedException): add
+	SendFailedException support.
+
+	* Events.cs (CreateSendCompletedEventArgsEventHandlerDispatcher):
+	we need a little hack here to get the exception from the error,
+	given the way our generator marshals MoonErrors.  Pass the
+	exception to SendCompletedEventArgs's ctor.
+
 2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Events.cs: Added safe handler for ContentChangedEventHandler.

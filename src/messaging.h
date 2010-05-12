@@ -73,13 +73,14 @@ protected:
 	virtual ~LocalMessageSender ();
 
 private:
-	static void MessageSentHandler (const char *message, const char *response, gpointer managedUserState, gpointer data);
-	void MessageSent (const char *message, const char *msg, gpointer managedUserState);
+	static void MessageSentHandler (MoonError *error, const char *message, const char *response, gpointer managedUserState, gpointer data);
+	void MessageSent (MoonError *error, const char *message, const char *msg, gpointer managedUserState);
 
 	MoonMessageSender *sender;
 
 	char *receiverName;
 	char *receiverDomain;
+	char *senderDomain;
 };
 
 #endif /* __MOON_MESSAGING_H__ */

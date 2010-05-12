@@ -1,3 +1,30 @@
+2010-05-11  Chris Toshok  <toshok@ximian.com>
+
+	* pal/messaging/glib/pal-glib-msg.cpp (StateMachine::do_read): add
+	a bit more info to the error message.
+	(StateMachine::do_write): same.
+	(MoonMessageListener::machine_finished_callback): stop using a
+	"receiver_machine" instance variable.  it'll always point to the
+	most recently created one.  we know which machine finished, it's
+	the "data" parameter.
+	(MoonMessageListener::machine_error_callback): same here.
+	(SenderMachine::on_finished): pass NULL for the error.
+	(MoonMessageSender::MachineError): call the messageSentCallback
+	with a MoonError.
+
+	* messaging.cpp,h (LocalMessageReceiver::LocalMessageReceiver):
+	get the domain from the deployment's xap location.
+	(LocalMessageReceiver::MessageReceived): it appears that if
+	there's no response supplied, we use the receiverName as the
+	response string.
+	(LocalMessageSender::LocalMessageSender): get the sender domain
+	from the xap location.
+	(MessageSentHandler, MessageSent): add a MoonError parameter.
+	Also only emit the event if there are handlers.
+
+	* eventargs.h,cpp: add a MoonError argument to the ctor, and a
+	GetErorr method that will throw the exception in managed.
+
 2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* provider.cpp: Fixed inherited macros to reference the

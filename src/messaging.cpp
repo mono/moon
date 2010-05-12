@@ -15,6 +15,8 @@
 
 #include "messaging.h"
 #include "runtime.h"
+#include "deployment.h"
+#include "uri.h"
 
 LocalMessageReceiver::LocalMessageReceiver (const char *receiverName,
 					    ReceiverNameScope namescope)
@@ -25,8 +27,26 @@ LocalMessageReceiver::LocalMessageReceiver (const char *receiverName,
 	this->namescope = namescope;
 	if (namescope == ReceiverNameScopeGlobal)
 		this->receiverDomain = g_strdup ("*");
-	else
-		this->receiverDomain = g_strdup ("receiverDomain"); /// need to retrieve this from the plugin
+	else {
+		this->receiverDomain = NULL;
+
+		Deployment *deployment = Deployment::GetCurrent();
+		if (deployment) {
+			Uri uri;
+			if (uri.Parse (deployment->GetXapLocation(), true)) {
+				this->receiverDomain = g_strdup (uri.GetHost());
+			}
+			else {
+				g_warning ("LocalMessageReceiver.ctor uri parse failed on %s", deployment->GetXapLocation());
+			}
+		}
+		else {
+			g_warning ("LocalMessageReceiver.ctor no deployment");
+		}
+
+		if (this->receiverDomain == NULL)
+			this->receiverDomain = g_strdup ("*");
+	}
 }
 
 LocalMessageReceiver::~LocalMessageReceiver ()
@@ -110,7 +130,12 @@ LocalMessageReceiver::MessageReceived (const char *msg)
 
 	Emit (MessageReceivedEvent, args);
 
-	char *response = g_strdup (args->GetResponse());
+	char *response;
+	const char *args_response = args->GetResponse();
+	if (args_response && *args_response)
+		response = g_strdup (args_response);
+	else
+		response = g_strdup (receiverName);
 
 	args->unref ();
 
@@ -132,7 +157,22 @@ LocalMessageSender::LocalMessageSender (const char *receiverName, const char *re
 	SetObjectType (Type::LOCALMESSAGESENDER);
 
 	this->receiverName = g_strdup (receiverName);
-	this->receiverDomain = g_strdup (receiverDomain);
+	this->receiverDomain = g_strdup (receiverDomain && *receiverDomain ? receiverDomain : "*");
+
+	this->senderDomain = NULL;
+
+	Deployment *deployment = Deployment::GetCurrent();
+	if (deployment) {
+		Uri uri;
+		if (uri.Parse (deployment->GetXapLocation())) {
+			this->senderDomain = g_strdup (uri.GetHost());
+		}
+	}
+
+	if (this->senderDomain == NULL)
+		this->senderDomain = g_strdup ("");
+
+	this->receiverDomain = g_strdup (receiverDomain && *receiverDomain ? receiverDomain : senderDomain);
 
 	sender = NULL;
 }
@@ -144,6 +184,7 @@ LocalMessageSender::~LocalMessageSender ()
 
 	g_free (receiverName);
 	g_free (receiverDomain);
+	g_free (senderDomain);
 }
 
 void
@@ -152,7 +193,7 @@ LocalMessageSender::SendAsyncWithError (const char *msg, gpointer managedUserSta
 	if (sender == NULL) {
 		sender = runtime_get_messaging_service ()->CreateMessagingSender (receiverName,
 										  receiverDomain,
-										  "senderDomain" /* need to retrieve this from the plugin*/,
+										  senderDomain,
 										  error);
 		if (sender == NULL)
 			return;
@@ -164,20 +205,22 @@ LocalMessageSender::SendAsyncWithError (const char *msg, gpointer managedUserSta
 }
 
 void
-LocalMessageSender::MessageSentHandler (const char *message, const char *response, gpointer managedUserState, gpointer data)
+LocalMessageSender::MessageSentHandler (MoonError *error, const char *message, const char *response, gpointer managedUserState, gpointer data)
 {
 	LocalMessageSender *sender = (LocalMessageSender*)data;
 
-	sender->MessageSent (message, response, managedUserState);
+	sender->MessageSent (error, message, response, managedUserState);
 }
 
 void
-LocalMessageSender::MessageSent (const char *message, const char *response, gpointer managedUserState)
+LocalMessageSender::MessageSent (MoonError *error, const char *message, const char *response, gpointer managedUserState)
 {
-	SendCompletedEventArgs *args = new SendCompletedEventArgs (message,
-								   receiverName,
-								   receiverDomain,
-								   response,
-								   managedUserState);
-	Emit (SendCompletedEvent, args);
+	if (HasHandlers (SendCompletedEvent)) {
+		Emit (SendCompletedEvent, new SendCompletedEventArgs (error,
+								      message,
+								      receiverName,
+								      receiverDomain,
+								      response,
+								      managedUserState));
+	}
 }
