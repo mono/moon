@@ -825,7 +825,6 @@ clean-local:
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
 	$(INSTALL) -c -m 755  $(assemblysl) $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll
-	$(INSTALL) -c -m 644  $(assembly).dll.config $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.config
 	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.mdb
 else
 install-sl:
