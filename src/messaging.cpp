@@ -157,7 +157,6 @@ LocalMessageSender::LocalMessageSender (const char *receiverName, const char *re
 	SetObjectType (Type::LOCALMESSAGESENDER);
 
 	this->receiverName = g_strdup (receiverName);
-	this->receiverDomain = g_strdup (receiverDomain && *receiverDomain ? receiverDomain : "*");
 
 	this->senderDomain = NULL;
 
