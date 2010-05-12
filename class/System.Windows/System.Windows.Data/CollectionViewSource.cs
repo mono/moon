@@ -146,7 +146,7 @@ namespace System.Windows.Data {
 				if (CachedViews.TryGetValue (newSource, out view)) {
 					View = view;
 				} else {
-					view = new StandardCollectionView ((IEnumerable) newSource);
+					view = CollectionView.Create ((IEnumerable) newSource);
 					CachedViews.Add (newSource, view);
 					View = view;
 				}

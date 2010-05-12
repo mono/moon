@@ -36,7 +36,7 @@ namespace System.Windows.Data {
 		public IList ActiveList {
 			get {
 				if (Filter == null && GroupDescriptions.Count == 0 && SortDescriptions.Count == 0)
-					return (IList) SourceCollection;
+					return SourceCollection;
 				return filteredList;
 			}
 		}
@@ -173,12 +173,17 @@ namespace System.Windows.Data {
 			get; private set;
 		}
 
-		public IEnumerable SourceCollection {
+		IEnumerable ICollectionView.SourceCollection {
+			get { return SourceCollection; }
+		}
+
+		public IList SourceCollection {
 			get; private set;
 		}
 
-		public StandardCollectionView (IEnumerable list)
+		public StandardCollectionView (IList collection)
 		{
+			SourceCollection = collection;
 			Func<PropertyChangedEventHandler> changed = () => PropertyChanged;
 
 			canAddNew = INPCProperty.Create (() => CanAddNew, changed);
@@ -195,23 +200,23 @@ namespace System.Windows.Data {
 			isEditingItem = INPCProperty.Create (() => IsEditingItem, changed);
 			newItemPlaceholderPosition = INPCProperty.Create (() => NewItemPlaceholderPosition, changed);
 
-			SourceCollection = list;
+			SourceCollection = collection;
 			SortDescriptions = new SortDescriptionCollection ();
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
-			var interfaces = list.GetType ().GetInterfaces ();
+			var interfaces = SourceCollection.GetType ().GetInterfaces ();
 			foreach (var t in interfaces)
 				if (t.IsGenericType && t.GetGenericTypeDefinition () == typeof (IList<>))
 					ItemType = t.GetGenericArguments () [0];
 
-			CanAddNew = ItemType != null && list is IList && !((IList)list).IsFixedSize;;
-			CanRemove = list is IList && !((IList)list).IsFixedSize;
-			filteredList = new List <object> (list.Cast <object> ());
+			UpdateCanAddNew ();
+			CanRemove = !SourceCollection.IsFixedSize;
+			filteredList = new List <object> (SourceCollection.Cast <object> ());
 			CurrentPosition = -1;
 			MoveCurrentToPosition (0);
 
-			if (list is INotifyCollectionChanged)
-				((INotifyCollectionChanged) list).CollectionChanged += HandleSourceCollectionChanged;
+			if (SourceCollection is INotifyCollectionChanged)
+				((INotifyCollectionChanged) SourceCollection).CollectionChanged += HandleSourceCollectionChanged;
 
 			GroupDescriptions.CollectionChanged += (o, e) => Refresh ();
 			((INotifyCollectionChanged) SortDescriptions).CollectionChanged += (o, e) => Refresh ();
@@ -408,7 +413,7 @@ namespace System.Windows.Data {
 			if (ItemType == null)
 				throw new InvalidOperationException ("The underlying collection does not support adding new items");
 
-			if (((IList) SourceCollection).IsFixedSize)
+			if (SourceCollection.IsFixedSize)
 				throw new InvalidOperationException ("The source collection is of fixed size");
 
 			// If there's an existing AddNew or Edit, we commit it
@@ -427,20 +432,18 @@ namespace System.Windows.Data {
 
 		void AddToSourceCollection (object item)
 		{
-			IList source = (IList) SourceCollection;
-			source.Add (item);
-			if (!(source is INotifyCollectionChanged)) {
-				HandleSourceCollectionChanged (source, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, item, source.Count - 1));
+			SourceCollection.Add (item);
+			if (!(SourceCollection is INotifyCollectionChanged)) {
+				HandleSourceCollectionChanged (SourceCollection, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, item, SourceCollection.Count - 1));
 			}
 		}
 
 		void RemoveFromSourceCollection (object item)
 		{
-			IList source = (IList) SourceCollection;
-			int index = source.IndexOf (item);
-			source.RemoveAt (index);
-			if (!(source is INotifyCollectionChanged)) {
-				HandleSourceCollectionChanged (source, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, item, index));
+			int index = SourceCollection.IndexOf (item);
+			SourceCollection.RemoveAt (index);
+			if (!(SourceCollection is INotifyCollectionChanged)) {
+				HandleSourceCollectionChanged (SourceCollection, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, item, index));
 			}
 		}
 
@@ -453,6 +456,7 @@ namespace System.Windows.Data {
 				CurrentEditItem = null;
 				IsEditingItem = false;
 				CanCancelEdit = false;
+				UpdateCanAddNew ();
 			}
 		}
 
@@ -477,6 +481,7 @@ namespace System.Windows.Data {
 				CurrentEditItem = null;
 				IsEditingItem = false;
 				CanCancelEdit = false;
+				UpdateCanAddNew ();
 			}
 		}
 
@@ -503,6 +508,7 @@ namespace System.Windows.Data {
 				CanCancelEdit = true;
 				((IEditableObject) item).BeginEdit ();
 			}
+			UpdateCanAddNew ();
 		}
 
 		public void Remove (object item)
@@ -512,7 +518,14 @@ namespace System.Windows.Data {
 
 		public void RemoveAt (int index)
 		{
-			RemoveFromSourceCollection (((IList) SourceCollection)[index]);
+			RemoveFromSourceCollection (SourceCollection[index]);
+		}
+
+		void UpdateCanAddNew ()
+		{
+			var value = ItemType != null && !SourceCollection.IsFixedSize && !IsEditingItem;
+			if (value != CanAddNew)
+				CanAddNew = value;
 		}
 	}
 }

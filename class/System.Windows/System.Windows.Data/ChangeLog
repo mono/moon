@@ -1,5 +1,21 @@
 2010-05-12  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewSource.cs: Call the factory method to create
+	  the correct type of collection view.
+
+	* CollectionView.cs: Add a CollectionView class which contains
+	  a factory method to create the correct ICollectionView for a
+	  given source collection.
+
+	* EnumerableCollectionView.cs: Add a new
+	  EnumerableCollectionView which works with IEnumerables which
+	  are not ILists.
+
+	* StandardCollectionView.cs: Refactor StandardCollectionView
+	  so that it only accepts an IList.
+
+2010-05-12  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Refactor StandardCollectionView
 	  so that we only use the filtered list when we are grouping,
 	  filtering or sorting. Fixes more of 232 and the new
