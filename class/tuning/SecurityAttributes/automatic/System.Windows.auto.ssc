@@ -2,7 +2,7 @@
 # 562 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
-+SSC-M: System.Void Mono.Events/<CreateSendCompletedEventArgsEventHandlerDispatcher>c__AnonStorey1C::<>m__1B(System.IntPtr,System.IntPtr,System.IntPtr)
++SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)

@@ -1,3 +1,9 @@
+2010-05-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Events.cs (CreateSendCompletedEventArgsEventHandlerDispatcher):
+	Do not use anonymous methods for code that needs to be decorated
+	with [SecuritySafeCritical] since the compiler can renamed them
+
 2010-05-11  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs (CreateManagedException): add

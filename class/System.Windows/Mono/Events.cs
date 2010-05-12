@@ -255,18 +255,23 @@ namespace Mono {
 							    new MessageReceivedEventArgs (calldata, false)) );
 		}
 
+		// avoid having SSC code in anonymous methods since their name can change on a compiler's whim
+		private static Exception SendCompletedEventArgsGetError (IntPtr calldata)
+		{
+			try {
+				NativeMethods.send_completed_event_args_get_error (calldata);
+				return null;
+			}
+			catch (Exception e) {
+				return e;
+			}
+		}
+
 		public static UnmanagedEventHandler CreateSendCompletedEventArgsEventHandlerDispatcher (EventHandler <SendCompletedEventArgs> handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> {
-							Exception exc = null;
-
-							try {
-								NativeMethods.send_completed_event_args_get_error (calldata);
-							}
-							catch (Exception e) {
-								exc = e;
-							}
+							Exception exc = SendCompletedEventArgsGetError (calldata);
 
 							handler (NativeDependencyObjectHelper.FromIntPtr (closure),
 								 new SendCompletedEventArgs (calldata, exc, false));
