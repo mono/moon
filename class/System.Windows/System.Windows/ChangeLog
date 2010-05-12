@@ -1,3 +1,9 @@
+2010-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: remove InitializePluginHost and roll its 2 lines
+	into InitializeDeployment.  also initialize the appdomain's
+	"xap_uri" setting in the non-plugin case.
+
 2010-05-10  Alan McGovern  <amcgovern@novell.com>
 
 	* UIElement.cs: Move TemplateOwner to DependencyObject

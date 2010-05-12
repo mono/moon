@@ -81,13 +81,20 @@ namespace System.Windows.Interop {
 		public Uri Source {
 			get {
 				if (source_uri == null) {
-					// note: this must return the original URI (i.e. before any redirection)
-					string source = NativeMethods.plugin_instance_get_source_original (PluginHost.Handle);
-					source_uri = new Uri (source, UriKind.RelativeOrAbsolute);
-					// the source is often relative (but can be absolute for cross-domain applications)
-					if (!source_uri.IsAbsoluteUri) {
-						string location = NativeMethods.plugin_instance_get_source_location_original (PluginHost.Handle);
-						source_uri = new Uri (new Uri (location), source_uri);
+					if (PluginHost.Handle == IntPtr.Zero) {
+						string source = NativeMethods.surface_get_source_location (Deployment.Current.Surface.Native);
+
+						source_uri = new Uri (source, UriKind.RelativeOrAbsolute);
+					}
+					else {
+						// note: this must return the original URI (i.e. before any redirection)
+						string source = NativeMethods.plugin_instance_get_source_original (PluginHost.Handle);
+						source_uri = new Uri (source, UriKind.RelativeOrAbsolute);
+						// the source is often relative (but can be absolute for cross-domain applications)
+						if (!source_uri.IsAbsoluteUri) {
+							string location = NativeMethods.plugin_instance_get_source_location_original (PluginHost.Handle);
+							source_uri = new Uri (new Uri (location), source_uri);
+						}
 					}
 				}
 				return source_uri;

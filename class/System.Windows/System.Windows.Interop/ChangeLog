@@ -1,3 +1,11 @@
+2010-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* SilverlightHost.cs (get_Source): deal with PluginHost.Handle ==
+	IntPtr.Zero, by using Surface::GetSourceLocation.
+
+	* PluginHost.cs (GetApplicationIdentity): open this method up so
+	we can call it from Deployment.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ComAutomationMetaObjectProviderAwaitingIndex.cs:

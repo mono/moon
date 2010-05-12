@@ -73,7 +73,7 @@ namespace System.Windows.Interop {
 		}
 
 		// used by IsolatedStorage (who has no access to the Uri class)
-		static string GetApplicationIdentity (Uri uri)
+		public static string GetApplicationIdentity (Uri uri)
 		{
 			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
 				return String.Format ("{0}://{1}{2}", uri.Scheme, uri.DnsSafeHost, uri.AbsolutePath);
