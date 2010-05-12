@@ -160,6 +160,62 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void AddNew_OutOfSync ()
+		{
+			var initialCount = Items.Count;
+			Items.Add (new object ());
+			Items.Add (new object ());
+
+			var alteredCount = Items.Count;
+			Assert.AreEqual (alteredCount, View.Cast<object> ().Count (), "#1");
+
+			var newItem = Editable.AddNew ();
+			Assert.AreEqual (alteredCount + 1, View.Cast<object> ().Count (), "#2");
+
+			Assert.IsTrue (View.MoveCurrentTo (Items [initialCount + 1]), "#3");
+			Assert.AreEqual (Items [initialCount + 1], View.CurrentItem, "#4");
+		}
+
+		[TestMethod]
+		public void AddNew_OutOfSync_Filtered ()
+		{
+			Source.Filter += (o, e) => e.Accepted = true;
+			TestClonesCollection ();
+		}
+
+		[TestMethod]
+		public void AddNew_OutOfSync_Grouped ()
+		{
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription () {
+				GroupNameFromItemFunc = (item, depth, culture) => Items.IndexOf (item) < 3 ? "A" : "B",
+			});
+			TestClonesCollection ();
+		}
+
+		[TestMethod]
+		public void AddNew_OutOfSync_Sorted ()
+		{
+			Source.SortDescriptions.Add (new SortDescription ("blah", ListSortDirection.Ascending));
+			TestClonesCollection ();
+		}
+
+		void TestClonesCollection ()
+		{
+			var initialCount = Items.Count;
+			Items.Add (new object ());
+			Items.Add (new object ());
+
+			var alteredCount = Items.Count;
+			Assert.AreEqual (initialCount, View.Cast<object> ().Count (), "#1");
+
+			var newItem = Editable.AddNew ();
+			Assert.AreEqual (initialCount + 1, View.Cast<object> ().Count (), "#2");
+
+			Assert.IsFalse (View.MoveCurrentTo (Items [initialCount + 1]), "#3");
+			Assert.IsNull (View.CurrentItem, "#4");
+		}
+
+		[TestMethod]
 		public void AddNew_ListObject_WithInt ()
 		{
 			Source.Source = new List<object> { 1, 2, 3 };

@@ -33,6 +33,13 @@ namespace System.Windows.Data {
 		Predicate<object> filter;
 		List<object> filteredList;
 
+		public IList ActiveList {
+			get {
+				if (Filter == null && GroupDescriptions.Count == 0 && SortDescriptions.Count == 0)
+					return (IList) SourceCollection;
+				return filteredList;
+			}
+		}
 
 		public bool CanAddNew {
 			get { return canAddNew.Value; }
@@ -77,10 +84,6 @@ namespace System.Windows.Data {
 
 		public bool CanSort {
 			get; private set;
-		}
-
-		int Count {
-			get { return filteredList.Count; }
 		}
 
 		public CultureInfo Culture {
@@ -155,7 +158,7 @@ namespace System.Windows.Data {
 		}
 
 		bool IsValidSelection {
-			get { return CurrentPosition >= 0 && CurrentPosition < filteredList.Count; }
+			get { return CurrentPosition >= 0 && CurrentPosition < ActiveList.Count; }
 		}
 
 		Type ItemType {
@@ -216,6 +219,9 @@ namespace System.Windows.Data {
 
 		void HandleSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
+			if (ActiveList == SourceCollection)
+				return;
+
 			// FIXME: If i inserted to the middle of the source list it'll be appended at the end
 			// of our filtered list. This is probably not right. Similarly for the rest.
 			switch (e.Action) {
@@ -287,12 +293,12 @@ namespace System.Windows.Data {
 		{
 			if (GroupDescriptions.Count > 0 && RootGroup != null)
 				return new GroupEnumerator (RootGroup);
-			return filteredList.GetEnumerator ();
+			return ActiveList.GetEnumerator ();
 		}
 
 		public bool MoveCurrentTo (object item)
 		{
-			return MoveCurrentTo (filteredList.IndexOf (item));
+			return MoveCurrentTo (ActiveList.IndexOf (item));
 		}
 
 		bool MoveCurrentTo (int position)
@@ -313,10 +319,10 @@ namespace System.Windows.Data {
 					return true;
 			}
 
-			IsCurrentAfterLast = position == filteredList.Count || Count == 0;
-			IsCurrentBeforeFirst = position == -1 || Count == 0;
+			IsCurrentAfterLast = position == ActiveList.Count || ActiveList.Count == 0;
+			IsCurrentBeforeFirst = position == -1 || ActiveList.Count == 0;
 			CurrentPosition = position;
-			CurrentItem = position < 0 || position >= filteredList.Count ? null : filteredList [position];
+			CurrentItem = position < 0 || position >= ActiveList.Count ? null : ActiveList [position];
 
 			var h2 = CurrentChanged;
 			if (h2 != null)
@@ -332,12 +338,12 @@ namespace System.Windows.Data {
 
 		public bool MoveCurrentToLast ()
 		{
-			return MoveCurrentTo (filteredList.Count - 1);
+			return MoveCurrentTo (ActiveList.Count - 1);
 		}
 
 		public bool MoveCurrentToNext ()
 		{
-			return CurrentPosition != filteredList.Count && MoveCurrentTo (CurrentPosition + 1);
+			return CurrentPosition != ActiveList.Count && MoveCurrentTo (CurrentPosition + 1);
 		}
 
 		public bool MoveCurrentToPosition (int position)
@@ -365,22 +371,25 @@ namespace System.Windows.Data {
 			if (RootGroup == null)
 				RootGroup = new StandardCollectionViewGroup (null, null, 0, false);
 
-			filteredList.Clear ();
-			foreach (var item in SourceCollection)
-				AddToFiltered (item);
-
-			if (SortDescriptions.Count > 0)
-				filteredList.Sort (new PropertyComparer (SortDescriptions));
-
 			Groups = null;
 			RootGroup.ClearItems ();
-			if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
-				foreach (var item in filteredList)
-					RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
-				Groups = RootGroup.Items;
+
+			if (ActiveList != SourceCollection) {
+				filteredList.Clear ();
+				foreach (var item in SourceCollection)
+					AddToFiltered (item);
+	
+				if (SortDescriptions.Count > 0)
+					filteredList.Sort (new PropertyComparer (SortDescriptions));
+
+				if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
+					foreach (var item in filteredList)
+						RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
+					Groups = RootGroup.Items;
+				}
 			}
 
-			if (filteredList.Count > 0) {
+			if (ActiveList.Count > 0) {
 				MoveCurrentTo (CurrentPosition, true);
 			} else {
 				MoveCurrentTo (-1);
