@@ -51,7 +51,7 @@ StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, P
 	style = NULL;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
-					    (GDestroyNotify)NULL);
+					    (GDestroyNotify)value_free_value);
 }
 
 void
@@ -93,6 +93,8 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Mo
 			continue;
 
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
+		if (new_value != NULL)
+			new_value = new Value (*new_value);
 
 		setter->ref ();
 		old_value = (Value *) g_hash_table_lookup (style_hash, property);
@@ -140,6 +142,8 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 			// This is a property which is in both styles
 			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
+			if (newValue != NULL)
+				newValue = new Value (*newValue);
 
 			g_hash_table_insert (style_hash, oldProp, newValue);
 			obj->ProviderValueChanged (precedence, oldProp, oldValue, newValue, true, true, false, error);
@@ -150,6 +154,8 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 			// This is a property which is only in the new style
 			oldValue = NULL;
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
+			if (newValue != NULL)
+				newValue = new Value (*newValue);
 
 			g_hash_table_insert (style_hash, newProp, newValue);
 			obj->ProviderValueChanged (precedence, newProp, oldValue, newValue, true, true, false, error);
