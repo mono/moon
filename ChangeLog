@@ -1,3 +1,7 @@
+2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Bump mono/mcs to r157252.
+
 2010-05-12  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac (LUNAR_LAUNCHER_CFLAGS): add MONO_CFLAGS, since

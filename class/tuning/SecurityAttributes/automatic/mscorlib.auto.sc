@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 431 methods needs to be decorated.
+# 432 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -603,6 +603,9 @@
 
 # internal call
 +SC-M: System.Object System.Enum::get_value()
+
+# internal call
++SC-M: System.Object System.GC::get_ephemeron_tombstone()
 
 # [VISIBLE] overrides 'System.Object System.Delegate::DynamicInvokeImpl(System.Object[])'.
 +SC-M: System.Object System.MulticastDelegate::DynamicInvokeImpl(System.Object[])

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 451 methods
+# 452 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -106,6 +106,7 @@
 +SSC-M: System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SSC-M: System.Boolean System.Environment::get_IsRunningOnWindows()
 +SSC-M: System.String System.Exception::get_StackTrace()
++SSC-M: System.Void System.GC::.cctor()
 +SSC-M: System.Void System.GC::Collect()
 +SSC-M: System.Void System.Globalization.CompareInfo::.ctor(System.Globalization.CultureInfo)
 +SSC-M: System.Int32 System.Globalization.CompareInfo::Compare(System.String,System.String,System.Globalization.CompareOptions)
@@ -294,7 +295,7 @@
 +SSC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(System.String,System.Globalization.CultureInfo)
 +SSC-M: System.Resources.MissingManifestResourceException System.Resources.ResourceManager::AssemblyResourceMissing(System.String)
 +SSC-M: System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::.ctor()
-+SSC-M: System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::Add(TKey,TValue)
++SSC-M: System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::Rehash()
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)
 +SSC-M: System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::GetHashCode(System.Object)
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)

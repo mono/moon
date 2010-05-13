@@ -1,3 +1,7 @@
+2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mscorlib.auto.s[s]c: regenerated for 157252.
+
 2010-05-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.s[s]c: regenerated (again) for 157066
