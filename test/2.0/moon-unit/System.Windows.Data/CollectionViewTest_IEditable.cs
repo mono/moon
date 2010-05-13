@@ -38,6 +38,7 @@ using Mono.Moonlight.UnitTesting;
 using System.Windows.Shapes;
 using System.Globalization;
 using System.Collections;
+using System.Windows;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -47,6 +48,8 @@ namespace MoonTest.System.Windows.Data {
 		public IEditableCollectionView Editable {
 			get { return (IEditableCollectionView) View; }
 		}
+
+		List<NotifyCollectionChangedEventArgs> CollectionChangedArgs;
 
 		public List<object> Items {
 			get; set;
@@ -71,7 +74,9 @@ namespace MoonTest.System.Windows.Data {
 				new object (),
 			});
 
+			CollectionChangedArgs = new List<NotifyCollectionChangedEventArgs> ();
 			Source = new CollectionViewSource { Source = Items };
+			View.CollectionChanged += (o, e) => CollectionChangedArgs.Add (e);
 		}
 
 
@@ -233,6 +238,18 @@ namespace MoonTest.System.Windows.Data {
 		{
 			Source.Source = new List<object> { new Rectangle (), new Rectangle () };
 			Assert.IsInstanceOfType<object> (Editable.AddNew (), "#1");
+		}
+
+		[TestMethod]
+		public void EventOrdering_EditableAddItem ()
+		{
+			var item = Editable.AddNew ();
+			Assert.AreEqual (1, CollectionChangedArgs.Count, "#1");
+
+			var args = CollectionChangedArgs [0];
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, args.Action, "#3");
+			Assert.AreEqual (5, args.NewStartingIndex, "#4");
+			Assert.AreEqual (item, args.NewItems [0], "#5");
 		}
 
 		[TestMethod]

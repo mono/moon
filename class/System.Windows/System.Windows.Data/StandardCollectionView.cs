@@ -212,8 +212,10 @@ namespace System.Windows.Data {
 
 		void HandleSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (ActiveList == SourceCollection)
+			if (ActiveList == SourceCollection) {
+				RaiseCollectionChanged (e);
 				return;
+			}
 
 			// FIXME: If i inserted to the middle of the source list it'll be appended at the end
 			// of our filtered list. This is probably not right. Similarly for the rest.
@@ -242,6 +244,8 @@ namespace System.Windows.Data {
 					AddToFilteredAndGroup (o);
 				break;
 			}
+
+			RaiseCollectionChanged (e);
 		}
 
 		void AddToFilteredAndGroup (object item)
@@ -346,6 +350,13 @@ namespace System.Windows.Data {
 		public bool MoveCurrentToPrevious ()
 		{
 			return CurrentPosition != -1 && MoveCurrentTo (CurrentPosition - 1);
+		}
+
+		void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
+		{
+			var h = CollectionChanged;
+			if (h != null)
+				h (this, e);
 		}
 
 		void RaisePropertyChanged (string propertyName)
