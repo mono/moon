@@ -1,3 +1,10 @@
+2010-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/CollectionViewTest.cs: Add extra tests
+	  to ensure that we emit PropertyChanged events correctly for
+	  CurrentItem and CurrentPosition. Both fields need to be
+	  updated before any event is raised.
+
 2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: Ignore

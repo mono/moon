@@ -293,6 +293,28 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void EventOrdering_SelectNewItem ()
+		{
+			int count = 0;
+			List<object> events = new List<object> ();
+			((INotifyPropertyChanged) View).PropertyChanged += (o, e) => {
+				Assert.AreSame (Items [1], View.CurrentItem, "#1");
+				Assert.AreEqual (1, View.CurrentPosition, "#2");
+
+				if (count == 0)
+					Assert.AreEqual ("CurrentPosition", e.PropertyName, "position");
+				else if (count == 1)
+					Assert.AreEqual ("CurrentItem", e.PropertyName, "#item");
+				else
+					Assert.Fail ("Too many events");
+				count++;
+			};
+
+			View.MoveCurrentToNext ();
+			Assert.AreEqual (2, count, "#two events should fire");
+		}
+
+		[TestMethod]
 		public void FilterAndGroup_FilterUpper_GroupBySelf ()
 		{
 			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription (""));

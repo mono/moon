@@ -21,8 +21,6 @@ namespace System.Windows.Data {
 		INPCProperty<bool> canRemove;
 		INPCProperty<object> currentAddItem;
 		INPCProperty<object> currentEditItem;
-		INPCProperty<object> currentItem;
-		INPCProperty<int> currentPosition;
 		INPCProperty<bool> isAddingNew;
 		INPCProperty<bool> isCurrentAfterLast;
 		INPCProperty<bool> isCurrentBeforeFirst;
@@ -102,19 +100,11 @@ namespace System.Windows.Data {
 		}
 
 		public object CurrentItem {
-			get { return currentItem.Value; }
-			set {
-				if (CurrentItem != value)
-					currentItem.Value = value;
-			}
+			get; private set;
 		}
 
 		public int CurrentPosition {
-			get { return currentPosition.Value; }
-			set {
-				if (CurrentPosition != value)
-					currentPosition.Value = value;
-			}
+			get; private set;
 		}
 
 		int IDeferRefresh.DeferLevel {
@@ -192,8 +182,6 @@ namespace System.Windows.Data {
 			culture = INPCProperty.Create (() => Culture, changed);
 			currentAddItem = INPCProperty.Create (() => CurrentAddItem, changed);
 			currentEditItem = INPCProperty.Create (() => CurrentEditItem, changed);
-			currentItem = INPCProperty.Create (() => CurrentItem, changed);
-			currentPosition = INPCProperty.Create (() => CurrentPosition, changed);
 			isAddingNew = INPCProperty.Create (() => IsAddingNew, changed);
 			isCurrentAfterLast = INPCProperty.Create (() => IsCurrentAfterLast, changed);
 			isCurrentBeforeFirst = INPCProperty.Create (() => IsCurrentBeforeFirst, changed);
@@ -211,7 +199,7 @@ namespace System.Windows.Data {
 
 			UpdateCanAddNew ();
 			CanRemove = !SourceCollection.IsFixedSize;
-			filteredList = new List <object> (SourceCollection.Cast <object> ());
+			filteredList = new List <object> ();
 			CurrentPosition = -1;
 			MoveCurrentToPosition (0);
 
@@ -326,8 +314,7 @@ namespace System.Windows.Data {
 
 			IsCurrentAfterLast = position == ActiveList.Count || ActiveList.Count == 0;
 			IsCurrentBeforeFirst = position == -1 || ActiveList.Count == 0;
-			CurrentPosition = position;
-			CurrentItem = position < 0 || position >= ActiveList.Count ? null : ActiveList [position];
+			UpdateCurrentPositionAndItem (position, position < 0 || position >= ActiveList.Count ? null : ActiveList [position]);
 
 			var h2 = CurrentChanged;
 			if (h2 != null)
@@ -535,6 +522,20 @@ namespace System.Windows.Data {
 			var value = ItemType != null && !SourceCollection.IsFixedSize && !IsEditingItem;
 			if (value != CanAddNew)
 				CanAddNew = value;
+		}
+
+		void UpdateCurrentPositionAndItem (int position, object item)
+		{
+			bool emitPositionChanged = CurrentPosition != position;
+			bool emitItemChanged = CurrentItem != item;
+
+			CurrentPosition = position;
+			CurrentItem = item;
+
+			if (emitPositionChanged)
+				RaisePropertyChanged ("CurrentPosition");
+			if (emitItemChanged)
+				RaisePropertyChanged ("CurrentItem");
 		}
 	}
 }
