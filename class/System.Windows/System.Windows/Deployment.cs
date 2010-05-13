@@ -299,8 +299,12 @@ namespace System.Windows {
 			else {
 				PluginHost.SetPluginHandle (plugin);
 			}
-			ExtractXap (xapPath);
-
+			
+			if (!Directory.Exists (xapPath))
+				ExtractXap (xapPath);
+			else
+				XapDir = xapPath;
+			
 			// this is currently disabled for the 3.0 desktop profile.  we'll
 			// need it to be done by unmanaged code there, on every deployment
 			// switch.
