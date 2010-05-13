@@ -142,13 +142,18 @@ namespace System.Windows.Data {
 			if (newSource == null) {
 				View = null;
 			} else {
-				ICollectionView view = null;
-				if (CachedViews.TryGetValue (newSource, out view)) {
-					View = view;
+				ICollectionViewFactory factory = newSource as ICollectionViewFactory;
+				if (factory != null) {
+					View = factory.CreateView ();
 				} else {
-					view = CollectionView.Create ((IEnumerable) newSource);
-					CachedViews.Add (newSource, view);
-					View = view;
+					ICollectionView view = null;
+					if (CachedViews.TryGetValue (newSource, out view)) {
+						View = view;
+					} else {
+						view = CollectionView.Create ((IEnumerable) newSource);
+						CachedViews.Add (newSource, view);
+						View = view;
+					}
 				}
 			}
 

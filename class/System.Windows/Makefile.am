@@ -499,6 +499,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/FilterEventArgs.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\
 	$(srcdir)/System.Windows.Data/GroupEnumerator.cs			\
+	$(srcdir)/System.Windows.Data/ICollectionViewFactory.cs			\
 	$(srcdir)/System.Windows.Data/IDeferRefresh.cs				\
 	$(srcdir)/System.Windows.Data/IndexedPropertyPathNode.cs		\
 	$(srcdir)/System.Windows.Data/INPCProperty.cs				\

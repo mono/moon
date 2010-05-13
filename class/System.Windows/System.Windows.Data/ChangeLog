@@ -1,5 +1,11 @@
 2010-05-13  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewSource.cs:
+	* ICollectionViewFactory.cs: Add in the ICollectionViewFactory
+	  interface and make CollectionViewSource use it.
+
+2010-05-13  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: When committing a new item we
 	  need to check if it passes the filter. If it does not we
 	  need to remove it and select the item at the index before
