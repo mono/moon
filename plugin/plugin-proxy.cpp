@@ -91,14 +91,11 @@ load (void)
 	}
 
 	// Must dllmap moon and moonplugin, otherwise it doesn't know where to get it
-	// the libmoon.so.0 is for System.Windows.dll, which may have a .config file 
-	// redirecting moon to libmoon.so.0
 	char* plugin_config = g_strdup_printf(
 "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 "<configuration>"
 	"<dllmap dll=\"moonplugin\" target=\"%s\" />"
 	"<dllmap dll=\"moon\" target=\"%s\" />"
-	"<dllmap dll=\"libmoon.so.0\" target=\"%s\" />"
 "</configuration>", plugin_path, plugin_path,
 	plugin_path);
 	mono_config_parse_memory(plugin_config);

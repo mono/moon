@@ -13,6 +13,7 @@
 
 #include <config.h>
 
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
 #include <stdio.h>
@@ -33,6 +34,8 @@
 
 #include "lunar-downloader.h"
 #include "getopts.h"
+
+#include <mono/metadata/mono-config.h>
 
 static BrowserBridge *bridge = NULL;
 static const char *geometry = NULL;
@@ -126,6 +129,37 @@ error_handler (EventObject *sender, EventArgs *args, gpointer user_data)
 	fprintf (stderr, "LunarLauncher Error: %s\n", err->GetErrorMessage ());
 	
 	exit (EXIT_FAILURE);
+}
+
+static bool
+add_mono_config (const char *plugin_dir)
+{
+	struct stat st;
+	char *plugin_path = g_build_filename (plugin_dir, "libmoonpluginxpi.so", NULL);
+	if (g_stat (plugin_path, &st) == -1) {
+		g_free (plugin_path);
+		plugin_path = g_build_filename (plugin_dir, "libmoonplugin.so", NULL);
+		if (g_stat (plugin_path, &st) == -1) {
+			g_free (plugin_path);
+			g_warning ("unable to locate libmoonplugin{xpi}.so");
+			return false;
+		}
+	}
+
+	// Must dllmap moon and moonplugin, otherwise it doesn't know where to get it
+	char* plugin_config = g_strdup_printf(
+"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+"<configuration>"
+	"<dllmap dll=\"moonplugin\" target=\"%s\" />"
+	"<dllmap dll=\"moon\" target=\"%s\" />"
+"</configuration>", plugin_path, plugin_path,
+	plugin_path);
+	mono_config_parse_memory(plugin_config);
+	g_free (plugin_config);
+
+	g_free (plugin_path);
+
+	return true;
 }
 
 typedef BrowserBridge * (* create_bridge_func) (void);
@@ -342,6 +376,9 @@ int main (int argc, char **argv)
 	
 	/* expects to be run from the xpi plugin dir */
 	plugin_dir = g_path_get_dirname (argv[0]);
+
+	add_mono_config (plugin_dir);
+
 	runtime_init_browser (plugin_dir);
 	load_bridge (plugin_dir);
 	g_free (plugin_dir);

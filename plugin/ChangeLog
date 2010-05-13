@@ -1,3 +1,9 @@
+2010-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-proxy.cpp (load): we don't need the libmoon.so.0 part
+	since we don't install the System.Windows.dll.config file into the
+	plugin directory anymore.
+
 2010-05-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Line-break the ReportException javascript code so that it can be
