@@ -1,3 +1,7 @@
+2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MethodInvokeWorkItem.cs: Print the name of the we're about to run to stdout.
+
 2009-04-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ConditionalWorkItem.cs: Double conditional wait timeout,

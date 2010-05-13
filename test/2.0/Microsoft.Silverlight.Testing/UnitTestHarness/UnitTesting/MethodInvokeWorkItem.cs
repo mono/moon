@@ -58,6 +58,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
         {
             if (_testMethod != null)
             {
+                System.Console.WriteLine("{0}.{1}", _testMethod.Method.DeclaringType.FullName, _testMethod.Method.Name);
                 _testMethod.Invoke(_instance);
             }
             else if (_method != null)
