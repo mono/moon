@@ -51,6 +51,8 @@ Xap::Unpack (const char *fname)
 		return NULL;
 	}
 	
+	unzClose (zipfile);
+	
 	return xap_dir;
 }
 

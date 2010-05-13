@@ -14,6 +14,9 @@
 #include <config.h>
 #endif
 
+#include <glib.h>
+#include <glib/gstdio.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -461,21 +464,24 @@ install_dialog_get_install_to_desktop (InstallDialog *dialog)
 static bool
 install_xap (GByteArray *xap, const char *app_dir)
 {
-	char *filename;
-	int fd, rv;
+	char *dirname;
+	bool rv;
 	
-	filename = g_build_filename (app_dir, "Application.xap", NULL);
-	if ((fd = open (filename, O_CREAT | O_EXCL | O_WRONLY, 0666)) == -1) {
-		g_free (filename);
+	// Note: Instead of saving the compressed Xap, we'll be extracting it
+	// to disk to both improve performance of OOB apps a bit but also so
+	// that we don't have to clutter /tmp when the OOB app is run.
+	
+	dirname = g_build_filename (app_dir, "Application.xap", NULL);
+	if (g_mkdir (dirname, 0777) == -1) {
+		g_free (dirname);
 		return false;
 	}
 	
-	g_free (filename);
+	rv = UnzipByteArrayToDir (xap, dirname, CanonModeXap);
 	
-	rv = write_all (fd, (const char *) xap->data, xap->len);
-	close (fd);
+	g_free (dirname);
 	
-	return rv != -1;
+	return rv;
 }
 
 static bool

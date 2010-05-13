@@ -1,5 +1,14 @@
 2010-05-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pal/gtk/install-dialog.cpp (install_xap): Install the unzipped
+	Xap instead.
+
+	* utils.cpp (UnzipByteArrayToDir): New convenience function to
+	unzip the contents of a GByteArray to a directory.
+
+	* xap.cpp (Unpack): Need to unzClose() the zipfile after a
+	succesful extraction.
+
 	* deployment.cpp (find_string): Removed.
 
 2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>

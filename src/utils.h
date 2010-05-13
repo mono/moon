@@ -27,8 +27,8 @@ typedef gboolean (*Stream_CanSeek)  (void *handle);
 typedef gboolean (*Stream_CanRead)  (void *handle);
 typedef gint64   (*Stream_Length)   (void *handle);
 typedef gint64   (*Stream_Position) (void *handle);
-typedef gint32   (*Stream_Read)     (void *handle,  void *buffer, gint32 offset, gint32 count);
-typedef void     (*Stream_Write)    (void *handle,  void *buffer, gint32 offset, gint32 count);
+typedef gint32   (*Stream_Read)     (void *handle, void *buffer, gint32 offset, gint32 count);
+typedef void     (*Stream_Write)    (void *handle, void *buffer, gint32 offset, gint32 count);
 typedef void     (*Stream_Seek)     (void *handle, gint64 offset, gint32 origin);
 typedef void     (*Stream_Close)    (void *handle);
 
@@ -61,6 +61,8 @@ enum CanonMode {
 	CanonModeXap,
 	CanonModeResource
 };
+
+bool UnzipByteArrayToDir (GByteArray *array, const char *dir, CanonMode mode);
 
 const char *CanonicalizeFilename (char *filename, int n, CanonMode mode);
 

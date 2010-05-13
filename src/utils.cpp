@@ -188,6 +188,118 @@ managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest)
 	return TRUE;
 }
 
+
+struct memzip_ctx_t {
+	GByteArray *array;
+	guint pos;
+};
+
+static void *
+memzip_open (void *opaque, const char *path, int mode)
+{
+	memzip_ctx_t *ctx = (memzip_ctx_t *) opaque;
+	
+	ctx->pos = 0;
+	
+	return opaque;
+}
+
+static unsigned long
+memzip_read (void *opaque, void *stream, void *buf, unsigned long size)
+{
+	memzip_ctx_t *ctx = (memzip_ctx_t *) opaque;
+	unsigned long nread;
+	
+	nread = MIN (ctx->array->len - ctx->pos, size);
+	memcpy (buf, ctx->array->data + ctx->pos, nread);
+	ctx->pos += nread;
+	
+	return nread;
+}
+
+static unsigned long
+memzip_write (void *opaque, void *stream, const void *buf, unsigned long size)
+{
+	return 0;
+}
+
+static long
+memzip_tell (void *opaque, void *stream)
+{
+	memzip_ctx_t *ctx = (memzip_ctx_t *) opaque;
+	
+	return ctx->pos;
+}
+
+static long
+memzip_seek (void *opaque, void *stream, unsigned long offset, int origin)
+{
+	memzip_ctx_t *ctx = (memzip_ctx_t *) opaque;
+	
+	switch (origin) {
+	case ZLIB_FILEFUNC_SEEK_CUR:
+		ctx->pos += offset;
+		break;
+	case ZLIB_FILEFUNC_SEEK_END:
+		ctx->pos = ctx->array->len + offset;
+		break;
+	case ZLIB_FILEFUNC_SEEK_SET:
+		ctx->pos = offset;
+		break;
+	default:
+		return -1;
+	}
+	
+	if (ctx->pos < 0)
+		ctx->pos = 0;
+	else if (ctx->pos > ctx->array->len)
+		ctx->pos = ctx->array->len;
+	
+	return 0;
+}
+
+static int
+memzip_close (void *opaque, void *stream)
+{
+	return 0;
+}
+
+static int
+memzip_error (void *opaque, void *stream)
+{
+	return 0;
+}
+
+bool
+UnzipByteArrayToDir (GByteArray *array, const char *dir, CanonMode mode)
+{
+	zlib_filefunc_def zfuncs;
+	memzip_ctx_t ctx;
+	unzFile zipfile;
+	bool rv;
+	
+	ctx.array = array;
+	ctx.pos = 0;
+	
+	zfuncs.zopen_file = memzip_open;
+	zfuncs.zread_file = memzip_read;
+	zfuncs.zwrite_file = memzip_write;
+	zfuncs.ztell_file = memzip_tell;
+	zfuncs.zseek_file = memzip_seek;
+	zfuncs.zclose_file = memzip_close;
+	zfuncs.zerror_file = memzip_error;
+	zfuncs.opaque = (void *) &ctx;
+	
+	if (!(zipfile = unzOpen2 (NULL, &zfuncs)))
+		return false;
+	
+	rv = ExtractAll (zipfile, dir, mode);
+	
+	unzClose (zipfile);
+	
+	return rv;
+}
+
 /**
  * MID:
  * @lo: the low bound
