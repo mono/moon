@@ -527,6 +527,12 @@ Value::Copy (const Value& v)
 			*u.type_info = *v.u.type_info;
 		}
 		break;
+	case Type::MANAGED: {
+		guint32 a = GPOINTER_TO_INT (u.managed_object);
+		MonoObject *mobj = mono_gchandle_get_target (a);
+		u.managed_object = GINT_TO_POINTER (mono_gchandle_new (mobj, FALSE));
+		break;
+	}
 	default:
 		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
 			LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
@@ -612,6 +618,9 @@ Value::FreeValue ()
 		break;
 	case Type::MANAGEDTYPEINFO:
 		ManagedTypeInfo::Free (u.type_info);
+		break;
+	case Type::MANAGED:
+		mono_gchandle_free (GPOINTER_TO_INT (u.managed_object));
 		break;
 	default:
 		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
