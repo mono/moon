@@ -1,3 +1,8 @@
+2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj:
+	Upgrade to VS 2010.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: smcs needs to be executed using the moonlight mono.

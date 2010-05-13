@@ -1,3 +1,7 @@
+2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* UnitTestHarness.csproj: Upgrade to VS 2010.
+
 2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* UnitTestHarness.csproj: Updated.
