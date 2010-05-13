@@ -1,8 +1,13 @@
+2010-05-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deployment.cpp (find_string): Removed.
+
 2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* provider.cpp: StylePropertyValueProvider: clone the Value instances we put
-	in our hash table so that we can control their lifetime and not access freed
-	instances someone else owns and have already deleted.
+	* provider.cpp (StylePropertyValueProvider): clone the Value
+	instances we put in our hash table so that we can control their
+	lifetime and not access freed instances someone else owns and have
+	already deleted.
 
 2010-05-12  Chris Toshok  <toshok@ximian.com>
 

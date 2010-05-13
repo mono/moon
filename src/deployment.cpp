@@ -79,15 +79,6 @@ public:
 	}
 };
 
-bool
-find_string (List::Node *node, void *data)
-{
-	StringNode *tp = (StringNode*)node;
-	char *p = (char*)data;
-
-	return !strcmp (tp->str, p);
-}
-
 static MonoBreakPolicy
 moonlight_should_insert_breakpoint (MonoMethod *method)
 {
