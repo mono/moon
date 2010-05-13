@@ -1,3 +1,10 @@
+2010-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: change
+	up NavigateInternally a bit so that we don't re-traverse subtrees
+	as we walk up the hierarchy, and also check for TargetName if we
+	have one.  Fixes the hyperlink portion of drt #705.
+
 2010-05-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Controls/Src/Common/NullableBoolConverter.cs: Handle null values properly.

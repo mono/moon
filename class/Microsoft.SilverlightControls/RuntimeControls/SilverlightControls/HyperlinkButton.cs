@@ -227,26 +227,42 @@ namespace System.Windows.Controls
         void NavigateInternally (Uri destination)
         {
             UIElement e = this;
+	    UIElement skip = null;
             INavigate navigator;
-            while (e != null && !FindNavigatorInSubtree (e, out navigator))
-                e = (UIElement) VisualTreeHelper.GetParent (e);
+            while (e != null && !FindNavigatorInSubtree (e, skip, out navigator)) {
+		    e = (UIElement)VisualTreeHelper.GetParent (e);
+		    skip = e;
+	    }
 
             if (navigator != null)
                 navigator.Navigate (destination);
         }
         
-        bool FindNavigatorInSubtree (UIElement e, out INavigate navigator)
+        bool FindNavigatorInSubtree (UIElement e, UIElement skip, out INavigate navigator)
         {
             // The docs say that HyperLinkButton searches the visual tree so that's what I implemented
             // Maybe it actually uses FindName.
             navigator = e as INavigate;
-            if (navigator != null)
-                return true;
+            if (navigator != null) {
+		    if (TargetName != null) {
+			    // if we have a target name make sure it matches
+			    if (navigator is FrameworkElement && ((FrameworkElement)navigator).Name == TargetName)
+				    return true;
+		    }
+		    else {
+			    // if we don't have a target name, take what we can get
+			    return true;
+		    }
+	    }
 
             int count = VisualTreeHelper.GetChildrenCount (e);
-            for (int i = 0; i < count; i++)
-                if (FindNavigatorInSubtree ((UIElement) VisualTreeHelper.GetChild (e, i), out navigator))
-                    return true;
+            for (int i = 0; i < count; i++) {
+		    UIElement ui = (UIElement) VisualTreeHelper.GetChild (e, i);
+		    if (ui == skip)
+			    continue;
+		    if (FindNavigatorInSubtree ((UIElement) VisualTreeHelper.GetChild (e, i), null, out navigator))
+			    return true;
+	    }
             return false;
         }
 #endif
