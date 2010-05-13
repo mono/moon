@@ -1,5 +1,14 @@
 2010-05-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/CollectionViewTest_IEditable.cs: When
+	  committing a new item we need to check if it passes the
+	  filter. If it does not we need to remove it and select the
+	  item at the index before it. If it passes the filter we need
+	  to sort it into the correct place instead of leaving it at
+	  the end of the array if the ICV is in sorting mode.
+
+2010-05-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewTest_IEditable.cs: Raise
 	  the CollectionChanged event when adding a new item and add a
 	  test on it. Fixes more of 232.

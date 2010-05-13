@@ -111,6 +111,19 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void AddNew_CommitFilteredItem()
+		{
+			// Filter everything then add a new item
+			View.Filter = o => false;
+
+			var item = Editable.AddNew();
+			Assert.IsTrue(View.Cast<object>().Contains(item), "#1");
+			Editable.CommitNew();
+
+			Assert.IsFalse(View.Cast<object>().Contains(item), "#2");
+		}
+
+		[TestMethod]
 		public void AddNew_DoesNotRegenerateGroups ()
 		{
 			var groups = View.Groups;
@@ -253,6 +266,46 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void EventOrdering_CommitFilteredItem ()
+		{
+			// Filter everything then add a new item
+			View.Filter = o => false;
+
+			Editable.AddNew ();
+			CollectionChangedArgs.Clear ();
+			Editable.CommitNew ();
+
+			Assert.AreEqual (1, CollectionChangedArgs.Count, "#1");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, CollectionChangedArgs[0].Action, "#2");
+		}
+
+		[TestMethod]
+		public void EventOrdering_CommitItem_Sorted()
+		{
+			var items = new List<Rectangle>() {
+				new Rectangle { Width = 0 },
+				new Rectangle { Width = 1 },
+				new Rectangle { Width = 3 },
+				new Rectangle { Width = 4 },
+			};
+			Source.Source = items;
+			View.CollectionChanged += (o, e) => CollectionChangedArgs.Add(e);
+			View.SortDescriptions.Add(new SortDescription("Width", ListSortDirection.Ascending));
+
+			Editable.AddNew();
+			CollectionChangedArgs.Clear();
+			Editable.CommitNew();
+
+			Assert.AreEqual(2, CollectionChangedArgs.Count, "#1");
+
+			Assert.AreEqual(NotifyCollectionChangedAction.Remove, CollectionChangedArgs[0].Action, "#2");
+			Assert.AreEqual(4, CollectionChangedArgs[0].OldStartingIndex, "#3");
+
+			Assert.AreEqual(NotifyCollectionChangedAction.Add, CollectionChangedArgs[1].Action, "#4");
+			Assert.AreEqual(0, CollectionChangedArgs[1].NewStartingIndex, "#5");
+		}
+
+		[TestMethod]
 		public void AddNew_Sorted ()
 		{
 			var items = new List<Rectangle> () {
@@ -281,7 +334,6 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Our unstable sort is different to their unstable sort.")]
 		public void AddNew_Sorted_SameKeys ()
 		{
 			var items = new List<Rectangle> () {
