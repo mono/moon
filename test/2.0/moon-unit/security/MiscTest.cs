@@ -146,6 +146,52 @@ namespace MoonTest.Security {
 			Assert.IsNotNull (new Imported ());
 		}
 #endif
+		AppDomainManager GetCritical ()
+		{
+			return null;
+		}
+
+		bool SetCritical (AppDomainManager value)
+		{
+			return (value == null);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("we do not throw - but API is unusable")]
+		public void Method_SecurityCritical ()
+		{
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.IsNotNull (GetCritical ()); // Assert should not be executed
+			}, "return value");
+			Assert.Throws<MethodAccessException> (delegate {
+				Assert.IsFalse (SetCritical (null)); // Assert should not be executed
+			}, "parameter");
+		}
+
+		private AppDomainManager field;
+
+		[TestMethod]
+		[MoonlightBug ("we do not throw - but API is unusable")]
+		public void Field_SecurityCritical ()
+		{
+			Assert.Throws<FieldAccessException> (delegate {
+				Assert.IsNotNull (field, "read"); // Assert should not be executed
+			}, "read");
+			Assert.Throws<FieldAccessException> (delegate {
+				field = null;
+			}, "write");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("we do not throw - but API is unusable")]
+		public void Local_SecurityCritical ()
+		{
+			AppDomainManager adm; 
+			// we can't read from it -> Use of unassigned variable 'adm'
+			Assert.Throws<FieldAccessException> (delegate {
+				adm = null;
+			}, "write");
+		}
 	}
 }
 

@@ -119,13 +119,13 @@ namespace System.Net.Browser {
 			if (String.Compare (Method, "GET", StringComparison.OrdinalIgnoreCase) != 0)
 				return;
 
-			if (Headers.headers.ContainsKey ("Cache-Control"))
+			if (Headers.ContainsKey ("Cache-Control"))
 				throw new NotSupportedException ();
 
 			// most headers are checked when set, but some are checked much later
 			foreach (string header in bad_get_headers) {
 				// case insensitive check to internal Headers dictionary
-				if (Headers.headers.ContainsKey (header))
+				if (Headers.ContainsKey (header))
 					throw new ProtocolViolationException ();
 			}
 		}

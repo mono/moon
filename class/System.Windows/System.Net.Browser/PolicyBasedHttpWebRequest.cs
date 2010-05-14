@@ -167,7 +167,7 @@ namespace System.Net.Browser {
 			}
 
 			if (!sendHeaders)
-				wreq.Headers.headers.Clear ();
+				wreq.Headers.Clear ();
 			wreq.progress = progress;
 
 			return wreq.BeginGetResponse (new AsyncCallback (EndCallback), wreq);

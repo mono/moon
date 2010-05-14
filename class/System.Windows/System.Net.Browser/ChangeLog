@@ -1,3 +1,10 @@
+2010-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs:
+	* ClientHttpWebRequest.cs:
+	* PolicyBasedHttpWebRequest.cs:
+		Don't directly use headers internal fields
+
 2010-05-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* PolicyBasedHttpWebRequest.cs: Revert r151713 since there were

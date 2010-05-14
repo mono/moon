@@ -1,3 +1,9 @@
+2010-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System/EnvironmentTest.cs: Update version check for 4.0
+	* security/GenericsTest.cs: Add some generic related tests
+	* security/MiscTest.cs: Add some signature tests
+
 2010-05-13  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewTest_IEditable.cs: When

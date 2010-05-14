@@ -1,3 +1,8 @@
+2010-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* README: Bump mono/mcs to r157360 and remove glib=system from
+	instructions
+
 2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* README: Bump mono/mcs to r157252.
