@@ -24,14 +24,16 @@
 // LocalPropertyValueProvider
 //
 
-LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
 	: PropertyValueProvider (obj, precedence)
 {
 	// XXX maybe move the "DependencyObject::current_values" hash table here?
+	this->dispose_value = dispose_value;
 }
 
 LocalPropertyValueProvider::~LocalPropertyValueProvider ()
 {
+	g_hash_table_foreach_remove (obj->GetLocalValues (), dispose_value, obj);
 }
 
 Value *
@@ -45,31 +47,19 @@ LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 // StylePropertyValueProvider
 //
 
-StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
 	: PropertyValueProvider (obj, precedence)
 {
 	style = NULL;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
 					    (GDestroyNotify)value_free_value);
-}
-
-void
-StylePropertyValueProvider::unlink_converted_value (gpointer key, gpointer value, gpointer data)
-{
-	StylePropertyValueProvider *provider = (StylePropertyValueProvider*)data;
-	Value *v = (Value*)value;
-
-	if (v && v->Is(Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *dob = v->AsDependencyObject();
-		if (dob->GetParent() == provider->obj)
-			dob->SetParent(NULL, NULL);
-	}
+	this->dispose_value = dispose_value;
 }
 
 StylePropertyValueProvider::~StylePropertyValueProvider ()
 {
-	g_hash_table_foreach (style_hash, StylePropertyValueProvider::unlink_converted_value, this);
+	g_hash_table_foreach_remove (style_hash, dispose_value, obj);
 	g_hash_table_destroy (style_hash);
 }
 
@@ -517,39 +507,11 @@ InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (UIEl
 // AutoPropertyValueProvider
 //
 
-static gboolean
-dispose_value (gpointer key, gpointer value, gpointer data)
-{
-	DependencyObject *obj = (DependencyObject *) data;
-	Value *v = (Value *) value;
-	
-	if (!value)
-		return true;
-	
-	// detach from the existing value
-	if (v->Is (obj->GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *dob = v->AsDependencyObject ();
-		
-		if (dob != NULL) {
-			if (obj == dob->GetParent ()) {
-				// unset its logical parent
-				dob->SetParent (NULL, NULL);
-			}
-			
-			// unregister from the existing value
-			dob->RemovePropertyChangeListener (obj, NULL);
-		}
-	}
-	
-	delete v;
-	
-	return true;
-}
-
-AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
 	: PropertyValueProvider (obj, precedence)
 {
-	auto_values = g_hash_table_new (g_direct_hash, g_direct_equal);
+	auto_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_free_value);
+	this->dispose_value = dispose_value;
 }
 
 AutoCreatePropertyValueProvider::~AutoCreatePropertyValueProvider ()

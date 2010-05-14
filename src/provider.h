@@ -61,15 +61,17 @@ protected:
 
 class LocalPropertyValueProvider : public PropertyValueProvider {
 public:
-	LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
+	LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence, GHRFunc dispose_value);
 	virtual ~LocalPropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
+ private:
+	GHRFunc dispose_value;
 };
 
 class StylePropertyValueProvider : public PropertyValueProvider {
 public:
-	StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
+	StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence, GHRFunc dispose_value);
 	virtual ~StylePropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
@@ -78,10 +80,11 @@ public:
 
 	void UpdateStyle (Style *Style, MoonError *error);
 
+
 private:
-	Style *style;
+	GHRFunc dispose_value;
 	GHashTable *style_hash;
-	static void unlink_converted_value (gpointer key, gpointer value, gpointer data);
+	Style *style;
 };
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {
@@ -128,14 +131,17 @@ public:
 class AutoCreatePropertyValueProvider : public PropertyValueProvider {
  public:
 	GHashTable *auto_values;
-	
-	AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
+
+	AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence, GHRFunc dispose_value);
 	virtual ~AutoCreatePropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 	
 	Value *ReadLocalValue (DependencyProperty *property);
 	void ClearValue (DependencyProperty *property);
+
+ private:
+	GHRFunc dispose_value;
 };
 
 class InheritedDataContextValueProvider : public PropertyValueProvider {

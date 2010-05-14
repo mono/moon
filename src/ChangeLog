@@ -1,3 +1,15 @@
+2010-05-14  Alan McGovern  <amcgovern@novell.com>
+
+	* provider.h:
+	* provider.cpp:
+	* dependencyobject.h:
+	* frameworkelement.cpp:
+	* dependencyobject.cpp: Remove duplicate and incorrect code
+	  when cleaing up the various PropertyValueProviders and make
+	  them all use DependencyObject::dispose_value instead. Also
+	  instantiate all our hashtables with the value_free_value to
+	  make absolutely sure we never forget to delete the value.
+
 2010-05-13  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::Paint): delete render_list and ctx after

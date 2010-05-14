@@ -97,8 +97,8 @@ FrameworkElement::FrameworkElement ()
 	bounds_with_children = Rect ();
 	logical_parent = NULL;
 
-	providers[PropertyPrecedence_LocalStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle);
-	providers[PropertyPrecedence_DefaultStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle);
+	providers[PropertyPrecedence_LocalStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle, dispose_value);
+	providers[PropertyPrecedence_DefaultStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle, dispose_value);
 	providers[PropertyPrecedence_DynamicValue] = new FrameworkElementProvider (this, PropertyPrecedence_DynamicValue);
 	providers[PropertyPrecedence_InheritedDataContext] = new InheritedDataContextValueProvider (this, PropertyPrecedence_InheritedDataContext);
 }

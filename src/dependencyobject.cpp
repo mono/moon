@@ -1545,6 +1545,9 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	}
 
 	if (!equal) {
+		if (current_value)
+			current_value = new Value (*current_value);
+
 		Value *new_value;
 		
 		// remove the old value
@@ -2147,7 +2150,10 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			}
 		}
 	}
-	
+
+	if (old_local_value)
+		old_local_value = new Value (*old_local_value);
+
 	g_hash_table_remove (local_values, property);
 	
 	if (property->IsAutoCreated ())
@@ -2171,7 +2177,7 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 
 	Value *v = (Value *) value;
 	
-	if (!value)
+	if (Value::IsNull (v))
 		return TRUE;
 
 	// detach from the existing value
@@ -2193,8 +2199,6 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 			}
 		}
 	}
-	
-	delete (Value *) value;
 	
 	return TRUE;
 }
@@ -2257,7 +2261,7 @@ DependencyObject::DependencyObject (Type::Kind object_type)
 void
 DependencyObject::Initialize ()
 {
-	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue);
+	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue, dispose_value);
 	providers[PropertyPrecedence_DynamicValue] = NULL;  // subclasses will set this if they need it.
 
 	providers[PropertyPrecedence_LocalStyle] = NULL;  // this is a frameworkelement specific thing
@@ -2265,9 +2269,9 @@ DependencyObject::Initialize ()
 
 	providers[PropertyPrecedence_Inherited] = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
 	providers[PropertyPrecedence_InheritedDataContext] = NULL; // this is a frameworkelement specific thing
-	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate);
+	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate, dispose_value);
 	
-	local_values = g_hash_table_new (g_direct_hash, g_direct_equal);
+	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_free_value);
 	listener_list = NULL;
 	parent = NULL;
 	is_hydrated = false;
@@ -2491,8 +2495,6 @@ free_listener (gpointer data, gpointer user_data)
 void
 DependencyObject::Dispose ()
 {
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
-	
 #if SANITY
 	/* Assert that if we still have a parent, it must be alive */
 	g_assert (parent == NULL || parent->GetRefCount () >= 0); /* #if SANITY */
@@ -2509,12 +2511,7 @@ DependencyObject::Dispose ()
 	}
 
 	RemoveAllListeners();
-	
-	if (autocreate)
-		g_hash_table_foreach_remove (autocreate->auto_values, dispose_value, this);
-	
-	g_hash_table_foreach_remove (local_values, dispose_value, this);
-	
+
 	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
 		delete providers[i];
 		providers [i] = NULL;

@@ -443,6 +443,7 @@ protected:
 	virtual void CloneCore (Types *types, DependencyObject* from);
 
 	PropertyValueProvider *providers[PropertyPrecedence_Count];
+	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
 
 private:
 	void DetachTemplateOwnerDestroyed ();
@@ -459,7 +460,6 @@ private:
 	static void clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data);
 	void CloneAnimationStorageList (DependencyProperty *key, List *list);
 
-	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
 	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
