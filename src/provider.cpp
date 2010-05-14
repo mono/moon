@@ -321,7 +321,19 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 				return types->GetProperty (TextElement::p); \
 		}							\
 	} G_STMT_END
-
+	
+#define PROPAGATE_F_I(p) G_STMT_START {					\
+		if (property->GetId() == FrameworkElement::p) {		\
+			return types->GetProperty (TextElement::p);	\
+		}							\
+	} G_STMT_END
+	
+#define PROPAGATE_F_R(p) G_STMT_START {					\
+		if (property->GetId() == FrameworkElement::p) {		\
+			return types->GetProperty (Run::p);		\
+		}							\
+	} G_STMT_END
+	
 	if (types->IsSubclassOf (property->GetOwnerType(), Type::CONTROL)) {
 		PROPAGATE_C_CT (ForegroundProperty);
 		PROPAGATE_C_CT (FontFamilyProperty);
@@ -332,20 +344,26 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 	}
 
 	if (types->IsSubclassOf (property->GetOwnerType(), Type::TEXTBLOCK)) {
-		if (types->IsSubclassOf (descendantKind, Type::INLINE)) {
+		if (types->IsSubclassOf (descendantKind, Type::TEXTELEMENT)) {
+			PROPAGATE_T_I (TextDecorationsProperty);
 			PROPAGATE_T_I (ForegroundProperty);
 			PROPAGATE_T_I (FontFamilyProperty);
 			PROPAGATE_T_I (FontStretchProperty);
 			PROPAGATE_T_I (FontStyleProperty);
 			PROPAGATE_T_I (FontWeightProperty);
 			PROPAGATE_T_I (FontSizeProperty);
-
-			PROPAGATE_T_I (LanguageProperty);
-			PROPAGATE_T_I (TextDecorationsProperty);
 		}
 	}
 
 	if (types->IsSubclassOf (property->GetOwnerType(), Type::FRAMEWORKELEMENT)) {
+		if (types->IsSubclassOf (descendantKind, Type::TEXTELEMENT)) {
+			PROPAGATE_F_I (LanguageProperty);
+		}
+		
+		if (types->IsSubclassOf (descendantKind, Type::RUN)) {
+			PROPAGATE_F_R (FlowDirectionProperty);
+		}
+		
 		if (types->IsSubclassOf (descendantKind, Type::FRAMEWORKELEMENT)) {
 			if (property->GetId() == FrameworkElement::LanguageProperty ||
 			    property->GetId() == FrameworkElement::FlowDirectionProperty)
@@ -369,7 +387,7 @@ propagate_to_inlines (InlineCollection *inlines, DependencyProperty *property, V
 	int count = inlines->GetCount ();
 	
 	for (int i = 0; i < count; i++) {
-		Inline *item = inlines->GetValueAt (i)->AsInline ();
+		TextElement *item = inlines->GetValueAt (i)->AsTextElement ();
 		MoonError error;
 		
 		item->ProviderValueChanged (PropertyPrecedence_Inherited, property,
