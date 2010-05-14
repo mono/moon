@@ -960,6 +960,10 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 		cairo_fill (cr);
 	}
 
+
+	delete render_list;
+	delete ctx;
+
 #if OCCLUSION_CULLING_STATS
 	printf ("%d UIElements rendered using occlusion culling for Surface::Paint (%p)\n", uielements_rendered_with_occlusion_culling, this);
 	printf ("%d UIElements rendered using normal painter's algorithm for Surface::Paint (%p)\n", uielements_rendered_with_painters, this);

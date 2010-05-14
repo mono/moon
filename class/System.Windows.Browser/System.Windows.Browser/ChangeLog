@@ -1,3 +1,9 @@
+2010-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptObject.cs (GetPropertyInternal<V>): don't leak Values.
+	(SetPropertyInternal): same.
+	(InvokeInternal<T>): same.
+
 2010-05-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* HtmlPage.cs (.ctor): Don't call

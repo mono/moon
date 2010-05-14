@@ -208,12 +208,19 @@ namespace System.Windows.Browser {
 
 		internal static T GetPropertyInternal<T> (IntPtr h, string name)
 		{
+			T result;
+
 			CheckName (name);
 			Mono.Value res;
 			NativeMethods.html_object_get_property (PluginHost.Handle, h, name, out res);
 			if (res.k != Mono.Kind.INVALID)
-				return (T)ScriptObjectHelper.ObjectFromValue<T> (res);
-			return default (T);
+				result = (T)ScriptObjectHelper.ObjectFromValue<T> (res);
+			else
+				result = default (T);
+
+			NativeMethods.value_free_value (ref res);
+
+			return result;
 		}
 
 		internal T GetPropertyInternal<T> (string name)
@@ -228,6 +235,8 @@ namespace System.Windows.Browser {
 			Mono.Value dp = new Mono.Value ();
 			ScriptObjectHelper.ValueFromObject (ref dp, value);
 			NativeMethods.html_object_set_property (PluginHost.Handle, h, name, ref dp);
+
+			NativeMethods.value_free_value (ref dp);
 		}
 
 		internal void SetPropertyInternal (string name, object value)
@@ -241,6 +250,7 @@ namespace System.Windows.Browser {
 			CheckName (name);
 			CheckHandle ();
 			int length = args == null ? 0 : args.Length;
+			T result;
 			Mono.Value res;
 			Mono.Value [] vargs = new Mono.Value [length];
 
@@ -251,15 +261,20 @@ namespace System.Windows.Browser {
 				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)
-				return (T)ScriptObjectHelper.ObjectFromValue<T> (res);
+				result = (T)ScriptObjectHelper.ObjectFromValue<T> (res);
+			else
+				result = default (T);
 
-			return default (T);
+			NativeMethods.value_free_value (ref res);
+
+			return result;
 		}
 
 		internal T InvokeInternal<T> (params object [] args)
 		{
 			CheckHandle ();
 			int length = args == null ? 0 : args.Length;
+			T result;
 			Mono.Value res;
 			Mono.Value [] vargs = new Mono.Value [length];
 
@@ -270,9 +285,13 @@ namespace System.Windows.Browser {
 				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)
-				return (T)ScriptObjectHelper.ObjectFromValue<T> (res);
+				result = (T)ScriptObjectHelper.ObjectFromValue<T> (res);
+			else
+				result = default (T);
 
-			return default (T);
+			NativeMethods.value_free_value (ref res);
+
+			return result;
 		}
 
 

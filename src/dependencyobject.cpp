@@ -1722,8 +1722,7 @@ DependencyObject::SetName (const char* name, NameScope *scope)
 	if (scope->FindName (name))
 		return false;
 
-	Value *new_value = new Value (name);
-	SetValue (property, new_value);
+	SetValue (property, Value (name));
 	scope->RegisterName (name, this);
 
 	return true;

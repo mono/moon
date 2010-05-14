@@ -1,3 +1,10 @@
+2010-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs (GenerateDPs): when generating the unmanaged setter
+	methods, don't use "Value::CreateUnrefPtr (value)", as that
+	creates a new Value* that we leak.  Instead just use
+	"Value (value)".
+
 2010-04-26  Andreia Gaita  <avidigal@novell.com>
 
 	* Generator.cs, TypeReference.cs: Add support for generating scriptable

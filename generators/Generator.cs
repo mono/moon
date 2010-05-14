@@ -1252,7 +1252,7 @@ class Generator {
 						text.AppendLine ("Value (*value));");
 					}
 					else if (prop_type.IsClass) {
-						text.AppendLine ("Value::CreateUnrefPtr (value));");
+						text.AppendLine ("Value (value));");
 					}
 					else if (prop_type.IsEnum) {
 						text.AppendFormat ("Value ((gint32) value, Type::{0}));", prop_type.KindName);

@@ -96,7 +96,6 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Mo
 		if (new_value != NULL)
 			new_value = new Value (*new_value);
 
-		setter->ref ();
 		old_value = (Value *) g_hash_table_lookup (style_hash, property);
 
 		g_hash_table_insert (style_hash, property, new_value);

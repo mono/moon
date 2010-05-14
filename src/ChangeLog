@@ -1,5 +1,15 @@
 2010-05-13  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::Paint): delete render_list and ctx after
+	we're done with them.
+
+	* provider.cpp (RecomputePropertyValue): don't ref Setters and
+	cause them to leak.
+
+	* dependencyobject.cpp (SetName): don't leak the name Value*.
+
+2010-05-13  Chris Toshok  <toshok@ximian.com>
+
 	* value.cpp (Value::Copy): implement for MANAGED by creating a new
 	gchandle for the target.
 	(Value::FreeValue): implement for MANAGED by freeing the gchandle.

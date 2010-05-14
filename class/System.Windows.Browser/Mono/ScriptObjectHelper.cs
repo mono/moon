@@ -102,10 +102,18 @@ namespace Mono {
 						Value val;
 						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
 
-						if (val.u.i32 == 9) // HtmlDocument
-							return CreateInstance<HtmlDocument> (v.u.p);
-						else if (val.u.i32 == 1) //HtmlElement
-							return CreateInstance<HtmlElement> (v.u.p);
+						if (val.u.i32 == 9 /* HtmlDocument */) {
+							object result = CreateInstance<HtmlDocument> (v.u.p);
+							NativeMethods.value_free_value (ref val);
+							return result;
+						}
+						else if (val.u.i32 == 1 /* HtmlElement */) {
+							object result = CreateInstance<HtmlElement> (v.u.p);
+							NativeMethods.value_free_value (ref val);
+							return result;
+						}
+
+						NativeMethods.value_free_value (ref val);
 					}
 					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "location")) {
 						return CreateInstance<HtmlWindow> (v.u.p);
