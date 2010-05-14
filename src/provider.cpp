@@ -381,8 +381,11 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 	return NULL;
 }
 
+static void propagate_to_inlines (Types *types, InlineCollection *inlines, DependencyProperty *property, Value *old_value, Value *new_value);
+static void propagate_to_blocks (Types *types, BlockCollection *blocks, DependencyProperty *property, Value *old_value, Value *new_value);
+
 static void
-propagate_to_inlines (InlineCollection *inlines, DependencyProperty *property, Value *old_value, Value *new_value)
+propagate_to_inlines (Types *types, InlineCollection *inlines, DependencyProperty *property, Value *old_value, Value *new_value)
 {
 	int count = inlines->GetCount ();
 	
@@ -390,11 +393,59 @@ propagate_to_inlines (InlineCollection *inlines, DependencyProperty *property, V
 		TextElement *item = inlines->GetValueAt (i)->AsTextElement ();
 		MoonError error;
 		
+		// If we're propagating, for example, FWE::FlowDirection to
+		// our children, only Runs can inherit this property, so
+		// ignore anything that isn't a Run.
+		if (!types->IsSubclassOf (item->GetObjectType (), property->GetOwnerType ()))
+			continue;
+		
 		item->ProviderValueChanged (PropertyPrecedence_Inherited, property,
 					    old_value, new_value, false, false, false, &error);
 		
 		if (error.number) {
 			// FIXME: what do we do here?  I'm guessing we continue propagating?
+		}
+		
+		if (types->IsSubclassOf (item->GetObjectType (), Type::PARAGRAPH)) {
+			InlineCollection *children = ((Paragraph *) item)->GetInlines ();
+			
+			propagate_to_inlines (types, children, property, old_value, new_value);
+		} else if (types->IsSubclassOf (item->GetObjectType (), Type::SPAN)) {
+			InlineCollection *children = ((Span *) item)->GetInlines ();
+			
+			propagate_to_inlines (types, children, property, old_value, new_value);
+		} else if (types->IsSubclassOf (item->GetObjectType(), Type::SECTION)) {
+			BlockCollection *children = ((Section *) item)->GetBlocks ();
+			
+			propagate_to_blocks (types, children, property, old_value, new_value);
+		}
+	}
+}
+
+static void
+propagate_to_blocks (Types *types, BlockCollection *blocks, DependencyProperty *property, Value *old_value, Value *new_value)
+{
+	int count = blocks->GetCount ();
+	
+	for (int i = 0; i < count; i++) {
+		Block *block = blocks->GetValueAt (i)->AsBlock ();
+		MoonError error;
+		
+		block->ProviderValueChanged (PropertyPrecedence_Inherited, property,
+					     old_value, new_value, false, false, false, &error);
+		
+		if (error.number) {
+			// FIXME: what do we do here?  I'm guessing we continue propagating?
+		}
+		
+		if (types->IsSubclassOf (block->GetObjectType (), Type::PARAGRAPH)) {
+			InlineCollection *children = ((Paragraph *) block)->GetInlines ();
+			
+			propagate_to_inlines (types, children, property, old_value, new_value);
+		} else if (types->IsSubclassOf (block->GetObjectType(), Type::SECTION)) {
+			BlockCollection *children = ((Section *) block)->GetBlocks ();
+			
+			propagate_to_blocks (types, children, property, old_value, new_value);
 		}
 	}
 }
@@ -411,15 +462,19 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 		
 		InlineCollection *inlines = ((TextBlock *) obj)->GetInlines ();
 		
-		propagate_to_inlines (inlines, child_property, old_value, new_value);
+		propagate_to_inlines (types, inlines, child_property, old_value, new_value);
 	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::PARAGRAPH)) {
 		InlineCollection *inlines = ((Paragraph *) obj)->GetInlines ();
 		
-		propagate_to_inlines (inlines, property, old_value, new_value);
+		propagate_to_inlines (types, inlines, property, old_value, new_value);
 	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::SPAN)) {
 		InlineCollection *inlines = ((Span *) obj)->GetInlines ();
 		
-		propagate_to_inlines (inlines, property, old_value, new_value);
+		propagate_to_inlines (types, inlines, property, old_value, new_value);
+	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::SECTION)) {
+		BlockCollection *blocks = ((Section *) obj)->GetBlocks ();
+		
+		propagate_to_blocks (types, blocks, property, old_value, new_value);
 	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::UIELEMENT)) {
 		// for inherited properties, we need to walk down the
 		// subtree and call ProviderValueChanged on all
@@ -444,6 +499,8 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 
 			walker.SkipBranch ();
 		}
+	} else if (obj->GetObjectType() == Type::LINEBREAK || obj->GetObjectType() == Type::RUN) {
+		// no children to propagate to
 	} else {
 		g_warning ("Unhandled inherited property %s.%sProperty", obj->GetTypeName (), property->GetName ());
 	}

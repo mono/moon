@@ -1,7 +1,13 @@
 2010-05-14  Jeffrey Stedfast  <fejj@novell.com>
 
-	* provider.cpp (MapPropertyToDescendant): Fix mappings for
-	FlowDirection and Language properties.
+	* provider.cpp (InheritedPropertyValueProvider::MapPropertyToDescendant):
+	Fix mappings for FlowDirection and Language properties.
+	(propagate_to_inlines): Don't proagate to children who don't
+	support the property. Also fixed to recurse and children that
+	contain inlines or blocks themselves.
+	(propagate_to_blocks): Similar to proagate_to_inlines().
+	(InheritedPropertyValueProvider::PropagateInheritedProperty):
+	Handle Sections too.
 
 2010-05-14  Alan McGovern  <amcgovern@novell.com>
 
