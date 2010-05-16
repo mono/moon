@@ -796,6 +796,12 @@ value_free_value (Value* value)
 	value->FreeValue ();
 }
 
+// This is just a callback we can use in our GHashTable destructors
+void value_delete_value (Value *value)
+{
+	delete value;
+}
+
 void
 value_free_value2 (Value *value)
 {

@@ -53,7 +53,7 @@ StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, P
 	style = NULL;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
-					    (GDestroyNotify)value_free_value);
+					    (GDestroyNotify)value_delete_value);
 	this->dispose_value = dispose_value;
 }
 
@@ -585,7 +585,7 @@ InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (UIEl
 AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
 	: PropertyValueProvider (obj, precedence)
 {
-	auto_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_free_value);
+	auto_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 	this->dispose_value = dispose_value;
 }
 

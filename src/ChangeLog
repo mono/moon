@@ -1,3 +1,20 @@
+2010-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* value.cpp:
+	* value.h.in: Add a value_delete_value which we can use in our
+	  ghashtable dtors.
+
+	* provider.cpp: Use value_delete_value, not value_free_value.
+	  We do actually want the value* itself freed :)
+
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: Use value_delete_value instead of a
+	  custom 'free_value' function for the default value overrides
+	  table.
+
+	* dependencyobject.cpp: The local_values hash should use
+	  value_delete_value too.
+
 2010-05-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* provider.cpp (InheritedPropertyValueProvider::MapPropertyToDescendant):

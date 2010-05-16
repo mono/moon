@@ -2271,7 +2271,7 @@ DependencyObject::Initialize ()
 	providers[PropertyPrecedence_InheritedDataContext] = NULL; // this is a frameworkelement specific thing
 	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate, dispose_value);
 	
-	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_free_value);
+	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 	listener_list = NULL;
 	parent = NULL;
 	is_hydrated = false;

@@ -22,12 +22,6 @@
 #include "eventargs.h"
 #include "deployment.h"
 
-void
-DependencyProperty::free_value (Value *value)
-{
-	delete value;
-}
-
 /*
  *	DependencyProperty
  */
@@ -109,7 +103,7 @@ void
 DependencyProperty::AddDefaultValueOverride (Type::Kind kind, Value *value)
 {
 	if (default_value_overrides == NULL)
-		default_value_overrides = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) free_value);
+		default_value_overrides = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 
 	g_hash_table_insert (default_value_overrides, GINT_TO_POINTER (kind), value);
 }

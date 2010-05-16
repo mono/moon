@@ -114,8 +114,6 @@ private:
 	Type::Kind owner_type;
 	Type::Kind property_type;
 	PropertyChangeHandler changed_callback;
-	
-	static void free_value (Value *value);
 };
 
 G_BEGIN_DECLS

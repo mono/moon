@@ -237,6 +237,8 @@ G_BEGIN_DECLS
 void value_free_value (Value *value);
 /* @GeneratePInvoke */
 void value_free_value2 (/* @MarshalAs=IntPtr */ Value *value);
+
+void value_delete_value (Value *value);
 G_END_DECLS
 
 
