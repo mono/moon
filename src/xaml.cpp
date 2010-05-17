@@ -1817,9 +1817,10 @@ flush_char_data (XamlParserInfo *p)
 	if (p->current_element->element_type == XamlElementInstance::ELEMENT) {
 		if (!p->current_element->TrySetContentProperty (p, p->cdata->str) && p->cdata_content) {
 			if (allow_value_from_str_in_flush (p, p->current_element->parent)) {
-				Value *v;
+				Value *v = NULL;
 				if (value_from_str (p->current_element->info->GetKind (), NULL, p->cdata->str, &v)) {
 					p->current_element->SetValue (v);
+					delete v;
 					goto cleanup;
 				}
 			}

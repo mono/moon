@@ -1,5 +1,10 @@
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
+	* xaml.cpp: make sure we clean up the value we get from
+	  value_from_str.
+
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
 	* value.cpp:
 	* value.h.in: Add pinvokes for value_delete_value so that
 	  managed land can correctly free Value*s it gets from native.
