@@ -25,6 +25,7 @@ namespace System.Windows.Data {
 		INPCProperty<bool> isCurrentAfterLast;
 		INPCProperty<bool> isCurrentBeforeFirst;
 		INPCProperty<bool> isEditingItem;
+		INPCProperty<bool> isempty;
 		INPCProperty<NewItemPlaceholderPosition> newItemPlaceholderPosition;
 
 		INPCProperty<CultureInfo> culture;
@@ -186,6 +187,7 @@ namespace System.Windows.Data {
 			isCurrentAfterLast = INPCProperty.Create (() => IsCurrentAfterLast, changed);
 			isCurrentBeforeFirst = INPCProperty.Create (() => IsCurrentBeforeFirst, changed);
 			isEditingItem = INPCProperty.Create (() => IsEditingItem, changed);
+			isempty = INPCProperty.Create (() => IsEmpty, changed);
 			newItemPlaceholderPosition = INPCProperty.Create (() => NewItemPlaceholderPosition, changed);
 
 			SourceCollection = collection;
@@ -201,6 +203,7 @@ namespace System.Windows.Data {
 			CanRemove = !SourceCollection.IsFixedSize;
 			filteredList = new List <object> ();
 			CurrentPosition = -1;
+			IsEmpty = ActiveList.Count == 0;
 			MoveCurrentToPosition (0);
 
 			if (SourceCollection is INotifyCollectionChanged)
@@ -213,6 +216,7 @@ namespace System.Windows.Data {
 		void HandleSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (ActiveList == SourceCollection) {
+				IsEmpty = ActiveList.Count == 0;
 				RaiseCollectionChanged (e);
 				return;
 			}
@@ -245,6 +249,7 @@ namespace System.Windows.Data {
 				break;
 			}
 
+			IsEmpty = ActiveList.Count == 0;
 			RaiseCollectionChanged (e);
 		}
 

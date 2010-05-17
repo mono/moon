@@ -1,5 +1,9 @@
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Update the IsEmpty property.
+
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Fix the implementation of
 	  Contains now that we don't always use the filtered list.
 
