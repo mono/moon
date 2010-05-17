@@ -1048,13 +1048,9 @@ namespace Mono.Xaml
 			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
 			// the managed object
 			//
-			try {
-				bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value);
-				if (!result) {
-					error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
-				}
-			} finally {
-				NativeMethods.value_delete_value2 (unmanaged_value);
+			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value);
+			if (!result) {
+				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
 			}
 		}
 
@@ -1225,10 +1221,15 @@ namespace Mono.Xaml
 
 				SetCLRPropertyFromString (data, target_data, target, pi, str_value, out error, out unmanaged_value);
 
-				if (error == null && unmanaged_value != IntPtr.Zero)
-					obj_value = Value.ToObject (null, unmanaged_value);
-				else
-					return error == null;
+				try {
+					if (error == null && unmanaged_value != IntPtr.Zero)
+						obj_value = Value.ToObject (null, unmanaged_value);
+					else
+						return error == null;
+				} finally {
+					if (unmanaged_value != IntPtr.Zero)
+						Mono.NativeMethods.value_delete_value2 (unmanaged_value);
+				}
 			} else {
 				obj_value = Value.ToObject (pi.PropertyType, value_ptr);
 			}
