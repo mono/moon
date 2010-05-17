@@ -1,3 +1,9 @@
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
+	* value.cpp:
+	* value.h.in: Add pinvokes for value_delete_value so that
+	  managed land can correctly free Value*s it gets from native.
+
 2010-05-16  Alan McGovern  <amcgovern@novell.com>
 
 	* value.cpp:

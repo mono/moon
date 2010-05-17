@@ -808,6 +808,12 @@ value_free_value2 (Value *value)
 	value_free_value (value);
 }
 
+void
+value_delete_value2 (Value *value)
+{
+	delete value;
+}
+
 Value::~Value ()
 {
 	FreeValue ();
