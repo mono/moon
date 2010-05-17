@@ -136,7 +136,7 @@ namespace Mono.Xaml
 			try {
 				result = Value.ToObject (null, top);
 			} finally {
-				NativeMethods.value_free_value2 (top);
+				NativeMethods.value_delete_value2 (top);
 			}
 			
 			return result;
@@ -1054,7 +1054,7 @@ namespace Mono.Xaml
 					error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
 				}
 			} finally {
-				NativeMethods.value_free_value2 (unmanaged_value);
+				NativeMethods.value_delete_value2 (unmanaged_value);
 			}
 		}
 

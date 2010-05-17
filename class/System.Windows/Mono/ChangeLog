@@ -1,5 +1,10 @@
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
+	* ManagedXamlLoader.cs: Fix another two places where we need
+	  to call delete_value instead of free_value
+
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
 	* ManagedXamlLoader.cs:
 	* MoonlightTypeConverter.cs:
 	* MarkupExpressionParser.cs:
