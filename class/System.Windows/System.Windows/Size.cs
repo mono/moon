@@ -30,7 +30,7 @@ namespace System.Windows {
 	public struct Size  {
 		double w, h;
 
-		public Size (double width, double height)
+		public Size (double width, double height) : this ()
 		{
 			Width = width;
 			Height = height;

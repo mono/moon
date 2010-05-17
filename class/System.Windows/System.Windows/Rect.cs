@@ -32,10 +32,10 @@ namespace System.Windows {
 
 		private double x, y, w, h;
 
-		public Rect (double x, double y, double width, double height)
+		public Rect (double x, double y, double width, double height) : this ()
 		{
-			X = x;
-			Y = y;
+			this.x = x;
+			this.y = y;
 			Width = width;
 			Height = height;
 		}

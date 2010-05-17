@@ -29,7 +29,8 @@ using System;
 namespace System.Windows.Controls.Primitives {
 
 	public struct GeneratorPosition {
-		public GeneratorPosition (int index, int offset)
+
+		public GeneratorPosition (int index, int offset) : this ()
 		{
 			Index = index;
 			Offset = offset;

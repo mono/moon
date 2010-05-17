@@ -1,3 +1,8 @@
+2010-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* StylusPoint.cs: Fix error CS0843 with newer compilers - just 
+	like CSC would not compile it previously
+
 2010-04-20  Alan McGovern  <amcgovern@novell.com>
 
 	* InputScope.cs: Add new types and DPs so that the SL4

@@ -36,7 +36,7 @@ namespace System.Windows.Input
 	public struct StylusPoint
 	{
 		float presssureFactor;
-		public StylusPoint (double x, double y)
+		public StylusPoint (double x, double y) : this ()
 		{
 			X = x;
 			Y = y;

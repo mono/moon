@@ -31,7 +31,7 @@ using Mono;
 namespace System.Windows {
 
 	public struct DependencyPropertyChangedEventArgs {
-		internal DependencyPropertyChangedEventArgs (IntPtr raw)
+		internal DependencyPropertyChangedEventArgs (IntPtr raw) : this ()
 		{
 			IntPtr uprop = NativeMethods.property_changed_event_args_get_property (raw);
 
@@ -43,7 +43,7 @@ namespace System.Windows {
 			NewValue = Value.ToObject (Property.PropertyType, NativeMethods.property_changed_event_args_get_new_value (raw));
 		}
 
-		internal DependencyPropertyChangedEventArgs (object old, object newp, DependencyProperty prop)
+		internal DependencyPropertyChangedEventArgs (object old, object newp, DependencyProperty prop) : this ()
 		{
 			OldValue = old;
 			NewValue = newp;

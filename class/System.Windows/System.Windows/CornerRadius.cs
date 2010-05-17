@@ -44,7 +44,7 @@ namespace System.Windows
 		{
 		}
 		
-		public CornerRadius (double topLeft, double topRight, double bottomRight, double bottomLeft)
+		public CornerRadius (double topLeft, double topRight, double bottomRight, double bottomLeft) : this ()
 		{
 			TopLeft = topLeft;
 			TopRight = topRight;
