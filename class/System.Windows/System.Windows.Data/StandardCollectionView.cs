@@ -279,7 +279,7 @@ namespace System.Windows.Data {
 
 		public bool Contains (object item)
 		{
-			return filteredList.Contains (item);
+			return ActiveList.Contains (item);
 		}
 
 		public IDisposable DeferRefresh ()

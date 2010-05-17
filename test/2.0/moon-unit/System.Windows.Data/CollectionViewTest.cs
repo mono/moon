@@ -184,6 +184,11 @@ namespace MoonTest.System.Windows.Data {
 			Assert.AreEqual (NotifyCollectionChangedAction.Add, list [2].Action, "#7");
 		}
 
+		[TestMethod]
+		public void Contains()
+		{
+			Assert.IsTrue(View.Contains(Items[0]), "#1");
+		}
 
 		[TestMethod]
 		public void CulturePropagatesToDescriptions ()

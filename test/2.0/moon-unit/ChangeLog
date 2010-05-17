@@ -1,3 +1,9 @@
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/CollectionViewTest.cs: Fix the
+	  implementation of Contains now that we don't always use the
+	  filtered list.
+
 2010-05-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System/EnvironmentTest.cs: Update version check for 4.0
