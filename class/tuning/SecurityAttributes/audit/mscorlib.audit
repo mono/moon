@@ -352,7 +352,7 @@ System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::Enu
 
 !SSC-C1420CCC249AEA3FFBCC987F35CD0518
 System.Collections.Generic.IList`1<System.Reflection.CustomAttributeData> System.MonoCustomAttrs::GetCustomAttributesData(System.Reflection.ICustomAttributeProvider)
-	r156891		spouliot - old code now required (and tuned). call GetCustomAttributesDataInternal (icall) with validated (non-null) parameter. Return results as a readonly IList<CustomAttributeData>
+if	r156891		spouliot - old code now required (and tuned). call GetCustomAttributesDataInternal (icall) with validated (non-null) parameter. Return results as a readonly IList<CustomAttributeData>
 
 !SSC-D11ED37AED1474CDA3FDF7C08F264FB4
 System.Collections.IEnumerator System.Array::GetEnumerator()
@@ -1801,6 +1801,10 @@ System.Void System.Diagnostics.StackTrace::.ctor(System.Exception)
 System.Void System.Environment::set_ExitCode(System.Int32)
 	r144558		spouliot - visible icall (named mono_environment_exitcode_get in mono/metadata/environment.c). return static value
 
+!SSC-C11A524398FBC3CAF57F63D810AE4B7A
+System.Void System.GC::.cctor()
+	r157173		spouliot - initialize static readonly EPHEMERON_TOMBSTONE variable with a parameter-less call to get_ephemeron_tombstone (icall)
+
 !SSC-7F5CCED3D21CF155E090CE621A279182
 System.Void System.GC::Collect()
 	r142142		spouliot - calls InternalCollect (icall in mono/metadata/gc.c) with MaxGeneration (icall in mono/metadata/boehm-gc.c) which returns 0
@@ -2057,9 +2061,9 @@ System.Void System.Reflection.MonoProperty::CachePropertyInfo(System.Reflection.
 System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::.ctor()
 	r156851		spouliot - new implementation. calls GC.register_ephemeron_array (icall) on a (field) array of Ephemeron
 
-!SSC-D23ABA542C6BB91EF135F3A891D5D1B5
-System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::Add(TKey,TValue)
-	r156851		spouliot - calls GC.register_ephemeron_array (icall) on a (field) resized array of Ephemeron
+!SSC-97F061DE10F6A30BB858642C1008B1A3
+System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::Rehash()
+	r157174		spouliot - calls GC.register_ephemeron_array (icall) on a local variable that is later assigned to the 'data' field in order to resize the Ephemeron array
 
 !SSC-CD0076691FD2A903A2C718A3047D0832
 System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)
