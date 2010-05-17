@@ -220,6 +220,7 @@ namespace Mono.Xaml
 					value = Value.Empty;
 					return false;
 				}
+				// This is freed in native.
 				value = Value.FromObject (res, false);
 			} else {
 				value = Value.Empty;

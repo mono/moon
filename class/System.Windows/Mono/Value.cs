@@ -145,7 +145,7 @@ namespace Mono {
 		[FieldOffset(0)] public IntPtr p;
 	}
 
-	internal struct Value {
+	internal struct Value : IDisposable {
 		// Note: Keep these flags in sync with the native version
 		const int NullFlag = 1;
 		
@@ -164,7 +164,7 @@ namespace Mono {
 		}
 
 		public static Value Empty {
-			get { return new Value (); }
+			get { return new Value { k = Kind.INVALID, IsNull = true }; }
 		}
 
 		public static unsafe object ToObject (Type type, Value* value)
@@ -662,5 +662,12 @@ namespace Mono {
 			return result;
 		}
 
+		public void Dispose ()
+		{
+			if (u.p != IntPtr.Zero) {
+				Mono.NativeMethods.value_free_value (ref this);
+				u.p = IntPtr.Zero;
+			}
+		}
 	}
 }

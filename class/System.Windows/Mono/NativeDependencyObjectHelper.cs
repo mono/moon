@@ -66,8 +66,7 @@ namespace Mono {
 		public static void SetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp, object value)
 		{
 			Type object_type;
-			Value v;
-			
+
 			if (dp == null)
 				throw new ArgumentNullException ("property");
 
@@ -82,8 +81,10 @@ namespace Mono {
 				if (dp.PropertyType.IsValueType && !dp.IsNullable)
 					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", dp.Name));
 
-				v = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true };
-				NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
+				using (var val = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true }) {
+					var v = val;
+					NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
+				}
 				return;
 			}
 
@@ -126,11 +127,9 @@ namespace Mono {
 				throw new ArgumentException (string.Format ("The DependencyProperty '{3}.{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name, dp.DeclaringType.FullName));
 			}
 				                     
-			v = Value.FromObject (value, dp.PropertyType == typeof(object) && dp.BoxValueTypes);
-			try {
+			using (var val = Value.FromObject (value, dp.PropertyType == typeof(object) && dp.BoxValueTypes)) {
+				var v = val;
 				NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
-			} finally {
-				NativeMethods.value_free_value (ref v);
 			}
 		}
 

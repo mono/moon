@@ -369,14 +369,11 @@ namespace System.Windows {
 			if (NullCheck (NotifyCollectionChangedAction.Add, value))
 				throw new ArgumentNullException ();
 
-			Value v = Value.FromObject (value, boxValueTypes);
 			int index;
-			try {
+			using (var val = Value.FromObject (value, boxValueTypes)) {
+				var v = val;
 				index = NativeMethods.collection_add (native, ref v);
-			} finally {
-				NativeMethods.value_free_value (ref v);
 			}
-
 			Notify (NotifyCollectionChangedAction.Add, value, index);
 		}
 
@@ -392,13 +389,10 @@ namespace System.Windows {
 			if (index < 0)
 				throw new ArgumentOutOfRangeException ();
 
-			Value v = Value.FromObject (value, boxValueTypes);
-			try {
+			using (var val = Value.FromObject (value, boxValueTypes)) {
+				var v = val;
 				NativeMethods.collection_insert (native, index, ref v);
-			} finally {
-				NativeMethods.value_free_value (ref v);
 			}
-
 			Notify (NotifyCollectionChangedAction.Add, value, index);
 		}
 
@@ -439,13 +433,11 @@ namespace System.Windows {
 		internal void SetItemImpl (int index, T value, bool boxValueTypes)
 		{
 			T old = GetItemImpl (index);
-			Value v = Value.FromObject (value, boxValueTypes);
-			try {
-				NativeMethods.collection_set_value_at (native, index, ref v);
-			} finally {
-				NativeMethods.value_free_value (ref v);
-			}
 
+			using (var val = Value.FromObject (value, boxValueTypes)) {
+				var v = val;
+				NativeMethods.collection_set_value_at (native, index, ref v);
+			}
 			Notify (NotifyCollectionChangedAction.Replace, value, old, index);
 		}
 
@@ -459,12 +451,10 @@ namespace System.Windows {
 			if (value == null)
 				return -1;
 
-			Value v = Value.FromObject (value, boxValueTypes);
 			int rv;
-			try {
+			using (var val = Value.FromObject (value, boxValueTypes)) {
+				var v = val;
 				rv = NativeMethods.collection_index_of (native, ref v);
-			} finally {
-				NativeMethods.value_free_value (ref v);
 			}
 			return rv;
 		}

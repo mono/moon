@@ -1,3 +1,14 @@
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs:
+	* ManagedXamlLoader.cs:
+	* NativeDependencyObjectHelper.cs: Make our managed Value
+	  struct implement IDisposable and make that call
+	  value_free_value. Change all places which use
+	  Value.FromObject to wrap the returned Value in a using
+	  statement. This should help find all the places where we use
+	  value_free_value incorrectly.
+
 2010-05-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Events.cs (CreateSendCompletedEventArgsEventHandlerDispatcher):

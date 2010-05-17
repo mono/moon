@@ -97,11 +97,9 @@ namespace System.Windows {
 			set {
 				var str_key = ToStringKey (key);
 				
-				Value v = Value.FromObject (value, true);
-				try {
+				using (var val = Value.FromObject (value, true)) {
+					var v = val;
 					NativeMethods.resource_dictionary_set (native, str_key, ref v);
-				} finally {
-					NativeMethods.value_free_value (ref v);
 				}
 			}
 		}
@@ -126,12 +124,9 @@ namespace System.Windows {
 				using (StreamReader sr = new StreamReader (stream.Stream)) {
 					string xaml = sr.ReadToEnd ();
 						
-					Value v = Value.FromObject (this);
-					try {
+					using (var v = Value.FromObject (this)) {
 						ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
 						loader.Hydrate (v, xaml, true, false, true);
-					} finally {
-						NativeMethods.value_free_value (ref v);
 					}
 				}
 			}
@@ -184,11 +179,9 @@ namespace System.Windows {
 			if (IsReadOnly || IsFixedSize)
 				throw new NotSupportedException ();
 			
-			Value v = Value.FromObject (value, true);
-			try {
+			using (var val = Value.FromObject (value, true)) {
+				var v = val;
 				NativeMethods.resource_dictionary_add (native, key, ref v);
-			} finally {
-				NativeMethods.value_free_value (ref v);
 			}
 		}
 		

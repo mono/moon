@@ -259,7 +259,8 @@ namespace System.Windows {
 				converted = Value.Empty;
 				return;
 			}
-			
+
+			// This is freed in native code
 			converted = Value.FromObject (o);
 		}
 		
@@ -376,9 +377,7 @@ namespace System.Windows {
 			if (sr == null)
 				return;
 
-			Value v = Value.FromObject (component);
-
-			try {
+			using (var v = Value.FromObject (component)) {
 				// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
 				// Application app = component as Application;
 	
@@ -387,8 +386,6 @@ namespace System.Windows {
 	
 				ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
 				loader.Hydrate (v, xaml);
-			} finally {
-				NativeMethods.value_free_value (ref v);
 			}
 		}
 
