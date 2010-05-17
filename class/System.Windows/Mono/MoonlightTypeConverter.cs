@@ -151,7 +151,7 @@ namespace Mono {
 						return value;
 					}
 				} finally {
-					NativeMethods.value_free_value2 (unmanaged_value);
+					NativeMethods.value_delete_value2 (unmanaged_value);
 				}
 			}
 

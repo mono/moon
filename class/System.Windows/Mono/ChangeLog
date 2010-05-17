@@ -1,5 +1,13 @@
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
+	* ManagedXamlLoader.cs:
+	* MoonlightTypeConverter.cs:
+	* MarkupExpressionParser.cs:
+	* MoonlightValueConverter.cs: we should be calling
+	  value_delete_value not value_free_value.
+
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
 	* Value.cs:
 	* ManagedXamlLoader.cs:
 	* NativeDependencyObjectHelper.cs: Make our managed Value

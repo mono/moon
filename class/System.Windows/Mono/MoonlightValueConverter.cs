@@ -64,7 +64,7 @@ namespace Mono {
 							return value;
 						}
 					} finally {
-						NativeMethods.value_free_value2 (value_ptr);
+						NativeMethods.value_delete_value2 (value_ptr);
 					}
 				}
 				if (targetType.IsEnum && str_value != null)
