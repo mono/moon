@@ -1,5 +1,10 @@
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
+	* xaml.cpp: Revert the change in 157438 - this value doesn't
+	  need to be deleted, the XamlElementInstance keeps it.
+
+2010-05-17  Alan McGovern  <amcgovern@novell.com>
+
 	* xaml.cpp: make sure we clean up the value we get from
 	  value_from_str.
 

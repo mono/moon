@@ -1820,7 +1820,6 @@ flush_char_data (XamlParserInfo *p)
 				Value *v = NULL;
 				if (value_from_str (p->current_element->info->GetKind (), NULL, p->cdata->str, &v)) {
 					p->current_element->SetValue (v);
-					delete v;
 					goto cleanup;
 				}
 			}
