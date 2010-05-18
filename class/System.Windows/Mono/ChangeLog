@@ -1,3 +1,9 @@
+2010-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* IListExtensions.cs: Add BinarySearch extension method to
+	  IList<T> so that I can binary search observable collections
+	  (and others).
+
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs: Don't call value_delete_value until

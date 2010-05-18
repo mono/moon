@@ -66,6 +66,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Helper.cs						\
 	$(srcdir)/Mono/Helper.PublicKey.cs					\
 	$(srcdir)/Mono/Hosting.cs						\
+	$(srcdir)/Mono/IListExtensions.cs					\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
 	$(srcdir)/Mono/INativeEventObjectWrapper.cs			\
 	$(srcdir)/Mono/Kind.cs							\
