@@ -192,6 +192,16 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void ChangeGroupsOnView ()
+		{
+			View.GroupDescriptions.Add (new ConcretePropertyGroupDescription {
+				GroupNameFromItemFunc = (item, depth, culture) => "A",
+			});
+			Assert.IsNotNull(View.Groups, "#1");
+			Assert.IsInstanceOfType<CollectionViewGroup>(View.Groups[0], "#2");
+		}
+
+		[TestMethod]
 		public void ChangeGroupsOnSource_EventsOnView ()
 		{
 			var list = new List<NotifyCollectionChangedEventArgs> ();
@@ -396,6 +406,32 @@ namespace MoonTest.System.Windows.Data {
 				Assert.IsTrue (g.IsBottomLevel, "#3." + i);
 				Assert.AreSame (Items [i], g.Name, "#5." + i);
 			}
+		}
+
+		[TestMethod]
+		public void Group_IndexOf()
+		{
+			List<Rectangle> rects = new List<Rectangle> {
+				new Rectangle { Width = 10, Height = 10 },
+				new Rectangle { Width = 10, Height = 20 },
+				new Rectangle { Width = 20, Height = 10 },
+				new Rectangle { Width = 20, Height = 20 }
+			};
+
+			SetSource(rects);
+			using (Source.DeferRefresh ()) {
+				Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription {
+					GroupNameFromItemFunc = (item, level, culture) => rects.IndexOf ((Rectangle)item) < 2 ? "A" : "B"
+				});
+
+				Source.SortDescriptions.Add (new SortDescription ("Width", ListSortDirection.Descending));
+				Source.SortDescriptions.Add (new SortDescription ("Height", ListSortDirection.Ascending));
+			}
+
+			Assert.AreSame (rects [2], View.Cast<object>().ElementAt(0),  "#1");
+			Assert.AreSame(rects[3], View.Cast<object>().ElementAt(1), "#2");
+			Assert.AreSame(rects[0], View.Cast<object>().ElementAt(2), "#3");
+			Assert.AreSame(rects[1], View.Cast<object>().ElementAt(3), "#4");
 		}
 
 		[TestMethod]

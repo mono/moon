@@ -248,7 +248,7 @@ namespace System.Windows.Data {
 			// Secondly update our selected item
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
-				int actualIndex = ActiveList.IndexOf (e.NewItems [0]);
+				int actualIndex = IndexOf (e.NewItems [0]);
 				if (actualIndex <= CurrentPosition)
 					MoveCurrentTo (CurrentPosition + 1);
 				break;
@@ -351,12 +351,25 @@ namespace System.Windows.Data {
 			return MoveCurrentTo (position, false);
 		}
 
+		object ItemAtIndex (int index)
+		{
+			if (Groups == null)
+				return index < 0 || index >= ActiveList.Count ? null : ActiveList [index];
+			foreach (var o in this) {
+				if (index == 0)
+					return o;
+				index --;
+			}
+
+			return null;
+		}
+
 		bool MoveCurrentTo (int position, bool force)
 		{
 			if (CurrentPosition == position && !force)
 				return IsValidSelection;
 
-			object newItem = position < 0 || position >= ActiveList.Count ? null : ActiveList [position];
+			object newItem = ItemAtIndex (position);
 			bool raiseEvents = CurrentItem != newItem;
 			var h = CurrentChanging;
 			if (raiseEvents && h != null) {
@@ -437,13 +450,15 @@ namespace System.Windows.Data {
 
 				if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
 					foreach (var item in filteredList)
-						RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
+						RootGroup.AddInSubtree (item, Culture, GroupDescriptions, false);
 					Groups = RootGroup.Items;
 				}
 			}
 
 			if (IsAddingNew && CurrentItem == CurrentAddItem) {
 				MoveCurrentTo (IndexOf (CurrentAddItem), true);
+			} else if (Groups != null) {
+				MoveCurrentTo (IndexOf (CurrentItem), true);
 			} else if (ActiveList.Count > 0) {
 				MoveCurrentTo (CurrentPosition, true);
 			} else {

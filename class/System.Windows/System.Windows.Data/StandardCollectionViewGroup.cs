@@ -56,8 +56,13 @@ namespace System.Windows.Data {
 
 		internal void AddInSubtree (object item, CultureInfo culture, IList<GroupDescription> descriptions)
 		{
+			AddInSubtree (item, culture, descriptions, true);
+		}
+
+		internal void AddInSubtree (object item, CultureInfo culture, IList<GroupDescription> descriptions, bool allowSorting)
+		{
 			if (IsBottomLevel) {
-				AddItem (item, true);
+				AddItem (item, allowSorting);
 			} else {
 				var desc = descriptions [Depth];
 				var name = desc.GroupNameFromItem (item, Depth, culture);
@@ -71,10 +76,10 @@ namespace System.Windows.Data {
 				if (subGroup == null) {
 					int depth = Depth + 1;
 					subGroup = new StandardCollectionViewGroup (this, name, depth, depth == descriptions.Count, Sorters);
-					AddItem (subGroup, true);
+					AddItem (subGroup, allowSorting);
 				}
 
-				subGroup.AddInSubtree (item, culture, descriptions);
+				subGroup.AddInSubtree (item, culture, descriptions, allowSorting);
 			}
 		}
 
@@ -115,8 +120,9 @@ namespace System.Windows.Data {
 
 		internal int IndexOfSubtree (object item)
 		{
-			int index;
+			int overallIndex = 0;
 			foreach (var o in ProtectedItems) {
+				int index = -1;
 				var group = o as StandardCollectionViewGroup;
 				if (group != null) {
 					index = group.IndexOfSubtree (item);
@@ -124,7 +130,11 @@ namespace System.Windows.Data {
 					index = IndexOf (item);
 				}
 				if (index > 0)
-					return index;
+					return index + overallIndex;
+				if (group != null)
+					overallIndex += group.ItemCount;
+				else
+					overallIndex ++;
 			}
 
 			return -1;

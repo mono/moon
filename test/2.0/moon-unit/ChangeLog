@@ -1,5 +1,14 @@
 2010-05-18  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/CollectionViewTest.cs: Add the ability
+	  to add items to CollectionViewGroups while ignoring the
+	  SortDescriptions. Fix several issues where we were getting
+	  the index from the wrong collection which was breaking the
+	  MoveCurentTo logic when elements were added/removed. Fixes
+	  the new moon-units and more of drt 232.
+
+2010-05-18  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/CollectionViewTest.cs: Fix up how we
 	  insert items to the filtered collection when sorting is
 	  enabled. In some cases we appear to binary search and insert
