@@ -181,7 +181,7 @@ namespace System.Net.Browser {
 			policy = CrossDomainPolicyManager.BuildSilverlightPolicy (wres);
 			if (policy != null) {
 				// we got our policy so we can proceed with the main request
-				GetResponse (this.Method, uri, false);
+				GetResponse (this.Method, uri, true);
 			} else {
 				// no policy but we get a second chance to try a Flash policy
 				Uri flash_policy_uri = CrossDomainPolicyManager.GetFlashPolicyUri (wres.ResponseUri);
