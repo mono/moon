@@ -1,3 +1,11 @@
+2010-05-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (PasswordBox::SyncText): Sync the
+	DisplayText *before* syncing the PasswordProperty value so that
+	the TextBoxView will use the updated DisplayText value rather than
+	the old value.
+	(PasswordBox::OnPropertyChanged): Fixed a copy/paste bug.
+
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
 	* xaml.cpp: Revert the change in 157438 - this value doesn't

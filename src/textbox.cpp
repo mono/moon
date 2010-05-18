@@ -2932,11 +2932,11 @@ PasswordBox::SyncText ()
 {
 	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
 	
+	SyncDisplayText ();
+	
 	setvalue = false;
 	SetValue (PasswordBox::PasswordProperty, Value (text, true));
 	setvalue = true;
-	
-	SyncDisplayText ();
 }
 
 const char *
@@ -3121,7 +3121,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	if (changed != TextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
-	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
+	if (args->GetProperty ()->GetOwnerType () != Type::PASSWORDBOX) {
 		TextBoxBase::OnPropertyChanged (args, error);
 		return;
 	}
