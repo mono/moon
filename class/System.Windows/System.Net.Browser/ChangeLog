@@ -1,3 +1,8 @@
+2010-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PolicyBasedHttpWebRequest.cs: Same fix as previous (typo) when 
+	a flash policy is used (previous case covers a SL policy)
+
 2010-05-18  Andreia Gaita  <avidigal@novell.com>
 
 	* PolicyBasedHttpWebRequest.cs: headers should be sent with the main

@@ -197,7 +197,7 @@ namespace System.Net.Browser {
 
 			// we either got a Flash policy or (if none/bad) a NoAccessPolicy, either way we continue...
 			policy = CrossDomainPolicyManager.BuildFlashPolicy (wres);
-			GetResponse (this.Method, uri, false);
+			GetResponse (this.Method, uri, true);
 		}
 
 		private void EndCallback (IAsyncResult result)
