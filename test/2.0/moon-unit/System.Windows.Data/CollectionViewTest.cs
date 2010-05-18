@@ -39,6 +39,7 @@ using System.Windows.Shapes;
 using System.Globalization;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
+using System.Collections;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -50,6 +51,12 @@ namespace MoonTest.System.Windows.Data {
 		public List<NotifyCollectionChangedEventArgs> CollectionChanged;
 
 		public List<object> Items
+		{
+			get;
+			set;
+		}
+
+		ObservableCollection<Rectangle> Rectangles
 		{
 			get;
 			set;
@@ -78,12 +85,24 @@ namespace MoonTest.System.Windows.Data {
 				new object (),
 			});
 
-			CurrentChanged = 0;
-			CurrentChanging = 0;
-			CollectionChanged = new List<NotifyCollectionChangedEventArgs> ();
+			Rectangles = new ObservableCollection<Rectangle> {
+				new Rectangle { Width= 1 },
+				new Rectangle { Width= 2 },
+				new Rectangle { Width= 3 },
+				new Rectangle { Width= 4 },
+				new Rectangle { Width= 5 },
+			};
 
-			Source = new CollectionViewSource { Source = Items };
+			Source = new CollectionViewSource { };
+			SetSource(Items);
+			ResetCounters();
+		}
+
+		void SetSource(IEnumerable items)
+		{
+			Source.Source = items;
 			View = Source.View;
+
 			View.CurrentChanged += (o, e) => {
 				CurrentChanged++;
 			};
@@ -91,6 +110,13 @@ namespace MoonTest.System.Windows.Data {
 				CurrentChanging++;
 			};
 			View.CollectionChanged += (o, e) => CollectionChanged.Add (e);
+		}
+
+		void ResetCounters()
+		{
+			CurrentChanged = 0;
+			CurrentChanging = 0;
+			CollectionChanged = new List<NotifyCollectionChangedEventArgs>();
 		}
 
 		[TestMethod]
@@ -413,6 +439,100 @@ namespace MoonTest.System.Windows.Data {
 		public void ImplicitGroupDoesNotExist ()
 		{
 			Assert.IsNull (View.Groups, "#1");
+		}
+
+		[TestMethod]
+		public void InsertItemBeforeSelection ()
+		{
+			var index = 2;
+			var item = Items [index];
+			var incc = new ObservableCollection<object>(Items);
+			SetSource(incc);
+
+			View.MoveCurrentToPosition(index);
+			ResetCounters();
+			incc.Insert(0, new object());
+
+			Assert.AreEqual(index + 1, View.CurrentPosition, "#1");
+			Assert.AreEqual(item, View.CurrentItem, "#2");
+			Assert.AreEqual(0, CurrentChanged, "#3");
+			Assert.AreEqual(0, CurrentChanging, "#4");
+		}
+
+		[TestMethod]
+		public void InsertItem_AfterSelection_SortedSecond ()
+		{
+			// This should be second in our list no matter where we insert it
+			var selection = Rectangles[1];
+			var rect = new Rectangle { Width = 1.5 };
+			SetSource(Rectangles);
+
+			View.SortDescriptions.Add(new SortDescription("Width", ListSortDirection.Ascending));
+			View.MoveCurrentTo(selection);
+			ResetCounters();
+
+			Rectangles.Insert(0, rect);
+			Assert.AreSame(selection, View.CurrentItem, "#1");
+			Assert.AreEqual(2, View.CurrentPosition, "#2");
+			Assert.AreEqual(0, CurrentChanged, "#3");
+			Assert.AreEqual(0, CurrentChanging, "#4");
+		}
+
+		[TestMethod]
+		public void InsertItem_BeforeSelection_SortedSecond()
+		{
+			// This should be second in our list no matter where we insert it
+			var selection = Rectangles[1];
+			var rect = new Rectangle { Width = 1.5 };
+			SetSource(Rectangles);
+
+			View.SortDescriptions.Add(new SortDescription("Width", ListSortDirection.Ascending));
+			View.MoveCurrentTo(selection);
+			ResetCounters();
+
+			Rectangles.Insert(4, rect);
+			Assert.AreSame(selection, View.CurrentItem, "#1");
+			Assert.AreEqual(2, View.CurrentPosition, "#2");
+			Assert.AreEqual(0, CurrentChanged, "#3");
+			Assert.AreEqual(0, CurrentChanging, "#4");
+		}
+
+		[TestMethod]
+		public void InsertItem_AfterSelection_SortedLast()
+		{
+			// This should be second in our list no matter where we insert it
+			var selection = Rectangles[1];
+			var rect = new Rectangle { Width = 6 };
+			SetSource(Rectangles);
+
+			View.SortDescriptions.Add(new SortDescription("Width", ListSortDirection.Ascending));
+			View.MoveCurrentTo(selection);
+			ResetCounters();
+
+			Rectangles.Insert(0, rect);
+			Assert.AreSame(selection, View.CurrentItem, "#1");
+			Assert.AreEqual(1, View.CurrentPosition, "#2");
+			Assert.AreEqual(0, CurrentChanged, "#3");
+			Assert.AreEqual(0, CurrentChanging, "#4");
+		}
+
+		[TestMethod]
+		public void InsertItem_BeforeSelection_SortedLast()
+		{
+			// This should be second in our list no matter where we insert it
+			var selection = Rectangles[1];
+			var rect = new Rectangle { Width = 6 };
+			SetSource(Rectangles);
+
+			View.SortDescriptions.Add(new SortDescription("Width", ListSortDirection.Ascending));
+			View.MoveCurrentTo(selection);
+			ResetCounters();
+
+			Rectangles.Insert(4, rect);
+			Assert.AreSame(selection, View.CurrentItem, "#1");
+			Assert.AreEqual(1, View.CurrentPosition, "#2");
+			Assert.AreEqual(0, CurrentChanged, "#3");
+			Assert.AreEqual(0, CurrentChanging, "#4");
 		}
 
 		[TestMethod]

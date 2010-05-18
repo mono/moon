@@ -1,3 +1,11 @@
+2010-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardCollectionView.cs:
+	* StandardCollectionViewGroup.cs: Fix up how we insert items
+	  to the filtered collection when sorting is enabled. In some
+	  cases we appear to binary search and insert the item, in
+	  others we do a linear search and insert.
+
 2010-05-17  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs: Update the IsEmpty property.
