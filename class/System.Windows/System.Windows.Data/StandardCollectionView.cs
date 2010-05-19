@@ -572,28 +572,37 @@ namespace System.Windows.Data {
 				throw new InvalidOperationException ("Cannot cancel edit while adding new");
 
 			if (IsEditingItem) {
+				var editItem = CurrentEditItem;
+
+				CurrentEditItem = null;
+				IsEditingItem = false;
+
 				if (CanCancelEdit) {
-					((IEditableObject) CurrentEditItem).EndEdit ();
+					((IEditableObject) editItem).EndEdit ();
+					CanCancelEdit = false;
 				}
 
+				UpdateCanAddNew ();
+				UpdateCanRemove ();
+
+				int originalIndex = IndexOf (editItem);
 				// We could also have changed the property which sorts it
 				if (SortDescriptions.Count > 0) {
 					filteredList.Sort (new PropertyComparer (SortDescriptions));
-					MoveCurrentTo (IndexOf (CurrentItem), true);
 				}
 
 				// We may have edited the property which controls which group the item is in
 				// so re-seat it
 				if (Grouping) {
-					RootGroup.RemoveInSubtree (CurrentEditItem);
-					RootGroup.AddInSubtree (CurrentEditItem, Culture, GroupDescriptions);
+					RootGroup.RemoveInSubtree (editItem);
+					RootGroup.AddInSubtree (editItem, Culture, GroupDescriptions);
+				}
+				int newIndex = IndexOf (editItem);
+				if (originalIndex != newIndex) {
+					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, editItem, originalIndex));
+					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, editItem, newIndex));
 					MoveCurrentTo (IndexOf (CurrentItem), true);
 				}
-
-				CurrentEditItem = null;
-				IsEditingItem = false;
-				CanCancelEdit = false;
-				UpdateCanAddNew ();
 			}
 		}
 
@@ -638,6 +647,10 @@ namespace System.Windows.Data {
 
 		public void EditItem (object item)
 		{
+			// We can't edit an item which hasn't been comitted.
+			if (IsAddingNew && item == CurrentAddItem)
+				return;
+
 			if (IsAddingNew)
 				CommitNew ();
 			if (IsEditingItem)
@@ -650,6 +663,7 @@ namespace System.Windows.Data {
 				((IEditableObject) item).BeginEdit ();
 			}
 			UpdateCanAddNew ();
+			UpdateCanRemove ();
 		}
 
 		public void Remove (object item)
@@ -667,6 +681,13 @@ namespace System.Windows.Data {
 			var value = ItemType != null && !SourceCollection.IsFixedSize && !IsEditingItem;
 			if (value != CanAddNew)
 				CanAddNew = value;
+		}
+
+		void UpdateCanRemove ()
+		{
+			var value = !SourceCollection.IsFixedSize && !IsEditingItem;
+			if (value != CanRemove)
+				CanRemove = value;
 		}
 
 		void UpdateCurrentPositionAndItem (int position, object item)

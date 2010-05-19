@@ -1,5 +1,12 @@
 2010-05-19  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Update the 'CanRemove' variable
+	  properly and change the various INPP properties in the
+	  correct order when committing an edit to appease the mighty
+	  drt 232.
+
+2010-05-19  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: 1) When refreshing the collection
 	  we always keep the same CurrentItem and just refresh the
 	  CurrentPosition if the item has changed index.
