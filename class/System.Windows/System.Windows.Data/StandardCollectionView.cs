@@ -515,6 +515,8 @@ namespace System.Windows.Data {
 			if (Grouping)
 				RootGroup.AddItem (newObject, false);
 			MoveCurrentTo (newObject);
+			if (newObject is IEditableObject)
+				((IEditableObject) newObject).BeginEdit ();
 			return newObject;
 		}
 
@@ -557,6 +559,8 @@ namespace System.Windows.Data {
 				throw new InvalidOperationException ("Cannot CancelNew while editing an item");
 
 			if (IsAddingNew) {
+				if (CurrentAddItem is IEditableObject)
+					((IEditableObject) CurrentAddItem).CancelEdit ();
 				if (Grouping) {
 					RootGroup.RemoveItem (CurrentAddItem);
 				}
@@ -621,6 +625,8 @@ namespace System.Windows.Data {
 			if (IsEditingItem)
 				throw new InvalidOperationException ("Cannot CommitNew while editing an item");
 			if (IsAddingNew) {
+								if (CurrentAddItem is IEditableObject)
+					((IEditableObject) CurrentAddItem).EndEdit ();
 				if (Filter != null && !Filter (CurrentAddItem)) {
 					RemoveFromSourceCollection (CurrentAddItem);
 				} else {

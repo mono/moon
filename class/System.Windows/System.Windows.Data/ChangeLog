@@ -1,5 +1,11 @@
 2010-05-19  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: We need to invoke the
+	  IEditableObject interface when adding/committing/cancelling
+	  a new item.
+
+2010-05-19  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Handle the case where we edit an
 	  item so that it gets filtered out.
 
