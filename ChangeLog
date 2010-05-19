@@ -1,3 +1,7 @@
+2010-05-19  Andreia Gaita  <avidigal@novell.com>
+
+	* README: Bump mono/mcs to r157525, WCF fixes
+
 2010-05-18  Andreia Gaita  <avidigal@novell.com>
 
 	* README: Bump mono/mcs to r157368, WCF fixes
