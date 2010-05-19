@@ -1,5 +1,10 @@
 2010-05-19  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Handle the case where we edit an
+	  item so that it gets filtered out.
+
+2010-05-19  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Update the 'CanRemove' variable
 	  properly and change the various INPP properties in the
 	  correct order when committing an edit to appease the mighty

@@ -586,6 +586,16 @@ namespace System.Windows.Data {
 				UpdateCanRemove ();
 
 				int originalIndex = IndexOf (editItem);
+
+				// If we're filtering the item out just nuke it
+				if (Filter != null && !Filter (editItem)) {
+					RemoveFromFilteredAndGroup (editItem);
+					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, editItem, originalIndex));
+					if (CurrentItem == editItem)
+						MoveCurrentTo (CurrentPosition, true);
+					return;
+				}
+
 				// We could also have changed the property which sorts it
 				if (SortDescriptions.Count > 0) {
 					filteredList.Sort (new PropertyComparer (SortDescriptions));
