@@ -1,5 +1,10 @@
 2010-05-19  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Add some more missing exceptions
+	  and update accordingly.
+
+2010-05-19  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionViewGroup.cs: It's actually pretty damn
 	  tough to get IndexOfSubtree to work right so I've just
 	  replaced it by creating an enumerator and iterating over the

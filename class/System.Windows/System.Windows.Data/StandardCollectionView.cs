@@ -505,8 +505,10 @@ namespace System.Windows.Data {
 
 			// If there's an existing AddNew or Edit, we commit it. Commit the edit first because
 			// we're not allowed CommitNew if we're in the middle of an edit.
-			CommitEdit ();
-			CommitNew ();
+			if (IsEditingItem)
+				CommitEdit ();
+			if (IsAddingNew)
+				CommitNew ();
 
 			var newObject = Activator.CreateInstance (ItemType);
 			// FIXME: I need to check the ordering on the events when the source is INCC
@@ -538,6 +540,9 @@ namespace System.Windows.Data {
 
 		public void CancelEdit ()
 		{
+			if (IsAddingNew)
+				throw new InvalidOperationException ("Cannot cancel edit while adding new");
+
 			if (IsEditingItem) {
 				if (CanCancelEdit) {
 					((IEditableObject) CurrentEditItem).CancelEdit ();
@@ -553,6 +558,7 @@ namespace System.Windows.Data {
 		{
 			if (IsEditingItem)
 				throw new InvalidOperationException ("Cannot CancelNew while editing an item");
+
 			if (IsAddingNew) {
 				if (Grouping) {
 					RootGroup.RemoveItem (CurrentAddItem);
@@ -565,6 +571,9 @@ namespace System.Windows.Data {
 
 		public void CommitEdit ()
 		{
+			if (IsAddingNew)
+				throw new InvalidOperationException ("Cannot cancel edit while adding new");
+
 			if (IsEditingItem) {
 				if (CanCancelEdit) {
 					((IEditableObject) CurrentEditItem).EndEdit ();
@@ -617,7 +626,11 @@ namespace System.Windows.Data {
 
 		public void EditItem (object item)
 		{
-			CommitEdit ();
+			if (IsAddingNew)
+				CommitNew ();
+			if (IsEditingItem)
+				CommitEdit ();
+
 			CurrentEditItem = item;
 			IsEditingItem = true;
 			if (item is IEditableObject) {
