@@ -477,15 +477,12 @@ namespace System.Windows.Data {
 				}
 			}
 
-			if (IsAddingNew && CurrentItem == CurrentAddItem) {
-				MoveCurrentTo (IndexOf (CurrentAddItem), true);
-			} else if (Grouping) {
-				MoveCurrentTo (IndexOf (CurrentItem), true);
-			} else if (ActiveList.Count > 0) {
-				MoveCurrentTo (CurrentPosition, true);
-			} else {
-				MoveCurrentTo (-1);
-			}
+			IsEmpty = ActiveList.Count == 0;
+			int index = IndexOf (CurrentItem);
+			if (index < 0 && CurrentPosition != -1 && !IsEmpty)
+				index = 0;
+
+			MoveCurrentTo (index, true);
 
 			var h = CollectionChanged;
 			if (h != null)
@@ -578,6 +575,21 @@ namespace System.Windows.Data {
 				if (CanCancelEdit) {
 					((IEditableObject) CurrentEditItem).EndEdit ();
 				}
+
+				// We could also have changed the property which sorts it
+				if (SortDescriptions.Count > 0) {
+					filteredList.Sort (new PropertyComparer (SortDescriptions));
+					MoveCurrentTo (IndexOf (CurrentItem), true);
+				}
+
+				// We may have edited the property which controls which group the item is in
+				// so re-seat it
+				if (Grouping) {
+					RootGroup.RemoveInSubtree (CurrentEditItem);
+					RootGroup.AddInSubtree (CurrentEditItem, Culture, GroupDescriptions);
+					MoveCurrentTo (IndexOf (CurrentItem), true);
+				}
+
 				CurrentEditItem = null;
 				IsEditingItem = false;
 				CanCancelEdit = false;

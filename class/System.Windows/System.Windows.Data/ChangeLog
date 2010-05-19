@@ -1,5 +1,17 @@
 2010-05-19  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: 1) When refreshing the collection
+	  we always keep the same CurrentItem and just refresh the
+	  CurrentPosition if the item has changed index.
+	2) When refreshing, if we previously had an item selected but
+	  now that item is not in the filtered collection we just
+	  select the first item in the filtered list.
+	3) When committing an edit we need to reseat the item in its
+	  group and also resort our filtered list in case we changed
+	  the property we group/sort by.
+
+2010-05-19  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Add some more missing exceptions
 	  and update accordingly.
 
