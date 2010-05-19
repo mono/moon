@@ -1,3 +1,18 @@
+2010-05-19  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardCollectionViewGroup.cs: It's actually pretty damn
+	  tough to get IndexOfSubtree to work right so I've just
+	  replaced it by creating an enumerator and iterating over the
+	  tree structure. It's not the most efficient but it
+	  definitely works in all cases.
+
+	* StandardCollectionView.cs: When we add/remove an item from
+	  the source collection we need to get the actual index of the
+	  item in the sorted/grouped/filtered collection and use that
+	  to adjust the current selection. Fix an issue in
+	  RemoveFromFilteredAndGroup where we added the item to the
+	  group again instead of removing it. Fixes yet more of 232.
+
 2010-05-18  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs:

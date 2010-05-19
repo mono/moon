@@ -120,6 +120,10 @@ namespace System.Windows.Data {
 			}
 		}
 
+		bool Grouping {
+			get { return Groups != null; }
+		}
+
 		public ObservableCollection<GroupDescription> GroupDescriptions {
 			get; private set;
 		}
@@ -216,15 +220,20 @@ namespace System.Windows.Data {
 		void HandleSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
 			// Firstly if we are copying the source collection into our filtered list, update
-			// the copy with the new changes.
-			if (ActiveList != SourceCollection) {
+			// the copy with the new changes and compute the actual index of our item in the
+			// sorted/grouped/filtered list.
+			int actualIndex = -1;
+			bool originalList = ActiveList == SourceCollection;
+			if (!originalList) {
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
 					foreach (object o in e.NewItems)
 						AddToFilteredAndGroupSorted (o);
+					actualIndex = IndexOf (e.NewItems [0]);
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
+					actualIndex = IndexOf (e.OldItems [0]);
 					foreach (object o in e.OldItems)
 						RemoveFromFilteredAndGroup (o);
 					break;
@@ -234,6 +243,7 @@ namespace System.Windows.Data {
 						RemoveFromFilteredAndGroup (o);
 					foreach (object o in e.NewItems)
 						AddToFilteredAndGroupSorted (o);
+					actualIndex = IndexOf (e.NewItems [0]);
 					break;
 	
 				case NotifyCollectionChangedAction.Reset:
@@ -245,17 +255,30 @@ namespace System.Windows.Data {
 				}
 			}
 
-			// Secondly update our selected item
+			// Secondly raise our collection changed events
+			RaiseCollectionChanged (e);
+			IsEmpty = ActiveList.Count == 0;
+
+			// Finally update the selected item if needed.
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
-				int actualIndex = IndexOf (e.NewItems [0]);
+				if (originalList)
+					actualIndex = e.NewStartingIndex;
 				if (actualIndex <= CurrentPosition)
 					MoveCurrentTo (CurrentPosition + 1);
 				break;
 
 			case NotifyCollectionChangedAction.Remove:
-				if (e.OldStartingIndex < CurrentPosition)
+				if (originalList)
+					actualIndex = e.OldStartingIndex;
+				if (actualIndex < CurrentPosition) {
 					MoveCurrentTo (CurrentPosition - 1);
+				} else if (actualIndex == CurrentPosition) {
+					if (CurrentAddItem == CurrentItem)
+						MoveCurrentTo (CurrentPosition - 1);
+					else
+						MoveCurrentTo (CurrentPosition, true);
+				}
 				break;
 
 			case NotifyCollectionChangedAction.Replace:
@@ -263,19 +286,17 @@ namespace System.Windows.Data {
 				break;
 
 			case NotifyCollectionChangedAction.Reset:
-				MoveCurrentTo (-1);
+				MoveCurrentTo (IndexOf (CurrentItem));
 				break;
 			}
 
-			IsEmpty = ActiveList.Count == 0;
-			RaiseCollectionChanged (e);
 		}
 
 		void AddToFilteredAndGroup (object item)
 		{
 			// If we're adding an item because of a call to the 'AddNew' method, we
 			//
-			if (AddToFiltered (item, false) && Groups != null && CurrentAddItem == null)
+			if (AddToFiltered (item, false) && Grouping && CurrentAddItem == null)
 				RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
 		}
 
@@ -283,14 +304,14 @@ namespace System.Windows.Data {
 		{
 			// If we're adding an item because of a call to the 'AddNew' method, we
 			//
-			if (AddToFiltered (item, true) && Groups != null && CurrentAddItem == null)
+			if (AddToFiltered (item, true) && Grouping && CurrentAddItem == null)
 				RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
 		}
 
 		void RemoveFromFilteredAndGroup (object item)
 		{
-			if (RemoveFromFiltered (item) && Groups != null)
-				RootGroup.AddInSubtree (item, Culture, GroupDescriptions);
+			if (RemoveFromFiltered (item) && Grouping)
+				RootGroup.RemoveInSubtree (item);
 		}
 
 		bool AddToFiltered (object item, bool sorted)
@@ -336,7 +357,7 @@ namespace System.Windows.Data {
 
 		int IndexOf (object item)
 		{
-			if (Groups != null)
+			if (Grouping)
 				return RootGroup.IndexOfSubtree (item);
 			else
 				return ActiveList.IndexOf (item);
@@ -371,6 +392,7 @@ namespace System.Windows.Data {
 
 			object newItem = ItemAtIndex (position);
 			bool raiseEvents = CurrentItem != newItem;
+
 			var h = CurrentChanging;
 			if (raiseEvents && h != null) {
 				CurrentChangingEventArgs e = new CurrentChangingEventArgs (true);
@@ -457,7 +479,7 @@ namespace System.Windows.Data {
 
 			if (IsAddingNew && CurrentItem == CurrentAddItem) {
 				MoveCurrentTo (IndexOf (CurrentAddItem), true);
-			} else if (Groups != null) {
+			} else if (Grouping) {
 				MoveCurrentTo (IndexOf (CurrentItem), true);
 			} else if (ActiveList.Count > 0) {
 				MoveCurrentTo (CurrentPosition, true);
@@ -491,7 +513,7 @@ namespace System.Windows.Data {
 			CurrentAddItem = newObject;
 			IsAddingNew = true;
 			AddToSourceCollection (newObject);
-			if (Groups != null)
+			if (Grouping)
 				RootGroup.AddItem (newObject, false);
 			MoveCurrentTo (newObject);
 			return newObject;
@@ -532,7 +554,7 @@ namespace System.Windows.Data {
 			if (IsEditingItem)
 				throw new InvalidOperationException ("Cannot CancelNew while editing an item");
 			if (IsAddingNew) {
-				if (Groups != null) {
+				if (Grouping) {
 					RootGroup.RemoveItem (CurrentAddItem);
 				}
 				RemoveFromSourceCollection (CurrentAddItem);
@@ -559,19 +581,16 @@ namespace System.Windows.Data {
 			if (IsEditingItem)
 				throw new InvalidOperationException ("Cannot CommitNew while editing an item");
 			if (IsAddingNew) {
-				// When adding a new item, we initially put it in the root group. Once it's committed
-				// we need to place it in the correct subtree group.
-				if (Groups != null) {
-					RootGroup.RemoveItem (CurrentAddItem);
-					RootGroup.AddInSubtree (CurrentAddItem, Culture, GroupDescriptions);
-				}
-
 				if (Filter != null && !Filter (CurrentAddItem)) {
 					RemoveFromSourceCollection (CurrentAddItem);
-					RootGroup.RemoveInSubtree (CurrentAddItem);
-					if (CurrentItem == CurrentAddItem)
-						MoveCurrentTo (CurrentPosition - 1);
 				} else {
+					// When adding a new item, we initially put it in the root group. Once it's committed
+					// we need to place it in the correct subtree group.
+					if (Grouping) {
+						RootGroup.RemoveItem (CurrentAddItem);
+						RootGroup.AddInSubtree (CurrentAddItem, Culture, GroupDescriptions);
+					}
+
 					// The item was not filtered out of the tree. Do we need to resort it?
 					if (SortDescriptions.Count > 0) {
 						// The newly added item is at the end of the array. If we're sorting, we may have to move it.
@@ -615,7 +634,7 @@ namespace System.Windows.Data {
 
 		public void RemoveAt (int index)
 		{
-			RemoveFromSourceCollection (SourceCollection[index]);
+			RemoveFromSourceCollection (ItemAtIndex (index));
 		}
 
 		void UpdateCanAddNew ()

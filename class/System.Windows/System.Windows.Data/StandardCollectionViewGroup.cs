@@ -120,23 +120,14 @@ namespace System.Windows.Data {
 
 		internal int IndexOfSubtree (object item)
 		{
-			int overallIndex = 0;
-			foreach (var o in ProtectedItems) {
-				int index = -1;
-				var group = o as StandardCollectionViewGroup;
-				if (group != null) {
-					index = group.IndexOfSubtree (item);
-				} else {
-					index = IndexOf (item);
-				}
-				if (index > 0)
-					return index + overallIndex;
-				if (group != null)
-					overallIndex += group.ItemCount;
-				else
-					overallIndex ++;
+			// FIXME: Enumerating might not be optimal but it's much easier to get right
+			int i = 0;
+			var enumerator = new GroupEnumerator (this);
+			while (enumerator.MoveNext ()) {
+				if (enumerator.Current == item)
+					return i;
+				i++;
 			}
-
 			return -1;
 		}
 
