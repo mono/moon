@@ -1,3 +1,8 @@
+2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: regenerated for the move of InitParams
+	initialization / cache.
+
 2010-05-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: regenerated for 157456

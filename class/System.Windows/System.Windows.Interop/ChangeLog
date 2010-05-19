@@ -1,3 +1,8 @@
+2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SilverlightHost.cs: Move InitParams initialization here (and
+	avoid creating a unneeded object)
+
 2010-05-12  Chris Toshok  <toshok@ximian.com>
 
 	* SilverlightHost.cs (get_Source): deal with PluginHost.Handle ==

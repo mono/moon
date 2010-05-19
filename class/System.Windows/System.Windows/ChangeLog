@@ -1,3 +1,9 @@
+2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Cast InitParams to Dictionary<>
+	* StartupEventArgs.cs: Move InitParams initialization to
+	SilverlightHost
+
 2010-05-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs:

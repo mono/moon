@@ -33,6 +33,8 @@ namespace Mono.Moonlight.UnitTesting
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
 			this.RootVisual = Testing.CreateTestPage (this);
+			// not read-only and will be available from SilverlightHost.InitParams
+			e.InitParams.Add ("Moon-y-Test", "?");
 		}
 
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> CustomUnhandledExceptionHandler

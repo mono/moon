@@ -658,7 +658,7 @@ namespace System.Windows {
 			// Dictionary<string,string> for each call to
 			// the lifetime objects?  or should we be
 			// creating a new one for each call?
-			ApplicationServiceContext ctx = new ApplicationServiceContext (e.InitParamsAsDictionary);
+			ApplicationServiceContext ctx = new ApplicationServiceContext (e.InitParams as Dictionary<string,string>);
 
 			lifetime_objects.Close (); // it's now too late to add items to this collection
 

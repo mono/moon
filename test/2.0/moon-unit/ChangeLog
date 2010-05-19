@@ -1,3 +1,11 @@
+2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* App.xaml.cs: Add something to InitParams so we can check on it
+	later (to ensure we're getting back the same stuff, not a new 
+	copy)
+	* System.Windows.Interop/SilverlightHostTest.cs: Add test case
+	for InitParams
+
 2010-05-18  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewTest.cs: Add the ability

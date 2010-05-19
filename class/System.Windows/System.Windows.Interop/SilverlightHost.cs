@@ -37,10 +37,11 @@ namespace System.Windows.Interop {
 		Content content;
 		Settings settings;
 		Uri source_uri;
+		private Dictionary<string,string> init_params;
 
 		public SilverlightHost ()
 		{
-			NavigationState = "";
+			NavigationState = String.Empty;
 		}
 
 		public bool IsVersionSupported (string versionStr)
@@ -103,9 +104,34 @@ namespace System.Windows.Interop {
 
 		public IDictionary<string,string> InitParams {
 			get {
-				/* FIXME this a very ugly way to get the initparams */
-				var args = new StartupEventArgs ();
-				return args.InitParams;
+				if (init_params != null)
+					return init_params;
+
+				init_params = new Dictionary<string,string> ();
+
+				if (PluginHost.Handle != IntPtr.Zero) {
+					char [] param_separator = new char [] { ',' };
+					
+					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
+					// Console.WriteLine ("params = {0}", param_string);
+					if (!String.IsNullOrEmpty (param_string)) {
+						foreach (string val in param_string.Split (param_separator)) {
+							int split = val.IndexOf ('=');
+							if (split >= 0) {
+								string k = val.Substring (0, split).Trim ();
+								string v = val.Substring (split + 1).Trim ();
+								if (k.Length > 0)
+									init_params [k] = v;
+							} else {
+								string s = val.Trim ();
+								if (!String.IsNullOrEmpty (s))
+									init_params [s] = String.Empty;
+							}
+						}
+					}
+				}
+
+				return init_params;
 			}
 		}
 

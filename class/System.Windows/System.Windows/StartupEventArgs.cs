@@ -25,50 +25,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System.Collections.Generic;
-using System.Windows.Interop;
-using Mono;
 
 namespace System.Windows {
 	public sealed class StartupEventArgs : EventArgs {
-		private Dictionary<string,string> init_params;
 
 		internal StartupEventArgs () {}
 
-		internal Dictionary<string,string> InitParamsAsDictionary {
-			get {
-				if (init_params != null)
-					return init_params;
-
-				init_params = new Dictionary<string,string> ();
-
-				if (PluginHost.Handle != IntPtr.Zero) {
-					char [] param_separator = new char [] { ',' };
-					
-					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
-					// Console.WriteLine ("params = {0}", param_string);
-					if (!String.IsNullOrEmpty (param_string)) {
-						foreach (string val in param_string.Split (param_separator)) {
-							int split = val.IndexOf ('=');
-							if (split >= 0) {
-								string k = val.Substring (0, split).Trim ();
-								string v = val.Substring (split + 1).Trim ();
-								if (k.Length > 0)
-									init_params [k] = v;
-							} else {
-								string s = val.Trim ();
-								if (!String.IsNullOrEmpty (s))
-									init_params [s] = String.Empty;
-							}
-						}
-					}
-				}
-
-				return init_params;
-			}
-		}
 		public IDictionary<string,string> InitParams {
 			get {
-				return InitParamsAsDictionary;
+				return Application.Current.Host.InitParams;
 			}
 		}
 	}

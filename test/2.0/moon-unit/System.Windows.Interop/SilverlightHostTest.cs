@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008, 2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -83,6 +83,20 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue  (host.IsVersionSupported ("1.0.0.0"), "1.0.0.0");
 			Assert.IsFalse (host.IsVersionSupported ("1.0.0.0."), "1.0.0.0.");
 			Assert.IsFalse (host.IsVersionSupported ("1.0.0.0.0"), "1.0.0.0.0");
+		}
+
+		[TestMethod]
+		public void InitParams ()
+		{
+			SilverlightHost host = Application.Current.Host;
+			// what's added at Application.Startup is available later (see App.xaml.cs)
+			Assert.IsTrue (host.InitParams.ContainsKey ("Moon-y-Test"), "Application_Startup");
+			int n = host.InitParams.Count;
+			host.InitParams.Add ("a", "b"); // not read-only
+			// a single copy is kept
+			Assert.AreEqual (n + 1, Application.Current.Host.InitParams.Count, "Count");
+			host.InitParams.Remove ("a");
+			Assert.AreEqual (n, Application.Current.Host.InitParams.Count, "Count-2");
 		}
 	}
 }
