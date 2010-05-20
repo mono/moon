@@ -1,5 +1,12 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Ensure that CanAddNew and
+	  CanRemove are both updated whenever any of the 'Add' or
+	  'Edit' methods are called. Fixes a small regression in 232
+	  from a previous commit.
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: You can't remove an item if we're
 	  in AddNew mode. Throw exceptions in Remove/RemoveAt if we're
 	  in edit/add mode.

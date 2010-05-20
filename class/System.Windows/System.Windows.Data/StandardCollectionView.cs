@@ -211,8 +211,7 @@ namespace System.Windows.Data {
 				}
 			}
 
-			UpdateCanAddNew ();
-			CanRemove = !SourceCollection.IsFixedSize;
+			UpdateCanAddNewAndRemove ();
 			filteredList = new List <object> ();
 			CurrentPosition = -1;
 			IsEmpty = ActiveList.Count == 0;
@@ -544,7 +543,8 @@ namespace System.Windows.Data {
 			MoveCurrentTo (newObject);
 			if (newObject is IEditableObject)
 				((IEditableObject) newObject).BeginEdit ();
-			UpdateCanRemove ();
+
+			UpdateCanAddNewAndRemove ();
 			return newObject;
 		}
 
@@ -577,7 +577,7 @@ namespace System.Windows.Data {
 				CurrentEditItem = null;
 				IsEditingItem = false;
 				CanCancelEdit = false;
-				UpdateCanAddNew ();
+				UpdateCanAddNewAndRemove ();
 			}
 		}
 
@@ -595,6 +595,7 @@ namespace System.Windows.Data {
 				RemoveFromSourceCollection (CurrentAddItem);
 				CurrentAddItem = null;
 				IsAddingNew = false;
+				UpdateCanAddNewAndRemove ();
 			}
 		}
 
@@ -614,8 +615,7 @@ namespace System.Windows.Data {
 					CanCancelEdit = false;
 				}
 
-				UpdateCanAddNew ();
-				UpdateCanRemove ();
+				UpdateCanAddNewAndRemove ();
 
 				int originalIndex = IndexOf (editItem);
 				int newIndex;
@@ -717,6 +717,7 @@ namespace System.Windows.Data {
 				}
 				CurrentAddItem = null;
 				IsAddingNew = false;
+				UpdateCanAddNewAndRemove ();
 			}
 		}
 
@@ -737,8 +738,7 @@ namespace System.Windows.Data {
 				CanCancelEdit = true;
 				((IEditableObject) item).BeginEdit ();
 			}
-			UpdateCanAddNew ();
-			UpdateCanRemove ();
+			UpdateCanAddNewAndRemove ();
 		}
 
 		public void Remove (object item)
@@ -759,16 +759,13 @@ namespace System.Windows.Data {
 			RemoveFromSourceCollection (ItemAtIndex (index));
 		}
 
-		void UpdateCanAddNew ()
+		void UpdateCanAddNewAndRemove ()
 		{
 			var value = ItemConstructor != null && !SourceCollection.IsFixedSize && !IsEditingItem;
 			if (value != CanAddNew)
 				CanAddNew = value;
-		}
 
-		void UpdateCanRemove ()
-		{
-			var value = !SourceCollection.IsFixedSize && !IsEditingItem && !IsAddingNew;
+			value = !SourceCollection.IsFixedSize && !IsEditingItem && !IsAddingNew;
 			if (value != CanRemove)
 				CanRemove = value;
 		}
