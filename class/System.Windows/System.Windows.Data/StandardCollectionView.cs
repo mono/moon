@@ -222,7 +222,11 @@ namespace System.Windows.Data {
 				((INotifyCollectionChanged) SourceCollection).CollectionChanged += HandleSourceCollectionChanged;
 
 			GroupDescriptions.CollectionChanged += (o, e) => Refresh ();
-			((INotifyCollectionChanged) SortDescriptions).CollectionChanged += (o, e) => Refresh ();
+			((INotifyCollectionChanged) SortDescriptions).CollectionChanged += (o, e) => {
+				if (IsAddingNew || IsEditingItem)
+					throw new InvalidOperationException ("Cannot modify SortDescriptions while adding or editing an item");
+				Refresh ();
+			};
 		}
 
 		void HandleSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
@@ -362,6 +366,9 @@ namespace System.Windows.Data {
 
 		public IDisposable DeferRefresh ()
 		{
+			if (IsAddingNew || IsEditingItem)
+				throw new InvalidOperationException ("Cannot defer refresh while adding or editing");
+
 			return new Deferrer (this);
 		}
 
@@ -470,6 +477,9 @@ namespace System.Windows.Data {
 
 		public void Refresh ()
 		{
+			if (IsAddingNew || IsEditingItem)
+				throw new InvalidOperationException ("Cannot refresh while adding or editing an item");
+
 			if (((IDeferRefresh) this).DeferLevel != 0)
 				return;
 
