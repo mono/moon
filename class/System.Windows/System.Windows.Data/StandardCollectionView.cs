@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace System.Windows.Data {
 
@@ -160,7 +161,7 @@ namespace System.Windows.Data {
 			get { return CurrentPosition >= 0 && CurrentPosition < ActiveList.Count; }
 		}
 
-		Type ItemType {
+		ConstructorInfo ItemConstructor {
 			get; set;
 		}
 
@@ -203,9 +204,12 @@ namespace System.Windows.Data {
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
 			var interfaces = SourceCollection.GetType ().GetInterfaces ();
-			foreach (var t in interfaces)
-				if (t.IsGenericType && t.GetGenericTypeDefinition () == typeof (IList<>))
-					ItemType = t.GetGenericArguments () [0];
+			foreach (var t in interfaces) {
+				if (t.IsGenericType && t.GetGenericTypeDefinition () == typeof (IList<>)) {
+					Type type = t.GetGenericArguments () [0];
+					ItemConstructor = type.GetConstructor (Type.EmptyTypes);
+				}
+			}
 
 			UpdateCanAddNew ();
 			CanRemove = !SourceCollection.IsFixedSize;
@@ -507,7 +511,7 @@ namespace System.Windows.Data {
 			if (((IDeferRefresh) this).DeferLevel != 0)
 				throw new InvalidOperationException ("Cannot add a new item while refresh is deferred");
 
-			if (ItemType == null)
+			if (ItemConstructor == null)
 				throw new InvalidOperationException ("The underlying collection does not support adding new items");
 
 			if (SourceCollection.IsFixedSize)
@@ -520,7 +524,7 @@ namespace System.Windows.Data {
 			if (IsAddingNew)
 				CommitNew ();
 
-			var newObject = Activator.CreateInstance (ItemType);
+			var newObject = ItemConstructor.Invoke (null);
 			// FIXME: I need to check the ordering on the events when the source is INCC
 			CurrentAddItem = newObject;
 			IsAddingNew = true;
@@ -742,7 +746,7 @@ namespace System.Windows.Data {
 
 		void UpdateCanAddNew ()
 		{
-			var value = ItemType != null && !SourceCollection.IsFixedSize && !IsEditingItem;
+			var value = ItemConstructor != null && !SourceCollection.IsFixedSize && !IsEditingItem;
 			if (value != CanAddNew)
 				CanAddNew = value;
 		}

@@ -1,5 +1,10 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: We can only auto-create items if
+	  there's a public parameterless constructor.
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: If CanRemove is false, throw an
 	  InvalidOperationException if we try to remove.l
 
