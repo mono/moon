@@ -728,11 +728,15 @@ namespace System.Windows.Data {
 
 		public void Remove (object item)
 		{
+			if (!CanRemove)
+				throw new InvalidOperationException ("Removing is not supported by this collection");
 			RemoveFromSourceCollection (item);
 		}
 
 		public void RemoveAt (int index)
 		{
+			if (!CanRemove)
+				throw new InvalidOperationException ("Removing is not supported by this collection");
 			RemoveFromSourceCollection (ItemAtIndex (index));
 		}
 

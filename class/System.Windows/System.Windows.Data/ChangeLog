@@ -1,5 +1,10 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: If CanRemove is false, throw an
+	  InvalidOperationException if we try to remove.l
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: If we're sorting or grouping the
 	  actual indices of the elements are different to those in the
 	  source collection. When raising the INCC event we need to
