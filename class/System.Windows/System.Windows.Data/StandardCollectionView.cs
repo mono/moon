@@ -544,6 +544,7 @@ namespace System.Windows.Data {
 			MoveCurrentTo (newObject);
 			if (newObject is IEditableObject)
 				((IEditableObject) newObject).BeginEdit ();
+			UpdateCanRemove ();
 			return newObject;
 		}
 
@@ -744,6 +745,8 @@ namespace System.Windows.Data {
 		{
 			if (!CanRemove)
 				throw new InvalidOperationException ("Removing is not supported by this collection");
+			if (IsAddingNew || IsEditingItem)
+				throw new InvalidOperationException ("Cannot remove an item when adding or editing an item");
 			RemoveFromSourceCollection (item);
 		}
 
@@ -751,6 +754,8 @@ namespace System.Windows.Data {
 		{
 			if (!CanRemove)
 				throw new InvalidOperationException ("Removing is not supported by this collection");
+			if (IsAddingNew || IsEditingItem)
+				throw new InvalidOperationException ("Cannot remove an item when adding or editing an item");
 			RemoveFromSourceCollection (ItemAtIndex (index));
 		}
 
@@ -763,7 +768,7 @@ namespace System.Windows.Data {
 
 		void UpdateCanRemove ()
 		{
-			var value = !SourceCollection.IsFixedSize && !IsEditingItem;
+			var value = !SourceCollection.IsFixedSize && !IsEditingItem && !IsAddingNew;
 			if (value != CanRemove)
 				CanRemove = value;
 		}
