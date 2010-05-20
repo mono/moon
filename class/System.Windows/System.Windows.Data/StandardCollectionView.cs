@@ -79,7 +79,7 @@ namespace System.Windows.Data {
 		}
 
 		public bool CanFilter {
-			get; private set;
+			get { return true; }
 		}
 
 		public bool CanGroup {
@@ -87,7 +87,7 @@ namespace System.Windows.Data {
 		}
 
 		public bool CanSort {
-			get; private set;
+			get { return true; }
 		}
 
 		public CultureInfo Culture {

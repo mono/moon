@@ -8,7 +8,7 @@ using System.Collections.Specialized;
 
 namespace System.Windows.Data {
 
-	class EnumerableCollectionView : ICollectionView {
+	class EnumerableCollectionView : ICollectionView, INotifyPropertyChanged, IDeferRefresh {
 
 		ObservableCollection<object> clonedCollection;
 		StandardCollectionView view;
@@ -16,7 +16,8 @@ namespace System.Windows.Data {
 		public event EventHandler CurrentChanged;
 		public event CurrentChangingEventHandler CurrentChanging;
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
-
+		public event PropertyChangedEventHandler PropertyChanged;
+		
 		public bool CanFilter {
 			get { return view.CanFilter; }
 		}
@@ -40,6 +41,11 @@ namespace System.Windows.Data {
 
 		public int CurrentPosition {
 			get { return view.CurrentPosition; }
+		}
+
+		int IDeferRefresh.DeferLevel {
+			get { return ((IDeferRefresh) view).DeferLevel; }
+			set { ((IDeferRefresh) view).DeferLevel = value; }
 		}
 
 		public Predicate<object> Filter {
@@ -85,6 +91,27 @@ namespace System.Windows.Data {
 			var c = collection as INotifyCollectionChanged;
 			if (c != null)
 				c.CollectionChanged += HandleCollectionChanged;
+
+			view.CollectionChanged += (o, e) => {
+				var h = CollectionChanged;
+				if (h != null)
+					h (this, e);
+			};
+			view.CurrentChanged += (o, e) => {
+				var h = CurrentChanged;
+				if (h != null)
+					h (this, e);
+			};
+			view.CurrentChanging += (o, e) => {
+				var h = CurrentChanging;
+				if (h != null)
+					h (this, e);
+			};
+			view.PropertyChanged += (o, e) => {
+				var h = PropertyChanged;
+				if (h != null)
+					h (this, e);
+			};
 		}
 
 		void HandleCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)

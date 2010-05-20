@@ -1,5 +1,13 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Implement CanFilter and CanSort
+	  as "return true" until a test says this is wrong
+
+	* EnumerableCollectionView.cs: Make EnumerableCollectionView
+	  forward any property change events as appropriate.
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewSource.cs: Register the DPs with the right
 	  names.
 
