@@ -1,5 +1,11 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Remove the fastpath as it's not
+	  required anymore. The bugs which lead to this code have been
+	  fixed.
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Implement CanFilter and CanSort
 	  as "return true" until a test says this is wrong
 

@@ -410,9 +410,6 @@ namespace System.Windows.Data {
 
 		bool MoveCurrentTo (int position, bool force)
 		{
-			if (CurrentPosition == position && !force)
-				return IsValidSelection;
-
 			object newItem = ItemAtIndex (position);
 			bool raiseEvents = CurrentItem != newItem;
 

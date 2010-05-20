@@ -1,3 +1,11 @@
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Update SelectedItem immediately if we're
+	  syncing with an ICV so that we don't wait for the first
+	  "CurrentChanged" event to select the item. When the
+	  selection is changed to null we need to synchronize that
+	  with the ICV, so pull that code outside of the null check.
+
 2010-05-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratorPosition.cs: Fix error CS0843 with newer compilers -

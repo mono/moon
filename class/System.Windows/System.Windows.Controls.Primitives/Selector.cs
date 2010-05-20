@@ -170,12 +170,17 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal override void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
 		{
-			if (oldSource is ICollectionView)
-				(oldSource as ICollectionView).CurrentChanged -= OnCurrentItemChanged;
-			
-			if (newSource is ICollectionView)
-				(newSource as ICollectionView).CurrentChanged += OnCurrentItemChanged;
-			
+			ICollectionView view = oldSource as ICollectionView;
+			if (view != null)
+				view.CurrentChanged -= OnCurrentItemChanged;
+
+			view = newSource as ICollectionView;
+			if (view != null) {
+				view.CurrentChanged += OnCurrentItemChanged;
+				if (SynchronizeWithCurrentItem)
+					Selection.Select (view.CurrentItem);
+			}
+
 			base.OnItemsSourceChanged (oldSource, newSource);
 		}
 		
@@ -252,10 +257,10 @@ namespace System.Windows.Controls.Primitives {
 						newItem.Focus ();
 					}
 				}
-
-				if (SynchronizeWithCurrentItem)
-					(ItemsSource as ICollectionView).MoveCurrentTo (newValue);
 			}
+
+			if (SynchronizeWithCurrentItem)
+				(ItemsSource as ICollectionView).MoveCurrentTo (SelectedItem);
 		}
 
 		internal void RaiseSelectionChanged (object [] oldVals, object [] newVals)
