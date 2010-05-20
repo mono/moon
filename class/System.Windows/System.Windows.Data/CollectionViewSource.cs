@@ -42,7 +42,7 @@ namespace System.Windows.Data {
 
 	public partial class CollectionViewSource : DependencyObject, IDeferRefresh {
 		public static readonly DependencyProperty SourceProperty =
-			DependencyProperty.Register ("SourceProperty", typeof (object), typeof (CollectionViewSource),
+			DependencyProperty.Register ("Source", typeof (object), typeof (CollectionViewSource),
 							 new PropertyMetadata (null, SourceChanged));
 
 		static void SourceChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -51,7 +51,7 @@ namespace System.Windows.Data {
 		}
 
 		public static readonly DependencyProperty ViewProperty =
-			DependencyProperty.Register ("ViewProperty", typeof (ICollectionView), typeof (CollectionViewSource), null);
+			DependencyProperty.Register ("View", typeof (ICollectionView), typeof (CollectionViewSource), null);
 
 		CultureInfo culture;
 		FilterEventHandler filter;

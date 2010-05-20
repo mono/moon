@@ -1,5 +1,10 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionViewSource.cs: Register the DPs with the right
+	  names.
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Ensure that CanAddNew and
 	  CanRemove are both updated whenever any of the 'Add' or
 	  'Edit' methods are called. Fixes a small regression in 232
