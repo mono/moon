@@ -1,5 +1,10 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionViewGroup.cs: An easy one this time,
+	  remove empty groups from the tree.
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: A simple "resort the collection
 	  after editing" isn't good enough for 232. The same logic as
 	  for CommitNew is required - we need to binary search the

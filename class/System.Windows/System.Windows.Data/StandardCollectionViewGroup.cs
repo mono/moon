@@ -148,8 +148,13 @@ namespace System.Windows.Data {
 				if (RemoveItem (item))
 					return true;
 			} else {
-				foreach (StandardCollectionViewGroup group in Items)
-					group.RemoveInSubtree (item);
+				foreach (StandardCollectionViewGroup group in Items) {
+					if (group.RemoveInSubtree (item)) {
+						if (group.ProtectedItems.Count == 0)
+							RemoveItem (group);
+						return true;
+					}
+				}
 			}
 			return false;
 		}
