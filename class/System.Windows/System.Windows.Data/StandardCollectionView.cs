@@ -226,28 +226,35 @@ namespace System.Windows.Data {
 			// Firstly if we are copying the source collection into our filtered list, update
 			// the copy with the new changes and compute the actual index of our item in the
 			// sorted/grouped/filtered list.
-			int actualIndex = -1;
+			int actualOldIndex = -1;
+			int actualNewIndex = -1;
 			bool originalList = ActiveList == SourceCollection;
+			NotifyCollectionChangedEventArgs modifed = e;
 			if (!originalList) {
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
 					foreach (object o in e.NewItems)
 						AddToFilteredAndGroupSorted (o);
-					actualIndex = IndexOf (e.NewItems [0]);
+					actualNewIndex = IndexOf (e.NewItems [0]);
+					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
-					actualIndex = IndexOf (e.OldItems [0]);
+					actualOldIndex = IndexOf (e.OldItems [0]);
 					foreach (object o in e.OldItems)
 						RemoveFromFilteredAndGroup (o);
+					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, e.OldItems [0], actualOldIndex));
 					break;
 
 				case NotifyCollectionChangedAction.Replace:
+					actualOldIndex = IndexOf (e.OldItems [0]);
 					foreach (object o in e.OldItems)
 						RemoveFromFilteredAndGroup (o);
 					foreach (object o in e.NewItems)
 						AddToFilteredAndGroupSorted (o);
-					actualIndex = IndexOf (e.NewItems [0]);
+					actualNewIndex = IndexOf (e.NewItems [0]);
+					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, e.OldItems[0], actualOldIndex));
+					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
 					break;
 	
 				case NotifyCollectionChangedAction.Reset:
@@ -255,29 +262,31 @@ namespace System.Windows.Data {
 					RootGroup.ClearSubtree ();
 					foreach (var o in SourceCollection)
 						AddToFilteredAndGroup (o);
+					modifed = e;
 					break;
 				}
+			} else {
+				// Raise the collection changed event
+				RaiseCollectionChanged (modifed);
 			}
 
-			// Secondly raise our collection changed events
-			RaiseCollectionChanged (e);
 			IsEmpty = ActiveList.Count == 0;
 
 			// Finally update the selected item if needed.
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
 				if (originalList)
-					actualIndex = e.NewStartingIndex;
-				if (actualIndex <= CurrentPosition)
+					actualNewIndex = e.NewStartingIndex;
+				if (actualNewIndex <= CurrentPosition)
 					MoveCurrentTo (CurrentPosition + 1);
 				break;
 
 			case NotifyCollectionChangedAction.Remove:
 				if (originalList)
-					actualIndex = e.OldStartingIndex;
-				if (actualIndex < CurrentPosition) {
+					actualOldIndex = e.OldStartingIndex;
+				if (actualOldIndex < CurrentPosition) {
 					MoveCurrentTo (CurrentPosition - 1);
-				} else if (actualIndex == CurrentPosition) {
+				} else if (actualOldIndex == CurrentPosition) {
 					if (CurrentAddItem == CurrentItem)
 						MoveCurrentTo (CurrentPosition - 1);
 					else

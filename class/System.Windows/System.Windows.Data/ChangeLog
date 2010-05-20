@@ -1,5 +1,16 @@
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: If we're sorting or grouping the
+	  actual indices of the elements are different to those in the
+	  source collection. When raising the INCC event we need to
+	  create new event args with the correct indices. We also need
+	  to mangle "Replace" events into a Remove and Add event as a
+	  replace in the source collection could result in an item
+	  being removed at index 4 and another one being added at
+	  index 10 in the actual collection. Very sneaky!
+
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionViewGroup.cs: An easy one this time,
 	  remove empty groups from the tree.
 
