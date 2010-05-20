@@ -58,6 +58,10 @@ namespace System.Windows.Data {
 			private set { canRemove.Value = value;}
 		}
 
+		PropertyComparer Comparer {
+			get { return new PropertyComparer (SortDescriptions); }
+		}
+
 		public bool IsAddingNew {
 			get { return isAddingNew.Value; }
 			private set { isAddingNew.Value = value;}
@@ -590,6 +594,7 @@ namespace System.Windows.Data {
 				UpdateCanRemove ();
 
 				int originalIndex = IndexOf (editItem);
+				int newIndex;
 
 				// If we're filtering the item out just nuke it
 				if (Filter != null && !Filter (editItem)) {
@@ -602,7 +607,36 @@ namespace System.Windows.Data {
 
 				// We could also have changed the property which sorts it
 				if (SortDescriptions.Count > 0) {
-					filteredList.Sort (new PropertyComparer (SortDescriptions));
+					// We can't just remove the item and binary search for the correct place as that will change the
+					// order of elements which compare as equal and breaks more tests than it fixes. We need to first
+					// check to see if the editItem is >= than the previous one and <= the next one. If that is true
+					// we need to do nothing. Otherwise we need to binary search either the upper or lower half and
+					// find the new index where the editItem should be placed.
+					if (originalIndex > 0 && Comparer.Compare (filteredList [originalIndex - 1], editItem) > 0) {
+						newIndex = filteredList.BinarySearch (0, originalIndex, editItem, Comparer);
+					} else if (originalIndex < (filteredList.Count - 1) && Comparer.Compare (filteredList [originalIndex + 1], editItem) < 0) {
+						newIndex = filteredList.BinarySearch (originalIndex + 1, filteredList.Count - (originalIndex + 1), editItem, Comparer);
+					} else {
+						// We're already in the right place.
+						newIndex = originalIndex;
+					}
+				} else {
+					// No sorting == no index change
+					newIndex = originalIndex;
+				}
+
+
+				if (newIndex != originalIndex) {
+					if (newIndex < 0)
+						newIndex = ~newIndex;
+
+					 // When we remove the element from the original index, our newIndex will be off by 1 as everything
+					// gets shuffled down so decrement it here.
+					if (newIndex > originalIndex)
+						newIndex --;
+
+					filteredList.RemoveAt (originalIndex);
+					filteredList.Insert (newIndex, editItem);
 				}
 
 				// We may have edited the property which controls which group the item is in
@@ -610,8 +644,9 @@ namespace System.Windows.Data {
 				if (Grouping) {
 					RootGroup.RemoveInSubtree (editItem);
 					RootGroup.AddInSubtree (editItem, Culture, GroupDescriptions);
+					newIndex = IndexOf (editItem);
 				}
-				int newIndex = IndexOf (editItem);
+
 				if (originalIndex != newIndex) {
 					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, editItem, originalIndex));
 					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, editItem, newIndex));

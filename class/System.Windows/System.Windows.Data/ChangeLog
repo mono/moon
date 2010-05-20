@@ -1,3 +1,11 @@
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardCollectionView.cs: A simple "resort the collection
+	  after editing" isn't good enough for 232. The same logic as
+	  for CommitNew is required - we need to binary search the
+	  list and re-insert the item in the correct place iif it
+	  needs to be moved.
+
 2010-05-19  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs: We need to invoke the
