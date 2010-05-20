@@ -1,3 +1,7 @@
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* error.cpp: Lets try not leaking GCHandles forever :)
+
 2010-05-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (PasswordBox::SyncText): Sync the

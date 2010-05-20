@@ -15,6 +15,7 @@
  
 #include "error.h"
 #include "eventargs.h"
+#include "mono/metadata/object.h"
 
 //
 // MoonError
@@ -58,6 +59,10 @@ MoonError::~MoonError ()
 void
 MoonError::Clear ()
 {
+	if (gchandle_ptr != NULL) {
+		mono_gchandle_free (GPOINTER_TO_INT (gchandle_ptr));
+		gchandle_ptr = NULL;
+	}
 	number = NO_ERROR;
 	code = 0;
 	g_free (message);
