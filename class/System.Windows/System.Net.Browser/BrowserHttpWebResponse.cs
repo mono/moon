@@ -113,7 +113,7 @@ namespace System.Net.Browser {
 		public override Stream GetResponseStream ()
 		{
 			response.Seek (0, SeekOrigin.Begin);
-			// the stream we return must be read-only, so we wrap arround our MemoryStream
+			// the stream we return must be read-only, so we wrap around our MemoryStream
 			return new InternalWebResponseStreamWrapper (response, progressive);
 		}
 
@@ -122,7 +122,9 @@ namespace System.Net.Browser {
 				long result;
 				if (!Int64.TryParse (Headers ["Content-Length"], out result))
 					result = 0;
-				return (IsCompressed && (response.Length > result)) ? response.Length : result;
+				// if compressed then do not report Content-Length but the real response's length
+				// if result == 0 then it likely means no Content-Length was specified, so use the reponse's length
+				return ((IsCompressed || (result == 0)) && (response.Length > result)) ? response.Length : result;
 			}
 		}
 
