@@ -1,3 +1,9 @@
+2010-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: We can attach bindings to
+	  DependencyObjects now, so remove the check which enforced
+	  FrameworkElements. Fixes more of 232.
+
 2010-05-18  Alan McGovern  <amcgovern@novell.com>
 
 	* IListExtensions.cs: Add BinarySearch extension method to

@@ -339,7 +339,7 @@ namespace Mono.Xaml
 			return !target.GetType ().IsSubclassOf (get_method.DeclaringType);
 		}
 
-		private unsafe DependencyProperty LookupDependencyPropertyForBinding (XamlCallbackData *data, FrameworkElement fwe, string type_name, string propertyName)
+		private unsafe DependencyProperty LookupDependencyPropertyForBinding (XamlCallbackData *data, DependencyObject fwe, string type_name, string propertyName)
 		{
 			// map the property name + type_name to an actual DependencyProperty
 			Kind kind;
@@ -363,7 +363,7 @@ namespace Mono.Xaml
 
 		private unsafe bool TrySetExpression (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string prop_xmlns, string name, string full_name, Value* value_ptr, IntPtr value_data)
 		{
-			FrameworkElement dob = target as FrameworkElement;
+			DependencyObject dob = target as DependencyObject;
 			object obj_value = Value.ToObject (null, value_ptr);
 			string str_value = obj_value as string;
 
@@ -396,14 +396,14 @@ namespace Mono.Xaml
 
 				// If it's null we should look for a regular CLR property
 				if (prop != null) {
-					dob.SetBinding (prop, binding);
+					BindingOperations.SetBinding (dob, prop, binding);
 					return true;
 				}
 			}
 			if (o is TemplateBindingExpression) {
 				// Applying a {TemplateBinding} to a DO which is not a FrameworkElement should silently discard
 				// the binding.
-				if (dob == null)
+				if (!(dob is FrameworkElement))
 					return true;
 
 				TemplateBindingExpression tb = o as TemplateBindingExpression;
@@ -433,7 +433,7 @@ namespace Mono.Xaml
 				tb.Source = templateSourceObject as Control;
 				tb.SourceProperty = sourceProperty;
 
-				dob.SetTemplateBinding (prop, tb);
+				((FrameworkElement) dob).SetTemplateBinding (prop, tb);
 
 				return true;
 			}
