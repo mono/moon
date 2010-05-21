@@ -801,7 +801,7 @@ Surface::Paint (cairo_t *ctx, Region *region)
 	Paint (ctx, region, false, false);
 }
 
-#if DEBUG
+#if 0
 static void
 dump_render_list (List *render_list)
 {
@@ -2696,8 +2696,6 @@ get_runtime_options (RuntimeInitFlag def)
 void
 runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 {
-	const char *env;
-	
 	if (inited)
 		return;
 
