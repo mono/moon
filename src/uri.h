@@ -50,6 +50,8 @@ public:
 	static bool Equals (const Uri *left, const Uri *right);
 	static bool IsNullOrEmpty (const Uri *uri);
 	static bool SameSiteOfOrigin (const Uri *left, const Uri *right);
+	static bool SameScheme (const Uri *uri1, const Uri *uri2);
+	static bool SameDomain (const Uri *uri1, const Uri *uri2);
 
 	/* @GenerateCBinding */
 	guint GetHashCode ();

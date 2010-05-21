@@ -149,28 +149,6 @@ Downloader::InternalOpen (const char *verb, const char *uri)
 	open_func (downloader_state, verb, uri, custom_header_support, disable_cache);
 }
 
-static bool
-same_scheme (const Uri *uri1, const Uri *uri2)
-{
-	return uri1->GetScheme () && uri2->GetScheme () &&
-		!strcmp (uri1->GetScheme (), uri2->GetScheme ());
-}
-
-static bool
-same_domain (const Uri *uri1, const Uri *uri2)
-{
-	const char *host1 = uri1->GetHost ();
-	const char *host2 = uri2->GetHost ();
-	
-	if (host1 && host2)
-		return g_ascii_strcasecmp (host1, host2) == 0;
-	
-	if (!host1 && !host2)
-		return true;
-	
-	return false;
-}
-
 // Reference:	URL Access Restrictions in Silverlight 2
 //		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 bool
@@ -204,13 +182,13 @@ Downloader::CheckRedirectionPolicy (const char *url)
 		case DownloaderPolicy:
 			// Redirection allowed for 'same domain' and 'same scheme'
 			// note: if 'dest' is relative then it's the same scheme and site
-			if (!dest->IsAbsolute () || (same_domain (source, dest) && same_scheme (source, dest)))
+			if (!dest->IsAbsolute () || (Uri::SameDomain (source, dest) && Uri::SameScheme (source, dest)))
 				retval = true;
 			break;
 		case MediaPolicy:
 			// Redirection allowed for: 'same scheme' and 'same or different sites'
 			// note: if 'dest' is relative then it's the same scheme and site
-			if (!dest->IsAbsolute () || same_scheme (source, dest))
+			if (!dest->IsAbsolute () || Uri::SameScheme (source, dest))
 				retval = true;
 			break;
 		case XamlPolicy:
@@ -257,11 +235,11 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!target->IsScheme ("http") && !target->IsScheme ("https"))
 			retval = false;
 		//X-Scheme: no
-		if (!same_scheme (target, source))
+		if (!Uri::SameScheme (target, source))
 			retval = false;
 		//X-Domain: requires policy file
 		// FIXME only managed is implemented
-		if (!same_domain (target, source))
+		if (!Uri::SameDomain (target, source))
 			retval = false;
 		break;
 	case MsiPolicy:
@@ -270,7 +248,7 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
-		if (!same_scheme (target, source))
+		if (!Uri::SameScheme (target, source))
 			retval = false;
 		//X-Domain: Allowed
 		break;
@@ -279,10 +257,10 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
-		if (!same_scheme (target, source))
+		if (!Uri::SameScheme (target, source))
 			retval =false;
 		//X-domain: allowed if not HTTPS to HTTPS
-		if (!same_domain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
+		if (!Uri::SameDomain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
 			retval = false;
 		break;
 	case FontPolicy:
@@ -290,10 +268,10 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
-		if (!same_scheme (target, source))
+		if (!Uri::SameScheme (target, source))
 			retval = false;
 		//X-domain: no
-		if (!same_domain (target, source))
+		if (!Uri::SameDomain (target, source))
 			retval = false;
 		break;
 	case StreamingPolicy: //Streaming media
@@ -301,10 +279,10 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!target->IsScheme ("http"))
 			retval = false;
 		//X-scheme: Not from https
-		if (source->IsScheme ("https") && !same_scheme (source, target))
+		if (source->IsScheme ("https") && !Uri::SameScheme (source, target))
 			retval = false;
 		//X-domain: allowed if not HTTPS to HTTPS
-		if (!same_domain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
+		if (!Uri::SameDomain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
 			retval = false;
 		break;
 	default:

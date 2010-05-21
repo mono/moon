@@ -1,5 +1,11 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* uri.cpp|h: 
+	* downloader.cpp: Move Downloader's same_scheme and same_domain to Uri so that
+	they can be reused in other source files.
+
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Add a few sanity asserts that really asserts if the
 	failed check would mean that we could crash any time.
 
