@@ -817,7 +817,7 @@ PluginInstance::UpdateSource ()
 
 	char *pos = strchr (source, '#');
 	if (pos) {
-		// FIXME: this will crash if this object has been deleted by the time IdleUpdateSourceByReference is called.
+		this->ref ();
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
 
 		// we're changing the page url as well as the xaml
@@ -890,6 +890,8 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 		instance->progress_changed_token = -1;
 	}
 	instance->GetSurface ()->EmitSourceDownloadComplete ();
+	instance->unref ();
+
 	return FALSE;
 }
 

@@ -1,5 +1,9 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp: Fix FIXME by reffing self during a timeout.
+
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin-proxy.cpp: Fix compiler warning.
 
 2010-05-12  Chris Toshok  <toshok@ximian.com>
