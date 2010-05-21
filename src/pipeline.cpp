@@ -2634,8 +2634,10 @@ IMediaStream::CreateCodec (int codec_id)
 	case CODEC_WMAV2: return g_strdup ("wmav2");
 	case CODEC_WMAV3: return g_strdup ("wmav3");
 	case CODEC_PCM:   return g_strdup ("pcm");
+	case CODEC_MPEG_RAW_AAC:
 	case CODEC_mp4a:
 	case CODEC_MP4A:  return g_strdup ("aac");
+	case CODEC_H264:
 	case CODEC_avc1:
 	case CODEC_AVC1:  return g_strdup ("h264");
 	case CODEC_ASF_MARKER: return g_strdup ("asf-marker");

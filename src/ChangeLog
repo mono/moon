@@ -1,5 +1,10 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Add fourcc codes for h.264 and aac when they're used in an
+	asf container.
+
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h: Fix old comment to be up-to-date.
 
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>

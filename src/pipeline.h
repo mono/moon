@@ -33,11 +33,14 @@
 #define CODEC_mp4a	MAKE_CODEC_ID ('m', 'p', '4', 'a')
 #define CODEC_AVC1	MAKE_CODEC_ID ('A', 'V', 'C', '1')
 #define CODEC_avc1	MAKE_CODEC_ID ('a', 'v', 'c', '1')
+#define CODEC_H264	MAKE_CODEC_ID ('H', '2', '6', '4')
 #define CODEC_MP3	0x55
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 #define CODEC_WMAV3 0x162
 #define CODEC_PCM   0x1
+/* This I got from Windows' mmreg.h. There are other *_AAC values defined too, not sure which are needed */
+#define CODEC_MPEG_RAW_AAC	0x1601
 /* this is an internal codec id used by moonlight, the fourcc is invalid on purpose */
 #define CODEC_ASF_MARKER MAKE_CODEC_ID ('|', '@', '#', '%')
 
