@@ -1,3 +1,7 @@
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ui.cpp: Fix #if condition.
+
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* error.cpp: Lets try not leaking GCHandles forever :)

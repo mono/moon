@@ -17,7 +17,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#define MONO_HEADERS_INCLUDED 1
+#define INCLUDED_MONO_HEADERS 1
 
 #include <glib.h>
 #include <mono/mini/jit.h>
