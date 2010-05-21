@@ -15,7 +15,6 @@
 #define FF2_BRIDGE
 
 #include "browser-bridge.h"
-#include "plugin-class.h"
 
 class FF2BrowserBridge : public BrowserBridge {
  public:
@@ -23,12 +22,6 @@ class FF2BrowserBridge : public BrowserBridge {
 
 	virtual DownloaderRequest* CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache);
 };
-
-struct FF2DomEventType : MoonlightObjectType {
-	FF2DomEventType ();
-};
-
-extern FF2DomEventType *FF2DomEventClass;
 
 #endif // FF2_BRIDGE
 
