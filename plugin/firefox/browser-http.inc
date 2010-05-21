@@ -254,21 +254,6 @@ GECKO_SYM(DownloaderRequest)::CreateChannel ()
 	nsEmbedCString meth;
 	meth = this->method;
 
-	if (!strcmp (this->method, "HEAD")) {
-		/* Disable keep-alive for HEAD requests: firefox has a bug when the server returns content for a HEAD request,
-		 * any subsequent requests on the same connection may get data from the first HEAD request. Just disable 
-		 * keep-alive. This should be deleted once a proper client http stack has been implemented, since SL doesn't
-		 * support HEAD requests in its browser http stack.
-		 */
-		nsEmbedCString nsname, nsvalue;
-		nsname = "Connection";
-		nsvalue = "close";
-		httpchannel->SetRequestHeader (nsname, nsvalue, false);
-		nsname = "keep-alive";
-		nsvalue = "";
-		httpchannel->SetRequestHeader (nsname, nsvalue, false);
-	}
-
 	httpchannel->SetRequestMethod (meth);
 }
 
