@@ -411,6 +411,9 @@ ErrorEventArgs::Initialize (Type::Kind kind, ErrorEventArgsType type, const Moon
 	this->error = new MoonError (error);
 	extended_message = g_strdup (extended_msg);
 	extended_code = extended_error_code;
+#if DEBUG
+	printf ("Moonlight: ErrorEventArgs created with message: '%s'\n", error.message);
+#endif
 }
 
 ErrorEventArgs::~ErrorEventArgs ()

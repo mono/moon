@@ -1,5 +1,10 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* eventargs.cpp: Tell the world when an ErrorEventArgs is created, useful
+	when debugging.
+
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: Add fourcc codes for h.264 and aac when they're used in an
 	asf container.
 
