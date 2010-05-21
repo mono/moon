@@ -1,3 +1,9 @@
+2010-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPathWalker.cs: Add a helper method "GetValue" to
+	  PropertyPathWalker for cases where you just want the value
+	  but don't want to attach listeners and all that.
+
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs: Remove the fastpath as it's not

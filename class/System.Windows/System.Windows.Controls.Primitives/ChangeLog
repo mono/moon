@@ -1,5 +1,13 @@
 2010-05-21  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: Add support for the new SelectedValue and
+	  SelectedValuePath properties.
+
+	* Selection.cs: Keep the new SelectedValue property in sync
+	  aswell.
+
+2010-05-21  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs:
 	* Selection.cs: Merge two methods which handle selection
 	  changes in Selector.cs to (hopefully) simplify the code a

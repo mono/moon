@@ -116,6 +116,14 @@ namespace System.Windows.Data
 			};
 		}
 
+		public object GetValue (object item)
+		{
+			Update (item);
+			object o = FinalNode.Value;
+			Update (null);
+			return o;
+		}
+
 		public void Update (object source)
 		{
 			Node.SetSource (source);

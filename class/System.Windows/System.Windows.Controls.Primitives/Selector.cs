@@ -30,6 +30,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace System.Windows.Controls.Primitives {
@@ -44,7 +45,7 @@ namespace System.Windows.Controls.Primitives {
 						     new PropertyMetadata (null, new PropertyChangedCallback (OnIsSynchronizedWithCurrentItemChanged)));
 
 		public static readonly DependencyProperty SelectedValueProperty = 
-			DependencyProperty.Register ("SelectedValue", typeof (object), typeof (Selector), null);
+			DependencyProperty.Register ("SelectedValue", typeof (object), typeof (Selector), new PropertyMetadata (OnSelectedValueChanged));
 		
 		public static readonly DependencyProperty SelectedValuePathProperty = 
 			DependencyProperty.Register ("SelectedValuePath", typeof (string), typeof (Selector), new PropertyMetadata ("", OnSelectedValuePathChanged));
@@ -64,6 +65,11 @@ namespace System.Windows.Controls.Primitives {
 			((Selector) o).SelectedIndexChanged (o, e);
 		}
 
+		static void OnSelectedValueChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			((Selector) o).SelectedValueChanged (o, e);
+		}
+
 		// This is not a core property because it is a non-parenting property
 		public static readonly DependencyProperty SelectedItemProperty =
 			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector),
@@ -77,7 +83,9 @@ namespace System.Windows.Controls.Primitives {
 
 		static void OnSelectedValuePathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			
+			var selector = (Selector) o;
+			selector.SelectedValueWalker.Update (null);
+			selector.SelectedValueWalker = new PropertyPathWalker ((string) e.NewValue);
 		}
 
 		internal static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -94,14 +102,19 @@ namespace System.Windows.Controls.Primitives {
 			}	
 		}
 
+		internal PropertyPathWalker SelectedValueWalker {
+			get; set;
+		}
+
 		internal Selector ()
 		{
 			// Set default values for ScrollViewer attached properties 
 			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			Selection = new Selection (this);
+			SelectedValueWalker = new PropertyPathWalker ("");
 		}
-		
+
 		bool SynchronizeWithCurrentItem {
 			get {
 				bool? sync = IsSynchronizedWithCurrentItem;
@@ -218,6 +231,27 @@ namespace System.Windows.Controls.Primitives {
 			} else {
 				Selection.Select (e.NewValue);
 			}
+		}
+
+		void SelectedValueChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			if (Selection.Updating)
+				return;
+
+			foreach (var item in Items) {
+				var value = SelectedValueWalker.GetValue (item);
+				// First check for reference equality. If that values we could have
+				// boxed value types, so use actual calls to .Equals.
+				// FIXME: Should i verify that both e.NewValue and value are value types
+				// before calling object.Equals?
+				if (e.NewValue == value || object.Equals (e.NewValue, value)) {
+					Selection.Select (item);
+					return;
+				}
+			}
+
+			Console.WriteLine ("Epic selection fail? Should i revert to the old item? Can i revert to the old item?!");
+			// If we get here we should probably revert to the old selection
 		}
 
 		internal void RaiseSelectionChanged (IList oldVals, IList newVals)

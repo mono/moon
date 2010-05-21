@@ -123,6 +123,7 @@ namespace System.Windows.Controls.Primitives
 			if (SelectedItems.Count == 1) {
 				Owner.SelectedItem = item;
 				Owner.SelectedIndex  = Owner.Items.IndexOf (item);
+				Owner.SelectedValue = Owner.SelectedValueWalker.GetValue (item);
 				SelectedItem = item;
 			}
 
@@ -136,6 +137,7 @@ namespace System.Windows.Controls.Primitives
 				SelectedItems.Clear ();
 				Owner.SelectedItem = null;
 				Owner.SelectedIndex = -1;
+				Owner.SelectedValue = null;
 				SelectedItem = null;
 				if (hasSelection)
 					Owner.RaiseSelectionChanged (oldSelection, Empty);
@@ -148,6 +150,7 @@ namespace System.Windows.Controls.Primitives
 				var newItem = SelectedItems.Count == 0 ? null : SelectedItems [0];
 				Owner.SelectedItem = newItem;
 				Owner.SelectedIndex = newItem == null ? -1 : Owner.Items.IndexOf (newItem);
+				Owner.SelectedValue = newItem == null ? null : Owner.SelectedValueWalker.GetValue (Owner.SelectedItem);
 				SelectedItem = newItem;
 			}
 
@@ -165,6 +168,7 @@ namespace System.Windows.Controls.Primitives
 				SelectedItem = item;
 				Owner.SelectedItem  = item;
 				Owner.SelectedIndex = Owner.Items.IndexOf (item);
+				Owner.SelectedValue = Owner.SelectedValueWalker.GetValue (item);
 
 				if (olditem != item)
 					Owner.RaiseSelectionChanged (new object [] { olditem }, new object []  { item }); 
