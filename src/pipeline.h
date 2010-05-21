@@ -1164,8 +1164,7 @@ private:
 	List read_closures;
 	// To avoid locking while reading and writing (since reading is done on 
 	// the media thread and writing on the main thread), we open two file
-	// handlers, one for reading (in FileSource) and the other one here
-	// for writing.
+	// handlers, one for reading and one for writing.
 	FILE *write_fd;
 	FILE *read_fd;
 	char *filename;
