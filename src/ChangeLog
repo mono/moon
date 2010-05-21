@@ -1,5 +1,10 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Add a few sanity asserts that really asserts if the
+	failed check would mean that we could crash any time.
+
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Fix a couple of warnings.
 
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>

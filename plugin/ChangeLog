@@ -1,5 +1,9 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-entry.cpp: Spew all js exceptions thrown when in debug mode.
+
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp: Fix FIXME by reffing self during a timeout.
 
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>

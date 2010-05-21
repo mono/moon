@@ -332,6 +332,11 @@ MOON_NPN_ReleaseVariantValue (NPVariant *variant)
 void MOON_NPN_SetException (NPObject *obj, const NPUTF8 *message)
 {
 	DeploymentStack deployment_push_pop;
+
+#if DEBUG
+	printf ("Moonlight: JS exception: %s\n", message);
+#endif
+
 	MozillaFuncs.setexception (obj, message);
 }
 

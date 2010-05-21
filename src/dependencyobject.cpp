@@ -177,6 +177,10 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	if (depl == NULL)
 		depl = Deployment::GetCurrent ();
 	
+#if SANITY
+	g_assert (depl != NULL); /* #if SANITY */
+#endif
+
 	object_type = type;
 	deployment = depl;
 	if (deployment != NULL && this != deployment)
@@ -440,6 +444,7 @@ EventObject::unref ()
 	if (v < 0) {
 		g_warning ("EventObject::Unref (): NEGATIVE REFCOUNT id: %i v: %i refcount: %i", GET_OBJ_ID (this), v, refcount);
 		print_stack_trace ();
+		abort (); /*  #if SANITY */
 	}
 #endif
 }
