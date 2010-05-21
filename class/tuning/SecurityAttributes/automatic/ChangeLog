@@ -1,3 +1,7 @@
+2010-05-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: regenerated forgotten change
+
 2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: regenerated for the move of InitParams

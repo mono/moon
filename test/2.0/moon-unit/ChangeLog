@@ -1,3 +1,10 @@
+2010-05-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.ComponentModel/AsyncOperationTest.cs: New. Some test 
+	about null handling.
+	* System.ComponentModel/BackgroundWorkerTest.cs: New. Test
+	where ReportProgress is called before the work is started
+
 2010-05-21  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs: This test passes now that we don't

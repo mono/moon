@@ -1271,7 +1271,7 @@
 +SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::DependencyPropertyFromString(Mono.Xaml.XamlCallbackData*,System.Object,Mono.Value*,System.String)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
-+SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::LookupDependencyPropertyForBinding(Mono.Xaml.XamlCallbackData*,System.Windows.FrameworkElement,System.String,System.String)
++SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::LookupDependencyPropertyForBinding(Mono.Xaml.XamlCallbackData*,System.Windows.DependencyObject,System.String,System.String)
 
 # p/invoke declaration
 +SC-M: System.Windows.InstallState Mono.NativeMethods::application_get_install_state(System.IntPtr)
