@@ -1,3 +1,7 @@
+2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* lunar-launcher.cpp: Fix compiler warning.
+
 2010-05-12  Chris Toshok  <toshok@ximian.com>
 
 	* lunar-launcher.cpp (add_mono_config): we need to do the same

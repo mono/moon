@@ -152,8 +152,7 @@ add_mono_config (const char *plugin_dir)
 "<configuration>"
 	"<dllmap dll=\"moonplugin\" target=\"%s\" />"
 	"<dllmap dll=\"moon\" target=\"%s\" />"
-"</configuration>", plugin_path, plugin_path,
-	plugin_path);
+"</configuration>", plugin_path, plugin_path);
 	mono_config_parse_memory(plugin_config);
 	g_free (plugin_config);
 
