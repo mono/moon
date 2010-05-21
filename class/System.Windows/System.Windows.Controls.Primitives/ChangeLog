@@ -1,3 +1,10 @@
+2010-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs:
+	* Selection.cs: Merge two methods which handle selection
+	  changes in Selector.cs to (hopefully) simplify the code a
+	  bit.
+
 2010-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Update SelectedItem immediately if we're

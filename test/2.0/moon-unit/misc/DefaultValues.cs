@@ -26352,7 +26352,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_SetStringValue_Selector ()
         {
             ComboBox widget = new ComboBox ();
@@ -29228,7 +29227,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_SetStringValue_Selector ()
         {
             ListBox widget = new ListBox ();

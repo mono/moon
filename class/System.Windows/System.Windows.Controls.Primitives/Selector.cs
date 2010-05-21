@@ -44,7 +44,7 @@ namespace System.Windows.Controls.Primitives {
 						     new PropertyMetadata (null, new PropertyChangedCallback (OnIsSynchronizedWithCurrentItemChanged)));
 
 		public static readonly DependencyProperty SelectedValueProperty = 
-			DependencyProperty.Register ("SelectedValue", typeof (object), typeof (Selector), new PropertyMetadata (null, OnSelectedValueChanged));
+			DependencyProperty.Register ("SelectedValue", typeof (object), typeof (Selector), null);
 		
 		public static readonly DependencyProperty SelectedValuePathProperty = 
 			DependencyProperty.Register ("SelectedValuePath", typeof (string), typeof (Selector), new PropertyMetadata ("", OnSelectedValuePathChanged));
@@ -75,16 +75,9 @@ namespace System.Windows.Controls.Primitives {
 			((Selector) o).SelectedItemChanged (o, e);
 		}
 
-		static void OnSelectedValueChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
-		{
-			Console.WriteLine ("System.Windows.Controls.Primitives.Selector:OnSelectedValueChanged (): NIEX");
-			throw new NotImplementedException ();
-		}
-		
 		static void OnSelectedValuePathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			Console.WriteLine ("System.Windows.Controls.Primitives.Selector:OnSelectedValuePathChanged (): NIEX");
-			throw new NotImplementedException ();
+			
 		}
 
 		internal static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -226,10 +219,13 @@ namespace System.Windows.Controls.Primitives {
 				Selection.Select (e.NewValue);
 			}
 		}
-		
-		void OnSelectedItemChanged (object [] oldValues, object [] newValues)
+
+		internal void RaiseSelectionChanged (IList oldVals, IList newVals)
 		{
-			foreach (var oldValue in oldValues) {
+			oldVals = oldVals ?? new object [0];
+			newVals = newVals ?? new object [0];
+
+			foreach (var oldValue in oldVals) {
 				if (oldValue != null) {
 					var oldItem =  (ListBoxItem) ((oldValue as ListBoxItem) ?? ItemContainerGenerator.ContainerFromItem (oldValue));
 	
@@ -238,7 +234,7 @@ namespace System.Windows.Controls.Primitives {
 				}
 			}
 
-			foreach (var newValue in newValues) {
+			foreach (var newValue in newVals) {
 				if (newValue != null) {
 					var newItem =  (ListBoxItem) ((newValue as ListBoxItem) ?? ItemContainerGenerator.ContainerFromItem (newValue));
 	
@@ -261,13 +257,6 @@ namespace System.Windows.Controls.Primitives {
 
 			if (SynchronizeWithCurrentItem)
 				(ItemsSource as ICollectionView).MoveCurrentTo (SelectedItem);
-		}
-
-		internal void RaiseSelectionChanged (object [] oldVals, object [] newVals)
-		{
-			oldVals = oldVals ?? new object [0];
-			newVals = newVals ?? new object [0];
-			OnSelectedItemChanged (oldVals, newVals);
 			
 			SelectionChangedEventHandler h = SelectionChanged;
 			if (h != null)

@@ -1,3 +1,8 @@
+2010-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/DefaultValues.cs: This test passes now that we don't
+	  throw a NotImplementedException.
+
 2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* App.xaml.cs: Add something to InitParams so we can check on it

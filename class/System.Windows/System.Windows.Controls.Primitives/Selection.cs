@@ -37,6 +37,7 @@ using System.Windows.Input;
 namespace System.Windows.Controls.Primitives
 {
 	class Selection  {
+		static readonly object [] Empty = new object [0];
 
 		Selector Owner {
 			get; set;
@@ -74,10 +75,8 @@ namespace System.Windows.Controls.Primitives
 			if (!Updating) {
 				if (Mode == SelectionMode.Single)
 					throw new InvalidOperationException ("SelectedItems cannot be modified directly when in Single select mode");
-	
-				object [] oldItems = e.OldItems == null ? null : e.OldItems.Cast <object>().ToArray ();
-				object [] newItems = e.NewItems == null ? null : e.NewItems.Cast <object>().ToArray ();
-				Owner.RaiseSelectionChanged (oldItems, newItems);
+
+				Owner.RaiseSelectionChanged (e.OldItems ?? Empty, e.NewItems ?? Empty);
 			}
 		}
 
@@ -127,7 +126,7 @@ namespace System.Windows.Controls.Primitives
 				SelectedItem = item;
 			}
 
-			Owner.RaiseSelectionChanged (null, new object [] { item });
+			Owner.RaiseSelectionChanged (Empty, new object [] { item });
 		}
 
 		void ClearSelection ()
@@ -139,7 +138,7 @@ namespace System.Windows.Controls.Primitives
 				Owner.SelectedIndex = -1;
 				SelectedItem = null;
 				if (hasSelection)
-					Owner.RaiseSelectionChanged (oldSelection, null);
+					Owner.RaiseSelectionChanged (oldSelection, Empty);
 		}
 
 		void RemoveFromSelected (object item)
@@ -152,7 +151,7 @@ namespace System.Windows.Controls.Primitives
 				SelectedItem = newItem;
 			}
 
-			Owner.RaiseSelectionChanged (new object [] { item }, null);
+			Owner.RaiseSelectionChanged (new object [] { item }, Empty);
 		}
 		
 		void ReplaceSelection (object item)
