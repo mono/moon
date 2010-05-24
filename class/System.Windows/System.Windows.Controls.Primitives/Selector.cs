@@ -110,7 +110,7 @@ namespace System.Windows.Controls.Primitives {
 
 		internal Selector ()
 		{
-			// Set default values for ScrollViewer attached properties 
+			// Set default values for ScrollViewer attached properties
 			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			Selection = new Selection (this);
@@ -264,7 +264,11 @@ namespace System.Windows.Controls.Primitives {
 				// FIXME: Should i verify that both e.NewValue and value are value types
 				// before calling object.Equals?
 				if (selectedValue == value || object.Equals (selectedValue, value)) {
-					Selection.Select (item);
+					// FIXME: I don't like this check here, but it fixes drt 232. What was happening
+					// is that if we set the selected value to the same thing twice we'd end up
+					// unselecting the item instead of maintaining the selection.
+					if (!Selection.SelectedItems.Contains (item))
+						Selection.Select (item);
 					return;
 				}
 			}
