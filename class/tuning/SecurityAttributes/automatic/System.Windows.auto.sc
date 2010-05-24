@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 430 methods needs to be decorated.
+# 426 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -63,12 +63,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_is_read_only(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::downloader_request_get_response(System.IntPtr,Mono.DownloaderResponseStartedDelegate,Mono.DownloaderResponseAvailableDelegate,Mono.DownloaderResponseFinishedDelegate,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::downloader_request_is_aborted(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::framework_element_apply_template(System.IntPtr)
@@ -311,9 +305,6 @@
 +SC-M: System.Int32 Mono.NativeMethods::collection_index_of(System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::downloader_response_get_response_status(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_code(System.IntPtr)
 
 # p/invoke declaration
@@ -330,6 +321,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::external_demuxer_add_stream(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::http_response_get_response_status(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::key_event_args_get_key(System.IntPtr)
@@ -461,6 +455,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_custom_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::deployment_create_http_request(System.IntPtr,Mono.HttpRequestOptions)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()
 
 # p/invoke declaration
@@ -468,15 +465,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_types(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::downloader_create_web_request(System.IntPtr,System.String,System.String)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::downloader_request_get_downloader_response(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::downloader_response_get_response_status_text_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::error_event_args_get_error_message_(System.IntPtr)
@@ -495,6 +483,15 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::general_transform_get_matrix(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::http_request_get_response(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::http_request_write_event_args_get_data(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::http_response_get_response_status_text_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::imedia_object_get_media_reffed(System.IntPtr)
@@ -638,9 +635,6 @@
 +SC-M: System.IntPtr Mono.NativeMethods::stroke_collection_hit_test(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::surface_create_downloader(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_background_color(System.IntPtr)
 
 # p/invoke declaration
@@ -766,6 +760,12 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(Mono.Xaml.XamlCallbackData*,System.String,System.String)
 
+# p/invoke declaration
++SC-M: System.UInt32 Mono.NativeMethods::http_request_write_event_args_get_count(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.UInt64 Mono.NativeMethods::http_request_write_event_args_get_offset(System.IntPtr)
+
 # overrides 'System.Void Mono.ToggleRef::AddToggleRefNotifyCallback()'.
 +SC-M: System.Void Mono.EventObjectToggleRef::AddToggleRefNotifyCallback()
 
@@ -848,42 +848,6 @@
 +SC-M: System.Void Mono.NativeMethods::dispatcher_timer_stop(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_notify_failed(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_notify_finished(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_notify_size(System.IntPtr,System.Int64)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_request_abort(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_request_free(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_request_set_body(System.IntPtr,System.Byte[],System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_request_set_http_header(System.IntPtr,System.String,System.String,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_response_abort(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_response_free(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.HeaderVisitor,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,Mono.DownloaderSetResponseHeaderCallbackFunc,Mono.DownloaderGetResponseFunc)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::easing_function_base_set_easing_function(System.IntPtr,Mono.EasingFunctionCallback)
 
 # p/invoke declaration
@@ -939,6 +903,24 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_set_property(System.IntPtr,System.IntPtr,System.String,Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::http_request_abort(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::http_request_open(System.IntPtr,System.String,System.String,Mono.DownloaderAccessPolicy)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::http_request_send(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::http_request_set_body(System.IntPtr,System.Byte[],System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::http_request_set_header(System.IntPtr,System.String,System.String,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::http_response_visit_headers(System.IntPtr,Mono.HttpHeaderVisitor,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::image_set_source(System.IntPtr,System.IntPtr)
@@ -1197,6 +1179,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::value_delete_value(Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::value_delete_value2(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::value_free_value(Mono.Value&)
