@@ -1,4 +1,14 @@
 <Project name="plugin" fileversion="2.0" language="C" Target="Bin" ctype="CProject">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
+    <BuildFilesVar />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar />
+    <AsmRefVar />
+    <ProjectRefVar />
+    <MessageRegex Name="gcc" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <Configurations active="Default">
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="plugin" />
@@ -80,32 +90,12 @@
     <File subtype="Code" buildaction="Nothing" name="plugin-accessibility.cpp" />
     <File subtype="Code" buildaction="Nothing" name="plugin-accessibility.h" />
     <File subtype="Code" buildaction="Nothing" name="silverlight-versions.h.in" />
-    <File subtype="Code" buildaction="Nothing" name="curl/curl-bridge.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="curl/curl-bridge.h" />
-    <File subtype="Code" buildaction="Nothing" name="curl/curl-http.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="curl/curl-http.h" />
-    <File subtype="Code" buildaction="Nothing" name="curl/Makefile.am" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/lunar-launcher.cpp" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/Makefile.am" />
-    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/ff36-bridge.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/ff36-bridge.h" />
-    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/ff36-http.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="firefox/ff36/Makefile.am" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/getopts.cpp" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/getopts.h" />
-    <File subtype="Code" buildaction="Nothing" name="lunar-launcher/lunar-downloader.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="lunar-launcher/lunar-downloader.h" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/ChangeLog" />
+    <File subtype="Directory" buildaction="Nothing" name="curl" />
   </Contents>
   <compiler ctype="GccCompiler" />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
-    <BuildFilesVar />
-    <DeployFilesVar />
-    <ResourcesVar />
-    <OthersVar />
-    <GacRefVar />
-    <AsmRefVar />
-    <ProjectRefVar />
-    <MessageRegex Name="gcc" />
-  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

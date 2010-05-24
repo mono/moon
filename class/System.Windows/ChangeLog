@@ -1,3 +1,7 @@
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.mdp: Updated.
+
 2010-05-18  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Update build files.

@@ -151,13 +151,8 @@
     <File subtype="Code" buildaction="Compile" name="type-generated.cpp" />
     <File subtype="Code" buildaction="Nothing" name="http-streaming.h" />
     <File subtype="Code" buildaction="Compile" name="http-streaming.cpp" />
-    <File subtype="Code" buildaction="Compile" name="mms-downloader.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="mms-downloader.h" />
     <File subtype="Code" buildaction="Compile" name="xap.cpp" />
     <File subtype="Code" buildaction="Nothing" name="xap.h" />
-    <File subtype="Code" buildaction="Nothing" name="internal-downloader.h" />
-    <File subtype="Code" buildaction="Nothing" name="file-downloader.h" />
-    <File subtype="Code" buildaction="Compile" name="file-downloader.cpp" />
     <File subtype="Code" buildaction="Nothing" name="deployment.h" />
     <File subtype="Code" buildaction="Compile" name="deployment.cpp" />
     <File subtype="Code" buildaction="Compile" name="audio-alsa.cpp" />
@@ -326,6 +321,10 @@
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog.h" />
     <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
     <File subtype="Code" buildaction="Nothing" name="inputscope.h" />
+    <File subtype="Code" buildaction="Compile" name="network.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="network.h" />
+    <File subtype="Code" buildaction="Nothing" name="network-curl.h" />
+    <File subtype="Code" buildaction="Compile" name="network-curl.cpp" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

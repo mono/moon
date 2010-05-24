@@ -13,7 +13,7 @@
       <Output directory="bin/Debug" assembly="System.Windows" signAssembly="True" assemblyKeyFile="/mono/main/src/moon-2.0/class/mono.snk" />
       <Build debugmode="True" target="Library" />
       <Execution consolepause="False" runwithwarnings="True" runtime="MsNet" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" definesymbols="DEBUG,NET_2_1" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" definesymbols="NET_2_1" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="System.Windows" />
@@ -715,6 +715,19 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/CollectionView.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/ICollectionViewFactory.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/IListExtensions.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/BrowserHttpWebRequest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/BrowserHttpWebRequestInternal.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/BrowserHttpWebResponse.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/ClientHttpWebRequest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/ClientHttpWebRequestInternal.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/ClientHttpWebResponse.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/ClientReflectionHelper.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/HttpWebAsyncResult.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/HttpWebRequestCore.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/HttpWebResponseCore.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/InternalWebResponseStreamWrapper.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/PolicyBasedHttpWebRequest.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono/EventObjectToggleRef.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

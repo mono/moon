@@ -1,5 +1,9 @@
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp: Updated.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network.cpp|h: Create a new HttpRequest API that substitutes the old
 	Downloader API.
 

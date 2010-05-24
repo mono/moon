@@ -24,7 +24,6 @@
   </Configurations>
   <Contents>
     <File subtype="Code" buildaction="Compile" name="Assembly/AssemblyInfo.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows/ScriptableObjectGenerator.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/BrowserInformation.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/HtmlDocument.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/HtmlElement.cs" />
@@ -34,9 +33,6 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/HttpUtility.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableMemberAttribute.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptObject.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/BrowserHttpWebRequest.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/BrowserHttpWebResponse.cs" />
     <File subtype="Code" buildaction="Nothing" name="Makefile.am" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/HtmlWindow.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/MouseButtons.cs" />
@@ -44,23 +40,12 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableTypeAttribute.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptObjectCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/HtmlPopupWindowOptions.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableObjectWrapper.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableObjectEventInfo.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/BrowserHttpWebRequestInternal.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/BaseDomainPolicy.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/ClientAccessPolicy.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/ClientAccessPolicyParser.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/CrossDomainPolicyManager.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/FlashCrossDomainPolicy.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/ICrossDomainPolicy.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/NoAccessPolicy.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/PolicyDownloadPolicy.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/SiteOfOriginPolicy.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/JSFriendlyMethodBinder.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ScriptObjectEventInfo.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ScriptObjectHelper.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ScriptObjectToggleRef.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/HostServices.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ManagedObject.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

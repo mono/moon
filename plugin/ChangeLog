@@ -1,5 +1,9 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.mdp: Updated.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp|h:
 	* plugin-glue.cpp:
 	* plugin-class.cpp:
