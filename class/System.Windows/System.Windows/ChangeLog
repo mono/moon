@@ -1,3 +1,9 @@
+2010-05-24  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: DPs which are of Type::OBJECT do not
+	  perform a value equality check when deciding if they should
+	  raise the property changed event or not.
+
 2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Cast InitParams to Dictionary<>

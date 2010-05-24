@@ -939,6 +939,18 @@ namespace MoonTest.System.Windows
 			private CustomClassCtorB () {}
 		}
 #endregion
+       
+		public void TypeObjectPropertyAlwaysChanges ()
+		{
+			int count = 0;
+			Canvas c = new Canvas ();
+			PropertyChangedCallback callback = (o, e) => count++;
+			var prop = DependencyProperty.Register ("MyProp", typeof(object), typeof (Canvas), new PropertyMetadata (callback));
+			c.SetValue (prop, 5);
+			c.SetValue (prop, 5);
+
+			Assert.AreEqual (2, count, "#1");
+		}
 
 #region Managed Test
 		[TestMethod]

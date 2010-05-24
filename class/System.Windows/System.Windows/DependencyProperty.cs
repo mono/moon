@@ -249,7 +249,7 @@ namespace System.Windows {
 			if (old_obj == new_obj)
 				return; // Nothing changed
 			
-			if (old_obj != null && new_obj != null)
+			if (property.PropertyType != typeof (object) && old_obj != null && new_obj != null)
 				if (object.Equals (old_obj, new_obj))
 					return; // Nothing changed
 			
