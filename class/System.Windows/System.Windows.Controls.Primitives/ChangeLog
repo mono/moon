@@ -1,6 +1,13 @@
 2010-05-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs:
+	* Selection.cs: Be consistent with how we deal with the case
+	  where the SelectedValueWalker is null so that everywhere
+	  uses the same logic. Fixes more of cs2.
+
+2010-05-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs:
 	* Selection.cs: Fix more of drt cs2.
 
 2010-05-21  Alan McGovern  <amcgovern@novell.com>

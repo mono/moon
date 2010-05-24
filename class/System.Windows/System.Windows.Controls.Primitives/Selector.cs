@@ -240,15 +240,25 @@ namespace System.Windows.Controls.Primitives {
 				SelectItemFromValue (e.NewValue, false);
 		}
 
+		internal object GetValueFromItem (object item)
+		{
+			if (SelectedValueWalker == null)
+				return item;
+			else if (item == null)
+				return item;
+			else
+				return SelectedValueWalker.GetValue (item);
+		}
+
 		void SelectItemFromValue (object selectedValue, bool ignoreSelectedValue)
 		{
-			if (SelectedValueWalker == null) {
+			if (selectedValue == null) {
 				Selection.Select (null, ignoreSelectedValue);
 				return;
 			}
 
 			foreach (var item in Items) {
-				var value = (SelectedValueWalker.GetValue (item) ?? item);
+				var value = GetValueFromItem (item);
 				// First check for reference equality. If that values we could have
 				// boxed value types, so use actual calls to .Equals.
 				// FIXME: Should i verify that both e.NewValue and value are value types
