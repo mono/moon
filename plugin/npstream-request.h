@@ -4,7 +4,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2008-2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -14,34 +14,25 @@
 #define __NPSTREAM_DOWNLOADER_H
 
 #include "moonlight.h"
-#include "browser-bridge.h"
 #include "plugin-downloader.h"
 
-class NPStreamRequest : public DownloaderRequest {
- private:
+class NPStreamRequest : public BrowserHttpRequest {
+private:
 	NPStream *stream;
-	PluginInstance *instance;
 
- public:
-	NPStreamRequest (const char *verb, const char *uri, PluginInstance *instance) : DownloaderRequest (verb, uri)
-	{
-		this->stream = NULL;
-		this->instance = instance;
-	}
+	virtual void OpenImpl ();
+	virtual void SendImpl ();
+	virtual void AbortImpl ();
+	virtual void SetBodyImpl (void *body, guint32 size);
+	virtual void SetHeaderImpl (const char *name, const char *value, bool disable_folding);
 
-	virtual ~NPStreamRequest ()
-	{
-	}
+public:
+	NPStreamRequest (BrowserHttpHandler *handler, HttpRequest::Options options);
 
-	virtual void Abort ();
-	virtual bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
-	virtual const bool IsAborted ();
-	virtual void SetHttpHeader (const char *name, const char *value, bool disable_folding);
-	virtual void SetBody (void *body, int size);
-	
-	void StreamDestroyed ();
-
-	static void SetStreamData (Downloader *downloader, NPP npp, NPStream *stream);
+	void DestroyStream ();
+	void UrlNotify (const char *url, NPReason reason);
+	void Write (gint32 offset, gint32 len, void *buffer);
+	void NewStream (NPStream *stream);
 };
 
-#endif
+#endif /* __NPSTREAM_DOWNLOADER_H */

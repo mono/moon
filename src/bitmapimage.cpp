@@ -218,7 +218,7 @@ BitmapImage::UriSourceChanged ()
 		if (get_res_aborter)
 			delete get_res_aborter;
 		get_res_aborter = new Cancellable ();
-		if (!current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy, get_res_aborter, this))
+		if (!current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy, HttpRequest::DisableFileStorage, get_res_aborter, this))
 			DownloaderFailed ();
 	}
 }
@@ -288,7 +288,7 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 	} else {
 		if (!downloader->Started () && uri) {
 			downloader->Open ("GET", uri, policy);
-			downloader->SetStreamFunctions (pixbuf_write, NULL, this);
+			downloader->GetHttpRequest ()->AddHandler (HttpRequest::WriteEvent, pixbuf_write, this);
 			downloader->Send ();
 		}
 	}
@@ -517,11 +517,12 @@ BitmapImage::PixbufWrite (gpointer buffer, gint32 offset, gint32 n)
 }
 
 void
-BitmapImage::pixbuf_write (void *buffer, gint32 offset, gint32 n, gpointer data)
+BitmapImage::pixbuf_write (EventObject *sender, EventArgs *calldata, gpointer data)
 {
 	BitmapImage *source = (BitmapImage *) data;
+	HttpRequestWriteEventArgs *ea = (HttpRequestWriteEventArgs *) calldata;
 
-	source->PixbufWrite ((unsigned char *)buffer, offset, n);
+	source->PixbufWrite ((unsigned char *) ea->GetData (), ea->GetOffset (), ea->GetCount ());
 	if (source->moon_error) {
 		ImageErrorEventArgs *args = NULL;
 		if (source->HasHandlers(ImageFailedEvent))

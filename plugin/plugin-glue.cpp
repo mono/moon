@@ -234,8 +234,6 @@ MOON_NPP_Initialize (void)
 		//g_thread_init (NULL);
 	} 
 
-	downloader_initialize ();
-
 	if (!runtime_initialized) {
 		runtime_initialized = true;
 		runtime_init_browser (get_plugin_dir ());
@@ -262,7 +260,6 @@ shutdown_moonlight (gpointer data)
 	
 	// printf ("shutdown_moonlight (): proceeding with shutdown, there are no more deployments nor plugins left.\n");
 
-	downloader_destroy ();
 	plugin_destroy_classes ();
 	runtime_shutdown ();
 	runtime_initialized = false;

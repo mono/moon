@@ -1,5 +1,12 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am:
+	* lunar-launcher.cpp:
+	* lunar-downloader.cpp|h: Remove LunarDownloader, it's no longer needed now
+	the curl bridge is the default and available for oob too.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* lunar-launcher.cpp: Fix compiler warning.
 
 2010-05-12  Chris Toshok  <toshok@ximian.com>

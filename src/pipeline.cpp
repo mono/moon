@@ -31,7 +31,6 @@
 #include "mediaelement.h"
 #include "yuv-converter.h"
 #include "runtime.h"
-#include "mms-downloader.h"
 #include "pipeline-ui.h"
 #include "pipeline-asf.h"
 #include "playlist.h"
@@ -1710,7 +1709,7 @@ ProgressiveSource::Initialize ()
 	cancellable = new Cancellable ();
 	u = new Uri ();
 	if (u->Parse (uri)) {
-		if (!application->GetResource (NULL, u, NotifyCallback, DataWriteCallback, MediaPolicy, cancellable, (gpointer) this)) {
+		if (!application->GetResource (NULL, u, NotifyCallback, DataWriteCallback, MediaPolicy, HttpRequest::DisableFileStorage, cancellable, (gpointer) this)) {
 			result = MEDIA_FAIL;
 			char *msg = g_strdup_printf ("invalid path found in uri '%s'", uri);
 			ReportErrorOccurred (msg);
@@ -1755,17 +1754,13 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 {
 	LOG_PIPELINE ("ProgressiveSource::Notify (%i = %s, %" G_GINT64_FORMAT ")\n", 
 		type, 
-		type == ::NotifySize ? "NotifySize" : 
-			(type == NotifyCompleted ? "NotifyCompleted" : 
+			(type == NotifyCompleted ? "NotifyCompleted" :
 			(type == NotifyFailed ? "NotifyFailed" : 
 			(type == NotifyStarted ? "NotifyStarted" : 
 			(type == NotifyProgressChanged ? "NotifyProgressChanged" : "unknown")))),
 		args);
 		
 	switch (type) {
-		case ::NotifySize:
-			NotifySize (args);
-			break;
 		case NotifyCompleted:
 			DownloadComplete ();
 			break;
@@ -1780,9 +1775,10 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 }
 
 void
-ProgressiveSource::DataWriteCallback (void *data, gint32 offset, gint32 n, void *closure)
+ProgressiveSource::DataWriteCallback (EventObject *sender, EventArgs *calldata, void *closure)
 {
-	((ProgressiveSource *) closure)->DataWrite (data, offset, n);
+	HttpRequestWriteEventArgs *args = (HttpRequestWriteEventArgs *) calldata;
+	((ProgressiveSource *) closure)->DataWrite (args->GetData (), args->GetOffset (), args->GetCount ());
 }
 
 void
@@ -1806,6 +1802,9 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 
 		/* Don't close the write handle, we might get seeks to parts of the file that hasn't been downloaded */
 		goto cleanup;
+	} else {
+		if (cancellable != NULL && cancellable->GetRequest () != NULL)
+			size = cancellable->GetRequest ()->GetNotifiedSize ();
 	}
 
 	nwritten = fwrite (buf, 1, n, write_fd);
@@ -1837,7 +1836,6 @@ ProgressiveSource::CheckPendingReads ()
 	MediaReadClosureNode *node;
 	MediaReadClosureNode *next = NULL;
 	gint64 write_pos;
-	gint64 size;
 	bool checked_for_media_thread = false;
 	List pending_reads;
 	bool ready;
@@ -1846,7 +1844,6 @@ ProgressiveSource::CheckPendingReads ()
 
 	mutex.Lock ();
 	write_pos = this->write_pos;
-	size = this->size;
 	
 	/* Check the list of read closures for read requests we can satisfy.
 	 * Store those requests in a separate list, and execute the reads with the mutex unlocked */
@@ -1920,16 +1917,6 @@ ProgressiveSource::GetPendingReadRequestCount ()
 	return result;
 }
 #endif
-
-void
-ProgressiveSource::NotifySize (gint64 size)
-{
-	LOG_PIPELINE ("ProgressiveSource::NotifySize (%" G_GINT64_FORMAT ")\n", size);
-	
-	mutex.Lock ();
-	this->size = size;
-	mutex.Unlock ();
-}
 
 void
 ProgressiveSource::DownloadComplete ()

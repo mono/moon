@@ -2460,7 +2460,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 		char *object_type = STRDUP_FROM_VARIANT (args [0]);
 		if (!g_ascii_strcasecmp ("downloader", object_type)) {
 			PluginInstance *plugin = GetPlugin ();
-			Downloader *dl = PluginInstance::CreateDownloader (plugin);
+			Downloader *dl = plugin->CreateDownloader ();
 
 			obj = EventObjectCreateWrapper (plugin, dl);
 			dl->unref ();
@@ -4793,7 +4793,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		
 		return true;
 	case MoonId_Send:
-		if (argCount != 0 || !downloader->IsAttached ())
+		if (argCount != 0)
 			THROW_JS_EXCEPTION ("send");
 		
 		downloader->Send ();

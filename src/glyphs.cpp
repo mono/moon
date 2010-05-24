@@ -20,7 +20,6 @@
 #include <errno.h>
 #include <math.h>
 
-#include "file-downloader.h"
 #include "runtime.h"
 #include "deployment.h"
 #include "glyphs.h"
@@ -713,9 +712,7 @@ Glyphs::SetIndicesInternal (const char *in)
 void
 Glyphs::DownloadFont (Uri *uri, MoonError *error)
 {
-	Surface *surface = GetDeployment ()->GetSurface ();
-
-	if ((downloader = surface->CreateDownloader ())) {
+	if ((downloader = GetDeployment ()->CreateDownloader ())) {
 		char *str = uri->ToString (UriHideFragment);
 		downloader->Open ("GET", str, FontPolicy);
 		g_free (str);

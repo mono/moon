@@ -21,7 +21,6 @@ class PluginXamlLoader;
 class PluginInstance;
 class BrowserBridge;
 class Xap;
-class StreamNotify;
 
 char *NPN_strdup (const char *val);
 typedef void callback_dom_event (gpointer context, char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
@@ -136,7 +135,7 @@ class PluginInstance
 	bool IsCrossDomainApplication () { return cross_domain_app; }
 	static gint32 GetPluginCount ();
 	
-	static Downloader *CreateDownloader (PluginInstance *instance);
+	Downloader *CreateDownloader ();
 	
 	bool CreatePluginDeployment ();
 
@@ -144,6 +143,16 @@ class PluginInstance
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
 	static void progress_changed_handler (EventObject *sender, EventArgs *args, gpointer closure);
 	int progress_changed_token;
+
+	static void SourceProgressChangedHandler (EventObject *obj, EventArgs *args, gpointer closure);
+	static void SourceStoppedHandler (EventObject *obj, EventArgs *args, gpointer closure);
+	void SourceProgressChanged (HttpRequest *request, HttpRequestProgressChangedEventArgs *args);
+	void SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs *args);
+
+	static void SplashProgressChangedHandler (EventObject *obj, EventArgs *args, gpointer closure);
+	static void SplashStoppedHandler (EventObject *obj, EventArgs *args, gpointer closure);
+	void SplashProgressChanged (HttpRequest *request, HttpRequestProgressChangedEventArgs *args);
+	void SplashStopped (HttpRequest *request, HttpRequestStoppedEventArgs *args);
 
  private:
 	// Gtk controls
@@ -264,8 +273,6 @@ private:
 	
 	void TryLoadBridge (const char *prefix);
 
-	const char *GetDownloadDir ();
-	
 	static gboolean IdleUpdateSourceByReference (gpointer data);
 
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
@@ -283,45 +290,6 @@ extern GSList *plugin_instances;
 
 #define STRDUP_FROM_VARIANT(v) (g_strndup ((char *) NPVARIANT_TO_STRING (v).utf8characters, NPVARIANT_TO_STRING (v).utf8length))
 #define STRLEN_FROM_VARIANT(v) ((size_t) NPVARIANT_TO_STRING (v).utf8length)
-
-class StreamNotify
-{
- public:
-	enum StreamNotifyFlags {
-		SOURCE = 1,
-		SPLASHSOURCE = 2,
-		DOWNLOADER = 3,
-	};
-	
-	StreamNotifyFlags type;
-	void *pdata;
-	DependencyObject *dob;
-	char *tmpfile;
-	int tmpfile_fd;
-	char *stream_url;
-
-	StreamNotify (StreamNotifyFlags type, void *data)
-		: type (type), pdata (data), dob (NULL), tmpfile (NULL), tmpfile_fd (-1), stream_url (NULL)
-	{
-	}
-
-	StreamNotify (StreamNotifyFlags type, DependencyObject *data)
-		: type (type), pdata (data), dob (data), tmpfile (NULL), tmpfile_fd (-1), stream_url (NULL)
-	{
-		if (dob)
-			dob->ref ();
-	}
-	
-	~StreamNotify ()
-	{
-		if (dob)
-			dob->unref ();
-		if (tmpfile_fd != -1)
-			close (tmpfile_fd);
-		g_free (stream_url);
-		g_free (tmpfile);
-	}
-};
 
 class PluginXamlLoader : public XamlLoader
 {

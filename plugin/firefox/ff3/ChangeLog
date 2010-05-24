@@ -1,3 +1,9 @@
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ff3-http.cpp: Move method into browser-http.inc.
+
+	* ff3-bridge.h: Update to the new HttpRequest API.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Don't link with libmoon, it's statically linked into

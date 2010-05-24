@@ -28,7 +28,6 @@
 #include "multiscaleimage.h"
 #include "tilesource.h"
 #include "deepzoomimagetilesource.h"
-#include "file-downloader.h"
 #include "multiscalesubimage.h"
 #include "bitmapimage.h"
 #include "ptr.h"

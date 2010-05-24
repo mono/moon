@@ -32,7 +32,8 @@ class BrowserBridge {
 	
  public:
 	BrowserBridge () : surface(NULL), shutting_down(0) {}
-	virtual DownloaderRequest* CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache) = 0;
+	virtual ~BrowserBridge () {}
+	virtual BrowserHttpRequest* CreateRequest (BrowserHttpHandler *handler, HttpRequest::Options options) = 0;
 	virtual void Shutdown () { shutting_down = true; }
 	bool IsShuttingDown () { return shutting_down; }
 	void SetSurface (Surface *value) { surface = value; }

@@ -110,7 +110,7 @@ MONO_LIBS="-lmono-2.0 -L$MCS_PATH/../mono/mono/mini -L$MCS_PATH/../mono/mono/min
 MONO_STATIC_LIBS="-lmono-moon -L$MCS_PATH/../mono/mono/mini"
 MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $MONO_CFLAGS $DBUS_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
-MOON_LIBS="$MOON_LIBS $FFMPEG_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS $UNWIND_LIBS $DBUS_LIBS"
+MOON_LIBS="$MOON_LIBS $FFMPEG_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS $UNWIND_LIBS $DBUS_LIBS $CURL_LIBS"
 
 dnl For MOON_XPI_LIBS, only link against libs which will be on all systems
 MOON_XPI_LIBS="$CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS" 
@@ -225,7 +225,6 @@ examples/desklet/ruler/Makefile
 examples/desklet/simpleclock/Makefile
 plugin/Makefile
 plugin/silverlight-versions.h
-plugin/curl/Makefile
 plugin/firefox/Makefile
 plugin/firefox/ff2/Makefile
 plugin/firefox/ff3/Makefile

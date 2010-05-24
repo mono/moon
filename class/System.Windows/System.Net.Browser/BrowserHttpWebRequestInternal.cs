@@ -43,7 +43,6 @@ namespace System.Net.Browser {
 	sealed class BrowserHttpWebRequestInternal : HttpWebRequestCore {
 		IntPtr native;
 		GCHandle managed;
-		IntPtr downloader;
 		long bytes_read;
 		bool aborted;
 
@@ -51,16 +50,16 @@ namespace System.Net.Browser {
 		BrowserHttpWebResponse response;
 		HttpWebAsyncResult async_result;
 		
-		DownloaderResponseStartedDelegate started;
-		DownloaderResponseAvailableDelegate available;
-		DownloaderResponseFinishedDelegate finished;
+		UnmanagedEventHandler started;
+		UnmanagedEventHandler available;
+		UnmanagedEventHandler finished;
 
  		public BrowserHttpWebRequestInternal (BrowserHttpWebRequest wreq, Uri uri)
 			: base (wreq, uri)
  		{
-			started = new DownloaderResponseStartedDelegate (OnAsyncResponseStartedSafe);
-			available = new DownloaderResponseAvailableDelegate (OnAsyncDataAvailableSafe);
-			finished = new DownloaderResponseFinishedDelegate (OnAsyncResponseFinishedSafe);
+			started = Events.SafeDispatcher (OnAsyncResponseStarted);
+			available = Events.SafeDispatcher (OnAsyncDataAvailable);
+			finished = Events.SafeDispatcher (OnAsyncResponseStopped);
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
 			if (wreq != null) {
@@ -77,19 +76,13 @@ namespace System.Net.Browser {
 				async_result.Dispose ();
 
 			if (native != IntPtr.Zero)
-				NativeMethods.downloader_request_free (native); /* this is thread-safe since this instance is the only place that has access to the native ptr */ 
-			
-			if (downloader != IntPtr.Zero)
-				NativeMethods.event_object_unref (downloader); /* thread-safe */
+				NativeMethods.event_object_unref (native); /* thread-safe */
 		}
 
 		public override void Abort ()
 		{
 			if (native == IntPtr.Zero)
 				return;
-			
-			if (response != null)
-				response.Abort ();
 
 			aborted = true;
 		}
@@ -107,109 +100,61 @@ namespace System.Net.Browser {
 			return async_result;
 		}
 
-		static uint OnAsyncResponseStartedSafe (IntPtr native, IntPtr context)
+		void OnAsyncResponseStarted (IntPtr sender, IntPtr calldata, IntPtr closure)
 		{
 			try {
-				return OnAsyncResponseStarted (native, context);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncResponseStartedSafe: {0}", ex);
-				} catch {
-				}
-			}
-			return 0;
-		}
-
-		static BrowserHttpWebRequestInternal BrowserFromHandle (IntPtr context)
-		{
-			// accessing [SecurityCritical] GCHandle.Target inside its own method
-			return (BrowserHttpWebRequestInternal) GCHandle.FromIntPtr (context).Target;
-		}
-
-		static uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
-		{
-			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
-			
-			try {
-				obj.bytes_read = 0;
-				obj.async_result.Response = new BrowserHttpWebResponse (obj, native);
+				IntPtr response = NativeMethods.http_request_get_response (native);
+				bytes_read = 0;
+				async_result.Response = new BrowserHttpWebResponse (this, response);
 			} catch (Exception e) {
-				obj.async_result.Exception = e;
+				async_result.Exception = e;
 			}
-			return 0;
 		}
-		
-		static uint OnAsyncResponseFinishedSafe (IntPtr native, IntPtr context, bool success, IntPtr data)
+
+		void OnAsyncResponseStopped (IntPtr sender, IntPtr calldata, IntPtr closure)
 		{
 			try {
-				return OnAsyncResponseFinished (native, context, success, data);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncResponseFinishedSafe: {0}", ex);
-				} catch {
-				}
-			}
-			return 0;
-		}
-		
-		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
-		{
-			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
-			HttpWebAsyncResult async_result = obj.async_result;
-			try {
-				if (obj.progress != null) {
+				if (progress != null) {
 					BrowserHttpWebResponse response = async_result.Response as BrowserHttpWebResponse;
 					// report the 100% progress on compressed (or without Content-Length)
 					if (response.IsCompressed) {
 						long length = response.ContentLength;
-						obj.progress (length, length);
+						progress (length, length);
 					}
 				}
 			}
 			finally {
 				async_result.SetComplete ();
 			}
-			return 0;
 		}
 		
-		static uint OnAsyncDataAvailableSafe (IntPtr native, IntPtr context, IntPtr data, uint length)
+		void OnAsyncDataAvailable (IntPtr sender, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				return OnAsyncDataAvailable (native, context, data, length);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncDataAvailableSafe: {0}", ex);
-				} catch {
-				}
-			}
-			return 0;
-		}
-		
-		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
-		{
-			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
-			HttpWebAsyncResult async_result = obj.async_result;
+			IntPtr data = IntPtr.Zero;
+			uint length = 0;
 			BrowserHttpWebResponse response = async_result.Response as BrowserHttpWebResponse;
 			try {
-				obj.bytes_read += length;
-				if (obj.progress != null) {
+				data = NativeMethods.http_request_write_event_args_get_data (calldata);
+				length = NativeMethods.http_request_write_event_args_get_count (calldata);
+				bytes_read += length;
+				if (progress != null) {
 					// if Content-Encoding is gzip (or other compressed) then Content-Length cannot be trusted,
 					// if present, since it does not (generally) correspond to the uncompressed length
 					long content_length = response.ContentLength;
 					bool compressed = (response.IsCompressed || (content_length == 0));
 					long total_bytes_to_receive = compressed ? -1 : content_length;
-					obj.progress (obj.bytes_read, total_bytes_to_receive);
+					progress (bytes_read, total_bytes_to_receive);
 				}
 			} catch (Exception e) {
 				async_result.Exception = e;
 			}
 
 			try {
-				response.Write (data, checked ((int) length));
+				if (data != IntPtr.Zero && length != 0)
+					response.Write (data, checked ((int) length));
 			} catch (Exception e) {
 				async_result.Exception = e;
 			}
-			return 0;
 		}
 
 		public override WebResponse EndGetResponse (IAsyncResult asyncResult)
@@ -219,7 +164,7 @@ namespace System.Net.Browser {
 					throw new ArgumentException ("asyncResult");
 
 				if (aborted) {
-					NativeMethods.downloader_request_abort (native);
+					NativeMethods.http_request_abort (native);
 					throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
 				}
 
@@ -240,7 +185,6 @@ namespace System.Net.Browser {
 			return response;
 		}
 
-
 		void InitializeNativeRequestSafe ()
 		{
 			try {
@@ -255,12 +199,15 @@ namespace System.Net.Browser {
 		
 		void InitializeNativeRequest ()
 		{
-			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
-			if (downloader == IntPtr.Zero)
-				throw new NotSupportedException ("Failed to create unmanaged downloader");
-			native = NativeMethods.downloader_create_web_request (downloader, Method, RequestUri.AbsoluteUri);
+			native = NativeMethods.deployment_create_http_request (System.Windows.Deployment.Current.native, HttpRequestOptions.CustomHeaders);
 			if (native == IntPtr.Zero)
-				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
+				throw new NotSupportedException ("Failed to create unmanaged HttpRequest object");
+
+			Events.AddHandler (native, EventIds.HttpRequest_StartedEvent, started);
+			Events.AddHandler (native, EventIds.HttpRequest_WriteEvent, available);
+			Events.AddHandler (native, EventIds.HttpRequest_StoppedEvent, finished);
+
+			NativeMethods.http_request_open (native, Method, RequestUri.AbsoluteUri, DownloaderAccessPolicy.NoPolicy);
 
 			long request_length = 0;
 			byte[] body = null;
@@ -276,13 +223,13 @@ namespace System.Net.Browser {
 			}
 
 			foreach (string header in Headers.AllKeys)
-				NativeMethods.downloader_request_set_http_header (native, header, Headers [header], false);
+				NativeMethods.http_request_set_header (native, header, Headers [header], false);
 
 			if (request_length > 1) {
-				NativeMethods.downloader_request_set_body (native, body, body.Length);
+				NativeMethods.http_request_set_body (native, body, body.Length);
 			}
 			
-			NativeMethods.downloader_request_get_response (native, started, available, finished, GCHandle.ToIntPtr (managed));
+			NativeMethods.http_request_send (native);
 		}
 	}
 }

@@ -19,7 +19,7 @@
 #include <errno.h>
 
 #include "deployment.h"
-#include "downloader.h"
+#include "network.h"
 #include "runtime.h"
 #include "uri.h"
 #include "pal.h"
@@ -609,10 +609,9 @@ MoonAppDatabase::GetAppRecordByUid (const char *uid)
 
 MoonInstallerService::MoonInstallerService ()
 {
-	downloader = NULL;
+	request = NULL;
 	completed = NULL;
 	user_data = NULL;
-	xap = NULL;
 	app = NULL;
 	db = NULL;
 }
@@ -641,20 +640,17 @@ MoonInstallerService::InitDatabase ()
 void
 MoonInstallerService::CloseDownloader (bool abort)
 {
-	if (downloader) {
-		g_byte_array_free (xap, true);
-		
+	if (request) {
 		if (abort)
-			downloader->Abort ();
+			request->Abort ();
 		
-		downloader->unref ();
+		request->unref ();
 		delete app;
 		
-		downloader = NULL;
+		request = NULL;
 		completed = NULL;
 		user_data = NULL;
 		app = NULL;
-		xap = NULL;
 	}
 }
 
@@ -710,50 +706,31 @@ MoonInstallerService::GetAppRecord (const char *uid)
 }
 
 void
-MoonInstallerService::UpdaterNotifySize (gint64 size)
-{
-	g_byte_array_set_size (xap, (guint) size);
-}
-
-void
-MoonInstallerService::downloader_notify_size (gint64 size, gpointer user_data)
-{
-	((MoonInstallerService *) user_data)->UpdaterNotifySize (size);
-}
-
-void
-MoonInstallerService::UpdaterWrite (void *buf, gint32 offset, gint32 n)
-{
-	memcpy (((char *) xap->data) + offset, buf, n);
-}
-
-void
-MoonInstallerService::downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data)
-{
-	((MoonInstallerService *) user_data)->UpdaterWrite (buf, offset, n);
-}
-
-void
 MoonInstallerService::UpdaterCompleted ()
 {
 	char *content, *path, *tmp;
+	char *xap;
 	int err = 0;
 	gsize size;
+	gsize xap_len;
 	FILE *fp;
 	
 	path = g_build_filename (GetBaseInstallDir (), app->uid, "Application.xap", NULL);
 	
 	// check that the xap has changed...
 	if (g_file_get_contents (path, &content, &size, NULL)) {
-		if (xap->len == size && !memcmp (xap->data, content, size)) {
-			// no change to the xap
-			completed (false, NULL, user_data);
-			CloseDownloader (false);
-			g_free (content);
-			g_free (path);
-			return;
+		if (g_file_get_contents (request->GetFilename (), &xap, &xap_len, NULL)) {
+			if (xap_len == size && !memcmp (xap, content, size)) {
+				// no change to the xap
+				completed (false, NULL, user_data);
+				CloseDownloader (false);
+				g_free (content);
+				g_free (xap);
+				g_free (path);
+				return;
+			}
+			g_free (xap);
 		}
-		
 		g_free (content);
 	}
 	
@@ -761,7 +738,7 @@ MoonInstallerService::UpdaterCompleted ()
 	
 	if ((fp = fopen (tmp, "wb"))) {
 		// write to the temporary file
-		if (fwrite (xap->data, 1, xap->len, fp) < xap->len)
+		if (CopyFileTo (request->GetFilename (), fileno (fp)))
 			err = ferror (fp);
 		fclose (fp);
 		
@@ -790,23 +767,22 @@ MoonInstallerService::UpdaterCompleted ()
 }
 
 void
-MoonInstallerService::downloader_completed (EventObject *sender, EventArgs *args, gpointer user_data)
+MoonInstallerService::downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data)
 {
-	((MoonInstallerService *) user_data)->UpdaterCompleted ();
+	HttpRequestStoppedEventArgs *ea = (HttpRequestStoppedEventArgs *) args;
+	if (ea->IsSuccess ()) {
+		((MoonInstallerService *) user_data)->UpdaterCompleted ();
+	} else {
+		((MoonInstallerService *) user_data)->UpdaterFailed (ea->GetErrorMessage ());
+	}
 }
 
 void
-MoonInstallerService::UpdaterFailed ()
+MoonInstallerService::UpdaterFailed (const char *msg)
 {
-	completed (false, downloader->GetFailedMessage (), user_data);
+	completed (false, msg, user_data);
 	
 	CloseDownloader (false);
-}
-
-void
-MoonInstallerService::downloader_failed (EventObject *sender, EventArgs *args, gpointer user_data)
-{
-	((MoonInstallerService *) user_data)->UpdaterFailed ();
 }
 
 static const char *tm_months[] = {
@@ -824,7 +800,7 @@ MoonInstallerService::CheckAndDownloadUpdateAsync (Deployment *deployment, Updat
 	char mtime[128];
 	struct tm tm;
 	
-	if (downloader) {
+	if (request) {
 		// already downloading an update...
 		return;
 	}
@@ -840,14 +816,11 @@ MoonInstallerService::CheckAndDownloadUpdateAsync (Deployment *deployment, Updat
 		  tm_days[tm.tm_wday], tm.tm_mday, tm_months[tm.tm_mon],
 		  tm.tm_year + 1900, tm.tm_hour, tm.tm_min, tm.tm_sec);
 	
-	downloader = deployment->GetSurface ()->CreateDownloader ();
-	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-	downloader->AddHandler (Downloader::CompletedEvent, downloader_completed, this);
-	downloader->SetStreamFunctions (downloader_write, downloader_notify_size, this);
-	downloader->InternalSetHeader ("If-Modified-Since", mtime);
-	downloader->Open ("GET", app->origin, XamlPolicy);
-	xap = g_byte_array_new ();
-	downloader->Send ();
+	request = deployment->CreateHttpRequest (HttpRequest::OptionsNone);
+	request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, this);
+	request->SetHeader ("If-Modified-Since", mtime, false);
+	request->Open ("GET", app->origin, XamlPolicy);
+	request->Send ();
 	
 	this->completed = completed;
 	this->user_data = user_data;

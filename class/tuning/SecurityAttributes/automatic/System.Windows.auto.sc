@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 432 methods needs to be decorated.
+# 430 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1197,12 +1197,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::value_delete_value(Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::value_delete_value2(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::value_free_value(Mono.Value&)

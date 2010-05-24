@@ -1,3 +1,10 @@
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: 
+	* Moonlight.Gtk/MoonlightRuntime.cs:
+	* Moonlight.Gtk/ManagedDownloader.cs: Remove ManagedDownloader, no longer
+	needed.
+	
 2010-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* Moonlight.Gtk/MoonlightHost.cs: use

@@ -547,38 +547,23 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		is_reentrant_mess = true;
 
 	if (strstr (useragent, "Gecko")) {
-#ifdef HAVE_CURL
-		if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
-			TryLoadBridge ("curl");
-		} else {
-#endif
+		if (!(moonlight_flags & RUNTIME_INIT_CURL_BRIDGE)) {
 			// gecko based, let's look for 'rv:1.8' vs 'rv:1.9.2' vs 'rv:1.9'
 			if (strstr (useragent, "rv:1.8"))
 				TryLoadBridge ("ff2");
 			else if (strstr (useragent, "rv:1.9.3"))
-				TryLoadBridge ("curl");
+				/* No bridge needed */ ;
 			else if (strstr (useragent, "rv:1.9"))
 				TryLoadBridge ("ff3");
 
 			if (!bridge) {
 				is_reentrant_mess = true;
-#ifdef HAVE_CURL
-				TryLoadBridge ("curl");
-#endif
 			}
-#ifdef HAVE_CURL
 		}
-#endif
-        }
-#ifdef HAVE_CURL
-	else
-		TryLoadBridge ("curl");
-#endif
-
-        if (!bridge) {
-		g_warning ("probing for browser type failed, user agent = `%s'",
-			   useragent);
 	}
+
+	if (!bridge)
+		g_warning ("Moonlight: probing for browser type failed (or browser bridge was disabled), user agent = `%s'", useragent);
 
 	if (!CreatePluginDeployment ()) { 
 		g_warning ("Couldn't initialize Mono or create the plugin Deployment");
@@ -776,8 +761,6 @@ PluginInstance::CreateWindow ()
 		normal_startup = LoadSplash ();
 	}
 
-	surface->SetDownloaderContext (this);
-	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 	
 	surface->SetEnableFrameRateCounter (enable_framerate_counter);
@@ -809,8 +792,8 @@ PluginInstance::UpdateSource ()
 		source_idle = 0;
 	}
 
-	if (surface != NULL)
-		surface->DetachDownloaders ();
+	if (deployment != NULL)
+		deployment->AbortAllHttpRequests ();
 
 	if (!source || strlen (source) == 0)
 		return;
@@ -829,6 +812,7 @@ PluginInstance::UpdateSource ()
 		// we're setting the source location but not changing
 		// the page location, so we need to call
 		// SetSourceLocation here.
+		char *request_uri = NULL;
 		Uri *page_uri = new Uri ();
 		Uri *source_uri = new Uri ();
 
@@ -854,6 +838,7 @@ PluginInstance::UpdateSource ()
 				char* source_string = source_uri->ToString();
 
 				surface->SetSourceLocation (source_string);
+				request_uri = g_strdup (source_string);
 
 				g_free (source_string);
 			}
@@ -863,10 +848,18 @@ PluginInstance::UpdateSource ()
 		delete page_uri;
 		delete source_uri;
 
-		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
-		
-		// FIXME: check for errors
-		MOON_NPN_GetURLNotify (instance, source, NULL, notify);
+		if (request_uri == NULL)
+			request_uri = source;
+
+		HttpRequest *request;
+		request = deployment->CreateHttpRequest (HttpRequest::OptionsNone);
+		if (request != NULL) {
+			this->ref ();
+			request->AddHandler (HttpRequest::ProgressChangedEvent, SourceProgressChangedHandler, this);
+			request->AddHandler (HttpRequest::StoppedEvent, SourceStoppedHandler, this);
+			request->Open ("GET", request_uri, NoPolicy);
+			request->Send ();
+		}
 	}
 }
 
@@ -963,14 +956,9 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 
 Downloader *
-PluginInstance::CreateDownloader (PluginInstance *instance)
+PluginInstance::CreateDownloader ()
 {
-	if (instance) {
-		return instance->surface->CreateDownloader ();
-	} else {
-		printf ("PluginInstance::CreateDownloader (%p): Unable to create contextual downloader.\n", instance);
-		return new Downloader ();
-	}
+	return deployment->CreateDownloader ();
 }
 
 void
@@ -1021,22 +1009,21 @@ PluginInstance::SetPageURL ()
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, guint16 *stype)
 {
-	StreamNotify *notify;
-	char *templ;
+	NPStreamRequest *request;
 
 	Deployment::SetCurrent (deployment);
 
-	notify = (StreamNotify *) stream->notifyData;
+	request = (NPStreamRequest *) stream->notifyData;
 
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p) notify: %p url: %s\n", type, stream, seekable, stype, notify, stream->url));
 
-	if (notify == NULL) {
+	if (request == NULL) {
 		/* We'll automatically get a stream for the src attribute on the embed tag */
 		*stype = NP_NORMAL;
 		return NPERR_NO_ERROR;
 	}
 
-	if (is_reentrant_mess && notify->type != StreamNotify::DOWNLOADER) {
+	if (is_reentrant_mess) {
 		if (source_location == NULL) {
 			SetPageURL ();
 			bool success = LoadSplash ();
@@ -1061,71 +1048,20 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 	 * bug #444160.
 	 */
 
-	/* create tmp file */
-	const char *dir = GetDownloadDir ();
-	if (dir == NULL)
-		return NPERR_GENERIC_ERROR;
-
-	templ = g_build_filename (dir, "XXXXXX", NULL);
-	notify->tmpfile_fd = g_mkstemp (templ);
-	if (notify->tmpfile_fd == -1) {
-		printf ("Moonlight: Could not create temporary download file %s for url %s\n", templ, stream->url);
-		g_free (templ);
-		return NPERR_GENERIC_ERROR;
-	}
-
-	notify->tmpfile = templ;
-	/* We need to store the stream url since we don't have access to the NPStream in UrlNotify */
-	notify->stream_url = g_strdup (stream->url);
 	*stype = NP_NORMAL;
+	request->NewStream (stream);
 
-#if DEBUG
-	deployment->AddSource (notify->stream_url, notify->tmpfile);
-#endif
-
-	switch (notify->type) {
-	case StreamNotify::SPLASHSOURCE:
-		SetPageURL ();
-
-		return NPERR_NO_ERROR;
-	case StreamNotify::SOURCE:
-		// See http://developer.mozilla.org/En/Getting_the_page_URL_in_NPAPI_plugin
-		//
-		// but don't call GetProperty inside SetWindow because it breaks opera by
-		// causing it to reenter
-		//
-		// this->source_location = g_strdup (stream->url);
-		SetPageURL ();
-
-		return NPERR_NO_ERROR;
-	case StreamNotify::DOWNLOADER: {
-		Downloader *dl = (Downloader *) notify->pdata;
-		// check if (a) it's a redirection and (b) if it is allowed for the current downloader policy
-
-		if (!dl->CheckRedirectionPolicy (stream->url))
-			return NPERR_INVALID_URL;
-
-		NPStreamRequest::SetStreamData (dl, instance, stream);
-		return NPERR_NO_ERROR;
-	}
-	default:
-		/* This shouldn't happen */
-		return NPERR_GENERIC_ERROR;
-	}
-
+	return NPERR_NO_ERROR;
 }
 
 NPError
 PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
 	nps (printf ("PluginInstance::DestroyStream (%p, %i)\n", stream, reason));
-	
-	PluginDownloader *pd = (PluginDownloader*) stream->pdata;
-	if (pd != NULL) {
-		NPStreamRequest *req = (NPStreamRequest *) pd->getRequest ();
-		if (req != NULL) 
-			req->StreamDestroyed ();
-	}
+
+	NPStreamRequest *req = (NPStreamRequest *) stream->pdata;
+	if (req != NULL)
+		req->DestroyStream ();
 
 	return NPERR_NO_ERROR;
 }
@@ -1443,26 +1379,13 @@ PluginInstance::WriteReady (NPStream *stream)
 	
 	Deployment::SetCurrent (deployment);
 
-	StreamNotify *notify = (StreamNotify *) stream->notifyData;
+	NPStreamRequest *request = (NPStreamRequest *) stream->notifyData;
 
-	if (notify) {
-		switch (notify->type) {
-		case StreamNotify::DOWNLOADER: {
-			Downloader *dl = (Downloader *) notify->dob;
-			if (dl != NULL)
-				dl->NotifySize (stream->end);
-			return MAX_STREAM_SIZE;
-		}
-		case StreamNotify::SOURCE:
-			source_size = stream->end;
-			return MAX_STREAM_SIZE;
-		case StreamNotify::SPLASHSOURCE:
-			return MAX_STREAM_SIZE;
-		}
-	}
-	
+	if (request != NULL)
+		return MAX_STREAM_SIZE;
+
 	MOON_NPN_DestroyStream (instance, stream, NPRES_DONE);
-	
+
 	return -1;
 }
 
@@ -1473,55 +1396,12 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 	
 	Deployment::SetCurrent (deployment);
 
-	StreamNotify *notify = (StreamNotify *) stream->notifyData;
+	NPStreamRequest *request = (NPStreamRequest *) stream->notifyData;
 	
-	if (notify && notify->pdata) {
-		/* write to tmp file */
-		if (lseek (notify->tmpfile_fd, offset, SEEK_SET) == -1) {
-			printf ("Moonlight: error while seeking to %i in temporary file '%s': %s\n", offset, notify->tmpfile, strerror (errno));
-		} else if (write (notify->tmpfile_fd, buffer, len) == -1) {
-			printf ("Moonlight: error while writing to temporary file '%s': %s\n", notify->tmpfile, strerror (errno));
-		}
-
-		switch (notify->type) {
-		case StreamNotify::DOWNLOADER: {
-			Downloader *dl = (Downloader *) notify->dob;
-
-			if (dl != NULL)
-				dl->Write (buffer, offset, len);
-			break;
-		}
-		case StreamNotify::SOURCE:
-			if (source_size > 0) {
-				float progress = (offset+len)/(float)source_size;
-				if (GetSurface ()->GetToplevel () != NULL) {
-					GetSurface ()->EmitSourceDownloadProgressChanged (progress);
-				}
-			}
-			break;
-		default:
-			/* Do nothing */
-			break;
-		}
-	}
+	if (request != NULL)
+		request->Write (offset, len, buffer);
 
 	return len;
-}
-
-const char *
-PluginInstance::GetDownloadDir ()
-{
-	if (download_dir == NULL) {
-		char *buf = g_build_filename (g_get_tmp_dir (), "moonlight-plugin.XXXXXX", NULL);
-		// create a root temp directory for all files
-		download_dir = MakeTempDir (buf);
-		if (download_dir == NULL) {
-			g_free (buf);
-			printf ("Moonlight: Could not create temporary download directory.\n");
-		}
-	}
-
-	return download_dir;
 }
 
 class PluginClosure : public EventObject {
@@ -1571,99 +1451,12 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 {
 	nps (printf ("PluginInstance::UrlNotify (%s, %i, %p)\n", url, reason, notifyData));
 	
-	StreamNotify *notify = (StreamNotify *) notifyData;
-	
 	Deployment::SetCurrent (deployment);
 	
-	if (reason != NPRES_DONE) {
-		d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
-			  reason == NPRES_USER_BREAK ? "user break" :
-			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
-	}
+	NPStreamRequest *request = (NPStreamRequest *) notifyData;
 
-	if (notify) {
-		switch (notify->type) {
-		case StreamNotify::DOWNLOADER: {
-			Downloader *dl = (Downloader *) notify->pdata;
-			if (dl == NULL)
-				break;
-
-			switch (reason) {
-			case NPRES_DONE:
-				dl->SetFilename (notify->tmpfile);
-				dl->NotifyFinished (url);
-				break;
-			case NPRES_USER_BREAK:
-				dl->NotifyFailed ("user break");
-				break;
-			case NPRES_NETWORK_ERR:
-				dl->NotifyFailed ("network error");
-				break;
-			default:
-				dl->NotifyFailed ("unknown error");
-				break;
-			}
-			break;
-		}
-		case StreamNotify::SPLASHSOURCE:
-			switch (reason) {
-			case NPRES_DONE:
-				xaml_loader = PluginXamlLoader::FromFilename (notify->stream_url, notify->tmpfile, this, surface);
-				loading_splash = true;
-				surface->SetSourceLocation (url);
-				LoadXAML ();
-				FlushSplash ();
-
-				CrossDomainApplicationCheck (source);
-				SetPageURL ();
-				UpdateSource ();
-				break;
-			case NPRES_USER_BREAK:
-			case NPRES_NETWORK_ERR:
-			default:
-				GetSurface()->GetTimeManager()->AddTickCall (splashscreen_error_tickcall, new PluginClosure (this));
-				break;
-			}
-			break;
-		case StreamNotify::SOURCE:
-			switch (reason) {
-			case NPRES_DONE: {
-				delete xaml_loader;
-				xaml_loader = NULL;
-		
-				CrossDomainApplicationCheck (url);
-		
-				Uri *uri = new Uri ();
-		
-				if (uri->Parse (notify->stream_url, false) && is_xap (notify->tmpfile)) {
-					LoadXAP (notify->stream_url, notify->tmpfile);
-				} else {
-					xaml_loader = PluginXamlLoader::FromFilename (notify->stream_url, notify->tmpfile, this, surface);
-					LoadXAML ();
-				}
-		
-				GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
-				GetSurface ()->EmitSourceDownloadComplete ();
-		
-				if (progress_changed_token != -1) {
-					GetSurface ()->RemoveHandler (Surface::SourceDownloadProgressChangedEvent, progress_changed_token);
-					progress_changed_token = -1;
-				}
-				delete uri;
-				break;
-			}
-			case NPRES_USER_BREAK:
-			case NPRES_NETWORK_ERR:
-			default:
-				GetSurface()->GetTimeManager()->AddTickCall (network_error_tickcall, new PluginClosure (this));
-				break;
-			}
-			break;
-		}
-	}
-	
-	if (notify)
-		delete notify;
+	if (request != NULL)
+		request->UrlNotify (url, reason);
 }
 
 static void
@@ -1754,10 +1547,15 @@ PluginInstance::LoadSplash ()
 				return false;
 			}
 			else {
-				StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
-
-				// FIXME: check for errors
-				MOON_NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+				HttpRequest *request;
+				request = deployment->CreateHttpRequest (HttpRequest::OptionsNone);
+				if (request != NULL) {
+					this->ref ();
+					request->AddHandler (HttpRequest::ProgressChangedEvent, SplashProgressChangedHandler, this);
+					request->AddHandler (HttpRequest::StoppedEvent, SplashStoppedHandler, this);
+					request->Open ("GET", splashscreensource, NoPolicy /* TODO: check if this is the correct policy */);
+					request->Send ();
+				}
 			}
 		}
 	} else {
@@ -2181,9 +1979,15 @@ plugin_xaml_loader_from_str (const char *resourceBase, const char *str, PluginIn
 bool
 PluginInstance::CreatePluginDeployment ()
 {
+	HttpHandler *handler;
+
 	deployment = new Deployment ();
 	Deployment::SetCurrent (deployment);
 	
+	handler = new BrowserHttpHandler (this);
+	deployment->SetHttpHandler (handler);
+	handler->unref ();
+
 	/* 
 	 * Give a ref to the deployment, this is required since managed code has
 	 * pointers to this PluginInstance instance. This way we ensure that the
@@ -2224,3 +2028,115 @@ PluginInstance::GetPluginCount ()
 {
 	return g_slist_length (plugin_instances);
 }
+
+void
+PluginInstance::SplashProgressChangedHandler (EventObject *obj, EventArgs *args, gpointer closure)
+{
+	((PluginInstance *) closure)->SplashProgressChanged ((HttpRequest *) obj, (HttpRequestProgressChangedEventArgs *) args);
+}
+
+void
+PluginInstance::SplashStoppedHandler (EventObject *obj, EventArgs *args, gpointer closure)
+{
+	((PluginInstance *) closure)->SplashStopped ((HttpRequest *) obj, (HttpRequestStoppedEventArgs *) args);
+}
+
+void
+PluginInstance::SourceProgressChangedHandler (EventObject *obj, EventArgs *args, gpointer closure)
+{
+	((PluginInstance *) closure)->SourceProgressChanged ((HttpRequest *) obj, (HttpRequestProgressChangedEventArgs *) args);
+}
+
+void
+PluginInstance::SourceStoppedHandler (EventObject *obj, EventArgs *args, gpointer closure)
+{
+	((PluginInstance *) closure)->SourceStopped ((HttpRequest *) obj, (HttpRequestStoppedEventArgs *) args);
+}
+
+void
+PluginInstance::SourceProgressChanged (HttpRequest *request, HttpRequestProgressChangedEventArgs *args)
+{
+	// See http://developer.mozilla.org/En/Getting_the_page_URL_in_NPAPI_plugin
+	//
+	// but don't call GetProperty inside SetWindow because it breaks opera by
+	// causing it to reenter
+	//
+	SetPageURL ();
+
+	if (GetSurface ()->GetToplevel () != NULL) {
+		GetSurface ()->EmitSourceDownloadProgressChanged (args->GetProgress ());
+	}
+}
+
+void
+PluginInstance::SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs *args)
+{
+	delete xaml_loader;
+	xaml_loader = NULL;
+
+	if (!args->IsSuccess ()) {
+		GetSurface ()->GetTimeManager ()->AddTickCall (network_error_tickcall, new PluginClosure (this));
+	} else {
+		char *original_uri = request->GetOriginalUri ()->ToString ();
+		CrossDomainApplicationCheck (original_uri);
+		g_free (original_uri);
+	
+		Uri *uri = new Uri ();
+	
+		if (uri->Parse (request->GetFinalUri (), false) && is_xap (request->GetFilename ())) {
+			LoadXAP (request->GetFinalUri (), request->GetFilename ());
+		} else {
+			xaml_loader = PluginXamlLoader::FromFilename (request->GetFinalUri (), request->GetFilename (), this, surface);
+			LoadXAML ();
+		}
+	
+		GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
+		GetSurface ()->EmitSourceDownloadComplete ();
+	
+		if (progress_changed_token != -1) {
+			GetSurface ()->RemoveHandler (Surface::SourceDownloadProgressChangedEvent, progress_changed_token);
+			progress_changed_token = -1;
+		}
+		delete uri;
+	}
+
+	request->RemoveAllHandlers (this);
+	request->unref ();
+	unref ();
+}
+
+void
+PluginInstance::SplashProgressChanged (HttpRequest *request, HttpRequestProgressChangedEventArgs *args)
+{
+	// See http://developer.mozilla.org/En/Getting_the_page_URL_in_NPAPI_plugin
+	//
+	// but don't call GetProperty inside SetWindow because it breaks opera by
+	// causing it to reenter
+	//
+	SetPageURL ();
+}
+
+void
+PluginInstance::SplashStopped (HttpRequest *request, HttpRequestStoppedEventArgs *args)
+{
+	if (!args->IsSuccess ()) {
+		GetSurface ()->GetTimeManager ()->AddTickCall (splashscreen_error_tickcall, new PluginClosure (this));
+	} else {
+		xaml_loader = PluginXamlLoader::FromFilename (request->GetFinalUri (), request->GetFilename (), this, surface);
+		loading_splash = true;
+		char *original_uri = request->GetOriginalUri ()->ToString ();
+		surface->SetSourceLocation (original_uri);
+		g_free (original_uri);
+		LoadXAML ();
+		FlushSplash ();
+	
+		CrossDomainApplicationCheck (source);
+		SetPageURL ();
+		UpdateSource ();
+	}
+
+	request->RemoveAllHandlers (this);
+	request->unref ();
+	unref ();
+}
+

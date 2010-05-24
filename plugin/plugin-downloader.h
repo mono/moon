@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -14,65 +14,54 @@
 #ifndef __PLUGIN_DOWNLOADER_H__
 #define __PLUGIN_DOWNLOADER_H__
 
-class PluginDownloader;
-
 #include "moonlight.h"
-#include "runtime.h"
-#include "downloader.h"
 #include "plugin.h"
 #include "plugin-class.h"
+#include "network.h"
 
+/*
+ * BrowserHttpHandler
+ */
 
-G_BEGIN_DECLS
+class BrowserHttpHandler : public HttpHandler {
+private:
+	PluginInstance *instance;
 
-guint32 plugin_downloader_started (DownloaderResponse *response, gpointer state);
-guint32 plugin_downloader_available (DownloaderResponse *response, gpointer state, char *buffer, guint32 length);
-guint32 plugin_downloader_finished (DownloaderResponse *response, gpointer state, gpointer data);
+protected:
+	virtual ~BrowserHttpHandler ();
 
-G_END_DECLS
+public:
+	BrowserHttpHandler (PluginInstance *instance);
 
-class PluginDownloader {
- private:
-	DownloaderResponse *response;
-	DownloaderRequest *request;
-	DownloaderResponseHeaderCallback response_header_callback;
-	gpointer response_header_context;
-	uint64_t offset;
-	bool finished;
-	bool aborted;
-	
- protected:
-	char *uri;
-	char *verb;
-
- public:
-	PluginDownloader (Downloader *dl);
-	virtual ~PluginDownloader ();
-
-	void Abort ();
-	void Open (const char *verb, const char *uri, bool custom_header_support, bool disable_cache);
-	void Send ();
-
-	guint32 Read (char *buffer, guint32 length);
-	void Started ();
-	void Finished (bool success, gpointer data, const char *uri);
-
-	void SetHttpHeader (const char *header, const char *value, bool disable_folding);
-	void SetBody (void *body, guint32 length);
-	
-	void SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context);
-
-	PluginInstance *GetPlugin ();
-
-	void setResponse (DownloaderResponse *response);
-	DownloaderResponse *getResponse () { return response; }
-	DownloaderRequest *getRequest ();
-	bool IsAborted () { return aborted; }
-
-	Downloader *dl;
+	virtual HttpRequest *CreateRequest (HttpRequest::Options options);
+	PluginInstance *GetInstance () { return instance; }
 };
 
-void downloader_initialize (void);
-void downloader_destroy (void);
+/*
+ * BrowserHttpRequest
+ */
+
+class BrowserHttpRequest : public HttpRequest {
+private:
+	BrowserHttpHandler *browser_handler;
+
+protected:
+	virtual ~BrowserHttpRequest ();
+
+	PluginInstance *GetInstance () { return browser_handler->GetInstance (); }
+	BrowserHttpHandler *GetHandler () { return (BrowserHttpHandler *) HttpRequest::GetHandler (); }
+
+public:
+	BrowserHttpRequest (BrowserHttpHandler *handler, HttpRequest::Options options);
+};
+
+/*
+ * BrowserHttpResponse
+ */
+
+class BrowserHttpResponse : public HttpResponse {
+public:
+	BrowserHttpResponse (HttpRequest *request);
+};
 
 #endif // __PLUGIN_DOWNLOADER_H__

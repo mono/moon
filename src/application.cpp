@@ -94,20 +94,19 @@ Application::ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property
 struct NotifyCtx {
 	gpointer user_data;
 	NotifyFunc notify_cb;
-	WriteFunc write_cb;
+	EventHandler write_cb;
+	HttpRequest *request;
 };
 
-static void downloader_abort (gpointer data, void *ctx);
+static void downloader_abort (HttpRequest *request, void *ctx);
 static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
-static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-static void downloader_write (void *data, gint32 offset, gint32 n, void *closure);
-static void downloader_notify_size (gint64 size, gpointer closure);
+static void downloader_stopped (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void downloader_write (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 bool
 Application::GetResource (const char *resourceBase, const Uri *uri,
-			  NotifyFunc notify_cb, WriteFunc write_cb,
-			  DownloaderAccessPolicy policy,
+			  NotifyFunc notify_cb, EventHandler write_cb,
+			  DownloaderAccessPolicy policy, HttpRequest::Options options,
 			  Cancellable *cancellable, gpointer user_data)
 {
 	if (!uri) {
@@ -126,10 +125,8 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 		g_free (url);
 		
 		if (stream.handle) {
-			if (notify_cb) {
+			if (notify_cb)
 				notify_cb (NotifyStarted, NULL, user_data);
-				notify_cb (NotifySize, stream.Length (stream.handle), user_data);
-			}
 			
 			if (write_cb) {
 				char buf[4096];
@@ -139,13 +136,18 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 				if (stream.CanSeek (stream.handle))
 					stream.Seek (stream.handle, 0, 0);
 				
+				HttpRequestWriteEventArgs *args = new HttpRequestWriteEventArgs (NULL, 0, 0);
 				do {
 					if ((nread = stream.Read (stream.handle, buf, 0, sizeof (buf))) <= 0)
 						break;
 					
-					write_cb (buf, offset, nread, user_data);
+					args->SetData (buf);
+					args->SetOffset (offset);
+					args->SetCount (nread);
+					write_cb (this, args, user_data);
 					offset += nread;
 				} while (true);
+				args->unref ();
 			}
 			
 			if (notify_cb)
@@ -166,82 +168,64 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 #endif
 	
 	//no get_resource_cb or empty stream
-	Downloader *downloader;
-	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	if (!(downloader = surface->CreateDownloader ()))
+	HttpRequest *request;
+	if (!(request = GetDeployment ()->CreateHttpRequest (options)))
 		return false;
 	
 	NotifyCtx *ctx = g_new (NotifyCtx, 1);
 	ctx->user_data = user_data;
 	ctx->notify_cb = notify_cb;
 	ctx->write_cb = write_cb;
+	ctx->request = request;
 
-	if (notify_cb) {
-		downloader->AddHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, ctx);
-		downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, ctx);
-		downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, ctx);
-	}
+	if (notify_cb)
+		request->AddHandler (HttpRequest::ProgressChangedEvent, downloader_progress_changed, ctx);
 
 	if (cancellable) {
-		cancellable->SetCancelFuncAndData (downloader_abort, downloader, ctx);
+		cancellable->SetCancelFuncAndData (downloader_abort, request, ctx);
 	}
 
-	downloader->Open ("GET", (Uri*)uri, policy);
-	downloader->SetStreamFunctions (downloader_write, downloader_notify_size, ctx);
-	downloader->Send ();
+	request->Open ("GET", (Uri *) uri, policy);
+	request->AddHandler (HttpRequest::WriteEvent, downloader_write, ctx);
+	request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, ctx);
+	request->Send ();
 	
 	return true;
 }
 
 static void
-downloader_notify_size (gint64 size, gpointer closure)
+downloader_write (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	NotifyCtx *ctx = (NotifyCtx *) closure;
-	ctx->notify_cb (NotifySize, size, ctx->user_data);
+	ctx->write_cb (sender, calldata, ctx->user_data);
 }
 
 static void
-downloader_write (void *data, gint32 offset, gint32 n, void *closure)
+downloader_abort (HttpRequest *request, void *ctx)
 {
-	NotifyCtx *ctx = (NotifyCtx *) closure;
-	ctx->write_cb (data, offset, n, ctx->user_data);
-}
-
-static void
-downloader_abort (gpointer data, void *ctx)
-{
-	Downloader *dl = (Downloader *) data;
-	NotifyCtx *nc = (NotifyCtx *)ctx;
-	dl->RemoveHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, nc);
-	dl->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, nc);
-	dl->RemoveHandler (Downloader::CompletedEvent, downloader_complete, nc);
-	dl->Abort ();
+	request->RemoveAllHandlers (ctx);
+	request->Abort ();
 }
 
 static void
 downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	NotifyCtx *ctx = (NotifyCtx *) closure;
-	Downloader *dl = (Downloader *) sender;
-	ctx->notify_cb (NotifyProgressChanged, (gint64) (100 * dl->GetDownloadProgress ()), ctx->user_data);
+	HttpRequestProgressChangedEventArgs *args = (HttpRequestProgressChangedEventArgs *) calldata;
+	if (ctx->notify_cb)
+		ctx->notify_cb (NotifyProgressChanged, (gint64) (100 * args->GetProgress ()), ctx->user_data);
 }
 
 static void
-downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+downloader_stopped (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
+	HttpRequestStoppedEventArgs *args = (HttpRequestStoppedEventArgs *) calldata;
 	NotifyCtx *ctx = (NotifyCtx *) closure;
-	ctx->notify_cb (NotifyCompleted, NULL, ctx->user_data);
+	if (ctx->notify_cb)
+		ctx->notify_cb (args->IsSuccess () ? NotifyCompleted : NotifyFailed, NULL, ctx->user_data);
+	ctx->request->RemoveAllHandlers (ctx);
+	ctx->request->unref ();
 	g_free (ctx);
-	((Downloader *) sender)->unref_delayed ();
-}
-
-static void
-downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	NotifyCtx *ctx = (NotifyCtx *) closure;
-	ctx->notify_cb (NotifyFailed, NULL, ctx->user_data);
-	g_free (ctx);
-	((Downloader *) sender)->unref_delayed ();
 }
 
 //FIXME: nuke this!

@@ -17,9 +17,9 @@
 #include "fontmanager.h"
 #include "application.h"
 #include "collection.h"
-#include "downloader.h"
 #include "mutex.h"
 #include "value.h"
+#include "network.h"
 
 #if !INCLUDED_MONO_HEADERS
 typedef struct _MonoAssembly MonoAssembly;
@@ -276,8 +276,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCurrentApplication (Application* value);
 
-	void RegisterDownloader (IDownloader *dl);
-	void UnregisterDownloader (IDownloader *dl);
 	/*
 	 * thread-safe, returns false if the media couldn't be registered (if the
 	 * deployment is already shutting down, in which case the media should
@@ -368,7 +366,7 @@ public:
 			g_free (filename);
 		}
 	};
-	void AddSource (const char *uri, const char *filename);
+	void AddSource (const Uri *uri, const char *filename);
 	List *GetSources ();
 #endif
 
@@ -381,11 +379,21 @@ public:
 
 	const char* InternString (const char *str);
 	
+	void SetHttpHandler (HttpHandler *handler);
+	void SetDefaultHttpHandler (HttpHandler *handler);
+	Downloader *CreateDownloader ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	HttpRequest *CreateHttpRequest (HttpRequest::Options options);
+	void UnregisterHttpRequest (HttpRequest *request);
+	void AbortAllHttpRequests ();
+
 protected:
 	virtual ~Deployment ();
 
 private:
 	GHashTable *interned_strings;
+	HttpHandler *http_handler;
+	HttpHandler *default_http_handler;
 
 #if DEBUG
 	List *moon_sources;
@@ -401,7 +409,6 @@ private:
 	Deployment (MonoDomain *domain);
 	void InnerConstructor ();
 
-	void AbortAllDownloaders ();
 	void DisposeAllMedias ();
 	void DrainUnrefs ();
 	static gboolean DrainUnrefs (gpointer ptr);
@@ -412,7 +419,7 @@ private:
 	FontManager *font_manager;
 	Application *current_app;
 	MonoDomain *domain;
-	List downloaders;
+	List http_requests;
 	List paths;
 
 #if EVENT_ARG_REUSE

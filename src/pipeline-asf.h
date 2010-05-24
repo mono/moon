@@ -39,7 +39,6 @@ class WaveFormatExtensible;
 #include "dependencyobject.h"
 #include "downloader.h"
 #include "pipeline.h"
-#include "mms-downloader.h"
 #include "mutex.h"
 #include "http-streaming.h"
 
@@ -175,8 +174,7 @@ private:
 	bool is_sspl;
 	bool failure_reported;
 	guint64 max_bitrate; /* must use locking to be thread-safe */
-	MmsDownloader *mms_dl; /* must use locking to be thread-safe (unrefs are done on the media thread in Dispose) */
-	Downloader *dl; /* must use locking to be thread-safe (unrefs are done on the media thread in Dispose) */
+	HttpRequest *request; /* must use locking to be thread-safe (unrefs are done on the media thread in Dispose) */
 	char *buffer; /* write in ctor/dtor, rw in main thread: thread-safe, no locks required */
 	guint32 buffer_size; /* write in ctor/dtor, rw in main thread: thread-safe, no locks required */
 	guint32 buffer_used; /* write in ctor/dtor, rw in main thread: thread-safe, no locks required */
@@ -193,8 +191,9 @@ private:
 	MmsPlaylistEntry *current;
 	MmsDemuxer *demuxer;
 
-	EVENTHANDLER (MmsSource, DownloadFailed, Downloader, EventArgs); // Main thread only
-	EVENTHANDLER (MmsSource, DownloadComplete, Downloader, EventArgs); // Main thread only
+	EVENTHANDLER (MmsSource, Started, HttpRequest, EventArgs); // Main thread only
+	EVENTHANDLER (MmsSource, Stopped, HttpRequest, HttpRequestStoppedEventArgs); // Main thread only
+	EVENTHANDLER (MmsSource, Write, HttpRequest, HttpRequestWriteEventArgs); // Main thread only
 	EVENTHANDLER (MmsSource, Opened, IMediaDemuxer, EventArgs);
 	EVENTHANDLER (MmsSource, MediaError, Media, EventArgs);
 
@@ -205,7 +204,6 @@ private:
 	void SendSelectStreamRequest (); /* Main thread only */
 	void SendLogRequest ();/* Main thread only */
 
-	static void ProcessResponseHeaderCallback (gpointer context, const char *header, const char *value); /* Main thread only */
 	void ProcessResponseHeader (const char *header, const char *value); /* Main thread only */
 
 	HttpStreamingFeatures GetCurrentStreamingFeatures (); /* thread-safe */
@@ -222,11 +220,11 @@ private:
 	bool ProcessEndPacket          (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
 
 	void CreateDownloaders (const char *method); /* Thread-safe since it doesn't touch any instance fields */
-	void CreateDownloaders (const char *method, Downloader **downloader, MmsDownloader **mms_downloader); /* Main thread only */
-	void SetStreamSelectionHeaders (Downloader *dl); /* Main thread only */
-	Downloader *GetDownloaderReffed (); /* Thread-safe */
+	void CreateDownloaders (const char *method, HttpRequest **request); /* Main thread only */
+	void SetStreamSelectionHeaders (HttpRequest *request); /* Main thread only */
+	HttpRequest *GetRequestReffed (); /* Thread-safe */
 
-	bool RemoveTemporaryDownloader (Downloader *dl); /* main thread only */
+	bool RemoveTemporaryDownloader (HttpRequest *request); /* main thread only */
 	/* Creates the current entry if it doesn't exist, otherwise the already existing current entry is returned. Caller must unref the entry */
 	MmsPlaylistEntry *CreateCurrentEntry (); /* thread-safe */
 
@@ -242,6 +240,7 @@ private:
 
 	void NotifyFinished (guint32 reason); // called when we get the END packet. Main thread only.
 
+	void Write (void *buf, gint32 n); /* main thread only */
 protected:
 	virtual ~MmsSource ();
 	virtual void Dispose (); // Thread safe
@@ -264,7 +263,6 @@ public:
 
 	bool IsSSPL () { return is_sspl; }
 
-	void Write (void *buf, gint32 off, gint32 n); /* main thread only */
 	guint64 GetMaxBitRate (); /* thread-safe */
 };
 

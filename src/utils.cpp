@@ -1155,30 +1155,30 @@ char *parse_rfc_1945_token (char *input, char *c, char **end)
 Cancellable::Cancellable ()
 {
 	cancel_cb = NULL;
-	downloader = NULL;
+	request = NULL;
 }
 
 Cancellable::~Cancellable ()
 {
-	if (downloader)
-		downloader->unref ();
+	if (request)
+		request->unref ();
 }
 
 void
 Cancellable::Cancel ()
 {
 	if (cancel_cb)
-		cancel_cb (downloader, context);
+		cancel_cb (request, context);
 }
 
 void
-Cancellable::SetCancelFuncAndData (CancelCallback cb, Downloader *downloader, void *_context)
+Cancellable::SetCancelFuncAndData (CancelCallback cb, HttpRequest *request, void *_context)
 {
 	cancel_cb = cb;
 	context = _context;
-	if (this->downloader)
-		this->downloader->unref ();
-	this->downloader = downloader;
-	if (this->downloader)
-		this->downloader->ref ();
+	if (this->request)
+		this->request->unref ();
+	this->request = request;
+	if (this->request)
+		this->request->ref ();
 }

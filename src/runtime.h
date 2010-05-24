@@ -284,13 +284,6 @@ public:
 	TimeManager *GetTimeManager () { return time_manager; }
 	TimeManager *GetTimeManagerReffed ();
 
-	void SetDownloaderContext (gpointer context) { downloader_context = context; }
-	gpointer GetDownloaderContext () { return downloader_context; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	Downloader *CreateDownloader ();
-	static Downloader *CreateDownloader (EventObject *obj);
-
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 	void SetExposeHandoffFunc (MoonlightExposeHandoffFunc func, void *user_data);
 
@@ -305,8 +298,6 @@ public:
 
 	bool IsZombie () { return zombie; }
 
-	void DetachDownloaders ();
-	
 #if OCCLUSION_CULLING_STATS
 	int uielements_rendered_with_occlusion_culling;
 	int uielements_rendered_with_painters;
@@ -369,10 +360,6 @@ private:
 
 	DirtyLists *down_dirty;
 	DirtyLists *up_dirty;
-	
-	gpointer downloader_context;
-	List *downloaders;
-	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);
 	
 	Color *background_color;
 	

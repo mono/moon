@@ -236,10 +236,11 @@ resource_notify (NotifyType type, gint64 args, gpointer user_data)
 }
 
 static void
-dz_write (void *buffer, gint32 offset, gint32 n, gpointer data)
+dz_write (EventObject *sender, EventArgs *calldata, gpointer data)
 {
+	HttpRequestWriteEventArgs *args = (HttpRequestWriteEventArgs *) calldata;
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) data;
-	dzits->XmlWrite ((char *) buffer, offset, n);
+	dzits->XmlWrite ((char *) args->GetData (), args->GetOffset (), args->GetCount ());
 }
 
 void
@@ -277,7 +278,7 @@ DeepZoomImageTileSource::Download ()
 		if (get_resource_aborter)
 			delete get_resource_aborter;
 		get_resource_aborter = new Cancellable ();
-		current->GetResource (GetResourceBase(), uri, resource_notify, dz_write, MediaPolicy, get_resource_aborter, this);
+		current->GetResource (GetResourceBase(), uri, resource_notify, dz_write, MediaPolicy, HttpRequest::DisableFileStorage, get_resource_aborter, this);
 	}
 }
 

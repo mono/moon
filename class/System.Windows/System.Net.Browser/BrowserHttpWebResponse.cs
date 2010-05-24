@@ -39,17 +39,12 @@ namespace System.Net.Browser {
 	sealed class BrowserHttpWebResponse : HttpWebResponseCore {
 		HttpWebRequest request;
 		Stream response;
-		bool aborted;
 		bool progressive;
-
-		GCHandle handle;
-		bool disposed;
 
 		public BrowserHttpWebResponse (HttpWebRequest request, IntPtr native)
 		{
 			this.request = request;
 			this.response = new MemoryStream ();
-			this.aborted = false;
 			progressive = request.AllowReadStreamBuffering;
 			Headers = new WebHeaderCollection ();
 			SetMethod (request.Method);
@@ -59,33 +54,14 @@ namespace System.Net.Browser {
 			
 			// Get the status code and status text asap, this way we don't have to 
 			// ref/unref the native ptr
-			int status_code = NativeMethods.downloader_response_get_response_status (native);
+			int status_code = NativeMethods.http_response_get_response_status (native);
 			SetStatus ((HttpStatusCode) status_code, (status_code == 200 || status_code == 404) ?
-				NativeMethods.downloader_response_get_response_status_text (native) : 
+				NativeMethods.http_response_get_response_status_text (native) :
 				"Requested resource was not found");
 
-			// TODO: this is leaking in certain cases
-			handle = GCHandle.Alloc (this);
-			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader, GCHandle.ToIntPtr (handle));
-		}
-
-		~BrowserHttpWebResponse () /* thread-safe: no p/invokes */
-		{
-			Abort ();
-		}
-
-		void Dispose ()
-		{
-			if (!disposed) {
-				handle.Free ();
-				disposed = true;
-			}
-		}
-
-		public void Abort ()
-		{
-			aborted = true;
-			Dispose ();
+			GCHandle handle = GCHandle.Alloc (this);
+			NativeMethods.http_response_visit_headers (native, OnHttpHeader, GCHandle.ToIntPtr (handle));
+			handle.Free ();
 		}
 
 		static void OnHttpHeader (IntPtr context, IntPtr name, IntPtr value)

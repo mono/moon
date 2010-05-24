@@ -89,7 +89,7 @@ class BitmapImage : public BitmapSource {
 	static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void pixbuf_write (void *buffer, gint32 offset, gint32 n, gpointer data);
+	static void pixbuf_write (EventObject *sender, EventArgs *calldata, gpointer data);
 };
 
 #endif /* __BITMAPIMAGE_H__ */

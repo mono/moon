@@ -1174,7 +1174,7 @@ private:
 	char *uri;
 	Cancellable *cancellable;
 	
-	static void DataWriteCallback (void *data, gint32 offset, gint32 n, void *closure);
+	static void DataWriteCallback (EventObject *sender, EventArgs *args, void *closure);
 	static void NotifyCallback (NotifyType type, gint64 args, void *closure);
 	static void DeleteCancellable (EventObject *data);
 	static MediaResult CheckPendingReadsCallback (MediaClosure *data);
@@ -1185,7 +1185,6 @@ private:
 	void DownloadComplete ();
 	void DownloadFailed ();
 	void DataWrite (void *data, gint32 offset, gint32 n);
-	void NotifySize (gint64 size);
 	void SetTotalSize (gint64 size);
 	
 	void Read (MediaReadClosure *closure);

@@ -39,7 +39,6 @@ libmoon_include_headers = 	\
 	effect.h		\
 	error.h			\
 	eventargs.h		\
-	file-downloader.h	\
 	fontmanager.h		\
 	fonts.h			\
 	fontfamily.h		\
@@ -54,7 +53,6 @@ libmoon_include_headers = 	\
 	http-streaming.h	\
 	imagesource.h		\
 	inputscope.h		\
-	internal-downloader.h	\
 	keyboard.h		\
 	layout.h		\
 	layoutinformation.h	\
@@ -65,7 +63,6 @@ libmoon_include_headers = 	\
 	mediaelement.h		\
 	mediaplayer.h		\
 	messaging.h		\
-	mms-downloader.h	\
 	moon-curves.h		\
 	moonlightconfiguration.h\
 	moon-path.h		\
@@ -75,6 +72,7 @@ libmoon_include_headers = 	\
 	mutex.h			\
 	notificationwindow.h	\
 	namescope.h		\
+	network.h		\
 	openfile.h		\
 	pal/pal.h		\
 	pal/window.h		\
@@ -174,7 +172,6 @@ libmoon_la_SOURCES = 		\
 	enums.cpp		\
 	error.cpp		\
 	eventargs.cpp		\
-	file-downloader.cpp	\
 	fontmanager.cpp		\
 	fonts.cpp		\
 	frameworkelement.cpp	\
@@ -192,13 +189,13 @@ libmoon_la_SOURCES = 		\
 	mediaelement.cpp	\
 	mediaplayer.cpp		\
 	messaging.cpp		\
-	mms-downloader.cpp	\
 	moon-curves.c		\
 	moonlightconfiguration.cpp	\
 	moon-path.c		\
 	mp3.cpp			\
 	multiscaleimage.cpp	\
 	multiscalesubimage.cpp	\
+	network.cpp				\
 	notificationwindow.cpp	\
 	namescope.cpp		\
 	openfile.cpp		\
@@ -285,6 +282,10 @@ endif
 
 if INCLUDE_PULSEAUDIO
 libmoon_la_SOURCES += audio-pulse.cpp audio-pulse.h
+endif
+
+if HAVE_CURL
+libmoon_la_SOURCES += network-curl.cpp network-curl.h
 endif
 
 EXTRA_DIST = \

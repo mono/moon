@@ -1,3 +1,8 @@
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: Regenerated.
+
 2010-05-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: regenerated forgotten change

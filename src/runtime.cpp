@@ -339,8 +339,6 @@ Surface::Surface (MoonWindow *window)
 	main_thread_inited = true;
 	
 	zombie = false;
-	downloader_context = NULL;
-	downloaders = NULL;
 	background_color = NULL;
 	cursor = CursorTypeDefault;
 	mouse_event = NULL;
@@ -449,7 +447,6 @@ Surface::~Surface ()
 	delete up_dirty;
 	delete down_dirty;
 	
-	delete downloaders;
 	layers->unref ();
 	
 	surface_list = g_list_remove (surface_list, this);
@@ -470,7 +467,6 @@ void
 Surface::Zombify ()
 {
 	time_manager->Shutdown ();
-	DetachDownloaders ();
 	zombie = true;
 }
 
@@ -616,8 +612,6 @@ Surface::Attach (UIElement *element)
 		first = true;
 
 	if (!element) {
-		DetachDownloaders ();
-
 		if (first)
 			active_window->EnableEvents (first);
 
@@ -1996,81 +1990,6 @@ public:
 	DownloaderNode (Downloader *dl) { downloader = dl; }		
 };
 
-void
-Surface::DetachDownloaders ()
-{
-	DownloaderNode *node;
-	if (downloaders == NULL)
-		return;
-		
-	node = (DownloaderNode *) downloaders->First ();
-	while (node != NULL) {
-		node->downloader->RemoveHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
-		node->downloader->SetIsAttached (false);
-		node = (DownloaderNode *) node->next;
-	}
-	downloaders->Clear (true);
-}
-
-void
-Surface::OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	DownloaderNode *node;
-	Surface *surface = (Surface *) closure;
-	List *downloaders = surface->downloaders;
-	
-	if (downloaders == NULL) {
-		printf ("Surface::OnDownloaderDestroyed (): The list of downloaders is empty.\n");
-		return;
-	}
-	
-	node = (DownloaderNode *) downloaders->First ();
-	while (node != NULL) {
-		if (node->downloader == sender) {
-			downloaders->Remove (node);
-			return;
-		}
-		node = (DownloaderNode *) node->next;
-	}
-	
-	printf ("Surface::OnDownloaderDestroyed (): Couldn't find the downloader %p in the list of downloaders\n", sender);
-}
-
-Downloader *
-Surface::CreateDownloader (void) 
-{
-	if (zombie) {
-		g_warning ("Surface::CreateDownloader (): Trying to create a downloader on a zombified surface.\n");
-		return NULL;
-	}
-	
-	Downloader *downloader = new Downloader ();
-	downloader->SetIsAttached (true);
-	downloader->SetContext (downloader_context);
-	downloader->AddHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
-	if (downloaders == NULL)
-		downloaders = new List ();
-	downloaders->Append (new DownloaderNode (downloader));
-	
-	return downloader;
-}
-
-Downloader *
-Surface::CreateDownloader (EventObject *obj)
-{
-	Surface *surface;
-
-	surface = obj->GetDeployment ()->GetSurface ();
-	
-	if (surface)
-		return surface->CreateDownloader ();
-	
-	g_warning ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
-		   obj, GET_OBJ_ID (obj));
-	
-	return NULL;
-}
-
 bool 
 Surface::VerifyWithCacheSizeCounter (int w, int h)
 {
@@ -2751,7 +2670,6 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 
 	xaml_init ();
-	downloader_init ();
 	Media::Initialize ();
 	Effect::Initialize ();
 }

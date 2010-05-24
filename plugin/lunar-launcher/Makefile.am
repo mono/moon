@@ -11,8 +11,6 @@ INCLUDES = $(LUNAR_LAUNCHER_CFLAGS) \
 	-Wall
 
 lunar_launcher_SOURCES = 	\
-	lunar-downloader.cpp	\
-	lunar-downloader.h	\
 	lunar-launcher.cpp	\
 	getopts.cpp		\
 	getopts.h

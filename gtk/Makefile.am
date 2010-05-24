@@ -14,7 +14,6 @@ moonlight_gtk_dll_CS = \
 	Moonlight.Gtk/MoonlightRuntime.cs	\
 	Moonlight.Gtk/MoonlightHost.cs 		\
 	Moonlight.Gtk/Desklets.cs 		\
-	Moonlight.Gtk/ManagedDownloader.cs 	\
 	Moonlight.Gtk/AssemblyInfo.cs
 
 EXTRA_DIST = \

@@ -31,6 +31,7 @@
 #include "pipeline.h"
 #include "debug.h"
 #include "codec-url.h"
+#include "deployment.h"
 
 #define EULA_URL "http://go.microsoft.com/fwlink/?LinkId=149579"
 
@@ -333,7 +334,7 @@ void
 CodecDownloader::CreateDownloader ()
 {
 	if (dl == NULL) {
-		dl = surface->CreateDownloader ();
+		dl = GetDeployment ()->CreateDownloader ();
 		// since we put up a UI, this might happen if the user has navigated to another page before dismissing the UI
 		// (the surface would be zombified).
 		g_return_if_fail (dl != NULL);

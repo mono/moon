@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "file-downloader.h"
 #include "deployment.h"
 #include "textblock.h"
 #include "geometry.h"
@@ -158,7 +157,7 @@ TextBlock::AddFontResource (const char *resource)
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
+		if (IsAttached () && (downloader = GetDeployment ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
 			downloader->unref ();
@@ -754,7 +753,6 @@ TextBlock::DownloaderComplete (Downloader *downloader)
 {
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	char *resource, *filename;
-	InternalDownloader *idl;
 	const char *path;
 	Uri *uri;
 	
@@ -768,18 +766,12 @@ TextBlock::DownloaderComplete (Downloader *downloader)
 	
 	g_free (filename);
 	
-	if (!(idl = downloader->GetInternalDownloader ()))
-		return;
-	
-	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
-		return;
-	
 	uri = downloader->GetUri ();
 	
 	// If the downloaded file was a zip file, this'll get the path to the
 	// extracted zip directory, else it will simply be the path to the
 	// downloaded file.
-	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
+	if (!(path = downloader->GetUnzippedPath ()))
 		return;
 	
 	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));

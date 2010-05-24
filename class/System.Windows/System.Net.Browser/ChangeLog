@@ -1,3 +1,17 @@
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebRequestInternal.cs: Update to HttpRequest API.
+
+	* BrowserHttpWebResponse.cs: Update to HttpRequest API. This means it is not
+	necessary to store a GCHandle to self in an instance field, since the only
+	place we use it (to visit the response headers), we can free it immediately
+	when done. This also makes the Dispose method empty, so it has been removed,
+	which also caused the Abort method to become empty, so that too has been
+	removed.
+
+	* BrowserHttpWebRequest.cs: Remove the abort method, it's empty now since
+	BrowserHttpWebResponse's Abort method is empty too.
+
 2010-05-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebResponse.cs: Fix ContentLength when the response 

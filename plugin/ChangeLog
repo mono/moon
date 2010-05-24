@@ -1,5 +1,18 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp|h:
+	* plugin-glue.cpp:
+	* plugin-class.cpp:
+	* npstream-request.cpp|h:
+	* plugin-downloader.cpp|h: Updated to the new HttpRequest API.
+
+	* Makefile.am:
+	* curl/*: Moved curl bridge source code into libmoon.
+
+	* browser-bridge.h: Update to the new HttpRequest API.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin-entry.cpp: Spew all js exceptions thrown when in debug mode.
 
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>

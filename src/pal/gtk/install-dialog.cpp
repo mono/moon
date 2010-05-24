@@ -27,7 +27,7 @@
 
 #include "install-dialog.h"
 #include "application.h"
-#include "downloader.h"
+#include "network.h"
 #include "runtime.h"
 #include "utils.h"
 #include "uri.h"
@@ -41,10 +41,9 @@ typedef struct {
 struct _InstallDialogPrivate {
 	Application *application;
 	Deployment *deployment;
-	Downloader *downloader;
+	HttpRequest *request;
 	GPtrArray *loaders;
 	GList *icon_list;
-	GByteArray *xap;
 	
 	char *install_dir;
 	bool installed;
@@ -197,15 +196,12 @@ install_dialog_finalize (GObject *obj)
 	IconLoader *loader;
 	guint i;
 	
-	if (priv->downloader) {
-		if (!priv->downloader->Completed ())
-			priv->downloader->Abort ();
-		priv->downloader->unref ();
+	if (priv->request) {
+		if (!priv->request->IsCompleted ())
+			priv->request->Abort ();
+		priv->request->unref ();
 	}
-	
-	if (priv->xap)
-		g_byte_array_free (priv->xap, true);
-	
+
 	if (!priv->installed) {
 		// FIXME: use the InstallerService to uninstall so we don't
 		// leave dummy records in the database...
@@ -281,27 +277,16 @@ icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 }
 
 static void
-icon_loader_write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
+icon_loader_write_cb (EventObject *sender, EventArgs *calldata, gpointer user_data)
 {
+	HttpRequestWriteEventArgs *args = (HttpRequestWriteEventArgs *) calldata;
 	IconLoader *loader = (IconLoader *) user_data;
 	
-	if (loader->loader && !gdk_pixbuf_loader_write (loader->loader, (const guchar *) buffer, n, NULL)) {
+	if (loader->loader && !gdk_pixbuf_loader_write (loader->loader, (const guchar *) args->GetData (), args->GetCount (), NULL)) {
 		/* loading failed, destroy the loader */
 		g_object_unref (loader->loader);
 		loader->loader = NULL;
 	}
-}
-
-static void
-downloader_completed (EventObject *sender, EventArgs *args, gpointer user_data)
-{
-	InstallDialog *installer = (InstallDialog *) user_data;
-	InstallDialogPrivate *priv = installer->priv;
-	
-	gtk_widget_set_sensitive (priv->ok_button, true);
-	gtk_widget_hide ((GtkWidget *) priv->progress);
-	if (priv->unattended)
-		gtk_button_clicked ((GtkButton *) priv->ok_button);
 }
 
 static void
@@ -317,49 +302,46 @@ error_dialog_response (GtkDialog *dialog, int response_id, gpointer user_data)
 }
 
 static void
-downloader_failed (EventObject *sender, EventArgs *args, gpointer user_data)
+downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data)
 {
 	InstallDialog *installer = (InstallDialog *) user_data;
 	InstallDialogPrivate *priv = installer->priv;
 	GtkWidget *dialog;
-	
-	dialog = gtk_message_dialog_new ((GtkWindow *) installer,
-					 (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
-					 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s",
-					 priv->downloader->GetFailedMessage ());
-	
-	gtk_window_set_title ((GtkWindow *) dialog, "Install Error");
-	
-	gtk_message_dialog_format_secondary_text ((GtkMessageDialog *) dialog,
-						  "Failed to download application from %s",
-						  priv->deployment->GetXapLocation ());
-	
-	g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response), installer);
-	
-	gtk_widget_show (dialog);
+	HttpRequestStoppedEventArgs *ea = (HttpRequestStoppedEventArgs *) args;
+
+	if (ea->IsSuccess ()) {
+		gtk_widget_set_sensitive (priv->ok_button, true);
+		gtk_widget_hide ((GtkWidget *) priv->progress);
+		if (priv->unattended)
+			gtk_button_clicked ((GtkButton *) priv->ok_button);
+	} else {
+		dialog = gtk_message_dialog_new ((GtkWindow *) installer,
+						 (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
+						 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s",
+						 ea->GetErrorMessage ());
+
+		gtk_window_set_title ((GtkWindow *) dialog, "Install Error");
+		
+		gtk_message_dialog_format_secondary_text ((GtkMessageDialog *) dialog,
+							  "Failed to download application from %s",
+							  priv->deployment->GetXapLocation ());
+		
+		g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response), installer);
+
+		gtk_widget_show (dialog);
+	}
 }
 
 static void
-downloader_notify_size (gint64 size, gpointer user_data)
+downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer user_data)
 {
+	HttpRequestProgressChangedEventArgs *args = (HttpRequestProgressChangedEventArgs *) calldata;
 	InstallDialog *installer = (InstallDialog *) user_data;
 	InstallDialogPrivate *priv = installer->priv;
-	
-	g_byte_array_set_size (priv->xap, (guint) size);
-}
-
-static void
-downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data)
-{
-	InstallDialog *installer = (InstallDialog *) user_data;
-	InstallDialogPrivate *priv = installer->priv;
-	char *dest = (char *) priv->xap->data;
 	double fraction;
 	char *label;
 	
-	memcpy (dest + offset, buf, n);
-	
-	fraction = (double) (offset + n) / priv->xap->len;
+	fraction = args->GetProgress ();
 	label = g_strdup_printf ("Downloading... %d%%", (int) (fraction * 100));
 	gtk_progress_bar_set_fraction (priv->progress, fraction);
 	gtk_progress_bar_set_text (priv->progress, label);
@@ -404,19 +386,15 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 	priv->install_dir = g_strdup (install_dir);
 	priv->unattended = unattended;
 	
-	/* desensitize the OK button until the downloader is complete */
+	/* desensitize the OK button until the httprequest is complete */
 	gtk_widget_set_sensitive (priv->ok_button, false);
 	
-	/* spin up a downloader for the xap */
-	priv->downloader = deployment->GetSurface ()->CreateDownloader ();
-	priv->downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, dialog);
-	priv->downloader->AddHandler (Downloader::CompletedEvent, downloader_completed, dialog);
-	priv->downloader->Open ("GET", deployment->GetXapLocation (), XamlPolicy);
-	priv->downloader->SetStreamFunctions (downloader_write, downloader_notify_size, dialog);
-	priv->xap = g_byte_array_new ();
-	// FIXME: find out why some of the drts fail to work with
-	// Send() vs SendNow().
-	priv->downloader->SendNow ();
+	/* spin up a httprequest for the xap */
+	priv->request = deployment->CreateHttpRequest (HttpRequest::OptionsNone);
+	priv->request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, dialog);
+	priv->request->AddHandler (HttpRequest::ProgressChangedEvent, downloader_progress_changed, dialog);
+	priv->request->Open ("GET", deployment->GetXapLocation (), XamlPolicy);
+	priv->request->Send ();
 	
 	/* load the icons */
 	if (icons && (count = icons->GetCount ()) > 0) {
@@ -435,7 +413,7 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 			
 			g_ptr_array_add (priv->loaders, loader);
 			
-			application->GetResource (NULL, uri, icon_loader_notify_cb, icon_loader_write_cb, MediaPolicy, NULL, loader);
+			application->GetResource (NULL, uri, icon_loader_notify_cb, icon_loader_write_cb, MediaPolicy, HttpRequest::DisableFileStorage, NULL, loader);
 		}
 	}
 	
@@ -462,8 +440,11 @@ install_dialog_get_install_to_desktop (InstallDialog *dialog)
 }
 
 static bool
-install_xap (GByteArray *xap, const char *app_dir)
+install_xap (const char *xap_filename, const char *app_dir)
 {
+	GByteArray xap;
+	char *content;
+	gsize size;
 	char *dirname;
 	bool rv;
 	
@@ -476,9 +457,14 @@ install_xap (GByteArray *xap, const char *app_dir)
 		g_free (dirname);
 		return false;
 	}
+
 	
-	rv = UnzipByteArrayToDir (xap, dirname, CanonModeXap);
-	
+	if (g_file_get_contents (xap_filename, &content, &size, NULL)) {
+		xap.data = (guint8 *) content;
+		xap.len = size;
+		rv = UnzipByteArrayToDir (&xap, dirname, CanonModeXap);
+		g_free (content);
+	}
 	g_free (dirname);
 	
 	return rv;
@@ -553,11 +539,12 @@ notify_cb (NotifyType type, gint64 args, gpointer user_data)
 }
 
 static void
-write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
+write_cb (EventObject *sender, EventArgs *calldata, gpointer user_data)
 {
+	HttpRequestWriteEventArgs *args = (HttpRequestWriteEventArgs *) calldata;
 	FILE *fp = (FILE *) user_data;
 	
-	fwrite (buffer, 1, n, fp);
+	fwrite (args->GetData (), 1, args->GetCount (), fp);
 }
 
 static void
@@ -586,7 +573,7 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 				filename = g_build_filename (icons_dir, name, NULL);
 				
 				if ((fp = fopen (filename, "wb")))
-					application->GetResource (NULL, uri, notify_cb, write_cb, MediaPolicy, NULL, fp);
+					application->GetResource (NULL, uri, notify_cb, write_cb, MediaPolicy, HttpRequest::DisableFileStorage, NULL, fp);
 				
 				g_free (filename);
 			}
@@ -710,7 +697,7 @@ install_dialog_install (InstallDialog *dialog)
 		return false;
 	
 	/* install the XAP */
-	if (!install_xap (priv->xap, priv->install_dir)) {
+	if (!install_xap (priv->request->GetFilename (), priv->install_dir)) {
 		RemoveDir (priv->install_dir);
 		return false;
 	}

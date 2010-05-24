@@ -1,3 +1,53 @@
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* network.cpp|h: Create a new HttpRequest API that substitutes the old
+	Downloader API.
+
+	* network-curl.cpp|h: The curl bridge, moved from plugin, and modified to
+	work with the new HttpRequest API.
+
+	* pal/pal.cpp|h: 
+	* pal/gtk/install-dialog.cpp: Update to use the new HttpRequest API + don't
+	keep the xaps in memory while downloading them, just copy the file we store
+	in /tmp. This fixes a potential security issue where we'd believe the size
+	the http request told us, and we'd write to a memory area exactly that big.
+
+	* runtime.cpp|h: Move the per-surface list of downloaders to Deployment.
+
+	* Makefile.am: Updated.
+
+	* glyphs.cpp:
+	* downloader.cpp|h: 
+	* mms-downloader.cpp|h:
+	* file-downloader.cpp|h: Get rid of the internal downloaders, move the code in
+	the file downloader into Downloader and delete the mms downloader. Move all
+	the code related to having an external provider to a new HttpRequest class,
+	only keep in Downloader what is required from the js API + the policy
+	verification code. The MmsDownloader code was just wrapper code which is no
+	longer needed, so it has been deleted.
+
+	* deployment.cpp|h: Add API to set a current http handler, and create a curl
+	handler by default if there is no current http handler or the current http
+	handler can't handle a request.
+
+	* media.cpp:
+	* glyphs.cpp:
+	* textbox.cpp:
+	* utils.cpp|h:
+	* textblock.cpp:
+	* pipeline.cpp|h:
+	* pipeline-ui.cpp:
+	* textelement.cpp:
+	* bitmapimage.cpp|h:
+	* pipeline-asf.cpp|h:
+	* multiscaleimage.cpp:
+	* deepzoomimagetilesource.cpp: Update according to new HttpRequest/Downloader/
+	Application API changes.
+
+	* application.cpp|h: Remove NotifySize, no longer used. Make GetResource work
+	with the new API, add a HttpRequest::Options to make it possible to set any
+	options if a HttpRequest has to be created.
+
 2010-05-24  Alan McGovern  <amcgovern@novell.com>
 
 	* xaml.cpp:

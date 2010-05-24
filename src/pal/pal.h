@@ -28,7 +28,7 @@
 class Surface;
 class UIElement;
 class Deployment;
-class Downloader;
+class HttpRequest;
 class EventObject;
 class EventArgs;
 class PluginInstance;
@@ -272,20 +272,16 @@ typedef void (* UpdateCompletedCallback) (bool updated, const char *error, gpoin
 /* @Version=2 */
 class MoonInstallerService {
 	UpdateCompletedCallback completed;
-	Downloader *downloader;
+	HttpRequest *request;
 	MoonAppDatabase *db;
 	gpointer user_data;
 	MoonAppRecord *app;
-	GByteArray *xap;
 	
 	MoonAppRecord *GetAppRecord (Deployment *deployment);
 	void CloseDownloader (bool abort);
 	bool InitDatabase ();
 	
-	static void downloader_notify_size (gint64 size, gpointer user_data);
-	static void downloader_write (void *buf, gint32 offset, gint32 n, gpointer user_data);
-	static void downloader_completed (EventObject *sender, EventArgs *args, gpointer user_data);
-	static void downloader_failed (EventObject *sender, EventArgs *args, gpointer user_data);
+	static void downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data);
 	
 protected:
 	MoonAppRecord *CreateAppRecord (const char *origin);
@@ -306,10 +302,8 @@ public:
 	bool IsRunningOutOfBrowser (Deployment *deployment);
 	bool CheckInstalled (Deployment *deployment);
 	
-	void UpdaterNotifySize (gint64 size);
-	void UpdaterWrite (void *buf, gint32 offset, gint32 n);
 	void UpdaterCompleted ();
-	void UpdaterFailed ();
+	void UpdaterFailed (const char *msg);
 };
 
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.

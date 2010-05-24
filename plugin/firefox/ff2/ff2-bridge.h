@@ -20,7 +20,7 @@ class FF2BrowserBridge : public BrowserBridge {
  public:
 	FF2BrowserBridge ();
 
-	virtual DownloaderRequest* CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache);
+	virtual BrowserHttpRequest* CreateRequest (BrowserHttpHandler *handler, HttpRequest::Options options);
 };
 
 #endif // FF2_BRIDGE

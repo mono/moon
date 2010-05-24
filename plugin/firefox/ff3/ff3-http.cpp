@@ -22,9 +22,3 @@
 #define CONCAT(x,y) x##y
 #define GECKO_SYM(x) CONCAT(FF3,x)
 #include "../browser-http.inc"
-
-DownloaderRequest*
-FF3BrowserBridge::CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache)
-{
-	return new FF3DownloaderRequest (method, uri, disable_cache);
-}

@@ -4,101 +4,148 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2008-2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
  */
 
 #include <config.h>
+
 #include "plugin-downloader.h"
 #include "browser-bridge.h"
 #include "npstream-request.h"
 
-void
-NPStreamRequest::SetStreamData (Downloader *downloader, NPP npp, NPStream *stream)
-{
-	PluginDownloader *pd = (PluginDownloader *) downloader->GetDownloaderState ();
+/*
+ * NPStreamRequest
+ */
 
-	if (pd != NULL) {
-		NPStreamRequest *req = (NPStreamRequest *) pd->getRequest ();
-		
-		if (pd->IsAborted ()) {
-			MOON_NPN_DestroyStream (npp, stream, NPRES_USER_BREAK);
-		} else if (req != NULL) {
-			req->stream = stream;
-		}
-	}
-	stream->pdata = pd;
-}
-
-const bool
-NPStreamRequest::IsAborted ()
-{
-	return this->aborted;
-}
-
-void
-NPStreamRequest::StreamDestroyed ()
+NPStreamRequest::NPStreamRequest (BrowserHttpHandler *handler, HttpRequest::Options options)
+	: BrowserHttpRequest (handler, options)
 {
 	stream = NULL;
 }
 
 void
-NPStreamRequest::Abort ()
+NPStreamRequest::NewStream (NPStream *stream)
 {
-	if (instance != NULL && stream != NULL) {
-		MOON_NPN_DestroyStream (instance->GetInstance (), stream, NPRES_USER_BREAK);
+	BrowserHttpResponse *response;
+
+	this->stream = stream;
+	if (IsAborted ()) {
+		AbortImpl ();
+	} else {
+		response = new BrowserHttpResponse (this);
+		response->ParseHeaders (stream->headers);
+		Started (response);
+		response->unref ();
+
+		NotifyFinalUri (stream->url);
+		NotifySize (stream->end);
+	}
+}
+
+void
+NPStreamRequest::DestroyStream ()
+{
+	stream = NULL;
+}
+
+void
+NPStreamRequest::OpenImpl ()
+{
+}
+
+void
+NPStreamRequest::SendImpl ()
+{
+	PluginInstance *instance = GetInstance ();
+	NPError err;
+
+	g_return_if_fail (instance != NULL);
+
+	err = MOON_NPN_GetURLNotify (instance->GetInstance (), GetUri (), NULL, this);
+
+	if (err == NPERR_NO_ERROR) {
+		/* This is a ref to ensure that we don't get deleted while the browser have a pointer to us */
+		/* We unref when UrlNotify is called */
+		this->ref ();
+		return;
+	}
+
+	const char *msg;
+
+	switch (err) {
+	case NPERR_GENERIC_ERROR:
+		msg = "generic error";
+		break;
+	case NPERR_OUT_OF_MEMORY_ERROR:
+		msg = "out of memory";
+		break;
+	case NPERR_INVALID_URL:
+		msg = "invalid url requested";
+		break;
+	case NPERR_FILE_NOT_FOUND:
+		msg = "file not found";
+		break;
+	default:
+		msg = "unknown error";
+		break;
+	}
+
+	Failed (msg);
+}
+
+void
+NPStreamRequest::AbortImpl ()
+{
+	VERIFY_MAIN_THREAD;
+
+	if (stream != NULL) {
+		MOON_NPN_DestroyStream (GetInstance ()->GetInstance (), stream, NPRES_USER_BREAK);
 		stream = NULL;
 	}
 }
 
-bool
-NPStreamRequest::GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
+void
+NPStreamRequest::SetBodyImpl (void *body, guint32 length)
 {
-	PluginDownloader *pd = (PluginDownloader *) context;
+	printf ("Moonlight: NPStreamRequest does not support SetBody\n");
+}
 
-	if (instance != NULL) {
-		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
-		NPError err = MOON_NPN_GetURLNotify (instance->GetInstance (), uri, NULL, notify);
+void
+NPStreamRequest::SetHeaderImpl (const char *name, const char *value, bool disable_folding)
+{
+	printf ("Moonlight: NPStreamRequest does not support SetHttpHeader\n");
+}
 
-		if (err != NPERR_NO_ERROR) {
-			const char *msg;
-			
-			switch (err) {
-			case NPERR_GENERIC_ERROR:
-				msg = "generic error";
-				break;
-			case NPERR_OUT_OF_MEMORY_ERROR:
-				msg = "out of memory";
-				break;
-			case NPERR_INVALID_URL:
-				msg = "invalid url requested";
-				break;
-			case NPERR_FILE_NOT_FOUND:
-				msg = "file not found";
-				break;
-			default:
-				msg = "unknown error";
-				break;
-			}
-			
-			pd->dl->NotifyFailed (msg);
-			return false;
-		}
-		return true;
+void
+NPStreamRequest::UrlNotify (const char *url, NPReason reason)
+{
+	switch (reason) {
+	case NPRES_DONE:
+		Succeeded ();
+		break;
+	case NPRES_USER_BREAK:
+		Failed ("user break");
+		break;
+	case NPRES_NETWORK_ERR:
+		Failed ("network error");
+		break;
+	default:
+		Failed ("unknown error");
+		break;
 	}
-	return false;
+
+	/* The browser won't call us again, so unref the ref we took when we called NPN_GetURLNotify in SendImpl */
+	if (stream != NULL) {
+		unref ();
+		stream = NULL;
+	}
 }
 
 void
-NPStreamRequest::SetHttpHeader (const char *name, const char *value, bool disable_folding)
+NPStreamRequest::Write (gint32 offset, gint32 len, void *buffer)
 {
-	g_warning ("NPStream does not support SetHttpHeader");
-}
-
-void
-NPStreamRequest::SetBody (void *body, int length)
-{
-	g_warning ("NPStream does not support SetBody");
+	BrowserHttpRequest::Write (offset, buffer, len);
 }

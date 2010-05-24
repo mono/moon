@@ -44,18 +44,6 @@ namespace Moonlight.Gtk
 		static MoonlightRuntime ()
 			{
 				NativeMethods.runtime_init_desktop ();
-				NativeMethods.downloader_set_functions (
-					ManagedDownloader.CreateDownloader,
-					ManagedDownloader.DestroyDownloader,
-					ManagedDownloader.Open,
-					ManagedDownloader.Send,
-					ManagedDownloader.Abort,
-					ManagedDownloader.Header,
-					ManagedDownloader.Body,
-					ManagedDownloader.CreateWebRequest,
-					null,
-					null);
-            
 				DependencyObject.Initialize ();
 			}
 

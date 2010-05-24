@@ -32,12 +32,10 @@
 #include "gtk/window-gtk.h"
 #include "gtk/pal-gtk.h"
 
-#include "lunar-downloader.h"
 #include "getopts.h"
 
 #include <mono/metadata/mono-config.h>
 
-static BrowserBridge *bridge = NULL;
 static const char *geometry = NULL;
 
 typedef struct {
@@ -81,11 +79,12 @@ icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 }
 
 static void
-icon_loader_write_cb (void *buffer, gint32 offset, gint32 n, gpointer user_data)
+icon_loader_write_cb (EventObject *obj, EventArgs *ea, gpointer user_data)
 {
+	HttpRequestWriteEventArgs *args = (HttpRequestWriteEventArgs *) ea;
 	IconLoader *icon = (IconLoader *) user_data;
 	
-	if (icon->loader && !gdk_pixbuf_loader_write (icon->loader, (const guchar *) buffer, n, NULL)) {
+	if (icon->loader && !gdk_pixbuf_loader_write (icon->loader, (const guchar *) args->GetData (), args->GetCount (), NULL)) {
 		/* loading failed, destroy the loader */
 		g_object_unref (icon->loader);
 		icon->loader = NULL;
@@ -109,8 +108,8 @@ load_window_icons (GtkWindow *window, Deployment *deployment, IconCollection *ic
 			loader = g_new (IconLoader, 1);
 			loader->loader = gdk_pixbuf_loader_new ();
 			loader->window = window;
-			
-			application->GetResource (NULL, uri, icon_loader_notify_cb, icon_loader_write_cb, MediaPolicy, NULL, loader);
+
+			application->GetResource (NULL, uri, icon_loader_notify_cb, icon_loader_write_cb, MediaPolicy, HttpRequest::DisableFileStorage, NULL, loader);
 		}
 	}
 }
@@ -158,37 +157,6 @@ add_mono_config (const char *plugin_dir)
 
 	g_free (plugin_path);
 
-	return true;
-}
-
-typedef BrowserBridge * (* create_bridge_func) (void);
-
-static bool
-load_bridge (const char *plugin_dir)
-{
-	create_bridge_func create_browser_bridge;
-	char *bridge_path;
-	void *handle;
-	
-	bridge_path = g_build_filename (plugin_dir, "libmoonplugin-curlbridge.so", NULL);
-	
-	handle = dlopen (bridge_path, RTLD_LAZY);
-	g_free (bridge_path);
-	
-	if (handle == NULL) {
-		g_warning ("Could not load curl bridge: %s.", dlerror ());
-		return false;
-	}
-	
-	if (!(create_browser_bridge = (create_bridge_func) dlsym (handle, "CreateBrowserBridge"))) {
-		g_warning ("Could not locate CreateBrowserBridge symbol: %s.", dlerror ());
-		return false;
-	}
-	
-	bridge = create_browser_bridge ();
-	
-	LunarDownloader::SetBridge (bridge);
-	
 	return true;
 }
 
@@ -244,7 +212,6 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
-	bridge->SetSurface (surface);
 
 	if (!load_app (deployment, installer->GetBaseInstallDir (), app))
 		return NULL;
@@ -379,10 +346,7 @@ int main (int argc, char **argv)
 	add_mono_config (plugin_dir);
 
 	runtime_init_browser (plugin_dir);
-	load_bridge (plugin_dir);
 	g_free (plugin_dir);
-	
-	lunar_downloader_init ();
 	
 	deployment = new Deployment ();
 	Deployment::SetCurrent (deployment);
@@ -402,7 +366,6 @@ int main (int argc, char **argv)
 	gdk_threads_leave ();
 	
 	getopts_context_free (ctx, true);
-	lunar_downloader_shutdown ();
 	deployment->Shutdown ();
 	runtime_shutdown ();
 	

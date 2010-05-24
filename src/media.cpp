@@ -85,9 +85,8 @@ void
 MediaBase::DownloaderAbort ()
 {
 	if (downloader) {
-		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
-		downloader->SetStreamFunctions (NULL, NULL, NULL);
+		downloader->RemoveAllHandlers (this);
+		downloader->GetHttpRequest ()->RemoveAllHandlers (this);
 		downloader->Abort ();
 		downloader->unref ();
 		g_free (part_name);
@@ -109,7 +108,7 @@ MediaBase::SetAllowDownloads (bool allow)
 		source_changed = false;
 		
 		if ((uri = GetSource ()) && *uri) {
-			if (!(dl = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
+			if (!(dl = GetDeployment ()->CreateDownloader ())) {
 				// we're shutting down
 				return;
 			}
@@ -210,7 +209,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (IsAttached () && AllowDownloads ()) {
 			if (uri && *uri) {
 				Downloader *dl;
-				if ((dl = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
+				if ((dl = GetDeployment ()->CreateDownloader ())) {
 					dl->Open ("GET", uri, GetDownloaderPolicy (uri));
 					SetSource (dl, "");
 					dl->unref ();

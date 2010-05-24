@@ -306,6 +306,9 @@ class TypeReference {
 			case "Type::Kind":
 				managed_type = "Kind";
 				break;
+			case "HttpRequest::Options":
+				managed_type = "HttpRequestOptions";
+				break;
 			case "gpointer":
 				managed_type = "IntPtr";
 				break;
@@ -376,17 +379,16 @@ class TypeReference {
 			case "DownloaderResponseFinishedHandler":
 				managed_type = "DownloaderResponseFinishedDelegate";
 				break;
-			case "DownloaderResponseHeaderCallback":
-				managed_type = "HeaderVisitor";
-				break;
 			case "callback_dom_event*":
 				managed_type = "DomEventCallback";
 				break;
+			case "HttpHeaderVisitor":
 			case "InvalidateHandleDelegate":
 			case "HasMemberDelegate":
 			case "InvokeDelegate":
 			case "SetPropertyDelegate":
 			case "GetPropertyDelegate":
+			case "DownloaderAccessPolicy":
 				managed_type = Value;
 				break;
 			default:

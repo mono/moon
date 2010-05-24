@@ -52,15 +52,6 @@ namespace System.Net.Browser {
 			get { return WebRequestCreator.BrowserHttp; }
 		}
 
-		public override void Abort ()
-		{
-			BrowserHttpWebResponse wresp = (response as BrowserHttpWebResponse);
-			if (wresp != null)
-				wresp.Abort ();
-
-			base.Abort ();
-		}
-
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
 		{
 			HttpWebAsyncResult result = new HttpWebAsyncResult (callback, state);

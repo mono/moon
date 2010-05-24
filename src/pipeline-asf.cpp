@@ -15,7 +15,6 @@
 #include <config.h>
 
 #include "pipeline-asf.h"
-#include "mms-downloader.h"
 #include "debug.h"
 #include "playlist.h"
 #include "clock.h"
@@ -1545,6 +1544,17 @@ ContentDescription::~ContentDescription ()
 }
 
 /*
+ * HttpRequestNode
+ */
+
+class HttpRequestNode : public List::Node {
+public:
+	HttpRequest *request;
+	HttpRequestNode (HttpRequest *request) { this->request = request; this->request->ref (); }
+	virtual ~HttpRequestNode () { request->unref (); }
+};
+
+/*
  * MmsSource
  */
  
@@ -1560,8 +1570,7 @@ MmsSource::MmsSource (Media *media, const char *uri)
 	this->uri = g_strdup (uri);
 	request_uri = NULL;
 	client_id = NULL;
-	mms_dl = NULL;
-	dl = NULL;
+	request = NULL;
 	current = NULL;
 	demuxer = NULL;
 	buffer = NULL;
@@ -1608,33 +1617,25 @@ MmsSource::Dispose ()
 	// thread safe method
 	MmsPlaylistEntry *current;
 	IMediaDemuxer *demuxer;
-	Downloader *dl;
-	MmsDownloader *mms_dl;
+	HttpRequest *request;
 	List *temporary_downloaders;
 
 	// don't lock during unref, only while nulling out the local field
 	Lock ();
 	current = this->current;
 	this->current = NULL;
-	dl = this->dl;
-	this->dl = NULL;
+	request = this->request;
+	this->request = NULL;
 	demuxer = this->demuxer;
 	this->demuxer = NULL;
-	mms_dl = this->mms_dl;
-	this->mms_dl = NULL;
 	temporary_downloaders = this->temporary_downloaders;
 	this->temporary_downloaders = NULL;
 	Unlock ();
 	
-	if (dl) {
-		dl->RemoveAllHandlers (this);
-		dl->unref ();
-		dl = NULL;
-	}
-
-	if (mms_dl) {
-		mms_dl->unref ();
-		mms_dl = NULL;
+	if (request) {
+		request->RemoveAllHandlers (this);
+		request->unref ();
+		request = NULL;
 	}
 
 	if (current) {
@@ -1671,15 +1672,14 @@ MmsSource::Initialize ()
 }
 
 void
-MmsSource::CreateDownloaders (const char *method, Downloader **downloader, MmsDownloader **mms_downloader)
+MmsSource::CreateDownloaders (const char *method, HttpRequest **req)
 {
 	/* Thread-safe since it doesn't touch any instance fields */
-	Downloader *dl;
+	HttpRequest *request;
 	char *id;
 	Uri *url = NULL;
 
-	*downloader = NULL;
-	*mms_downloader = NULL;
+	*req = NULL;
 
 	url = new Uri ();
 	if (!url->Parse (uri)) {
@@ -1689,40 +1689,32 @@ MmsSource::CreateDownloaders (const char *method, Downloader **downloader, MmsDo
 		goto cleanup;
 	}
 
-	dl = Surface::CreateDownloader (this);
-	*downloader = dl;
-	if (dl == NULL) {
-		ReportErrorOccurred ("Couldn't create downloader.");
+	request = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableCache | HttpRequest::DisableFileStorage));
+	*req = request;
+	if (request == NULL) {
+		ReportErrorOccurred ("Couldn't create httprequest.");
 		goto cleanup;
 	}
 
-	*mms_downloader = new MmsDownloader (dl, this);
+	request->AddHandler (HttpRequest::StartedEvent, StartedCallback, this);
+	request->AddHandler (HttpRequest::StoppedEvent, StoppedCallback, this);
+	request->AddHandler (HttpRequest::WriteEvent, WriteCallback, this);
 
-	dl->Open (method, url, StreamingPolicy, *mms_downloader);
-	dl->SetRequireCustomHeaderSupport (true);
-	dl->SetDisableCache (true);
-	dl->InternalOpen (method, request_uri);
-	dl->InternalSetHeader ("User-Agent", CLIENT_USER_AGENT, false);
-	dl->InternalSetHeader ("Pragma", "no-cache", true);
-	dl->InternalSetHeader ("Pragma", "xClientGUID=" CLIENT_GUID, true);
-	dl->InternalSetHeader ("Supported", CLIENT_SUPPORTED, false);
+	request->Open (method, request_uri, StreamingPolicy);
+	request->SetHeader ("User-Agent", CLIENT_USER_AGENT, false);
+	request->SetHeader ("Pragma", "no-cache", true);
+	request->SetHeader ("Pragma", "xClientGUID=" CLIENT_GUID, true);
+	request->SetHeader ("Supported", CLIENT_SUPPORTED, false);
 	id = GetCurrentPlaylistGenId ();
 	if (id != NULL) {
-		dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("playlist-gen-id=%s", id), true);
+		request->SetHeaderFormatted ("Pragma", g_strdup_printf ("playlist-gen-id=%s", id), true);
 		g_free (id);
 	}
 	id = GetClientId ();
 	if (id != NULL) {
-		dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("client-id=%s", id), true);
+		request->SetHeaderFormatted ("Pragma", g_strdup_printf ("client-id=%s", id), true);
 		g_free (id);
 	}
-
-	if (dl->GetFailedMessage () != NULL) {
-		ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
-		goto cleanup;
-	}
-	dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedCallback, this);
-	dl->AddHandler (Downloader::CompletedEvent, DownloadCompleteCallback, this);
 
 cleanup:
 	delete url;
@@ -1731,31 +1723,22 @@ cleanup:
 void
 MmsSource::CreateDownloaders (const char *method)
 {
-	Downloader *dl = NULL;
-	MmsDownloader *mms_dl = NULL;
+	HttpRequest *request = NULL;;
 
 	LOG_MMS ("MmsSource::CreateDownloaders ('%s')\n", method);
 	VERIFY_MAIN_THREAD;
 
 	Lock ();
-	mms_dl = this->mms_dl;
-	this->mms_dl = NULL;
-	dl = this->dl;
-	this->dl = NULL;
+	request = this->request;
+	this->request = NULL;
 	Unlock ();
 
 	/* Clean up any old downloaders */
-	if (mms_dl != NULL) {
-		mms_dl->ClearSource (); /* To prevent it from giving us more data */
-		mms_dl->unref ();
-		mms_dl = NULL;
-	}
-
-	if (dl != NULL) {
-		dl->RemoveAllHandlers (this);
-		dl->Abort ();
-		dl->unref ();
-		dl = NULL;
+	if (request != NULL) {
+		request->RemoveAllHandlers (this);
+		request->Abort ();
+		request->unref ();
+		request = NULL;
 	}
 
 	/* Clean up old buffers */
@@ -1764,15 +1747,12 @@ MmsSource::CreateDownloaders (const char *method)
 	buffer_size = 0;
 	buffer_used = 0;
 
-	CreateDownloaders (method, &dl, &mms_dl);
+	CreateDownloaders (method, &request);
 
-	g_return_if_fail (dl != NULL && mms_dl != NULL);
-
-	dl->SetResponseHeaderCallback (ProcessResponseHeaderCallback, this);
+	g_return_if_fail (request != NULL);
 
 	Lock ();
-	this->dl = dl;
-	this->mms_dl = mms_dl;
+	this->request = request;
 	Unlock ();
 }
 
@@ -1781,7 +1761,7 @@ MmsSource::SendDescribeRequest ()
 {
 	LOG_MMS ("MmsSource::SendDescribeRequest () uri: %s request_uri: %s state: %i\n", uri, request_uri, waiting_state);
 	VERIFY_MAIN_THREAD;
-	Downloader *dl;
+	HttpRequest *request;
 
 	g_return_if_fail (waiting_state == MmsInitialization);
 
@@ -1789,18 +1769,18 @@ MmsSource::SendDescribeRequest ()
 
 	CreateDownloaders ("GET");
 
-	dl = GetDownloaderReffed ();
-	g_return_if_fail (dl != NULL);
+	request = GetRequestReffed ();
+	g_return_if_fail (request != NULL);
 
-	dl->InternalSetHeader ("Pragma", "packet-pair-experiment=1", true);
-	dl->Send ();
-	dl->unref ();
+	request->SetHeader ("Pragma", "packet-pair-experiment=1", true);
+	request->Send ();
+	request->unref ();
 }
 
 void
 MmsSource::SendPlayRequest ()
 {
-	Downloader *dl;
+	HttpRequest *request;
 	guint64 pts;
 
 	LOG_MMS ("MmsSource::SendPlayRequest () uri: %s request_uri: %s waiting_state: %i\n", uri, request_uri, waiting_state);
@@ -1818,46 +1798,43 @@ MmsSource::SendPlayRequest ()
 
 	CreateDownloaders ("GET");
 
-	dl = GetDownloaderReffed ();
-	g_return_if_fail (dl != NULL);
+	request = GetRequestReffed ();
+	g_return_if_fail (request != NULL);
 
-	dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0", false);
-	dl->InternalSetHeader ("Pragma", "xPlayStrm=1", false);
-	dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647", false);
-	dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295", pts / 10000), false);
-	SetStreamSelectionHeaders (dl);
+	request->SetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0", false);
+	request->SetHeader ("Pragma", "xPlayStrm=1", false);
+	request->SetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647", false);
+	request->SetHeaderFormatted ("Pragma", g_strdup_printf ("stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295", pts / 10000), false);
+	SetStreamSelectionHeaders (request);
 
-	dl->Send ();
-	dl->unref ();
+	request->Send ();
+	request->unref ();
 }
 
 void
 MmsSource::SendSelectStreamRequest ()
 {
-	Downloader *dl;
-	MmsDownloader *mms_dl;
+	HttpRequest *request;
 
 	LOG_MMS ("MmsSource::SendSelectStreamRequest ()\n");
 	VERIFY_MAIN_THREAD;
 
-	CreateDownloaders ("POST", &dl, &mms_dl);
+	CreateDownloaders ("POST", &request);
 
-	g_return_if_fail (this->mms_dl != mms_dl);
-	g_return_if_fail (this->dl != dl);
-	g_return_if_fail (dl != NULL);
+	g_return_if_fail (this->request != request);
+	g_return_if_fail (request != NULL);
 
-	mms_dl->ClearSource (); /* We don't want any data from this mms downloader */
+	request->RemoveAllHandlers (this); /* We don't want any data from this mms downloader */
 	Lock ();
 	if (temporary_downloaders == NULL)
 		temporary_downloaders = new List ();
-	temporary_downloaders->Append (new Downloader::Node (dl));
+	temporary_downloaders->Append (new HttpRequestNode (request));
 	Unlock ();
 
-	SetStreamSelectionHeaders (dl);
-	dl->Send ();
+	SetStreamSelectionHeaders (request);
+	request->Send ();
 
-	dl->unref ();
-	mms_dl->unref ();
+	request->unref ();
 }
 
 void
@@ -2118,7 +2095,7 @@ MmsSource::SendLogRequest ()
 }
 
 void
-MmsSource::SetStreamSelectionHeaders (Downloader *dl)
+MmsSource::SetStreamSelectionHeaders (HttpRequest *request)
 {
 	MmsPlaylistEntry *entry;
 	gint8 streams [128];
@@ -2153,25 +2130,17 @@ MmsSource::SetStreamSelectionHeaders (Downloader *dl)
 	}
 
 	/* stream-switch-count && stream-switch-entry need to be on their own pragma lines */
-	dl->InternalSetHeader ("Pragma", line->str, true);
-	dl->InternalSetHeaderFormatted ("Pragma", g_strdup_printf ("stream-switch-count=%i", count), true);
+	request->SetHeader ("Pragma", line->str, true);
+	request->SetHeaderFormatted ("Pragma", g_strdup_printf ("stream-switch-count=%i", count), true);
 
 	g_string_free (line, true);
 	entry->unref ();
 }
 
 void
-MmsSource::ProcessResponseHeaderCallback (gpointer context, const char *header, const char *value)
-{
-	VERIFY_MAIN_THREAD;
-	((MmsSource *) context)->SetCurrentDeployment ();
-	((MmsSource *) context)->ProcessResponseHeader (header, value);
-}
-
-void
 MmsSource::ProcessResponseHeader (const char *header, const char *value)
 {
-	Downloader *dl = NULL;
+	HttpRequest *request = NULL;
 	char *h = NULL;
 	char *duped = NULL;
 
@@ -2181,11 +2150,11 @@ MmsSource::ProcessResponseHeader (const char *header, const char *value)
 	if (failure_reported)
 		return;
 
-	dl = GetDownloaderReffed ();
-	g_return_if_fail (dl != NULL);
+	request = GetRequestReffed ();
+	g_return_if_fail (request != NULL);
 
 	// check response code
-	DownloaderResponse *response = dl->GetResponse ();
+	HttpResponse *response = request->GetResponse ();
 	if (response != NULL && response->GetResponseStatus () != 200) {
 		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri, response->GetResponseStatus ());
 		ReportDownloadFailure ();
@@ -2241,17 +2210,17 @@ MmsSource::ProcessResponseHeader (const char *header, const char *value)
 	}
 
 cleanup:
-	if (dl != NULL)
-		dl->unref ();
+	if (request != NULL)
+		request->unref ();
 	g_free (duped);
 }
 
-Downloader *
-MmsSource::GetDownloaderReffed ()
+HttpRequest *
+MmsSource::GetRequestReffed ()
 {
-	Downloader *result;
+	HttpRequest *result;
 	Lock ();
-	result = dl;
+	result = request;
 	if (result != NULL)
 		result->ref ();
 	Unlock ();
@@ -2259,9 +2228,9 @@ MmsSource::GetDownloaderReffed ()
 }
 
 void
-MmsSource::Write (void *buf, gint32 off, gint32 n)
+MmsSource::Write (void *buf, gint32 n)
 {
-	LOG_MMS_EX ("MmsSource::Write (%p, %i, %i)\n", buf, off, n);
+	LOG_MMS_EX ("MmsSource::Write (%p, %i)\n", buf, n);
 	VERIFY_MAIN_THREAD;
 
 	MmsHeader *header;
@@ -2269,7 +2238,7 @@ MmsSource::Write (void *buf, gint32 off, gint32 n)
 	char *payload;
 	guint32 offset = 0;
 	bool is_valid = false;
-	Downloader *dl;
+	HttpRequest *request;
 
 	// Make sure our internal buffer is big enough
 	if (buffer_size < buffer_used + n) {
@@ -2301,11 +2270,11 @@ MmsSource::Write (void *buf, gint32 off, gint32 n)
 
 		if (!is_valid) {
 			LOG_MMS ("MmsDownloader::Write (): invalid mms header: %i = %c\n%*s\n", header->id, header->id, n, (char *) buf);
-			dl = GetDownloaderReffed ();
-			if (dl != NULL) {
-				dl->Abort ();
-				dl->NotifyFailed ("invalid mms source");
-				dl->unref ();
+			request = GetRequestReffed ();
+			if (request != NULL) {
+				request->Abort ();
+				ReportErrorOccurred ("invalid mms source");
+				request->unref ();
 			}
 			return;
 		}
@@ -2749,30 +2718,30 @@ cleanup:
 }
 
 bool
-MmsSource::RemoveTemporaryDownloader (Downloader *dl)
+MmsSource::RemoveTemporaryDownloader (HttpRequest *request)
 {
-	Downloader::Node *node;
-	Downloader::Node *found = NULL;
+	HttpRequestNode *node;
+	HttpRequestNode *found = NULL;
 
 	VERIFY_MAIN_THREAD;
 
 	Lock ();
 	if (temporary_downloaders != NULL) {
-		node = (Downloader::Node *) temporary_downloaders->First ();
+		node = (HttpRequestNode *) temporary_downloaders->First ();
 		while (node != NULL) {
-			if (node->downloader == dl) {
+			if (node->request == request) {
 				found = node;
 				temporary_downloaders->Unlink (node);
 				break;
 			}
-			node = (Downloader::Node *) node->next;
+			node = (HttpRequestNode *) node->next;
 		}
 	}
 	Unlock ();
 
 	/* Don't delete the node/unref the dl in a lock */
 	if (found != NULL) {
-		dl->RemoveAllHandlers (this);
+		request->RemoveAllHandlers (this);
 		delete node;
 	}
 
@@ -2780,33 +2749,58 @@ MmsSource::RemoveTemporaryDownloader (Downloader *dl)
 }
 
 void
-MmsSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
+MmsSource::StartedHandler (HttpRequest *request, EventArgs *args)
 {
-	Media *media = GetMediaReffed ();
-	ErrorEventArgs *eea;
+	HttpResponse *response;
+	List *headers;
+	HttpHeader *header;
 
-	LOG_MMS ("MmsSource::DownloadFailedHandler ()\n");
+	LOG_MMS ("MmsSource::DownloadStoppedHandler ()\n");
 
 	VERIFY_MAIN_THREAD;
 
-	if (RemoveTemporaryDownloader (dl))
-		return; /* Nothing more to do here, don't report failures for temporary downloaders */
-
-	g_return_if_fail (media != NULL);
-	eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
-	media->RetryHttp (eea);
-	media->unref ();
-	eea->unref ();
+	response = request->GetResponse ();
+	headers = response->GetHeaders ();
+	if (headers != NULL) {
+		header = (HttpHeader *) headers->First ();
+		while (header != NULL) {
+			ProcessResponseHeader (header->GetHeader (), header->GetValue ());
+			header = (HttpHeader *) header->next;
+		}
+	}
 }
 
 void
-MmsSource::DownloadCompleteHandler (Downloader *dl, EventArgs *args)
+MmsSource::WriteHandler (HttpRequest *request, HttpRequestWriteEventArgs *args)
 {
-	LOG_MMS ("MmsSource::DownloadCompleteHandler ()\n");
-	
+	Write (args->GetData (), args->GetCount ());
+}
+
+void
+MmsSource::StoppedHandler (HttpRequest *request, HttpRequestStoppedEventArgs *args)
+{
+	Media *media = GetMediaReffed ();
+	ErrorEventArgs *eea;
+	bool is_temporary;
+
+	LOG_MMS ("MmsSource::DownloadStoppedHandler () IsSuccess: %i Error message: %s\n", args->IsSuccess (), args->GetErrorMessage ());
+
 	VERIFY_MAIN_THREAD;
 
-	RemoveTemporaryDownloader (dl);
+	is_temporary = RemoveTemporaryDownloader (request);
+
+	if (is_temporary || args->IsSuccess ())
+		goto cleanup; /* Nothing more to do here, don't report failures for temporary downloaders */
+
+	g_return_if_fail (media != NULL);
+
+	eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
+	media->RetryHttp (eea);
+	eea->unref ();
+
+cleanup:
+	if (media != NULL)
+		media->unref ();
 }
 
 void
@@ -3458,7 +3452,6 @@ MmsPlaylistEntry::OpenedHandler (IMediaDemuxer *sender, EventArgs *ea)
 	gint8 dummy [128];
 	List *buffers;
 
-	LOG_MMS ("MmsPlaylistEntry::OpenedHandler (): demuxer has been opened, rewriting %i packets\n", buffers == NULL ? 0 : buffers->Length ());
 	VERIFY_MEDIA_THREAD;
 
 	GetSelectedStreams (dummy);
@@ -3468,6 +3461,8 @@ MmsPlaylistEntry::OpenedHandler (IMediaDemuxer *sender, EventArgs *ea)
 	this->buffers = NULL;
 	opened = true;
 	Unlock ();
+
+	LOG_MMS ("MmsPlaylistEntry::OpenedHandler (): demuxer has been opened, rewriting %i packets\n", buffers == NULL ? 0 : buffers->Length ());
 
 	if (buffers != NULL) {
 		node = (MediaClosure::Node *) buffers->First ();

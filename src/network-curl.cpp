@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * curl-http.cpp: Curl bridge
+ * network-curl.cpp
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -8,17 +8,12 @@
  * Copyright 2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- *
  */
 
+#include <config.h>
+#include <errno.h>
 
-// define this here so that protypes.h isn't included (and doesn't
-// muck with our npapi.h)
-#include "plugin.h"
-
-#include "curl-bridge.h"
-#include "curl-http.h"
-#include "config.h"
+#include "network-curl.h"
 #include "pipeline.h"
 
 #define d(x)
@@ -27,6 +22,30 @@
 // FIX: this is temporary
 #define SKIP_PEER 1
 #define SKIP_HOSTNAME 1
+
+#ifdef SANITY
+#define VERIFY_CURL_THREAD 										\
+	if (!pthread_equal (pthread_self (), worker_thread)) {						\
+		printf ("%s: this method should only be called on the curl thread.\n", __func__);	\
+	}
+#else
+#define VERIFY_CURL_THREAD
+#endif
+
+#if TIMERS
+#define STARTCALLTIMER(id,str) \
+	struct timeval id##_t_start; \
+	gettimeofday(&id##_t_start, NULL); \
+	printf ("timing of '%s' started at %" G_GINT64_FORMAT "\n", str, id##_t_start.tv_usec)
+
+#define ENDCALLTIMER(id,str) \
+	struct timeval id##_t_end; \
+	gettimeofday(&id##_t_end, NULL); \
+	printf ("timing of '%s' ended at %" G_GINT64_FORMAT " (%f seconds)\n", str, id##_t_end.tv_usec, (double)(id##_t_end.tv_usec - id##_t_start.tv_usec) / 10000000)
+#else
+#define STARTCALLTIMER(id,str)
+#define ENDCALLTIMER(id,str)
+#endif
 
 class CurlDownloaderRequest;
 class CurlDownloaderResponse;
@@ -40,7 +59,7 @@ static gboolean _abort (void *sender);
 static void _started (CallData *sender);
 static void _visitor (CallData *sender);
 static void _available (CallData *sender);
-static void _finished (CallData *sender);
+//static void _finished (CallData *sender);
 
 
 // Debugging methods that dump all data sent through
@@ -148,6 +167,27 @@ static int my_trace(CURL *handle, curl_infotype type, char *data, size_t size, v
 
 #endif
 
+static gboolean
+Emit (void* data)
+{
+	STARTCALLTIMER (emit_call, "Emit - Call");
+
+	CallData* call = NULL;
+	GList* t;
+	GList* list = (GList*)data;
+	for (t = list; t; t = t->next) {
+		call = (CallData*) t->data;
+		if (!call->bridge->IsShuttingDown ())
+			call->func (call);
+		delete call;
+	}
+	g_list_free (list);
+
+	ENDCALLTIMER (emit_call, "Emit - Call");
+
+	return FALSE;
+}
+
 static size_t
 header_received (void *ptr, size_t size, size_t nmemb, void *data)
 {
@@ -201,16 +241,18 @@ _available (CallData *sender)
 	res->Available (data->buffer, data->size);
 }
 
+#if 0
 static void
 _finished (CallData *sender)
 {
 	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
 	res->Finished ();
 }
+#endif
 
-CurlDownloaderRequest::CurlDownloaderRequest (CurlBrowserBridge *bridge, const char *method, const char *uri, bool disable_cache)
-	: DownloaderRequest (method, uri), headers(NULL), response(NULL),
-	  bridge(bridge), post(NULL), postlast(NULL), body(NULL), state(NONE), aborting(FALSE)
+CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequest::Options options)
+	: HttpRequest (Type::CURLDOWNLOADERREQUEST, handler, options), headers(NULL), response(NULL),
+	  bridge(handler), post(NULL), postlast(NULL), body(NULL), state(NONE), aborting(FALSE)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p %s\n", this, uri));
 
@@ -232,19 +274,22 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlBrowserBridge *bridge, const c
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 #endif
 	curl_easy_setopt (curl, CURLOPT_USERAGENT, "NSPlayer/11.08.0005.0000");
-	curl_easy_setopt (curl, CURLOPT_URL, uri);
 	curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1);
 }
 
+void CurlDownloaderRequest::Started ()
+{
+	HttpRequest::Started (response);
+}
 
-void CurlDownloaderRequest::SetHttpHeader (const char *name, const char *value, bool disable_folding)
+void CurlDownloaderRequest::SetHeaderImpl (const char *name, const char *value, bool disable_folding)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::SetHttpHeader %p - %s:%s\n", this, name, value));
 	char *header = g_strdup_printf ("%s: %s", name, value);
 	headers = curl_slist_append(headers, header);
 }
 
-void CurlDownloaderRequest::SetBody (void *ptr, int size)
+void CurlDownloaderRequest::SetBodyImpl (void *ptr, guint32 size)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::SetBody %p\n", this));
 
@@ -254,14 +299,12 @@ void CurlDownloaderRequest::SetBody (void *ptr, int size)
 	curl_easy_setopt (curl, CURLOPT_POSTFIELDSIZE, size);
 }
 
-bool CurlDownloaderRequest::GetResponse (DownloaderResponseStartedHandler started,
-	DownloaderResponseDataAvailableHandler available,
-	DownloaderResponseFinishedHandler finished, gpointer context)
+void CurlDownloaderRequest::SendImpl ()
 {
-	d(printf ("BRIDGE CurlDownloaderRequest::GetResponse %p\n", this));
+	d(printf ("BRIDGE CurlDownloaderRequest::Send %p\n", this));
 
 	if (IsAborted ())
-		return FALSE;
+		return;
 
 	VERIFY_MAIN_THREAD
 
@@ -271,7 +314,8 @@ bool CurlDownloaderRequest::GetResponse (DownloaderResponseStartedHandler starte
 		curl_easy_setopt(curl, CURLOPT_POST, 1);
 
 	// we're ready to start the connection, set the headers
-	response = new CurlDownloaderResponse (bridge, this, started, available, finished, context);
+	response = new CurlDownloaderResponse (bridge, this);
+	curl_easy_setopt (curl, CURLOPT_URL, GetUri ());
 	curl_easy_setopt (curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, data_received);
 	curl_easy_setopt (curl, CURLOPT_WRITEDATA, response);
@@ -279,21 +323,17 @@ bool CurlDownloaderRequest::GetResponse (DownloaderResponseStartedHandler starte
 	curl_easy_setopt (curl, CURLOPT_WRITEHEADER, response);
 
 	response->Open ();
-	return TRUE;
 }
 
 CurlDownloaderRequest::~CurlDownloaderRequest ()
 {
 }
 
-CurlDownloaderResponse::CurlDownloaderResponse (CurlBrowserBridge *bridge,
-	CurlDownloaderRequest *request,
-	DownloaderResponseStartedHandler started,
-	DownloaderResponseDataAvailableHandler available,
-	DownloaderResponseFinishedHandler finished, gpointer ctx)
-	: DownloaderResponse(started, available, finished, ctx), 
-	  bridge(bridge), request(request), visitor(NULL), vcontext(NULL),
-	  delay(2), state(STOPPED)
+CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
+	CurlDownloaderRequest *request)
+	: HttpResponse (Type::CURLDOWNLOADERRESPONSE, request),
+	  bridge(bridge), request(request),
+	  delay(2), state(STOPPED), aborted (false)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::CurlDownloaderResponse %p\n", this));
 
@@ -314,14 +354,14 @@ CurlDownloaderResponse::Open ()
 
 	if (delay) {
 		delay--;
-		bridge->GetSurface()->GetTimeManager()->AddDispatcherCall (_open, closure);
+		GetDeployment ()->GetSurface()->GetTimeManager()->AddDispatcherCall (_open, closure);
 		return;
 	}
 	bridge->OpenHandle (request, request->GetHandle ());
 }
 
 void
-CurlDownloaderRequest::Abort () {
+CurlDownloaderRequest::AbortImpl () {
 	d(printf ("BRIDGE CurlDownloaderRequest::Abort request:%p response:%p\n", this, response));
 
 	if (bridge->IsDataThread ()) {
@@ -397,22 +437,12 @@ CurlDownloaderResponse::Close ()
 	bridge->CloseHandle (request, request->GetHandle ());
 
 	if (closure) {
-		bridge->GetSurface()->GetTimeManager()->RemoveTickCall (_open, closure);
+		GetDeployment ()->GetSurface()->GetTimeManager()->RemoveTickCall (_open, closure);
 		closure = NULL;
 	}
 	state = DONE;
 
 	Finished ();
-}
-
-void CurlDownloaderResponse::SetHeaderVisitor (DownloaderResponseHeaderCallback callback, gpointer ctx)
-{
-	d(printf ("BRIDGE CurlDownloaderResponse::SetHeaderVisitor %p callback:%p vcontext:%p\n", this, callback, ctx));
-
-	VERIFY_MAIN_THREAD
-
-	this->visitor = callback;
-	this->vcontext = ctx;
 }
 
 int CurlDownloaderResponse::GetResponseStatus ()
@@ -425,16 +455,6 @@ const char * CurlDownloaderResponse::GetResponseStatusText ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::GetResponseStatusText %p\n", this));
 	return 0;
-}
-
-void CurlDownloaderResponse::ref ()
-{
-	d(printf ("BRIDGE CurlDownloaderResponse::ref %p %p\n", this, closure.get()));
-}
-
-void CurlDownloaderResponse::unref ()
-{
-	d(printf ("BRIDGE CurlDownloaderResponse::unref %p %p\n", this, closure.get()));
 }
 
 void
@@ -489,7 +509,7 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 		return size;
 	state = DATA;
 
-	if (!available || IsAborted ())
+	if (IsAborted ())
 		return -1;
 
 	char *buffer = (char *) g_malloc (size);
@@ -504,10 +524,8 @@ CurlDownloaderResponse::Started ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Started %p\n", this));
 
-	if (started) {
-		state = HEADER;
-		started (this, context);
-	}
+	state = HEADER;
+	request->Started ();
 	if (state == FINISHED)
 		Finished ();
 }
@@ -516,16 +534,15 @@ void
 CurlDownloaderResponse::Visitor (const char *name, const char *val)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Visitor %p visitor:%p vcontext:%p\n", this, visitor, vcontext));
-	if (visitor)
-		visitor (vcontext, name, val);
+	AppendHeader (name, val);
 }
 
 void
 CurlDownloaderResponse::Available (char* buffer, size_t size)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Available %p\n", this));
-	if (available)
-		available (this, context, buffer, size);
+//	if (available)
+		printf ("TODO: available (this, context, buffer, size);");
 }
 
 void
@@ -537,6 +554,305 @@ CurlDownloaderResponse::Finished ()
 		state = FINISHED;
 		return;
 	}
-	if (finished && (int)state > FINISHED)
-		finished (this, context, true, NULL, NULL);
+//	if (finished && (int)state > FINISHED)
+		printf ("TODO: finished (this, context, true, NULL, NULL);");
+}
+
+static pthread_t worker_thread;
+static pthread_mutex_t worker_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t worker_cond = PTHREAD_COND_INITIALIZER;
+static gboolean Emit (void* data);
+
+class CurlNode : public List::Node {
+public:
+	CURL* handle;
+	CurlNode (CURL* handle) : Node (), handle(handle) {};
+};
+
+class HandleNode : public List::Node {
+public:
+	HttpRequest* res;
+	HandleNode (HttpRequest* res) : Node (), res(res) {};
+	CURL* GetHandle () { return ((CurlDownloaderRequest*)res)->GetHandle (); }
+	void Close () { return ((CurlDownloaderRequest*)res)->Close (); }
+};
+
+#if 0
+static void*
+getdata_callback (void* sender)
+{
+	((CurlHttpHandler*)sender)->GetData ();
+
+	return NULL;
+}
+#endif
+
+bool
+find_easy_handle (List::Node *node, void *data)
+{
+	HandleNode* rn = (HandleNode*)node;
+	CURL* handle = (CURL*)data;
+	return (rn->GetHandle () == handle);
+}
+
+bool
+find_handle (List::Node *node, void *data)
+{
+	HandleNode* rn = (HandleNode*)node;
+	HttpRequest* handle = (HttpRequest*)data;
+	return (rn->res == handle);
+}
+
+CurlHttpHandler::CurlHttpHandler () :
+	HttpHandler (Type::CURLHTTPHANDLER),
+	sharecurl(NULL),
+	multicurl(NULL),
+	running(0),
+	quit(false),
+	shutting_down(false),
+	pool(NULL),
+	handles(NULL),
+	calls(NULL)
+{
+	pool = new Queue ();
+	handles = new Queue ();
+
+	curl_global_init(CURL_GLOBAL_ALL);
+	sharecurl = curl_share_init();
+	multicurl = curl_multi_init ();
+	curl_share_setopt (sharecurl, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
+}
+
+HttpRequest *
+CurlHttpHandler::CreateRequest (HttpRequest::Options options)
+{
+	return new CurlDownloaderRequest (this, options);
+}
+
+void
+CurlHttpHandler::Dispose ()
+{
+	shutting_down = true;
+	if (closure) {
+		pthread_mutex_lock (&worker_mutex);
+		quit = true;
+
+		if (calls)
+			g_list_free (calls);
+		calls = NULL;
+
+		pthread_cond_signal (&worker_cond);
+		pthread_mutex_unlock (&worker_mutex);
+
+		pthread_join (worker_thread, NULL);
+		closure = NULL;
+	}
+
+	curl_share_cleanup(sharecurl);
+	CurlNode* node = NULL;
+	while ((node = (CurlNode*)pool->Pop ())) {
+		curl_easy_cleanup (node->handle);
+		delete node;
+	}
+
+	curl_multi_cleanup(multicurl);
+	curl_global_cleanup ();
+
+	HttpHandler::Dispose ();
+}
+
+CurlHttpHandler::~CurlHttpHandler ()
+{
+	d(printf("BRIDGE ~CurlHttpHandler\n"));
+
+	delete handles;
+	handles = NULL;
+	delete pool;
+	pool = NULL;
+}
+
+CURL*
+CurlHttpHandler::RequestHandle ()
+{
+	d(printf ("BRIDGE CurlHttpHandler::RequestHandle pool is %s\n", pool->IsEmpty () ? "empty" : "not empty"));
+
+	CURL* handle;
+	if (!pool->IsEmpty ()) {
+		CurlNode* node = (CurlNode*) pool->Pop ();
+		handle = node->handle;
+		delete node;
+	}
+	else {
+		handle = curl_easy_init ();
+		curl_easy_setopt (handle, CURLOPT_SHARE, sharecurl);
+	}
+	d(printf ("\t%p\n", handle));
+
+	return handle;
+}
+
+void
+CurlHttpHandler::ReleaseHandle (CURL* handle)
+{
+	d(printf ("BRIDGE CurlHttpHandler::ReleaseHandle handle:%p\n", handle));
+
+	curl_easy_reset (handle);
+	pool->Push (new CurlNode (handle));
+}
+
+void
+CurlHttpHandler::OpenHandle (HttpRequest* res, CURL* handle)
+{
+	d(printf ("BRIDGE CurlHttpHandler::OpenHandle res:%p handle:%p\n", res, handle));
+
+	pthread_mutex_lock (&worker_mutex);
+	if (!quit) {
+		handles->Push (new HandleNode (res));
+		curl_multi_add_handle (multicurl, handle);
+		pthread_cond_signal (&worker_cond);
+	}
+	pthread_mutex_unlock (&worker_mutex);
+}
+
+void
+CurlHttpHandler::CloseHandle (HttpRequest* res, CURL* handle)
+{
+	d(printf ("BRIDGE CurlHttpHandler::CloseHandle res:%p handle:%p\n", res, handle));
+
+	VERIFY_MAIN_THREAD
+
+	pthread_mutex_lock (&worker_mutex);
+	if (!quit) {
+		handles->Lock ();
+		List* list = handles->LinkedList ();
+		HandleNode* node = (HandleNode*)list->Find (find_handle, res);
+		if (node) {
+			curl_multi_remove_handle (multicurl, handle);
+			list->Remove (node);
+		}
+		handles->Unlock ();
+	}
+	pthread_mutex_unlock (&worker_mutex);
+}
+
+static void
+_close (CallData *sender)
+{
+	VERIFY_MAIN_THREAD
+
+	CurlDownloaderRequest* req = (CurlDownloaderRequest*) ((CallData*)sender)->req;
+	req->Close ();
+}
+
+void
+CurlHttpHandler::GetData ()
+{
+	VERIFY_CURL_THREAD
+
+	fd_set r,w,x;
+	int num, available;
+	long timeout;
+	struct timespec tv;
+
+	do {
+		if (handles->IsEmpty ()) {
+			pthread_mutex_lock (&worker_mutex);
+			if (!quit) pthread_cond_wait (&worker_cond, &worker_mutex);
+			pthread_mutex_unlock (&worker_mutex);
+			if (quit) break;
+		}
+
+		pthread_mutex_lock (&worker_mutex);
+		if (!quit) while (CURLM_CALL_MULTI_PERFORM == curl_multi_perform (multicurl, &num));
+		pthread_mutex_unlock (&worker_mutex);
+		if (quit) break;
+
+		if (num != running) {
+			running = num;
+			int msgs;
+			CURLMsg* msg;
+			while ((msg = curl_multi_info_read (multicurl, &msgs))) {
+				if (msg->msg == CURLMSG_DONE) {
+
+					handles->Lock ();
+					List* list = handles->LinkedList ();
+					HandleNode* node = (HandleNode*) list->Find (find_easy_handle, msg->easy_handle);
+					handles->Unlock ();
+					if (node) {
+						CallData* data = new CallData (this, _close, node->res);
+						calls = g_list_append (calls, data);
+					}
+				}
+			}
+		}
+
+
+		if (calls) {
+			GList* tmp = g_list_copy (calls);
+			g_list_free (calls);
+			calls = NULL;
+			g_idle_add (::Emit, tmp);
+		}
+
+		if (running > 0) {
+			FD_ZERO(&r);
+			FD_ZERO(&w);
+			FD_ZERO(&x);
+
+			if (curl_multi_fdset (multicurl, &r, &w, &x, &available)) {
+				fprintf(stderr, "E: curl_multi_fdset\n");
+				return;
+			}
+
+			if (curl_multi_timeout (multicurl, &timeout)) {
+				fprintf(stderr, "E: curl_multi_timeout\n");
+				return;
+			}
+
+			if (timeout > 0) {
+				tv.tv_sec = timeout / 1000;
+				tv.tv_nsec = (timeout % 1000) * 1000 * 1000;
+
+				if (available == -1) {
+					pthread_mutex_lock (&worker_mutex);
+					if (!quit) pthread_cond_timedwait (&worker_cond, &worker_mutex, &tv);
+					pthread_mutex_unlock (&worker_mutex);
+				} else {
+					if (pselect (available+1, &r, &w, &x, &tv, NULL) < 0) {
+						fprintf(stderr, "E: select(%i,,,,%li): %i: %s\n", available+1, timeout, errno, strerror(errno));
+					}
+				}
+			}
+		} else {
+			pthread_mutex_lock (&worker_mutex);
+			if (!quit) pthread_cond_wait (&worker_cond, &worker_mutex);
+			pthread_mutex_unlock (&worker_mutex);
+		}
+	} while (!quit);
+}
+
+void
+CurlHttpHandler::AddCallback (CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val)
+{
+	VERIFY_CURL_THREAD
+
+	CallData* data = new CallData (this, func, res, buffer, size, name, val);
+	calls = g_list_append (calls, data);
+}
+
+
+bool
+CurlHttpHandler::IsDataThread ()
+{
+	return pthread_equal (pthread_self (), worker_thread);
+}
+
+CallData::~CallData ()
+{
+	if (buffer)
+		g_free (buffer);
+	if (name)
+		g_free ((gpointer) name);
+	if (val)
+		g_free ((gpointer) val);
 }

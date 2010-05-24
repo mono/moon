@@ -36,6 +36,8 @@ G_END_DECLS
 #include "security.h"
 #include "namescope.h"
 #include "pipeline.h"
+#include "network-curl.h"
+#include "uri.h"
 
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
@@ -55,17 +57,17 @@ Deployment *Deployment::desktop_deployment = NULL;
 gint32 Deployment::deployment_count = 0;
 char *Deployment::platform_dir = NULL;
 
-class IDownloaderNode : public List::Node {
+class HttpRequestNode : public List::Node {
 public:
-	IDownloader *dl;
-	IDownloaderNode (IDownloader *dl)
+	HttpRequest *request;
+	HttpRequestNode (HttpRequest *request)
 	{
-		this->dl = dl;
+		this->request = request;
 	}
-	virtual ~IDownloaderNode ()
+	virtual ~HttpRequestNode ()
 	{
-		if (dl && !dl->IsAborted ())
-			dl->Abort ();
+		if (request != NULL)
+			request->Abort ();
 	}
 };
 
@@ -221,6 +223,65 @@ Deployment::GetSurfaceReffed ()
 	surface_mutex.Unlock ();
 	
 	return result;
+}
+
+void
+Deployment::SetHttpHandler (HttpHandler *handler)
+{
+	VERIFY_MAIN_THREAD;
+	if (http_handler != NULL)
+		http_handler->unref ();
+	http_handler = handler;
+	if (http_handler != NULL)
+		http_handler->ref ();
+}
+
+void
+Deployment::SetDefaultHttpHandler (HttpHandler *handler)
+{
+	VERIFY_MAIN_THREAD;
+	if (default_http_handler != NULL)
+		default_http_handler->unref ();
+	default_http_handler = handler;
+	if (default_http_handler != NULL)
+		default_http_handler->ref ();
+}
+
+HttpRequest *
+Deployment::CreateHttpRequest (HttpRequest::Options options)
+{
+	HttpRequest *result = NULL;
+
+	VERIFY_MAIN_THREAD;
+
+	/* We must not create any http requests after shutdown has started */
+	if (is_shutting_down)
+		return result;
+
+	if (http_handler != NULL)
+		result = http_handler->CreateRequest (options);
+
+	if (result == NULL) {
+#if HAVE_CURL
+		if (default_http_handler == NULL)
+			default_http_handler = new CurlHttpHandler ();
+#endif
+
+		if (default_http_handler != NULL)
+			result = default_http_handler->CreateRequest (options);
+	}
+
+	if (result != NULL)
+		http_requests.Append (new HttpRequestNode (result));
+
+	return result;
+}
+
+Downloader *
+Deployment::CreateDownloader ()
+{
+	VERIFY_MAIN_THREAD;
+	return new Downloader ();
 }
 
 void
@@ -398,6 +459,8 @@ Deployment::InnerConstructor ()
 	pending_loaded = false;
 	objects_created = 0;
 	objects_destroyed = 0;
+	http_handler = NULL;
+	default_http_handler = NULL;
 	
 	types = NULL;
 
@@ -729,10 +792,10 @@ Deployment::ReportLeaks ()
 
 #if DEBUG
 void
-Deployment::AddSource (const char *uri, const char *filename)
+Deployment::AddSource (const Uri *uri, const char *filename)
 {
 	moon_source *src = new moon_source ();
-	src->uri = g_strdup (uri);
+	src->uri = uri->ToString ();
 	src->filename = g_strdup (filename);
 	if (moon_sources == NULL)
 		moon_sources = new List ();
@@ -790,7 +853,7 @@ Deployment::ReleasePropertyChangedEventArgs (PropertyChangedEventArgs *args)
 void
 Deployment::Reinitialize ()
 {
-	downloaders.Clear (true);
+	http_requests.Clear (true);
 	AssemblyPartCollection * parts = new AssemblyPartCollection ();
 	SetParts (parts);
 	parts->unref ();
@@ -866,7 +929,17 @@ Deployment::Shutdown ()
 
 	Emit (ShuttingDownEvent);
 	
-	AbortAllDownloaders ();
+	if (http_handler != NULL) {
+		http_handler->unref ();
+		http_handler = NULL;
+	}
+
+	if (default_http_handler != NULL) {
+		default_http_handler->unref ();
+		default_http_handler = NULL;
+	}
+
+	AbortAllHttpRequests ();
 	/*
 	 * Dispose all Media instances so that we can be sure nothing is executed
 	 * on the media threadpool threads after this point.
@@ -1247,29 +1320,23 @@ Deployment::SetCurrentApplication (Application* value)
 }
 
 void
-Deployment::RegisterDownloader (IDownloader *dl)
+Deployment::UnregisterHttpRequest (HttpRequest *request)
 {
-	downloaders.Append (new IDownloaderNode (dl));
-}
-
-void
-Deployment::UnregisterDownloader (IDownloader *dl)
-{
-	IDownloaderNode *node = (IDownloaderNode *) downloaders.First ();
+	HttpRequestNode *node = (HttpRequestNode *) http_requests.First ();
 	while (node != NULL) {
-		if (node->dl == dl) {
-			node->dl = NULL;
-			downloaders.Remove (node);
+		if (node->request == request) {
+			node->request = NULL;
+			http_requests.Remove (node);
 			return;
 		}
-		node = (IDownloaderNode *) node->next;
+		node = (HttpRequestNode *) node->next;
 	}
 }
 
 void
-Deployment::AbortAllDownloaders ()
+Deployment::AbortAllHttpRequests ()
 {
-	downloaders.Clear (true);
+	http_requests.Clear (true);
 }
 
 class MediaNode : public List::Node {

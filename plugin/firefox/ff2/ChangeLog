@@ -1,5 +1,11 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* ff2-http.cpp: Move method into browser-http.inc.
+
+	* ff2-bridge.h: Update to the new HttpRequest API.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* ff2-bridge.h: Remove dead code.
 
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>

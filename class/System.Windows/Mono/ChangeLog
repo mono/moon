@@ -1,3 +1,7 @@
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeMethods.cs: Update to HttpRequest API.
+
 2010-05-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs:

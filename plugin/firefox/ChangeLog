@@ -1,5 +1,9 @@
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* browser-http.inc: Update to the new HttpRequest API.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* browser-http.inc: Remove the HEAD request hack, no longer needed since we
 	have a proper http stack now.
 
