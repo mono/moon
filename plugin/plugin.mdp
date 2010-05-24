@@ -95,7 +95,6 @@
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/getopts.cpp" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/getopts.h" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/ChangeLog" />
-    <File subtype="Directory" buildaction="Nothing" name="curl" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>
