@@ -1,5 +1,9 @@
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Don't include any curl headers if curl isn't enabled.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* src.mdp: Updated.
 
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>

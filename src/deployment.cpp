@@ -36,7 +36,9 @@ G_END_DECLS
 #include "security.h"
 #include "namescope.h"
 #include "pipeline.h"
+#if HAVE_CURL
 #include "network-curl.h"
+#endif
 #include "uri.h"
 
 
