@@ -82,11 +82,16 @@ namespace System.Windows.Controls.Primitives
 
 		public void Select (object item)
 		{
+			Select (item, false);
+		}
+
+		public void Select (object item, bool ignoreSelectedValue)
+		{
 			try {
 				Updating = true;
 
 				if (item == null) {
-					ClearSelection ();
+					ClearSelection (ignoreSelectedValue);
 					return;
 				} else if (!Owner.Items.Contains (item)) {
 					if (SelectedItems.Contains (item))
@@ -97,7 +102,7 @@ namespace System.Windows.Controls.Primitives
 				switch (Mode) {
 				case SelectionMode.Single:
 					if (SelectedItem == item && ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control))
-						ClearSelection ();
+						ClearSelection (ignoreSelectedValue);
 					else
 						ReplaceSelection (item);
 					break;
@@ -123,21 +128,25 @@ namespace System.Windows.Controls.Primitives
 			if (SelectedItems.Count == 1) {
 				Owner.SelectedItem = item;
 				Owner.SelectedIndex  = Owner.Items.IndexOf (item);
-				Owner.SelectedValue = Owner.SelectedValueWalker.GetValue (item);
+				if (Owner.SelectedValueWalker == null)
+					Owner.SelectedValue = item;
+				else
+					Owner.SelectedValue = Owner.SelectedValueWalker.GetValue (item);
 				SelectedItem = item;
 			}
 
 			Owner.RaiseSelectionChanged (Empty, new object [] { item });
 		}
 
-		void ClearSelection ()
+		void ClearSelection (bool ignoreSelectedValue)
 		{
 			bool hasSelection = SelectedItem != null;
 				var oldSelection = SelectedItems.Cast <object> ().ToArray ();
 				SelectedItems.Clear ();
 				Owner.SelectedItem = null;
 				Owner.SelectedIndex = -1;
-				Owner.SelectedValue = null;
+				if (!ignoreSelectedValue)
+					Owner.SelectedValue = null;
 				SelectedItem = null;
 				if (hasSelection)
 					Owner.RaiseSelectionChanged (oldSelection, Empty);

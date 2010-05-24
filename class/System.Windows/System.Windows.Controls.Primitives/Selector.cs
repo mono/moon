@@ -84,8 +84,10 @@ namespace System.Windows.Controls.Primitives {
 		static void OnSelectedValuePathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			var selector = (Selector) o;
-			selector.SelectedValueWalker.Update (null);
-			selector.SelectedValueWalker = new PropertyPathWalker ((string) e.NewValue);
+			var value = (string) e.NewValue;
+
+			selector.SelectedValueWalker = string.IsNullOrEmpty (value) ? null : new PropertyPathWalker (value);
+			selector.SelectItemFromValue (selector.SelectedValue, true);
 		}
 
 		internal static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -112,7 +114,6 @@ namespace System.Windows.Controls.Primitives {
 			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			Selection = new Selection (this);
-			SelectedValueWalker = new PropertyPathWalker ("");
 		}
 
 		bool SynchronizeWithCurrentItem {
@@ -235,23 +236,30 @@ namespace System.Windows.Controls.Primitives {
 
 		void SelectedValueChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (Selection.Updating)
+			if (!Selection.Updating)
+				SelectItemFromValue (e.NewValue, false);
+		}
+
+		void SelectItemFromValue (object selectedValue, bool ignoreSelectedValue)
+		{
+			if (SelectedValueWalker == null) {
+				Selection.Select (null, ignoreSelectedValue);
 				return;
+			}
 
 			foreach (var item in Items) {
-				var value = SelectedValueWalker.GetValue (item);
+				var value = (SelectedValueWalker.GetValue (item) ?? item);
 				// First check for reference equality. If that values we could have
 				// boxed value types, so use actual calls to .Equals.
 				// FIXME: Should i verify that both e.NewValue and value are value types
 				// before calling object.Equals?
-				if (e.NewValue == value || object.Equals (e.NewValue, value)) {
+				if (selectedValue == value || object.Equals (selectedValue, value)) {
 					Selection.Select (item);
 					return;
 				}
 			}
 
-			Console.WriteLine ("Epic selection fail? Should i revert to the old item? Can i revert to the old item?!");
-			// If we get here we should probably revert to the old selection
+			Selection.Select (null, ignoreSelectedValue);
 		}
 
 		internal void RaiseSelectionChanged (IList oldVals, IList newVals)

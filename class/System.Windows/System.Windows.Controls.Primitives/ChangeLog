@@ -1,3 +1,8 @@
+2010-05-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs:
+	* Selection.cs: Fix more of drt cs2.
+
 2010-05-21  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Add support for the new SelectedValue and
