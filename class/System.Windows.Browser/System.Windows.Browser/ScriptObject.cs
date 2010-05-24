@@ -59,6 +59,7 @@ namespace System.Windows.Browser {
 		static ScriptObject ()
 		{
 			toggleRefs = new Dictionary<IntPtr, ScriptObjectToggleRef> ();
+			cachedObjects = new Dictionary<IntPtr, WeakReference> ();
 		}
 
 		internal ScriptObject ()
@@ -102,6 +103,7 @@ namespace System.Windows.Browser {
 
 				if (handleIsScriptableNPObject)
 					free_mapping = AddNativeMapping (value, this);
+				cachedObjects[value] = new WeakReference (this);
 			}
 		}
 
@@ -114,6 +116,7 @@ namespace System.Windows.Browser {
 		{
 			if (free_mapping)
 				FreeNativeMapping (this);
+			cachedObjects.Remove (_handle);
 		}
 
 		public virtual void SetProperty (string name, object value)
@@ -466,23 +469,26 @@ namespace System.Windows.Browser {
 
 #region mappings from native handles to ScriptObjects
 		internal static Dictionary<IntPtr, ScriptObjectToggleRef> toggleRefs;
+		static Dictionary<IntPtr, WeakReference> cachedObjects;
 
-		internal static ScriptObject LookupScriptObject (IntPtr obj_handle, bool createIfNotFound)
+		internal static ScriptObject LookupScriptObject (IntPtr obj_handle)
 		{
 			ScriptObject obj = null;
 
 			ScriptObjectToggleRef tref = null;
 			toggleRefs.TryGetValue (obj_handle, out tref);
-			if (tref == null) {
-				if (createIfNotFound)
-					obj = new ScriptObject (obj_handle, false);
-				else
-					obj = null;
-			}
-			else {
+			if (tref != null)
 				obj = tref.Target;
+			else {
+				WeakReference wref = null;
+				cachedObjects.TryGetValue (obj_handle, out wref);
+				if (wref != null) {
+					if (wref.IsAlive)
+						obj = wref.Target as ScriptObject;
+					else
+						cachedObjects.Remove (obj_handle);
+				}
 			}
-
 			return obj;
 		}
 
@@ -569,7 +575,7 @@ namespace System.Windows.Browser {
 		private static bool InvalidateHandleFromUnmanagedSafe (IntPtr obj_handle)
 		{
 			return SafeBridgeAction ( () => {
-					ScriptObject obj = LookupScriptObject (obj_handle, false);
+					ScriptObject obj = LookupScriptObject (obj_handle);
 					return obj.InvalidateHandle ();
 				});
 		}
@@ -577,7 +583,7 @@ namespace System.Windows.Browser {
 		private static bool HasPropertyFromUnmanagedSafe (IntPtr obj_handle, string name)
 		{
 			return SafeBridgeAction ( () => {
-					ScriptObject obj = LookupScriptObject (obj_handle, false);
+					ScriptObject obj = LookupScriptObject (obj_handle);
 					return obj.HasProperty (name);
 				});
 		}
@@ -585,7 +591,7 @@ namespace System.Windows.Browser {
 		private static bool HasMethodFromUnmanagedSafe (IntPtr obj_handle, string name)
 		{
 			return SafeBridgeAction ( () => {
-					ScriptObject obj = LookupScriptObject (obj_handle, false);
+					ScriptObject obj = LookupScriptObject (obj_handle);
 					return obj.HasMethod (name);
 				});
 		}
@@ -595,7 +601,7 @@ namespace System.Windows.Browser {
 		{
 			exc_string = null;
 			try {
-				ScriptObject obj = LookupScriptObject (obj_handle, false);
+				ScriptObject obj = LookupScriptObject (obj_handle);
 				return obj.InvokeFromUnmanaged (name, uargs, arg_count, ref return_value);
 			}
 			catch (Exception ex) {
@@ -613,7 +619,7 @@ namespace System.Windows.Browser {
 		{
 			exc_string = null;
 			try {
-				ScriptObject obj = LookupScriptObject (obj_handle, false);
+				ScriptObject obj = LookupScriptObject (obj_handle);
 				return obj.SetPropertyFromUnmanaged (name, uargs, arg_count, ref value);
 			}
 			catch (Exception ex) {
@@ -631,7 +637,7 @@ namespace System.Windows.Browser {
 		{
 			exc_string = null;
 			try {
-				ScriptObject obj = LookupScriptObject (obj_handle, false);
+				ScriptObject obj = LookupScriptObject (obj_handle);
 				return obj.GetPropertyFromUnmanaged (name, uargs, arg_count, ref value);
 			}
 			catch (Exception ex) {

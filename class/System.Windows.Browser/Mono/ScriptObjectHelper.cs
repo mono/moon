@@ -91,7 +91,7 @@ namespace Mono {
 				if (v.u.p == IntPtr.Zero)
 					return null;
 
-				ScriptObject reference = ScriptObject.LookupScriptObject (v.u.p, false);
+				ScriptObject reference = ScriptObject.LookupScriptObject (v.u.p);
 				if (reference != null)
 					return reference;
 

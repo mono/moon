@@ -1,3 +1,7 @@
+2010-05-24  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser.auto.ssc: Update LookupScriptObject signature
+
 2010-05-24  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc: Update the sec. attrs. for the

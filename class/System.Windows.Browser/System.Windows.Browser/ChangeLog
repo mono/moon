@@ -1,3 +1,8 @@
+2010-05-24  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptObject.cs: Add a weak reference object cache for all script
+	  objects so there's only one object per handle (drt 981)
+
 2010-05-13  Chris Toshok  <toshok@ximian.com>
 
 	* ScriptObject.cs (GetPropertyInternal<V>): don't leak Values.
