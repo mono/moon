@@ -1,5 +1,9 @@
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* configure.ac: Build libmoon with curl flags too.
+
+2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* configure.ac: Build libmoon with curl libs, and remove the curl Makefile.
 
 2010-05-19  Andreia Gaita  <avidigal@novell.com>
