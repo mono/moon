@@ -1434,7 +1434,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 			return true;
 		}
 		
-		if (value->Is (GetDeployment (), Type::MANAGED)) {
+		if (value->GetIsManaged ()) {
 			// This is a big hack, we do no type-checking if we try to set a managed type.
 			// Given that for the moment we might not have the surface available, we can't
 			// do any type checks since we can't access types registered on the surface.

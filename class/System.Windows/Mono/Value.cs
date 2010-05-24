@@ -148,10 +148,21 @@ namespace Mono {
 	internal struct Value : IDisposable {
 		// Note: Keep these flags in sync with the native version
 		const int NullFlag = 1;
+		const int GCHandleFlag = 1 << 1;
 		
 		public Kind k;
 		public int bitfield;
 		public ValUnion u;
+
+		public bool IsGCHandle {
+			get { return (bitfield & GCHandleFlag) == GCHandleFlag; }
+			set {
+				if (value)
+					bitfield |= GCHandleFlag;
+				else
+					bitfield &= ~GCHandleFlag;
+			}
+		}
 
 		public bool IsNull {
 			get { return (bitfield & NullFlag) == NullFlag; }
@@ -171,6 +182,11 @@ namespace Mono {
 		{
 			if (value == null || value->IsNull) {
 				return null;
+			}
+			if (value->IsGCHandle) {
+				IntPtr managed_object = value->u.p;
+				GCHandle handle = GCHandle.FromIntPtr (managed_object);
+				return handle.Target;
 			}
 			switch (value->k) {
 			case Kind.INVALID:
@@ -207,11 +223,6 @@ namespace Mono {
 
 			case Kind.SURFACE:
 				return NativeDependencyObjectHelper.FromIntPtr (value->u.p);
-
-			case Kind.MANAGED:
-				IntPtr managed_object = value->u.p;
-				GCHandle handle = GCHandle.FromIntPtr (managed_object);
-				return handle.Target;
 
 			case Kind.STRING: {
 				string str = Marshal.PtrToStringAuto (value->u.p);
@@ -376,7 +387,8 @@ namespace Mono {
 				return NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
 			}
 
-			throw new Exception (String.Format ("Do not know how to convert {0}  {1}", value->k, (int) value->k));
+			throw new Exception (String.Format ("Do not know how to convert {0}  {1}. Managed type: {2}",
+			                                    value->k, (int) value->k, Deployment.Current.Types.KindToType (value->k)));
 		}
 
 		public static unsafe object ToObject (Type type, IntPtr value)
@@ -404,7 +416,8 @@ namespace Mono {
 					//Console.WriteLine ("Boxing a value of type {0}:", v.GetType());
 
 					GCHandle handle = GCHandle.Alloc (v);
-					value.k = Kind.MANAGED;
+					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
+					value.IsGCHandle = true;
 					value.u.p = GCHandle.ToIntPtr (handle);
 					return value;
 				}
@@ -642,7 +655,8 @@ namespace Mono {
 					// TODO: We need to store the GCHandle somewhere so that we can free it,
 					// or register a callback on the surface for the unmanaged code to call.
 					GCHandle handle = GCHandle.Alloc (v);
-					value.k = Kind.MANAGED;
+					value.IsGCHandle = true;
+					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
 					value.u.p = GCHandle.ToIntPtr (handle);
 				}
 			}

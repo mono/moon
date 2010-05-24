@@ -689,7 +689,8 @@ namespace Mono.Xaml
 				Value *val = (Value *) target_ptr;
 
 				GCHandle handle = GCHandle.Alloc (e);
-				val->k = Kind.MANAGED;
+				val->IsGCHandle = true;
+				val->k = Deployment.Current.Types.TypeToKind (e.GetType ());
 				val->u.p = GCHandle.ToIntPtr (handle);
 			}
 
@@ -736,7 +737,8 @@ namespace Mono.Xaml
 				Value *val = (Value *) target_ptr;
 
 				GCHandle handle = GCHandle.Alloc (e);
-				val->k = Kind.MANAGED;
+				val->IsGCHandle = true;
+				val->k = Deployment.Current.Types.TypeToKind (e.GetType ());
 				val->u.p = GCHandle.ToIntPtr (handle);
 			}
 

@@ -116,6 +116,8 @@ public:
 	// does a deep copy of DependencyObjects.
 	static Value* Clone (Value *v, Types *types = NULL);
 
+	bool GetIsManaged ();
+
 	static bool IsNull (Value *value) { return value == NULL ? true : value->GetIsNull (); }
 	bool GetIsNull ();
 	void SetIsNull (bool isNull);
@@ -151,7 +153,7 @@ public:
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
 	DependencyProperty*		AsDependencyProperty ()	{ checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
 	
-	void *		AsManagedObject () { checked_get_exact (Type::MANAGED, NULL, u.managed_object); }
+	void *		AsManagedObject () { g_return_val_if_fail (GetIsManaged (), NULL); return u.managed_object; }
 	void *		AsNPObj () { checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
 	
 	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }

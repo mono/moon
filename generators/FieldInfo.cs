@@ -231,8 +231,6 @@ class FieldInfo : MemberInfo {
 			property_type = "string"; break;
 		case "gint32":
 			property_type = "int"; break;
-		case "Managed":
-			property_type = "object"; break;
 		}
 
 		if (IsDPNullable)

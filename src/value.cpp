@@ -44,7 +44,8 @@
  */
 
 static const int NullFlag = 1;
-    
+static const int GCHandleFlag = 1 << 1;
+
 Value*
 Value::CreateUnrefPtr (EventObject* dob)
 {
@@ -85,6 +86,12 @@ Type::Kind
 Value::GetKind ()
 {
 	return k;
+}
+
+bool
+Value::GetIsManaged ()
+{
+	return (padding & GCHandleFlag) == GCHandleFlag;
 }
 
 bool
@@ -401,7 +408,12 @@ Value::Copy (const Value& v)
 	k = v.k;
 	u = v.u;
 
-	SetIsNull (((Value&)v).GetIsNull());
+	if ((padding & GCHandleFlag) == GCHandleFlag) {
+		guint32 a = GPOINTER_TO_INT (u.managed_object);
+		MonoObject *mobj = mono_gchandle_get_target (a);
+		u.managed_object = GINT_TO_POINTER (mono_gchandle_new (mobj, FALSE));
+		return;
+	}
 
 	/* make a copy of the string instead of just the pointer */
 	switch (k) {
@@ -527,12 +539,6 @@ Value::Copy (const Value& v)
 			*u.type_info = *v.u.type_info;
 		}
 		break;
-	case Type::MANAGED: {
-		guint32 a = GPOINTER_TO_INT (u.managed_object);
-		MonoObject *mobj = mono_gchandle_get_target (a);
-		u.managed_object = GINT_TO_POINTER (mono_gchandle_new (mobj, FALSE));
-		break;
-	}
 	default:
 		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
 			LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
@@ -545,6 +551,11 @@ Value::Copy (const Value& v)
 void
 Value::FreeValue ()
 {
+	if ((padding & GCHandleFlag) == GCHandleFlag) {
+		mono_gchandle_free (GPOINTER_TO_INT (u.managed_object));
+		return;
+	}
+
 	switch (GetKind ()) {
 	case Type::STRING:
 		g_free (u.s);
@@ -618,9 +629,6 @@ Value::FreeValue ()
 		break;
 	case Type::MANAGEDTYPEINFO:
 		ManagedTypeInfo::Free (u.type_info);
-		break;
-	case Type::MANAGED:
-		mono_gchandle_free (GPOINTER_TO_INT (u.managed_object));
 		break;
 	default:
 		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
@@ -700,6 +708,14 @@ Value::operator== (const Value &v) const
 	if (padding != v.padding)
 		return false;
 
+	if ((padding & GCHandleFlag) == GCHandleFlag) {
+		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
+		//g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
+		guint32 a = GPOINTER_TO_INT (u.managed_object);
+		guint32 b = GPOINTER_TO_INT (v.u.managed_object);
+		return mono_gchandle_get_target (a) == mono_gchandle_get_target (b);
+	}
+
 	switch (k) {
 	case Type::STRING:
 		if (u.s == NULL){
@@ -762,13 +778,6 @@ Value::operator== (const Value &v) const
 		return fabs (u.d - v.u.d) < DBL_EPSILON;
 	case Type::FLOAT:
 		return fabs (u.f - v.u.f) < FLT_EPSILON;
-	case Type::MANAGED: {
-		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
-		//g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
-		guint32 a = GPOINTER_TO_INT (u.managed_object);
-		guint32 b = GPOINTER_TO_INT (v.u.managed_object);
-		return mono_gchandle_get_target (a) == mono_gchandle_get_target (b);
-	}
 	
 	default:
 		return !memcmp (&u, &v.u, sizeof (u));

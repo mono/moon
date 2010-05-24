@@ -3330,8 +3330,7 @@ static bool
 is_managed_kind (Type::Kind kind)
 {
 	
-	if (kind == Type::MANAGED ||
-	    kind == Type::OBJECT ||
+	if (kind == Type::OBJECT ||
 	    kind == Type::URI ||
 	    kind == Type::MANAGEDTYPEINFO ||
 	    kind == Type::DEPENDENCYPROPERTY)
@@ -3353,7 +3352,7 @@ kind_requires_managed_load (Type::Kind kind)
 static bool
 is_legal_top_level_kind (Type::Kind kind)
 {
-	if (kind == Type::MANAGED || kind == Type::OBJECT || Type::IsSubclassOf (Deployment::GetCurrent (), kind, Type::DEPENDENCY_OBJECT))
+	if (kind == Type::OBJECT || Type::IsSubclassOf (Deployment::GetCurrent (), kind, Type::DEPENDENCY_OBJECT))
 		return true;
 	return false;
 }
@@ -4471,9 +4470,12 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 void *
 XamlElementInstanceManaged::GetManagedPointer ()
 {
-	if (value->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT))
+	if (value->GetIsManaged ())
+		return value->AsManagedObject ();
+	else if (value->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT))
 		return value->AsDependencyObject ();
-	return value->AsManagedObject ();
+	else
+		printf ("ERROR: XamlElementInstanceManaged::GetManagedPointer was not a managed object");
 }
 
 Value *
@@ -4637,8 +4639,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			// XamlElementInfoEnum has Type::INVALID as
 			// its kind, which is why that first check is
 			// here.
-			if (child->info->GetKind() != Type::MANAGED &&
-			    !types->Find (child->info->GetKind())->IsCtorVisible()) {
+			if (!types->Find (child->info->GetKind())->IsCtorVisible()) {
 				// we can't instantiate this type
 				return parser_error (p, child->element_name, NULL, 2007,
 						     "Unknown element: %s.", child->element_name);
@@ -5065,7 +5066,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 			Type::Kind propKind = prop->GetPropertyType ();
 
-			if (need_managed || is_managed_kind (propKind) || types->Find (prop->GetOwnerType ())->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
+			if (need_managed || is_managed_kind (propKind) || types->Find (prop->GetOwnerType ())->IsCustomType () || (v && (v->GetIsManaged () || is_managed_kind (v->GetKind ())))) {
 				bool str_value = false;
 				if (!v_set) {
 					v = new Value (attr [i + 1]); // Note that we passed the non escaped value, not attr_value

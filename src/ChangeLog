@@ -1,3 +1,14 @@
+2010-05-24  Alan McGovern  <amcgovern@novell.com>
+
+	* xaml.cpp:
+	* value.cpp:
+	* value.h.in:
+	* dependencyobject.cpp: We always store the correct type in
+	  our Value*s instead of failing over to Type::MANAGED now.
+	  GCHandles can be checked for with the new "GCHandleFlag"
+	  flag in the padding field. This should clear up a lot of
+	  warnings about incompatible types.
+
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* uri.cpp|h: 

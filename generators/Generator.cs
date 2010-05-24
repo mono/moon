@@ -1444,8 +1444,6 @@ class Generator {
 		t.Interfaces.Add (IEquatableCharInfo);
 
 		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true, false));
-		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
-
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 
 		// Set IncludeInKinds for all types which inherit from EventObject

@@ -1,3 +1,12 @@
+2010-05-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs:
+	* FieldInfo.cs: We always store the correct type in our
+	  Value*s instead of failing over to Type::MANAGED now.
+	  GCHandles can be checked for with the new "GCHandleFlag"
+	  flag in the padding field. This should clear up a lot of
+	  warnings about incompatible types.
+
 2010-05-13  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs (GenerateDPs): when generating the unmanaged setter
