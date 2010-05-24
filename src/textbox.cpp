@@ -779,7 +779,7 @@ is_start_of_word (TextBuffer *buffer, int index)
 	if (index > 0 && !g_unichar_isspace (buffer->text[index - 1]))
 		return false;
 	
-	return g_unichar_isalnum (buffer->text[index]);
+	return !g_unichar_isspace (buffer->text[index]);
 }
 #endif
 
@@ -1685,7 +1685,7 @@ TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 		return;
 	
 	// set 'emit' to NOTHING_CHANGED so that we can figure out
-	// what has chanegd after applying the changes that this
+	// what has changed after applying the changes that this
 	// keypress will cause.
 	emit = NOTHING_CHANGED;
 	BatchPush ();

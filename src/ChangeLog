@@ -1,3 +1,8 @@
+2010-05-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (is_start_of_word): A word doesn't need to start
+	with an alphanumeric. Fixes drt 225.
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Don't include any curl headers if curl isn't enabled.
