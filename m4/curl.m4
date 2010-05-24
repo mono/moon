@@ -7,7 +7,7 @@ AC_DEFUN([MOONLIGHT_CHECK_CURL],
 	if test x$with_curl = xembedded; then
 		PKG_CHECK_MODULES(OPENSSL, openssl, [has_openssl=yes], [has_openssl=no])
 		if test x$has_openssl = xyes; then
-			CUSTOM_SUBDIR_OPTION(curl, [--disable-shared --disable-manual])
+			CUSTOM_SUBDIR_OPTION(curl, [--disable-shared --disable-manual --without-libssh2 --disable-ldap --disable-ldaps --without-libidn])
 				
 			CURL_CFLAGS='-I$(top_srcdir)/curl/include'
 			CURL_LIBS="\$(top_builddir)/curl/lib/libcurl.la $OPENSSL_LIBS"
