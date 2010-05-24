@@ -177,6 +177,8 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal override void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
 		{
+			base.OnItemsSourceChanged (oldSource, newSource);
+
 			ICollectionView view = oldSource as ICollectionView;
 			if (view != null)
 				view.CurrentChanged -= OnCurrentItemChanged;
@@ -187,8 +189,6 @@ namespace System.Windows.Controls.Primitives {
 				if (SynchronizeWithCurrentItem)
 					Selection.Select (view.CurrentItem);
 			}
-
-			base.OnItemsSourceChanged (oldSource, newSource);
 		}
 		
 		public event SelectionChangedEventHandler SelectionChanged;

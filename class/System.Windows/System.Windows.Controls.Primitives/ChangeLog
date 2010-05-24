@@ -1,5 +1,11 @@
 2010-05-24  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: Call base.OnItemsSourceChanged first instead of
+	  last. Otherwise the 'Items' list will be empty which will
+	  cause any calls to Selection.Select to fail.
+
+2010-05-24  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs:
 	* Selection.cs: Be consistent with how we deal with the case
 	  where the SelectedValueWalker is null so that everywhere
