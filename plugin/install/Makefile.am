@@ -50,11 +50,6 @@ if HAVE_GECKO_1_9
 BRIDGES += ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so
 endif HAVE_GECKO_1_9
 
-if HAVE_CURL
-CURL_BRIDGE = ../curl/.libs/libmoonpluginxpi-curlbridge.so
-BRIDGES += $(CURL_BRIDGE)
-endif
-
 SDK_DLLS = \
 	System.Data.Services.Client.dll         \
 	System.Json.dll                         \
@@ -97,10 +92,6 @@ if HAVE_GECKO_1_9
 # Rename the bridges to the original names
 	cp -L ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff3bridge.so
 endif HAVE_GECKO_1_9
-if HAVE_CURL
-# Rename the bridges to the original names
-	cp -L ../curl/.libs/libmoonpluginxpi-curlbridge.so .xpinstall/plugins/moonlight/libmoonplugin-curlbridge.so
-endif HAVE_CURL
 if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/plugins/moonlight/
@@ -123,7 +114,7 @@ endif INCLUDE_BROWSER_MANAGED_CODE
 if CHROME_INSTALL
 CRXDIR=novell-moonlight
 
-novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) $(CURL_BRIDGE) Makefile
+novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) Makefile
 	rm -f $@
 	rm -f novell-moonlight.crx.unsigned
 	rm -rf $(CRXDIR)
@@ -136,8 +127,6 @@ novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) $(CURL_BRIDGE) Makefile
 	cp -L ../lunar-launcher/.libs/lunar-launcher $(CRXDIR)/moonlight/
 
 # Rename the bridge to the original name
-# no if HAVE_CURL here since curl is required for chrome
-	cp -L ../curl/.libs/libmoonpluginxpi-curlbridge.so $(CRXDIR)/moonlight/libmoonplugin-curlbridge.so
 
 if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so $(CRXDIR)/moonlight/
