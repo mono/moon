@@ -4470,12 +4470,15 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 void *
 XamlElementInstanceManaged::GetManagedPointer ()
 {
+	// This is scary - If the Value* is a GCHandle we return that or if it's a
+	// DependencyObject we return that. How does the callee know which it is?
 	if (value->GetIsManaged ())
 		return value->AsManagedObject ();
 	else if (value->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT))
 		return value->AsDependencyObject ();
-	else
-		printf ("ERROR: XamlElementInstanceManaged::GetManagedPointer was not a managed object");
+
+	g_warning ("XamlElementInstanceManaged::GetManagedPointer was not a managed object.");
+	return NULL;
 }
 
 Value *

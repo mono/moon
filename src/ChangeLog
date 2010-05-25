@@ -1,3 +1,8 @@
+2010-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* xaml.cpp: Make sure we don't return a random value at the
+	  end of the function and make the 'else' a g_warning instead.
+
 2010-05-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (is_start_of_word): A word doesn't need to start
