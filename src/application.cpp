@@ -185,9 +185,9 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 		cancellable->SetCancelFuncAndData (downloader_abort, request, ctx);
 	}
 
-	request->Open ("GET", (Uri *) uri, policy);
 	request->AddHandler (HttpRequest::WriteEvent, downloader_write, ctx);
 	request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, ctx);
+	request->Open ("GET", (Uri *) uri, policy);
 	request->Send ();
 	
 	return true;
