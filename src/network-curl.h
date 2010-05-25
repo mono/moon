@@ -137,6 +137,9 @@ class CurlDownloaderRequest : public HttpRequest {
 	CURL* GetHandle () { return curl; }
 
 	void Started ();
+	void Succeeded ();
+
+	void Write (gint64 offset, void *buffer, gint32 length);
 };
 
 class CurlDownloaderResponse : public HttpResponse {

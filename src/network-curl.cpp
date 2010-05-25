@@ -282,6 +282,12 @@ void CurlDownloaderRequest::Started ()
 	HttpRequest::Started (response);
 }
 
+void
+CurlDownloaderRequest::Succeeded ()
+{
+	HttpRequest::Succeeded ();
+}
+
 void CurlDownloaderRequest::SetHeaderImpl (const char *name, const char *value, bool disable_folding)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::SetHttpHeader %p - %s:%s\n", this, name, value));
@@ -405,6 +411,12 @@ CurlDownloaderRequest::Close ()
 	if (headers)
 		curl_slist_free_all (headers);
 
+}
+
+void
+CurlDownloaderRequest::Write (gint64 offset, void *buffer, gint32 length)
+{
+	HttpRequest::Write (offset, buffer, length);
 }
 
 void
@@ -541,8 +553,7 @@ void
 CurlDownloaderResponse::Available (char* buffer, size_t size)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Available %p\n", this));
-//	if (available)
-		printf ("TODO: available (this, context, buffer, size);");
+	request->Write (-1, buffer, size);
 }
 
 void
@@ -554,8 +565,8 @@ CurlDownloaderResponse::Finished ()
 		state = FINISHED;
 		return;
 	}
-//	if (finished && (int)state > FINISHED)
-		printf ("TODO: finished (this, context, true, NULL, NULL);");
+	if ((int) state > FINISHED)
+		request->Succeeded ();
 }
 
 static pthread_t worker_thread;
