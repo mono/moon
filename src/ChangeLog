@@ -1,5 +1,10 @@
 2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network.cpp: Send: Don't do anything if we're completed already (this will
+	happen if Open failed due to policy validations for instance).
+
+2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Fix typo in comment.
 
 2010-05-25  Alan McGovern  <amcgovern@novell.com>

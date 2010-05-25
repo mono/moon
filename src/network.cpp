@@ -161,9 +161,9 @@ HttpRequest::Send ()
 	char *templ;
 
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Send ()\n");
+	LOG_DOWNLOADER ("HttpRequest::Send () is_aborted: %i is_completed: %i\n", is_aborted, is_completed);
 
-	if (is_aborted)
+	if (is_aborted || is_completed)
 		return;
 
 	/* create tmp file */
@@ -200,7 +200,7 @@ void
 HttpRequest::Abort ()
 {
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Abort ()\n");
+	LOG_DOWNLOADER ("HttpRequest::Abort () is_completed: %i\n", is_completed);
 
 	if (is_completed)
 		return;
