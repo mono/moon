@@ -1,3 +1,8 @@
+2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Re-add a check for not allowing downloaders to be used for
+	detached surfaces (our own test #381 / test-dead-downloaders.html).
+
 2010-05-25  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: remove reentrant hack for chrome, fixed upstream
