@@ -207,29 +207,27 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	} G_STMT_END
 	
 	DependencyObject *parent = NULL;
-
+	
 	if (types->IsSubclassOf (obj->GetObjectType(), Type::FRAMEWORKELEMENT)) {
 		// we loop up the visual tree
 		parent = ((FrameworkElement*)obj)->GetVisualParent();
-		if (parent) {
-			while (parent) {
-				INHERIT_CTI_CTI (ForegroundProperty);
-				INHERIT_CTI_CTI (FontFamilyProperty);
-				INHERIT_CTI_CTI (FontStretchProperty);
-				INHERIT_CTI_CTI (FontStyleProperty);
-				INHERIT_CTI_CTI (FontWeightProperty);
-				INHERIT_CTI_CTI (FontSizeProperty);
-
-				INHERIT_F_F (LanguageProperty);
-				INHERIT_F_F (FlowDirectionProperty);
-				
-				INHERIT_U_U (UseLayoutRoundingProperty);
-
-				if (parentPropertyId != -1)
-					return parent->GetValue (types->GetProperty (parentPropertyId));
-
-				parent = ((FrameworkElement*)parent)->GetVisualParent();
-			}
+		while (parent) {
+			INHERIT_CTI_CTI (ForegroundProperty);
+			INHERIT_CTI_CTI (FontFamilyProperty);
+			INHERIT_CTI_CTI (FontStretchProperty);
+			INHERIT_CTI_CTI (FontStyleProperty);
+			INHERIT_CTI_CTI (FontWeightProperty);
+			INHERIT_CTI_CTI (FontSizeProperty);
+			
+			INHERIT_F_F (LanguageProperty);
+			INHERIT_F_F (FlowDirectionProperty);
+			
+			INHERIT_U_U (UseLayoutRoundingProperty);
+			
+			if (parentPropertyId != -1)
+				return parent->GetValue (types->GetProperty (parentPropertyId));
+			
+			parent = ((FrameworkElement*)parent)->GetVisualParent();
 		}
 	}
 	else if (types->IsSubclassOf (obj->GetObjectType(), Type::INLINE)) {
@@ -241,7 +239,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 		if (!parent)
 			return NULL;
-
+		
 		INHERIT_I_T (ForegroundProperty);
 		INHERIT_I_T (FontFamilyProperty);
 		INHERIT_I_T (FontStretchProperty);
@@ -252,9 +250,8 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 		INHERIT_I_T (LanguageProperty);
 		INHERIT_I_T (TextDecorationsProperty);
 		
-		if (parentPropertyId != -1) {
-			return parent->GetValue (parentPropertyId);
-		}
+		if (parentPropertyId != -1)
+			return parent->GetValue (types->GetProperty (parentPropertyId));
 	}
 	
 	return NULL;

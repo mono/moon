@@ -1,3 +1,8 @@
+2010-05-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	Removed some unnecessary branching.
+
 2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: When marshalling events to the main thread, only do one
