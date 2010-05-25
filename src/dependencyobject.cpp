@@ -415,7 +415,7 @@ EventObject::unref ()
 
 	if (v == 0) {
 		// here we *can* access instance fields, since we know that we haven't been
-		// desctructed already.
+		// destructed already.
 		Dispose ();
 		
 #if SANITY
