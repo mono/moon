@@ -1544,14 +1544,14 @@ ContentDescription::~ContentDescription ()
 }
 
 /*
- * HttpRequestNode
+ * MmsRequestNode
  */
 
-class HttpRequestNode : public List::Node {
+class MmsRequestNode : public List::Node {
 public:
 	HttpRequest *request;
-	HttpRequestNode (HttpRequest *request) { this->request = request; this->request->ref (); }
-	virtual ~HttpRequestNode () { request->unref (); }
+	MmsRequestNode (HttpRequest *request) { this->request = request; this->request->ref (); }
+	virtual ~MmsRequestNode () { request->unref (); }
 };
 
 /*
@@ -1850,7 +1850,7 @@ MmsSource::SendSelectStreamRequest ()
 	Lock ();
 	if (temporary_downloaders == NULL)
 		temporary_downloaders = new List ();
-	temporary_downloaders->Append (new HttpRequestNode (request));
+	temporary_downloaders->Append (new MmsRequestNode (request));
 	Unlock ();
 
 	SetStreamSelectionHeaders (request);
@@ -2742,21 +2742,21 @@ cleanup:
 bool
 MmsSource::RemoveTemporaryDownloader (HttpRequest *request)
 {
-	HttpRequestNode *node;
-	HttpRequestNode *found = NULL;
+	MmsRequestNode *node;
+	MmsRequestNode *found = NULL;
 
 	VERIFY_MAIN_THREAD;
 
 	Lock ();
 	if (temporary_downloaders != NULL) {
-		node = (HttpRequestNode *) temporary_downloaders->First ();
+		node = (MmsRequestNode *) temporary_downloaders->First ();
 		while (node != NULL) {
 			if (node->request == request) {
 				found = node;
 				temporary_downloaders->Unlink (node);
 				break;
 			}
-			node = (HttpRequestNode *) node->next;
+			node = (MmsRequestNode *) node->next;
 		}
 	}
 	Unlock ();

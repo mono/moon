@@ -1,5 +1,10 @@
 2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp: Rename HttpRequestNode to something else, since there
+	already is a HttpRequestNode in deployment.cpp.
+
+2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp|h: MmsSource: don't touch http requests on the media thread.
 
 2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
