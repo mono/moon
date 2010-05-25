@@ -197,6 +197,8 @@ private:
 	EVENTHANDLER (MmsSource, Opened, IMediaDemuxer, EventArgs);
 	EVENTHANDLER (MmsSource, MediaError, Media, EventArgs);
 
+	static void DeleteTemporaryDownloaders (EventObject *data); // Main thread only
+
 	static void SendDescribeRequestCallback (EventObject *obj) { ((MmsSource *) obj)->SendDescribeRequest (); }  /* Main thread only */
 	static void SendPlayRequestCallback (EventObject *obj) { ((MmsSource *) obj)->SendPlayRequest (); } /* Main thread only */
 	void SendDescribeRequest (); /* Main thread only */
