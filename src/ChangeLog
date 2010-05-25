@@ -1,5 +1,9 @@
 2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network-curl.cpp: Readd code that got accidentally removed.
+
+2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.cpp|h: Implement a couple of TODOs I'd missed.
 
 2010-05-25  Jeffrey Stedfast  <fejj@novell.com>

@@ -588,7 +588,6 @@ public:
 	void Close () { return ((CurlDownloaderRequest*)res)->Close (); }
 };
 
-#if 0
 static void*
 getdata_callback (void* sender)
 {
@@ -596,7 +595,6 @@ getdata_callback (void* sender)
 
 	return NULL;
 }
-#endif
 
 bool
 find_easy_handle (List::Node *node, void *data)
@@ -637,6 +635,11 @@ CurlHttpHandler::CurlHttpHandler () :
 HttpRequest *
 CurlHttpHandler::CreateRequest (HttpRequest::Options options)
 {
+	if (!closure) {
+		closure = new Closure (this);
+		pthread_create (&worker_thread, NULL, getdata_callback, (void*)this);
+	}
+
 	return new CurlDownloaderRequest (this, options);
 }
 
