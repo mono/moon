@@ -543,7 +543,7 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
         // browser bridge we should use.
         const char *useragent = MOON_NPN_UserAgent (instance);
 
-	if (strstr (useragent, "Opera") || strstr (useragent, "AppleWebKit"))
+	if (strstr (useragent, "Opera"))
 		is_reentrant_mess = true;
 
 	if (strstr (useragent, "Gecko")) {
@@ -555,10 +555,6 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 				/* No bridge needed */ ;
 			else if (strstr (useragent, "rv:1.9"))
 				TryLoadBridge ("ff3");
-
-			if (!bridge) {
-				is_reentrant_mess = true;
-			}
 		}
 	}
 

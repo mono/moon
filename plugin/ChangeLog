@@ -1,3 +1,8 @@
+2010-05-25  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.cpp: remove reentrant hack for chrome, fixed upstream
+	(see http://code.google.com/p/chromium/issues/detail?id=32797)
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.mdp: Updated.
