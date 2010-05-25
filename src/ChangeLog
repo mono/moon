@@ -8,6 +8,9 @@
 
 2010-05-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fonts.cpp (IsValidLang): Rewritten to be a bit more robust... I
+	guess. Makes drt 245 pass.
+
 	* uielement.cpp (ElementAdded): Always propagate inherited
 	values. Partial fix for drt 245.
 

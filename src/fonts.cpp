@@ -150,6 +150,48 @@ static const char lang_table[256] = {
 	'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
 };
 
+#define SUBTAG_ALPHA         (1 << 0)
+#define SUBTAG_NUMERIC       (1 << 1)
+
+#define SUBTAG_ISALPHA(x)    ((x) == SUBTAG_ALPHA)
+#define SUBTAG_ISNUMERIC(x)  ((x) == SUBTAG_NUMERIC)
+#define SUBTAG_ISALPHANUM(x) ((x) == (SUBTAG_ALPHA | SUBTAG_NUMERIC))
+
+static int
+subtag_decode (const char **in, int *n)
+{
+	const char *inptr = *in;
+	int mask = 0;
+	int len = 0;
+	char c = 0;
+	
+	while (*inptr) {
+		if (!(c = lang_table[(unsigned char) *inptr]))
+			return -1;
+		
+		inptr++;
+		
+		if (c == '-')
+			break;
+		
+		if (c >= '0' && c <= '9')
+			mask |= SUBTAG_NUMERIC;
+		else
+			mask |= SUBTAG_ALPHA;
+		
+		len++;
+	}
+	
+	if (len > 10)
+		return -1;
+	
+	*in = inptr;
+	*n = len;
+	
+	return mask;
+}
+
+
 //
 // IsValidLang:
 //   lang: string representing the language code
@@ -163,37 +205,46 @@ bool
 IsValidLang (const char *lang)
 {
 	const char *inptr = lang;
-	int dashes = 0;
-	int len = 0;
-	char c = 0;
+	int v, n, i = 0;
 	
-	while (*inptr) {
-		if (!(c = lang_table[(unsigned char) *inptr]))
-			return false;
-		
-		if (c == '-') {
-			if (len != 2 || dashes == 2)
-				return false;
-			
-			dashes++;
-			len = 0;
-		} else if (c >= '0' && c <= '9') {
-			if (dashes < 2)
-				return false;
-			
-			len++;
-		} else {
-			len++;
-		}
-		
-		if (len > 4)
-			return false;
-		
-		inptr++;
+	if (*lang == '\0' || !strcmp (lang, "private-private"))
+		return true;
+	
+	/* 1x required language subtag, composed of 2 or 3 alphas */
+	if ((v = subtag_decode (&inptr, &n)) == -1)
+		return false;
+	
+	if (!(SUBTAG_ISALPHA (v) && n >= 2 && n <= 3)) {
+		if (SUBTAG_ISALPHA (v) && *inptr == '\0')
+			return true;
+		return false;
 	}
 	
-	if (c == '-')
-		return false;
+	/* up to 3x optional extended language subtags, composed of 3 alphas each */
+	v = subtag_decode (&inptr, &n);
+	while (SUBTAG_ISALPHA (v) && n == 3 && i < 3) {
+		if ((v = subtag_decode (&inptr, &n)) == -1)
+			return false;
+		i++;
+	}
+	
+	/* 1x optional script subtag, composed of 4 alphas */
+	if (SUBTAG_ISALPHA (v) && n == 4) {
+		if ((v = subtag_decode (&inptr, &n)) == -1)
+			return false;
+	}
+	
+	/* 1x optional region subtag, composed of 2 alphas or 3 digits only */
+	if ((SUBTAG_ISALPHA (v) && n == 2) || (SUBTAG_ISNUMERIC (v) && n == 3)) {
+		if ((v = subtag_decode (&inptr, &n)) == -1)
+			return false;
+	}
+	
+	/* optional variant subtags, composed of 5-8 alphas or 4 alpha-nums (first being numeric) */
+	while ((SUBTAG_ISALPHA (v) && (n >= 5 && n <= 8)) || (SUBTAG_ISALPHANUM (v) && n == 4)) {
+		if ((v = subtag_decode (&inptr, &n)) == -1)
+			return false;
+	}
 	
 	return true;
 }
