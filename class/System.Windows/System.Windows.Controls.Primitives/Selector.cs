@@ -33,6 +33,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
+using Mono;
+using System.Collections.ObjectModel;
+
 namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
 		internal const string TemplateScrollViewerName = "ScrollViewer";
@@ -104,6 +107,10 @@ namespace System.Windows.Controls.Primitives {
 			}	
 		}
 
+		internal ObservableCollection <object> SelectedItems {
+			get; set;
+		}
+
 		internal PropertyPathWalker SelectedValueWalker {
 			get; set;
 		}
@@ -113,6 +120,7 @@ namespace System.Windows.Controls.Primitives {
 			// Set default values for ScrollViewer attached properties
 			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
+			SelectedItems = new ObservableCollection<object> ();
 			Selection = new Selection (this);
 		}
 
@@ -171,8 +179,14 @@ namespace System.Windows.Controls.Primitives {
 		
 		void OnCurrentItemChanged (object sender, EventArgs args)
 		{
-			if (SynchronizeWithCurrentItem)
-				Selection.Select (((ICollectionView) ItemsSource).CurrentItem);
+			if (SynchronizeWithCurrentItem) {
+				var icv = (ICollectionView) ItemsSource;
+				if (!Helper.Equals (icv.CurrentItem, SelectedItem))
+					Selection.SelectOnly (icv.CurrentItem);
+				else {
+					Console.WriteLine ("Item is: {0}, Selected is: {1}. Count is: {2}", icv.CurrentItem, SelectedItem, SelectedItems.Count);
+				}
+			}
 		}
 		
 		internal override void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
@@ -187,7 +201,7 @@ namespace System.Windows.Controls.Primitives {
 			if (view != null) {
 				view.CurrentChanged += OnCurrentItemChanged;
 				if (SynchronizeWithCurrentItem)
-					Selection.Select (view.CurrentItem);
+					Selection.SelectOnly (view.CurrentItem);
 			}
 		}
 		
@@ -259,11 +273,7 @@ namespace System.Windows.Controls.Primitives {
 
 			foreach (var item in Items) {
 				var value = GetValueFromItem (item);
-				// First check for reference equality. If that values we could have
-				// boxed value types, so use actual calls to .Equals.
-				// FIXME: Should i verify that both e.NewValue and value are value types
-				// before calling object.Equals?
-				if (selectedValue == value || object.Equals (selectedValue, value)) {
+				if (Helper.AreEqual (selectedValue, value)) {
 					// FIXME: I don't like this check here, but it fixes drt 232. What was happening
 					// is that if we set the selected value to the same thing twice we'd end up
 					// unselecting the item instead of maintaining the selection.
@@ -311,8 +321,11 @@ namespace System.Windows.Controls.Primitives {
 				}
 			}
 
-			if (SynchronizeWithCurrentItem)
-				(ItemsSource as ICollectionView).MoveCurrentTo (SelectedItem);
+			if (SynchronizeWithCurrentItem) {
+				var icv = (ICollectionView) ItemsSource;
+				if (!Helper.AreEqual (SelectedItem, icv.CurrentItem))
+					icv.MoveCurrentTo (SelectedItem);
+			}
 			
 			SelectionChangedEventHandler h = SelectionChanged;
 			if (h != null)

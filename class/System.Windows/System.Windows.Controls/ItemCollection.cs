@@ -26,6 +26,8 @@
 
 using System.Collections.Specialized;
 
+using Mono;
+
 namespace System.Windows.Controls {
 
 	public sealed partial class ItemCollection : PresentationFrameworkCollection<object>, INotifyCollectionChanged {
@@ -61,7 +63,7 @@ namespace System.Windows.Controls {
 			if (value.GetType ().IsValueType) {
 				int count = Count;
 				for (int i = 0; i < count; i++)
-					if (this [i].Equals (value))
+					if (Helper.Equals (this [i], value))
 						return i;
 				return -1;
 			} else {

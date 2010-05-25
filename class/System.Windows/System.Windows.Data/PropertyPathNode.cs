@@ -31,6 +31,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 
+using Mono;
+
 namespace System.Windows.Data
 {
 	abstract class PropertyPathNode : IPropertyPathNode {
@@ -66,7 +68,7 @@ namespace System.Windows.Data
 		public object Value {
 			get { return value; }
 			protected set {
-				if (!object.Equals (value, this.value)) {
+				if (!Helper.AreEqual (value, this.value)) {
 					this.value = value;
 					var h = ValueChanged;
 					if (h != null && this.Next == null)

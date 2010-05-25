@@ -1,5 +1,10 @@
 2010-05-25  Alan McGovern  <amcgovern@novell.com>
 
+	* IListExtensions.cs: Add a handy 'AddRange' extension method
+	  to IList<T>.
+
+2010-05-25  Alan McGovern  <amcgovern@novell.com>
+
 	* Helper.cs: Add some static "AreEqual" methods which do
 	  reference and/or value equality testing as appropriate.
 

@@ -1,3 +1,8 @@
+2010-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemCollection.cs: User Helper.AreEqual as the method of
+	  deciding whether or two values are equal.
+
 2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ContentChangedEventHandler.cs: Added

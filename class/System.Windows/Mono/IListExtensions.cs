@@ -6,6 +6,16 @@ namespace Mono
 {
 	static class IListExtensions
 	{
+		public static void AddRange<T> (this IList<T> list, IEnumerable<T> items)
+		{
+			if (list is List<T>) {
+				((List<T>) list).AddRange (list);
+			} else {
+				foreach (var v in items)
+					list.Add (v);
+			}
+		}
+
 		public static int BinarySearch<T> (this IList<T> list, T item, IComparer<T> comparer)
 		{
 			// cache this in case we need it

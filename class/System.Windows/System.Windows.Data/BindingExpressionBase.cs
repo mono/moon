@@ -317,7 +317,7 @@ namespace System.Windows.Data {
 				if (Binding.TargetNullValue != null) {
 					try {
 						var v = MoonlightTypeConverter.ConvertObject (Property, Binding.TargetNullValue, Target.GetType (), true);
-						if (object.Equals (v, value))
+						if (Helper.AreEqual (v, value))
 							value = null;
 					} catch {
 						// FIXME: I'm fairly sure we ignore this, but we need a test to be 100% sure.
@@ -343,7 +343,7 @@ namespace System.Windows.Data {
 						return;
 					}
 				}
-				else if (cachedValue.Equals (value)) {
+				else if (Helper.AreEqual (cachedValue, value)) {
 					return;
 				}
 

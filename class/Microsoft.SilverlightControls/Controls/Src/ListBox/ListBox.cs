@@ -55,8 +55,8 @@ namespace System.Windows.Controls
             set { SetValue (SelectionModeProperty, value); }
         }
 
-        public IList SelectedItems {
-            get { return Selection.SelectedItems; }
+        public new IList SelectedItems {
+            get { return base.SelectedItems; }
         }
 
         /// <summary> 

@@ -1,3 +1,9 @@
+2010-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPathNode.cs:
+	* BindingExpressionBase.cs: User Helper.AreEqual as the method
+	  of deciding whether or two values are equal.
+
 2010-05-21  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPathWalker.cs: Add a helper method "GetValue" to

@@ -1,3 +1,15 @@
+2010-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Update the implementation
+	  of Selector.SelectedItems to pass more of drt 232. Basically
+	  we need to keep two copies of the list, one which is
+	  publicly accessible by the user and one which is our private
+	  'master' list. We listen for changes to the public one and
+	  then mirror them in the master list if they're valid. The
+	  public list is always synced to the master one after any
+	  modifications to the selection so that if the user does
+	  something mad, we can revert that.
+
 2010-05-13  Chris Toshok  <toshok@ximian.com>
 
 	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: change

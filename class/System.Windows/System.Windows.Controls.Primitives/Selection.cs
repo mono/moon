@@ -29,10 +29,13 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Input;
+
+using Mono;
 
 namespace System.Windows.Controls.Primitives
 {
@@ -51,7 +54,7 @@ namespace System.Windows.Controls.Primitives
 			get; set;
 		}
 
-		internal IList SelectedItems {
+		internal List<object> SelectedItems {
 			get; private set;
 		}
 
@@ -62,22 +65,59 @@ namespace System.Windows.Controls.Primitives
 		public Selection (Selector owner)
 		{
 			Owner = owner;
-
-			var items = new ObservableCollection <object> ();
-			items.CollectionChanged += HandleItemsCollectionChanged;
-			SelectedItems = items;
+			Owner.SelectedItems.CollectionChanged += HandleOwnerSelectionChanged;
+			SelectedItems = new List<object> ();
 		}
 
-		void HandleItemsCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		void HandleOwnerSelectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
 			// When 'Updating' is false it means the user has directly modified the collection
-			// by calling ListBox.SelectedItems.<Action>. In this case we need to emit the event
+			// by calling ListBox.SelectedItems.[Add|Remove]. In this case we need to ensure we
+			// don't have a duplicate selection.
 			if (!Updating) {
 				if (Mode == SelectionMode.Single)
 					throw new InvalidOperationException ("SelectedItems cannot be modified directly when in Single select mode");
+				try {
+					Updating = true;
+					switch (e.Action) {
+					case NotifyCollectionChangedAction.Add:
+						if (!SelectedItems.Contains (e.NewItems [0]))
+							AddToSelected (e.NewItems [0]);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						if (SelectedItems.Contains (e.OldItems [0]))
+							RemoveFromSelected (e.OldItems [0]);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						if (SelectedItems.Contains (e.OldItems [0]))
+							RemoveFromSelected (e.OldItems [0]);
+						if (!SelectedItems.Contains (e.NewItems [0]))
+							AddToSelected (e.NewItems [0]);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						foreach (var v in SelectedItems.Where (o => !Owner.SelectedItems.Contains (o)).ToArray ())
+							if (SelectedItems.Contains (v))
+								RemoveFromSelected (v);
+						foreach (var v in Owner.SelectedItems.Where (o => !SelectedItems.Contains (o)).ToArray ())
+							if (!SelectedItems.Contains (v))
+								AddToSelected (v);
+						break;
+					}
 
-				Owner.RaiseSelectionChanged (e.OldItems ?? Empty, e.NewItems ?? Empty);
+					UpdateOwnerSelectedItems ();
+				} finally {
+					Updating = false;
+				}
 			}
+		}
+
+		void UpdateOwnerSelectedItems ()
+		{
+			// Now make sure the Selectors version of 'SelectedItems' matches the actual Selection.
+			// This is an incredibly lazy way of doing it and we emit more events than is strictly required.
+			// Fix it later if it breaks tests.
+			Owner.SelectedItems.Clear ();
+			Owner.SelectedItems.AddRange (SelectedItems);
 		}
 
 		public void Select (object item)
@@ -94,8 +134,9 @@ namespace System.Windows.Controls.Primitives
 					ClearSelection (ignoreSelectedValue);
 					return;
 				} else if (!Owner.Items.Contains (item)) {
-					if (SelectedItems.Contains (item))
+					if (SelectedItems.Contains (item)) {
 						RemoveFromSelected (item);
+					}
 					return;
 				}
 
@@ -122,6 +163,27 @@ namespace System.Windows.Controls.Primitives
 			}
 		}
 
+		public void SelectOnly (object item)
+		{
+			if ((SelectedItem == item && SelectedItems.Count == 1)) {
+				Console.WriteLine ("Already have: {0} selected", SelectedItem);
+				return;
+			}
+			try {
+				Updating = true;
+				if (item == null) {
+					ClearSelection (false);
+					Console.WriteLine ("Cleared. Selected: {0}. Owner.SelectedItem: {1}, Count {2}, Owner.Count {3}", SelectedItem, Owner.SelectedItem, SelectedItems.Count, Owner.SelectedItems.Count);
+				}
+				else {
+					ReplaceSelection (item);
+					Console.WriteLine ("Replaced. Selected: {0}. Owner.SelectedItem: {1}, Count {2}, Owner.Count {3}", SelectedItem, Owner.SelectedItem, SelectedItems.Count, Owner.SelectedItems.Count);
+				}
+			} finally {
+				Updating = false;
+			}
+		}
+
 		void AddToSelected (object item)
 		{
 			SelectedItems.Add (item);
@@ -132,21 +194,25 @@ namespace System.Windows.Controls.Primitives
 				SelectedItem = item;
 			}
 
+			UpdateOwnerSelectedItems ();
 			Owner.RaiseSelectionChanged (Empty, new object [] { item });
 		}
 
 		void ClearSelection (bool ignoreSelectedValue)
 		{
-			bool hasSelection = SelectedItem != null;
-				var oldSelection = SelectedItems.Cast <object> ().ToArray ();
-				SelectedItems.Clear ();
-				Owner.SelectedItem = null;
-				Owner.SelectedIndex = -1;
-				if (!ignoreSelectedValue)
-					Owner.SelectedValue = null;
-				SelectedItem = null;
-				if (hasSelection)
-					Owner.RaiseSelectionChanged (oldSelection, Empty);
+			var oldSelection = SelectedItems.Cast <object> ().ToArray ();
+
+			SelectedItems.Clear ();
+			SelectedItem = null;
+			Owner.SelectedItem = null;
+			Owner.SelectedIndex = -1;
+			if (!ignoreSelectedValue)
+				Owner.SelectedValue = null;
+
+			if (oldSelection.Length > 0) {
+				UpdateOwnerSelectedItems ();
+				Owner.RaiseSelectionChanged (oldSelection, Empty);
+			}
 		}
 
 		void RemoveFromSelected (object item)
@@ -160,24 +226,42 @@ namespace System.Windows.Controls.Primitives
 				SelectedItem = newItem;
 			}
 
+			UpdateOwnerSelectedItems ();
 			Owner.RaiseSelectionChanged (new object [] { item }, Empty);
 		}
 		
 		void ReplaceSelection (object item)
 		{
-			if (SelectedItem == null) {
-				AddToSelected (item);
-			} else {
-				var olditem = SelectedItem;
-				SelectedItems.Remove (olditem);
-				SelectedItems.Add (item);
-				SelectedItem = item;
-				Owner.SelectedItem  = item;
-				Owner.SelectedIndex = Owner.Items.IndexOf (item);
-				Owner.SelectedValue = Owner.GetValueFromItem (item);
+			var addedItems = Empty;
+			var oldItems = Empty;
+			if (SelectedItem != item || SelectedItems.Count != 1) {
+				oldItems = SelectedItems.Cast <object> ().Where (o => o != item).ToArray ();
 
-				if (olditem != item)
-					Owner.RaiseSelectionChanged (new object [] { olditem }, new object []  { item }); 
+				// Unselect all the previously selected items
+				foreach (var v in oldItems)
+					SelectedItems.Remove (v);
+
+				// If we previously had the current item selected, it will be the only one the list now
+				// so we only have to add it if the list is empty.
+				if (SelectedItems.Count == 0) {
+					addedItems = new object [] { item };
+					SelectedItems.Add (item);
+				}
+			}
+
+			// Alwayus update the selection properties to keep everything nicely in sync. These could get out of sync
+			// if (for example) the user inserts an item at the start of the ItemsControl.Items collection.
+			SelectedItem = item;
+			Owner.SelectedItem  = item;
+			Owner.SelectedIndex = Owner.Items.IndexOf (item);
+			Owner.SelectedValue = Owner.GetValueFromItem (item);
+
+			if (addedItems != Empty || oldItems != Empty) {
+				// Refresh the Selector.SelectedItems list
+				UpdateOwnerSelectedItems ();
+
+				// Raise our SelectionChanged event
+				Owner.RaiseSelectionChanged (oldItems, addedItems);
 			}
 		}
 	}
