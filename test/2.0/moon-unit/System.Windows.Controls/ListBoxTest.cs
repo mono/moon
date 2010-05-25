@@ -38,6 +38,7 @@ using System.Windows.Shapes;
 using Microsoft.Silverlight.Testing;
 using MoonTest.System.Windows.Controls.Primitives;
 using System.Windows.Markup;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Controls {
 	public class ListBoxPoker : ListBox, IPoker
@@ -218,6 +219,125 @@ namespace MoonTest.System.Windows.Controls {
 				}
 			});
 			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ICollectionViewSyncing()
+		{
+			var data = new int[] { 0, 1, 2, 3, 4 };
+			var source = new CollectionViewSource { Source = data };
+			var box = new ListBox { ItemsSource = source.View };
+
+			CreateAsyncTest(box, () => {
+				// First try to select our boxed value type using another boxed object
+				box.SelectedItem = 3;
+				Assert.AreEqual(3, source.View.CurrentPosition, "#1");
+				Assert.AreEqual(3, (int) source.View.CurrentItem, "#2");
+				Assert.AreNotSame(data[3], source.View.CurrentItem, "#3");
+				Assert.AreNotSame(data[3], box.SelectedItem, "#4");
+
+				// Now try to select a boxed value type with the *same* boxed value type
+				box.SelectedItem = data[2];
+				Assert.AreEqual(2, source.View.CurrentPosition, "#5");
+				Assert.AreEqual(2, (int)source.View.CurrentItem, "#6");
+			});
+		}
+
+		[TestMethod]
+		public void ICollectionViewSyncing_SyncsAtStart ()
+		{
+			// We sync the SelectedItem to ICV.CurrentItem at the start.
+			var data = new List<object> {
+				new object (),
+				new object (),
+				new object (),
+				new object (),
+			};
+			CollectionViewSource source = new CollectionViewSource { Source = data };
+			ListBox box = new ListBox { ItemsSource = source.View };
+
+			Assert.AreEqual (data[0], box.SelectedItem, "#1");
+			Assert.AreEqual(1, box.SelectedItems.Count, "#2");
+		}
+
+		[TestMethod]
+		public void ICollectionViewSyncing_SelectSameTwice ()
+		{
+			// We sync the SelectedItem to ICV.CurrentItem at the start.
+			var data = new List<object> {
+				new object (),
+				new object (),
+				new object (),
+				new object (),
+			};
+			CollectionViewSource source = new CollectionViewSource { Source = data };
+			ListBox box = new ListBox {
+				ItemsSource = source.View,
+				SelectionMode = SelectionMode.Multiple,
+			};
+			box.SelectedItems.Add(data[0]);
+			box.SelectedItems.Add(data[0]);
+			Assert.AreEqual(1, box.SelectedItems.Count, "#1");
+		}
+
+		[TestMethod]
+		public void ICollectionViewSyncing_AlreadySelectedTwoOthers()
+		{
+			bool executed = false;
+			var data = new List<object> {
+				new object (),
+				new object (),
+				new object (),
+				new object (),
+			};
+			CollectionViewSource source = new CollectionViewSource { Source = data };
+			ListBox box = new ListBox { ItemsSource = source.View };
+
+			box.SelectionMode = SelectionMode.Multiple;
+			box.SelectedItems.Add(data[0]);
+			box.SelectedItems.Add(data[1]);
+
+			box.SelectionChanged += (o, e) => {
+				executed = true;
+				Assert.AreEqual(2, e.RemovedItems.Count, "#1");
+				Assert.AreEqual(1, e.AddedItems.Count, "#2");
+			};
+
+			source.View.MoveCurrentTo(data[2]);
+			Assert.IsTrue(executed, "#3");
+			Assert.AreSame (data[2], box.SelectedItem, "#4");
+			Assert.AreEqual(1, box.SelectedItems.Count, "#5");
+		}
+
+		[TestMethod]
+		public void ICollectionViewSyncing_AlreadySelected ()
+		{
+			bool executed = false;
+			var data = new List<object> {
+				new object (),
+				new object (),
+				new object (),
+				new object (),
+			};
+			CollectionViewSource source = new CollectionViewSource { Source = data };
+			ListBox box = new ListBox { ItemsSource = source.View };
+
+			box.SelectionMode = SelectionMode.Multiple;
+			box.SelectedItems.Add(data[0]);
+			box.SelectedItems.Add(data[1]);
+
+			box.SelectionChanged += (o, e) =>
+			{
+				executed = true;
+				Assert.AreEqual(1, e.RemovedItems.Count, "#1");
+				Assert.AreEqual(0, e.AddedItems.Count, "#2");
+			};
+
+			source.View.MoveCurrentTo(data[1]);
+			Assert.IsTrue(executed, "#3");
+			Assert.AreSame(data[1], box.SelectedItem, "#4");
+			Assert.AreEqual(1, box.SelectedItems.Count, "#5");
 		}
 
 		public override void IsItemItsOwnContainerTest ()

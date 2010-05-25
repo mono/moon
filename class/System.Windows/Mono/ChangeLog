@@ -1,3 +1,8 @@
+2010-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Helper.cs: Add some static "AreEqual" methods which do
+	  reference and/or value equality testing as appropriate.
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* NativeMethods.cs: Update to HttpRequest API.

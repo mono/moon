@@ -238,22 +238,15 @@ namespace System.Windows {
 		static void InvokeChangedCallback (DependencyObject obj, DependencyProperty property, PropertyChangedCallback callback,
 						   object old_obj, object new_obj)
 		{
-			DependencyPropertyChangedEventArgs args;
-
-			if (old_obj == null && property.property_type.IsValueType && !property.IsNullable)
+			if (old_obj == null && property.property_type.IsValueType && !property.IsNullable) {
 				old_obj = property.GetDefaultValue (obj);
-			
-			if (old_obj == null && new_obj == null)
-				return; // Nothing changed.
-			
-			if (old_obj == new_obj)
-				return; // Nothing changed
-			
-			if (property.PropertyType != typeof (object) && old_obj != null && new_obj != null)
-				if (object.Equals (old_obj, new_obj))
-					return; // Nothing changed
-			
-			args = new DependencyPropertyChangedEventArgs (old_obj, new_obj, property);
+				Console.WriteLine ("WARNING: Got a null value for {0}.{1} which is a value type", property.DeclaringType.Name, property.Name);
+			}
+
+			if (Helper.AreEqual (property.PropertyType, old_obj, new_obj))
+				return;
+
+			var args = new DependencyPropertyChangedEventArgs (old_obj, new_obj, property);
 
 			// note: since callbacks might throw exceptions but we cannot catch them
 			callback (obj, args);

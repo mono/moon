@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 562 methods
+# 566 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -313,6 +313,8 @@
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::SelectAll()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::Initialize()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::OnOpened()
++SSC-M: System.Void System.Windows.Controls.Primitives.Selector::SelectItemFromValue(System.Object,System.Boolean)
++SSC-M: System.Void System.Windows.Controls.Primitives.Selector::RaiseSelectionChanged(System.Collections.IList,System.Collections.IList)
 +SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDialog()
 +SSC-M: System.Void System.Windows.Controls.SaveFileDialog::EnsureMainThread()
 +SSC-M: System.Void System.Windows.Controls.TextBlock::.cctor()
@@ -333,6 +335,7 @@
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::ViewChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
++SSC-M: System.Void System.Windows.Data.PropertyPathNode::set_Value(System.Object)
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::get_TemplateOwner()
@@ -345,6 +348,7 @@
 +SSC-M: System.Int32 System.Windows.DependencyObjectCollection`1::get_Count()
 +SSC-M: System.Windows.PropertyMetadata System.Windows.DependencyProperty::GetMetadata(System.Type)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
++SSC-M: System.Void System.Windows.DependencyProperty::InvokeChangedCallback(System.Windows.DependencyObject,System.Windows.DependencyProperty,System.Windows.PropertyChangedCallback,System.Object,System.Object)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(Mono.Kind,System.String,System.Type,System.Boolean)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::LookupInternal(Mono.Kind,System.String,System.Type,System.Boolean,System.Windows.DependencyProperty&)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_HasHiddenDefaultValue()

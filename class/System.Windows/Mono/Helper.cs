@@ -45,7 +45,29 @@ namespace Mono {
 
 	internal static partial class Helper {
 		internal static CultureInfo DefaultCulture = CultureInfo.GetCultureInfo ("en-US");
-		
+
+		public static bool AreEqual (object x, object y)
+		{
+			return AreEqual (null, x, y);
+		}
+
+		public static bool AreEqual (Type type, object x, object y)
+		{
+			if (x == null)
+				return y == null;
+			if (y == null)
+				return false;
+
+			if (type == null) {
+				if (x.GetType ().IsValueType || x.GetType () == typeof (string))
+					return x.Equals (y);
+			} else if (type.IsValueType) {
+				return x.Equals (y);
+			}
+
+			return x == y;
+		}
+
 		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
 			Attribute[] attrs;
