@@ -1,5 +1,13 @@
 2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: ProgressiveSource::Dispose: Use the new Resurrect method to
+	prevent a warning when reffing ourselves.
+
+	* dependencyobject.cpp|h: Add a Resurrect method that refs without showing a
+	warning if the refcount is 0.
+
+2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network.cpp: Send: Don't do anything if we're completed already (this will
 	happen if Open failed due to policy validations for instance).
 

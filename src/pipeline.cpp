@@ -1600,13 +1600,9 @@ ProgressiveSource::Dispose ()
 			// we have to cancel/delete he cancellable on the main thread
 			// it may end up doing a lot of stuff, including calling into
 			// mozilla.
-				
-			// The tick call will ref us until the callback has been called.
-			// Note that it may cause a warning to be printed
-			// in ref () (reffing an object with a refcount of 0). 
-			// TODO: find a way to avoid the warning in this case, imho this is
-			// a valid case of reffing an object with a refcount of 0.
+			Resurrect (); /* Don't call ref, since that will cause a warning to be printed */
 			AddTickCall (DeleteCancellable);
+			unref (); /* The tick call still has a ref */
 		}
 	}
 	

@@ -229,6 +229,14 @@ protected:
 	
 	int GetEventGeneration (int event_id);
 
+	/* This method will increase the refcount by one, and it won't warn if refcount already is 0.
+	 * There is at least one valid case for this: when something on the media thread realizes in
+	 * the dtor that some cleanup is required, but the cleanup must happen on the main thread.
+	 * In this case we need to stay alive until the cleanup on the main thread has finished.
+	 * The only reason real reason for this method is to exist is to be able to keep a warning
+	 * in ref () about reffing an object with a refcount of 0 (and trust that the warning means
+	 * something really bad has happened) */
+	void Resurrect ();
 private:
 	void AddTickCallInternal (TickCallHandler handler, EventObject *data = NULL);
 	void Initialize (Deployment *deployment, Type::Kind type);
