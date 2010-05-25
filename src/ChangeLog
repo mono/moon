@@ -1,5 +1,8 @@
 2010-05-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* uielement.cpp (ElementAdded): Always propagate inherited
+	values. Partial fix for drt 245.
+
 	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
 	Removed some unnecessary branching.
 

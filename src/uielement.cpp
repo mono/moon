@@ -581,10 +581,10 @@ UIElement::ElementAdded (UIElement *item)
 	item->UpdateTotalHitTestVisibility ();
 	//item->UpdateBounds (true);
 	item->Invalidate ();
-
-	if (0 != (flags & (UIElement::IS_LOADED))) {
-		InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
-
+	
+	InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
+	
+	if ((flags & (UIElement::IS_LOADED)) != 0) {
 		bool post = false;
 
 		item->WalkTreeForLoadedHandlers (&post, true, false);
