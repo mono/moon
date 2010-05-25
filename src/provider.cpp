@@ -171,19 +171,14 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	Types *types =  Deployment::GetCurrent()->GetTypes();
 
-#define INHERIT_CTI_CTI(p) \
+#define INHERIT_CT_C(p) \
 	G_STMT_START {							\
 	if (property->GetId () == Control::p ||				\
-	    property->GetId () == TextBlock::p ||			\
-	    property->GetId () == TextElement::p) {		       	\
-									\
+	    property->GetId () == TextBlock::p) {			\
 		if (types->IsSubclassOf (parent->GetObjectType(), Type::CONTROL)) \
 			parentPropertyId = Control::p;			\
-		else if (types->IsSubclassOf (parent->GetObjectType(), Type::TEXTBLOCK)) \
-			parentPropertyId = TextBlock::p;		\
 	}								\
 	} G_STMT_END
-
 
 #define INHERIT_I_T(p) \
 	G_STMT_START {							\
@@ -201,7 +196,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 #define INHERIT_U_U(p) \
 	G_STMT_START {							\
-	if (property->GetId () == UIElement::p) {		\
+	if (property->GetId () == UIElement::p) {			\
 		parentPropertyId = UIElement::p;			\
 	}								\
 	} G_STMT_END
@@ -212,12 +207,12 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 		// we loop up the visual tree
 		parent = ((FrameworkElement*)obj)->GetVisualParent();
 		while (parent) {
-			INHERIT_CTI_CTI (ForegroundProperty);
-			INHERIT_CTI_CTI (FontFamilyProperty);
-			INHERIT_CTI_CTI (FontStretchProperty);
-			INHERIT_CTI_CTI (FontStyleProperty);
-			INHERIT_CTI_CTI (FontWeightProperty);
-			INHERIT_CTI_CTI (FontSizeProperty);
+			INHERIT_CT_C (ForegroundProperty);
+			INHERIT_CT_C (FontFamilyProperty);
+			INHERIT_CT_C (FontStretchProperty);
+			INHERIT_CT_C (FontStyleProperty);
+			INHERIT_CT_C (FontWeightProperty);
+			INHERIT_CT_C (FontSizeProperty);
 			
 			INHERIT_F_F (LanguageProperty);
 			INHERIT_F_F (FlowDirectionProperty);
@@ -484,7 +479,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 			DependencyProperty *child_property = MapPropertyToDescendant (types, property, element->GetObjectType());
 			if (!child_property)
 				continue;
-
+			
 			MoonError error;
 
 			element->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
@@ -492,6 +487,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 
 			if (error.number) {
 				// FIXME: what do we do here?  I'm guessing we continue propagating?
+				printf ("error propagating %s to %s\n", child_property->GetName (), element->GetName ());
 			}
 
 			walker.SkipBranch ();
