@@ -360,8 +360,12 @@ private:
 		EmitData (int event_id, EventHandler handler, EventObject *context, EventArgs *args);
 		virtual ~EmitData ();
 	};
+	class PendingEmitList : public List::Node {
+	public:
+		List list;
+	};
 	List *events; // list of event handlers
-	List *emit_on_main_thread; // list of emit calls to emit on main thread
+	List *emit_on_main_thread; // list of lists of emit calls to emit on main thread
 	Mutex event_mutex;
 	
 	void EmitList (List *list);

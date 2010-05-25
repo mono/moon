@@ -1,5 +1,16 @@
 2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: When marshalling events to the main thread, only do one
+	event emission per tick call. This fixes a tick call ordering issue where
+	an early event emission would also cause later events to be emitted since
+	they'd get accumulated before the tick call was executed - which is
+	problematic if the Surface' loaded event's tick call was added in between
+	those event emissions, causing MediaElements to emit events before the
+	Surface' Loaded event had been raised. Fixes a regression with
+	our media test #113.
+
+2010-05-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Rename HttpRequestNode to something else, since there
 	already is a HttpRequestNode in deployment.cpp.
 

@@ -4023,6 +4023,8 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 	List *emits = NULL; // The events to emit on this thread.
 	EventData *ed;
 	EmitData *emit;
+	PendingEmitList *emit_list = NULL; // The events to emit on the main thread
+	bool add_tick_call = false;
 		
 	if (events == NULL)
 		goto cleanup;
@@ -4036,9 +4038,9 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 			if (ed->event_id == event_id) {
 				emit = new EmitData (event_id, ed->handler, ed->context, args);
 				if (ed->invoke_on_main_thread) {
-					if (emit_on_main_thread == NULL)
-						emit_on_main_thread = new List ();
-					emit_on_main_thread->Append (emit);
+					if (emit_list == NULL)
+						emit_list = new PendingEmitList ();
+					emit_list->list.Append (emit);
 				} else {
 					if (emits == NULL)
 						emits = new List ();
@@ -4048,24 +4050,20 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 			ed = (EventData *) ed->next;
 		}
 	}
+	if (emit_list != NULL) {
+		if (emit_on_main_thread == NULL)
+			emit_on_main_thread = new List ();
+		emit_on_main_thread->Append (emit_list);
+		add_tick_call = true;
+	}
 	event_mutex.Unlock ();
 	
 	// emit the events to be emitted on this thread
 	EmitList (emits);
+	delete emits;
 	
-	if (Surface::InMainThread ()) {
-		// if we're already on the main thread, 
-		// we can the events to be emitted
-		// on the main thread
-		List *tmp;
-		event_mutex.Lock ();
-		tmp = emit_on_main_thread;
-		emit_on_main_thread = NULL;
-		event_mutex.Unlock ();
-		EmitList (tmp);
-	} else {
+	if (add_tick_call)
 		AddTickCall (EmitListCallback);
-	}	
 	
 cleanup:
 	if (args)
@@ -4075,14 +4073,22 @@ cleanup:
 void
 IMediaObject::EmitListMain ()
 {
+	PendingEmitList *emit_list = NULL;
+
 	VERIFY_MAIN_THREAD;
 	
-	List *list;
 	event_mutex.Lock ();
-	list = emit_on_main_thread;
-	emit_on_main_thread = NULL;
+	if (emit_on_main_thread != NULL) {
+		emit_list = (PendingEmitList *) emit_on_main_thread->First ();
+		if (emit_list != NULL)
+			emit_on_main_thread->Unlink (emit_list);
+	}
 	event_mutex.Unlock ();
-	EmitList (list);
+
+	if (emit_list != NULL) {
+		EmitList (&emit_list->list);
+		delete emit_list;
+	}
 }
 
 void
@@ -4105,8 +4111,6 @@ IMediaObject::EmitList (List *list)
 		emit->handler (this, emit->args, emit->context);
 		emit = (EmitData *) emit->next;
 	}
-	
-	delete list;
 }
 
 Media *
