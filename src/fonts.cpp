@@ -201,6 +201,8 @@ subtag_decode (const char **in, int *n)
 // Notes: Typical language codes will be in the form en-US, en-GB, ja-JP,
 // ko-KR, etc. However, it must also accept strings like zh-Hans.
 //
+// See http://en.wikipedia.org/wiki/IETF_language_tag for more details.
+//
 bool
 IsValidLang (const char *lang)
 {
