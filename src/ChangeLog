@@ -1,5 +1,9 @@
 2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* downloader.cpp: Initialize 'request' field to null.
+
+2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* downloader.cpp: A downloader can be reused, so create the HttpRequest in
 	Open and not in the constructor.
 

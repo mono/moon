@@ -44,6 +44,7 @@ Downloader::Downloader ()
 	failed_msg = NULL;
 	unzipdir = NULL;
 	unzipped = false;
+	request = NULL;
 }
 
 Downloader::~Downloader ()
