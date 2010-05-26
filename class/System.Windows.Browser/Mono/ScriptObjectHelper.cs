@@ -137,35 +137,21 @@ namespace Mono {
 			}
 
 			switch (Type.GetTypeCode (o.GetType())) {
-			case TypeCode.Boolean:
-			case TypeCode.Double:		
-			case TypeCode.Int32:
-			case TypeCode.UInt32:			
-			case TypeCode.Int64:
-			case TypeCode.UInt64:			
-			case TypeCode.String:
-				//
-				// XXX - jackson: I left the switch in because Value.FromObject allows way more types
-				// than this method used to.
-				//
-				
-				v = Value.FromObject (o);
-				break;
-			case TypeCode.Object:
-//				Console.WriteLine ("Trying to marshal managed object {0}...", o.GetType ().FullName);
-				ScriptObject so = o as ScriptObject;
-				if (so != null) {
-					v.u.p = so.Handle;
-				} else {
-					ManagedObject obj = new ManagedObject (o);
-					v.u.p = obj.Handle;
-				}
-				v.k = Kind.NPOBJ;
-//				Console.WriteLine ("  Marshalled as {0}", v.k);
-				break;
-			default:
-				Console.WriteLine ("unsupported TypeCode.{0} = {1}", Type.GetTypeCode(o.GetType()), o.GetType ().FullName);
-				throw new NotSupportedException ();
+				case TypeCode.Object:
+	//				Console.WriteLine ("Trying to marshal managed object {0}...", o.GetType ().FullName);
+					ScriptObject so = o as ScriptObject;
+					if (so != null) {
+						v.u.p = so.Handle;
+					} else {
+						ManagedObject obj = new ManagedObject (o);
+						v.u.p = obj.Handle;
+					}
+					v.k = Kind.NPOBJ;
+	//				Console.WriteLine ("  Marshalled as {0}", v.k);
+					break;
+				default:
+					v = Value.FromObject (o);
+					break;
 			}
 		}
 

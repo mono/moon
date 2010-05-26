@@ -134,7 +134,7 @@ namespace System.Windows.Browser {
 
 		public void SetProperty (int index, object value)
 		{
-			throw new System.NotImplementedException ();
+			SetProperty (index.ToString(), value);
 		}
 
 		public virtual object GetProperty (string name)

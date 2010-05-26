@@ -46,9 +46,7 @@ namespace System.Windows.Browser
 
 		public HtmlElement DocumentElement {
 			get {
-				if (document_element == null)
-					document_element = new HtmlElement (Handle);
-				return document_element;
+				return GetPropertyInternal <HtmlElement> ("documentElement");
 			}
 		}
 

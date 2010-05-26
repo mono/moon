@@ -61,21 +61,16 @@ namespace System.Windows.Browser
 			return (string) Invoke ("getAttribute", name);
 		}
 
-		[MonoTODO]
 		public string GetStyleAttribute (string name)
 		{
-			ScriptObject style = GetPropertyInternal<ScriptObject> ("style");
-
-			if (style == null) {
-				//Console.WriteLine ("HtmlElement.GetStyleAttribute ('{0}'). Getting style failed.", name);
+			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
+			if (so == null)
 				return null;
-			}
 
-			object result = style.GetPropertyInternal<object> (name);
-
-			//Console.WriteLine ("HtmlElement.GetStyleAttribute ('{0}'): {1} {2}", name, result, result == null ? null : result.GetType ());
-			
-			return (string) result;
+			string o = so.InvokeInternal<string> ("getPropertyValue", name);
+			if (o.Equals (String.Empty))
+				return null;
+			return o;
 		}
 
 		public void RemoveAttribute (string name)
@@ -89,10 +84,10 @@ namespace System.Windows.Browser
 		}
 
 				
-		[MonoTODO]
 		public void RemoveStyleAttribute (string name)
 		{
-			throw new NotImplementedException ();
+			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
+			so.InvokeInternal<object> ("removeProperty", name);
 		}
 
 		public void SetAttribute (string name, string value)
@@ -100,11 +95,10 @@ namespace System.Windows.Browser
 			InvokeInternal<object> ("setAttribute", name, value);
 		}
 
-		[MonoTODO ("This doesn't seem to work.")]
 		public void SetStyleAttribute (string name, string value)
 		{
 			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
-			so.SetProperty (name, value);
+			so.InvokeInternal<object> ("setProperty", name, value, "");
 		}
 
 		public ScriptObjectCollection Children {

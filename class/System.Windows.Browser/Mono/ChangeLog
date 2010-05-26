@@ -1,3 +1,8 @@
+2010-05-26  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptObjectHelper.cs: Remove type case from ValueFromObject,
+	should not be needed (fixes for drt 981)
+
 2010-05-24  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptObjectHelper.cs: update LookupScriptObject call

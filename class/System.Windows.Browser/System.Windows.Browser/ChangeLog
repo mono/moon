@@ -1,5 +1,14 @@
 2010-05-26  Andreia Gaita  <avidigal@novell.com>
 
+	fixes for drt 981
+
+	* HtmlDocument.cs: fix DocumentElement
+	* HtmlElement.cs: Implement RemoveStyleAttribute, fix
+	  (Set|Get)StyleAttribute
+	* ScriptObject.cs: Implement SetProperty
+
+2010-05-26  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs: Add needed locks
 
 2010-05-24  Andreia Gaita  <avidigal@novell.com>
