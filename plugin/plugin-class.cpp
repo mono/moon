@@ -592,14 +592,28 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 
 	// do not let cross-domain application re-register the events (e.g. via scripting)
 	if (plugin->IsCrossDomainApplication ()) {
-//		g_warning ("xdomain restriction on javascript event: %s", proxy->GetCallbackAsString ());
-		return;
+		const char *name = proxy->GetCallbackAsString ();
+		// g_warning ("xdomain restriction on javascript event: %s", name);
+
+		// OnLoad is a special case and is emmitted if CrossDomainAccess.ScriptableOnly is specified and if EnabledHtmlAccess == true
+		if (strcmp ("OnLoad", name) != 0)
+			return;
+		if (Deployment::GetCurrent ()->GetExternalCallersFromCrossDomain () != CrossDomainAccessScriptableOnly)
+			return;
+		if (!plugin->GetEnableHtmlAccess ())
+			return;
+
+		// OnLoad might be emitted but it does not provide a sender nor data (see DRT 361 / 366)
+		js_sender = NULL;
+		calldata = NULL;
+		NULL_TO_NPVARIANT (args[1]);
+		argcount++;
 	}
 
 	previous_deployment = Deployment::GetCurrent ();
 	Deployment::SetCurrent (plugin->GetDeployment ());
 
-	if (js_sender->GetObjectType () == Type::SURFACE) {
+	if (js_sender && (js_sender->GetObjectType () == Type::SURFACE)) {
 		// This is somewhat hackish, but is required for
 		// the FullScreenChanged event (js expects the
 		// sender to be the toplevel canvas, not the surface,

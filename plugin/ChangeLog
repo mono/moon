@@ -1,3 +1,9 @@
+2010-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Cover special case where OnLoad is emmitted for 
+	xdomain apps, without a sender or data, if CrossDomainAccess.
+	ScriptableOnly is specified and if EnabledHtmlAccess == true
+
 2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: Re-add a check for not allowing downloaders to be used for
