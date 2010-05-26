@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -65,21 +66,32 @@ namespace System.Windows.Data {
 				AddItem (item, allowSorting);
 			} else {
 				var desc = descriptions [Depth];
-				var name = desc.GroupNameFromItem (item, Depth, culture);
-				StandardCollectionViewGroup subGroup = null;
-				foreach (StandardCollectionViewGroup group in Items) {
-					if (desc.NamesMatch (group.Name, name)) {
-						subGroup = group;
-						break;
-					}
+				var groupNames = desc.GroupNameFromItem (item, Depth, culture);
+				if (groupNames is IList) {
+					foreach (var name in (IList) groupNames)
+						AddInSubtree (item, culture, descriptions, allowSorting, name);
+				} else {
+					AddInSubtree (item, culture, descriptions, allowSorting, groupNames);
 				}
-				if (subGroup == null) {
-					int depth = Depth + 1;
-					subGroup = new StandardCollectionViewGroup (this, name, depth, depth == descriptions.Count, Sorters);
-					AddItem (subGroup, allowSorting);
-				}
+			}
+		}
 
-				subGroup.AddInSubtree (item, culture, descriptions, allowSorting);
+		internal void AddInSubtree (object item, CultureInfo culture, IList<GroupDescription> descriptions, bool allowSorting, object name)
+		{
+			bool added = false;
+			foreach (StandardCollectionViewGroup group in Items) {
+				var desc = descriptions [Depth];
+				if (desc.NamesMatch (group.Name, name)) {
+					group.AddInSubtree (item, culture, descriptions, allowSorting);
+					added = true;
+				}
+			}
+
+			if (!added) {
+				int depth = Depth + 1;
+				var group = new StandardCollectionViewGroup (this, name, depth, depth == descriptions.Count, Sorters);
+				AddItem (group, allowSorting);
+				group.AddInSubtree (item, culture, descriptions, allowSorting);
 			}
 		}
 

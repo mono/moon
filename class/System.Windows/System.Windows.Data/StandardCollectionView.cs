@@ -534,10 +534,11 @@ namespace System.Windows.Data {
 			// FIXME: I need to check the ordering on the events when the source is INCC
 			CurrentAddItem = newObject;
 			IsAddingNew = true;
-			AddToSourceCollection (newObject);
 			if (Grouping)
 				RootGroup.AddItem (newObject, false);
+			AddToSourceCollection (newObject);
 			MoveCurrentTo (newObject);
+
 			if (newObject is IEditableObject)
 				((IEditableObject) newObject).BeginEdit ();
 
@@ -553,9 +554,9 @@ namespace System.Windows.Data {
 			}
 		}
 
-		void RemoveFromSourceCollection (object item)
+		void RemoveFromSourceCollection (int index)
 		{
-			int index = SourceCollection.IndexOf (item);
+			var item = SourceCollection [index];
 			SourceCollection.RemoveAt (index);
 			if (!(SourceCollection is INotifyCollectionChanged)) {
 				HandleSourceCollectionChanged (SourceCollection, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, item, index));
@@ -568,9 +569,10 @@ namespace System.Windows.Data {
 				throw new InvalidOperationException ("Cannot cancel edit while adding new");
 
 			if (IsEditingItem) {
-				if (CanCancelEdit) {
-					((IEditableObject) CurrentEditItem).CancelEdit ();
-				}
+				if (!CanCancelEdit)
+					throw new InvalidOperationException ("Cannot cancel edit when CanCancelEdit is false");
+
+				((IEditableObject) CurrentEditItem).CancelEdit ();
 				CurrentEditItem = null;
 				IsEditingItem = false;
 				CanCancelEdit = false;
@@ -589,7 +591,7 @@ namespace System.Windows.Data {
 				if (Grouping) {
 					RootGroup.RemoveItem (CurrentAddItem);
 				}
-				RemoveFromSourceCollection (CurrentAddItem);
+				RemoveFromSourceCollection (SourceCollection.IndexOf (CurrentAddItem));
 				CurrentAddItem = null;
 				IsAddingNew = false;
 				UpdateCanAddNewAndRemove ();
@@ -681,10 +683,10 @@ namespace System.Windows.Data {
 			if (IsEditingItem)
 				throw new InvalidOperationException ("Cannot CommitNew while editing an item");
 			if (IsAddingNew) {
-								if (CurrentAddItem is IEditableObject)
+				if (CurrentAddItem is IEditableObject)
 					((IEditableObject) CurrentAddItem).EndEdit ();
 				if (Filter != null && !Filter (CurrentAddItem)) {
-					RemoveFromSourceCollection (CurrentAddItem);
+					RemoveFromSourceCollection (SourceCollection.IndexOf (CurrentAddItem));
 				} else {
 					// When adding a new item, we initially put it in the root group. Once it's committed
 					// we need to place it in the correct subtree group.
@@ -744,7 +746,9 @@ namespace System.Windows.Data {
 				throw new InvalidOperationException ("Removing is not supported by this collection");
 			if (IsAddingNew || IsEditingItem)
 				throw new InvalidOperationException ("Cannot remove an item when adding or editing an item");
-			RemoveFromSourceCollection (item);
+			int index = SourceCollection.IndexOf (item);
+			if (index != -1)
+				RemoveFromSourceCollection (index);
 		}
 
 		public void RemoveAt (int index)
@@ -753,7 +757,8 @@ namespace System.Windows.Data {
 				throw new InvalidOperationException ("Removing is not supported by this collection");
 			if (IsAddingNew || IsEditingItem)
 				throw new InvalidOperationException ("Cannot remove an item when adding or editing an item");
-			RemoveFromSourceCollection (ItemAtIndex (index));
+
+			RemoveFromSourceCollection (SourceCollection.IndexOf (ItemAtIndex (index)));
 		}
 
 		void UpdateCanAddNewAndRemove ()

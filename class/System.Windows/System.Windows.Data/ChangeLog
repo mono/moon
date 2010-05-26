@@ -1,3 +1,21 @@
+2010-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardCollectionViewGroup.cs: If GroupNameFromItem returns
+	  a collection (IList?) we need to enumerate that and add the
+	  current item to each CollectionViewGroup in the IList.
+
+	* PropertyGroupDescription.cs: Make GroupNameFromItem a little
+	  prettier. Also fix a case of bad caching - we need to null
+	  the property path walker whenever the propertyName changes
+	  so we re-create a new one with the new path.
+
+	* StandardCollectionView.cs: When calling AddNew () we need to
+	  add the item to the group before adding it to the source
+	  collection. If we don't IndexOf () the item will return -1
+	  when we respond to the INotifyCollectionChanged for the
+	  source collection. Also fix some cases where we weren't
+	  throwing exceptions in the right place.
+
 2010-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPathNode.cs:

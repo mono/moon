@@ -54,6 +54,7 @@ namespace System.Windows.Data {
 			set {
 				if (propertyName != value) {
 					propertyName = value;
+					PropertyPathWalker = null;
 					OnPropertyChanged (new PropertyChangedEventArgs ("PropertyName"));
 				}
 			}
@@ -98,14 +99,14 @@ namespace System.Windows.Data {
 
 		public override object GroupNameFromItem (object item, int level, CultureInfo culture)
 		{
+			object value;
 			if (string.IsNullOrEmpty (PropertyName)) {
-				return item;
+				value = item;
+			} else {
+				PropertyPathWalker = PropertyPathWalker ?? new PropertyPathWalker (PropertyName);
+				value = PropertyPathWalker.GetValue (item);
 			}
-			PropertyPathWalker = PropertyPathWalker ?? new PropertyPathWalker (PropertyName);
-			PropertyPathWalker.Update (item);
 
-			var value = PropertyPathWalker.IsPathBroken ? null : PropertyPathWalker.Value;
-			PropertyPathWalker.Update (null);
 			if (converter != null)
 				value = converter.Convert (value, typeof (object), level, culture);
 			return value;
