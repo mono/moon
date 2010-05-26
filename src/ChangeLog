@@ -1,3 +1,7 @@
+2010-05-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (Emit): Don't warn for async events.
+
 2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* downloader.cpp: Initialize 'request' field to null.
