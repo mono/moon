@@ -103,7 +103,9 @@ namespace System.Windows.Browser {
 
 				if (handleIsScriptableNPObject)
 					free_mapping = AddNativeMapping (value, this);
-				cachedObjects[value] = new WeakReference (this);
+				lock (cachedObjects) {
+					cachedObjects[value] = new WeakReference (this);
+				}
 			}
 		}
 
@@ -474,19 +476,24 @@ namespace System.Windows.Browser {
 		internal static ScriptObject LookupScriptObject (IntPtr obj_handle)
 		{
 			ScriptObject obj = null;
-
 			ScriptObjectToggleRef tref = null;
-			toggleRefs.TryGetValue (obj_handle, out tref);
+			WeakReference wref = null;
+
+			lock (toggleRefs) {
+				toggleRefs.TryGetValue (obj_handle, out tref);
+			}
+
 			if (tref != null)
 				obj = tref.Target;
 			else {
-				WeakReference wref = null;
-				cachedObjects.TryGetValue (obj_handle, out wref);
-				if (wref != null) {
-					if (wref.IsAlive)
-						obj = wref.Target as ScriptObject;
-					else
-						cachedObjects.Remove (obj_handle);
+				lock (cachedObjects) {
+					cachedObjects.TryGetValue (obj_handle, out wref);
+					if (wref != null) {
+						if (wref.IsAlive)
+							obj = wref.Target as ScriptObject;
+						else
+							cachedObjects.Remove (obj_handle);
+					}
 				}
 			}
 			return obj;
