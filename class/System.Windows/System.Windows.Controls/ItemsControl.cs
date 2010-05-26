@@ -131,9 +131,9 @@ namespace System.Windows.Controls {
 					((INotifyCollectionChanged)newSource).CollectionChanged += OnSourceCollectionChanged;
 				}
 				
-				itemsIsDataBound = true;
 				Items.ClearImpl ();
 				Items.SetIsReadOnly (true);
+				itemsIsDataBound = true;
 				
 				foreach (var v in newSource)
 					Items.AddImpl (v);

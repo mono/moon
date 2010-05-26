@@ -1,3 +1,8 @@
+2010-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: If we get a collection reset event, just
+	  attempt to reselect the current selection.
+
 2010-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs:

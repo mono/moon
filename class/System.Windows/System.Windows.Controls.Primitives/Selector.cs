@@ -387,7 +387,7 @@ namespace System.Windows.Controls.Primitives {
 				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				Selection.Select (null);
+				Selection.Select (SelectedItem);
 				break;
 				
 			case NotifyCollectionChangedAction.Remove:
