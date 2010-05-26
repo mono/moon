@@ -1,5 +1,12 @@
 2010-05-26  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: Sometimes we don't want to do the
+	  sanity checks to make sure we don't have duplicates in the
+	  ItemContainerGenerator dictionaries. It is legal to have one
+	  item in multiple containers.
+
+2010-05-26  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: Make sure we access the 'Items' property
 	  before setting itemsIsDatabound to true as the first time we
 	  touch that property it sets it to false. Fixes a horrible to

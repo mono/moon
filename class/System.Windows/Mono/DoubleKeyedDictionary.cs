@@ -50,7 +50,12 @@ namespace System.Windows
 
 		public void Add (K1 key1, K2 key2)
 		{
-			if (forwards.ContainsKey (key1) || backwards.ContainsKey (key2))
+			Add (key1, key2, false);
+		}
+
+		public void Add (K1 key1, K2 key2, bool ignoreExisting)
+		{
+			if (!ignoreExisting && (forwards.ContainsKey (key1) || backwards.ContainsKey (key2)))
 				throw new InvalidOperationException ("Dictionary already contains this key pair");
 			forwards [key1] = key2;
 			backwards [key2] = key1;
@@ -65,6 +70,14 @@ namespace System.Windows
 		public void Remove (K1 key1, K2 key2)
 		{
 			if (!forwards.ContainsKey (key1) || !backwards.ContainsKey (key2))
+				throw new InvalidOperationException ("Dictionary does not contain this key pair");
+			forwards.Remove (key1);
+			backwards.Remove (key2);
+		}
+
+		public void Remove (K1 key1, K2 key2, bool ignoreExisting)
+		{
+			if (!ignoreExisting && (!forwards.ContainsKey (key1) || !backwards.ContainsKey (key2)))
 				throw new InvalidOperationException ("Dictionary does not contain this key pair");
 			forwards.Remove (key1);
 			backwards.Remove (key2);

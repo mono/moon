@@ -156,19 +156,25 @@ namespace System.Windows.Data {
 
 		internal bool RemoveInSubtree (object item)
 		{
+			bool removed = false;
 			if (IsBottomLevel) {
-				if (RemoveItem (item))
-					return true;
+				removed |= RemoveItem (item);
 			} else {
 				foreach (StandardCollectionViewGroup group in Items) {
 					if (group.RemoveInSubtree (item)) {
-						if (group.ProtectedItems.Count == 0)
-							RemoveItem (group);
-						return true;
+						removed = true;
+					}
+				}
+
+				for (int i = 0; i < ProtectedItems.Count; i ++) {
+					var g = ProtectedItems [i] as StandardCollectionViewGroup;
+					if (g != null && g.ProtectedItems.Count == 0) {
+						ProtectedItems.Remove (g);
+						i --;
 					}
 				}
 			}
-			return false;
+			return removed;
 		}
 	}
 }

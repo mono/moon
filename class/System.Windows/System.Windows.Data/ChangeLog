@@ -1,5 +1,22 @@
 2010-05-26  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionViewGroup.cs: We have to support removing
+	  items from multiple collection view groups now so don't
+	  remove empty groups as we iterate, do a separate loop at the
+	  end. This can all be done in one loop if I remember to
+	  rewrite it later ;)
+
+	* StandardCollectionView.cs: Ensure we remove the item from
+	  the root group when the item is filtered out. When finding
+	  the correct index of the new item when sorting is enabled,
+	  we need to binary search the filteredList, not the source
+	  collection. If there's filtering and we binary search teh
+	  source collection, we'll get crazy indices and die. Finally
+	  use the correct values when raising the collection changed
+	  event.
+
+2010-05-26  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionViewGroup.cs: If GroupNameFromItem returns
 	  a collection (IList?) we need to enumerate that and add the
 	  current item to each CollectionViewGroup in the IList.

@@ -212,6 +212,25 @@ namespace MoonTest.System.Windows.Data {
 			Assert.AreEqual (3, upper.ItemCount, "#15");
 			Assert.AreEqual (3, upper.Items.Count, "#17");
 		}
+
+		[TestMethod]
+		public void OneItem_TwoGroups()
+		{
+			var o = new object();
+			var source = new CollectionViewSource { Source = new[] { o } };
+			source.GroupDescriptions.Add (new ConcretePropertyGroupDescription() {
+				GroupNameFromItemFunc = (item, level, culture) => new [] { "First", "Second" }
+			});
+
+			Assert.AreEqual (2, source.View.Groups.Count, "#1");
+			var lowerGroup = (CollectionViewGroup) source.View.Groups [0];
+			Assert.AreEqual(1, lowerGroup.Items.Count, "#2");
+			Assert.AreEqual(o, lowerGroup.Items [0], "#3");
+
+			var upperGroup = (CollectionViewGroup)source.View.Groups[1];
+			Assert.AreEqual(1, upperGroup.Items.Count, "#2");
+			Assert.AreEqual(o, upperGroup.Items[0], "#3");
+		}
 	}
 
 	class ConcreteCollectionViewGroup : CollectionViewGroup {

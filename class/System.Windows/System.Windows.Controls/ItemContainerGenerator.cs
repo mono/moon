@@ -171,7 +171,7 @@ namespace System.Windows.Controls {
 
 			RealizedElements.Add (index);
 			ContainerIndexMap.Add (container, index);
-			ContainerItemMap.Add (container, item);
+			ContainerItemMap.Add (container, item, true);
 			
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
 			return container;
@@ -325,7 +325,7 @@ namespace System.Windows.Controls {
 				var container = ContainerIndexMap [index + i];
 				var item = ContainerItemMap [container];
 				ContainerIndexMap.Remove (container, index + i);
-				ContainerItemMap.Remove (container, item);
+				ContainerItemMap.Remove (container, item, true);
 				RealizedElements.Remove (index + i);
 				Owner.ClearContainerForItem (container, item);
 			}

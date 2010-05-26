@@ -1,3 +1,10 @@
+2010-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* DoubleKeyedDictionary.cs: Sometimes we don't want to do the
+	  sanity checks to make sure we don't have duplicates in the
+	  ItemContainerGenerator dictionaries. It is legal to have one
+	  item in multiple containers.
+
 2010-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* IListExtensions.cs: Add a handy 'AddRange' extension method

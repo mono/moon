@@ -685,13 +685,14 @@ namespace System.Windows.Data {
 			if (IsAddingNew) {
 				if (CurrentAddItem is IEditableObject)
 					((IEditableObject) CurrentAddItem).EndEdit ();
+
+				RootGroup.RemoveItem (CurrentAddItem);
 				if (Filter != null && !Filter (CurrentAddItem)) {
 					RemoveFromSourceCollection (SourceCollection.IndexOf (CurrentAddItem));
 				} else {
 					// When adding a new item, we initially put it in the root group. Once it's committed
 					// we need to place it in the correct subtree group.
 					if (Grouping) {
-						RootGroup.RemoveItem (CurrentAddItem);
 						RootGroup.AddInSubtree (CurrentAddItem, Culture, GroupDescriptions);
 					}
 
@@ -699,7 +700,7 @@ namespace System.Windows.Data {
 					if (SortDescriptions.Count > 0) {
 						// The newly added item is at the end of the array. If we're sorting, we may have to move it.
 						// Use a binary search to figure out where the item should be in the list and put it in there.
-						int actualIndex = SourceCollection.IndexOf (CurrentAddItem);
+						int actualIndex = filteredList.IndexOf (CurrentAddItem);
 						int sortedIndex = filteredList.BinarySearch (0, filteredList.Count - 1, CurrentAddItem, new PropertyComparer (SortDescriptions));
 						if (sortedIndex < 0)
 							sortedIndex = ~sortedIndex;
@@ -707,8 +708,8 @@ namespace System.Windows.Data {
 						if (actualIndex != sortedIndex) {
 							filteredList.RemoveAt (actualIndex);
 							filteredList.Insert (sortedIndex, CurrentAddItem);
-							RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, currentAddItem, actualIndex));
-							RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, currentAddItem, sortedIndex));
+							RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, CurrentAddItem, actualIndex));
+							RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, CurrentAddItem, sortedIndex));
 							if (CurrentAddItem == CurrentItem)
 								UpdateCurrentPositionAndItem (sortedIndex, CurrentAddItem);
 						}

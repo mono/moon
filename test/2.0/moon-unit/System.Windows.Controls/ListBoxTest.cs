@@ -39,6 +39,7 @@ using Microsoft.Silverlight.Testing;
 using MoonTest.System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using System.Collections.Generic;
+using MoonTest.System.Windows.Data;
 
 namespace MoonTest.System.Windows.Controls {
 	public class ListBoxPoker : ListBox, IPoker
@@ -488,6 +489,89 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsTrue (item.Focus (), "#2");
 			});
 			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ICV_OneItemTwoGroups ()
+		{
+			var o = new object();
+			var source = new CollectionViewSource { Source = new[] { o } };
+			var group = new ConcretePropertyGroupDescription {
+				GroupNameFromItemFunc = (item, level, culture) => new[] { "First", "Second" }
+			};
+
+			source.GroupDescriptions.Add(group);
+			var box = new ListBox { ItemsSource = source.View };
+			CreateAsyncTest (box,
+				() => {
+					box.ApplyTemplate();
+				}, () => {
+					Assert.AreEqual(2, box.Items.Count, "#1");
+					Assert.AreSame (o, box.Items[0], "#2");
+					Assert.AreSame (o, box.Items[1], "#3");
+
+					Assert.IsNotNull(box.ItemContainerGenerator.ContainerFromIndex(0), "#4");
+					Assert.AreNotSame(box.ItemContainerGenerator.ContainerFromIndex(0), box.ItemContainerGenerator.ContainerFromIndex(1), "#5");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ICV_OneItemTwoGroups2()
+		{
+			var o = new object();
+			var source = new CollectionViewSource { Source = new[] { o } };
+			var group = new ConcretePropertyGroupDescription {
+				GroupNameFromItemFunc = (item, level, culture) => new[] { "First", "Second" }
+			};
+
+			var box = new ListBox { ItemsSource = source.View };
+			source.GroupDescriptions.Add(group);
+
+			CreateAsyncTest(box,
+				() => {
+					box.ApplyTemplate();
+				}, () => {
+					Assert.AreEqual(2, box.Items.Count, "#1");
+					Assert.AreEqual(o, box.Items[0], "#2");
+					Assert.AreEqual(o, box.Items[1], "#3");
+
+					Assert.IsNotNull(box.ItemContainerGenerator.ContainerFromIndex(0), "#4");
+					Assert.AreNotSame(box.ItemContainerGenerator.ContainerFromIndex(0), box.ItemContainerGenerator.ContainerFromIndex(1), "#5");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ICV_OneItemTwoGroups3 ()
+		{
+			var o = new object();
+			var source = new CollectionViewSource { Source = new[] { o } };
+			var group = new ConcretePropertyGroupDescription {
+				GroupNameFromItemFunc = (item, level, culture) => new[] { "First", "Second" }
+			};
+
+			var box = new ListBox { ItemsSource = source.View };
+			CreateAsyncTest(box,
+				() => {
+					box.ApplyTemplate();
+				}, () => {
+					source.GroupDescriptions.Add(group);
+					Assert.AreEqual(2, box.Items.Count, "#1");
+					Assert.AreEqual(o, box.Items[0], "#2");
+					Assert.AreEqual(o, box.Items[1], "#3");
+
+					// FIXME: This assertion passes in SL but not in ML. I don't think it's hugely important.
+					Assert.IsNull(box.ItemContainerGenerator.ContainerFromIndex(0), "#4");
+				}, () => {
+					Assert.IsNotNull(box.ItemContainerGenerator.ContainerFromIndex(0), "#5");
+					Assert.AreNotSame(box.ItemContainerGenerator.ContainerFromIndex(0), box.ItemContainerGenerator.ContainerFromIndex(1), "#6");
+				}
+			);
 		}
 
 		[TestMethod]
