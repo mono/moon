@@ -1044,7 +1044,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 		if (calldata) {
 #if DEBUG
 			if (!(GetObjectType () == Type::TEXTBOX && (event_id == TextBox::SelectionChangedEvent || event_id == TextBox::TextChangedEvent))
-			    || !(GetObjectType () == Type::PASSWORDBOX && event_id == PasswordBox::PasswordChangedEvent))
+			    && !(GetObjectType () == Type::PASSWORDBOX && event_id == PasswordBox::PasswordChangedEvent))
 				printf ("EMIT OF EVENT %d ON OBJECT %s CALLED WITH NO LISTENERS AND NON-NULL CALLDATA\n", event_id, GetTypeName());
 #endif
 			calldata->unref ();
