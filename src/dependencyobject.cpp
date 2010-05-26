@@ -25,6 +25,7 @@
 #include "uielement.h"
 #include "animation.h"
 #include "deployment.h"
+#include "textbox.h"
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 gint64 provider_property_lookups = 0;
