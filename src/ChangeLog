@@ -1,5 +1,10 @@
 2010-05-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp (EmitEventOnList): Simplified a smidge.
+
+	* textbox.cpp (PostOnKeyDown): Use the correct event keycode so
+	that Enter actually works. Fixes a slew of drts.
+
 	* dependencyobject.cpp (Emit): Don't warn for async events.
 
 2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>

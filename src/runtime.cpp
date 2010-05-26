@@ -1711,9 +1711,10 @@ Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, in
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
 		args->ref ();
-		bool h = node->uielement->DoEmit (event_id, args);
-		if (h)
+		
+		if (node->uielement->DoEmit (event_id, args))
 			handled = true;
+		
 		if (zombie) {
 			handled = false;
 			break;

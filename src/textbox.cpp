@@ -1501,12 +1501,13 @@ TextBoxBase::paste (MoonClipboard *clipboard, const char *text, gpointer closure
 void
 TextBoxBase::OnKeyDown (KeyEventArgs *args)
 {
-	MoonModifier modifiers = (MoonModifier) args->GetEvent()->GetModifiers ();
-	Key key = args->GetEvent()->GetSilverlightKey ();
+	MoonKeyEvent *event = args->GetEvent ();
+	MoonModifier modifiers = (MoonModifier) event->GetModifiers ();
+	Key key = event->GetSilverlightKey ();
 	MoonClipboard *clipboard;
 	bool handled = false;
 	
-	if (args->GetEvent()->IsModifier ())
+	if (event->IsModifier ())
 		return;
 	
 	// set 'emit' to NOTHING_CHANGED so that we can figure out
@@ -1670,8 +1671,8 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 void
 TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 {
-	MoonKeyEvent *event = args->GetEvent();
-	guint key = event->GetPlatformKeyval ();
+	MoonKeyEvent *event = args->GetEvent ();
+	int key = event->GetSilverlightKey ();
 	gunichar c;
 	
 	// Note: we don't set Handled=true because anything we handle here, we
