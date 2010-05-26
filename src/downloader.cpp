@@ -34,10 +34,6 @@ Downloader::Downloader ()
 	: DependencyObject (Type::DOWNLOADER)
 {
 	LOG_DOWNLOADER ("Downloader::Downloader ()\n");
-
-	request = GetDeployment ()->CreateHttpRequest (HttpRequest::DisableAsyncSend);
-	request->AddHandler (HttpRequest::StoppedEvent, StoppedCallback, this);
-	request->AddHandler (HttpRequest::ProgressChangedEvent, ProgressChangedCallback, this);
 	
 	send_queued = false;
 	started = false;
@@ -56,6 +52,7 @@ Downloader::~Downloader ()
 	
 	if (request != NULL) {
 		request->RemoveAllHandlers (this);
+		request->Dispose ();
 		request->unref ();
 		request = NULL;
 	}
@@ -422,6 +419,15 @@ Downloader::OpenInitialize ()
 	g_free (filename);
 	failed_msg = NULL;
 	filename = NULL;
+	if (request != NULL) {
+		request->RemoveAllHandlers (this);
+		request->Dispose ();
+		request->unref ();
+		request = NULL;
+	}
+	request = GetDeployment ()->CreateHttpRequest (HttpRequest::DisableAsyncSend);
+	request->AddHandler (HttpRequest::StoppedEvent, StoppedCallback, this);
+	request->AddHandler (HttpRequest::ProgressChangedEvent, ProgressChangedCallback, this);
 }
 
 void

@@ -1,5 +1,10 @@
 2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* downloader.cpp: A downloader can be reused, so create the HttpRequest in
+	Open and not in the constructor.
+
+2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network.cpp|h:
 	* downloader.cpp: Make HttpRequest::Send send async using tick calls. Fixes
 	our media test #126 (it raises a download error event before the surface'
