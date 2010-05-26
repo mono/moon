@@ -1,5 +1,12 @@
 2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network.cpp|h:
+	* downloader.cpp: Make HttpRequest::Send send async using tick calls. Fixes
+	our media test #126 (it raises a download error event before the surface'
+	loaded event otherwise).
+
+2010-05-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* application.cpp: GetResource: add event handlers before calling Open, since
 	Open might raise error events.
 

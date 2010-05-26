@@ -158,10 +158,22 @@ HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 void
 HttpRequest::Send ()
 {
+	LOG_DOWNLOADER ("HttpRequest::Send () async send disabled: %i\n", options & DisableAsyncSend);
+
+	if (options & DisableAsyncSend) {
+		SendAsync ();
+	} else {
+		AddTickCall (SendAsyncCallback);
+	}
+}
+
+void
+HttpRequest::SendAsync ()
+{
 	char *templ;
 
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Send () is_aborted: %i is_completed: %i\n", is_aborted, is_completed);
+	LOG_DOWNLOADER ("HttpRequest::SendAsync () is_aborted: %i is_completed: %i\n", is_aborted, is_completed);
 
 	if (is_aborted || is_completed)
 		return;
@@ -194,6 +206,12 @@ HttpRequest::Send ()
 #endif
 
 	SendImpl ();
+}
+
+void
+HttpRequest::SendAsyncCallback (EventObject *obj)
+{
+	((HttpRequest *) obj)->SendAsync ();
 }
 
 void
@@ -357,7 +375,7 @@ HttpRequest::NotifyFinalUri (const char *value)
 	// check if (a) it's a redirection and (b) if it is allowed for the current downloader policy
 
 	if (!CheckRedirectionPolicy (final_uri)) {
-		LOG_DOWNLOADER ("HttpRequest::NotifyFinalUri ('%s'): Security Policy Validation failed\n");
+		LOG_DOWNLOADER ("HttpRequest::NotifyFinalUri ('%s'): Security Policy Validation failed\n", value);
 		Failed ("Security Policy Violation");
 		Abort ();
 	}

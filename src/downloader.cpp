@@ -35,7 +35,7 @@ Downloader::Downloader ()
 {
 	LOG_DOWNLOADER ("Downloader::Downloader ()\n");
 
-	request = GetDeployment ()->CreateHttpRequest (HttpRequest::OptionsNone);
+	request = GetDeployment ()->CreateHttpRequest (HttpRequest::DisableAsyncSend);
 	request->AddHandler (HttpRequest::StoppedEvent, StoppedCallback, this);
 	request->AddHandler (HttpRequest::ProgressChangedEvent, ProgressChangedCallback, this);
 	
