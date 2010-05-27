@@ -96,9 +96,9 @@ system_windows_sources =							\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.ComponentModel/ICollectionView.cs			\
 	$(srcdir)/System.ComponentModel/INotifyDataErrorInfo.cs			\
-	$(srcdir)/System.ComponentModel/IEditableCollectionView.cs			\
+	$(srcdir)/System.ComponentModel/IEditableCollectionView.cs		\
 	$(srcdir)/System.ComponentModel/GroupDescription.cs			\
-	$(srcdir)/System.ComponentModel/NewItemPlaceholderPosition.cs			\
+	$(srcdir)/System.ComponentModel/NewItemPlaceholderPosition.cs		\
 	$(srcdir)/System.ComponentModel/SortDescription.cs			\
 	$(srcdir)/System.ComponentModel/SortDescriptionCollection.cs 		\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
@@ -496,6 +496,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/CollectionViewGroup.cs			\
 	$(srcdir)/System.Windows.Data/CollectionViewNode.cs			\
 	$(srcdir)/System.Windows.Data/CollectionViewSource.cs			\
+	$(srcdir)/System.Windows.Data/EditableCollectionView.cs			\
 	$(srcdir)/System.Windows.Data/EnumerableCollectionView.cs		\
 	$(srcdir)/System.Windows.Data/FilterEventArgs.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\

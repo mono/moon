@@ -1,3 +1,9 @@
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* System.Windows.mdp: Strip out the IEditableCollectionView
+	  properties into the new 'EditableCollectionView' class.
+
 2010-05-26  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add SampleReadyEventArgs

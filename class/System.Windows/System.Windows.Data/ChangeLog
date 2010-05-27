@@ -1,5 +1,12 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs:
+	* EditableCollectionView.cs: Strip out the
+	  IEditableCollectionView properties into the new
+	  'EditableCollectionView' class.
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionView.cs:
 	* StandardCollectionView.cs: Make StandardCollectionView
 	  inherit from CollectionView and move all the ICollectionView

@@ -10,17 +10,7 @@ using System.Reflection;
 
 namespace System.Windows.Data {
 
-	sealed class StandardCollectionView : CollectionView, IEditableCollectionView, IDeferRefresh {
-
-		INPCProperty<bool> canAddNew;
-		INPCProperty<bool> canCancelEdit;
-		INPCProperty<bool> canRemove;
-		INPCProperty<object> currentAddItem;
-		INPCProperty<object> currentEditItem;
-		INPCProperty<bool> isAddingNew;
-
-		INPCProperty<bool> isEditingItem;
-		INPCProperty<NewItemPlaceholderPosition> newItemPlaceholderPosition;
+	sealed class StandardCollectionView : EditableCollectionView, IDeferRefresh {
 
 		List<object> filteredList;
 
@@ -32,51 +22,9 @@ namespace System.Windows.Data {
 			}
 		}
 
-		public bool CanAddNew {
-			get { return canAddNew.Value; }
-			private set { canAddNew.Value = value;}
-		}
-
-		public bool CanCancelEdit {
-			get { return canCancelEdit.Value; }
-			private set {
-				if (CanCancelEdit != value)
-					canCancelEdit.Value = value;
-			}
-		}
-
-		public bool CanRemove {
-			get { return canRemove.Value; }
-			private set { canRemove.Value = value;}
-		}
 
 		PropertyComparer Comparer {
 			get { return new PropertyComparer (SortDescriptions); }
-		}
-
-		public bool IsAddingNew {
-			get { return isAddingNew.Value; }
-			private set { isAddingNew.Value = value;}
-		}
-
-		public bool IsEditingItem {
-			get { return isEditingItem.Value; }
-			private set { isEditingItem.Value = value;}
-		}
-
-		public NewItemPlaceholderPosition NewItemPlaceholderPosition {
-			get { return newItemPlaceholderPosition.Value; }
-			set { newItemPlaceholderPosition.Value = value;}
-		}
-
-		public object CurrentAddItem {
-			get { return currentAddItem.Value; }
-			private set { currentAddItem.Value = value; }
-		}
-
-		public object CurrentEditItem {
-			get { return currentEditItem.Value; }
-			private set { currentEditItem.Value = value; }
 		}
 
 		int IDeferRefresh.DeferLevel {
@@ -106,16 +54,6 @@ namespace System.Windows.Data {
 		public StandardCollectionView (IList collection)
 			: base (collection)
 		{
-			var changed = PropertyChangedFunc;
-			canAddNew = INPCProperty.Create (() => CanAddNew, changed);
-			canCancelEdit = INPCProperty.Create (() => CanCancelEdit, changed);
-			canRemove = INPCProperty.Create (() => CanRemove, changed);
-			currentAddItem = INPCProperty.Create (() => CurrentAddItem, changed);
-			currentEditItem = INPCProperty.Create (() => CurrentEditItem, changed);
-			isAddingNew = INPCProperty.Create (() => IsAddingNew, changed);
-			isEditingItem = INPCProperty.Create (() => IsEditingItem, changed);
-			newItemPlaceholderPosition = INPCProperty.Create (() => NewItemPlaceholderPosition, changed);
-
 			var interfaces = SourceCollection.GetType ().GetInterfaces ();
 			foreach (var t in interfaces) {
 				if (t.IsGenericType && t.GetGenericTypeDefinition () == typeof (IList<>)) {
@@ -408,7 +346,7 @@ namespace System.Windows.Data {
 			RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
-		public object AddNew ()
+		public override object AddNew ()
 		{
 			if (((IDeferRefresh) this).DeferLevel != 0)
 				throw new InvalidOperationException ("Cannot add a new item while refresh is deferred");
@@ -459,7 +397,7 @@ namespace System.Windows.Data {
 			}
 		}
 
-		public void CancelEdit ()
+		public override void CancelEdit ()
 		{
 			if (IsAddingNew)
 				throw new InvalidOperationException ("Cannot cancel edit while adding new");
@@ -476,7 +414,7 @@ namespace System.Windows.Data {
 			}
 		}
 
-		public void CancelNew ()
+		public override void CancelNew ()
 		{
 			if (IsEditingItem)
 				throw new InvalidOperationException ("Cannot CancelNew while editing an item");
@@ -494,7 +432,7 @@ namespace System.Windows.Data {
 			}
 		}
 
-		public void CommitEdit ()
+		public override void CommitEdit ()
 		{
 			if (IsAddingNew)
 				throw new InvalidOperationException ("Cannot cancel edit while adding new");
@@ -574,7 +512,7 @@ namespace System.Windows.Data {
 			}
 		}
 
-		public void CommitNew ()
+		public override void CommitNew ()
 		{
 			if (IsEditingItem)
 				throw new InvalidOperationException ("Cannot CommitNew while editing an item");
@@ -617,7 +555,7 @@ namespace System.Windows.Data {
 			}
 		}
 
-		public void EditItem (object item)
+		public override void EditItem (object item)
 		{
 			// We can't edit an item which hasn't been comitted.
 			if (IsAddingNew && item == CurrentAddItem)
@@ -637,7 +575,7 @@ namespace System.Windows.Data {
 			UpdateCanAddNewAndRemove ();
 		}
 
-		public void Remove (object item)
+		public override void Remove (object item)
 		{
 			if (!CanRemove)
 				throw new InvalidOperationException ("Removing is not supported by this collection");
@@ -648,7 +586,7 @@ namespace System.Windows.Data {
 				RemoveFromSourceCollection (index);
 		}
 
-		public void RemoveAt (int index)
+		public override void RemoveAt (int index)
 		{
 			if (!CanRemove)
 				throw new InvalidOperationException ("Removing is not supported by this collection");
