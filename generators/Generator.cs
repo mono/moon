@@ -213,19 +213,30 @@ class Generator {
 						body.AppendLine ("\t\t\tstring_to_npvariant (ret, *result);");
 						break;
 					case "o":
-						body.AppendLine ("\t\t\tif (ret) {");
-
 						string strobj = "EventObjectCreateWrapper (GetPlugin (), ret)";
-						if (method.ReturnType.IsMoonNpType) {
+						
+						if (method.ReturnType.IsPointer) {
+							body.AppendLine ("\t\t\tif (ret) {");
+							
+							if (method.ReturnType.IsMoonNpType) {
 								string strname = method.ReturnType.GetPlainType();
 								body.AppendLine (String.Format ("\t\t\t\tMoonlight{0} *{1} = (Moonlight{0} *) MOON_NPN_CreateObject (GetInstance (), Moonlight{0}Class);", strname, strname.ToLower()));
-								body.AppendLine (String.Format ("\t\t\t\t{0}->{0} = *ret;", strname.ToLower()));
+								body.AppendLine (String.Format ("\t\t\t\t{0}->{0} = {1}ret;", strname.ToLower()));
 								strobj = strname.ToLower();
+							}
+							
+							body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (" + strobj + ", *result);");
+							body.AppendLine ("\t\t\t} else");
+							body.AppendLine ("\t\t\t\tNULL_TO_NPVARIANT (*result);");
+						} else {
+							// this will be something like a Point.
+							string strname = method.ReturnType.GetPlainType();
+							body.AppendLine (String.Format ("\t\t\tMoonlight{0} *{1} = (Moonlight{0} *) MOON_NPN_CreateObject (GetInstance (), Moonlight{0}Class);", strname, strname.ToLower()));
+							body.AppendLine (String.Format ("\t\t\t{0}->{0} = ret;", strname.ToLower()));
+							strobj = strname.ToLower();
+							
+							body.AppendLine ("\t\t\tOBJECT_TO_NPVARIANT (" + strobj + ", *result);");
 						}
-
-						body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (" + strobj + ", *result);");
-						body.AppendLine ("\t\t\t} else");
-						body.AppendLine ("\t\t\t\tNULL_TO_NPVARIANT (*result);");
 						break;
 					case "d":
 						body.AppendLine ("\t\t\tDOUBLE_TO_NPVARIANT (ret, *result);");

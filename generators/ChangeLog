@@ -1,3 +1,8 @@
+2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Generator.cs: Fixes for the plugin-class.g.cpp generator to
+	allow functions to return Point instead of Point*.
+
 2010-05-26  Chris Toshok  <toshok@ximian.com>
 
 	* TypeReference.cs: add support for MoonVideoFormat** and
