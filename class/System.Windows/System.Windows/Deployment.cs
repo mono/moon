@@ -287,12 +287,14 @@ namespace System.Windows {
 
 			if (plugin == IntPtr.Zero) {
 				string location = NativeMethods.surface_get_source_location (Surface.Native);
-				// full uri including xap
-				Uri source_uri = new Uri (location, UriKind.RelativeOrAbsolute);
+				if (location != null) {
+					// full uri including xap
+					Uri source_uri = new Uri (location, UriKind.RelativeOrAbsolute);
 
-				// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
-				// to initialize it's application and site directory storage. WebClient is another user of this
-				AppDomain.CurrentDomain.SetData ("xap_uri", PluginHost.GetApplicationIdentity (source_uri));
+					// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
+					// to initialize it's application and site directory storage. WebClient is another user of this
+					AppDomain.CurrentDomain.SetData ("xap_uri", PluginHost.GetApplicationIdentity (source_uri));
+				}
 			}
 			else {
 				PluginHost.SetPluginHandle (plugin);
