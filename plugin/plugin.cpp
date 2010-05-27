@@ -2073,9 +2073,8 @@ PluginInstance::SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 	if (!args->IsSuccess ()) {
 		GetSurface ()->GetTimeManager ()->AddTickCall (network_error_tickcall, new PluginClosure (this));
 	} else {
-		char *original_uri = request->GetOriginalUri ()->ToString ();
-		CrossDomainApplicationCheck (original_uri);
-		g_free (original_uri);
+		// the xdomain check MUST be done with the final URI so it can consider any redirection (DRT956)
+		CrossDomainApplicationCheck (request->GetFinalUri ());
 	
 		Uri *uri = new Uri ();
 	
