@@ -1,5 +1,10 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPathWalker.cs: An empty binding ( {Binding} ) means
+	  that we bind directly to the ICollectionView if it exists.
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionView.cs: Implement the IComparer<object> interface
 	  on CollectionView to keep the DRTs happy. It gives the wrong
 	  results though...

@@ -84,7 +84,8 @@ namespace System.Windows.Data
 			if (string.IsNullOrEmpty (path)) {
 				// If the property path is null or empty, we still need to add a CollectionViewNode
 				// to handle the case where we bind diretly to a CollectionViewSource. i.e. new Binding () { Source = cvs }
-				Node = new CollectionViewNode (bindDirectlyToSource, bindsToView);
+				// An empty path means we always bind directly to the view.
+				Node = new CollectionViewNode (bindDirectlyToSource, true);
 			} else {
 				var parser = new PropertyPathParser (path);
 				while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
