@@ -1,3 +1,10 @@
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionView.cs:
+	* StandardCollectionView.cs: Make StandardCollectionView
+	  inherit from CollectionView and move all the ICollectionView
+	  properties there.
+
 2010-05-26  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionViewGroup.cs: We have to support removing

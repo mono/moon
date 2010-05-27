@@ -10,12 +10,7 @@ using System.Reflection;
 
 namespace System.Windows.Data {
 
-	sealed class StandardCollectionView : ICollectionView, IEditableCollectionView, INotifyPropertyChanged, IDeferRefresh {
-
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
-		public event EventHandler CurrentChanged;
-		public event CurrentChangingEventHandler CurrentChanging;
-		public event PropertyChangedEventHandler PropertyChanged;
+	sealed class StandardCollectionView : CollectionView, IEditableCollectionView, IDeferRefresh {
 
 		INPCProperty<bool> canAddNew;
 		INPCProperty<bool> canCancelEdit;
@@ -23,14 +18,10 @@ namespace System.Windows.Data {
 		INPCProperty<object> currentAddItem;
 		INPCProperty<object> currentEditItem;
 		INPCProperty<bool> isAddingNew;
-		INPCProperty<bool> isCurrentAfterLast;
-		INPCProperty<bool> isCurrentBeforeFirst;
+
 		INPCProperty<bool> isEditingItem;
-		INPCProperty<bool> isempty;
 		INPCProperty<NewItemPlaceholderPosition> newItemPlaceholderPosition;
 
-		INPCProperty<CultureInfo> culture;
-		Predicate<object> filter;
 		List<object> filteredList;
 
 		public IList ActiveList {
@@ -78,23 +69,6 @@ namespace System.Windows.Data {
 			set { newItemPlaceholderPosition.Value = value;}
 		}
 
-		public bool CanFilter {
-			get { return true; }
-		}
-
-		public bool CanGroup {
-			get { return true; }
-		}
-
-		public bool CanSort {
-			get { return true; }
-		}
-
-		public CultureInfo Culture {
-			get { return culture.Value; }
-			set { culture.Value = value; }
-		}
-
 		public object CurrentAddItem {
 			get { return currentAddItem.Value; }
 			private set { currentAddItem.Value = value; }
@@ -105,56 +79,12 @@ namespace System.Windows.Data {
 			private set { currentEditItem.Value = value; }
 		}
 
-		public object CurrentItem {
-			get; private set;
-		}
-
-		public int CurrentPosition {
-			get; private set;
-		}
-
 		int IDeferRefresh.DeferLevel {
 			get; set;
 		}
 
-		public Predicate<object> Filter {
-			get { return filter; }
-			set {
-				filter = value;
-				Refresh ();
-			}
-		}
-
 		bool Grouping {
 			get { return Groups != null; }
-		}
-
-		public ObservableCollection<GroupDescription> GroupDescriptions {
-			get; private set;
-		}
-
-		public ReadOnlyObservableCollection<object> Groups {
-			get; private set;
-		}
-
-		public bool IsCurrentAfterLast {
-			get { return isCurrentAfterLast.Value; }
-			private set {
-				if (IsCurrentAfterLast != value)
-					isCurrentAfterLast.Value = value;
-			}
-		}
-
-		public bool IsCurrentBeforeFirst {
-			get { return isCurrentBeforeFirst.Value; }
-			private set {
-				if (IsCurrentBeforeFirst != value)
-					isCurrentBeforeFirst.Value = value;
-			}
-		}
-
-		public bool IsEmpty {
-			get; private set;
 		}
 
 		bool IsValidSelection {
@@ -169,39 +99,22 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		public SortDescriptionCollection SortDescriptions {
-			get; private set;
-		}
-
-		IEnumerable ICollectionView.SourceCollection {
-			get { return SourceCollection; }
-		}
-
-		public IList SourceCollection {
-			get; private set;
+		public new IList SourceCollection {
+			get { return (IList) base.SourceCollection; }
 		}
 
 		public StandardCollectionView (IList collection)
+			: base (collection)
 		{
-			SourceCollection = collection;
-			Func<PropertyChangedEventHandler> changed = () => PropertyChanged;
-
+			var changed = PropertyChangedFunc;
 			canAddNew = INPCProperty.Create (() => CanAddNew, changed);
 			canCancelEdit = INPCProperty.Create (() => CanCancelEdit, changed);
 			canRemove = INPCProperty.Create (() => CanRemove, changed);
-			culture = INPCProperty.Create (() => Culture, changed);
 			currentAddItem = INPCProperty.Create (() => CurrentAddItem, changed);
 			currentEditItem = INPCProperty.Create (() => CurrentEditItem, changed);
 			isAddingNew = INPCProperty.Create (() => IsAddingNew, changed);
-			isCurrentAfterLast = INPCProperty.Create (() => IsCurrentAfterLast, changed);
-			isCurrentBeforeFirst = INPCProperty.Create (() => IsCurrentBeforeFirst, changed);
 			isEditingItem = INPCProperty.Create (() => IsEditingItem, changed);
-			isempty = INPCProperty.Create (() => IsEmpty, changed);
 			newItemPlaceholderPosition = INPCProperty.Create (() => NewItemPlaceholderPosition, changed);
-
-			SourceCollection = collection;
-			SortDescriptions = new SortDescriptionCollection ();
-			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 
 			var interfaces = SourceCollection.GetType ().GetInterfaces ();
 			foreach (var t in interfaces) {
@@ -358,12 +271,12 @@ namespace System.Windows.Data {
 			return filteredList.Remove (item);
 		}
 
-		public bool Contains (object item)
+		public override bool Contains (object item)
 		{
 			return ActiveList.Contains (item);
 		}
 
-		public IDisposable DeferRefresh ()
+		public override IDisposable DeferRefresh ()
 		{
 			if (IsAddingNew || IsEditingItem)
 				throw new InvalidOperationException ("Cannot defer refresh while adding or editing");
@@ -371,7 +284,7 @@ namespace System.Windows.Data {
 			return new Deferrer (this);
 		}
 
-		public IEnumerator GetEnumerator ()
+		public override IEnumerator GetEnumerator ()
 		{
 			if (GroupDescriptions.Count > 0 && RootGroup != null)
 				return new GroupEnumerator (RootGroup);
@@ -385,7 +298,8 @@ namespace System.Windows.Data {
 			else
 				return ActiveList.IndexOf (item);
 		}
-		public bool MoveCurrentTo (object item)
+
+		public override bool MoveCurrentTo (object item)
 		{
 			return MoveCurrentTo (IndexOf (item));
 		}
@@ -413,10 +327,9 @@ namespace System.Windows.Data {
 			object newItem = ItemAtIndex (position);
 			bool raiseEvents = CurrentItem != newItem;
 
-			var h = CurrentChanging;
-			if (raiseEvents && h != null) {
+			if (raiseEvents) {
 				CurrentChangingEventArgs e = new CurrentChangingEventArgs (true);
-				h (this, e);
+				RaiseCurrentChanging (e);
 				if (e.Cancel)
 					return true;
 			}
@@ -425,53 +338,38 @@ namespace System.Windows.Data {
 			IsCurrentBeforeFirst = position == -1 || ActiveList.Count == 0;
 			UpdateCurrentPositionAndItem (position, newItem);
 
-			var h2 = CurrentChanged;
-			if (raiseEvents && h2 != null)
-				h2 (this, EventArgs.Empty);
+			if (raiseEvents)
+				RaiseCurrentChanged (EventArgs.Empty);
 
 			return IsValidSelection;
 		}
 
-		public bool MoveCurrentToFirst ()
+		public override bool MoveCurrentToFirst ()
 		{
 			return MoveCurrentTo (0);
 		}
 
-		public bool MoveCurrentToLast ()
+		public override bool MoveCurrentToLast ()
 		{
 			return MoveCurrentTo (ActiveList.Count - 1);
 		}
 
-		public bool MoveCurrentToNext ()
+		public override bool MoveCurrentToNext ()
 		{
 			return CurrentPosition != ActiveList.Count && MoveCurrentTo (CurrentPosition + 1);
 		}
 
-		public bool MoveCurrentToPosition (int position)
+		public override bool MoveCurrentToPosition (int position)
 		{
 			return MoveCurrentTo (position);
 		}
 
-		public bool MoveCurrentToPrevious ()
+		public override bool MoveCurrentToPrevious ()
 		{
 			return CurrentPosition != -1 && MoveCurrentTo (CurrentPosition - 1);
 		}
 
-		void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
-		{
-			var h = CollectionChanged;
-			if (h != null)
-				h (this, e);
-		}
-
-		void RaisePropertyChanged (string propertyName)
-		{
-			var h = PropertyChanged;
-			if (h != null)
-				h (this, new PropertyChangedEventArgs (propertyName));
-		}
-
-		public void Refresh ()
+		public override void Refresh ()
 		{
 			if (IsAddingNew || IsEditingItem)
 				throw new InvalidOperationException ("Cannot refresh while adding or editing an item");
@@ -507,9 +405,7 @@ namespace System.Windows.Data {
 
 			MoveCurrentTo (index, true);
 
-			var h = CollectionChanged;
-			if (h != null)
-				h (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
 		public object AddNew ()
