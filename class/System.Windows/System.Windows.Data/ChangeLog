@@ -1,5 +1,10 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyComparer.cs: If there are no sort descriptions,
+	  pretend there was one ascending comparer.
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionView.cs:
 	* StandardCollectionView.cs:
 	* EnumerableCollectionView.cs: Rename StandardCollectionView

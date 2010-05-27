@@ -27,6 +27,11 @@ namespace System.Windows.Data {
 				else
 					Walkers.Add (new PropertyPathWalker (sorter.PropertyName));
 			}
+
+			if (sortDescriptions.Count == 0) {
+				Directions.Add (ListSortDirection.Ascending);
+				Walkers.Add (null);
+			}
 		}
 
 		public int Compare (object x, object y)
