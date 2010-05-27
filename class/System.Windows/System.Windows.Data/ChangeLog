@@ -1,5 +1,14 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionView.cs: Implement the IComparer<object> interface
+	  on CollectionView to keep the DRTs happy. It gives the wrong
+	  results though...
+
+	* StandardCollectionView.cs: We raise the changing events if
+	  either the item or position has changed.
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyComparer.cs: If there are no sort descriptions,
 	  pretend there was one ascending comparer.
 

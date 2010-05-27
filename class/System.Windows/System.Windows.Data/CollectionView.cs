@@ -5,10 +5,11 @@ using System.Windows.Data;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace System.Windows {
 
-	abstract class CollectionView : ICollectionView, INotifyPropertyChanged {
+	abstract class CollectionView : ICollectionView, INotifyPropertyChanged, IComparer<object> {
 
 		public static ICollectionView Create (IEnumerable collection)
 		{
@@ -112,6 +113,11 @@ namespace System.Windows {
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 			SortDescriptions = new SortDescriptionCollection ();
 			SourceCollection = collection;
+		}
+
+		int IComparer<object>.Compare (object x, object y)
+		{
+			return new PropertyComparer (SortDescriptions).Compare (x, y);
 		}
 
 		protected void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)

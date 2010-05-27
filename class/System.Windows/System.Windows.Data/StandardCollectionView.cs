@@ -265,7 +265,7 @@ namespace System.Windows.Data {
 		bool MoveCurrentTo (int position, bool force)
 		{
 			object newItem = ItemAtIndex (position);
-			bool raiseEvents = CurrentItem != newItem;
+			bool raiseEvents = CurrentItem != newItem || CurrentPosition != position;
 
 			if (raiseEvents) {
 				CurrentChangingEventArgs e = new CurrentChangingEventArgs (true);
