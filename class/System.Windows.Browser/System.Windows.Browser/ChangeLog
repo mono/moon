@@ -1,3 +1,8 @@
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* ScriptObject.cs: Add the last missing lock to see if that'll
+	  fix the random moonunit hangs.
+
 2010-05-27  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlElement.cs: reverting SetStyleAttribute fix, it breaks moonunit

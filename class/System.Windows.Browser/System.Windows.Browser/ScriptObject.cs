@@ -118,7 +118,8 @@ namespace System.Windows.Browser {
 		{
 			if (free_mapping)
 				FreeNativeMapping (this);
-			cachedObjects.Remove (_handle);
+			lock (cachedObjects)
+				cachedObjects.Remove (_handle);
 		}
 
 		public virtual void SetProperty (string name, object value)
