@@ -13,7 +13,7 @@ namespace System.Windows {
 		public static ICollectionView Create (IEnumerable collection)
 		{
 			if (collection is IList)
-				return new StandardCollectionView ((IList) collection);
+				return new ListCollectionView ((IList) collection);
 			return new EnumerableCollectionView (collection);
 		}
 

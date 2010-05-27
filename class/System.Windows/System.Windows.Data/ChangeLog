@@ -1,5 +1,13 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* CollectionView.cs:
+	* StandardCollectionView.cs:
+	* EnumerableCollectionView.cs: Rename StandardCollectionView
+	  to be ListCollectionView to keep the DRTs happy. Stupid
+	  drts.
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: If an item is added to the source
 	  collection but is filtered out, we shouldn't raise the
 	  INCC.Add event.

@@ -11,7 +11,7 @@ namespace System.Windows.Data {
 	class EnumerableCollectionView : ICollectionView, INotifyPropertyChanged, IDeferRefresh {
 
 		ObservableCollection<object> clonedCollection;
-		StandardCollectionView view;
+		ListCollectionView view;
 
 		public event EventHandler CurrentChanged;
 		public event CurrentChangingEventHandler CurrentChanging;
@@ -86,7 +86,7 @@ namespace System.Windows.Data {
 			SourceCollection = collection;
 
 			clonedCollection = new ObservableCollection<object> (collection.Cast <object> ());
-			view = new StandardCollectionView (clonedCollection);
+			view = new ListCollectionView (clonedCollection);
 
 			var c = collection as INotifyCollectionChanged;
 			if (c != null)

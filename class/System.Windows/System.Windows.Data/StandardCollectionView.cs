@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace System.Windows.Data {
 
-	sealed class StandardCollectionView : EditableCollectionView, IDeferRefresh {
+	sealed class ListCollectionView : EditableCollectionView, IDeferRefresh {
 
 		List<object> filteredList;
 
@@ -51,7 +51,7 @@ namespace System.Windows.Data {
 			get { return (IList) base.SourceCollection; }
 		}
 
-		public StandardCollectionView (IList collection)
+		public ListCollectionView (IList collection)
 			: base (collection)
 		{
 			var interfaces = SourceCollection.GetType ().GetInterfaces ();
