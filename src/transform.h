@@ -44,8 +44,8 @@ class GeneralTransform : public DependencyObject {
 
 	Point Transform (Point point);
 
-	/* @GenerateJSBinding=TransformXY,Version=3.0 */
-	Point *TransformXYWithError (double x, double y, MoonError *error);
+	/* @GenerateJSBinding,Version=3.0 */
+	Point TransformXY (double x, double y);
 };
 
 

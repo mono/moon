@@ -1,5 +1,11 @@
 2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* transform.cpp (TransformXYWithError): Renamed to TransformXY()
+	and made return Point instead of Point* so that we don't leak
+	memory.
+
+2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* transform.cpp (TransformXYWithError): Fixed to take doubles
 	instead of ints.
 
