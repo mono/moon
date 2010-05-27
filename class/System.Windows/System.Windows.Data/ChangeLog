@@ -1,5 +1,10 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Revert this change as it breaks
+	  moon-units. The DRT must be fixed a different way..
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPathWalker.cs: An empty binding ( {Binding} ) means
 	  that we bind directly to the ICollectionView if it exists.
 
