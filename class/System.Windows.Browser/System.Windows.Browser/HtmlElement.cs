@@ -95,10 +95,11 @@ namespace System.Windows.Browser
 			InvokeInternal<object> ("setAttribute", name, value);
 		}
 
+		[MonoTODO ("This doesn't seem to work, and yet fixing it breaks moonunit rendering. I guess it's not supposed to work.")]
 		public void SetStyleAttribute (string name, string value)
 		{
 			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
-			so.InvokeInternal<object> ("setProperty", name, value, "");
+			so.SetProperty (name, value);
 		}
 
 		public ScriptObjectCollection Children {
