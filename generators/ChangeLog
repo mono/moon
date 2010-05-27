@@ -1,7 +1,16 @@
 2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
 
-	* Generator.cs: Fixes for the plugin-class.g.cpp generator to
-	allow functions to return Point instead of Point*.
+	* TypeReference.cs (GetNPType): Any function that takes doubles
+	*may* get integers from js, so return "(id)" as our type.
+
+	* Generator.cs (GenerateJSBindings): Handle ParamerTypes of "(id)"
+	by promoting ints to doubles for arguments.
+
+2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Generator.cs (GenerateJSBindings): Fixes for the
+	plugin-class.g.cpp generator to allow functions to return Point
+	instead of Point*.
 
 2010-05-26  Chris Toshok  <toshok@ximian.com>
 

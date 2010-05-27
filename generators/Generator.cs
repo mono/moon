@@ -167,6 +167,14 @@ class Generator {
 								args.Add ("\t\t\tdouble arg" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "]);");
 								parms.Add ("arg" + i);
 								break;
+							case "(id)":
+								args.Add ("\t\t\tdouble arg" + i + ";");
+								args.Add ("\t\t\tif (NPVARIANT_IS_INT32 (args[" + i + "]))");
+								args.Add ("\t\t\t\targ" + i + " = (double) NPVARIANT_TO_INT32 (args[" + i + "]);");
+								args.Add ("\t\t\telse");
+								args.Add ("\t\t\t\targ" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "]);");
+								parms.Add ("arg" + i);
+								break;
 							case "b":
 								args.Add ("\t\t\tbool arg" + i + " = NPVARIANT_TO_BOOLEAN (args[" + i + "]);");
 								parms.Add ("arg" + i);
