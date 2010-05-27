@@ -1,5 +1,10 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: Propagate the CollectionChanged
+	  event when the source collection does a Reset.
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs:
 	* EditableCollectionView.cs: Strip out the
 	  IEditableCollectionView properties into the new

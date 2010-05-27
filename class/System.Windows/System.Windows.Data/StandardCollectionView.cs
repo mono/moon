@@ -87,7 +87,7 @@ namespace System.Windows.Data {
 			int actualOldIndex = -1;
 			int actualNewIndex = -1;
 			bool originalList = ActiveList == SourceCollection;
-			NotifyCollectionChangedEventArgs modifed = e;
+
 			if (!originalList) {
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
@@ -120,12 +120,12 @@ namespace System.Windows.Data {
 					RootGroup.ClearSubtree ();
 					foreach (var o in SourceCollection)
 						AddToFilteredAndGroup (o);
-					modifed = e;
+					RaiseCollectionChanged (e);
 					break;
 				}
 			} else {
 				// Raise the collection changed event
-				RaiseCollectionChanged (modifed);
+				RaiseCollectionChanged (e);
 			}
 
 			IsEmpty = ActiveList.Count == 0;
