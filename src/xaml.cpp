@@ -1405,6 +1405,7 @@ class ManagedNamespace : public XamlNamespace {
 
 					if (!p->hydrating) {
 						parser_error (p, el, "x:Class", 4005, "Cannot specify x:Class in xaml files outside of a xap.");
+						g_free (type_xmlns);
 						return NULL;
 					}
 				}
@@ -1415,10 +1416,8 @@ class ManagedNamespace : public XamlNamespace {
 		if (!p->loader->LookupObject (p, p->GetTopElementPtr (), p->current_element ? p->current_element->GetAsValue () : NULL, use_xmlns, el, create, false, value)) {
 			parser_error (p, el, NULL, 2007, "Unable to resolve managed type %s.", el);
 			delete value;
-			if (type_name)
-				g_free (type_name);
-			if (type_xmlns)
-				g_free (type_xmlns);
+			g_free (type_name);
+			g_free (type_xmlns);
 			return  NULL;
 		}
 
@@ -1435,10 +1434,8 @@ class ManagedNamespace : public XamlNamespace {
 		}
 
 		XamlElementInfoManaged *info = new XamlElementInfoManaged (xmlns, g_strdup (el), NULL, value->GetKind (), value, delete_value);
-		if (type_name)
-			g_free (type_name);
-		if (type_xmlns)
-			g_free (type_xmlns);
+		g_free (type_name);
+		g_free (type_xmlns);
 		return info;
 	}
 

@@ -1,3 +1,8 @@
+2010-05-14  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlNamespace::FindElement): add a missing g_free, and
+	no need to check for null when calling it.
+
 2010-05-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (EmitEventOnList): Simplified a smidge.
