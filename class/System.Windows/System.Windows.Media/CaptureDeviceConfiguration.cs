@@ -28,43 +28,102 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
+using Mono;
 
 namespace System.Windows.Media {
 	public static class CaptureDeviceConfiguration {
+
+		private static IntPtr GetAudioCaptureService ()
+		{
+			IntPtr capture_service = NativeMethods.runtime_get_capture_service ();
+			if (capture_service == IntPtr.Zero)
+				return IntPtr.Zero;
+			return NativeMethods.moon_capture_service_get_audio_capture_service (capture_service);
+		}
+
+		private static IntPtr GetVideoCaptureService ()
+		{
+			IntPtr capture_service = NativeMethods.runtime_get_capture_service ();
+			if (capture_service == IntPtr.Zero)
+				return IntPtr.Zero;
+			return NativeMethods.moon_capture_service_get_video_capture_service (capture_service);
+		}
+
 		public static Collection<AudioCaptureDevice> GetAvailableAudioCaptureDevices ()
 		{
-			Console.WriteLine ("System.Windows.Media.GetAvailableVideoCaptureDevices (): NIEX");
-			throw new NotImplementedException ();
+			IntPtr audio_service = GetAudioCaptureService ();
+			if (audio_service == IntPtr.Zero)
+				return new Collection<AudioCaptureDevice>(); // FIXME readonly?
+
+			Collection<AudioCaptureDevice> col = new Collection<AudioCaptureDevice>();
+			int num_devices;
+			IntPtr devices = NativeMethods.moon_audio_capture_service_get_available_capture_devices (audio_service, out num_devices);
+			for (int i = 0; i < num_devices; i ++)
+				col.Add (new AudioCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
+
+			return col;
 		}
 
 		public static Collection<VideoCaptureDevice> GetAvailableVideoCaptureDevices ()
 		{
-			Console.WriteLine ("System.Windows.Media.GetAvailableAudioCaptureDevices (): NIEX");
-			throw new NotImplementedException ();
+			IntPtr video_service = GetVideoCaptureService ();
+			if (video_service == IntPtr.Zero)
+				return new Collection<VideoCaptureDevice>(); // FIXME readonly?
+
+			Collection<VideoCaptureDevice> col = new Collection<VideoCaptureDevice>();
+			int num_devices;
+			IntPtr devices = NativeMethods.moon_video_capture_service_get_available_capture_devices (video_service, out num_devices);
+
+			for (int i = 0; i < num_devices; i ++)
+				col.Add (new VideoCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
+
+			return col;
 		}
 
 		public static AudioCaptureDevice GetDefaultAudioCaptureDevice ()
 		{
-			Console.WriteLine ("System.Windows.Media.GetDefaultAudioCaptureDevice (): NIEX");
-			throw new NotImplementedException ();
+			IntPtr audio_service = GetAudioCaptureService ();
+
+			if (audio_service == IntPtr.Zero)
+				return null;
+
+			IntPtr audio_device = NativeMethods.moon_audio_capture_service_get_default_capture_device (audio_service);
+			if (audio_device == IntPtr.Zero)
+				return null;
+
+			return new AudioCaptureDevice (audio_device);
 		}
 
 		public static VideoCaptureDevice GetDefaultVideoCaptureDevice ()
 		{
-			Console.WriteLine ("System.Windows.Media.GetDefaultVideoCaptureDevice (): NIEX");
-			throw new NotImplementedException ();
+			IntPtr video_service = GetVideoCaptureService ();
+
+			if (video_service == IntPtr.Zero)
+				return null;
+
+			IntPtr video_device = NativeMethods.moon_video_capture_service_get_default_capture_device (video_service);
+			if (video_device == IntPtr.Zero)
+				return null;
+
+			return new VideoCaptureDevice (video_device);
 		}
+
+		static bool last_device_access_response = false;
 
 		public static bool RequestDeviceAccess ()
 		{
-			Console.WriteLine ("System.Windows.Media.RequestDeviceAccess (): not implemented, returning false");
-			return false;
+			IntPtr capture_service = NativeMethods.runtime_get_capture_service ();
+			if (capture_service == IntPtr.Zero)
+				last_device_access_response = false;
+			else
+				last_device_access_response = NativeMethods.moon_capture_service_request_system_access (capture_service);
+			return last_device_access_response;
 		}
 
 		public static bool AllowedDeviceAccess {
 			get {
-				Console.WriteLine ("System.Windows.Media.get_AllowedDeviceAccess (): not implemented, returning false");
-				return false;
+				return last_device_access_response;
 			}
 		}
 	}

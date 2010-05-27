@@ -32,36 +32,39 @@ namespace System.Windows.Media {
 	public class AudioFormat {
 		internal AudioFormat ()
 		{
-			Console.WriteLine ("System.Windows.Media.AudioFormat..ctor: NIEX");
+		}
+
+		internal AudioFormat (int bitsPerSample,
+				      int channels,
+				      int samplesPerSecond,
+				      WaveFormatType waveFormat)
+		{
+			this.bitsPerSample = bitsPerSample;
+			this.channels = channels;
+			this.samplesPerSecond = samplesPerSecond;
+			this.waveFormat = waveFormat;
 		}
 
 		public int BitsPerSample {
-			get {
-				Console.WriteLine ("System.Windows.Media.AudioFormat.get_BitsPerSample: NIEX");
-				throw new NotImplementedException();
-			}
+			get { return bitsPerSample; }
 		}
 
 		public int Channels {
-			get {
-				Console.WriteLine ("System.Windows.Media.AudioFormat.get_Channels: NIEX");
-				throw new NotImplementedException();
-			}
+			get { return channels; }
 		}
 
 		public int SamplesPerSecond {
-			get {
-				Console.WriteLine ("System.Windows.Media.AudioFormat.get_SamplesPerSecond: NIEX");
-				throw new NotImplementedException();
-			}
+			get { return samplesPerSecond; }
 		}
 
 		public WaveFormatType WaveFormat {
-			get {
-				Console.WriteLine ("System.Windows.Media.AudioFormat.get_WaveFormat: NIEX");
-				throw new NotImplementedException();
-			}
+			get { return waveFormat; }
 		}
+
+		private int bitsPerSample;
+		private int channels;
+		private int samplesPerSecond;
+		private WaveFormatType waveFormat;
 	}
 }
 

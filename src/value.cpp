@@ -29,6 +29,7 @@
 #include "point.h"
 #include "grid.h"
 #include "cornerradius.h"
+#include "capture.h"
 #include "mono/metadata/object.h"
 #include "fontmanager.h"
 #include "fontsource.h"
@@ -384,6 +385,24 @@ Value::Value (CornerRadius corner)
 	SetIsNull (false);
 }
 
+Value::Value (AudioFormat format)
+{
+	Init ();
+	k = Type::AUDIOFORMAT;
+	u.audioformat = g_new (AudioFormat, 1);
+	*u.audioformat = AudioFormat (format);
+	SetIsNull (false);
+}
+
+Value::Value (VideoFormat format)
+{
+	Init ();
+	k = Type::VIDEOFORMAT;
+	u.videoformat = g_new (VideoFormat, 1);
+	*u.videoformat = VideoFormat (format);
+	SetIsNull (false);
+}
+
 Value::Value (GlyphTypeface *typeface)
 {
 	Init ();
@@ -527,6 +546,18 @@ Value::Copy (const Value& v)
 			*u.corner = *v.u.corner;
 		}
 		break;
+	case Type::AUDIOFORMAT:
+		if (v.u.audioformat) {
+			u.audioformat = g_new (AudioFormat, 1);
+			*u.audioformat = *v.u.audioformat;
+		}
+		break;
+	case Type::VIDEOFORMAT:
+		if (v.u.videoformat) {
+			u.videoformat = g_new (VideoFormat, 1);
+			*u.videoformat = *v.u.videoformat;
+		}
+		break;
 	case Type::GLYPHTYPEFACE:
 		if (v.u.typeface)
 			u.typeface = new GlyphTypeface (v.u.typeface);
@@ -623,6 +654,12 @@ Value::FreeValue ()
 		break;
 	case Type::CORNERRADIUS:
 		g_free (u.corner);
+		break;
+	case Type::AUDIOFORMAT:
+		g_free (u.audioformat);
+		break;
+	case Type::VIDEOFORMAT:
+		g_free (u.videoformat);
 		break;
 	case Type::GLYPHTYPEFACE:
 		delete u.typeface;
@@ -760,6 +797,10 @@ Value::operator== (const Value &v) const
 		return *u.thickness == *v.u.thickness;
 	case Type::CORNERRADIUS:
 		return *u.corner == *v.u.corner;
+	case Type::AUDIOFORMAT:
+		return *u.audioformat == *v.u.audioformat;
+	case Type::VIDEOFORMAT:
+		return *u.videoformat == *v.u.videoformat;
 	case Type::MANAGEDTYPEINFO:
 		return u.type_info->kind == v.u.type_info->kind;
 	case Type::URI:

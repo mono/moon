@@ -1,3 +1,17 @@
+2010-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* pal/pal.h: various capture-related api fixes.
+
+	* pal/capture/v4l2/pal-v4l2-video-capture.cpp,h: incredibly naive
+	implementation of all this.  hardcodes a lot, doesn't probe
+	properly, doesn't pass along unconverted data to videosinks, a
+	host of problems.
+
+	* capture.h: lots more implementation work.
+
+	* brush.h, brush.cpp (VideoBrush): add support for using a
+	CaptureSource for the source.
+
 2010-05-14  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlNamespace::FindElement): add a missing g_free, and

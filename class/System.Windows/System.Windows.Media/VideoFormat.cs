@@ -32,44 +32,46 @@ namespace System.Windows.Media {
 	public class VideoFormat {
 		internal VideoFormat ()
 		{
-			Console.WriteLine ("System.Windows.Media.VideoFormat..ctor: NIEX");
-			throw new NotImplementedException ();
+		}
+
+		internal VideoFormat (float framesPerSecond,
+				      int height,
+				      int width,
+				      int stride,
+				      PixelFormatType pixelFormat)
+		{
+			this.framesPerSecond = framesPerSecond;
+			this.height = height;
+			this.width = width;
+			this.stride = stride;
+			this.pixelFormat = pixelFormat;
 		}
 
 		public float FramesPerSecond {
-			get {
-				Console.WriteLine ("System.Windows.Media.VideoFormat.get_FramesPerSecond: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return framesPerSecond; }
 		}
 
 		public int Height {
-			get {
-				Console.WriteLine ("System.Windows.Media.VideoFormat.get_Height: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return height; }
 		}
 
 		public int Width {
-			get {
-				Console.WriteLine ("System.Windows.Media.VideoFormat.get_Width: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return width; }
 		}
 
 		public int Stride {
-			get {
-				Console.WriteLine ("System.Windows.Media.VideoFormat.get_Stride: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return stride; }
 		}
 
 		public PixelFormatType PixelFormat {
-			get {
-				Console.WriteLine ("System.Windows.Media.VideoFormat.get_PixelFormat: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return pixelFormat; }
 		}
+
+		float framesPerSecond;
+		int height;
+		int width;
+		int stride;
+		PixelFormatType pixelFormat;
 	}
 }
 

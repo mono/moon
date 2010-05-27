@@ -1,6 +1,4 @@
 //
-// CaptureSource.cs
-//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
@@ -26,29 +24,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Windows.Media.Imaging;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Mono;
 
 namespace System.Windows.Media {
-	public sealed partial class CaptureSource : DependencyObject {
-		public void AsyncCaptureImage (Action<WriteableBitmap> Callback)
-		{
-			Console.WriteLine ("System.Windows.Media.CaptureSource.AsyncCaptureImage: NIEX");
-			throw new NotImplementedException ();
-		}
 
-		public void Start ()
-		{
-			NativeMethods.capture_source_start (native);
-		}
-
-		public void Stop ()
-		{
-			NativeMethods.capture_source_stop (native);
-		}
-
-		public CaptureState State {
-			get { return (CaptureState)NativeMethods.capture_source_get_state (native); }
-		}
+	internal partial class AudioFormatCollection : PresentationFrameworkCollection<AudioFormat> {
 	}
+
 }

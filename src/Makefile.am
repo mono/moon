@@ -19,6 +19,7 @@ libmoon_include_headers = 	\
 	border.h		\
 	brush.h			\
 	canvas.h		\
+	capture.h		\
 	cbinding.h		\
 	clock.h			\
 	codec-url.h		\
@@ -151,6 +152,7 @@ libmoon_la_SOURCES = 		\
 	border.cpp		\
 	brush.cpp		\
 	canvas.cpp		\
+	capture.cpp		\
 	cbinding.cpp		\
 	clock.cpp		\
 	collection.cpp		\

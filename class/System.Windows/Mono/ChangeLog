@@ -1,3 +1,11 @@
+2010-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: correct field usage for Audio/VideoFormat classes.
+
+	* Events.cs: add CreateSampleReadyEventArgsEventHandlerDispatcher
+	and CreateVideoFormatChangedEventArgsEventHandlerDispatcher for
+	the video capture stuff.
+
 2010-05-26  Alan McGovern  <amcgovern@novell.com>
 
 	* DoubleKeyedDictionary.cs: Sometimes we don't want to do the

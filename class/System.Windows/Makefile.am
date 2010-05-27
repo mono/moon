@@ -555,6 +555,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/AudioCaptureDevice.cs			\
 	$(srcdir)/System.Windows.Media/AudioCaptureDeviceCollection.cs		\
 	$(srcdir)/System.Windows.Media/AudioFormat.cs				\
+	$(srcdir)/System.Windows.Media/AudioFormatCollection.cs			\
 	$(srcdir)/System.Windows.Media/AudioSink.cs				\
 	$(srcdir)/System.Windows.Media/BitmapCache.cs				\
 	$(srcdir)/System.Windows.Media/BezierSegment.cs				\
@@ -633,6 +634,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/RectangleGeometry.cs			\
 	$(srcdir)/System.Windows.Media/RenderingEventArgs.cs			\
 	$(srcdir)/System.Windows.Media/RotateTransform.cs			\
+	$(srcdir)/System.Windows.Media/SampleReadyEventArgs.cs			\
 	$(srcdir)/System.Windows.Media/ScaleTransform.cs			\
 	$(srcdir)/System.Windows.Media/SkewTransform.cs				\
 	$(srcdir)/System.Windows.Media/SolidColorBrush.cs			\
@@ -655,6 +657,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/VideoCaptureDevice.cs			\
 	$(srcdir)/System.Windows.Media/VideoCaptureDeviceCollection.cs		\
 	$(srcdir)/System.Windows.Media/VideoFormat.cs				\
+	$(srcdir)/System.Windows.Media/VideoFormatChangedEventArgs.cs		\
+	$(srcdir)/System.Windows.Media/VideoFormatCollection.cs			\
 	$(srcdir)/System.Windows.Media/VideoSink.cs				\
 	$(srcdir)/System.Windows.Media/VisualTreeHelper.cs			\
 	$(srcdir)/System.Windows.Media/WaveFormatType.cs			\

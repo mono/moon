@@ -254,6 +254,22 @@ namespace Mono {
 							    new MessageReceivedEventArgs (calldata, false)) );
 		}
 
+		public static UnmanagedEventHandler CreateSampleReadyEventArgsEventHandlerDispatcher (EventHandler <SampleReadyEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
+						     SampleReadyEventArgs args = new SampleReadyEventArgs (calldata);
+						     handler (o, args); } );
+		}
+
+		public static UnmanagedEventHandler CreateVideoFormatChangedEventArgsEventHandlerDispatcher (EventHandler <VideoFormatChangedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
+						     VideoFormatChangedEventArgs args = new VideoFormatChangedEventArgs (calldata);
+						     handler (o, args); } );
+		}
+
 		// avoid having SSC code in anonymous methods since their name can change on a compiler's whim
 		private static Exception SendCompletedEventArgsGetError (IntPtr calldata)
 		{

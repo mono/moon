@@ -40,6 +40,8 @@ struct GridLength;
 struct Thickness;
 struct CornerRadius;
 struct ManagedTypeInfo;
+struct AudioFormat;
+struct VideoFormat;
 
 struct Value;
 
@@ -96,6 +98,8 @@ public:
 	Value (GridLength grid_length);
 	Value (Thickness thickness);
 	Value (CornerRadius radius);
+	Value (VideoFormat format);
+	Value (AudioFormat format);
 	Value (GlyphTypeface *typeface);
 	Value (ManagedTypeInfo type_info);
 	Value (const char *s, bool take = false);
@@ -162,6 +166,8 @@ public:
 	GridLength*     AsGridLength () { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
 	Thickness*      AsThickness () { checked_get_exact (Type::THICKNESS, NULL, u.thickness); }
 	CornerRadius*   AsCornerRadius () { checked_get_exact (Type::CORNERRADIUS, NULL, u.corner); }
+	AudioFormat*    AsAudioFormat () { checked_get_exact (Type::AUDIOFORMAT, NULL, u.audioformat); }
+	VideoFormat*    AsVideoFormat () { checked_get_exact (Type::VIDEOFORMAT, NULL, u.videoformat); }
 	ManagedTypeInfo* AsManagedTypeInfo () { checked_get_exact (Type::MANAGEDTYPEINFO, NULL, u.type_info); }
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
@@ -210,6 +216,8 @@ public:
 		GridLength *grid_length;
 		Thickness *thickness;
 		CornerRadius *corner;
+		AudioFormat *audioformat;
+		VideoFormat *videoformat;
 		GlyphTypeface *typeface;
 		ManagedTypeInfo *type_info;
 		void *managed_object;

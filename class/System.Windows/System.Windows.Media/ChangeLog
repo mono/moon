@@ -1,3 +1,19 @@
+2010-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* VideoSink.cs: implement this by just hooking up to events on the
+	CaptureSource which turn around and call the abstract methods.
+
+	* VideoBrush.cs: implement SetSource (CaptureSource).
+
+	* SampleReadyEventArgs.cs, VideoFormatChangedEventArgs.cs: event
+	args we use to communicate from CaptureSource to VideoSink.
+
+	* CaptureSource.cs: implement.
+
+	* CaptureDeviceConfiguration.cs: add implementation of
+	GetAvailableVideoCaptureDevices and
+	GetAvailableAudioCaptureDevices.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* AcquireLicenseCompletedEventArgs.cs:

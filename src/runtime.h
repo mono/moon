@@ -539,6 +539,7 @@ void	 runtime_flags_set_use_shapecache (gboolean flag);
 MoonWindowingSystem *runtime_get_windowing_system ();
 MoonInstallerService *runtime_get_installer_service ();
 MoonMessagingService *runtime_get_messaging_service ();
+/* @GeneratePInvoke */
 MoonCaptureService *runtime_get_capture_service ();
 /* @GeneratePInvoke */
 MoonNetworkService *runtime_get_network_service ();

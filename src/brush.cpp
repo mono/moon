@@ -24,6 +24,7 @@
 #include "mediaplayer.h"
 #include "bitmapimage.h"
 #include "uri.h"
+#include "capture.h"
 
 //
 // SL-Cairo convertion and helper routines
@@ -957,20 +958,98 @@ TileBrush::Stroke (cairo_t *cr, bool preserve)
 VideoBrush::VideoBrush ()
 {
 	SetObjectType (Type::VIDEOBRUSH);
-	media = NULL;
+	source = NULL;
+	video_format = NULL;
 }
 
 VideoBrush::~VideoBrush ()
 {
-	if (media != NULL) {
-		media->RemovePropertyChangeListener (this);
-		media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
-		media->unref ();
+	if (source != NULL) {
+		if (source->Is (Type::MEDIAELEMENT)) {
+			source->RemovePropertyChangeListener (this);
+			source->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+			source->unref ();
+		}
+		else /* Is (Type::CAPTURESOURCE) */ {
+			source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
+			source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+			source->unref ();
+		}
 	}
+
+	delete video_format;
 }
 
 void
 VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
+{
+	if (source == NULL || source->Is (Type::MEDIAELEMENT))
+		SetupBrushFromMediaElement (cr, area);
+	else /* Is (Type::CAPTURESOURCE) */
+		SetupBrushFromCaptureSource (cr, area);
+}
+
+void
+VideoBrush::SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area)
+{
+	// FIXME: this should be folded back into SetupBrush and we
+	// should check for mediaelement/capturesource there.
+
+	printf ("VideoBrush::SetupBrushFromCaptureSource\n");
+	Stretch stretch = GetStretch ();
+	if (!is_stretch_valid (stretch)) {
+		// bad enum value for stretch, nothing should be drawn
+		// XXX Removing this _source_set at all?
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
+	if (!video_format) {
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
+	CaptureSource *capture = (CaptureSource*)source;
+
+	Transform *transform = GetTransform ();
+	Transform *relative_transform = GetRelativeTransform ();
+	AlignmentX ax = GetAlignmentX ();
+	AlignmentY ay = GetAlignmentY ();
+	cairo_surface_t *surface;
+	cairo_pattern_t *pattern;
+	cairo_matrix_t matrix;
+	
+	guint8 *sampleData;
+	int sampleDataLength;
+
+	capture->GetSample (NULL, NULL, &sampleData, &sampleDataLength);
+
+	surface = cairo_image_surface_create_for_data (sampleData,
+						       CAIRO_FORMAT_ARGB32,
+						       video_format->width,
+						       video_format->height,
+						       video_format->stride);
+
+	pattern = cairo_pattern_create_for_surface (surface);
+	cairo_surface_destroy (surface);
+
+	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, video_format->width,
+					    video_format->height, stretch, ax, ay,
+					    transform, relative_transform);
+	
+	cairo_matrix_translate (&matrix, -area.x, -area.y);
+	cairo_pattern_set_matrix (pattern, &matrix);
+	
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) 
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
+	cairo_pattern_destroy (pattern);
+}
+
+void
+VideoBrush::SetupBrushFromMediaElement (cairo_t *cr, const Rect &area)
 {
 	Stretch stretch = GetStretch ();
 	if (!is_stretch_valid (stretch)) {
@@ -979,6 +1058,8 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
 		return;
 	}
+
+	MediaElement *media = (MediaElement*)source;
 
 	MediaPlayer *mplayer = media ? media->GetMediaPlayer () : NULL;
 	Transform *transform = GetTransform ();
@@ -1004,6 +1085,7 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			mplayer = media->GetMediaPlayer ();
 			obj->ref ();
+			source = obj;
 		} else if (obj == NULL) {
 			printf ("could not find element `%s'\n", name);
 		} else {
@@ -1054,17 +1136,24 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		char *name = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		DependencyObject *obj;
 		
-		if (media != NULL) {
-			media->RemovePropertyChangeListener (this);
-			media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
-			media->unref ();
-			media = NULL;
+		if (source != NULL) {
+			if (source->Is (Type::MEDIAELEMENT)) {
+				source->RemovePropertyChangeListener (this);
+				source->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+			}
+			else /* Is (Type::CAPTURESOURCE) */ {
+				source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
+				source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+			}
+
+			source->unref ();
+			source = NULL;
 		}
 		
 		if (name && (obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->AddPropertyChangeListener (this);
-			media = (MediaElement *) obj;
-			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+			source = obj;
+			source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			obj->ref ();
 		} else {
 			// Note: This may have failed because the parser hasn't set the
@@ -1092,23 +1181,44 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *ob
 }
 
 void
-VideoBrush::SetSource (MediaElement *source)
+VideoBrush::SetSource (DependencyObject *source)
 {
+	if (this->source) {
+		if (this->source->Is (Type::MEDIAELEMENT)) {
+			this->source->RemovePropertyChangeListener (this);
+			this->source->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+		}
+		else /* Is (Type::CAPTURESOURCE) */ {
+			this->source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
+			this->source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+		}
+
+		this->source->unref ();
+		this->source = NULL;
+	}
+
 	if (source) {
-		source->ref ();
-		source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+		if (source->Is (Type::MEDIAELEMENT)) {
+			source->ref ();
+			source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+
+			SetSourceName ("");
+
+			this->source = source;
+		}
+		else if (source->Is (Type::CAPTURESOURCE)) {
+			source->ref ();
+			source->AddHandler (CaptureSource::SampleReadyEvent, update_brush, this);
+			source->AddHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+
+			SetSourceName ("");
+
+			this->source = source;
+		}
+		else {
+			g_warning ("invalid object of type '%s' passed to VideoBrush::SetSource", source->GetTypeName());
+		}
 	}
-	
-	SetSourceName ("");
-	
-	if (media != NULL) {
-		media->RemovePropertyChangeListener (this);
-		media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
-		media->unref ();
-		media = NULL;
-	}
-	
-	media = source;
 }
 
 bool
@@ -1121,8 +1231,16 @@ VideoBrush::IsOpaque ()
 bool
 VideoBrush::IsAnimating ()
 {
-	if (media && media->IsPlaying ())
-		return true;
+	if (source) {
+		if (source->Is (Type::MEDIAELEMENT)) {
+			if (((MediaElement*)source)->IsPlaying ())
+				return true;
+		}
+		else /* Is (Type::CAPTURESOURCE) */ {
+			if (((CaptureSource*)source)->GetState() == CaptureSource::Started)
+				return true;
+		}
+	}
 
 	return TileBrush::IsAnimating ();
 }
@@ -1132,6 +1250,23 @@ VideoBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
 {
 	VideoBrush *b = (VideoBrush*)closure;
 	b->NotifyListenersOfPropertyChange (Brush::ChangedProperty, NULL);
+}
+
+void
+VideoBrush::VideoFormatChanged (VideoFormatChangedEventArgs *args)
+{
+	printf ("VideoBrush::VideoFormatChanged\n");
+	delete video_format;
+	video_format = new VideoFormat (*args->GetNewFormat());
+}
+
+void
+VideoBrush::video_format_changed (EventObject *, EventArgs *args, gpointer closure)
+{
+	VideoBrush *b = (VideoBrush*)closure;
+	VideoFormatChangedEventArgs *vargs = (VideoFormatChangedEventArgs*)args;
+
+	b->VideoFormatChanged (vargs);
 }
 
 //

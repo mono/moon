@@ -41,8 +41,7 @@ namespace System.Windows.Media {
 
 		public void SetSource (CaptureSource source)
 		{
-			Console.WriteLine ("System.Windows.Media.VideoBrush:SetSource (CaptureSource): NIEX");
-			throw new NotImplementedException ();
+			NativeMethods.video_brush_set_source (this.native, source.native);
 		}
 	}
 }

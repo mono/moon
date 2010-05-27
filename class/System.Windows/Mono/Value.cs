@@ -90,6 +90,31 @@ namespace Mono {
 		}
 	}
 
+	internal struct UnmanagedAudioFormat {
+		public int bitsPerSample;
+		public int channels;
+		public int samplesPerSecond;
+		public WaveFormatType waveFormat;
+
+		public AudioFormat ToAudioFormat ()
+		{
+			return new AudioFormat (bitsPerSample, channels, samplesPerSecond, waveFormat);
+		}
+	}
+
+	internal struct UnmanagedVideoFormat {
+		public float framesPerSecond;
+		public int height;
+		public int width;
+		public int stride;
+		public PixelFormatType pixelFormat;
+
+		public VideoFormat ToVideoFormat ()
+		{
+			return new VideoFormat (framesPerSecond, height, width, stride, pixelFormat);
+		}
+	}
+
 	internal struct UnmanagedUri {
 		public bool isAbsolute;
 		public IntPtr scheme;
@@ -310,6 +335,16 @@ namespace Mono {
 				return (corner == null) ? new CornerRadius (0) : *corner;
 			}
 
+			case Kind.AUDIOFORMAT: {
+				UnmanagedAudioFormat *format = (UnmanagedAudioFormat*)value->u.p;
+				return (format == null) ? new AudioFormat () : format->ToAudioFormat ();
+			}
+
+			case Kind.VIDEOFORMAT: {
+				UnmanagedVideoFormat *format = (UnmanagedVideoFormat*)value->u.p;
+				return (format == null) ? new VideoFormat () : format->ToVideoFormat ();
+			}
+
 			case Kind.THICKNESS: {
 				Thickness *thickness = (Thickness*)value->u.p;
 				return (thickness == null) ? new Thickness (0) : *thickness;
@@ -500,6 +535,27 @@ namespace Mono {
 					value.k = Kind.CORNERRADIUS;
 					value.u.p = Marshal.AllocHGlobal (sizeof (CornerRadius));
 					Marshal.StructureToPtr (corner, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				}
+				else if (v is AudioFormat) {
+					AudioFormat f = (AudioFormat) v;
+					value.k = Kind.AUDIOFORMAT;
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedAudioFormat));
+					UnmanagedAudioFormat *format = (UnmanagedAudioFormat*) value.u.p;
+					format->bitsPerSample = f.BitsPerSample;
+					format->channels = f.Channels;
+					format->samplesPerSecond = f.SamplesPerSecond;
+					format->waveFormat = f.WaveFormat;
+				}
+				else if (v is VideoFormat) {
+					VideoFormat f = (VideoFormat) v;
+					value.k = Kind.VIDEOFORMAT;
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedVideoFormat));
+					UnmanagedVideoFormat *format = (UnmanagedVideoFormat*) value.u.p;
+					format->framesPerSecond = f.FramesPerSecond;
+					format->height = f.Height;
+					format->width = f.Width;
+					format->stride = f.Stride;
+					format->pixelFormat = f.PixelFormat;
 				}
 				else if (v is Point) {
 					Point pnt = (Point) v;

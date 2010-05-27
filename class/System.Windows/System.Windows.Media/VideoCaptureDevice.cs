@@ -27,26 +27,26 @@
 //
 
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class VideoCaptureDevice : CaptureDevice {
-		public Collection<VideoFormat> SupportedFormats {
+		internal VideoCaptureDevice (IntPtr pal_device)
+			: this ()
+		{
+			NativeMethods.capture_device_set_pal_device (native, pal_device);
+		}
+
+		public ReadOnlyCollection<VideoFormat> SupportedFormats {
 			get {
-				Console.WriteLine ("System.Windows.Media.VideoCaptureDevice.get_SupportedFormats: NIEX");
-				throw new NotImplementedException ();
+				return new ReadOnlyCollection<VideoFormat>((VideoFormatCollection)GetValue (SupportedFormatsProperty));
 			}
 		}
 
-		public VideoFormat DesiredFormat {
-			get {
-				Console.WriteLine("System.Windows.Media.VideoCaptureDevice.get_DesiredFormat: NIEX");
-				throw new NotImplementedException ();
-			}
-			set {
-				Console.WriteLine("System.Windows.Media.VideoCaptureDevice.set_DesiredFormat: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
+	}
+
+	partial class VideoFormatCollection : PresentationFrameworkCollection<VideoFormat> {
 	}
 }
 

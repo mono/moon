@@ -357,10 +357,18 @@ cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int hei
 
 /* @Namespace=System.Windows.Media */
 class VideoBrush : public TileBrush {
-	MediaElement *media;
+	DependencyObject *source;
 	
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
+	static void video_format_changed (EventObject *, EventArgs *, gpointer closure);
+
+	void VideoFormatChanged (VideoFormatChangedEventArgs *args);
 	
+	void SetupBrushFromMediaElement (cairo_t *cr, const Rect &area);
+	void SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area);
+
+	VideoFormat *video_format;
+
  protected:
 	virtual ~VideoBrush ();
 	
@@ -382,7 +390,7 @@ class VideoBrush : public TileBrush {
 	// Methods
 	//
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetSource (MediaElement *source);
+	void SetSource (DependencyObject *source);
 	
 	//
 	// Property Accessors

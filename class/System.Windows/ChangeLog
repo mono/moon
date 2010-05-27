@@ -1,3 +1,8 @@
+2010-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add SampleReadyEventArgs
+	and VideoFormatChangedEventArgs.
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.mdp: Updated.

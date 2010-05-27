@@ -548,6 +548,11 @@ namespace System.Windows.Media {
 		internal AudioCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class AudioFormatCollection {
+		public AudioFormatCollection () : base (SafeNativeMethods.audio_format_collection_new (), true) {}
+		internal AudioFormatCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class BezierSegment {
 		public BezierSegment () : base (SafeNativeMethods.bezier_segment_new (), true) {}
 		internal BezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -838,6 +843,11 @@ namespace System.Windows.Media {
 	partial class VideoCaptureDevice {
 		internal VideoCaptureDevice () : base (SafeNativeMethods.video_capture_device_new (), true) {}
 		internal VideoCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class VideoFormatCollection {
+		public VideoFormatCollection () : base (SafeNativeMethods.video_format_collection_new (), true) {}
+		internal VideoFormatCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 

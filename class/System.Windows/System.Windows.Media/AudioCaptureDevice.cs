@@ -27,24 +27,20 @@
 //
 
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class AudioCaptureDevice : CaptureDevice {
-		public Collection<AudioFormat> SupportedFormats {
-			get {
-				Console.WriteLine ("System.Windows.Media.AudioCaptureDevice.get_SupportedFormats: NIEX");
-				throw new NotImplementedException ();
-			}
+		internal AudioCaptureDevice (IntPtr pal_device)
+			: this ()
+		{
+			NativeMethods.capture_device_set_pal_device (native, pal_device);
 		}
 
-		public AudioFormat DesiredFormat {
+		public ReadOnlyCollection<AudioFormat> SupportedFormats {
 			get {
-				Console.WriteLine("System.Windows.Media.AudioCaptureDevice.get_DesiredFormat: NIEX");
-				throw new NotImplementedException ();
-			}
-			set {
-				Console.WriteLine("System.Windows.Media.AudioCaptureDevice.set_DesiredFormat: NIEX");
-				throw new NotImplementedException ();
+				return new ReadOnlyCollection<AudioFormat>((AudioFormatCollection)GetValue (SupportedFormatsProperty));
 			}
 		}
 	}

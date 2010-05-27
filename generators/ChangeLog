@@ -1,3 +1,8 @@
+2010-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs: add support for MoonVideoFormat** and
+	MoonAudioFormat**
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* TypeReference.cs: Updated according to new HttpRequest API.

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 426 methods needs to be decorated.
+# 443 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -81,6 +81,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream_first_file(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::moon_capture_service_request_system_access(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_network_service_get_is_network_available(System.IntPtr)
@@ -293,6 +296,9 @@
 +SC-M: System.IAsyncResult Mono.Xaml.SetPropertyCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::capture_source_get_state(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_add_with_error_(System.IntPtr,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
@@ -359,6 +365,9 @@
 +SC-M: System.Int32 Mono.NativeMethods::property_changed_event_args_get_id(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::sample_ready_event_args_get_sample_data_length(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::storyboard_get_current_state(System.IntPtr)
 
 # p/invoke declaration
@@ -372,6 +381,12 @@
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::rendering_event_args_get_rendering_time(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int64 Mono.NativeMethods::sample_ready_event_args_get_frame_duration(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int64 Mono.NativeMethods::sample_ready_event_args_get_sample_time(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::storyboard_get_current_time(System.IntPtr)
@@ -533,6 +548,24 @@
 +SC-M: System.IntPtr Mono.NativeMethods::message_received_event_args_get_sender_domain_(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_audio_capture_service_get_available_capture_devices(System.IntPtr,System.Int32&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_audio_capture_service_get_default_capture_device(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_capture_service_get_audio_capture_service(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_capture_service_get_video_capture_service(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_video_capture_service_get_available_capture_devices(System.IntPtr,System.Int32&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_video_capture_service_get_default_capture_device(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_get_platform_window(System.IntPtr)
 
 # p/invoke declaration
@@ -605,10 +638,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::routed_event_args_get_source(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::runtime_get_capture_service()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::runtime_get_network_service()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::runtime_get_windowing_system()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::sample_ready_event_args_get_sample_data(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_managed_user_state(System.IntPtr)
@@ -684,6 +723,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_visual_parent(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::video_format_changed_event_args_get_new_format(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::video_stream_new(System.IntPtr,System.Int32,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,System.UInt32)
@@ -795,6 +837,15 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::bitmap_source_set_bitmap_data(System.IntPtr,System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::capture_device_set_pal_device(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::capture_source_start(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::capture_source_stop(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::collection_changed_event_args_set_index(System.IntPtr,System.Int32)
