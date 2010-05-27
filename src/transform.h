@@ -41,11 +41,11 @@ class GeneralTransform : public DependencyObject {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Matrix* GetMatrix ();
-	
+
 	Point Transform (Point point);
 
 	/* @GenerateJSBinding=TransformXY,Version=3.0 */
-	Point* TransformXYWithError (int x, int y, MoonError *error);
+	Point *TransformXYWithError (double x, double y, MoonError *error);
 };
 
 

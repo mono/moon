@@ -95,10 +95,10 @@ general_transform_transform_point (GeneralTransform *t, Point *p, Point *r)
 	*r = t->Transform (*p);
 }
 
-Point*
-GeneralTransform::TransformXYWithError (int x, int y, MoonError *error)
+Point *
+GeneralTransform::TransformXYWithError (double x, double y, MoonError *error)
 {
-	Point* p = new Point ((double)x, (double)y);
+	Point *p = new Point (x, y);
 	*p = Transform (*p);
 	return p;
 }

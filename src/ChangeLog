@@ -1,3 +1,8 @@
+2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* transform.cpp (TransformXYWithError): Fixed to take doubles
+	instead of ints.
+
 2010-05-26  Chris Toshok  <toshok@ximian.com>
 
 	* pal/pal.h: various capture-related api fixes.
