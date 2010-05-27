@@ -94,7 +94,8 @@ namespace System.Windows.Data {
 					foreach (object o in e.NewItems)
 						AddToFilteredAndGroupSorted (o);
 					actualNewIndex = IndexOf (e.NewItems [0]);
-					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
+					if (actualNewIndex != -1) // Maybe it was filtered out
+						RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
@@ -112,7 +113,8 @@ namespace System.Windows.Data {
 						AddToFilteredAndGroupSorted (o);
 					actualNewIndex = IndexOf (e.NewItems [0]);
 					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, e.OldItems[0], actualOldIndex));
-					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
+					if (actualNewIndex != -1) // Maybe it got filtered out
+						RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
 					break;
 	
 				case NotifyCollectionChangedAction.Reset:

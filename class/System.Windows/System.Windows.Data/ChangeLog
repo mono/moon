@@ -1,5 +1,11 @@
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardCollectionView.cs: If an item is added to the source
+	  collection but is filtered out, we shouldn't raise the
+	  INCC.Add event.
+
+2010-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardCollectionView.cs: Propagate the CollectionChanged
 	  event when the source collection does a Reset.
 
