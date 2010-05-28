@@ -495,7 +495,7 @@ MoonVideoCaptureDeviceV4L2::StartCapturing (MoonReportSampleFunc report_sample,
 		capturing_format = ((MoonVideoFormatV4L2*)formats->pdata[0]);
 
 	struct v4l2_format fmt;
-
+	memset (&fmt, 0, sizeof (fmt));
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	fmt.fmt.pix.pixelformat = ((MoonVideoFormatV4L2*)capturing_format)->GetV4L2PixelFormat ();
 	fmt.fmt.pix.width = capturing_format->GetWidth();
