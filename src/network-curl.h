@@ -11,6 +11,8 @@
  */
 
 
+#ifdef HAVE_CURL
+
 #ifndef __MOON_NETWORK_CURL__
 #define __MOON_NETWORK_CURL__
 
@@ -202,5 +204,6 @@ public:
 	CurlDownloaderResponse *res;
 };
 
-#endif
+#endif /* __MOON_NETWORK_CURL__ */
 
+#endif /* HAVE_CURL */
