@@ -1,5 +1,10 @@
 2010-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network-curl.cpp: Only set the current deployment on the thread we end up
+	calling HttpRequest on.
+
+2010-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.h: Don't do anything if curl isn't enabled.
 
 2010-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>

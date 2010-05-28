@@ -475,8 +475,6 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 	d(printf ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n", this));
 	d(printf ("%s", ptr));
 
-	SetCurrentDeployment ();
-
 	if (IsAborted () || request->aborting)
 		return;
 
@@ -549,6 +547,7 @@ void
 CurlDownloaderResponse::Visitor (const char *name, const char *val)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Visitor %p visitor:%p vcontext:%p\n", this, visitor, vcontext));
+	SetCurrentDeployment ();
 	AppendHeader (name, val);
 }
 
