@@ -14,8 +14,7 @@ AC_DEFUN([MOONLIGHT_CHECK_CURL],
 
 			AC_DEFINE([HAVE_CURL], [1], [curl support for the bridge])
 		else
-			curl_reason="(embedded curl needs openssl)"
-			with_curl=no
+			AC_MSG_ERROR(embedded curl build requires openssl devel package)
 		fi
 
 	elif test x$with_curl = xsystem; then
