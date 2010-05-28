@@ -1,5 +1,10 @@
 2010-05-28  Larry Ewing  <lewing@novell.com>
 
+	* pal/capture/v4l2/pal-v4l2-video-capture.cpp (ReadNextFrame): add
+	a braindead decoder for yu12 and yv12 until we merge the yuv logic.
+
+2010-05-28  Larry Ewing  <lewing@novell.com>
+
 	* pal/capture/v4l2/pal-v4l2-video-capture.cpp (StartCapturing):
 	make sure to clear the format struct.
 

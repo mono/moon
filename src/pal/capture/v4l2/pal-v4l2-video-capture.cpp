@@ -427,30 +427,47 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gin
 	guint8 *op = output_buffer;
 	guint32 *ip = (guint32*)buffers[v4l2buf.index].start;
 
-	if (capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_YUYV ||
-	    capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_YVU420 /* YV12 */ ||
-	    capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_NV12   /* YV12 */) {
+	guint32 pixelformat = capturing_format->GetV4L2PixelFormat ();
+
+	if (pixelformat == V4L2_PIX_FMT_YUYV) {
 		while (((char*)ip - (char*)buffers[v4l2buf.index].start) < buffers[v4l2buf.index].length) {
 			guint8 y, u, y2, v;
 
 			y  = ((*ip & 0x000000ff));
 			y2 = ((*ip & 0x00ff0000)>>16);
-			if (capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_YUYV) {
-				u =  ((*ip & 0x0000ff00)>>8);
-				v =  ((*ip & 0xff000000)>>24);
-			}
-			else {
-				u =  ((*ip & 0xff000000)>>24);
-				v =  ((*ip & 0x0000ff00)>>8);
-			}
+			u =  ((*ip & 0x0000ff00)>>8);
+			v =  ((*ip & 0xff000000)>>24);
 
 			YUV444ToBGRA (y, u, v, op); op += 4;
 			YUV444ToBGRA (y2, u, v, op); op += 4;
+			
+			ip++;
+		}
+	} else if (pixelformat == (V4L2_PIX_FMT_YUV420) || pixelformat == (V4L2_PIX_FMT_YVU420)) {
+		int width = capturing_format->GetWidth ();
+		int height = capturing_format->GetHeight ();		
+		bool u_first = (pixelformat == V4L2_PIX_FMT_YUV420);
+		guint8 *yp = (guint8 *)buffers[v4l2buf.index].start;
+		guint8 *up = (guint8 *)buffers[v4l2buf.index].start + width * height + (u_first ? 0 : width * height / 4);
+		guint8 *vp = (guint8 *)buffers[v4l2buf.index].start + width * height + (u_first ? width * height / 4 : 0);
+		int i = 0, j = 0;
 
-			ip ++;
+		while (i * j < width * height) { 
+			guint8 y  =  yp[j * width + i];
+			guint8 u =  up[j/2 * width/2 + i/2];
+			guint8 v  =  vp[j/2 * width/2 + i/2];
+			
+			YUV444ToBGRA (y, u, v, op); op += 4;
+			
+			ip++;
+			i++;
+
+			if (i >= width) {
+				i = 0;
+				j++;
+			}
 		}
 	}
-
 	*buffer = output_buffer;
 	*buflen = buffers[v4l2buf.index].length * 2;
 #endif
@@ -503,6 +520,12 @@ MoonVideoCaptureDeviceV4L2::StartCapturing (MoonReportSampleFunc report_sample,
 	fmt.fmt.pix.bytesperline = 0; // the driver will fill this in
 
 	if (-1 == ioctl (fd, VIDIOC_S_FMT, &fmt)) {
+		perror ("VIDIOC_S_FMT");
+		capturing_format = NULL;
+		return;
+	}
+
+	if (-1 == ioctl (fd, VIDIOC_G_FMT, &fmt)) {
 		perror ("VIDIOC_S_FMT");
 		capturing_format = NULL;
 		return;
