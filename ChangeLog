@@ -1,3 +1,8 @@
+2010-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* README: Bump the mono requirement to get a fix for mcs bug
+	  609049
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* configure.ac: Build libmoon with curl flags too.
