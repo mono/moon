@@ -637,6 +637,8 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (gpointer context)
 
 	device->report_sample (pts, 0 /* FIXME */, buffer, buflen, device->callback_data);
 
+	g_free (buffer);
+
 	return TRUE;
 }
 
