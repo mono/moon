@@ -669,13 +669,16 @@ MoonWindowingSystemGtk::ShowMessageBox (const char *caption, const char *text, i
 						text);
 
 	gtk_window_set_title (GTK_WINDOW (widget), caption);
-	
-	gint result = gtk_dialog_run (GTK_DIALOG (widget));
+
+	GtkDialog *dialog = GTK_DIALOG (widget);
+	gtk_dialog_set_default_response (dialog, GTK_RESPONSE_OK);
+	gint result = gtk_dialog_run (dialog);
 	gtk_widget_destroy (widget);
 
 	switch (result) {
 	case GTK_RESPONSE_OK:
 		return MESSAGE_BOX_RESULT_OK;
+	case GTK_RESPONSE_DELETE_EVENT:
 	case GTK_RESPONSE_CANCEL:
 		return MESSAGE_BOX_RESULT_CANCEL;
 	case GTK_RESPONSE_YES:

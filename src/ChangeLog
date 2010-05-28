@@ -1,3 +1,8 @@
+2010-05-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pal/gtk/pal-gtk.cpp: Make OK the default button and handle ESC 
+	correctly. Fix parts of #913
+
 2010-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* network-curl.cpp: Only set the current deployment on the thread we end up
