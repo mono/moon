@@ -150,12 +150,12 @@ namespace System.Windows.Data {
 					if (CurrentAddItem == CurrentItem)
 						MoveCurrentTo (CurrentPosition - 1);
 					else
-						MoveCurrentTo (CurrentPosition, true);
+						MoveCurrentTo (CurrentPosition);
 				}
 				break;
 
 			case NotifyCollectionChangedAction.Replace:
-				MoveCurrentTo (CurrentPosition, true);
+				MoveCurrentTo (CurrentPosition);
 				break;
 
 			case NotifyCollectionChangedAction.Reset:
@@ -265,7 +265,7 @@ namespace System.Windows.Data {
 		bool MoveCurrentTo (int position, bool force)
 		{
 			object newItem = ItemAtIndex (position);
-			bool raiseEvents = CurrentItem != newItem;
+			bool raiseEvents = force || CurrentItem != newItem;
 
 			if (raiseEvents) {
 				CurrentChangingEventArgs e = new CurrentChangingEventArgs (true);
@@ -460,7 +460,7 @@ namespace System.Windows.Data {
 					RemoveFromFilteredAndGroup (editItem);
 					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, editItem, originalIndex));
 					if (CurrentItem == editItem)
-						MoveCurrentTo (CurrentPosition, true);
+						MoveCurrentTo (CurrentPosition);
 					return;
 				}
 
@@ -509,7 +509,7 @@ namespace System.Windows.Data {
 				if (originalIndex != newIndex) {
 					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, editItem, originalIndex));
 					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, editItem, newIndex));
-					MoveCurrentTo (IndexOf (CurrentItem), true);
+					MoveCurrentTo (IndexOf (CurrentItem));
 				}
 			}
 		}

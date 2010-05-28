@@ -1,3 +1,11 @@
+2010-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardCollectionView.cs: We now use the 'force' variable
+	  in MoveCurrentTo to indicate whether we should emit the
+	  CurrentChanging/CurrentChanged events regardless of whether
+	  the item is actually changing. This is needed because
+	  calling Refresh on the ICV always emits the events.
+
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs: Revert this change as it breaks
