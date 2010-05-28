@@ -194,16 +194,22 @@ MoonVideoCaptureDeviceV4L2::SetDesiredFormat (MoonVideoFormat *format)
 }
 
 static int
-pixel_format_comparer (gconstpointer vf1, gconstpointer vf2)
+video_format_comparer (gconstpointer vf1, gconstpointer vf2)
 {
 	// we order formats based on ones we prefer, so that the
 	// default is always at the 0 index.
-	guint32 format1 = (*(MoonVideoFormatV4L2**)vf1)->GetV4L2PixelFormat();
-	guint32 format2 = (*(MoonVideoFormatV4L2**)vf2)->GetV4L2PixelFormat();
+	MoonVideoFormatV4L2* format1 = (*(MoonVideoFormatV4L2**)vf1);
+	MoonVideoFormatV4L2* format2 = (*(MoonVideoFormatV4L2**)vf2);
 
-#define FORMAT(fmt) G_STMT_START {			\
-		if (format1 == (fmt)) return -1;	\
-		else if (format2 == (fmt)) return 1;	\
+#define FORMAT(fmt) G_STMT_START {					\
+		if (format1->GetV4L2PixelFormat() == (fmt)) { \
+			if (format1->GetV4L2PixelFormat () == format2->GetV4L2PixelFormat ()) \
+				return format2->GetWidth() * format2->GetHeight() - format1->GetWidth() * format1->GetHeight(); \
+			else						\
+				return -1;				\
+		}							\
+		else if (format2->GetV4L2PixelFormat() == (fmt))	\
+			return 1;					\
 	} G_STMT_END
 
 	// we prefer YUYV if we can get it
@@ -294,7 +300,7 @@ MoonVideoCaptureDeviceV4L2::GetSupportedFormats (int* count)
 				}
 
 				g_ptr_array_insert_sorted (formats,
-							   pixel_format_comparer,
+							   video_format_comparer,
 							   new MoonVideoFormatV4L2 (MoonPixelFormatRGBA32,
 										    frame_rate,
 										    frame_width * 4,
