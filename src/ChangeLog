@@ -1,3 +1,7 @@
+2010-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* network-curl.cpp: Make sure the current deployment is set in callbacks.
+
 2010-05-27  Chris Toshok  <toshok@ximian.com>
 
 	* pal/capture/v4l2/pal-v4l2-video-capture.cpp,h (~MoonVideoCaptureServiceV4L2):

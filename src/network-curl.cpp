@@ -475,6 +475,8 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 	d(printf ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n", this));
 	d(printf ("%s", ptr));
 
+	SetCurrentDeployment ();
+
 	if (IsAborted () || request->aborting)
 		return;
 
@@ -536,6 +538,7 @@ CurlDownloaderResponse::Started ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Started %p\n", this));
 
+	SetCurrentDeployment ();
 	state = HEADER;
 	request->Started ();
 	if (state == FINISHED)
@@ -553,6 +556,7 @@ void
 CurlDownloaderResponse::Available (char* buffer, size_t size)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Available %p\n", this));
+	SetCurrentDeployment ();
 	request->Write (-1, buffer, size);
 }
 
@@ -561,6 +565,7 @@ CurlDownloaderResponse::Finished ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Finished %p\n", this));
 
+	SetCurrentDeployment ();
 	if (state == STARTED) {
 		state = FINISHED;
 		return;
