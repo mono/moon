@@ -375,12 +375,16 @@ public:
 	{
 	}
 
+	virtual ~MoonVideoFormat () { }
+
 	MoonPixelFormat GetPixelFormat () { return format; }
 	int GetFramesPerSecond () { return framesPerSecond; }
 	int GetStride () { return stride; }
 	int GetHeight () { return height; }
 	int GetWidth () { return width; }
-	
+
+	virtual MoonVideoFormat* Clone () = 0;
+
 private:
 	MoonPixelFormat format;
 	int framesPerSecond;

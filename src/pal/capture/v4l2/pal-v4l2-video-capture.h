@@ -15,6 +15,46 @@
 
 class MoonVideoCaptureServiceV4L2;
 
+class MoonVideoFormatV4L2 : public MoonVideoFormat {
+public:
+	MoonVideoFormatV4L2 (MoonPixelFormat moonFormat,
+			     int framesPerSecond,
+			     int stride,
+			     int width,
+			     int height,
+			     guint32 v4l2PixelFormat,
+			     guint32 v4l2Stride)
+		:
+		MoonVideoFormat (moonFormat,
+				 framesPerSecond,
+				 stride,
+				 width,
+				 height),
+		v4l2PixelFormat (v4l2PixelFormat),
+		v4l2Stride (v4l2Stride)
+	{
+	}
+
+	virtual ~MoonVideoFormatV4L2 () { }
+
+	virtual MoonVideoFormat* Clone () { return new MoonVideoFormatV4L2 (GetPixelFormat (),
+									    GetFramesPerSecond (),
+									    GetStride (),
+									    GetWidth (),
+									    GetHeight (),
+									    v4l2PixelFormat,
+									    v4l2Stride); }
+									    
+
+	guint32 GetV4L2PixelFormat () { return v4l2PixelFormat; }
+	guint32 GetV4L2Stride () { return v4l2Stride; }
+
+private:
+	guint32 v4l2PixelFormat;
+	guint32 v4l2Stride;
+			     
+};
+
 class MoonVideoCaptureDeviceV4L2 : public MoonVideoCaptureDevice {
 public:
 	MoonVideoCaptureDeviceV4L2 (MoonVideoCaptureServiceV4L2* service, int fd);

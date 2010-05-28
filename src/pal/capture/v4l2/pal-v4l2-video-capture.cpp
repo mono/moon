@@ -9,6 +9,7 @@
  */
 
 #include "config.h"
+#include "utils.h"
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -165,8 +166,30 @@ MoonVideoCaptureDeviceV4L2::SetDesiredFormat (MoonVideoFormat *format)
 	desired_format = NULL;
 	if (format) {
 		// XXX we need to validate the format
-		desired_format = new MoonVideoFormat (*format);
+		desired_format = format->Clone ();
 	}
+}
+
+static int
+pixel_format_comparer (gconstpointer vf1, gconstpointer vf2)
+{
+	// we order formats based on ones we prefer, so that the
+	// default is always at the 0 index.
+	guint32 format1 = (*(MoonVideoFormatV4L2**)vf1)->GetV4L2PixelFormat();
+	guint32 format2 = (*(MoonVideoFormatV4L2**)vf2)->GetV4L2PixelFormat();
+
+#define FORMAT(fmt) G_STMT_START {			\
+		if (format1 == (fmt)) return -1;	\
+		else if (format2 == (fmt)) return 1;	\
+	} G_STMT_END
+
+	// we prefer YUYV if we can get it
+	FORMAT (V4L2_PIX_FMT_YUYV);
+	// with YV12 a close second
+	FORMAT (V4L2_PIX_FMT_YVU420);
+
+	// for now we don't care enough about the rest
+	return 0;
 }
 
 MoonVideoFormat**
@@ -247,11 +270,15 @@ MoonVideoCaptureDeviceV4L2::GetSupportedFormats (int* count)
 					frame_rate = frame_interval.discrete.denominator / frame_interval.discrete.numerator;;
 				}
 
-				g_ptr_array_add (formats, new MoonVideoFormat (MoonPixelFormatRGBA32,
-									       frame_rate,
-									       frame_width * 4,
-									       frame_width,
-									       frame_height));
+				g_ptr_array_insert_sorted (formats,
+							   pixel_format_comparer,
+							   new MoonVideoFormatV4L2 (MoonPixelFormatRGBA32,
+										    frame_rate,
+										    frame_width * 4,
+										    frame_width,
+										    frame_height,
+										    fmt.pixelformat,
+										    0 /* no way to get this here */));
 
 				printf ("Format: %c%c%c%c ",
 					(char)(fmt.pixelformat & 0xff),
@@ -425,22 +452,46 @@ MoonVideoCaptureDeviceV4L2::StartCapturing (MoonReportSampleFunc report_sample,
 
 	printf ("MoonVideoCaptureDeviceV4L2::StartCapturing ()\n");
 
+	delete capturing_format;
+
+	if (desired_format)
+		capturing_format = desired_format;
+	else
+		capturing_format = ((MoonVideoFormat*)formats->pdata[0]);
+
 	struct v4l2_format fmt;
 
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+	fmt.fmt.pix.pixelformat = ((MoonVideoFormatV4L2*)capturing_format)->GetV4L2PixelFormat ();
+	fmt.fmt.pix.width = capturing_format->GetWidth();
+	fmt.fmt.pix.height = capturing_format->GetHeight();
+	fmt.fmt.pix.bytesperline = 0; // the driver will fill this in
 
 	if (-1 == ioctl (fd, VIDIOC_S_FMT, &fmt)) {
 		perror ("VIDIOC_S_FMT");
+		capturing_format = NULL;
 		return;
 	}
 
-	capturing_format = new MoonVideoFormat (MoonPixelFormatYUV420P,
-						0                      /* fps */,
-						fmt.fmt.pix.width * 4  /* stride */,
-						fmt.fmt.pix.width      /* width */,
-						fmt.fmt.pix.height     /* height */);
+	capturing_format = new MoonVideoFormatV4L2 (MoonPixelFormatRGBA32,   /* the pixel format we report to moonlight */
+						    0                        /* fps for moonlight FIXME from where? */,
+						    fmt.fmt.pix.width * 4    /* stride */,
+						    fmt.fmt.pix.width        /* width */,
+						    fmt.fmt.pix.height       /* height */,
 
+						    fmt.fmt.pix.pixelformat,  /* the pixel format v4l2 gave us */
+						    fmt.fmt.pix.bytesperline /* the stride of the unconverted data */
+						    );
+
+	printf ("capturing with format %c%c%c%c, %d x %d, %d stride\n",
+		(char)(fmt.fmt.pix.pixelformat & 0xff),
+		(char)((fmt.fmt.pix.pixelformat >> 8) & 0xff),
+		(char)((fmt.fmt.pix.pixelformat >> 16) & 0xff),
+		(char)((fmt.fmt.pix.pixelformat >> 24) & 0xff),
+		fmt.fmt.pix.width,
+		fmt.fmt.pix.height,
+		fmt.fmt.pix.bytesperline);
+		
 	struct v4l2_requestbuffers reqbuf;
 
 	memset (&reqbuf, 0, sizeof (reqbuf));
