@@ -203,6 +203,9 @@ struct MoonNameIdMapping {
 #define IS_METHOD(id)         (((id) & 0x8000) != 0)
 #define IS_PROPERTY(id)       (((id) & 0x4000) != 0)
 
+#define NPVARIANT_IS_NUMERIC(v) ((v).type == NPVariantType_Int32 || (v).type == NPVariantType_Double)
+#define NPVARIANT_AS_DOUBLE(v) ((v).type == NPVariantType_Int32 ? (double) (v).value.intValue : (v).value.doubleValue)
+#define NPVARIANT_AS_INT32(v) ((v).type == NPVariantType_Int32 ? (v).value.intValue : (int) (v).value.doubleValue)
 
 G_BEGIN_DECLS
 G_GNUC_INTERNAL bool npobject_is_dependency_object (NPObject *obj);

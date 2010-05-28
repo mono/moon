@@ -1,5 +1,18 @@
 2010-05-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* plugin-class.h.in: Added some helper macros to get ints and
+	doubles from an NPVariant no matter which numeric type it is.
+
+	* plugin-utils.cpp (decode_arg_ctype): For 'd', return a
+	bitwise-or of Double and Int32.
+
+	* plugin-class.cpp (MoonlightMultiScaleImageObject::Invoke):
+	Changed over to use the simpler NPVARIANT_AS_DOUBLE() macro and to
+	revert the check_arg_list() string code back to "ddd" since 'd'
+	now matches int32 and double.
+
+2010-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* plugin-class.cpp (MoonlightMultiScaleImageObject::Invoke): Fixed
 	to properly handle integer args for ZoomAboutLogicalPoint().
 

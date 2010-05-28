@@ -36,7 +36,7 @@ decode_arg_ctype (char c)
 	case 'n': return MethodArgTypeNull;
 	case 'b': return MethodArgTypeBool;
 	case 'i': return MethodArgTypeInt32;
-	case 'd': return MethodArgTypeDouble;
+	case 'd': return (MethodArgType) (MethodArgTypeDouble | MethodArgTypeInt32);
 	case 's': return MethodArgTypeString;
 	case 'o': return MethodArgTypeObject;
 	case '*': return MethodArgTypeAny;

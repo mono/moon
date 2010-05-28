@@ -4052,26 +4052,11 @@ MoonlightMultiScaleImageObject::Invoke (int id, NPIdentifier name,
 		}
 
 		case MoonId_MultiScaleImage_ZoomAboutLogicalPoint: {
-			double arg0, arg1, arg2;
-			
-			if (!check_arg_list ("(id)(id)(id)", argCount, args))
+			if (!check_arg_list ("ddd", argCount, args))
 				THROW_JS_EXCEPTION ("ZoomAboutLogicalPoint");
-			
-			if (NPVARIANT_IS_INT32 (args[0]))
-				arg0 = (double) NPVARIANT_TO_INT32 (args[0]);
-			else
-				arg0 = NPVARIANT_TO_DOUBLE (args[0]);
-			
-			if (NPVARIANT_IS_INT32 (args[1]))
-				arg1 = (double) NPVARIANT_TO_INT32 (args[1]);
-			else
-				arg1 = NPVARIANT_TO_DOUBLE (args[1]);
-			
-			if (NPVARIANT_IS_INT32 (args[2]))
-				arg2 = (double) NPVARIANT_TO_INT32 (args[2]);
-			else
-				arg2 = NPVARIANT_TO_DOUBLE (args[2]);
-			
+			double arg0 = NPVARIANT_AS_DOUBLE (args[0]);
+			double arg1 = NPVARIANT_AS_DOUBLE (args[1]);
+			double arg2 = NPVARIANT_AS_DOUBLE (args[2]);
 			dob->ZoomAboutLogicalPoint (arg0, arg1, arg2);
 			VOID_TO_NPVARIANT (*result);
 			return true;
