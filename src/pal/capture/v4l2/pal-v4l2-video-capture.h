@@ -78,7 +78,7 @@ private:
 
 	int fd;
 	MoonVideoFormat *desired_format;
-	MoonVideoFormat *capturing_format;
+	MoonVideoFormatV4L2 *capturing_format;
 	bool need_to_notify_format;
 	MoonVideoCaptureServiceV4L2* service;
 	char *friendly_name;

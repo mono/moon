@@ -10,12 +10,14 @@
 
 #include "config.h"
 #include "utils.h"
+#include <glib/gstdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <poll.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <sys/mman.h>
 #include <linux/videodev2.h>
 
@@ -30,7 +32,7 @@ MoonVideoCaptureServiceV4L2::MoonVideoCaptureServiceV4L2 ()
 MoonVideoCaptureServiceV4L2::~MoonVideoCaptureServiceV4L2 ()
 {
 	if (devices) {
-		for (int i = 0; i < devices->len; i ++)
+		for (guint i = 0; i < devices->len; i ++)
 			delete ((MoonVideoCaptureDeviceV4L2*)devices->pdata[i]);
 		g_ptr_array_free (devices, FALSE);
 	}
@@ -68,6 +70,10 @@ MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (int *num_devices)
 	}
 
 	const char *entry_name;
+	char default_device_name [PATH_MAX];
+
+	default_device_name[0] = 0;
+
 	while ((entry_name = g_dir_read_name (dir))) {
 		if (!strncmp (entry_name, "video", 5)) {
 			char name [PATH_MAX];
@@ -97,12 +103,29 @@ MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (int *num_devices)
 			g_ptr_array_add (devices, device);
 
 			if (!strcmp (entry_name, "video")) {
-				// if it's /dev/video treat it like the
-				// default device it probing it works
+				struct stat st;
+
+				if (-1 == g_lstat (name, &st))
+					continue;
+				
+				if (S_ISLNK (st.st_mode)) {
+					if (-1 == readlink (name, default_device_name, PATH_MAX))
+						continue;
+				}
+				else {
+					// if it's /dev/video treat it like the
+					// default device if probing it works
+					default_device = device;
+				}
+			}
+			else if (!strcmp (entry_name,
+					  default_device_name)) {
+				// we found the destination of the /dev/video symlink, make this our default device
 				default_device = device;
 			}
-			else if (!strcmp (entry_name, "video0")
-				 && !default_device) {
+			else if (!strcmp (entry_name, "video0") &&
+				 !default_device_name[0] &&
+				 !default_device) {
 				// if it's /dev/video0 we also treat
 				// it like the default device, but
 				// only if there wasn't a viable
@@ -147,7 +170,7 @@ MoonVideoCaptureDeviceV4L2::~MoonVideoCaptureDeviceV4L2 ()
 	if (idle_id != -1)
 		g_source_remove (idle_id);
 	if (formats) {
-		for (int i = 0; i < formats->len; i ++)
+		for (guint i = 0; i < formats->len; i ++)
 			delete ((MoonVideoFormat*)formats->pdata[i]);
 		g_ptr_array_free (formats, FALSE);
 	}
@@ -404,16 +427,28 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gin
 	guint8 *op = output_buffer;
 	guint32 *ip = (guint32*)buffers[v4l2buf.index].start;
 
-	while (((char*)ip - (char*)buffers[v4l2buf.index].start) < buffers[v4l2buf.index].length) {
-		guint8 y  =  ((*ip & 0x000000ff));
-		guint8 u =  ((*ip & 0x0000ff00)>>8);
-		guint8 y2  =  ((*ip & 0x00ff0000)>>16);
-		guint8 v  =  ((*ip & 0xff000000)>>24);
+	if (capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_YUYV ||
+	    capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_YVU420 /* YV12 */ ||
+	    capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_NV12   /* YV12 */) {
+		while (((char*)ip - (char*)buffers[v4l2buf.index].start) < buffers[v4l2buf.index].length) {
+			guint8 y, u, y2, v;
 
-		YUV444ToBGRA (y, u, v, op); op += 4;
-		YUV444ToBGRA (y2, u, v, op); op += 4;
+			y  = ((*ip & 0x000000ff));
+			y2 = ((*ip & 0x00ff0000)>>16);
+			if (capturing_format->GetV4L2PixelFormat() == V4L2_PIX_FMT_YUYV) {
+				u =  ((*ip & 0x0000ff00)>>8);
+				v =  ((*ip & 0xff000000)>>24);
+			}
+			else {
+				u =  ((*ip & 0xff000000)>>24);
+				v =  ((*ip & 0x0000ff00)>>8);
+			}
 
-		ip ++;
+			YUV444ToBGRA (y, u, v, op); op += 4;
+			YUV444ToBGRA (y2, u, v, op); op += 4;
+
+			ip ++;
+		}
 	}
 
 	*buffer = output_buffer;
@@ -455,9 +490,9 @@ MoonVideoCaptureDeviceV4L2::StartCapturing (MoonReportSampleFunc report_sample,
 	delete capturing_format;
 
 	if (desired_format)
-		capturing_format = desired_format;
+		capturing_format = (MoonVideoFormatV4L2*)desired_format;
 	else
-		capturing_format = ((MoonVideoFormat*)formats->pdata[0]);
+		capturing_format = ((MoonVideoFormatV4L2*)formats->pdata[0]);
 
 	struct v4l2_format fmt;
 
