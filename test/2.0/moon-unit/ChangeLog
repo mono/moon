@@ -1,3 +1,9 @@
+2010-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/CollectionViewTest.cs: Add a moonunit to
+	  show that calling Refresh always emits the CurrentChanging
+	  event.
+
 2010-05-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs:

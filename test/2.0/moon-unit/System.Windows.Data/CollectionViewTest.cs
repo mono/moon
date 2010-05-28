@@ -707,6 +707,28 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void RefreshEmitsCurrentChangingEvents()
+		{
+			var events = new List<CurrentChangingEventArgs>();
+			var data = new List<object> {
+				"First",
+				"Second",
+				"Third",
+				"Fourth",
+				"Fifth",
+			};
+
+			var view = new CollectionViewSource() { Source = data }.View;
+			view.CurrentChanging += (o, e) => events.Add(e);
+
+			view.Refresh();
+			Assert.AreEqual(1, events.Count, "#1");
+
+			view.Refresh();
+			Assert.AreEqual(2, events.Count, "#2");
+		}
+
+		[TestMethod]
 		public void Sort_OneDescription ()
 		{
 			Source.Source = new [] { 1, 2, 3, 4, 5 };
