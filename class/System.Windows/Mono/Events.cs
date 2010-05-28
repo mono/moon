@@ -293,6 +293,28 @@ namespace Mono {
 						} );
 		}
 
+		private static Exception CaptureImageCompletedEventArgsGetError (IntPtr calldata)
+		{
+			try {
+				NativeMethods.capture_image_completed_event_args_get_error (calldata);
+				return null;
+			}
+			catch (Exception e) {
+				return e;
+			}
+		}
+
+		public static UnmanagedEventHandler CreateCaptureImageCompletedEventArgsEventHandlerDispatcher (EventHandler <CaptureImageCompletedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> {
+							Exception exc = CaptureImageCompletedEventArgsGetError (calldata);
+
+							handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								 new CaptureImageCompletedEventArgs (calldata, exc, false));
+						} );
+		}
+
 		public static UnmanagedEventHandler CreateEndPrintEventArgsEventHandlerDispatcher (EventHandler <EndPrintEventArgs> handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)

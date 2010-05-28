@@ -33,7 +33,7 @@ G_END_DECLS
 #include "runtime.h"
 #include "timeline.h"
 #include "deployment.h"
-
+#include "writeablebitmap.h"
 
 EventArgs::EventArgs ()
 	: DependencyObject (Type::EVENTARGS)
@@ -493,6 +493,28 @@ SendCompletedEventArgs::~SendCompletedEventArgs ()
 		guint32 state = GPOINTER_TO_UINT (managedUserState);
 		mono_gchandle_free (state);
 	}
+}
+
+//
+// CaptureImageCompletedEventArgs
+//
+
+CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error,
+								WriteableBitmap *result)
+
+	: EventArgs (Type::CAPTUREIMAGECOMPLETEDEVENTARGS)
+{
+	this->error = error ? new MoonError (*error) : NULL;
+	this->result = result;
+	if (result)
+		result->ref ();
+}
+
+CaptureImageCompletedEventArgs::~CaptureImageCompletedEventArgs ()
+{
+	delete error;
+	if (result)
+		result->unref ();
 }
 
 //

@@ -1,8 +1,9 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 583 methods
+# 589 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
++SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -448,6 +449,11 @@
 +SSC-M: System.Windows.Media.AudioCaptureDevice System.Windows.Media.CaptureDeviceConfiguration::GetDefaultAudioCaptureDevice()
 +SSC-M: System.Windows.Media.VideoCaptureDevice System.Windows.Media.CaptureDeviceConfiguration::GetDefaultVideoCaptureDevice()
 +SSC-M: System.Boolean System.Windows.Media.CaptureDeviceConfiguration::RequestDeviceAccess()
++SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::.ctor(System.IntPtr,System.Exception,System.Boolean)
++SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::Free()
++SSC-M: System.Windows.Media.Imaging.WriteableBitmap System.Windows.Media.CaptureImageCompletedEventArgs::get_Result()
++SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::set_NativeHandle(System.IntPtr)
++SSC-M: System.Void System.Windows.Media.CaptureSource::CaptureImageAsync()
 +SSC-M: System.Void System.Windows.Media.CaptureSource::Start()
 +SSC-M: System.Void System.Windows.Media.CaptureSource::Stop()
 +SSC-M: System.Windows.Media.CaptureState System.Windows.Media.CaptureSource::get_State()

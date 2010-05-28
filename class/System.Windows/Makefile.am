@@ -565,6 +565,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/CacheMode.cs				\
 	$(srcdir)/System.Windows.Media/CaptureDevice.cs				\
 	$(srcdir)/System.Windows.Media/CaptureDeviceConfiguration.cs		\
+	$(srcdir)/System.Windows.Media/CaptureImageCompletedEventArgs.cs	\
 	$(srcdir)/System.Windows.Media/CaptureSource.cs				\
 	$(srcdir)/System.Windows.Media/CaptureState.cs				\
 	$(srcdir)/System.Windows.Media/Color.cs					\

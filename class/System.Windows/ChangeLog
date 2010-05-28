@@ -1,3 +1,8 @@
+2010-05-27  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add
+	System.Windows.Media/CaptureImageCompletedEventArgs.cs
+
 2010-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:

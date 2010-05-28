@@ -444,6 +444,33 @@ private:
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+class CaptureImageCompletedEventArgs : public EventArgs {
+public:
+	CaptureImageCompletedEventArgs (MoonError *error,
+					WriteableBitmap *result);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void GetError (MoonError *error) {
+		if (this->error) {
+			*error = MoonError (*this->error);
+		}
+		else {
+			MoonError::FillIn (error, MoonError::NO_ERROR, "");
+		}
+	}
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	WriteableBitmap *GetResult () { return result; }
+
+protected:
+	virtual ~CaptureImageCompletedEventArgs ();
+
+private:
+	MoonError *error;
+	WriteableBitmap *result;
+};
+
+/* @Namespace=None,ManagedDependencyProperties=None */
 class ParserErrorEventArgs : public ErrorEventArgs {
 protected:
 	virtual ~ParserErrorEventArgs ();

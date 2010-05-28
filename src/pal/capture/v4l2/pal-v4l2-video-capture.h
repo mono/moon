@@ -56,6 +56,8 @@ private:
 	MoonFormatChangedFunc format_changed;
 	gpointer callback_data;
 
+	GPtrArray *formats;
+
 	gint idle_id;
 };
 

@@ -37,6 +37,11 @@ namespace System.Windows.Media {
 			throw new NotImplementedException ();
 		}
 
+		public void CaptureImageAsync ()
+		{
+			NativeMethods.capture_source_capture_image_async (native);
+		}
+
 		public void Start ()
 		{
 			NativeMethods.capture_source_start (native);

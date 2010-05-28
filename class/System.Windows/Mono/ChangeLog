@@ -1,3 +1,8 @@
+2010-05-27  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: add dispatcher for
+	EventHandler<CaptureImageCompletedEventArgs>
+
 2010-05-26  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: correct field usage for Audio/VideoFormat classes.

@@ -66,6 +66,12 @@ CaptureSource::CaptureSource ()
 }
 
 void
+CaptureSource::CaptureImageAsync ()
+{
+	printf ("CaptureSource::CaptureImageAsync ()\n");
+}
+
+void
 CaptureSource::Start ()
 {
 	printf ("CaptureSource::Start ()\n");

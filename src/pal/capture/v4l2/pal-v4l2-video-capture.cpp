@@ -28,12 +28,22 @@ MoonVideoCaptureServiceV4L2::MoonVideoCaptureServiceV4L2 ()
 
 MoonVideoCaptureServiceV4L2::~MoonVideoCaptureServiceV4L2 ()
 {
-	g_ptr_array_free (devices, true);
+	if (devices) {
+		for (int i = 0; i < devices->len; i ++)
+			delete ((MoonVideoCaptureDeviceV4L2*)devices->pdata[i]);
+		g_ptr_array_free (devices, FALSE);
+	}
 }
 
 MoonVideoCaptureDevice*
 MoonVideoCaptureServiceV4L2::GetDefaultCaptureDevice ()
 {
+	int unused;
+
+	// make sure we probe all the devices so that the default is
+	// populated.
+	GetAvailableCaptureDevices (&unused);
+
 	return default_device;
 }
 
@@ -120,6 +130,7 @@ MoonVideoCaptureDeviceV4L2::MoonVideoCaptureDeviceV4L2 (MoonVideoCaptureServiceV
 	this->capturing_format = NULL;
 	this->need_to_notify_format = true;
 	this->idle_id = -1;
+	this->formats = NULL;
 }
 
 MoonVideoCaptureDeviceV4L2::~MoonVideoCaptureDeviceV4L2 ()
@@ -134,6 +145,11 @@ MoonVideoCaptureDeviceV4L2::~MoonVideoCaptureDeviceV4L2 ()
 	delete capturing_format;
 	if (idle_id != -1)
 		g_source_remove (idle_id);
+	if (formats) {
+		for (int i = 0; i < formats->len; i ++)
+			delete ((MoonVideoFormat*)formats->pdata[i]);
+		g_ptr_array_free (formats, FALSE);
+	}
 }
 
 MoonVideoFormat*
@@ -156,8 +172,115 @@ MoonVideoCaptureDeviceV4L2::SetDesiredFormat (MoonVideoFormat *format)
 MoonVideoFormat**
 MoonVideoCaptureDeviceV4L2::GetSupportedFormats (int* count)
 {
-	*count = 0;
-	return NULL;
+	if (formats) {
+		*count = formats->len;
+		return (MoonVideoFormat**)formats->pdata;
+	}
+
+	formats = g_ptr_array_new ();
+
+	struct v4l2_fmtdesc fmt;
+	struct v4l2_frmsizeenum frame_size;
+	struct v4l2_frmivalenum frame_interval;
+
+	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+	for (fmt.index = 0; ; fmt.index ++) {
+		if (-1 == ioctl (fd, VIDIOC_ENUM_FMT, &fmt)) {
+			if (errno != EINVAL)
+				perror ("VIDIOC_ENUM_FMT");
+			break;
+		}
+
+		// we skip compressed formats since we don't want to
+		// be decoding, e.g. mjpg
+		if (fmt.flags & V4L2_FMT_FLAG_COMPRESSED)
+			continue;
+
+		frame_size.pixel_format = fmt.pixelformat;
+
+		bool discrete_framesizes = true;
+		for (frame_size.index = 0; ; frame_size.index ++) {
+			guint32 frame_width;
+			guint32 frame_height;
+			guint32 frame_rate;
+
+			if (-1 == ioctl (fd, VIDIOC_ENUM_FRAMESIZES, &frame_size)) {
+				if (errno != EINVAL)
+					perror ("VIDIOC_ENUM_FRAMESIZES");
+				break;
+			}
+
+			// for now we treat stepwise sizes as their
+			// maximum size, since there's no way to
+			// communicate this to SL (FIXME: maybe we can
+			// expand them to many different sizes and
+			// represent them as separate formats?)
+			if (frame_size.type == V4L2_FRMSIZE_TYPE_CONTINUOUS ||
+			    frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
+				frame_width = frame_size.stepwise.max_width;
+				frame_height = frame_size.stepwise.max_height;
+				discrete_framesizes = false;
+			}
+			else {
+				frame_width = frame_size.discrete.width;
+				frame_height = frame_size.discrete.height;
+			}
+			    
+			frame_interval.pixel_format = fmt.pixelformat;
+			frame_interval.width = frame_width;
+			frame_interval.height = frame_height;
+
+			bool discrete_frameintervals = true;
+			for (frame_interval.index = 0; ; frame_interval.index ++) {
+				if (-1 == ioctl (fd, VIDIOC_ENUM_FRAMEINTERVALS, &frame_interval)) {
+					if (errno != EINVAL)
+						perror ("VIDIOC_ENUM_FRAMEINTERVALS");
+					break;
+				}
+
+				if (frame_interval.type == V4L2_FRMIVAL_TYPE_STEPWISE) {
+					frame_rate = frame_interval.stepwise.max.denominator / frame_interval.stepwise.max.numerator;
+					discrete_frameintervals = false;
+				}
+				else {
+					frame_rate = frame_interval.discrete.denominator / frame_interval.discrete.numerator;;
+				}
+
+				g_ptr_array_add (formats, new MoonVideoFormat (MoonPixelFormatRGBA32,
+									       frame_rate,
+									       frame_width * 4,
+									       frame_width,
+									       frame_height));
+
+				printf ("Format: %c%c%c%c ",
+					(char)(fmt.pixelformat & 0xff),
+					(char)((fmt.pixelformat >> 8) & 0xff),
+					(char)((fmt.pixelformat >> 16) & 0xff),
+					(char)((fmt.pixelformat >> 24) & 0xff));
+				printf ("  frame size: %d x %d, frame rate = %d\n", frame_width, frame_height, frame_rate);
+
+				if (!discrete_frameintervals)
+					break;
+			}
+
+			if (!discrete_framesizes) {
+				// according to the v4l2 docs:
+				//
+				// if the first element is DISCRETE then
+				// 1) there can be more than one
+				// 2) they'll all be discrete
+				//
+				// if the first element is not
+				// DISCRETE, then there will be only
+				// one
+				break;
+			}
+		}
+	}
+
+	*count = formats->len;
+	return (MoonVideoFormat**)formats->pdata;
 }
 
 const char*

@@ -134,6 +134,9 @@ public:
 	void SetVideoCaptureDevice (VideoCaptureDevice *value);
 
 	/* @GeneratePInvoke,GenerateCBinding */
+	void CaptureImageAsync ();
+
+	/* @GeneratePInvoke,GenerateCBinding */
 	void Start ();
 
 	/* @GeneratePInvoke,GenerateCBinding */
@@ -153,6 +156,9 @@ public:
 
 	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int CaptureFailedEvent;
+
+	/* @DelegateType=EventHandler<CaptureImageCompletedEventArgs> */
+	const static int CaptureImageCompletedEvent;
 
 	// internal events
 	/* @DelegateType=EventHandler<SampleReadyEventArgs>,ManagedAccess=Internal */

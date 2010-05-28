@@ -1,3 +1,18 @@
+2010-05-27  Chris Toshok  <toshok@ximian.com>
+
+	* pal/capture/v4l2/pal-v4l2-video-capture.cpp,h (~MoonVideoCaptureServiceV4L2):
+	delete the devices properly (don't use g_free to deallocate c++
+	allocated objects).
+	(MoonVideoCaptureServiceV4L2::GetDefaultCaptureDevice): we need to
+	make sure default_device has been initialized before returning it,
+	so call GetAvailableCaptureDevices.
+	(MoonVideoCaptureDeviceV4L2::GetSupportedFormats): implement.
+
+	* eventargs.cpp,h: add CaptureImageCompletedEventArgs.
+
+	* capture.cpp,h (CaptureSource): add CaptureImageAsync method and
+	CaptureImageCompletedEvent.
+
 2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* transform.cpp (TransformXYWithError): Renamed to TransformXY()
