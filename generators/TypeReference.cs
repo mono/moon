@@ -131,9 +131,6 @@ class TypeReference {
 					np_type = "b";
 					break;
 				case "double":
-					// anything that takes a double also accepts int32
-					np_type = "(id)";
-					break;
 				case "int64_t":
 				case "gint64":
 				case "uint64_t":

@@ -93,7 +93,9 @@ class Generator {
 			header.AppendLine ();
 			header.AppendLine ("};");
 
+			body.AppendLine ();
 			body.AppendLine ("/*** Moonlight" + parent + "Class *********/");
+			body.AppendLine ();
 			body.AppendLine ("static NPObject *");
 			body.AppendLine ("moonlight_" + parent.ToLower() + "_allocate (NPP instance, NPClass *klass)");
 			body.AppendLine ("{");
@@ -108,7 +110,7 @@ class Generator {
 				if (name == null)
 					name = method.Name;
 				string id = "MoonId_" + parent + "_" + name;
-				body.Append ("	{\"" + name.ToLower () + "\", " + id + "}");
+				body.Append ("	{ \"" + name.ToLower () + "\", " + id + " }");
 
 				if (i < t.Value.Count - 1)
 					body.Append (",");
@@ -123,7 +125,7 @@ class Generator {
 			body.AppendLine ("				   const NPVariant *args, guint32 argCount,");
 			body.AppendLine ("				   NPVariant *result)");
 			body.AppendLine ("{");
-			body.AppendLine ("	" + parent + " *dob = (" + parent + "*)GetDependencyObject ();");
+			body.AppendLine ("	" + parent + " *dob = (" + parent + " *) GetDependencyObject ();");
 			body.AppendLine ("");
 			body.AppendLine ("	switch (id) {");
 
@@ -132,7 +134,6 @@ class Generator {
 				if (name == null)
 					name = method.Name;
 				string id = "MoonId_" + parent + "_" + name;
-				body.AppendLine ();
 				body.AppendLine ("\t\tcase " + id + ": {");
 
 				bool errorcheck = false;
@@ -164,15 +165,7 @@ class Generator {
 								parms.Add ("(" + parameter.ParameterType.WriteFormatted () + ") arg" + i);
 								break;
 							case "d":
-								args.Add ("\t\t\tdouble arg" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "]);");
-								parms.Add ("arg" + i);
-								break;
-							case "(id)":
-								args.Add ("\t\t\tdouble arg" + i + ";");
-								args.Add ("\t\t\tif (NPVARIANT_IS_INT32 (args[" + i + "]))");
-								args.Add ("\t\t\t\targ" + i + " = (double) NPVARIANT_TO_INT32 (args[" + i + "]);");
-								args.Add ("\t\t\telse");
-								args.Add ("\t\t\t\targ" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "]);");
+								args.Add ("\t\t\tdouble arg" + i + " = NPVARIANT_AS_DOUBLE (args[" + i + "]);");
 								parms.Add ("arg" + i);
 								break;
 							case "b":
@@ -200,9 +193,11 @@ class Generator {
 
 				if (method.ReturnType.GetNPType () != "v") {
 					method.ReturnType.WriteFormatted (body);
-					body.AppendLine (" ret = dob->" + method.Name + "(" + String.Join (",", parms.ToArray ()) + ");");
+					if (!method.ReturnType.IsPointer)
+						body.Append (" ");
+					body.AppendLine ("ret = dob->" + method.Name + " (" + String.Join (", ", parms.ToArray ()) + ");");
 				} else
-					body.AppendLine ("dob->" + method.Name + "(" + String.Join (",", parms.ToArray ()) + ");");
+					body.AppendLine ("dob->" + method.Name + " (" + String.Join (", ", parms.ToArray ()) + ");");
 
 				for (int i = 0; i < method.Parameters.Count; i++) {
 					ParameterInfo parameter = method.Parameters[i];

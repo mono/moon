@@ -1,3 +1,14 @@
+2010-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TypeReference.cs (GetNPType): Revert previous change, found a
+	better way.
+
+	* Generator.cs (GenerateJSBindings): Instead of special-casing
+	doubles to accept int or double, we'll do that in the plugin's
+	check_arg_list() function instead. When getting a double from an
+	NPVariant, use the new NPVARIANT_*AS*_DOUBLE() macro which will
+	up-cast ints to doubles if needed.
+
 2010-05-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TypeReference.cs (GetNPType): Any function that takes doubles
