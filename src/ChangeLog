@@ -1,3 +1,14 @@
+2010-05-28  Chris Toshok  <toshok@ximian.com>
+
+	* pal/pal.h (MoonVideoCaptureDevice): add SetCallbacks api, and
+	remove the callbacks from StartCapturing, so we can modify them
+	while we're capturing.
+
+	* pal/capture/v4l2/pal-v4l2-video-capture.h,cpp: track
+	MoonVideoCaptureDevice api changes, and remove some of the spew.
+
+	* capture.h, cpp: add in the async image capture stuff.
+
 2010-05-28  Larry Ewing  <lewing@novell.com>
 
 	* pal/capture/v4l2/pal-v4l2-video-capture.cpp (ReadNextFrame): add

@@ -67,9 +67,10 @@ public:
 	virtual const char* GetFriendlyName();
 	virtual bool GetIsDefaultDevice();
 
-	virtual void StartCapturing (MoonReportSampleFunc report_sample,
-				     MoonFormatChangedFunc format_changed,
-				     gpointer data);
+	virtual void SetCallbacks (MoonReportSampleFunc report_sample,
+				   MoonFormatChangedFunc format_changed,
+				   gpointer data);
+	virtual void StartCapturing ();
 	virtual void StopCapturing ();
 
 private:

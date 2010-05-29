@@ -445,9 +445,10 @@ public:
 	virtual void SetDesiredFormat (MoonVideoFormat *format) = 0;
 	virtual MoonVideoFormat** GetSupportedFormats (int* count) = 0;
 
-	virtual void StartCapturing (MoonReportSampleFunc report_sample,
-				     MoonFormatChangedFunc format_changed,
-				     gpointer data) = 0;
+	virtual void SetCallbacks (MoonReportSampleFunc report_sample,
+				   MoonFormatChangedFunc format_changed,
+				   gpointer data) = 0;
+	virtual void StartCapturing () = 0;
 	virtual void StopCapturing () = 0;
 };
 

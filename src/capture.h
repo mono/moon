@@ -115,7 +115,7 @@ private:
 /* @Namespace=System.Windows.Media */
 class CaptureSource : public DependencyObject {
 protected:
-	virtual ~CaptureSource () {}
+	virtual ~CaptureSource ();
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
@@ -177,11 +177,20 @@ private:
 	static void VideoFormatChangedCallback (MoonVideoFormat *format, gpointer data);
 	void VideoFormatChanged (MoonVideoFormat *format);
 
+	static void CaptureImageReportSampleCallback (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength, gpointer data);
+	void CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength);
+
+	static void CaptureImageVideoFormatChangedCallback (MoonVideoFormat *format, gpointer data);
+	void CaptureImageVideoFormatChanged (MoonVideoFormat *format);
+
 	State current_state;
 	guint8 *cached_sampleData;
 	int cached_sampleDataLength;
 	gint64 cached_sampleTime;
 	gint64 cached_frameDuration;
+
+	bool need_image_capture;
+	VideoFormat *capture_format;
 };
 
 
@@ -299,8 +308,11 @@ public:
 
 	void SetPalDevice (MoonCaptureDevice *device);
 
-	void Start (MoonReportSampleFunc report_sample, MoonFormatChangedFunc format_changed,
-		    gpointer data);
+	void SetCallbacks (MoonReportSampleFunc report_sample,
+			   MoonFormatChangedFunc format_changed,
+			   gpointer data);
+
+	void Start ();
 	void Stop ();
 
 protected:

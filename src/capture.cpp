@@ -13,6 +13,7 @@
 
 #include "capture.h"
 #include "deployment.h"
+#include "writeablebitmap.h"
 
 /*
  * VideoFormat
@@ -63,27 +64,59 @@ CaptureSource::CaptureSource ()
 	cached_sampleDataLength = 0;
 	cached_sampleTime = 0;
 	cached_frameDuration = 0;
+
+	need_image_capture = false;
+	capture_format = NULL;
+}
+
+CaptureSource::~CaptureSource ()
+{
+	delete capture_format;
 }
 
 void
 CaptureSource::CaptureImageAsync ()
 {
 	printf ("CaptureSource::CaptureImageAsync ()\n");
+
+	if (current_state != CaptureSource::Started) {
+		VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
+		// we weren't started, so let's start now
+		if (video_device) {
+			video_device->SetCallbacks (CaptureSource::CaptureImageReportSampleCallback,
+						    CaptureSource::CaptureImageVideoFormatChangedCallback,
+						    this);
+			video_device->Start ();
+		}
+	}
+
+	need_image_capture = true;
 }
 
 void
 CaptureSource::Start ()
 {
+	if (current_state == CaptureSource::Started)
+		return;
+
 	printf ("CaptureSource::Start ()\n");
+
 	AudioCaptureDevice *audio_device = GetAudioCaptureDevice ();
 	VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
 
 	if (audio_device)
 		audio_device->Start ();
-	if (video_device)
-		video_device->Start (CaptureSource::ReportSampleCallback,
-				     CaptureSource::VideoFormatChangedCallback,
-				     this);
+	if (video_device) {
+		video_device->SetCallbacks (CaptureSource::ReportSampleCallback,
+					    CaptureSource::VideoFormatChangedCallback,
+					    this);
+		if (!need_image_capture) {
+			// if need_image_capture is true the image
+			// capture stuff has already started the
+			// device
+			video_device->Start ();
+		}
+	}
 
 	current_state = CaptureSource::Started;
 	if (HasHandlers (CaptureSource::CaptureStartedEvent))
@@ -98,8 +131,19 @@ CaptureSource::Stop ()
 
 	if (audio_device)
 		audio_device->Stop ();
-	if (video_device)
-		video_device->Stop ();
+	if (video_device) {
+		if (need_image_capture) {
+			// if we're waiting for an image capture,
+			// replace the callbacks instead of stopping
+			// the device outright.
+			video_device->SetCallbacks (CaptureSource::CaptureImageReportSampleCallback,
+						    CaptureSource::CaptureImageVideoFormatChangedCallback,
+						    this);
+		}
+		else {
+			video_device->Stop ();
+		}
+	}
 
 	current_state = CaptureSource::Stopped;
 	if (HasHandlers (CaptureSource::CaptureStoppedEvent))
@@ -122,6 +166,11 @@ void
 CaptureSource::ReportSample (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength)
 {
 	SetCurrentDeployment ();
+
+	if (need_image_capture) {
+		CaptureImageReportSample (sampleTime, frameDuration, sampleData, sampleDataLength);
+		need_image_capture = false;
+	}
 
 	if (!cached_sampleData || sampleDataLength != cached_sampleDataLength) {
 		g_free (cached_sampleData);
@@ -152,11 +201,74 @@ CaptureSource::VideoFormatChanged (MoonVideoFormat *format)
 	SetCurrentDeployment ();
 
 	printf ("CaptureSource::VideoFormatChanged\n");
+
+	delete capture_format;
+	capture_format = new VideoFormat (format);
+
 	if (HasHandlers (CaptureSource::FormatChangedEvent)) {
 		VideoFormat vformat (format);
 		Emit (CaptureSource::FormatChangedEvent,
 		      new VideoFormatChangedEventArgs (&vformat));
 	}
+}
+
+
+
+
+void
+CaptureSource::CaptureImageReportSampleCallback (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength, gpointer data)
+{
+	((CaptureSource*)data)->CaptureImageReportSample (sampleTime, frameDuration, sampleData, sampleDataLength);
+}
+
+void
+CaptureSource::CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength)
+{
+	SetCurrentDeployment ();
+
+	printf ("CaptureSource::CaptureImageReportSample (%llu, %llu, %d\n", sampleTime, frameDuration, sampleDataLength);
+
+	if (HasHandlers (CaptureSource::CaptureImageCompletedEvent)) {
+		BitmapSource *source = new BitmapSource ();
+		source->SetPixelWidth (capture_format->width);
+		source->SetPixelHeight (capture_format->height);
+		source->SetBitmapData (sampleData, false);
+
+		source->Invalidate (); // causes the BitmapSource to create its image_surface
+
+		WriteableBitmap *bitmap = new WriteableBitmap();
+		bitmap->InitializeFromBitmapSource (source);
+		source->unref ();
+		
+		Emit (CaptureSource::CaptureImageCompletedEvent,
+		      new CaptureImageCompletedEventArgs (NULL, bitmap));
+
+		bitmap->unref ();
+	}
+
+	// if we started the pal device strictly for an image capture
+	// (or kept it running after the user had called
+	// CaptureSource::Stop), stop it now.
+	if (current_state != CaptureSource::Started) {
+		VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
+		video_device->Stop();
+	}
+}
+
+void
+CaptureSource::CaptureImageVideoFormatChangedCallback (MoonVideoFormat *format, gpointer data)
+{
+	((CaptureSource*)data)->CaptureImageVideoFormatChanged (format);
+}
+
+void
+CaptureSource::CaptureImageVideoFormatChanged (MoonVideoFormat *format)
+{
+	SetCurrentDeployment ();
+
+	printf ("CaptureSource::CaptureImageVideoFormatChanged\n");
+	delete capture_format;
+	capture_format = new VideoFormat (format);
 }
 
 void
@@ -262,12 +374,18 @@ VideoCaptureDevice::SetPalDevice (MoonCaptureDevice *device)
 }
 
 void
-VideoCaptureDevice::Start (MoonReportSampleFunc report_sample,
-			   MoonFormatChangedFunc format_changed,
-			   gpointer data)
+VideoCaptureDevice::SetCallbacks (MoonReportSampleFunc report_sample,
+				  MoonFormatChangedFunc format_changed,
+				  gpointer data)
+{
+	((MoonVideoCaptureDevice*)GetPalDevice())->SetCallbacks (report_sample, format_changed, data);
+}
+
+void
+VideoCaptureDevice::Start ()
 {
 	printf ("VideoCaptureDevice::Start\n");
-	((MoonVideoCaptureDevice*)GetPalDevice())->StartCapturing (report_sample, format_changed, data);
+	((MoonVideoCaptureDevice*)GetPalDevice())->StartCapturing ();
 }
 
 void

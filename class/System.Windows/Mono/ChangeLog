@@ -1,3 +1,8 @@
+2010-05-28  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: reuse existing event args for
+	CaptureImageCompletedEvent and SendCompletedEvent.
+
 2010-05-27  Chris Toshok  <toshok@ximian.com>
 
 	* Events.cs: add dispatcher for

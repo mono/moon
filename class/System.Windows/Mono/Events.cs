@@ -289,7 +289,7 @@ namespace Mono {
 							Exception exc = SendCompletedEventArgsGetError (calldata);
 
 							handler (NativeDependencyObjectHelper.FromIntPtr (closure),
-								 new SendCompletedEventArgs (calldata, exc, false));
+								 (SendCompletedEventArgs)NativeDependencyObjectHelper.Lookup (calldata) ?? new SendCompletedEventArgs (calldata, exc, false));
 						} );
 		}
 
@@ -311,7 +311,7 @@ namespace Mono {
 							Exception exc = CaptureImageCompletedEventArgsGetError (calldata);
 
 							handler (NativeDependencyObjectHelper.FromIntPtr (closure),
-								 new CaptureImageCompletedEventArgs (calldata, exc, false));
+								 (CaptureImageCompletedEventArgs)NativeDependencyObjectHelper.Lookup (calldata) ?? new CaptureImageCompletedEventArgs (calldata, exc, false));
 						} );
 		}
 

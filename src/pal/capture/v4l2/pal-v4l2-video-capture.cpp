@@ -394,12 +394,12 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gin
 	fds[0].events = POLLIN | POLLERR;
 	fds[0].revents = 0;
 
-	printf ("POLL>>>>>>>>>>>>>>>>>\n");
+	// printf ("POLL>>>>>>>>>>>>>>>>>\n");
 	if (-1 == poll(fds, 1, 2000)) {
 		perror ("poll");
 		return;
 	}
-	printf ("POLL<<<<<<<<<<<<<<<<<\n");
+	// printf ("POLL<<<<<<<<<<<<<<<<<\n");
 
 	if (fds[0].revents == POLLERR) {
 		printf ("boooo\n");
@@ -419,8 +419,8 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gin
 		}
 	}
 
-	printf ("******************\n");
-	printf ("got a frame, length = %d, bytesused = %d\n", v4l2buf.length, v4l2buf.bytesused);
+	// printf ("******************\n");
+	// printf ("got a frame, length = %d, bytesused = %d\n", v4l2buf.length, v4l2buf.bytesused);
 
 #if COPY_BUFFER
 	*buffer = (guint8*)g_malloc (buffers[v4l2buf.index].length);
@@ -500,14 +500,19 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gin
 }
 
 void
-MoonVideoCaptureDeviceV4L2::StartCapturing (MoonReportSampleFunc report_sample,
-					    MoonFormatChangedFunc format_changed,
-					    gpointer data)
+MoonVideoCaptureDeviceV4L2::SetCallbacks (MoonReportSampleFunc report_sample,
+					  MoonFormatChangedFunc format_changed,
+					  gpointer data)
 {
 	this->report_sample = report_sample;
 	this->format_changed = format_changed;
 	this->callback_data = data;
+}
 
+
+void
+MoonVideoCaptureDeviceV4L2::StartCapturing ()
+{
 	printf ("MoonVideoCaptureDeviceV4L2::StartCapturing ()\n");
 
 	delete capturing_format;
