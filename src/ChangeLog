@@ -1,5 +1,12 @@
 2010-05-28  Chris Toshok  <toshok@ximian.com>
 
+	* enums.h (MoonPixelFormat): reorder things so that they match SL
+	for the two exposed pixel format (None/Unknown, and RGBA32).
+
+	* capture.cpp (CaptureSource::Stop): this should be idempotent.
+
+2010-05-28  Chris Toshok  <toshok@ximian.com>
+
 	* pal/pal.h (MoonVideoCaptureDevice): add SetCallbacks api, and
 	remove the callbacks from StartCapturing, so we can modify them
 	while we're capturing.

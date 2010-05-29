@@ -558,8 +558,8 @@ enum MediaStreamSourceDiagnosticKind {
 
 enum MoonPixelFormat {
 	MoonPixelFormatNone = 0,
+	MoonPixelFormatRGBA32 = 8,
 	MoonPixelFormatRGB32,
-	MoonPixelFormatRGBA32,
 	MoonPixelFormatYUV420P
 };
 

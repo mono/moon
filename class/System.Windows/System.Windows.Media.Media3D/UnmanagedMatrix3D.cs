@@ -34,22 +34,22 @@ namespace System.Windows.Media.Media3D {
 	internal partial class UnmanagedMatrix3D : DependencyObject {
 
 		// FIXME: introduce a private DP that allows us to set all values in a single SetValue call
-		public static readonly DependencyProperty M11Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M11", typeof (double));
-		public static readonly DependencyProperty M12Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M12", typeof (double));
-		public static readonly DependencyProperty M13Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M13", typeof (double));
-		public static readonly DependencyProperty M14Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M14", typeof (double));
-		public static readonly DependencyProperty M21Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M21", typeof (double));
-		public static readonly DependencyProperty M22Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M22", typeof (double));
-		public static readonly DependencyProperty M23Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M23", typeof (double));
-		public static readonly DependencyProperty M24Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M24", typeof (double));
-		public static readonly DependencyProperty M31Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M31", typeof (double));
-		public static readonly DependencyProperty M32Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M32", typeof (double));
-		public static readonly DependencyProperty M33Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M33", typeof (double));
-		public static readonly DependencyProperty M34Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M34", typeof (double));
-		public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Lookup (Kind.MATRIX3D, "OffsetX", typeof (double));
-		public static readonly DependencyProperty OffsetYProperty = DependencyProperty.Lookup (Kind.MATRIX3D, "OffsetY", typeof (double));
-		public static readonly DependencyProperty OffsetZProperty = DependencyProperty.Lookup (Kind.MATRIX3D, "OffsetZ", typeof (double));
-		public static readonly DependencyProperty M44Property = DependencyProperty.Lookup (Kind.MATRIX3D, "M44", typeof (double));
+		public static readonly DependencyProperty M11Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M11", typeof (double));
+		public static readonly DependencyProperty M12Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M12", typeof (double));
+		public static readonly DependencyProperty M13Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M13", typeof (double));
+		public static readonly DependencyProperty M14Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M14", typeof (double));
+		public static readonly DependencyProperty M21Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M21", typeof (double));
+		public static readonly DependencyProperty M22Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M22", typeof (double));
+		public static readonly DependencyProperty M23Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M23", typeof (double));
+		public static readonly DependencyProperty M24Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M24", typeof (double));
+		public static readonly DependencyProperty M31Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M31", typeof (double));
+		public static readonly DependencyProperty M32Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M32", typeof (double));
+		public static readonly DependencyProperty M33Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M33", typeof (double));
+		public static readonly DependencyProperty M34Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M34", typeof (double));
+		public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "OffsetX", typeof (double));
+		public static readonly DependencyProperty OffsetYProperty = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "OffsetY", typeof (double));
+		public static readonly DependencyProperty OffsetZProperty = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "OffsetZ", typeof (double));
+		public static readonly DependencyProperty M44Property = DependencyProperty.Lookup (Kind.UNMANAGEDMATRIX3D, "M44", typeof (double));
 
 		public UnmanagedMatrix3D (Matrix3D m) :
 			this ()

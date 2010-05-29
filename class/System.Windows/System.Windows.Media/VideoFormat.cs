@@ -34,16 +34,15 @@ namespace System.Windows.Media {
 		{
 		}
 
-		internal VideoFormat (float framesPerSecond,
-				      int height,
-				      int width,
-				      int stride,
-				      PixelFormatType pixelFormat)
+		public VideoFormat (PixelFormatType pixelFormat,
+				    int height,
+				    int width,
+				    float framesPerSecond)
 		{
 			this.framesPerSecond = framesPerSecond;
 			this.height = height;
 			this.width = width;
-			this.stride = stride;
+			this.stride = width * 4;
 			this.pixelFormat = pixelFormat;
 		}
 
@@ -51,11 +50,11 @@ namespace System.Windows.Media {
 			get { return framesPerSecond; }
 		}
 
-		public int Height {
+		public int PixelHeight {
 			get { return height; }
 		}
 
-		public int Width {
+		public int PixelWidth {
 			get { return width; }
 		}
 

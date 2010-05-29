@@ -1,3 +1,8 @@
+2010-05-28  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Media.Media3D/UnmanagedMatrix3D.cs: we need to
+	look these properties up on Kind.UNMANAGEDMATRIX3D, not MATRIX3D.
+
 2010-05-27  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add

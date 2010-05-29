@@ -1,5 +1,9 @@
 2010-05-28  Chris Toshok  <toshok@ximian.com>
 
+	* Value.cs: track change to VideoFormat ctor and fieldnames.
+
+2010-05-28  Chris Toshok  <toshok@ximian.com>
+
 	* Events.cs: reuse existing event args for
 	CaptureImageCompletedEvent and SendCompletedEvent.
 

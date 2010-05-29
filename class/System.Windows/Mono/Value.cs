@@ -111,7 +111,7 @@ namespace Mono {
 
 		public VideoFormat ToVideoFormat ()
 		{
-			return new VideoFormat (framesPerSecond, height, width, stride, pixelFormat);
+			return new VideoFormat (pixelFormat, height, width, framesPerSecond);
 		}
 	}
 
@@ -552,8 +552,8 @@ namespace Mono {
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedVideoFormat));
 					UnmanagedVideoFormat *format = (UnmanagedVideoFormat*) value.u.p;
 					format->framesPerSecond = f.FramesPerSecond;
-					format->height = f.Height;
-					format->width = f.Width;
+					format->height = f.PixelHeight;
+					format->width = f.PixelWidth;
 					format->stride = f.Stride;
 					format->pixelFormat = f.PixelFormat;
 				}

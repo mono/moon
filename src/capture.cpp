@@ -129,6 +129,9 @@ CaptureSource::Stop ()
 	AudioCaptureDevice *audio_device = GetAudioCaptureDevice ();
 	VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
 
+	if (current_state != CaptureSource::Started && !need_image_capture)
+		return;
+
 	if (audio_device)
 		audio_device->Stop ();
 	if (video_device) {
