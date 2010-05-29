@@ -1,3 +1,8 @@
+2010-05-19  Andreia Gaita  <avidigal@novell.com>
+
+	* BrowserHttpWebRequestInternal.cs: Keep the dispatcher around, it
+	  needs to be alive for the callback
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebRequestInternal.cs: Update to HttpRequest API.

@@ -45,6 +45,7 @@ namespace System.Net.Browser {
 		GCHandle managed;
 		long bytes_read;
 		bool aborted;
+		Dispatcher dispatcher;
 
 		InternalWebRequestStreamWrapper request;
 		BrowserHttpWebResponse response;
@@ -66,6 +67,7 @@ namespace System.Net.Browser {
 				request = wreq.request;
 				Headers = wreq.Headers;
 			}
+			dispatcher = new Dispatcher ();
 		}
 
 		~BrowserHttpWebRequestInternal () /* thread-safe: all p/invokes are thread-safe */
@@ -95,7 +97,7 @@ namespace System.Net.Browser {
 
 			async_result = new HttpWebAsyncResult (callback, state);
 
-			new Dispatcher ().BeginInvoke (new Action (InitializeNativeRequestSafe), null);
+			dispatcher.BeginInvoke (new Action (InitializeNativeRequestSafe), null);
 
 			return async_result;
 		}
