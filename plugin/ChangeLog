@@ -1,3 +1,8 @@
+2010-05-29  Chris Toshok  <toshok@ximian.com>
+
+	* npstream-request.cpp (UrlNotify): once we unref don't go poking
+	at ourselves.
+
 2010-05-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.h.in: Added some helper macros to get ints and

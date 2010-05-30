@@ -139,8 +139,8 @@ NPStreamRequest::UrlNotify (const char *url, NPReason reason)
 
 	/* The browser won't call us again, so unref the ref we took when we called NPN_GetURLNotify in SendImpl */
 	if (stream != NULL) {
-		unref ();
 		stream = NULL;
+		unref ();
 	}
 }
 
