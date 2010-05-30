@@ -58,9 +58,14 @@ namespace System.Windows.Media {
                         }
                 }
 
+		WriteableBitmap result;
                 public WriteableBitmap Result {
                         get {
-				return (WriteableBitmap)NativeDependencyObjectHelper.FromIntPtr (NativeMethods.capture_image_completed_event_args_get_result (NativeHandle));
+				if (result == null) {
+					BitmapSource source = (BitmapSource)NativeDependencyObjectHelper.FromIntPtr (NativeMethods.capture_image_completed_event_args_get_source (NativeHandle));
+					result = new WriteableBitmap (source);
+				}
+				return result;
 			}
                 }
 

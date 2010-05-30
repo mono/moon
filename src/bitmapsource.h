@@ -50,7 +50,7 @@ class BitmapSource : public ImageSource {
 	/* @GenerateCBinding,GeneratePInvoke */
 	gpointer GetBitmapData ();
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetBitmapData (gpointer data, bool own = true);
+	void SetBitmapData (gpointer data, bool own);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Invalidate ();

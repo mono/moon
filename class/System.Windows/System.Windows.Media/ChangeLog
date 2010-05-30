@@ -1,3 +1,9 @@
+2010-05-29  Chris Toshok  <toshok@ximian.com>
+
+	* CaptureImageCompletedEventArgs.cs: we need to create the
+	WriteableBitmap here instead of passing it from unmanaged, or else
+	the managed pixels array won't be created properly.
+
 2010-05-28  Chris Toshok  <toshok@ximian.com>
 
 	* VideoFormat.cs: correct field names and order (and number) of

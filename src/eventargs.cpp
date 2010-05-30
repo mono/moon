@@ -500,21 +500,21 @@ SendCompletedEventArgs::~SendCompletedEventArgs ()
 //
 
 CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error,
-								WriteableBitmap *result)
+								BitmapSource *source)
 
 	: EventArgs (Type::CAPTUREIMAGECOMPLETEDEVENTARGS)
 {
 	this->error = error ? new MoonError (*error) : NULL;
-	this->result = result;
-	if (result)
-		result->ref ();
+	this->source = source;
+	if (source)
+		source->ref ();
 }
 
 CaptureImageCompletedEventArgs::~CaptureImageCompletedEventArgs ()
 {
 	delete error;
-	if (result)
-		result->unref ();
+	if (source)
+		source->unref ();
 }
 
 //

@@ -14,6 +14,7 @@
 #include "capture.h"
 #include "deployment.h"
 #include "writeablebitmap.h"
+#include "bitmapimage.h"
 
 /*
  * VideoFormat
@@ -71,6 +72,7 @@ CaptureSource::CaptureSource ()
 
 CaptureSource::~CaptureSource ()
 {
+	g_free (cached_sampleData);
 	delete capture_format;
 }
 
@@ -170,11 +172,6 @@ CaptureSource::ReportSample (gint64 sampleTime, gint64 frameDuration, guint8 *sa
 {
 	SetCurrentDeployment ();
 
-	if (need_image_capture) {
-		CaptureImageReportSample (sampleTime, frameDuration, sampleData, sampleDataLength);
-		need_image_capture = false;
-	}
-
 	if (!cached_sampleData || sampleDataLength != cached_sampleDataLength) {
 		g_free (cached_sampleData);
 		cached_sampleData = (guint8*)g_malloc (sampleDataLength);
@@ -184,6 +181,11 @@ CaptureSource::ReportSample (gint64 sampleTime, gint64 frameDuration, guint8 *sa
 	cached_sampleDataLength = sampleDataLength;
 	cached_sampleTime = sampleTime;
 	cached_frameDuration = frameDuration;
+
+	if (need_image_capture) {
+		CaptureImageReportSample (sampleTime, frameDuration, cached_sampleData, sampleDataLength);
+		need_image_capture = false;
+	}
 
 	printf ("CaptureSource::ReportSample (%llu, %llu, %d\n", sampleTime, frameDuration, sampleDataLength);
 	if (HasHandlers (CaptureSource::SampleReadyEvent)) {
@@ -232,21 +234,18 @@ CaptureSource::CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration
 	printf ("CaptureSource::CaptureImageReportSample (%llu, %llu, %d\n", sampleTime, frameDuration, sampleDataLength);
 
 	if (HasHandlers (CaptureSource::CaptureImageCompletedEvent)) {
-		BitmapSource *source = new BitmapSource ();
+		BitmapImage *source = new BitmapImage ();
 		source->SetPixelWidth (capture_format->width);
 		source->SetPixelHeight (capture_format->height);
+
 		source->SetBitmapData (sampleData, false);
 
 		source->Invalidate (); // causes the BitmapSource to create its image_surface
 
-		WriteableBitmap *bitmap = new WriteableBitmap();
-		bitmap->InitializeFromBitmapSource (source);
-		source->unref ();
-		
 		Emit (CaptureSource::CaptureImageCompletedEvent,
-		      new CaptureImageCompletedEventArgs (NULL, bitmap));
+		      new CaptureImageCompletedEventArgs (NULL, source));
 
-		bitmap->unref ();
+		source->unref ();
 	}
 
 	// if we started the pal device strictly for an image capture

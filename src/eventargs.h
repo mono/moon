@@ -447,7 +447,7 @@ private:
 class CaptureImageCompletedEventArgs : public EventArgs {
 public:
 	CaptureImageCompletedEventArgs (MoonError *error,
-					WriteableBitmap *result);
+					BitmapSource *source);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void GetError (MoonError *error) {
@@ -460,14 +460,14 @@ public:
 	}
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	WriteableBitmap *GetResult () { return result; }
+	BitmapSource *GetSource () { return source; }
 
 protected:
 	virtual ~CaptureImageCompletedEventArgs ();
 
 private:
 	MoonError *error;
-	WriteableBitmap *result;
+	BitmapSource *source;
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */

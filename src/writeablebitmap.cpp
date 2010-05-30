@@ -41,7 +41,7 @@ WriteableBitmap::InitializeFromBitmapSource (BitmapSource *source)
 	cairo_paint (cr);
 	cairo_destroy (cr);
 
-	SetBitmapData (cairo_image_surface_get_data (image_surface));
+	SetBitmapData (cairo_image_surface_get_data (image_surface), false);
 
 	return GetBitmapData ();
 }

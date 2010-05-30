@@ -210,7 +210,7 @@ BitmapImage::UriSourceChanged ()
 	Uri *uri = GetUriSource ();
 	
 	if (surface == NULL) {
-		SetBitmapData (NULL);
+		SetBitmapData (NULL, false);
 		return;
 	}
 
@@ -237,11 +237,11 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		Abort ();
 
 		if (Uri::IsNullOrEmpty (uri)) {
-			SetBitmapData (NULL);
+			SetBitmapData (NULL, false);
 		} else if (uri->IsInvalidPath ()) {
 			if (IsBeingParsed ())
 				MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri");
-			SetBitmapData (NULL);
+			SetBitmapData (NULL, false);
 		} else {
 			AddTickCall (uri_source_changed_callback);
 		}
@@ -435,9 +435,9 @@ BitmapImage::PixmapComplete ()
 		// http://blogs.msdn.com/silverlight_sdk/archive/2009/07/01/breaking-changes-document-errata-silverlight-3.aspx
 		// not clear if '3' channel is still supported (converted to 4) in SL3
 		if (pixbuf->GetNumChannels () == 4) {
-			SetBitmapData (premultiply_rgba (pixbuf));
+			SetBitmapData (premultiply_rgba (pixbuf), true);
 		} else {
-			SetBitmapData (expand_rgb_to_argb (pixbuf));
+			SetBitmapData (expand_rgb_to_argb (pixbuf), true);
 		}
 
 		Invalidate ();

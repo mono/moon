@@ -1,3 +1,23 @@
+2010-05-29  Chris Toshok  <toshok@ximian.com>
+
+	* pal/capture/v4l2/pal-v4l2-video-capture.cpp (MoonVideoCaptureDeviceV4L2):
+	initialize first_pts to quiet valgrind.
+
+	* eventargs.cpp,h: for CaptureImageCompletedEventArgs to produce a
+	useful WriteableBitmap, we need to pass a BitmapSource from
+	unmanaged to managed, and create the WriteableBitmap there.
+
+	* capture.cpp: track CaptureImageCompletedEventArgs change (pass a
+	BitmapImage instead of WriteableBitmap).
+
+	* bitmapsource.h (ImageSource::SetBitmapData): remove default arg
+	value.
+
+	* bitmapimage.cpp: track removal of default arg to SetBitmapData.
+
+	* writeablebitmap.cpp: fix double free+crash due to default arg to
+	SetBitmapData.
+
 2010-05-28  Chris Toshok  <toshok@ximian.com>
 
 	* enums.h (MoonPixelFormat): reorder things so that they match SL

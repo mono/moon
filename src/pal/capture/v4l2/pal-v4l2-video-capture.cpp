@@ -155,6 +155,7 @@ MoonVideoCaptureDeviceV4L2::MoonVideoCaptureDeviceV4L2 (MoonVideoCaptureServiceV
 	this->need_to_notify_format = true;
 	this->idle_id = -1;
 	this->formats = NULL;
+	this->first_pts = G_MAXUINT64;
 }
 
 MoonVideoCaptureDeviceV4L2::~MoonVideoCaptureDeviceV4L2 ()
