@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,6 +44,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using System.Globalization;
+using System.ComponentModel;
+using System.Collections.Specialized;
 
 namespace MoonTest.System.Windows.Data {
 
@@ -230,6 +233,40 @@ namespace MoonTest.System.Windows.Data {
 			var upperGroup = (CollectionViewGroup)source.View.Groups[1];
 			Assert.AreEqual(1, upperGroup.Items.Count, "#2");
 			Assert.AreEqual(o, upperGroup.Items[0], "#3");
+		}
+
+		[TestMethod]
+		public void OneItem_TwoGroups_Remove()
+		{
+			var o = new object();
+			var source = new CollectionViewSource { Source = new List<object> { o } };
+			source.GroupDescriptions.Add (new ConcretePropertyGroupDescription() {
+				GroupNameFromItemFunc = (item, level, culture) => new [] { "First", "Second" }
+			});
+
+			((IEditableCollectionView)source.View).RemoveAt(0);
+			Assert.AreEqual(0, source.View.Cast<object>().Count(), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("When we have an item in the groups twice we only emit one Remove event, we need two")]
+		public void OneItem_TwoGroups_Remove_Events ()
+		{
+			var args = new List<NotifyCollectionChangedEventArgs>();
+			var source = new CollectionViewSource { Source = new List<object> { new object () } };
+			source.GroupDescriptions.Add(new ConcretePropertyGroupDescription() {
+				GroupNameFromItemFunc = (item, level, culture) => new[] { "First", "Second" }
+			});
+
+			source.View.CollectionChanged += (o, e) => args.Add(e);
+			((IEditableCollectionView)source.View).RemoveAt(0);
+			Assert.AreEqual(2, args.Count, "#1");
+
+			Assert.AreEqual(NotifyCollectionChangedAction.Remove, args[0].Action, "#2");
+			Assert.AreEqual(1, args[0].OldStartingIndex, "#3");
+
+			Assert.AreEqual(NotifyCollectionChangedAction.Remove, args[1].Action, "#4");
+			Assert.AreEqual(0, args[1].OldStartingIndex, "#5");
 		}
 	}
 

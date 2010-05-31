@@ -181,10 +181,8 @@ namespace System.Windows.Controls.Primitives {
 		{
 			if (SynchronizeWithCurrentItem) {
 				var icv = (ICollectionView) ItemsSource;
-				if (!Helper.Equals (icv.CurrentItem, SelectedItem))
+				if (!Helper.Equals (icv.CurrentItem, SelectedItem)) {
 					Selection.SelectOnly (icv.CurrentItem);
-				else {
-					Console.WriteLine ("Item is: {0}, Selected is: {1}. Count is: {2}", icv.CurrentItem, SelectedItem, SelectedItems.Count);
 				}
 			}
 		}
@@ -225,10 +223,11 @@ namespace System.Windows.Controls.Primitives {
 				return;
 
 			var newVal = (int) e.NewValue;
-			if (newVal < 0 || newVal >= Items.Count)
+			if (newVal < 0 || newVal >= Items.Count) {
 				Selection.Select (null);
-			else
+			} else {
 				Selection.Select (Items [newVal]);
+			}
 		}
 		
 		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -323,8 +322,9 @@ namespace System.Windows.Controls.Primitives {
 
 			if (SynchronizeWithCurrentItem) {
 				var icv = (ICollectionView) ItemsSource;
-				if (!Helper.AreEqual (SelectedItem, icv.CurrentItem))
+				if (!Helper.AreEqual (SelectedItem, icv.CurrentItem)) {
 					icv.MoveCurrentTo (SelectedItem);
+				}
 			}
 			
 			SelectionChangedEventHandler h = SelectionChanged;
@@ -387,7 +387,10 @@ namespace System.Windows.Controls.Primitives {
 				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				Selection.Select (SelectedItem);
+				if (ItemsSource is ICollectionView)
+					Selection.Select (((ICollectionView) ItemsSource).CurrentItem);
+				else
+					Selection.Select (SelectedItem);
 				break;
 				
 			case NotifyCollectionChangedAction.Remove:

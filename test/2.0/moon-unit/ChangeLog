@@ -1,3 +1,11 @@
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Data/CollectionViewGroupTest.cs:
+	* System.Windows.Data/CollectionViewSourceTest.cs:
+	* System.Windows.Data/BindingTest_CollectionView.cs: Add a
+	  bunch of extra tests.
+
 2010-05-28  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/CollectionViewTest.cs: Add a moonunit to

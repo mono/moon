@@ -80,17 +80,20 @@ namespace System.Windows.Data
 			string propertyName;
 			string typeName;
 			PropertyNodeType type;
+			CollectionViewNode lastCVNode = null;
 
 			if (string.IsNullOrEmpty (path)) {
 				// If the property path is null or empty, we still need to add a CollectionViewNode
 				// to handle the case where we bind diretly to a CollectionViewSource. i.e. new Binding () { Source = cvs }
 				// An empty path means we always bind directly to the view.
-				Node = new CollectionViewNode (bindDirectlyToSource, true);
+				Node = new CollectionViewNode (bindDirectlyToSource, bindsToView);
+				lastCVNode = (CollectionViewNode) Node;
 			} else {
 				var parser = new PropertyPathParser (path);
 				while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
 					bool isViewProperty = CollectionViewProperties.Any (prop => prop.Name == propertyName);
-					IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource, isViewProperty || bindsToView);
+					IPropertyPathNode node = new CollectionViewNode (bindDirectlyToSource, isViewProperty);
+					lastCVNode = (CollectionViewNode) node;
 					switch (type) {
 					case PropertyNodeType.AttachedProperty:
 					case PropertyNodeType.Property:
@@ -109,6 +112,7 @@ namespace System.Windows.Data
 				}
 			}
 
+			lastCVNode.BindToView |= bindsToView;
 			FinalNode.ValueChanged += delegate (object o, EventArgs e) {
 				Value = ((PropertyPathNode) o).Value;
 				var h = ValueChanged;

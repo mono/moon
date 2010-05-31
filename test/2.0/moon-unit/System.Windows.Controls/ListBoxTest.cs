@@ -25,21 +25,23 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Media;
-
-using Mono.Moonlight.UnitTesting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using System.Windows.Shapes;
-using Microsoft.Silverlight.Testing;
-using MoonTest.System.Windows.Controls.Primitives;
 using System.Windows.Markup;
-using System.Collections.Generic;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
+using Microsoft.Silverlight.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
+using MoonTest.System.Windows.Controls.Primitives;
 using MoonTest.System.Windows.Data;
+
+
 
 namespace MoonTest.System.Windows.Controls {
 	public class ListBoxPoker : ListBox, IPoker
@@ -513,6 +515,29 @@ namespace MoonTest.System.Windows.Controls {
 
 					Assert.IsNotNull(box.ItemContainerGenerator.ContainerFromIndex(0), "#4");
 					Assert.AreNotSame(box.ItemContainerGenerator.ContainerFromIndex(0), box.ItemContainerGenerator.ContainerFromIndex(1), "#5");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("We don't get two INotifyCollectionChanged.Remove events so we don't remove the item twice from the listbox")]
+		public void ICV_OneItemTwoGroups_Remove ()
+		{
+			var o = new object();
+			var source = new CollectionViewSource { Source = new List<Object> { o } };
+			var group = new ConcretePropertyGroupDescription {
+				GroupNameFromItemFunc = (item, level, culture) => new[] { "First", "Second" }
+			};
+
+			source.GroupDescriptions.Add(group);
+			var box = new ListBox { ItemsSource = source.View };
+			CreateAsyncTest (box,
+				() => {
+					box.ApplyTemplate();
+				}, () => {
+					((IEditableCollectionView)source.View).RemoveAt (0);
+					Assert.AreEqual (0, box.Items.Count, "#1");
 				}
 			);
 		}

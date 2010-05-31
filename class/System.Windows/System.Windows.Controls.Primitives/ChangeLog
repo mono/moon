@@ -1,3 +1,9 @@
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: If there's a reset event, we need to either
+	  select the old item (if it exists) or the CurrentItem of the
+	  ICV if we have an ICV now.
+
 2010-05-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: If we get a collection reset event, just

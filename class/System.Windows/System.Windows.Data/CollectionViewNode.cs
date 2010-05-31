@@ -29,6 +29,7 @@
 using System;
 using System.ComponentModel;
 using Mono;
+using System.Collections;
 
 namespace System.Windows.Data {
 
@@ -42,7 +43,7 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		bool BindsToView {
+		public bool BindToView {
 			get; set;
 		}
 
@@ -50,28 +51,35 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		public CollectionViewNode (bool bindsDirectlyToSource, bool bindsToView)
+		public CollectionViewNode (bool bindsDirectlyToSource, bool bindToView)
 		{
 			BindsDirectlyToSource = bindsDirectlyToSource;
-			BindsToView = bindsToView;
+			BindToView = bindToView;
 			ViewChangedHandler = ViewChanged;
 		}
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
 		{
 			CollectionViewSource source;
+			ICollectionView view;
 			base.OnSourceChanged (oldSource, newSource);
 
 			source = oldSource as CollectionViewSource;
+			view = oldSource as ICollectionView;
 			if (source != null) {
 				source.RemovePropertyChangedHandler (CollectionViewSource.ViewProperty, ViewChangedHandler);
 				DisconnectViewHandlers (source.View);
+			} else if (view != null) {
+				DisconnectViewHandlers (view);
 			}
 
 			source = newSource as CollectionViewSource;
+			view = newSource as ICollectionView;
 			if (source != null) {
 				source.AddPropertyChangedHandler (CollectionViewSource.ViewProperty, ViewChangedHandler);
 				ConnectViewHandlers (source.View);
+			} else if (view != null) {
+				ConnectViewHandlers (view);
 			}
 		}
 
@@ -100,6 +108,7 @@ namespace System.Windows.Data {
 
 		void HandleSourceViewCurrentChanged (object sender, EventArgs e)
 		{
+			var old = Value;
 			UpdateValue ();
 			if (Next != null)
 				Next.SetSource (Value);
@@ -112,6 +121,7 @@ namespace System.Windows.Data {
 
 		public override void UpdateValue ()
 		{
+			var oldValue = Value;
 			// The simple case - we use the source object directly, whatever it is.
 			if (BindsDirectlyToSource) {
 				ValueType = Source == null ? null : Source.GetType ();
@@ -133,7 +143,7 @@ namespace System.Windows.Data {
 				} else {
 					// If we have an ICollectionView and the property we're binding to exists
 					// on ICollectionView, we bind to the view. Otherwise we bind to its CurrentItem.
-					if (BindsToView) {
+					if (BindToView) {
 						ValueType = view.GetType ();
 						Value = view;
 					} else {

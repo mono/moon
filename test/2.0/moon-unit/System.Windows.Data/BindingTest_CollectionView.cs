@@ -109,17 +109,11 @@ namespace MoonTest.System.Windows.Data {
 		[TestMethod]
 		public void SourceNotSet ()
 		{
-			try {
 			Source.Source = null;
 			Target.SetBinding (Rectangle.TagProperty, new Binding ("Age") {
 				Source = Source
 			});
 			Assert.IsNull (Target.Tag, "#1");
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-				Console.ReadLine ();
-				throw;
-			}
 		}
 
 		[TestMethod]

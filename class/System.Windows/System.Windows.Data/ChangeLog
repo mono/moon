@@ -1,3 +1,21 @@
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
+	* CollectionViewNode.cs: If the CollectionViewNode is given an
+	  actual ICollectionView, we need to attach handlers to the
+	  CurrentChanged event too.
+
+	* PropertyPathWalker.cs: Only the final node cares about
+	  whether it binds directly to the view or not.
+
+	* StandardCollectionView.cs: We should raise the
+	  CollectionChanged event before calling MoveCurrentTo
+	  otherwise we might confuse things which have bound to the
+	  collection.
+
+	* BindingExpressionBase.cs: If we're binding to the
+	  datacontext we have to use the view itself, not the current
+	  item.
+
 2010-05-28  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardCollectionView.cs: We now use the 'force' variable

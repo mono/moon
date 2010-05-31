@@ -343,9 +343,8 @@ namespace System.Windows.Data {
 			if (index < 0 && CurrentPosition != -1 && !IsEmpty)
 				index = 0;
 
-			MoveCurrentTo (index, true);
-
 			RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			MoveCurrentTo (index, true);
 		}
 
 		public override object AddNew ()
