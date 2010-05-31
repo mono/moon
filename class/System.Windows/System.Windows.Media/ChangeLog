@@ -1,3 +1,7 @@
+2010-05-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* VideoFormat.cs: Add back SL4 beta API so that the drts build.
+
 2010-05-29  Chris Toshok  <toshok@ximian.com>
 
 	* CaptureImageCompletedEventArgs.cs: we need to create the
