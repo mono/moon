@@ -352,7 +352,7 @@ System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::Enu
 
 !SSC-C1420CCC249AEA3FFBCC987F35CD0518
 System.Collections.Generic.IList`1<System.Reflection.CustomAttributeData> System.MonoCustomAttrs::GetCustomAttributesData(System.Reflection.ICustomAttributeProvider)
-if	r156891		spouliot - old code now required (and tuned). call GetCustomAttributesDataInternal (icall) with validated (non-null) parameter. Return results as a readonly IList<CustomAttributeData>
+	r156891		spouliot - old code now required (and tuned). call GetCustomAttributesDataInternal (icall) with validated (non-null) parameter. Return results as a readonly IList<CustomAttributeData>
 
 !SSC-D11ED37AED1474CDA3FDF7C08F264FB4
 System.Collections.IEnumerator System.Array::GetEnumerator()

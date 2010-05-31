@@ -1,3 +1,8 @@
+2010-05-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Helper is growing with non-critical code
+	so we need to be more precise (or end up with extra SSC to audit)
+
 2010-05-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Adjust for the renaming of Content

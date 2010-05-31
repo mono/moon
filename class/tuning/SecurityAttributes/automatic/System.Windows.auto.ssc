@@ -1,9 +1,10 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 589 methods
+# 584 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
++SSC-M: System.Void Mono.Helper::.cctor()
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -304,7 +305,6 @@
 +SSC-M: System.Windows.Point System.Windows.Controls.MultiScaleImage::ElementToLogicalPoint(System.Windows.Point)
 +SSC-M: System.Windows.Point System.Windows.Controls.MultiScaleImage::LogicalToElementPoint(System.Windows.Point)
 +SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.OpenFileDialog::ShowDialog()
-+SSC-M: System.Void System.Windows.Controls.OpenFileDialog::EnsureMainThread()
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::OnKeyUp(System.Windows.Input.KeyEventArgs)
@@ -316,10 +316,7 @@
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::SelectAll()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::Initialize()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::OnOpened()
-+SSC-M: System.Void System.Windows.Controls.Primitives.Selector::SelectItemFromValue(System.Object,System.Boolean)
-+SSC-M: System.Void System.Windows.Controls.Primitives.Selector::RaiseSelectionChanged(System.Collections.IList,System.Collections.IList)
 +SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDialog()
-+SSC-M: System.Void System.Windows.Controls.SaveFileDialog::EnsureMainThread()
 +SSC-M: System.Void System.Windows.Controls.TextBlock::.cctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::.cctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
@@ -338,7 +335,6 @@
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::ViewChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
-+SSC-M: System.Void System.Windows.Data.PropertyPathNode::set_Value(System.Object)
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::get_TemplateOwner()
@@ -351,7 +347,6 @@
 +SSC-M: System.Int32 System.Windows.DependencyObjectCollection`1::get_Count()
 +SSC-M: System.Windows.PropertyMetadata System.Windows.DependencyProperty::GetMetadata(System.Type)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
-+SSC-M: System.Void System.Windows.DependencyProperty::InvokeChangedCallback(System.Windows.DependencyObject,System.Windows.DependencyProperty,System.Windows.PropertyChangedCallback,System.Object,System.Object)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(Mono.Kind,System.String,System.Type,System.Boolean)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::LookupInternal(Mono.Kind,System.String,System.Type,System.Boolean,System.Windows.DependencyProperty&)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_HasHiddenDefaultValue()

@@ -31,7 +31,6 @@
 +SC-T: Mono.Value
 +SC-T: Mono.Xaml.XamlLoader
 +SC-T: Mono.MoonError
-+SC-T: Mono.Helper
 +SC-T: Mono.EasingFunctionWrapper
 +SC-T: Mono.Hosting
 +SC-T: Mono.StreamWrapper
@@ -44,6 +43,12 @@
 +SC-T: System.IO.SimpleUnmanagedMemoryStream
 # don't SC-T Mono.DispatcherTimer, Mono.Events, Mono.ManagedType, Mono.NativeDependencyObjectHelper,
 # Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
+
+# too many new helpers don't require to be critical so we'll be more precise with them
++SC-M: System.ComponentModel.TypeConverter Mono.Helper::GetConverterFor(System.Reflection.MemberInfo,System.Type)
++SC-M: System.IntPtr Mono.Helper::StreamToIntPtr(System.IO.Stream)
++SC-M: System.Void Mono.Helper::ReportException(System.Exception)
++SC-M: System.Boolean Mono.Helper::CheckFileIntegrity(System.String)
 
 # internal types
 +SC-T: System.Windows.PresentationFrameworkCollection`1/CollectionIterator
