@@ -1,5 +1,5 @@
 // 
-// CaptureDeviceConfiguration.cs.cs
+// CaptureDeviceConfiguration.cs
 // 
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -50,35 +50,33 @@ namespace System.Windows.Media {
 			return NativeMethods.moon_capture_service_get_video_capture_service (capture_service);
 		}
 
-		public static Collection<AudioCaptureDevice> GetAvailableAudioCaptureDevices ()
+		public static ReadOnlyCollection<AudioCaptureDevice> GetAvailableAudioCaptureDevices ()
 		{
 			IntPtr audio_service = GetAudioCaptureService ();
-			if (audio_service == IntPtr.Zero)
-				return new Collection<AudioCaptureDevice>(); // FIXME readonly?
+			Collection<AudioCaptureDevice> col = new Collection<AudioCaptureDevice> ();
+			if (audio_service != IntPtr.Zero) {
+				int num_devices;
+				IntPtr devices = NativeMethods.moon_audio_capture_service_get_available_capture_devices (audio_service, out num_devices);
+				for (int i = 0; i < num_devices; i ++)
+					col.Add (new AudioCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
+			}
 
-			Collection<AudioCaptureDevice> col = new Collection<AudioCaptureDevice>();
-			int num_devices;
-			IntPtr devices = NativeMethods.moon_audio_capture_service_get_available_capture_devices (audio_service, out num_devices);
-			for (int i = 0; i < num_devices; i ++)
-				col.Add (new AudioCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
-
-			return col;
+			return new ReadOnlyCollection<AudioCaptureDevice> (col);
 		}
 
-		public static Collection<VideoCaptureDevice> GetAvailableVideoCaptureDevices ()
+		public static ReadOnlyCollection<VideoCaptureDevice> GetAvailableVideoCaptureDevices ()
 		{
 			IntPtr video_service = GetVideoCaptureService ();
-			if (video_service == IntPtr.Zero)
-				return new Collection<VideoCaptureDevice>(); // FIXME readonly?
+			Collection<VideoCaptureDevice> col = new Collection<VideoCaptureDevice> ();
+			if (video_service != IntPtr.Zero) {
+				int num_devices;
+				IntPtr devices = NativeMethods.moon_video_capture_service_get_available_capture_devices (video_service, out num_devices);
 
-			Collection<VideoCaptureDevice> col = new Collection<VideoCaptureDevice>();
-			int num_devices;
-			IntPtr devices = NativeMethods.moon_video_capture_service_get_available_capture_devices (video_service, out num_devices);
+				for (int i = 0; i < num_devices; i ++)
+					col.Add (new VideoCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
+			}
 
-			for (int i = 0; i < num_devices; i ++)
-				col.Add (new VideoCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
-
-			return col;
+			return new ReadOnlyCollection<VideoCaptureDevice> (col);
 		}
 
 		public static AudioCaptureDevice GetDefaultAudioCaptureDevice ()

@@ -1,3 +1,8 @@
+2010-05-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CaptureDeviceConfiguration.cs: API fix (which removes the FIXME
+	too ;-)
+
 2010-05-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* VideoFormat.cs: Add back SL4 beta API so that the drts build.

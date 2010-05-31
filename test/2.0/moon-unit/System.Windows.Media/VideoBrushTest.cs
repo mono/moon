@@ -45,7 +45,10 @@ namespace MoonTest.System.Windows.Media {
 			VideoBrush vb = new VideoBrush ();
 			Assert.Throws<NullReferenceException> (delegate {
 				vb.SetSource ((MediaElement) null);
-			}, "null");
+			}, "MediaElement");
+			Assert.Throws<NullReferenceException> (delegate {
+				vb.SetSource ((CaptureSource) null);
+			}, "CaptureSource");
 		}
 
 		[TestMethod]

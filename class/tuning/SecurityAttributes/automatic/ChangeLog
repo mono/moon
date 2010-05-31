@@ -1,3 +1,7 @@
+2010-05-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: regenerated with API signature fix
+
 2010-05-31  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.sc: regenerated with new override rules

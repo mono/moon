@@ -1,3 +1,9 @@
+2010-05-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pal/capture/pal-linux-capture.cpp: Ensure the call to 
+	RequestSystemAccess was user initiated (a requirement for the
+	missing dialog too)
+
 2010-05-31  Andreia Gaita  <avidigal@novell.com>
 
 	* network-curl.cpp: Close the curl handle immediately when aborting

@@ -1,3 +1,10 @@
+2010-05-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Media/CaptureDeviceConfigurationTest.cs: New.
+	Some test cases for the new feature
+	* System.Windows.Media/VideoBrushTest.cs: Check that SetSource(
+	CaptureSource) suffers from the same NRE as MediaElement
+
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs: Add some more tests

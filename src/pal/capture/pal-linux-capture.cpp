@@ -11,6 +11,8 @@
 #include "config.h"
 
 #include "pal-linux-capture.h"
+#include "deployment.h"
+#include "runtime.h"
 
 #if PAL_V4L2_VIDEO_CAPTURE
 #include "pal/capture/v4l2/pal-v4l2-video-capture.h"
@@ -64,6 +66,6 @@ bool
 MoonCaptureServiceLinux::RequestSystemAccess ()
 {
 	// FIXME need to figure this out - we need to use the pal windowing system to pop up a dialog
-	return true;
+	return Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ();
 }
 
