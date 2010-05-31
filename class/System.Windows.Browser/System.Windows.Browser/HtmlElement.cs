@@ -63,42 +63,43 @@ namespace System.Windows.Browser
 
 		public string GetStyleAttribute (string name)
 		{
-			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
+			ScriptObject so = GetProperty ("style") as ScriptObject;
 			if (so == null)
 				return null;
 
-			string o = so.InvokeInternal<string> ("getPropertyValue", name);
-			if (o.Equals (String.Empty))
+			string o = so.GetProperty (name) as string;
+			if (o == null || o.Equals (String.Empty))
 				return null;
 			return o;
 		}
 
 		public void RemoveAttribute (string name)
 		{
-			InvokeInternal<object> ("removeAttribute", name);
+			Invoke ("removeAttribute", name);
 		}
 
 		public void RemoveChild (HtmlElement element)
 		{
-			InvokeInternal<object> ("removeChild", element);
+			Invoke ("removeChild", element);
 		}
 
 				
 		public void RemoveStyleAttribute (string name)
 		{
 			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
-			so.InvokeInternal<object> ("removeProperty", name);
+			so.Invoke ("removeProperty", name);
 		}
 
 		public void SetAttribute (string name, string value)
 		{
-			InvokeInternal<object> ("setAttribute", name, value);
+			Invoke ("setAttribute", name, value);
 		}
 
-		[MonoTODO ("This doesn't seem to work, and yet fixing it breaks moonunit rendering. I guess it's not supposed to work.")]
 		public void SetStyleAttribute (string name, string value)
 		{
-			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
+			ScriptObject so = GetProperty ("style") as ScriptObject;
+			if (so == null)
+				return;
 			so.SetProperty (name, value);
 		}
 
