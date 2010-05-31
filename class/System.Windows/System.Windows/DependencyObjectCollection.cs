@@ -38,6 +38,7 @@ using System.Collections.ObjectModel;
 namespace System.Windows {
 	public partial class DependencyObjectCollection<T> : DependencyObject, IList<T>, IList, INotifyCollectionChanged {
 
+		[MonoTODO ("This isn't raised anywhere")]
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public int Count {

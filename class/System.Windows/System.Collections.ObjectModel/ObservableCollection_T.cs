@@ -35,6 +35,14 @@ namespace System.Collections.ObjectModel {
 
 	public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		protected event PropertyChangedEventHandler PropertyChanged;
+
+		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
+			add { PropertyChanged += value; }
+			remove { PropertyChanged -= value; }
+		}
+
 		public ObservableCollection ()
 		{
 		}
@@ -54,12 +62,16 @@ namespace System.Collections.ObjectModel {
 		protected override void ClearItems ()
 		{
 			base.ClearItems ();
+			RaiseCountChanged ();
+			RaiseItemsChanged ();
 			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
 		protected override void InsertItem (int index, T item)
 		{
 			base.InsertItem (index, item);
+			RaiseCountChanged ();
+			RaiseItemsChanged ();
 			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add,
 										   item,
 										   index));
@@ -81,6 +93,8 @@ namespace System.Collections.ObjectModel {
 		{
 			T old_item = this[index];
 			base.RemoveItem (index);
+			RaiseCountChanged ();
+			RaiseItemsChanged ();
 			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove,
 										   old_item,
 										   index));
@@ -91,18 +105,28 @@ namespace System.Collections.ObjectModel {
 			T old_item = this[index];
 			base.SetItem (index, item);
 
+			RaiseItemsChanged ();
 			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Replace,
 										   item,
 										   old_item,
 										   index));
 		}
 
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
-		protected event PropertyChangedEventHandler PropertyChanged;
+		void RaiseCountChanged ()
+		{
+			RaisePropertyChanged ("Count");
+		}
 
-		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
-			add { PropertyChanged += value; }
-			remove { PropertyChanged -= value; }
+		void RaiseItemsChanged ()
+		{
+			RaisePropertyChanged ("Item[]");
+		}
+
+		void RaisePropertyChanged (string property)
+		{
+			var h = PropertyChanged;
+			if (h != null)
+				h (this, new PropertyChangedEventArgs (property));
 		}
 	}
 }

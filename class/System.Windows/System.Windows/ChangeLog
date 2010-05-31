@@ -1,5 +1,10 @@
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyObjectCollection.cs: add a MonoTodo for raising
+	  INCC, though this is covered by drt 232.
+
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
 	* DependencyObjectCollection.cs: Implement
 	  DependencyObjectCollection <T> well enough to pass the tests
 	  on it in 232
