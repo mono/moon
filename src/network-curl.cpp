@@ -488,7 +488,7 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 			state = STARTED;
 			bridge->AddCallback (_started, this, NULL, NULL, NULL, NULL);
 		} else if (status > 302) {
-			request->Abort ();
+			request->AbortImpl ();
 		}
 		return;
 	}

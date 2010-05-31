@@ -1,3 +1,8 @@
+2010-05-31  Andreia Gaita  <avidigal@novell.com>
+
+	* network-curl.cpp: Call AbortImpl instead of Abort from the curl
+	  thread so it can deal with any needed thread changes
+
 2010-05-29  Chris Toshok  <toshok@ximian.com>
 
 	* pal/capture/v4l2/pal-v4l2-video-capture.cpp (MoonVideoCaptureDeviceV4L2):
