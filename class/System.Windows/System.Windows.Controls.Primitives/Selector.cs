@@ -140,12 +140,7 @@ namespace System.Windows.Controls.Primitives {
 		[TypeConverter (typeof (NullableBoolConverter))]
 		public bool? IsSynchronizedWithCurrentItem {
 			get { return (bool?) GetValue (IsSynchronizedWithCurrentItemProperty); }
-			set {
-				if (value.HasValue && value.Value)
-					throw new ArgumentException ();
-				
-				SetValue (IsSynchronizedWithCurrentItemProperty, value);
-			}
+			set { SetValue (IsSynchronizedWithCurrentItemProperty, value); }
 		}
 
 		[Mono.Xaml.SetPropertyDelayed]
@@ -208,12 +203,14 @@ namespace System.Windows.Controls.Primitives {
 		void IsSynchronizedWithCurrentItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			bool? sync = (bool?) e.NewValue;
-			
-			if ((!sync.HasValue || sync.Value) && ItemsSource is ICollectionView) {
-				ICollectionView view = ItemsSource as ICollectionView;
-				
-				// synchronize with the current item
-				view.MoveCurrentTo (SelectedItem);
+
+			if (sync.HasValue && sync.Value)
+				throw new ArgumentException ("Setting IsSynchronizedWithCurrentItem to 'true' is not supported");
+
+			if (!sync.HasValue && ItemsSource is ICollectionView) {
+				SelectedItem = ((ICollectionView) ItemsSource).CurrentItem;
+			} else {
+				SelectedItem = null;
 			}
 		}
 		
@@ -387,7 +384,7 @@ namespace System.Windows.Controls.Primitives {
 				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				if (ItemsSource is ICollectionView)
+				if (ItemsSource is ICollectionView && SynchronizeWithCurrentItem)
 					Selection.Select (((ICollectionView) ItemsSource).CurrentItem);
 				else
 					Selection.Select (SelectedItem);

@@ -1,5 +1,13 @@
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: Throw exceptions properly when
+	  IsSynchronisedWithCurrentItem is set to true. Copy the value
+	  of ICV.CurrentItem to SelectedItem when we're syncing as
+	  opposed to copying SelectedItem to ICV.CurrentItem. Fixes
+	  more of 232.
+
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: If there's a reset event, we need to either
 	  select the old item (if it exists) or the CurrentItem of the
 	  ICV if we have an ICV now.

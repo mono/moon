@@ -600,6 +600,40 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void IsSynchronizedWithCurrent_False()
+		{
+			var lb = (ListBox)CurrentControl;
+			var source = new CollectionViewSource { Source = new[] { new object(), } };
+			lb.ItemsSource = source.View;
+			lb.IsSynchronizedWithCurrentItem = false;
+			Assert.IsNull(lb.SelectedItem, "#1");
+		}
+
+		[TestMethod]
+		public void IsSynchronizedWithCurrent_True()
+		{
+			var lb = (ListBox)CurrentControl;
+			Assert.Throws<ArgumentException>(() => {
+				lb.IsSynchronizedWithCurrentItem = true;
+			}, "#1");
+
+			Assert.Throws<ArgumentException>(() => {
+				lb.SetValue (Selector.IsSynchronizedWithCurrentItemProperty,true);
+			}, "#2");
+		}
+
+		[TestMethod]
+		public void IsSynchronizedWithCurrent_Null()
+		{
+			var o = new object();
+			var lb = (ListBox)CurrentControl;
+			var source = new CollectionViewSource { Source = new[] { o } };
+			lb.ItemsSource = source.View;
+			lb.IsSynchronizedWithCurrentItem = null;
+			Assert.AreSame (o, lb.SelectedItem, "#1");
+		}
+
+		[TestMethod]
 		public void SingleSelect_AccessSelectedItems ()
 		{
 			// Doesn't throw an exception to access it
