@@ -1,5 +1,12 @@
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: We should only seal the binding
+	  after all validation is successful. Add in a missing sanity
+	  check to make sure two way bindings don't have a stupid
+	  path.
+
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: we aren't guaranteed that the item
 	  is a FrameworkElement now so add in some debug spew for
 	  cases where we add DataContext based bindings on

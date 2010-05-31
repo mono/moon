@@ -117,7 +117,6 @@ namespace System.Windows.Data {
 
 		internal BindingExpressionBase (Binding binding, DependencyObject target, DependencyProperty property)
 		{
-			binding.Seal ();
 			Binding = binding;
 			Target = target;
 			Property = property;

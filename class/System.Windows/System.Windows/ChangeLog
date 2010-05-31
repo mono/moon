@@ -1,5 +1,11 @@
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyObject.cs: We should only seal the binding after
+	  all validation is successful. Add in a missing sanity check
+	  to make sure two way bindings don't have a stupid path.
+
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
 	* DependencyObjectCollection.cs: add a MonoTodo for raising
 	  INCC, though this is covered by drt 232.
 

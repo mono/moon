@@ -233,9 +233,11 @@ namespace System.Windows {
 			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
 			
 			if (bindingExpression != null) {
-				if (string.IsNullOrEmpty (bindingExpression.Binding.Path.Path) &&
+				string path = bindingExpression.Binding.Path.Path;
+				if ((string.IsNullOrEmpty (path) || path == ".") &&
 				    bindingExpression.Binding.Mode == BindingMode.TwoWay)
 					throw new ArgumentException ("TwoWay bindings require a non-empty Path");
+				bindingExpression.Binding.Seal ();
 			}
 
 			expressions.TryGetValue (dp, out existing);
