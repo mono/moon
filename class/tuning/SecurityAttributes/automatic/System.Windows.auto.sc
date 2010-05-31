@@ -401,7 +401,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_get_bitmap_data(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::capture_image_completed_event_args_get_result(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::capture_image_completed_event_args_get_source(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::check_and_download_update_completed_event_args_get_error_(System.IntPtr)
