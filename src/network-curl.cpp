@@ -372,6 +372,7 @@ CurlDownloaderRequest::AbortImpl () {
 
 	if (bridge->IsDataThread ()) {
 		aborting = TRUE;
+		bridge->CloseHandle (this, GetHandle ());
 		g_idle_add (_abort, this);
 	} else {
 		if (state != OPENED)
@@ -736,8 +737,6 @@ void
 CurlHttpHandler::CloseHandle (HttpRequest* res, CURL* handle)
 {
 	d(printf ("BRIDGE CurlHttpHandler::CloseHandle res:%p handle:%p\n", res, handle));
-
-	VERIFY_MAIN_THREAD
 
 	pthread_mutex_lock (&worker_mutex);
 	if (!quit) {

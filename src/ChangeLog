@@ -1,5 +1,12 @@
 2010-05-31  Andreia Gaita  <avidigal@novell.com>
 
+	* network-curl.cpp: Close the curl handle immediately when aborting
+	  from the curl thread, it will take a while before the request gets
+	  aborted, and curl might try to get more data for it in the meantime.
+	  Fixes some shutdown segfaults
+
+2010-05-31  Andreia Gaita  <avidigal@novell.com>
+
 	* network-curl.cpp: Call AbortImpl instead of Abort from the curl
 	  thread so it can deal with any needed thread changes
 
