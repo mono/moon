@@ -33,10 +33,22 @@ using System.Windows;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 
 namespace System.Windows {
 	public partial class DependencyObjectCollection<T> : DependencyObject, IList<T>, IList, INotifyCollectionChanged {
-#region Interface implementations
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		public int Count {
+			get { return Mono.NativeMethods.collection_get_count (native); }
+		}
+
+		public bool IsReadOnly {
+			get { return false; }
+		}
+
+
 		int IList.Add (object value)
 		{
 			Add ((T) value);
@@ -70,116 +82,90 @@ namespace System.Windows {
 
 		void ICollection.CopyTo (Array array, int index)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.<ICollection>.CopyTo: NIEX");
-			throw new NotImplementedException ();
+			foreach (var v in this)
+				array.SetValue (v, index ++);
 		}
 
 		object ICollection.SyncRoot {
-			get {
-				Console.WriteLine ("System.Windows.DependencyObjectCollection.<ICollection>.SyncRoot: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return this; }
 		}
 
 		bool ICollection.IsSynchronized {
-			get {
-				Console.WriteLine ("System.Windows.DependencyObjectCollection.<ICollection>.IsSynchronized: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return false; }
 		}
 		
 		bool System.Collections.IList.IsFixedSize {
-			get {
-				Console.WriteLine ("System.Windows.DependencyObjectCollection.<IList>.IsFixedSize: NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return false; }
 		}
 
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.<IEnumerable>.GetEnumerator: NIEX");
-			throw new NotImplementedException ();
+			return GetEnumerator ();
 		}
-#endregion
 
 		public void Clear ()
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.Clear (): NIEX");
-			throw new NotImplementedException ();
+			Mono.NativeMethods.collection_clear (native);
 		}
 
 		public void RemoveAt (int index)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.RemoveAt (): NIEX");
-			throw new NotImplementedException ();
+			Mono.NativeMethods.collection_remove_at (native, index);
 		}
 
 		public void Add (T value)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.Add (): NIEX");
-			throw new NotImplementedException ();
+			Value v;
+			using ((v = Value.FromObject (value)))
+				Mono.NativeMethods.collection_add (native, ref v);
 		}
 
 		public void Insert (int index, T value)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.Insert (): NIEX");
-			throw new NotImplementedException ();
+			Value v;
+			using ((v = Value.FromObject (value)))
+				Mono.NativeMethods.collection_insert (native, index, ref v);
 		}
 
 		public bool Remove (T value)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.Remove (): NIEX");
-			throw new NotImplementedException ();
+			Value v;
+			using ((v = Value.FromObject (value)))
+				return Mono.NativeMethods.collection_remove (native, ref v);
 		}
 
 		public T this [int index] {
-			get {
-				Console.WriteLine ("System.Windows.DependencyObjectCollection.get_this (): NIEX");
-				throw new NotImplementedException ();
-			}
+			get { return (T) Value.ToObject (typeof (object), Mono.NativeMethods.collection_get_value_at (native, index)); }
 			set {
-				Console.WriteLine ("System.Windows.DependencyObjectCollection.set_this (): NIEX");
-				throw new NotImplementedException ();
+				Value v;
+				using ((v = Value.FromObject (value)))
+					Mono.NativeMethods.collection_set_value_at (native, index, ref v);
 			}
 		}
 
 		public bool Contains (T value)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.Add (): NIEX");
-			throw new NotImplementedException ();
+			Value v;
+			using ((v = Value.FromObject (value)))
+				return NativeMethods.collection_contains (native, ref v);
 		}
 
 		public int IndexOf (T value)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.IndexOf (): NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public int Count {
-			get {
-				return NativeMethods.collection_get_count (native);
-			}
+			Value v;
+			using ((v = Value.FromObject (value)))
+				return NativeMethods.collection_index_of (native, ref v);
 		}
 
 		public void CopyTo (T [] array, int index)
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.CopyTo: NIEX");
-			throw new NotImplementedException ();
+			foreach (var v in this)
+				array [index ++] = v;
 		}
 
-		public bool IsReadOnly {
-			get {
-				Console.WriteLine ("System.Windows.DependencyObjectCollection.IsReadOnly: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-		
 		public IEnumerator<T> GetEnumerator ()
 		{
-			Console.WriteLine ("System.Windows.DependencyObjectCollection.GetEnumerator: NIEX");
-			throw new NotImplementedException ();
+			return new PresentationFrameworkCollection<T>.GenericCollectionIterator (NativeMethods.collection_get_iterator (native));
 		}
-
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
 	}
 }

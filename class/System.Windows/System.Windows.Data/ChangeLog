@@ -1,5 +1,12 @@
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: we aren't guaranteed that the item
+	  is a FrameworkElement now so add in some debug spew for
+	  cases where we add DataContext based bindings on
+	  DependencyObjects (like brushes).
+
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
 	* CollectionViewNode.cs: If the CollectionViewNode is given an
 	  actual ICollectionView, we need to attach handlers to the
 	  CurrentChanged event too.

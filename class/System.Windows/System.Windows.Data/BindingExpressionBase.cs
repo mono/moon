@@ -103,8 +103,10 @@ namespace System.Windows.Data {
 						if (e != null) {
 							source = e.DataContext;
 						}
-					} else {
+					} else if (Target is FrameworkElement) {
 						source = ((FrameworkElement) Target).DataContext;
+					} else {
+						Console.WriteLine ("DataSource could not be determined");
 					}
 				}
 				if (PropertyPathWalker != null)

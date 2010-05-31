@@ -1,3 +1,9 @@
+2010-05-31  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObjectCollection.cs: Implement
+	  DependencyObjectCollection <T> well enough to pass the tests
+	  on it in 232
+
 2010-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.cs: Make
