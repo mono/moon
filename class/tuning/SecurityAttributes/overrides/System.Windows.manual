@@ -21,6 +21,8 @@
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::Abort()
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::EndCallback(System.IAsyncResult)
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.cctor()
++SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::OnAsyncDataAvailable(System.IntPtr,System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::OnAsyncResponseStarted(System.IntPtr,System.IntPtr,System.IntPtr)
 
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
@@ -177,6 +179,10 @@
 
 +SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
+# capture device
++SC-M: System.IntPtr System.Windows.Media.CaptureDeviceConfiguration::GetAudioCaptureService()
++SC-M: System.IntPtr System.Windows.Media.CaptureDeviceConfiguration::GetVideoCaptureService()
 
 # Elevated Trust related overrides
 +SSC-M: System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()

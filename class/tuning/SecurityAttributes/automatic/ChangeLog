@@ -1,3 +1,7 @@
+2010-05-31  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.sc: regenerated with new override rules
+
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: regen sec. attrs.
