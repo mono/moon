@@ -167,6 +167,9 @@
 # Can create a delegate on private/internal method" 
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::UpdateValue()
 
++SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
 # LocalMessaging methods
 +SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
