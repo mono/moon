@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 590 methods
+# 591 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -335,6 +335,7 @@
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::ViewChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
++SSC-M: System.Windows.FrameworkElement System.Windows.DependencyObject::get_Mentor()
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::get_TemplateOwner()
 +SSC-M: System.Void System.Windows.DependencyObject::set_TemplateOwner(System.Windows.DependencyObject)
 +SSC-M: System.Void System.Windows.DependencyObject::Free()

@@ -269,6 +269,9 @@ public:
 	GHashTable *GetLocalValues () { return local_values; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
+	FrameworkElement *GetMentor ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetTemplateOwner (DependencyObject *value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateOwner ();

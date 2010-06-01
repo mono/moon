@@ -2323,6 +2323,18 @@ DependencyObject::SetTemplateOwner (DependencyObject *value)
 		template_owner->AddHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
 }
 
+FrameworkElement *
+DependencyObject::GetMentor ()
+{
+	DependencyObject *e = this;
+	Types *types = GetDeployment ()->GetTypes ();
+
+	while (e && !types->IsSubclassOf (e->GetObjectType (), Type::FRAMEWORKELEMENT))
+		e = e->GetParent ();
+
+	return (FrameworkElement *) e;
+}
+
 DependencyObject *
 DependencyObject::GetTemplateOwner ()
 {

@@ -106,7 +106,9 @@ namespace System.Windows.Data {
 					} else if (Target is FrameworkElement) {
 						source = ((FrameworkElement) Target).DataContext;
 					} else {
-						Console.WriteLine ("DataSource could not be determined");
+						var mentor = Target.Mentor;
+						if (mentor != null)
+							source = mentor.DataContext;
 					}
 				}
 				if (PropertyPathWalker != null)

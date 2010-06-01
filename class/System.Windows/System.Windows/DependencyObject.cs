@@ -77,6 +77,10 @@ namespace System.Windows {
 			}
 		}
 
+		internal FrameworkElement Mentor {
+			get { return (FrameworkElement) NativeDependencyObjectHelper.Lookup (NativeMethods.dependency_object_get_mentor (native)); }
+		}
+
 		internal DependencyObject TemplateOwner {
 			get { return (DependencyObject) NativeDependencyObjectHelper.Lookup (Mono.NativeMethods.dependency_object_get_template_owner (native)); }
 			set {

@@ -1204,6 +1204,17 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void MentorTest()
+		{
+			var rect = new Rectangle { DataContext = Colors.Red };
+			var brush = new SolidColorBrush();
+
+			rect.Fill = brush;
+			BindingOperations.SetBinding(brush, SolidColorBrush.ColorProperty, new Binding());
+			Assert.AreEqual(Colors.Red.ToString(), brush.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
 		public void MultiPathINPC_Standard ()
 		{
 			var a = new INPC { Value = 0 };

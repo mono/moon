@@ -1,3 +1,11 @@
+2010-06-01  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: Implement the first section of
+	  mentor based databinding. When doing DataContext based
+	  bindings on DependencyObjects, we get the DataContext from
+	  the first FrameworkElement in the actual tree (not visual
+	  tree). This FE is known as the 'mentor'. 
+
 2010-05-31  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: We should only seal the binding
