@@ -56,12 +56,16 @@ namespace System.Windows.Media.Imaging
 				Marshal.Copy (bitmap_data, pixels, 0, pixels.Length);
 
 			PinAndSetBitmapData ();
+
+			Invalidate ();
 		}
 
 		public WriteableBitmap (int width, int height) : base (SafeNativeMethods.writeable_bitmap_new (), true)
 		{
 			AllocatePixels (width, height);
 			PinAndSetBitmapData ();
+
+			Invalidate ();
 		}
 
 		public WriteableBitmap (UIElement element, Transform transform) :
@@ -84,6 +88,8 @@ namespace System.Windows.Media.Imaging
 
 			AllocatePixels (Double.IsNaN (bounds.Width) ? 0 : (int) bounds.Width, Double.IsNaN (bounds.Height) ? 0 : (int) bounds.Height);
 			PinAndSetBitmapData ();
+
+			Invalidate ();
 
 			Render (element, transform);
 		}
