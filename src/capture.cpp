@@ -187,7 +187,7 @@ CaptureSource::ReportSample (gint64 sampleTime, gint64 frameDuration, guint8 *sa
 		need_image_capture = false;
 	}
 
-	printf ("CaptureSource::ReportSample (%llu, %llu, %d\n", sampleTime, frameDuration, sampleDataLength);
+	// printf ("CaptureSource::ReportSample (%llu, %llu, %d\n", sampleTime, frameDuration, sampleDataLength);
 	if (HasHandlers (CaptureSource::SampleReadyEvent)) {
 		Emit (CaptureSource::SampleReadyEvent,
 		      new SampleReadyEventArgs (cached_sampleTime, cached_frameDuration, cached_sampleData, cached_sampleDataLength));

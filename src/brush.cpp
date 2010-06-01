@@ -995,7 +995,7 @@ VideoBrush::SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area)
 	// FIXME: this should be folded back into SetupBrush and we
 	// should check for mediaelement/capturesource there.
 
-	printf ("VideoBrush::SetupBrushFromCaptureSource\n");
+	//printf ("VideoBrush::SetupBrushFromCaptureSource\n");
 	Stretch stretch = GetStretch ();
 	if (!is_stretch_valid (stretch)) {
 		// bad enum value for stretch, nothing should be drawn
