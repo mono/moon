@@ -1,3 +1,8 @@
+2010-06-01  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeDependencyObjectHelper.cs: Add a missing case for
+	  CompositeTransform
+
 2010-05-28  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: track change to VideoFormat ctor and fieldnames.
