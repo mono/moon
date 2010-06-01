@@ -128,7 +128,7 @@ namespace System.Windows.Controls {
 			EnsureMainThread ();
 
 			// the dialog is displayed only if the action leading to this call was initiated directly from the user
-			if (!NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native))
+			if (!Helper.IsUserInitiated ())
 				throw new SecurityException ("Action was not initiated by the user");
 
 			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();

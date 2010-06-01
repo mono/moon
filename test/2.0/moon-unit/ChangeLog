@@ -1,3 +1,8 @@
+2010-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/ClipboardTest.cs: New. Test user initiation
+	requirement to access clipboard
+
 2010-06-01  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Implement the first

@@ -1,3 +1,8 @@
+2010-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Helper.cs: Add a centralized (managed) IsUserInitiated so
+	we'll be able to waive the requirement under SL4 elevated trust
+
 2010-06-01  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeDependencyObjectHelper.cs: Add a missing case for

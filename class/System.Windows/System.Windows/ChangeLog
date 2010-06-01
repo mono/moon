@@ -1,3 +1,7 @@
+2010-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Clipboard.cs: Ensure [G|S]etText methods are user initiated
+
 2010-06-01  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: Implement the first section of mentor

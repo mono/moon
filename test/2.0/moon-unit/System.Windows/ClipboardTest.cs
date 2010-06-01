@@ -1,10 +1,10 @@
 //
-// Clipboard.cs
+// Unit tests for Clipboard
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2010 Novell, Inc.
+// Copyright (C) 2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,35 +26,40 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.Security;
-using Mono;
+using System.Windows;
 
-namespace System.Windows {
-	public static class Clipboard {
-		public static bool ContainsText ()
+using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace MoonTest.System.Windows {
+
+	[TestClass]
+	public class ClipboardTest {
+
+		[TestMethod]
+		[MoonlightBug ("NIE")]
+		public void ContainsText_NonUserInitiated ()
 		{
-			Console.WriteLine ("System.Windows.Clipboard.ContainsText (): NIEX");
-			throw new NotImplementedException ();
+			// can return true or false - i.e. it does not need to be user initiated
+			Clipboard.ContainsText ();
 		}
 
-		public static string GetText ()
+		[TestMethod]
+		public void GetText_NonUserInitiated ()
 		{
-			CheckUserInitiated ();
-			Console.WriteLine ("System.Windows.Clipboard.GetText (): NIEX");
-			throw new NotImplementedException ();
+			Assert.Throws<SecurityException> (delegate {
+				Clipboard.GetText ();
+			}, "GetText");
 		}
 
-		public static void SetText (string text)
+		[TestMethod]
+		public void SetText_NonUserInitiated ()
 		{
-			CheckUserInitiated ();
-			Console.WriteLine ("System.Windows.Clipboard.SetText (): NIEX");
-			throw new NotImplementedException ();
-		}
-
-		private static void CheckUserInitiated ()
-		{
-			if (!Helper.IsUserInitiated ())
-				throw new SecurityException ("Clipboard access is not allowed");
+			Assert.Throws<SecurityException> (delegate {
+				Clipboard.SetText ("hey!");
+			}, "SetText");
 		}
 	}
 }

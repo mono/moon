@@ -181,6 +181,12 @@ namespace Mono {
 			return Thread.CurrentThread == DependencyObject.moonlight_thread;
 		}
 
+		public static bool IsUserInitiated ()
+		{
+			// FIXME: requirement to be waived (i.e. return true) with used under SL4 elevated trust
+			return NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native);
+		}
+
 #if DEBUG
 		public static void ReportException (Exception ex)
 		{
