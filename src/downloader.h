@@ -103,6 +103,7 @@ class Downloader : public DependencyObject {
 
 	bool Started () { return started; }
 	bool Completed () { return completed; }
+	bool Failed () { return failed_msg != NULL; }
 	const char *GetFailedMessage () { return failed_msg; }
 	
 	const char *GetUnzippedPath ();
