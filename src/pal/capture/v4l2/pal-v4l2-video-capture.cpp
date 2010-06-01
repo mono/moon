@@ -344,21 +344,30 @@ const char*
 MoonVideoCaptureDeviceV4L2::GetFriendlyName()
 {
 	if (!friendly_name) {
-		struct v4l2_input input;
+		struct v4l2_capability cap;
 
-		memset (&input, 0, sizeof (input));
+		memset (&cap, 0, sizeof (cap));
 
-		if (-1 == ioctl (fd, VIDIOC_G_INPUT, &input.index)) {
-			perror ("VIDIOC_G_INPUT");
-			return NULL;
+		if (-1 == ioctl (fd, VIDIOC_QUERYCAP, &cap)) {
+			struct v4l2_input input;
+
+			memset (&input, 0, sizeof (input));
+
+			if (-1 == ioctl (fd, VIDIOC_G_INPUT, &input.index)) {
+				perror ("VIDIOC_G_INPUT");
+				return NULL;
+			}
+
+			if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
+				perror ("VIDIOC_ENUM_INPUT");
+				return NULL;
+			}
+
+			friendly_name = g_strdup ((char*)input.name);
 		}
-
-		if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
-			perror ("VIDIOC_ENUM_INPUT");
-			return NULL;
+		else {
+			friendly_name = g_strdup_printf ("%s (%s)", cap.card, cap.driver);
 		}
-
-		friendly_name = g_strdup ((char*)input.name);
 	}
 
 	return friendly_name;
