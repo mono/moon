@@ -231,7 +231,7 @@ CaptureSource::CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration
 {
 	SetCurrentDeployment ();
 
-	printf ("CaptureSource::CaptureImageReportSample (%llu, %llu, %d\n", sampleTime, frameDuration, sampleDataLength);
+	printf ("CaptureSource::CaptureImageReportSample (%lld, %lld, %d\n", (long long) sampleTime, (long long) frameDuration, sampleDataLength);
 
 	if (HasHandlers (CaptureSource::CaptureImageCompletedEvent)) {
 		BitmapImage *source = new BitmapImage ();
