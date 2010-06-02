@@ -296,12 +296,16 @@ namespace System.Windows.Data {
 
 		void PropertyPathValueChanged (object o, EventArgs EventArgs)
 		{
+			string dataError = null;
 			Exception exception = null;
 			// If we detach the binding, we set the Source of the PropertyPathWalker to null
 			// and emit a ValueChanged event which tries to update the target. We need to ignore this.
 			if (!Attached)
 				return;
 
+			var node = PropertyPathWalker.FinalNode;
+			if (Binding.ValidatesOnDataErrors && node.Source is IDataErrorInfo && node.PropertyInfo != null)
+				dataError = ((IDataErrorInfo) node.Source) [node.PropertyInfo.Name];
 			bool oldUpdating = Updating;
 			try {
 				Updating = true;
@@ -315,7 +319,10 @@ namespace System.Windows.Data {
 			finally {
 				Updating = oldUpdating;
 			}
-			MaybeEmitError (exception);
+			if (dataError != null)
+				MaybeEmitError (dataError);
+			else
+				MaybeEmitError (exception);
 		}
 
 		void MaybeEmitError (string message)
@@ -332,7 +339,6 @@ namespace System.Windows.Data {
 		{
 			var fe = Target as FrameworkElement;
 			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError || fe == null) {
-				Console.WriteLine ("Bailing out at maybe emit");
 				return;
 			}
 
@@ -441,7 +447,7 @@ namespace System.Windows.Data {
 			}
 			finally {
 				Updating = oldUpdating;
-				if (exception == null && node.Source is IDataErrorInfo && node.PropertyInfo != null) {
+				if (Binding.ValidatesOnDataErrors && exception == null && node.Source is IDataErrorInfo && node.PropertyInfo != null) {
 					dataError = ((IDataErrorInfo) node.Source) [node.PropertyInfo.Name];
 				}
 			}
