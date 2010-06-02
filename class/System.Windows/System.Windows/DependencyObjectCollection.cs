@@ -38,7 +38,6 @@ using System.Collections.ObjectModel;
 namespace System.Windows {
 	public partial class DependencyObjectCollection<T> : DependencyObject, IList<T>, IList, INotifyCollectionChanged {
 
-		[MonoTODO ("This isn't raised anywhere")]
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public int Count {
@@ -107,11 +106,14 @@ namespace System.Windows {
 		public void Clear ()
 		{
 			Mono.NativeMethods.collection_clear (native);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Reset);
 		}
 
 		public void RemoveAt (int index)
 		{
+			var oldItem = this [index];
 			Mono.NativeMethods.collection_remove_at (native, index);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, oldItem, index);
 		}
 
 		public void Add (T value)
@@ -119,6 +121,7 @@ namespace System.Windows {
 			Value v;
 			using ((v = Value.FromObject (value)))
 				Mono.NativeMethods.collection_add (native, ref v);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, value, Count - 1);
 		}
 
 		public void Insert (int index, T value)
@@ -126,21 +129,31 @@ namespace System.Windows {
 			Value v;
 			using ((v = Value.FromObject (value)))
 				Mono.NativeMethods.collection_insert (native, index, ref v);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, value, index);
 		}
 
 		public bool Remove (T value)
 		{
 			Value v;
-			using ((v = Value.FromObject (value)))
-				return Mono.NativeMethods.collection_remove (native, ref v);
+			var oldIndex = IndexOf (value);
+			using ((v = Value.FromObject (value))) {
+				if (Mono.NativeMethods.collection_remove (native, ref v)) {
+					CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, value, oldIndex);
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public T this [int index] {
 			get { return (T) Value.ToObject (typeof (object), Mono.NativeMethods.collection_get_value_at (native, index)); }
 			set {
 				Value v;
-				using ((v = Value.FromObject (value)))
+				using ((v = Value.FromObject (value))) {
+					var oldItem = this [index];
 					Mono.NativeMethods.collection_set_value_at (native, index, ref v);
+					CollectionChanged.Raise (this, NotifyCollectionChangedAction.Replace, value, oldItem, index);
+				}
 			}
 		}
 

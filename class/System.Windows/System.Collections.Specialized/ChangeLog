@@ -1,3 +1,11 @@
+2010-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* NotifyCollectionChangedEventHandler.cs: Add an extension
+	  method to NotifyCollectionChangedEventHandler to allow us to
+	  remove the boiler plate code used to raise the
+	  INotifyCollectionChanged event. Now all you have to write is
+	  CollectionChanged.Raise (...).
+
 2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* NotifyCollectionChangedAction.cs: Fix validations and default 

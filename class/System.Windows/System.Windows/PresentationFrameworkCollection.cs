@@ -144,22 +144,6 @@ namespace System.Windows {
 
 		internal event NotifyCollectionChangedEventHandler ItemsChanged;
 
-		internal void Notify (NotifyCollectionChangedAction action, T value, int index)
-		{
-			NotifyCollectionChangedEventHandler handler = ItemsChanged;
-			if (handler != null) {
-				handler (this, new NotifyCollectionChangedEventArgs (action, value, index));
-			}
-		}
-
-		internal void Notify (NotifyCollectionChangedAction action, T new_value, T old_value, int index)
-		{
-			NotifyCollectionChangedEventHandler handler = ItemsChanged;
-			if (handler != null) {
-				handler (this, new NotifyCollectionChangedEventArgs (action, new_value, old_value, index));
-			}
-		}
-
 		//
 		// ICollection members
 		//
@@ -352,11 +336,7 @@ namespace System.Windows {
 		internal void ClearImpl ()
 		{
 			NativeMethods.collection_clear (native);
-
-			NotifyCollectionChangedEventHandler handler = ItemsChanged;
-			if (handler != null) {
-				handler (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-			}
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Reset);
 		}
 
 		internal virtual void AddImpl (T value)
@@ -374,7 +354,7 @@ namespace System.Windows {
 				var v = val;
 				index = NativeMethods.collection_add (native, ref v);
 			}
-			Notify (NotifyCollectionChangedAction.Add, value, index);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Add, value, index);
 		}
 
 		internal virtual void InsertImpl (int index, T value)
@@ -393,7 +373,7 @@ namespace System.Windows {
 				var v = val;
 				NativeMethods.collection_insert (native, index, ref v);
 			}
-			Notify (NotifyCollectionChangedAction.Add, value, index);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Add, value, index);
 		}
 
 		internal bool RemoveImpl (T value)
@@ -406,7 +386,7 @@ namespace System.Windows {
 				return false;
 
 			NativeMethods.collection_remove_at (native, index);
-			Notify (NotifyCollectionChangedAction.Remove, value, index);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Remove, value, index);
 			return true;
 		}
 
@@ -414,7 +394,7 @@ namespace System.Windows {
 		{
 			T value = GetItemImpl (index);
 			NativeMethods.collection_remove_at (native, index);
-			Notify (NotifyCollectionChangedAction.Remove, value, index);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Remove, value, index);
 		}
 
 		internal T GetItemImpl (int index)
@@ -438,7 +418,7 @@ namespace System.Windows {
 				var v = val;
 				NativeMethods.collection_set_value_at (native, index, ref v);
 			}
-			Notify (NotifyCollectionChangedAction.Replace, value, old, index);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Replace, value, old, index);
 		}
 
 		internal virtual int IndexOfImpl (T value)

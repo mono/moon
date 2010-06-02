@@ -55,10 +55,7 @@ namespace System.Collections.ObjectModel {
 
 		protected virtual void OnCollectionChanged (NotifyCollectionChangedEventArgs args)
 		{
-			NotifyCollectionChangedEventHandler eh = CollectionChanged;
-
-			if (eh != null)
-				eh (this, args);
+			CollectionChanged.Raise (this, args);
 		}
 
 		protected virtual void OnPropertyChanged (PropertyChangedEventArgs args)

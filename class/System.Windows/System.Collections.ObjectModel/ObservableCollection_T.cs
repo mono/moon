@@ -79,8 +79,7 @@ namespace System.Collections.ObjectModel {
 
 		protected virtual void OnCollectionChanged (NotifyCollectionChangedEventArgs e)
 		{
-			if (CollectionChanged != null)
-				CollectionChanged (this, e);
+			CollectionChanged.Raise (this, e);
 		}
 
 		protected virtual void OnPropertyChanged (PropertyChangedEventArgs e)

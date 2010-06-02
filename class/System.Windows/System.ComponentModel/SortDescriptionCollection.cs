@@ -48,21 +48,21 @@ namespace System.ComponentModel {
 		protected override void ClearItems ()
 		{
 			base.ClearItems ();
-			OnCollectionChanged (NotifyCollectionChangedAction.Reset);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Reset);
 		}
 
 		protected override void InsertItem (int index, SortDescription item)
 		{
 			item.Seal ();
 			base.InsertItem (index, item);
-			OnCollectionChanged (NotifyCollectionChangedAction.Add, item, index);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, index);
 		}
 
 		protected override void RemoveItem (int index)
 		{
 			SortDescription sd = base [index];
 			base.RemoveItem (index);
-			OnCollectionChanged (NotifyCollectionChangedAction.Remove, sd, index);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, sd, index);
 		}
 
 		protected override void SetItem (int index, SortDescription item)
@@ -70,26 +70,9 @@ namespace System.ComponentModel {
 			SortDescription old = base [index];
 			item.Seal ();
 			base.SetItem (index, item);
-			OnCollectionChanged (NotifyCollectionChangedAction.Remove, old, index);
-			OnCollectionChanged (NotifyCollectionChangedAction.Add, item, index);
-		}
-
-		private void OnCollectionChanged (NotifyCollectionChangedAction action)
-		{
-			NotifyCollectionChangedEventHandler eh = CollectionChanged;
-
-			if (eh != null)
-				eh (this, new NotifyCollectionChangedEventArgs (action));
-		}
-
-		private void OnCollectionChanged (NotifyCollectionChangedAction action, SortDescription item, int index)
-		{
-			NotifyCollectionChangedEventHandler eh = CollectionChanged;
-
-			if (eh != null)
-				eh (this, new NotifyCollectionChangedEventArgs (action, item, index));
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, old, index);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, index);
 		}
 	}
-
 }
 

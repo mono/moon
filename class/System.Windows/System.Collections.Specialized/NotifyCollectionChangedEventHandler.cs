@@ -29,4 +29,31 @@
 namespace System.Collections.Specialized {
 
 	public delegate void NotifyCollectionChangedEventHandler (object sender, NotifyCollectionChangedEventArgs e);
+
+	static class NotifyCollectionChangedEventHandlerExtensions {
+
+		public static void Raise (this NotifyCollectionChangedEventHandler handler, object sender, NotifyCollectionChangedAction action)
+		{
+			if (handler != null)
+				handler (sender, new NotifyCollectionChangedEventArgs (action));
+		}
+
+		public static void Raise (this NotifyCollectionChangedEventHandler handler, object sender, NotifyCollectionChangedAction action, object changedItem, int index)
+		{
+			if (handler != null)
+				handler (sender, new NotifyCollectionChangedEventArgs (action, changedItem, index));
+		}
+
+		public static void Raise (this NotifyCollectionChangedEventHandler handler, object sender, NotifyCollectionChangedAction action, object newItem, object oldItem, int index)
+		{
+			if (handler != null)
+				handler (sender, new NotifyCollectionChangedEventArgs (action, newItem, oldItem, index));
+		}
+
+		public static void Raise (this NotifyCollectionChangedEventHandler handler, object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (handler != null)
+				handler (sender, e);
+		}
+	}
 }

@@ -1,5 +1,12 @@
 2010-06-02  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyObjectCollection.cs:
+	* PresentationFrameworkCollection.cs: use the new extension
+	  method to raise the INCC event and remove old (duplicated)
+	  boilerplate.
+
+2010-06-02  Alan McGovern  <amcgovern@novell.com>
+
 	* DependencyObject.cs: Update our implementation of mentors to
 	  allow us to listen for changes to the mentor and correctly
 	  NULL it out when the mentor is destroyed as if we were to
