@@ -30,17 +30,18 @@ namespace System.Windows.Controls {
 
 	public class ValidationError {
 
-		Exception exception;
-
-		internal ValidationError (Exception exception)
-		{
-			this.exception = exception;
+			public object ErrorContent {
+			get; private set;
 		}
 
 		public Exception Exception {
-			get { return exception; }
+			get; private set;
 		}
 
-		public object ErrorContent { get; private set; }
+		internal ValidationError (string message, Exception exception)
+		{
+			ErrorContent = message;
+			Exception = exception;
+		}
 	}
 }

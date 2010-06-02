@@ -1,5 +1,10 @@
 2010-06-02  Alan McGovern  <amcgovern@novell.com>
 
+	* ValidationError.cs: Put in initial support for
+	  IDataErrorInfo objects. Passes the basic tests in drt 232.
+
+2010-06-02  Alan McGovern  <amcgovern@novell.com>
+
 	* Validation.cs: We now pass all the V3 Validation tests in
 	  drt 232. hurrah!
 

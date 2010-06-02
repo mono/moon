@@ -13,6 +13,8 @@ namespace System.Windows.Data
 
 		void SetValue (object value);
 
+		object Source { get; }
+
 		object Value { get; }
 
 		PropertyInfo PropertyInfo { get; }

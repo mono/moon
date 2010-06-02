@@ -318,16 +318,31 @@ namespace System.Windows.Data {
 			MaybeEmitError (exception);
 		}
 
+		void MaybeEmitError (string message)
+		{
+			MaybeEmitError (message, null);
+		}
+
 		void MaybeEmitError (Exception exception)
 		{
+			MaybeEmitError (null, exception);
+		}
+
+		void MaybeEmitError (string message, Exception exception)
+		{
 			var fe = Target as FrameworkElement;
-			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError || fe == null)
+			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError || fe == null) {
+				Console.WriteLine ("Bailing out at maybe emit");
 				return;
+			}
+
+			if (message == "")
+				message = null;
 
 			// We had an error and now we have a new error
 			var last = LastError;
-			if (last != null && exception != null) {
-				LastError = new ValidationError (exception);
+			if (last != null && (exception != null || message != null)) {
+				LastError = new ValidationError (message, exception);
 				Validation.AddError (fe, LastError);
 				Validation.RemoveError (fe, last);
 				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, last));
@@ -336,8 +351,8 @@ namespace System.Windows.Data {
 				Validation.RemoveError (fe, LastError);
 				LastError = null;
 				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, last));
-			} else if (exception != null) {
-				LastError = new ValidationError (exception);
+			} else if ((exception != null || message != null)) {
+				LastError = new ValidationError (message, exception);
 				Validation.AddError (fe, LastError);
 				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError));
 			}
@@ -369,8 +384,11 @@ namespace System.Windows.Data {
 
 		internal void UpdateSourceObject (object value)
 		{
+			string dataError = null;
 			Exception exception = null;
 			bool oldUpdating = Updating;
+			var node = PropertyPathWalker.FinalNode;
+
 			try {
 				// TextBox.Text only updates a two way binding if it is *not* focused.
 				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
@@ -380,7 +398,6 @@ namespace System.Windows.Data {
 					return;
 				}
 				
-				var node = PropertyPathWalker.FinalNode;
 				if (Binding.TargetNullValue != null) {
 					try {
 						var v = MoonlightTypeConverter.ConvertObject (Property, Binding.TargetNullValue, Target.GetType (), true);
@@ -424,9 +441,15 @@ namespace System.Windows.Data {
 			}
 			finally {
 				Updating = oldUpdating;
+				if (exception == null && node.Source is IDataErrorInfo && node.PropertyInfo != null) {
+					dataError = ((IDataErrorInfo) node.Source) [node.PropertyInfo.Name];
+				}
 			}
 
-			MaybeEmitError (exception);
+			if (dataError != null)
+				MaybeEmitError (dataError);
+			else
+				MaybeEmitError (exception);
 		}
 	}
 }
