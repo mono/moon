@@ -72,7 +72,7 @@ NPStreamRequest::SendImpl ()
 
 	if (err == NPERR_NO_ERROR) {
 		/* This is a ref to ensure that we don't get deleted while the browser have a pointer to us */
-		/* We unref when UrlNotify is called */
+		/* We unref when DestroyStream is called */
 		this->ref ();
 		return;
 	}
@@ -107,7 +107,12 @@ NPStreamRequest::AbortImpl ()
 
 	if (stream != NULL) {
 		MOON_NPN_DestroyStream (GetInstance ()->GetInstance (), stream, NPRES_USER_BREAK);
-		stream = NULL;
+
+		if (stream != NULL) {
+			/* Calling NPN_DestroyStream should end up calling our DestroyStream method, but only ff 3.7+ does it.
+			   so if DestroyStream wasn't called, call it manually */
+			 DestroyStream ();
+		}
 	}
 }
 

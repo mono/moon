@@ -1,3 +1,9 @@
+2010-06-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* npstream-request.cpp: Abort: if we still have the stream after calling
+	NPN_DestroyStream, it means we're using a buggy browser (firefox <3.7), so
+	just call our own DestroyStream ourselves.
+
 2010-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* npstream-request.cpp: clear out the stream field and unref ourselves in DestroyStream.
