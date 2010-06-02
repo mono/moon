@@ -1,3 +1,9 @@
+2010-06-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/capture/v4l2/pal-v4l2-video-capture.cpp (ReadNextFrame):
+	first_pts and new_pts are gint64's and so cannot contain a value
+	of G_MAXUINT64.
+
 2010-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* application.cpp: downloader_abort: clear the handlers after aborting, since

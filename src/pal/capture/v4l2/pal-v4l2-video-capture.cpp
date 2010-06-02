@@ -155,7 +155,7 @@ MoonVideoCaptureDeviceV4L2::MoonVideoCaptureDeviceV4L2 (MoonVideoCaptureServiceV
 	this->need_to_notify_format = true;
 	this->idle_id = -1;
 	this->formats = NULL;
-	this->first_pts = G_MAXUINT64;
+	this->first_pts = G_MAXINT64;
 }
 
 MoonVideoCaptureDeviceV4L2::~MoonVideoCaptureDeviceV4L2 ()
@@ -446,7 +446,7 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gin
 	guint32 pixelformat = capturing_format->GetV4L2PixelFormat ();
 
 	if (pixelformat == V4L2_PIX_FMT_YUYV) {
-		while (((char*)ip - (char*)buffers[v4l2buf.index].start) < buffers[v4l2buf.index].length) {
+		while ((size_t) ((char*)ip - (char*)buffers[v4l2buf.index].start) < buffers[v4l2buf.index].length) {
 			guint8 y, u, y2, v;
 
 			y  = ((*ip & 0x000000ff));
@@ -490,7 +490,7 @@ MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gin
 
 	gint64 new_pts = v4l2buf.timestamp.tv_usec * 10ULL + v4l2buf.timestamp.tv_sec * 10000000ULL;
 
-	if (first_pts == G_MAXUINT64)
+	if (first_pts == G_MAXINT64)
 		first_pts = new_pts;
 	*pts = new_pts - first_pts;
 	//      *pts = MilliSeconds_ToPts (v4l2buf.timestamp.tv_usec / 1000 + v4l2buf.timestamp.tv_sec * 1000);
