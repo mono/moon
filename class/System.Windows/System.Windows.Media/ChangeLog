@@ -1,3 +1,10 @@
+2010-06-02  Jackson Harper  <jackson@ximian.com>
+
+	* ImageSourceConverter.cs: remove the override/new stuff. I don't
+	think the new was ever needed, we were just getting a warning
+	because we stopped defining NET_2_1.  Without this fix the
+	overridden methods never get called.
+
 2010-05-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* CaptureDeviceConfiguration.cs: API fix (which removes the FIXME
