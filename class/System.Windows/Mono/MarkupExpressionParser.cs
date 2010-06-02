@@ -249,11 +249,11 @@ namespace Mono.Xaml {
 		{
 			char next;
 			string mode_str = GetNextPiece (ref expression, out next);
-
-			if (!Enum.IsDefined (typeof (RelativeSourceMode), mode_str))
+			try {
+				return new RelativeSource ((RelativeSourceMode) Enum.Parse (typeof (RelativeSourceMode), mode_str, true));
+			} catch {
 				throw new XamlParseException (String.Format ("MarkupExpressionParser:  Error parsing RelativeSource, unknown mode: {0}", mode_str));
-				
-			return new RelativeSource ((RelativeSourceMode) Enum.Parse (typeof (RelativeSourceMode), mode_str, true));
+			}
 		}
 
 		private object LookupNamedResource (DependencyObject dob, string name)

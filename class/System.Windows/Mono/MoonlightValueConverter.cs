@@ -68,7 +68,7 @@ namespace Mono {
 					}
 				}
 				if (targetType.IsEnum && str_value != null)
-					return Enum.Parse (targetType, str_value);
+					return Enum.Parse (targetType, str_value, true);
 				if (targetType != value.GetType() && targetType.IsValueType && value.GetType().IsValueType)
 					return System.Convert.ChangeType (value, targetType, null);
 			}
