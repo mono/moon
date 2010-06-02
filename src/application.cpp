@@ -203,8 +203,8 @@ downloader_write (EventObject *sender, EventArgs *calldata, gpointer closure)
 static void
 downloader_abort (HttpRequest *request, void *ctx)
 {
-	request->RemoveAllHandlers (ctx);
 	request->Abort ();
+	request->RemoveAllHandlers (ctx);
 }
 
 static void

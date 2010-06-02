@@ -1,3 +1,8 @@
+2010-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* application.cpp: downloader_abort: clear the handlers after aborting, since
+	we need the stopped handler to be called during the abort to cleanup properly.
+
 2010-06-02  Alan McGovern  <amcgovern@novell.com>
 
 	* dependencyobject.h:
