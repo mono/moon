@@ -1,3 +1,8 @@
+2010-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemCollection.cs: Implment INCC properly for the Items
+	  collection. I can't believe no tests every checked this :)
+
 2010-06-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SaveFileDialog.cs: Use new helper to check if the user 

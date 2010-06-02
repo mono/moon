@@ -76,11 +76,9 @@ namespace System.Windows.Controls {
 			return readOnly;
 		}
 		
-		event NotifyCollectionChangedEventHandler CollectionChanged;
-		
 		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged {
-			add { this.CollectionChanged += value; }
-			remove { this.CollectionChanged -= value; }
+			add { ItemsChanged += value; }
+			remove { ItemsChanged -= value; }
 		}
 	}
 }

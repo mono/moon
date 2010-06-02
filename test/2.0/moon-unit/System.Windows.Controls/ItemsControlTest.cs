@@ -549,6 +549,21 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void ItemsIsINCC()
+		{
+			Assert.IsInstanceOfType<INotifyCollectionChanged>(CurrentControl.Items, "#1");
+		}
+
+		[TestMethod]
+		public void ItemsIsINCC_EventsRaised()
+		{
+			List<NotifyCollectionChangedEventArgs> args = new List<NotifyCollectionChangedEventArgs>();
+			((INotifyCollectionChanged)CurrentControl.Items).CollectionChanged += (o, e) => args.Add(e);
+			CurrentControl.Items.Add(new object());
+			Assert.AreEqual(1, args.Count, "#1");
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void ItemsPanelTemplateTest ()
 		{

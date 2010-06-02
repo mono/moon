@@ -1,5 +1,11 @@
 2010-06-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemsControlTest.cs: Implment INCC
+	  properly for the Items collection. I can't believe no tests
+	  every checked this :)
+
+2010-06-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs:
 	* System.Windows/DependencyPropertyTest.cs: Update our
 	  implementation of mentors to allow us to listen for changes
