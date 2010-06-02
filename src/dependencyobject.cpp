@@ -2298,6 +2298,7 @@ DependencyObject::Initialize ()
 	
 	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 	listener_list = NULL;
+	mentor = NULL;
 	parent = NULL;
 	is_hydrated = false;
 	is_frozen = false;
@@ -2314,6 +2315,19 @@ DependencyObject::Initialize ()
 }
 
 void
+DependencyObject::SetMentor (DependencyObject *value)
+{
+	if (mentor != value) {
+		if (mentor)
+			mentor->RemoveHandler (EventObject::DestroyedEvent, DependencyObject::MentorDestroyedEvent, this);
+		mentor = value;
+		if (mentor)
+			mentor->AddHandler (EventObject::DestroyedEvent, DependencyObject::MentorDestroyedEvent, this);
+		Emit (DependencyObject::MentorChangedEvent);
+	}
+}
+
+void
 DependencyObject::SetTemplateOwner (DependencyObject *value)
 {
 	// you should only set template owner once.
@@ -2323,16 +2337,10 @@ DependencyObject::SetTemplateOwner (DependencyObject *value)
 		template_owner->AddHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
 }
 
-FrameworkElement *
+DependencyObject *
 DependencyObject::GetMentor ()
 {
-	DependencyObject *e = this;
-	Types *types = GetDeployment ()->GetTypes ();
-
-	while (e && !types->IsSubclassOf (e->GetObjectType (), Type::FRAMEWORKELEMENT))
-		e = e->GetParent ();
-
-	return (FrameworkElement *) e;
+	return mentor;
 }
 
 DependencyObject *
@@ -2351,6 +2359,13 @@ const char *
 DependencyObject::GetResourceBase ()
 {
 	return resource_base;
+}
+
+void
+DependencyObject::MentorDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	DependencyObject *o = (DependencyObject *) closure;
+	o->SetMentor (NULL);
 }
 
 void
@@ -2539,6 +2554,7 @@ DependencyObject::Dispose ()
 	if (parent != NULL) {
 		SetParent (NULL, NULL);
 	}
+	SetMentor (NULL);
 	DetachTemplateOwnerDestroyed ();
 	
 	if (listener_list != NULL) {
@@ -2979,6 +2995,12 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 
 	if (!error || error->number == 0) {
 		this->parent = parent;
+
+		DependencyObject *e = this;
+		Types *types = GetDeployment ()->GetTypes ();
+		while (e && !types->IsSubclassOf (e->GetObjectType (), Type::FRAMEWORKELEMENT))
+			e = e->GetParent ();
+		SetMentor (e);
 	}
 }
 

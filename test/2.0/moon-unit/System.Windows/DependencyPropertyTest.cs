@@ -145,6 +145,30 @@ namespace MoonTest.System.Windows
 		}
 
 #region Canvas Custom
+		[TestMethod()]
+		public void Custom_Property_CanSetTwice ()
+		{
+			var canvas1 = new CustomCanvas();
+			var canvas2 = new CustomCanvas();
+			var child = new Button();
+
+			canvas1.Child = (child);
+			canvas2.Child = (child);
+
+		}
+
+		[TestMethod()]
+		[MoonlightBug ("This should work")]
+		public void Custom_Property_CanSetTwice_Collection()
+		{
+			var canvas1 = new CustomCanvas { Collection = new DependencyObjectCollection<DependencyObject>() };
+			var canvas2 = new CustomCanvas { Collection = new DependencyObjectCollection<DependencyObject>() };
+			var child = new Button();
+
+			canvas1.Collection.Add(child);
+			canvas2.Collection.Add(child);
+		}
+
 		[TestMethod ()]
 		public void Custom_Property_DoesNotRegisterDOName ()
 		{
@@ -1858,6 +1882,8 @@ namespace MoonTest.System.Windows
 	{
 		public static readonly DependencyProperty ChildProperty = DependencyProperty.Register ("Child", typeof (FrameworkElement), typeof (CustomCanvas), null);
 		public static readonly DependencyProperty Child2Property = DependencyProperty.Register ("Child2", typeof (FrameworkElement), typeof (CustomCanvas), null);
+		public static readonly DependencyProperty CollectionProperty = DependencyProperty.Register("Collection", typeof(DependencyObjectCollection<DependencyObject>), typeof(CustomCanvas), null);
+		
 		public FrameworkElement Child {
 			get { return (FrameworkElement) GetValue (ChildProperty); }
 			set { SetValue (ChildProperty, value); }
@@ -1866,6 +1892,11 @@ namespace MoonTest.System.Windows
 		public FrameworkElement Child2 {
 			get { return (FrameworkElement) GetValue (Child2Property); }
 			set { SetValue (Child2Property, value); }
+		}
+
+		public DependencyObjectCollection<DependencyObject> Collection {
+			get { return (DependencyObjectCollection<DependencyObject>)GetValue(CollectionProperty); }
+			set { SetValue(CollectionProperty, value); }
 		}
 	}
 }

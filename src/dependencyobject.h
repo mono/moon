@@ -172,6 +172,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Type::Kind GetObjectType () { return object_type; }
 
+	const static int MentorChangedEvent;
 	const static int DestroyedEvent;
 	
 	void unref_delayed ();
@@ -269,7 +270,8 @@ public:
 	GHashTable *GetLocalValues () { return local_values; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	FrameworkElement *GetMentor ();
+	DependencyObject *GetMentor ();
+	void SetMentor (DependencyObject *value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetTemplateOwner (DependencyObject *value);
@@ -458,6 +460,7 @@ protected:
 
 private:
 	void DetachTemplateOwnerDestroyed ();
+	void DetachMentorDestroyed ();
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
@@ -471,6 +474,7 @@ private:
 	static void clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data);
 	void CloneAnimationStorageList (DependencyProperty *key, List *list);
 
+	static void MentorDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
@@ -484,6 +488,7 @@ private:
 
 	GHashTable        *local_values;
 	GSList            *listener_list;
+	DependencyObject  *mentor;
 	DependencyObject  *parent;
 	DependencyObject  *template_owner;
 

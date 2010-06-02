@@ -1215,6 +1215,104 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void MentorTest_SetMentorThenBinding()
+		{
+			var rect = new Rectangle { DataContext = Colors.Red };
+			var brush = new SolidColorBrush();
+
+			rect.Fill = brush;
+			BindingOperations.SetBinding(brush, SolidColorBrush.ColorProperty, new Binding());
+			Assert.AreEqual(Colors.Red.ToString(), brush.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("We should not listen for mentor changes here")]
+		public void MentorTest_SetBindingThenMentor ()
+		{
+			var rect = new Rectangle { DataContext = Colors.Red };
+			var brush = new SolidColorBrush();
+
+			BindingOperations.SetBinding(brush, SolidColorBrush.ColorProperty, new Binding());
+			rect.Fill = brush;
+			Assert.AreEqual("#00000000", brush.Color.ToString(), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("We need to parent the collection so that we can pick up the correct mentor")]
+		public void MentorTest_SetBindingThenMentor_Collection()
+		{
+			var rect = new CustomCanvas { DataContext = Colors.Red, Collection = new DependencyObjectCollection<DependencyObject> () };
+			var brush = new SolidColorBrush();
+
+			BindingOperations.SetBinding(brush, SolidColorBrush.ColorProperty, new Binding());
+			rect.Collection.Add(brush);
+			Assert.AreEqual("#FFFF0000", brush.Color.ToString(), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MentorTest_TwoMentors_SetMentorsThenBinding ()
+		{
+			var mentor1 = new Rectangle { DataContext = Colors.Red };
+			var mentor2 = new Rectangle { DataContext = Colors.Green };
+			var brush = new SolidColorBrush();
+
+			mentor1.Fill = brush;
+			mentor2.Fill = brush;
+			BindingOperations.SetBinding(brush, SolidColorBrush.ColorProperty, new Binding());
+			Assert.AreEqual("#00000000", brush.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MentorTest_TwoMentors_SetBindingThenMentors ()
+		{
+			var mentor1 = new Rectangle { DataContext = Colors.Red };
+			var mentor2 = new Rectangle { DataContext = Colors.Green };
+			var brush = new SolidColorBrush();
+
+			BindingOperations.SetBinding(brush, SolidColorBrush.ColorProperty, new Binding());
+			mentor1.Fill = brush;
+			mentor2.Fill = brush;
+			Assert.AreEqual("#00000000", brush.Color.ToString(), "#1");
+		}
+
+		[TestMethod]
+		public void MentorTest_TwoMentors_SetBindingThenMentors_Remove()
+		{
+			var mentor1 = new Rectangle { DataContext = Colors.Red };
+			var mentor2 = new Rectangle { DataContext = Colors.Green };
+			var brush = new SolidColorBrush();
+
+			BindingOperations.SetBinding(brush, SolidColorBrush.ColorProperty, new Binding());
+			mentor1.Fill = brush;
+			mentor2.Fill = brush;
+			mentor1.Fill = null;
+			Assert.AreEqual("#00000000", brush.Color.ToString(), "#1");
+		}
+
+		[TestMethod()]
+		public void MentorTest_CustomProperty()
+		{
+			var child = new Button();
+			var canvas = new CustomCanvas { DataContext = 15.0, Child = child };
+
+			BindingOperations.SetBinding(child, Button.WidthProperty, new Binding());
+			Assert.IsTrue (double.IsNaN (child.Width), "#1");
+		}
+
+		[TestMethod()]
+		public void MentorTest_CustomCollectionProperty()
+		{
+			var child = new Button();
+			var canvas = new CustomCanvas { DataContext = 15.0, Collection = new DependencyObjectCollection<DependencyObject>() };
+			canvas.Collection.Add(child);
+
+			BindingOperations.SetBinding(child, Button.WidthProperty, new Binding());
+			Assert.IsTrue (double.IsNaN (child.Width), "#1");
+		}
+
+		[TestMethod]
 		public void MultiPathINPC_Standard ()
 		{
 			var a = new INPC { Value = 0 };

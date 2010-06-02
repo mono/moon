@@ -46,6 +46,17 @@ namespace System.Windows {
 		EventHandlerList event_list;
 		bool free_mapping;
 
+		internal event EventHandler MentorChanged {
+			add {
+				var val = value;
+				UnmanagedEventHandler h = delegate { val (this, EventArgs.Empty); };
+				RegisterEvent (EventIds.EventObject_MentorChangedEvent, value, h);
+			}
+			remove {
+				UnregisterEvent (EventIds.EventObject_MentorChangedEvent, value);
+			}
+		}
+
 		internal EventHandlerList EventList {
 			get {
 				if (event_list == null)

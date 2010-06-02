@@ -44,6 +44,9 @@ namespace System.Windows.Data {
 		static readonly Type [] midParseParams = new Type [] { typeof (string), typeof (IFormatProvider) };
 		static readonly Type [] simpleParseParams = new Type [] { typeof (string) };
 
+		FrameworkElement mentor;
+		UnmanagedPropertyChangeHandler mentorDataContextChangedCallback;
+
 		internal bool cached;
 		object cachedValue;
 		
@@ -56,7 +59,11 @@ namespace System.Windows.Data {
 		ValidationError LastError {
 			get; set;
 		}
-		
+
+		bool IsMentorBound {
+			get { return Binding.ElementName == null && Binding.Source == null && Binding.RelativeSource == null && !(Target is FrameworkElement); }
+		}
+
 		DependencyObject Target {
 			get; set;
 		}
@@ -92,7 +99,9 @@ namespace System.Windows.Data {
 					} else if (Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
 						source = Target.TemplateOwner;
 					} else {
-						Console.WriteLine ("*** WARNING *** Unsupported RelativeSourceMode '{0}'", Binding.RelativeSource.Mode);
+						var mentor = Target.Mentor;
+						if (mentor != null)
+							source = mentor.DataContext;
 					}
 				}
 
@@ -123,6 +132,8 @@ namespace System.Windows.Data {
 			Target = target;
 			Property = property;
 
+			mentorDataContextChangedCallback = OnNativeMentorDataContextChanged;
+
 			bool bindsToView = property == FrameworkElement.DataContextProperty || property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
 			PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource, bindsToView);
 			if (Binding.Mode != BindingMode.OneTime)
@@ -134,6 +145,12 @@ namespace System.Windows.Data {
 			base.OnAttached (element);
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus += TextBoxLostFocus;
+
+			if (IsMentorBound) {
+				Target.MentorChanged += MentorChanged;
+				mentor = Target.Mentor;
+				AttachDataContextHandlers (mentor);
+			}
 
 			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
 				updateDataSourceCallback = delegate {
@@ -150,10 +167,52 @@ namespace System.Windows.Data {
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus -= TextBoxLostFocus;
 
+			if (IsMentorBound) {
+				DetachDataContextHandlers (mentor);
+				mentor = null;
+				Target.MentorChanged -= MentorChanged;;
+			}
+
 			if (updateDataSourceCallback != null)
 				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
 
 			PropertyPathWalker.Update (null);
+		}
+
+		void AttachDataContextHandlers (FrameworkElement mentor)
+		{
+			if (mentor != null)
+				mentor.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, mentorDataContextChangedCallback);
+		}
+
+		void DetachDataContextHandlers (FrameworkElement mentor)
+		{
+			if (mentor != null)
+				mentor.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, mentorDataContextChangedCallback);
+		}
+
+		void MentorChanged (object sender, EventArgs e)
+		{
+			DetachDataContextHandlers (mentor);
+			mentor = Target.Mentor;
+			AttachDataContextHandlers (mentor);
+			MentorDataContextChanged ();
+		}
+
+		void OnNativeMentorDataContextChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
+		{
+			MentorDataContextChanged ();
+		}
+
+		void MentorDataContextChanged ()
+		{
+			try {
+				Invalidate ();
+				Updating = true;
+				Target.SetValue (Property, this);
+			} finally {
+				Updating = false;
+			}
 		}
 
 		internal void Invalidate ()
