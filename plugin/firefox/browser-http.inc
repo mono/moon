@@ -90,7 +90,8 @@ public:
 	{
 		if (headers != NULL)
 			g_string_free (headers, true);
-		listener->ClearRequest ();
+		if (listener != NULL)
+			listener->ClearRequest ();
 	}
 
 	virtual void AbortImpl ();
