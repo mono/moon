@@ -1,3 +1,8 @@
+2010-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: DestroyStream: fetch the correct member of the stream to get the
+	NPStreamRequest.
+
 2010-05-29  Chris Toshok  <toshok@ximian.com>
 
 	* npstream-request.cpp (UrlNotify): once we unref don't go poking

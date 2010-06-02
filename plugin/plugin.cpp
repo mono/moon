@@ -1011,7 +1011,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 
 	request = (NPStreamRequest *) stream->notifyData;
 
-	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p) notify: %p url: %s\n", type, stream, seekable, stype, notify, stream->url));
+	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p) request: %p url: %s\n", type, stream, seekable, stype, request, stream->url));
 
 	if (request == NULL) {
 		/* We'll automatically get a stream for the src attribute on the embed tag */
@@ -1055,7 +1055,7 @@ PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
 	nps (printf ("PluginInstance::DestroyStream (%p, %i)\n", stream, reason));
 
-	NPStreamRequest *req = (NPStreamRequest *) stream->pdata;
+	NPStreamRequest *req = (NPStreamRequest *) stream->notifyData;
 	if (req != NULL)
 		req->DestroyStream ();
 
