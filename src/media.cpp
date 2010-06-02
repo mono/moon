@@ -379,7 +379,7 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	source->Lock ();
 
 	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
        
 	Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);
@@ -666,7 +666,7 @@ Image::InsideObject (cairo_t *cr, double x, double y)
 
 	cairo_save (cr);
 	cairo_new_path (cr);
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 
 	double nx = x;
 	double ny = y;

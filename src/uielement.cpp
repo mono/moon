@@ -33,6 +33,8 @@
 #include "effect.h"
 #include "projection.h"
 
+cairo_user_data_key_t xform_key;
+
 //#define DEBUG_INVALIDATE 0
 
 UIElement::UIElement ()
@@ -165,7 +167,7 @@ void
 UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 {
 	cairo_new_path (cr);
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 
 	Geometry *geometry = GetClip();
 	if (!geometry)
@@ -391,6 +393,20 @@ UIElement::UpdateTransform ()
 {
 	if (IsAttached ()) {
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyLocalTransform);
+	}
+}
+
+void
+UIElement::ApplyTransform (cairo_t *cr)
+{
+	cairo_matrix_t *paint_xforms = (cairo_matrix_t *)cairo_get_user_data (cr, &xform_key);
+
+	if (paint_xforms) {
+		cairo_set_matrix (cr, &paint_xforms[0]);
+		cairo_transform (cr, &absolute_xform);
+		cairo_transform (cr, &paint_xforms[1]);
+	} else {
+		cairo_set_matrix (cr, &absolute_xform);
 	}
 }
 
@@ -1149,6 +1165,7 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 	region->Intersect (parent_region);
 
 	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) {
+		printf ("no visible");
 		delete region;
 		return;
 	}
@@ -1295,6 +1312,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		delete region;
 }
 
+
 void
 UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 {
@@ -1303,7 +1321,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 
 	cairo_save (cr);
 
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 	RenderClipPath (cr);
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
@@ -1331,7 +1349,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		r.Draw (cr);
 		cairo_clip (cr);
 	}
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 
 	/*
 	if (ClipToExtents ()) {
@@ -1353,7 +1371,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		group_surface = cairo_surface_create_similar (cairo_get_target (cr),
 							      CAIRO_CONTENT_COLOR_ALPHA,
 							      r.width,
-							      r.height);
+			 				      r.height);
 		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
 		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
 	}
@@ -1369,6 +1387,13 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
 		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
 	}
+
+	cairo_t *redirected = ((ContextNode *) ctx->First ())->GetCr ();
+
+	if (cr != redirected)
+		cairo_set_user_data (redirected, &xform_key, cairo_get_user_data (cr, &xform_key), NULL);
+
+	//printf ("setting xform: xform key addr = %p", &xform_key);
 }
 
 void
@@ -1510,7 +1535,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
 		cairo_save (cr);
 		cairo_new_path (cr);
-		cairo_set_matrix (cr, &absolute_xform);
+		ApplyTransform (cr);
 		cairo_set_line_width (cr, 1);
 		
 		Geometry *geometry = GetClip ();
@@ -1544,11 +1569,20 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 }
 
 void
-UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
+UIElement::Paint (cairo_t *cr,  Rect bounds, cairo_matrix_t *xform)
 {
-	// FIXME xform is ignored for now
+	cairo_matrix_t paint_forms [2];
+
+	paint_forms [0] = absolute_xform;
 	if (xform)
-		g_warning ("passing a transform to UIElement::Paint is not yet supported");
+		paint_forms [1] = *xform;
+	else
+		cairo_matrix_init_identity (&paint_forms[1]);
+
+	cairo_matrix_invert (&paint_forms[0]);
+	cairo_set_user_data (cr, &xform_key, &paint_forms[0], NULL);
+
+	Region region (bounds.Transform (&absolute_xform));
 
 #if OCCLUSION_CULLING_STATS
 	GetDeployment ()->GetSurface ()->uielements_rendered_with_occlusion_culling = 0;
@@ -1562,7 +1596,7 @@ UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
 	ctx->Append (new ContextNode (cr));
 
 	if (moonlight_flags & RUNTIME_INIT_OCCLUSION_CULLING) {
-		Region *copy = new Region (region);
+		Region *copy = new Region (&region);
 		FrontToBack (copy, render_list);
 		
 		if (!render_list->IsEmpty ()) {
@@ -1580,7 +1614,7 @@ UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
 	}
 
 	if (!did_occlusion_culling) {
-		DoRender (ctx, region);
+		DoRender (ctx, &region);
 	}
 
 	delete ctx;

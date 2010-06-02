@@ -844,7 +844,7 @@ InkPresenter::PostRender (List *ctx, Region *region, bool skip_children)
 
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 	
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
 	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
 

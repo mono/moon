@@ -3488,7 +3488,7 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 	
 	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 	
 	if (!path_only)
 		RenderLayoutClip (cr);

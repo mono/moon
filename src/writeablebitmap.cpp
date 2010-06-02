@@ -74,7 +74,6 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 {
 	cairo_t *cr;
 	Region *region;
-	Rect bounds;
 
 	if (!element)
 		return;
@@ -90,8 +89,7 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 
         cr = cairo_create (surface);
 
-	// Region is the entire WB size
-	region = new Region (Rect (0, 0, GetPixelWidth (), GetPixelHeight ()));
+	Rect bounds (0, 0, GetPixelWidth (), GetPixelHeight ());
 
 	// FIXME is this supposed to clear the surface?
 	cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
@@ -99,10 +97,12 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
 
 	cairo_matrix_t xform;
+	cairo_matrix_init_identity (&xform);
+
 	if (transform)
 		transform->GetTransform (&xform);
 
-       	element->Paint (cr, region, &xform);
+	element->Paint (cr, bounds, &xform);
 
 	cairo_destroy (cr);
 	cairo_surface_flush (surface);

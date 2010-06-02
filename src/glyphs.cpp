@@ -411,7 +411,7 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 	g_return_if_fail (fill != NULL);
 		
 	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 	
 	if (!path_only)
 		RenderLayoutClip (cr);

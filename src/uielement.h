@@ -147,6 +147,7 @@ public:
 	void UpdateTransform ();
 	void ComputeLocalTransform ();
 	void ComputeTransform ();
+	void ApplyTransform (cairo_t *cr);
 	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
 
 	//
@@ -178,7 +179,7 @@ public:
 	//   Do an optimized render pass on the this element and it's
 	//   subtree.
 	//
-	void Paint (cairo_t *cr, Region *region, cairo_matrix_t *matrix);
+	void Paint (cairo_t *cr, Rect bounds, cairo_matrix_t *matrix);
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info

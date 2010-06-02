@@ -495,7 +495,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 			cached_cr = cairo_create (cached_surface);
 			
-			cairo_set_matrix (cached_cr, &absolute_xform);
+			ApplyTransform (cached_cr);
 		
 			ret = DrawShape (cached_cr, do_op);
 			
@@ -513,7 +513,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_pattern_t *cached_pattern = NULL;
 
 		cached_pattern = cairo_pattern_create_for_surface (cached_surface);
-		cairo_set_matrix (cr, &absolute_xform);
+		ApplyTransform (cr);
+
 		if (do_op)
 			Clip (cr);
 		
@@ -526,7 +527,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_pattern_destroy (cached_pattern);
 		cairo_paint (cr);
 	} else {
-		cairo_set_matrix (cr, &absolute_xform);
+		ApplyTransform (cr);
+
 		if (do_op)
 			Clip (cr);
 		

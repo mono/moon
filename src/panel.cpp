@@ -128,7 +128,7 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Brush *background = GetBackground ();
 	
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 	
 	Size framework (GetActualWidth (), GetActualHeight ());
 	framework = ApplySizeConstraints (framework);

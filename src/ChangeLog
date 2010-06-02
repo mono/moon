@@ -1,3 +1,24 @@
+2010-06-02  Larry Ewing  <lewing@novell.com>
+
+	* uielement.h:
+	* uielement.cpp (Paint): rework the way that the absolute
+	transform is applied so that we can pass transforms to Paint.
+
+	* border.cpp:
+	* glyphs.cpp:
+	* media.cpp:
+	* mediaelement.cpp:
+	* panel.cpp:
+	* shape.cpp:
+	* stylus.cpp:
+	* textblock.cpp:
+	* textbox.cpp: call ::ApplyTransform rather than simply
+	calling cairo_set_matrix so that ::Paint can modify the render
+	tranform at will.
+
+	* writeablebitmap.cpp: add initial (hacked) support for passing
+	transforms to WriteableBitmap::Render.
+
 2010-06-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/capture/v4l2/pal-v4l2-video-capture.cpp (ReadNextFrame):
