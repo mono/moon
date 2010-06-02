@@ -48,7 +48,11 @@ NPStreamRequest::NewStream (NPStream *stream)
 void
 NPStreamRequest::DestroyStream ()
 {
-	stream = NULL;
+	if (stream != NULL) {
+		stream = NULL;
+		/*  Unref the ref we took when we called NPN_GetURLNotify in SendImpl */
+		unref ();
+	}
 }
 
 void
@@ -135,12 +139,6 @@ NPStreamRequest::UrlNotify (const char *url, NPReason reason)
 	default:
 		Failed ("unknown error");
 		break;
-	}
-
-	/* The browser won't call us again, so unref the ref we took when we called NPN_GetURLNotify in SendImpl */
-	if (stream != NULL) {
-		stream = NULL;
-		unref ();
 	}
 }
 

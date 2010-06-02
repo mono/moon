@@ -1,5 +1,9 @@
 2010-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* npstream-request.cpp: clear out the stream field and unref ourselves in DestroyStream.
+
+2010-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp: DestroyStream: fetch the correct member of the stream to get the
 	NPStreamRequest.
 
