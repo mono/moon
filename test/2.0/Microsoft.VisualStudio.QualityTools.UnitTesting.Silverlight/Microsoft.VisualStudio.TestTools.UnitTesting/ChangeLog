@@ -1,3 +1,9 @@
+2010-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Assert.cs: Assert.IsInstanceOf should just do an
+	  'IsAssignableFrom' check. This way the check works for
+	  interfaces aswell.
+
 2010-05-07  Alan McGovern  <amcgovern@novell.com>
 
 	* Assert.cs: Add Assert.IsNotInstanceOf.

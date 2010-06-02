@@ -407,7 +407,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			message = string.Format ("Expected '{0}' but was '{1}'. {2}", expectedType.Name, value == null ? "<null>" : value.GetType ().Name, message);
 			if (value == null)
 				throw new AssertFailedException (message);
-			else if (!(value.GetType () == expectedType || value.GetType ().IsSubclassOf (expectedType)))
+			else if (!expectedType.IsAssignableFrom (value.GetType ()))
 				throw new AssertFailedException (message);
 		}
 
