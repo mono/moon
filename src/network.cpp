@@ -218,9 +218,9 @@ void
 HttpRequest::Abort ()
 {
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Abort () is_completed: %i\n", is_completed);
+	LOG_DOWNLOADER ("HttpRequest::Abort () is_completed: %i is_aborted: %i\n", is_completed, is_aborted);
 
-	if (is_completed)
+	if (is_completed || is_aborted)
 		return;
 
 	is_aborted = true;
