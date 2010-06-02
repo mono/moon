@@ -324,17 +324,22 @@ namespace System.Windows.Data {
 			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError || fe == null)
 				return;
 
-			ValidationErrorEventArgs args;
-			if (LastError != null) {
-				args = new ValidationErrorEventArgs (ValidationErrorEventAction.Removed, LastError);
-				fe.RaiseBindingValidationError (args);
-				LastError = null;
-			}
-
-			if (exception != null) {
+			// We had an error and now we have a new error
+			var last = LastError;
+			if (last != null && exception != null) {
 				LastError = new ValidationError (exception);
-				args = new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError);
-				fe.RaiseBindingValidationError (args);
+				Validation.AddError (fe, LastError);
+				Validation.RemoveError (fe, last);
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, last));
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError));
+			} else if (LastError != null) {
+				Validation.RemoveError (fe, LastError);
+				LastError = null;
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, last));
+			} else if (exception != null) {
+				LastError = new ValidationError (exception);
+				Validation.AddError (fe, LastError);
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError));
 			}
 		}
 

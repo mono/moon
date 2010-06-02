@@ -1,5 +1,10 @@
 2010-06-02  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: We now pass all the V3 Validation
+	  tests in drt 232. hurrah!
+
+2010-06-02  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: Update our implementation of
 	  mentors to allow us to listen for changes to the mentor and
 	  correctly NULL it out when the mentor is destroyed as if we

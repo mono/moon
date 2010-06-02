@@ -34,22 +34,65 @@ namespace System.Windows.Controls {
 	public static class Validation {
 		public static readonly DependencyProperty ErrorsProperty =
 			DependencyProperty.RegisterAttachedCore ("Errors", typeof (ReadOnlyObservableCollection<ValidationError>), typeof (Validation), null);
+		public static readonly DependencyProperty ErrorsCoreProperty =
+			DependencyProperty.RegisterAttachedCore ("ErrorsCore", typeof (ObservableCollection<ValidationError>), typeof (Validation), null);
 		public static readonly DependencyProperty HasErrorProperty =
 			DependencyProperty.RegisterAttachedCore ("HasError", typeof (bool), typeof (Validation), null);
-		
+
+		internal static void AddError (FrameworkElement element, ValidationError error)
+		{
+			var errors = GetErrorsCore (element);
+			errors.Add (error);
+			if (errors.Count == 1)
+				SetHasError (element, true);
+		}
+
 		public static ReadOnlyObservableCollection<ValidationError> GetErrors (DependencyObject element)
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			return (ReadOnlyObservableCollection<ValidationError>) element.GetValue (ErrorsProperty);
+			var result = (ReadOnlyObservableCollection<ValidationError>) element.GetValue (ErrorsProperty);
+			if (result == null) {
+				result = new ReadOnlyObservableCollection<ValidationError> (GetErrorsCore (element));
+				element.SetValue (ErrorsProperty, result);
+			}
+			return result;
 		}
-		
+
+		static ObservableCollection<ValidationError> GetErrorsCore (DependencyObject element)
+		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
+			var result = (ObservableCollection<ValidationError>) element.GetValue (ErrorsCoreProperty);
+			if (result == null) {
+				result = new ObservableCollection<ValidationError> ();
+				element.SetValue (ErrorsCoreProperty, result);
+			}
+
+			return result;
+		}
+
 		public static bool GetHasError (DependencyObject element)
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
 			return (bool) element.GetValue (HasErrorProperty);
+		}
+
+		static void SetHasError (DependencyObject element, bool value)
+		{
+			element.SetValue (HasErrorProperty, value);
+		}
+
+		internal static void RemoveError (FrameworkElement element, ValidationError error)
+		{
+			var errors = GetErrorsCore (element);
+			if (errors.Remove (error)) {
+				if (errors.Count == 0)
+					SetHasError (element, false);
+			}
 		}
 	}
 }
