@@ -53,6 +53,7 @@ system_windows_sources =							\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
+	$(srcdir)/Microsoft.Internal/RichTextBoxView.cs				\
 	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
 	$(srcdir)/Mono/A11yHelper.cs						\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\

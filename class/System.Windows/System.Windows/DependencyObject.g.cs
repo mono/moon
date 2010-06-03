@@ -17,6 +17,11 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace Microsoft.Internal {
+	partial class RichTextBoxView {
+		public RichTextBoxView () : base (SafeNativeMethods.rich_text_box_view_new (), true) {}
+		internal RichTextBoxView (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class TextBoxView {
 		public TextBoxView () : base (SafeNativeMethods.text_box_view_new (), true) {}
 		internal TextBoxView (IntPtr raw, bool dropref) : base (raw, dropref) {}

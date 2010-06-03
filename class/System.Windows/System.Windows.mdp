@@ -394,6 +394,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation/AutomationElementIdentifiers.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemsPresenter.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/TextAlignment.cs" />
+    <File subtype="Code" buildaction="Compile" name="Microsoft.Internal/RichTextBoxView.cs" />
     <File subtype="Code" buildaction="Compile" name="Microsoft.Internal/TextBoxView.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/INativeDependencyObjectWrapper.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/NativeDependencyObjectHelper.cs" />
