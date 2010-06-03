@@ -1178,6 +1178,11 @@ public:
 	LoadedClosure (UIElement *obj, EventHandler handler, gpointer handler_data)
 		: obj (obj), handler (handler), handler_data (handler_data)
 	{
+		obj->ref ();
+	}
+	~LoadedClosure ()
+	{
+		obj->unref ();
 	}
 };
 

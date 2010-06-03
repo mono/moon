@@ -1,3 +1,9 @@
+2010-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* deployment.cpp: We need to ref/unref the object in the
+	  LoadedClosure otherwise it can be gc'ed between when we add
+	  it and when we emit the loaded event.
+
 2010-06-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.h (Node::.dtor): Fixed to be virtual.
