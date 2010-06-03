@@ -1165,7 +1165,6 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 	region->Intersect (parent_region);
 
 	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) {
-		printf ("no visible");
 		delete region;
 		return;
 	}
