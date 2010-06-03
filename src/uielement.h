@@ -627,4 +627,6 @@ private:
 	cairo_matrix_t local_xform;
 };
 
+extern cairo_user_data_key_t uielement_xform_key;
+
 #endif /* __MOON_UIELEMENT_H__ */

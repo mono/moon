@@ -476,12 +476,13 @@ void
 Shape::DoDraw (cairo_t *cr, bool do_op)
 {
 	bool ret = FALSE;
+	bool has_external_xform = cairo_get_user_data (cr, &uielement_xform_key) != NULL;
 
 	// quick out if, when building the path, we detected an empty shape
 	if (IsEmpty ())
 		goto cleanpath;
 
-	if (do_op && cached_surface == NULL && IsCandidateForCaching ()) {
+	if (do_op && cached_surface == NULL && IsCandidateForCaching () && !has_external_xform) {
 		Rect cache_extents = bounds.RoundOut ();
 		cairo_t *cached_cr = NULL;
 		
@@ -509,7 +510,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		}
 	}
 	
-	if (do_op && cached_surface) {
+	if (do_op && cached_surface && !has_external_xform) {
 		cairo_pattern_t *cached_pattern = NULL;
 
 		cached_pattern = cairo_pattern_create_for_surface (cached_surface);

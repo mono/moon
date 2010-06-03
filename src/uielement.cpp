@@ -33,7 +33,7 @@
 #include "effect.h"
 #include "projection.h"
 
-cairo_user_data_key_t xform_key;
+cairo_user_data_key_t uielement_xform_key;
 
 //#define DEBUG_INVALIDATE 0
 
@@ -399,7 +399,7 @@ UIElement::UpdateTransform ()
 void
 UIElement::ApplyTransform (cairo_t *cr)
 {
-	cairo_matrix_t *paint_xforms = (cairo_matrix_t *)cairo_get_user_data (cr, &xform_key);
+	cairo_matrix_t *paint_xforms = (cairo_matrix_t *)cairo_get_user_data (cr, &uielement_xform_key);
 
 	if (paint_xforms) {
 		cairo_matrix_t xform = paint_xforms [0];
@@ -1391,9 +1391,9 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	cairo_t *redirected = ((ContextNode *) ctx->First ())->GetCr ();
 
 	if (cr != redirected)
-		cairo_set_user_data (redirected, &xform_key, cairo_get_user_data (cr, &xform_key), NULL);
+		cairo_set_user_data (redirected, &uielement_xform_key, cairo_get_user_data (cr, &uielement_xform_key), NULL);
 
-	//printf ("setting xform: xform key addr = %p", &xform_key);
+	//printf ("setting xform: xform key addr = %p", &uielement_xform_key);
 }
 
 void
@@ -1580,7 +1580,7 @@ UIElement::Paint (cairo_t *cr,  Rect bounds, cairo_matrix_t *xform)
 		cairo_matrix_init_identity (&paint_forms[1]);
 
 	cairo_matrix_invert (&paint_forms[0]);
-	cairo_set_user_data (cr, &xform_key, &paint_forms[0], NULL);
+	cairo_set_user_data (cr, &uielement_xform_key, &paint_forms[0], NULL);
 
 	Region region (bounds.Transform (&absolute_xform));
 

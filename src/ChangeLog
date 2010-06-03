@@ -10,6 +10,15 @@
 
 2010-06-03  Larry Ewing  <lewing@novell.com>
 
+	* uielement.h:
+	* uielement.cpp: rename xform_key to uielement_xform_key and
+	expose it (temporarily) so that elements can check on this state.
+
+	* shape.cpp: avoid the shape cache completely when there is an
+	active paint transform.
+
+2010-06-03  Larry Ewing  <lewing@novell.com>
+
 	* uielement.cpp: attempt to compose the parent relative transforms
 	correctly inside ApplyTransform.
 
