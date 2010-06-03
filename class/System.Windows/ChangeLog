@@ -1,3 +1,7 @@
+2010-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Add missing files to sln.
+
 2010-05-28  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Media.Media3D/UnmanagedMatrix3D.cs: we need to
