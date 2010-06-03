@@ -42,6 +42,8 @@ namespace System.Windows.Controls {
 		{
 			ErrorContent = message;
 			Exception = exception;
+			if (Exception != null)
+				ErrorContent = ErrorContent ?? Exception.Message;
 		}
 	}
 }
