@@ -1,5 +1,11 @@
 2010-06-03  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: If the datasource implements
+	  INotifyDataError we should use it. Stops 232 from hanging,
+	  woo!
+
+2010-06-03  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: Only capture validation exceptions
 	  if ValidatesOnExceptions is true, just like the way we only
 	  capture data errors if ValidatesOnDataError is true.

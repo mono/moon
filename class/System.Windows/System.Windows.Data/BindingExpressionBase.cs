@@ -28,6 +28,7 @@
 
 using System.Collections;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Collections.Generic;
@@ -57,6 +58,10 @@ namespace System.Windows.Data {
 		}
 		
 		ValidationError CurrentError {
+			get; set;
+		}
+
+		INotifyDataErrorInfo CurrentNotifyError {
 			get; set;
 		}
 
@@ -191,6 +196,55 @@ namespace System.Windows.Data {
 				mentor.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, mentorDataContextChangedCallback);
 		}
 
+		void AttachToNotifyError (INotifyDataErrorInfo element)
+		{
+			if (CurrentNotifyError == element || !Binding.ValidatesOnNotifyDataErrors)
+				return;
+
+			string property = "";
+			if (PropertyPathWalker.FinalNode.PropertyInfo != null)
+				property = PropertyPathWalker.FinalNode.PropertyInfo.Name;
+			if (CurrentNotifyError != null) {
+				CurrentNotifyError.ErrorsChanged -= NotifyErrorsChanged;
+				MaybeEmitError (null, null);
+			}
+
+			CurrentNotifyError = element;
+
+			if (CurrentNotifyError != null) {
+				CurrentNotifyError.ErrorsChanged += NotifyErrorsChanged;
+				if (CurrentNotifyError.HasErrors) {
+					foreach (var v in CurrentNotifyError.GetErrors (property)) {
+						MaybeEmitError (v as string, v as Exception);
+					}
+				} else {
+					MaybeEmitError (null, null);
+				}
+			}
+		}
+
+		void NotifyErrorsChanged (object o, DataErrorsChangedEventArgs e)
+		{
+			string property = "";
+			if (PropertyPathWalker.FinalNode.PropertyInfo != null)
+				property = PropertyPathWalker.FinalNode.PropertyInfo.Name;
+			if (e.PropertyName == property) {
+				var errors = CurrentNotifyError.GetErrors (property);
+				if (errors != null) {
+					var errorList = CurrentNotifyError.GetErrors (property).Cast <object> ().ToArray ();
+					if (errorList.Length > 0) {
+						foreach (var v in errorList) {
+							MaybeEmitError (v, v as Exception);
+						}
+					} else {
+						MaybeEmitError (null, null);
+					}
+				} else {
+					MaybeEmitError (null, null);
+				}
+			}
+		}
+
 		void MentorChanged (object sender, EventArgs e)
 		{
 			DetachDataContextHandlers (mentor);
@@ -304,6 +358,8 @@ namespace System.Windows.Data {
 				return;
 
 			var node = PropertyPathWalker.FinalNode;
+			AttachToNotifyError (node.Source as INotifyDataErrorInfo);
+
 			if (!Updating && Binding.ValidatesOnDataErrors && node.Source is IDataErrorInfo && node.PropertyInfo != null)
 				dataError = ((IDataErrorInfo) node.Source) [node.PropertyInfo.Name];
 			bool oldUpdating = Updating;
@@ -325,14 +381,14 @@ namespace System.Windows.Data {
 			MaybeEmitError (dataError, exception);
 		}
 
-		void MaybeEmitError (string message, Exception exception)
+		void MaybeEmitError (object message, Exception exception)
 		{
 			var fe = Target as FrameworkElement;
 			if (!Binding.NotifyOnValidationError || fe == null) {
 				return;
 			}
 
-			if (message == "")
+			if (message is string && (string) message == "")
 				message = null;
 
 			var oldError = CurrentError;
