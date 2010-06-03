@@ -1,3 +1,7 @@
+2010-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.h (Node::.dtor): Fixed to be virtual.
+
 2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* application.cpp: Ensure Install is called from a user-initiated

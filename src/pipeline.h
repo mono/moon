@@ -140,7 +140,7 @@ public:
 	public:
 		MediaClosure *closure;
 		Node (MediaClosure *c) { closure = c; closure->ref (); }
-		~Node () { closure->unref (); }
+		virtual ~Node () { closure->unref (); }
 	};
 };
 
