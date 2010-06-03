@@ -320,6 +320,7 @@
     <File subtype="Code" buildaction="Compile" name="pal/gtk/install-dialog.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog.h" />
     <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="inputmethod.h" />
     <File subtype="Code" buildaction="Nothing" name="inputscope.h" />
     <File subtype="Code" buildaction="Compile" name="network.cpp" />
     <File subtype="Code" buildaction="Nothing" name="network.h" />

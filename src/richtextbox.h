@@ -16,8 +16,10 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "inputmethod.h"
 #include "textelement.h"
 #include "control.h"
+#include "layout.h"
 
 /* @Namespace=None */
 class ContentChangedEventArgs : public RoutedEventArgs {
@@ -49,14 +51,147 @@ class TextSelection : public DependencyObject {
 	TextSelection ();
 };
 
+
+enum RichTextBoxModelChangeType {
+	RichTextBoxModelChangedNothing,
+	RichTextBoxModelChangedBaselineOffset,
+	RichTextBoxModelChangedTextAlignment,
+	RichTextBoxModelChangedTextWrapping,
+	RichTextBoxModelChangedSelection,
+	RichTextBoxModelChangedContent,
+	RichTextBoxModelChangedBrush
+};
+
+/* @Namespace=None */
+class RichTextBoxModelChangedEventArgs : public EventArgs {
+ protected:
+	virtual ~RichTextBoxModelChangedEventArgs () { }
+	
+ public:
+	PropertyChangedEventArgs *property;
+	RichTextBoxModelChangeType changed;
+	
+	RichTextBoxModelChangedEventArgs (RichTextBoxModelChangeType changed, PropertyChangedEventArgs *property = NULL)
+	{
+		SetObjectType (Type::RICHTEXTBOXMODELCHANGEDEVENTARGS);
+		this->property = property;
+		this->changed = changed;
+	}
+};
+
+class RichTextBoxUndoStack;
+class RichTextBoxView;
+
 /* @Namespace=System.Windows.Controls */
 /* @ContentProperty=Blocks */
 class RichTextArea : public Control {
+ protected:
+	friend class RichTextBoxView;
+	
+	DependencyObject *contentElement;
+	
+	RichTextBoxUndoStack *undo;
+	RichTextBoxUndoStack *redo;
+	int selection_anchor;
+	int selection_cursor;
+	double cursor_offset;
+	RichTextBoxView *view;
+	MoonIMContext *im_ctx;
+	
+	short accepts_return:1;
+	short need_im_reset:1;
+	short is_read_only:1;
+	short have_offset:1;
+	short selecting:1;
+	short setvalue:1;
+	short captured:1;
+	short focused:1;
+	
+	short events_mask:2;
+	short emit:2;
+	
+	short batch;
+	
+	// internal mouse events
+	static void mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args);
+	
+	// MoonIMContext events
+	static void attach_im_client_window (EventObject *sender, EventArgs *args, gpointer closure);
+	static void detach_im_client_window (EventObject *sender, EventArgs *args, gpointer closure);
+	void AttachIMClientWindow (EventObject *sender, EventArgs *calldata);
+	void DetachIMClientWindow (EventObject *sender, EventArgs *calldata);
+	
+	static gboolean delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data);
+	static gboolean retrieve_surrounding (MoonIMContext *context, gpointer user_data);
+	static void commit (MoonIMContext *context, const char *str, gpointer user_data);
+	bool DeleteSurrounding (int offset, int n_chars);
+	void Commit (const char *str);
+	bool RetrieveSurrounding ();
+	
+	// Clipboard callbacks
+	static void paste (MoonClipboard *clipboard, const char *text, gpointer closure);
+	void Paste (MoonClipboard *clipboard, const char *text);
+	
+	//
+	// Cursor Navigation
+	//
+	double GetCursorOffset ();
+	int CursorDown (int cursor, bool page);
+	int CursorUp (int cursor, bool page);
+	int CursorLineBegin (int cursor);
+	int CursorLineEnd (int cursor, bool include = false);
+	int CursorNextWord (int cursor);
+	int CursorPrevWord (int cursor);
+	
+	//
+	// Keyboard Input
+	//
+	bool KeyPressUnichar (gunichar c);
+	
+	bool KeyPressBackSpace (MoonModifier modifiers);
+	bool KeyPressDelete (MoonModifier modifiers);
+	bool KeyPressPageDown (MoonModifier modifiers);
+	bool KeyPressPageUp (MoonModifier modifiers);
+	bool KeyPressHome (MoonModifier modifiers);
+	bool KeyPressEnd (MoonModifier modifiers);
+	bool KeyPressRight (MoonModifier modifiers);
+	bool KeyPressLeft (MoonModifier modifiers);
+	bool KeyPressDown (MoonModifier modifiers);
+	bool KeyPressUp (MoonModifier modifiers);
+	
+	void ResetIMContext ();
+	
+	void EmitCursorPositionChanged (double height, double x, double y);
+	
+	void EmitSelectionChanged ();
+	void EmitContentChanged ();
+	
+	void SyncSelection ();
+	void SyncContent ();
+	
+	void BatchPush ();
+	void BatchPop ();
+	
+	void SyncAndEmit (bool sync_text = true);
+	
+	//
+	// Protected Property Accessors
+	//
+	bool HasSelectedText () { return selection_cursor != selection_anchor; }
+	//TextBuffer *GetBuffer () { return buffer; }
+	int GetCursor () { return selection_cursor; }
+	bool IsFocused () { return focused; }
+	
 	void SetBaselineOffset (double offset);
 	void SetSelection (TextSelection *selection);
 	
- protected:
-	virtual ~RichTextArea () {}
+	//
+	// Protected Events
+	//
+	const static int ModelChangedEvent;
+	
+	virtual ~RichTextArea ();
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -84,6 +219,49 @@ class RichTextArea : public Control {
 	
 	/* @GeneratePInvoke,GenerateCBinding */
 	RichTextArea ();
+	
+	//
+	// Overrides
+	//
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual void SetIsAttached (bool value);
+	virtual void OnApplyTemplate ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseMove (MouseEventArgs *args);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void PostOnKeyDown (KeyEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnKeyDown (KeyEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnKeyUp (KeyEventArgs *args);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnGotFocus (RoutedEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnLostFocus (RoutedEventArgs *args);
+	
+	//
+	// Undo/Redo Operations
+	//
+	bool CanUndo ();
+	bool CanRedo ();
+	void Undo ();
+	void Redo ();
+	
+	//
+	// Selection Operations
+	//
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SelectAll ();
 	
 	//
 	// Property Accessors
@@ -119,10 +297,96 @@ class RichTextArea : public Control {
 	void SetXaml (const char *xaml);
 	const char *GetXaml ();
 	
+	//
+	// Events
+	//
 	/* @DelegateType=ContentChangedEventHandler */
 	const static int ContentChangedEvent;
 	/* @DelegateType=RoutedEventHandler */
 	const static int SelectionChangedEvent;
+	const static int CursorPositionChangedEvent;
+};
+
+
+/* @Namespace=Microsoft.Internal */
+class RichTextBoxView : public FrameworkElement {
+	RichTextArea *textbox;
+	glong blink_timeout;
+	TextLayout *layout;
+	Rect cursor;
+	
+	int selection_changed:1;
+	int had_selected_text:1;
+	int cursor_visible:1;
+	int enable_cursor:1;
+	int dirty:1;
+	
+	// mouse events
+	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
+	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
+	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
+	
+	// RichTextBox events
+	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnModelChanged (RichTextBoxModelChangedEventArgs *args);
+	
+	// cursor blink
+	static gboolean blink (void *user_data);
+	void ConnectBlinkTimeout (guint multiplier);
+	void DisconnectBlinkTimeout ();
+	void ResetCursorBlink (bool delay);
+	void DelayCursorBlink ();
+	void BeginCursorBlink ();
+	void EndCursorBlink ();
+	void ShowCursor ();
+	void HideCursor ();
+	bool Blink ();
+	
+	void UpdateCursor (bool invalidate);
+	void InvalidateCursor ();
+	void UpdateText ();
+	
+	void Layout (Size constraint);
+	void Paint (cairo_t *cr);
+	
+ protected:
+	virtual ~RichTextBoxView ();
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	RichTextBoxView ();
+	
+	//
+	// Overrides
+	//
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual Size ComputeActualSize ();
+	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
+	
+	//
+	// Methods
+	//
+	int GetLineCount () { return layout->GetLineCount (); }
+	TextLayoutLine *GetLineFromY (double y, int *index = NULL);
+	TextLayoutLine *GetLineFromIndex (int index);
+	
+	int GetCursorFromXY (double x, double y);
+	Rect GetCursor () { return cursor; }
+	
+	void OnLostFocus ();
+	void OnGotFocus ();
+	
+	//
+	// Property Accessors
+	//
+	RichTextArea *GetTextBox () { return textbox; }
+	void SetTextBox (RichTextArea *textbox);
+	
+	bool GetEnableCursor () { return enable_cursor ? true : false; }
+	void SetEnableCursor (bool enable);
 };
 
 #endif /* __RICHTEXTBOX_H__ */

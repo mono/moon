@@ -573,7 +573,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	font_source = NULL;
 	
 	contentElement = NULL;
-
+	
 	MoonWindowingSystem *ws = runtime_get_windowing_system ();
 	im_ctx = ws->CreateIMContext();
 	im_ctx->SetUsePreedit (false);
@@ -2515,6 +2515,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	DependencyProperty *prop;
 	int start, length;
 	
+	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
+		TextBoxBase::OnPropertyChanged (args, error);
+		return;
+	}
+	
 	if (args->GetId () == TextBox::AcceptsReturnProperty) {
 		// update accepts_return state
 		accepts_return = args->GetNewValue ()->AsBool ();
@@ -2734,11 +2739,6 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (changed != TextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
-	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
-		TextBoxBase::OnPropertyChanged (args, error);
-		return;
-	}
-	
 	NotifyListenersOfPropertyChange (args, error);
 }
 
@@ -2944,6 +2944,11 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	int length, start;
 	
+	if (args->GetProperty ()->GetOwnerType () != Type::PASSWORDBOX) {
+		TextBoxBase::OnPropertyChanged (args, error);
+		return;
+	}
+	
 	if (args->GetId () == PasswordBox::CaretBrushProperty) {
 		// FIXME: if we want to be perfect, we could invalidate the
 		// blinking cursor rect if it is active... but is it that
@@ -3113,11 +3118,6 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	
 	if (changed != TextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
-	
-	if (args->GetProperty ()->GetOwnerType () != Type::PASSWORDBOX) {
-		TextBoxBase::OnPropertyChanged (args, error);
-		return;
-	}
 	
 	NotifyListenersOfPropertyChange (args, error);
 }

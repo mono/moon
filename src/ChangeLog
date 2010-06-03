@@ -1,3 +1,13 @@
+2010-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* richtextbox.cpp|h: stubbed out a ton of stuff.
+
+	* inputmethod.h: New source file - moved the InputMethod class
+	here from textbox.h
+
+	* textbox.cpp (OnPropertyChanged): Chain up immediately if it's
+	not a TextBox/PasswordBox property.
+
 2010-06-03  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp: attempt to compose the parent relative transforms
