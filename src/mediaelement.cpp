@@ -750,7 +750,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 
 	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
+	ApplyTransform (cr);
 
         Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);
@@ -816,8 +816,8 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 
-	if (!path_only)
-		RenderLayoutClip (cr);
+	//if (!path_only)
+	//	RenderLayoutClip (cr);
 
 	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
 	paint.Draw (cr);

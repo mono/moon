@@ -1,3 +1,7 @@
+2010-06-03  Larry Ewing  <lewing@novell.com>
+
+	* mediaelement.cpp: add a missing call to ApplyTransform here.
+
 2010-06-03  Alan McGovern  <amcgovern@novell.com>
 
 	* deployment.cpp: Fix the LoadedClosure ref/unref issue in a
