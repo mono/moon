@@ -56,7 +56,7 @@ namespace System.Windows.Data {
 			get; private set;
 		}
 		
-		ValidationError LastError {
+		ValidationError CurrentError {
 			get; set;
 		}
 
@@ -312,56 +312,49 @@ namespace System.Windows.Data {
 				Invalidate ();
 				Target.SetValueImpl (Property, this);
 			} catch (Exception ex) {
-				if (ex is TargetInvocationException)
-					ex = ex.InnerException;
-				exception = ex;
+				if (Binding.ValidatesOnExceptions) {
+					if (ex is TargetInvocationException)
+						ex = ex.InnerException;
+					exception = ex;
+				}
 			}
 			finally {
 				Updating = oldUpdating;
 			}
-			if (!string.IsNullOrEmpty (dataError)) {
-				MaybeEmitError (dataError);
-			} else {
-				MaybeEmitError (exception);
-			}
-		}
 
-		void MaybeEmitError (string message)
-		{
-			MaybeEmitError (message, null);
-		}
-
-		void MaybeEmitError (Exception exception)
-		{
-			MaybeEmitError (null, exception);
+			MaybeEmitError (dataError, exception);
 		}
 
 		void MaybeEmitError (string message, Exception exception)
 		{
 			var fe = Target as FrameworkElement;
-			if (!Binding.ValidatesOnExceptions || !Binding.NotifyOnValidationError || fe == null) {
+			if (!Binding.NotifyOnValidationError || fe == null) {
 				return;
 			}
 
 			if (message == "")
 				message = null;
 
+			var oldError = CurrentError;
+			if (message != null)
+				CurrentError = new ValidationError (message, null);
+			else if (exception != null)
+				CurrentError = new ValidationError (null, exception);
+			else
+				CurrentError = null;
+
 			// We had an error and now we have a new error
-			var last = LastError;
-			if (last != null && (exception != null || message != null)) {
-				LastError = new ValidationError (message, exception);
-				Validation.AddError (fe, LastError);
-				Validation.RemoveError (fe, last);
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, last));
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError));
-			} else if (LastError != null) {
-				Validation.RemoveError (fe, LastError);
-				LastError = null;
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, last));
-			} else if ((exception != null || message != null)) {
-				LastError = new ValidationError (message, exception);
-				Validation.AddError (fe, LastError);
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, LastError));
+			if (oldError != null && CurrentError != null) {
+				Validation.AddError (fe, CurrentError);
+				Validation.RemoveError (fe, oldError);
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, oldError));
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, CurrentError));
+			} else if (oldError != null) {
+				Validation.RemoveError (fe, oldError);
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, oldError));
+			} else if (CurrentError != null) {
+				Validation.AddError (fe, CurrentError);
+				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, CurrentError));
 			}
 		}
 
@@ -442,9 +435,11 @@ namespace System.Windows.Data {
 				node.SetValue (value);
 				cachedValue = value;
 			} catch (Exception ex) {
-				if (ex is TargetInvocationException)
-					ex = ex.InnerException;
-				exception = ex;
+				if (Binding.ValidatesOnExceptions) {
+					if (ex is TargetInvocationException)
+						ex = ex.InnerException;
+					exception = ex;
+				}
 			}
 			finally {
 				Updating = oldUpdating;
@@ -453,11 +448,7 @@ namespace System.Windows.Data {
 				}
 			}
 
-			if (!string.IsNullOrEmpty (dataError)) {
-				MaybeEmitError (dataError);
-			} else {
-				MaybeEmitError (exception);
-			}
+			MaybeEmitError (dataError, exception);
 		}
 	}
 }

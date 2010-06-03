@@ -1,5 +1,12 @@
 2010-06-03  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: Only capture validation exceptions
+	  if ValidatesOnExceptions is true, just like the way we only
+	  capture data errors if ValidatesOnDataError is true.
+	  Simplify the emit error code a bit too.
+
+2010-06-03  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: Tighten up the places where we
 	  emit validation errors. Fixes some more of 232.
 
