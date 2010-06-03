@@ -205,7 +205,7 @@ video_format_comparer (gconstpointer vf1, gconstpointer vf2)
 #define FORMAT(fmt) G_STMT_START {					\
 		if (format1->GetV4L2PixelFormat() == (fmt)) { \
 			if (format1->GetV4L2PixelFormat () == format2->GetV4L2PixelFormat ()) \
-				return format2->GetWidth() * format2->GetHeight() - format1->GetWidth() * format1->GetHeight(); \
+				return format1->GetWidth() * format1->GetHeight() - format2->GetWidth() * format2->GetHeight(); \
 			else						\
 				return -1;				\
 		}							\
