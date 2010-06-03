@@ -1178,18 +1178,20 @@ public:
 	LoadedClosure (UIElement *obj, EventHandler handler, gpointer handler_data)
 		: obj (obj), handler (handler), handler_data (handler_data)
 	{
-		obj->ref ();
+
 	}
 	~LoadedClosure ()
 	{
-		obj->unref ();
+		
 	}
 };
 
 void
 Deployment::delete_loaded_closure (gpointer closure)
 {
-	delete (LoadedClosure*)closure;
+	LoadedClosure *c = (LoadedClosure *) closure;
+	c->obj->unref ();
+	delete c;
 }
 
 bool
@@ -1230,6 +1232,9 @@ Deployment::add_loaded_handler (EventObject *obj, EventHandler handler, gpointer
 	Deployment *deployment = (Deployment*)closure;
 	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj,
 						     handler, handler_data);
+
+	// This is unrefed in delete_loaded_closure
+	obj->ref ();
 	deployment->AddHandler (Deployment::LoadedEvent, proxy_loaded_event, lclosure, delete_loaded_closure);
 }
 
