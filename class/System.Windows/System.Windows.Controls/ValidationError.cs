@@ -30,7 +30,7 @@ namespace System.Windows.Controls {
 
 	public class ValidationError {
 
-			public object ErrorContent {
+		public object ErrorContent {
 			get; private set;
 		}
 
@@ -38,9 +38,9 @@ namespace System.Windows.Controls {
 			get; private set;
 		}
 
-		internal ValidationError (string message, Exception exception)
+		internal ValidationError (object errorContent, Exception exception)
 		{
-			ErrorContent = message;
+			ErrorContent = errorContent;
 			Exception = exception;
 			if (Exception != null)
 				ErrorContent = ErrorContent ?? Exception.Message;

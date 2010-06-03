@@ -1,5 +1,10 @@
 2010-06-03  Alan McGovern  <amcgovern@novell.com>
 
+	* ValidationError.cs: Error content is an object not a string.
+	  Change the constructor to reflect that.
+
+2010-06-03  Alan McGovern  <amcgovern@novell.com>
+
 	* ValidationError.cs: We need to copy the exception message as
 	  the error content.
 
