@@ -487,6 +487,13 @@ enum FlowDirection {
 };
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows.Documents */
+enum LogicalDirection {
+	LogicalDirectionBackward,
+	LogicalDirectionForward
+};
+
+/* @IncludeInKinds */
 /* @Namespace=System.Windows.Controls */
 enum StretchDirection {
 	StretchDirectionUpOnly,

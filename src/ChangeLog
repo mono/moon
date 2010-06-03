@@ -1,5 +1,9 @@
 2010-06-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* enums.cpp: Added mapping for LogicalDirection
+
+2010-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* richtextbox.cpp|h: stubbed out a ton of stuff.
 
 	* inputmethod.h: New source file - moved the InputMethod class

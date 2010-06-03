@@ -341,6 +341,12 @@ static enum_map_t flow_direction_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t logical_direction_map [] = {
+	MAP_ENUM (LogicalDirection, Backward),
+	MAP_ENUM (LogicalDirection, Forward),
+	END_MAPPING
+};
+
 static enum_map_t text_hinting_mode_map [] = {
 	MAP_ENUM (TextHintingMode, Fixed),
 	MAP_ENUM (TextHintingMode, Animated),
@@ -460,6 +466,7 @@ initialize_enums (void)
 	
 	g_hash_table_insert (enum_map, (char *) "LogSource", log_source_map);
 	g_hash_table_insert (enum_map, (char *) "FlowDirection", flow_direction_map);
+	g_hash_table_insert (enum_map, (char *) "LogicalDirection", logical_direction_map);
 	g_hash_table_insert (enum_map, (char *) "StretchDirection", stretch_direction_map);
 	g_hash_table_insert (enum_map, (char *) "ImeConversionModeValues", ime_conversion_mode_values_map);
 	g_hash_table_insert (enum_map, (char *) "InputMethodState", input_method_state_map);
