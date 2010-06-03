@@ -1,3 +1,7 @@
+2010-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Application.cs: Enable isolated storage increase
+
 2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Install() now calls Install(false) - i.e.

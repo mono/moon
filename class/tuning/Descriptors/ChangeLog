@@ -1,3 +1,7 @@
+2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.xml: Keep System.IO.IsolatedStorage.IsolatedStorage intact
+
 2010-04-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.xml: Compiler/runtime changes on trunk requires a few
