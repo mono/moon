@@ -119,9 +119,32 @@ RichTextBoxUndoStack::Peek ()
 // TextPointer
 //
 
-TextPointer::TextPointer ()
+int
+TextPointer::CompareTo (TextPointer *pointer)
 {
-	SetObjectType (Type::TEXTPOINTER);
+	// FIXME: implement this
+	return 0;
+}
+
+Rect
+TextPointer::GetCharacterRect (LogicalDirection dir)
+{
+	// FIXME: implement this
+	return Rect ();
+}
+
+TextPointer *
+TextPointer::GetNextInsertionPoint (LogicalDirection dir)
+{
+	// FIXME: implement this
+	return NULL;
+}
+
+TextPointer *
+TextPointer::GetPositionAtOffset (int offset, LogicalDirection dir)
+{
+	// FIXME: implement this
+	return NULL;
 }
 
 

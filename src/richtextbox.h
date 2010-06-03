@@ -37,8 +37,39 @@ class TextPointer : public DependencyObject {
 	virtual ~TextPointer () {}
 	
  public:
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
+	const static int IsAtInsertionPositionProperty;
+	/* @PropertyType=LogicalDirection,DefaultValue=LogicalDirectionForward,GenerateAccessors */
+	const static int LogicalDirectionProperty;
+	/* @PropertyType=DependencyObject,GenerateAccessors */
+	const static int ParentProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextPointer () { SetObjectType (Type::TEXTPOINTER); }
+	
+	//
+	// Methods
+	//
 	/* @GeneratePInvoke,GenerateCBinding */
-	TextPointer ();
+	int CompareTo (TextPointer *pointer);
+	/* @GeneratePInvoke,GenerateCBinding */
+	Rect GetCharacterRect (LogicalDirection dir);
+	/* @GeneratePInvoke,GenerateCBinding */
+	TextPointer *GetNextInsertionPoint (LogicalDirection dir);
+	/* @GeneratePInvoke,GenerateCBinding */
+	TextPointer *GetPositionAtOffset (int offset, LogicalDirection dir);
+	
+	//
+	// Property Accessors
+	//
+	void SetIsAtInsertionPosition (bool value);
+	bool GetIsAtInsertionPosition ();
+	
+	void SetLogicalDirection (LogicalDirection dir);
+	LogicalDirection GetLogicalDirection ();
+	
+	void SetParent (DependencyObject *parent);
+	DependencyObject *GetParent ();
 };
 
 /* @Namespace=None */
@@ -87,6 +118,8 @@ class RichTextBoxView;
 class RichTextArea : public Control {
  protected:
 	friend class RichTextBoxView;
+	friend class TextSelection;
+	friend class TextPointer;
 	
 	DependencyObject *contentElement;
 	

@@ -1,5 +1,7 @@
 2010-06-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* richtextbox.h (TextPointer): Stubbed out.
+
 	* enums.cpp: Added mapping for LogicalDirection
 
 2010-06-03  Jeffrey Stedfast  <fejj@novell.com>
