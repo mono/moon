@@ -1,5 +1,8 @@
 2010-06-03  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp: attempt to compose the parent relative transforms
+	correctly inside ApplyTransform.
+
 	* mediaelement.cpp: add a missing call to ApplyTransform here.
 
 2010-06-03  Alan McGovern  <amcgovern@novell.com>

@@ -402,9 +402,10 @@ UIElement::ApplyTransform (cairo_t *cr)
 	cairo_matrix_t *paint_xforms = (cairo_matrix_t *)cairo_get_user_data (cr, &xform_key);
 
 	if (paint_xforms) {
-		cairo_set_matrix (cr, &paint_xforms[0]);
-		cairo_transform (cr, &absolute_xform);
-		cairo_transform (cr, &paint_xforms[1]);
+		cairo_matrix_t xform = paint_xforms [0];
+		cairo_matrix_multiply (&xform, &xform, &absolute_xform);
+		cairo_set_matrix (cr, &paint_xforms [1]);
+		cairo_transform (cr, &xform);
 	} else {
 		cairo_set_matrix (cr, &absolute_xform);
 	}
