@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008, 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,6 +30,7 @@ using Mono;
 using Mono.Xaml;
 using System;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Reflection;
 using System.Security;
@@ -209,7 +210,23 @@ namespace System.Windows {
 
 		public bool Install ()
 		{
-			return NativeMethods.application_install (NativeHandle, false);
+			return Install (false);
+		}
+
+		bool Install (bool unattended)
+		{
+			// note: user-initiated check is done in unmanaged code
+			if (!NativeMethods.application_install (NativeHandle, unattended))
+				return false;
+
+			// once installed the default quota for isolated storage is augmented to 25MB (instead of 1MB)
+			// note: this applies only to the browser (not desktop) assemblies (it won't compile otherwise)
+#if false // not yet - requires updating mono/mcs // !NET_3_0
+			const long OutOfBrowserQuota = 25 * IsolatedStorage.DefaultQuota;
+			if (IsolatedStorage.Quota < OutOfBrowserQuota)
+				IsolatedStorage.Quota = OutOfBrowserQuota;
+#endif
+			return true;
 		}
 
 		public IList ApplicationLifetimeObjects {

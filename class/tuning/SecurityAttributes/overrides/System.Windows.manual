@@ -97,6 +97,7 @@
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.String,System.String)
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb_safe(System.String,System.String)
 +SC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetXapResource(System.String)
++SC-M: System.Boolean System.Windows.Application::Install(System.Boolean)
 
 # mark most of Deployment internals as [SecurityCritical]
 +SC-M: System.Boolean System.Windows.Deployment::CreateApplication()

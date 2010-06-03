@@ -189,5 +189,11 @@ namespace MoonTest.System.Windows {
 			// and we can't clear it
 			Assert.Throws (delegate { Application.Current.RootVisual = null; }, typeof (InvalidOperationException), "null");
 		}
+
+		[TestMethod]
+		public void NonUserInitiated ()
+		{
+			Assert.IsFalse (Application.Current.Install (), "Install");
+		}
 	}
 }

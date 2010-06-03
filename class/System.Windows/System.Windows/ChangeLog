@@ -1,3 +1,8 @@
+2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Install() now calls Install(false) - i.e.
+	not unattended. Add, #ifdef out, quota increase for OOB apps
+
 2010-06-03  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: Tighten up the places where we emit

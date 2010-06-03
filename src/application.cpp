@@ -436,7 +436,15 @@ bool
 Application::InstallWithError (MoonError *error, bool unattended)
 {
 	MoonInstallerService *installer = runtime_get_installer_service ();
-	
+	Deployment *deployment = Deployment::GetCurrent ();
+
+	// application manifest must allow out-of-browser support
+	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
+	if (!settings) {
+		// FIXME - this fix a crasher but is not complete wrt MSDN
+		return false;
+	}
+
 	if (!IsInstallable ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Applications may only be installed from http, https or file URLs");
 		return false;
@@ -446,10 +454,14 @@ Application::InstallWithError (MoonError *error, bool unattended)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Application is already installed");
 		return false;
 	}
+
+	// the dialog is displayed only if the action leading to this call was initiated directly from the user
+	if (!unattended && !deployment->GetSurface ()->IsUserInitiatedEvent ())
+		return false;
 	
 	SetInstallState (InstallStateInstalling);
 	
-	if (installer->Install (Deployment::GetCurrent (), unattended)) {
+	if (installer->Install (deployment, unattended)) {
 		SetInstallState (InstallStateInstalled);
 		return true;
 	}

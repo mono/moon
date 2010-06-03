@@ -1,3 +1,9 @@
+2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* application.cpp: Ensure Install is called from a user-initiated
+	event (unless unattended) and that OutOfBrowserSettings are 
+	available (fix crasher).
+
 2010-06-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* network.cpp: Don't abort again if we already aborted.
