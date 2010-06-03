@@ -274,7 +274,7 @@ namespace System.Windows {
 					BindingExpressionBase beb = (BindingExpressionBase)existing;
 
 					if (beb.Binding.Mode == BindingMode.TwoWay) {
-						updateTwoWay = !(dp is CustomDependencyProperty);
+						updateTwoWay = !beb.Updating && !(dp is CustomDependencyProperty);
 					} else if (!beb.Updating || beb.Binding.Mode == BindingMode.OneTime) {
 						RemoveExpression (dp);
 					}

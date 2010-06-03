@@ -304,7 +304,7 @@ namespace System.Windows.Data {
 				return;
 
 			var node = PropertyPathWalker.FinalNode;
-			if (Binding.ValidatesOnDataErrors && node.Source is IDataErrorInfo && node.PropertyInfo != null)
+			if (!Updating && Binding.ValidatesOnDataErrors && node.Source is IDataErrorInfo && node.PropertyInfo != null)
 				dataError = ((IDataErrorInfo) node.Source) [node.PropertyInfo.Name];
 			bool oldUpdating = Updating;
 			try {
@@ -319,10 +319,11 @@ namespace System.Windows.Data {
 			finally {
 				Updating = oldUpdating;
 			}
-			if (dataError != null)
+			if (!string.IsNullOrEmpty (dataError)) {
 				MaybeEmitError (dataError);
-			else
+			} else {
 				MaybeEmitError (exception);
+			}
 		}
 
 		void MaybeEmitError (string message)
@@ -452,10 +453,11 @@ namespace System.Windows.Data {
 				}
 			}
 
-			if (dataError != null)
+			if (!string.IsNullOrEmpty (dataError)) {
 				MaybeEmitError (dataError);
-			else
+			} else {
 				MaybeEmitError (exception);
+			}
 		}
 	}
 }

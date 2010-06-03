@@ -1,3 +1,8 @@
+2010-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: Tighten up the places where we
+	  emit validation errors. Fixes some more of 232.
+
 2010-06-02  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Only emit data errors if
