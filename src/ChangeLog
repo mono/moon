@@ -1,5 +1,10 @@
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: Reverse yes/no condition for ffmpeg-codecs, since it's a
+	negative flag.
+
+2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.cpp: CurlDownloaderResponse::Finished: we didn't succeed if we
 	were aborted.
 
