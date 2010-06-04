@@ -976,7 +976,9 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 				switch (source->GetObjectType ()) {
 				case Type::PROGRESSIVESOURCE: {
 					ProgressiveSource *ps = (ProgressiveSource *) source;
-					source_name = g_strdup_printf ("%s (%s)", ps->GetUri (), ps->GetFileName ());
+					char *tmp = ps->GetUri ()->ToString ();
+					source_name = g_strdup_printf ("%s (%s)", tmp, ps->GetFileName ());
+					g_free (tmp);
 					break;
 				}
 				case Type::FILESOURCE:
@@ -1552,6 +1554,117 @@ public:
 };
 
 /*
+ * Ranges
+ */
+
+Ranges::Ranges ()
+{
+	ranges = NULL;
+	count = 0;
+}
+
+Ranges::~Ranges ()
+{
+	g_free (ranges);
+}
+
+void
+Ranges::Add (guint64 offset, guint32 length)
+{
+	bool extended = false;
+
+	LOG_PIPELINE_EX ("Ranges::Add (%" G_GUINT64_FORMAT ", %" G_GUINT32_FORMAT ")\n", offset, length);
+
+	/* Check if we can extend an existing range */
+	for (int i = 0; i < count; i++) {
+		guint64 r_offset = ranges [i].offset;
+		guint64 r_length = ranges [i].length;
+		if (r_offset <= offset && r_offset + r_length >= offset) {
+			/* We can extend an existing range */
+			ranges [i].length = MAX ((offset + length) - r_offset, r_length);
+			extended = true;
+			break;
+		} else if (r_offset > offset && offset + length >= r_offset) {
+			/* We can extend 'backwards' an existing range */
+			ranges [i].offset = offset;
+			ranges [i].length = MAX ((r_offset + r_length) - offset, length);
+			extended = true;
+			break;
+		} else if (r_offset > offset) {
+			/* No need to look further since the ranges array is ordered */
+			break;
+		}
+	}
+
+	if (!extended) {
+		/* We could not extend an existing range, append/insert a new one */
+		count++;
+		ranges = (Range *) g_realloc (ranges, count * sizeof (Range));
+		ranges [count - 1].offset = 0;
+		ranges [count - 1].length = 0;
+
+		/* We need to make sure we insert the new range at the right index */
+		gint32 insert_index = count - 1;
+		for (int i = 0; i < count - 1; i++) {
+			guint64 r_offset = ranges [i].offset;
+			if (r_offset > offset) {
+				/* We need to insert, not append. Move the data one step ahead */
+				memmove (ranges + i + 1, ranges + i, (count - 1 - i) * sizeof (Range));
+				insert_index = i;
+				break;
+			}
+		}
+		ranges [insert_index].offset = offset;
+		ranges [insert_index].length = length;
+	}
+
+	/* Now we need to check for overlapping/redundant ranges */
+	bool found_redundant;
+	do {
+		found_redundant = false;
+		for (int i = 0; i < count - 1; i++) {
+			guint64 r_offset = ranges [i].offset;
+			guint64 r_length = ranges [i].length;
+			guint64 n_offset = ranges [i + 1].offset;
+			guint64 n_length = ranges [i + 1].length;
+			if (r_offset + r_length >= n_offset) {
+				/* the current range overlaps the next range, join them */
+				ranges [i].length = (n_offset + n_length) - r_offset;
+				if (count < i + 2) {
+					/* move back the next ranges */
+					memmove (ranges + i + 1, ranges + i + 2, (count - (i + 2)) * sizeof (Range));
+				} else {
+					/* last entry joined into the second last entry, no need to move memory back */
+				}
+				count--;
+				found_redundant = true;
+				break;
+			}
+		}
+	} while (found_redundant);
+
+	LOG_PIPELINE_EX ("Final ranges: ");
+	for (int i = 0; i < count; i++)
+		LOG_PIPELINE_EX ("[%" G_GUINT64_FORMAT ",%" G_GUINT64_FORMAT "] ", ranges [i].offset, ranges [i].length);
+	LOG_PIPELINE_EX ("\n");
+}
+
+bool
+Ranges::Contains (guint64 offset, guint64 length, Range *partial)
+{
+	for (int i = 0; i < count; i++) {
+		if (ranges [i].Contains (offset, length)) {
+			LOG_PIPELINE_EX ("Ranges::Contains (%" G_GUINT64_FORMAT ",%" G_GUINT64_FORMAT "): YES\n", offset, length);
+			return true;
+		} else if (ranges [i].offset <= offset && ranges [i].offset + ranges [i].length >= offset) {
+			*partial = ranges [i];
+		}
+	}
+	LOG_PIPELINE_EX ("Ranges::Contains (%" G_GUINT64_FORMAT ",%" G_GUINT64_FORMAT "): NO\n", offset, length);
+	return false;
+}
+
+/*
  * ProgressiveSource
  */
 
@@ -1564,8 +1677,23 @@ ProgressiveSource::ProgressiveSource (Media *media, const char *uri)
 	write_fd = NULL;
 	read_fd = NULL;
 	cancellable = NULL;
-	this->uri = g_strdup (uri);
-	this->filename = NULL;
+	filename = NULL;
+	bytes_received = 0;
+	first_reception = 0;
+	current_request = 0;
+	current_request_received = 0;
+	range_request = NULL;
+	brr_enabled = 0;
+
+	this->uri = new Uri ();
+	if (!this->uri->Parse (uri)) {
+		delete this->uri;
+		this->uri = NULL;
+
+		char *msg = g_strdup_printf ("Could not parse the uri '%s'", uri);
+		ReportErrorOccurred (msg);
+		g_free (msg);
+	}
 }
 
 ProgressiveSource::~ProgressiveSource ()
@@ -1578,7 +1706,7 @@ ProgressiveSource::~ProgressiveSource ()
 		fclose (read_fd);
 		read_fd = NULL;
 	}
-	g_free (uri);
+	delete uri;
 	uri = NULL;
 	g_free (filename);
 	filename = NULL;
@@ -1586,14 +1714,14 @@ ProgressiveSource::~ProgressiveSource ()
 
 void
 ProgressiveSource::Dispose ()
-{	
-	bool delete_cancellable;
+{
+	bool delete_requests;
 
 	mutex.Lock ();
-	delete_cancellable = cancellable != NULL;
+	delete_requests = cancellable != NULL || range_request != NULL;
 	mutex.Unlock ();
 	
-	if (delete_cancellable) {
+	if (delete_requests) {
 		if (Surface::InMainThread ()) {
 			DeleteCancellable (this);
 		} else {
@@ -1618,7 +1746,7 @@ void
 ProgressiveSource::DeleteCancellable (EventObject *data)
 {
 	ProgressiveSource *src = (ProgressiveSource *) data;
-	Cancellable *cancellable;
+	Cancellable *cancellable = NULL;
 
 	src->mutex.Lock ();
 	if (src->cancellable) {
@@ -1628,8 +1756,12 @@ ProgressiveSource::DeleteCancellable (EventObject *data)
 	src->mutex.Unlock ();
 
 	/* Do work with the mutex unlocked */
-	cancellable->Cancel ();
-	delete cancellable;
+	if (cancellable != NULL) {
+		cancellable->Cancel ();
+		delete cancellable;
+	}
+	if (src->range_request != NULL)
+		src->SetRangeRequest (NULL);
 }
 
 bool
@@ -1650,8 +1782,12 @@ ProgressiveSource::Initialize ()
 	MediaResult result = MEDIA_SUCCESS;
 	Application *application;
 	int tmp_fd;
-	Uri *u;
-	
+
+	if (uri == NULL) {
+		/* Error message has already been shown from the ctor */
+		return MEDIA_FAIL;
+	}
+
 	application = GetDeployment ()->GetCurrentApplication ();
 	
 	g_return_val_if_fail (application != NULL, MEDIA_FAIL);
@@ -1669,7 +1805,7 @@ ProgressiveSource::Initialize ()
 		return MEDIA_FAIL;
 	}
 	
-	LOG_PIPELINE ("ProgressiveSource::Initialize (): Created temporary file %s for %s\n", filename, uri);
+	LOG_PIPELINE ("ProgressiveSource::Initialize (): Created temporary file %s for %s\n", filename, uri->ToString ());
 	
 	/* Open the read file descriptor */
 	read_fd = fdopen (tmp_fd, "r");
@@ -1695,29 +1831,29 @@ ProgressiveSource::Initialize ()
 	 * using the read file descriptor. */
 	setvbuf (write_fd, NULL, _IONBF, 0);
 
+	/* Disable buffering for the read file descriptor too, with http seeking enabled we might have empty chunks in
+	 * the file now that could get buffered */
+	setvbuf (read_fd, NULL, _IONBF, 0);
+
 	/* Unlink the file right away so that it'll be deleted even if we crash. */
 	if (moonlight_flags & RUNTIME_INIT_KEEP_MEDIA) {
-		printf ("Moonlight: The media file %s will not deleted (uri: %s).\n", filename, uri);
+		char *tmp = uri->ToString ();
+		printf ("Moonlight: The media file %s will not deleted (uri: %s).\n", filename, tmp);
+		g_free (tmp);
 	} else {
 		g_unlink (filename);
 	}
 	
 	cancellable = new Cancellable ();
-	u = new Uri ();
-	if (u->Parse (uri)) {
-		if (!application->GetResource (NULL, u, NotifyCallback, DataWriteCallback, MediaPolicy, HttpRequest::DisableFileStorage, cancellable, (gpointer) this)) {
-			result = MEDIA_FAIL;
-			char *msg = g_strdup_printf ("invalid path found in uri '%s'", uri);
-			ReportErrorOccurred (msg);
-			g_free (msg);
-		}
-	} else {
+	if (!application->GetResource (NULL, uri, NotifyCallback, DataWriteCallback, MediaPolicy,
+		 (HttpRequest::Options) (HttpRequest::DisableFileStorage), cancellable, (gpointer) this)) {
 		result = MEDIA_FAIL;
-		char *msg = g_strdup_printf ("Could not parse the uri '%s'", uri);
+		char *tmp = uri->ToString ();
+		char *msg = g_strdup_printf ("invalid path found in uri '%s'", tmp);
+		g_free (tmp);
 		ReportErrorOccurred (msg);
 		g_free (msg);
 	}
-	delete u;
 	
 	return result;
 
@@ -1748,14 +1884,19 @@ ProgressiveSource::NotifyCallback (NotifyType type, gint64 args, void *closure)
 void
 ProgressiveSource::Notify (NotifyType type, gint64 args)
 {
-	LOG_PIPELINE ("ProgressiveSource::Notify (%i = %s, %" G_GINT64_FORMAT ")\n", 
+	LOG_PIPELINE ("ProgressiveSource::Notify (%i = %s, %" G_GINT64_FORMAT ") current range request: %" G_GINT64_FORMAT "\n",
 		type, 
 			(type == NotifyCompleted ? "NotifyCompleted" :
 			(type == NotifyFailed ? "NotifyFailed" : 
 			(type == NotifyStarted ? "NotifyStarted" : 
 			(type == NotifyProgressChanged ? "NotifyProgressChanged" : "unknown")))),
-		args);
+		args, current_request);
 		
+	if (current_request != 0) {
+		/* We have range requests going on and we've cancelled the main http request: do nothing */
+		return;
+	}
+
 	switch (type) {
 		case NotifyCompleted:
 			DownloadComplete ();
@@ -1768,6 +1909,14 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 		default:
 			break;
 	}
+}
+
+gint32
+ProgressiveSource::CalculateDownloadSpeed ()
+{
+	TimeSpan now = get_now ();
+	double time = TimeSpan_ToSecondsFloat (now - first_reception);
+	return (gint32) (bytes_received / time);
 }
 
 void
@@ -1790,11 +1939,15 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 	
 	g_return_if_fail (write_fd != NULL);
 	
+	if (first_reception == 0)
+		first_reception = get_now ();
+	bytes_received += n;
+
 	media = GetMediaReffed ();
 	
 	if (n == 0) {
 		// We've got the entire file, update the size
-		size = write_pos; // Since this method is the only method that writes to write_pos, and we're not reentrant, there is no need to lock here.
+		size = MAX (size, write_pos); // Since this method is the only method that writes to write_pos, and we're not reentrant, there is no need to lock here.
 
 		/* Don't close the write handle, we might get seeks to parts of the file that hasn't been downloaded */
 		goto cleanup;
@@ -1803,20 +1956,175 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 			size = cancellable->GetRequest ()->GetNotifiedSize ();
 	}
 
-	nwritten = fwrite (buf, 1, n, write_fd);
-	fflush (write_fd);
+	if (fseek (write_fd, offset, SEEK_SET) != 0) {
+		char *msg = g_strdup_printf ("Could not seek to offset %i: %s", offset, strerror (errno));
+		ReportErrorOccurred (msg);
+		g_free (msg);
+	} else {
+		nwritten = fwrite (buf, 1, n, write_fd);
+		fflush (write_fd);
 
-	mutex.Lock ();
-	write_pos += nwritten;
-	mutex.Unlock ();
+		if (nwritten > 0) {
+			mutex.Lock ();
+			write_pos = offset + nwritten;
+			ranges.Add (offset, nwritten);
+			mutex.Unlock ();
 
-	CheckPendingReads ();
+			CheckPendingReads ();
+		}
+	}
+
 
 cleanup:
 	if (media) {
 		media->ReportDownloadProgress ((double) (offset + n) / (double) size);
 		media->unref ();
 	}
+}
+
+void
+ProgressiveSource::CheckReadRequestsCallback (EventObject *obj)
+{
+	((ProgressiveSource *) obj)->CheckReadRequests ();
+}
+
+void
+ProgressiveSource::CheckReadRequests ()
+{
+	MediaReadClosureNode *node;
+	guint64 request_range = 0;
+	gint64 write_pos;
+	VERIFY_MAIN_THREAD;
+
+	if (brr_enabled == 0) {
+		/* Check if we should do byte rante requests (if the server sent a 'Accept-Ranges: bytes' header) */
+		if (cancellable != NULL && cancellable->GetRequest () != NULL && cancellable->GetRequest ()->GetResponse () != NULL) {
+			if (!cancellable->GetRequest ()->GetResponse ()->ContainsHeader ("Accept-Ranges", "bytes")) {
+				LOG_PIPELINE ("ProgressiveSource::CheckReadRequests (): brr disabled\n");
+				brr_enabled = 2; /* Disabled */
+			} else {
+				LOG_PIPELINE ("ProgressiveSource::CheckReadRequests (): brr enabled\n");
+				brr_enabled = 1; /* Enabled */
+			}
+		}
+	}
+
+	if (brr_enabled == 2) {
+		/* Byte range requests are disabled, do nothing */
+		return;
+	}
+
+	mutex.Lock ();
+	node = (MediaReadClosureNode *) read_closures.First ();
+	write_pos = this->write_pos;
+	while (node != NULL) {
+		MediaReadClosure *closure = node->GetClosure ();
+		if (closure->GetOffset () < current_request) {
+			/* A position before the last requested position: we need to seek */
+			request_range = closure->GetOffset ();
+		} else if (write_pos > current_request && write_pos >= closure->GetOffset ()) {
+			/* We're currently downloading what's been requested: wait */
+		} else if (write_pos > current_request && write_pos < closure->GetOffset () && CalculateDownloadSpeed () * 5 > (closure->GetOffset () - write_pos)) {
+			/* It would take less than 5 seconds to reach the requested position if we just wait: wait */
+		} else {
+			/* It would take more than 5 seconds to reach the requested position if we just wait: seek */
+			request_range = closure->GetOffset ();
+		}
+
+		if (request_range != 0)
+			break;
+
+		node = (MediaReadClosureNode *) node->next;
+	}
+	mutex.Unlock ();
+
+	if (request_range != 0) {
+		current_request = request_range;
+		current_request_received = 0;
+		HttpRequest *r;
+		r = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableFileStorage | HttpRequest::DisableCache | HttpRequest::DisableAsyncSend));
+		SetRangeRequest (r);
+		r->unref ();
+	}
+}
+
+void
+ProgressiveSource::SetRangeRequest (HttpRequest *value)
+{
+	HttpRequest *rr;
+
+	LOG_PIPELINE ("ProgressiveSource::SetRangeRequest (%p), range_request: %p\n", value, range_request);
+	VERIFY_MAIN_THREAD;
+
+	rr = range_request;
+	range_request = NULL;
+	if (rr != NULL) {
+		rr->RemoveAllHandlers (this);
+		rr->unref ();
+		rr = NULL;
+	}
+
+	if (value == NULL)
+		return;
+
+	range_request = value;
+	range_request->ref ();
+
+	LOG_PIPELINE ("ProgressiveSource::SetRangeRequest (): requesting restart at %" G_GINT64_FORMAT "\n", current_request);
+	range_request->AddHandler (HttpRequest::StartedEvent, RangeStartedCallback, this);
+	range_request->AddHandler (HttpRequest::WriteEvent, RangeWriteCallback, this);
+	range_request->AddHandler (HttpRequest::StoppedEvent, RangeStoppedCallback, this);
+	range_request->Open ("GET", uri, MediaPolicy);
+	range_request->SetHeaderFormatted ("Range", g_strdup_printf ("bytes=%" G_GINT64_FORMAT "-", current_request), false);
+	range_request->Send ();
+}
+
+void
+ProgressiveSource::RangeStartedHandler (HttpRequest *sender, EventArgs *args)
+{
+	Cancellable *cancellable;
+	HttpResponse *response;
+
+	LOG_PIPELINE ("HttpRequest::RangeStartedHandler ()\n");
+
+	response = sender->GetResponse ();
+	if (response->GetResponseStatus () == 206) {
+		/* partial content, cancel the first (normal) request, we don't need it anymore */
+		mutex.Lock ();
+		cancellable = this->cancellable;
+		this->cancellable = NULL;
+		mutex.Unlock ();
+		/* Do work with the mutex unlocked */
+		if (cancellable != NULL) {
+			cancellable->Cancel ();
+			delete cancellable;
+			cancellable = NULL;
+		}
+	} else {
+		/* not partial content, just disable brr and forget about it. We'll continue to get the original data we requested. */
+		brr_enabled = 2; /* disabled */
+		sender->Abort ();
+	}
+}
+
+void
+ProgressiveSource::RangeWriteHandler (HttpRequest *sender, HttpRequestWriteEventArgs *args)
+{
+	LOG_PIPELINE ("ProgressiveSource::RangeWriteHandler (%p, %p)\n", sender, args);
+
+	if (range_request == sender) {
+		DataWrite (args->GetData (), current_request + current_request_received, args->GetCount ());
+		current_request_received += args->GetCount ();
+	}
+}
+
+void
+ProgressiveSource::RangeStoppedHandler (HttpRequest *sender, HttpRequestStoppedEventArgs *args)
+{
+	LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p) success: %i error: %s\n", sender, args, args->IsSuccess (), args->GetErrorMessage ());
+
+	if (range_request == sender)
+		SetRangeRequest (NULL);
 }
 
 MediaResult
@@ -1831,16 +2139,14 @@ ProgressiveSource::CheckPendingReads ()
 {
 	MediaReadClosureNode *node;
 	MediaReadClosureNode *next = NULL;
-	gint64 write_pos;
 	bool checked_for_media_thread = false;
 	List pending_reads;
 	bool ready;
+	Range partial;
 
 	LOG_PIPELINE ("ProgressiveSource::CheckPendingReads () %i closures to check\n", read_closures.Length ());
 
 	mutex.Lock ();
-	write_pos = this->write_pos;
-	
 	/* Check the list of read closures for read requests we can satisfy.
 	 * Store those requests in a separate list, and execute the reads with the mutex unlocked */
 	node = (MediaReadClosureNode *) read_closures.First ();
@@ -1848,13 +2154,7 @@ ProgressiveSource::CheckPendingReads ()
 		MediaReadClosure *closure = node->GetClosure ();
 		next = (MediaReadClosureNode *) node->next;
 		
-		if (complete) {
-			ready = true;
-		} else if (	write_pos >= closure->GetOffset () + closure->GetCount ()) {
-			ready = true;
-		} else {
-			ready = false;
-		}
+		ready = ranges.Contains (closure->GetOffset (), closure->GetCount (), &partial);
 		
 		if (ready) {
 			if (!checked_for_media_thread) {
@@ -1900,6 +2200,7 @@ ProgressiveSource::ReadAsyncInternal (MediaReadClosure *closure)
 	mutex.Unlock ();
 	
 	CheckPendingReads ();
+	AddTickCall (CheckReadRequestsCallback);
 }
 
 #if OBJECT_TRACKING
