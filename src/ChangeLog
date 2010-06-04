@@ -1,3 +1,10 @@
+2010-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* deployment.cpp: When we emit a proxied loaded event we
+	  should remove the proxied handler otherwise we'll never
+	  unref the DO who emitted the loaded event and it will live
+	  forever and ever and ever.
+
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/install-dialog.cpp: Make oob xap downloading's send sync (again).

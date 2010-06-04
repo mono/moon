@@ -1217,6 +1217,7 @@ Deployment::match_loaded_closure (EventHandler cb_handler, gpointer cb_data, gpo
 void
 Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer closure)
 {
+	Deployment *deployment  = (Deployment *) sender;
 	LoadedClosure *lclosure = (LoadedClosure*)closure;
 
 // FIXME: in a perfect world this would be all that was needed, but
@@ -1232,6 +1233,8 @@ Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer cl
 		lclosure->handler (lclosure->obj, rea, lclosure->handler_data);
 		rea->unref ();
 	}
+	
+	deployment->RemoveHandler (Deployment::LoadedEvent, proxy_loaded_event, lclosure);
 }
 
 void
