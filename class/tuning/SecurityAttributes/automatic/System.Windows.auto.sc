@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 458 methods needs to be decorated.
+# 462 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -150,6 +150,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::text_box_base_select_with_error_(System.IntPtr,System.Int32,System.Int32,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::text_selection_select_with_error_(System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_get_value_type(Mono.Kind)
@@ -701,6 +704,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_property_value(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_get_manual_target(System.IntPtr)
 
 # p/invoke declaration
@@ -1206,6 +1212,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_selection_apply_property_value(System.IntPtr,System.IntPtr,Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_selection_insert(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_add_dispatcher_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
