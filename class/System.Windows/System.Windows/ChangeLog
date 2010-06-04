@@ -1,3 +1,10 @@
+2010-06-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Remove confusing 'catch hack' for External
+	CallersFromCrossDomain. Reduce duplication code when initializing
+	the deployment. Add start/end boundaries for initializing some
+	properties (so we can throw afterward).
+
 2010-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Application.cs: Enable isolated storage increase

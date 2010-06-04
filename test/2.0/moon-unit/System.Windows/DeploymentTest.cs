@@ -63,6 +63,31 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		public void SetValue ()
+		{
+			// Deployment only provides getters - using SetValue throws
+			Deployment d = Deployment.Current;
+			Assert.Throws<ArgumentException> (delegate {
+				d.SetValue (Deployment.EntryPointAssemblyProperty, null);
+			}, "EntryPointAssemblyProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				d.SetValue (Deployment.EntryPointTypeProperty, null);
+			}, "EntryPointTypeProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				d.SetValue (Deployment.ExternalPartsProperty, null);
+			}, "ExternalPartsProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				d.SetValue (Deployment.OutOfBrowserSettingsProperty, null);
+			}, "OutOfBrowserSettingsProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				d.SetValue (Deployment.PartsProperty, null);
+			}, "PartsProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				d.SetValue (Deployment.RuntimeVersionProperty, null);
+			}, "RuntimeVersionProperty");
+		}
+
+		[TestMethod]
 		public void Current ()
 		{
 			Deployment d = Deployment.Current;

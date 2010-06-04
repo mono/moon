@@ -43,11 +43,12 @@ public:
 	static ValueValidator ContentControlContentValidator;
 	static ValueValidator LanguageValidator;
 	static ValueValidator NameValidator;
-	static ValueValidator CrossDomainValidator;
 	static ValueValidator VolumeValidator;
 	static ValueValidator BalanceValidator;
 	static ValueValidator BasedOnValidator;
 	static ValueValidator StyleValidator;
+	static ValueValidator OnlyDuringInitializationValidator;
+	static ValueValidator NonNullOnlyDuringInitializationValidator;
 };
 
 #endif /* __VALIDATORS_H__ */

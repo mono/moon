@@ -100,19 +100,19 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	WindowSettings ();
 
-	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private,Validator=NonNullOnlyDuringInitializationValidator */
 	const static int TitleProperty;	
-	/* @PropertyType=double,DefaultValue=600.0,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=600.0,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int HeightProperty;	
-	/* @PropertyType=double,DefaultValue=800.0,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=800.0,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int WidthProperty;	
-	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int LeftProperty;
-	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int TopProperty;
-	/* @PropertyType=WindowStartupLocation,DefaultValue=WindowStartupLocationCenterScreen,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=WindowStartupLocation,DefaultValue=WindowStartupLocationCenterScreen,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int WindowStartupLocationProperty;
-	/* @PropertyType=WindowStyle,DefaultValue=WindowStyleSingleBorderWindow,GenerateAccessors */
+	/* @PropertyType=WindowStyle,DefaultValue=WindowStyleSingleBorderWindow,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int WindowStyleProperty;
 
 	const char *GetTitle ();
@@ -146,9 +146,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Icon ();
 
-	/* @PropertyType=Uri,DefaultValue=Uri(),ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=Uri,DefaultValue=Uri(),ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SourceProperty;
-	/* @PropertyType=Size,DefaultValue=Size(),ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=Size,DefaultValue=Size(),ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SizeProperty;
 
 	Uri* GetSource ();
@@ -179,19 +179,19 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	OutOfBrowserSettings ();
 
-	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,GenerateAccessors,Validator=NonNullOnlyDuringInitializationValidator */
 	const static int BlurbProperty;
-	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,GenerateAccessors,Validator=NonNullOnlyDuringInitializationValidator */
 	const static int ShortNameProperty;
-	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int EnableGPUAccelerationProperty;
-	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int ShowInstallMenuItemProperty;
-	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int WindowSettingsProperty;
-	/* @PropertyType=IconCollection,AutoCreateValue,HiddenDefaultValue,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=IconCollection,AutoCreateValue,HiddenDefaultValue,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int IconsProperty;
-	/* @PropertyType=SecuritySettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=SecuritySettings,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SecuritySettingsProperty;
 	
 	const char *GetBlurb ();
@@ -222,19 +222,19 @@ protected:
 /* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
 public:
- 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=CrossDomainValidator */
+ 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int ExternalCallersFromCrossDomainProperty;
- 	/* @PropertyType=string,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal,Validator=OnlyDuringInitializationValidator */
 	const static int EntryPointAssemblyProperty;
- 	/* @PropertyType=string,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal,Validator=OnlyDuringInitializationValidator */
 	const static int EntryPointTypeProperty;
-	/* @PropertyType=ExternalPartCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=ExternalPartCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int ExternalPartsProperty;
-	/* @PropertyType=OutOfBrowserSettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=OutOfBrowserSettings,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int OutOfBrowserSettingsProperty;
- 	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int PartsProperty;
- 	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int RuntimeVersionProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -303,6 +303,10 @@ public:
 	bool IsLoadedFromXap ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetIsLoadedFromXap (bool flag);
+
+	bool IsInitializing () { return is_initializing; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetInitialization (bool init);
 
 	void SetXapLocation (const char *location);
 	const char *GetXapLocation ();
@@ -435,6 +439,7 @@ private:
 	/* accessed from several threads, needs the medias_mutex locked on all accesses */
 	List *medias;
 
+	bool is_initializing;
 	bool is_shutting_down;
 	bool is_network_stopped;
 	bool appdomain_unloaded;

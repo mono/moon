@@ -328,7 +328,6 @@ namespace MoonTest.System.Windows
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_SetStringValue_OutOfBrowserSettings ()
         {
             OutOfBrowserSettings widget = new OutOfBrowserSettings ();
@@ -551,7 +550,6 @@ namespace MoonTest.System.Windows
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_SetStringValue_WindowSettings ()
         {
             WindowSettings widget = new WindowSettings ();

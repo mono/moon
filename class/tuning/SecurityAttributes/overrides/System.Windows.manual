@@ -101,6 +101,7 @@
 
 # mark most of Deployment internals as [SecurityCritical]
 +SC-M: System.Boolean System.Windows.Deployment::CreateApplication()
++SC-M: System.Void System.Windows.Deployment::TerminateAndSetCulture(System.String,System.String)
 +SC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String,System.String,System.String)
 +SC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.String,System.String)
 +SC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()

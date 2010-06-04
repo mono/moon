@@ -1,3 +1,14 @@
+2010-06-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* deployment.cpp|h: Track deployment initialization time since
+	some properties can only be set at that time. If no set by the
+	manifest then set ExternalCallersFromCrossDomainProperty to 
+	CrossDomainAccessNoAccess when initialization is complete
+	* security.h: ElevatedPermissionsProperty can only be set during
+	deployment initialization
+	* validator.cpp|h: Remove CrossDomainValidator and replace it
+	with [NonNull]OnlyDuringInitializationValidator
+
 2010-06-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* richtextbox.cpp (TextSelection): More stubbing action.

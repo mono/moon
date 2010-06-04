@@ -241,17 +241,10 @@ namespace System.Windows {
 
 			if (EntryPointType == null)
 				throw new Exception ("No entrypoint defined in the AppManifest.xaml");
-
-			try {
-				// this is a "set once" property, we set it to its default in case it was not part of the manifest
-				ExternalCallersFromCrossDomain = CrossDomainAccess.NoAccess;
-			}
-			catch (ArgumentException) {
-				// a value was already set (should be quite rare)
-			}
 		}
 
-		internal bool InitializeDeployment (string culture, string uiCulture) {
+		void TerminateAndSetCulture (string culture, string uiCulture)
+		{
 			TerminateCurrentApplication ();
 
 			try {
@@ -264,26 +257,27 @@ namespace System.Windows {
 				// 2105 is required by the Localization drt (#352)
 				throw new MoonException (2105, e.Message);
 			}
+		}
 
-			EntryPointType = "System.Windows.Application";
-			EntryPointAssembly = typeof (Application).Assembly.GetName ().Name;
-			EntryAssembly = typeof (Application).Assembly;
-			return LoadAssemblies ();
+		internal bool InitializeDeployment (string culture, string uiCulture)
+		{
+			TerminateAndSetCulture (culture, uiCulture);
+
+			NativeMethods.deployment_set_initialization (native, true);
+			try {
+				EntryPointType = "System.Windows.Application";
+				EntryPointAssembly = typeof (Application).Assembly.GetName ().Name;
+				EntryAssembly = typeof (Application).Assembly;
+				return LoadAssemblies ();
+			}
+			finally {
+				NativeMethods.deployment_set_initialization (native, false);
+			}
 		}
 			
-		internal bool InitializeDeployment (IntPtr plugin, string xapPath, string culture, string uiCulture) {
-			TerminateCurrentApplication ();
-
-			try {
-				if (culture != null && culture.ToLower () != "auto")
-					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
-				if (uiCulture != null && uiCulture.ToLower() != "auto")
-					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
-			}
-			catch (Exception e) {
-				// 2105 is required by the Localization drt (#352)
-				throw new MoonException (2105, e.Message);
-			}
+		internal bool InitializeDeployment (IntPtr plugin, string xapPath, string culture, string uiCulture)
+		{
+			TerminateAndSetCulture (culture, uiCulture);
 
 			if (plugin == IntPtr.Zero) {
 				string location = NativeMethods.surface_get_source_location (Surface.Native);
@@ -312,10 +306,16 @@ namespace System.Windows {
 			AppDomain.CurrentDomain.SetupInformationNoCopy.ApplicationBase = XapDir;
 #endif
 
-			ReadManifest ();
+			NativeMethods.deployment_set_initialization (native, true);
+			try {
+				ReadManifest ();
 
-			NativeMethods.deployment_set_is_loaded_from_xap (native, true);
-			return LoadAssemblies ();
+				NativeMethods.deployment_set_is_loaded_from_xap (native, true);
+				return LoadAssemblies ();
+			}
+			finally {
+				NativeMethods.deployment_set_initialization (native, false);
+			}
 		}
 
 		// note: throwing MoonException from here is ok since this code is called (sync) from the plugin

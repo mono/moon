@@ -446,6 +446,7 @@ Deployment::InnerConstructor ()
 #endif
 	surface = NULL;
 	medias = NULL;
+	is_initializing = false;
 	is_shutting_down = false;
 	is_network_stopped = false;
 	deployment_count++;
@@ -1567,6 +1568,17 @@ void
 Deployment::SetIsLoadedFromXap (bool flag)
 {
 	is_loaded_from_xap = flag;
+}
+
+void
+Deployment::SetInitialization (bool init)
+{
+	if (!is_initializing) {
+		// this is a "set once" property, we set it to its default in case it was not set as part of the manifest
+		if (!GetValueNoDefault (Deployment::ExternalCallersFromCrossDomainProperty))
+			SetExternalCallersFromCrossDomain (CrossDomainAccessNoAccess);
+	}
+	is_initializing = init;
 }
 
 void

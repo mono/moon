@@ -1,3 +1,14 @@
+2010-06-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/DeploymentTest.cs
+	* System.Windows/IconTest.cs:
+	* System.Windows/OutOfBrowserSettingsTest.cs: 
+	* System.Windows/SecuritySettingsTest.cs:
+	* System.Windows/WindowSettingsTest.cs:
+		Ensure we can't set some properties once deployment 
+		initialization is complete
+	* misc/DefaultValues.cs: Remove some [MoonlightBug]
+
 2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/ApplicationTest.cs: Install return false if

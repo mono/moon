@@ -28,7 +28,7 @@ public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	SecuritySettings () {}
 
-	/* @PropertyType=ElevatedPermissions,DefaultValue=ElevatedPermissionsNone,GenerateAccessors,ManagedSetterAccess=Private */
+	/* @PropertyType=ElevatedPermissions,DefaultValue=ElevatedPermissionsNone,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int ElevatedPermissionsProperty;
 
 	ElevatedPermissions GetElevatedPermissions ();

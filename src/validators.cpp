@@ -320,17 +320,6 @@ Validators::ContentControlContentValidator (DependencyObject* instance, Dependen
 }
 
 bool
-Validators::CrossDomainValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
-{
-	if (instance->GetValueNoDefault (property)) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
-			g_strdup_printf ("Property 'ExternalCallersFromCrossDomain' cannot be changed.\n"));
-		return false;
-	}
-	return true;
-}
-
-bool
 Validators::FloatValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	double d = value->AsDouble ();
@@ -431,3 +420,22 @@ Validators::StyleValidator (DependencyObject *instance, DependencyProperty *prop
 
 	return true;
 }
+
+bool
+Validators::OnlyDuringInitializationValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!instance->GetDeployment ()->IsInitializing ()) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, g_strdup_printf ("Property %s cannot be changed.", property->GetName ()));
+		return false;
+	}
+	return true;
+}
+
+bool
+Validators::NonNullOnlyDuringInitializationValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (OnlyDuringInitializationValidator (instance, property, value, error))
+		return NonNullValidator (instance, property, value, error);
+	return false;
+}
+

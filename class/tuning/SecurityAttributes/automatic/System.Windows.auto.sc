@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 462 methods needs to be decorated.
+# 463 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -909,6 +909,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::deployment_set_current_application(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::deployment_set_initialization(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::deployment_set_is_loaded_from_xap(System.IntPtr,System.Boolean)
