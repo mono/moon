@@ -152,9 +152,38 @@ TextPointer::GetPositionAtOffset (int offset, LogicalDirection dir)
 // TextSelection
 //
 
-TextSelection::TextSelection ()
+void
+TextSelection::ApplyPropertyValue (DependencyProperty *formatting, Value *value)
 {
-	SetObjectType (Type::TEXTSELECTION);
+	// FIXME: implement this
+}
+
+Value *
+TextSelection::GetPropertyValue (DependencyProperty *formatting)
+{
+	// FIXME: implement this
+	return NULL;
+}
+
+void
+TextSelection::Insert (TextElement *element)
+{
+	// FIXME: implement this
+}
+
+bool
+TextSelection::SelectWithError (TextPointer *anchor, TextPointer *cursor, MoonError *error)
+{
+	// FIXME: implement this
+	return false;
+}
+
+bool
+TextSelection::Select (TextPointer *anchor, TextPointer *cursor)
+{
+	MoonError err;
+	
+	return SelectWithError (anchor, cursor, &err);
 }
 
 

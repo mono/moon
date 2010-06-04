@@ -78,8 +78,45 @@ class TextSelection : public DependencyObject {
 	virtual ~TextSelection () {}
 	
  public:
+	/* @PropertyType=TextPointer,GenerateAccessors */
+	const static int EndProperty;
+	/* @PropertyType=TextPointer,GenerateAccessors */
+	const static int StartProperty;
+	/* @PropertyType=string,GenerateAccessors */
+	const static int TextProperty;
+	/* @PropertyType=string,GenerateAccessors */
+	const static int XamlProperty;
+	
 	/* @GeneratePInvoke,GenerateCBinding */
-	TextSelection ();
+	TextSelection () { SetObjectType (Type::TEXTSELECTION); }
+	
+	//
+	// Methods
+	//
+	/* @GeneratePInvoke,GenerateCBinding */
+	void ApplyPropertyValue (DependencyProperty *formatting, Value *value);
+	/* @GeneratePInvoke,GenerateCBinding */
+	Value *GetPropertyValue (DependencyProperty *formatting);
+	/* @GeneratePInvoke,GenerateCBinding */
+	void Insert (TextElement *element);
+	/* @GeneratePInvoke,GenerateCBinding */
+	bool SelectWithError (TextPointer *anchor, TextPointer *cursor, MoonError *error);
+	bool Select (TextPointer *anchor, TextPointer *cursor);
+	
+	//
+	// Property Accessors
+	//
+	void SetStart (TextPointer *start);
+	TextPointer *GetStart ();
+	
+	void SetEnd (TextPointer *end);
+	TextPointer *GetEnd ();
+	
+	void SetText (const char *text);
+	const char *GetText ();
+	
+	void SetXaml (const char *xaml);
+	const char *GetXaml ();
 };
 
 
