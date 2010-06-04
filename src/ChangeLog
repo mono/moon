@@ -1,5 +1,10 @@
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp: Implement parsing of int values for enums. Fixes #611465 and
+	part 1 of #595476.
+
+2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Reverse yes/no condition for ffmpeg-codecs, since it's a
 	negative flag.
 

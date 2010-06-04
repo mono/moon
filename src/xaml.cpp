@@ -3959,14 +3959,18 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 
 		// we don't care about NULL or empty values
 		Type *t = Type::Find (Deployment::GetCurrent (), type);
-		if (t && t->IsEnum ()) {
+		if (t && t->IsEnum () && t->GetName ()) {
 			gint64 i;
-			if (g_ascii_isalpha (s[0]) && t->GetName ()) {
+			if (g_ascii_isalpha (s[0])) {
 				i = enums_str_to_int (t->GetName (), s);
 				if (i != -1) {
 					*v = new Value (i, type);
 					*v_set = true;
 				}
+			} else if (g_ascii_isdigit (s[0])) {
+				i = atoi (s);
+				*v = new Value (i, type);
+				*v_set = true;
 			}
 		}
 		
