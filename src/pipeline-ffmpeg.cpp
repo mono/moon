@@ -741,6 +741,10 @@ FfmpegDemuxer::Read (uint8_t *buf, int buf_size)
 		} else {
 			LOG_FFMPEG ("FfmpegDemuxer::Read (%i): previous read closure still present (probably due to a spurious wakeup from the wait) - not creating a new one. Waiting again.\n", buf_size);
 		}
+		if (demuxers == NULL) {
+			/* We're shutting down the ffmpeg thread */
+			break;
+		}
 		pthread_cond_wait (&wait_cond, &wait_mutex);
 	}
 	/* read the data we have */
