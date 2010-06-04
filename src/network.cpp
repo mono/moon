@@ -570,6 +570,24 @@ HttpResponse::VisitHeaders (HttpHeaderVisitor visitor, void *context)
 	}
 }
 
+bool
+HttpResponse::ContainsHeader (const char *header, const char *value)
+{
+	HttpHeader *node;
+
+	if (headers == NULL)
+		return false;
+
+	node = (HttpHeader *) headers->First ();
+	while (node != NULL) {
+		if (!strcmp (node->GetHeader (), header) && !strcmp (node->GetValue (), value))
+			return true;
+		node = (HttpHeader *) node->next;
+	}
+
+	return false;
+}
+
 void
 HttpResponse::SetStatus (gint32 status, const char *status_text)
 {

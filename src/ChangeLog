@@ -1,5 +1,9 @@
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network.cpp|h: Add a HttpResponse::ContainsHeader utility method.
+
+2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp|h: Abort all http requests before setting the is_shutting_down
 	flag, since aborting will raise important events (possibly reaching managed
 	code), and when is_shutting_down is true events are blocked. Use another flag
