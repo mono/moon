@@ -436,6 +436,7 @@ private:
 	List *medias;
 
 	bool is_shutting_down;
+	bool is_network_stopped;
 	bool appdomain_unloaded;
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders
