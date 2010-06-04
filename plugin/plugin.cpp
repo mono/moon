@@ -2070,6 +2070,9 @@ PluginInstance::SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 	delete xaml_loader;
 	xaml_loader = NULL;
 
+	if (IsShuttingDown ())
+		return;
+
 	if (!args->IsSuccess ()) {
 		GetSurface ()->GetTimeManager ()->AddTickCall (network_error_tickcall, new PluginClosure (this));
 	} else {
