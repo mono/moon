@@ -150,7 +150,7 @@ class CurlDownloaderResponse : public HttpResponse {
 	CurlDownloaderRequest *request;
 
 	long status;
-	const char* statusText;
+	char* statusText;
 	int delay;
 	DOPtr<ResponseClosure> closure;
 
