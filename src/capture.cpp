@@ -16,6 +16,8 @@
 #include "writeablebitmap.h"
 #include "bitmapimage.h"
 
+#define d(x)
+
 /*
  * VideoFormat
  */
@@ -79,7 +81,7 @@ CaptureSource::~CaptureSource ()
 void
 CaptureSource::CaptureImageAsync ()
 {
-	printf ("CaptureSource::CaptureImageAsync ()\n");
+	d(printf ("CaptureSource::CaptureImageAsync ()\n"));
 
 	if (current_state != CaptureSource::Started) {
 		VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
@@ -101,7 +103,7 @@ CaptureSource::Start ()
 	if (current_state == CaptureSource::Started)
 		return;
 
-	printf ("CaptureSource::Start ()\n");
+	d(printf ("CaptureSource::Start ()\n"));
 
 	AudioCaptureDevice *audio_device = GetAudioCaptureDevice ();
 	VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
@@ -205,7 +207,7 @@ CaptureSource::VideoFormatChanged (MoonVideoFormat *format)
 {
 	SetCurrentDeployment ();
 
-	printf ("CaptureSource::VideoFormatChanged\n");
+	d(printf ("CaptureSource::VideoFormatChanged\n"));
 
 	delete capture_format;
 	capture_format = new VideoFormat (format);
@@ -231,7 +233,7 @@ CaptureSource::CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration
 {
 	SetCurrentDeployment ();
 
-	printf ("CaptureSource::CaptureImageReportSample (%lld, %lld, %d\n", (long long) sampleTime, (long long) frameDuration, sampleDataLength);
+	d(printf ("CaptureSource::CaptureImageReportSample (%lld, %lld, %d\n", (long long) sampleTime, (long long) frameDuration, sampleDataLength));
 
 	if (HasHandlers (CaptureSource::CaptureImageCompletedEvent)) {
 		BitmapImage *source = new BitmapImage ();
@@ -268,7 +270,7 @@ CaptureSource::CaptureImageVideoFormatChanged (MoonVideoFormat *format)
 {
 	SetCurrentDeployment ();
 
-	printf ("CaptureSource::CaptureImageVideoFormatChanged\n");
+	d(printf ("CaptureSource::CaptureImageVideoFormatChanged\n"));
 	delete capture_format;
 	capture_format = new VideoFormat (format);
 }
@@ -386,7 +388,7 @@ VideoCaptureDevice::SetCallbacks (MoonReportSampleFunc report_sample,
 void
 VideoCaptureDevice::Start ()
 {
-	printf ("VideoCaptureDevice::Start\n");
+	d(printf ("VideoCaptureDevice::Start\n"));
 	((MoonVideoCaptureDevice*)GetPalDevice())->StartCapturing ();
 }
 

@@ -1,3 +1,19 @@
+2010-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* capture.cpp: comment out spew.
+
+	* pal/pal.h: use enums for everything.  allow us to specify yes/no
+	buttons for message dialogs (but not managed code), and allow
+	us (and again not managed code) to change the message box type.
+
+	* pal/gtk/pal-gtk.h,cpp: track new messagebox api.
+
+	* pal/capture/pal-linux-capture.cpp (MoonCaptureServiceLinux::RequestSystemAccess):
+	pop up a message box using the windowing service to request
+	permission.
+
+	* pal/capture/v4l2/pal-v4l2-video-capture.cpp: comment out spew.
+
 2010-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* deployment.cpp|h: Track deployment initialization time since

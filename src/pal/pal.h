@@ -188,16 +188,27 @@ public:
 	virtual ~MoonPixbufLoader () {}
 };
 
+enum MoonMessageBoxType {
+	MessageBoxTypeInfo,
+	MessageBoxTypeQuestion,
+	MessageBoxTypeWarning
+};
+
 // must match values from System.Windows.MessageBoxButtons
-#define MESSAGE_BOX_BUTTON_OK		0
-#define MESSAGE_BOX_BUTTON_OK_CANCEL	1
+enum MoonMessageBoxButton {
+	MessageBoxButtonOk,
+	MessageBoxButtonOkCancel,
+	MessageBoxButtonYesNo  // extra value just in native
+};
 
 // must match values from System.Windows.MessageBoxResult
-#define MESSAGE_BOX_RESULT_NONE		0
-#define MESSAGE_BOX_RESULT_OK		1
-#define MESSAGE_BOX_RESULT_CANCEL	2
-#define MESSAGE_BOX_RESULT_YES		6
-#define MESSAGE_BOX_RESULT_NO		7
+enum MoonMessageBoxResult {
+	MessageBoxResultNone = 0,
+	MessageBoxResultOk = 1,
+	MessageBoxResultCancel = 2,
+	MessageBoxResultYes = 6,
+	MessageBoxResultNo = 7
+};
 
 typedef MoonWindow* (*MoonWindowlessCtor)(int width, int height, PluginInstance *forPlugin);
 
@@ -215,7 +226,7 @@ public:
 	virtual MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual int ShowMessageBox (const char *caption, const char *text, int buttons) = 0;
+	virtual MoonMessageBoxResult ShowMessageBox (MoonMessageBoxType messagebox_type, const char *caption, const char *text, MoonMessageBoxButton button) = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx) = 0;

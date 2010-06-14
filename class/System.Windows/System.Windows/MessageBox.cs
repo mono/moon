@@ -32,7 +32,7 @@ namespace System.Windows {
 				throw new UnauthorizedAccessException ("Must be called from the main thread");
 
 			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
-			return (MessageBoxResult) NativeMethods.moon_windowing_system_show_message_box (windowing_system, caption, messageBoxText, (int) button);
+			return NativeMethods.moon_windowing_system_show_message_box (windowing_system, 0, caption, messageBoxText, button);
 		}
 
 		public static MessageBoxResult Show (string messageBoxText)

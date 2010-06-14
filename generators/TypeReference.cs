@@ -197,6 +197,15 @@ class TypeReference {
 					managed_type = "Value";
 				}
 				break;
+			case "MoonMessageBoxResult":
+				managed_type = "MessageBoxResult";
+				break;
+			case "MoonMessageBoxButton":
+				managed_type = "MessageBoxButton";
+				break;
+			case "MoonMessageBoxType":
+				managed_type = "int";
+				break;
 			case "GetDefaultStyleCallback":
 				managed_type = "Mono.GetDefaultStyleCallback";
 				break;

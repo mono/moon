@@ -607,6 +607,7 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 					 MAP_SHARED,
 					 fd, buffer.m.offset);
 
+#if 0
 		if (buffer.m.offset % 16 == 0) {
 			printf ("buffer %d is 16 byte aligned\n", i);
 		}
@@ -616,6 +617,7 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 		else if (buffer.m.offset % 4 == 0) {
 			printf ("buffer %d is 4 byte aligned\n", i);
 		}
+#endif
 
 		if (MAP_FAILED == buffers[i].start) {
 			/* If you do not exit here you should unmap() and free()

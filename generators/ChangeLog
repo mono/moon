@@ -1,3 +1,8 @@
+2010-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs: generate code correctly using new message box
+	enums.
+
 2010-05-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TypeReference.cs (GetNPType): Revert previous change, found a

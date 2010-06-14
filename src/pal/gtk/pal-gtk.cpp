@@ -650,23 +650,48 @@ MoonWindowingSystemGtk::CreateWindowless (int width, int height, PluginInstance 
 #define GTK_MESSAGE_OTHER	GTK_MESSAGE_INFO
 #endif
 
-int
-MoonWindowingSystemGtk::ShowMessageBox (const char *caption, const char *text, int buttons)
+MoonMessageBoxResult
+MoonWindowingSystemGtk::ShowMessageBox (MoonMessageBoxType message_type, const char *caption, const char *text, MoonMessageBoxButton button)
 {
 	if (!caption || !text)
-		return MESSAGE_BOX_RESULT_NONE;
+		return MessageBoxResultNone;
+
+	GtkButtonsType bt = GTK_BUTTONS_OK;
+	GtkMessageType mt = GTK_MESSAGE_OTHER;
 
 	// NOTE: this dialog is displayed even WITHOUT any user action
 	//if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
 	//	return MESSAGE_BOX_RESULT_NONE;
 
-	GtkButtonsType bt = buttons == MESSAGE_BOX_BUTTON_OK ? GTK_BUTTONS_OK : GTK_BUTTONS_OK_CANCEL;
+	switch (message_type) {
+	case MessageBoxTypeInfo:
+		mt = GTK_MESSAGE_OTHER;
+		break;
+	case MessageBoxTypeQuestion:
+		mt = GTK_MESSAGE_QUESTION;
+		break;
+	case MessageBoxTypeWarning:
+		mt = GTK_MESSAGE_WARNING;
+		break;
+	}
+
+	switch (button) {
+	case MessageBoxButtonOk:
+		bt = GTK_BUTTONS_OK;
+		break;
+	case MessageBoxButtonOkCancel:
+		bt = GTK_BUTTONS_OK_CANCEL;
+		break;
+	case MessageBoxButtonYesNo:
+		bt = GTK_BUTTONS_YES_NO;
+		break;
+	}
 
 	GtkWidget *widget = gtk_message_dialog_new (NULL,
-						GTK_DIALOG_MODAL,
-						GTK_MESSAGE_OTHER,
-						bt,
-						text);
+						    GTK_DIALOG_MODAL,
+						    mt,
+						    bt,
+						    text);
 
 	gtk_window_set_title (GTK_WINDOW (widget), caption);
 
@@ -677,17 +702,17 @@ MoonWindowingSystemGtk::ShowMessageBox (const char *caption, const char *text, i
 
 	switch (result) {
 	case GTK_RESPONSE_OK:
-		return MESSAGE_BOX_RESULT_OK;
+		return MessageBoxResultOk;
 	case GTK_RESPONSE_DELETE_EVENT:
 	case GTK_RESPONSE_CANCEL:
-		return MESSAGE_BOX_RESULT_CANCEL;
+		return MessageBoxResultCancel;
 	case GTK_RESPONSE_YES:
-		return MESSAGE_BOX_RESULT_YES;
+		return MessageBoxResultYes;
 	case GTK_RESPONSE_NO:
-		return MESSAGE_BOX_RESULT_NO;
+		return MessageBoxResultNo;
 	case GTK_RESPONSE_NONE:
 	default:
-		return MESSAGE_BOX_RESULT_NONE;
+		return MessageBoxResultNone;
 	}
 }
 
