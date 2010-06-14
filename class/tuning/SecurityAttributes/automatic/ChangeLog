@@ -1,3 +1,7 @@
+2010-06-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Runtime.Serialization.auto.ssc: Regenerated for r158874
+
 2010-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: regenerated for deployment_set_

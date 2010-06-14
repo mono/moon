@@ -1,3 +1,8 @@
+2010-06-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System/EnvironmentTest.cs: Update version number to latest
+	SL4 release
+
 2010-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/DeploymentTest.cs

@@ -1,3 +1,7 @@
+2010-06-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* README: Bump mono/mcs/mono-basic to r158874
+
 2010-05-28  Alan McGovern  <amcgovern@novell.com>
 
 	* README: Bump the mono requirement to get a fix for mcs bug
