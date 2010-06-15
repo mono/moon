@@ -1,3 +1,10 @@
+2010-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pal/gtk/pal-gtk.cpp: Do not supply NULL as parent window to 
+	dialogs	since it allows more than one dialog to be shown at the
+	same time (e.g. events) and, besides the obvious problems, that
+	differs from SL behavior
+
 2010-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: ProgressiveSource::DataWrite: don't report download progress

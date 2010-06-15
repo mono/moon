@@ -645,6 +645,24 @@ MoonWindowingSystemGtk::CreateWindowless (int width, int height, PluginInstance 
 	return gtkwindow;
 }
 
+static GtkWindow *
+get_top_level_widget (Deployment *deployment = NULL)
+{
+	if (!deployment)
+		deployment = Deployment::GetCurrent ();
+
+	Surface *surface = deployment->GetSurface ();
+	if (!surface)
+		return NULL;
+
+	MoonWindow *window = surface->GetWindow ();
+	if (!window)
+		return NULL;
+
+	GtkWidget *widget = ((MoonWindowGtk *) window)->GetWidget ();
+	return (GtkWindow *) gtk_widget_get_toplevel (widget);
+}
+
 // older gtk+ (like 2.8 used in SLED10) don't support icon-less GTK_MESSAGE_OTHER
 #ifndef GTK_MESSAGE_OTHER
 #define GTK_MESSAGE_OTHER	GTK_MESSAGE_INFO
@@ -687,7 +705,7 @@ MoonWindowingSystemGtk::ShowMessageBox (MoonMessageBoxType message_type, const c
 		break;
 	}
 
-	GtkWidget *widget = gtk_message_dialog_new (NULL,
+	GtkWidget *widget = gtk_message_dialog_new (get_top_level_widget (),
 						    GTK_DIALOG_MODAL,
 						    mt,
 						    bt,
@@ -761,7 +779,7 @@ set_filters (GtkFileChooser *chooser, const char* filter, int idx)
 char**
 MoonWindowingSystemGtk::ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx)
 {
-	GtkWidget *widget = gtk_file_chooser_dialog_new (title, NULL, 
+	GtkWidget *widget = gtk_file_chooser_dialog_new (title, get_top_level_widget (), 
 					    GTK_FILE_CHOOSER_ACTION_OPEN, 
 					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
@@ -792,7 +810,7 @@ MoonWindowingSystemGtk::ShowOpenFileDialog (const char *title, bool multsel, con
 char*
 MoonWindowingSystemGtk::ShowSaveFileDialog (const char *title, const char *filter, int idx)
 {
-	GtkWidget *widget = gtk_file_chooser_dialog_new (title, NULL, 
+	GtkWidget *widget = gtk_file_chooser_dialog_new (title, get_top_level_widget (), 
 					    GTK_FILE_CHOOSER_ACTION_SAVE, 
 					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, NULL);
@@ -1064,12 +1082,10 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	GtkWidget *parent = NULL;
 	bool installed = false;
 	MoonAppRecord *app;
-	MoonWindow *window;
 	GdkScreen *screen;
 	GtkDialog *dialog;
 	GtkWidget *widget;
 	char *install_dir;
-	Surface *surface;
 	char *argv[3];
 	int pid;
 	
@@ -1082,12 +1098,7 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	
 	install_dir = g_build_filename (base_install_dir, app->uid, NULL);
 	
-	if ((surface = deployment->GetSurface ()) && (window = surface->GetWindow ())) {
-		widget = ((MoonWindowGtk *) window)->GetWidget ();
-		parent = gtk_widget_get_toplevel (widget);
-	}
-	
-	dialog = install_dialog_new ((GtkWindow *) parent, deployment, install_dir, unattended);
+	dialog = install_dialog_new (get_top_level_widget (deployment), deployment, install_dir, unattended);
 	g_free (install_dir);
 	
 	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
