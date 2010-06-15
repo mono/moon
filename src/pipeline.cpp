@@ -1956,7 +1956,7 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 			size = cancellable->GetRequest ()->GetNotifiedSize ();
 	}
 
-	if (fseek (write_fd, offset, SEEK_SET) != 0) {
+	if (offset != -1 && fseek (write_fd, offset, SEEK_SET) != 0) {
 		char *msg = g_strdup_printf ("Could not seek to offset %i: %s", offset, strerror (errno));
 		ReportErrorOccurred (msg);
 		g_free (msg);
@@ -1966,8 +1966,13 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 
 		if (nwritten > 0) {
 			mutex.Lock ();
-			write_pos = offset + nwritten;
-			ranges.Add (offset, nwritten);
+			if (offset != -1) {
+				write_pos = offset + nwritten;
+				ranges.Add (offset, nwritten);
+			} else {
+				ranges.Add (write_pos, nwritten);
+				write_pos += nwritten;
+			}
 			mutex.Unlock ();
 
 			CheckPendingReads ();
