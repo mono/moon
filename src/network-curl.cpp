@@ -254,7 +254,7 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequ
 	: HttpRequest (Type::CURLDOWNLOADERREQUEST, handler, options), headers(NULL), response(NULL),
 	  bridge(handler), post(NULL), postlast(NULL), body(NULL), state(NONE), aborting(FALSE)
 {
-	d(printf ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p %s\n", this, uri));
+	d(printf ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p\n", this));
 
 	VERIFY_MAIN_THREAD
 
@@ -550,7 +550,7 @@ CurlDownloaderResponse::Started ()
 void
 CurlDownloaderResponse::Visitor (const char *name, const char *val)
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Visitor %p visitor:%p vcontext:%p\n", this, visitor, vcontext));
+	d(printf ("BRIDGE CurlDownloaderResponse::Visitor %p name: %s val: %s\n", this, name, val));
 	SetCurrentDeployment ();
 	AppendHeader (name, val);
 }
