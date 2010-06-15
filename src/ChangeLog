@@ -1,3 +1,8 @@
+2010-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* pal/gtk/pal-gtk.cpp: Fix previous commit to set 'parent' variable
+	in MoonInstallerServiceGtk::Install as it is used later
+
 2010-06-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* pal/gtk/pal-gtk.cpp: Do not supply NULL as parent window to 

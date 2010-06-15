@@ -1079,7 +1079,7 @@ bool
 MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 {
 	const char *platform_dir;
-	GtkWidget *parent = NULL;
+	GtkWindow *parent = NULL;
 	bool installed = false;
 	MoonAppRecord *app;
 	GdkScreen *screen;
@@ -1098,7 +1098,8 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	
 	install_dir = g_build_filename (base_install_dir, app->uid, NULL);
 	
-	dialog = install_dialog_new (get_top_level_widget (deployment), deployment, install_dir, unattended);
+	parent = get_top_level_widget (deployment);
+	dialog = install_dialog_new (parent, deployment, install_dir, unattended);
 	g_free (install_dir);
 	
 	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
@@ -1115,7 +1116,7 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	gtk_widget_destroy ((GtkWidget *) dialog);
 	
 	if (installed) {
-		screen = gtk_widget_get_screen (parent);
+		screen = gtk_widget_get_screen ((GtkWidget *) parent);
 		gdk_spawn_on_screen (screen, NULL, argv, NULL, (GSpawnFlags) 0, NULL, NULL, &pid, NULL);
 		g_free (argv[0]);
 	}
