@@ -1,3 +1,7 @@
+2010-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.sc: regenerated forgotten change
+
 2010-06-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Runtime.Serialization.auto.ssc: Regenerated for r158874
