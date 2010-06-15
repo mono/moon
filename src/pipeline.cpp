@@ -1982,7 +1982,8 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 
 cleanup:
 	if (media) {
-		media->ReportDownloadProgress ((double) (offset + n) / (double) size);
+		if (size != -1 && offset != -1)
+			media->ReportDownloadProgress ((double) (offset + n) / (double) size);
 		media->unref ();
 	}
 }
