@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 594 methods
+# 598 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -282,6 +282,10 @@
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
 +SSC-M: System.Boolean System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_UpdateAvailable()
 +SSC-M: System.Exception System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_Error()
++SSC-M: System.IntPtr System.Windows.Clipboard::GetClipboard()
++SSC-M: System.Boolean System.Windows.Clipboard::ContainsText()
++SSC-M: System.String System.Windows.Clipboard::GetText()
++SSC-M: System.Void System.Windows.Clipboard::SetText(System.String)
 +SSC-M: System.Void System.Windows.Controls.ContentControl::content_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.ContentControl::Initialize()
 +SSC-M: System.Void System.Windows.Controls.ContentPresenter::ClearRoot()

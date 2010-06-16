@@ -181,7 +181,7 @@ public:
 	Surface (MoonWindow *window);
 	virtual void Dispose ();
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	MoonWindow *GetWindow () { return active_window; }
 	MoonWindow *DetachWindow ();
 	

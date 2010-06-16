@@ -31,24 +31,41 @@ using Mono;
 
 namespace System.Windows {
 	public static class Clipboard {
+		// this needs to match the pal.h enum
+		private enum MoonClipboardType {
+			MoonClipboard_Clipboard,
+			MoonClipboard_Primary
+		}
+
+		private static IntPtr GetClipboard ()
+		{
+			Surface surface;
+			IntPtr window;
+			surface = Deployment.Current.Surface;
+			window = NativeMethods.surface_get_window (surface.Native);
+			if (window == IntPtr.Zero)
+				return IntPtr.Zero;
+			return NativeMethods.moon_window_get_clipboard (window, (int)MoonClipboardType.MoonClipboard_Clipboard);
+		}
+
 		public static bool ContainsText ()
 		{
-			Console.WriteLine ("System.Windows.Clipboard.ContainsText (): NIEX");
-			throw new NotImplementedException ();
+			IntPtr clipboard = GetClipboard();
+			return NativeMethods.moon_clipboard_contains_text (clipboard);
 		}
 
 		public static string GetText ()
 		{
 			CheckUserInitiated ();
-			Console.WriteLine ("System.Windows.Clipboard.GetText (): NIEX");
-			throw new NotImplementedException ();
+			IntPtr clipboard = GetClipboard();
+			return NativeMethods.moon_clipboard_get_text (clipboard);
 		}
 
 		public static void SetText (string text)
 		{
 			CheckUserInitiated ();
-			Console.WriteLine ("System.Windows.Clipboard.SetText (): NIEX");
-			throw new NotImplementedException ();
+			IntPtr clipboard = GetClipboard();
+			NativeMethods.moon_clipboard_set_text (clipboard, text, text.Length);
 		}
 
 		private static void CheckUserInitiated ()

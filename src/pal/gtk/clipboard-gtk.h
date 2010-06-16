@@ -13,8 +13,6 @@ class MoonClipboardGtk : public MoonClipboard {
 public:
 	MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipboardType);
 
-	void SetSelection (const char *text, int length);
-	
 	virtual bool ContainsText ();
 	virtual void SetText (const char *text, int length);
 	virtual void AsyncGetText (MoonClipboardGetTextCallback cb, gpointer data);

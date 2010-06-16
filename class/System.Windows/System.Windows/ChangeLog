@@ -1,3 +1,7 @@
+2010-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* Clipboard.cs: implement all this using our pal api.
+
 2010-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* MessageBox.cs: track pal api changes.

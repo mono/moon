@@ -25,11 +25,6 @@ MoonClipboardGtk::MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipbo
 		clipboard = NULL;
 }
 
-void
-MoonClipboardGtk::SetSelection (const char *text, int length)
-{
-}
-
 bool
 MoonClipboardGtk::ContainsText ()
 {

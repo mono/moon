@@ -1,3 +1,15 @@
+2010-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (Surface): GetWindow needs a pinvoke.
+
+	* pal/window.h (MoonWindow): GetClipboard needs a
+	cbinding/pinvoke.
+
+	* pal/gtk/clipboard-gtk.h,cpp: remove SetSelection override.
+
+	* pal/pal.h (MoonClipboard): remove SetSelection, and add
+	cbinding/pinvoke decorations for 3 of the methods.
+
 2010-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* pal/gtk/pal-gtk.cpp: Fix previous commit to set 'parent' variable

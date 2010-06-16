@@ -1,3 +1,7 @@
+2010-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs: MoonClipboardType -> int.
+
 2010-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* TypeReference.cs: generate code correctly using new message box

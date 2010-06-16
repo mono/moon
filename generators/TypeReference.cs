@@ -321,6 +321,9 @@ class TypeReference {
 			case "gpointer":
 				managed_type = "IntPtr";
 				break;
+			case "MoonClipboardType":
+				managed_type = "int";
+				break;
 			case "ModifierKeys":
 				managed_type = "int";
 				break;

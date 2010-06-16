@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 463 methods needs to be decorated.
+# 468 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -84,6 +84,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_capture_service_request_system_access(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::moon_clipboard_contains_text(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_network_service_get_is_network_available(System.IntPtr)
@@ -569,10 +572,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::moon_capture_service_get_video_capture_service(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_clipboard_get_text_(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_video_capture_service_get_available_capture_devices(System.IntPtr,System.Int32&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_video_capture_service_get_default_capture_device(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_window_get_clipboard(System.IntPtr,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_get_platform_window(System.IntPtr)
@@ -696,6 +705,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_toplevel(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::surface_get_window(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)
@@ -1047,6 +1059,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::message_received_event_args_set_response(System.IntPtr,System.String)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::moon_clipboard_set_text(System.IntPtr,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::moon_window_set_transparent(System.IntPtr,System.Boolean)

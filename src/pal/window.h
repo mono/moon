@@ -73,6 +73,7 @@ class MoonWindow {
 
 	void SetCurrentDeployment ();
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType) = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
