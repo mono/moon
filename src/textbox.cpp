@@ -531,18 +531,18 @@ TextBoxUndoStack::Peek ()
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
 static MoonWindow *
-GetWindow (TextBoxBase *textbox)
+GetNormalWindow (TextBoxBase *textbox)
 {
 	if (!textbox->IsAttached ())
 		return NULL;
 	
-	return textbox->GetDeployment ()->GetSurface ()->GetWindow ();
+	return textbox->GetDeployment ()->GetSurface ()->GetNormalWindow ();
 }
 
 static MoonClipboard *
 GetClipboard (TextBoxBase *textbox, MoonClipboardType clipboardType)
 {
-	MoonWindow *window = GetWindow(textbox);
+	MoonWindow *window = GetNormalWindow(textbox);
 
 	if (!window)
 		return NULL;

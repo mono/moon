@@ -201,18 +201,18 @@ TextSelection::Select (TextPointer *anchor, TextPointer *cursor)
 #define ALT_MASK     MoonModifier_Mod1
 
 static MoonWindow *
-GetWindow (RichTextArea *textbox)
+GetNormalWindow (RichTextArea *textbox)
 {
 	if (!textbox->IsAttached ())
 		return NULL;
 	
-	return textbox->GetDeployment ()->GetSurface ()->GetWindow ();
+	return textbox->GetDeployment ()->GetSurface ()->GetNormalWindow ();
 }
 
 static MoonClipboard *
 GetClipboard (RichTextArea *textbox, MoonClipboardType clipboardType)
 {
-	MoonWindow *window = GetWindow (textbox);
+	MoonWindow *window = GetNormalWindow (textbox);
 	
 	if (!window)
 		return NULL;
