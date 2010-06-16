@@ -42,7 +42,7 @@ namespace System.Windows {
 			Surface surface;
 			IntPtr window;
 			surface = Deployment.Current.Surface;
-			window = NativeMethods.surface_get_window (surface.Native);
+			window = NativeMethods.surface_get_normal_window (surface.Native);
 			if (window == IntPtr.Zero)
 				return IntPtr.Zero;
 			return NativeMethods.moon_window_get_clipboard (window, (int)MoonClipboardType.MoonClipboard_Clipboard);

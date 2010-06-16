@@ -698,6 +698,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_focused_element(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::surface_get_normal_window(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_source_location_(System.IntPtr)
 
 # p/invoke declaration
@@ -705,9 +708,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_toplevel(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::surface_get_window(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)

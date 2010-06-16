@@ -181,9 +181,12 @@ public:
 	Surface (MoonWindow *window);
 	virtual void Dispose ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding */
 	MoonWindow *GetWindow () { return active_window; }
 	MoonWindow *DetachWindow ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	MoonWindow *GetNormalWindow () { return normal_window; }
 	
 	// arbitrary cairo context.
 	void Paint (cairo_t *ctx, Region *region);
