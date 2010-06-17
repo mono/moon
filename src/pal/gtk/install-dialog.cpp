@@ -390,7 +390,7 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 	gtk_widget_set_sensitive (priv->ok_button, false);
 	
 	/* spin up a httprequest for the xap */
-	priv->request = deployment->CreateHttpRequest (HttpRequest::OptionsNone);
+	priv->request = deployment->CreateHttpRequest (HttpRequest::DisableAsyncSend /* FIXME: why can't it be async? */);
 	priv->request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, dialog);
 	priv->request->AddHandler (HttpRequest::ProgressChangedEvent, downloader_progress_changed, dialog);
 	priv->request->Open ("GET", deployment->GetXapLocation (), XamlPolicy);
