@@ -105,9 +105,8 @@ public:
 		DisableCache = 2,
 		/* Data will not be written to disk. User must listen to the Write event */
 		DisableFileStorage = 4,
-		EnableSeeking = 8,
 		/* Disables async Send. At least the Downloader class should use this, since Downloader already has an async Send. */
-		DisableAsyncSend = 16,
+		DisableAsyncSend = 8,
 		/* Keep in sync with HttpRequestOptions in NativeMethods.cs */
 	};
 

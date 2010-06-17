@@ -1,5 +1,12 @@
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Implement byte range requests for ProgressiveSource.
+
+	* network.h: Remove HttpOptions::EnableSeeking, byte range requests are
+	handled manually in ProgressiveSource.
+
+2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network.cpp|h: Add a HttpResponse::ContainsHeader utility method.
 
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>

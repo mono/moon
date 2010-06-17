@@ -107,6 +107,38 @@ typedef MediaResult MediaCallback (MediaClosure *closure);
 #include "application.h"
 
 /*
+ * Range
+ */
+struct Range {
+	guint64 offset;
+	guint64 length;
+	bool Contains (guint64 offset, guint64 length)
+	{
+		return this->offset <= offset && this->offset + this->length >= offset + length;
+	}
+	Range ()
+	{
+		offset = 0;
+		length = 0;
+	}
+};
+
+/*
+ * Ranges
+ */
+class Ranges {
+private:
+	Range *ranges;
+	gint32 count; /* number of elements in the array*/
+
+public:
+	Ranges ();
+	~Ranges ();
+	void Add (guint64 offset, guint32 length);
+	bool Contains (guint64 offset, guint64 length, Range *partial);
+};
+
+/*
  * MediaClosure: 
  */ 
 class MediaClosure : public EventObject {
@@ -1175,13 +1207,35 @@ private:
 	FILE *write_fd;
 	FILE *read_fd;
 	char *filename;
-	char *uri;
-	Cancellable *cancellable;
-	
+	Uri *uri;
+	int brr_enabled; /* If we'll do byte range requests (if server sent 'Accept-Ranges: bytes' or not) 0: not checked, 1: yes, 2: no. Main thread only. */
+	Cancellable *cancellable; /* Write on main thread & Read on other threads require lock to be held. Reads on main thread is safe. */
+
+	/* A list of all the ranges we've downloaded */
+	Ranges ranges; /* write on main thread, read on media thread: all accesses needs mutex locked) */
+	gint64 current_request; /* The last range request made */
+	guint64 current_request_received; /* The # of bytes received from the current range request */
+	HttpRequest *range_request; /* Main thread only */
+
+	/* We calculate approximately the download speed to know when to emit a byte range request or not.
+	 * (if we calculate that we'll reach the position we want in a few seconds, don't emit a byte
+	 * range request */
+	guint64 bytes_received; /* The total number of bytes received. Main thread only */
+	TimeSpan first_reception; /* The time when the first chunk was received. Main thread only. */
+
+	void SetRangeRequest (HttpRequest *value);
+
+	EVENTHANDLER (ProgressiveSource, RangeStarted, HttpRequest, EventArgs);
+	EVENTHANDLER (ProgressiveSource, RangeWrite,   HttpRequest, HttpRequestWriteEventArgs);
+	EVENTHANDLER (ProgressiveSource, RangeStopped, HttpRequest, HttpRequestStoppedEventArgs);
+
 	static void DataWriteCallback (EventObject *sender, EventArgs *args, void *closure);
 	static void NotifyCallback (NotifyType type, gint64 args, void *closure);
 	static void DeleteCancellable (EventObject *data);
 	static MediaResult CheckPendingReadsCallback (MediaClosure *data);
+	static void CheckReadRequestsCallback (EventObject *data);
+
+	void CheckReadRequests ();
 	void CheckPendingReads ();
 	
 	void Notify (NotifyType, gint64 args);
@@ -1192,6 +1246,7 @@ private:
 	void SetTotalSize (gint64 size);
 	
 	void Read (MediaReadClosure *closure);
+	gint32 CalculateDownloadSpeed (); /* bps */
 	
 protected:
 	virtual ~ProgressiveSource ();
@@ -1208,7 +1263,7 @@ public:
 		
 	virtual MediaResult Initialize (); 
 	
-	const char *GetUri () { return uri; }
+	Uri *GetUri () { return uri; }
 	const char *GetFileName () { return filename; }
 #if OBJECT_TRACKING
 	guint32 GetPendingReadRequestCount ();
