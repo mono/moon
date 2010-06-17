@@ -1,3 +1,7 @@
+2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: SourceStopped: Don't do anything if we're shutting down.
+
 2010-06-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* npstream-request.cpp: Abort: if we still have the stream after calling

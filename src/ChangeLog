@@ -1,3 +1,8 @@
+2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* network-curl.cpp: CurlDownloaderResponse::Finished: we didn't succeed if we
+	were aborted.
+
 2010-06-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* network-curl.cpp|h: Clean up statusText properly, and ensure to call

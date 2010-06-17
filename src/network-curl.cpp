@@ -573,7 +573,7 @@ CurlDownloaderResponse::Finished ()
 		state = FINISHED;
 		return;
 	}
-	if ((int) state > FINISHED)
+	if ((int) state > FINISHED && !IsAborted ())
 		request->Succeeded ();
 }
 
