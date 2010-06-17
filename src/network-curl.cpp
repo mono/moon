@@ -339,6 +339,7 @@ CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
 	CurlDownloaderRequest *request)
 	: HttpResponse (Type::CURLDOWNLOADERRESPONSE, request),
 	  bridge(bridge), request(request),
+	  status(0), statusText(NULL),
 	  delay(2), state(STOPPED), aborted (false)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::CurlDownloaderResponse %p\n", this));
@@ -348,6 +349,7 @@ CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
 
 CurlDownloaderResponse::~CurlDownloaderResponse ()
 {
+	g_free (statusText);
 }
 
 void
@@ -539,6 +541,7 @@ CurlDownloaderResponse::Started ()
 
 	SetCurrentDeployment ();
 	state = HEADER;
+	SetStatus (status, statusText);
 	request->Started ();
 	if (state == FINISHED)
 		Finished ();
