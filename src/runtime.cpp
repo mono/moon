@@ -99,7 +99,7 @@ static MoonlightRuntimeOption options [] = {
 	/* flag                               name                 enable        disable   runtime changable  description */
 	// There's no "ms-codecs=yes" option to not allow enablin  g them from the command line.
 	{ RUNTIME_INIT_ENABLE_MS_CODECS,      "ms-codecs",         NULL,         "no" },
-	{ RUNTIME_INIT_DISABLE_FFMPEG_CODECS, "ffmpeg-codecs",     "yes",        "no" },
+	{ RUNTIME_INIT_DISABLE_FFMPEG_CODECS, "ffmpeg-codecs",     "no",         "yes" },
 	{ RUNTIME_INIT_MANUAL_TIMESOURCE,     "timesource",        "manual",     "system" },
 	{ RUNTIME_INIT_SHOW_EXPOSE,           "expose",            "show",       "hide",   true,            "Show expose regions" },
 	{ RUNTIME_INIT_SHOW_CLIPPING,         "clipping",          "show",       "hide",   true,            "Show clipping rectangles" },
