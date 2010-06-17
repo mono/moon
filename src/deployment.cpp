@@ -257,7 +257,7 @@ Deployment::CreateHttpRequest (HttpRequest::Options options)
 	VERIFY_MAIN_THREAD;
 
 	/* We must not create any http requests after shutdown has started */
-	if (is_shutting_down)
+	if (is_network_stopped)
 		return result;
 
 	if (http_handler != NULL)
@@ -447,6 +447,7 @@ Deployment::InnerConstructor ()
 	surface = NULL;
 	medias = NULL;
 	is_shutting_down = false;
+	is_network_stopped = false;
 	deployment_count++;
 	appdomain_unloaded = false;
 	system_windows_assembly = NULL;
@@ -911,7 +912,11 @@ Deployment::Shutdown ()
 	 * The current process is as follows:
 	 * - Abort all downloaders. Firefox has a habit of calling into our
 	 *   downloader callbacks in bad moments, aborting all downloaders
-	 *   will prevent this from happening.
+	 *   will prevent this from happening. We need to do this *before*
+	 *   setting the 'is_shutting_down' flag, since aborting downloaders
+	 *   may cause (important) events to be raised (events which may have
+	 *   managed handlers). To stop new network requests from being created
+	 *   from now on, we use a 'is_network_stopped' flag.
 	 * - Ensure nothing is executed on the media threadpool threads and
 	 *   audio threads.
 	 * - Unload our appdomain. We still have code executing on separate
@@ -924,13 +929,9 @@ Deployment::Shutdown ()
 	 *   to be deleted is the deployment (every other object references the
 	 *   deployment to ensure this).
 	 */
-		
-	is_shutting_down = true;
-	
-	g_return_if_fail (!IsDisposed ());
 
-	Emit (ShuttingDownEvent);
-	
+	is_network_stopped = true;
+
 	if (http_handler != NULL) {
 		http_handler->unref ();
 		http_handler = NULL;
@@ -942,6 +943,13 @@ Deployment::Shutdown ()
 	}
 
 	AbortAllHttpRequests ();
+
+	is_shutting_down = true;
+	
+	g_return_if_fail (!IsDisposed ());
+
+	Emit (ShuttingDownEvent);
+
 	/*
 	 * Dispose all Media instances so that we can be sure nothing is executed
 	 * on the media threadpool threads after this point.

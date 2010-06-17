@@ -1,5 +1,13 @@
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp|h: Abort all http requests before setting the is_shutting_down
+	flag, since aborting will raise important events (possibly reaching managed
+	code), and when is_shutting_down is true events are blocked. Use another flag
+	(is_network_stopped) to prevent new requests from being created while aborting
+	current requests.
+
+2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-ffmpeg.cpp: FfmpegDemuxer::Read: break out of the waiting loop
 	when we're shutting down.
 
