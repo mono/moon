@@ -661,6 +661,15 @@ get_top_level_widget (Deployment *deployment = NULL)
 
 	GtkWidget *widget = ((MoonWindowGtk *) window)->GetWidget ();
 	GtkWidget *top_level = gtk_widget_get_toplevel (widget);
+	// a "windowless==true" won't provide a GtkWindow for top_level
+	if (!GTK_IS_WINDOW (top_level)) {
+		// so we need to query it from FF (well hidden) using the GdkWindow we can get from the plugin
+		gpointer user_data = NULL;
+		gdk_window_get_user_data (GDK_WINDOW (window->GetPlatformWindow ()), &user_data);
+		if (user_data)
+			top_level = GTK_WIDGET (user_data);
+	}
+
 	return GTK_IS_WINDOW (top_level) ? (GtkWindow *) top_level : NULL;
 }
 
@@ -1085,7 +1094,6 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	MoonAppRecord *app;
 	GdkScreen *screen;
 	GtkDialog *dialog;
-	GtkWidget *widget;
 	char *install_dir;
 	char *argv[3];
 	int pid;
