@@ -1,3 +1,7 @@
+2010-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* MessageBox.cs: track pal api changes.
+
 2010-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Application.cs: Enable isolated storage increase

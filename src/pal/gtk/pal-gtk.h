@@ -16,7 +16,7 @@ public:
 	MoonWindow *CreateWindow (bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface);
 	MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
 
-	virtual int ShowMessageBox (const char *caption, const char *text, int buttons);
+	virtual MoonMessageBoxResult ShowMessageBox (MoonMessageBoxType message_type, const char *caption, const char *text, MoonMessageBoxButton button);
 
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx);
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx);
