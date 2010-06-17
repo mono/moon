@@ -39,7 +39,6 @@ namespace MoonTest.System.Windows {
 	public class ClipboardTest {
 
 		[TestMethod]
-		[MoonlightBug ("NIE")]
 		public void ContainsText_NonUserInitiated ()
 		{
 			// can return true or false - i.e. it does not need to be user initiated
