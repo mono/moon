@@ -347,9 +347,6 @@
 +SC-M: System.Int32 Mono.NativeMethods::message_received_event_args_get_namescope(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::moon_windowing_system_show_message_box(System.IntPtr,System.String,System.String,System.Int32)
-
-# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::mouse_wheel_event_args_get_wheel_delta(System.IntPtr)
 
 # p/invoke declaration
@@ -1353,6 +1350,9 @@
 
 # p/invoke declaration
 +SC-M: System.Windows.InstallState Mono.NativeMethods::application_get_install_state(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Windows.MessageBoxResult Mono.NativeMethods::moon_windowing_system_show_message_box(System.IntPtr,System.Int32,System.String,System.String,System.Windows.MessageBoxButton)
 
 # p/invoke declaration
 +SC-M: System.Windows.Point Mono.NativeMethods::multi_scale_image_element_to_logical_point(System.IntPtr,System.Windows.Point)
