@@ -1,3 +1,9 @@
+2010-06-17  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* pal/gtk/pal-gtk.cpp: Fix dialog (to show) when plugin is running
+	windowless. However that does not fix the possible multiple-dialogs
+	in that case (windowless)
+
 2010-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h (Surface): GetWindow needs a pinvoke.

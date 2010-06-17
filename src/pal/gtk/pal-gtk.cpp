@@ -660,7 +660,8 @@ get_top_level_widget (Deployment *deployment = NULL)
 		return NULL;
 
 	GtkWidget *widget = ((MoonWindowGtk *) window)->GetWidget ();
-	return (GtkWindow *) gtk_widget_get_toplevel (widget);
+	GtkWidget *top_level = gtk_widget_get_toplevel (widget);
+	return GTK_IS_WINDOW (top_level) ? (GtkWindow *) top_level : NULL;
 }
 
 // older gtk+ (like 2.8 used in SLED10) don't support icon-less GTK_MESSAGE_OTHER
