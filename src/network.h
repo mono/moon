@@ -181,7 +181,7 @@ private:
 	bool is_aborted;
 	bool is_completed; /* does not say anything about whether it failed or not */
 	char *verb;
-	/* uri of what were requested to fetch */
+	/* uri of what we were requested to fetch */
 	Uri *original_uri;
 	/* uri we actually requested */
 	char *uri;
@@ -249,6 +249,7 @@ public:
 	List *GetHeaders ();
 	void ParseHeaders (const char *value);
 	void AppendHeader (const char *header, const char *value);
+	bool ContainsHeader (const char *header, const char *value);
 
 	/* @GeneratePInvoke,GenerateCBinding */
 	gint32 GetResponseStatus () { return response_status; }
