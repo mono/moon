@@ -1,3 +1,9 @@
+2010-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: ProgressiveSource::DataWrite: Don't seek anywhere if offset is
+	-1, we should just write to whatever the current position is. Also don't use
+	a -1 offset to calculate the current write_pos and the available ranges.
+
 2010-06-04  Alan McGovern  <amcgovern@novell.com>
 
 	* deployment.cpp: When we emit a proxied loaded event we
