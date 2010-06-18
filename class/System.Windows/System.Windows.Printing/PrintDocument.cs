@@ -26,11 +26,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
+using System.Security;
+using Mono;
 
 namespace System.Windows.Printing {
 	public partial class PrintDocument : DependencyObject {
-		public void Print (string documentName) {
+
+		public void Print (string documentName)
+		{
+			if (!Helper.IsUserInitiated ())
+				throw new SecurityException ("Printing must be user initiated");
+
 			Console.WriteLine ("System.Windows.Printing.PrintDocument.Start (): NIEX");
 			throw new NotImplementedException ();
 		}

@@ -1,3 +1,7 @@
+2010-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PrintDocument.cs: Add user-initiated check on Print
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* PrintDocument.cs:
