@@ -1,3 +1,7 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* printing.h-disabled: Remove old file.
+
 2010-06-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* pal/gtk/pal-gtk.cpp: Finally fix the possible "multiple-dialogs"
