@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 598 methods
+# 600 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -108,6 +108,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::inline_uicontainer_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::input_method_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::input_scope_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::input_scope_name_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::italic_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::item_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::key_event_args_new()
@@ -177,7 +178,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::rectangle_geometry_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::resource_dictionary_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::resource_dictionary_collection_new()
-+SSC-M: System.IntPtr Mono.SafeNativeMethods::rich_text_area_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::rich_text_box_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::rich_text_box_view_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::rotate_transform_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::routed_event_args_new()

@@ -179,7 +179,8 @@ enum StyleSimulations {
 enum TextAlignment {
 	TextAlignmentCenter,
 	TextAlignmentLeft,
-	TextAlignmentRight
+	TextAlignmentRight,
+	TextAlignmentJustify,
 };
 
 // TextDecorations would appear to be a collection of bit flags rather
@@ -266,6 +267,8 @@ enum CursorType {
 	CursorTypeEraser,
 	CursorTypeSizeNS,
 	CursorTypeSizeWE,
+	CursorTypeSizeNESW,
+	CursorTypeSizeNWSE,
 	CursorTypeNone	
 };
 

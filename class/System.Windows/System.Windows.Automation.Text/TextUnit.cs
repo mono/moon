@@ -1,11 +1,3 @@
-//
-// PrintPageEventHandler.cs
-//
-// Contact:
-//   Moonlight List (moonlight-list@lists.ximian.com)
-//
-// Copyright 2010 Novell, Inc.
-//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -25,9 +17,22 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+//
+// Contact:
+//   Moonlight Team (moonlight-list@lists.ximian.com)
+//
 
-namespace System.Windows.Printing
-{
-	public delegate void PrintPageEventHandler (object sender, PrintPageEventArgs e);
+using System.Windows.Automation;
+
+namespace System.Windows.Automation.Text {
+	public enum TextUnit {
+		Character,
+		Format,
+		Word,
+		Line,
+		Paragraph,
+		Page,
+		Document,
+	}
 }
-

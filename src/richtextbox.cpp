@@ -201,7 +201,7 @@ TextSelection::Select (TextPointer *anchor, TextPointer *cursor)
 #define ALT_MASK     MoonModifier_Mod1
 
 static MoonWindow *
-GetNormalWindow (RichTextArea *textbox)
+GetNormalWindow (RichTextBox *textbox)
 {
 	if (!textbox->IsAttached ())
 		return NULL;
@@ -210,7 +210,7 @@ GetNormalWindow (RichTextArea *textbox)
 }
 
 static MoonClipboard *
-GetClipboard (RichTextArea *textbox, MoonClipboardType clipboardType)
+GetClipboard (RichTextBox *textbox, MoonClipboardType clipboardType)
 {
 	MoonWindow *window = GetNormalWindow (textbox);
 	
@@ -220,16 +220,16 @@ GetClipboard (RichTextArea *textbox, MoonClipboardType clipboardType)
 	return window->GetClipboard (clipboardType);
 }
 
-RichTextArea::RichTextArea ()
+RichTextBox::RichTextBox ()
 {
-	SetObjectType (Type::RICHTEXTAREA);
+	SetObjectType (Type::RICHTEXTBOX);
 	
 	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
-	type_info->Initialize (GetObjectType (), "System.Windows.Controls.RichTextArea");
+	type_info->Initialize (GetObjectType (), "System.Windows.Controls.RichTextBox");
 	SetDefaultStyleKey (type_info);
 	ManagedTypeInfo::Free (type_info);
 	
-	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextArea::mouse_left_button_multi_click, this);
+	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
 	
 	contentElement = NULL;
 	
@@ -237,9 +237,9 @@ RichTextArea::RichTextArea ()
 	im_ctx = ws->CreateIMContext ();
 	im_ctx->SetUsePreedit (false);
 	
-	im_ctx->SetRetrieveSurroundingCallback ((MoonCallback) RichTextArea::retrieve_surrounding, this);
-	im_ctx->SetDeleteSurroundingCallback ((MoonCallback) RichTextArea::delete_surrounding, this);
-	im_ctx->SetCommitCallback ((MoonCallback) RichTextArea::commit, this);
+	im_ctx->SetRetrieveSurroundingCallback ((MoonCallback) RichTextBox::retrieve_surrounding, this);
+	im_ctx->SetDeleteSurroundingCallback ((MoonCallback) RichTextBox::delete_surrounding, this);
+	im_ctx->SetCommitCallback ((MoonCallback) RichTextBox::commit, this);
 	
 	undo = new RichTextBoxUndoStack (10);
 	redo = new RichTextBoxUndoStack (10);
@@ -263,9 +263,9 @@ RichTextArea::RichTextArea ()
 	view = NULL;
 }
 
-RichTextArea::~RichTextArea ()
+RichTextBox::~RichTextBox ()
 {
-	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextArea::mouse_left_button_multi_click, this);
+	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
 	
 	ResetIMContext ();
 	delete im_ctx;
@@ -276,49 +276,49 @@ RichTextArea::~RichTextArea ()
 }
 
 void
-RichTextArea::SetIsAttached (bool value)
+RichTextBox::SetIsAttached (bool value)
 {
 	Control::SetIsAttached (value);
 	
 	Surface *surface = GetDeployment ()->GetSurface ();
 	
 	if (value) {
-		surface->AddHandler (Surface::WindowAvailableEvent, RichTextArea::attach_im_client_window, this);
-		surface->AddHandler (Surface::WindowUnavailableEvent, RichTextArea::detach_im_client_window, this);
+		surface->AddHandler (Surface::WindowAvailableEvent, RichTextBox::attach_im_client_window, this);
+		surface->AddHandler (Surface::WindowUnavailableEvent, RichTextBox::detach_im_client_window, this);
 	} else if (surface) {
-		surface->RemoveHandler (Surface::WindowAvailableEvent, RichTextArea::attach_im_client_window, this);
-		surface->RemoveHandler (Surface::WindowUnavailableEvent, RichTextArea::detach_im_client_window, this);
+		surface->RemoveHandler (Surface::WindowAvailableEvent, RichTextBox::attach_im_client_window, this);
+		surface->RemoveHandler (Surface::WindowUnavailableEvent, RichTextBox::detach_im_client_window, this);
 		
 		DetachIMClientWindow (NULL, NULL);
 	}
 }
 
 void
-RichTextArea::attach_im_client_window (EventObject *sender, EventArgs *args, gpointer closure)
+RichTextBox::attach_im_client_window (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((RichTextArea *) closure)->AttachIMClientWindow (sender, args);
+	((RichTextBox *) closure)->AttachIMClientWindow (sender, args);
 }
 
 void
-RichTextArea::AttachIMClientWindow (EventObject *sender, EventArgs *calldata)
+RichTextBox::AttachIMClientWindow (EventObject *sender, EventArgs *calldata)
 {
 	im_ctx->SetClientWindow (GetDeployment ()->GetSurface ()->GetWindow());
 }
 
 void
-RichTextArea::detach_im_client_window (EventObject *sender, EventArgs *args, gpointer closure)
+RichTextBox::detach_im_client_window (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((RichTextArea *) closure)->DetachIMClientWindow (sender, args);
+	((RichTextBox *) closure)->DetachIMClientWindow (sender, args);
 }
 
 void
-RichTextArea::DetachIMClientWindow (EventObject *sender, EventArgs *calldata)
+RichTextBox::DetachIMClientWindow (EventObject *sender, EventArgs *calldata)
 {
 	im_ctx->SetClientWindow (NULL);
 }
 
 double
-RichTextArea::GetCursorOffset ()
+RichTextBox::GetCursorOffset ()
 {
 	if (!have_offset && view) {
 		cursor_offset = view->GetCursor ().x;
@@ -329,118 +329,118 @@ RichTextArea::GetCursorOffset ()
 }
 
 int
-RichTextArea::CursorDown (int cursor, bool page)
+RichTextBox::CursorDown (int cursor, bool page)
 {
 	return -1;
 }
 
 int
-RichTextArea::CursorUp (int cursor, bool page)
+RichTextBox::CursorUp (int cursor, bool page)
 {
 	return -1;
 }
 
 int
-RichTextArea::CursorNextWord (int cursor)
+RichTextBox::CursorNextWord (int cursor)
 {
 	return -1;
 }
 
 int
-RichTextArea::CursorPrevWord (int cursor)
+RichTextBox::CursorPrevWord (int cursor)
 {
 	return -1;
 }
 
 int
-RichTextArea::CursorLineBegin (int cursor)
+RichTextBox::CursorLineBegin (int cursor)
 {
 	return -1;
 }
 
 int
-RichTextArea::CursorLineEnd (int cursor, bool include)
+RichTextBox::CursorLineEnd (int cursor, bool include)
 {
 	return -1;
 }
 
 bool
-RichTextArea::KeyPressBackSpace (MoonModifier modifiers)
+RichTextBox::KeyPressBackSpace (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressDelete (MoonModifier modifiers)
+RichTextBox::KeyPressDelete (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressPageDown (MoonModifier modifiers)
+RichTextBox::KeyPressPageDown (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressPageUp (MoonModifier modifiers)
+RichTextBox::KeyPressPageUp (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressDown (MoonModifier modifiers)
+RichTextBox::KeyPressDown (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressUp (MoonModifier modifiers)
+RichTextBox::KeyPressUp (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressHome (MoonModifier modifiers)
+RichTextBox::KeyPressHome (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressEnd (MoonModifier modifiers)
+RichTextBox::KeyPressEnd (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressRight (MoonModifier modifiers)
+RichTextBox::KeyPressRight (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressLeft (MoonModifier modifiers)
+RichTextBox::KeyPressLeft (MoonModifier modifiers)
 {
 	return false;
 }
 
 bool
-RichTextArea::KeyPressUnichar (gunichar c)
+RichTextBox::KeyPressUnichar (gunichar c)
 {
 	return false;
 }
 
 void
-RichTextArea::BatchPush ()
+RichTextBox::BatchPush ()
 {
 	batch++;
 }
 
 void
-RichTextArea::BatchPop ()
+RichTextBox::BatchPop ()
 {
 	if (batch == 0) {
-		g_warning ("RichTextArea batch underflow");
+		g_warning ("RichTextBox batch underflow");
 		return;
 	}
 	
@@ -448,36 +448,36 @@ RichTextArea::BatchPop ()
 }
 
 void
-RichTextArea::EmitSelectionChanged ()
+RichTextBox::EmitSelectionChanged ()
 {
-	EmitAsync (RichTextArea::SelectionChangedEvent, new RoutedEventArgs ());
+	EmitAsync (RichTextBox::SelectionChangedEvent, new RoutedEventArgs ());
 }
 
 void
-RichTextArea::EmitContentChanged ()
+RichTextBox::EmitContentChanged ()
 {
-	EmitAsync (RichTextArea::ContentChangedEvent, new ContentChangedEventArgs ());
+	EmitAsync (RichTextBox::ContentChangedEvent, new ContentChangedEventArgs ());
 }
 
 void
-RichTextArea::SyncSelection ()
+RichTextBox::SyncSelection ()
 {
 	// FIXME: sync the TextSelection
 }
 
 void
-RichTextArea::SyncContent ()
+RichTextBox::SyncContent ()
 {
 	// FIXME: generate the proper xaml
 	char *xaml = NULL;
 	
 	setvalue = false;
-	SetValue (RichTextArea::XamlProperty, Value (xaml, true));
+	SetValue (RichTextBox::XamlProperty, Value (xaml, true));
 	setvalue = true;
 }
 
 void
-RichTextArea::SyncAndEmit (bool sync_text)
+RichTextBox::SyncAndEmit (bool sync_text)
 {
 	if (batch != 0 || emit == NOTHING_CHANGED)
 		return;
@@ -503,19 +503,19 @@ RichTextArea::SyncAndEmit (bool sync_text)
 }
 
 void
-RichTextArea::Paste (MoonClipboard *clipboard, const char *str)
+RichTextBox::Paste (MoonClipboard *clipboard, const char *str)
 {
 	// FIXME: implement this
 }
 
 void
-RichTextArea::paste (MoonClipboard *clipboard, const char *text, gpointer closure)
+RichTextBox::paste (MoonClipboard *clipboard, const char *text, gpointer closure)
 {
-	((RichTextArea *) closure)->Paste (clipboard, text);
+	((RichTextBox *) closure)->Paste (clipboard, text);
 }
 
 void
-RichTextArea::OnKeyDown (KeyEventArgs *args)
+RichTextBox::OnKeyDown (KeyEventArgs *args)
 {
 	MoonKeyEvent *event = args->GetEvent ();
 	MoonModifier modifiers = (MoonModifier) event->GetModifiers ();
@@ -566,7 +566,7 @@ RichTextArea::OnKeyDown (KeyEventArgs *args)
 			
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				// paste clipboard contents to the buffer
-				clipboard->AsyncGetText (RichTextArea::paste, this);
+				clipboard->AsyncGetText (RichTextBox::paste, this);
 			}
 			
 			handled = true;
@@ -647,7 +647,7 @@ RichTextArea::OnKeyDown (KeyEventArgs *args)
 				
 				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					// paste clipboard contents to the buffer
-					clipboard->AsyncGetText (RichTextArea::paste, this);
+					clipboard->AsyncGetText (RichTextBox::paste, this);
 				}
 				
 				handled = true;
@@ -685,7 +685,7 @@ RichTextArea::OnKeyDown (KeyEventArgs *args)
 }
 
 void
-RichTextArea::PostOnKeyDown (KeyEventArgs *args)
+RichTextBox::PostOnKeyDown (KeyEventArgs *args)
 {
 	MoonKeyEvent *event = args->GetEvent ();
 	int key = event->GetSilverlightKey ();
@@ -726,7 +726,7 @@ RichTextArea::PostOnKeyDown (KeyEventArgs *args)
 }
 
 void
-RichTextArea::OnKeyUp (KeyEventArgs *args)
+RichTextBox::OnKeyUp (KeyEventArgs *args)
 {
 	if (!is_read_only) {
 		if (im_ctx->FilterKeyPress (args->GetEvent()))
@@ -735,20 +735,20 @@ RichTextArea::OnKeyUp (KeyEventArgs *args)
 }
 
 bool
-RichTextArea::DeleteSurrounding (int offset, int n_chars)
+RichTextBox::DeleteSurrounding (int offset, int n_chars)
 {
 	// FIXME: implement this
 	return true;
 }
 
 gboolean
-RichTextArea::delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data)
+RichTextBox::delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data)
 {
-	return ((RichTextArea *) user_data)->DeleteSurrounding (offset, n_chars);
+	return ((RichTextBox *) user_data)->DeleteSurrounding (offset, n_chars);
 }
 
 bool
-RichTextArea::RetrieveSurrounding ()
+RichTextBox::RetrieveSurrounding ()
 {
 	// FIXME: implement this
 	//im_ctx->SetSurroundingText (text, -1, cursor - text);
@@ -757,25 +757,25 @@ RichTextArea::RetrieveSurrounding ()
 }
 
 gboolean
-RichTextArea::retrieve_surrounding (MoonIMContext *context, gpointer user_data)
+RichTextBox::retrieve_surrounding (MoonIMContext *context, gpointer user_data)
 {
-	return ((RichTextArea *) user_data)->RetrieveSurrounding ();
+	return ((RichTextBox *) user_data)->RetrieveSurrounding ();
 }
 
 void
-RichTextArea::Commit (const char *str)
+RichTextBox::Commit (const char *str)
 {
 	// FIXME: implement this
 }
 
 void
-RichTextArea::commit (MoonIMContext *context, const char *str, gpointer user_data)
+RichTextBox::commit (MoonIMContext *context, const char *str, gpointer user_data)
 {
-	((RichTextArea *) user_data)->Commit (str);
+	((RichTextBox *) user_data)->Commit (str);
 }
 
 void
-RichTextArea::ResetIMContext ()
+RichTextBox::ResetIMContext ()
 {
 	if (need_im_reset) {
 		im_ctx->Reset ();
@@ -784,7 +784,7 @@ RichTextArea::ResetIMContext ()
 }
 
 void
-RichTextArea::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
+RichTextBox::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 {
 	double x, y;
 	int cursor;
@@ -814,7 +814,7 @@ RichTextArea::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 }
 
 void
-RichTextArea::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
+RichTextBox::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 {
 	int cursor, start, end;
 	double x, y;
@@ -861,13 +861,13 @@ RichTextArea::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 }
 
 void
-RichTextArea::mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure)
+RichTextBox::mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((RichTextArea *) closure)->OnMouseLeftButtonMultiClick ((MouseButtonEventArgs *) args);
+	((RichTextBox *) closure)->OnMouseLeftButtonMultiClick ((MouseButtonEventArgs *) args);
 }
 
 void
-RichTextArea::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
+RichTextBox::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 {
 	if (captured)
 		ReleaseMouseCapture ();
@@ -878,7 +878,7 @@ RichTextArea::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 }
 
 void
-RichTextArea::OnMouseMove (MouseEventArgs *args)
+RichTextBox::OnMouseMove (MouseEventArgs *args)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -909,7 +909,7 @@ RichTextArea::OnMouseMove (MouseEventArgs *args)
 }
 
 void
-RichTextArea::OnLostFocus (RoutedEventArgs *args)
+RichTextBox::OnLostFocus (RoutedEventArgs *args)
 {
 	BatchPush ();
 	emit = NOTHING_CHANGED;
@@ -931,7 +931,7 @@ RichTextArea::OnLostFocus (RoutedEventArgs *args)
 }
 
 void
-RichTextArea::OnGotFocus (RoutedEventArgs *args)
+RichTextBox::OnGotFocus (RoutedEventArgs *args)
 {
 	focused = true;
 	
@@ -945,33 +945,33 @@ RichTextArea::OnGotFocus (RoutedEventArgs *args)
 }
 
 void
-RichTextArea::EmitCursorPositionChanged (double height, double x, double y)
+RichTextBox::EmitCursorPositionChanged (double height, double x, double y)
 {
-	//Emit (RichTextArea::CursorPositionChangedEvent, new CursorPositionChangedEventArgs (height, x, y));
+	//Emit (RichTextBox::CursorPositionChangedEvent, new CursorPositionChangedEventArgs (height, x, y));
 }
 
 void
-RichTextArea::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	RichTextBoxModelChangeType changed = RichTextBoxModelChangedNothing;
 	DependencyProperty *prop;
 	
-	if (args->GetProperty ()->GetOwnerType () != Type::RICHTEXTAREA) {
+	if (args->GetProperty ()->GetOwnerType () != Type::RICHTEXTBOX) {
 		Control::OnPropertyChanged (args, error);
 		return;
 	}
 	
-	if (args->GetId () == RichTextArea::AcceptsReturnProperty) {
+	if (args->GetId () == RichTextBox::AcceptsReturnProperty) {
 		// update accepts_return state
 		accepts_return = args->GetNewValue ()->AsBool ();
-	} else if (args->GetId () == RichTextArea::BaselineOffsetProperty) {
+	} else if (args->GetId () == RichTextBox::BaselineOffsetProperty) {
 		// propagate this to our view
 		changed = RichTextBoxModelChangedBaselineOffset;
-	} else if (args->GetId () == RichTextArea::CaretBrushProperty) {
+	} else if (args->GetId () == RichTextBox::CaretBrushProperty) {
 		// Note: if we wanted to be perfect, we could invalidate the
 		// blinking cursor rect if it is active... but is it that
 		// really important? I don't think so...
-	} else if (args->GetId () == RichTextArea::IsReadOnlyProperty) {
+	} else if (args->GetId () == RichTextBox::IsReadOnlyProperty) {
 		// update is_read_only state
 		is_read_only = args->GetNewValue ()->AsBool ();
 		
@@ -986,24 +986,24 @@ RichTextArea::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		
 		if (view)
 			view->SetEnableCursor (!is_read_only);
-	} else if (args->GetId () == RichTextArea::SelectionProperty) {
+	} else if (args->GetId () == RichTextBox::SelectionProperty) {
 		// FIXME: probably need to do stuff here...
 		changed = RichTextBoxModelChangedSelection;
-	} else if (args->GetId () == RichTextArea::TextAlignmentProperty) {
+	} else if (args->GetId () == RichTextBox::TextAlignmentProperty) {
 		changed = RichTextBoxModelChangedTextAlignment;
-	} else if (args->GetId () == RichTextArea::TextWrappingProperty) {
+	} else if (args->GetId () == RichTextBox::TextWrappingProperty) {
 		if (contentElement) {
 			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility"))) {
 				// If TextWrapping is set to Wrap, disable the horizontal scroll bars
 				if (args->GetNewValue ()->AsTextWrapping () == TextWrappingWrap)
 					contentElement->SetValue (prop, Value (ScrollBarVisibilityDisabled, Type::SCROLLBARVISIBILITY));
 				else
-					contentElement->SetValue (prop, GetValue (RichTextArea::HorizontalScrollBarVisibilityProperty));
+					contentElement->SetValue (prop, GetValue (RichTextBox::HorizontalScrollBarVisibilityProperty));
 			}
 		}
 		
 		changed = RichTextBoxModelChangedTextWrapping;
-	} else if (args->GetId () == RichTextArea::HorizontalScrollBarVisibilityProperty) {
+	} else if (args->GetId () == RichTextBox::HorizontalScrollBarVisibilityProperty) {
 		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
 			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility"))) {
@@ -1014,13 +1014,13 @@ RichTextArea::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 					contentElement->SetValue (prop, args->GetNewValue ());
 			}
 		}
-	} else if (args->GetId () == RichTextArea::VerticalScrollBarVisibilityProperty) {
+	} else if (args->GetId () == RichTextBox::VerticalScrollBarVisibilityProperty) {
 		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
 			if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
 				contentElement->SetValue (prop, args->GetNewValue ());
 		}
-	} else if (args->GetId () == RichTextArea::XamlProperty) {
+	} else if (args->GetId () == RichTextBox::XamlProperty) {
 		// FIXME: need to sync the XAML to Blocks
 	}
 	
@@ -1031,23 +1031,23 @@ RichTextArea::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 }
 
 void
-RichTextArea::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+RichTextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop->GetOwnerType () != Type::RICHTEXTAREA)
+	if (prop->GetOwnerType () != Type::RICHTEXTBOX)
 		Control::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void
-RichTextArea::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+RichTextBox::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	// FIXME: need to sync the Blocks to XAML
 	Control::OnCollectionChanged (col, args);
 }
 
 void
-RichTextArea::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+RichTextBox::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (!PropertyHasValueNoAutoCreate (RichTextArea::BlocksProperty, col)) {
+	if (!PropertyHasValueNoAutoCreate (RichTextBox::BlocksProperty, col)) {
 		Control::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -1059,28 +1059,28 @@ RichTextArea::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 }
 
 void
-RichTextArea::OnApplyTemplate ()
+RichTextBox::OnApplyTemplate ()
 {
 	DependencyProperty *prop;
 	
 	contentElement = GetTemplateChild ("ContentElement");
 	
 	if (contentElement == NULL) {
-		g_warning ("RichTextArea::OnApplyTemplate: no ContentElement found");
+		g_warning ("RichTextBox::OnApplyTemplate: no ContentElement found");
 		Control::OnApplyTemplate ();
 		return;
 	}
 	
 	// XXX LAME these should be template bindings in the textbox template.
 	if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
-		contentElement->SetValue (prop, GetValue (RichTextArea::VerticalScrollBarVisibilityProperty));
+		contentElement->SetValue (prop, GetValue (RichTextBox::VerticalScrollBarVisibilityProperty));
 	
 	if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility"))) {
 		// If TextWrapping is set to Wrap, disable the horizontal scroll bars
 		if (GetTextWrapping () == TextWrappingWrap)
 			contentElement->SetValue (prop, Value (ScrollBarVisibilityDisabled, Type::SCROLLBARVISIBILITY));
 		else
-			contentElement->SetValue (prop, GetValue (RichTextArea::HorizontalScrollBarVisibilityProperty));
+			contentElement->SetValue (prop, GetValue (RichTextBox::HorizontalScrollBarVisibilityProperty));
 	}
 	
 	// Create our view control
@@ -1113,25 +1113,25 @@ RichTextArea::OnApplyTemplate ()
 }
 
 void
-RichTextArea::SelectAll ()
+RichTextBox::SelectAll ()
 {
 	// FIXME: implement this
 }
 
 bool
-RichTextArea::CanUndo ()
+RichTextBox::CanUndo ()
 {
 	return !undo->IsEmpty ();
 }
 
 bool
-RichTextArea::CanRedo ()
+RichTextBox::CanRedo ()
 {
 	return !redo->IsEmpty ();
 }
 
 void
-RichTextArea::Undo ()
+RichTextBox::Undo ()
 {
 	//RichTextBoxUndoActionReplace *replace;
 	//RichTextBoxUndoActionInsert *insert;
@@ -1182,7 +1182,7 @@ RichTextArea::Undo ()
 }
 
 void
-RichTextArea::Redo ()
+RichTextBox::Redo ()
 {
 	//RichTextBoxUndoActionReplace *replace;
 	//RichTextBoxUndoActionInsert *insert;
@@ -1265,7 +1265,7 @@ RichTextBoxView::~RichTextBoxView ()
 	RemoveHandler (UIElement::MouseLeftButtonUpEvent, RichTextBoxView::mouse_left_button_up, this);
 	
 	if (textbox) {
-		textbox->RemoveHandler (RichTextArea::ModelChangedEvent, RichTextBoxView::model_changed, this);
+		textbox->RemoveHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
 		textbox->view = NULL;
 	}
 	
@@ -1680,7 +1680,7 @@ RichTextBoxView::mouse_left_button_up (EventObject *sender, EventArgs *args, gpo
 }
 
 void
-RichTextBoxView::SetTextBox (RichTextArea *textbox)
+RichTextBoxView::SetTextBox (RichTextBox *textbox)
 {
 	TextLayoutAttributes *attrs;
 	
@@ -1689,13 +1689,13 @@ RichTextBoxView::SetTextBox (RichTextArea *textbox)
 	
 	if (this->textbox) {
 		// remove the event handlers from the old textbox
-		this->textbox->RemoveHandler (RichTextArea::ModelChangedEvent, RichTextBoxView::model_changed, this);
+		this->textbox->RemoveHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
 	}
 	
 	this->textbox = textbox;
 	
 	if (textbox) {
-		textbox->AddHandler (RichTextArea::ModelChangedEvent, RichTextBoxView::model_changed, this);
+		textbox->AddHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
 		
 		// sync our state with the textbox
 		layout->SetTextAttributes (new List ());

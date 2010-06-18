@@ -1,5 +1,5 @@
 //
-// StartPrintEventHandler.cs
+// FullScreenOptions.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -26,8 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace System.Windows.Printing
-{
-	public delegate void StartPrintEventHandler (object sender, StartPrintEventArgs e);
+namespace System.Windows.Interop {
+	[Flags]
+	public enum FullScreenOptions {
+		None,
+		StaysFullScreenWhenUnfocused,
+	}
 }
 

@@ -1,3 +1,12 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TextBox.cs:
+	* Control.cs:
+	* PasswordBox.cs:
+	* RichTextBox.cs:
+	* RichTextArea.cs:
+	* WebBrowserBrush.cs: Updated to SL4 final API.
+
 2010-06-03  Alan McGovern  <amcgovern@novell.com>
 
 	* ValidationError.cs: Error content is an object not a string.

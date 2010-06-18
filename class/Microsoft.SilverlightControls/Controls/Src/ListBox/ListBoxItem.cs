@@ -33,6 +33,9 @@ namespace System.Windows.Controls
     [TemplateVisualStateAttribute(Name = "Selected", GroupName = "SelectionStates")]
     [TemplateVisualStateAttribute(Name = "SelectedUnfocused", GroupName = "SelectionStates")]
     [TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
+    [TemplateVisualStateAttribute(Name = "AfterLoaded", GroupName = "LayoutStates")]
+    [TemplateVisualStateAttribute(Name = "BeforeLoaded", GroupName = "LayoutStates")]
+    [TemplateVisualStateAttribute(Name = "BeforeUnloaded", GroupName = "LayoutStates")]
     public class ListBoxItem : ContentControl 
     { 
         /// <summary>

@@ -23,7 +23,12 @@
 //	Rolf Bjarne Kvinge (RKvinge@novell.com)
 //
 
+using System.Runtime.CompilerServices;
+
 namespace System.ComponentModel {
+#if NET_2_1
+	[TypeForwardedFrom ("System.Windows.Data, Version=2.0.5.0, Culture=Neutral, PublicKeyToken=31bf3856ad364e35")]
+#endif
 	public enum NewItemPlaceholderPosition {
 		None,
 	}

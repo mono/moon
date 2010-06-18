@@ -50,9 +50,15 @@ namespace System.Windows.Media
 			throw new NotImplementedException ();
 		}
 
-		public void AcquireLicenseAsyncCancel ()
+		public void AcquireLicenseAsync (byte [] mediaHeader)
 		{
-			Console.WriteLine ("System.Windows.Media.LicenseAcquirer.AcquireLicenseAsyncCancel: NIEX");
+			Console.WriteLine ("System.Windows.Media.LicenseAcquirer.AcquireLicenseAsync: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public void CancelAsync ()
+		{
+			Console.WriteLine ("System.Windows.Media.LicenseAcquirer.CancelAsync: NIEX");
 			throw new NotImplementedException ();
 		}
 
@@ -62,13 +68,13 @@ namespace System.Windows.Media
 			throw new NotImplementedException ();
 		}
 
-		public string CustomData {
+		public string ChallengeCustomData {
 			get {
-				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.get_CustomData: NIEX");
+				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.get_ChallengeCustomData: NIEX");
 				throw new NotImplementedException ();
 			}
 			set {
-				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.set_CustomData: NIEX");
+				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.set_ChallengeCustomData: NIEX");
 				throw new NotImplementedException ();
 			}
 		}

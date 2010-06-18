@@ -24,9 +24,6 @@ public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	PrintDocument ();
 
-	/* @PropertyType=string,GenerateAccessors */
-	const static int DocumentNameProperty;
-
 	/* @DelegateType=EventHandler<EndPrintEventArgs> */
 	const static int EndPrintEvent;
 
@@ -36,8 +33,8 @@ public:
 	/* @DelegateType=EventHandler<PrintPageEventArgs> */
 	const static int PrintPageEvent;
 
-	/* @DelegateType=EventHandler<StartPrintEventArgs> */
-	const static int StartPrintEvent;
+	/* @DelegateType=EventHandler<BeginPrintEventArgs> */
+	const static int BeginPrintEvent;
 
 	const char *GetDocumentName ();
 	void SetDocumentName (const char *name);

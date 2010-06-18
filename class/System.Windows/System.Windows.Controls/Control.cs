@@ -26,6 +26,7 @@
 
 using Mono;
 using Mono.Xaml;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -459,6 +460,28 @@ namespace System.Windows.Controls {
 			Console.WriteLine ("System.Windows.Controls.OnDrop (): NIEX");
 			throw new NotImplementedException ();
 		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		protected virtual void OnManipulationStarted (ManipulationStartedEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.OnManipulationStarted (): NIEX");
+			throw new NotImplementedException ();
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		protected virtual void OnManipulationDelta (ManipulationDeltaEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.OnManipulationDelta (): NIEX");
+			throw new NotImplementedException ();
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		protected virtual void OnManipulationCompleted (ManipulationCompletedEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.OnManipulationCompleted (): NIEX");
+			throw new NotImplementedException ();
+		}
+
 		#region UIA Events
 
 		internal event DependencyPropertyChangedEventHandler UIAIsTabStopChanged;

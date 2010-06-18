@@ -152,7 +152,7 @@ class RichTextBoxView;
 
 /* @Namespace=System.Windows.Controls */
 /* @ContentProperty=Blocks */
-class RichTextArea : public Control {
+class RichTextBox : public Control {
  protected:
 	friend class RichTextBoxView;
 	friend class TextSelection;
@@ -261,7 +261,7 @@ class RichTextArea : public Control {
 	//
 	const static int ModelChangedEvent;
 	
-	virtual ~RichTextArea ();
+	virtual ~RichTextBox ();
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -288,7 +288,7 @@ class RichTextArea : public Control {
 	const static int XamlProperty;
 	
 	/* @GeneratePInvoke,GenerateCBinding */
-	RichTextArea ();
+	RichTextBox ();
 	
 	//
 	// Overrides
@@ -380,7 +380,7 @@ class RichTextArea : public Control {
 
 /* @Namespace=Microsoft.Internal */
 class RichTextBoxView : public FrameworkElement {
-	RichTextArea *textbox;
+	RichTextBox *textbox;
 	glong blink_timeout;
 	TextLayout *layout;
 	Rect cursor;
@@ -452,8 +452,8 @@ class RichTextBoxView : public FrameworkElement {
 	//
 	// Property Accessors
 	//
-	RichTextArea *GetTextBox () { return textbox; }
-	void SetTextBox (RichTextArea *textbox);
+	RichTextBox *GetTextBox () { return textbox; }
+	void SetTextBox (RichTextBox *textbox);
 	
 	bool GetEnableCursor () { return enable_cursor ? true : false; }
 	void SetEnableCursor (bool enable);

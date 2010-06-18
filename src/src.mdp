@@ -326,6 +326,10 @@
     <File subtype="Code" buildaction="Nothing" name="network.h" />
     <File subtype="Code" buildaction="Nothing" name="network-curl.h" />
     <File subtype="Code" buildaction="Compile" name="network-curl.cpp" />
+    <File subtype="Code" buildaction="Compile" name="richtextbox.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="richtextbox.h" />
+    <File subtype="Code" buildaction="Compile" name="textelement.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="textelement.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

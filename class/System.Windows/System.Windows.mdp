@@ -623,12 +623,9 @@
     <File subtype="Code" buildaction="Nothing" name="System.Windows.Printing/ChangeLog" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/PrintDocument.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/EndPrintEventArgs.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/EndPrintEventHandler.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/PrintPageEventArgs.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/PrintPageEventHandler.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/StartPrintEventArgs.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/StartPrintEventHandler.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/RichTextArea.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Printing/BeginPrintEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/RichTextBox.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/CollectionViewGroup.cs" />
     <File subtype="Directory" buildaction="Compile" name="MS.Internal.ComAutomation" />
     <File subtype="Code" buildaction="Compile" name="System.ComponentModel/IEditableCollectionView.cs" />
@@ -674,10 +671,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/Touch.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/TouchFrameEventArgs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/TouchFrameEventHandler.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationEvent.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationEventArgs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationEventMetaObjectProvider.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationFactory.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationMetaObjectProvider.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationMetaObjectProviderAwaitingIndex.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationMetaObjectProviderBase.cs" />
@@ -691,7 +685,6 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/MediaLicense.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoCaptureDeviceCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/ContentKeyType.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/ComAutomationEventHandler.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/HyperlinkButton.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Orientation.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/WindowStartupLocation.cs" />
@@ -732,6 +725,49 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/EditableCollectionView.cs" />
     <File subtype="Code" buildaction="Compile" name="System.ComponentModel/DataErrorsChangedEventArgs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.ComponentModel/INotifyDataErrorInfo.cs" />
+    <File subtype="Directory" buildaction="Compile" name="System.Windows.Automation.Text" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Text/TextUnit.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Text/TextPatternRangeEndPoint.cs" />
+    <File subtype="Directory" buildaction="Compile" name="System.Windows.Navigation" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Navigation/LoadCompletedEventHandler.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Navigation/NavigatedEventHandler.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Navigation/NavigatingCancelEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Navigation/NavigatingCancelEventHandler.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Navigation/NavigationEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Navigation/NavigationMode.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.ComponentModel/AlternateContentPropertyAttribute.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.ComponentModel/ClosingEventArgs.cs" />
+    <File subtype="Directory" buildaction="Compile" name="System.Runtime.InteropServices.Automation" />
+    <File subtype="Code" buildaction="Compile" name="System.Runtime.InteropServices.Automation/AutomationEvent.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Runtime.InteropServices.Automation/AutomationEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Runtime.InteropServices.Automation/AutomationFactory.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/ManipulationCompletedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/ManipulationDelta.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/ManipulationDeltaEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/ManipulationStartedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/ManipulationVelocities.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/WindowResizeEdge.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation/AutomationTextAttribute.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation/TextPatternIdentifiers.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation/SupportedTextSelection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/RichTextBoxAutomationPeer.cs" />
+    <File subtype="Directory" buildaction="Compile" name="System.Windows.Automation" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Provider/ITextProvider.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Provider/ITextRangeProvider.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/GlyphTypeface.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/InputScopeConverter.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/InputScopeName.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/InputScopeNameConverter.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/InputScopeNameValue.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Interop/FullScreenOptions.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/CaptureImageCompletedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/AudioFormatCollection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/Fonts.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/JoinDomainCompletedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/LeaveDomainCompletedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/Typeface.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoOutputConnector.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoOutputConnectorType.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

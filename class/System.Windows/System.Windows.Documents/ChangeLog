@@ -1,3 +1,11 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Inline.cs:
+	* Hyperlink.cs:
+	* FontSource.cs:
+	* TextElement.cs:
+	* TextSelection.cs: Update to SL4 final API.
+
 2010-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextPointer.cs: Fixed to subclass INativeEventObjectWrapper.

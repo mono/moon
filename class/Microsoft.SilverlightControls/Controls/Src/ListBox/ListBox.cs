@@ -519,5 +519,11 @@ namespace System.Windows.Controls
 	{
 		return new ListBoxAutomationPeer (this);
 	}
+
+		public void SelectAll ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.ListBox:.SelectAll ()\n");
+			throw new NotImplementedException ();
+		}
     } 
 }

@@ -32,6 +32,7 @@ namespace System.Windows {
 	public enum TextAlignment {
 		Center,
 		Left,
-		Right
+		Right,
+		Justify,
 	}
 }

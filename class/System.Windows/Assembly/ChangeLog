@@ -1,3 +1,7 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* AssemblyInfo.cs: Update to SL4 final API.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* AssemblyInfo.cs: Update to SL4 beta API.

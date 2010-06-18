@@ -569,6 +569,12 @@ public:
 	const static int DragOverEvent;
 	/* @DelegateType=DragEventHandler */
 	const static int DropEvent;
+	/* @DelegateType=EventHandler<ManipulationStartedEventArgs>,GenerateManagedEventField=true,Browsable=Never */
+	const static int ManipulationStartedEvent;
+	/* @DelegateType=EventHandler<ManipulationDeltaEventArgs>,GenerateManagedEventField=true,Browsable=Never */
+	const static int ManipulationDeltaEvent;
+	/* @DelegateType=EventHandler<ManipulationCompletedEventArgs>,GenerateManagedEventField=true,Browsable=Never */
+	const static int ManipulationCompletedEvent;
 
 	// these we turn off generation for and handle manually since
 	// they're desktop-only

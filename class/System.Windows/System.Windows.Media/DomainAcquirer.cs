@@ -79,30 +79,25 @@ namespace System.Windows.Media {
 			throw new NotImplementedException ();
 		}
 
-		public void DomainJoinAsyncCancel ()
+		public void CancelAsync ()
 		{
-			Console.WriteLine ("System.Windows.Media.DomainAcquirer.DomainJoinAsyncCancel: NIEX");
+			Console.WriteLine ("System.Windows.Media.DomainAcquirer.CancelAsync: NIEX");
 			throw new NotImplementedException ();			
 		}
 
-		public void DomainLeaveAsyncCancel ()
-		{
-			Console.WriteLine ("System.Windows.Media.DomainAcquirer.DomainLeaveAsyncCancel: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public string CustomData {
+		public string ChallengeCustomData {
 			get {
-				Console.WriteLine ("System.Windows.Media.DomainAcquirer.get_CustomData: NIEX");
+				Console.WriteLine ("System.Windows.Media.DomainAcquirer.get_ChallengeCustomData: NIEX");
 				throw new NotImplementedException ();
 			}
 			set {
-				Console.WriteLine ("System.Windows.Media.DomainAcquirer.set_CustomData: NIEX");
+				Console.WriteLine ("System.Windows.Media.DomainAcquirer.set_ChallengeCustomData: NIEX");
 				throw new NotImplementedException ();
 			}
 		}
 
-		public event EventHandler<DomainOperationCompletedEventArgs> DomainOperationCompleted;
+		public event EventHandler<JoinDomainCompletedEventArgs> JoinDomainCompleted;
+		public event EventHandler<LeaveDomainCompletedEventArgs> LeaveDomainCompleted;
 	}
 }
 

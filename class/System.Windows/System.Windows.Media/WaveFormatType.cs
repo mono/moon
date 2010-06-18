@@ -30,7 +30,7 @@ using System;
 
 namespace System.Windows.Media {
 	public enum WaveFormatType {
-		PCM = 1,
+		Pcm = 1,
 	}
 }
 

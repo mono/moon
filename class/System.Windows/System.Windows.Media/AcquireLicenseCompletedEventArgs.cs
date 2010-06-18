@@ -39,9 +39,9 @@ namespace System.Windows.Media {
 			
 		}
 
-		public string CustomData {
+		public string ResponseCustomData {
 			get {
-				Console.WriteLine ("System.Windows.Media.AcquireLicenseCompletedEventArgs.get_CustomData: NIEX");
+				Console.WriteLine ("System.Windows.Media.AcquireLicenseCompletedEventArgs.get_ResponseCustomData: NIEX");
 				throw new NotImplementedException ();
 			}
 		}

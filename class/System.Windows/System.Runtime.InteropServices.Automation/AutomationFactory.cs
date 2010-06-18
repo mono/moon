@@ -1,5 +1,5 @@
-// 
-// ComAutomationEventHandler.cs
+//
+// ComAutomationFactory.cs
 // 
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -29,9 +29,42 @@
 #if NET_2_1 // couldn't make it build with the 3.0 profile
 
 using System;
+using System.ComponentModel;
 
-namespace System.Windows.Interop {
-	public delegate void ComAutomationEventHandler (object sender, ComAutomationEventArgs e);
+namespace System.Runtime.InteropServices.Automation {
+	public static class AutomationFactory {
+		public static dynamic CreateObject (string progID)
+		{
+			Console.WriteLine ("System.Runtime.InteropServices.Automation.AutomationFactory.CreateObject: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public static T CreateObject<T> ()
+		{
+			Console.WriteLine ("System.Runtime.InteropServices.Automation.AutomationFactory.CreateObject<T>: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public static dynamic GetObject (string progID)
+		{
+			Console.WriteLine ("System.Runtime.InteropServices.Automation.AutomationFactory.GetObject: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public static AutomationEvent GetEvent (object comAutomationObject, string eventName)
+		{
+			Console.WriteLine ("System.Runtime.InteropServices.Automation.AutomationFactory.GetEvent: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public static bool IsAvailable {
+			get {
+				Console.WriteLine ("System.Runtime.InteropServices.Automation.AutomationFactory.get_IsAvailable: not implemented (returning false);");
+				return false;
+			}
+		}
+	}
 }
 
 #endif

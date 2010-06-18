@@ -1,3 +1,12 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Content.cs:
+	* FullScreenOptions.cs:
+	* ComAutomationEvent.cs:
+	* ComAutomationFactory.cs:
+	* ComAutomationEventArgs.cs:
+	* ComAutomationEventHandler.cs: Update to SL4 final API.
+
 2010-05-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SilverlightHost.cs: Move InitParams initialization here (and

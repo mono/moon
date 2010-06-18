@@ -80,12 +80,6 @@ namespace System.Windows.Documents {
 		{
 			return NativeMethods.event_object_get_object_type (native);
 		}
-		
-		public bool CanInsert (TextElement element)
-		{
-			Console.WriteLine ("System.Windows.Documents.TextSelection.CanInsert: () NIEX");
-			throw new NotImplementedException ();
-		}
 
 		public object GetPropertyValue (DependencyProperty formattingProperty)
 		{
@@ -93,15 +87,21 @@ namespace System.Windows.Documents {
 			throw new NotImplementedException ();
 		}
 
-		public void SetPropertyValue (DependencyProperty formattingProperty, object value)
+		public void ApplyPropertyValue (DependencyProperty formattingProperty, object value)
 		{
-			Console.WriteLine ("System.Windows.Documents.TextSelection.SetPropertyValue: () NIEX");
+			Console.WriteLine ("System.Windows.Documents.TextSelection.ApplyPropertyValue: () NIEX");
 			throw new NotImplementedException ();
 		}
 
 		public void Insert (TextElement element)
 		{
 			Console.WriteLine ("System.Windows.Documents.TextSelection.Insert: () NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public void Select (TextPointer anchorPosition, TextPointer movingPosition)
+		{
+			Console.WriteLine ("System.Windows.Documents.TextSelection.Select: () NIEX");
 			throw new NotImplementedException ();
 		}
 
@@ -112,6 +112,31 @@ namespace System.Windows.Documents {
 			}
 			set {
 				Console.WriteLine ("System.Windows.Documents.TextSelection.set_Text: () NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public string Xaml {
+			get {
+				Console.WriteLine ("System.Windows.Documents.TextSelection.get_Xaml: () NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Documents.TextSelection.set_Xaml: () NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public TextPointer End {
+			get {
+				Console.WriteLine ("System.Windows.Documents.TextSelection.get_End: () NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public TextPointer Start {
+			get {
+				Console.WriteLine ("System.Windows.Documents.TextSelection.get_Start: () NIEX");
 				throw new NotImplementedException ();
 			}
 		}

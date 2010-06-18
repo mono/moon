@@ -29,8 +29,8 @@
 using System;
 
 namespace System.Windows.Printing {
-	public sealed partial class PrintDocument : DependencyObject {
-		public void Print () {
+	public partial class PrintDocument : DependencyObject {
+		public void Print (string documentName) {
 			Console.WriteLine ("System.Windows.Printing.PrintDocument.Start (): NIEX");
 			throw new NotImplementedException ();
 		}

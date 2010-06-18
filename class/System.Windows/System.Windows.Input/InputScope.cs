@@ -27,11 +27,20 @@
 //
 
 using System;
+using System.Collections;
+using System.ComponentModel;
 
 namespace System.Windows.Input
 {
+	[EditorBrowsable (EditorBrowsableState.Never)]
+	[TypeConverter ("System.Windows.Input.InputScopeConverter")]
 	public partial class InputScope : DependencyObject {
-		
+	    public IList Names {
+			get {
+				Console.WriteLine ("NIEX: System.Windows.Input.InputScoepe:.get_Names");
+				throw new NotImplementedException ();
+			}
+		}
 	}
 }
 

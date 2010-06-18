@@ -41,7 +41,7 @@ namespace System.Windows.Controls {
 	[TemplateVisualState (Name = "InvalidFocused", GroupName = "ValidationStates")]
 	[TemplateVisualState (Name = "Disabled", GroupName = "CommonStates")]
 	[TemplateVisualState (Name = "Normal", GroupName = "CommonStates")]
-	public partial class RichTextArea : Control {
+	public partial class RichTextBox : Control {
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
 			base.OnGotFocus (e);
@@ -100,6 +100,42 @@ namespace System.Windows.Controls {
 		protected override void OnTextInputUpdate (System.Windows.Input.TextCompositionEventArgs e)
 		{
 			base.OnTextInputUpdate (e);
+		}
+
+		protected override void OnLostMouseCapture (System.Windows.Input.MouseEventArgs e)
+		{
+			base.OnLostMouseCapture (e);
+		}
+
+		protected override Automation.Peers.AutomationPeer OnCreateAutomationPeer ()
+		{
+			return base.OnCreateAutomationPeer ();
+		}
+
+		public void SelectAll ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.RichTextBox:.SelectAll");
+			throw new NotImplementedException ();
+		}
+
+		public TextPointer GetPositionFromPoint (Point point)
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.RichTextBox:.GetPositionFromPoint");
+			throw new NotImplementedException ();
+		}
+
+		public TextPointer ContentStart {
+			get {
+				Console.WriteLine ("NEIX: System.Windows.Controls.RichTextBox:.get_ContentStart");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public TextPointer ContentEnd {
+			get {
+				Console.WriteLine ("NEIX: System.Windows.Controls.RichTextBox:.get_ContentEnd");
+				throw new NotImplementedException ();
+			}
 		}
 	}
 }

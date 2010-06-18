@@ -1,3 +1,8 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs:
+	* GlobalInfo.cs: Add support for [Editor]Browsable attributes/metadata.
+
 2010-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* TypeReference.cs: MoonClipboardType -> int.

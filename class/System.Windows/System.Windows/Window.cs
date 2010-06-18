@@ -34,6 +34,24 @@ namespace System.Windows {
 			Console.WriteLine ("System.Windows.Window.Activate (): NIEX");
 			throw new NotImplementedException ();
 		}
+
+		public void Close ()
+		{
+			Console.WriteLine ("System.Windows.Window.Close (): NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public void DragMove ()
+		{
+			Console.WriteLine ("System.Windows.Window.DragMove (): NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public void DragResize (WindowResizeEdge resizeEdge)
+		{
+			Console.WriteLine ("System.Windows.Window.DragResize (): NIEX");
+			throw new NotImplementedException ();
+		}
 	}
 }
 

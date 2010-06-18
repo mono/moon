@@ -1,11 +1,3 @@
-// 
-// ComAutomationFactory.cs
-// 
-// Contact:
-//   Moonlight List (moonlight-list@lists.ximian.com)
-// 
-// Copyright 2010 Novell, Inc.
-// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -24,39 +16,37 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
-
-#if NET_2_1 // couldn't make it build with the 3.0 profile
+//
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+//
+// Contact:
+//   Moonlight Team (moonlight-list@lists.ximian.com)
+//
 
 using System;
 
-namespace System.Windows.Interop {
-	public static class ComAutomationFactory {
-		public static IDisposable CreateObject (string progID)
+namespace System.Windows.Media
+{
+	public sealed class GlyphTypeface {
+		internal GlyphTypeface ()
 		{
-			Console.WriteLine ("System.Windows.Interop.ComAutomationFactory.CreateObject: NIEX");
-			throw new NotImplementedException ();
+			// This ctor is here to prevent the compiler from adding a default, public ctor
 		}
 
-		public static IDisposable GetObject (string progID)
-		{
-			Console.WriteLine ("System.Windows.Interop.ComAutomationFactory.GetObject: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public static ComAutomationEvent GetEvent (object comAutomationObject, string eventName)
-		{
-			Console.WriteLine ("System.Windows.Interop.ComAutomationFactory.GetEvent: NIEX");
-			throw new NotImplementedException ();
-		}
-
-		public static bool IsAvailable {
+		// Properties
+		public string FontFileName {
 			get {
-				Console.WriteLine ("System.Windows.Interop.ComAutomationFactory.get_IsAvailable: not implemented (returning false);");
-				return false;
+				Console.WriteLine ("NIEX: System.Windows.Media.GlyphTypeface:get_FontFileName");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public double Version {
+			get {
+				Console.WriteLine ("NIEX: System.Windows.Media.GlyphTypeface:get_Version");
+				throw new NotImplementedException ();
 			}
 		}
 	}
 }
 
-#endif

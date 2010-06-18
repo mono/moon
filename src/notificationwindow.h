@@ -38,6 +38,9 @@ public:
 	const static int TopMostProperty;
 	/* @PropertyType=WindowState,ManagedFieldAccess=Internal */
 	const static int WindowStateProperty;
+
+	/* @DelegateType=EventHandler<ClosingEventArgs> */
+	const static int ClosingEvent;
 };
 
 /* @Namespace=System.Windows */

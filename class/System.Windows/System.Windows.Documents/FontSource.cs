@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Windows.Media;
 
 using Mono;
 
@@ -41,6 +42,12 @@ namespace System.Windows.Documents {
 				wrapper = new StreamWrapper (stream);
 			else
 				wrapper = null;
+		}
+
+		public FontSource (GlyphTypeface glyphtypeface)
+		{
+			Console.WriteLine ("System.Windows.Documents.FontSource:.ctor (GlyphTypeface)");
+			throw new NotImplementedException ();
 		}
 	}
 }

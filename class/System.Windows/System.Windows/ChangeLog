@@ -1,3 +1,10 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Window.cs:
+	* TextAlignment.cs:
+	* WindowResizeEdge.cs:
+	* DependencyObject.g.cs: Update to SL4 final API.
+
 2010-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* Clipboard.cs: implement all this using our pal api.

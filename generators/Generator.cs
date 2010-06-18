@@ -337,6 +337,7 @@ class Generator {
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Collections.Generic;");
+		text.AppendLine ("using System.ComponentModel;");
 		text.AppendLine ("using System.Windows;");
 		text.AppendLine ("using System.Windows.Controls;");
 		text.AppendLine ("using System.Windows.Documents;");
@@ -345,6 +346,7 @@ class Generator {
 		text.AppendLine ("using System.Windows.Markup;");
 		text.AppendLine ("using System.Windows.Media;");
 		text.AppendLine ("using System.Windows.Media.Animation;");
+		text.AppendLine ("using System.Windows.Navigation;");
 		text.AppendLine ("using System.Windows.Shapes;");
 		text.AppendLine ();
 
@@ -460,6 +462,12 @@ class Generator {
 
 				text.AppendLine ();
 
+				if (field.Annotations.ContainsKey ("Browsable")) {
+					text.Append ("\t\t[EditorBrowsable (EditorBrowsableState.");
+					text.Append (field.Annotations.GetValue ("Browsable"));
+					text.AppendLine (")]");
+				}
+
 				// property accessor
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedAccessorAccess ());
@@ -496,6 +504,11 @@ class Generator {
 				text.AppendLine ("\t\t}");
 
 				if (field.GenerateManagedEventField) {
+					if (field.Annotations.ContainsKey ("Browsable")) {
+						text.Append ("\t\t[EditorBrowsable (EditorBrowsableState.");
+						text.Append (field.Annotations.GetValue ("Browsable"));
+						text.AppendLine (")]");
+					}
 					text.Append ("\t\t");
 					text.Append (string.Format ("public static readonly RoutedEvent {0}Event = new RoutedEvent (EventIds.{1}_{2}Event);", field.EventName, field.ParentType.Name, field.EventName));
 					text.AppendLine ();
@@ -681,6 +694,7 @@ class Generator {
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
+		text.AppendLine ("using System.ComponentModel;");
 		text.AppendLine ("using System.Collections.Generic;");
 		text.AppendLine ("using System.Windows;");
 		text.AppendLine ("using System.Windows.Controls;");
@@ -757,6 +771,12 @@ class Generator {
 			foreach (FieldInfo field in fields) {
 				bool conv_int_to_double = field.GetDPManagedPropertyType (all) == "int" && field.GetDPPropertyType (all).Name == "double";
 
+				if (field.Annotations.ContainsKey ("Browsable")) {
+					text.Append ("\t\t[EditorBrowsable (EditorBrowsableState.");
+					text.Append (field.Annotations.GetValue ("Browsable"));
+					text.AppendLine (")]");
+				}
+
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedFieldAccess ());
 				text.Append (" static readonly DependencyProperty ");
@@ -780,6 +800,13 @@ class Generator {
 					continue;
 
 				text.AppendLine ();
+
+
+				if (field.Annotations.ContainsKey ("Browsable")) {
+					text.Append ("\t\t[EditorBrowsable (EditorBrowsableState.");
+					text.Append (field.Annotations.GetValue ("Browsable"));
+					text.AppendLine (")]");
+				}
 
 				// property accessor
 				text.Append ("\t\t");

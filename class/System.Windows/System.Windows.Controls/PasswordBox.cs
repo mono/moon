@@ -172,6 +172,11 @@ namespace System.Windows.Controls
 			base.OnTextInputUpdate (e);
 		}
 
+		protected override void OnLostMouseCapture (MouseEventArgs e)
+		{
+			base.OnLostMouseCapture (e);
+		}
+
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
 			return new PasswordBoxAutomationPeer (this);

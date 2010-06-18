@@ -98,6 +98,7 @@ namespace System.Windows {
 		internal FrameworkTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	[ContentProperty ("Source")]
 	partial class Icon {
 		public Icon () : base (SafeNativeMethods.icon_new (), true) {}
 		internal Icon (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -317,9 +318,9 @@ namespace System.Windows.Controls {
 	}
 
 	[ContentProperty ("Blocks")]
-	partial class RichTextArea {
-		public RichTextArea () : base (SafeNativeMethods.rich_text_area_new (), true) {}
-		internal RichTextArea (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	partial class RichTextBox {
+		public RichTextBox () : base (SafeNativeMethods.rich_text_box_new (), true) {}
+		internal RichTextBox (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class RowDefinition {
@@ -509,6 +510,12 @@ namespace System.Windows.Input {
 	partial class InputScope {
 		public InputScope () : base (SafeNativeMethods.input_scope_new (), true) {}
 		internal InputScope (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	[ContentProperty ("NameValue")]
+	partial class InputScopeName {
+		public InputScopeName () : base (SafeNativeMethods.input_scope_name_new (), true) {}
+		internal InputScopeName (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class StylusInfo {

@@ -344,6 +344,9 @@ class Hyperlink : public Span {
 	//
 	void SetMouseOverForeground (Brush *brush);
 	Brush *GetMouseOverForeground ();
+
+	/* @DelegateType=RoutedEventHandler */
+	const static int ClickEvent;
 };
 
 /* @Namespace=System.Windows.Documents */

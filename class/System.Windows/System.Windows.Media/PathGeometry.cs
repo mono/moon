@@ -32,6 +32,9 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class PathGeometry : Geometry {
-
+		public override string ToString ()
+		{
+			return base.ToString ();
+		}
 	}
 }

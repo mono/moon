@@ -1,3 +1,10 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Binding.cs:
+	* CollectionViewGroup.cs:
+	* CollectionViewSource.cs:
+	* PropertyGroupDescription.cs: Update to SL4 final API.
+
 2010-06-03  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: If the datasource implements

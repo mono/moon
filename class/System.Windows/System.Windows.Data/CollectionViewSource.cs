@@ -40,7 +40,7 @@ using System.Windows;
 
 namespace System.Windows.Data {
 
-	public partial class CollectionViewSource : DependencyObject, IDeferRefresh {
+	public partial class CollectionViewSource : DependencyObject, IDeferRefresh, ISupportInitialize {
 		public static readonly DependencyProperty SourceProperty =
 			DependencyProperty.Register ("Source", typeof (object), typeof (CollectionViewSource),
 							 new PropertyMetadata (null, SourceChanged));
@@ -183,5 +183,19 @@ namespace System.Windows.Data {
 		{
 			Refresh ();
 		}
+
+		#region ISupportInitialize implementation
+		void ISupportInitialize.BeginInit ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Data.CollectionViewSource:.ISupportInitialize.BeginInit");
+			throw new System.NotImplementedException();
+		}
+
+		void ISupportInitialize.EndInit ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Data.CollectionViewSource:.ISupportInitialize.EndInit");
+			throw new NotImplementedException ();
+		}
+		#endregion
 	}
 }

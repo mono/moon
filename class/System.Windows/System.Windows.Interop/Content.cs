@@ -65,7 +65,18 @@ namespace System.Windows.Interop {
 				NativeMethods.surface_set_full_screen (Deployment.Current.Surface.Native, value);
 			}
 		}
-		
+
+		public FullScreenOptions FullScreenOptions {
+			get {
+				Console.WriteLine ("NIEX: System.Windows.Interop.Content.get_FullScreenOptions");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("NIEX: System.Windows.Interop.Content.set_FullScreenOptions");
+				throw new NotImplementedException ();
+			}
+		}
+
 		public double ZoomFactor {
 			get {
 				return NativeMethods.surface_get_zoom_factor (Deployment.Current.Surface.Native);

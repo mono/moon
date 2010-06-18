@@ -45,6 +45,13 @@ namespace System.Windows.Media {
                                 NativeMethods.event_object_unref (raw);
                 }
 
+		public CaptureImageCompletedEventArgs (WriteableBitmap image)
+			: base (null, false, null)
+		{
+			Console.WriteLine ("NIEX: System.Windows.Media.CaptureImageCompletedEventArgs:.ctor");
+			throw new NotImplementedException ();
+		}
+
                 ~CaptureImageCompletedEventArgs ()
                 {
                         Free ();

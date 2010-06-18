@@ -1,0 +1,8 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NavigationMode.cs:
+	* NavigationEventArgs.cs:
+	* NavigatedEventHandler.cs:
+	* NavigatingCancelEventArgs.cs:
+	* NavigatingCancelEventHandler.cs: Update to SL4 final API.
+

@@ -41,6 +41,8 @@ namespace System.Windows.Input {
 		Eraser,
 		SizeNS,
 		SizeWE,
+		SizeNESW,
+		SizeNWSE,
 		None	
 	}
 

@@ -1,4 +1,3 @@
 # [SecuritySafeCritical] needed inside System.Core to call all [SecurityCritical] methods
-# 1 methods
+# 0 methods
 
-+SSC-M: System.Void System.Linq.Expressions.EmitContext::.ctor(System.Linq.Expressions.CompilationContext,System.Linq.Expressions.EmitContext,System.Linq.Expressions.LambdaExpression)

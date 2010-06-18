@@ -30,10 +30,16 @@ using System;
 using System.Windows.Media;
 
 namespace System.Windows.Controls {
-	public partial class WebBrowserBrush : TileBrush {
+	public sealed partial class WebBrowserBrush : TileBrush {
 
 		public void Redraw()
 		{
+			throw new NotImplementedException ();
+		}
+
+		public void SetSource (WebBrowser source)
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.WebBrowserBrush:.SetSource");
 			throw new NotImplementedException ();
 		}
 	}

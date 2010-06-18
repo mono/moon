@@ -34,9 +34,9 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public DateTime ExpirationDate {
+		public DateTimeOffset? ExpirationDate {
 			get {
-				Console.WriteLine ("System.Windows.Media.MediaLicense.get_ExpirationData: NIEX");
+				Console.WriteLine ("System.Windows.Media.MediaLicense.get_ExpirationDate: NIEX");
 				throw new NotImplementedException ();
 			}
 		}

@@ -1,3 +1,24 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Fonts.cs:
+	* Typeface.cs:
+	* PathGeometry.cs:
+	* MediaLicense.cs:
+	* GlyphTypeface.cs:
+	* WaveFormatType.cs:
+	* DomainAcquirer.cs:
+	* ContentKeyType.cs:
+	* LicenseAcquirer.cs:
+	* LicenseManagement.cs:
+	* VideoOutputConnector.cs:
+	* VideoOutputConnectorType.cs:
+	* MediaSampleAttributeKeys.cs:
+	* JoinDomainCompletedEventArgs.cs:
+	* LeaveDomainCompletedEventArgs.cs:
+	* CaptureImageCompletedEventArgs.cs:
+	* AcquireLicenseCompletedEventArgs.cs:
+	* DomainOperationCompletedEventArgs.cs: Update to SL4 final API.
+
 2010-06-02  Jackson Harper  <jackson@ximian.com>
 
 	* ImageSourceConverter.cs: remove the override/new stuff. I don't

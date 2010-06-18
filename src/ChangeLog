@@ -1,5 +1,21 @@
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp:
+	* enums.h:
+	* enums.cpp:
+	* textbox.h:
+	* printing.h:
+	* uielement.h:
+	* webbrowser.h:
+	* inputscope.h:
+	* deployment.h:
+	* richtextbox.h:
+	* textelement.h:
+	* richtextbox.cpp:
+	* notificationwindow.h: Update to SL4 final API.
+
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* printing.h-disabled: Remove old file.
 
 2010-06-17  Sebastien Pouliot  <sebastien@ximian.com>

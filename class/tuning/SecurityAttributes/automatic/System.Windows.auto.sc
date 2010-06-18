@@ -1100,31 +1100,31 @@
 +SC-M: System.Void Mono.NativeMethods::plugin_instance_set_max_frame_rate(System.IntPtr,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_on_got_focus(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_on_got_focus(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_on_key_down(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_on_key_down(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_on_key_up(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_on_key_up(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_on_lost_focus(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_on_lost_focus(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_on_mouse_left_button_down(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_on_mouse_left_button_down(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_on_mouse_left_button_up(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_on_mouse_left_button_up(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_on_mouse_move(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_on_mouse_move(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_post_on_key_down(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_post_on_key_down(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::rich_text_area_select_all(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::rich_text_box_select_all(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::routed_event_args_set_handled(System.IntPtr,System.Boolean)

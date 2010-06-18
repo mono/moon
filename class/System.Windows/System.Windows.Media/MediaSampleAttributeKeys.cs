@@ -35,6 +35,7 @@ namespace System.Windows.Media
 		KeyFrameFlag,
 		DRMInitializationVector,
 		FrameWidth,
-		FrameHeight
+		FrameHeight,
+		DRMSubSampleMapping,
 	}
 }

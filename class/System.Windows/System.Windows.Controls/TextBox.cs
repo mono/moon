@@ -25,6 +25,7 @@
 //
 
 using Mono;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -165,11 +166,6 @@ namespace System.Windows.Controls {
 			ChangeVisualState ();
 			base.OnMouseLeave (e);
 		}
-		
-		protected override void OnMouseWheel (MouseWheelEventArgs e)
-		{
-			base.OnMouseWheel (e);
-		}
 
 		protected override void OnTextInput (TextCompositionEventArgs e)
 		{
@@ -201,7 +197,12 @@ namespace System.Windows.Controls {
 			base.OnLostFocus (e);
 			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
 		}
-		
+
+		protected override void OnLostMouseCapture (MouseEventArgs e)
+		{
+			base.OnLostMouseCapture (e);
+		}
+
 		public string Text {
 			get {
 				return (string)GetValue (TextProperty) ?? "";
@@ -228,7 +229,21 @@ namespace System.Windows.Controls {
 		{
 			NativeMethods.text_box_base_select_all (native);
 		}
-		
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public Rect GetRectFromCharacterIndex (int charIndex)
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.TextBox:.GetRectFromCharacterIndex");
+			throw new NotImplementedException ();
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public Rect GetRectFromCharacterIndex (int charIndex, bool trailingEdge)
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.TextBox:.GetRectFromCharacterIndex");
+			throw new NotImplementedException ();
+		}
+
 		void OnCursorPositionChanged (object sender, CursorPositionChangedEventArgs args)
 		{
 			if (contentElement == null)

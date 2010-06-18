@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using Mono;
 
 namespace System.Windows.Data {
-	public class Binding : BindingBase {
+	public class Binding : BindingBase, ISupportInitialize {
 
 		bool bindsDirectlyToSource;
 		IValueConverter converter;
@@ -192,5 +192,19 @@ namespace System.Windows.Data {
 			Path = new PropertyPath (path);
 			UpdateSourceTrigger = UpdateSourceTrigger.Default;
 		}
+
+		#region ISupportInitialize implementation
+		void ISupportInitialize.BeginInit ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Data.Binding:.ISupportInitialize.BeginInit");
+			throw new System.NotImplementedException();
+		}
+
+		void ISupportInitialize.EndInit ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Data.Binding:.ISupportInitialize.EndInit");
+			throw new NotImplementedException ();
+		}
+		#endregion
 	}
 }

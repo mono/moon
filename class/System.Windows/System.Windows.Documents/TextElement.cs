@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Documents {
 	public abstract partial class TextElement : DependencyObject {
@@ -38,6 +40,41 @@ namespace System.Windows.Documents {
 
 		public string Name {
 			get { return (string) GetValue (FrameworkElement.NameProperty); }
+		}
+
+
+		protected virtual AutomationPeer OnCreateAutomationPeer()
+		{
+			Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.OnCreateAutomationPeer");
+			throw new NotImplementedException ();;
+		}
+
+		public TextPointer ContentStart {
+			get {
+				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ContentStart");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public TextPointer ContentEnd {
+			get {
+				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ContentEnd");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public TextPointer ElementStart {
+			get {
+				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ElementStart");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public TextPointer ElementEnd {
+			get {
+				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ElementEnd");
+				throw new NotImplementedException ();
+			}
 		}
 	}
 }

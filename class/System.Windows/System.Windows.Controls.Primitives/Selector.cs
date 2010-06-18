@@ -37,7 +37,7 @@ using Mono;
 using System.Collections.ObjectModel;
 
 namespace System.Windows.Controls.Primitives {
-	public abstract class Selector : ItemsControl {
+	public abstract class Selector : ItemsControl, ISupportInitialize {
 		internal const string TemplateScrollViewerName = "ScrollViewer";
 
 		internal static readonly DependencyProperty IsSelectionActiveProperty =
@@ -421,12 +421,24 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal virtual void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
 		{
-			
 		}
 		
 		internal virtual void NotifyListItemLostFocus(ListBoxItem listBoxItemOldFocus)
 		{
 			
 		}
+		#region ISupportInitialize implementation
+		void ISupportInitialize.BeginInit ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.Primitive.Selector:.ISupportInitialize.BeginInit");
+			throw new System.NotImplementedException();
+		}
+
+		void ISupportInitialize.EndInit ()
+		{
+			Console.WriteLine ("NIEX: System.Windows.Controls.Primitive.Selector:.ISupportInitialize.EndInit");
+			throw new NotImplementedException ();
+		}
+		#endregion
 	}
 }

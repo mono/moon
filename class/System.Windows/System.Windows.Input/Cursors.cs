@@ -43,6 +43,8 @@ namespace System.Windows.Input {
 			SizeWE = new Cursor (CursorType.SizeWE);
 			Stylus = new Cursor (CursorType.Stylus);
 			Wait = new Cursor (CursorType.Wait);
+			SizeNESW = new Cursor (CursorType.SizeNESW);
+			SizeNWSE = new Cursor (CursorType.SizeNWSE);
 		}
 		
 		internal static Cursor FromEnum (CursorType type)
@@ -66,6 +68,10 @@ namespace System.Windows.Input {
 				return Stylus;
 			case CursorType.Wait:
 				return Wait;
+			case CursorType.SizeNESW:
+				return SizeNESW;
+			case CursorType.SizeNWSE:
+				return SizeNWSE;
 			case CursorType.Default:
 			default:
 				return null;
@@ -97,6 +103,12 @@ namespace System.Windows.Input {
 			get; private set;
 		}
 		public static Cursor Stylus {
+			get; private set;
+		}
+		public static Cursor SizeNESW {
+			get; private set;
+		}
+		public static Cursor SizeNWSE {
 			get; private set;
 		}
 	}

@@ -38,13 +38,6 @@ namespace System.Windows.Media {
 			throw new NotImplementedException ();
 		}
 
-		public bool IsDomainJoin {
-			get {
-				Console.WriteLine ("System.Windows.Media.DomainOperationCompletedEventArgs.get_IsDomainJoin: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
-
 		public Guid ServiceId {
 			get {
 				Console.WriteLine ("System.Windows.Media.DomainOperationCompletedEventArgs.get_ServiceId: NIEX");
@@ -59,9 +52,9 @@ namespace System.Windows.Media {
 			}
 		}
 
-		public string CustomData {
+		public string ResponseCustomData {
 			get {
-				Console.WriteLine ("System.Windows.Media.DomainOperationCompletedEventArgs.get_CustomData: NIEX");
+				Console.WriteLine ("System.Windows.Media.DomainOperationCompletedEventArgs.get_ResponseCustomData: NIEX");
 				throw new NotImplementedException ();
 			}
 		}

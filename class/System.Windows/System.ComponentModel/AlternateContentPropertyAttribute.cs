@@ -1,11 +1,3 @@
-// 
-// ComAutomationEventArgs.cs
-// 
-// Contact:
-//   Moonlight List (moonlight-list@lists.ximian.com)
-// 
-// Copyright 2010 Novell, Inc.
-// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -24,25 +16,15 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+//
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+//
+// Contact:
+//   Moonlight Team (moonlight-list@lists.ximian.com)
+//
 
-#if NET_2_1 // couldn't make it build with the 3.0 profile
-
-using System;
-
-namespace System.Windows.Interop {
-	public sealed class ComAutomationEventArgs : EventArgs {
-		internal ComAutomationEventArgs ()
-		{
-		}
-
-		public object [] Arguments {
-			get {
-				Console.WriteLine ("System.Windows.Interop.ComAutomationEventArgs.get_Arguments: NIEX");
-				throw new NotImplementedException ();
-			}
-		}
+namespace System.ComponentModel {
+	[AttributeUsage (AttributeTargets.Property)]
+	public sealed class AlternateContentPropertyAttribute : Attribute {
 	}
 }
-
-#endif

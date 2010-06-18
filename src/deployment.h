@@ -141,6 +141,7 @@ protected:
 };
 
 /* @Namespace=System.Windows */
+/* @ContentProperty=Source */
 class Icon : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */

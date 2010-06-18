@@ -1,3 +1,9 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Core.auto.ssc:
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: Update to SL4 final API.
+
 2010-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.sc: regenerated forgotten change

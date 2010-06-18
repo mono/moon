@@ -27,9 +27,9 @@ public:
 	/* @PropertyType=Uri */
 	const static int SourceProperty;
 
-	/* @DelegateType=EventHandler */
+	/* @DelegateType=LoadCompletedEventHandler */
 	const static int LoadCompletedEvent;
-	/* @DelegateType=NotifyEventHandler */
+	/* @DelegateType=EventHandler<NotifyEventArgs> */
 	const static int ScriptNotifyEvent;
 };
 

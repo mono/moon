@@ -68,6 +68,13 @@ namespace System.Windows.Printing {
 				throw new NotImplementedException ();
 			}
 		}
+
+		public Thickness PageMargins {
+			get {
+				Console.WriteLine ("System.Windows.Printing.PrintPageEventArgs.get_PageMargins: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
 	}
 }
 

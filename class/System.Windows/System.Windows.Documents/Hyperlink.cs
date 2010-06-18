@@ -28,9 +28,14 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Documents {
 
 	public sealed partial class Hyperlink : Span {
+		protected override AutomationPeer OnCreateAutomationPeer()
+		{
+		    return base.OnCreateAutomationPeer ();
+		}
 	}
 }

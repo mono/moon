@@ -29,8 +29,12 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace System.Windows.Data {
+#if NET_2_1
+	[TypeForwardedFrom ("System.Windows.Data, Version=2.0.5.0, Culture=Neutral, PublicKeyToken=31bf3856ad364e35")]
+#endif
 	public abstract class CollectionViewGroup : INotifyPropertyChanged {
 
 		protected event PropertyChangedEventHandler PropertyChanged;

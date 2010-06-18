@@ -42,5 +42,10 @@ namespace System.Windows.Documents {
 		public static readonly new DependencyProperty ForegroundProperty = TextElement.ForegroundProperty;
 		public static readonly new DependencyProperty LanguageProperty = TextElement.LanguageProperty;
 		public static readonly new DependencyProperty TextDecorationsProperty = TextElement.TextDecorationsProperty;
+
+		public TextDecorationCollection TextDecorations {
+			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
+			set { SetValue (TextDecorationsProperty, value); }
+		}
 	}
 }

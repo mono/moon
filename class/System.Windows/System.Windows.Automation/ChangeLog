@@ -1,0 +1,6 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TextPatternIdentifiers.cs:
+	* SupportedTextSelection.cs:
+	* AutomationTextAttribute.cs: Update to SL4 final API.
+

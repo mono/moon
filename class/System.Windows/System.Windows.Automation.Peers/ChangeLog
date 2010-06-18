@@ -1,3 +1,8 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* PatternInterface.cs:
+	* RichTextBoxAutomationPeer.cs: Update to SL4 final API.
+
 2010-03-19  Mario Carrion  <mcarrion@novell.com>
 
 	* ItemAutomationPeer.cs: Fixes crash when

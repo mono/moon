@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,6 +35,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Messaging;
+using System.Windows.Navigation;
 using System.Windows.Printing;
 using System.Runtime.InteropServices;
 
@@ -152,7 +154,14 @@ namespace Mono {
 						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
 								new NotifyEventArgs ()) );
 		}
-		
+
+		public static UnmanagedEventHandler CreateNotifyEventArgsEventHandlerDispatcher (EventHandler<NotifyEventArgs> handler)
+		{
+			return SafeDispatcher( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								new NotifyEventArgs ()) );
+		}
+
 		public static UnmanagedEventHandler CreateMouseEventHandlerDispatcher (MouseEventHandler handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
@@ -270,6 +279,13 @@ namespace Mono {
 						     handler (o, args); } );
 		}
 
+		public static UnmanagedEventHandler CreateLoadCompletedEventHandlerDispatcher (LoadCompletedEventHandler handler)
+		{
+			return SafeDispatcher( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								new NavigationEventArgs ()) );
+		}
+
 		// avoid having SSC code in anonymous methods since their name can change on a compiler's whim
 		private static Exception SendCompletedEventArgsGetError (IntPtr calldata)
 		{
@@ -322,11 +338,11 @@ namespace Mono {
 								new EndPrintEventArgs ()) );
 		}
 
-		public static UnmanagedEventHandler CreateStartPrintEventArgsEventHandlerDispatcher (EventHandler <StartPrintEventArgs> handler)
+		public static UnmanagedEventHandler CreateBeginPrintEventArgsEventHandlerDispatcher (EventHandler <BeginPrintEventArgs> handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
-								new StartPrintEventArgs ()) );
+								new BeginPrintEventArgs ()) );
 		}
 
 		public static UnmanagedEventHandler CreatePrintPageEventArgsEventHandlerDispatcher (EventHandler <PrintPageEventArgs> handler)
@@ -334,6 +350,34 @@ namespace Mono {
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
 								new PrintPageEventArgs ()) );
+		}
+
+		public static UnmanagedEventHandler CreateManipulationStartedEventArgsEventHandlerDispatcher (EventHandler <ManipulationStartedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
+								new ManipulationStartedEventArgs ()) );
+		}
+
+		public static UnmanagedEventHandler CreateManipulationDeltaEventArgsEventHandlerDispatcher (EventHandler <ManipulationDeltaEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
+								new ManipulationDeltaEventArgs ()) );
+		}
+
+		public static UnmanagedEventHandler CreateManipulationCompletedEventArgsEventHandlerDispatcher (EventHandler <ManipulationCompletedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
+								new ManipulationCompletedEventArgs ()) );
+		}
+
+		public static UnmanagedEventHandler CreateClosingEventArgsEventHandlerDispatcher (EventHandler <ClosingEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
+								new ClosingEventArgs ()) );
 		}
 
 		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)

@@ -91,6 +91,8 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/XamlLoaderCallbacks.cs					\
+	$(srcdir)/System.ComponentModel/AlternateContentPropertyAttribute.cs	\
+	$(srcdir)/System.ComponentModel/ClosingEventArgs.cs						\
 	$(srcdir)/System.ComponentModel/CurrentChangingEventArgs.cs		\
 	$(srcdir)/System.ComponentModel/CurrentChangingEventHandler.cs		\
 	$(srcdir)/System.ComponentModel/DataErrorsChangedEventArgs.cs		\
@@ -124,9 +126,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Net.Browser/InternalWebResponseStreamWrapper.cs	\
 	$(srcdir)/System.Net.Browser/PolicyBasedHttpWebRequest.cs			\
 	$(srcdir)/System.Net.Browser/WebRequestCreator.cs			\
+	$(srcdir)/System.Runtime.InteropServices.Automation/AutomationEvent.cs				\
+	$(srcdir)/System.Runtime.InteropServices.Automation/AutomationEventArgs.cs				\
+	$(srcdir)/System.Runtime.InteropServices.Automation/AutomationFactory.cs				\
 	$(srcdir)/System.Windows.Automation/AutomationElementIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperties.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperty.cs		\
+	$(srcdir)/System.Windows.Automation/AutomationTextAttribute.cs		\
 	$(srcdir)/System.Windows.Automation/DockPatternIdentifiers.cs			\
 	$(srcdir)/System.Windows.Automation/DockPosition.cs			\
 	$(srcdir)/System.Windows.Automation/ElementNotEnabledException.cs		\
@@ -142,8 +148,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation/ScrollPatternIdentifiers.cs				\
 	$(srcdir)/System.Windows.Automation/SelectionItemPatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/SelectionPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/SupportedTextSelection.cs		\
 	$(srcdir)/System.Windows.Automation/TableItemPatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/TablePatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/TextPatternIdentifiers.cs			\
 	$(srcdir)/System.Windows.Automation/TogglePatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/ToggleState.cs			\
 	$(srcdir)/System.Windows.Automation/TransformPatternIdentifiers.cs		\
@@ -177,6 +185,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/RadioButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/RichTextBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ScrollBarAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ScrollViewerAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/SelectorAutomationPeer.cs	\
@@ -201,10 +210,14 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Provider/ISelectionProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/ITableItemProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/ITableProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/ITextProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/ITextRangeProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IToggleProvider.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/ITransformProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IValueProvider.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/IWindowProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Text/TextPatternRangeEndPoint.cs	\
+	$(srcdir)/System.Windows.Automation.Text/TextUnit.cs					\
 	$(srcdir)/System.Windows.Controls/Border.cs				\
 	$(srcdir)/System.Windows.Controls/ComboBox.cs				\
 	$(srcdir)/System.Windows.Controls/ComboBoxItem.cs			\
@@ -241,7 +254,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/PasswordBox.cs			\
 	$(srcdir)/System.Windows.Controls/RangeCollection.cs			\
-	$(srcdir)/System.Windows.Controls/RichTextArea.cs			\
+	$(srcdir)/System.Windows.Controls/RichTextBox.cs			\
 	$(srcdir)/System.Windows.Controls/SaveFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/SelectionMode.cs			\
 	$(srcdir)/System.Windows.Controls/StretchDirection.cs			\
@@ -288,7 +301,16 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/InputMethod.cs				\
 	$(srcdir)/System.Windows.Input/InputMethodState.cs			\
 	$(srcdir)/System.Windows.Input/InputScope.cs				\
+	$(srcdir)/System.Windows.Input/InputScopeConverter.cs			\
+	$(srcdir)/System.Windows.Input/InputScopeName.cs				\
+	$(srcdir)/System.Windows.Input/InputScopeNameConverter.cs		\
+	$(srcdir)/System.Windows.Input/InputScopeNameValue.cs			\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\
+	$(srcdir)/System.Windows.Input/ManipulationCompletedEventArgs.cs	\
+	$(srcdir)/System.Windows.Input/ManipulationDelta.cs					\
+	$(srcdir)/System.Windows.Input/ManipulationDeltaEventArgs.cs		\
+	$(srcdir)/System.Windows.Input/ManipulationStartedEventArgs.cs		\
+	$(srcdir)/System.Windows.Input/ManipulationVelocities.cs			\
 	$(srcdir)/System.Windows.Input/ModifierKeys.cs				\
 	$(srcdir)/System.Windows.Input/StylusInfo.cs				\
 	$(srcdir)/System.Windows.Input/StylusDevice.cs				\
@@ -316,15 +338,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/TouchPoint.cs				\
 	$(srcdir)/System.Windows.Input/TouchPointCollection.cs			\
 	$(srcdir)/System.Windows.Input/UnmanagedStylusPoint.cs			\
-	$(srcdir)/System.Windows.Interop/ComAutomationEvent.cs				\
-	$(srcdir)/System.Windows.Interop/ComAutomationEventArgs.cs				\
-	$(srcdir)/System.Windows.Interop/ComAutomationEventHandler.cs				\
 	$(srcdir)/System.Windows.Interop/ComAutomationEventMetaObjectProvider.cs				\
-	$(srcdir)/System.Windows.Interop/ComAutomationFactory.cs				\
 	$(srcdir)/System.Windows.Interop/ComAutomationMetaObjectProvider.cs				\
 	$(srcdir)/System.Windows.Interop/ComAutomationMetaObjectProviderAwaitingIndex.cs				\
 	$(srcdir)/System.Windows.Interop/ComAutomationMetaObjectProviderBase.cs				\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
+	$(srcdir)/System.Windows.Interop/FullScreenOptions.cs				\
 	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
 	$(srcdir)/System.Windows.Interop/NavigationStateChangedEventArgs.cs	\
 	$(srcdir)/System.Windows.Interop/PluginHost.cs				\
@@ -377,6 +396,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Effects/PixelShader.cs			\
 	$(srcdir)/System.Windows.Media.Effects/SamplingMode.cs			\
 	$(srcdir)/System.Windows.Media.Effects/ShaderEffect.cs			\
+	$(srcdir)/System.Windows.Navigation/LoadCompletedEventHandler.cs		\
+	$(srcdir)/System.Windows.Navigation/NavigatedEventHandler.cs		\
+	$(srcdir)/System.Windows.Navigation/NavigatingCancelEventArgs.cs	\
+	$(srcdir)/System.Windows.Navigation/NavigatingCancelEventHandler.cs	\
+	$(srcdir)/System.Windows.Navigation/NavigationEventArgs.cs			\
+	$(srcdir)/System.Windows.Navigation/NavigationMode.cs				\
 	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationLifetimeObjectsCollection.cs	\
@@ -483,6 +508,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/VisualState.cs					\
 	$(srcdir)/System.Windows/Window.cs					\
+	$(srcdir)/System.Windows/WindowResizeEdge.cs					\
 	$(srcdir)/System.Windows/WindowSettings.cs				\
 	$(srcdir)/System.Windows/WindowStartupLocation.cs			\
 	$(srcdir)/System.Windows/WindowState.cs					\
@@ -582,10 +608,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\
 	$(srcdir)/System.Windows.Media/FontFamily.cs				\
+	$(srcdir)/System.Windows.Media/Fonts.cs						\
 	$(srcdir)/System.Windows.Media/GeneralTransform.cs			\
 	$(srcdir)/System.Windows.Media/Geometry.cs				\
 	$(srcdir)/System.Windows.Media/GeometryCollection.cs			\
 	$(srcdir)/System.Windows.Media/GeometryGroup.cs				\
+	$(srcdir)/System.Windows.Media/GlyphTypeface.cs			\
 	$(srcdir)/System.Windows.Media/GradientBrush.cs				\
 	$(srcdir)/System.Windows.Media/GradientSpreadMethod.cs			\
 	$(srcdir)/System.Windows.Media/GradientStop.cs				\
@@ -594,6 +622,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/ImageSource.cs				\
 	$(srcdir)/System.Windows.Media/ImageSourceConverter.cs			\
 	$(srcdir)/System.Windows.Media/ImplicitInputBrush.cs			\
+	$(srcdir)/System.Windows.Media/JoinDomainCompletedEventArgs.cs	\
+	$(srcdir)/System.Windows.Media/LeaveDomainCompletedEventArgs.cs	\
 	$(srcdir)/System.Windows.Media/LicenseAcquirer.cs			\
 	$(srcdir)/System.Windows.Media/LicenseManagement.cs			\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
@@ -655,6 +685,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Transform.cs				\
 	$(srcdir)/System.Windows.Media/TransformGroup.cs			\
 	$(srcdir)/System.Windows.Media/TranslateTransform.cs			\
+	$(srcdir)/System.Windows.Media/Typeface.cs						\
 	$(srcdir)/System.Windows.Media/UnmanagedMatrix.cs			\
 	$(srcdir)/System.Windows.Media/VideoBrush.cs				\
 	$(srcdir)/System.Windows.Media/VideoCaptureDevice.cs			\
@@ -662,6 +693,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/VideoFormat.cs				\
 	$(srcdir)/System.Windows.Media/VideoFormatChangedEventArgs.cs		\
 	$(srcdir)/System.Windows.Media/VideoFormatCollection.cs			\
+	$(srcdir)/System.Windows.Media/VideoOutputConnector.cs			\
+	$(srcdir)/System.Windows.Media/VideoOutputConnectorType.cs		\
 	$(srcdir)/System.Windows.Media/VideoSink.cs				\
 	$(srcdir)/System.Windows.Media/VisualTreeHelper.cs			\
 	$(srcdir)/System.Windows.Media/WaveFormatType.cs			\
@@ -701,12 +734,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Threading/DispatcherSynchronizationContext.cs	\
 	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs			\
 	$(srcdir)/System.Windows.Printing/EndPrintEventArgs.cs			\
-	$(srcdir)/System.Windows.Printing/EndPrintEventHandler.cs		\
 	$(srcdir)/System.Windows.Printing/PrintDocument.cs			\
 	$(srcdir)/System.Windows.Printing/PrintPageEventArgs.cs			\
-	$(srcdir)/System.Windows.Printing/PrintPageEventHandler.cs		\
-	$(srcdir)/System.Windows.Printing/StartPrintEventArgs.cs		\
-	$(srcdir)/System.Windows.Printing/StartPrintEventHandler.cs		\
+	$(srcdir)/System.Windows.Printing/BeginPrintEventArgs.cs		\
 	$(srcdir)/System.Windows/DependencyObject.g.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
 	$(srcdir)/System.Windows/Events.g.cs					\

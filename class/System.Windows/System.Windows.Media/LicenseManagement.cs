@@ -27,20 +27,28 @@
 // 
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace System.Windows.Media {
 	public static class LicenseManagement {
-		public static IEnumerator<MediaLicense> SelectLicenses (Guid keyId)
+		public static IEnumerable<MediaLicense> SelectLicenses (Guid keyId)
 		{
 			Console.WriteLine ("System.Windows.Media.LicenseManagement.SelectLicense (Guid): NIEX");
 			throw new NotImplementedException ();
 		}
 
-		public static IEnumerator<MediaLicense> SelectLicenses (Stream mediaStream)
+		public static IEnumerable<MediaLicense> SelectLicenses (Stream mediaStream)
 		{
 			Console.WriteLine ("System.Windows.Media.LicenseManagement.SelectLicense (Stream): NIEX");
 			throw new NotImplementedException ();
+		}
+
+	    public static ReadOnlyCollection<VideoOutputConnector> VideoOutputConnectors {
+			get {
+				Console.WriteLine ("System.Windows.Media.LicenseManagement.get_VideoOutputConnectors: NIEX");
+				throw new NotImplementedException ();
+			}
 		}
 	}
 }

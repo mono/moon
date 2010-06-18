@@ -28,8 +28,8 @@
 
 namespace System.Windows.Media {
 	public enum ContentKeyType {
-		AES128Bit,
-		Cocktail,
+		Aes128Bit,
+		Cocktail = 3,
 	}
 }
 

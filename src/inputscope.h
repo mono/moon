@@ -26,4 +26,15 @@ class InputScope : public DependencyObject {
 	virtual ~InputScope () {}
 };
 
+/* @Namespace=System.Windows.Input */
+/* @ContentProperty=NameValue */
+class InputScopeName : public DependencyObject {
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	InputScopeName () : DependencyObject (Type::INPUTSCOPENAME) {}
+
+ protected:
+	virtual ~InputScopeName () {}
+};
+
 #endif /* __MOON_INPUTSCOPE_H__ */

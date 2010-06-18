@@ -28,8 +28,12 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace System.ComponentModel {
+#if NET_2_1
+	[TypeForwardedFrom ("System.Windows.Data, Version=2.0.5.0, Culture=Neutral, PublicKeyToken=31bf3856ad364e35")]
+#endif
 	public interface IEditableCollectionView {
 		object AddNew ();
 		void CancelEdit ();

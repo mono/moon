@@ -1,0 +1,5 @@
+2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* AutomationEvent.cs:
+	* AutomationFactory.cs:
+	* AutomationEventArgs.cs: Update to SL4 final API.

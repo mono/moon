@@ -42,7 +42,8 @@ namespace System.Windows.Automation.Peers {
 		Table,
 		TableItem,
 		Toggle,
-		Transform
+		Transform,
+		Text,
 	}
 
 }

@@ -80,6 +80,8 @@ static enum_map_t cursors_map [] = {
 	MAP_ENUM (CursorType, Eraser),
 	MAP_ENUM (CursorType, SizeNS),
 	MAP_ENUM (CursorType, SizeWE),
+	MAP_ENUM (CursorType, SizeNESW),
+	MAP_ENUM (CursorType, SizeNWSE),
 	MAP_ENUM (CursorType, None),
 	END_MAPPING
 };
@@ -259,6 +261,7 @@ static enum_map_t text_alignment_map [] = {
 	MAP_ENUM (TextAlignment, Center),
 	MAP_ENUM (TextAlignment, Left),
 	MAP_ENUM (TextAlignment, Right),
+	MAP_ENUM (TextAlignment, Justify),
 	END_MAPPING
 };
 
