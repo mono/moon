@@ -85,6 +85,7 @@ namespace MoonTest.Security {
 		}
 
 		[TestMethod]
+		[Ignore ("throws before SL4 but not anymore")]
 		public void DynamicMethod_SkipVisibilityCheck_ReadPlatformCodeInternalField ()
 		{
 			var p = Ast.Parameter (typeof (Nullable<int>), "i");

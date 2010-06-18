@@ -1,3 +1,10 @@
+2010-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ReflectionEmitTest.cs: Ignore a test that worked only
+	before SL4 (ML has the same behavior).
+	* System.Windows.Printing/PrintDocumentTest.cs: New. Ensure user
+	initiated check on printing.
+
 2010-06-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/ClipboardTest.cs: Remove [MoonlightBug]
