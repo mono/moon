@@ -52,6 +52,12 @@ MoonlightConfiguration::Save ()
 	g_free (contents);
 	g_free (dir);
 }
+
+bool
+MoonlightConfiguration::HasKey (const char *group, const char *key)
+{
+	return (bool)g_key_file_has_key (data, group, key, NULL);
+}
 	
 void 
 MoonlightConfiguration::SetBooleanValue (const char *group, const char *key, gboolean value)
@@ -71,9 +77,9 @@ MoonlightConfiguration::GetStringValue (const char *group, const char *key)
 	return g_key_file_get_string (data, group, key, NULL);
 }
 
-gboolean
+bool
 MoonlightConfiguration::GetBooleanValue (const char *group, const char *key)
 {
-	return g_key_file_get_boolean (data, group, key, NULL);
+	return (bool)g_key_file_get_boolean (data, group, key, NULL);
 }
 

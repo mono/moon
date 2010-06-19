@@ -1,3 +1,18 @@
+2010-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* pal/gtk/pal-gtk.cpp (MoonWindowingSystemGtk::ShowConsentDialog):
+	c&p a bunch of the pipeline-ui dialog code here.
+
+	* pal/capture/pal-linux-capture.cpp (MoonCaptureServiceLinux::RequestSystemAccess):
+	use the Consent class instead of using the pal directly.
+
+	* moonlightconfiguration.h,cpp (MoonlightConfiguration): add
+	HasKey method, and change return value of GetBooleanValue to bool.
+
+	* consent.h, consent.cpp: new files containing methods for popping
+	up the various consent dialogs moonlight will have (clipboard,
+	fullscreen pinning, video capture, etc).
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp:

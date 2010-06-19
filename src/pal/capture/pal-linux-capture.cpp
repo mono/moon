@@ -13,6 +13,7 @@
 #include "pal-linux-capture.h"
 #include "deployment.h"
 #include "runtime.h"
+#include "consent.h"
 
 #if PAL_V4L2_VIDEO_CAPTURE
 #include "pal/capture/v4l2/pal-v4l2-video-capture.h"
@@ -65,24 +66,11 @@ MoonCaptureServiceLinux::RequiresSystemPermissionForDeviceAccess ()
 bool
 MoonCaptureServiceLinux::RequestSystemAccess ()
 {
-	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	// this must be called from a user initiated event (clicking a
 	// button, etc), or else it fails outright.
-	if (!surface->IsUserInitiatedEvent ())
+	if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
 		return false;
 
-	MoonWindowingSystem *windowing_system = runtime_get_windowing_system ();
-
-	char *msg = g_strdup_printf ("Allow %s to access your video/audio hardware?",
-				     surface->GetSourceLocation());
-
-	MoonMessageBoxResult result = windowing_system->ShowMessageBox (MessageBoxTypeQuestion,
-									"Capture access",
-									msg,
-									MessageBoxButtonYesNo);
-
-	g_free (msg);
-
-	return result == MessageBoxResultYes;
+	return Consent::PromptUserFor (MOON_CONSENT_VIDEO_CAPTURE);
 }
 

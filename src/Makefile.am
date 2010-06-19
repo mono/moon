@@ -28,6 +28,7 @@ libmoon_include_headers = 	\
 	contentcontrol.h	\
 	control.h		\
 	cornerradius.h		\
+	consent.h		\
 	debug.h			\
 	dependencyobject.h	\
 	dependencyproperty.h	\
@@ -161,6 +162,7 @@ libmoon_la_SOURCES = 		\
 	contentcontrol.cpp	\
 	control.cpp		\
 	cornerradius.cpp	\
+	consent.cpp		\
 	debug.cpp		\
 	deepzoomimagetilesource.cpp \
 	dependencyobject.cpp	\

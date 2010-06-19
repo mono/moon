@@ -26,10 +26,12 @@ public:
 
 	void Save ();
 
+	bool HasKey (const char *group, const char *key);
+
 	void SetBooleanValue (const char *group, const char *key, gboolean value);
 	void SetStringValue (const char *group, const char *key, const char *value);
 	char *GetStringValue (const char *group, const char *key);
-	gboolean GetBooleanValue (const char *group, const char *key);
+	bool GetBooleanValue (const char *group, const char *key);
 };
 
 #endif /* __MOON_MOONLIGHT_CONFIGURATION_H__ */

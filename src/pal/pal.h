@@ -234,7 +234,10 @@ public:
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx) = 0;
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual bool ShowConsentDialog (const char *question, const char *detail, const char *website, bool *remember) = 0;
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Color *GetSystemColor (SystemColor id) = 0;
 	

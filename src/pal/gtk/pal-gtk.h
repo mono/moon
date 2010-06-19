@@ -18,6 +18,8 @@ public:
 
 	virtual MoonMessageBoxResult ShowMessageBox (MoonMessageBoxType message_type, const char *caption, const char *text, MoonMessageBoxButton button);
 
+	virtual bool ShowConsentDialog (const char *question, const char *detail, const char *website, bool *remember);
+
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx);
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx);
 	

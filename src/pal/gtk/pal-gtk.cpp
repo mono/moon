@@ -838,6 +838,78 @@ MoonWindowingSystemGtk::ShowSaveFileDialog (const char *title, const char *filte
 	return ret;
 }
 
+
+bool
+MoonWindowingSystemGtk::ShowConsentDialog (const char *question, const char *detail, const char *website, bool *remember)
+{
+	gint label_width = 400;
+	const char *question_full = g_strdup_printf ("<big><b>%s</b></big>", question);
+	const char *website_full = g_strdup_printf ("Website: <b>%s</b>", website);
+
+	GtkWidget *dialog = gtk_dialog_new_with_buttons ("Moonlight", NULL, (GtkDialogFlags)
+							 (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR),
+							 GTK_STOCK_YES, GTK_RESPONSE_YES,
+							 GTK_STOCK_NO, GTK_RESPONSE_NO,
+							 NULL);
+
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+	gtk_object_set (GTK_OBJECT (dialog), "resizable", false, NULL);
+
+	// HIG HBox
+	GtkWidget *hbox = gtk_hbox_new (false, 12);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, true, true, 0);
+
+	// Message box icon
+	GtkWidget *icon = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
+	gtk_misc_set_alignment (GTK_MISC (icon), 0.5f, 0.0f);
+	gtk_box_pack_start (GTK_BOX (hbox), icon, false, false, 0);
+
+	// Contents container
+	GtkWidget *vbox = gtk_vbox_new (false, 0);
+	gtk_box_set_spacing (GTK_BOX (vbox), 10);
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, true, true, 0);
+
+	// question Label
+	GtkWidget *header_label = gtk_label_new (NULL);
+	gtk_label_set_markup (GTK_LABEL(header_label), question_full);
+	gtk_label_set_line_wrap (GTK_LABEL (header_label), true);
+	gtk_label_set_justify (GTK_LABEL (header_label), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (header_label), 0.0f, 0.5f);
+	gtk_widget_set_size_request (header_label, label_width, -1);
+	gtk_box_pack_start (GTK_BOX (vbox), header_label, false, false, 0);
+
+	// detail Label
+	GtkWidget *message_label = gtk_label_new (detail);
+	gtk_label_set_line_wrap (GTK_LABEL (message_label), true);
+	gtk_label_set_justify (GTK_LABEL (message_label), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (message_label), 0.0f, 0.5f);
+	gtk_widget_set_size_request (message_label, label_width, -1);
+	gtk_box_pack_start (GTK_BOX (vbox), message_label, false, false, 0);
+
+	// website label
+	GtkWidget *website_label = gtk_label_new (detail);
+	gtk_label_set_markup (GTK_LABEL (website_label), website_full);
+	gtk_label_set_justify (GTK_LABEL (website_label), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (website_label), 0.0f, 0.5f);
+	gtk_widget_set_size_request (website_label, label_width, -1);
+	gtk_box_pack_start (GTK_BOX (vbox), website_label, false, false, 0);
+
+	// remember togglebutton
+	GtkWidget *remember_toggle = gtk_check_button_new_with_label ("Remember my answer");
+	gtk_box_pack_start (GTK_BOX (vbox), remember_toggle, false, false, 0);
+
+	gtk_widget_show_all (hbox);
+
+	bool rv = gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_YES;
+
+	*remember = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (remember_toggle));
+	
+	gtk_widget_destroy (dialog);
+
+	return rv;
+}
+
 void
 MoonWindowingSystemGtk::RegisterWindow (MoonWindow *window)
 {
