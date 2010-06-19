@@ -71,6 +71,6 @@ MoonCaptureServiceLinux::RequestSystemAccess ()
 	if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
 		return false;
 
-	return Consent::PromptUserFor (MOON_CONSENT_VIDEO_CAPTURE);
+	return Consent::PromptUserFor (MOON_CONSENT_CAPTURE);
 }
 

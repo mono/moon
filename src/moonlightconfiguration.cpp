@@ -53,6 +53,21 @@ MoonlightConfiguration::Save ()
 	g_free (dir);
 }
 
+gchar**
+MoonlightConfiguration::GetKeys (const char *group)
+{
+	return g_key_file_get_keys (data, group, NULL, NULL);
+}
+
+void
+MoonlightConfiguration::RemoveKey (const char *group, const char *key)
+{
+	g_key_file_remove_key (data,
+			       group,
+			       key,
+			       NULL);
+}
+
 bool
 MoonlightConfiguration::HasKey (const char *group, const char *key)
 {

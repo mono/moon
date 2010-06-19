@@ -19,13 +19,52 @@
 #include "moonlightconfiguration.h"
 
 static const char *consent_name[] = {
-	"clipboard", "fullscreen", "videocapture", "audiocapture"
+	"clipboard",
+	"fullscreen",
+	"capture"
 };
 
-static char*
-generate_key (MoonConsentType consent, const char *website)
+static const char *consent_description[] = {
+	"Clipboard",
+	"Full-screen: stay full-screen when unfocused",
+	"Webcam and Microphone"
+};
+
+char*
+Consent::GeneratePermissionConfigurationKey (MoonConsentType consent, const char *website)
 {
-	return g_strdup_printf ("%s-%s", website, consent_name[consent]);
+	const char *name = GetConsentName (consent);
+	if (name == NULL)
+		return NULL;
+	return g_strdup_printf ("%s-%s", website, name);
+}
+
+const char *
+Consent::GetConsentName (MoonConsentType consent)
+{
+	if (consent < 0 || consent >= MOON_CONSENT_LAST)
+		return NULL;
+
+	return consent_name[consent];
+}
+
+const char *
+Consent::GetConsentDescription (MoonConsentType consent)
+{
+	if (consent < 0 || consent >= MOON_CONSENT_LAST)
+		return NULL;
+
+	return consent_description[consent];
+}
+
+MoonConsentType
+Consent::GetConsentType (const char *name)
+{
+	for (int i = 0; i < MOON_CONSENT_LAST; i ++)
+		if (!g_ascii_strcasecmp (name, consent_name[i]))
+			return (MoonConsentType)i;
+
+	return (MoonConsentType)-1;
 }
 
 bool
@@ -57,13 +96,13 @@ Consent::PromptUserFor (MoonConsentType consent)
 		question = "[fullscreen question here]"; // FIXME
 		detail = "[fullscreen detail here]"; // FIXME
 		break;
-	case MOON_CONSENT_VIDEO_CAPTURE:
-		question = "Do you want to allow this application to access your webcam?";
-		detail = "If you allow this, the application can capture still frames and video from your webcam as long as the application is running.";
+	case MOON_CONSENT_CAPTURE:
+		question = "Do you want to allow this application to access your webcam and microphone?";
+		detail = "If you allow this, the application can capture video and audio as long as the application is running.";
 		break;
-	case MOON_CONSENT_AUDIO_CAPTURE:
-		question = "Do you want to allow this application to access your microphone?";
-		detail = "If you allow this, the application can capture audio from your microphone as long as the application is running.";
+	case MOON_CONSENT_LAST:
+		// should't be reached...
+		question = detail = NULL;
 		break;
 	}
 
@@ -78,7 +117,7 @@ Consent::PromptUserFor (MoonConsentType consent, const char *question, const cha
 
 	MoonlightConfiguration configuration;
 
-	char *config_key = generate_key (consent, website);
+	char *config_key = GeneratePermissionConfigurationKey (consent, website);
 	if (configuration.HasKey ("Permissions", config_key)) {
 		rv = configuration.GetBooleanValue ("Permissions", config_key);
 		g_free (config_key);

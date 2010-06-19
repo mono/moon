@@ -15,6 +15,7 @@
 #define __MOON_CONFIG_DIALOG_GTK_H__
 
 #include "window-gtk.h"
+#include "moonlightconfiguration.h"
 
 class ConfigDialogPage;
 
@@ -104,6 +105,35 @@ private:
 	GtkTreeView *treeview;
 	GtkWidget *delete_button;
 	GtkWidget *delete_all_button;
+};
+
+class PermissionsConfigDialogPage : public ConfigDialogPage {
+public:
+	PermissionsConfigDialogPage ();
+	virtual ~PermissionsConfigDialogPage ();
+
+	virtual void PageActivated ();
+	virtual GtkWidget* GetContentWidget ();
+
+private:
+
+	void PopulateModel ();
+
+	static void selection_changed (PermissionsConfigDialogPage *page);
+	static void remove_selected_permission (PermissionsConfigDialogPage *page);
+	static void allow_selected_permission (PermissionsConfigDialogPage *page);
+	static void deny_selected_permission (PermissionsConfigDialogPage *page);
+
+	void UpdateButtonSensitivity ();
+
+	MoonlightConfiguration *configuration;
+	GtkTreeStore *model;
+	GtkTreeSelection* selection;
+	GtkTreeView *treeview;
+	GHashTable *website_path_hash;
+	GtkWidget *remove_button;
+	GtkWidget *allow_button;
+	GtkWidget *deny_button;
 };
 
 class ApplicationConfigDialogPage : public ConfigDialogPage {

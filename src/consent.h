@@ -17,15 +17,21 @@
 typedef enum {
 	MOON_CONSENT_CLIPBOARD,
 	MOON_CONSENT_FULLSCREEN_PINNING,
-	MOON_CONSENT_VIDEO_CAPTURE,
-	MOON_CONSENT_AUDIO_CAPTURE,
+	MOON_CONSENT_CAPTURE,
 	// FIXME should this be here too?  MOON_CONSENT_ISOSTOR_QUOTA_INCREASE
+	MOON_CONSENT_LAST
 } MoonConsentType;
 
 G_BEGIN_DECLS
 
 class Consent {
 public:
+	static char *GeneratePermissionConfigurationKey (MoonConsentType consent, const char *website);
+
+	static const char *GetConsentName (MoonConsentType consent);
+	static const char *GetConsentDescription (MoonConsentType consent);
+	static MoonConsentType GetConsentType (const char *name);
+
 	/* @GeneratePInvoke */
 	static bool PromptUserFor (MoonConsentType consent);
 	static bool PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website);

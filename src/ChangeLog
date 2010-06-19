@@ -1,5 +1,11 @@
 2010-06-18  Chris Toshok  <toshok@ximian.com>
 
+	* pal/gtk/config-dialog-gtk.h,cpp: add permissions dialog page.
+
+	* moonlightconfiguration.h,cpp: add GetKeys and RemoveKey.
+
+2010-06-18  Chris Toshok  <toshok@ximian.com>
+
 	* pal/gtk/pal-gtk.cpp (MoonWindowingSystemGtk::ShowConsentDialog):
 	c&p a bunch of the pipeline-ui dialog code here.
 

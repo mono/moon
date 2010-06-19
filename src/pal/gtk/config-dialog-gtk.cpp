@@ -24,6 +24,7 @@
 #include "pipeline-ui.h"
 #include "timemanager.h"
 #include "debug-ui.h"
+#include "consent.h"
 
 #define PLUGIN_OURNAME      "Novell Moonlight"
 
@@ -49,6 +50,7 @@ MoonConfigDialogGtk::MoonConfigDialogGtk (MoonWindowGtk *window, Surface *surfac
 	AddNotebookPage ("About", new AboutConfigDialogPage ());
 	AddNotebookPage ("Playback", new PlaybackConfigDialogPage ());
 	AddNotebookPage ("Storage", new StorageConfigDialogPage ());
+	AddNotebookPage ("Permissions", new PermissionsConfigDialogPage ());
 #if 0
 	AddNotebookPage ("Applications", new ApplicationConfigDialogPage ());
 #endif
@@ -547,6 +549,345 @@ StorageConfigDialogPage::delete_all_storage (StorageConfigDialogPage *page)
 	page->PopulateModel ();
 }
 
+
+////// Permissions page
+enum PermissionsColumn {
+	PERMISSIONS_COLUMN_NAME,
+	PERMISSIONS_COLUMN_PERMISSION,
+
+	// these columns aren't shown
+	PERMISSIONS_COLUMN_ALLOWED,
+	PERMISSIONS_COLUMN_CONSENT_TYPE
+};
+
+PermissionsConfigDialogPage::PermissionsConfigDialogPage()
+{
+	configuration = NULL;
+	website_path_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+						   (GDestroyNotify)g_free,
+						   (GDestroyNotify)gtk_tree_path_free);
+}
+
+PermissionsConfigDialogPage::~PermissionsConfigDialogPage ()
+{
+	delete configuration;
+	g_hash_table_destroy (website_path_hash);
+}
+
+void
+PermissionsConfigDialogPage::PageActivated ()
+{
+	PopulateModel ();
+}
+
+static gboolean
+_true ()
+{
+	return TRUE;
+}
+
+void
+PermissionsConfigDialogPage::PopulateModel ()
+{
+	// first off clear whatever happened to be there before
+	gtk_tree_store_clear (GTK_TREE_STORE (model));
+
+#if GLIB_CHECK_VERSION(2,12,0)
+	if (glib_check_version (2,12,0))
+		g_hash_table_remove_all (website_path_hash);
+	else
+#endif
+	g_hash_table_foreach_remove (website_path_hash, (GHRFunc) _true, NULL);
+
+	delete configuration;
+	configuration = new MoonlightConfiguration ();
+
+	gchar **permission_keys = configuration->GetKeys ("Permissions");
+
+	int i;
+	for (i = 0; permission_keys[i] != NULL; i ++) {
+		gchar *key = permission_keys[i];
+		char *minus = strrchr(key, '-');
+		char *website = g_strndup (key, minus - key);
+		char *perm_name = minus + 1;
+		MoonConsentType consent_type = Consent::GetConsentType (perm_name);
+
+		bool value = configuration->GetBooleanValue ("Permissions", key);
+
+		GtkTreePath *website_path;
+		GtkTreeIter website_iter, perm_iter;
+
+		website_path = (GtkTreePath*)g_hash_table_lookup (website_path_hash, website);
+		if (!website_path) {
+			gtk_tree_store_append (GTK_TREE_STORE (model),
+					       &website_iter,
+					       NULL);
+			gtk_tree_store_set (GTK_TREE_STORE (model),
+					    &website_iter,
+					    PERMISSIONS_COLUMN_NAME, website,
+					    PERMISSIONS_COLUMN_CONSENT_TYPE, -1,
+					    -1);
+			website_path = gtk_tree_model_get_path (GTK_TREE_MODEL (model),
+								&website_iter);
+
+			g_hash_table_insert (website_path_hash, website, website_path);
+		}
+
+		gtk_tree_store_append (GTK_TREE_STORE (model),
+				       &perm_iter,
+				       &website_iter);
+
+		gtk_tree_store_set (GTK_TREE_STORE (model),
+				    &perm_iter,
+				    PERMISSIONS_COLUMN_NAME, Consent::GetConsentDescription (consent_type),
+				    PERMISSIONS_COLUMN_PERMISSION, value ? "Allow" : "Deny",
+				    PERMISSIONS_COLUMN_ALLOWED, value,
+				    PERMISSIONS_COLUMN_CONSENT_TYPE, consent_type,
+				    -1);
+	}
+}
+
+GtkWidget*
+PermissionsConfigDialogPage::GetContentWidget ()
+{
+	GtkTreeViewColumn *column;
+	GtkCellRenderer *renderer;
+	GtkWidget *scrolled;
+	GtkWidget *vbox;
+	GtkWidget *label;
+
+	vbox = gtk_vbox_new (FALSE, 0);
+
+	label = gtk_label_new ("Permissions");
+
+	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 4);
+
+	model = gtk_tree_store_new (4,
+				    /* PERMISSIONS_COLUMN_NAME         */ G_TYPE_STRING,
+				    /* PERMISSIONS_COLUMN_PERMISSION   */ G_TYPE_STRING,
+				    /* PERMISSIONS_COLUMN_ALLOWED      */ G_TYPE_BOOLEAN,
+				    /* PERMISSIONS_COLUMN_CONSENT_TYPE */ G_TYPE_INT);
+
+	treeview = GTK_TREE_VIEW (gtk_tree_view_new_with_model (GTK_TREE_MODEL (model)));
+
+        selection = gtk_tree_view_get_selection (treeview);
+
+	g_signal_connect_swapped (G_OBJECT (selection), "changed", G_CALLBACK (PermissionsConfigDialogPage::selection_changed), this);
+
+	gtk_tree_view_set_headers_visible (treeview, TRUE);
+
+	g_object_unref (model);
+
+	column = gtk_tree_view_column_new ();
+	gtk_tree_view_column_set_title (GTK_TREE_VIEW_COLUMN (column), "Web site");
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (column, renderer, "text", PERMISSIONS_COLUMN_NAME);
+	gtk_tree_view_append_column (treeview, column);
+
+	column = gtk_tree_view_column_new ();
+	gtk_tree_view_column_set_title (GTK_TREE_VIEW_COLUMN (column), "Permission");
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (column, renderer, "text", PERMISSIONS_COLUMN_PERMISSION);
+	gtk_tree_view_append_column (treeview, column);
+
+	scrolled = gtk_scrolled_window_new (NULL, NULL);
+	
+	gtk_container_add (GTK_CONTAINER (scrolled), GTK_WIDGET (treeview));
+
+	gtk_box_pack_start (GTK_BOX (vbox), scrolled, TRUE, TRUE, 4);
+
+
+	GtkWidget *hbox = gtk_hbox_new (TRUE, 4);
+
+	allow_button = gtk_button_new_with_label ("Allow");
+	gtk_widget_set_sensitive (allow_button, FALSE);
+	g_signal_connect_swapped (G_OBJECT (allow_button), "clicked", G_CALLBACK (PermissionsConfigDialogPage::allow_selected_permission), this);
+
+	gtk_box_pack_start (GTK_BOX(hbox), allow_button, FALSE, FALSE, 0);
+
+	deny_button = gtk_button_new_with_label ("Deny");
+	gtk_widget_set_sensitive (allow_button, FALSE);
+	g_signal_connect_swapped (G_OBJECT (deny_button), "clicked", G_CALLBACK (PermissionsConfigDialogPage::deny_selected_permission), this);
+
+	gtk_box_pack_start (GTK_BOX(hbox), deny_button, FALSE, FALSE, 0);
+
+	remove_button = gtk_button_new_with_label ("Remove");
+	gtk_widget_set_sensitive (allow_button, FALSE);
+	g_signal_connect_swapped (G_OBJECT (remove_button), "clicked", G_CALLBACK (PermissionsConfigDialogPage::remove_selected_permission), this);
+
+	gtk_box_pack_start (GTK_BOX(hbox), remove_button, FALSE, FALSE, 0);
+
+	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+	
+	return vbox;
+}
+
+void
+PermissionsConfigDialogPage::UpdateButtonSensitivity ()
+{
+	GtkTreeIter iter, parent_iter;
+	GtkTreeModel *model;
+
+	if (gtk_tree_selection_get_selected (selection,
+					     &model,
+					     &iter)
+	    && gtk_tree_model_iter_parent (model,
+					   &parent_iter,
+					   &iter)) {
+
+		gboolean allowed;
+		gtk_tree_model_get (GTK_TREE_MODEL (model),
+				    &iter,
+				    PERMISSIONS_COLUMN_ALLOWED, &allowed,
+				    -1);
+
+		gtk_widget_set_sensitive (allow_button, !allowed);
+		gtk_widget_set_sensitive (deny_button, allowed);
+		gtk_widget_set_sensitive (remove_button, TRUE);
+	}
+	else {
+		gtk_widget_set_sensitive (allow_button, FALSE);
+		gtk_widget_set_sensitive (deny_button, FALSE);
+		gtk_widget_set_sensitive (remove_button, FALSE);
+	}
+}
+
+void
+PermissionsConfigDialogPage::selection_changed (PermissionsConfigDialogPage *page)
+{
+	page->UpdateButtonSensitivity ();
+}
+
+void
+PermissionsConfigDialogPage::allow_selected_permission (PermissionsConfigDialogPage *page)
+{
+	GtkTreeIter iter;
+	GtkTreeIter parent_iter;
+	GtkTreeModel *model;
+	char *website;
+	MoonConsentType consent_type;
+
+	if (!gtk_tree_selection_get_selected (page->selection,
+					      &model,
+					      &iter))
+		return;
+
+	if (!gtk_tree_model_iter_parent (model,
+					 &parent_iter,
+					 &iter))
+		return;
+
+	gtk_tree_model_get (model,
+			    &parent_iter,
+			    PERMISSIONS_COLUMN_NAME, &website,
+			    -1);
+
+	gtk_tree_model_get (model,
+			    &iter,
+			    PERMISSIONS_COLUMN_CONSENT_TYPE, &consent_type,
+			    -1);
+
+	char *key = Consent::GeneratePermissionConfigurationKey (consent_type, website);
+
+	page->configuration->SetBooleanValue ("Permissions", key, true);
+	page->configuration->Save ();
+
+	g_free (key);
+
+	gtk_tree_store_set (GTK_TREE_STORE (model),
+			    &iter,
+			    PERMISSIONS_COLUMN_PERMISSION, "Allow",
+			    PERMISSIONS_COLUMN_ALLOWED, TRUE,
+			    -1);
+
+	page->UpdateButtonSensitivity ();
+}
+
+void
+PermissionsConfigDialogPage::deny_selected_permission (PermissionsConfigDialogPage *page)
+{
+	GtkTreeIter iter;
+	GtkTreeIter parent_iter;
+	GtkTreeModel *model;
+	char *website;
+	MoonConsentType consent_type;
+
+	if (!gtk_tree_selection_get_selected (page->selection,
+					      &model,
+					      &iter))
+		return;
+
+	if (!gtk_tree_model_iter_parent (model,
+					 &parent_iter,
+					 &iter))
+		return;
+
+	gtk_tree_model_get (model,
+			    &parent_iter,
+			    PERMISSIONS_COLUMN_NAME, &website,
+			    -1);
+
+	gtk_tree_model_get (model,
+			    &iter,
+			    PERMISSIONS_COLUMN_CONSENT_TYPE, &consent_type,
+			    -1);
+
+	char *key = Consent::GeneratePermissionConfigurationKey (consent_type, website);
+
+	page->configuration->SetBooleanValue ("Permissions", key, false);
+	page->configuration->Save ();
+
+	g_free (key);
+
+	gtk_tree_store_set (GTK_TREE_STORE (model),
+			    &iter,
+			    PERMISSIONS_COLUMN_PERMISSION, "Deny",
+			    PERMISSIONS_COLUMN_ALLOWED, FALSE,
+			    -1);
+
+	page->UpdateButtonSensitivity ();
+}
+
+void
+PermissionsConfigDialogPage::remove_selected_permission (PermissionsConfigDialogPage *page)
+{
+	GtkTreeIter iter;
+	GtkTreeIter parent_iter;
+	GtkTreeModel *model;
+	char *website;
+	MoonConsentType consent_type;
+
+	if (!gtk_tree_selection_get_selected (page->selection,
+					      &model,
+					      &iter))
+		return;
+
+	if (!gtk_tree_model_iter_parent (model,
+					 &parent_iter,
+					 &iter))
+		return;
+
+	gtk_tree_model_get (model,
+			    &parent_iter,
+			    PERMISSIONS_COLUMN_NAME, &website,
+			    -1);
+
+	gtk_tree_model_get (model,
+			    &iter,
+			    PERMISSIONS_COLUMN_CONSENT_TYPE, &consent_type,
+			    -1);
+
+	char *key = Consent::GeneratePermissionConfigurationKey (consent_type, website);
+
+	page->configuration->RemoveKey ("Permissions", key);
+	page->configuration->Save ();
+
+	g_free (key);
+
+	page->PopulateModel ();
+}
 
 ////// Applications page
 ApplicationConfigDialogPage::ApplicationConfigDialogPage()

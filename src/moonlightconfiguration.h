@@ -28,6 +28,10 @@ public:
 
 	bool HasKey (const char *group, const char *key);
 
+	gchar** GetKeys (const char *group);
+
+	void RemoveKey (const char *group, const char *key);
+
 	void SetBooleanValue (const char *group, const char *key, gboolean value);
 	void SetStringValue (const char *group, const char *key, const char *value);
 	char *GetStringValue (const char *group, const char *key);
