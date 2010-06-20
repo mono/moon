@@ -53,7 +53,7 @@ class CurlBrowserBridge : public BrowserBridge {
 
 	// available handles pool
 	Queue* pool;
-	List* handles;
+	Queue* handles;
 	GList *calls;
 
 	CurlBrowserBridge ();

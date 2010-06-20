@@ -100,7 +100,7 @@ CurlBrowserBridge::CurlBrowserBridge () :
 	calls(NULL)
 {
 	pool = new Queue ();
-	handles = new List ();
+	handles = new Queue ();
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	sharecurl = curl_share_init();
@@ -111,7 +111,7 @@ CurlBrowserBridge::CurlBrowserBridge () :
 void
 CurlBrowserBridge::Shutdown ()
 {
-	shutting_down=true;
+	shutting_down = true;
 
 	if (closure) {
 		pthread_mutex_lock (&worker_mutex);
@@ -198,7 +198,7 @@ CurlBrowserBridge::OpenHandle (DownloaderRequest* res, CURL* handle)
 	d(printf ("BRIDGE CurlBrowserBridge::OpenHandle res:%p handle:%p\n", res, handle));
 
 	pthread_mutex_lock (&worker_mutex);
-	handles->Append (new HandleNode (res));
+	handles->Push (new HandleNode (res));
 	curl_multi_add_handle (multicurl, handle);
 	pthread_cond_signal (&worker_cond);
 	pthread_mutex_unlock (&worker_mutex);
@@ -212,11 +212,14 @@ CurlBrowserBridge::CloseHandle (DownloaderRequest* res, CURL* handle)
 	VERIFY_MAIN_THREAD
 
 	pthread_mutex_lock (&worker_mutex);
-	HandleNode* node = (HandleNode*)handles->Find (find_handle, res);
+	handles->Lock ();
+	List* list = handles->LinkedList ();
+	HandleNode* node = (HandleNode*)list->Find (find_handle, res);
 	if (node) {
 		curl_multi_remove_handle (multicurl, handle);
-		handles->Remove (node);
+		list->Remove (node);
 	}
+	handles->Unlock ();
 	pthread_mutex_unlock (&worker_mutex);
 }
 
@@ -257,8 +260,10 @@ CurlBrowserBridge::GetData ()
 			while ((msg = curl_multi_info_read (multicurl, &msgs))) {
 				if (msg->msg == CURLMSG_DONE) {
 
-					HandleNode* node = (HandleNode*) handles->Find (find_easy_handle, msg->easy_handle);
-
+					handles->Lock ();
+					List* list = handles->LinkedList ();
+					HandleNode* node = (HandleNode*) list->Find (find_easy_handle, msg->easy_handle);
+					handles->Unlock ();
 					if (node) {
 						CallData* data = new CallData (this, _close, node->res);
 						calls = g_list_append (calls, data);
