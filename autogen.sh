@@ -144,6 +144,12 @@ if test -d $srcdir/cairo; then
   echo Done running cairo/autogen.sh ...
 fi
 
+if test -d $srcdir/curl; then
+  echo Running curl/buildconf ...
+  (cd $srcdir/curl ; ./buildconf )
+  echo Done running curl/buildconf ...
+fi
+
 conf_flags="--enable-maintainer-mode --enable-compile-warnings --with-sanity-checks" #--enable-iso-c
 
 if test x$NOCONFIGURE = x; then

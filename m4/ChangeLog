@@ -1,3 +1,10 @@
+2010-03-30  Andreia Gaita  <avidigal@novell.com>
+
+	* various.m4: move curl checks to curl.m4
+	* curl.m4: add support for --with-curl=no|embedded|system options
+	* ax_file_escapes.m4, m4/ax_print_to_file.m4: helper files for
+	CUSTOM_SUBDIR_OPTION
+
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
 	* various.m4: Add curl checks and --with-curl flag to
