@@ -881,6 +881,8 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 				TryLoadBridge ("ff2");
 			else if (strstr (useragent, "rv:1.9.2"))
 				TryLoadBridge ("ff36");
+			else if (strstr (useragent, "rv:1.9.3"))
+				TryLoadBridge ("curl");
 			else if (strstr (useragent, "rv:1.9"))
 				TryLoadBridge ("ff3");
 
