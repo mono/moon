@@ -1,3 +1,15 @@
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: add bridge/ subdir to the build
+	* browser-bridge.h: save a ref to the plugin, the curl bridge
+	needs it to add tick calls
+	* plugin.cpp: (Shutdown) kill the bridge only after shutting
+	down the deployment, because it aborts downloaders and the curl
+	bridge downloaders need to know if the plugin is shutting down to
+	know if they can safely remove tick callbacks
+	(Initialize) If the curl bridge is available and activated via
+	the env flag, then load it regardless of browser
+
 2010-02-16  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (StreamAsFile): work around some opera evilness and

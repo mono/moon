@@ -130,15 +130,33 @@ set_common_dl_headers (Downloader *dl, MmsDownloader *mms, GString *pragma)
 		const char *playlist_gen_id = mms->GetPlaylistGenId ();
 		const char *client_id = mms->GetClientId ();
 
+#ifdef HAVE_CURL
+		if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
+			if (playlist_gen_id != NULL) {
+				g_string_printf (pragma, "playlist-gen-id=%s", playlist_gen_id);
+				dl->InternalSetHeader ("Pragma", pragma->str);
+			}
+			if (client_id != NULL) {
+				g_string_printf (pragma, "client-id=%s", client_id);
+				dl->InternalSetHeader ("Pragma", pragma->str);
+			}
+		} else {
+#endif
+
 		if (playlist_gen_id != NULL)
 			g_string_append_printf (pragma, "Pragma: playlist-gen-id=%s\r\n", playlist_gen_id);
 		if (client_id != NULL)
 			g_string_append_printf (pragma, "Pragma: client-id=%s\r\n", client_id);
+
+#ifdef HAVE_CURL
+		}
+#endif
+
 	}
 }
 
 static void
-set_stream_selection_headers (MmsDownloader *mms, GString *pragma, MmsPlaylistEntry *entry)
+set_stream_selection_headers (Downloader *dl, MmsDownloader *mms, GString *pragma, MmsPlaylistEntry *entry)
 {
 	gint8 streams [128];
 	int count = 0;
@@ -154,27 +172,43 @@ set_stream_selection_headers (MmsDownloader *mms, GString *pragma, MmsPlaylistEn
 
 	entry->GetSelectedStreams (mms->GetMaxBitrate (), streams);
 
-	g_string_append_printf (pragma, "Pragma: stream-switch-entry=");
-	for (int i = 0; i < 128; i++) {
+	GString *line = g_string_new (NULL);
+	g_string_printf (line, "stream-switch-entry=");
+	for (int i = 1; i < 128; i++) {
 		switch (streams [i]) {
 		case -1: // invalid stream
 			break;
 		case 0: // not selected
 			count++;
-			g_string_append_printf (pragma, "%i:ffff:0 ", i);
+			g_string_append_printf (line, "%i:ffff:0 ", i);
 			break;
 		case 1: // selected
 			count++;
-			g_string_append_printf (pragma, "ffff:%i:0 ", i);
+			g_string_append_printf (line, "ffff:%i:0 ", i);
 			break;
 		default: // ?
 			printf ("MmsDownloader: invalid stream selection value (%i).\n", streams [i]);
 			break;
 		}
 	}
-	g_string_append_printf (pragma, "\r\n");
 
-	g_string_append_printf (pragma, "Pragma: stream-switch-count=%i\r\n", count);
+
+#ifdef HAVE_CURL
+	if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
+		dl->InternalSetHeader ("Pragma", line->str);
+		g_string_printf (line, "stream-switch-count=%i", count);
+		dl->InternalSetHeader ("Pragma", line->str);
+	} else {
+#endif
+
+		g_string_append_printf (pragma, "Pragma: %s\r\n", line->str);
+		g_string_append_printf (pragma, "Pragma: stream-switch-count=%i\r\n", count);
+
+#ifdef HAVE_CURL
+	}
+#endif
+
+	g_string_free (line, true);
 }
 
 void
@@ -253,16 +287,33 @@ MmsDownloader::Play ()
 
 	set_common_dl_headers (dl, this, pragma);
 
-	g_string_append_printf (pragma, "Pragma: rate=1.000000,stream-offset=0:0,max-duration=0\r\n");
-	g_string_append_printf (pragma, "Pragma: xPlayStrm=1\r\n");
-	g_string_append_printf (pragma, "Pragma: LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647\r\n");
-	g_string_append_printf (pragma, "Pragma: stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295\r\n", pts / 10000);
+#ifdef HAVE_CURL
+	if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
 
-	set_stream_selection_headers (this, pragma, entry);
+		dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");
+		dl->InternalSetHeader ("Pragma", "xPlayStrm=1");
+		dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647");
 
-	g_string_append_printf (pragma, "\r\n"); // end of header
+		g_string_printf (pragma, "stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295", pts / 10000);
+		dl->InternalSetHeader ("Pragma", pragma->str);
 
-	dl->InternalSetBody (pragma->str, pragma->len);
+		set_stream_selection_headers (dl, this, pragma, entry);
+	} else {
+#endif
+		g_string_append (pragma, "Pragma: rate=1.000000,stream-offset=0:0,max-duration=0\r\n");
+		g_string_append (pragma, "Pragma: xPlayStrm=1\r\n");
+		g_string_append (pragma, "Pragma: LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647\r\n");
+		g_string_append_printf (pragma, "Pragma: stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295\r\n", pts / 10000);
+
+		set_stream_selection_headers (dl, this, pragma, entry);
+
+		g_string_append_printf (pragma, "\r\n"); // end of header
+
+		dl->InternalSetBody (pragma->str, pragma->len);
+
+#ifdef HAVE_CURL
+	}
+#endif
 
 	dl->Send ();
 
@@ -373,9 +424,7 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 	size += n;
 
 	// Check if we have an entire packet available.
-
 	while (size >= sizeof (MmsHeader)) {
-
 		header = (MmsHeader *) buffer;
 
 		if (!is_valid_mms_header (header)) {
@@ -979,11 +1028,17 @@ MmsSecondDownloader::SendStreamSwitch ()
 	pragma = g_string_new (NULL);
 
 	set_common_dl_headers (dl, mms, pragma);
-	set_stream_selection_headers (mms, pragma, entry);
+	set_stream_selection_headers (dl, mms, pragma, entry);
 
-	g_string_append (pragma, "\r\n");
-
-	dl->InternalSetBody (pragma->str, pragma->len);
+#ifdef HAVE_CURL
+	if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
+	} else {
+#endif
+		g_string_append (pragma, "\r\n");
+		dl->InternalSetBody (pragma->str, pragma->len);
+#ifdef HAVE_CURL
+	}
+#endif
 	dl->Send ();
 
 	entry->unref ();

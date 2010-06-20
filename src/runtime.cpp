@@ -133,6 +133,8 @@ static struct env_options overrides[] = {
 	{ "allimages=yes",     RUNTIME_INIT_ALL_IMAGE_FORMATS,     true  },
 	{ "emulatekeycodes=yes", RUNTIME_INIT_EMULATE_KEYCODES,	   true  },
 	{ "emulatekeycodes=no",  RUNTIME_INIT_EMULATE_KEYCODES,	   false },
+	{ "curlbridge=yes",     RUNTIME_INIT_CURL_BRIDGE,          true  },
+	{ "curlbridge=no",     RUNTIME_INIT_CURL_BRIDGE,          false },
 
 };
 

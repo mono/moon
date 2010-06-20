@@ -1,3 +1,10 @@
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
+	* mms-downloader.cpp: if we're using the curl bridge, set all
+	custom headers via SetHeader and not via the SetBody hack
+	* runtime.[h|cpp]: add new "curlbridge" env var to enable
+	the curl bridge at runtime (disabled by default)
+
 2009-12-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xap.cpp: Print error messages to the terminal if there is a

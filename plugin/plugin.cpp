@@ -660,12 +660,13 @@ PluginInstance::Shutdown ()
 		surface = NULL;
 	}
 
+	deployment->Shutdown ();
+
 	if (bridge) {
 		delete bridge;
 		bridge = NULL;
 	}
 
-	deployment->Shutdown ();
 #if DEBUG
 	delete moon_sources;
 	moon_sources = NULL;
@@ -862,7 +863,17 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
         // grovel around in the useragent and try to figure out which
         // browser bridge we should use.
         const char *useragent = MOON_NPN_UserAgent (instance);
-	printf ("%s\n", useragent);
+
+#ifdef HAVE_CURL
+	if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
+		TryLoadBridge ("curl");
+
+		if (strstr (useragent, "Opera") || strstr (useragent, "AppleWebKit"))
+			is_reentrant_mess = true;
+
+	} else {
+#endif
+
 	if (strstr (useragent, "Opera")) {
 		// opera based
 		TryLoadBridge ("opera");
@@ -889,6 +900,9 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 	// XXX Opera currently claims to be mozilla when we query it
 	if (!bridge && try_opera_quirks)
 		TryLoadBridge ("opera");
+#ifdef HAVE_CURL
+	}
+#endif
 
         if (!bridge) {
 		g_warning ("probing for browser type failed, user agent = `%s'",
@@ -943,6 +957,7 @@ PluginInstance::TryLoadBridge (const char *prefix)
 	}
 
 	bridge = bridge_ctor ();
+	bridge->SetPlugin (this);
 }
 
 NPError

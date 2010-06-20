@@ -1,3 +1,8 @@
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
+	* various.m4: Add curl checks and --with-curl flag to
+	activate building the curl bridge
+
 2010-02-17  Andreia Gaita  <avidigal@novell.com>
 
 	* mozilla.m4: Fix firefox flags, for they are borked

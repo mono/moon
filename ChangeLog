@@ -1,3 +1,8 @@
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: Add curl bridge, curl checks and--with-curl flag
+	to activate building the bridge
+
 2010-01-28  Andreia Gaita  <avidigal@novell.com>
 
 	* configure.ac: Add Firefox 3.6 support
