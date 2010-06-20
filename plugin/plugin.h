@@ -250,6 +250,7 @@ private:
 	bool enable_framerate_counter;
 	bool loading_splash;
 	bool is_splash;
+	bool is_reentrant_mess;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;

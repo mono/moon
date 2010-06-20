@@ -1,3 +1,12 @@
+2010-02-13  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp, plugin.h: add an instance flag that helps us decide
+	if we should attempt normal startup or try to avoid reentering at
+	all calls in CreateWindow.
+
+	Works aroud the hang when trying to load moonlight in chromium
+	without breaking the firefox startup sequence.
+
 2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp|h: The default value for AllowHtmlPopupWindow is
