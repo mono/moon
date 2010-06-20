@@ -1,3 +1,8 @@
+2010-03-19  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-entry.cpp: don't touch Deployment on NPN_Mem* calls, the
+	curl backend calls them on side threads
+
 2010-03-03  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: If available, load the curl backend by default for

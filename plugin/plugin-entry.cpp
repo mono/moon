@@ -126,21 +126,18 @@ MOON_NPN_UserAgent (NPP instance)
 void *
 MOON_NPN_MemAlloc (uint32_t size)
 {
-	DeploymentStack deployment_push_pop;
 	return MozillaFuncs.memalloc (size);
 }
 
 void
 MOON_NPN_MemFree (void *ptr)
 {
-	DeploymentStack deployment_push_pop;
 	MozillaFuncs.memfree (ptr);
 }
 
 uint32_t
 MOON_NPN_MemFlush (uint32_t size)
 {
-	DeploymentStack deployment_push_pop;
 	return MozillaFuncs.memflush (size);
 }
 
