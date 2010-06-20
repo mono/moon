@@ -1,5 +1,12 @@
 2010-03-22  Andreia Gaita  <avidigal@novell.com>
 
+	* curl-bridge.[h|cpp]: added IsDataThread helper method
+	* curl-http.[h|cpp]: make aborting threadsafe. if a request is closed
+	during header processing when the Started call is still queued on idle,
+	wait for it before calling Finished
+
+2010-03-22  Andreia Gaita  <avidigal@novell.com>
+
 	* curl-bridge.[h|cpp]: move the multi curl handle up to the bridge
 	so all requests are handled by it and all data from all connections
 	can be pumped in one call (GetData). data is handled on a separate
