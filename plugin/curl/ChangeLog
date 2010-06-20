@@ -1,3 +1,11 @@
+2010-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* curl-bridge.cpp (getdata_callback): Need to return something
+	here (since this is a pthread_create cb, we can safely return
+	NULL).
+	(HandleNode): Init res after calling parent ctor.
+	(CURLNode): Init handle after calling parent ctor.
+
 2010-04-10  Andreia Gaita  <avidigal@novell.com>
 
 	* curl-bridge.cpp: add a few checks to prevent hangs when shutting

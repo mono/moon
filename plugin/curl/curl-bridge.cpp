@@ -52,13 +52,13 @@ static gboolean Emit (void* data);
 class CurlNode : public List::Node {
 public:
 	CURL* handle;
-	CurlNode (CURL* handle) : handle(handle), Node () {};
+	CurlNode (CURL* handle) : Node (), handle(handle) {};
 };
 
 class HandleNode : public List::Node {
 public:
 	DownloaderRequest* res;
-	HandleNode (DownloaderRequest* res) : res(res), Node () {};
+	HandleNode (DownloaderRequest* res) : Node (), res(res) {};
 	CURL* GetHandle () { return ((CurlDownloaderRequest*)res)->GetHandle (); }
 	void Close () { return ((CurlDownloaderRequest*)res)->Close (); }
 };
@@ -67,6 +67,8 @@ static void*
 getdata_callback (void* sender)
 {
 	((CurlBrowserBridge*)sender)->GetData ();
+
+	return NULL;
 }
 
 bool
