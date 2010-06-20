@@ -11,6 +11,7 @@
  *
  */
 
+
 // define this here so that protypes.h isn't included (and doesn't
 // muck with our npapi.h)
 #include "plugin.h"
@@ -20,7 +21,7 @@
 #include "config.h"
 #include "pipeline.h"
 
-#define d(x) 1
+#define d(x)
 #define ds(x) 1
 
 // FIX: this is temporary
@@ -30,8 +31,18 @@
 class CurlDownloaderRequest;
 class CurlDownloaderResponse;
 
+static size_t header_received (void *ptr, size_t size, size_t nmemb, void *data);
+static size_t data_received (void *ptr, size_t size, size_t nmemb, void *data);
+static void open_callback (EventObject *sender);
 
-// Debugging methods that dump all data send through
+// These 4 methods are for asynchronous operation
+static void _started (CallData *sender);
+static void _visitor (CallData *sender);
+static void _available (CallData *sender);
+static void _finished (CallData *sender);
+
+
+// Debugging methods that dump all data sent through
 // curl
 #if !(ds(0))
 
@@ -100,18 +111,18 @@ static int my_trace(CURL *handle, curl_infotype type, char *data, size_t size, v
 
 		case CURLINFO_HEADER_OUT:
 			text = "=> Send header";
-			dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
-			text = "";
+//			dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
+//			text = "";
 		break;
 		case CURLINFO_DATA_OUT:
 			text = "=> Send data";
-			dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
-			text = "";
+//			dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
+//			text = "";
 		break;
 		case CURLINFO_SSL_DATA_OUT:
 			text = "=> Send SSL data";
-			dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
-			text = "";
+//			dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
+//			text = "";
 		break;
 		case CURLINFO_HEADER_IN:
 			text = "<= Recv header";
@@ -139,7 +150,6 @@ static int my_trace(CURL *handle, curl_infotype type, char *data, size_t size, v
 static size_t
 header_received (void *ptr, size_t size, size_t nmemb, void *data)
 {
-//	d(printf ("CALLBACK header_received thread:%i\n", (int)pthread_self()));
 	CurlDownloaderResponse* response = (CurlDownloaderResponse*) data;
 	response->HeaderReceived (ptr, size*nmemb);
 	return size*nmemb;
@@ -148,7 +158,6 @@ header_received (void *ptr, size_t size, size_t nmemb, void *data)
 static size_t
 data_received (void *ptr, size_t size, size_t nmemb, void *data)
 {
-//	d(printf ("CALLBACK data_received thread:%i\n", (int)pthread_self()));
 	CurlDownloaderResponse* response = (CurlDownloaderResponse*) data;
 	return response->DataReceived (ptr, size*nmemb);
 }
@@ -156,63 +165,50 @@ data_received (void *ptr, size_t size, size_t nmemb, void *data)
 static void
 open_callback (EventObject *sender)
 {
-//	d(printf ("CALLBACK open_callback %p closure:%p\n", ((ResponseClosure*)sender)->res, sender));
-	((ResponseClosure*)sender)->res->Open();
+	((ResponseClosure*)sender)->res->Open ();
 }
 
-static void
-getdata_callback (EventObject *sender)
-{
-//	d(printf ("CALLBACK getdata_callback %p closure:%p\n", ((ResponseClosure*)sender)->res, sender));
-	((ResponseClosure*)sender)->res->GetData ();
-}
-
-
-// These 4 methods are for asynchronous operation, not used right now
+// These 4 methods are for asynchronous operation
 
 static void
-_started (EventObject *sender)
+_started (CallData *sender)
 {
-	CurlDownloaderResponse *res = ((ResponseClosure*)sender)->res;
+	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
 	res->Started ();
 }
 
 static void
-_available (EventObject *sender)
+_visitor (CallData *sender)
 {
-	DataClosure *dl = (DataClosure*)sender;
-	dl->res->Available (dl);
+	CallData* data = ((CallData*)sender);
+	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
+	res->Visitor (data->name, data->val);
 }
 
 static void
-_finished (EventObject *sender)
+_available (CallData *sender)
 {
-	CurlDownloaderResponse *res = ((ResponseClosure*)sender)->res;
+	CallData* data = ((CallData*)sender);
+	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
+	res->Available (data->buffer, data->size);
+}
+
+static void
+_finished (CallData *sender)
+{
+	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
 	res->Finished ();
 }
 
-static void
-_visitor (EventObject *sender)
-{
-	DataClosure *dl = (DataClosure*)sender;
-	dl->res->Visitor (dl->name, dl->val);
-}
-
-DownloaderRequest*
-CurlBrowserBridge::CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache)
-{
-	return new CurlDownloaderRequest (this, method, uri, disable_cache);
-}
-
-
 CurlDownloaderRequest::CurlDownloaderRequest (CurlBrowserBridge *bridge, const char *method, const char *uri, bool disable_cache)
-	: DownloaderRequest (method, uri), headers(NULL), response(NULL), bridge(bridge), body(0)
+	: DownloaderRequest (method, uri), headers(NULL), response(NULL),
+	  bridge(bridge), post(NULL), postlast(NULL), body(NULL), state(NONE)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p %s\n", this, uri));
-	multicurl = curl_multi_init ();
-	curl = curl_easy_init ();
-	curl_easy_setopt (curl, CURLOPT_SHARE, bridge->sharecurl);
 
+	VERIFY_MAIN_THREAD
+
+	curl = bridge->RequestHandle ();
 
 #if !(ds(0))
 	config.trace_ascii = 1;
@@ -229,7 +225,7 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlBrowserBridge *bridge, const c
 #endif
 	curl_easy_setopt (curl, CURLOPT_USERAGENT, "NSPlayer/11.08.0005.0000");
 	curl_easy_setopt (curl, CURLOPT_URL, uri);
-	curl_multi_add_handle (multicurl, curl);
+	curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1);
 }
 
 
@@ -256,19 +252,23 @@ bool CurlDownloaderRequest::GetResponse (DownloaderResponseStartedHandler starte
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::GetResponse %p\n", this));
 
-	this->started = true;
+	if (IsAborted ())
+		return FALSE;
+
+	VERIFY_MAIN_THREAD
+
+	state = OPENED;
+
+	if (isPost ())
+		curl_easy_setopt(curl, CURLOPT_POST, 1);
 
 	// we're ready to start the connection, set the headers
 	response = new CurlDownloaderResponse (bridge, this, started, available, finished, context);
-
 	curl_easy_setopt (curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, data_received);
 	curl_easy_setopt (curl, CURLOPT_WRITEDATA, response);
 	curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, header_received);
 	curl_easy_setopt (curl, CURLOPT_WRITEHEADER, response);
-
-	if (isPost ())
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
 
 	response->Open ();
 	return TRUE;
@@ -276,7 +276,6 @@ bool CurlDownloaderRequest::GetResponse (DownloaderResponseStartedHandler starte
 
 CurlDownloaderRequest::~CurlDownloaderRequest ()
 {
-//	d(printf ("DESTROYED REQUEST %p\n", this));
 }
 
 CurlDownloaderResponse::CurlDownloaderResponse (CurlBrowserBridge *bridge,
@@ -286,37 +285,22 @@ CurlDownloaderResponse::CurlDownloaderResponse (CurlBrowserBridge *bridge,
 	DownloaderResponseFinishedHandler finished, gpointer ctx)
 	: DownloaderResponse(started, available, finished, ctx),
 	  bridge(bridge), request(request), visitor(NULL), vcontext(NULL),
-	  delay(1), headers(NULL), bodies(NULL), state(STOPPED)
+	  delay(2), state(STOPPED)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::CurlDownloaderResponse %p\n", this));
 
-	curl = request->curl;
-	multicurl = request->multicurl;
 	closure = new ResponseClosure (this);
 }
 
 CurlDownloaderResponse::~CurlDownloaderResponse ()
 {
-	if (!aborted)
-		Abort ();
-	headers = NULL;
-	bodies = NULL;
-
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, NULL);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
-	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, NULL);
-
-	curl_multi_remove_handle (multicurl, curl);
-
-	curl_easy_setopt (curl, CURLOPT_SHARE, NULL);
-	curl_easy_cleanup (curl);
-	curl_multi_cleanup (multicurl);
 }
 
 void
 CurlDownloaderResponse::Open ()
 {
+	VERIFY_MAIN_THREAD
+
 	if (IsAborted ())
 		return;
 
@@ -325,43 +309,62 @@ CurlDownloaderResponse::Open ()
 		bridge->plugin->GetSurface()->GetTimeManager()->AddDispatcherCall (open_callback, closure);
 		return;
 	}
-	GetData ();
+	bridge->OpenHandle (request, request->GetHandle ());
 }
 
 void
 CurlDownloaderRequest::Abort () {
-	d(printf ("BRIDGE CurlDownloaderRequest::Abort %p\n", this));
+	d(printf ("BRIDGE CurlDownloaderRequest::Abort request:%p response:%p\n", this, response));
 
-	aborted = true;
+	VERIFY_MAIN_THREAD
+
+	if (state != OPENED)
+		return;
+
+	state = ABORTED;
 	Close ();
 }
 
 void
 CurlDownloaderRequest::Close ()
 {
+	d(printf ("BRIDGE CurlDownloaderRequest::Close request:%p response:%p\n", this, response));
+
+	VERIFY_MAIN_THREAD
+
+	if (state != OPENED && state != ABORTED)
+		return;
+
+	if (state != ABORTED)
+		state = CLOSED;
+
+	if (response) {
+		if (IsAborted ())
+			response->Abort ();
+		else
+			response->Close ();
+		response = NULL;
+	}
+
+	bridge->ReleaseHandle (curl);
+
 	if (body)
 		MOON_NPN_MemFree (body);
 
-	if (response) {
-		response->Abort ();
-		response = NULL;
-	}
 	if (headers)
 		curl_slist_free_all (headers);
+
 }
 
 void
 CurlDownloaderResponse::Abort ()
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Abort %p\n", this));
+	d(printf ("BRIDGE CurlDownloaderResponse::Abort request:%p response:%p\n", request, this));
+
+	VERIFY_MAIN_THREAD
+
 	if (IsAborted ()) {
 		closure = NULL;
-		if (headers)
-			g_list_free (headers);
-		if (bodies)
-			g_list_free (bodies);
-		headers = NULL;
-		bodies = NULL;
 	}
 
 	aborted = true;
@@ -371,34 +374,32 @@ CurlDownloaderResponse::Abort ()
 void
 CurlDownloaderResponse::Close ()
 {
+	d(printf ("BRIDGE CurlDownloaderResponse::Close request:%p response:%p\n", request, this));
+
+	VERIFY_MAIN_THREAD
+
+	curl_easy_setopt(request->GetHandle (), CURLOPT_HTTPHEADER, NULL);
+	curl_easy_setopt(request->GetHandle (), CURLOPT_WRITEFUNCTION, NULL);
+	curl_easy_setopt(request->GetHandle (), CURLOPT_WRITEDATA, NULL);
+	curl_easy_setopt(request->GetHandle (), CURLOPT_HEADERFUNCTION, NULL);
+
+	bridge->CloseHandle (request, request->GetHandle ());
+
 	if (closure) {
 		bridge->plugin->GetSurface()->GetTimeManager()->RemoveTickCall (open_callback, closure);
-		bridge->plugin->GetSurface()->GetTimeManager()->RemoveTickCall (getdata_callback, closure);
-		bridge->plugin->GetSurface()->GetTimeManager()->RemoveTickCall (_finished, closure);
 		closure = NULL;
 	}
-
-	if (headers) {
-		GList *t;
-		for (t = headers; t; t = t->next)
-			bridge->plugin->GetSurface()->GetTimeManager()->RemoveTickCall (_available, (EventObject*)t->data);
-		g_list_free (headers);
-		headers = NULL;
-	}
-
-	if (bodies) {
-		GList *t;
-		for (t = bodies; t; t = t->next)
-			bridge->plugin->GetSurface()->GetTimeManager()->RemoveTickCall (_available, (EventObject*)t->data);
-		g_list_free (bodies);
-		bodies = NULL;
-	}
 	state = DONE;
+
+	Finished ();
 }
 
 void CurlDownloaderResponse::SetHeaderVisitor (DownloaderResponseHeaderCallback callback, gpointer ctx)
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::SetHeaderVisitor %p callback:%p vcontext:%p\n", this, callback, ctx));
+
+	VERIFY_MAIN_THREAD
+
 	this->visitor = callback;
 	this->vcontext = ctx;
 }
@@ -435,21 +436,19 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 		return;
 
 	d(printf ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n", this));
+	d(printf ("%s", ptr));
 	if (state == STOPPED) {
-		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
+		curl_easy_getinfo (request->GetHandle (), CURLINFO_RESPONSE_CODE, &status);
 		statusText = g_strndup ((char*)ptr, size-2);
 		if (status == 200) {
 			state = HEADER;
-			if (started)
-				started (this, context);
-		} else if (status > 300) {
+			bridge->AddCallback (_started, this, NULL, NULL, NULL, NULL);
+		} else if (status > 302) {
 			request->Close ();
 		}
 		return;
 	}
 
-	if (!visitor)
-		return;
 	if (size <= 2)
 		return;
 
@@ -463,14 +462,16 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 	val = g_strdup (header[1]);
 	val = g_strstrip (val);
 
-	visitor (vcontext, name, val);
+	bridge->AddCallback (_visitor, this, NULL, NULL, name, val);
 }
 
 size_t
 CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::DataReceived thread:%i\n", (int)pthread_self()));
+	d(printf ("BRIDGE CurlDownloaderResponse::DataReceived %p\n", this));
 
+	if (state == STOPPED || state == DONE)
+		return size;
 	state = DATA;
 
 	if (!available || IsAborted ())
@@ -479,55 +480,16 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 	char *buffer = (char *) MOON_NPN_MemAlloc (size);
 	memcpy(buffer, ptr, size);
 
-	available (this, context, buffer, size);
-	MOON_NPN_MemFree (buffer);
+	bridge->AddCallback (_available, this, buffer, size, NULL, NULL);
 	return aborted ? -1 : size;
-}
-
-void
-CurlDownloaderResponse::GetData ()
-{
-	if (IsAborted () || state == DONE)
-		return;
-
-	int running;
-	if (state < DATA) {
-		// keep pumping until all the headers have arrived and we start getting data
-		while (state < DATA) {
-			while (CURLM_CALL_MULTI_PERFORM == curl_multi_perform (multicurl, &running));
-			Emit ();
-		}
-	} else {
-		while (CURLM_CALL_MULTI_PERFORM == curl_multi_perform (multicurl, &running));
-		Emit ();
-	}
-
-	if (running && !IsAborted ())
-		bridge->plugin->GetSurface()->GetTimeManager()->AddDispatcherCall (getdata_callback, closure);
-	else {
-		request->Close ();
-		Finished ();
-	}
 }
 
 void
 CurlDownloaderResponse::Started ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Started %p\n", this));
-	started (this, context);
-}
-
-void
-CurlDownloaderResponse::Available (DataClosure *dl)
-{
-	d(printf ("BRIDGE CurlDownloaderResponse::Available %p\n", this));
-	available (this, context, dl->buffer, dl->size);
-}
-
-void
-CurlDownloaderResponse::Finished ()
-{
-	finished (this, context, true, NULL, NULL);
+	if (started)
+		started (this, context);
 }
 
 void
@@ -539,50 +501,18 @@ CurlDownloaderResponse::Visitor (const char *name, const char *val)
 }
 
 void
-CurlDownloaderResponse::AddCallback (TickData *data, bool delayed)
+CurlDownloaderResponse::Available (char* buffer, size_t size)
 {
-	bodies = g_list_append (bodies, data);
-}
-
-static bool
-emit (GList *list, Surface *surface, bool delay)
-{
-	TickData *data = NULL;
-	GList *t;
-	for (t = list; t; t = t->next) {
-		data = (TickData*)t->data;
-		surface->GetTimeManager()->AddDispatcherCall (data->func, data->GetClosure ());
-	}
-	return delay;
+	d(printf ("BRIDGE CurlDownloaderResponse::Available %p\n", this));
+	if (available)
+		available (this, context, buffer, size);
 }
 
 void
-CurlDownloaderResponse::Emit ()
+CurlDownloaderResponse::Finished ()
 {
-	if (IsAborted ())
-		return;
-
-	if (!headers && !bodies)
-		return;
-
-	bool delayed = FALSE;
-
-	if (bodies) {
-		delayed = emit (bodies, bridge->plugin->GetSurface(), delayed);
-		g_list_free (bodies);
-	}
+	d(printf ("BRIDGE CurlDownloaderResponse::Finished %p\n", this));
+	if (finished)
+		finished (this, context, true, NULL, NULL);
 }
 
-DataClosure::~DataClosure ()
-{
-	if (buffer)
-		MOON_NPN_MemFree (buffer);
-	if (name)
-		g_free ((gpointer) name);
-	if (val)
-		g_free ((gpointer) val);
-}
-
-TickData::~TickData ()
-{
-}

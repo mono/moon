@@ -1,3 +1,8 @@
+2010-03-22  Andreia Gaita  <avidigal@novell.com>
+
+	* browser-bridge.h: Add Shutdown method
+	* plugin.cpp: (Shutdown) call the bridge Shutdown method
+
 2010-03-19  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-entry.cpp: don't touch Deployment on NPN_Mem* calls, the
