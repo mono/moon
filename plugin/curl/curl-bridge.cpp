@@ -113,7 +113,7 @@ CurlBrowserBridge::CurlBrowserBridge () :
 void
 CurlBrowserBridge::Shutdown ()
 {
-	shutting_down = true;
+	BrowserBridge::Shutdown ();
 
 	if (closure) {
 		pthread_mutex_lock (&worker_mutex);
@@ -351,7 +351,7 @@ Emit (void* data)
 	GList* list = (GList*)data;
 	for (t = list; t; t = t->next) {
 		call = (CallData*) t->data;
-		if (!call->bridge->shutting_down)
+		if (!call->bridge->IsShuttingDown ())
 			call->func (call);
 		delete call;
 	}

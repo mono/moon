@@ -51,7 +51,7 @@ class CurlDownloaderRequest : public DownloaderRequest {
 	~CurlDownloaderRequest ();
 	void Abort ();
 	const bool IsAborted () {
-		if (state != ABORTED && bridge->shutting_down)
+		if (state != ABORTED && bridge->IsShuttingDown ())
 			state = ABORTED;
 		return state == ABORTED;
 	}
@@ -87,7 +87,7 @@ class CurlDownloaderResponse : public DownloaderResponse {
 	State state;
 
 	const bool IsAborted () {
-		aborted = aborted || bridge->shutting_down;
+		aborted = aborted || bridge->IsShuttingDown ();
 		return aborted;
 	}
 

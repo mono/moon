@@ -1,3 +1,10 @@
+2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* curl/*.cpp|h: Updated for API changes.
+
+	* browser-bridge.h (BrowserBridge): Make the plugin and
+	shutting_down members private and provide accessors for them.
+
 2010-04-09  Andreia Gaita  <avidigal@novell.com>
 
 	* browser-bridge.h: fix premature abortion due to missing
