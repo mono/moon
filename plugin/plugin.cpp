@@ -954,7 +954,7 @@ PluginInstance::TryLoadBridge (const char *prefix)
 	}
 
 	bridge = bridge_ctor ();
-	bridge->SetPlugin (this);
+	bridge->SetSurface (GetSurface ());
 
 	// TODO: Remove this once things settle down around here
 	printf ("Using the %s bridge\n", prefix);

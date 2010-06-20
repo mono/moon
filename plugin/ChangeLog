@@ -1,5 +1,15 @@
 2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* plugin.cpp (TryLoadBridge): Set the Surface on the Bridge rather
+	than the plugin.
+
+	* curl/*.cpp|h: Updated for API changes.
+
+	* browser-bridge.h (BrowserBridge): Instead of having a
+	PluginInstance member, keep a Surface member instead.
+
+2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* curl/*.cpp|h: Updated for API changes.
 
 	* browser-bridge.h (BrowserBridge): Make the plugin and

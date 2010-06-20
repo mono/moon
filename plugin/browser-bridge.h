@@ -27,16 +27,16 @@ BrowserBridge *CreateBrowserBridge ();
 G_END_DECLS
 
 class BrowserBridge {
-	PluginInstance* plugin;
+	Surface *surface;
 	bool shutting_down;
 
  public:
-	BrowserBridge () : shutting_down(0) {}
+	BrowserBridge () : surface(NULL), shutting_down(0) {}
 	virtual DownloaderRequest* CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache) = 0;
 	virtual void Shutdown () { shutting_down = true; }
 	bool IsShuttingDown () { return shutting_down; }
-	void SetPlugin (PluginInstance* value) { plugin = value; }
-	PluginInstance *GetPlugin () { return plugin; }
+	void SetSurface (Surface *value) { surface = value; }
+	Surface *GetSurface () { return surface; }
 };
 
 #endif /* BROWSER_BRIDGE */

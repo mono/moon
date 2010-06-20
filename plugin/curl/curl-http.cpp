@@ -314,7 +314,7 @@ CurlDownloaderResponse::Open ()
 
 	if (delay) {
 		delay--;
-		bridge->GetPlugin()->GetSurface()->GetTimeManager()->AddDispatcherCall (_open, closure);
+		bridge->GetSurface()->GetTimeManager()->AddDispatcherCall (_open, closure);
 		return;
 	}
 	bridge->OpenHandle (request, request->GetHandle ());
@@ -397,7 +397,7 @@ CurlDownloaderResponse::Close ()
 	bridge->CloseHandle (request, request->GetHandle ());
 
 	if (closure) {
-		bridge->GetPlugin()->GetSurface()->GetTimeManager()->RemoveTickCall (_open, closure);
+		bridge->GetSurface()->GetTimeManager()->RemoveTickCall (_open, closure);
 		closure = NULL;
 	}
 	state = DONE;
