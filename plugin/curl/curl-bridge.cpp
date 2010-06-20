@@ -18,10 +18,13 @@
 CurlBrowserBridge::CurlBrowserBridge ()
 {
 	curl_global_init(CURL_GLOBAL_ALL);
+	sharecurl = curl_share_init();
+	curl_share_setopt (sharecurl, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
 }
 
 CurlBrowserBridge::~CurlBrowserBridge ()
 {
+	curl_share_cleanup(sharecurl);
 	curl_global_cleanup ();
 }
 

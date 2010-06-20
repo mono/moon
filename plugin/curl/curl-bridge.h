@@ -23,6 +23,8 @@
 
 class CurlBrowserBridge : public BrowserBridge {
  public:
+	CURL *sharecurl;
+
 	CurlBrowserBridge ();
 	~CurlBrowserBridge ();
 

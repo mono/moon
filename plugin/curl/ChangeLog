@@ -1,3 +1,15 @@
+2010-03-03  Andreia Gaita  <avidigal@novell.com>
+
+	Curl bridge - olympics support (requires mono-2-6 r152891)
+
+	* curl-bridge.[h|cpp]: add a curl share interface handle so that
+	all requests handled by this bridge can share cookie data
+	automagically
+
+	* curl-http.[h|cpp]: add support for ssl (no checks for now), posts,
+	cookies, getting headers synchronously. also initial asynch support
+	(not yet in use), finish the callbacks
+
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
 	* curl-bridge.[h|cpp], curl-http.[h|cpp], Makefile.am:

@@ -11,10 +11,17 @@
  *
  */
 
+#ifndef __CURL_HTTP_H__
+#define __CURL_HTTP_H__
+
+
+#include <glib.h>
 #include "timemanager.h"
 #include "ptr.h"
 
 class ResponseClosure;
+class TickData;
+class DataClosure;
 class CurlDownloaderResponse;
 
 class CurlDownloaderRequest : public DownloaderRequest {
@@ -24,7 +31,9 @@ class CurlDownloaderRequest : public DownloaderRequest {
 	struct curl_slist *headers;
 	CurlDownloaderResponse *response;
 	CurlBrowserBridge *bridge;
-
+	struct curl_httppost *post;
+	struct curl_httppost *postlast;
+	void *body;
  public:
 	CURL* curl;
 	CURL* multicurl;
@@ -35,21 +44,36 @@ class CurlDownloaderRequest : public DownloaderRequest {
 	const bool IsAborted () { return this->aborted; }
 	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
-	void SetBody (void *body, int size);
+	void SetBody (void *ptr, int size);
+
+	bool isPost () { return strstr (method, "POST"); }
+	void Close ();
 };
 
 class CurlDownloaderResponse : public DownloaderResponse {
  protected:
 	CurlBrowserBridge *bridge;
+	CurlDownloaderRequest *request;
 	DownloaderResponseHeaderCallback visitor;
 	gpointer vcontext;
-	bool isStarted;
+
 	long status;
 	const char* statusText;
 	int delay;
 	CURL* curl;
 	CURL* multicurl;
 	DOPtr<ResponseClosure> closure;
+	GList *headers;
+	GList *bodies;
+	GList *callCache;
+
+	enum State {
+		STOPPED = 0,
+		HEADER = 1,
+		DATA = 2,
+		DONE = 3,
+	};
+	State state;
 
 	const bool IsAborted () {
 		aborted = aborted || bridge->plugin->IsShuttingDown ();
@@ -58,7 +82,6 @@ class CurlDownloaderResponse : public DownloaderResponse {
 
  public:
 
-	CurlDownloaderResponse () {}
 	CurlDownloaderResponse (CurlBrowserBridge *bridge,
 	    CurlDownloaderRequest *request,
 	    DownloaderResponseStartedHandler started,
@@ -66,7 +89,7 @@ class CurlDownloaderResponse : public DownloaderResponse {
 	    DownloaderResponseFinishedHandler finished,
 	    gpointer context);
 
-	~CurlDownloaderResponse () {}
+	~CurlDownloaderResponse ();
 
 	DownloaderRequest *GetDownloaderRequest () { return request; }
 	void SetDownloaderRequest (DownloaderRequest *value) { request = (CurlDownloaderRequest*)value; }
@@ -82,6 +105,14 @@ class CurlDownloaderResponse : public DownloaderResponse {
 	void GetData ();
 	void HeaderReceived (void *ptr, size_t size);
 	size_t DataReceived (void *ptr, size_t size);
+
+	void Started ();
+	void Available (DataClosure *dl);
+	void Finished ();
+	void Visitor (const char *name, const char *val);
+	void AddCallback (TickData *data, bool delayed = FALSE);
+	void Emit ();
+	void Close ();
 };
 
 class ResponseClosure : public EventObject {
@@ -95,3 +126,65 @@ public:
 
 	CurlDownloaderResponse *res;
 };
+
+class DataClosure : public EventObject {
+private :
+public:
+	DataClosure (CurlDownloaderResponse *res,
+	    gpointer context, char *buffer, size_t size,
+	    const char *name, const char *val) :
+		res (res), context(context),
+		buffer(buffer), size(size),
+		name(name), val(val)
+	{
+	}
+
+	virtual ~DataClosure ();
+
+	CurlDownloaderResponse *res;
+	gpointer context;
+	char *buffer;
+	size_t size;
+	const char *name;
+	const char *val;
+};
+
+class TickData {
+public:
+	enum CallType {
+		HEADER = 0,
+		BODY = 1,
+	};
+
+	TickData (CallType type, TickCallHandler func, CurlDownloaderResponse *res, gpointer context, char *buffer, size_t size) :
+		type(type), func(func), res(res),
+		context(context), buffer(buffer), size(size), name(NULL), val(NULL)
+
+	{
+	}
+
+	TickData (CallType type, TickCallHandler func, CurlDownloaderResponse *res, const char *name, const char *val) :
+		type(type), func(func), res(res),
+		context(NULL), buffer(NULL), size(0), name(name), val(val)
+	{
+	}
+
+	~TickData ();
+
+	EventObject* GetClosure ()
+	{
+		return new DataClosure (res, context, buffer, size, name, val);
+	}
+
+	CallType type;
+	TickCallHandler func;
+	CurlDownloaderResponse *res;
+	gpointer context;
+	char *buffer;
+	size_t size;
+	const char *name;
+	const char *val;
+	bool delay;
+};
+
+#endif
