@@ -87,6 +87,10 @@ if HAVE_GECKO_1_9
 # Rename the bridges to the original names
 	cp -L ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff3bridge.so
 endif HAVE_GECKO_1_9
+if HAVE_CURL
+# Rename the bridges to the original names
+	cp -L ../curl/.libs/libmoonpluginxpi-curlbridge.so .xpinstall/plugins/moonlight/libmoonplugin-curlbridge.so
+endif HAVE_CURL
 if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/plugins/moonlight/
