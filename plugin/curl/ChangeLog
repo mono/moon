@@ -1,3 +1,8 @@
+2010-04-10  Andreia Gaita  <avidigal@novell.com>
+
+	* curl-bridge.cpp: add a few checks to prevent hangs when shutting
+	down the bridge
+
 2010-04-09  Andreia Gaita  <avidigal@novell.com>
 
 	* curl-http.h: tweak the IsAborted check a bit

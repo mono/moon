@@ -198,9 +198,11 @@ CurlBrowserBridge::OpenHandle (DownloaderRequest* res, CURL* handle)
 	d(printf ("BRIDGE CurlBrowserBridge::OpenHandle res:%p handle:%p\n", res, handle));
 
 	pthread_mutex_lock (&worker_mutex);
-	handles->Push (new HandleNode (res));
-	curl_multi_add_handle (multicurl, handle);
-	pthread_cond_signal (&worker_cond);
+	if (!quit) {
+		handles->Push (new HandleNode (res));
+		curl_multi_add_handle (multicurl, handle);
+		pthread_cond_signal (&worker_cond);
+	}
 	pthread_mutex_unlock (&worker_mutex);
 }
 
@@ -212,14 +214,16 @@ CurlBrowserBridge::CloseHandle (DownloaderRequest* res, CURL* handle)
 	VERIFY_MAIN_THREAD
 
 	pthread_mutex_lock (&worker_mutex);
-	handles->Lock ();
-	List* list = handles->LinkedList ();
-	HandleNode* node = (HandleNode*)list->Find (find_handle, res);
-	if (node) {
-		curl_multi_remove_handle (multicurl, handle);
-		list->Remove (node);
+	if (!quit) {
+		handles->Lock ();
+		List* list = handles->LinkedList ();
+		HandleNode* node = (HandleNode*)list->Find (find_handle, res);
+		if (node) {
+			curl_multi_remove_handle (multicurl, handle);
+			list->Remove (node);
+		}
+		handles->Unlock ();
 	}
-	handles->Unlock ();
 	pthread_mutex_unlock (&worker_mutex);
 }
 
@@ -245,13 +249,15 @@ CurlBrowserBridge::GetData ()
 	do {
 		if (handles->IsEmpty ()) {
 			pthread_mutex_lock (&worker_mutex);
-			pthread_cond_wait (&worker_cond, &worker_mutex);
+			if (!quit) pthread_cond_wait (&worker_cond, &worker_mutex);
 			pthread_mutex_unlock (&worker_mutex);
+			if (quit) break;
 		}
 
 		pthread_mutex_lock (&worker_mutex);
-		while (CURLM_CALL_MULTI_PERFORM == curl_multi_perform (multicurl, &num));
+		if (!quit) while (CURLM_CALL_MULTI_PERFORM == curl_multi_perform (multicurl, &num));
 		pthread_mutex_unlock (&worker_mutex);
+		if (quit) break;
 
 		if (num != running) {
 			running = num;
@@ -301,7 +307,7 @@ CurlBrowserBridge::GetData ()
 
 				if (available == -1) {
 					pthread_mutex_lock (&worker_mutex);
-					pthread_cond_timedwait (&worker_cond, &worker_mutex, &tv);
+					if (!quit) pthread_cond_timedwait (&worker_cond, &worker_mutex, &tv);
 					pthread_mutex_unlock (&worker_mutex);
 				} else {
 					if (pselect (available+1, &r, &w, &x, &tv, NULL) < 0) {
@@ -311,7 +317,7 @@ CurlBrowserBridge::GetData ()
 			}
 		} else {
 			pthread_mutex_lock (&worker_mutex);
-			pthread_cond_wait (&worker_cond, &worker_mutex);
+			if (!quit) pthread_cond_wait (&worker_cond, &worker_mutex);
 			pthread_mutex_unlock (&worker_mutex);
 		}
 	} while (!quit);
