@@ -1,3 +1,8 @@
+2010-05-24  Andreia Gaita  <avidigal@novell.com>
+
+	* curl.m4: tweak curl configure options to not build unnecessary
+	things that can potentially break the build on dev systems
+
 2010-05-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* curl.m4: Show configure failure reason for embedded curl.
