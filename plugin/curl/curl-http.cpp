@@ -453,14 +453,15 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 	if (size <= 2)
 		return;
 
-	const char *name, *val;
+	gchar *name, *val;
 	char **header = g_strsplit ((char*)ptr, ":", 2);
 
 	if (!header[1])
 		return;
 
 	name = g_strdup (header[0]);
-	val = g_strndup (header[1], size - 2);
+	val = g_strdup (header[1]);
+	val = g_strstrip (val);
 
 	visitor (vcontext, name, val);
 }
