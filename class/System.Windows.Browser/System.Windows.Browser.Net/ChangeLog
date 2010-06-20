@@ -1,3 +1,9 @@
+2010-03-03  Andreia Gaita  <avidigal@novell.com>
+
+	* BrowserHttpWebResponse.cs: keep the handle around until the
+	response is closed or data comes in, header callbacks might be
+	invoked asynchronously
+
 2010-02-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebResponse.cs: Introduce internal IsCompressed property
