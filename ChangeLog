@@ -1,3 +1,7 @@
+2010-05-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Show any failure reason for curl.
+
 2010-03-30  Andreia Gaita  <avidigal@novell.com>
 
 	* autogen.sh: add curl build step

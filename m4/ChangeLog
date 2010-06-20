@@ -1,3 +1,7 @@
+2010-05-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* curl.m4: Show configure failure reason for embedded curl.
+
 2010-03-30  Andreia Gaita  <avidigal@novell.com>
 
 	* m4/curl.m4: move CUSTOM_SUBDIR_OPTION to utilities.m4

@@ -293,7 +293,7 @@ EOF
 fi
 
 cat <<EOF
-          Curl bridge: $with_curl
+          Curl bridge: $with_curl $curl_reason
 EOF
 
 # blank line
