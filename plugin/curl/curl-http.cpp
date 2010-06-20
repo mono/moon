@@ -326,6 +326,7 @@ CurlDownloaderRequest::Abort () {
 
 	if (bridge->IsDataThread ()) {
 		aborting = TRUE;
+		bridge->CloseHandle (this, GetHandle ());
 		g_idle_add (_abort, this);
 	} else {
 		if (state != OPENED)
@@ -504,10 +505,9 @@ CurlDownloaderResponse::Started ()
 {
 	d(printf ("BRIDGE CurlDownloaderResponse::Started %p\n", this));
 
-	if (started) {
-		state = HEADER;
+	state = HEADER;
+	if (started)
 		started (this, context);
-	}
 	if (state == FINISHED)
 		Finished ();
 }
@@ -537,6 +537,6 @@ CurlDownloaderResponse::Finished ()
 		state = FINISHED;
 		return;
 	}
-	if (finished && (int)state > FINISHED)
+	if (finished && (int)state > FINISHED && !IsAborted ())
 		finished (this, context, true, NULL, NULL);
 }
