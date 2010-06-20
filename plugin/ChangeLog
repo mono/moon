@@ -1,3 +1,7 @@
+2010-04-30  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.cpp: set the surface on the bridge
+
 2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (TryLoadBridge): Set the Surface on the Bridge rather

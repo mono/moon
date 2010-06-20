@@ -1101,6 +1101,9 @@ PluginInstance::CreateWindow ()
 	deployment->SetSurface (surface);
 	if (!created)
 		moon_window->SetSurface (surface);
+
+	if (bridge)
+		bridge->SetSurface (surface);
 	
 	MoonlightScriptControlObject *root = GetRootObject ();
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
