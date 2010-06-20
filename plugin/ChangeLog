@@ -1,3 +1,8 @@
+2010-04-09  Andreia Gaita  <avidigal@novell.com>
+
+	* browser-bridge.h: fix premature abortion due to missing
+	initialization
+
 2010-03-22  Andreia Gaita  <avidigal@novell.com>
 
 	* browser-bridge.h: Add Shutdown method
