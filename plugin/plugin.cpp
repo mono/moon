@@ -864,44 +864,36 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
         // browser bridge we should use.
         const char *useragent = MOON_NPN_UserAgent (instance);
 
+	if (strstr (useragent, "Opera") || strstr (useragent, "AppleWebKit"))
+		is_reentrant_mess = true;
+
+	if (strstr (useragent, "Gecko")) {
 #ifdef HAVE_CURL
-	if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
-		TryLoadBridge ("curl");
-
-		if (strstr (useragent, "Opera") || strstr (useragent, "AppleWebKit"))
-			is_reentrant_mess = true;
-
-	} else {
+		if (moonlight_flags & RUNTIME_INIT_CURL_BRIDGE) {
+			TryLoadBridge ("curl");
+		} else {
 #endif
+			// gecko based, let's look for 'rv:1.8' vs 'rv:1.9.2' vs 'rv:1.9'
+			if (strstr (useragent, "rv:1.8"))
+				TryLoadBridge ("ff2");
+			else if (strstr (useragent, "rv:1.9.2"))
+				TryLoadBridge ("ff36");
+			else if (strstr (useragent, "rv:1.9"))
+				TryLoadBridge ("ff3");
 
-	if (strstr (useragent, "Opera")) {
-		// opera based
-		TryLoadBridge ("opera");
-		is_reentrant_mess = true;
-	}
-	else if (strstr (useragent, "AppleWebKit")) {
-		// webkit based
-		is_reentrant_mess = true;
-		TryLoadBridge ("webkit");
-	}
-        else if (strstr (useragent, "Gecko")) {
-		// gecko based, let's look for 'rv:1.8' vs 'rv:1.9.2' vs 'rv:1.9'
-		if (strstr (useragent, "rv:1.8")) {
-			TryLoadBridge ("ff2");
-		}
-		else if (strstr (useragent, "rv:1.9.2")) {
-			TryLoadBridge ("ff36");
-		}
-		else if (strstr (useragent, "rv:1.9")) {
-			TryLoadBridge ("ff3");
-		}
-        }
-
-	// XXX Opera currently claims to be mozilla when we query it
-	if (!bridge && try_opera_quirks)
-		TryLoadBridge ("opera");
+			if (!bridge) {
+				is_reentrant_mess = true;
 #ifdef HAVE_CURL
-	}
+				TryLoadBridge ("curl");
+#endif
+			}
+#ifdef HAVE_CURL
+		}
+#endif
+        }
+#ifdef HAVE_CURL
+	else
+		TryLoadBridge ("curl");
 #endif
 
         if (!bridge) {
@@ -958,6 +950,9 @@ PluginInstance::TryLoadBridge (const char *prefix)
 
 	bridge = bridge_ctor ();
 	bridge->SetPlugin (this);
+
+	// TODO: Remove this once things settle down around here
+	printf ("Using the %s bridge\n", prefix);
 }
 
 NPError
