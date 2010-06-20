@@ -1,4 +1,9 @@
-SUBDIRS = . test samples firefox curl
+if HAVE_CURL
+	SUBDIRS = . test samples firefox curl
+else
+	SUBDIRS = . test samples firefox
+endif
+
 DIST_SUBDIRS = $(SUBDIRS) install
 
 CLEANFILES =
