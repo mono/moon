@@ -1,7 +1,7 @@
+SUBDIRS = . test samples firefox
+
 if HAVE_CURL
-	SUBDIRS = . test samples firefox curl
-else
-	SUBDIRS = . test samples firefox
+SUBDIRS += curl
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) install
@@ -117,4 +117,5 @@ all-local:
 	@mkdir -p .libs
 	test -L .libs/libmoonplugin-ff2bridge.so || (cd .libs && ln -s ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so)
 	test -L .libs/libmoonplugin-ff3bridge.so || (cd .libs && ln -s ../firefox/ff3/.libs/libmoonplugin-ff3bridge.so)
+	test -L .libs/libmoonplugin-ff36bridge.so || (cd .libs && ln -s ../firefox/ff3/.libs/libmoonplugin-ff36bridge.so)
 	test -L .libs/libmoonplugin-curlbridge.so || (cd .libs && ln -s ../firefox/ff3/.libs/libmoonplugin-curlbridge.so)
