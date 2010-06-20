@@ -34,10 +34,15 @@ AC_DEFUN([MOONLIGHT_CHECK_CURL],
 		[If you want to enable the curl bridge]),
 		[], [with_curl=yes])
 
-	PKG_CHECK_MODULES(CURL, libcurl, [has_curl=yes], [has_curl=no])
+	if test x$with_curl = xyes; then
+		PKG_CHECK_MODULES(CURL, libcurl, [has_curl=yes], [has_curl=no])
 
-	AM_CONDITIONAL(HAVE_CURL, test x$with_curl = xyes -a x$has_curl = xyes)
-	if test x$with_curl = xyes -a x$has_curl = xyes; then
-		AC_DEFINE([HAVE_CURL], [1], [curl support for the bridge])
+		if test x$has_curl = xyes; then
+			AC_DEFINE([HAVE_CURL], [1], [curl support for the bridge])
+		else
+			with_curl=no
+		fi
 	fi
+
+	AM_CONDITIONAL(HAVE_CURL, test x$with_curl = xyes)
 ])
