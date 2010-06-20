@@ -50,7 +50,11 @@ class CurlDownloaderRequest : public DownloaderRequest {
 	CurlDownloaderRequest (CurlBrowserBridge *bridge, const char *method, const char *uri, bool disable_cache);
 	~CurlDownloaderRequest ();
 	void Abort ();
-	const bool IsAborted () { return (state = (bridge->shutting_down ? (state != CLOSED ? ABORTED : state) : state)); }
+	const bool IsAborted () {
+		if (state != ABORTED && bridge->shutting_down)
+			state = ABORTED;
+		return state == ABORTED;
+	}
 	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (void *ptr, int size);
