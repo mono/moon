@@ -1423,6 +1423,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
 		Downloader *dl = (Downloader *) notify->pdata;
 		// check if (a) it's a redirection and (b) if it is allowed for the current downloader policy
+
 		if (!dl->CheckRedirectionPolicy (stream->url))
 			return NPERR_INVALID_URL;
 
@@ -1703,15 +1704,20 @@ void
 PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
 	nps (printf ("PluginInstance::StreamAsFile (%p, %s)\n", stream, fname));
+	/*
+	 * FIXOPERA we dup the string here incase one of these calls
+	 * reenters and the url is reused out from under us
+	 */
+	char *url = g_strdup (stream->url);
 	
 	Deployment::SetCurrent (deployment);
 #if DEBUG
-	AddSource (stream->url, fname);
+	AddSource (url, fname);
 #endif
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
-		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
+		xaml_loader = PluginXamlLoader::FromFilename (url, fname, this, surface);
 		loading_splash = true;
-		surface->SetSourceLocation (stream->url);
+		surface->SetSourceLocation (url);
 		LoadXAML ();
 		FlushSplash ();
 
@@ -1722,15 +1728,14 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		delete xaml_loader;
 		xaml_loader = NULL;
 		
-		CrossDomainApplicationCheck (stream->url);
+		CrossDomainApplicationCheck (url);
 
 		Uri *uri = new Uri ();
 
-
-		if (uri->Parse (stream->url, false) && is_xap (fname)) {
-			LoadXAP (stream->url, fname);
+		if (uri->Parse (url, false) && is_xap (fname)) {
+			LoadXAP (url, fname);
 		} else {
-			xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
+			xaml_loader = PluginXamlLoader::FromFilename (url, fname, this, surface);
 			LoadXAML ();
 		}
 
@@ -1743,6 +1748,8 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		
 		dl->SetFilename (fname);
 	}
+
+	g_free (url);
 }
 
 gint32
