@@ -1,3 +1,13 @@
+2010-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* curl-bridge.cpp (CallData::~CallData): we can't use MOON_NPN_
+	methods in this bridge for memory allocation, since the bridge is
+	used in lunar-launcher.
+
+	* curl-http.cpp (CurlDownloaderRequest::SetBody): same.
+	(CurlDownloaderRequest::Close): same.
+	(CurlDownloaderResponse::DataReceived): same.
+
 2010-04-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Don't link with libmoon.la - this Makefile.am was

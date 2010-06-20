@@ -248,7 +248,7 @@ void CurlDownloaderRequest::SetBody (void *ptr, int size)
 {
 	d(printf ("BRIDGE CurlDownloaderRequest::SetBody %p\n", this));
 
-	body = (void *) MOON_NPN_MemAlloc (size);
+	body = (void *) g_malloc (size);
 	memcpy(body, ptr, size);
 	curl_easy_setopt (curl, CURLOPT_POSTFIELDS, body);
 	curl_easy_setopt (curl, CURLOPT_POSTFIELDSIZE, size);
@@ -360,7 +360,7 @@ CurlDownloaderRequest::Close ()
 	bridge->ReleaseHandle (curl);
 
 	if (body)
-		MOON_NPN_MemFree (body);
+		g_free (body);
 
 	if (headers)
 		curl_slist_free_all (headers);
@@ -492,7 +492,7 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 	if (!available || IsAborted ())
 		return -1;
 
-	char *buffer = (char *) MOON_NPN_MemAlloc (size);
+	char *buffer = (char *) g_malloc (size);
 	memcpy(buffer, ptr, size);
 
 	bridge->AddCallback (_available, this, buffer, size, NULL, NULL);
