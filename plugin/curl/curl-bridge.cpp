@@ -190,8 +190,13 @@ CurlBrowserBridge::ReleaseHandle (CURL* handle)
 {
 	d(printf ("BRIDGE CurlBrowserBridge::ReleaseHandle handle:%p\n", handle));
 
+	if (!handle)
+		return;
 	curl_easy_reset (handle);
-	pool->Push (new CurlNode (handle));
+	if (!pool)
+		quit = true;
+	else
+		pool->Push (new CurlNode (handle));
 }
 
 void
@@ -217,14 +222,18 @@ CurlBrowserBridge::CloseHandle (DownloaderRequest* res, CURL* handle)
 
 	pthread_mutex_lock (&worker_mutex);
 	if (!quit) {
-		handles->Lock ();
-		List* list = handles->LinkedList ();
-		HandleNode* node = (HandleNode*)list->Find (find_handle, res);
-		if (node) {
-			curl_multi_remove_handle (multicurl, handle);
-			list->Remove (node);
+		if (!handles)
+			quit = true;
+		else {
+			handles->Lock ();
+			List* list = handles->LinkedList ();
+			HandleNode* node = (HandleNode*)list->Find (find_handle, res);
+			if (node) {
+				curl_multi_remove_handle (multicurl, handle);
+				list->Remove (node);
+			}
+			handles->Unlock ();
 		}
-		handles->Unlock ();
 	}
 	pthread_mutex_unlock (&worker_mutex);
 }
