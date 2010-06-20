@@ -135,15 +135,17 @@ pkgadd:
 cygwinbin:
 	$(MAKE) -C packages/Win32/cygwin cygwinbin
 
-# We extend the standard install with a custom hook:
-install-data-hook:
-	cd include && $(MAKE) install
-	cd docs && $(MAKE) install
+install:
 
+# We extend the standard install with a custom hook:
+#install-data-hook:
+#	cd include && $(MAKE) install
+#	cd docs && $(MAKE) install
+#
 # We extend the standard uninstall with a custom hook:
-uninstall-hook:
-	cd include && $(MAKE) uninstall
-	cd docs && $(MAKE) uninstall
+#uninstall-hook:
+#	cd include && $(MAKE) uninstall
+#	cd docs && $(MAKE) uninstall
 
 ca-bundle: lib/mk-ca-bundle.pl
 	@echo "generate a fresh ca-bundle.crt"
