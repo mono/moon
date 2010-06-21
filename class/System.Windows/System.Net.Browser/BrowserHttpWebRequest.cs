@@ -48,6 +48,15 @@ namespace System.Net.Browser {
  		{
 		}
 
+		public override bool AllowWriteStreamBuffering {
+			get { return true; }
+			set {
+				// cannot be false - but can be set to (default) true
+				if (!value)
+					throw new NotSupportedException ();
+			}
+		}
+
 		public override IWebRequestCreate CreatorInstance { 
 			get { return WebRequestCreator.BrowserHttp; }
 		}

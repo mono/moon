@@ -1,3 +1,11 @@
+2010-06-21  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net.Browser/BaseHttpWebRequestTest.cs: Renamed test case
+	* System.Net.Browser/BrowserHttpWebRequestTest.cs: Add buffering
+	setter test case
+	* System.Net.Browser/ClientHttpWebRequestTest.cs: : Add buffering
+	setter test case
+
 2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/ClipboardTest.cs: Add null test on SetText (which

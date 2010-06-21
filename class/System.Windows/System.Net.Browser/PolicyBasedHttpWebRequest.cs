@@ -43,7 +43,6 @@ namespace System.Net.Browser {
 		private Uri uri;
 		private bool aborted;
 		private bool allow_read_buffering;
-		private bool allow_write_buffering;
 		private string method;
 
 		private ICrossDomainPolicy policy;
@@ -55,7 +54,6 @@ namespace System.Net.Browser {
  		{
 			this.uri = uri;
 			allow_read_buffering = true;
-			allow_write_buffering = true;
 			method = "GET";
 		}
 
@@ -71,13 +69,6 @@ namespace System.Net.Browser {
 		public override bool AllowReadStreamBuffering {
 			get { return allow_read_buffering; }
 			set { allow_read_buffering = value; }
-		}
-
-		// new in SL4 RC
-		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
-		public override bool AllowWriteStreamBuffering {
-			get { return allow_write_buffering; }
-			set { allow_write_buffering = value; }
 		}
 
 		protected bool IsAborted {

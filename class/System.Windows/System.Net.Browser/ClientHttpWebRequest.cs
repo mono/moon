@@ -39,10 +39,19 @@ namespace System.Net.Browser {
 
 		internal ClientHttpWebRequestInternal request;
 		private Stream stream;
+		private bool allow_write_buffering;
 
 		internal ClientHttpWebRequest (Uri uri)
 			: base (uri)
 		{
+			allow_write_buffering = true;
+		}
+
+		// new in SL4 RC
+		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
+		public override bool AllowWriteStreamBuffering {
+			get { return allow_write_buffering; }
+			set { allow_write_buffering = value; }
 		}
 
 		public override ICredentials Credentials {

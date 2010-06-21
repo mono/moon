@@ -45,6 +45,18 @@ namespace MoonTest.System.Net.Browser {
 		}
 
 		[TestMethod]
+		public void Buffering_Set ()
+		{
+			HttpWebRequest wr = (HttpWebRequest) GetWebRequest (new Uri ("http://localhost"));
+			wr.AllowReadStreamBuffering = false;
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.AllowWriteStreamBuffering = false;
+			}, "AllowWriteStreamBuffering-false");
+			// that's ok
+			wr.AllowWriteStreamBuffering = true;
+		}
+
+		[TestMethod]
 		public void CookieContainer ()
 		{
 			HttpWebRequest wr = (HttpWebRequest) GetWebRequest (new Uri ("http://localhost"));

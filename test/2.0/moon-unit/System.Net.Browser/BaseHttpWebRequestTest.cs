@@ -50,7 +50,7 @@ namespace MoonTest.System.Net.Browser {
 		protected abstract WebRequest GetWebRequest (Uri uri);
 
 		[TestMethod]
-		public void Buffering ()
+		public void Buffering_Get ()
 		{
 			HttpWebRequest wr = (HttpWebRequest) GetWebRequest (new Uri ("http://localhost"));
 			Assert.IsTrue (wr.AllowReadStreamBuffering, "AllowReadStreamBuffering");

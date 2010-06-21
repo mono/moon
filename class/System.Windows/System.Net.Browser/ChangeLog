@@ -1,3 +1,12 @@
+2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: AllowWriteStreamBuffering is always 
+	true (getter) and cannot be set (NotSupportedException)
+	* ClientHttpWebRequest.cs: Add get/set AllowWriteStreamBuffering
+	property override
+	* PolicyBasedHttpWebRequest.cs: Remove AllowWriteStreamBuffering
+	property override since it differs between the two stacks
+
 2010-05-19  Andreia Gaita  <avidigal@novell.com>
 
 	* BrowserHttpWebRequestInternal.cs: Keep the dispatcher around, it
