@@ -44,6 +44,7 @@ namespace System.Net.Browser {
 		private bool aborted;
 		private bool allow_read_buffering;
 		private string method;
+		private long content_length;
 
 		private ICrossDomainPolicy policy;
 
@@ -55,6 +56,7 @@ namespace System.Net.Browser {
 			this.uri = uri;
 			allow_read_buffering = true;
 			method = "GET";
+			content_length = -1;
 		}
 
 		~PolicyBasedWebRequest () /* thread-safe: no p/invokes */
@@ -69,6 +71,11 @@ namespace System.Net.Browser {
 		public override bool AllowReadStreamBuffering {
 			get { return allow_read_buffering; }
 			set { allow_read_buffering = value; }
+		}
+
+		public override long ContentLength {
+			get { return content_length; }
+			set { content_length = value; }
 		}
 
 		protected bool IsAborted {

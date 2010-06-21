@@ -388,6 +388,18 @@ namespace MoonTest.System.Net {
 			result.AsyncWaitHandle.WaitOne ();
 			Assert.IsNull (wr.EndGetResponse (result), "Response-Read");
 		}
+
+		[TestMethod]
+		public void ContentLength ()
+		{
+			ConcreteWebRequest wr = new ConcreteWebRequest ();
+			Assert.Throws<NotImplementedException> (delegate {
+				Assert.AreEqual (-1, wr.ContentLength, "default");
+			}, "get");
+			Assert.Throws<NotImplementedException> (delegate {
+				wr.ContentLength = 0;
+			}, "set");
+		}
 	}
 }
 

@@ -57,6 +57,19 @@ namespace MoonTest.System.Net.Browser {
 			Assert.IsTrue (wr.AllowWriteStreamBuffering, "AllowWriteStreamBuffering");
 		}
 
+		[TestMethod]
+		public void ContentLength ()
+		{
+			HttpWebRequest wr = (HttpWebRequest) GetWebRequest (new Uri ("http://localhost"));
+			Assert.AreEqual (-1, wr.ContentLength, "default");
+			wr.ContentLength = Int64.MinValue;
+			Assert.AreEqual (Int64.MinValue, wr.ContentLength, "min");
+			wr.ContentLength = Int64.MaxValue;
+			Assert.AreEqual (Int64.MaxValue, wr.ContentLength, "max");
+			wr.ContentLength = 0;
+			Assert.AreEqual (0, wr.ContentLength, "0");
+		}
+
 		bool IsValidHeader (HttpRequestHeader header)
 		{
 			switch (header) {

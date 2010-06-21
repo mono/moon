@@ -1,3 +1,9 @@
+2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebRequestTest.cs: Add ContentLength test (NI)
+	* System.Net.Browser/BaseHttpWebRequestTest.cs: Add ContentLength
+	test (applies to both browser and client stack)
+
 2010-06-21  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net.Browser/BaseHttpWebRequestTest.cs: Renamed test case

@@ -1,3 +1,8 @@
+2010-06-21  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* PolicyBasedHttpWebRequest.cs: Implement ContentLength for both
+	stacks
+
 2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: AllowWriteStreamBuffering is always 
