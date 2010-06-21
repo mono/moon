@@ -1,3 +1,7 @@
+2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Add SC to Clipboard::GetClipboard()
+
 2010-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Add SC to Deployment::TerminateAndSetCulture

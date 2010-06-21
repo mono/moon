@@ -1,4 +1,0 @@
-!SSC-B9088C0C787FAE644235B7E46ABB8F34
-System.Void System.Linq.Expressions.EmitContext::.ctor(System.Linq.Expressions.CompilationContext,System.Linq.Expressions.EmitContext,System.Linq.Expressions.LambdaExpression)
-	r142142		spouliot, creates DynamicMethod [Critical] lambda_method (see security/ReflectionEmitTest.cs)
-

@@ -185,6 +185,9 @@
 +SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 
+# clipboard
++SC-M: System.IntPtr System.Windows.Clipboard::GetClipboard()
+
 # capture device
 +SC-M: System.IntPtr System.Windows.Media.CaptureDeviceConfiguration::GetAudioCaptureService()
 +SC-M: System.IntPtr System.Windows.Media.CaptureDeviceConfiguration::GetVideoCaptureService()
