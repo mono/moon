@@ -1,3 +1,8 @@
+2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/ClipboardTest.cs: Add null test on SetText (which
+	occurs before the user initiated check)
+
 2010-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/ReflectionEmitTest.cs: Ignore a test that worked only

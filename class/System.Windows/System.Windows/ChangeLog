@@ -1,3 +1,7 @@
+2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Clipboard.cs: Add missing null check on SetText
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Window.cs:

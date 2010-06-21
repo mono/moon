@@ -63,6 +63,9 @@ namespace System.Windows {
 
 		public static void SetText (string text)
 		{
+			if (text == null)
+				throw new ArgumentNullException ("text");
+
 			CheckUserInitiated ();
 			IntPtr clipboard = GetClipboard();
 			NativeMethods.moon_clipboard_set_text (clipboard, text, text.Length);

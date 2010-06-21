@@ -54,6 +54,15 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		public void SetText_Null ()
+		{
+			// null check is done before user-initiated check
+			Assert.Throws<ArgumentNullException> (delegate {
+				Clipboard.SetText (null);
+			}, "SetText");
+		}
+
+		[TestMethod]
 		public void SetText_NonUserInitiated ()
 		{
 			Assert.Throws<SecurityException> (delegate {
