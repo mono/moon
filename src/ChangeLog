@@ -1,5 +1,11 @@
 2010-06-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* multiscaleimage.cpp (qtree_insert): Use qtree_new(). Also
+	optimized to use a temporary variable to hold the value of pow2 of
+	'level' so we didn't need to calculate it a dozen times per loop.
+
+2010-06-21  Jeffrey Stedfast  <fejj@novell.com>
+
 	* multiscaleimage.cpp (qtree_set_image): Renamed from
 	set_value(). The value is always a cairo_surface_t image.
 	(qtree_lookup_image): Renamed from lookup_data().

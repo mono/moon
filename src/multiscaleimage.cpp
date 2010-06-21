@@ -35,7 +35,7 @@
 #if LOGGING
 #include "clock.h"
 #define MSI_STARTTIMER(id)    if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_start = get_now()
-#define MSI_ENDTIMER(id,str)  if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended took (%f ms)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000)
+#define MSI_ENDTIMER(id,str)  if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' took %f ms\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000)
 #else
 #define MSI_STARTTIMER(id)
 #define MSI_ENDTIMER(id,str)
@@ -61,7 +61,7 @@ struct QTree {
 	QTree* parent;
 };
 
-static QTree*
+static QTree *
 qtree_new (void)
 {
 	return g_new0 (QTree, 1);
@@ -82,43 +82,48 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 		g_warning ("passing a NULL QTree to qtree_insert");
 		return NULL;
 	}
-
+	
 	QTree *node = root;
+	guint64 level2;
+	
 	while (level-- > 0) {
-		if (y < (pow2 (level))) {
-			if (x < (pow2 (level))) {
+		level2 = pow2 (level);
+		
+		if (y < level2) {
+			if (x < level2) {
 				if (!node->l0) {
-					node->l0 = g_new0 (QTree, 1);
+					node->l0 = qtree_new ();
 					node->l0->parent = node;
 				}
 				node = node->l0;
 			} else {
 				if (!node->l1) {
-					node->l1 = g_new0 (QTree, 1);
+					node->l1 = qtree_new ();
 					node->l1->parent = node;
 				}
 				node = node->l1;
-				x -= (pow2 (level));
+				x -= level2;
 			}
 		} else {
-			if (x < (pow2 (level))) {
+			if (x < level2) {
 				if (!node->l2) {
-					node->l2 = g_new0 (QTree, 1);
+					node->l2 = qtree_new ();
 					node->l2->parent = node;
 				}
 				node = node->l2;
-				y -= (pow2 (level));
+				y -= level2;
 			} else {
 				if (!node->l3) {
-					node->l3 = g_new0 (QTree, 1);
+					node->l3 = qtree_new ();
 					node->l3->parent = node;
 				}
 				node = node->l3;
-				x -= (pow2 (level));
-				y -= (pow2 (level));
+				x -= level2;
+				y -= level2;
 			}
 		}
 	}
+	
 	return node;
 }
 
