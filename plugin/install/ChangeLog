@@ -1,3 +1,7 @@
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: remove ff36 bridge.
+
 2010-02-11  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: we need to include the ff3 bridge.

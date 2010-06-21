@@ -7,6 +7,10 @@
 
 	* plugin.cpp: set the surface on the bridge
 
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am, plugin.cpp: remove ff36 bridge.
+
 2010-04-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (TryLoadBridge): Set the Surface on the Bridge rather

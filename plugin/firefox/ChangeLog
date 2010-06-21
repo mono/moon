@@ -1,3 +1,7 @@
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: remove ff36 bridge.
+
 2010-01-28  Andreia Gaita  <avidigal@novell.com>
 
 	* Makefile.am: Add FF3.6 bridge

@@ -136,9 +136,7 @@ AC_SUBST(LOADER_LIBS)
 
 DOCDIR=$(pkg-config --variable=sourcesdir monodoc)
 
-if test x$with_ff36 = xyes; then
-   MOZILLA_CFLAGS=$FF36_CFLAGS
-elif test x$with_ff3 = xyes; then
+if test x$with_ff3 = xyes; then
    MOZILLA_CFLAGS=$FF3_CFLAGS
 else
    MOZILLA_CFLAGS=$FF2_CFLAGS
@@ -216,7 +214,6 @@ plugin/curl/Makefile
 plugin/firefox/Makefile
 plugin/firefox/ff2/Makefile
 plugin/firefox/ff3/Makefile
-plugin/firefox/ff36/Makefile
 plugin/install/Makefile
 plugin/install/install.rdf
 plugin/test/Makefile
@@ -288,7 +285,6 @@ cat <<EOF
           Plugin Installer (.xpi): $user_plugin
           Gecko 1.8 (Firefox 2): $with_ff2 $ff2_reason
           Gecko 1.9 (Firefox 3): $with_ff3 $ff3_reason
-          Gecko 1.9.2 (Firefox 3.6): $with_ff36 $ff36_reason
 EOF
 fi
 

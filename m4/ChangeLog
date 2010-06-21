@@ -7,6 +7,13 @@
 
 	* curl.m4: Show configure failure reason for embedded curl.
 
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* mozilla.m4: remove ff36 bridge.
+	using --define-variable=includetype=unstable on pkg-config for
+	the ff3 bridge, we can get cflags that work for both libxul 1.9.1
+	and 1.9.2, so ff3 now supports both.
+
 2010-03-30  Andreia Gaita  <avidigal@novell.com>
 
 	* m4/curl.m4: move CUSTOM_SUBDIR_OPTION to utilities.m4

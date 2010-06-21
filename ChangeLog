@@ -2,6 +2,10 @@
 
 	* configure.ac: Show any failure reason for curl.
 
+2010-04-28  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: remove ff36 bridge
+
 2010-03-30  Andreia Gaita  <avidigal@novell.com>
 
 	* autogen.sh: add curl build step

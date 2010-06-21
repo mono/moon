@@ -1,3 +1,0 @@
-2010-01-28  Andreia Gaita  <avidigal@novell.com>
-
-	* Makefile.am, ff36-bridge.[h|cpp], ff36-http.cpp: Add FF3.6 bridge

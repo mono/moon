@@ -79,10 +79,6 @@ if HAVE_GECKO_1_8
 # Rename the bridges to the original names
 	cp -L ../firefox/ff2/.libs/libmoonpluginxpi-ff2bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff2bridge.so
 endif HAVE_GECKO_1_8
-if HAVE_GECKO_1_9_2
-# Rename the bridges to the original names
-	cp -L ../firefox/ff36/.libs/libmoonpluginxpi-ff36bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff36bridge.so
-endif HAVE_GECKO_1_9_2
 if HAVE_GECKO_1_9
 # Rename the bridges to the original names
 	cp -L ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff3bridge.so

@@ -876,11 +876,9 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 			TryLoadBridge ("curl");
 		} else {
 #endif
-			// gecko based, let's look for 'rv:1.8' vs 'rv:1.9.2' vs 'rv:1.9'
+			// gecko based, let's look for 'rv:1.8' vs 'rv:1.9.3' vs 'rv:1.9'
 			if (strstr (useragent, "rv:1.8"))
 				TryLoadBridge ("ff2");
-			else if (strstr (useragent, "rv:1.9.2"))
-				TryLoadBridge ("ff36");
 			else if (strstr (useragent, "rv:1.9.3"))
 				TryLoadBridge ("curl");
 			else if (strstr (useragent, "rv:1.9"))

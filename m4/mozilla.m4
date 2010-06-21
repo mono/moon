@@ -3,7 +3,6 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 	with_mozilla=no
 
 	if test x$browser_support = xno; then
-		with_ff36=no
 		with_ff3=no
 		with_ff2=no
 	fi
@@ -12,37 +11,13 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 	dnl Firefox 3.6
 	dnl
 
-	AC_ARG_WITH(ff36, AC_HELP_STRING([--with-ff36=no|yes],
-		[If you want to enable the xulrunner 1.9.2+ (Firefox 3.6) bridge]),
-		[], [with_ff36=yes])
 
-	if test x$with_ff36 = xyes -a x$browser_support = xyes; then
-		FF36_MODULES="libxul mozilla-plugin mozilla-js"
-
-		PKG_CHECK_EXISTS($FF36_MODULES,
-			[with_ff36=yes],
-			[with_ff36=no ff36_reason="(reason: missing FF36 development packages)"])
-
-		if test x$with_ff36 = xyes; then
-			AC_DEFINE([HAVE_GECKO_1_9_2], [1], [Gecko 1.9.2+ support])
-			PKG_CHECK_MODULES(FF36, [$FF36_MODULES glib-2.0])
-			dnl Strip out problem libraries (should already be in process space)
-			FF36_LIBS="$(echo $FF36_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
-		fi
-	fi
-
-	AM_CONDITIONAL(HAVE_GECKO_1_9_2,test x$with_ff36 = xyes)
-
-	dnl
-	dnl Firefox 3
-	dnl
-
-	AC_ARG_WITH(ff3, AC_HELP_STRING([--with-ff3=no|yes], 
+	AC_ARG_WITH(ff3, AC_HELP_STRING([--with-ff3=no|yes],
 		[If you want to enable the xulrunner 1.9 (Firefox 3) bridge]),
 		[], [with_ff3=yes])
 
 	if test x$with_ff3 = xyes -a x$browser_support = xyes; then
-		FF3_MODULES="libxul-unstable mozilla-plugin mozilla-js"
+		FF3_MODULES="libxul mozilla-plugin mozilla-js"
 
 		PKG_CHECK_EXISTS($FF3_MODULES,
 			[with_ff3=yes],
@@ -50,12 +25,16 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 
 		if test x$with_ff3 = xyes; then
 			AC_DEFINE([HAVE_GECKO_1_9], [1], [Gecko 1.9 support])
+
 			PKG_CHECK_MODULES(FF3, [$FF3_MODULES glib-2.0])
+			FF3_CFLAGS=`$PKG_CONFIG --cflags --define-variable=includetype=unstable "$FF3_MODULES glib-2.0"`
+			FF3_LIBS=`$PKG_CONFIG --libs --define-variable=includetype=unstable "$FF3_MODULES glib-2.0"`
+
 			dnl Strip out problem libraries (should already be in process space)
 			FF3_LIBS="$(echo $FF3_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
 		fi
 	fi
-	
+
 	AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
 
 	dnl
@@ -105,10 +84,8 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 		fi
 	elif test x$with_ff3 = xyes; then
    		with_mozilla=yes
-	elif test x$with_ff36 = xyes; then
-		with_mozilla=yes
-    	MIN_FIREFOX_VERSION="2.9.*"
-	MAX_FIREFOX_VERSION="3.6.*"
+		MIN_FIREFOX_VERSION="2.9.*"
+		MAX_FIREFOX_VERSION="3.6.*"
   	fi
 
 	AC_SUBST([MIN_FIREFOX_VERSION])
