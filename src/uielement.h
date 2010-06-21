@@ -537,6 +537,10 @@ public:
 	const static int MouseLeftButtonDownEvent;
 	/* @DelegateType=MouseButtonEventHandler,GenerateManagedEventField=true */
 	const static int MouseLeftButtonUpEvent;
+	/* @DelegateType=MouseButtonEventHandler */
+	const static int MouseRightButtonDownEvent;
+	/* @DelegateType=MouseButtonEventHandler */
+	const static int MouseRightButtonUpEvent;
 	/* @DelegateType=KeyEventHandler,GenerateManagedEventField=true */
 	const static int KeyDownEvent;
 	/* @DelegateType=KeyEventHandler,GenerateManagedEventField=true */
@@ -581,11 +585,7 @@ public:
 
 	/* @GenerateManagedEvent=false */
 	const static int MouseLeftButtonMultiClickEvent;
-	/* @DelegateType=MouseButtonEventHandler */
-	const static int MouseRightButtonDownEvent;
-	/* @DelegateType=MouseButtonEventHandler */
-	const static int MouseRightButtonUpEvent;
-
+	
 	// Helper method which checks recursively checks this element and its visual
 	// parents to see if any are loaded.
 	static bool IsSubtreeLoaded (UIElement *element);

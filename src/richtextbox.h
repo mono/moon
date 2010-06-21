@@ -313,7 +313,7 @@ class RichTextBox : public Control {
 	void OnKeyDown (KeyEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void OnKeyUp (KeyEventArgs *args);
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void OnGotFocus (RoutedEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */

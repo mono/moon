@@ -1,3 +1,8 @@
+2010-06-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uielement.h (UIElement): Move the Right mouse button events to
+	the public grouping.
+
 2010-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* pal/gtk/config-dialog-gtk.h,cpp: add permissions dialog page.
