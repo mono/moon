@@ -41,7 +41,7 @@
 #define MSI_ENDTIMER(id,str)
 #endif
 
-inline guint64
+static inline guint64
 pow2 (int pow)
 {
 	return ((guint64) 1 << pow);
@@ -539,7 +539,7 @@ MultiScaleImage::PanFinished ()
 		EmitMotionFinished ();
 }
 
-void
+static void
 tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 //	LOG_MSI ("Tile downloaded %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
@@ -559,7 +559,7 @@ MultiScaleImage::TileOpened (BitmapImage *bitmapimage)
 	Invalidate ();
 }
 
-void
+static void
 tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 //	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
