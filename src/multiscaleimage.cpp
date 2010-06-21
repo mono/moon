@@ -34,15 +34,16 @@
 
 #if LOGGING
 #include "clock.h"
-#define MSI_STARTTIMER(id)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_start = get_now()
-#define MSI_ENDTIMER(id,str)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended took (%f ms)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000)
+#define MSI_STARTTIMER(id)    if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_start = get_now()
+#define MSI_ENDTIMER(id,str)  if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended took (%f ms)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000)
 #else
-#define STATTIMER(id)
-#define ENDTIMER(id,str)
+#define MSI_STARTTIMER(id)
+#define MSI_ENDTIMER(id,str)
 #endif
 
-inline
-guint64 pow2(int pow) {
+inline guint64
+pow2 (int pow)
+{
 	return ((guint64) 1 << pow);
 }
 
@@ -51,8 +52,8 @@ guint64 pow2(int pow) {
  */
 
 struct QTree {
-	bool has_value;
-	void *data;
+	cairo_surface_t *image;
+	bool has_image;
 	QTree* l0; //N-E
 	QTree* l1; //N-W
 	QTree* l2; //S-E
@@ -70,10 +71,10 @@ static QTree*
 qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 {
 	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
+		g_warning ("QuadTree index out of range.");
 #if DEBUG
 		abort ();
 #endif
-		g_warning ("QuadTree index out of range.");
 		return NULL;
 	}
 
@@ -122,26 +123,26 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 }
 
 static void
-qtree_set_value (QTree* node, void *data)
+qtree_set_image (QTree *node, cairo_surface_t *image)
 {
 	//FIXME: the destroy method should be a ctor argument
-	if (node->has_value && node->data)
-		cairo_surface_destroy ((cairo_surface_t*)node->data);
-
-	node->has_value = true;
-	node->data = data;	
+	if (node->has_image && node->image)
+		cairo_surface_destroy (node->image);
+	
+	node->has_image = true;
+	node->image = image;	
 }
 
 static QTree *
-qtree_lookup (QTree* root, int level, guint64 x, guint64 y)
+qtree_lookup (QTree *root, int level, guint64 x, guint64 y)
 {
 	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
+		g_warning ("QuadTree index out of range.");
 #if DEBUG
  		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
  		// abort to get a stack trace. 
 		abort ();
 #endif
-		g_warning ("QuadTree index out of range.");
 		return NULL;
 	}
 
@@ -170,67 +171,79 @@ qtree_lookup (QTree* root, int level, guint64 x, guint64 y)
 	return root;
 }
 
-static void *
-qtree_lookup_data (QTree* root, int level, guint64 x, guint64 y)
+static cairo_surface_t *
+qtree_lookup_image (QTree *root, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_lookup (root, level, x, y);
-	if (node && node->has_value)
-		return node->data;
+	if (node && node->has_image)
+		return node->image;
 	return NULL;
 }
 
 //FIXME: merge qtree_next_sibling and _qtree_next_sibling in a single
 //function, with an elegant loop to avoid recursion.
-static QTree*
+static QTree *
 _qtree_next_sibling (QTree *node, guint64 *i, guint64 *j, int l)
 {
+	QTree *next_parent;
+	guint64 pow;
+	
 	if (!node) {
+		g_warning ("Empty node");
 #if DEBUG
 		abort ();
 #endif
-		g_warning ("Empty node");
 		return NULL;
 	}
-
+	
 	if (!node->parent) //no parent, we're probably at the root
 		return NULL;
 	
+	pow = pow2 (l);
+	
 	if (node == node->parent->l0) {
-		*i += pow2 (l);
+		*i += pow;
 		return node->parent->l1;
 	}
+	
 	if (node == node->parent->l1) {
-		*i -= pow2 (l);
-		*j += pow2 (l);
+		*i -= pow;
+		*j += pow;
 		return node->parent->l2;
 	}
+	
 	if (node == node->parent->l2) {
-		*i += pow2 (l);
+		*i += pow;
 		return node->parent->l3;
 	}
+	
 	if (node == node->parent->l3) {
-		*i -= pow2 (l);
-		*j -= pow2 (l);
-		QTree *next_parent = _qtree_next_sibling (node->parent, i, j, l + 1);
-		if (!next_parent)
+		*i -= pow;
+		*j -= pow;
+		
+		if (!(next_parent = _qtree_next_sibling (node->parent, i, j, l + 1)))
 			return NULL;
+		
 		return next_parent->l0;
 	}
+	
+	g_warning ("Broken parent link, this is bad");
+	
 #if DEBUG
 	abort ();
 #endif
-	g_warning ("Broken parent link, this is bad");
+	
 	return NULL;
 }
 
 static void
-qtree_remove (QTree* node, int depth)
+qtree_remove (QTree *node, int depth)
 {
-	if (node && node->has_value) {
-		node->has_value = false;
-		if (node->data) {
-			cairo_surface_destroy ((cairo_surface_t*)node->data);
-			node->data = NULL;
+	if (node && node->has_image) {
+		node->has_image = false;
+		if (node->image) {
+			cairo_surface_destroy (node->image);
+			node->image = NULL;
 		}
 	}	
 
@@ -245,16 +258,16 @@ qtree_remove (QTree* node, int depth)
 }
 
 static void
-qtree_remove_at (QTree* root, int level, guint64 x, guint64 y, int depth)
+qtree_remove_at (QTree *root, int level, guint64 x, guint64 y, int depth)
 {
 	QTree* node = qtree_lookup (root, level, x, y);
 	qtree_remove (node, depth);
 }
 
 static inline bool
-qtree_has_value (QTree* node)
+qtree_has_image (QTree *node)
 {
-	return node->has_value;	
+	return node->has_image;	
 }
 
 static void
@@ -264,9 +277,9 @@ qtree_destroy (QTree *root)
 		return;
 
 	//FIXME: the destroy func should be a qtree ctor option
-	if (root->data) {
-		cairo_surface_destroy ((cairo_surface_t*)(root->data));
-		root->data = NULL;
+	if (root->image) {
+		cairo_surface_destroy (root->image);
+		root->image = NULL;
 	}
 
 	qtree_destroy (root->l0);
@@ -286,8 +299,7 @@ enum BitmapImageStatus {
 	BitmapImageDone
 };
 
-struct BitmapImageContext
-{
+struct BitmapImageContext {
 	BitmapImageStatus state;
 	BitmapImage *bitmapimage;
 	QTree *node;
@@ -565,7 +577,7 @@ MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
 		ctx->state = BitmapImageFree;
 
 		LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
-		qtree_set_value (ctx->node, NULL);
+		qtree_set_image (ctx->node, NULL);
 
 		GList *list;
 		bool is_downloading = false;
@@ -681,7 +693,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 
 		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
 		LOG_MSI ("caching %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
-		qtree_set_value (ctx->node, surface);
+		qtree_set_image (ctx->node, surface);
 
 		ctx->bitmapimage->SetUriSource (NULL);
 		ctx->state = BitmapImageFree;
@@ -804,12 +816,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 
 					if (from_layer > dzits->GetMaxLevel ()) {
-						if ((image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, from_layer, i, j)))
-							found ++;
-					} else if ((image = (cairo_surface_t*)qtree_lookup_data (shared_cache, from_layer,
-									  morton_x (sub_image->n) * (pow2 (from_layer)) / tile_width,
-									  morton_y (sub_image->n) * (pow2 (from_layer)) / tile_height)))
-						found ++;
+						if ((image = qtree_lookup_image (subimage_cache, from_layer, i, j)))
+							found++;
+					} else if ((image = qtree_lookup_image (shared_cache, from_layer,
+										morton_x (sub_image->n) * (pow2 (from_layer)) / tile_width,
+										morton_y (sub_image->n) * (pow2 (from_layer)) / tile_height)))
+						found++;
 
 					if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
 						blending = TRUE;
@@ -861,14 +873,14 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						cairo_surface_t *image = NULL;
 						bool shared_tile = false;
 						if (layer_to_render > dzits->GetMaxLevel())
-							image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, layer_to_render, i, j);
+							image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
 						else {
 							//Check in the shared levels
 							shared_tile = true;
 
-							image = (cairo_surface_t*)qtree_lookup_data (shared_cache, layer_to_render,
-									morton_x(sub_image->n) * pow2 (layer_to_render) / tile_width,
-									morton_y(sub_image->n) * pow2 (layer_to_render) / tile_height);
+							image = qtree_lookup_image (shared_cache, layer_to_render,
+										    morton_x (sub_image->n) * pow2 (layer_to_render) / tile_width,
+										    morton_y (sub_image->n) * pow2 (layer_to_render) / tile_height);
 						}
 
 						if (!image)
@@ -960,7 +972,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 									    from_layer,
 									    morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
 									    morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height);
-						if (!qtree_has_value (node)
+						if (!qtree_has_image (node)
 						    && dzits->get_tile_func (from_layer,
 									      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
 									      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height,
@@ -968,7 +980,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 							DownloadTile (bitmapimagectx, tile, node);
 					} else {
 						QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
-						if (!qtree_has_value (node)
+						if (!qtree_has_image (node)
 						    && dzits->get_tile_func (from_layer, i, j, tile, sub_image->source))
 							DownloadTile (bitmapimagectx, tile, node);
 					}
@@ -1035,7 +1047,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
 				count++;
-				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, from_layer, i, j);
+				cairo_surface_t *image = qtree_lookup_image (subimage_cache, from_layer, i, j);
 
 				if (image)
 					found ++;
@@ -1088,7 +1100,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
-				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, layer_to_render, i, j);
+				cairo_surface_t *image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
 				if (!image)
 					continue;
 
@@ -1143,11 +1155,11 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 					return;
 				Uri *tile = new Uri ();
 				QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
-				if (!qtree_has_value (node)) {
+				if (!qtree_has_image (node)) {
 					if (source->get_tile_func (from_layer, i, j, tile, source))
 						DownloadTile (bitmapimagectx, tile, node);
 					else
-						qtree_set_value (node, NULL);
+						qtree_set_image (node, NULL);
 				}
 				delete tile;
 			}
