@@ -67,24 +67,24 @@ qtree_new (void)
 	return g_new0 (QTree, 1);
 }
 
-static QTree*
-qtree_insert (QTree* root, int level, guint64 x, guint64 y)
+static QTree *
+qtree_insert (QTree *root, int level, guint64 x, guint64 y)
 {
-	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
+	guint64 level2 = pow2 (level);
+	QTree *node = root;
+	
+	if (x >= level2 || y >= level2) {
 		g_warning ("QuadTree index out of range.");
 #if DEBUG
 		abort ();
 #endif
 		return NULL;
 	}
-
+	
 	if (!root) {
 		g_warning ("passing a NULL QTree to qtree_insert");
 		return NULL;
 	}
-	
-	QTree *node = root;
-	guint64 level2;
 	
 	while (level-- > 0) {
 		level2 = pow2 (level);
