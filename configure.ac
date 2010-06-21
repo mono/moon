@@ -67,10 +67,11 @@ MOONLIGHT_CHECK_TESTING
 MOONLIGHT_CHECK_EXAMPLES
 MOONLIGHT_CHECK_BUILD_CONFIGURATION
 MOONLIGHT_CHECK_FIREFOX_XPI
+MOONLIGHT_CHECK_CURL
+dnl the chrome check must come after curl
+MOONLIGHT_CHECK_CHROME_CRX
 
 MOONLIGHT_CHECK_UNWIND
-
-MOONLIGHT_CHECK_CURL
 
 dnl
 dnl The silverlight TargetRuntime versions we claim to support
@@ -216,6 +217,7 @@ plugin/firefox/ff2/Makefile
 plugin/firefox/ff3/Makefile
 plugin/install/Makefile
 plugin/install/install.rdf
+plugin/install/manifest.json
 plugin/test/Makefile
 plugin/samples/Makefile
 perf/Makefile
@@ -290,6 +292,10 @@ fi
 
 cat <<EOF
           Curl bridge: $with_curl $curl_reason
+EOF
+
+cat <<EOF
+        Chrome (.crx): $chrome_extension $chrome_reason
 EOF
 
 # blank line

@@ -1,6 +1,15 @@
+2010-06-21  Andreia Gaita  <avidigal@novell.com>
+
+	* make-crx.py: dropped, we use chrome to pack up the crx
+
 2010-04-28  Andreia Gaita  <avidigal@novell.com>
 
 	* Makefile.am: remove ff36 bridge.
+
+2010-04-08  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (novell-moonlight.crx): use chrome to pack/sign the
+	extension instead of python+openssl.
 
 2010-02-11  Chris Toshok  <toshok@ximian.com>
 

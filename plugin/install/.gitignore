@@ -3,4 +3,5 @@
 /install.rdf
 /*.xpi
 /.xpinstall
-
+/.crxinstall
+manifest.json

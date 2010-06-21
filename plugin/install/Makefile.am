@@ -8,7 +8,7 @@ mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
 
 novell_moonlight_xpi_CONTENTS =		\
 				$(srcdir)/install.rdf \
-				$(srcdir)/icon.png \
+				$(srcdir)/icon32.png \
 				$(srcdir)/chrome.manifest \
 				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
 				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
@@ -32,18 +32,24 @@ endif
 endif INCLUDE_BROWSER_MANAGED_CODE
 
 
-if HAVE_GECKO_1_8
-novell_moonlight_xpi_CONTENTS += ../firefox/ff2/.libs/libmoonpluginxpi-ff2bridge.so
-endif HAVE_GECKO_1_8
-
-if HAVE_GECKO_1_9
-novell_moonlight_xpi_CONTENTS += ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so
-endif HAVE_GECKO_1_9
-
 if INCLUDE_FFMPEG
 novell_moonlight_xpi_CONTENTS += $(avutil_libdir)/libavutil.so \
 				$(avcodec_libdir)/libavcodec.so
 endif INCLUDE_FFMPEG
+
+BRIDGES=
+if HAVE_GECKO_1_8
+BRIDGES += ../firefox/ff2/.libs/libmoonpluginxpi-ff2bridge.so
+endif HAVE_GECKO_1_8
+
+if HAVE_GECKO_1_9
+BRIDGES += ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so
+endif HAVE_GECKO_1_9
+
+if HAVE_CURL
+CURL_BRIDGE = ../curl/.libs/libmoonpluginxpi-curlbridge.so
+BRIDGES += $(CURL_BRIDGE)
+endif
 
 # Mono.CompilerServices.SymbolWriter.dll is useless for the plugin but should be shipped with our own SDK (for smcs)
 SDK_DLLS = \
@@ -62,19 +68,17 @@ SDK_DLLS = \
 	System.Xml.Utils.dll			\
 	System.Xml.Linq.dll
 
-novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
+novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) $(BRIDGES) Makefile
 	rm -f $@
 	rm -rf .xpinstall/
-	rm -f novell-moonlight.xpi
-
 	mkdir -p .xpinstall/plugins/moonlight/
 	cp -L $(srcdir)/install.rdf .xpinstall/
 	cp -L $(srcdir)/chrome.manifest .xpinstall/
 	mkdir -p .xpinstall/skin/
-	cp -L $(srcdir)/icon.png .xpinstall/skin/
+	cp -L $(srcdir)/icon32.png .xpinstall/skin/
 	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
 	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
-	cp -L $(top_builddir)/src/.libs/libmoonxpi.so .xpinstall/plugins/moonlight/
+
 if HAVE_GECKO_1_8
 # Rename the bridges to the original names
 	cp -L ../firefox/ff2/.libs/libmoonpluginxpi-ff2bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff2bridge.so
@@ -93,7 +97,6 @@ if INCLUDE_FFMPEG
 endif INCLUDE_FFMPEG
 
 if INCLUDE_BROWSER_MANAGED_CODE
-	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
 	cp -L $(top_builddir)/class/lib/2.1/*.dll .xpinstall/plugins/moonlight
 
 	cd .xpinstall/plugins/moonlight && rm -f $(SDK_DLLS)
@@ -107,10 +110,45 @@ endif INCLUDE_BROWSER_MANAGED_CODE
 	cd .xpinstall/ && zip -r9 ../$@ *
 	./check_xpi.sh $@
 
+if CHROME_INSTALL
+CRXDIR=novell-moonlight
+
+novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) $(CURL_BRIDGE) Makefile
+	rm -f $@
+	rm -f novell-moonlight.crx.unsigned
+	rm -rf $(CRXDIR)
+	mkdir -p $(CRXDIR)/moonlight/
+	cp -L $(srcdir)/manifest.json $(CRXDIR)/
+	cp -L $(srcdir)/icon48.png $(CRXDIR)/
+	cp -L $(srcdir)/icon128.png $(CRXDIR)/
+	cp -L ../.libs/libmoonloaderxpi.so $(CRXDIR)/
+	cp -L ../.libs/libmoonpluginxpi.so $(CRXDIR)/moonlight/
+
+# Rename the bridge to the original name
+# no if HAVE_CURL here since curl is required for chrome
+	cp -L ../curl/.libs/libmoonpluginxpi-curlbridge.so $(CRXDIR)/moonlight/libmoonplugin-curlbridge.so
+
+if INCLUDE_FFMPEG
+	cp -L $(avutil_libdir)/libavutil.so $(CRXDIR)/moonlight/
+	cp -L $(avcodec_libdir)/libavcodec.so $(CRXDIR)/moonlight/
+endif INCLUDE_FFMPEG
+
+if INCLUDE_BROWSER_MANAGED_CODE
+	cp -L $(top_builddir)/class/lib/2.1/*.dll $(CRXDIR)/moonlight
+
+	cd $(CRXDIR)/moonlight && rm -f $(SDK_DLLS)
+endif
+
+	$(CHROME) --pack-extension=$(CRXDIR) --pack-extension-key=novell-moonlight.pem
+	rm -rf $(CRXDIR)
+endif
+
 clean-local:
 	-rm -rf .xpinstall
+	-rm -rf .crxinstall
 	-rm -f *.xpi
+	-rm -f *.crx
 	-rm -rf tmp*
 
-EXTRA_DIST = install.rdf.in icon.png chrome.manifest check_xpi.sh
+EXTRA_DIST = install.rdf.in manifest.json.in icon32.png icon48.png icon128.png chrome.manifest check_xpi.sh
 DISTCLEANFILES = novell-moonlight.xpi
