@@ -1,3 +1,7 @@
+2010-06-21  Andreia Gaita  <avidigal@novell.com>
+
+	* make-crx.py: dropped, we use chrome to pack up the crx
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: There is no curl bridge anymore, don't try to package it.
