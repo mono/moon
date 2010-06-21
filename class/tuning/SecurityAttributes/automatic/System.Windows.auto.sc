@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 468 methods needs to be decorated.
+# 469 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -93,6 +93,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_window_get_transparent(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::moon_windowing_system_show_consent_dialog(System.IntPtr,System.String,System.String,System.String,System.Boolean&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_allow_html_popup_window(System.IntPtr)
