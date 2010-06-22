@@ -1,3 +1,7 @@
+2010-06-22  Jb Evain  <jbevain@novell.com>
+
+	* mscorlib.xml: protect more types needed by smcs.
+
 2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.xml: Keep System.IO.IsolatedStorage.IsolatedStorage intact

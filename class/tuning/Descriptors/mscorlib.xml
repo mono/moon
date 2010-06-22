@@ -19,6 +19,11 @@
 		<type fullname="System.Reflection.CustomAttributeTypedArgument">
 			<method signature="System.Void .ctor(System.Type,System.Object)" />
 		</type>
+		<type fullname="System.Reflection.Module" preserve="all" />
+		<type fullname="System.Reflection.MonoAssembly" preserve="all" />
+		<type fullname="System.Reflection.MonoModule" preserve="all" />
+		<type fullname="System.Reflection.MonoGenericClass" preserve="all" />
+		<type fullname="System.Reflection.Emit.TypeBuilderInstantiation" preserve="all" />
 		<type fullname="System.Resources.RuntimeResourceSet" preserve="all" />
 		<type fullname="System.Runtime.InteropServices.Marshal" />
 		<type fullname="System.Security.SecurityCriticalAttribute" preserve="all" />
