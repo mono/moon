@@ -1,5 +1,11 @@
 2010-06-22  Andreia Gaita  <avidigal@novell.com>
 
+	* application.cpp, downloader.cpp,
+	  mediaelement.cpp, playlist.cpp: Use UriToStringFlags.UriShowFileScheme
+	  when on relaxed mode so file:// and chrome:// urls can be distinguished
+
+2010-06-22  Andreia Gaita  <avidigal@novell.com>
+
 	* uri.[h|cpp]: Add local file support for relaxed media mode (moonshine).
 
 2010-06-22  Andreia Gaita  <avidigal@novell.com>

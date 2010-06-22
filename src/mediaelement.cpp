@@ -1197,7 +1197,10 @@ MediaElement::SetUriSource (Uri *uri)
 	
 	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
 		CreatePlaylist ();
-		char *str = uri->ToString ();
+		int uriflags = 0;
+		if (GetSurface ()->GetRelaxedMediaMode ())
+			uriflags |= UriShowFileScheme;
+		char *str = uri->ToString ((UriToStringFlags)uriflags);
 		playlist->GetCurrentEntry ()->InitializeWithUri (str);
 		g_free (str);
 	} else {

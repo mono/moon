@@ -114,7 +114,10 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	}
 
 	if (get_resource_cb && uri && !uri->isAbsolute) {
-		char *url = uri->ToString ();
+		int uriflags = 0;
+		if (GetSurface () && GetSurface ()->GetRelaxedMediaMode ())
+			uriflags |= UriShowFileScheme;
+		char *url = uri->ToString ((UriToStringFlags)uriflags);
 		ManagedStreamCallbacks stream = get_resource_cb (resourceBase, url);
 		g_free (url);
 		
@@ -250,7 +253,10 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 		return NULL;
 	
 	// construct the path name for this resource
-	filename = uri->ToString ();
+	int uriflags = 0;
+	if (GetSurface () && GetSurface ()->GetRelaxedMediaMode ())
+		uriflags |= UriShowFileScheme;
+	filename = uri->ToString ((UriToStringFlags)uriflags);
 	CanonicalizeFilename (filename, -1, CanonModeResource);
 	if (uri->GetQuery () != NULL) {
 		char *sc = strchr (filename, ';');
@@ -276,7 +282,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	
 	g_free (dirname);
 	
-	url = uri->ToString ();
+	url = uri->ToString ((UriToStringFlags)uriflags);
 	stream = get_resource_cb (resourceBase, url);
 	g_free (url);
 	

@@ -482,7 +482,10 @@ Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 	
 	SetUri (uri);
 	
-	str = url->ToString ();
+	int uriflags = 0;
+	if (GetSurface ()->GetRelaxedMediaMode ())
+		uriflags |= UriShowFileScheme;
+	str = url->ToString ((UriToStringFlags)uriflags);
 	delete src_uri;
 	
 	internal_dl->Open (verb, str);
