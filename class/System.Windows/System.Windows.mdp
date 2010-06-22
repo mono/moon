@@ -768,6 +768,9 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/Typeface.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoOutputConnector.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoOutputConnectorType.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/RangeBase.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/Thumb.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/RepeatButton.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

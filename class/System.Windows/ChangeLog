@@ -1,3 +1,7 @@
+2010-06-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Add missing files to the build
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am:
