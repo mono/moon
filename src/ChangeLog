@@ -1,5 +1,9 @@
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
+	* deployment.cpp: Fix the build when not using OBJECT_TRACKING
+
+2010-06-22  Alan McGovern  <amcgovern@novell.com>
+
 	* deployment.cpp: Add some more useful output to ReportLeaks
 	  so we can see the number of leaked objects grouped by type.
 	  We also now print out the leak report multiple times so we

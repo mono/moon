@@ -947,9 +947,11 @@ Deployment::Dispose ()
 	interned_strings = NULL;
 
 	DependencyObject::Dispose ();
+#if OBJECT_TRACKING
 	printf ("Deployment disposing, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
 	if (objects_created != objects_destroyed)
 		ReportLeaks ();
+#endif
 }
 
 void
@@ -1044,9 +1046,11 @@ Deployment::Shutdown ()
 	if (types)
 		types->Dispose ();
 
+#if OBJECT_TRACKING
 	printf ("Deployment shutting down, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
 	if (objects_created != objects_destroyed)
 		ReportLeaks ();
+#endif
 }
 
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
