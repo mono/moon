@@ -1,3 +1,10 @@
+2010-06-22  Andreia Gaita  <avidigal@novell.com>
+
+	* runtime.[h|cpp]: Added relaxed_media_mode flag and getter/setter
+	* mediaelement.cpp, pipeline.cpp: relax policy if GetRelaxedMediaMode
+	  is true
+	  (bug #614781, patch from abock)
+
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
 	* mms-downloader.cpp: if we're using the curl bridge, set all

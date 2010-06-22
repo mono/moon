@@ -298,6 +298,7 @@ Surface::Surface (MoonWindow *window)
 	zombie = false;
 	downloader_context = NULL;
 	downloaders = NULL;
+	relaxed_media_mode = false;
 	background_color = NULL;
 	cursor = MouseCursorDefault;
 	mouse_event = NULL;

@@ -54,6 +54,13 @@
 
 extern guint32 moonlight_flags;
 
+// Global state of relaxed media mode authorization
+// relaxed_media_mode_active_guids simply points to
+// GUIDs in relaxed_media_mode_env_guids.
+char **relaxed_media_mode_env_guids = NULL;
+GSList *relaxed_media_mode_active_guids = NULL;
+bool relaxed_media_mode_env_checked = false;
+
 /* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
 static const char *moonlight_authors[] = {
 	"Aaron Bockover <abockover@novell.com>",
@@ -427,8 +434,10 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	id = NULL;
 	culture = NULL;
 	uiCulture = NULL;
+	relaxedMediaModeGuid = NULL;
 
 	windowless = false;
+	relaxed_media_mode = false;
 	cross_domain_app = false;		// false, since embedded xaml (in html) won't load anything (to change this value)
 	default_enable_html_access = true;	// should we use the default value (wrt the HTML script supplied value)
 	enable_html_access = true;		// an empty plugin must return TRUE before loading anything else (e.g. scripting)
@@ -478,13 +487,13 @@ PluginInstance::Recreate (const char *source)
 		"source", "background", "windowless", "maxFramerate", "id",
 		"enablehtmlaccess", "allowhtmlpopupwindow", "splashscreensource",
 		"onSourceDownloadProgressChanged", "onSourceDownloadComplete",
-		"culture", "uiculture", NULL };
+		"culture", "uiculture", "moonlightRelaxedMediaModeGuid", NULL };
 	const char *argv [] = 
 		{ initParams, onLoad, onError, onResize,
 		source, background, windowless ? "true" : "false", maxFramerate, id,
 		enable_html_access ? "true" : "false", allow_html_popup_window ? "true" : "false", splashscreensource,
 		onSourceDownloadProgressChanged, onSourceDownloadComplete,
-		culture, uiCulture, NULL };
+		culture, uiCulture, relaxedMediaModeGuid, NULL };
 
 		
 	instance->pdata = NULL;
@@ -632,6 +641,7 @@ PluginInstance::Shutdown ()
 	uiCulture = NULL;
 	g_free (initParams);
 	initParams = NULL;
+	relaxedMediaModeGuid = NULL; // do not free
 	delete xaml_loader;
 	xaml_loader = NULL;
 
@@ -809,6 +819,9 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "uiCulture")) {
 			uiCulture = g_strdup (argv[i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "moonlightRelaxedMediaModeGuid")) {
+			RelaxedMediaModeCheck (argv[i]);
 		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
@@ -1119,7 +1132,8 @@ PluginInstance::CreateWindow ()
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
 	surface->SetDownloaderContext (this);
-	
+	surface->SetRelaxedMediaMode (relaxed_media_mode);
+
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 	
 	if (background) {
@@ -1686,6 +1700,53 @@ PluginInstance::CrossDomainApplicationCheck (const char *source)
 	// 'allowHtmlPopupWindow' is TRUE for same-site applications and FALSE for cross-domain applications
 	if (default_allow_html_popup_window)
 		allow_html_popup_window = !cross_domain_app;
+}
+
+void
+PluginInstance::RelaxedMediaModeCheck (const char *guid)
+{
+	// Load any allowed GUIDs from the environment if we haven't yet
+	if (relaxed_media_mode_env_guids == NULL && !relaxed_media_mode_env_checked) {
+		const char *env = g_getenv ("MOONLIGHT_RELAXED_MEDIA_MODE_GUIDS");
+		if (env != NULL) {
+			relaxed_media_mode_env_guids = g_strsplit (env, ":", -1);
+		}
+		relaxed_media_mode_env_checked = true;
+	}
+
+	for (int j = 0; relaxed_media_mode_env_guids != NULL &&
+		relaxed_media_mode_env_guids[j] != NULL; j++) {
+		bool taken = false;
+		GSList *node = relaxed_media_mode_active_guids;
+		gchar *env_guid = relaxed_media_mode_env_guids[j];
+
+		// Check if we've found the requested GUID in the environment
+		if (g_ascii_strcasecmp (env_guid, guid)) {
+			continue;
+		}
+
+		// It's in the environment, now check that it hasn't
+		// already claimed by another plugin instance
+		for (; node != NULL; node = node->next) {
+			if (!g_ascii_strcasecmp ((const char *)node->data, guid)) {
+				g_warning ("Another plugin instance has reserved relaxedMediaModeGuid=%s", guid);
+				taken = true;
+				break;
+			}
+		}
+
+		// This instance is allowed to enable relaxed media mode. The
+		// environment copy of the GUID is stored on the plugin instance
+		// and inserted into the active list. It should not be free'd
+		// in either case.
+		if (!taken) {
+			relaxed_media_mode_active_guids = g_slist_prepend (relaxed_media_mode_active_guids, env_guid);
+			relaxed_media_mode = true;
+			relaxedMediaModeGuid = env_guid;
+			printf ("Enabling relaxed media mode (GUID:%s)\n", relaxedMediaModeGuid);
+			break;
+		}
+	}
 }
 
 static bool

@@ -1699,14 +1699,21 @@ ProgressiveSource::Initialize ()
 {
 	MediaResult result = MEDIA_SUCCESS;
 	Application *application;
+	Surface *surface;
+	DownloaderAccessPolicy policy = MediaPolicy;
 	
 	application = GetDeployment ()->GetCurrentApplication ();
-	
+	surface = GetDeployment ()->GetSurface ();
+
 	g_return_val_if_fail (application != NULL, MEDIA_FAIL);
 	g_return_val_if_fail (filename == NULL, MEDIA_FAIL);
 	g_return_val_if_fail (cancellable == NULL, MEDIA_FAIL);
 
 	result = FileSource::Initialize ();
+
+	if (surface != NULL && surface->GetRelaxedMediaMode ()) {
+		policy = NoPolicy;
+	}
 
 	if (!MEDIA_SUCCEEDED (result)) {
 		g_unlink (filename);
@@ -1732,7 +1739,7 @@ ProgressiveSource::Initialize ()
 	cancellable = new Cancellable ();
 	Uri *u = new Uri ();
 	if (u->Parse (uri)) {
-		application->GetResource (NULL, u, notify_func, data_write, MediaPolicy, cancellable, (gpointer) this);
+		application->GetResource (NULL, u, notify_func, data_write, policy, cancellable, (gpointer) this);
 	} else {
 		result = MEDIA_FAIL;
 		char *msg = g_strdup_printf ("Could not parse the uri '%s'", uri);

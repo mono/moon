@@ -248,6 +248,9 @@ public:
 	Downloader *CreateDownloader ();
 	static Downloader *CreateDownloader (EventObject *obj);
 
+	bool GetRelaxedMediaMode (void) { return relaxed_media_mode; }
+	void SetRelaxedMediaMode (bool value) { relaxed_media_mode = value; }
+
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 	void SetExposeHandoffFunc (MoonlightExposeHandoffFunc func, void *user_data);
@@ -389,6 +392,11 @@ private:
 	
 	GdkEvent *mouse_event;
 	
+	// Relaxed mode enables local file and cross domain playback
+	// and relaxes playlist parsing to better handle poorly
+	// formed ASX playlists, etc. (for Moonshine, love abock)
+	bool relaxed_media_mode;
+
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
 	gint64 fps_start;

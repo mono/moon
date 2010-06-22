@@ -1459,6 +1459,10 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		DownloaderAccessPolicy policy = MediaPolicy;
 		Uri *uri = GetSource ();
 		const char *location;
+
+		if (GetSurface ()->GetRelaxedMediaMode ()) {
+			policy = NoPolicy;
+		}
 		
 		if (uri != NULL) {
 			if (!(location = GetDeployment ()->GetXapLocation ()) && GetSurface ())

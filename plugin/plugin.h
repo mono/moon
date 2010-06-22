@@ -235,6 +235,7 @@ private:
 	char *splashscreensource;
 	char *onSourceDownloadProgressChanged;
 	char *onSourceDownloadComplete;
+	char *relaxedMediaModeGuid;
 
 	char *culture;
 	char *uiCulture;
@@ -242,6 +243,7 @@ private:
 	int source_size;
 
 	bool windowless;
+	bool relaxed_media_mode;
 	bool cross_domain_app;
 	bool default_enable_html_access;
 	bool enable_html_access;
@@ -276,6 +278,7 @@ private:
 	void SetPageURL ();
 	char* GetPageLocation ();
 	void CrossDomainApplicationCheck (const char *source);
+	void RelaxedMediaModeCheck (const char *guid);
 	
 	void TryLoadBridge (const char *prefix);
 	

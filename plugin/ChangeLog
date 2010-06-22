@@ -1,3 +1,9 @@
+2010-06-22  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.[h|cpp]: added checks for a MOONLIGHT_RELAXED_MEDIA_MODE_GUIDS
+	  env variable that enables relaxed mode
+	  (bug #614781, patch from abock)
+
 2010-05-25  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: remove reentrant hack for chrome, fixed upstream
