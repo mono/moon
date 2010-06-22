@@ -19,6 +19,7 @@ enum UriToStringFlags {
 	UriHidePasswd   = 1 << 0,
 	UriHideFragment = 1 << 1,
 	UriHideQuery    = 1 << 2,
+	UriShowFileScheme    = 1 << 3,
 };
 
 /* @IncludeInKinds */

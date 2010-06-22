@@ -1,5 +1,9 @@
 2010-06-22  Andreia Gaita  <avidigal@novell.com>
 
+	* uri.[h|cpp]: Add local file support for relaxed media mode (moonshine).
+
+2010-06-22  Andreia Gaita  <avidigal@novell.com>
+
 	* runtime.[h|cpp]: Added relaxed_media_mode flag and getter/setter
 	* mediaelement.cpp, pipeline.cpp: relax policy if GetRelaxedMediaMode
 	  is true

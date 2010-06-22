@@ -723,6 +723,9 @@ Uri::ToString (UriToStringFlags flags) const
 		
 		if (this->port > 0)
 			g_string_append_printf (string, ":%d", this->port);
+	} else if ((IsScheme ("file") || IsScheme ("chrome")) && (flags & UriShowFileScheme)) {
+		g_string_append (string, this->scheme);
+		g_string_append (string, "://");
 	}
 	
 	if (this->path) {
