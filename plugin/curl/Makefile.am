@@ -22,7 +22,7 @@ libmoonplugin_curlbridge_la_SOURCES=	curl-bridge.cpp \
 					curl-http.h
 
 libmoonplugin_curlbridge_la_LDFLAGS=-module -avoid-version
-libmoonplugin_curlbridge_la_LIBADD=$(CURL_LIBS) ../libmoonplugin.la
+libmoonplugin_curlbridge_la_LIBADD=$(CURL_LIBS) ../libmoonplugin.la ../../src/libmoon.la
 
 libmoonpluginxpi_curlbridge_la_SOURCES = $(libmoonplugin_curlbridge_la_SOURCES)
 libmoonpluginxpi_curlbridge_la_LDFLAGS = $(libmoonplugin_curlbridge_la_LDFLAGS) -rpath /nowhere
