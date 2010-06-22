@@ -1055,6 +1055,8 @@ PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
 	nps (printf ("PluginInstance::DestroyStream (%p, %i)\n", stream, reason));
 
+	Deployment::SetCurrent (deployment);
+
 	NPStreamRequest *req = (NPStreamRequest *) stream->notifyData;
 	if (req != NULL)
 		req->DestroyStream ();

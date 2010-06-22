@@ -1,3 +1,7 @@
+2010-06-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Add a missing Deployment::SetCurrent.
+
 2010-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: SourceStopped: Don't do anything if we're shutting down.
