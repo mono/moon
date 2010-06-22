@@ -32,54 +32,15 @@ using Mono;
 namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
 		static UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
-		
-		internal sealed class ContentControlChangedEventArgs : EventArgs {
-			internal IntPtr native;
-			
-			internal ContentControlChangedEventArgs (IntPtr raw)
-			{
-				native = raw;
-				NativeMethods.event_object_ref (native);
-			}
-			
-			~ContentControlChangedEventArgs ()
-			{
-				if (native != IntPtr.Zero) {
-					NativeMethods.event_object_unref (native);
-					native = IntPtr.Zero;
-				}
-			}
-			
-			public object OldContent {
-				get {
-					IntPtr result = NativeMethods.content_control_changed_event_args_get_old_content (native);
-					
-					if (result == IntPtr.Zero)
-						return null;
-					
-					return Value.ToObject (typeof (object), result);
-				}
-			}
-			
-			public object NewContent {
-				get {
-					IntPtr result = NativeMethods.content_control_changed_event_args_get_new_content (native);
-					
-					if (result == IntPtr.Zero)
-						return null;
-					
-					return Value.ToObject (typeof (object), result);
-				}
-			}
-		}
-		
+
 		static void content_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			ContentControl cc = (ContentControl) NativeDependencyObjectHelper.FromIntPtr (closure);
-			ContentControlChangedEventArgs args = new ContentControlChangedEventArgs (calldata);
-			
-			cc.OnContentChanged (args.OldContent, args.NewContent);
-			cc.RaiseUIAContentChanged (args.OldContent, args.NewContent);
+			var oldContent = Value.ToObject (typeof (object), NativeMethods.content_control_changed_event_args_get_old_content (calldata));
+			var newContent = Value.ToObject (typeof (object), NativeMethods.content_control_changed_event_args_get_new_content (calldata));
+
+			cc.OnContentChanged (oldContent, newContent);
+			cc.RaiseUIAContentChanged (oldContent, newContent);
 		}
 
 		// Needed in case OnContentControlChanged is overwritten in a subclass

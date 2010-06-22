@@ -1,3 +1,8 @@
+2010-06-22  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentControl.cs: Nuke the 'ContentControlChangedEventArgs'
+	  class as nothing ever actually uses it.
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* TextBox.cs:
