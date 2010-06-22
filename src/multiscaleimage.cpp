@@ -646,6 +646,42 @@ MultiScaleImage::GetFreeBitmapImageContext ()
 	return NULL;
 }
 
+static void
+invalidate_tile_layer (MultiScaleImage *msi, int level, int tilePositionX, int tilePositionY, int tileLayer)
+{
+	msi->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
+}
+
+static void
+handle_dz_parsed (MultiScaleImage *msi)
+{
+	msi->HandleDzParsed ();
+}
+
+static void
+emit_image_open_failed (MultiScaleImage *msi)
+{
+	msi->EmitImageOpenFailed ();
+}
+
+static void
+emit_image_failed (MultiScaleImage *msi)
+{
+	msi->EmitImageFailed ();
+}
+
+static void
+emit_motion_finished (MultiScaleImage *msi)
+{
+	msi->EmitMotionFinished ();
+}
+
+static void
+on_source_property_changed (MultiScaleImage *msi)
+{
+	msi->OnSourcePropertyChanged ();
+}
+
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
@@ -712,7 +748,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	if (source->GetImageWidth () < 0 && !is_collection) {
 		LOG_MSI ("nothing to render so far...\n");
 		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			((DeepZoomImageTileSource*)source)->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_emit_image_open_failed, multi_scale_image_on_source_property_changed, this);
+			((DeepZoomImageTileSource*)source)->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
 			((DeepZoomImageTileSource*)source)->Download ();
 		}
 		return;
@@ -953,7 +989,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			//if the subimage is unparsed, trigger the download
 			if (from_layer > dzits->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
-				((DeepZoomImageTileSource*)sub_image->source)->set_callbacks ((void(*)(MultiScaleImage*))uielement_invalidate, multi_scale_image_emit_image_failed, NULL, this);
+				((DeepZoomImageTileSource*)sub_image->source)->set_callbacks ((void(*)(MultiScaleImage*))uielement_invalidate, emit_image_failed, NULL, this);
 				((DeepZoomImageTileSource*)sub_image->source)->Download ();
 				break;
 			}
@@ -1182,7 +1218,7 @@ MultiScaleImage::OnSourcePropertyChanged ()
 	if (GetSource ()) {
 		if (GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 			if ((newsource = GetValue (MultiScaleImage::SourceProperty)->AsDeepZoomImageTileSource ())) {
-				newsource->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_emit_image_open_failed, multi_scale_image_on_source_property_changed, this);
+				newsource->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
 				newsource->Download ();
 			}
 		} else {
@@ -1207,7 +1243,7 @@ MultiScaleImage::OnSourcePropertyChanged ()
 
 	//register the callback for InvalidateTileLayers
 	if (GetSource ())
-		GetSource ()->set_invalidate_tile_layer_func (multi_scale_image_invalidate_tile_layer, this);
+		GetSource ()->set_invalidate_tile_layer_func (invalidate_tile_layer, this);
 
 	Invalidate ();
 }
@@ -1366,7 +1402,7 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall ((TickCallHandler)multi_scale_image_emit_motion_finished);
+			AddTickCall ((TickCallHandler) emit_motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportWidthProperty, Value (value));
@@ -1409,7 +1445,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall ((TickCallHandler)multi_scale_image_emit_motion_finished);
+			AddTickCall ((TickCallHandler) emit_motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportOriginProperty, Value (*value));
