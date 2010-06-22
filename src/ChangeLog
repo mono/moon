@@ -3,6 +3,8 @@
 	* multiscaleimage.cpp (OnPropertyChanged): Use if-else branching
 	like every other implementation. Also moved non-MSI check to the
 	top.
+	(qtree_lookup): Precalculate pow2 (l) so we don't have to
+	calculate it multiple times in some of the conditions.
 
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 

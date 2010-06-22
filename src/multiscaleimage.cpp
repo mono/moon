@@ -86,7 +86,7 @@ qtree_insert (QTree *root, int level, guint64 x, guint64 y)
 		return NULL;
 	}
 	
-	while (level-- > 0) {
+	while (node && level-- > 0) {
 		level2 = pow2 (level);
 		
 		if (y < level2) {
@@ -141,7 +141,10 @@ qtree_set_image (QTree *node, cairo_surface_t *image)
 static QTree *
 qtree_lookup (QTree *root, int level, guint64 x, guint64 y)
 {
-	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
+	guint64 level2 = pow2 (level);
+	QTree *node = root;
+	
+	if (x >= level2 || y >= level2) {
 		g_warning ("QuadTree index out of range.");
 #if DEBUG
  		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
@@ -150,30 +153,30 @@ qtree_lookup (QTree *root, int level, guint64 x, guint64 y)
 #endif
 		return NULL;
 	}
-
-	while (level-- > 0) {
-		if (!root)
-			return NULL;
-
-		if (y < (pow2 (level))) {
-			if (x < (pow2 (level))) {
-				root = root->l0;
+	
+	while (node && level-- > 0) {
+		level2 = pow2 (level);
+		
+		if (y < level2) {
+			if (x < level2) {
+				node = node->l0;
 			} else {
-				root = root->l1;
-				x -= (pow2 (level));
+				node = node->l1;
+				x -= level2;
 			}
 		} else {
-			if (x < (pow2 (level))) {
-				root = root->l2;
-				y -= (pow2 (level));
+			if (x < level2) {
+				node = node->l2;
+				y -= level2;
 			} else {
-				root = root->l3;
-				x -= (pow2 (level));
-				y -= (pow2 (level));
+				node = node->l3;
+				x -= level2;
+				y -= level2;
 			}
 		}
 	}
-	return root;
+	
+	return node;
 }
 
 static cairo_surface_t *
