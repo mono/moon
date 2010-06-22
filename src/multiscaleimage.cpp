@@ -64,7 +64,7 @@ struct QTree {
 static QTree *
 qtree_new (void)
 {
-	return g_new0 (QTree, 1);
+	return g_slice_new0 (QTree);
 }
 
 static QTree *
@@ -135,7 +135,7 @@ qtree_set_image (QTree *node, cairo_surface_t *image)
 		cairo_surface_destroy (node->image);
 	
 	node->has_image = true;
-	node->image = image;	
+	node->image = image;
 }
 
 static QTree *
@@ -257,12 +257,12 @@ qtree_remove (QTree *node, int depth)
 
 	if (depth <= 0)
 		return;
-
+	
 	qtree_remove (node->l0, depth - 1);
 	qtree_remove (node->l1, depth - 1);
 	qtree_remove (node->l2, depth - 1);
 	qtree_remove (node->l3, depth - 1);
-
+	g_slice_free (QTree, node);
 }
 
 static void

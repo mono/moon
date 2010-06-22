@@ -5,6 +5,8 @@
 	top.
 	(qtree_lookup): Precalculate pow2 (l) so we don't have to
 	calculate it multiple times in some of the conditions.
+	(qtree_new): Use GSlice
+	(qtree_destroy): use g_slice_free().
 
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
