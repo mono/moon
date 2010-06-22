@@ -43,6 +43,10 @@ System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::Initialize
 System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.IntPtr)
 	r142142		spouliot - calls GCHandle.Alloc on self and pinvoke downloader_response_set_header_visitor
 
+!SSC-8716A82A58FC3E8A3FC78CC10190737B
+System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::Dispose()
+	r159189		spouliot - call GCHandle.Free [SecurityCritical] on 'handle'
+
 !SSC-2F399D8F4B0C16B87CD79BA54A6AEB00
 System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr,System.IntPtr)
 	r142142		spouliot - calls GCHandle.Target and Marshal.PtrToStringAnsi
