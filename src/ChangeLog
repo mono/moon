@@ -1,3 +1,8 @@
+2010-06-22  Andreia Gaita  <avidigal@novell.com>
+
+	* network-curl.cpp: activate ssl soft check (host/ip only, no
+	  local certificates yet)
+
 2010-06-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (qtree_insert): Use qtree_new(). Also

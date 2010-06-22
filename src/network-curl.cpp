@@ -19,10 +19,6 @@
 #define d(x)
 #define ds(x) 1
 
-// FIX: this is temporary
-#define SKIP_PEER 1
-#define SKIP_HOSTNAME 1
-
 #ifdef SANITY
 #define VERIFY_CURL_THREAD 										\
 	if (!pthread_equal (pthread_self (), worker_thread)) {						\
@@ -266,13 +262,14 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequ
 	curl_easy_setopt (curl, CURLOPT_DEBUGDATA, &config);
 	curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
 #endif
-#ifdef SKIP_PEER
-	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-#endif
 
-#ifdef SKIP_HOSTNAME
-	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-#endif
+	// only validate host/ip, without using local certificates
+	// TODO: test with nss stores and activate these checks
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2);
+	curl_easy_setopt(curl,CURLOPT_SSL_VERIFYPEER, 0);
+	curl_easy_setopt(curl,CURLOPT_CAINFO, NULL);
+	curl_easy_setopt(curl,CURLOPT_CAPATH, NULL);
+
 	curl_easy_setopt (curl, CURLOPT_USERAGENT, "NSPlayer/11.08.0005.0000");
 	curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1);
 }
