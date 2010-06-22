@@ -1,5 +1,9 @@
 2010-06-22  Jb Evain  <jbevain@novell.com>
 
+	* System.Core.xml: protect some dlr methods.
+
+2010-06-22  Jb Evain  <jbevain@novell.com>
+
 	* mscorlib.xml: protect more types needed by smcs.
 
 2010-06-03  Sebastien Pouliot  <sebastien@ximian.com>

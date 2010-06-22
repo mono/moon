@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <linker>
 	<assembly fullname="System.Core">
+		<type fullname="System.Linq.Expressions.Expression" preserve="all" />
 		<type fullname="System.Security.Cryptography.Aes" preserve="all" />
 	</assembly>
 </linker>
