@@ -1,3 +1,8 @@
+2010-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs: add RichTextBoxView to the
+	switch.
+
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs:
