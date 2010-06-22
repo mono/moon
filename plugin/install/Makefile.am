@@ -97,6 +97,7 @@ if INCLUDE_FFMPEG
 endif INCLUDE_FFMPEG
 
 if INCLUDE_BROWSER_MANAGED_CODE
+	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
 	cp -L $(top_builddir)/class/lib/2.1/*.dll .xpinstall/plugins/moonlight
 
 	cd .xpinstall/plugins/moonlight && rm -f $(SDK_DLLS)
@@ -134,6 +135,7 @@ if INCLUDE_FFMPEG
 endif INCLUDE_FFMPEG
 
 if INCLUDE_BROWSER_MANAGED_CODE
+	cp -L $(mono_libdir)/libmono.so $(CRXDIR)/moonlight/
 	cp -L $(top_builddir)/class/lib/2.1/*.dll $(CRXDIR)/moonlight
 
 	cd $(CRXDIR)/moonlight && rm -f $(SDK_DLLS)
