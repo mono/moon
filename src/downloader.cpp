@@ -483,7 +483,7 @@ Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 	SetUri (uri);
 	
 	int uriflags = 0;
-	if (GetSurface ()->GetRelaxedMediaMode ())
+	if (GetSurface () && GetSurface ()->GetRelaxedMediaMode ())
 		uriflags |= UriShowFileScheme;
 	str = url->ToString ((UriToStringFlags)uriflags);
 	delete src_uri;

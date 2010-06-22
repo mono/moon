@@ -1,5 +1,10 @@
 2010-06-22  Andreia Gaita  <avidigal@novell.com>
 
+	* downloader.cpp, mediaelement.cpp: null checks
+	* playlist.cpp: remove relaxed media mode support, not needed here
+
+2010-06-22  Andreia Gaita  <avidigal@novell.com>
+
 	* application.cpp, downloader.cpp,
 	  mediaelement.cpp, playlist.cpp: Use UriToStringFlags.UriShowFileScheme
 	  when on relaxed mode so file:// and chrome:// urls can be distinguished

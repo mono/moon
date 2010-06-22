@@ -838,10 +838,7 @@ PlaylistEntry::GetFullSourceName ()
 			result = current;
 		}
 		
-		int uriflags = 0;
-		if (GetSurface ()->GetRelaxedMediaMode ())
-			uriflags |= UriShowFileScheme;
-		full_source_name = result->ToString ((UriToStringFlags)uriflags);
+		full_source_name = result->ToString ();
 		
 		//printf (" result: %s\n", full_source_name);
 		

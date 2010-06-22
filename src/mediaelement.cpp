@@ -1198,7 +1198,7 @@ MediaElement::SetUriSource (Uri *uri)
 	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
 		CreatePlaylist ();
 		int uriflags = 0;
-		if (GetSurface ()->GetRelaxedMediaMode ())
+		if (GetSurface () && GetSurface ()->GetRelaxedMediaMode ())
 			uriflags |= UriShowFileScheme;
 		char *str = uri->ToString ((UriToStringFlags)uriflags);
 		playlist->GetCurrentEntry ()->InitializeWithUri (str);
@@ -1463,7 +1463,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		Uri *uri = GetSource ();
 		const char *location;
 
-		if (GetSurface ()->GetRelaxedMediaMode ()) {
+		if (GetSurface () && GetSurface ()->GetRelaxedMediaMode ()) {
 			policy = NoPolicy;
 		}
 		
