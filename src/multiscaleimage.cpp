@@ -247,7 +247,10 @@ _qtree_next_sibling (QTree *node, guint64 *i, guint64 *j, int l)
 static void
 qtree_remove (QTree *node, int depth)
 {
-	if (node && node->has_image) {
+	if (!node)
+		return;
+	
+	if (node->has_image) {
 		node->has_image = false;
 		if (node->image) {
 			cairo_surface_destroy (node->image);
@@ -262,13 +265,13 @@ qtree_remove (QTree *node, int depth)
 	qtree_remove (node->l1, depth - 1);
 	qtree_remove (node->l2, depth - 1);
 	qtree_remove (node->l3, depth - 1);
-	g_slice_free (QTree, node);
 }
 
 static void
 qtree_remove_at (QTree *root, int level, guint64 x, guint64 y, int depth)
 {
-	QTree* node = qtree_lookup (root, level, x, y);
+	QTree *node = qtree_lookup (root, level, x, y);
+	
 	qtree_remove (node, depth);
 }
 
@@ -294,7 +297,7 @@ qtree_destroy (QTree *root)
 	qtree_destroy (root->l1);
 	qtree_destroy (root->l2);
 	qtree_destroy (root->l3);
-	g_free (root);
+	g_slice_free (QTree, root);
 }
 
 /*
