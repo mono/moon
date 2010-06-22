@@ -1,3 +1,12 @@
+2010-06-22  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs:
+	* MarkupExpressionParser.cs: Rewrite TemplateBindings to not
+	  be leaky. We have to be careful to not store a reference to
+	  the template owner otherwise we end up with a reference
+	  cycle and cannot ever GC the source or target of the
+	  TemplateBinding.
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Events.cs:

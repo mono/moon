@@ -430,7 +430,6 @@ namespace Mono.Xaml
 					return false;
 
 				tb.TargetProperty = prop;
-				tb.Source = templateSourceObject as Control;
 				tb.SourceProperty = sourceProperty;
 
 				((FrameworkElement) dob).SetTemplateBinding (prop, tb);

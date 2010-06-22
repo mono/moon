@@ -1,5 +1,13 @@
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
+	* ContentPresenter.cs: Rewrite TemplateBindings to not be
+	  leaky. We have to be careful to not store a reference to the
+	  template owner otherwise we end up with a reference cycle
+	  and cannot ever GC the source or target of the
+	  TemplateBinding.
+
+2010-06-22  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentControl.cs: Nuke the 'ContentControlChangedEventArgs'
 	  class as nothing ever actually uses it.
 

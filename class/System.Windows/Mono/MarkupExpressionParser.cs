@@ -237,7 +237,6 @@ namespace Mono.Xaml {
 			string prop = GetNextPiece (ref expression, out next);
 			/*FrameworkTemplate template = */GetParentTemplate ();
 
-			tb.Target = target as FrameworkElement;
 			tb.TargetPropertyName = attribute_name;
 			tb.SourcePropertyName = prop;
 			// tb.Source will be filled in elsewhere between attaching the change handler.

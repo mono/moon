@@ -180,9 +180,7 @@ namespace System.Windows.Controls
 				if (DependencyProperty.UnsetValue == ReadLocalValue (ContentPresenter.ContentProperty)) {
 					SetTemplateBinding (ContentPresenter.ContentProperty,
 							       new TemplateBindingExpression {
-								       Source = templateOwner,
 								       SourceProperty = ContentControl.ContentProperty,
-								       Target = this,
 								       TargetProperty = ContentPresenter.ContentProperty
 							       });
 				}
@@ -190,9 +188,7 @@ namespace System.Windows.Controls
 				if (DependencyProperty.UnsetValue == ReadLocalValue (ContentPresenter.ContentTemplateProperty)) {
 					SetTemplateBinding (ContentPresenter.ContentTemplateProperty,
 							       new TemplateBindingExpression {
-								       Source = templateOwner,
 								       SourceProperty = ContentControl.ContentTemplateProperty,
-								       Target = this,
 								       TargetProperty = ContentPresenter.ContentTemplateProperty
 							       });
 				}

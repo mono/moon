@@ -33,17 +33,33 @@ using System.Windows.Controls;
 namespace System.Windows {
 	public class TemplateBindingExpression : Expression {
 
-		private UnmanagedPropertyChangeHandler change_handler;
+		UnmanagedPropertyChangeHandler change_handler {
+			get; set;
+		}
 
-		bool setsParent;
-		internal Control Source;
-		internal string SourcePropertyName;
-		internal DependencyProperty SourceProperty;
+		bool SetsParent {
+			get; set;
+		}
 
-		internal FrameworkElement Target;
-		internal string TargetPropertyName;
-		internal DependencyProperty TargetProperty;
+		internal DependencyProperty SourceProperty {
+			get; set;
+		}
 
+		internal string SourcePropertyName {
+			get; set;
+		}
+
+		FrameworkElement Target {
+			get; set;
+		}
+
+		internal DependencyProperty TargetProperty {
+			get; set;
+		}
+
+		internal string TargetPropertyName {
+			get; set;
+		}
 		internal TemplateBindingExpression ()
 		{
 		}
@@ -68,36 +84,48 @@ namespace System.Windows {
 
 		internal override object GetValue (DependencyProperty dp)
 		{
-			return MoonlightTypeConverter.ConvertObject (TargetProperty, Source.GetValue (SourceProperty), Target.GetType (), false);
+			var source = Target.TemplateOwner;
+			object value = null;
+			if (source != null)
+				value = source.GetValue (SourceProperty);
+			return MoonlightTypeConverter.ConvertObject (TargetProperty, value, Target.GetType (), false);
 		}
 
 		internal override void OnAttached (DependencyObject element)
 		{
 			base.OnAttached (element);
+
+			Target = (FrameworkElement) element;
 			if (change_handler == null)
 				change_handler = new UnmanagedPropertyChangeHandler (PropertyChanged);
 
 			ContentControl c = Target as ContentControl;
 			if (TargetProperty == ContentControl.ContentProperty && c != null) {
-				setsParent = c.ContentSetsParent;
+				SetsParent = c.ContentSetsParent;
 				c.ContentSetsParent = false;
 			}
-			Source.AddPropertyChangedHandler (SourceProperty, change_handler);
+
+			// Note that Target.TemplateOwner is a weak reference - it can be GC'ed at any time
+			var source = Target.TemplateOwner;
+			if (source != null)
+				source.AddPropertyChangedHandler (SourceProperty, change_handler);
 		}
 
 		internal override void OnDetached (DependencyObject element)
 		{
 			base.OnDetached (element);
+
 			if (change_handler == null)
 				return;
 
 			ContentControl c = Target as ContentControl;
 			if (c != null)
-				c.ContentSetsParent = setsParent;
-			
-			Source.RemovePropertyChangedHandler (SourceProperty, change_handler);
-			
-			Source = null;
+				c.ContentSetsParent = SetsParent;
+
+			// Note that Target.TemplateOwner is a weak reference - it can be GC'ed at any time
+			var source = Target.TemplateOwner;
+			if (source != null)
+				source.RemovePropertyChangedHandler (SourceProperty, change_handler);
 			Target = null;
 		}
 	}
