@@ -1,3 +1,8 @@
+2010-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* Dispatcher.cs: fast-path Deploymet.AssemblyRegistration's
+	delegate type.
+
 2010-03-22  Chris Toshok  <toshok@ximian.com>
 
 	* Dispatcher.cs (InvokeDelegate): factor out all the delegate

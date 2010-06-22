@@ -1,3 +1,8 @@
+2010-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: make AssemblyRegistration delegate type internal
+	so we can get at it from the Dispatcher code.
+
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
 	* TemplateBindingExpression.cs: Rewrite TemplateBindings to

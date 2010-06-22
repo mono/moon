@@ -25,6 +25,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading;
 using System.Collections.Generic;
 using Mono;
@@ -114,6 +115,9 @@ namespace System.Windows.Threading {
 			}
 			else if (d is EventHandler) {
 				((EventHandler)d) (args[0], (EventArgs)args[1]);
+			}
+			else if (d is Deployment.AssemblyRegistration) {
+				((Deployment.AssemblyRegistration)d) ((Assembly)args[0]);
 			}
 			else {
 #if DEBUG

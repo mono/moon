@@ -461,7 +461,7 @@ namespace System.Windows {
 			}
 		}
 
-		delegate void AssemblyRegistration (Assembly asm);
+		internal delegate void AssemblyRegistration (Assembly asm);
 
 		// note: only access 'assemblies' from the main thread
 		void AssemblyRegister (Assembly assembly)
