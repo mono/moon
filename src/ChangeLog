@@ -7,6 +7,8 @@
 	calculate it multiple times in some of the conditions.
 	(qtree_new): Use GSlice
 	(qtree_destroy): use g_slice_free().
+	(ctor): Init member vars in the body of the ctor, and make sure to
+	init all of them.
 
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 

@@ -29,32 +29,37 @@ struct BitmapImageContext;
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
 	friend class MultiScaleImagePropertyValueProvider;
-
-	GHashTable *cache;
-	bool cache_contains (Uri* filename, bool check_empty_tile);
-	bool subimages_sorted;
-	bool pending_motion_completed;
-
-	cairo_user_data_key_t width_key;
-	cairo_user_data_key_t height_key;
+	
+	DOPtr<DoubleAnimationUsingKeyFrames> zoom_animation;
+	DOPtr<PointAnimationUsingKeyFrames> pan_animation;
+	DOPtr<DoubleAnimation> fadein_animation;
+	DOPtr<Storyboard> fadein_sb;
+	DOPtr<Storyboard> zoom_sb;
+	DOPtr<Storyboard> pan_sb;
+	
 	cairo_user_data_key_t full_opacity_at_key;
-
+	cairo_user_data_key_t height_key;
+	cairo_user_data_key_t width_key;
+	bool pending_motion_completed;
+	bool subimages_sorted;
+	GList *bitmapimages;
+	GHashTable *cache;
+	double zoom_target;
+	Point pan_target;
+	bool is_zooming;
+	bool is_panning;
+	bool is_fading;
+	
+	bool cache_contains (Uri* filename, bool check_empty_tile);
+	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-
-	GList *bitmapimages;
+	
 	BitmapImageContext *GetBitmapImageContext (BitmapImage *bitmapimage);
 
 	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);
-
-	DOPtr<Storyboard> zoom_sb;
-	DOPtr<Storyboard> pan_sb;
-	DOPtr<Storyboard> fadein_sb;
-	DOPtr<DoubleAnimationUsingKeyFrames> zoom_animation;
-	DOPtr<PointAnimationUsingKeyFrames> pan_animation;
-	DOPtr<DoubleAnimation> fadein_animation;
-
+	
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);
 
@@ -75,14 +80,7 @@ class MultiScaleImage : public MediaBase {
 	void SetZoomAnimationEndPoint (double endpoint);
 	Point *GetPanAnimationEndPoint ();
 	void SetPanAnimationEndPoint (Point endpoint);
-
-	double zoom_target;
-	Point pan_target;
-
-	bool is_fading;
-	bool is_zooming;
-	bool is_panning;
-
+	
  protected:
 	virtual ~MultiScaleImage ();
 

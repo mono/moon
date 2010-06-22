@@ -358,30 +358,29 @@ morton_y (int n)
  * MultiScaleImage
  */
 
-MultiScaleImage::MultiScaleImage () :
-	subimages_sorted(false),
-	pending_motion_completed(false),
-	bitmapimages(NULL),
-	is_fading(false),
-	is_zooming(false),
-	is_panning(false)
+MultiScaleImage::MultiScaleImage ()
 {
-//	static bool init = true;
-//	if (init) {
-//		init = false;
-//		MultiScaleImage::SubImagesProperty->SetValueValidator (MultiScaleSubImageCollectionValidator);	
-//	}
+	SetObjectType (Type::MULTISCALEIMAGE);
+	
 	providers [PropertyPrecedence_DynamicValue] = new MultiScaleImagePropertyValueProvider (this, PropertyPrecedence_DynamicValue);
-
-	SetObjectType (Type::MULTISCALEIMAGE); 
+	
+	// Note: cairo_user_data_key_t's do not need to be initialized
+	
 	cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+	pending_motion_completed = false;
+	subimages_sorted = false;
+	bitmapimages = NULL;
+	pan_target = Point (0, 0);
+	zoom_target = 1.0;
+	is_panning = false;
+	is_zooming = false;
+	is_fading = false;
 }
 
 MultiScaleImage::~MultiScaleImage ()
 {
 	StopDownloading ();
-	if (cache)
-		g_hash_table_destroy (cache);
+	g_hash_table_destroy (cache);
 	cache = NULL;
 }
 
