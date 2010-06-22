@@ -55,7 +55,7 @@ class TextPointer : public DependencyObject {
 	/* @GeneratePInvoke,GenerateCBinding */
 	Rect GetCharacterRect (LogicalDirection dir);
 	/* @GeneratePInvoke,GenerateCBinding */
-	TextPointer *GetNextInsertionPoint (LogicalDirection dir);
+	TextPointer *GetNextInsertionPosition (LogicalDirection dir);
 	/* @GeneratePInvoke,GenerateCBinding */
 	TextPointer *GetPositionAtOffset (int offset, LogicalDirection dir);
 	
@@ -88,7 +88,12 @@ class TextSelection : public DependencyObject {
 	const static int XamlProperty;
 	
 	/* @GeneratePInvoke,GenerateCBinding */
-	TextSelection () { SetObjectType (Type::TEXTSELECTION); }
+	TextSelection ()
+	{
+		SetObjectType (Type::TEXTSELECTION);
+		// FIXME: we should not be doing this... should they be autocreated?
+		SetEnd (new TextPointer()); SetStart (new TextPointer());
+	}
 	
 	//
 	// Methods
@@ -153,13 +158,16 @@ class RichTextBoxView;
 /* @Namespace=System.Windows.Controls */
 /* @ContentProperty=Blocks */
 class RichTextBox : public Control {
- protected:
+	friend class RichTextBoxDynamicPropertyValueProvider;
 	friend class RichTextBoxView;
 	friend class TextSelection;
 	friend class TextPointer;
-	
+
+ protected:
 	DependencyObject *contentElement;
 	
+	Section *rootSection;
+
 	RichTextBoxUndoStack *undo;
 	RichTextBoxUndoStack *redo;
 	int selection_anchor;
@@ -268,7 +276,7 @@ class RichTextBox : public Control {
 	const static int AcceptsReturnProperty;
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BaselineOffsetProperty;
-	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	/* @PropertyType=BlockCollection,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int CaretBrushProperty;
@@ -326,6 +334,17 @@ class RichTextBox : public Control {
 	bool CanRedo ();
 	void Undo ();
 	void Redo ();
+
+	// TextPointer things
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextPointer* GetPositionFromPoint (Point point);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextPointer* GetContentStart ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextPointer* GetContentEnd ();
 	
 	//
 	// Selection Operations

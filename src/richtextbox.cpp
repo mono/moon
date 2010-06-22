@@ -134,7 +134,7 @@ TextPointer::GetCharacterRect (LogicalDirection dir)
 }
 
 TextPointer *
-TextPointer::GetNextInsertionPoint (LogicalDirection dir)
+TextPointer::GetNextInsertionPosition (LogicalDirection dir)
 {
 	// FIXME: implement this
 	return NULL;
@@ -186,6 +186,26 @@ TextSelection::Select (TextPointer *anchor, TextPointer *cursor)
 	return SelectWithError (anchor, cursor, &err);
 }
 
+//
+// RichTextBoxDynamicPropertyValueProvider
+//
+class RichTextBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
+ public:
+	RichTextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+		: FrameworkElementProvider (obj, precedence)
+	{
+	}
+	
+	virtual ~RichTextBoxDynamicPropertyValueProvider () {}
+	
+	virtual Value *GetPropertyValue (DependencyProperty *property)
+	{
+		if (property->GetId () == RichTextBox::BlocksProperty)
+			return ((RichTextBox*)obj)->rootSection->GetValue (Section::BlocksProperty);
+		
+		return FrameworkElementProvider::GetPropertyValue (property);
+	}
+};
 
 //
 // RichTextBox
@@ -222,6 +242,8 @@ GetClipboard (RichTextBox *textbox, MoonClipboardType clipboardType)
 
 RichTextBox::RichTextBox ()
 {
+	providers[PropertyPrecedence_DynamicValue] = new RichTextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
+
 	SetObjectType (Type::RICHTEXTBOX);
 	
 	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
@@ -231,6 +253,11 @@ RichTextBox::RichTextBox ()
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
 	
+	rootSection = new Section();
+
+	// FIXME: we should not be doing this... should the selection be autocreated?
+	SetSelection (new TextSelection());
+
 	contentElement = NULL;
 	
 	MoonWindowingSystem *ws = runtime_get_windowing_system ();
@@ -1112,6 +1139,27 @@ RichTextBox::OnApplyTemplate ()
 	Control::OnApplyTemplate ();
 }
 
+TextPointer*
+RichTextBox::GetPositionFromPoint (Point point)
+{
+	// FIXME
+	return new TextPointer ();
+}
+
+TextPointer*
+RichTextBox::GetContentStart ()
+{
+	// FIXME
+	return new TextPointer ();
+}
+
+TextPointer*
+RichTextBox::GetContentEnd ()
+{
+	// FIXME
+	return new TextPointer ();
+}
+
 void
 RichTextBox::SelectAll ()
 {
@@ -1699,7 +1747,7 @@ RichTextBoxView::SetTextBox (RichTextBox *textbox)
 		
 		// sync our state with the textbox
 		layout->SetTextAttributes (new List ());
-		attrs = new TextLayoutAttributes ((ITextAttributes *) textbox, 0);
+		attrs = new TextLayoutAttributes (textbox->rootSection, 0);
 		layout->GetTextAttributes ()->Append (attrs);
 		
 		layout->SetTextAlignment (textbox->GetTextAlignment ());

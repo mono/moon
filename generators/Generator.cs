@@ -2123,6 +2123,8 @@ class Generator {
 		f ("System.Windows.FontStretch", "FONTSTRETCH");
 		f ("System.Windows.FontWeight", "FONTWEIGHT");
 		f ("System.Windows.FontStyle", "FONTSTYLE");
+		f ("System.Windows.Documents.TextSelection", "TEXTSELECTION");
+		f ("System.Windows.Documents.TextPointer", "TEXTPOINTER");
 		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
 		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
 

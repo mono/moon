@@ -27,10 +27,11 @@
 // 
 
 using System;
+using System.Threading;
 using Mono;
 
 namespace System.Windows.Documents {
-	public sealed class TextSelection : INativeEventObjectWrapper {
+	public sealed class TextSelection : INativeDependencyObjectWrapper {
 		bool free_mapping;
 		IntPtr native;
 		
@@ -57,29 +58,63 @@ namespace System.Windows.Documents {
 		{
 			Free ();
 		}
-		
+
+#region "INativeDependencyObjectWrapper interface"
+		IntPtr _native;
+
 		internal IntPtr NativeHandle {
-			get { return native; }
+			get { return _native; }
 			set {
-				if (native != IntPtr.Zero) {
-					throw new InvalidOperationException ("TextPointer.native is already set");
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("TextSelection.native is already set");
 				}
-				
-				native = value;
-				
+
+				_native = value;
+
 				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
-		
+
 		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
 		}
-		
+
+		object INativeDependencyObjectWrapper.GetValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.SetValue (DependencyProperty dp, object value)
+		{
+			NativeDependencyObjectHelper.SetValue (this, dp, value);
+		}
+
+		object INativeDependencyObjectWrapper.GetAnimationBaseValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
+		}
+
+		object INativeDependencyObjectWrapper.ReadLocalValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.ClearValue (DependencyProperty dp)
+		{
+			NativeDependencyObjectHelper.ClearValue (this, dp);
+		}
+
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			return NativeMethods.event_object_get_object_type (native);
+			return Kind.TEXTSELECTION;
 		}
+
+		bool INativeDependencyObjectWrapper.CheckAccess ()
+		{
+			return Thread.CurrentThread == DependencyObject.moonlight_thread;
+		}
+#endregion
 
 		public object GetPropertyValue (DependencyProperty formattingProperty)
 		{
@@ -95,50 +130,55 @@ namespace System.Windows.Documents {
 
 		public void Insert (TextElement element)
 		{
-			Console.WriteLine ("System.Windows.Documents.TextSelection.Insert: () NIEX");
-			throw new NotImplementedException ();
+			NativeMethods.text_selection_insert (native, element.native);
 		}
 
 		public void Select (TextPointer anchorPosition, TextPointer movingPosition)
 		{
-			Console.WriteLine ("System.Windows.Documents.TextSelection.Select: () NIEX");
-			throw new NotImplementedException ();
+			NativeMethods.text_selection_select (native, anchorPosition.native, movingPosition.native);
 		}
 
 		public string Text {
 			get {
-				Console.WriteLine ("System.Windows.Documents.TextSelection.get_Text: () NIEX");
-				throw new NotImplementedException ();
+				return (string)((INativeDependencyObjectWrapper)this).GetValue(TextProperty);
 			}
 			set {
-				Console.WriteLine ("System.Windows.Documents.TextSelection.set_Text: () NIEX");
-				throw new NotImplementedException ();
+				((INativeDependencyObjectWrapper)this).SetValue(TextProperty, value);
 			}
 		}
 
 		public string Xaml {
 			get {
-				Console.WriteLine ("System.Windows.Documents.TextSelection.get_Xaml: () NIEX");
-				throw new NotImplementedException ();
+				return (string)((INativeDependencyObjectWrapper)this).GetValue(XamlProperty);
 			}
 			set {
-				Console.WriteLine ("System.Windows.Documents.TextSelection.set_Xaml: () NIEX");
-				throw new NotImplementedException ();
+				((INativeDependencyObjectWrapper)this).SetValue(XamlProperty, value);
 			}
 		}
 
 		public TextPointer End {
 			get {
-				Console.WriteLine ("System.Windows.Documents.TextSelection.get_End: () NIEX");
-				throw new NotImplementedException ();
+				return (TextPointer)((INativeDependencyObjectWrapper)this).GetValue(EndProperty);
 			}
 		}
 
 		public TextPointer Start {
 			get {
-				Console.WriteLine ("System.Windows.Documents.TextSelection.get_Start: () NIEX");
-				throw new NotImplementedException ();
+				return (TextPointer)((INativeDependencyObjectWrapper)this).GetValue(StartProperty);
 			}
 		}
+
+		private DependencyProperty TextProperty = DependencyProperty.Lookup
+			(Kind.TEXTSELECTION, "Text", typeof (string));
+
+		private DependencyProperty XamlProperty = DependencyProperty.Lookup
+			(Kind.TEXTSELECTION, "Xaml", typeof (string));
+
+		private DependencyProperty EndProperty = DependencyProperty.Lookup
+			(Kind.TEXTSELECTION, "End", typeof (TextPointer));
+
+		private DependencyProperty StartProperty = DependencyProperty.Lookup
+			(Kind.TEXTSELECTION, "Start", typeof (TextPointer));
+										     
 	}
 }

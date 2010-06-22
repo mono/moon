@@ -78,7 +78,7 @@ namespace System.Windows.Documents {
 		
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			return NativeMethods.event_object_get_object_type (native);
+			return Kind.TEXTPOINTER;
 		}
 		
 		public bool IsAtInsertionPosition {
@@ -95,22 +95,22 @@ namespace System.Windows.Documents {
 
 		public int CompareTo (TextPointer position)
 		{
-			throw new NotImplementedException ();
+			return NativeMethods.text_pointer_compare_to (native, position.NativeHandle);
 		}
 
 		public Rect GetCharacterRect (LogicalDirection direction)
 		{
-			throw new NotImplementedException ();
+			return NativeMethods.text_pointer_get_character_rect (native, direction);
 		}
 
 		public TextPointer GetNextInsertionPosition (LogicalDirection direction)
 		{
-			throw new NotImplementedException ();
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_next_insertion_position (native, direction)) as TextPointer;
 		}
 
 		public TextPointer GetPositionAtOffset (int offset, LogicalDirection direction)
 		{
-			throw new NotImplementedException ();
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_position_at_offset (native, offset, direction)) as TextPointer;
 		}
 	}
 }

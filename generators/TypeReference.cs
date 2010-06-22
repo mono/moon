@@ -339,6 +339,9 @@ class TypeReference {
 			case "SystemColor":
 				managed_type = "int";
 				break;
+			case "LogicalDirection":
+				managed_type = "System.Windows.Documents.LogicalDirection";
+				break;
 			case "ToggleNotifyHandler":
 				managed_type = "Mono.ToggleRef.ToggleNotifyHandler";
 				break;
