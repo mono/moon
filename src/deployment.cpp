@@ -692,14 +692,48 @@ IdComparer (gconstpointer base1, gconstpointer base2)
 		return 1;
 }
 
+static int
+ByTypeComparer (gconstpointer base1, gconstpointer base2, gpointer user_data)
+{
+	GHashTable *by_type = (GHashTable *) user_data;
+	char *left = *((char **) base1);
+	char *right = *((char **) base2);
+
+	int iddiff =  GPOINTER_TO_INT (g_hash_table_lookup (by_type, left)) - GPOINTER_TO_INT (g_hash_table_lookup (by_type, right));
+
+	if (iddiff == 0)
+		return 0;
+	else if (iddiff < 0)
+		return -1;
+	else
+		return 1;
+}
+
 static void
 accumulate_last_n (gpointer key,
 		   gpointer value,
 		   gpointer user_data)
 {
 	GPtrArray *last_n = (GPtrArray*)user_data;
-
 	g_ptr_array_insert_sorted (last_n, IdComparer, key);
+}
+
+static void
+accumulate_by_type (gpointer key,
+		   gpointer value,
+		   gpointer user_data)
+{
+	GHashTable *by_type = (GHashTable*) user_data;
+	EventObject *ob = (EventObject *) key;
+	int count = GPOINTER_TO_INT (g_hash_table_lookup (by_type, ob->GetType ()->GetName ())) + 1;
+	g_hash_table_insert (by_type, (void*)ob->GetType ()->GetName (), GINT_TO_POINTER (count));
+}
+
+static void
+add_keys_to_array (gpointer key, gpointer value, gpointer user_data)
+{
+	GPtrArray *by_type = (GPtrArray*) user_data;
+	g_ptr_array_add (by_type, key);
 }
 #endif
 
@@ -766,9 +800,15 @@ Deployment::ReportLeaks ()
 		printf ("\tDifference: %i (%.1f%%)\n", objects_created - objects_destroyed, (100.0 * objects_destroyed) / objects_created);
 
 		GPtrArray* last_n = g_ptr_array_new ();
+		GHashTable *by_type = g_hash_table_new (g_str_hash, g_str_equal);;
+		GPtrArray *top_n_by_type = g_ptr_array_new ();
 
 		pthread_mutex_lock (&objects_alive_mutex);
 		g_hash_table_foreach (objects_alive, accumulate_last_n, last_n);
+		g_hash_table_foreach (objects_alive, accumulate_by_type, by_type);
+		g_hash_table_foreach (by_type, add_keys_to_array, top_n_by_type);
+
+		g_ptr_array_sort_with_data (top_n_by_type, ByTypeComparer, by_type);
 		pthread_mutex_unlock (&objects_alive_mutex);
 
 		guint32 counter = 10;
@@ -789,7 +829,13 @@ Deployment::ReportLeaks ()
 			}
 		}
 
+		printf ("Leaked objects by type:\n");
+		for (int i = 0; i < (int) top_n_by_type->len; i++) {
+			printf ("\t%d instances leaked of type %s\n", GPOINTER_TO_INT (g_hash_table_lookup (by_type, top_n_by_type->pdata [i])), top_n_by_type->pdata [i]);
+		}
+		g_ptr_array_free (top_n_by_type, true);
 		g_ptr_array_free (last_n, true);
+		g_hash_table_destroy (by_type);
 	}
 }
 #endif
@@ -901,11 +947,15 @@ Deployment::Dispose ()
 	interned_strings = NULL;
 
 	DependencyObject::Dispose ();
+	printf ("Deployment disposing, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
+	if (objects_created != objects_destroyed)
+		ReportLeaks ();
 }
 
 void
 Deployment::Shutdown ()
 {
+	printf ("Shutting down\n");
 	LOG_DEPLOYMENT ("Deployment::Shutdown ()\n");
 
 	/*
@@ -993,6 +1043,10 @@ Deployment::Shutdown ()
 
 	if (types)
 		types->Dispose ();
+
+	printf ("Deployment shutting down, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
+	if (objects_created != objects_destroyed)
+		ReportLeaks ();
 }
 
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
