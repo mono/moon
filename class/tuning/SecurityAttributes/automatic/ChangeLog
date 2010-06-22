@@ -1,3 +1,7 @@
+2010-06-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.s[s]c: regenerated for r159337
+
 2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: regenerated wrt manual override

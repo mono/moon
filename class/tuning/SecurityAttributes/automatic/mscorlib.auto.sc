@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 432 methods needs to be decorated.
+# 448 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -208,11 +208,20 @@
 # internal call
 +SC-M: System.Byte[] System.Reflection.Emit.CustomAttributeBuilder::GetBlob(System.Reflection.Assembly,System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
 
+# overrides 'System.Byte[] System.Reflection.Module::ResolveSignature(System.Int32)'.
++SC-M: System.Byte[] System.Reflection.Emit.ModuleBuilder::ResolveSignature(System.Int32)
+
 # internal call
 +SC-M: System.Byte[] System.Reflection.Emit.SignatureHelper::get_signature_field()
 
 # internal call
 +SC-M: System.Byte[] System.Reflection.Emit.SignatureHelper::get_signature_local()
+
+# internal call
++SC-M: System.Byte[] System.Reflection.Module::ResolveSignature(System.IntPtr,System.Int32,System.Reflection.ResolveTokenError&)
+
+# overrides 'System.Byte[] System.Reflection.Module::ResolveSignature(System.Int32)'.
++SC-M: System.Byte[] System.Reflection.MonoModule::ResolveSignature(System.Int32)
 
 # internal call
 +SC-M: System.Byte[] System.Threading.Thread::ByteArrayToCurrentDomain(System.Byte[])
@@ -280,8 +289,14 @@
 # internal call
 +SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentUICulture(System.Threading.InternalThread)
 
+# overrides 'System.Guid System.Reflection.Module::get_ModuleVersionId()'.
++SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::get_ModuleVersionId()
+
 # overrides 'System.Guid System.Reflection.Module::GetModuleVersionId()'.
 +SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::GetModuleVersionId()
+
+# overrides 'System.Guid System.Reflection.Module::get_ModuleVersionId()'.
++SC-M: System.Guid System.Reflection.MonoModule::get_ModuleVersionId()
 
 # localloc
 +SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
@@ -378,6 +393,12 @@
 
 # internal call
 +SC-M: System.Int32 System.Reflection.Module::get_MetadataToken(System.Reflection.Module)
+
+# internal call
++SC-M: System.Int32 System.Reflection.Module::GetMDStreamVersion(System.IntPtr)
+
+# overrides 'System.Int32 System.Reflection.Module::get_MDStreamVersion()'.
++SC-M: System.Int32 System.Reflection.MonoModule::get_MDStreamVersion()
 
 # internal call
 +SC-M: System.Int32 System.Reflection.ParameterInfo::GetMetadataToken()
@@ -507,6 +528,9 @@
 
 # internal call
 +SC-M: System.IntPtr System.Reflection.Assembly::GetManifestResourceInternal(System.String,System.Int32&,System.Reflection.Module&)
+
+# internal call
++SC-M: System.IntPtr System.Reflection.Module::ResolveFieldToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
 
 # internal call
 +SC-M: System.IntPtr System.Reflection.Module::ResolveMethodToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
@@ -700,8 +724,14 @@
 # internal call
 +SC-M: System.Reflection.EventInfo[] System.MonoType::GetEvents_internal(System.Reflection.BindingFlags,System.Type)
 
+# overrides 'System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32,System.Type[],System.Type[])'.
++SC-M: System.Reflection.FieldInfo System.Reflection.Emit.ModuleBuilder::ResolveField(System.Int32,System.Type[],System.Type[])
+
 # internal call
 +SC-M: System.Reflection.FieldInfo System.Reflection.FieldInfo::internal_from_handle_type(System.IntPtr,System.IntPtr)
+
+# overrides 'System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32,System.Type[],System.Type[])'.
++SC-M: System.Reflection.FieldInfo System.Reflection.MonoModule::ResolveField(System.Int32,System.Type[],System.Type[])
 
 # internal call
 +SC-M: System.Reflection.FieldInfo[] System.MonoType::GetFields_internal(System.Reflection.BindingFlags,System.Type)
@@ -717,6 +747,15 @@
 
 # Promoting interface member to [SecurityCritical] because of 'System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)'.
 +SC-M: System.Reflection.ManifestResourceInfo System.Runtime.InteropServices._Assembly::GetManifestResourceInfo(System.String)
+
+# overrides 'System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32,System.Type[],System.Type[])'.
++SC-M: System.Reflection.MemberInfo System.Reflection.Emit.ModuleBuilder::ResolveMember(System.Int32,System.Type[],System.Type[])
+
+# internal call
++SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMemberToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
+
+# overrides 'System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32,System.Type[],System.Type[])'.
++SC-M: System.Reflection.MemberInfo System.Reflection.MonoModule::ResolveMember(System.Int32,System.Type[],System.Type[])
 
 # implements 'System.Reflection.MethodBase System.Runtime.InteropServices._Exception::get_TargetSite()'.
 +SC-M: System.Reflection.MethodBase System.Exception::get_TargetSite()
@@ -870,6 +909,9 @@
 
 # internal call
 +SC-M: System.String System.Reflection.MonoMethod::get_name(System.Reflection.MethodBase)
+
+# overrides 'System.String System.Reflection.Module::get_FullyQualifiedName()'.
++SC-M: System.String System.Reflection.MonoModule::get_FullyQualifiedName()
 
 # Promoting interface member to [SecurityCritical] because of 'System.String System.Reflection.Assembly::get_CodeBase()'.
 +SC-M: System.String System.Runtime.InteropServices._Assembly::get_CodeBase()
@@ -1148,6 +1190,9 @@
 +SC-M: System.Void System.Reflection.Emit.TypeBuilder::setup_internal_class(System.Reflection.Emit.TypeBuilder)
 
 # internal call
++SC-M: System.Void System.Reflection.Module::GetPEKind(System.IntPtr,System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)
+
+# internal call
 +SC-M: System.Void System.Reflection.MonoEventInfo::get_event_info(System.Reflection.MonoEvent,System.Reflection.MonoEventInfo&)
 
 # internal call
@@ -1161,6 +1206,9 @@
 
 # internal call
 +SC-M: System.Void System.Reflection.MonoMethodInfo::get_method_info(System.IntPtr,System.Reflection.MonoMethodInfo&)
+
+# overrides 'System.Void System.Reflection.Module::GetPEKind(System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)'.
++SC-M: System.Void System.Reflection.MonoModule::GetPEKind(System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)
 
 # internal call
 +SC-M: System.Void System.Reflection.MonoPropertyInfo::get_property_info(System.Reflection.MonoProperty,System.Reflection.MonoPropertyInfo&,System.Reflection.PInfo)
