@@ -78,6 +78,8 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) $(BRIDGES) Makefile
 	cp -L $(srcdir)/icon32.png .xpinstall/skin/
 	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
 	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
+	cp -L $(top_builddir)/src/.libs/libmoonxpi.so .xpinstall/plugins/moonlight/
+
 
 if HAVE_GECKO_1_8
 # Rename the bridges to the original names
@@ -124,6 +126,7 @@ novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) $(CURL_BRIDGE) Makefile
 	cp -L $(srcdir)/icon128.png $(CRXDIR)/
 	cp -L ../.libs/libmoonloaderxpi.so $(CRXDIR)/
 	cp -L ../.libs/libmoonpluginxpi.so $(CRXDIR)/moonlight/
+	cp -L $(top_builddir)/src/.libs/libmoonxpi.so $(CRXDIR)/moonlight/
 
 # Rename the bridge to the original name
 # no if HAVE_CURL here since curl is required for chrome
