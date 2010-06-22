@@ -88,12 +88,10 @@ class MultiScaleImage : public MediaBase {
 
  public:
 	void EmitImageOpenSucceeded ();
-	/* @GenerateCBinding */
-	void EmitMotionFinished ();
-	/* @GenerateCBinding */
-	void EmitImageFailed ();
-	/* @GenerateCBinding */
 	void EmitImageOpenFailed ();
+	void EmitMotionFinished ();
+	void EmitImageFailed ();
+	
 	void FadeFinished ();
 	void ZoomFinished ();
 	void PanFinished ();
@@ -120,8 +118,7 @@ class MultiScaleImage : public MediaBase {
 	const static int ViewportOriginProperty;
 	/* @PropertyType=double,AlwaysChange,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
-
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleImage ();
 
@@ -199,13 +196,11 @@ class MultiScaleImage : public MediaBase {
 	BitmapImageContext *GetFreeBitmapImageContext ();
 	void StopDownloading ();
 	void DownloadTile (BitmapImageContext *ctx, Uri *tile, void *user_data);
-	/* @GenerateCBinding */
+	
 	void HandleDzParsed ();
-
-	/* @GenerateCBinding */
+	
 	void OnSourcePropertyChanged ();
-
-	/* @GenerateCBinding */
+	
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };
 
