@@ -536,6 +536,10 @@ FfmpegDemuxer::Dispose ()
 		worker_list.Clear (true);
 		pthread_cond_signal (&worker_cond);
 		pthread_mutex_unlock (&worker_mutex);
+		/* We need to signal any waiting reads that we don't have to read more */
+		pthread_mutex_lock (&wait_mutex);
+		pthread_cond_signal (&wait_cond);
+		pthread_mutex_unlock (&wait_mutex);
 		/* We need to unlock the worker_mutex before joining the thread, otherwise we'll deadlock. This is also the reason we're using two mutexes. */
 		pthread_join (worker_thread, NULL);
 	} else {
@@ -741,7 +745,7 @@ FfmpegDemuxer::Read (uint8_t *buf, int buf_size)
 		} else {
 			LOG_FFMPEG ("FfmpegDemuxer::Read (%i): previous read closure still present (probably due to a spurious wakeup from the wait) - not creating a new one. Waiting again.\n", buf_size);
 		}
-		if (demuxers == NULL) {
+		if (demuxers == 0) {
 			/* We're shutting down the ffmpeg thread */
 			break;
 		}

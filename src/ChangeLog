@@ -1,3 +1,8 @@
+2010-06-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ffmpeg.cpp: Signal the wait_mutex too when shutting down the ffmpeg
+	thread, fixes #97 when building with ffmpeg support.
+
 2010-06-22  Andreia Gaita  <avidigal@novell.com>
 
 	* network-curl.cpp: activate ssl soft check (host/ip only, no
