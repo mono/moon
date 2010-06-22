@@ -1,3 +1,9 @@
+2010-06-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (OnPropertyChanged): Use if-else branching
+	like every other implementation. Also moved non-MSI check to the
+	top.
+
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
 	* deployment.cpp: Fix the build when not using OBJECT_TRACKING

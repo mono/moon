@@ -1251,49 +1251,38 @@ MultiScaleImage::OnSourcePropertyChanged ()
 void
 MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	if (args->GetId () == MultiScaleImage::AllowDownloadingProperty) {
+	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
+		MediaBase::OnPropertyChanged (args, error);
+		return;
+	}
+	
+	if (args->GetId () == MultiScaleImage::InternalViewportOriginProperty ||
+	    args->GetId () == MultiScaleImage::InternalViewportWidthProperty) {
+		Emit (MultiScaleImage::ViewportChangedEvent);
+		Invalidate ();
+	} else if (args->GetId () == MultiScaleImage::AllowDownloadingProperty) {
 		if (args->GetNewValue()->AsBool ())
 			Invalidate();
 		else
 			StopDownloading ();
-	}
-
-	if (args->GetId () == MultiScaleImage::InternalViewportOriginProperty) {
-		Emit (MultiScaleImage::ViewportChangedEvent);
-		Invalidate ();
-	}
-
-	if (args->GetId () == MultiScaleImage::InternalViewportWidthProperty) {
-		Emit (MultiScaleImage::ViewportChangedEvent);
-		Invalidate ();
-	}
-
-	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
+	} else if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
 		pan_target = Point (args->GetNewValue ()->AsPoint ()->x, args->GetNewValue ()->AsPoint ()->y);
 		SetInternalViewportOrigin (args->GetNewValue ()->AsPoint ());
 		ClearValue (MultiScaleImage::ViewportOriginProperty, false);
-	}
-	
-	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
+	} else if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
 		zoom_target = args->GetNewValue ()->AsDouble ();
 		SetInternalViewportWidth (args->GetNewValue ()->AsDouble ());
 		ClearValue (MultiScaleImage::ViewportWidthProperty, false);
-	}
-
-	if (args->GetId () == MultiScaleImage::TileFadeProperty) {
+	} else if (args->GetId () == MultiScaleImage::TileFadeProperty) {
 		//There's 2 options here,
 		// - loop all the tiles, update their opacity, and only invalidate a subregion
 		// - Invalidate all, and compute the new opacity on the tiles that needs to be rendered.
 		//Both options are unfortunately quite expensive :(
 		//LOG_MSI ("TileFade changed to %f\n", args->GetNewValue()->AsDouble ());
 		Invalidate ();
-	}
-
-	if (args->GetId () == MultiScaleImage::SourceProperty) {
+	} else if (args->GetId () == MultiScaleImage::SourceProperty) {
 		OnSourcePropertyChanged ();
-	}
-
-	if (args->GetId () == MultiScaleImage::UseSpringsProperty) {
+	} else if (args->GetId () == MultiScaleImage::UseSpringsProperty) {
 		if (!args->GetNewValue()->AsBool ()) {
 			if (zoom_sb) {
 				double endpoint = GetZoomAnimationEndPoint ();
@@ -1306,11 +1295,6 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 				SetViewportOrigin (endpoint);
 			}
 		}
-	}
-
-	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
-		MediaBase::OnPropertyChanged (args, error);
-		return;
 	}
 	
 	NotifyListenersOfPropertyChange (args, error);
