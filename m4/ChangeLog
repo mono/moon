@@ -1,3 +1,7 @@
+2010-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* curl.m4: Make it an error to not be able to build embedded curl.
+
 2010-05-24  Andreia Gaita  <avidigal@novell.com>
 
 	* curl.m4: tweak curl configure options to not build unnecessary
