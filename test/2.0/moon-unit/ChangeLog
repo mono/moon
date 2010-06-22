@@ -1,3 +1,9 @@
+2010-06-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add a MoonlightBug to
+	  XamlTemplateBinding_Reuse as it's not passing under SL4
+	  either. I need to figure out why.
+
 2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebRequestTest.cs: Add ContentLength test (NI)

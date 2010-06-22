@@ -2883,6 +2883,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
+		[MoonlightBug ("This is failing in SL4 now aswell when XamlReader is parsing the string")]
 		public void XamlTemplateBinding_Reuse ()
 		{
 			// If we re-apply a TemplateBinding, a NullReferenceException
