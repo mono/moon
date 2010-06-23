@@ -1,5 +1,21 @@
 2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* multiscaleimage.cpp (HandleDzParsed): Iterate over the
+	DeepZoomImageTileSource's SubImages using the new accessor
+	methods. Beats using g_list_get_nth_data() for each item.
+
+	* deepzoomimagetilesource.cpp: Use GPtrArrays for the
+	display_rects and subimages for performance reasons and also
+	because it's simpler.
+	(GetSubImage): New helper method to get a SubImage at a particular
+	index.
+	(DZParserInfo::dtor): Free display_rects and subimages.
+	(DeepZoomImageTileSource): Free display_rects and subimages.
+	(Abort): Delete the DZParserInfo.
+	(DownloaderComplete): Same.
+
+2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* multiscaleimage.cpp: Reworked the BitmapImageContext code to not
 	use a GList to make things simpler.
 

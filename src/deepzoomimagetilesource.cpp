@@ -25,8 +25,7 @@
 #include "multiscalesubimage.h"
 #include "uri.h"
 
-class DisplayRect
-{
+class DisplayRect {
  public:
 	long min_level;
 	long max_level;
@@ -39,8 +38,7 @@ class DisplayRect
 	}
 };
 
-class SubImage
-{
+class SubImage {
  public:
  	int id;
 	int n;
@@ -60,36 +58,40 @@ class SubImage
 		has_viewport = false;
 		has_size = false;
 	}
+	
+	~SubImage ()
+	{
+		if (source)
+			delete source;
+	}
 };
 
-class DZParserinfo
-{
+class DZParserInfo {
  public:
 	int depth;
 	int skip;
 	bool error;
 	DeepZoomImageTileSource *source;
 
-	bool isCollection;
+	bool is_collection;
 
-	//Image attributes
+	// Image attributes
 	int overlap;
 	long image_width, image_height;
 	DisplayRect *current_rect;
-	GList *display_rects;
+	GPtrArray *display_rects;
 
-	//Collection attributes
+	// Collection attributes
 	int max_level;
 	SubImage *current_subimage;
-	GList *sub_images;
+	GPtrArray *subimages;
 
-	//Common attributes
+	// Common attributes
 	char *format;
 	char *server_format;
 	int tile_size;
 
-
-	DZParserinfo ()
+	DZParserInfo ()
 	{
 		depth = 0;
 		skip = -1;
@@ -98,17 +100,40 @@ class DZParserinfo
 		server_format = NULL;
 		image_width = image_height = tile_size = overlap = 0;
 		current_rect = NULL;
-		display_rects = NULL;
-		sub_images = NULL;
+		display_rects = g_ptr_array_new ();
+		subimages = g_ptr_array_new ();
 		current_subimage = NULL;
 		source = NULL;
 	}
+	
+	~DZParserInfo ()
+	{
+		if (current_rect)
+			delete current_rect;
+		
+		if (display_rects) {
+			for (guint i = 0; i < display_rects->len; i++)
+				delete (DisplayRect *) display_rects->pdata[i];
+			
+			g_ptr_array_free (display_rects, true);
+		}
+		
+		if (current_subimage)
+			delete current_subimage;
+		
+		if (subimages) {
+			for (guint i = 0; i < subimages->len; i++)
+				((MultiScaleSubImage *) subimages->pdata[i])->unref ();
+			
+			g_ptr_array_free (subimages, true);
+		}
+	}
 };
 
-void start_element (void *data, const char *el, const char **attr);
-void end_element (void *data, const char *el);
+static void start_element (void *data, const char *el, const char **attr);
+static void end_element (void *data, const char *el);
 
-bool
+static bool
 get_tile_layer (int level, int x, int y, Uri *uri, void *userdata)
 {
 	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y, uri);
@@ -125,10 +150,11 @@ DeepZoomImageTileSource::Init ()
 	server_format = NULL;
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
-	parsed_callback = NULL;	
+	parsed_callback = NULL;
 	failed_callback = NULL;
 	sourcechanged_callback = NULL;
-	isCollection = false;
+	is_collection = false;
+	max_level = 0;
 	subimages = NULL;
 	nested = false;
 	get_resource_aborter = NULL;
@@ -154,16 +180,37 @@ DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 	g_free (format);
 	g_free (server_format);
 	delete get_resource_aborter;
+	
+	if (display_rects) {
+		for (guint i = 0; i < display_rects->len; i++)
+			delete (DisplayRect *) display_rects->pdata[i];
+		
+		g_ptr_array_free (display_rects, true);
+	}
+	
+	if (subimages) {
+		for (guint i = 0; i < subimages->len; i++)
+			((MultiScaleSubImage *) subimages->pdata[i])->unref ();
+		
+		g_ptr_array_free (subimages, true);
+	}
 }
 
 void
 DeepZoomImageTileSource::Abort ()
 {
+	DZParserInfo *info;
+	
 	if (get_resource_aborter)
 		get_resource_aborter->Cancel ();
-	if (parser)
+	
+	if (parser) {
+		info = (DZParserInfo *) XML_GetUserData (parser);
+		delete info;
+		
 		XML_ParserFree (parser);
-	parser = NULL;
+		parser = NULL;
+	}
 }
 
 bool
@@ -172,15 +219,15 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 	//check if there tile is listed in DisplayRects
 	if (display_rects) {
 		DisplayRect *cur;
-		int i =0;
+		int i = 0;
 		bool found = false;
 		int layers;
 		
 		frexp ((double) MAX (GetImageWidth (), GetImageHeight ()), &layers);
-
-		while ((cur = (DisplayRect*)g_list_nth_data (display_rects, i))) {
-			i++;
-
+		
+		for (guint i = 0; i < display_rects->len; i++) {
+			cur = (DisplayRect *) display_rects->pdata[i];
+			
 			if (!(cur->min_level <= level && level <= cur->max_level))
 				continue;
 
@@ -207,7 +254,6 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 		filename ++;
 	else
 		filename = baseUri->path;
-	
 	
 	if (GetServerFormat () && !g_ascii_strcasecmp (GetServerFormat (), "SmoothStreaming")) {
 		image = g_strdup_printf ("/QualityLevels(%d)/RawFragments(tile=%d)", 100+level, y*1000000000+x);
@@ -246,18 +292,20 @@ dz_write (EventObject *sender, EventArgs *calldata, gpointer data)
 void
 DeepZoomImageTileSource::XmlWrite (char* buffer, gint32 offset, gint32 n)
 {
+	DZParserInfo *info;
+	
 	if (offset == 0) {
 		//Init xml parser
 		LOG_MSI ("Start parsing DeepZoom\n");
 		parser = XML_ParserCreate (NULL);
 		XML_SetElementHandler (parser, start_element, end_element);
-		DZParserinfo *info = new DZParserinfo ();
+		info = new DZParserInfo ();
 		info->source = this;
 		XML_SetUserData (parser, info);
 	}
 
 	if (!XML_Parse (parser, buffer, n, 0)) {
-		printf ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (parser), XML_ErrorString(XML_GetErrorCode(parser)));
+		g_warning ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (parser), XML_ErrorString(XML_GetErrorCode(parser)));
 		Abort ();
 		DownloaderFailed ();
 	}
@@ -287,23 +335,25 @@ DeepZoomImageTileSource::DownloaderComplete ()
 {
 	//set isFinal for the parser to complete
 	if (!XML_Parse (parser, NULL, 0, 1)) {
-		printf ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (parser), XML_ErrorString(XML_GetErrorCode(parser)));
+		g_warning ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (parser), XML_ErrorString(XML_GetErrorCode(parser)));
 		Abort ();
 		DownloaderFailed ();
 		return;
 	}
 
-	DZParserinfo *info = (DZParserinfo *)XML_GetUserData (parser);
+	DZParserInfo *info = (DZParserInfo *) XML_GetUserData (parser);
 
-	if (!info->isCollection) {
+	if (!info->is_collection) {
 		SetImageWidth (info->image_width);
 		SetImageHeight (info->image_height);
 		SetTileOverlap (info->overlap);
 		display_rects = info->display_rects;
+		info->display_rects = NULL;
 	} else {
-		subimages = info->sub_images;
-		isCollection = info->isCollection;
-		maxLevel = info->max_level;
+		is_collection = info->is_collection;
+		max_level = info->max_level;
+		subimages = info->subimages;
+		info->subimages = NULL;
 	}
 
 	SetTileWidth (info->tile_size);
@@ -317,7 +367,8 @@ DeepZoomImageTileSource::DownloaderComplete ()
 
 	XML_ParserFree (parser);
 	parser = NULL;
-
+	delete info;
+	
 	if (parsed_callback)
 		parsed_callback (cb_userdata);
 }
@@ -360,20 +411,21 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 }
 
 //DeepZoomParsing
-void
+static void
 start_element (void *data, const char *el, const char **attr)
 {
-	DZParserinfo *info = (DZParserinfo*)data;
+	DZParserInfo *info = (DZParserInfo *) data;
 
 	if (info->skip >= 0) {
 		(info->depth)++;
 		return;
 	}
+	
 	switch (info->depth) {
 	case 0:
 		//Image or Collection
 		if (!g_ascii_strcasecmp ("Image", el)) {
-			info->isCollection = false;
+			info->is_collection = false;
 			int i;
 			for (i = 0; attr[i]; i+=2)
 				if (!g_ascii_strcasecmp ("Format", attr[i]))
@@ -387,7 +439,7 @@ start_element (void *data, const char *el, const char **attr)
 				else
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 		} else if (!g_ascii_strcasecmp ("Collection", el)) {
-			info->isCollection = true;
+			info->is_collection = true;
 			int i;
 			for (i = 0; attr[i]; i+=2)
 				if (!g_ascii_strcasecmp ("Format", attr[i]))
@@ -401,12 +453,12 @@ start_element (void *data, const char *el, const char **attr)
 				else
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 		} else {
-			printf ("Unexpected element %s\n", el);
+			g_warning ("Unexpected element %s\n", el);
 			info->error = true;
 		}
 		break;
 	case 1:
-		if (!info->isCollection) {
+		if (!info->is_collection) {
 			//Size or DisplayRects
 			if (!g_ascii_strcasecmp ("Size", el)) {
 				int i;
@@ -420,20 +472,20 @@ start_element (void *data, const char *el, const char **attr)
 			} else if (!g_ascii_strcasecmp ("DisplayRects", el)) {
 				//no attributes, only contains DisplayRect element
 			} else {
-				printf ("Unexpected element %s\n", el);
+				g_warning ("Unexpected element %s\n", el);
 				info->error = true;
 			}
 		} else {
 			if (!g_ascii_strcasecmp ("Items", el)) {
 				//no attributes, only contains <I> elements
 			} else {
-				printf ("Unexpected element %d %s\n", info->depth, el);
+				g_warning ("Unexpected element %d %s\n", info->depth, el);
 				info->error = true;
 			}
 		}
 		break;
 	case 2:
-		if (!info->isCollection) {
+		if (!info->is_collection) {
 			//DisplayRect elts
 			if (!g_ascii_strcasecmp ("DisplayRect", el)) {
 				long min_level = 0, max_level = 0;
@@ -447,7 +499,7 @@ start_element (void *data, const char *el, const char **attr)
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
 				info->current_rect = new DisplayRect (min_level, max_level);
 			} else {
-				printf ("Unexpected element %s\n", el);
+				g_warning ("Unexpected element %s\n", el);
 				info->error = true;
 			}
 		} else {
@@ -466,13 +518,13 @@ start_element (void *data, const char *el, const char **attr)
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
 
 			} else {
-				printf ("Unexpected element %d %s\n", info->depth, el);
+				g_warning ("Unexpected element %d %s\n", info->depth, el);
 				info->error = true;
 			}
 		}
 		break;
 	case 3:
-		if (!info->isCollection) {
+		if (!info->is_collection) {
 			//Rect elt
 			if (!g_ascii_strcasecmp ("Rect", el)) {
 				if (!info->current_rect) {
@@ -491,10 +543,11 @@ start_element (void *data, const char *el, const char **attr)
 						info->current_rect->rect.height = (double)atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
-				info->display_rects = g_list_append (info->display_rects, info->current_rect);
+				
+				g_ptr_array_add (info->display_rects, info->current_rect);
 				info->current_rect = NULL;
 			} else {
-				printf ("Unexpected element %s\n", el);
+				g_warning ("Unexpected element %s\n", el);
 				info->error = true;
 			}
 		} else {
@@ -533,27 +586,27 @@ start_element (void *data, const char *el, const char **attr)
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 			} else {
-				printf ("Unexpected element %s\n", el);
+				g_warning ("Unexpected element %s\n", el);
 				info->error = true;
 			}
 		}
 		break;
 	}
-
-
+	
 	(info->depth)++;
 }
 
 void
 DeepZoomImageTileSource::EndElement (void *data, const char *el)
 {
-	DZParserinfo *info = (DZParserinfo*)data;
+	DZParserInfo *info = (DZParserInfo *) data;
+	
 	(info->depth)--;
 
 	if (info->skip < 0) {
 		switch (info->depth) {
 		case 2:
-			if (info->isCollection)
+			if (info->is_collection)
 				if (!g_ascii_strcasecmp ("I", el)) {
 					DeepZoomImageTileSource *subsource = new DeepZoomImageTileSource (info->current_subimage->source, TRUE);
 					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (),
@@ -572,7 +625,8 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 					if (info->current_subimage->has_size) {
 						subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
 					}
-					info->sub_images = g_list_append (info->sub_images, subi);
+					
+					g_ptr_array_add (info->subimages, subi);
 					info->current_subimage = NULL;
 				}
 			break;
@@ -583,12 +637,28 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 		info->skip = -1;	
 }
 
-void
+static void
 end_element (void *data, const char *el)
 {
-	DZParserinfo *info = (DZParserinfo*)data;
-	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*)info->source;
-	if (!dzits)
-		g_assert ("That's wrong...\n");
+	DZParserInfo *info = (DZParserInfo *) data;
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) info->source;
+	
+	g_assert (dzits != NULL);
+	
 	dzits->EndElement (info, el);
+}
+
+MultiScaleSubImage *
+DeepZoomImageTileSource::GetSubImage (guint index)
+{
+	if (!subimages || index >= subimages->len)
+		return NULL;
+	
+	return (MultiScaleSubImage *) subimages->pdata[index];
+}
+
+guint
+DeepZoomImageTileSource::GetSubImageCount ()
+{
+	return subimages ? subimages->len : 0;
 }

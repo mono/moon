@@ -26,47 +26,52 @@ typedef void (*msi_cb) (MultiScaleImage *msi);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
-
 	msi_cb parsed_callback;
 	msi_cb failed_callback;
 	msi_cb sourcechanged_callback;
 	MultiScaleImage *cb_userdata;
-
+	
+	Cancellable *get_resource_aborter;
+	bool is_collection;
 	bool downloaded;
 	bool parsed;
+	bool nested;
+	
 	char *format;
 	char *server_format;
-	bool nested;
-	GList *display_rects;
+	GPtrArray *display_rects;
+	GPtrArray *subimages;
 	XML_Parser parser;
-
+	int max_level;
+	
 	void Init ();
-
+	
 	void UriSourceChanged ();	
 	void Abort ();
-
-	bool isCollection;
-	int maxLevel;
-	Cancellable *get_resource_aborter;
-
+	
  protected:
 	virtual ~DeepZoomImageTileSource ();
 
  public:
-	GList *subimages;
-	bool IsCollection () { return isCollection;}
-	int GetMaxLevel () { return maxLevel;}
-
+	/* @PropertyType=Uri,GenerateAccessors */
+	const static int UriSourceProperty;
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource ();
 	DeepZoomImageTileSource (Uri *uri, bool nested = false);
-
+	
+	bool IsCollection () { return is_collection;}
+	int GetMaxLevel () { return max_level; }
+	
+	MultiScaleSubImage *GetSubImage (guint index);
+	guint GetSubImageCount ();
+	
 	void Download ();
-	void DownloaderComplete ();	
+	void DownloaderComplete ();
 	void DownloaderFailed ();
 	bool GetTileLayer (int level, int x, int y, Uri *uri);
-	bool IsDownloaded () {return downloaded; }
-	bool IsParsed () {return parsed; }
+	bool IsDownloaded () { return downloaded; }
+	bool IsParsed () { return parsed; }
 	char *GetServerFormat () { return server_format; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -81,15 +86,11 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 		cb_userdata = userdata;
 	}
 
-
 	//
-	// Properties
+	// Property Accessors
 	//
-	/* @PropertyType=Uri,GenerateAccessors */
-	const static int UriSourceProperty;
-
-	void        SetUriSource (Uri* value);
-	Uri*        GetUriSource ();
+	void SetUriSource (Uri *value);
+	Uri *GetUriSource ();
 
 	void EndElement (void *info, const char* el);
 };
