@@ -5233,6 +5233,8 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	NPP npp = plugin->GetInstance ();
 	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (name);
 
+	memset (&npresult, 0, sizeof (npresult));
+
 	if (npobj == NULL) {
 		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
@@ -5285,6 +5287,8 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	NPP npp = plugin->GetInstance ();
 	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (name);
 
+	memset (&npresult, 0, sizeof (npresult));
+
 	if (npobj == NULL) {
 		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
@@ -5327,6 +5331,8 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 	NPVariant *npargs = NULL;
 	NPObject *window = NULL;
 	NPP npp = plugin->GetInstance ();
+
+	memset (&npresult, 0, sizeof (npresult));
 
 	if (npobj == NULL) {
 		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);

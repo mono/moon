@@ -1,3 +1,9 @@
+2010-06-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: chrome doesn't set the return value for calls to
+	NPN_Invoke and friends if the js doesn't return a value, so zero-initialize
+	it so that we don't access random memory afterwards.
+
 2010-06-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Add a missing Deployment::SetCurrent.
