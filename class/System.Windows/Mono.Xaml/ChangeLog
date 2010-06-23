@@ -1,0 +1,7 @@
+2010-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: Split this up a little bit so it can
+	be used for the SL3 parser (from now on we will refer to this as
+	'xaml parser classic') and the SL4 parser.
+
+	* ManagedXamlLoader.cs: Use the SL3 parser.

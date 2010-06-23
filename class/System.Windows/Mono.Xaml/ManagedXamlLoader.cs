@@ -373,7 +373,7 @@ namespace Mono.Xaml
 			if (!str_value.StartsWith ("{"))
 				return false;
 
-			MarkupExpressionParser p = new MarkupExpressionParser (target, name, data->parser, target_data);
+			MarkupExpressionParser p = new SL3MarkupExpressionParser (target, name, data->parser, target_data);
 			string expression = str_value;
 			object o = p.ParseExpression (ref expression);
 
@@ -1192,8 +1192,8 @@ namespace Mono.Xaml
 					}
 				}
 
-				if (typeof (System.Windows.Data.Binding).IsAssignableFrom (pi.PropertyType) && MarkupExpressionParser.IsBinding (str_value)) {
-					MarkupExpressionParser p = new MarkupExpressionParser (null, pi.Name,  data->parser, target_data);
+				if (typeof (System.Windows.Data.Binding).IsAssignableFrom (pi.PropertyType) && SL3MarkupExpressionParser.IsBinding (str_value)) {
+					MarkupExpressionParser p = new SL3MarkupExpressionParser (null, pi.Name,  data->parser, target_data);
 
 					string expression = str_value;
 					obj_value = p.ParseExpression (ref expression);
@@ -1205,13 +1205,13 @@ namespace Mono.Xaml
 					return true;
 				}
 
-				if (MarkupExpressionParser.IsStaticResource (str_value)) {
+				if (SL3MarkupExpressionParser.IsStaticResource (str_value)) {
 					// FIXME: The NUnit tests show we need to use the parent of the target to resolve
 					// the StaticResource, but are there any cases where we should use the actual target?
 					DependencyObject parent = Value.ToObject (null, target_parent_ptr) as DependencyObject;
 					if (parent == null)
 						return false;
-					MarkupExpressionParser p = new MarkupExpressionParser (parent, "", data->parser, target_data);
+					MarkupExpressionParser p = new SL3MarkupExpressionParser (parent, "", data->parser, target_data);
 					obj_value = p.ParseExpression (ref str_value);
 
 					obj_value = ConvertType (pi, pi.PropertyType, obj_value);
@@ -1433,8 +1433,8 @@ namespace Mono.Xaml
 			if (error == null && unmanaged_value != IntPtr.Zero)
 				o_value = Value.ToObject (null, unmanaged_value);
 
-			if (o_value is String && MarkupExpressionParser.IsStaticResource ((string) o_value)) {
-				MarkupExpressionParser mp = new MarkupExpressionParser ((DependencyObject) target, prop_name, parser, target_data);
+			if (o_value is String && SL3MarkupExpressionParser.IsStaticResource ((string) o_value)) {
+				MarkupExpressionParser mp = new SL3MarkupExpressionParser ((DependencyObject) target, prop_name, parser, target_data);
 				string str_value = o_value as String;
 				o_value = mp.ParseExpression (ref str_value);
 			}

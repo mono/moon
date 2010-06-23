@@ -37,47 +37,92 @@ using System.Windows.Markup;
 
 namespace Mono.Xaml {
 
-	internal sealed class MarkupExpressionParser {
+	internal class SL3MarkupExpressionParser : MarkupExpressionParser {
 
-		private bool parsingBinding;
-		StringBuilder piece;
-		private object target;
-		private string attribute_name;
 		private IntPtr parser;
 		private IntPtr target_data;
 
-		public MarkupExpressionParser (object target, string attribute_name, IntPtr parser, IntPtr target_data)
+		public SL3MarkupExpressionParser (object target, string attribute_name, IntPtr parser, IntPtr target_data) : base (target, attribute_name)
 		{
-			this.target = target;
-			this.attribute_name = attribute_name;
 			this.parser = parser;
 			this.target_data = target_data;
 		}
-#if __TESTING
-		public static void Main ()
-		{
-			TestParseBinding ("{Binding}");
-			TestParseBinding ("{Binding MyProperty}");
-			TestParseBinding ("{Binding Fill, Mode=OneWay}");
-			TestParseBinding ("{Binding Source={StaticResource Brush}}");
-			TestParseBinding ("{Binding Width, Path=Height, Source={StaticResource rect}, Mode=OneTime, Path=RadiusX}");
-			TestParseBinding ("{Binding OpacityString, Source={StaticResource CLRObject}, Mode=OneTime}");
 
-			Console.WriteLine ("done with tests");
+		protected override object LookupNamedResource (DependencyObject dob, string name)
+		{
+			if (name == null)
+				throw new XamlParseException ("you must specify a key in {StaticResource}");
+
+			IntPtr value_ptr = NativeMethods.xaml_lookup_named_item (parser, target_data, name);
+			object o = Value.ToObject (null, value_ptr);
+			if (value_ptr != IntPtr.Zero)
+				NativeMethods.value_delete_value2 (value_ptr);
+
+			if (o == null && !parsingBinding)
+				throw new XamlParseException (String.Format ("Resource '{0}' must be available as a static resource", name));
+			return o;
 		}
 
-		public static void TestParseBinding (string exp)
+		protected override FrameworkTemplate GetParentTemplate ()
 		{
-			MarkupExpressionParser p = new MarkupExpressionParser (null, String.Empty, IntPtr.Zero);
+			IntPtr template = NativeMethods.xaml_get_template_parent (parser, target_data);
 
-			try {
-				p.ParseExpression (ref exp);
-			} catch (Exception e) {
-				Console.WriteLine ("exception while parsing:  {0}", exp);
-				Console.WriteLine (e);
-			}
+			if (template == IntPtr.Zero)
+				return null;
+
+			INativeEventObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
+
+			return dob as FrameworkTemplate;
 		}
+
+	}
+#if NOTYET
+	internal class SL4MarkupExpressionParser : MarkupExpressionParser {
+
+		private XamlParser parser;
+		private XamlObjectElement target_element;
+
+		public SL4MarkupExpressionParser (object target, string attribute_name, XamlParser parser, XamlObjectElement target_element) : base (target, attribute_name)
+		{
+			this.parser = parser;
+			this.target_element = target_element;
+		}
+
+		protected override object LookupNamedResource (DependencyObject dob, string name)
+		{
+			if (name == null)
+				throw new XamlParseException ("you must specify a key in {StaticResource}");
+
+			object o = parser.LookupNamedItem (target_element, name);
+			if (o == null && !parsingBinding)
+				throw new XamlParseException (String.Format ("Resource '{0}' must be available as a static resource", name));
+			return o;
+		}
+
+		protected override FrameworkTemplate GetParentTemplate ()
+		{
+			return null;
+		}
+
+	}
 #endif
+	internal abstract class MarkupExpressionParser {
+
+		private StringBuilder piece;
+		private object target;
+		private string attribute_name;
+
+		protected bool parsingBinding;
+
+		public MarkupExpressionParser ()
+		{
+		}
+
+		public MarkupExpressionParser (object target, string attribute_name)
+		{
+			this.target = target;
+			this.attribute_name = attribute_name;
+		}
 
 		public static bool IsTemplateBinding (string expression)
 		{
@@ -94,7 +139,7 @@ namespace Mono.Xaml {
 			return MatchExpression ("Binding", expression);
 		}
 
-		private delegate object ExpressionHandler (ref string expression);
+		public delegate object ExpressionHandler (ref string expression);
 
 		public object ParseExpression (ref string expression)
 		{
@@ -248,38 +293,12 @@ namespace Mono.Xaml {
 		{
 			char next;
 			string mode_str = GetNextPiece (ref expression, out next);
+
 			try {
 				return new RelativeSource ((RelativeSourceMode) Enum.Parse (typeof (RelativeSourceMode), mode_str, true));
 			} catch {
 				throw new XamlParseException (String.Format ("MarkupExpressionParser:  Error parsing RelativeSource, unknown mode: {0}", mode_str));
 			}
-		}
-
-		private object LookupNamedResource (DependencyObject dob, string name)
-		{
-			if (name == null)
-				throw new XamlParseException ("you must specify a key in {StaticResource}");
-
-			IntPtr value_ptr = NativeMethods.xaml_lookup_named_item (parser, target_data, name);
-			object o = Value.ToObject (null, value_ptr);
-			if (value_ptr != IntPtr.Zero)
-				NativeMethods.value_delete_value2 (value_ptr);
-
-			if (o == null && !parsingBinding)
-				throw new XamlParseException (String.Format ("Resource '{0}' must be available as a static resource", name));
-			return o;
-		}
-
-		private FrameworkTemplate GetParentTemplate ()
-		{
-			IntPtr template = NativeMethods.xaml_get_template_parent (parser, target_data);
-
-			if (template == IntPtr.Zero)
-				return null;
-
-			INativeEventObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
-
-			return dob as FrameworkTemplate;
 		}
 
 		private void HandleProperty (Binding b, string prop, ref string remaining)
@@ -429,6 +448,9 @@ namespace Mono.Xaml {
 
 			return piece.ToString ();
 		}
+
+		protected abstract object LookupNamedResource (DependencyObject dob, string name);
+		protected abstract FrameworkTemplate GetParentTemplate ();
 	}
 }
 
