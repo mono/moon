@@ -844,7 +844,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		while (from_layer >= 0) {
 			int count = 0;
 			int found = 0;
-			bool blending = FALSE; //means at least a tile is not yet fully blended
+			bool blending = false; //means at least a tile is not yet fully blended
 
 			int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): dzits->GetTileHeight ();
@@ -857,10 +857,10 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			guint64 i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					count++;
 					cairo_surface_t* image = NULL;
-
-
+					
+					count++;
+					
 					if (from_layer > dzits->GetMaxLevel ()) {
 						if ((image = qtree_lookup_image (subimage_cache, from_layer, i, j)))
 							found++;
@@ -870,7 +870,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						found++;
 
 					if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
-						blending = TRUE;
+						blending = true;
 				}
 			}
 			if (found > 0 && to_layer < from_layer)
@@ -885,7 +885,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 		double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
 		if (from_layer >= 0) {
-
 			cairo_save (cr);
 			cairo_rectangle (cr, 0, 0, msi_w, msi_h);
 			cairo_clip (cr);
@@ -907,17 +906,25 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
-				int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
-				int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
-
-				double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) * sub_vp.width / sub_w;
-				double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) * sub_vp.width / sub_w;
-
+				bool parsed = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource *) sub_image->source)->IsParsed ());
+				int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
+				int tile_height = parsed ? sub_image->source->GetTileHeight (): dzits->GetTileHeight ();
+				guint64 layer_to_render2 = pow2 (layer_to_render);
+				guint64 layers2 = pow2 (layers - layer_to_render);
+				double v_scale = (double) layers2 * sub_vp.width / sub_w;
+				double v_tile_w = tile_width * v_scale;
+				double v_tile_h = tile_height * v_scale;
+				int minx = (int) ((MAX (msivp_ox, sub_vp.x) - sub_vp.x) / v_tile_w);
+				int maxx = MIN (msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;
+				int miny = (int) ((MAX (msivp_oy, sub_vp.y) - sub_vp.y) / v_tile_h);
+				int maxy = MIN (msivp_oy + msivp_w / msi_ar, sub_vp.y + sub_vp.width / sub_ar) - sub_vp.y;
 				int i, j;
-				for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
-					for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+				
+				for (i = minx; i * v_tile_w < maxx; i++) {
+					for (j = miny; j * v_tile_h < maxy; j++) {
 						cairo_surface_t *image = NULL;
 						bool shared_tile = false;
+						
 						if (layer_to_render > dzits->GetMaxLevel())
 							image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
 						else {
@@ -925,8 +932,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 							shared_tile = true;
 
 							image = qtree_lookup_image (shared_cache, layer_to_render,
-										    morton_x (sub_image->n) * pow2 (layer_to_render) / tile_width,
-										    morton_y (sub_image->n) * pow2 (layer_to_render) / tile_height);
+										    morton_x (sub_image->n) * layer_to_render2 / tile_width,
+										    morton_y (sub_image->n) * layer_to_render2 / tile_height);
 						}
 
 						if (!image)
@@ -935,18 +942,14 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						LOG_MSI ("rendering subimage %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
 						cairo_save (cr);
 
-						cairo_scale (cr,
-							     pow2 (layers - layer_to_render),
-							     pow2 (layers - layer_to_render));
-
-						cairo_translate (cr,
-								 i * tile_width,
-								 j * tile_height);
+						cairo_scale (cr, layers2, layers2);
+						
+						cairo_translate (cr, i * tile_width, j * tile_height);
 
 						if (shared_tile) {
 							cairo_translate (cr,
-									 (int)(-morton_x(sub_image->n) * (pow2 (layer_to_render))) % tile_width,
-									 (int)(-morton_y(sub_image->n) * (pow2 (layer_to_render))) % tile_height);
+									 (int)(-morton_x(sub_image->n) * layer_to_render2) % tile_width,
+									 (int)(-morton_y(sub_image->n) * layer_to_render2) % tile_height);
 
 						}
 
@@ -966,6 +969,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						cairo_restore (cr);
 					}
 				}
+				
 				layer_to_render++;
 			}
 
@@ -988,7 +992,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 			continue;
 
-		//Get the next tiles..
+		// Get the next tiles..
 		while (from_layer < optimal_layer) {
 			from_layer ++;
 
@@ -999,30 +1003,36 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				break;
 			}
 			
-			int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
-			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): dzits->GetTileHeight ();
-
-			double v_tile_w = tile_width * (double)(pow2 (layers - from_layer)) * sub_vp.width / sub_w;
-			double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) * sub_vp.width / sub_w;
-
+			bool parsed = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource *) sub_image->source)->IsParsed ());
+			int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
+			int tile_height = parsed ? sub_image->source->GetTileHeight (): dzits->GetTileHeight ();
+			guint64 layers2 = pow2 (layers - from_layer);
+			double v_scale = (double) layers2 * sub_vp.width / sub_w;
+			double v_tile_w = tile_width * v_scale;
+			double v_tile_h = tile_height * v_scale;
+			int minx = (int) ((MAX (msivp_ox, sub_vp.x) - sub_vp.x) / v_tile_w);
+			int maxx = MIN (msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;
+			int miny = (int) ((MAX (msivp_oy, sub_vp.y) - sub_vp.y) / v_tile_h);
+			int maxy = MIN (msivp_oy + msivp_w / msi_ar, sub_vp.y + sub_vp.width / sub_ar) - sub_vp.y;
 			int i, j;
-			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+			
+			for (i = minx; i * v_tile_w < maxx; i++) {
 				if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 					break;
-				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+				
+				for (j = miny; j * v_tile_h < maxy; j++) {
 					if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 						break;
+					
 					Uri *tile = new Uri ();
 					if (from_layer <= dzits->GetMaxLevel ()) {
-						QTree *node = qtree_insert (shared_cache,
-									    from_layer,
-									    morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
-									    morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height);
+						guint64 from_layer2 = pow2 (from_layer);
+						guint64 x = morton_x (sub_image->n) * from_layer2 / tile_width;
+						guint64 y = morton_y (sub_image->n) * from_layer2 / tile_height;
+						QTree *node = qtree_insert (shared_cache, from_layer, x, y);
+						
 						if (!qtree_has_image (node)
-						    && dzits->get_tile_func (from_layer,
-									      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
-									      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height,
-									      tile, dzits))
+						    && dzits->get_tile_func (from_layer, x, y, tile, dzits))
 							DownloadTile (bitmapimagectx, tile, node);
 					} else {
 						QTree *node = qtree_insert (subimage_cache, from_layer, i, j);

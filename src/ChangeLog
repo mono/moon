@@ -1,3 +1,9 @@
+2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (RenderCollection): Use some temp vars to
+	help make the code more readable as well as avoiding duplicate
+	calculations.
+
 2010-06-23  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:
