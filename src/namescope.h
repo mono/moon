@@ -16,8 +16,7 @@
 #include "error.h"
 #include "list.h"
 
-/* @Namespace=None */
-/* @ManagedDependencyProperties=None */
+/* @Namespace=Mono */
 /* @ManagedEvents=None */
 class NameScope : public EventObject {
 	GHashTable *names;
@@ -34,10 +33,10 @@ class NameScope : public EventObject {
 	virtual void CloneCore (Types *types, DependencyObject *fromObj);
 
  public:
- 	/* @PropertyType=NameScope,Attached,GenerateAccessors */
+ 	/* @PropertyType=NameScope,Attached,GenerateAccessors,ManagedSetterAccess=Internal */
 	const static int NameScopeProperty;
 	
-	/* @GenerateCBinding*/
+	/* @GenerateCBinding,GeneratePInvoke*/
 	NameScope ();
 
 	virtual void Dispose ();
@@ -49,12 +48,14 @@ class NameScope : public EventObject {
 	
 	bool GetIsLocked () { return is_locked; }
 	void Lock () { is_locked = true; }
-	
+
+	/* @GenerateCBinding,GeneratePInvoke*/
 	void SetTemporary (bool flag) { temporary = flag; }
+	/* @GenerateCBinding,GeneratePInvoke*/
 	bool GetTemporary () { return temporary; }
 	
 	void MergeTemporaryScope (NameScope *scope, MoonError *error);
-	
+
 	static NameScope *GetNameScope (DependencyObject *obj);
 	static void SetNameScope (DependencyObject *obj, NameScope *scope);
 

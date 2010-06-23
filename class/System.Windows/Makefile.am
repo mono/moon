@@ -77,6 +77,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/MoonlightTypeConverter.cs				\
 	$(srcdir)/Mono/MoonlightValueConverter.cs				\
 	$(srcdir)/Mono/NativeDependencyObjectHelper.cs				\
+	$(srcdir)/Mono/NameScope.cs						\
 	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
 	$(srcdir)/Mono/SetPropertyDelayedAttribute.cs				\

@@ -1,3 +1,7 @@
+2010-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* namescope.h: Make a managed class for namescopes.
+
 2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (RenderCollection): Use some temp vars to
