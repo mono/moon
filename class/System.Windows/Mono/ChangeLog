@@ -1,3 +1,7 @@
+2010-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* Value.cs: Handle EventObjects not just DependencyObjects.
+
 2010-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs: add RichTextBoxView to the

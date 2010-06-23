@@ -460,8 +460,8 @@ namespace Mono {
 				if (v is IEasingFunction && !(v is EasingFunctionBase))
 					v = new EasingFunctionWrapper (v as IEasingFunction);
 
-				if (v is INativeDependencyObjectWrapper) {
-					INativeDependencyObjectWrapper dov = (INativeDependencyObjectWrapper) v;
+				if (v is INativeEventObjectWrapper) {
+					INativeEventObjectWrapper dov = (INativeEventObjectWrapper) v;
 
 					if (dov.NativeHandle == IntPtr.Zero)
 						throw new Exception (String.Format (
