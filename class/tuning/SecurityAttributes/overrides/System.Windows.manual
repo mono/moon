@@ -38,6 +38,7 @@
 +SC-T: Mono.StreamWrapper
 +SC-T: Mono.MoonlightTypeConverter
 +SC-T: Mono.Xaml.MarkupExpressionParser
++SC-T: Mono.Xaml.SL3MarkupExpressionParser
 +SC-T: Mono.ManagedStreamCallbacks
 +SC-T: Mono.MoonlightValueConverter
 +SC-T: Mono.ToggleRef
