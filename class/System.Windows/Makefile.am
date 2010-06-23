@@ -72,8 +72,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/INativeEventObjectWrapper.cs			\
 	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\
-	$(srcdir)/Mono/ManagedXamlLoader.cs					\
-	$(srcdir)/Mono/MarkupExpressionParser.cs				\
 	$(srcdir)/Mono/MoonError.cs						\
 	$(srcdir)/Mono/MoonException.cs						\
 	$(srcdir)/Mono/MoonlightTypeConverter.cs				\
@@ -86,11 +84,13 @@ system_windows_sources =							\
 	$(srcdir)/Mono/StreamCallbacks.cs					\
 	$(srcdir)/Mono/StreamWrapper.cs						\
 	$(srcdir)/Mono/Surface.cs						\
-	$(srcdir)/Mono/ToggleRef.cs							\
+	$(srcdir)/Mono/ToggleRef.cs						\
 	$(srcdir)/Mono/Types.cs							\
 	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/Value.cs							\
-	$(srcdir)/Mono/XamlLoaderCallbacks.cs					\
+	$(srcdir)/Mono.Xaml/ManagedXamlLoader.cs				\
+	$(srcdir)/Mono.Xaml/MarkupExpressionParser.cs				\
+	$(srcdir)/Mono.Xaml/XamlLoaderCallbacks.cs				\
 	$(srcdir)/System.ComponentModel/AlternateContentPropertyAttribute.cs	\
 	$(srcdir)/System.ComponentModel/ClosingEventArgs.cs						\
 	$(srcdir)/System.ComponentModel/CurrentChangingEventArgs.cs		\
