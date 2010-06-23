@@ -1,6 +1,12 @@
 2010-06-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: I thought i just committed these,
+	  but obviously not... Regen sec. attrs.
+
+2010-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc:
 	* System.Windows.auto.ssc: regen sec. attrs.
 
 2010-06-22  Sebastien Pouliot  <sebastien@ximian.com>
