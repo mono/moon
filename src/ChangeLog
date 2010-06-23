@@ -7,6 +7,7 @@
 	* multiscaleimage.cpp (RenderCollection): Use some temp vars to
 	help make the code more readable as well as avoiding duplicate
 	calculations.
+	(OnSourcePropertyChanged): More use of temp vars.
 
 2010-06-23  Alan McGovern  <amcgovern@novell.com>
 

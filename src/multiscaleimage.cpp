@@ -1229,13 +1229,14 @@ MultiScaleImage::OnSourcePropertyChanged ()
 	//abort all downloaders
 	StopDownloading ();
 
-	DeepZoomImageTileSource *newsource;
-	if (GetSource ()) {
-		if (GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			if ((newsource = GetValue (MultiScaleImage::SourceProperty)->AsDeepZoomImageTileSource ())) {
-				newsource->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
-				newsource->Download ();
-			}
+	DeepZoomImageTileSource *dzits;
+	MultiScaleTileSource *source;
+	
+	if ((source = GetSource ())) {
+		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+			dzits = (DeepZoomImageTileSource *) source;
+			dzits->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
+			dzits->Download ();
 		} else {
 			EmitImageOpenSucceeded ();	
 		}
@@ -1257,8 +1258,8 @@ MultiScaleImage::OnSourcePropertyChanged ()
 	GetSubImages()->Clear ();
 
 	//register the callback for InvalidateTileLayers
-	if (GetSource ())
-		GetSource ()->set_invalidate_tile_layer_func (invalidate_tile_layer, this);
+	if (source)
+		source->set_invalidate_tile_layer_func (invalidate_tile_layer, this);
 
 	Invalidate ();
 }
