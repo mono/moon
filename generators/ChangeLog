@@ -1,3 +1,13 @@
+2010-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Lets cheat because it's easier, both
+	  System.Windows.Cursor.CursorType and
+	  System.Windows.Cursor.Cursor map to Kind.CURSORTYPE. Really
+	  we should not have 'CURSORTYPE' at all, but we can't declare
+	  our native enum with the correct name 'Cursor' because it
+	  conflicts with a typedef in X11. This is the simplest hack
+	  to work around it.
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs:

@@ -2127,6 +2127,7 @@ class Generator {
 		f ("System.Windows.Documents.TextPointer", "TEXTPOINTER");
 		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
 		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
+		f ("System.Windows.Input.Cursor", "CURSORTYPE");
 
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");
 		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.ToString ());");
