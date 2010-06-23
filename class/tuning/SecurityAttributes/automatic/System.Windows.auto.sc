@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 475 methods needs to be decorated.
+# 480 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -96,6 +96,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_windowing_system_show_consent_dialog(System.IntPtr,System.String,System.String,System.String,System.Boolean&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::name_scope_get_temporary(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_allow_html_popup_window(System.IntPtr)
@@ -826,6 +829,9 @@
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::GetObjectValue(System.Object,System.IntPtr,System.String,System.IntPtr,Mono.Value*,System.String&)
 
+# overrides 'System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)'.
++SC-M: System.Object Mono.Xaml.SL3MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetGetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
 
@@ -856,8 +862,11 @@
 # overrides 'System.Void Mono.ToggleRef::RemoveToggleRefNotifyCallback()'.
 +SC-M: System.Void Mono.EventObjectToggleRef::RemoveToggleRefNotifyCallback()
 
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)'.
+# Promoting interface member to [SecurityCritical] because of 'System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_check_and_download_update_async(System.IntPtr)
@@ -1104,6 +1113,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,Mono.ImageUriFunc)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::name_scope_set_temporary(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::plugin_instance_report_exception(System.IntPtr,System.String,System.String,System.String[],System.Int32)
@@ -1395,6 +1407,9 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::LookupDependencyPropertyForBinding(Mono.Xaml.XamlCallbackData*,System.Windows.DependencyObject,System.String,System.String)
+
+# overrides 'System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()'.
++SC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL3MarkupExpressionParser::GetParentTemplate()
 
 # p/invoke declaration
 +SC-M: System.Windows.InstallState Mono.NativeMethods::application_get_install_state(System.IntPtr)

@@ -1,11 +1,15 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 611 methods
+# 619 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Void Mono.Helper::.cctor()
 +SSC-M: System.Boolean Mono.Helper::IsUserInitiated()
++SSC-M: System.Void Mono.NameScope::.ctor(System.IntPtr,System.Boolean)
++SSC-M: System.Boolean Mono.NameScope::get_Temporary()
++SSC-M: System.Void Mono.NameScope::set_Temporary(System.Boolean)
++SSC-M: System.Void Mono.NameScope::Free()
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -138,6 +142,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::multi_scale_sub_image_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::multi_scale_sub_image_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::multi_scale_tile_source_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::name_scope_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::notification_window_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::object_animation_using_key_frames_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::object_key_frame_new()
@@ -255,6 +260,9 @@
 +SSC-M: System.Void Mono.Surface::set_Native(System.IntPtr)
 +SSC-M: System.Void Mono.Surface::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
++SSC-M: System.Void Mono.Xaml.SL3MarkupExpressionParser::.ctor(System.Object,System.String,System.IntPtr,System.IntPtr)
++SSC-M: System.Object Mono.Xaml.SL3MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
++SSC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL3MarkupExpressionParser::GetParentTemplate()
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::.ctor(System.Net.Browser.BrowserHttpWebRequest,System.Uri)
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::Finalize()
 +SSC-M: System.Net.WebResponse System.Net.Browser.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)
