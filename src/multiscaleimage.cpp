@@ -41,6 +41,8 @@
 #define MSI_ENDTIMER(id,str)
 #endif
 
+#define MAX_DOWNLOADERS 6
+
 static inline guint64
 pow2 (int pow)
 {
@@ -312,7 +314,7 @@ enum BitmapImageStatus {
 
 struct BitmapImageContext {
 	BitmapImageStatus state;
-	BitmapImage *bitmapimage;
+	BitmapImage *image;
 	QTree *node;
 	int retry;
 };
@@ -367,9 +369,9 @@ MultiScaleImage::MultiScaleImage ()
 	// Note: cairo_user_data_key_t's do not need to be initialized
 	
 	cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+	downloaders = g_ptr_array_new ();
 	pending_motion_completed = false;
 	subimages_sorted = false;
-	bitmapimages = NULL;
 	pan_target = Point (0, 0);
 	zoom_target = 1.0;
 	is_panning = false;
@@ -380,8 +382,9 @@ MultiScaleImage::MultiScaleImage ()
 MultiScaleImage::~MultiScaleImage ()
 {
 	StopDownloading ();
+	
+	g_ptr_array_free (downloaders, true);
 	g_hash_table_destroy (cache);
-	cache = NULL;
 }
 
 void
@@ -433,26 +436,53 @@ MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
 		      (logicalPoint.y - vp_origin->y) * actual_width / vp_width);
 }
 
-void
-MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, void *user_data)
+bool
+MultiScaleImage::CanDownloadMoreTiles ()
 {
-	GList *list;
-	BitmapImageContext *ctx;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
-		if (ctx->state != BitmapImageFree && ctx->bitmapimage->GetUriSource()->operator==(*tile)) {
+	return downloaders->len < MAX_DOWNLOADERS;
+}
+
+void
+MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
+{
+	BitmapImageContext *ctx, *avail = NULL;
+	
+	// Check that we aren't already downloading this tile and find an
+	// available BitmapImageContext
+	for (guint i = 0; i < downloaders->len; i++) {
+		ctx = (BitmapImageContext *) downloaders->pdata[i];
+		
+		if (ctx->state == BitmapImageFree) {
+			if (!avail)
+				avail = ctx;
+			
+			continue;
+		}
+		
+		if (ctx->image->GetUriSource ()->operator==(*tile)) {
 			//LOG_MSI ("Tile %s is already being downloaded\n", tile->ToString ());
 			return;
 		}
 	}
-
+	
 	//LOG_MSI ("downloading tile %s\n", tile->ToString ());
-
-	bictx->state = BitmapImageBusy;
-	bictx->node = (QTree *)user_data;
-	bictx->retry = 0;
+	
+	if (!avail) {
+		ctx = new BitmapImageContext ();
+		ctx->image = new BitmapImage ();
+		ctx->image->AddHandler (ctx->image->ImageOpenedEvent, tile_available, this);
+		ctx->image->AddHandler (ctx->image->ImageFailedEvent, tile_failed, this);
+		g_ptr_array_add (downloaders, ctx);
+	} else
+		ctx = avail;
+	
+	ctx->state = BitmapImageBusy;
+	ctx->node = (QTree *) user_data;
+	ctx->retry = 0;
+	
 	SetIsDownloading (true);
-	bictx->bitmapimage->SetDownloadPolicy (MsiPolicy);
-	bictx->bitmapimage->SetUriSource (tile);
+	ctx->image->SetDownloadPolicy (MsiPolicy);
+	ctx->image->SetUriSource (tile);
 }
 
 //Only used for DeepZoom sources
@@ -479,24 +509,24 @@ MultiScaleImage::HandleDzParsed ()
 			subs->Add (si);
 		}
 	}
+	
 	Invalidate ();
-
-	//Get the first tiles
-	BitmapImageContext *bitmapimagectx;
-
+	
+	// Get the first tiles
 	int shared_index = -1;
-
 	QTree *shared_cache = (QTree*)g_hash_table_lookup (cache, &shared_index);
 	if (!shared_cache)
 		g_hash_table_insert (cache, new int(shared_index), (shared_cache = qtree_new ()));
-
+	
 	int layer = 0;
-	while ((bitmapimagectx = GetFreeBitmapImageContext ())) {
+	while (CanDownloadMoreTiles ()) {
 		Uri *tile = new Uri ();
+		
 		if (source->get_tile_func (layer, 0, 0, tile, source)) {
 			QTree *node = qtree_insert (shared_cache, layer, 0, 0);
-			DownloadTile (bitmapimagectx, tile, node);
+			DownloadTile (tile, node);
 		}
+		
 		delete tile;
 		layer ++;
 	}
@@ -504,11 +534,11 @@ MultiScaleImage::HandleDzParsed ()
 	EmitImageOpenSucceeded ();
 }
 
-static void
-fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+void
+MultiScaleImage::fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->FadeFinished ();	
+	msi->FadeFinished ();
 }
 
 void
@@ -519,11 +549,11 @@ MultiScaleImage::FadeFinished ()
 		EmitMotionFinished ();
 }
 
-static void
-zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+void
+MultiScaleImage::zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->ZoomFinished ();		
+	msi->ZoomFinished ();
 }
 
 void
@@ -534,11 +564,11 @@ MultiScaleImage::ZoomFinished ()
 		EmitMotionFinished ();
 }
 
-static void
-pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+void
+MultiScaleImage::pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->PanFinished ();		
+	msi->PanFinished ();
 }
 
 void
@@ -549,64 +579,60 @@ MultiScaleImage::PanFinished ()
 		EmitMotionFinished ();
 }
 
-static void
-tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
+void
+MultiScaleImage::tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 //	LOG_MSI ("Tile downloaded %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
 	((MultiScaleImage *)closure)->TileOpened ((BitmapImage *)sender);
 }
 
 void
-MultiScaleImage::TileOpened (BitmapImage *bitmapimage)
+MultiScaleImage::TileOpened (BitmapImage *image)
 {
-	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
+	BitmapImageContext *ctx = GetBitmapImageContext (image);
+	
 	ctx->state = BitmapImageDone;
-	GList *list;
-	bool is_downloading = false;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		is_downloading |= (ctx->state == BitmapImageBusy);
-	SetIsDownloading (is_downloading);
+	UpdateIsDownloading ();
 	Invalidate ();
 }
 
-static void
-tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+void
+MultiScaleImage::tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 //	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
 	((MultiScaleImage *)closure)->TileFailed ((BitmapImage *)sender);
 }
 
 void
-MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
+MultiScaleImage::TileFailed (BitmapImage *image)
 {
-	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
+	BitmapImageContext *ctx = GetBitmapImageContext (image);
+	
 	if (ctx->retry < 5) {
-		bitmapimage->SetUriSource (bitmapimage->GetUriSource ());
-		ctx->retry = ctx->retry + 1;
+		image->SetUriSource (image->GetUriSource ());
+		ctx->retry++;
 	} else {
-		ctx->state = BitmapImageFree;
-
-		LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
+		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_image (ctx->node, NULL);
-
-		GList *list;
-		bool is_downloading = false;
-		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-			is_downloading |= (ctx->state == BitmapImageBusy);
-		SetIsDownloading (is_downloading);
+		ctx->state = BitmapImageFree;
+		UpdateIsDownloading ();
 	}
-	Invalidate ();
+	
 	EmitImageFailed ();
+	Invalidate ();
 }
 
 BitmapImageContext *
-MultiScaleImage::GetBitmapImageContext (BitmapImage *bitmapimage)
+MultiScaleImage::GetBitmapImageContext (BitmapImage *image)
 {
 	BitmapImageContext *ctx;
-	GList *list;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		if (ctx->bitmapimage == bitmapimage)
+	
+	for (guint i = 0; i < downloaders->len; i++) {
+		ctx = (BitmapImageContext *) downloaders->pdata[i];
+		if (ctx->image == image)
 			return ctx;
+	}
+	
 	return NULL;
 }
 
@@ -614,41 +640,15 @@ void
 MultiScaleImage::StopDownloading ()
 {
 	BitmapImageContext *ctx;
-	GList *list;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
-		ctx->bitmapimage->Abort ();
-		ctx->bitmapimage->Dispose ();
-		ctx->bitmapimage->unref ();
-		ctx->state = BitmapImageFree;
-		delete ctx;
-	}	
-
-	if (bitmapimages)
-		g_list_free (bitmapimages);
-	bitmapimages = NULL;
-}
-
-BitmapImageContext *
-MultiScaleImage::GetFreeBitmapImageContext ()
-{
-	guint num_dl = 6;
-	BitmapImageContext *ctx;
-	GList *list;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		if (ctx->state == BitmapImageFree)
-			return ctx;
-
-	if (g_list_length (bitmapimages) < num_dl) {
-		ctx = new BitmapImageContext ();
-		ctx->state = BitmapImageFree;
-		ctx->bitmapimage = new BitmapImage ();
-		ctx->bitmapimage->AddHandler (ctx->bitmapimage->ImageOpenedEvent, tile_available, this);
-		ctx->bitmapimage->AddHandler (ctx->bitmapimage->ImageFailedEvent, tile_failed, this);
-		bitmapimages = g_list_append (bitmapimages, ctx);
-		return ctx;
+	
+	for (guint i = 0; i < downloaders->len; i++) {
+		ctx = (BitmapImageContext *) downloaders->pdata[i];
+		ctx->image->Abort ();
+		ctx->image->Dispose ();
+		ctx->image->unref ();
 	}
-
-	return NULL;
+	
+	g_ptr_array_set_size (downloaders, 0);
 }
 
 static void
@@ -690,27 +690,28 @@ on_source_property_changed (MultiScaleImage *msi)
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	LOG_MSI ("MSI::Render\n");
-
 	MultiScaleTileSource *source = GetSource ();
+	cairo_surface_t *surface;
+	BitmapImageContext *ctx;
+	
+	LOG_MSI ("MSI::Render\n");
+	
 	if (!source) {
 		LOG_MSI ("no sources set, nothing to render\n");
 		return;	
 	}
-
-	//Process the downloaded tile
-	GList *list;
-	BitmapImageContext *ctx;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
-		cairo_surface_t *surface;
-
-		if (ctx->state != BitmapImageDone || !(surface = cairo_surface_reference (ctx->bitmapimage->GetSurface (cr))))
+	
+	// Process the downloaded tile
+	for (guint i = 0; i < downloaders->len; i++) {
+		ctx = (BitmapImageContext *) downloaders->pdata[i];
+		
+		if (ctx->state != BitmapImageDone || !(surface = cairo_surface_reference (ctx->image->GetSurface (cr))))
 			continue;
-
-//		Uri *tile = ctx->bitmapimage->GetUriSource ();
-		cairo_surface_set_user_data (surface, &width_key, new int (ctx->bitmapimage->GetPixelWidth ()), g_free);
-		cairo_surface_set_user_data (surface, &height_key, new int (ctx->bitmapimage->GetPixelHeight ()), g_free);
-
+		
+//		Uri *tile = ctx->image->GetUriSource ();
+		cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), g_free);
+		cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), g_free);
+		
 		if (!fadein_sb) {
 			fadein_sb = new Storyboard ();
 			fadein_sb->SetManualTarget (this);
@@ -738,10 +739,10 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		fadein_sb->BeginWithError(NULL);
 
 		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
-		LOG_MSI ("caching %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
+		LOG_MSI ("caching %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_image (ctx->node, surface);
 
-		ctx->bitmapimage->SetUriSource (NULL);
+		ctx->image->SetUriSource (NULL);
 		ctx->state = BitmapImageFree;
 	}
 
@@ -985,14 +986,10 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			cairo_restore (cr);
 		}
 
-		if (!GetAllowDownloading ())
+		if (!GetAllowDownloading () || !CanDownloadMoreTiles ())
 			continue;
-
-		BitmapImageContext *bitmapimagectx;
-		if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
-			continue;
-
-		// Get the next tiles..
+		
+		// Download the next set of tiles..
 		while (from_layer < optimal_layer) {
 			from_layer ++;
 
@@ -1017,14 +1014,15 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int i, j;
 			
 			for (i = minx; i * v_tile_w < maxx; i++) {
-				if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
+				if (!CanDownloadMoreTiles ())
 					break;
 				
 				for (j = miny; j * v_tile_h < maxy; j++) {
-					if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
+					if (!CanDownloadMoreTiles ())
 						break;
 					
 					Uri *tile = new Uri ();
+					
 					if (from_layer <= dzits->GetMaxLevel ()) {
 						guint64 from_layer2 = pow2 (from_layer);
 						guint64 x = morton_x (sub_image->n) * from_layer2 / tile_width;
@@ -1033,13 +1031,14 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						
 						if (!qtree_has_image (node)
 						    && dzits->get_tile_func (from_layer, x, y, tile, dzits))
-							DownloadTile (bitmapimagectx, tile, node);
+							DownloadTile (tile, node);
 					} else {
 						QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
 						if (!qtree_has_image (node)
 						    && dzits->get_tile_func (from_layer, i, j, tile, sub_image->source))
-							DownloadTile (bitmapimagectx, tile, node);
+							DownloadTile (tile, node);
 					}
+					
 					delete tile;
 				}
 			}
@@ -1185,39 +1184,47 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		}
 		layer_to_render++;
 	}
+	
 	cairo_restore (cr);
-	//	cairo_pop_group_to_source (cr);
-
-	if (!GetAllowDownloading ())
+	//cairo_pop_group_to_source (cr);
+	
+	if (!GetAllowDownloading () || !CanDownloadMoreTiles ())
 		return;
-
-	BitmapImageContext *bitmapimagectx;
-	if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
-		return;
-
-	//Get the next tile(s)...
+	
+	// Download the next set of tiles...
 	while (from_layer < optimal_layer) {
 		from_layer ++;
-
-		double v_tile_w = tile_width * (double)(pow2 (layers - from_layer)) / im_w;
-		double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) / im_w;
+		
+		guint64 layers2 = pow2 (layers - from_layer);
+		double v_scale = (double) layers2 / im_w;
+		double v_tile_w = tile_width * v_scale;
+		double v_tile_h = tile_height * v_scale;
+		int minx = MAX (0, (int) (vp_ox / v_tile_w));
+		int maxx = MIN (vp_ox + vp_w, 1.0);
+		int miny = MAX (0, (int) (vp_oy / v_tile_h));
+		int maxy = MIN (vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar);
 		int i, j;
-
-		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
-			if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
+		
+		for (i = minx; i * v_tile_w < maxx; i++) {
+			if (!CanDownloadMoreTiles ())
 				return;
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
-				if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
+			
+			for (j = miny; j * v_tile_h < maxy; j++) {
+				if (!CanDownloadMoreTiles ())
 					return;
-				Uri *tile = new Uri ();
+				
 				QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
+				
 				if (!qtree_has_image (node)) {
+					Uri *tile = new Uri ();
+					
 					if (source->get_tile_func (from_layer, i, j, tile, source))
-						DownloadTile (bitmapimagectx, tile, node);
+						DownloadTile (tile, node);
 					else
 						qtree_set_image (node, NULL);
+					
+					delete tile;
 				}
-				delete tile;
 			}
 		}
 	}
@@ -1226,11 +1233,11 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 void
 MultiScaleImage::OnSourcePropertyChanged ()
 {
-	//abort all downloaders
-	StopDownloading ();
-
 	DeepZoomImageTileSource *dzits;
 	MultiScaleTileSource *source;
+	
+	// Abort all downloaders
+	StopDownloading ();
 	
 	if ((source = GetSource ())) {
 		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
@@ -1242,7 +1249,7 @@ MultiScaleImage::OnSourcePropertyChanged ()
 		}
 	}
 
-	//Reset the viewport
+	// Reset the viewport
 	ClearValue (MultiScaleImage::InternalViewportWidthProperty, true);
 	ClearValue (MultiScaleImage::InternalViewportOriginProperty, true);
 	//SetValue (MultiScaleImage::ViewportOriginProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportOriginProperty)->GetDefaultValue());
@@ -1489,6 +1496,24 @@ void
 MultiScaleImage::SetIsDownloading (bool value)
 {
 	SetValue (MultiScaleImage::IsDownloadingProperty, Value (value));
+}
+
+void
+MultiScaleImage::UpdateIsDownloading ()
+{
+	BitmapImageContext *ctx;
+	bool value = false;
+	
+	for (guint i = 0; i < downloaders->len; i++) {
+		ctx = (BitmapImageContext *) downloaders->pdata[i];
+		
+		if (ctx->state == BitmapImageBusy) {
+			value = true;
+			break;
+		}
+	}
+	
+	SetIsDownloading (value);
 }
 
 int

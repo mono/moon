@@ -42,7 +42,7 @@ class MultiScaleImage : public MediaBase {
 	cairo_user_data_key_t width_key;
 	bool pending_motion_completed;
 	bool subimages_sorted;
-	GList *bitmapimages;
+	GPtrArray *downloaders;
 	GHashTable *cache;
 	double zoom_target;
 	Point pan_target;
@@ -54,12 +54,18 @@ class MultiScaleImage : public MediaBase {
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void tile_available (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
-	BitmapImageContext *GetBitmapImageContext (BitmapImage *bitmapimage);
+	BitmapImageContext *GetBitmapImageContext (BitmapImage *image);
 
 	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);
 	
+	void UpdateIsDownloading ();
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);
 
@@ -93,8 +99,8 @@ class MultiScaleImage : public MediaBase {
 	void FadeFinished ();
 	void ZoomFinished ();
 	void PanFinished ();
-	void TileOpened (BitmapImage *bitmapImage);
-	void TileFailed (BitmapImage *bitmapImage);
+	void TileOpened (BitmapImage *image);
+	void TileFailed (BitmapImage *image);
 
 	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateAccessors */
 	const static int AllowDownloadingProperty;
@@ -190,10 +196,10 @@ class MultiScaleImage : public MediaBase {
 	const static int MotionFinishedEvent;
 	/* @DelegateType=RoutedEventHandler */
 	const static int ViewportChangedEvent;
-
-	BitmapImageContext *GetFreeBitmapImageContext ();
+	
+	void DownloadTile (Uri *tile, void *user_data);
+	bool CanDownloadMoreTiles ();
 	void StopDownloading ();
-	void DownloadTile (BitmapImageContext *ctx, Uri *tile, void *user_data);
 	
 	void HandleDzParsed ();
 	
