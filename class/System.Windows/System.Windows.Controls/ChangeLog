@@ -1,3 +1,10 @@
+2010-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsPresenter.cs: ItemsPresenter may be in the
+	  ControlTemplate for an item which is *not* an ItemsControl.
+	  In this case we just do nothing instead of throwing an
+	  InvalidCastException.
+
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ContentPresenter.cs: Rewrite TemplateBindings to not be

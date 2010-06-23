@@ -47,7 +47,9 @@ namespace System.Windows.Controls
 
 		internal override UIElement GetDefaultTemplate ()
 		{
-			ItemsControl c = (ItemsControl) TemplateOwner;
+			// ItemsPresenter only works when it's attached to an ItemsControl
+			// but the user may try to attach it to any custom control
+			ItemsControl c = TemplateOwner as ItemsControl;
 			if (c == null)
 				return null;
 
