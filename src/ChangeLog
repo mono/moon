@@ -1,5 +1,18 @@
 2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* multiscaleimage.cpp (MultiScaleImage::ctor): Init n_downloading
+	to 0.
+	(CanDownloadMoreTiles): Check n_downloading < MAX_DOWNLOADERS
+	rather than downloaders->len < MAX_DOWNLOADERS because the
+	downloaders array can contain unused downloaders.
+	(UpdateIsDownloading): If n_downloaders > 0, then set the property
+	to true, else false.
+	(DownloadTile): Increment n_downloading.
+	(TileFailed): Decrement n_downloading if we give up.
+	(TileOpened): Decrement n_downloading.
+
+2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* multiscaleimage.cpp (HandleDzParsed): Iterate over the
 	DeepZoomImageTileSource's SubImages using the new accessor
 	methods. Beats using g_list_get_nth_data() for each item.

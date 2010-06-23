@@ -374,6 +374,7 @@ MultiScaleImage::MultiScaleImage ()
 	subimages_sorted = false;
 	pan_target = Point (0, 0);
 	zoom_target = 1.0;
+	n_downloading = 0;
 	is_panning = false;
 	is_zooming = false;
 	is_fading = false;
@@ -439,7 +440,7 @@ MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
 bool
 MultiScaleImage::CanDownloadMoreTiles ()
 {
-	return downloaders->len < MAX_DOWNLOADERS;
+	return n_downloading < MAX_DOWNLOADERS;
 }
 
 void
@@ -483,6 +484,8 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	SetIsDownloading (true);
 	ctx->image->SetDownloadPolicy (MsiPolicy);
 	ctx->image->SetUriSource (tile);
+	
+	n_downloading++;
 }
 
 //Only used for DeepZoom sources
@@ -593,6 +596,8 @@ MultiScaleImage::TileOpened (BitmapImage *image)
 	BitmapImageContext *ctx = GetBitmapImageContext (image);
 	
 	ctx->state = BitmapImageDone;
+	n_downloading--;
+	
 	UpdateIsDownloading ();
 	Invalidate ();
 }
@@ -616,6 +621,8 @@ MultiScaleImage::TileFailed (BitmapImage *image)
 		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_image (ctx->node, NULL);
 		ctx->state = BitmapImageFree;
+		n_downloading--;
+		
 		UpdateIsDownloading ();
 	}
 	
@@ -746,7 +753,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		ctx->image->SetUriSource (NULL);
 		ctx->state = BitmapImageFree;
 	}
-
+	
 	bool is_collection = source &&
 			     source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
 			     ((DeepZoomImageTileSource *)source)->IsCollection () &&
@@ -1502,6 +1509,7 @@ MultiScaleImage::SetIsDownloading (bool value)
 void
 MultiScaleImage::UpdateIsDownloading ()
 {
+#if 0
 	BitmapImageContext *ctx;
 	bool value = false;
 	
@@ -1515,6 +1523,9 @@ MultiScaleImage::UpdateIsDownloading ()
 	}
 	
 	SetIsDownloading (value);
+#else
+	SetIsDownloading (n_downloading > 0);
+#endif
 }
 
 int

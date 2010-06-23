@@ -219,7 +219,6 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 	//check if there tile is listed in DisplayRects
 	if (display_rects) {
 		DisplayRect *cur;
-		int i = 0;
 		bool found = false;
 		int layers;
 		

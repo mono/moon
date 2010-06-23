@@ -43,6 +43,7 @@ class MultiScaleImage : public MediaBase {
 	bool pending_motion_completed;
 	bool subimages_sorted;
 	GPtrArray *downloaders;
+	int n_downloading;
 	GHashTable *cache;
 	double zoom_target;
 	Point pan_target;
