@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008, 2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -29,7 +29,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.IsolatedStorage;
+using System.Runtime.Serialization;
 using Mono.Moonlight.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -193,6 +195,48 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		public void SiteSettingsTest ()
 		{
 			CheckAll (IsolatedStorageSettings.SiteSettings);
+		}
+
+		public void Format (IsolatedStorageSettings settings, IsolatedStorageFile isf)
+		{
+			settings.Clear ();
+			settings.Add ("a", 1);
+			settings.Save ();
+
+			Dictionary<string, object> dict = null;
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("__LocalSettings", FileMode.Open, isf)) {
+				using (StreamReader sr = new StreamReader (fs)) {
+					DataContractSerializer reader = new DataContractSerializer (typeof (Dictionary<string, object>));
+					dict = (Dictionary<string, object>) reader.ReadObject (fs);
+				}
+			}
+
+			Assert.AreEqual (1, dict.Count, "settings.Count");
+			Assert.AreEqual (1, dict ["a"], "settings.a");
+			dict ["b"] = 2;
+
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("__LocalSettings", FileMode.Create, isf)) {
+				using (StreamReader sr = new StreamReader (fs)) {
+					DataContractSerializer writer = new DataContractSerializer (dict.GetType ());
+					writer.WriteObject (fs, dict);
+				}
+			}
+
+			// saved but not re-loaded
+			Assert.AreEqual (1, settings.Count, "Count");
+			settings.Clear ();
+		}
+
+		[TestMethod]
+		public void Format_Application ()
+		{
+			Format (IsolatedStorageSettings.ApplicationSettings, IsolatedStorageFile.GetUserStoreForApplication ());
+		}
+
+		[TestMethod]
+		public void Format_Site ()
+		{
+			Format (IsolatedStorageSettings.SiteSettings, IsolatedStorageFile.GetUserStoreForSite ());
 		}
 	}
 }

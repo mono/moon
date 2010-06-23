@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008, 2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -62,10 +62,6 @@ namespace System.IO.IsolatedStorage {
 
 			using (IsolatedStorageFileStream fs = isf.OpenFile (LocalSettings, FileMode.Open)) {
 				using (StreamReader sr = new StreamReader (fs)) {
-					// first line contains a fully qualified type + CRLF (System.Object)
-					string header = sr.ReadLine ();
-					if (header == null || header.StartsWith ("<"))
-						fs.Position = 0;
 					DataContractSerializer reader = new DataContractSerializer (typeof (Dictionary<string, object>));
 					try {
 						settings = (Dictionary<string, object>) reader.ReadObject (fs);
@@ -157,12 +153,6 @@ namespace System.IO.IsolatedStorage {
 		public void Save ()
 		{
 			using (IsolatedStorageFileStream fs = container.CreateFile (LocalSettings)) {
-				// note: SL seems to prepend a line with a fully qualified name for System.Object + CRLF
-				byte[] header = System.Text.Encoding.UTF8.GetBytes (typeof (object).AssemblyQualifiedName);
-				fs.Write (header, 0, header.Length);
-				fs.WriteByte (13);
-				fs.WriteByte (10);
-				// and does not seems to need it when reading back...
 				DataContractSerializer ser = new DataContractSerializer (settings.GetType ());
 				ser.WriteObject (fs, settings);
 			}

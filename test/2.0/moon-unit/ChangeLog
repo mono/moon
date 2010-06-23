@@ -1,3 +1,8 @@
+2010-06-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs: Add
+	test case about the format of the special __LocalSettings file
+
 2010-06-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Add a MoonlightBug to

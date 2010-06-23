@@ -1,3 +1,8 @@
+2010-06-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IsolatedStorageSettings.cs: Looks like the "weird first line" was
+	removed from SL (3 or 4 ?) so w're matching again...
+
 2009-11-05  Andreia Gaita  <avidigal@novell.com>
 
 	* IsolatedStorageSettings.cs: don't set the stream position, ReadLine
