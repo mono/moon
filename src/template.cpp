@@ -54,7 +54,7 @@ FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_bu
 }
 
 DependencyObject*
-FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
+FrameworkTemplate::GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error)
 {
 	if (xaml_buffer) {
 		XamlLoader *loader = new XamlLoader (GetResourceBase(), NULL, xaml_buffer, GetDeployment ()->GetSurface(), xaml_context);
@@ -68,6 +68,8 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 
 		DependencyObject *result = loader->CreateDependencyObjectFromString (xaml_buffer, true, &dummy);
 
+		if (error && loader->error_args && loader->error_args->GetErrorCode () != -1)
+			MoonError::FillIn (error, loader->error_args);
 		delete loader;
 
 		if (result)
@@ -101,8 +103,8 @@ DataTemplate::DataTemplate ()
 }
 
 DependencyObject *
-DataTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
+DataTemplate::GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error)
 {
 	// DataTemplate ignores the source paramater and always uses null
-	return FrameworkTemplate::GetVisualTree (NULL);
+	return FrameworkTemplate::GetVisualTreeWithError (NULL, error);
 }

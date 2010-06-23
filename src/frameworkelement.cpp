@@ -212,7 +212,6 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		UpdateBounds ();
 	}
 	else if (args->GetId () == FrameworkElement::StyleProperty) {
-		Style *old_style = args->GetOldValue () ? args->GetOldValue ()->AsStyle () : NULL;
 		Style *new_style = args->GetNewValue () ? args->GetNewValue ()->AsStyle () : NULL;
 
 		if (!error->number)
@@ -500,7 +499,9 @@ FrameworkElement::Measure (Size availableSize)
 		return;
 	}
 
-	ApplyTemplate ();
+	// FIXME: Propagate the error through Measure here... probably.
+	MoonError e;
+	ApplyTemplateWithError (&e);
 
 	UIElement *parent = GetVisualParent ();
 	/* unit tests show a short circuit in this case */
@@ -940,24 +941,26 @@ FrameworkElement::OnLoaded ()
 }
 
 bool
-FrameworkElement::ApplyTemplate ()
+FrameworkElement::ApplyTemplateWithError (MoonError *error)
 {
 	if (GetSubtreeObject ())
 		return false;
 	
-	bool result = DoApplyTemplate ();
+	bool result = DoApplyTemplateWithError (error);
 	if (result)
 		OnApplyTemplate ();
 	return result;
 }
 
 bool
-FrameworkElement::DoApplyTemplate ()
+FrameworkElement::DoApplyTemplateWithError (MoonError *error)
 {
 	UIElement *e = GetDefaultTemplate ();
 	if (e) {
-		MoonError err;
-		e->SetParent (this, &err);
+		e->SetParent (this, error);
+		if (error->number)
+			return false;
+
 		if (default_template) {
 			default_template->SetParent (NULL, NULL);
 			default_template->unref ();

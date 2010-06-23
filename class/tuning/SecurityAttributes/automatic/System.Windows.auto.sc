@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 475 methods needs to be decorated.
+# 469 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -656,15 +656,6 @@
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_iterator_get_current_key_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rich_text_box_get_content_end(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rich_text_box_get_content_start(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rich_text_box_get_position_from_point(System.IntPtr,System.Windows.Point)
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::routed_event_args_get_source(System.IntPtr)
 
 # p/invoke declaration
@@ -723,12 +714,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_pointer_get_next_insertion_position(System.IntPtr,System.Windows.Documents.LogicalDirection)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_pointer_get_position_at_offset(System.IntPtr,System.Int32,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_property_value(System.IntPtr,System.IntPtr)
@@ -1410,9 +1395,6 @@
 
 # p/invoke declaration
 +SC-M: System.Windows.Rect Mono.NativeMethods::geometry_get_bounds(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Windows.Rect Mono.NativeMethods::text_pointer_get_character_rect(System.IntPtr,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
 +SC-M: System.Windows.Size Mono.NativeMethods::framework_element_arrange_override(System.IntPtr,System.Windows.Size)

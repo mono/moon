@@ -66,9 +66,9 @@ public:
 	FrameworkElement ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool ApplyTemplate ();
-	virtual bool DoApplyTemplate ();
-	virtual UIElement * GetDefaultTemplate ();
+	bool ApplyTemplateWithError (MoonError *error);
+	virtual bool DoApplyTemplateWithError (MoonError *error);
+	virtual UIElement *GetDefaultTemplate ();
 	virtual void OnApplyTemplate ();
 	
 	virtual void ElementRemoved (UIElement *obj);

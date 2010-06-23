@@ -56,7 +56,7 @@ public:
 	virtual void ElementRemoved (UIElement *item);
 	
 	void ApplyDefaultStyle ();
-	virtual bool DoApplyTemplate ();
+	virtual bool DoApplyTemplateWithError (MoonError *error);
 	virtual void SetVisualParent (UIElement *visual_parent);
 
 	virtual bool Focus (bool recurse = true);

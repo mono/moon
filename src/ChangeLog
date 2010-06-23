@@ -1,3 +1,15 @@
+2010-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* template.h:
+	* control.cpp:
+	* template.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Make the template expansion methods
+	  all take a MoonError* argument and append "WithError" to the
+	  function names. This fixes some of the exception propagation
+	  issues in drt 350.
+
 2010-06-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (OnPropertyChanged): Use if-else branching

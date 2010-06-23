@@ -1,3 +1,8 @@
+2010-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: regen sec. attrs.
+
 2010-06-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.s[s]c: regenerated for r159337

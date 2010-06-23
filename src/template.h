@@ -31,7 +31,7 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	/* This method always returns a reffed object */
-	virtual DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource = NULL);
+	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 
 	void SetXamlBuffer (XamlContext *context, const char *buffer);
 
@@ -72,7 +72,7 @@ public:
 	DataTemplate ();
 
 	/* This method always returns a reffed object */
-	virtual DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource);
+	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 protected:
 	virtual ~DataTemplate () {}
 };

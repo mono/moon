@@ -191,15 +191,15 @@ Control::ApplyDefaultStyle ()
 }
 
 bool
-Control::DoApplyTemplate ()
+Control::DoApplyTemplateWithError (MoonError *error)
 {
 	ControlTemplate *t = GetTemplate ();
 	if (!t)
-		return FrameworkElement::DoApplyTemplate ();
+		return FrameworkElement::DoApplyTemplateWithError (error);
 
 	// If the template expands to an element which is *not* a UIElement
 	// we don't apply the template.
-	DependencyObject *root = t->GetVisualTree (this);
+	DependencyObject *root = t->GetVisualTreeWithError (this, error);
 	if (root && !root->Is (Type::UIELEMENT)) {
 		g_warning ("Control::DoApplyTemplate () Template root was not a UIElement");
 		root->unref ();
@@ -207,7 +207,7 @@ Control::DoApplyTemplate ()
 	}
 
 	if (!root)
-		return FrameworkElement::DoApplyTemplate ();
+		return FrameworkElement::DoApplyTemplateWithError (error);
 
 	// No need to ref template_root here as ElementAdded refs it
 	// and it is cleared when ElementRemoved is called.
