@@ -1,5 +1,9 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network.cpp: Fix possible crash in debug spew.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network.cpp: HttpRequest::Open: don't make uris absolute using the xap
 	location when in oob mode, but the source location. Fixes #8001.
 

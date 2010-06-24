@@ -229,7 +229,7 @@ void
 HttpRequest::Abort ()
 {
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Abort () is_completed: %i is_aborted: %i original_uri: %s\n", is_completed, is_aborted, original_uri->ToString ());
+	LOG_DOWNLOADER ("HttpRequest::Abort () is_completed: %i is_aborted: %i original_uri: %s\n", is_completed, is_aborted, original_uri == NULL ? NULL : original_uri->ToString ());
 
 	if (is_completed || is_aborted)
 		return;
