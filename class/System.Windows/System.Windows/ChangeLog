@@ -1,5 +1,10 @@
 2010-06-24  Jackson Harper  <jackson@ximian.com>
 
+	* FrameworkTemplate.cs: Add a new method for setting the xaml
+	buffer from managed.
+
+2010-06-24  Jackson Harper  <jackson@ximian.com>
+
 	* DependencyObject.cs: Expose a function for setting an objects
 	namescope.
 

@@ -91,6 +91,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono.Xaml/ManagedXamlLoader.cs				\
 	$(srcdir)/Mono.Xaml/MarkupExpressionParser.cs				\
+	$(srcdir)/Mono.Xaml/XamlContext.cs					\
 	$(srcdir)/Mono.Xaml/XamlLoaderCallbacks.cs				\
 	$(srcdir)/System.ComponentModel/AlternateContentPropertyAttribute.cs	\
 	$(srcdir)/System.ComponentModel/ClosingEventArgs.cs						\

@@ -1,5 +1,9 @@
 2010-06-24  Jackson Harper  <jackson@ximian.com>
 
+	* XamlContext.cs: New class, used with parsing templates.
+
+2010-06-24  Jackson Harper  <jackson@ximian.com>
+
 	* XamlLoaderCallbacks.cs: Add the template parsing callback.
 
 2010-06-23  Jackson Harper  <jackson@ximian.com>

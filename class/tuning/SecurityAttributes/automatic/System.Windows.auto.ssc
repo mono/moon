@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 617 methods
+# 618 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -413,6 +413,7 @@
 +SSC-M: System.Windows.DependencyObject System.Windows.FrameworkElement::get_Parent()
 +SSC-M: System.Windows.DependencyObject System.Windows.FrameworkElement::get_SubtreeObject()
 +SSC-M: System.Windows.DependencyObject System.Windows.FrameworkTemplate::GetVisualTree(System.Windows.DependencyObject)
++SSC-M: System.Void System.Windows.FrameworkTemplate::SetXamlBuffer(Mono.Xaml.ParseTemplateFunc,Mono.Xaml.XamlContext,System.String)
 +SSC-M: System.Windows.Rect System.Windows.Ink.Stroke::GetBounds()
 +SSC-M: System.Boolean System.Windows.Ink.Stroke::HitTest(System.Windows.Input.StylusPointCollection)
 +SSC-M: System.Windows.Rect System.Windows.Ink.StrokeCollection::GetBounds()

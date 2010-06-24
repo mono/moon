@@ -1,10 +1,10 @@
 //
-// FrameworkTemplate.cs
+// XamlContext.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,34 +26,71 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.IO;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Windows;
+
 using Mono;
-using Mono.Xaml;
 
-namespace System.Windows {
+namespace Mono.Xaml
+{
+	internal class XamlContext {
 
-	public abstract partial class FrameworkTemplate : DependencyObject {
-		internal DependencyObject GetVisualTree ()
+		internal XamlContext (XamlContext parent, List<DependencyObject> resources, FrameworkTemplate template)
 		{
-			return GetVisualTree (null);
+			Parent = parent;
+			Resources = resources;
+			Template = template;
 		}
-		
-		internal DependencyObject GetVisualTree (DependencyObject bindingSource)
+
+		public XamlContext Parent {
+			get;
+			private set;
+		}
+
+		public List<DependencyObject> Resources {
+			get;
+			private set;
+		}
+
+		public FrameworkTemplate Template {
+			get;
+			private set;
+		}
+
+		public object LookupNamedItem (string name)
 		{
-			IntPtr src = bindingSource == null ? IntPtr.Zero : bindingSource.native;
-			IntPtr visual_tree = NativeMethods.framework_template_get_visual_tree (native, src);
-			/* GetVisualTree always returns a reffed object */
-			try {
-				return NativeDependencyObjectHelper.FromIntPtr (visual_tree) as DependencyObject;
-			} finally {
-				NativeMethods.event_object_unref (visual_tree);
+			object res = null;
+
+			foreach (DependencyObject dob in Resources) {
+				ResourceDictionary rd = dob as ResourceDictionary;
+				if (rd != null) {
+					res = rd [name];
+					if (res != null)
+						return res;
+				}
+				FrameworkElement fwe = (FrameworkElement) dob;
+				res = fwe.Resources [name];
+				if (res != null)
+					return res;
 			}
+
+			return null;
 		}
 
-		internal void SetXamlBuffer (ParseTemplateFunc func, XamlContext context, string xaml)
+		~XamlContext ()
 		{
-			Value v = Value.FromObject (context);
+			Free ();
+		}
 
-			NativeMethods.framework_template_set_xaml_buffer (_native, func, ref v, xaml);
+		internal void Free ()
+		{
+			Console.WriteLine ("FREEING THE XAML CONTEXT");
 		}
 	}
 }
+
+
