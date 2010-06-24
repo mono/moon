@@ -2148,8 +2148,10 @@ ProgressiveSource::CheckPendingReads ()
 	bool checked_for_media_thread = false;
 	List pending_reads;
 	bool ready;
+	int c = 0;
 	Range partial;
 
+	/* This method is thread-safe */
 	LOG_PIPELINE ("ProgressiveSource::CheckPendingReads () %i closures to check\n", read_closures.Length ());
 
 	mutex.Lock ();
@@ -2160,7 +2162,13 @@ ProgressiveSource::CheckPendingReads ()
 		MediaReadClosure *closure = node->GetClosure ();
 		next = (MediaReadClosureNode *) node->next;
 		
-		ready = ranges.Contains (closure->GetOffset (), closure->GetCount (), &partial);
+		if (complete && brr_enabled != 1 /* enabled */) {
+			ready = true;
+		} else {
+			ready = ranges.Contains (closure->GetOffset (), closure->GetCount (), &partial);
+		}
+
+		LOG_PIPELINE ("ProgressiveSource::CheckPendingReads () closure #%i: %i (complete: %i brr_enabled: %i offset: %" G_GINT64_FORMAT " count: %i)\n", ++c, ready, complete, brr_enabled, closure->GetOffset (), closure->GetCount ());
 		
 		if (ready) {
 			if (!checked_for_media_thread) {

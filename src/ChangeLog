@@ -1,5 +1,11 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: ProgressiveSource::CheckPendingReads: we can read if the
+	entire file has been downloaded, even if the requested range isn't
+	available.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network.cpp: Fix possible crash in debug spew.
 
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
