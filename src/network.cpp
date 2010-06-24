@@ -110,6 +110,8 @@ HttpRequest::Open (const char *verb, const char *uri, DownloaderAccessPolicy pol
 void
 HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 {
+	Surface *surface;
+	Application *application;
 	const char *source_location;
 	Uri *src_uri = NULL;
 
@@ -126,8 +128,16 @@ HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 
 	access_policy = policy;
 
-	if (!(source_location = GetDeployment ()->GetXapLocation ()))
-		source_location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
+	surface = GetDeployment ()->GetSurface ();
+	application = GetDeployment ()->GetCurrentApplication ();
+
+	if (application->IsRunningOutOfBrowser ()) {
+		source_location = surface->GetSourceLocation ();
+	} else {
+		source_location = GetDeployment ()->GetXapLocation ();
+		if (source_location == NULL)
+			source_location = surface->GetSourceLocation ();
+	}
 
 	// FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
 	if (!Downloader::ValidateDownloadPolicy (source_location, uri, policy)) {
@@ -150,6 +160,7 @@ HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 		g_free (this->uri);
 		this->uri = src_uri->ToString ();
 		delete src_uri;
+		LOG_DOWNLOADER ("HttpRequest::Open (%s, %p = %s, %i) Url was absolutified to '%s' using source location '%s'\n", verb, uri, uri == NULL ? NULL : uri->ToString (), policy, this->uri, source_location);
 	}
 
 	OpenImpl ();
@@ -218,7 +229,7 @@ void
 HttpRequest::Abort ()
 {
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Abort () is_completed: %i is_aborted: %i\n", is_completed, is_aborted);
+	LOG_DOWNLOADER ("HttpRequest::Abort () is_completed: %i is_aborted: %i original_uri: %s\n", is_completed, is_aborted, original_uri->ToString ());
 
 	if (is_completed || is_aborted)
 		return;

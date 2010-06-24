@@ -1,5 +1,10 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network.cpp: HttpRequest::Open: don't make uris absolute using the xap
+	location when in oob mode, but the source location. Fixes #8001.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network.cpp: Don't send -1 as the offset when writing data, not all
 	consumers understands what -1 means.
 
