@@ -11,6 +11,7 @@
  * 
  */
 
+#include <config.h>
 #include "tilesource.h"
 
 

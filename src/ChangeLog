@@ -1,3 +1,18 @@
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* popup.cpp:
+	* applier.cpp:
+	* tilesource.cpp:
+	* imagesource.cpp:
+	* imagesource.cpp:
+	* pal/gtk/im-gtk.cpp:
+	* writeablebitmap.cpp:
+	* pal/gtk/pal-gtk.cpp:
+	* layoutinformation.cpp:
+	* pal/gtk/pixbuf-gtk.cpp:
+	* tabnavigationwalker.cpp:
+	* pal/gtk/clipboard-gtk.cpp: Include config.h.
+
 2010-06-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp: Added callback functions for deleting int

@@ -8,6 +8,7 @@
  * 
  */
 
+#include <config.h>
 #include "popup.h"
 #include "runtime.h"
 #include "deployment.h"

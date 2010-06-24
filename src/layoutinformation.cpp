@@ -7,6 +7,8 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
+#include <config.h>
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "rect.h"

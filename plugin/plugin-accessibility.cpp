@@ -13,6 +13,7 @@
  */
 
 
+#include <config.h>
 #include "plugin-accessibility.h"
 #include "moonlight.h"
 

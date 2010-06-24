@@ -11,6 +11,7 @@
  *
  */
 
+#include <config.h>
 #include "runtime.h"
 #include "transform.h"
 #include "rect.h"

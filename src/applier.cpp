@@ -9,6 +9,7 @@
  * 
  */
 
+#include <config.h>
 #include "applier.h"
 
 typedef struct {

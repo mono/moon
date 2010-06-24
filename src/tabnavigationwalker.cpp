@@ -11,6 +11,7 @@
 //  */
 // 
 
+ #include <config.h>
  #include "control.h"
  #include "deployment.h"
  #include "tabnavigationwalker.h"
