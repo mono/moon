@@ -192,6 +192,7 @@ static struct MoonlightDebugOption debugs[] = {
 	{ "mp3",               RUNTIME_DEBUG_MP3 },
 	{ "mp4",               RUNTIME_DEBUG_MP4 },
 	{ "msi",               RUNTIME_DEBUG_MSI },
+	{ "oob",               RUNTIME_DEBUG_OOB },
 	{ "pipeline",          RUNTIME_DEBUG_PIPELINE },
 	{ "pipeline-error",    RUNTIME_DEBUG_PIPELINE_ERROR },
 	{ "playlist",          RUNTIME_DEBUG_PLAYLIST },

@@ -1,3 +1,12 @@
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.h:
+	* runtime.cpp|h: Add LOG_OOB support.
+
+	* pal/pal.cpp:
+	* pal/gtk/pal-gtk.cpp:
+	* pal/gtk/install-dialog.cpp: Add oob debug spew.
+
 2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (MultiScaleImage::ctor): Init n_downloading

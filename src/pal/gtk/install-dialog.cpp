@@ -31,6 +31,7 @@
 #include "runtime.h"
 #include "utils.h"
 #include "uri.h"
+#include "debug.h"
 
 typedef struct {
 	GdkPixbufLoader *loader;
@@ -309,6 +310,8 @@ downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data)
 	GtkWidget *dialog;
 	HttpRequestStoppedEventArgs *ea = (HttpRequestStoppedEventArgs *) args;
 
+	LOG_OOB ("OOB install: downloader_stopped (IsSuccess: %i)\n", ea->IsSuccess ());
+
 	if (ea->IsSuccess ()) {
 		gtk_widget_set_sensitive (priv->ok_button, true);
 		gtk_widget_hide ((GtkWidget *) priv->progress);
@@ -448,6 +451,8 @@ install_xap (const char *xap_filename, const char *app_dir)
 	char *dirname;
 	bool rv;
 	
+	LOG_OOB ("OOB install: install_xap (%s, %s)\n", xap_filename, app_dir);
+
 	// Note: Instead of saving the compressed Xap, we'll be extracting it
 	// to disk to both improve performance of OOB apps a bit but also so
 	// that we don't have to clutter /tmp when the OOB app is run.
@@ -479,6 +484,8 @@ install_html (OutOfBrowserSettings *settings, const char *app_dir)
 	char *filename, *title;
 	FILE *fp;
 	
+	LOG_OOB ("OOB install: install_html (%s)\n", app_dir);
+
 	filename = g_build_filename (app_dir, "index.html", NULL);
 	if (!(fp = fopen (filename, "wt"))) {
 		g_free (filename);
@@ -617,6 +624,8 @@ install_gnome_desktop (OutOfBrowserSettings *settings, const char *app_dir, cons
 	FILE *fp;
 	int fd;
 	
+	LOG_OOB ("OOB install: install_gnome_desktop (%s, %s)\n", app_dir, filename);
+
 	if (!(app_id = strrchr (app_dir, G_DIR_SEPARATOR)))
 		return false;
 	
@@ -688,8 +697,10 @@ install_dialog_install (InstallDialog *dialog)
 	
 	g_return_val_if_fail (IS_INSTALL_DIALOG (dialog), false);
 	
-	if (priv->installed)
+	if (priv->installed) {
+		LOG_OOB ("OOB install: install_dialog_install: already installed\n");
 		return true;
+	}
 	
 	settings = priv->deployment->GetOutOfBrowserSettings ();
 	
@@ -698,22 +709,27 @@ install_dialog_install (InstallDialog *dialog)
 	
 	/* install the XAP */
 	if (!install_xap (priv->request->GetFilename (), priv->install_dir)) {
+		LOG_OOB ("OOB install: install_dialog_install: could not install xap\n");
 		RemoveDir (priv->install_dir);
 		return false;
 	}
 	
 	/* install the HTML page */
 	if (!install_html (settings, priv->install_dir)) {
+		LOG_OOB ("OOB install: install_dialog_install: could not install html\n");
 		RemoveDir (priv->install_dir);
 		return false;
 	}
 	
 	/* install the update uri */
 	if (!install_update_uri (priv->deployment, settings, priv->install_dir)) {
+		LOG_OOB ("OOB install: install_dialog_install: could not install update uri\n");
 		RemoveDir (priv->install_dir);
 		return false;
 	}
 	
+	LOG_OOB ("OOB install: install_dialog_install: installed\n");
+
 	priv->installed = true;
 	
 	/* install the icon(s) */

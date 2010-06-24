@@ -7,6 +7,7 @@
 #include "pixbuf-gtk.h"
 #include "install-dialog.h"
 #include "im-gtk.h"
+#include "debug.h"
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -1160,6 +1161,8 @@ MoonInstallerServiceGtk::GetBaseInstallDir ()
 bool
 MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 {
+	LOG_OOB ("MoonInstallerServiceGtk::Install (unattended: %i)\n", unattended);
+
 	const char *platform_dir;
 	GtkWindow *parent = NULL;
 	bool installed = false;
@@ -1174,16 +1177,21 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	argv[1] = NULL;
 	argv[2] = NULL;
 	
-	if (!(app = CreateAppRecord (deployment->GetXapLocation ())))
+	if (!(app = CreateAppRecord (deployment->GetXapLocation ()))) {
+		LOG_OOB ("MoonInstallerServiceGtk::Install (): Could not create app record.\n");
 		return false;
+	}
 	
 	install_dir = g_build_filename (base_install_dir, app->uid, NULL);
 	
 	parent = get_top_level_widget (deployment);
 	dialog = install_dialog_new (parent, deployment, install_dir, unattended);
 	g_free (install_dir);
-	
+
+	LOG_OOB ("MoonInstallerServiceGtk::Install (): Showing oob dialog.\n");
+
 	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
+		LOG_OOB ("MoonInstallerServiceGtk::Install (): Installing...\n");
 		if ((installed = install_dialog_install ((InstallDialog *) dialog))) {
 			if ((platform_dir = Deployment::GetPlatformDir ()))
 				argv[0] = g_build_filename (platform_dir, "lunar-launcher", NULL);
@@ -1192,14 +1200,18 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 			
 			argv[1] = app->uid;
 		}
+		LOG_OOB ("MoonInstallerServiceGtk::Install (): Install completed, success: %i.\n", installed);
 	}
 	
 	gtk_widget_destroy ((GtkWidget *) dialog);
 	
 	if (installed) {
+		LOG_OOB ("MoonInstallerServiceGtk::Install (): Spawning oob application.\n");
 		screen = gtk_widget_get_screen ((GtkWidget *) parent);
 		gdk_spawn_on_screen (screen, NULL, argv, NULL, (GSpawnFlags) 0, NULL, NULL, &pid, NULL);
 		g_free (argv[0]);
+	} else {
+		LOG_OOB ("MoonInstallerServiceGtk::Install (): Not spawning oob application.\n");
 	}
 	
 	delete app;
@@ -1210,6 +1222,8 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 bool
 MoonInstallerServiceGtk::Uninstall (Deployment *deployment)
 {
+	LOG_OOB ("MoonInstallerServiceGtk::Uninstall ()\n");
+
 	OutOfBrowserSettings *settings = deployment->GetOutOfBrowserSettings ();
 	char *shortcut;
 	

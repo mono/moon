@@ -33,9 +33,11 @@
 #include "gtk/pal-gtk.h"
 
 #include "getopts.h"
+#include "debug.h"
 
 #include <mono/metadata/mono-config.h>
 
+extern guint32 moonlight_flags;
 static const char *geometry = NULL;
 
 typedef struct {
@@ -348,6 +350,8 @@ int main (int argc, char **argv)
 	runtime_init_browser (plugin_dir);
 	g_free (plugin_dir);
 	
+	LOG_OOB ("[lunar-launcher]: Starting\n");
+
 	deployment = new Deployment ();
 	Deployment::SetCurrent (deployment);
 	
@@ -374,6 +378,8 @@ int main (int argc, char **argv)
 	while (g_main_context_iteration (NULL, false)) {
 		;
 	}
+
+	LOG_OOB ("[lunar-launcher]: Exiting\n");
 
 	return EXIT_SUCCESS;
 }

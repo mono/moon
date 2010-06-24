@@ -23,6 +23,7 @@
 #include "runtime.h"
 #include "uri.h"
 #include "pal.h"
+#include "debug.h"
 
 void
 MoonWindowingSystem::SetWindowlessCtor (MoonWindowlessCtor ctor)
@@ -867,6 +868,7 @@ MoonInstallerService::CheckInstalled (Deployment *deployment)
 bool
 MoonInstallerService::Uninstall (Deployment *deployment)
 {
+	LOG_OOB ("MoonInstallerService::Uninstall ()\n");
 	const char *base_dir = GetBaseInstallDir ();
 	MoonAppRecord *app;
 	char *install_dir;
