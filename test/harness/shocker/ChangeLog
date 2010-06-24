@@ -1,5 +1,10 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* harness.cpp: When looking for a window, actually set the window handle in
+	the structure we return.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shutdown-manager.cpp: Send ctrl-w to chrome, since WM_DELETE_WINDOW doesn't
 	work. Hopefully there are no oob races, since oob apps seems to always be
 	installed from firefox.

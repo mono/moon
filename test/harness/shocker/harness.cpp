@@ -384,6 +384,7 @@ find_window_r (guint32 pid, Window window, Display *display, Atom atom_pid, guin
 		XTranslateCoordinates (display, window, window_attributes.root, -window_attributes.border_width, -window_attributes.border_width, &x, &y, &dummy);
 
 		wix = (WindowInfoEx *) g_malloc0 (sizeof (WindowInfoEx));
+		wix->window = window;
 		wi = &wix->wi;
 		// This is not entirely correct: we're not taking into account the title bar of the window
 		wi->windowLeft = x - window_attributes.border_width;
@@ -464,8 +465,8 @@ int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi)
 				*wi = wix->wi;
 			}
 
-			LOG_HARNESS ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found window: %x '%s' [%i,%i %i:%i] Client [%i,%i %i:%i\n",
-				getpid (), pid, (int) wix->window, wi->title, wi->windowLeft, wi->windowTop, wi->windowWidth, wi->windowHeight,
+			LOG_HARNESS ("[%i shocker] WindowHelper_GetWindowInfo (%i): Found window: %p '%s' [%i,%i %i:%i] Client [%i,%i %i:%i]\n",
+				getpid (), pid, (void *) wix->window, wi->title, wi->windowLeft, wi->windowTop, wi->windowWidth, wi->windowHeight,
 				wi->clientLeft, wi->clientTop, wi->clientWidth, wi->clientHeight);
 
 			if (found) {
