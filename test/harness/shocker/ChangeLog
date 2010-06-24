@@ -1,5 +1,10 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shutdown-manager.cpp: Make a few printfs somewhat better and fix a compiler
+	warning.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* harness.cpp: When looking for a window, actually set the window handle in
 	the structure we return.
 

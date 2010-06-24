@@ -47,7 +47,7 @@ static gboolean
 force_shutdown (gpointer data)
 {
 	if (getenv ("MOONLIGHT_SHOCKER_DONT_EXIT") == NULL) {
-		printf ("[%i shocker] Could not shutdown nicely, exiting the process.\n", getpid ());
+		printf ("[%i shocker] Could not shutdown nicely, exiting the process. Set MOONLIGHT_SHOCKER_DONT_EXIT to disable.\n", getpid ());
 		exit (0);
 	} else {
 		printf ("[%i shocker] Could not shutdown nicely, but won't exit process since MOONLIGHT_SHOCKER_DONT_EXIT is set.\n", getpid ());
@@ -85,7 +85,7 @@ send_ctrl_w (gpointer dummy)
 
 static void send_wm_delete (Window window)
 {
-	printf ("[%i shocker] sending WM_DELETE_WINDOW event\n", getpid ());
+	printf ("[%i shocker] sending WM_DELETE_WINDOW event to %p\n", getpid (), (void*) window);
 
 	Display *display = XOpenDisplay (NULL);
 	Atom WM_PROTOCOLS = XInternAtom (display, "WM_PROTOCOLS", False);
@@ -117,7 +117,7 @@ execute_shutdown ()
 	g_type_init ();
 
 	if (PluginObject::browser_app_context != 0) {
-		printf ("[%i shocker] shutting down firefox...\n", getpid ());
+		printf ("[%i shocker] shutting down browser...\n", getpid ());
 
 		send_wm_delete (PluginObject::browser_app_context);
 		PluginObject::browser_app_context = 0;
@@ -126,7 +126,7 @@ execute_shutdown ()
 		readlink ("/proc/self/exe", executable, sizeof (executable) - 1);
 		printf ("[%i shocker] executable: %s\n", getpid (), executable);
 
-		if (executable [0] == NULL || strstr (executable, "chrome") != NULL) {
+		if (executable [0] == 0 || strstr (executable, "chrome") != NULL) {
 			/* This happens on OS 11.2 causing readlink to fail: /proc/self/exe: /lib64/libz.so.1: no version information available (required by /proc/self/exe)
 			 * readlink does not fail for firefox. */
 			LOG_SHUTDOWN ("[%i shocker] we're executing inside chrome ('%s' to be exact), sending ctrl+w\n", getpid (), executable);
