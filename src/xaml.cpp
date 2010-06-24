@@ -293,7 +293,28 @@ class XamlContextInternal {
 	}
 };
 
+DependencyObject *
+parse_template (Value *data, const char *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error)
+{
+	XamlContext *xaml_context = (XamlContext *) data->AsEventObject ();
+	XamlLoader *loader = new XamlLoader (resource_base, NULL, xaml, surface, xaml_context);
+	Type::Kind dummy;
 
+	loader->SetExpandingTemplate (true);
+	loader->SetTemplateOwner (binding_source);
+	loader->SetImportDefaultXmlns (true);
+
+	xaml_context->SetTemplateBindingSource (binding_source);
+
+	DependencyObject *result = loader->CreateDependencyObjectFromString (xaml, true, &dummy);
+
+	if (error && loader->error_args && loader->error_args->GetErrorCode () != -1)
+		MoonError::FillIn (error, loader->error_args);
+
+	delete loader;
+	return result;
+}
+	 
 XamlContext::XamlContext (XamlContextInternal *internal)
 {
 	this->internal = internal;
@@ -1994,7 +2015,8 @@ end_element_handler (void *data, const char *el)
 						}
 					}
 
-					template_->SetXamlBuffer (context, buffer);
+					Value v = Value (context);
+					template_->SetXamlBuffer (parse_template, &v, buffer);
 
 					if (p->current_element->parent)
 						p->current_element->parent->AddChild (p, p->current_element);

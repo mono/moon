@@ -33,13 +33,15 @@ public:
 	/* This method always returns a reffed object */
 	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 
-	void SetXamlBuffer (XamlContext *context, const char *buffer);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *buffer);
 
 protected:
 	virtual ~FrameworkTemplate () {}
 
 	char *xaml_buffer;
-	XamlContext *xaml_context;
+	parse_template_func *parse_template;
+	Value *parse_template_data;
 
 private:
 	EVENTHANDLER (FrameworkTemplate, ShuttingDownEvent, Deployment, EventArgs);

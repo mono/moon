@@ -73,7 +73,8 @@ struct XamlLoaderCallbacks {
 
 class XamlContextInternal;
 
-class XamlContext {
+
+class XamlContext : public EventObject {
 
  public:
 	XamlContextInternal *internal;
@@ -86,6 +87,12 @@ class XamlContext {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* GetTemplateBindingSource ();
 };
+
+
+
+/* @CBindingRequisite */
+typedef DependencyObject *parse_template_func (Value *data, const char *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error);
+
 
 
 G_BEGIN_DECLS

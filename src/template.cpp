@@ -22,7 +22,8 @@ FrameworkTemplate::FrameworkTemplate ()
 	SetObjectType (Type::FRAMEWORKTEMPLATE);
 
 	xaml_buffer = NULL;
-	xaml_context = NULL;
+	parse_template = NULL;
+	parse_template_data = NULL;
 }
 
 void
@@ -39,17 +40,18 @@ FrameworkTemplate::ClearXamlBuffer ()
 		g_free (xaml_buffer);
 		xaml_buffer = NULL;
 	}
-	delete xaml_context;
-	xaml_context = NULL;
+	parse_template = NULL;
+	delete parse_template_data;
+	parse_template_data = NULL;
 	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownEventCallback, this);
 }
 
 void
-FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_buffer)
+FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *xaml_buffer)
 {
-//	printf ("%p setting xaml buffer to %s\n", this, xaml_buffer);
 	this->xaml_buffer = g_strdup (xaml_buffer);
-	this->xaml_context = xaml_context;
+	this->parse_template = parse_template;
+	this->parse_template_data = new Value (*parse_template_data);
 	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownEventCallback, this);
 }
 
@@ -57,20 +59,7 @@ DependencyObject*
 FrameworkTemplate::GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error)
 {
 	if (xaml_buffer) {
-		XamlLoader *loader = new XamlLoader (GetResourceBase(), NULL, xaml_buffer, GetDeployment ()->GetSurface(), xaml_context);
-		Type::Kind dummy;
-
-		loader->SetExpandingTemplate (true);
-		loader->SetTemplateOwner (templateBindingSource);
-		loader->SetImportDefaultXmlns (true);
-
-		xaml_context->SetTemplateBindingSource (templateBindingSource);
-
-		DependencyObject *result = loader->CreateDependencyObjectFromString (xaml_buffer, true, &dummy);
-
-		if (error && loader->error_args && loader->error_args->GetErrorCode () != -1)
-			MoonError::FillIn (error, loader->error_args);
-		delete loader;
+		DependencyObject *result = parse_template (parse_template_data, GetResourceBase (), GetDeployment ()->GetSurface (), templateBindingSource, xaml_buffer, error);
 
 		if (result)
 			NameScope::GetNameScope (result)->Lock ();

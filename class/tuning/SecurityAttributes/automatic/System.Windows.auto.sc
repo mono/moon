@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 481 methods needs to be decorated.
+# 484 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -306,6 +306,9 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.IAsyncResult Mono.Xaml.LookupObjectCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&,System.AsyncCallback,System.Object)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.IAsyncResult Mono.Xaml.ParseTemplateFunc::BeginInvoke(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.IAsyncResult Mono.Xaml.SetPropertyCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
@@ -818,6 +821,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xap_unpack_(System.String)
 
 # using 'Mono.Value*' as a parameter type
++SC-M: System.IntPtr Mono.Xaml.ParseTemplateFunc::Invoke(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
+
+# using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Value::ToObject(System.Type,Mono.Value*)
 
 # overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromFile(System.String,System.Boolean)'.
@@ -999,6 +1005,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::framework_template_set_xaml_buffer(System.IntPtr,Mono.Xaml.ParseTemplateFunc,Mono.Value&,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::g_free_pinvoke(System.IntPtr)

@@ -1,3 +1,7 @@
+2010-06-24  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: Add the template parsing callback.
+
 2010-06-23  Jackson Harper  <jackson@ximian.com>
 
 	* MarkupExpressionParser.cs: Split this up a little bit so it can

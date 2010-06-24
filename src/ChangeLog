@@ -1,3 +1,11 @@
+2010-06-24  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h:
+	* template.cpp|h: Change the template parsing mechanism a little
+	bit, now the parser will give the template a callback function for
+	parsing itself. This allows us the two different parsers to be
+	transparent to the template.
+
 2010-06-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (RenderCollection): Fixed a regression I
