@@ -245,6 +245,9 @@ class TypeReference {
 			case "SetValueCallback":
 				managed_type = "Mono.SetValueCallback";
 				break;
+			case "parse_template_func":
+				managed_type = "Mono.Xaml.ParseTemplateFunc";
+				break;
 			case "CloseDemuxerCallback":
 			case "GetDiagnosticAsyncCallback":
 			case "GetFrameAsyncCallback":
