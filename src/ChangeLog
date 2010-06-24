@@ -1,3 +1,12 @@
+2010-06-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp: Added callback functions for deleting int
+	and double pointers. We can't use g_free() for data created with
+	the new operator.
+
+	* multiscaleimage.h: Added getter for TileFadeProperty to make
+	getting that value simpler in multiscaleimage.cpp.
+
 2010-06-24  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h:

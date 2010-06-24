@@ -51,6 +51,13 @@ class MultiScaleImage : public MediaBase {
 	bool is_panning;
 	bool is_fading;
 	
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	const static int TileFadeProperty;
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	const static int InternalViewportOriginProperty;
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	const static int InternalViewportWidthProperty;
+	
 	bool cache_contains (Uri* filename, bool check_empty_tile);
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -69,20 +76,15 @@ class MultiScaleImage : public MediaBase {
 	void UpdateIsDownloading ();
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);
-
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
-	const static int TileFadeProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
-	const static int InternalViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
-	const static int InternalViewportWidthProperty;
-
+	
 	Point* GetInternalViewportOrigin ();
 	void SetInternalViewportOrigin (Point* p);
 
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
-
+	
+	double GetTileFade ();
+	
 	double GetZoomAnimationEndPoint ();
 	void SetZoomAnimationEndPoint (double endpoint);
 	Point *GetPanAnimationEndPoint ();

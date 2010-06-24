@@ -355,6 +355,18 @@ morton_y (int n)
 	return n >> 16;
 }
 
+static void
+double_free (gpointer user_data)
+{
+	delete (double *) user_data;
+}
+
+static void
+int_free (gpointer user_data)
+{
+	delete (int *) user_data;
+}
+
 
 /*
  * MultiScaleImage
@@ -368,7 +380,7 @@ MultiScaleImage::MultiScaleImage ()
 	
 	// Note: cairo_user_data_key_t's do not need to be initialized
 	
-	cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+	cache = g_hash_table_new_full (g_int_hash, g_int_equal, int_free, (GDestroyNotify) qtree_destroy);
 	downloaders = g_ptr_array_new ();
 	pending_motion_completed = false;
 	subimages_sorted = false;
@@ -488,7 +500,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	n_downloading++;
 }
 
-//Only used for DeepZoom sources
+// Only used for DeepZoom sources
 void
 MultiScaleImage::HandleDzParsed ()
 {
@@ -717,8 +729,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			continue;
 		
 //		Uri *tile = ctx->image->GetUriSource ();
-		cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), g_free);
-		cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), g_free);
+		cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), int_free);
+		cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), int_free);
 		
 		if (!fadein_sb) {
 			fadein_sb = new Storyboard ();
@@ -737,16 +749,16 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			fadein_sb->PauseWithError (NULL);
 		}
 
-		//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
-		double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
-		fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
-		fadein_animation->SetTo (*to);
+		//LOG_MSI ("animating Fade from %f to %f\n\n", GetTileFade (), GetTileFade () + 0.9);
+		double tile_fade = GetTileFade ();
+		fadein_animation->SetFrom (tile_fade);
+		fadein_animation->SetTo (tile_fade + 0.9);
 
 		is_fading = true;
 
 		fadein_sb->BeginWithError(NULL);
 
-		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
+		cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
 		LOG_MSI ("caching %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_image (ctx->node, surface);
 
@@ -765,6 +777,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			((DeepZoomImageTileSource*)source)->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
 			((DeepZoomImageTileSource*)source)->Download ();
 		}
+		
 		return;
 	}
 
@@ -784,8 +797,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 void
 MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
-	LOG_MSI ("\nMSI::RenderCollection\n");
-
+	MultiScaleTileSource *source = GetSource ();
+	DeepZoomImageTileSource *dzits;
 	double msi_w = GetActualWidth ();
 	double msi_h = GetActualHeight ();
 	double msi_ar = GetAspectRatio();
@@ -793,12 +806,15 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	double msivp_oy = GetViewportOrigin()->y;
 	double msivp_w = GetViewportWidth();
 	
-	if (!GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+	LOG_MSI ("\nMSI::RenderCollection\n");
+	
+	if (!source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 		g_warning ("RenderCollection called for a non deepzoom tile source. this should not happen");
 		return;
 	}
-	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *)GetSource ();
-
+	
+	dzits = (DeepZoomImageTileSource *) source;
+	
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
 	MultiScaleSubImageCollection *subs = GetSubImages ();
@@ -813,9 +829,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	if (!shared_cache)
 		g_hash_table_insert (cache, new int(shared_index), (shared_cache = qtree_new ()));
 
-	int i;
 	int subs_count = subs->GetCount ();
-	for (i = 0; i < subs_count; i++) {
+	
+	for (int i = 0; i < subs_count; i++) {
 		MultiScaleSubImage *sub_image = (MultiScaleSubImage*)g_ptr_array_index (subs->z_sorted, i);
 
 		int index = sub_image->GetId();
@@ -874,21 +890,27 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					
 					count++;
 					
-					if (from_layer > dzits->GetMaxLevel ()) {
-						if ((image = qtree_lookup_image (subimage_cache, from_layer, i, j)))
-							found++;
-					} else if ((image = qtree_lookup_image (shared_cache, from_layer,
-										morton_x (sub_image->n) * from_layer2 / tile_width,
-										morton_y (sub_image->n) * from_layer2 / tile_height)))
-						found++;
+					if (from_layer > dzits->GetMaxLevel ())
+						image = qtree_lookup_image (subimage_cache, from_layer, i, j);
+					else
+						image = qtree_lookup_image (shared_cache, from_layer,
+									    morton_x (sub_image->n) * from_layer2 / tile_width,
+									    morton_y (sub_image->n) * from_layer2 / tile_height);
 					
-					if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
-						blending = true;
+					if (image) {
+						double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
+						
+						if (*opacity > GetTileFade ())
+							blending = true;
+						
+						found++;
+					}
 				}
 			}
 			
 			if (found > 0 && to_layer < from_layer)
 				to_layer = from_layer;
+			
 			if (found == count && (!blending || from_layer == 0))
 				break;
 			
@@ -897,7 +919,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	
 		//render here
 		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
-		double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
+		double fade = GetTileFade ();
 		if (from_layer >= 0) {
 			cairo_save (cr);
 			cairo_rectangle (cr, 0, 0, msi_w, msi_h);
@@ -1071,25 +1093,27 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
 	double vp_w = GetViewportWidth ();
-
-	if (msi_w <= 0.0 || msi_h <= 0.0)
-		return; //invisible widget, nothing to render
-
-	//Number of layers in the MSI, aka the lowest powerof2 that's bigger than width and height
+	int optimal_layer;
 	int layers;
+	
+	if (msi_w <= 0.0 || msi_h <= 0.0)
+		return; // invisible widget, nothing to render
+	
+	// number of layers in the MSI, aka the lowest powerof2 that's bigger than width and height
 	if (frexp (MAX (im_w, im_h), &layers) == 0.5)
 		layers --;
-
-	//optimal layer for this... aka "best viewed at"
-	int optimal_layer;
+	
+	// optimal layer for this... aka "best viewed at"
 	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar))  , &optimal_layer) == 0.5)
 		optimal_layer--;
 	optimal_layer = MIN (optimal_layer, layers);
 	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
-	//We have to figure all the layers that we'll have to render:
-	//- from_layer is the highest COMPLETE layer that we can display (all tiles are there and blended (except for level 0, where it might not be blended yet))
-	//- to_layer is the highest PARTIAL layer that we can display (contains at least 1 tiles partially blended)
+	// We have to figure all the layers that we'll have to render:
+	// - from_layer is the highest COMPLETE layer that we can display (all tiles are
+	//   there and blended (except for level 0, where it might not be blended yet))
+	// - to_layer is the highest PARTIAL layer that we can display (contains at least
+	//   1 tiles partially blended)
 
 	int to_layer = -1;
 	int from_layer = optimal_layer;
@@ -1101,38 +1125,48 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		g_hash_table_insert (cache, new int(index), (subimage_cache = qtree_new ()));
 
 	while (from_layer >= 0) {
+		guint64 layers2 = pow2 (layers - from_layer);
+		double v_scale = (double) layers2 / im_w;
+		double v_tile_w = tile_width * v_scale;
+		double v_tile_h = tile_height * v_scale;
+		double minx = MAX (0, (vp_ox / v_tile_w));
+		double maxx = MIN (vp_ox + vp_w, 1.0);
+		double miny = MAX (0, (vp_oy / v_tile_h));
+		double maxy = MIN (vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar);
+		bool blending = false;
 		int count = 0;
 		int found = 0;
-		bool blending = FALSE; //means at least a tile is not yet fully blended
-
-		//v_tile_X is the virtual tile size at this layer in relative coordinates
-		double v_tile_w = tile_width  * (double)(pow2 (layers - from_layer)) / im_w;
-		double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) / im_w;
-		int i, j;
-		//This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
-		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
-				count++;
+		
+		// This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
+		for (int i = (int) minx; i * v_tile_w < maxx; i++) {
+			for (int j = (int) miny; j * v_tile_h < maxy; j++) {
 				cairo_surface_t *image = qtree_lookup_image (subimage_cache, from_layer, i, j);
-
-				if (image)
-					found ++;
-				if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
-					blending = TRUE;
-
+				
+				count++;
+				
+				if (image) {
+					double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
+					
+					if (*opacity > GetTileFade ())
+						blending = true;
+					
+					found++;
+				}
 			}
 		}
+		
 		if (found > 0 && to_layer < from_layer)
 			to_layer = from_layer;
+		
 		if (found == count && (!blending || from_layer == 0))
 			break;
+		
 		from_layer --;
 	}
 
 	//render here
 	//cairo_push_group (cr);
-
-
+	
 	cairo_save (cr);
 	cairo_matrix_t render_xform;
 	cairo_matrix_init_identity (&render_xform);
@@ -1158,7 +1192,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 
-	double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
+	double fade = GetTileFade ();
 	int layer_to_render = MAX (0, from_layer);
 	while (layer_to_render <= to_layer) {
 		int i, j;
@@ -1269,7 +1303,7 @@ MultiScaleImage::OnSourcePropertyChanged ()
 	//Invalidate the whole cache
 	if (cache) {
 		g_hash_table_destroy (cache);
-		cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+		cache = g_hash_table_new_full (g_int_hash, g_int_equal, int_free, (GDestroyNotify) qtree_destroy);
 	}
 
 	//Reset the subimages
