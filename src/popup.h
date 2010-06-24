@@ -34,6 +34,7 @@ class Popup : public FrameworkElement {
 	Popup ();
 	virtual void Dispose ();
 
+	virtual void ClearLoaded ();
 	//
 	// Property Accessors
 	//

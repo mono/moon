@@ -30,6 +30,14 @@ Popup::Dispose ()
 }
 
 void
+Popup::ClearLoaded ()
+{
+	if (GetIsOpen ())
+		SetIsOpen (false);
+	FrameworkElement::ClearLoaded ();
+}
+
+void
 Popup::HitTest (cairo_t *cr, Point p, List *uielement_list)
 {
 	if (visible)

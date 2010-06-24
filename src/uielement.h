@@ -156,7 +156,7 @@ public:
 	//   surface and is part of the visual hierarchy.
 	//
 	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
-	void ClearLoaded ();
+	virtual void ClearLoaded ();
 
 	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
 	void ClearWalkedForLoaded ();

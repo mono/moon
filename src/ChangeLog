@@ -1,3 +1,10 @@
+2010-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp:
+	* uielement.h: When a Popup is removed from the visual tree,
+	  it needs to hide itself. Fixes drt 699.
+
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: ProgressiveSource::CheckPendingReads: we can read if the
