@@ -1,3 +1,8 @@
+2010-06-24  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyObject.cs: Expose a function for setting an objects
+	namescope.
+
 2010-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* Deployment.cs: make AssemblyRegistration delegate type internal

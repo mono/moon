@@ -312,6 +312,15 @@ namespace System.Windows {
 			return NativeDependencyObjectHelper.Lookup (k, o) as DependencyObject;
 		}
 
+		internal bool SetNameOnScope (string name, NameScope scope)
+		{
+			if (name == null)
+				throw new ArgumentNullException ("name");
+			if (scope == null)
+				throw new ArgumentNullException ("scope");
+			return NativeMethods.dependency_object_set_name_on_scope (_native, name, scope.NativeHandle);
+		}
+
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return GetKind ();

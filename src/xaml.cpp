@@ -1138,7 +1138,7 @@ class XNamespace : public XamlNamespace {
 
 			if (item->IsDependencyObject ()) {
 				NameScope *scope = p->namescope;
-				if (!item->GetAsDependencyObject ()->SetName (value, scope)) {
+				if (!item->GetAsDependencyObject ()->SetNameOnScope (value, scope)) {
 					if (IsParentResourceDictionary (p->current_element)) {
 						// FIXME: inside of a resource dictionary this has an extremly
 						// strange behavior.  this isn't exactly right, since not only
@@ -5017,7 +5017,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				item->SetKey (p, attr[i+1]);
 
 				NameScope *scope = p->namescope;
-				if (!item->GetAsDependencyObject ()->SetName (attr [i+1], scope)) {
+				if (!item->GetAsDependencyObject ()->SetNameOnScope (attr [i+1], scope)) {
 					parser_error (p, item->element_name, NULL, 2028,
 						      "The name already exists in the tree: %s.", attr [i+1]);
 					g_free (atchname);

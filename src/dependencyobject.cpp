@@ -1743,7 +1743,7 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 }
 
 bool
-DependencyObject::SetName (const char* name, NameScope *scope)
+DependencyObject::SetNameOnScope (const char* name, NameScope *scope)
 {
 	DependencyProperty *property = GetDeployment ()->GetTypes ()->GetProperty (NameProperty);
 
@@ -3035,8 +3035,10 @@ void
 DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (DependencyObject::NameProperty == args->GetId ()) {
+		
 		NameScope *scope = FindNameScope ();
 		if (scope && args->GetNewValue()) {
+			
 			if (args->GetOldValue ())
 				scope->UnregisterName (args->GetOldValue ()->AsString ());
 			scope->RegisterName (args->GetNewValue()->AsString (), this);

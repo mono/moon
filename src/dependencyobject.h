@@ -344,8 +344,8 @@ public:
 	const char *GetName ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetName (const char *name);
-
-	bool SetName (const char *name, NameScope *scope);
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool SetNameOnScope (const char *name, NameScope *scope);
 
 	virtual void SetIsAttached (bool value);
 
