@@ -251,6 +251,8 @@ HttpRequest::NotifySize (gint64 size)
 void
 HttpRequest::Write (gint64 offset, void *buffer, gint32 length)
 {
+	gint64 reported_offset = offset;
+
 	VERIFY_MAIN_THREAD;
 	LOG_DOWNLOADER ("HttpRequest::Write (%" G_GINT64_FORMAT ", %p, %i) HasHandlers: %i\n", offset, buffer, length, HasHandlers (WriteEvent));
 
@@ -265,8 +267,14 @@ HttpRequest::Write (gint64 offset, void *buffer, gint32 length)
 		}
 	}
 
-	if (HasHandlers (WriteEvent))
-		Emit (WriteEvent, new HttpRequestWriteEventArgs (buffer, offset, length));
+	if (HasHandlers (WriteEvent)) {
+		if (reported_offset == -1 && ((options & CustomHeaders) == 0)) {
+			/* We check if custom headers is required, if so, our creator might have issued a byte range request,
+			 * in which case written_size isn't related to offset */
+			reported_offset = written_size - length;
+		}
+		Emit (WriteEvent, new HttpRequestWriteEventArgs (buffer, reported_offset, length));
+	}
 
 	if (notified_size > 0 && HasHandlers (ProgressChangedEvent))
 		Emit (ProgressChangedEvent, new HttpRequestProgressChangedEventArgs (((double) offset + (double) length) / (double) notified_size));

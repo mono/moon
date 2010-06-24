@@ -1,5 +1,10 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network.cpp: Don't send -1 as the offset when writing data, not all
+	consumers understands what -1 means.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h:
 	* runtime.cpp|h: Add LOG_OOB support.
 
