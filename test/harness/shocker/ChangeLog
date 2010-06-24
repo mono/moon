@@ -1,3 +1,8 @@
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shutdown-manager.cpp: Don't send neither ctrl-q nor alt-f4, it may mess up
+	oob tests due to a race when starting oob apps.
+
 2010-05-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* harness.cpp: GetWindowInfo: Add a hack to get the Window handle.

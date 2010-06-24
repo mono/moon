@@ -58,6 +58,7 @@ force_shutdown (gpointer data)
 static gboolean
 send_alt_f4 (gpointer dummy)
 {
+	return false;
 	printf ("[%i shocker] sending Alt+F4 to firefox...\n", getpid ());
 	InputProvider *input = InputProvider::GetInstance ();
 	// send alt-f4
@@ -71,6 +72,7 @@ send_alt_f4 (gpointer dummy)
 static gboolean
 send_ctrl_q (gpointer dummy)
 {
+	return false;
 	printf ("[%i shocker] sending Ctrl-Q to firefox...\n", getpid ());
 	// This doesn't work with oob - there is no menu so nothing handles ctrl-q
 	InputProvider *input = InputProvider::GetInstance ();
