@@ -711,6 +711,7 @@ void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	MultiScaleTileSource *source = GetSource ();
+	DeepZoomImageTileSource *dzits;
 	cairo_surface_t *surface;
 	BitmapImageContext *ctx;
 	
@@ -766,16 +767,18 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		ctx->state = BitmapImageFree;
 	}
 	
-	bool is_collection = source &&
-			     source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
-			     ((DeepZoomImageTileSource *)source)->IsCollection () &&
-			     GetSubImages ();
-
+	if (source && source->Is (Type::DEEPZOOMIMAGETILESOURCE))
+		dzits = (DeepZoomImageTileSource *) source;
+	else
+		dzits = NULL;
+	
+	bool is_collection = dzits && dzits->IsCollection () && GetSubImages ();
+	
 	if (source->GetImageWidth () < 0 && !is_collection) {
 		LOG_MSI ("nothing to render so far...\n");
-		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			((DeepZoomImageTileSource*)source)->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
-			((DeepZoomImageTileSource*)source)->Download ();
+		if (dzits != NULL) {
+			dzits->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
+			dzits->Download ();
 		}
 		
 		return;
@@ -832,7 +835,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	int subs_count = subs->GetCount ();
 	
 	for (int i = 0; i < subs_count; i++) {
-		MultiScaleSubImage *sub_image = (MultiScaleSubImage*)g_ptr_array_index (subs->z_sorted, i);
+		MultiScaleSubImage *sub_image = (MultiScaleSubImage *) subs->z_sorted->pdata[i];
+		DeepZoomImageTileSource *sub_dzits = (DeepZoomImageTileSource *) sub_image->source;
 
 		int index = sub_image->GetId();
 		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
@@ -866,7 +870,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		int to_layer = -1;
 		int from_layer = optimal_layer;	
 		while (from_layer >= 0) {
-			bool parsed = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource *) sub_image->source)->IsParsed ());
+			bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
 			int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 			int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 			guint64 from_layer2 = pow2 (from_layer);
@@ -942,7 +946,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
-				bool parsed = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource *) sub_image->source)->IsParsed ());
+				bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
 				int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 				int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 				guint64 layer_to_render2 = pow2 (layer_to_render);
@@ -965,32 +969,31 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						else {
 							//Check in the shared levels
 							shared_tile = true;
-
+							
 							image = qtree_lookup_image (shared_cache, layer_to_render,
 										    morton_x (sub_image->n) * layer_to_render2 / tile_width,
 										    morton_y (sub_image->n) * layer_to_render2 / tile_height);
 						}
-
+						
 						if (!image)
 							continue;
 						
 						LOG_MSI ("rendering subimage %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
 						cairo_save (cr);
-
+						
 						cairo_scale (cr, layers2, layers2);
 						
 						cairo_translate (cr, i * tile_width, j * tile_height);
-
+						
 						if (shared_tile) {
 							cairo_translate (cr,
 									 (int)(-morton_x(sub_image->n) * layer_to_render2) % tile_width,
 									 (int)(-morton_y(sub_image->n) * layer_to_render2) % tile_height);
-
 						}
-
+						
 						cairo_set_source_surface (cr, image, 0, 0);
 						
-						double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
+						double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
 						double combined = 1.0;
 
 						if (opacity && *opacity > fade) 
@@ -1028,13 +1031,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			from_layer ++;
 
 			//if the subimage is unparsed, trigger the download
-			if (from_layer > dzits->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
-				((DeepZoomImageTileSource*)sub_image->source)->set_callbacks ((void(*)(MultiScaleImage*))uielement_invalidate, emit_image_failed, NULL, this);
-				((DeepZoomImageTileSource*)sub_image->source)->Download ();
+			if (from_layer > dzits->GetMaxLevel () && !sub_dzits->IsDownloaded ()) {
+				sub_dzits->set_callbacks ((void(*)(MultiScaleImage*))uielement_invalidate, emit_image_failed, NULL, this);
+				sub_dzits->Download ();
 				break;
 			}
 			
-			bool parsed = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource *) sub_image->source)->IsParsed ());
+			bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
 			int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 			int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 			guint64 layers2 = pow2 (layers - from_layer);
@@ -1195,38 +1198,46 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double fade = GetTileFade ();
 	int layer_to_render = MAX (0, from_layer);
 	while (layer_to_render <= to_layer) {
-		int i, j;
-		double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) / im_w;
-		double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) / im_w;
-		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
+		guint64 layers2 = pow2 (layers - layer_to_render);
+		double v_scale = (double) layers2 / im_w;
+		double v_tile_w = tile_width * v_scale;
+		double v_tile_h = tile_height * v_scale;
+		double minx = MAX (0, (vp_ox / v_tile_w));
+		double maxx = MIN (vp_ox + vp_w, 1.0);
+		double miny = MAX (0, (vp_oy / v_tile_h));
+		double maxy = MIN (vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar);
+		
+		for (int i = (int) minx; i * v_tile_w < maxx; i++) {
+			for (int j = (int) miny; j * v_tile_h < maxy; j++) {
 				cairo_surface_t *image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
 				if (!image)
 					continue;
-
+				
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
 				cairo_save (cr);
-
-				cairo_scale (cr, (pow2 (layers - layer_to_render)), (pow2 (layers - layer_to_render))); //scale to image size
-
+				
+				// scale to image size
+				cairo_scale (cr, layers2, layers2);
+				
 				cairo_translate (cr, i * tile_width, j * tile_height);
-
+				
 				cairo_set_source_surface (cr, image, 0, 0);
-
-				double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
+				
+				double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
 				double combined = 1.0;
-
+				
 				if (opacity && *opacity > fade)
 					combined = MIN(1.0 - *opacity + fade, 1.0);
-
+				
 				if (IS_TRANSLUCENT (combined))
 					cairo_paint_with_alpha (cr, combined);
 				else
 					cairo_paint (cr);
-
+				
 				cairo_restore (cr);
 			}
 		}
+		
 		layer_to_render++;
 	}
 	
@@ -1238,23 +1249,22 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	
 	// Download the next set of tiles...
 	while (from_layer < optimal_layer) {
-		from_layer ++;
+		from_layer++;
 		
 		guint64 layers2 = pow2 (layers - from_layer);
 		double v_scale = (double) layers2 / im_w;
 		double v_tile_w = tile_width * v_scale;
 		double v_tile_h = tile_height * v_scale;
-		int minx = MAX (0, (int) (vp_ox / v_tile_w));
-		int maxx = MIN (vp_ox + vp_w, 1.0);
-		int miny = MAX (0, (int) (vp_oy / v_tile_h));
-		int maxy = MIN (vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar);
-		int i, j;
+		double minx = MAX (0, (vp_ox / v_tile_w));
+		double maxx = MIN (vp_ox + vp_w, 1.0);
+		double miny = MAX (0, (vp_oy / v_tile_h));
+		double maxy = MIN (vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar);
 		
-		for (i = minx; i * v_tile_w < maxx; i++) {
+		for (int i = (int) minx; i * v_tile_w < maxx; i++) {
 			if (!CanDownloadMoreTiles ())
 				return;
 			
-			for (j = miny; j * v_tile_h < maxy; j++) {
+			for (int j = (int) miny; j * v_tile_h < maxy; j++) {
 				if (!CanDownloadMoreTiles ())
 					return;
 				
@@ -1278,7 +1288,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 void
 MultiScaleImage::OnSourcePropertyChanged ()
 {
-	DeepZoomImageTileSource *dzits;
+	DeepZoomImageTileSource *dzits = NULL;
 	MultiScaleTileSource *source;
 	
 	// Abort all downloaders

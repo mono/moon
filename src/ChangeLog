@@ -3,6 +3,7 @@
 	* multiscaleimage.cpp: Added callback functions for deleting int
 	and double pointers. We can't use g_free() for data created with
 	the new operator.
+	(RenderSingle): More cleanup.
 
 	* multiscaleimage.h: Added getter for TileFadeProperty to make
 	getting that value simpler in multiscaleimage.cpp.
