@@ -1,9 +1,14 @@
+2010-06-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (RenderCollection): Fixed a regression I
+	introduced in rev 159440.
+
 2010-06-24  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.cpp|h: Rename this function so it makes a
 	little more sense when being set in managed.
 	* xaml.cpp: Renamed the setname function.
-	
+
 2010-06-24  Alan McGovern  <amcgovern@novell.com>
 
 	* popup.h:
