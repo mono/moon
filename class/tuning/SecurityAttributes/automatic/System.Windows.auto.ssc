@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 616 methods
+# 617 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -364,6 +364,7 @@
 +SSC-M: System.Void System.Windows.DependencyObject::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.DependencyObject::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::FindName(System.String)
++SSC-M: System.Boolean System.Windows.DependencyObject::SetNameOnScope(System.String,Mono.NameScope)
 +SSC-M: Mono.Kind System.Windows.DependencyObject::GetKind()
 +SSC-M: System.Int32 System.Windows.DependencyObjectCollection`1::get_Count()
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Clear()
