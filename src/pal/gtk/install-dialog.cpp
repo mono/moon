@@ -519,6 +519,7 @@ install_html (OutOfBrowserSettings *settings, const char *app_dir)
 	fprintf (fp, "      <object data=\"data:application/x-silverlight-2,\" type=\"application/x-silverlight-2\" width=\"100%%\" height=\"100%%\" onload=\"ResizeWindow\">\n");
 	fprintf (fp, "        <param name=\"source\" value=\"Application.xap\"/>\n");
 	fprintf (fp, "        <param name=\"out-of-browser\" value=\"true\"/>\n");
+	fprintf (fp, "        <param name=\"enableGPUAcceleration\" value=\"False\"/>\n");
 	fprintf (fp, "      </object>\n");
 	fprintf (fp, "    </div>\n");
 	fprintf (fp, "  </body>\n");

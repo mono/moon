@@ -1,5 +1,10 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pal/gtk/install-dialog.cpp: Explicitly disable gpu acceleration, since the
+	test harness does a string replace to enable it when necessary.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* popup.cpp:
 	* applier.cpp:
 	* tilesource.cpp:
