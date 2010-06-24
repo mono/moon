@@ -59,7 +59,7 @@ static gboolean
 send_alt_f4 (gpointer dummy)
 {
 	return false;
-	printf ("[%i shocker] sending Alt+F4 to firefox...\n", getpid ());
+	printf ("[%i shocker] sending Alt+F4 to browser...\n", getpid ());
 	InputProvider *input = InputProvider::GetInstance ();
 	// send alt-f4
 	input->SendKeyInput (VK_MENU, true, false, false);
@@ -70,16 +70,15 @@ send_alt_f4 (gpointer dummy)
 }
 
 static gboolean
-send_ctrl_q (gpointer dummy)
+send_ctrl_w (gpointer dummy)
 {
-	return false;
-	printf ("[%i shocker] sending Ctrl-Q to firefox...\n", getpid ());
+	printf ("[%i shocker] sending Ctrl-W to browser...\n", getpid ());
 	// This doesn't work with oob - there is no menu so nothing handles ctrl-q
 	InputProvider *input = InputProvider::GetInstance ();
 	// send ctrl-q
 	input->SendKeyInput (VK_CONTROL, true, false, false);
-	input->SendKeyInput (VK_Q, true, false, false);
-	input->SendKeyInput (VK_Q, false, false, false);
+	input->SendKeyInput (VK_W, true, false, false);
+	input->SendKeyInput (VK_W, false, false, false);
 	input->SendKeyInput (VK_CONTROL, false, false, false);
 	return false;
 }
@@ -107,6 +106,8 @@ static void send_wm_delete (Window window)
 static void
 execute_shutdown ()
 {
+	char executable [1024];
+
 	LOG_SHUTDOWN ("[%i shocker] execute_shutdown\n", getpid ())
 
 	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
@@ -121,9 +122,19 @@ execute_shutdown ()
 		send_wm_delete (PluginObject::browser_app_context);
 		PluginObject::browser_app_context = 0;
 
-		// have a backup, since the above doesn't work with oob
-		// note that this is racy: the current process might not be the one with the focus.
-		g_timeout_add (1000, send_alt_f4, NULL);
+		memset (executable, 0, sizeof (executable));
+		readlink ("/proc/self/exe", executable, sizeof (executable) - 1);
+		printf ("[%i shocker] executable: %s\n", getpid (), executable);
+
+		if (executable [0] == NULL || strstr (executable, "chrome") != NULL) {
+			/* This happens on OS 11.2 causing readlink to fail: /proc/self/exe: /lib64/libz.so.1: no version information available (required by /proc/self/exe)
+			 * readlink does not fail for firefox. */
+			LOG_SHUTDOWN ("[%i shocker] we're executing inside chrome ('%s' to be exact), sending ctrl+w\n", getpid (), executable);
+			send_ctrl_w (NULL);
+		} else {
+			/* Some other browser (firefox), don't send anything since it messes with oob tests
+			 * because it is racy: the current process might not be the one with the focus. */
+		}
 	} else {
 		WindowInfoEx ex;
 		memcpy (ex.wi.title, "IWANTEX", sizeof ("IWANTEX"));
@@ -133,7 +144,7 @@ execute_shutdown ()
 
 		// have a backup
 		// note that this is racy: the current process might not be the one with the focus.
-		g_timeout_add (5000, send_ctrl_q, NULL); // this doesn't work for oob apps
+		g_timeout_add (5000, send_ctrl_w, NULL); // this doesn't work for oob apps
 		g_timeout_add (5000, send_alt_f4, NULL); // this doesn't work if there is no window manager (inside xvfb while running tests for instance)
 	}
 	

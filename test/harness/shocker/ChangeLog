@@ -1,5 +1,11 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shutdown-manager.cpp: Send ctrl-w to chrome, since WM_DELETE_WINDOW doesn't
+	work. Hopefully there are no oob races, since oob apps seems to always be
+	installed from firefox.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shutdown-manager.cpp: Don't send neither ctrl-q nor alt-f4, it may mess up
 	oob tests due to a race when starting oob apps.
 
