@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 619 methods
+# 616 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -260,9 +260,6 @@
 +SSC-M: System.Void Mono.Surface::set_Native(System.IntPtr)
 +SSC-M: System.Void Mono.Surface::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
-+SSC-M: System.Void Mono.Xaml.SL3MarkupExpressionParser::.ctor(System.Object,System.String,System.IntPtr,System.IntPtr)
-+SSC-M: System.Object Mono.Xaml.SL3MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
-+SSC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL3MarkupExpressionParser::GetParentTemplate()
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::.ctor(System.Net.Browser.BrowserHttpWebRequest,System.Uri)
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::Finalize()
 +SSC-M: System.Net.WebResponse System.Net.Browser.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)

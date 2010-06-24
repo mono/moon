@@ -1,3 +1,7 @@
+2010-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Regen the sec. attrs.
+
 2010-06-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: Reneregared to include missing
