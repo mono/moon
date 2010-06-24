@@ -324,6 +324,12 @@ static GetOptsOption options[] = {
 
 int main (int argc, char **argv)
 {
+#if DEBUG
+	/* stdout defaults to block buffering if it's not writing to a terminal, which happens with our test harness:
+	 * we redirect stdout to capture it. Force line buffering in all cases. */
+	setlinebuf (stdout);
+#endif
+
 	Deployment *deployment;
 	GetOptsContext *ctx;
 	const char **args;

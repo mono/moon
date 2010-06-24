@@ -1,5 +1,9 @@
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* lunar-launcher.cpp: Force stdout to have line buffering.
+
+2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* lunar-launcher.cpp: Add debug spew.
 
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
