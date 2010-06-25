@@ -19,6 +19,8 @@ class LayoutInformation {
 public:
 	/* @PropertyType=Geometry,Attached,GenerateAccessors */
 	const static int LayoutClipProperty;
+	/* @PropertyType=UIElement,IsCustom=true,Attached,GenerateAccessors */
+	const static int LayoutExceptionElementProperty;
 	/* @PropertyType=Rect,DefaultValue=Rect(),Attached,GenerateAccessors */
 	const static int LayoutSlotProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
@@ -32,6 +34,9 @@ public:
 
 	static void SetLayoutClip (DependencyObject *item, Geometry *clip);
 	static Geometry* GetLayoutClip (DependencyObject *item);
+
+	static void SetLayoutExceptionElement (DependencyObject *item, UIElement *el);
+	static UIElement *GetLayoutExceptionElement (DependencyObject *item);
 
 	static void SetLayoutSlot (DependencyObject *item, Rect *slot);
 	static Rect *GetLayoutSlot (DependencyObject *item);

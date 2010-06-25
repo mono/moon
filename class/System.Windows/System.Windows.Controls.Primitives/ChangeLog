@@ -1,3 +1,10 @@
+2010-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* LayoutInformation.cs: For lack of a better place, store the
+	  current LayoutExceptionElement on the deployment using the
+	  attached property
+	  LayoutInformation::CurrentExceptionElementProperty.
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Selector.cs: Updated to SL4 final API.

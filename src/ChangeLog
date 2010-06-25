@@ -1,3 +1,10 @@
+2010-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* layoutinformation.h: For lack of a better place, store the
+	  current LayoutExceptionElement on the deployment using the
+	  attached property
+	  LayoutInformation::CurrentExceptionElementProperty.
+
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/install-dialog.cpp: Explicitly disable gpu acceleration, since the

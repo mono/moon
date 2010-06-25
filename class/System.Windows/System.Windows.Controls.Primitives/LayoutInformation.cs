@@ -40,6 +40,7 @@ namespace System.Windows.Controls.Primitives {
 	public static class LayoutInformation {
 		private static readonly DependencyProperty LayoutClipProperty = DependencyProperty.Lookup (Kind.LAYOUTINFORMATION, "LayoutClip", typeof (Geometry));
 		private static readonly DependencyProperty LayoutSlotProperty = DependencyProperty.Lookup (Kind.LAYOUTINFORMATION, "LayoutSlot", typeof (Rect));
+		private static readonly DependencyProperty LayoutExceptionElementProperty = DependencyProperty.Lookup (Kind.LAYOUTINFORMATION, "LayoutExceptionElement", typeof (UIElement));
 
 		public static Rect GetLayoutSlot (FrameworkElement element)
 		{
@@ -53,7 +54,13 @@ namespace System.Windows.Controls.Primitives {
 
 		public static UIElement GetLayoutExceptionElement (Dispatcher dispatcher)
 		{
-			throw new NotImplementedException ();
+			return (UIElement) Deployment.Current.GetValue (LayoutExceptionElementProperty);
+		}
+
+
+		internal static void SetLayoutExceptionElement (Dispatcher dispatcher, UIElement element)
+		{
+			Deployment.Current.SetValue (LayoutExceptionElementProperty, element);
 		}
 
 		private static float[] GetRawLayoutData (FrameworkElement element)
