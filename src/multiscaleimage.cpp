@@ -653,6 +653,7 @@ MultiScaleImage::StopDownloading ()
 		ctx->image->Abort ();
 		ctx->image->Dispose ();
 		ctx->image->unref ();
+		delete ctx;
 	}
 	
 	g_ptr_array_set_size (downloaders, 0);

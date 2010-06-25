@@ -6,6 +6,7 @@
 	longer have to do a lookup.
 	(TileFailed): Same.
 	(GetBitmapImageContext): Removed as it is no longer needed.
+	(StopDownloading): Don't leak the BitmapImageContexts.
 
 2010-06-25  Jeffrey Stedfast  <fejj@novell.com>
 
