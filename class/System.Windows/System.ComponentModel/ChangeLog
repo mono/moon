@@ -1,3 +1,8 @@
+2010-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* DesignerProperties.cs: Implement the getter/setter for
+	  IsInDesignMode.
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ClosingEventArgs.cs:

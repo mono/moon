@@ -38,7 +38,7 @@ namespace System.ComponentModel {
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			return false;
+			return (bool) element.GetValue (IsInDesignModeProperty);
 		}
 
 		public static void SetIsInDesignMode (DependencyObject element, bool value)
@@ -46,7 +46,7 @@ namespace System.ComponentModel {
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			throw new NotImplementedException ();
+			element.SetValue (IsInDesignModeProperty, value);
 		}
 
 		public static bool IsInDesignTool {
