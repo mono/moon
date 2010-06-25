@@ -1,7 +1,7 @@
 2010-06-25  Jeffrey Stedfast  <fejj@novell.com>
 
-	* multiscaleimage.h: Made Emit*() methods private. Renamed
-	tile_available() to tile_opened() for consistency.
+	* multiscaleimage.h: Renamed tile_available() to tile_opened() for
+	consistency.
 
 2010-06-25  Jeffrey Stedfast  <fejj@novell.com>
 
