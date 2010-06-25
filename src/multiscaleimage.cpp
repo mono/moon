@@ -634,10 +634,10 @@ MultiScaleImage::TileFailed (BitmapImage *image)
 		n_downloading--;
 		
 		UpdateIsDownloading ();
+		Invalidate ();
 	}
 	
 	EmitImageFailed ();
-	Invalidate ();
 }
 
 BitmapImageContext *
