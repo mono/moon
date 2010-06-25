@@ -58,15 +58,18 @@ class MultiScaleImage : public MediaBase {
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int InternalViewportWidthProperty;
 	
-	bool cache_contains (Uri* filename, bool check_empty_tile);
-	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void tile_available (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void tile_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
+	void EmitImageOpenSucceeded ();
+	void EmitImageOpenFailed ();
+	void EmitMotionFinished ();
+	void EmitImageFailed ();
 	
 	BitmapImageContext *GetBitmapImageContext (BitmapImage *image);
 
@@ -94,17 +97,6 @@ class MultiScaleImage : public MediaBase {
 	virtual ~MultiScaleImage ();
 
  public:
-	void EmitImageOpenSucceeded ();
-	void EmitImageOpenFailed ();
-	void EmitMotionFinished ();
-	void EmitImageFailed ();
-	
-	void FadeFinished ();
-	void ZoomFinished ();
-	void PanFinished ();
-	void TileOpened (BitmapImage *image);
-	void TileFailed (BitmapImage *image);
-
 	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateAccessors */
 	const static int AllowDownloadingProperty;
 	/* @PropertyType=double,ReadOnly,DefaultValue=1.0,Version=2.0,GenerateGetter */
@@ -128,7 +120,7 @@ class MultiScaleImage : public MediaBase {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleImage ();
-
+	
 	//
 	// Overrides
 	//
@@ -156,6 +148,15 @@ class MultiScaleImage : public MediaBase {
 	int LogicalToElementY (int x, int y);
 	// There is no documentation in MSDN for this method, it only shows up in a few tests.
 	int GetSubImageCount ();
+	
+	//
+	// Callback Methods
+	//
+	void TileOpened (BitmapImage *image);
+	void TileFailed (BitmapImage *image);
+	void FadeFinished ();
+	void ZoomFinished ();
+	void PanFinished ();
 	
 	//
 	// Property Accessors

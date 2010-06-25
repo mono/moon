@@ -483,7 +483,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	if (!avail) {
 		ctx = new BitmapImageContext ();
 		ctx->image = new BitmapImage ();
-		ctx->image->AddHandler (ctx->image->ImageOpenedEvent, tile_available, this);
+		ctx->image->AddHandler (ctx->image->ImageOpenedEvent, tile_opened, this);
 		ctx->image->AddHandler (ctx->image->ImageFailedEvent, tile_failed, this);
 		g_ptr_array_add (downloaders, ctx);
 	} else
@@ -596,7 +596,7 @@ MultiScaleImage::PanFinished ()
 }
 
 void
-MultiScaleImage::tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
+MultiScaleImage::tile_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((MultiScaleImage *)closure)->TileOpened ((BitmapImage *)sender);
 }
@@ -720,7 +720,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		return;	
 	}
 	
-	// Process the downloaded tile
+	// Process downloaded tiles
 	for (guint i = 0; i < downloaders->len; i++) {
 		ctx = (BitmapImageContext *) downloaders->pdata[i];
 		
