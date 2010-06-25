@@ -504,7 +504,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 void
 MultiScaleImage::HandleDzParsed ()
 {
-	//if the source is a collection, fill the subimages list
+	// if the source is a collection, fill the subimages list
 	MultiScaleTileSource *source = GetSource ();
 	MultiScaleSubImageCollection *subs = GetSubImages ();
 
@@ -598,7 +598,6 @@ MultiScaleImage::PanFinished ()
 void
 MultiScaleImage::tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-//	LOG_MSI ("Tile downloaded %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
 	((MultiScaleImage *)closure)->TileOpened ((BitmapImage *)sender);
 }
 
@@ -617,7 +616,6 @@ MultiScaleImage::TileOpened (BitmapImage *image)
 void
 MultiScaleImage::tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-//	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
 	((MultiScaleImage *)closure)->TileFailed ((BitmapImage *)sender);
 }
 
@@ -729,7 +727,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		if (ctx->state != BitmapImageDone || !(surface = cairo_surface_reference (ctx->image->GetSurface (cr))))
 			continue;
 		
-//		Uri *tile = ctx->image->GetUriSource ();
 		cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), int_free);
 		cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), int_free);
 		
@@ -808,6 +805,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	double msivp_ox = GetViewportOrigin()->x;
 	double msivp_oy = GetViewportOrigin()->y;
 	double msivp_w = GetViewportWidth();
+	double fade = GetTileFade ();
 	
 	LOG_MSI ("\nMSI::RenderCollection\n");
 	
@@ -826,7 +824,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		subimages_sorted = true;
 	}
 
-	//using the "-1" index for the shared cache
+	// using the "-1" index for the shared cache
 	int shared_index = -1;
 	QTree *shared_cache = (QTree*)g_hash_table_lookup (cache, &shared_index);
 	if (!shared_cache)
@@ -842,31 +840,32 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
 		if (!subimage_cache)
 			g_hash_table_insert (cache, new int(index), (subimage_cache = qtree_new ()));
-
+		
 		double subvp_ox = sub_image->GetViewportOrigin()->x;
 		double subvp_oy = sub_image->GetViewportOrigin()->y;
 		double subvp_w = sub_image->GetViewportWidth();
 		double sub_w = sub_image->source->GetImageWidth ();
 		double sub_h = sub_image->source->GetImageHeight ();
 		double sub_ar = sub_image->GetAspectRatio();
-
-		//expressing the subimage viewport in main viewport coordinates.
+		
+		// expressing the subimage viewport in main viewport coordinates.
 		Rect sub_vp = Rect (-subvp_ox / subvp_w, -subvp_oy / subvp_w, 1.0/subvp_w, 1.0/(sub_ar * subvp_w));
-
-		//render only if the subimage viewport intersects with this viewport
+		
+		// render only if the subimage viewport intersects with this viewport
 		if (!sub_vp.IntersectsWith (viewport))
 			continue;
+		
 		LOG_MSI ("Intersects with main viewport...rendering\n");
-
+		
 		int layers;
 		if (frexp (MAX (sub_w, sub_h), &layers) == 0.5)
 			layers --;
-
+		
 		int optimal_layer;
 		frexp (msi_w / (subvp_w * msivp_w * MIN (1.0, sub_ar)), &optimal_layer);
 		optimal_layer = MIN (optimal_layer, layers);
 		LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
-
+		
 		int to_layer = -1;
 		int from_layer = optimal_layer;	
 		while (from_layer >= 0) {
@@ -921,9 +920,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			from_layer--;
 		}
 	
-		//render here
+		// render loop
 		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
-		double fade = GetTileFade ();
+		
 		if (from_layer >= 0) {
 			cairo_save (cr);
 			cairo_rectangle (cr, 0, 0, msi_w, msi_h);
@@ -1030,9 +1029,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		while (from_layer < optimal_layer) {
 			from_layer ++;
 
-			//if the subimage is unparsed, trigger the download
+			// if the subimage is unparsed, trigger the download
 			if (from_layer > dzits->GetMaxLevel () && !sub_dzits->IsDownloaded ()) {
-				sub_dzits->set_callbacks ((void(*)(MultiScaleImage*))uielement_invalidate, emit_image_failed, NULL, this);
+				sub_dzits->set_callbacks ((MultiScaleImageCallback) uielement_invalidate, emit_image_failed, NULL, this);
 				sub_dzits->Download ();
 				break;
 			}
@@ -1096,6 +1095,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
 	double vp_w = GetViewportWidth ();
+	double fade = GetTileFade ();
 	int optimal_layer;
 	int layers;
 	
@@ -1120,8 +1120,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 	int to_layer = -1;
 	int from_layer = optimal_layer;
-
-	//using the "-1" index for the single image case
+	
+	// using the "-1" index for the single image case
 	int index = -1;
 	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
 	if (!subimage_cache)
@@ -1150,7 +1150,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (image) {
 					double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
 					
-					if (*opacity > GetTileFade ())
+					if (*opacity > fade)
 						blending = true;
 					
 					found++;
@@ -1194,8 +1194,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	cairo_transform (cr, &render_xform);
 
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
-
-	double fade = GetTileFade ();
+	
 	int layer_to_render = MAX (0, from_layer);
 	while (layer_to_render <= to_layer) {
 		guint64 layers2 = pow2 (layers - layer_to_render);
@@ -1310,16 +1309,16 @@ MultiScaleImage::OnSourcePropertyChanged ()
 	//SetValue (MultiScaleImage::ViewportOriginProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportOriginProperty)->GetDefaultValue());
 	//SetValue (MultiScaleImage::ViewportWidthProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportWidthProperty)->GetDefaultValue());
 
-	//Invalidate the whole cache
+	// Invalidate the whole cache
 	if (cache) {
 		g_hash_table_destroy (cache);
 		cache = g_hash_table_new_full (g_int_hash, g_int_equal, int_free, (GDestroyNotify) qtree_destroy);
 	}
-
-	//Reset the subimages
+	
+	// Reset the subimages
 	GetSubImages()->Clear ();
-
-	//register the callback for InvalidateTileLayers
+	
+	// register the callback for InvalidateTileLayers
 	if (source)
 		source->set_invalidate_tile_layer_func (invalidate_tile_layer, this);
 
@@ -1352,11 +1351,10 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		SetInternalViewportWidth (args->GetNewValue ()->AsDouble ());
 		ClearValue (MultiScaleImage::ViewportWidthProperty, false);
 	} else if (args->GetId () == MultiScaleImage::TileFadeProperty) {
-		//There's 2 options here,
-		// - loop all the tiles, update their opacity, and only invalidate a subregion
-		// - Invalidate all, and compute the new opacity on the tiles that needs to be rendered.
-		//Both options are unfortunately quite expensive :(
-		//LOG_MSI ("TileFade changed to %f\n", args->GetNewValue()->AsDouble ());
+		// There's 2 options here,
+		//  - loop all the tiles, update their opacity, and only invalidate a subregion
+		//  - Invalidate all, and compute the new opacity on the tiles that needs to be rendered.
+		// Both options are unfortunately quite expensive :(
 		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::SourceProperty) {
 		OnSourcePropertyChanged ();

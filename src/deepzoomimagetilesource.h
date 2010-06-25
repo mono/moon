@@ -22,13 +22,13 @@
 #include "uri.h"
 #include "utils.h"
 
-typedef void (*msi_cb) (MultiScaleImage *msi);
+typedef void (* MultiScaleImageCallback) (MultiScaleImage *msi);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
-	msi_cb parsed_callback;
-	msi_cb failed_callback;
-	msi_cb sourcechanged_callback;
+	MultiScaleImageCallback parsed_callback;
+	MultiScaleImageCallback failed_callback;
+	MultiScaleImageCallback sourcechanged_callback;
 	MultiScaleImage *cb_userdata;
 	
 	Cancellable *get_resource_aborter;
@@ -60,7 +60,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	DeepZoomImageTileSource ();
 	DeepZoomImageTileSource (Uri *uri, bool nested = false);
 	
-	bool IsCollection () { return is_collection;}
+	bool IsCollection () { return is_collection; }
 	int GetMaxLevel () { return max_level; }
 	
 	MultiScaleSubImage *GetSubImage (guint index);
@@ -78,7 +78,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	void XmlWrite (char* buffer, gint32 offset, gint32 n);
 
-	void set_callbacks (msi_cb parsed, msi_cb failed, msi_cb source_changed, MultiScaleImage *userdata)
+	void set_callbacks (MultiScaleImageCallback parsed, MultiScaleImageCallback failed, MultiScaleImageCallback source_changed, MultiScaleImage *userdata)
 	{
 		parsed_callback = parsed;
 		failed_callback = failed;

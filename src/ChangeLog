@@ -1,3 +1,11 @@
+2010-06-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deepzoomimagetilesource.h: Renamed msi_cb to
+	MultiScaleImageCallback.
+
+	* multiscaleimage.cpp: Move GetTileFade() requests out of inner
+	loops.
+
 2010-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* layoutinformation.h: For lack of a better place, store the
