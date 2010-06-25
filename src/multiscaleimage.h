@@ -66,8 +66,6 @@ class MultiScaleImage : public MediaBase {
 	static void tile_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
-	BitmapImageContext *GetBitmapImageContext (BitmapImage *image);
-
 	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);
 	
@@ -147,8 +145,8 @@ class MultiScaleImage : public MediaBase {
 	//
 	// Callback Methods
 	//
-	void TileOpened (BitmapImage *image);
-	void TileFailed (BitmapImage *image);
+	void TileOpened (BitmapImageContext *ctx);
+	void TileFailed (BitmapImageContext *ctx);
 	void EmitImageOpenSucceeded ();
 	void EmitImageOpenFailed ();
 	void EmitMotionFinished ();

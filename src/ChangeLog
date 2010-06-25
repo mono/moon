@@ -1,5 +1,14 @@
 2010-06-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* multiscaleimage.cpp (DownloadTile): Optimization: pass the
+	BitmapImageContext as the closure argument to the event handlers.
+	(TileOpened): Now takes a BitmapImageContext argument so we no
+	longer have to do a lookup.
+	(TileFailed): Same.
+	(GetBitmapImageContext): Removed as it is no longer needed.
+
+2010-06-25  Jeffrey Stedfast  <fejj@novell.com>
+
 	* multiscaleimage.cpp (TileFailed): Only invalidate if we've given
 	up on downloading the tile. Requeued attempts should not
 	invalidate because nothing has changed visually.

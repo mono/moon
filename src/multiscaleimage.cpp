@@ -314,6 +314,7 @@ enum BitmapImageStatus {
 
 struct BitmapImageContext {
 	BitmapImageStatus state;
+	MultiScaleImage *msi;
 	BitmapImage *image;
 	QTree *node;
 	int retry;
@@ -483,8 +484,10 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	if (!avail) {
 		ctx = new BitmapImageContext ();
 		ctx->image = new BitmapImage ();
-		ctx->image->AddHandler (ctx->image->ImageOpenedEvent, tile_opened, this);
-		ctx->image->AddHandler (ctx->image->ImageFailedEvent, tile_failed, this);
+		ctx->msi = this;
+		
+		ctx->image->AddHandler (ctx->image->ImageOpenedEvent, tile_opened, ctx);
+		ctx->image->AddHandler (ctx->image->ImageFailedEvent, tile_failed, ctx);
 		g_ptr_array_add (downloaders, ctx);
 	} else
 		ctx = avail;
@@ -598,14 +601,14 @@ MultiScaleImage::PanFinished ()
 void
 MultiScaleImage::tile_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((MultiScaleImage *)closure)->TileOpened ((BitmapImage *)sender);
+	BitmapImageContext *ctx = (BitmapImageContext *) closure;
+	
+	ctx->msi->TileOpened (ctx);
 }
 
 void
-MultiScaleImage::TileOpened (BitmapImage *image)
+MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 {
-	BitmapImageContext *ctx = GetBitmapImageContext (image);
-	
 	ctx->state = BitmapImageDone;
 	n_downloading--;
 	
@@ -616,16 +619,16 @@ MultiScaleImage::TileOpened (BitmapImage *image)
 void
 MultiScaleImage::tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((MultiScaleImage *)closure)->TileFailed ((BitmapImage *)sender);
+	BitmapImageContext *ctx = (BitmapImageContext *) closure;
+	
+	ctx->msi->TileFailed (ctx);
 }
 
 void
-MultiScaleImage::TileFailed (BitmapImage *image)
+MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 {
-	BitmapImageContext *ctx = GetBitmapImageContext (image);
-	
 	if (ctx->retry < 5) {
-		image->SetUriSource (image->GetUriSource ());
+		ctx->image->SetUriSource (ctx->image->GetUriSource ());
 		ctx->retry++;
 	} else {
 		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
@@ -638,20 +641,6 @@ MultiScaleImage::TileFailed (BitmapImage *image)
 	}
 	
 	EmitImageFailed ();
-}
-
-BitmapImageContext *
-MultiScaleImage::GetBitmapImageContext (BitmapImage *image)
-{
-	BitmapImageContext *ctx;
-	
-	for (guint i = 0; i < downloaders->len; i++) {
-		ctx = (BitmapImageContext *) downloaders->pdata[i];
-		if (ctx->image == image)
-			return ctx;
-	}
-	
-	return NULL;
 }
 
 void
