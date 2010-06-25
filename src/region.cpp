@@ -133,13 +133,13 @@ Region::ClipBox ()
 void 
 Region::Draw (cairo_t *cr)
 {
-	int i, count;
 	GdkRectangle *rects;
+	int count;
 
-	gdk_region_get_rectangles (gdkregion, &rects, &i);
+	gdk_region_get_rectangles (gdkregion, &rects, &count);
 
-	for (count = 0; count < i; count++)
-		cairo_rectangle (cr, rects [count].x, rects [count].y, rects [count].width, rects [count].height);
+	for (int i = 0; i < count; i++)
+		cairo_rectangle (cr, rects [i].x, rects [i].y, rects [i].width, rects [i].height);
 
 	g_free (rects);
 }
