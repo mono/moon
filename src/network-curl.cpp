@@ -778,6 +778,8 @@ CurlHttpHandler::GetData ()
 	long timeout;
 	struct timespec tv;
 
+	SetCurrentDeployment (true, true);
+
 	do {
 		if (handles->IsEmpty ()) {
 			pthread_mutex_lock (&worker_mutex);
