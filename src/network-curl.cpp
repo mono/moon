@@ -487,13 +487,20 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 
 	if (state == STOPPED) {
 		curl_easy_getinfo (request->GetHandle (), CURLINFO_RESPONSE_CODE, &status);
-		statusText = g_strndup ((char*)ptr, size-2);
-		if (status == 200) {
-			state = STARTED;
-			bridge->AddCallback (_started, this, NULL, NULL, NULL, NULL);
-		} else if (status > 302) {
-			request->AbortImpl ();
-		}
+
+		// The first line
+		// Parse status line: "HTTP/1.X # <status>"
+		// Split on the space character and select the third entry
+		char *statusLine = g_strndup ((char *) ptr, size); /* Null terminate string */
+		char **strs = g_strsplit (statusLine, " ", 3);
+		if (strs [0] != NULL && strs [1] != NULL && strs [2] != NULL)
+			statusText = g_strdup (strs [2]);
+		g_free (statusLine);
+		g_strfreev (strs);
+
+		SetStatus (status, statusText);
+
+		state = STARTED;
 		return;
 	}
 
@@ -523,6 +530,10 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 
 	if (state == STOPPED || state == DONE)
 		return size;
+
+	if (state == STARTED)
+		bridge->AddCallback (_started, this, NULL, NULL, NULL, NULL);
+
 	state = DATA;
 
 	if (IsAborted ())
@@ -542,7 +553,6 @@ CurlDownloaderResponse::Started ()
 
 	SetCurrentDeployment ();
 	state = HEADER;
-	SetStatus (status, statusText);
 	request->Started ();
 	if (state == FINISHED)
 		Finished ();

@@ -1,5 +1,13 @@
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network-curl.cpp: Don't abort if status isn't 200, start the request instead
+	(even though the status is a failure status, we might get data we need).
+	Always call SetStatus, and compute the status text as the browsers do. We also
+	can't call HttpRequest::Started until all headers have been processed, so
+	do that the first time we get data.
+
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.cpp|h: CurlDownloaderRequest::AbortImpl: Don't use g_idle_add,
 	use EO's AddTickCall instead, which ensures the object doesn't get freed
 	before the callback is executed. Also use a callback to close the curl handle,
