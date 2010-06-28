@@ -1,5 +1,12 @@
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network-curl.cpp|h: CurlDownloaderRequest::AbortImpl: Don't use g_idle_add,
+	use EO's AddTickCall instead, which ensures the object doesn't get freed
+	before the callback is executed. Also use a callback to close the curl handle,
+	since we may already be inside a curl callback and we'll deadlock.
+
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.cpp: CurlHttpHandler::GetData: we need to lock the handles list
 	as long as we're accessing nodes which are still in the list.
 

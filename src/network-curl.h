@@ -77,6 +77,7 @@ class CurlHttpHandler : public HttpHandler {
 	void CloseHandle (CurlDownloaderRequest* res, CURL* handle);
 
 	void GetData ();
+	void AddCallback (CallData *data);
 	void AddCallback (CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val);
 	bool IsDataThread ();
 	bool IsShuttingDown () { return shutting_down; }

@@ -49,7 +49,7 @@ class CurlDownloaderResponse;
 static size_t header_received (void *ptr, size_t size, size_t nmemb, void *data);
 static size_t data_received (void *ptr, size_t size, size_t nmemb, void *data);
 static void _open (EventObject *sender);
-static gboolean _abort (void *sender);
+static void _abort (EventObject *sender);
 
 // These 4 methods are for asynchronous operation
 static void _started (CallData *sender);
@@ -205,11 +205,10 @@ _open (EventObject *sender)
 	((ResponseClosure*)sender)->res->Open ();
 }
 
-static gboolean
-_abort (void *req)
+static void
+_abort (EventObject *req)
 {
 	((CurlDownloaderRequest*)req)->Abort ();
-	return FALSE;
 }
 
 // These 4 methods are for asynchronous operation
@@ -365,14 +364,20 @@ CurlDownloaderResponse::Open ()
 	bridge->OpenHandle (request, request->GetHandle ());
 }
 
+static void
+_close_handle (CallData *cd)
+{
+	cd->bridge->CloseHandle (cd->req, cd->req->GetHandle ());
+	cd->req->AddTickCall (_abort);
+}
+
 void
 CurlDownloaderRequest::AbortImpl () {
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::Abort request:%p response:%p\n", this, response);
 
 	if (bridge->IsDataThread ()) {
 		aborting = TRUE;
-		bridge->CloseHandle (this, GetHandle ());
-		g_idle_add (_abort, this);
+		bridge->AddCallback (new CallData (bridge, _close_handle, this));
 	} else {
 		if (state != OPENED)
 			return;
@@ -861,12 +866,17 @@ CurlHttpHandler::GetData ()
 }
 
 void
-CurlHttpHandler::AddCallback (CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val)
+CurlHttpHandler::AddCallback (CallData *data)
 {
 	VERIFY_CURL_THREAD
 
-	CallData* data = new CallData (this, func, res, buffer, size, name, val);
 	calls = g_list_append (calls, data);
+}
+
+void
+CurlHttpHandler::AddCallback (CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val)
+{
+	AddCallback (new CallData (this, func, res, buffer, size, name, val));
 }
 
 
