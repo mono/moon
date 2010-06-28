@@ -831,7 +831,7 @@ Deployment::ReportLeaks ()
 
 		printf ("Leaked objects by type:\n");
 		for (int i = 0; i < (int) top_n_by_type->len; i++) {
-			printf ("\t%d instances leaked of type %s\n", GPOINTER_TO_INT (g_hash_table_lookup (by_type, top_n_by_type->pdata [i])), top_n_by_type->pdata [i]);
+			printf ("\t%d instances leaked of type %s\n", GPOINTER_TO_INT (g_hash_table_lookup (by_type, top_n_by_type->pdata [i])), (char *) top_n_by_type->pdata [i]);
 		}
 		g_ptr_array_free (top_n_by_type, true);
 		g_ptr_array_free (last_n, true);

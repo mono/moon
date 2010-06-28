@@ -1,5 +1,9 @@
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Fix compiler warning.
+
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h:
 	* runtime.h:
 	* runtime.cpp:
