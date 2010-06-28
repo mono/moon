@@ -471,6 +471,8 @@ void
 HttpResponse::AppendHeader (const char *header, const char *value)
 {
 	LOG_DOWNLOADER ("HttpResponse::AppendHeader ('%s', '%s')\n", header, value);
+	VERIFY_MAIN_THREAD;
+
 	if (headers == NULL)
 		headers = new List ();
 	headers->Append (new HttpHeader (header, value));

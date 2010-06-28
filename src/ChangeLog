@@ -1,5 +1,9 @@
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network.cpp: Verify that HttpResponse::AppendHeader is main-thread only.
+
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.cpp: Don't abort if status isn't 200, start the request instead
 	(even though the status is a failure status, we might get data we need).
 	Always call SetStatus, and compute the status text as the browsers do. We also
