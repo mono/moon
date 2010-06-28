@@ -1,5 +1,10 @@
 2010-06-28  Alan McGovern  <amcgovern@novell.com>
 
+	* MoonlightTypeConverter.cs: MoonlightTypeConverter needs to
+	  work with CultureInfos too.
+
+2010-06-28  Alan McGovern  <amcgovern@novell.com>
+
 	* NativeMethods.cs: Add MoonError* parameters to our
 	  measure/arrange/UpdateLayout functions to ensure that errors
 	  are propagated correctly.

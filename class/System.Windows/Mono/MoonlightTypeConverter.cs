@@ -126,6 +126,9 @@ namespace Mono {
 						return new BitmapCache ();
 				}
 
+				if (destinationType == typeof (System.Globalization.CultureInfo))
+					return CultureInfo.GetCultureInfo (str_val);
+
 				if (destinationType == typeof (ImageSource) ||
 				    destinationType == typeof (BitmapSource) ||
 				    destinationType == typeof (BitmapImage))
