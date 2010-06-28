@@ -573,9 +573,6 @@ CurlDownloaderResponse::Finished ()
 		request->Succeeded ();
 }
 
-static pthread_t worker_thread;
-static pthread_mutex_t worker_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t worker_cond = PTHREAD_COND_INITIALIZER;
 static gboolean Emit (void* data);
 
 class CurlNode : public List::Node {
@@ -642,6 +639,9 @@ CurlHttpHandler::CurlHttpHandler () :
 	sharecurl = curl_share_init();
 	multicurl = curl_multi_init ();
 	curl_share_setopt (sharecurl, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
+
+	pthread_mutex_init (&worker_mutex, NULL);
+	pthread_cond_init (&worker_cond, NULL);
 }
 
 HttpRequest *
@@ -683,6 +683,9 @@ CurlHttpHandler::Dispose ()
 
 	curl_multi_cleanup(multicurl);
 	curl_global_cleanup ();
+
+	pthread_mutex_destroy (&worker_mutex),
+	pthread_cond_destroy (&worker_cond);
 
 	HttpHandler::Dispose ();
 }

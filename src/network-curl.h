@@ -56,6 +56,9 @@ class CurlHttpHandler : public HttpHandler {
 	int running;
 	bool quit;
 	bool shutting_down;
+	pthread_t worker_thread;
+	pthread_mutex_t worker_mutex;
+	pthread_cond_t worker_cond;
 
 	// available handles pool
 	Queue* pool;

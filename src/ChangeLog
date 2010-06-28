@@ -1,5 +1,11 @@
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network-curl.cpp|h: The lifetime of the curl thread is managed by instance
+	data on CurlHttpHandler, so make the thread and related data structures
+	instance fields on CurlHttpHandler to make things consistent.
+
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.cpp: Curl thread: we need to set the current deployment and
 	initialize it for this thread.
 
