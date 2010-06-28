@@ -70,8 +70,8 @@ class CurlHttpHandler : public HttpHandler {
 
 	CURL* RequestHandle ();
 	void ReleaseHandle (CURL* handle);
-	void OpenHandle (HttpRequest* res, CURL* handle);
-	void CloseHandle (HttpRequest* res, CURL* handle);
+	void OpenHandle (CurlDownloaderRequest* res, CURL* handle);
+	void CloseHandle (CurlDownloaderRequest* res, CURL* handle);
 
 	void GetData ();
 	void AddCallback (CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val);
@@ -81,19 +81,14 @@ class CurlHttpHandler : public HttpHandler {
 
 class CallData {
 public:
-	CallData (CurlHttpHandler *bridge, CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val)
-		: bridge(bridge), func(func), res (res), buffer(buffer), size(size), name(name), val(val)
-	{}
-
-	CallData (CurlHttpHandler *bridge, CallHandler func, HttpRequest *req) :
-		bridge(bridge), func(func), req(req), buffer(NULL), size(0), name(NULL), val(NULL) {}
-
+	CallData (CurlHttpHandler *bridge, CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val);
+	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req);
 	~CallData ();
 
 	CurlHttpHandler *bridge;
 	CallHandler func;
 	HttpResponse *res;
-	HttpRequest *req;
+	CurlDownloaderRequest *req;
 	char *buffer;
 	size_t size;
 	const char *name;

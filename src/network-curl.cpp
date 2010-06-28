@@ -586,10 +586,18 @@ public:
 
 class HandleNode : public List::Node {
 public:
-	HttpRequest* res;
-	HandleNode (HttpRequest* res) : Node (), res(res) {};
-	CURL* GetHandle () { return ((CurlDownloaderRequest*)res)->GetHandle (); }
-	void Close () { return ((CurlDownloaderRequest*)res)->Close (); }
+	CurlDownloaderRequest* res;
+	HandleNode (CurlDownloaderRequest* res) : Node (), res(res) {
+		if (res)
+			res->ref ();
+	};
+	virtual ~HandleNode ()
+	{
+		if (res)
+			res->unref ();
+	}
+	CURL* GetHandle () { return res->GetHandle (); }
+	void Close () { return res->Close (); }
 };
 
 static void*
@@ -719,7 +727,7 @@ CurlHttpHandler::ReleaseHandle (CURL* handle)
 }
 
 void
-CurlHttpHandler::OpenHandle (HttpRequest* res, CURL* handle)
+CurlHttpHandler::OpenHandle (CurlDownloaderRequest* res, CURL* handle)
 {
 	LOG_CURL ("BRIDGE CurlHttpHandler::OpenHandle res:%p handle:%p\n", res, handle);
 
@@ -733,7 +741,7 @@ CurlHttpHandler::OpenHandle (HttpRequest* res, CURL* handle)
 }
 
 void
-CurlHttpHandler::CloseHandle (HttpRequest* res, CURL* handle)
+CurlHttpHandler::CloseHandle (CurlDownloaderRequest* res, CURL* handle)
 {
 	LOG_CURL ("BRIDGE CurlHttpHandler::CloseHandle res:%p handle:%p\n", res, handle);
 
@@ -863,6 +871,25 @@ CurlHttpHandler::IsDataThread ()
 	return pthread_equal (pthread_self (), worker_thread);
 }
 
+CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req)
+	: bridge(bridge), func(func), res(NULL), req(req), buffer(NULL), size(0), name(NULL), val(NULL)
+{
+	if (bridge)
+		bridge->ref ();
+	if (req)
+		req->ref ();
+}
+
+CallData::CallData (CurlHttpHandler *bridge, CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val)
+	: bridge(bridge), func(func), res (res), req(NULL), buffer(buffer), size(size), name(name), val(val)
+{
+	if (bridge)
+		bridge->ref ();
+	if (res)
+		res->ref ();
+	req = NULL;
+}
+
 CallData::~CallData ()
 {
 	if (buffer)
@@ -871,4 +898,10 @@ CallData::~CallData ()
 		g_free ((gpointer) name);
 	if (val)
 		g_free ((gpointer) val);
+	if (req)
+		req->unref ();
+	if (res)
+		res->unref ();
+	if (bridge)
+		bridge->unref ();
 }

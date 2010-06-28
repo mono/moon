@@ -1,5 +1,11 @@
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network-curl.cpp: Ensure CallData fields are reffed properly. Make
+	fields/arguments typed more strictly, and ensure HandleNode refs the
+	Request is stores in a field.
+
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Fix compiler warning.
 
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
