@@ -1,3 +1,9 @@
+2010-06-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Update the binding tests
+	  to SL4 compatibility. Add SilverlightBugs and MoonlightBugs
+	  as appropriate.
+
 2010-06-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs: Add

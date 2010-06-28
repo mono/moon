@@ -2388,7 +2388,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 			Assert.Throws<XamlParseException> (() => {
 				Canvas canvas = (Canvas) XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     Width=""400"" Height=""300"">
     <Canvas.Resources>
         <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
@@ -2405,6 +2405,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[SilverlightBug ("Throws an unexpected XamlParseException")]
 		public void XamlBindAfterResourcesb ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -2445,6 +2446,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[SilverlightBug("They think 'Path' is part of a static resource for some bizarre reason")]
 		public void XamlBindAfterResources2b ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -2485,6 +2487,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[SilverlightBug("They think 'Converter' is part of a static resource for some bizarre reason")]
 		public void XamlBindAfterResources3b ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -2524,6 +2527,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[SilverlightBug ("Throws an unexpected XamlParseException")]
 		public void XamlBindBeforeResourcesb ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -2583,9 +2587,10 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlBindingPropertyPathPriority ()
 		{
-			Canvas canvas = (Canvas) XamlReader.Load(@"	
+			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"
 <Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 Width=""100"" Height=""100"">
@@ -2594,12 +2599,7 @@ Width=""100"" Height=""100"">
 	</Canvas.Resources>
 	<TextBlock x:Name=""text"" Text=""{Binding Width, Path=Height, Source={StaticResource rect}, Mode=OneTime, Path=RadiusX}""/>
 </Canvas>
-");
-			
-			TextBlock block = (TextBlock) canvas.Children[0];
-			object text = block.ReadLocalValue (TextBlock.TextProperty);
-			Assert.IsTrue (text is BindingExpressionBase);
-			Assert.AreEqual ("4", block.Text);
+"));
 		}
 
 		[TestMethod]
@@ -2659,6 +2659,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 							
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlBindWithContent2 ()
 		{
 			TextProp c = (TextProp) XamlReader.Load (@"
@@ -2670,7 +2671,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		<clr:String>'        This contains {Binding} and {StaticResource} and {TemplateBinding} '</clr:String>
 	</c:TextProp.MyText>
 </c:TextProp>");
-			Assert.AreEqual ("'        This contains {Binding} and {StaticResource} and {TemplateBinding} '", c.MyText, "#1");
+			Assert.AreEqual ("' This contains {Binding} and {StaticResource} and {TemplateBinding} '", c.MyText, "#1");
 		}
 			
 		[TestMethod]
@@ -2694,11 +2695,12 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlStaticResource ()
 		{
-			Canvas canvas = (Canvas)XamlReader.Load (@"
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     Width=""400"" Height=""300"">
 	<Rectangle x:Name=""Before"" Fill=""{Binding Source={StaticResource brush}}"" />
     <Canvas.Resources>
@@ -2707,14 +2709,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 	<Rectangle x:Name=""After"" Fill=""{Binding Source={StaticResource brush}}"" />
 	<Rectangle x:Name=""Invalid"" Fill=""{Binding Source={StaticResource NOTHERE}}"" />
 </Canvas>
-");
-			Rectangle before = (Rectangle) canvas.FindName ("Before");
-			Rectangle after = (Rectangle) canvas.FindName ("After");
-			Rectangle invalid = (Rectangle) canvas.FindName ("Invalid");
-			Assert.IsNull (before.Fill, "#1");
-			Assert.IsNotNull (after.Fill, "#2");
-			Assert.AreEqual (after.Fill.GetValue (SolidColorBrush.ColorProperty).ToString (), Colors.Blue.ToString (), "#3");
-			Assert.IsNull (invalid.Fill, "#4");
+"));
 		}
 
 		[TestMethod]
@@ -2758,10 +2753,10 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlStaticResource4 ()
 		{
-			Assert.Throws<XamlParseException> (() => {
-				XamlReader.Load (@"
+			var c = (Canvas) XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
     Width=""400"" Height=""300"">
@@ -2773,9 +2768,10 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 	</TextBlock>
 </Canvas>
 ");
-			});
+            // Where does the binding go?
+            Assert.IsNull(((TextBlock)c.Children[0]).GetBindingExpression(TextBlock.TextProperty), "#1");
 		}
-							
+
 		[TestMethod]
 		[Asynchronous]
 		[Ignore ("This blows up silverlight")]
@@ -2811,11 +2807,12 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 							
 		[TestMethod]
 		[Asynchronous]
+		[Ignore("This blows up silverlight")]
 		public void XamlTemplateBinding2 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
 <ContentControl
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
     xmlns:clr=""clr-namespace:Mono.Moonlight"">
     <ContentControl.Template>
@@ -2840,11 +2837,12 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore("This blows up silverlight")]
 		public void XamlTemplateBinding3 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
 <ContentControl
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
     xmlns:clr=""clr-namespace:Mono.Moonlight"">
     <ContentControl.Template>
