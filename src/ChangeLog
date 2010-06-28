@@ -1,5 +1,10 @@
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* network-curl.cpp: CurlHttpHandler::GetData: we need to lock the handles list
+	as long as we're accessing nodes which are still in the list.
+
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* network-curl.cpp|h: The lifetime of the curl thread is managed by instance
 	data on CurlHttpHandler, so make the thread and related data structures
 	instance fields on CurlHttpHandler to make things consistent.

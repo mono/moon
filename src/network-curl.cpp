@@ -806,11 +806,11 @@ CurlHttpHandler::GetData ()
 					handles->Lock ();
 					List* list = handles->LinkedList ();
 					HandleNode* node = (HandleNode*) list->Find (find_easy_handle, msg->easy_handle);
-					handles->Unlock ();
 					if (node) {
 						CallData* data = new CallData (this, _close, node->res);
 						calls = g_list_append (calls, data);
 					}
+					handles->Unlock ();
 				}
 			}
 		}
