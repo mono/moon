@@ -1,5 +1,11 @@
 2010-06-28  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp: Elements which are not visible should
+	  not be checked for any dirty flags. Prevents spurious
+	  warnings about bailing out after 250 passes.
+
+2010-06-28  Alan McGovern  <amcgovern@novell.com>
+
 	* grid.h:
 	* shape.h:
 	* panel.h:

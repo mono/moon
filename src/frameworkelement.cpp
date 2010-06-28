@@ -814,12 +814,14 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 		i++;
 		// Figure out which type of elements we should be selected - dirty measure, arrange or size
 		UIElementFlags flag = NONE;
-		if (element->HasFlag (DIRTY_MEASURE_HINT))
-			flag = DIRTY_MEASURE_HINT;
-		else if (element->HasFlag (DIRTY_ARRANGE_HINT))
-			flag = DIRTY_ARRANGE_HINT;
-		else if (element->HasFlag (DIRTY_SIZE_HINT))
-			flag = DIRTY_SIZE_HINT;
+		if (element->GetVisibility () == VisibilityVisible) {
+			if (element->HasFlag (DIRTY_MEASURE_HINT))
+				flag = DIRTY_MEASURE_HINT;
+			else if (element->HasFlag (DIRTY_ARRANGE_HINT))
+				flag = DIRTY_ARRANGE_HINT;
+			else if (element->HasFlag (DIRTY_SIZE_HINT))
+				flag = DIRTY_SIZE_HINT;
+		}
 
 		if (flag != NONE) {
 			DeepTreeWalker measure_walker (element);
@@ -896,7 +898,7 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 				GetDeployment ()->LayoutUpdated ();
 			
 			// If emitting LayoutUpdate invalidated measures/arranges, we should loop again
-			if (element->HasFlag (DIRTY_MEASURE_HINT) || element->HasFlag (DIRTY_ARRANGE_HINT))
+			if (element->GetVisibility () == VisibilityVisible && (element->HasFlag (DIRTY_MEASURE_HINT) || element->HasFlag (DIRTY_ARRANGE_HINT)))
 				updated = false;
 			else
 				break;
