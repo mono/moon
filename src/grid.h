@@ -205,8 +205,8 @@ class Grid : public Panel {
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void ComputeBounds ();
 
-	virtual Size MeasureOverride (Size availableSize);
-	virtual Size ArrangeOverride (Size finalSize);
+	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
+	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 
 	// property accessors
 	ColumnDefinitionCollection *GetColumnDefinitions ();

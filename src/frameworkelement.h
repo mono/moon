@@ -18,9 +18,9 @@
 #include "enums.h"
 
 /* @CBindingRequisite */
-typedef Size (*MeasureOverrideCallback)(Size availableSize);
+typedef Size (*MeasureOverrideCallback)(Size availableSize, MoonError *error);
 /* @CBindingRequisite */
-typedef Size (*ArrangeOverrideCallback)(Size finalSize);
+typedef Size (*ArrangeOverrideCallback)(Size finalSize, MoonError *error);
 /* @CBindingRequisite */
 typedef UIElement *(*GetDefaultTemplateCallback)(FrameworkElement *element);
 /* @CBindingRequisite */
@@ -113,8 +113,8 @@ public:
 	// 2.0 methods
 	//
 	// Layout
-	virtual void Measure (Size availableSize);
-	virtual void Arrange (Rect finalRect);
+	virtual void MeasureWithError (Size availableSize, MoonError *error);
+	virtual void ArrangeWithError (Rect finalRect, MoonError *error);
 
 	/* @GeneratePInvoke,GenerateCBinding */
 	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
@@ -126,9 +126,9 @@ public:
 	// should override these two methods.
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual Size MeasureOverride (Size availableSize);
+	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual Size ArrangeOverride (Size finalSize);
+	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 	virtual Size ComputeActualSize ();
 
 	

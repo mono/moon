@@ -1,3 +1,8 @@
+2010-06-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: regen.
+
 2010-06-24  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: Regen the sec. attrs.

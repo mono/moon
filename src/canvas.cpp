@@ -97,13 +97,13 @@ Canvas::IsLayoutContainer ()
 }
 
 Size
-Canvas::MeasureOverride (Size availableSize)
+Canvas::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size childSize = Size (INFINITY, INFINITY); 
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		child->Measure (childSize);
+		child->MeasureWithError (childSize, error);
 	}
 
 	Size desired = Size (0,0);
@@ -112,14 +112,14 @@ Canvas::MeasureOverride (Size availableSize)
 }
 
 Size 
-Canvas::ArrangeOverride (Size finalSize)
+Canvas::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (FrameworkElement *child = (FrameworkElement *)walker.Step ()) {
 		Size desired = child->GetDesiredSize ();
 		Rect child_final = Rect (GetLeft (child), GetTop (child),
 					 desired.width, desired.height);
-		child->Arrange (child_final);
+		child->ArrangeWithError (child_final, error);
 		//child->ClearValue (LayoutInformation::LayoutClipProperty);
 	}
 

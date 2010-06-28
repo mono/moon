@@ -111,8 +111,8 @@ class TextBlock : public FrameworkElement {
 	// Overrides
 	//
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
-	virtual Size MeasureOverride (Size availableSize);
-	virtual Size ArrangeOverride (Size finalSize);
+	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
+	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 	virtual Size ComputeActualSize ();
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();

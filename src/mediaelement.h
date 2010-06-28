@@ -217,8 +217,8 @@ class MediaElement : public FrameworkElement {
 	// bounds and layout
 	virtual Rect GetCoverageBounds ();
 	virtual Size ComputeActualSize ();
-	virtual Size MeasureOverride (Size availableSize);
-	virtual Size ArrangeOverride (Size finalSize);
+	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
+	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 
 	// hit testing
 	virtual bool CanFindElement () { return true; }

@@ -416,7 +416,9 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 	if (adjust) {
-		specified = MeasureOverride (specified);
+		// FIXME: Propagate error properly
+		MoonError error;
+		specified = MeasureOverrideWithError (specified, &error);
 		paint = Rect ((stretched.width - specified.width) * 0.5, (stretched.height - specified.height) * 0.5, specified.width, specified.height);
 	}
 	
@@ -448,7 +450,9 @@ Image::ComputeActualSize ()
 	if (source && source->GetSurface (NULL)) {
 		Size available = Size (INFINITY, INFINITY);
 		available = ApplySizeConstraints (available);
-		result = MeasureOverride (available);
+		// FIXME - Propagate properly
+		MoonError error;
+		result = MeasureOverrideWithError (available, &error);
 		result = ApplySizeConstraints (result);
 	}
 
@@ -456,7 +460,7 @@ Image::ComputeActualSize ()
 }
 
 Size
-Image::MeasureOverride (Size availableSize)
+Image::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = availableSize;
 	Rect shape_bounds = Rect ();
@@ -509,7 +513,7 @@ Image::MeasureOverride (Size availableSize)
 }
 
 Size
-Image::ArrangeOverride (Size finalSize)
+Image::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Size arranged = finalSize;
 	Rect shape_bounds = Rect ();

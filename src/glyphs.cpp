@@ -435,7 +435,7 @@ Glyphs::ComputeActualSize ()
 }
 
 Size
-Glyphs::MeasureOverride (Size availableSize)
+Glyphs::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	if (dirty)
 		Layout ();
@@ -444,7 +444,7 @@ Glyphs::MeasureOverride (Size availableSize)
 }
 
 Size
-Glyphs::ArrangeOverride (Size finalSize)
+Glyphs::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	if (dirty)
 		Layout ();

@@ -53,8 +53,8 @@ namespace Mono {
 		NoPolicy
 	}
 
-	internal delegate Size MeasureOverrideCallback (Size availableSize);
-	internal delegate Size ArrangeOverrideCallback (Size finalSize);
+	internal delegate Size MeasureOverrideCallback (Size availableSize, ref MoonError error);
+	internal delegate Size ArrangeOverrideCallback (Size finalSize, ref MoonError error);
 	internal delegate void LoadedCallback (IntPtr fwe_ptr);
 
 	internal delegate IntPtr GetDefaultStyleCallback (IntPtr type_info_ptr);

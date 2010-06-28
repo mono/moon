@@ -1307,7 +1307,7 @@
 +SC-M: System.Void Mono.NativeMethods::touch_point_set_touch_device(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::uielement_arrange(System.IntPtr,System.Windows.Rect)
++SC-M: System.Void Mono.NativeMethods::uielement_arrange_with_error_(System.IntPtr,System.Windows.Rect,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_element_added(System.IntPtr,System.IntPtr)
@@ -1328,7 +1328,7 @@
 +SC-M: System.Void Mono.NativeMethods::uielement_invalidate_measure(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::uielement_measure(System.IntPtr,System.Windows.Size)
++SC-M: System.Void Mono.NativeMethods::uielement_measure_with_error_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_release_mouse_capture(System.IntPtr)
@@ -1442,10 +1442,10 @@
 +SC-M: System.Windows.Rect Mono.NativeMethods::text_pointer_get_character_rect(System.IntPtr,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
-+SC-M: System.Windows.Size Mono.NativeMethods::framework_element_arrange_override(System.IntPtr,System.Windows.Size)
++SC-M: System.Windows.Size Mono.NativeMethods::framework_element_arrange_override_with_error_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Windows.Size Mono.NativeMethods::framework_element_measure_override(System.IntPtr,System.Windows.Size)
++SC-M: System.Windows.Size Mono.NativeMethods::framework_element_measure_override_with_error_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Windows.Size Mono.NativeMethods::uielement_get_desired_size(System.IntPtr)

@@ -1531,7 +1531,7 @@ RichTextBoxView::ComputeActualSize ()
 }
 
 Size
-RichTextBoxView::MeasureOverride (Size availableSize)
+RichTextBoxView::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = Size ();
 	
@@ -1547,7 +1547,7 @@ RichTextBoxView::MeasureOverride (Size availableSize)
 }
 
 Size
-RichTextBoxView::ArrangeOverride (Size finalSize)
+RichTextBoxView::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Size arranged = Size ();
 	

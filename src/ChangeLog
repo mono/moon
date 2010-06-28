@@ -1,3 +1,37 @@
+2010-06-28  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* shape.h:
+	* panel.h:
+	* media.h:
+	* glyphs.h:
+	* border.h:
+	* grid.cpp:
+	* canvas.h:
+	* textbox.h:
+	* dirty.cpp:
+	* media.cpp:
+	* panel.cpp:
+	* shape.cpp:
+	* glyphs.cpp:
+	* canvas.cpp:
+	* border.cpp:
+	* textbox.cpp:
+	* uielement.h:
+	* textblock.h:
+	* usercontrol.h:
+	* uielement.cpp:
+	* richtextbox.h:
+	* textblock.cpp:
+	* mediaelement.h:
+	* richtextbox.cpp:
+	* usercontrol.cpp:
+	* mediaelement.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Add MoonError* parameters to our
+	  measure/arrange/UpdateLayout functions to ensure that errors
+	  are propagated correctly.
+
 2010-06-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (DownloadTile): Optimization: pass the

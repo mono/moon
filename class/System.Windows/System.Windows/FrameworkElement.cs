@@ -35,6 +35,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Automation;
+using System.Windows.Controls.Primitives;
 
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
@@ -187,30 +188,24 @@ namespace System.Windows {
 			InvalidateSubtreeBindings ();
 		}
 
-		private Size InvokeMeasureOverride (Size availableSize)
+		private Size InvokeMeasureOverride (Size availableSize, ref MoonError error)
 		{
 			try {
 				return MeasureOverride (availableSize);
 			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeMeasureOverride: {0}", ex);
-				} catch {
-					// Ignore
-				}
+				LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
+				error = new MoonError (ex);
 			}
 			return new Size (); 
 		}
 
-		private Size InvokeArrangeOverride (Size finalSize)
+		private Size InvokeArrangeOverride (Size finalSize, ref MoonError error)
 		{
 			try {
 				return ArrangeOverride (finalSize);
 			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeArrangeOverride: {0}", ex);
-				} catch {
-					// Ignore
-				}
+				LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
+				error = new MoonError (ex);
 			}
 			return new Size ();
 		}

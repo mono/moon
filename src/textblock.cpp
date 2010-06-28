@@ -234,7 +234,7 @@ TextBlock::ComputeActualSize ()
 };
 
 Size
-TextBlock::MeasureOverride (Size availableSize)
+TextBlock::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Thickness padding = *GetPadding ();
 	Size constraint;
@@ -250,7 +250,7 @@ TextBlock::MeasureOverride (Size availableSize)
 }
 
 Size
-TextBlock::ArrangeOverride (Size finalSize)
+TextBlock::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Thickness padding = *GetPadding ();
 	Size constraint;

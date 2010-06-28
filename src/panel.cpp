@@ -175,7 +175,7 @@ Panel::EmptyBackground ()
 }
 
 Size
-Panel::MeasureOverride (Size availableSize)
+Panel::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size result = Size (0,0);
 	return result;

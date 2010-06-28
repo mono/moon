@@ -640,7 +640,7 @@ UIElement::InvalidateArrange ()
 }
 
 void
-UIElement::DoMeasure ()
+UIElement::DoMeasureWithError (MoonError *error)
 {
 	Size *last = LayoutInformation::GetPreviousConstraint (this);
 	UIElement *parent = GetVisualParent ();
@@ -654,7 +654,7 @@ UIElement::DoMeasure ()
 		Size previous_desired = GetDesiredSize ();
 
 		// This will be a noop on non layout elements
-		Measure (*last);
+		MeasureWithError (*last, error);
 		
 		if (previous_desired == GetDesiredSize ())
 		    return;
@@ -668,7 +668,7 @@ UIElement::DoMeasure ()
 }
 
 void
-UIElement::DoArrange ()
+UIElement::DoArrangeWithError (MoonError *error)
 {
 	Value *lastVal = ReadLocalValue (LayoutInformation::LayoutSlotProperty);
 	Rect *last = Value::IsNull (lastVal) ? NULL : lastVal->AsRect ();
@@ -703,7 +703,7 @@ UIElement::DoArrange ()
 	}
 
 	if (last) {
-		Arrange (*last);
+		ArrangeWithError (*last, error);
 	} else {
 		if (parent)
 			parent->InvalidateArrange ();

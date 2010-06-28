@@ -64,7 +64,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 }
 
 Size
-UserControl::MeasureOverride (Size availableSize)
+UserControl::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = Size (0,0);
 	
@@ -73,7 +73,7 @@ UserControl::MeasureOverride (Size availableSize)
 	// Get the desired size of our child, and include any margins we set
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		child->Measure (availableSize.GrowBy (-border));
+		child->MeasureWithError (availableSize.GrowBy (-border), error);
 		desired = child->GetDesiredSize ();
 	}
 
@@ -83,7 +83,7 @@ UserControl::MeasureOverride (Size availableSize)
 }
 
 Size
-UserControl::ArrangeOverride (Size finalSize)
+UserControl::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
@@ -95,7 +95,7 @@ UserControl::ArrangeOverride (Size finalSize)
 
 		childRect = childRect.GrowBy (-border);
 
-		child->Arrange (childRect);
+		child->ArrangeWithError (childRect, error);
 
 		arranged = Size (childRect.width, childRect.height).GrowBy (border);
 	}

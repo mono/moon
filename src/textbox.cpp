@@ -3390,7 +3390,7 @@ TextBoxView::ComputeActualSize ()
 }
 
 Size
-TextBoxView::MeasureOverride (Size availableSize)
+TextBoxView::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = Size ();
 	
@@ -3406,7 +3406,7 @@ TextBoxView::MeasureOverride (Size availableSize)
 }
 
 Size
-TextBoxView::ArrangeOverride (Size finalSize)
+TextBoxView::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Size arranged = Size ();
 	

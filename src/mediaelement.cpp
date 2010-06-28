@@ -575,7 +575,9 @@ MediaElement::ComputeActualSize ()
 	if (mplayer) {
 		Size available = Size (INFINITY, INFINITY);
 		available = available.Min (specified);
-		result = MeasureOverride (available);
+		// FIXME: Propagate this properly
+		MoonError error;
+		result = MeasureOverrideWithError (available, &error);
 		result = ApplySizeConstraints (result);
 	}
 
@@ -585,7 +587,7 @@ MediaElement::ComputeActualSize ()
 }
 
 Size
-MediaElement::MeasureOverride (Size availableSize)
+MediaElement::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = availableSize;
 	Rect shape_bounds = Rect ();
@@ -639,7 +641,7 @@ MediaElement::MeasureOverride (Size availableSize)
 }
 
 Size
-MediaElement::ArrangeOverride (Size finalSize)
+MediaElement::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Size arranged = finalSize;
 	Rect shape_bounds = Rect ();
@@ -811,7 +813,9 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 	if (adjust) {
-		specified = MeasureOverride (specified);
+		// FIXME: Propagate this properly
+		MoonError error;
+		specified = MeasureOverrideWithError (specified, &error);
 		paint = Rect ((stretched.width - specified.width) * 0.5, (stretched.height - specified.height) * 0.5, specified.width, specified.height);
 	}
 

@@ -24,7 +24,7 @@ Border::Border()
 }
 
 Size
-Border::MeasureOverride (Size availableSize)
+Border::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = Size (0,0);
 
@@ -33,7 +33,7 @@ Border::MeasureOverride (Size availableSize)
 	// Get the desired size of our child, and include any margins we set
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		child->Measure (availableSize.GrowBy (-border));
+		child->MeasureWithError (availableSize.GrowBy (-border), error);
 		desired = child->GetDesiredSize ();
 	}
 
@@ -45,7 +45,7 @@ Border::MeasureOverride (Size availableSize)
 }
 
 Size
-Border::ArrangeOverride (Size finalSize)
+Border::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 	
@@ -58,7 +58,7 @@ Border::ArrangeOverride (Size finalSize)
 		childRect = childRect.GrowBy (-border);
 
 
-		child->Arrange (childRect);
+		child->ArrangeWithError (childRect, error);
 
 		arranged = Size (childRect.width, childRect.height).GrowBy (border);
 

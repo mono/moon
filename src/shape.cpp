@@ -620,7 +620,7 @@ Shape::ComputeActualSize ()
 }
 
 Size
-Shape::MeasureOverride (Size availableSize)
+Shape::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = availableSize;
 	Rect shape_bounds = GetNaturalBounds ();
@@ -675,7 +675,7 @@ Shape::MeasureOverride (Size availableSize)
 }
 
 Size
-Shape::ArrangeOverride (Size finalSize)
+Shape::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Size arranged = finalSize;
 	double sx = 1.0;

@@ -34,8 +34,8 @@ public:
 	virtual bool IsLayoutContainer () { return true; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
-	virtual Size MeasureOverride (Size availableSize);
-	virtual Size ArrangeOverride (Size finalSize);
+	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
+	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 };
 
 G_BEGIN_DECLS

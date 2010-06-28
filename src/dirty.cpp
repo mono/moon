@@ -457,7 +457,9 @@ Surface::UpdateLayout ()
 			LayoutInformation::SetPreviousConstraint (layer, &available);
 		}
 
-		layer->UpdateLayout ();
+		// FIXME: Propgate this somewhere?
+		MoonError error;
+		layer->UpdateLayoutWithError (&error);
 	}
 }
 

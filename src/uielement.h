@@ -408,19 +408,18 @@ public:
 
 	// Layout foo
 
-	void DoMeasure ();
-	void DoArrange ();
+	void DoMeasureWithError (MoonError *error);
+	void DoArrangeWithError (MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual void Measure (Size availableSize) = 0;
+	virtual void MeasureWithError (Size availableSize, MoonError *error) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual void Arrange (Rect finalRect) = 0;
+	virtual void ArrangeWithError (Rect finalRect, MoonError *error) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
 	void InvalidateMeasure ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void InvalidateArrange ();
 
-	void UpdateLayout () { UpdateLayoutWithError (NULL); }
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding=UpdateLayout */
 	virtual void UpdateLayoutWithError (MoonError *error) = 0;
 

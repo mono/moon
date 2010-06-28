@@ -43,8 +43,8 @@ class Canvas : public Panel {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Canvas ();
 	
-	virtual Size MeasureOverride (Size availableSize);
-	virtual Size ArrangeOverride (Size availableSize);
+	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
+	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 	virtual bool IsLayoutContainer ();
 	virtual void ShiftPosition (Point p);
 	virtual void ComputeBounds ();

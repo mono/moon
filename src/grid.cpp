@@ -115,7 +115,7 @@ Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyC
 }
 
 Size
-Grid::MeasureOverride (Size availableSize)
+Grid::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size totalSize = availableSize;
 
@@ -283,7 +283,7 @@ Grid::MeasureOverride (Size availableSize)
 				}
 			}
 
-			child->Measure (child_size);
+			child->MeasureWithError (child_size, error);
 			Size desired = child->GetDesiredSize();
 	
 			// Elements distribute their height based on two rules:
@@ -586,7 +586,7 @@ Grid::PostRender (List *ctx, Region *region, bool skip_children)
 }
 
 Size
-Grid::ArrangeOverride (Size finalSize)
+Grid::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	ColumnDefinitionCollection *columns = GetColumnDefinitionsNoAutoCreate ();
 	RowDefinitionCollection *rows = GetRowDefinitionsNoAutoCreate ();
@@ -630,7 +630,7 @@ Grid::ArrangeOverride (Size finalSize)
 		for (int r = row; r < row + rowspan; r++)
 			child_final.height += row_matrix [r][r].size;
 
-		child->Arrange (child_final);
+		child->ArrangeWithError (child_final, error);
 	}
 
 	return finalSize;

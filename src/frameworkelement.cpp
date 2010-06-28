@@ -484,9 +484,18 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 }
 
 void
-FrameworkElement::Measure (Size availableSize)
+FrameworkElement::MeasureWithError (Size availableSize, MoonError *error)
 {
+	if (error->number)
+		return;
+
 	//LOG_LAYOUT ("measuring %p %s %g,%g\n", this, GetTypeName (), availableSize.width, availableSize.height);
+
+	if (isnan (availableSize.width) || isnan (availableSize.height)) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot call Measure using a size with NaN values");
+		LayoutInformation::SetLayoutExceptionElement (GetDeployment (), this);
+		return;
+	}
 
 	Size *last = LayoutInformation::GetPreviousConstraint (this);
 	bool domeasure = (this->dirty_flags & DirtyMeasure) > 0;
@@ -499,9 +508,7 @@ FrameworkElement::Measure (Size availableSize)
 		return;
 	}
 
-	// FIXME: Propagate the error through Measure here... probably.
-	MoonError e;
-	ApplyTemplateWithError (&e);
+	ApplyTemplateWithError (error);
 
 	UIElement *parent = GetVisualParent ();
 	/* unit tests show a short circuit in this case */
@@ -526,9 +533,12 @@ FrameworkElement::Measure (Size availableSize)
 	size = ApplySizeConstraints (size);
 
 	if (measure_cb)
-		size = (*measure_cb)(size);
+		size = (*measure_cb)(size, error);
 	else
-		size = MeasureOverride (size);
+		size = MeasureOverrideWithError (size, error);
+
+	if (error->number)
+		return;
 
 	dirty_flags &= ~DirtyMeasure;
 	hidden_desire = size;
@@ -555,7 +565,7 @@ FrameworkElement::Measure (Size availableSize)
 }
 
 Size
-FrameworkElement::MeasureOverride (Size availableSize)
+FrameworkElement::MeasureOverrideWithError (Size availableSize, MoonError *error)
 {
 	Size desired = Size (0,0);
 
@@ -563,7 +573,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		child->Measure (availableSize);
+		child->MeasureWithError (availableSize, error);
 		desired = child->GetDesiredSize ();
 	}
 
@@ -575,8 +585,11 @@ FrameworkElement::MeasureOverride (Size availableSize)
 // imagine both should take Rects and ArrangeOverride would return a
 // rectangle as well..
 void
-FrameworkElement::Arrange (Rect finalRect)
+FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 {
+	if (error->number)
+		return;
+
 	//LOG_LAYOUT ("arranging %p %s %g,%g,%g,%g\n", this, GetTypeName (), finalRect.x, finalRect.y, finalRect.width, finalRect.height);
 	Value *slotValue = ReadLocalValue (LayoutInformation::LayoutSlotProperty);
 	Rect *slot = Value::IsNull (slotValue) ? NULL : slotValue->AsRect ();
@@ -625,7 +638,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	 */
         Size *measure = LayoutInformation::GetPreviousConstraint (this);
 	if (IsContainer () && !measure)
-		Measure (Size (finalRect.width, finalRect.height));
+		MeasureWithError (Size (finalRect.width, finalRect.height), error);
 	measure = LayoutInformation::GetPreviousConstraint (this);
 
 	ClearValue (LayoutInformation::LayoutClipProperty);
@@ -657,9 +670,12 @@ FrameworkElement::Arrange (Rect finalRect)
 	LayoutInformation::SetLayoutSlot (this, &finalRect);
 
 	if (arrange_cb)
-		response = (*arrange_cb)(offer);
+		response = (*arrange_cb)(offer, error);
 	else
-		response = ArrangeOverride (offer);
+		response = ArrangeOverrideWithError (offer, error);
+
+	if (error->number)
+		return;
 
 	this->dirty_flags &= ~DirtyArrange;
 	Point visual_offset (child_rect.x, child_rect.y);
@@ -747,7 +763,7 @@ FrameworkElement::Arrange (Rect finalRect)
 }
 
 Size
-FrameworkElement::ArrangeOverride (Size finalSize)
+FrameworkElement::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Size arranged = finalSize;
 
@@ -755,7 +771,7 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 	while (UIElement *child = walker.Step ()) {
 		Rect childRect (0,0,finalSize.width,finalSize.height);
 
-		child->Arrange (childRect);
+		child->ArrangeWithError (childRect, error);
 		arranged = arranged.Max (finalSize);
 	}
 
@@ -837,7 +853,7 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 			while (UIElementNode* node = (UIElementNode*)measure_list->First ()) {
 				measure_list->Unlink (node);
 				
-				node->uielement->DoMeasure ();
+				node->uielement->DoMeasureWithError (error);
 				
 				updated = true;
 				delete (node);
@@ -846,7 +862,7 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 			while (UIElementNode *node = (UIElementNode*)arrange_list->First ()) {
 				arrange_list->Unlink (node);
 				
-				node->uielement->DoArrange ();
+				node->uielement->DoArrangeWithError (error);
 			
 				updated = true;
 				delete (node);
