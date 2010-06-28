@@ -1,3 +1,8 @@
+2010-06-28  Andreia Gaita  <avidigal@novell.com>
+
+	* utilities.m4: when using configure.gnu, don't call configure with $@,
+	  options set there are not escaped and can break the build needlessly
+
 2010-06-22  Andreia Gaita  <avidigal@novell.com>
 
 	* curl.m4: use nss instead of openssl to be able to use existing store
