@@ -1,3 +1,12 @@
+2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.h:
+	* runtime.h:
+	* runtime.cpp:
+	* network-curl.cpp:
+	* http-streaming.cpp: Remove LOG_HTTPSTREAMING (only used in 1 place) and add
+	LOG_CURL. Use LOG_CURL instead of having to change defines and recompile.
+
 2010-06-28  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Elements which are not visible should

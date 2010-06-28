@@ -105,7 +105,7 @@ enum RuntimeDebugFlag {
 	RUNTIME_DEBUG_ALSA              = 1 << 0,
 	RUNTIME_DEBUG_AUDIO             = 1 << 1,
 	RUNTIME_DEBUG_PULSE             = 1 << 2,
-	RUNTIME_DEBUG_HTTPSTREAMING     = 1 << 3,
+	RUNTIME_DEBUG_CURL              = 1 << 3,
 	RUNTIME_DEBUG_MARKERS           = 1 << 4,
 	RUNTIME_DEBUG_MMS               = 1 << 5,
 	RUNTIME_DEBUG_MEDIAPLAYER       = 1 << 6,

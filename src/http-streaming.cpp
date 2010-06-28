@@ -28,8 +28,6 @@ parse_http_streaming_features (const char *val)
 	size_t length = 0;
 	bool end = false;
 
-	LOG_HTTPSTREAMING ("parse_http_streaming_features ('%s')\n", val);
-		
 	if (val == NULL)
 		return result;
 	

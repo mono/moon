@@ -15,8 +15,8 @@
 
 #include "network-curl.h"
 #include "pipeline.h"
+#include "debug.h"
 
-#define d(x)
 #define ds(x) 1
 
 #ifdef SANITY
@@ -250,7 +250,7 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequ
 	: HttpRequest (Type::CURLDOWNLOADERREQUEST, handler, options), headers(NULL), response(NULL),
 	  bridge(handler), post(NULL), postlast(NULL), body(NULL), state(NONE), aborting(FALSE)
 {
-	d(printf ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p\n", this);
 
 	VERIFY_MAIN_THREAD
 
@@ -287,14 +287,14 @@ CurlDownloaderRequest::Succeeded ()
 
 void CurlDownloaderRequest::SetHeaderImpl (const char *name, const char *value, bool disable_folding)
 {
-	d(printf ("BRIDGE CurlDownloaderRequest::SetHttpHeader %p - %s:%s\n", this, name, value));
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::SetHttpHeader %p - %s:%s\n", this, name, value);
 	char *header = g_strdup_printf ("%s: %s", name, value);
 	headers = curl_slist_append(headers, header);
 }
 
 void CurlDownloaderRequest::SetBodyImpl (void *ptr, guint32 size)
 {
-	d(printf ("BRIDGE CurlDownloaderRequest::SetBody %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::SetBody %p\n", this);
 
 	body = (void *) g_malloc (size);
 	memcpy(body, ptr, size);
@@ -304,7 +304,7 @@ void CurlDownloaderRequest::SetBodyImpl (void *ptr, guint32 size)
 
 void CurlDownloaderRequest::SendImpl ()
 {
-	d(printf ("BRIDGE CurlDownloaderRequest::Send %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::Send %p\n", this);
 
 	if (IsAborted ())
 		return;
@@ -339,7 +339,7 @@ CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
 	  status(0), statusText(NULL),
 	  delay(2), state(STOPPED), aborted (false)
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::CurlDownloaderResponse %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::CurlDownloaderResponse %p\n", this);
 
 	closure = new ResponseClosure (this);
 }
@@ -367,7 +367,7 @@ CurlDownloaderResponse::Open ()
 
 void
 CurlDownloaderRequest::AbortImpl () {
-	d(printf ("BRIDGE CurlDownloaderRequest::Abort request:%p response:%p\n", this, response));
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::Abort request:%p response:%p\n", this, response);
 
 	if (bridge->IsDataThread ()) {
 		aborting = TRUE;
@@ -385,7 +385,7 @@ CurlDownloaderRequest::AbortImpl () {
 void
 CurlDownloaderRequest::Close ()
 {
-	d(printf ("BRIDGE CurlDownloaderRequest::Close request:%p response:%p\n", this, response));
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::Close request:%p response:%p\n", this, response);
 
 	VERIFY_MAIN_THREAD
 
@@ -422,7 +422,7 @@ CurlDownloaderRequest::Write (gint64 offset, void *buffer, gint32 length)
 void
 CurlDownloaderResponse::Abort ()
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Abort request:%p response:%p\n", request, this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Abort request:%p response:%p\n", request, this);
 
 	VERIFY_MAIN_THREAD
 
@@ -437,7 +437,7 @@ CurlDownloaderResponse::Abort ()
 void
 CurlDownloaderResponse::Close ()
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Close request:%p response:%p\n", request, this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Close request:%p response:%p\n", request, this);
 
 	VERIFY_MAIN_THREAD
 
@@ -459,21 +459,20 @@ CurlDownloaderResponse::Close ()
 
 int CurlDownloaderResponse::GetResponseStatus ()
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::GetResponseStatus %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::GetResponseStatus %p\n", this);
 	return status;
 }
 
 const char * CurlDownloaderResponse::GetResponseStatusText ()
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::GetResponseStatusText %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::GetResponseStatusText %p\n", this);
 	return 0;
 }
 
 void
 CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n", this));
-	d(printf ("%s", ptr));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n%s", this, (char *) ptr);
 
 	if (IsAborted () || request->aborting)
 		return;
@@ -512,7 +511,7 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 size_t
 CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::DataReceived %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::DataReceived %p\n", this);
 
 	if (request->aborting)
 		return -1;
@@ -534,7 +533,7 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 void
 CurlDownloaderResponse::Started ()
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Started %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Started %p\n", this);
 
 	SetCurrentDeployment ();
 	state = HEADER;
@@ -547,7 +546,7 @@ CurlDownloaderResponse::Started ()
 void
 CurlDownloaderResponse::Visitor (const char *name, const char *val)
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Visitor %p name: %s val: %s\n", this, name, val));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Visitor %p name: %s val: %s\n", this, name, val);
 	SetCurrentDeployment ();
 	AppendHeader (name, val);
 }
@@ -555,7 +554,7 @@ CurlDownloaderResponse::Visitor (const char *name, const char *val)
 void
 CurlDownloaderResponse::Available (char* buffer, size_t size)
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Available %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Available %p\n", this);
 	SetCurrentDeployment ();
 	request->Write (-1, buffer, size);
 }
@@ -563,7 +562,7 @@ CurlDownloaderResponse::Available (char* buffer, size_t size)
 void
 CurlDownloaderResponse::Finished ()
 {
-	d(printf ("BRIDGE CurlDownloaderResponse::Finished %p\n", this));
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Finished %p\n", this);
 
 	SetCurrentDeployment ();
 	if (state == STARTED) {
@@ -682,7 +681,7 @@ CurlHttpHandler::Dispose ()
 
 CurlHttpHandler::~CurlHttpHandler ()
 {
-	d(printf("BRIDGE ~CurlHttpHandler\n"));
+	LOG_CURL("BRIDGE ~CurlHttpHandler\n");
 
 	delete handles;
 	handles = NULL;
@@ -693,7 +692,7 @@ CurlHttpHandler::~CurlHttpHandler ()
 CURL*
 CurlHttpHandler::RequestHandle ()
 {
-	d(printf ("BRIDGE CurlHttpHandler::RequestHandle pool is %s\n", pool->IsEmpty () ? "empty" : "not empty"));
+	LOG_CURL ("BRIDGE CurlHttpHandler::RequestHandle pool is %s\n", pool->IsEmpty () ? "empty" : "not empty");
 
 	CURL* handle;
 	if (!pool->IsEmpty ()) {
@@ -705,7 +704,7 @@ CurlHttpHandler::RequestHandle ()
 		handle = curl_easy_init ();
 		curl_easy_setopt (handle, CURLOPT_SHARE, sharecurl);
 	}
-	d(printf ("\t%p\n", handle));
+	LOG_CURL ("\t%p\n", handle);
 
 	return handle;
 }
@@ -713,7 +712,7 @@ CurlHttpHandler::RequestHandle ()
 void
 CurlHttpHandler::ReleaseHandle (CURL* handle)
 {
-	d(printf ("BRIDGE CurlHttpHandler::ReleaseHandle handle:%p\n", handle));
+	LOG_CURL ("BRIDGE CurlHttpHandler::ReleaseHandle handle:%p\n", handle);
 
 	curl_easy_reset (handle);
 	pool->Push (new CurlNode (handle));
@@ -722,7 +721,7 @@ CurlHttpHandler::ReleaseHandle (CURL* handle)
 void
 CurlHttpHandler::OpenHandle (HttpRequest* res, CURL* handle)
 {
-	d(printf ("BRIDGE CurlHttpHandler::OpenHandle res:%p handle:%p\n", res, handle));
+	LOG_CURL ("BRIDGE CurlHttpHandler::OpenHandle res:%p handle:%p\n", res, handle);
 
 	pthread_mutex_lock (&worker_mutex);
 	if (!quit) {
@@ -736,7 +735,7 @@ CurlHttpHandler::OpenHandle (HttpRequest* res, CURL* handle)
 void
 CurlHttpHandler::CloseHandle (HttpRequest* res, CURL* handle)
 {
-	d(printf ("BRIDGE CurlHttpHandler::CloseHandle res:%p handle:%p\n", res, handle));
+	LOG_CURL ("BRIDGE CurlHttpHandler::CloseHandle res:%p handle:%p\n", res, handle);
 
 	pthread_mutex_lock (&worker_mutex);
 	if (!quit) {

@@ -60,7 +60,7 @@ G_END_DECLS
 #define LOG_AUDIO_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_AUDIO_EX)) printf (__VA_ARGS__);
 #define LOG_PULSE(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PULSE)) printf (__VA_ARGS__);
 #define LOG_PULSE_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_PULSE_EX)) printf (__VA_ARGS__);
-#define LOG_HTTPSTREAMING(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_HTTPSTREAMING)) printf (__VA_ARGS__);
+#define LOG_CURL(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_CURL)) printf (__VA_ARGS__);
 #define LOG_MARKERS(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MARKERS)) printf (__VA_ARGS__);
 #define LOG_MARKERS_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MARKERS_EX)) printf (__VA_ARGS__);
 #define LOG_MMS(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MMS)) printf (__VA_ARGS__);
@@ -104,7 +104,7 @@ G_END_DECLS
 #define LOG_AUDIO_EX(...)
 #define LOG_PULSE(...)
 #define LOG_PULSE_EX(...)
-#define LOG_HTTPSTREAMING(...) 
+#define LOG_CURL(...)
 #define LOG_MARKERS(...)
 #define LOG_MARKERS_EX(...)
 #define LOG_MMS(...)
