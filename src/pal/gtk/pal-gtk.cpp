@@ -1173,6 +1173,7 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	char *install_dir;
 	char *argv[3];
 	int pid;
+	int dialog_result;
 	
 	argv[0] = NULL;
 	argv[1] = NULL;
@@ -1191,7 +1192,8 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 
 	LOG_OOB ("MoonInstallerServiceGtk::Install (): Showing oob dialog.\n");
 
-	if (gtk_dialog_run (dialog) == GTK_RESPONSE_OK) {
+	dialog_result = gtk_dialog_run (dialog);
+	if (dialog_result == GTK_RESPONSE_OK) {
 		LOG_OOB ("MoonInstallerServiceGtk::Install (): Installing...\n");
 		if ((installed = install_dialog_install ((InstallDialog *) dialog))) {
 			if ((platform_dir = Deployment::GetPlatformDir ()))
@@ -1202,6 +1204,8 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 			argv[1] = app->uid;
 		}
 		LOG_OOB ("MoonInstallerServiceGtk::Install (): Install completed, success: %i.\n", installed);
+	} else {
+		LOG_OOB ("MoonInstallerServiceGtk::Install (): Dialog was cancelled (returned: %i)\n", dialog_result);
 	}
 	
 	gtk_widget_destroy ((GtkWidget *) dialog);

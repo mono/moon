@@ -1,3 +1,7 @@
+2010-06-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/gtk/pal-gtk.cpp: Log why a dialog failed.
+
 2010-06-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* network.cpp: Verify that HttpResponse::AppendHeader is main-thread only.
