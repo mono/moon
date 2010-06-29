@@ -1,3 +1,9 @@
+2010-06-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deepzoomimagetilesource.cpp (GetTileLayer): Move the
+	GetTileWidth() call outside the loop. Also make sure
+	display_rects->len > 0 before entering the code segment.
+
 2010-06-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/pal-gtk.cpp: Log why a dialog failed.

@@ -217,7 +217,8 @@ bool
 DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 {
 	//check if there tile is listed in DisplayRects
-	if (display_rects) {
+	if (display_rects && display_rects->len > 0) {
+		int tile_width = GetTileWidth ();
 		DisplayRect *cur;
 		bool found = false;
 		int layers;
@@ -230,7 +231,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 			if (!(cur->min_level <= level && level <= cur->max_level))
 				continue;
 
-			int vtilesize = GetTileWidth () * (layers + 1 - level);
+			int vtilesize = tile_width * (layers + 1 - level);
 			Rect virtualtile = Rect (x * vtilesize, y * vtilesize, vtilesize, vtilesize);
 			if (cur->rect.IntersectsWith (virtualtile)) {
 				found = true;
@@ -242,7 +243,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 			return false;
 	}
 	
-	const Uri *baseUri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri ();
+	const Uri *baseUri = GetUriSource ();
 	const char *filename, *ext;
 	char *image;
 	
@@ -425,8 +426,8 @@ start_element (void *data, const char *el, const char **attr)
 		//Image or Collection
 		if (!g_ascii_strcasecmp ("Image", el)) {
 			info->is_collection = false;
-			int i;
-			for (i = 0; attr[i]; i+=2)
+			
+			for (int i = 0; attr[i]; i += 2) {
 				if (!g_ascii_strcasecmp ("Format", attr[i]))
 					info->format = g_strdup (attr[i+1]);
 			        else if (!g_ascii_strcasecmp ("ServerFormat", attr[i]))
@@ -437,10 +438,11 @@ start_element (void *data, const char *el, const char **attr)
 					info->overlap = atoi (attr[i+1]);
 				else
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+			}
 		} else if (!g_ascii_strcasecmp ("Collection", el)) {
 			info->is_collection = true;
-			int i;
-			for (i = 0; attr[i]; i+=2)
+			
+			for (int i = 0; attr[i]; i += 2) {
 				if (!g_ascii_strcasecmp ("Format", attr[i]))
 					info->format = g_strdup (attr[i+1]);
 				else if (!g_ascii_strcasecmp ("ServerFormat", attr[i]))
@@ -451,6 +453,7 @@ start_element (void *data, const char *el, const char **attr)
 					info->max_level = atoi (attr[i+1]);
 				else
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+			}
 		} else {
 			g_warning ("Unexpected element %s\n", el);
 			info->error = true;
@@ -460,14 +463,14 @@ start_element (void *data, const char *el, const char **attr)
 		if (!info->is_collection) {
 			//Size or DisplayRects
 			if (!g_ascii_strcasecmp ("Size", el)) {
-				int i;
-				for (i = 0; attr[i]; i+=2)
+				for (int i = 0; attr[i]; i += 2) {
 					if (!g_ascii_strcasecmp ("Width", attr[i]))
 						info->image_width = atol (attr[i+1]);
 					else if (!g_ascii_strcasecmp ("Height", attr[i]))
 						info->image_height = atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+				}
 			} else if (!g_ascii_strcasecmp ("DisplayRects", el)) {
 				//no attributes, only contains DisplayRect element
 			} else {
@@ -488,14 +491,15 @@ start_element (void *data, const char *el, const char **attr)
 			//DisplayRect elts
 			if (!g_ascii_strcasecmp ("DisplayRect", el)) {
 				long min_level = 0, max_level = 0;
-				int i;
-				for (i = 0; attr[i]; i+=2)
+				
+				for (int i = 0; attr[i]; i += 2) {
 					if (!g_ascii_strcasecmp ("MinLevel", attr[i]))
 						min_level = atol (attr[i+1]);
 					else if (!g_ascii_strcasecmp ("MaxLevel", attr[i]))
 						max_level = atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+				}
 				info->current_rect = new DisplayRect (min_level, max_level);
 			} else {
 				g_warning ("Unexpected element %s\n", el);
@@ -504,8 +508,8 @@ start_element (void *data, const char *el, const char **attr)
 		} else {
 			if (!g_ascii_strcasecmp ("I", el)) {
 				info->current_subimage = new SubImage ();
-				int i;
-				for (i = 0; attr[i]; i+=2)
+				
+				for (int i = 0; attr[i]; i += 2) {
 					if (!g_ascii_strcasecmp ("N", attr[i]))
 						info->current_subimage->n = atoi (attr[i+1]);
 					else if (!g_ascii_strcasecmp ("Id", attr[i]))
@@ -515,7 +519,7 @@ start_element (void *data, const char *el, const char **attr)
 						info->current_subimage->source->Parse (attr[i+1]);
 					} else
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
-
+				}
 			} else {
 				g_warning ("Unexpected element %d %s\n", info->depth, el);
 				info->error = true;
@@ -530,8 +534,8 @@ start_element (void *data, const char *el, const char **attr)
 					info->error = true;
 					break;
 				}
-				int i;
-				for (i = 0; attr[i]; i+=2)
+				
+				for (int i = 0; attr[i]; i += 2) {
 					if (!g_ascii_strcasecmp ("X", attr[i]))
 						info->current_rect->rect.x = (double)atol (attr[i+1]);
 					else if (!g_ascii_strcasecmp ("Y", attr[i]))
@@ -542,6 +546,7 @@ start_element (void *data, const char *el, const char **attr)
 						info->current_rect->rect.height = (double)atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+				}
 				
 				g_ptr_array_add (info->display_rects, info->current_rect);
 				info->current_rect = NULL;
@@ -557,15 +562,15 @@ start_element (void *data, const char *el, const char **attr)
 				}
 
 				info->current_subimage->has_size = true;
-
-				int i;
-				for (i = 0; attr [i]; i+=2)
+				
+				for (int i = 0; attr [i]; i += 2) {
 					if (!g_ascii_strcasecmp ("Width", attr[i]))
 						info->current_subimage->width = atol (attr[i+1]);
 					else if (!g_ascii_strcasecmp ("Height", attr[i]))
 						info->current_subimage->height = atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed attr %s.%s: %s\n", el, attr[i], attr[i+1]);
+				}
 			} else if (!g_ascii_strcasecmp ("Viewport", el)) {
 				if (!info->current_subimage) {
 					info->error = true;
@@ -573,9 +578,8 @@ start_element (void *data, const char *el, const char **attr)
 				}
 
 				info->current_subimage->has_viewport = true;
-
-				int i;
-				for (i = 0; attr [i]; i+=2)
+				
+				for (int i = 0; attr [i]; i += 2) {
 					if (!g_ascii_strcasecmp ("X", attr[i]))
 						info->current_subimage->vp_x = g_ascii_strtod (attr[i+1], NULL);
 					else if (!g_ascii_strcasecmp ("Y", attr[i]))
@@ -584,6 +588,7 @@ start_element (void *data, const char *el, const char **attr)
 						info->current_subimage->vp_w = g_ascii_strtod (attr[i+1], NULL);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+				}
 			} else {
 				g_warning ("Unexpected element %s\n", el);
 				info->error = true;
@@ -605,29 +610,28 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 	if (info->skip < 0) {
 		switch (info->depth) {
 		case 2:
-			if (info->is_collection)
-				if (!g_ascii_strcasecmp ("I", el)) {
-					DeepZoomImageTileSource *subsource = new DeepZoomImageTileSource (info->current_subimage->source, TRUE);
-					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (),
-											   subsource, 
-											   info->current_subimage->id, 
-											   info->current_subimage->n);
-					subsource->SetImageWidth (info->current_subimage->width);
-					subsource->SetImageHeight (info->current_subimage->height);
-					subsource->format = info->format;
-					subsource->server_format = info->format;
-					if (info->current_subimage->has_viewport) {
-						subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
-						subi->SetViewportWidth (info->current_subimage->vp_w);
-					}
-
-					if (info->current_subimage->has_size) {
-						subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
-					}
-					
-					g_ptr_array_add (info->subimages, subi);
-					info->current_subimage = NULL;
+			if (info->is_collection && !g_ascii_strcasecmp ("I", el)) {
+				DeepZoomImageTileSource *subsource = new DeepZoomImageTileSource (info->current_subimage->source, TRUE);
+				MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (),
+										   subsource, 
+										   info->current_subimage->id, 
+										   info->current_subimage->n);
+				subsource->SetImageWidth (info->current_subimage->width);
+				subsource->SetImageHeight (info->current_subimage->height);
+				subsource->format = info->format;
+				subsource->server_format = info->format;
+				if (info->current_subimage->has_viewport) {
+					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
+					subi->SetViewportWidth (info->current_subimage->vp_w);
 				}
+				
+				if (info->current_subimage->has_size) {
+					subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
+				}
+				
+				g_ptr_array_add (info->subimages, subi);
+				info->current_subimage = NULL;
+			}
 			break;
 		}
 	}
