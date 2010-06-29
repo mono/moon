@@ -110,6 +110,8 @@ namespace System.Windows.Controls {
 
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
+			if (_presenter != null)
+				_presenter._elementRoot.Children.Clear ();
 			_presenter = presenter;
 			AddItemsToPresenter (new GeneratorPosition (-1, 1), Items.Count);
 		}

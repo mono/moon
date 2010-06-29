@@ -1,3 +1,9 @@
+2010-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: If the ItemsPresenter changes on an
+	  ItemsControl we should clear the children on the old
+	  presenter before using the new one. Fixes part of cs2.
+
 2010-06-23  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsPresenter.cs: ItemsPresenter may be in the
