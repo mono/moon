@@ -102,7 +102,7 @@ namespace System.Windows.Controls.Primitives {
 			for (int i = 0; i < count; i++)
 			{ 
 				ListBoxItem item = (ListBoxItem) s.ItemContainerGenerator.ContainerFromIndex (i);
-				if (item != null)  // May be null if GetContainerForItemOverride has not been called yet
+				if (item != null && item != s.Items [i])  // May be null if GetContainerForItemOverride has not been called yet
 					item.Style = style;
 			}	
 		}

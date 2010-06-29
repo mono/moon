@@ -1,3 +1,9 @@
+2010-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: ItemContainerStyle is only propagated to
+	  generated containers, not to ComboBoxItems the user adds
+	  directly.
+
 2010-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* LayoutInformation.cs: For lack of a better place, store the

@@ -1,5 +1,11 @@
 2010-06-29  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: ItemContainerStyle is only propagated to
+	  generated containers, not to ComboBoxItems the user adds
+	  directly.
+
+2010-06-29  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: We base the popups position based on the size
 	  of the plugin itself, not the root element. We also need to
 	  reset HorizontalOffset/VerticalOffset to display the popup

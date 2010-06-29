@@ -59,8 +59,8 @@ namespace System.Windows.Controls
 
 		// ComboBox really does ignore property changes here 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
-			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
-		//                                 new PropertyMetadata (OnItemContainerStyleChanged));
+			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox),
+		                                 new PropertyMetadata (OnItemContainerStyleChanged));
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
 			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
@@ -247,9 +247,11 @@ namespace System.Windows.Controls
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride (element, item);
-			ListBoxItem cb = (ListBoxItem) element;
-			if (cb.Style == null && ItemContainerStyle != null)
-				cb.Style = ItemContainerStyle;
+			if (element != item) {
+				ListBoxItem cb = (ListBoxItem) element;
+				if (cb.Style == null && ItemContainerStyle != null)
+					cb.Style = ItemContainerStyle;
+			}
 		}
 
 		public override void OnApplyTemplate ()
