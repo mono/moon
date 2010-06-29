@@ -356,7 +356,7 @@ int main (int argc, char **argv)
 	runtime_init_browser (plugin_dir);
 	g_free (plugin_dir);
 	
-	LOG_OOB ("[lunar-launcher]: Starting\n");
+	LOG_OOB ("[%i lunar-launcher]: Starting\n", getpid ());
 
 	deployment = new Deployment ();
 	Deployment::SetCurrent (deployment);
@@ -385,7 +385,7 @@ int main (int argc, char **argv)
 		;
 	}
 
-	LOG_OOB ("[lunar-launcher]: Exiting\n");
+	LOG_OOB ("[%i lunar-launcher]: Exiting\n", getpid ());
 
 	return EXIT_SUCCESS;
 }
