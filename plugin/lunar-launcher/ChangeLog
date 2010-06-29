@@ -1,5 +1,9 @@
 2010-06-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* lunar-launcher.cpp: Ignore SIGHUP, since we may outlive our parent process.
+
+2010-06-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* lunar-launcher.cpp: Add pid to logging to make it easier to attach gdb to
 	the correct process.
 

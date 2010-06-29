@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dlfcn.h>
+#include <signal.h>
 
 #include "runtime.h"
 #include "deployment.h"
@@ -322,12 +323,43 @@ static GetOptsOption options[] = {
 	GETOPTS_TABLE_END
 };
 
+#if DEBUG
+void
+static lunar_handle_native_sigsegv (int signal, siginfo_t *info, void *ptr)
+{
+	const char *signal_str;
+
+	switch (signal) {
+	case SIGSEGV: signal_str = "SIGSEGV"; break;
+	case SIGFPE: signal_str = "SIGFPE"; break;
+	case SIGABRT: signal_str = "SIGABRT"; break;
+	case SIGQUIT: signal_str = "SIGQUIT"; break;
+	case SIGCHLD: signal_str = "SIGCHLD"; break;
+	case SIGHUP: signal_str = "SIGHUP"; break;
+	default: signal_str = "UNKNOWN"; break;
+	}
+	LOG_OOB ("[%i lunar-launcher] %s (ignored)\n", getpid (), signal_str);
+}
+#endif
+
 int main (int argc, char **argv)
 {
 #if DEBUG
 	/* stdout defaults to block buffering if it's not writing to a terminal, which happens with our test harness:
 	 * we redirect stdout to capture it. Force line buffering in all cases. */
 	setlinebuf (stdout);
+
+	/* We also need to disable SIGHUP - we have another workaround for the above problem for chrome, where we create
+	 * a pseudo terminal to capture stdout/stderr. Problem is that when the browser closes after executing
+	 * lunar-launcher, a SIGHUP is sent to all its descendant processes (since the browser is the foreground process
+	 * of the controlling terminal), which ends up killing lunar-launcher. */
+	struct sigaction sa;
+
+	sa.sa_sigaction = lunar_handle_native_sigsegv;
+	sigemptyset (&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
+
+	g_assert (sigaction (SIGHUP, &sa, NULL) != -1);
 #endif
 
 	Deployment *deployment;
