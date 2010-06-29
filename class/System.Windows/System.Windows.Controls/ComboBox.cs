@@ -148,7 +148,7 @@ namespace System.Windows.Controls
 				if (t != null)
 					t.Focus ();
 
-				UpdatePopupSizeAndPosition (null, EventArgs.Empty);
+				UpdatePopupSizeAndPosition (this, EventArgs.Empty);
 				LayoutUpdated += UpdatePopupSizeAndPosition;
 				OnDropDownOpened (EventArgs.Empty);
 
@@ -464,23 +464,20 @@ namespace System.Windows.Controls
 			if (_popup == null)
 				return;
 
-			_popup.VerticalOffset = RenderSize.Height;
-
-
 			FrameworkElement child = _popup.RealChild as FrameworkElement;
 			if (child == null)
 				return;
 
 			child.MinWidth = ActualWidth;
 			
-			FrameworkElement root = Application.Current.RootVisual as FrameworkElement;
+			var root = Application.Current.Host.Content;
 			if (root == null)
 				return;
 
 			GeneralTransform xform;
 
 			try {
-				xform = TransformToVisual (root);
+				xform = TransformToVisual (null);
 			}
 			catch (ArgumentException) {
 				// exception is raised if the combobox is no longer in the visual tree
@@ -493,9 +490,13 @@ namespace System.Windows.Controls
 
 			if (bottom_right.X > root.ActualWidth) {
 				_popup.HorizontalOffset = root.ActualWidth - bottom_right.X;
+			} else {
+				_popup.HorizontalOffset = 0;
 			}
 			if (bottom_right.Y > root.ActualHeight) {
 				_popup.VerticalOffset = -child.ActualHeight;
+			} else {
+				_popup.VerticalOffset = RenderSize.Height;
 			}
 			
 			// Silverlight does not resize its dropdown properly when the available height is altered.

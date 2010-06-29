@@ -1,5 +1,13 @@
 2010-06-29  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: We base the popups position based on the size
+	  of the plugin itself, not the root element. We also need to
+	  reset HorizontalOffset/VerticalOffset to display the popup
+	  at the bottom should the dimensions change such that it now
+	  fits there. Fixes part of the new cs2.
+
+2010-06-29  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: If the ItemsPresenter changes on an
 	  ItemsControl we should clear the children on the old
 	  presenter before using the new one. Fixes part of cs2.
