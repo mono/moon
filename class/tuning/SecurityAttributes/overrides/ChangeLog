@@ -1,3 +1,7 @@
+2010-06-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Add SC to FrameworkTemplate::SetXamlBuffer
+
 2010-06-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Add SC to Clipboard::GetClipboard()

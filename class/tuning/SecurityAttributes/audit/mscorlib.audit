@@ -708,14 +708,15 @@ System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.String)
 System.Int32 System.Reflection.MemberInfo::get_MetadataToken()
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
-!SSC-95839221910244E7A8093AA2BFE6FBEF
-System.Int32 System.Reflection.Module::get_MetadataToken()
-	r154595		spouliot - not an icall anymore, call new icall "get_MetadataToken (Module module)" using 'this' (code moved to MonoModule.cs file)
-	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
-
 !SSC-BD7E9B1BE604C606760A82E41A521BA3
 System.Int32 System.Reflection.MonoField::GetFieldOffset()
 	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoField_GetFieldOffset (icall.c)
+
+!SSC-6276B54C8A930C8AADCB477FC52C4F41
+System.Int32 System.Reflection.MonoModule::get_MetadataToken()
+	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
+	r154595		spouliot - not an icall anymore, call new icall "get_MetadataToken (Module module)" using 'this' (code moved to MonoModule.cs file)
+	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
 !SSC-75C6365925F1D68B3CEA2B1A8EFFC850
 System.Int32 System.Reflection.ParameterInfo::get_MetadataToken()
@@ -995,8 +996,9 @@ System.Reflection.Assembly System.Reflection.Assembly::GetCallingAssembly()
 System.Reflection.Assembly System.Reflection.Assembly::GetExecutingAssembly()
 	r144558		spouliot - visible icall. parameter-less (static)
 
-!SSC-F17D5EB3540299473CA70964D6820436
+!SSC-CC82B164BCBE150AF29F63EA3C636D96
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
+	r159682		spouliot - no source change (compiler?)
 	r154229		spouliot - visibility changed from private to internal
 	r150368		spouliot - call AppDomain.LoadSatellite(AssemblyName,bool), with false, instead of LoadSatellite(AssemblyName)
 	r145284		spouliot - try/catch to ignore FileNotFoundException added in r144845
@@ -1006,8 +1008,13 @@ System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(Syst
 System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
 	r143653		spouliot - call AppDomain.Load, which calls LoadAssembly (icall in mono/metadata/appdomain.c) with non-null, no-empty 'assemblyString'. This string is NOT a filename (but a fully qualified assembly name)
 
-!SSC-5945B08D3FC8A5BA9F7837F32CDE3A44
-System.Reflection.AssemblyName[] System.Reflection.Assembly::GetReferencedAssemblies()
+!SSC-1A8791A79D2A764D4A5EBAB67692DF80
+System.Reflection.AssemblyName[] System.Reflection.Emit.AssemblyBuilder::GetReferencedAssemblies()
+	r159312		spouliot - call Assembly.GetReferencedAssembly (SecurityCritical icall) using 'this'
+
+!SSC-48F75EA336C4B0A0D231A982700B1D46
+System.Reflection.AssemblyName[] System.Reflection.MonoAssembly::GetReferencedAssemblies()
+	r159266		spouliot - code moved from Assembly to MonoAssembly to match FX4 behavior
 	r154229		spouliot - change from from icall to a method calling the icall with 'this' as parameter
 
 !SSC-D322BC4CB0F1FDE2DC72C2B98F74B78D
@@ -1098,6 +1105,10 @@ System.Reflection.InterfaceMapping System.Type::GetInterfaceMap(System.Type)
 System.Reflection.MethodBase System.MonoType::get_DeclaringMethod()
 	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoType_get_DeclaringMethod (icall.c)
 
+!SSC-3FE732431E2477733688DA70BE78B75A
+System.Reflection.MethodBase System.Reflection.Emit.ModuleBuilder::ResolveMethod(System.Int32,System.Type[],System.Type[])
+	r159312		spouliot - call ResolveMethodToken (icall w/FIXME)
+
 !SSC-99567BD1F323D81936D95F770DA5A3A2
 System.Reflection.MethodBase System.Reflection.MethodBase::GetCurrentMethod()
 	r144558		spouliot - visible icall. parameter-less (static)
@@ -1114,8 +1125,9 @@ System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandle(S
 System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromIntPtr(System.IntPtr,System.IntPtr)
 	r144449		spouliot - call GetMethodFromHandleInternalType (icall) with validated input parameters and output value
 
-!SSC-9928B1C328ECD0C048A4524A967A452C
-System.Reflection.MethodBase System.Reflection.Module::ResolveMethod(System.Int32,System.Type[],System.Type[])
+!SSC-DE53F687AD2FFFE31EA9104F155F9873
+System.Reflection.MethodBase System.Reflection.MonoModule::ResolveMethod(System.Int32,System.Type[],System.Type[])
+	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
 	r142142		spouliot - call ResolveMethodToken (icall w/FIXME)
 
 !SSC-63FE0230705F686F75882022F6489ADD
@@ -1207,8 +1219,9 @@ System.Reflection.TypeAttributes System.MonoType::GetAttributeFlagsImpl()
 System.Resources.MissingManifestResourceException System.Resources.ResourceManager::AssemblyResourceMissing(System.String)
 	r142142		spouliot - call Assembly.GetName (SecurityCritical) to get the Name property (not an issue, it can be found using FullName)
 
-!SSC-6F034F8E66CCA8641D7A94228CE63452
+!SSC-EA0A2167ECF383339D2AC8206E754455
 System.Resources.ResourceSet System.Resources.ResourceManager::InternalGetResourceSet(System.Globalization.CultureInfo,System.Boolean,System.Boolean)
+	r159682		spouliot - no source code change (compiler?)
 	r142142		spouliot - validate 'culture' (non-null). call File.Exists [SecurityCritical] on a culture (non-user-based) filename
 
 !SSC-B590CBBADADF0161E7E5E29CB6F57290
@@ -1312,9 +1325,9 @@ System.String System.Reflection.Assembly::get_ImageRuntimeVersion()
 System.String System.Reflection.Assembly::ToString()
 	r142142		spouliot - call get_fullname (icall)
 
-!SSC-DD9BF42D6ED15CA5BEC8FA03FC04F241
-System.String System.Reflection.Module::ResolveString(System.Int32)
-	r142142		spouliot - call ResolveStringToken (icall w/FIXME)
+!SSC-34134838CD4C837759651A3B6AB2924A
+System.String System.Reflection.Emit.ModuleBuilder::ResolveString(System.Int32)
+	r159312		spouliot - call ResolveStringToken (icall w/FIXME)
 
 !SSC-BFCE653CBEC9CCBF20D11AF5F36D0B16
 System.String System.Reflection.MonoCMethod::get_Name()
@@ -1323,6 +1336,11 @@ System.String System.Reflection.MonoCMethod::get_Name()
 !SSC-8BBA9D0FB0B3D2A360F23AEB5496FE5E
 System.String System.Reflection.MonoMethod::get_Name()
 	r142142		spouliot - call get_name (icall)
+
+!SSC-B0D4C16E14BB875521584498A7644ED2
+System.String System.Reflection.MonoModule::ResolveString(System.Int32)
+	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
+	r142142		spouliot - call ResolveStringToken (icall w/FIXME)
 
 !SSC-9E681DEBC28627FB3A441412EA1A657D
 System.String System.String::Concat(System.Collections.Generic.IEnumerable`1<System.String>)
@@ -1578,9 +1596,9 @@ System.Type System.MonoType::GetNestedType(System.String,System.Reflection.Bindi
 System.Type System.Object::GetType()
 	r144558		spouliot - visible icall. parameter-less (instance)
 
-!SSC-38B58CA154EF6600C52A439DAFBEC1C8
-System.Type System.Reflection.Assembly::GetType(System.String,System.Boolean,System.Boolean)
-	r142142		spouliot - call (instance) InternalGetType (icall) with 'null' for 'module' and the validated parameters
+!SSC-597186A6D1F0E6CB6F15BF02CF03E61F
+System.Type System.Reflection.Emit.AssemblyBuilder::GetType(System.String,System.Boolean,System.Boolean)
+	r159312		spouliot - call (instance) InternalGetType (icall) with 'null' for 'module' and the validated parameters
 
 !SSC-07080879D7716F8D9D297B8ABBB40938
 System.Type System.Reflection.Emit.DerivedType::get_UnderlyingSystemType()
@@ -1590,6 +1608,10 @@ System.Type System.Reflection.Emit.DerivedType::get_UnderlyingSystemType()
 System.Type System.Reflection.Emit.ModuleBuilder::GetType(System.String,System.Boolean,System.Boolean)
 	r142142		spouliot - call create_modified_type (icall) with cached 'TypeBuilder' and 'modifiers' (based on the string parameter)
 
+!SSC-D2C22947608DA2597D83E47B303F4F36
+System.Type System.Reflection.Emit.ModuleBuilder::ResolveType(System.Int32,System.Type[],System.Type[])
+	r159312		spouliot - call ResolveTypeToken (icall)
+
 !SSC-70ACD3CF9521E417990489348A022308
 System.Type System.Reflection.Emit.TypeBuilder::CreateType()
 	r142142		spouliot - call create_generic_class (icall in reflection.c, parameter-less instance). call AppDomain.DoTypeResolve on fields where FieldType is a TypeBuilder (as parameter). call create_runtime_class (icall) on 'this'
@@ -1598,13 +1620,10 @@ System.Type System.Reflection.Emit.TypeBuilder::CreateType()
 System.Type System.Reflection.Module::GetGlobalType()
 	r155239		spouliot - non-visible instance icall. call ves_icall_System_Reflection_Module_GetGlobalType (icall.c)
 
-!SSC-CE56B82AF49F1F8FB267A0DAB371213F
-System.Type System.Reflection.Module::GetType(System.String,System.Boolean,System.Boolean)
-	r142142		spouliot - call assembly.InternalGetType (instance icall) with this and the validated (string) parameters
-
-!SSC-15EAA53FF2633858598068E26722C549
-System.Type System.Reflection.Module::ResolveType(System.Int32,System.Type[],System.Type[])
-	r142142		spouliot - call ResolveTypeToken (icall)
+!SSC-2EA254A3AF66964B0C194D2290D637BC
+System.Type System.Reflection.MonoAssembly::GetType(System.String,System.Boolean,System.Boolean)
+	r159266		spouliot - code moved from Assembly to MonoAssembly to match FX4 behavior
+	r142142		spouliot - call (instance) InternalGetType (icall) with 'null' for 'module' and the validated parameters
 
 !SSC-E9358DC28977AE78E7A4A67E07123669
 System.Type System.Reflection.MonoField::get_DeclaringType()
@@ -1621,6 +1640,16 @@ System.Type System.Reflection.MonoGenericCMethod::get_ReflectedType()
 !SSC-6E90ECAA2FF0F4AC652C1FCD62E0A664
 System.Type System.Reflection.MonoGenericMethod::get_ReflectedType()
 	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoGenericMethod_get_ReflectedType (icall.c)
+
+!SSC-158ED044D3CCAEC344D73F6B9564737B
+System.Type System.Reflection.MonoModule::GetType(System.String,System.Boolean,System.Boolean)
+	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
+	r142142		spouliot - call assembly.InternalGetType (instance icall) with this and the validated (string) parameters
+
+!SSC-D74B33DB990A652DA250A7A8F44AA150
+System.Type System.Reflection.MonoModule::ResolveType(System.Int32,System.Type[],System.Type[])
+	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
+	r142142		spouliot - call ResolveTypeToken (icall)
 
 !SSC-A2D3DD91FDAE1A4A7BF3F90016D9E23E
 System.Type System.Type::GetType(System.String)
@@ -1675,13 +1704,14 @@ System.Type[] System.MonoType::GetNestedTypes(System.Reflection.BindingFlags)
 System.Type[] System.Reflection.Assembly::GetTypes(System.Boolean)
 	r155239		spouliot - internal icall. call ves_icall_System_Reflection_Assembly_GetTypes (icall.c) with boolean 'exportedOnly' parameter
 
-!SSC-BAA07B3B544BB4070AF2869386A011A7
-System.Type[] System.Reflection.Module::GetTypes()
-	r142142		spouliot - call InternalGetTypes (icall) on self (instance)
-
 !SSC-FC6461C4057C1A65EAE165002C8EB6E4
 System.Type[] System.Reflection.MonoMethod::GetGenericArguments()
 	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoMethod_GetGenericArguments (icall.c)
+
+!SSC-E26FDB84FABF6AF6B715C8803C6ACBB2
+System.Type[] System.Reflection.MonoModule::GetTypes()
+	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
+	r142142		spouliot - call InternalGetTypes (icall) on self (instance)
 
 !SSC-72E9DD287BED874AB00833743A2DAA23
 System.Type[] System.Type::GetGenericParameterConstraints()

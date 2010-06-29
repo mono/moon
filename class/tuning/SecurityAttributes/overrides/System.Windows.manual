@@ -165,6 +165,8 @@
 +SC-M: System.Void System.Windows.Style::ConvertSetterValue(System.Windows.Setter)
 +SC-M: System.Void System.Windows.Style::ConvertSetterValues()
 
++SC-M: System.Void System.Windows.FrameworkTemplate::SetXamlBuffer(Mono.Xaml.ParseTemplateFunc,Mono.Xaml.XamlContext,System.String)
+
 +SC-M: System.Void System.Windows.TemplateBindingExpression::PropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 
 # Can create a delegate on private/internal method" 
