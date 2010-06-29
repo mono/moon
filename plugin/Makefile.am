@@ -52,6 +52,8 @@ libmoonplugin_la_SOURCES = \
 	plugin.h			\
 	plugin-accessibility.cpp	\
 	plugin-accessibility.h		\
+	plugin-accessibility-bridge.cpp	\
+	plugin-accessibility-bridge.h	\
 	plugin-downloader.cpp		\
 	plugin-downloader.h		\
 	plugin-entry.cpp 		\

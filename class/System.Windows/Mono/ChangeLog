@@ -1,3 +1,11 @@
+2010-06-29  Mario Carrion  <mcarrion@novell.com>
+
+	* A11yHelper.cs:
+	* ApplicationLauncher.cs: Deprecate A11yHelper class in favor of
+	AccessibilityBridge in C++. (Reworked patch r156659)
+
+	r: toshok
+
 2010-06-28  Alan McGovern  <amcgovern@novell.com>
 
 	* MoonlightTypeConverter.cs: MoonlightTypeConverter needs to

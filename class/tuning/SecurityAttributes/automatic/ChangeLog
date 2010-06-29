@@ -1,3 +1,10 @@
+2010-06-29  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: Regenerated. (Reworked patch r156659)
+
+	r: toshok
+
 2010-06-28  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc:

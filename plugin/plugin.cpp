@@ -147,6 +147,8 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	}
 
 	plugin_instances = g_slist_append (plugin_instances, instance);
+
+	accessibility_bridge = new AccessibilityBridge ();
 	
 	/* back pointer to us */
 	instance->pdata = this;
@@ -274,6 +276,8 @@ PluginInstance::Shutdown ()
 		bridge->Shutdown ();
 	
 	Deployment::SetCurrent (deployment);
+
+	accessibility_bridge->Shutdown ();
 
 	// Destroy the XAP application
 	DestroyApplication ();
@@ -615,6 +619,22 @@ PluginInstance::TryLoadBridge (const char *prefix)
 	printf ("Using the %s bridge\n", prefix);
 }
 
+#if PAL_GTK_A11Y
+AtkObject*
+PluginInstance::GetRootAccessible ()
+{
+	Deployment::SetCurrent (deployment);
+
+	return accessibility_bridge->GetRootAccessible ();
+}
+#endif
+
+AccessibilityBridge*
+PluginInstance::GetAccessibilityBridge ()
+{
+	return accessibility_bridge;
+}
+
 NPError
 PluginInstance::GetValue (NPPVariable variable, void *result)
 {
@@ -627,6 +647,15 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 	case NPPVpluginScriptableNPObject:
 		*((NPObject**) result) = GetRootObject ();
 		break;
+#if PAL_GTK_A11Y
+	case NPPVpluginNativeAccessibleAtkPlugId:
+		AtkObject *root;
+		root = GetRootAccessible ();
+
+		if (root != NULL)
+			*((char **)result) = accessibility_bridge->GetPlugId (root);
+		break;
+#endif
 	default:
 		err = NPERR_INVALID_PARAM;
 		break;
@@ -1999,6 +2028,8 @@ PluginInstance::CreatePluginDeployment ()
 		g_warning ("Moonlight: Couldn't initialize the AppDomain");
 		return false;
 	}
+
+	accessibility_bridge->Initialize ();
 
 	return true;
 }

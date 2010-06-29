@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 484 methods needs to be decorated.
+# 486 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -12,6 +12,9 @@
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::accessibility_bridge_is_accessibility_enabled(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&,System.Boolean)
@@ -624,6 +627,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_evaluate(System.IntPtr,System.String)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_accessibility_bridge(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_browser_host(System.IntPtr)

@@ -28,8 +28,9 @@
 
 using System;
 using System.Reflection;
-using System.Collections.Generic;
+using System.Windows.Interop;
 using System.Windows.Automation;
+using System.Collections.Generic;
 using System.Windows.Automation.Provider;
 
 namespace System.Windows.Automation.Peers {
@@ -51,7 +52,9 @@ namespace System.Windows.Automation.Peers {
 				if (forceAccessibilityEnabled)
 					return true;
 
-				return Mono.A11yHelper.AccessibilityEnabled;
+				return Mono.NativeMethods.accessibility_bridge_is_accessibility_enabled (
+					Mono.NativeMethods.plugin_instance_get_accessibility_bridge (PluginHost.Handle)
+				);
 			}
 		}
 

@@ -55,7 +55,6 @@ system_windows_sources =							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/Microsoft.Internal/RichTextBoxView.cs				\
 	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
-	$(srcdir)/Mono/A11yHelper.cs						\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
 	$(srcdir)/Mono/DoubleKeyedDictionary.cs					\

@@ -1,3 +1,11 @@
+2010-06-29  Mario Carrion  <mcarrion@novell.com>
+
+	* various.m4: Add atk dependency for Accessibility support. This
+	shouldn't be a problem as GTK+ has an ATK dependency anyway. (Reworked
+	patch r156659)
+
+	r: toshok
+
 2010-06-28  Andreia Gaita  <avidigal@novell.com>
 
 	* utilities.m4: when using configure.gnu, don't call configure with $@,
