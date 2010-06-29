@@ -1,5 +1,10 @@
 2010-06-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* multiscaleimage.cpp (HandleDzParsed): You can't pass a DO as the
+	second arg to SetValue(), it only takes Values. Get rid of this
+	anyway, since the collection is auto-created, there should never
+	be a need to set our own collection value.
+
 	* deepzoomimagetilesource.cpp (GetTileLayer): Move the
 	GetTileWidth() call outside the loop. Also make sure
 	display_rects->len > 0 before entering the code segment.

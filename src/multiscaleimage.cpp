@@ -510,21 +510,18 @@ MultiScaleImage::HandleDzParsed ()
 	// if the source is a collection, fill the subimages list
 	MultiScaleTileSource *source = GetSource ();
 	MultiScaleSubImageCollection *subs = GetSubImages ();
-
-	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
-		SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
-
-	DeepZoomImageTileSource *dsource;
+	DeepZoomImageTileSource *dzits = NULL;
 	
-	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
-	    (dsource = (DeepZoomImageTileSource *) source)) {
+	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
+		SetValue (MultiScaleImage::AspectRatioProperty, Value (source->GetImageWidth () / source->GetImageHeight ()));
+	
+	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 		MultiScaleSubImage *si;
 		
-		if (!subs && dsource->GetSubImageCount () > 0)
-			SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
+		dzits = (DeepZoomImageTileSource *) source;
 		
-		for (guint i = 0; i < dsource->GetSubImageCount (); i++) {
-			si = dsource->GetSubImage (i);
+		for (guint i = 0; i < dzits->GetSubImageCount (); i++) {
+			si = dzits->GetSubImage (i);
 			subs->Add (si);
 		}
 	}
