@@ -47,6 +47,7 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (Colors.White, host.Background, "Background");
 			Assert.IsNotNull (host.Content, "Content");
 			Assert.IsTrue (host.IsLoaded, "IsLoaded");
+			Assert.AreEqual (String.Empty, host.NavigationState, "NavigationState");
 			Assert.IsNotNull (host.Settings, "Settings");
 			Assert.IsTrue (host.Source.AbsoluteUri.EndsWith ("moon-unit.xap"), "Source");
 		}
@@ -97,6 +98,26 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (n + 1, Application.Current.Host.InitParams.Count, "Count");
 			host.InitParams.Remove ("a");
 			Assert.AreEqual (n, Application.Current.Host.InitParams.Count, "Count-2");
+		}
+
+		[TestMethod]
+		public void StateChange ()
+		{
+			SilverlightHost host = Application.Current.Host;
+			int n = 0;
+
+			host.NavigationStateChanged += delegate (object sender, NavigationStateChangedEventArgs e) {
+				Assert.AreSame (host, sender, "sender");
+				Assert.AreEqual (n == 0 ? "a" : String.Empty, e.NewNavigationState, "NewNavigationState");
+				Assert.AreEqual (n == 0 ? String.Empty : "a", e.PreviousNavigationState, "PreviousNavigationState");
+				n++;
+			};
+			host.NavigationState = host.NavigationState;
+			Assert.AreEqual (n, 0, "same state");
+			host.NavigationState = "a";
+			Assert.AreEqual (n, 1, "different state");
+			host.NavigationState = String.Empty;
+			Assert.AreEqual (n, 2, "back to original");
 		}
 	}
 }

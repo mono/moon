@@ -38,10 +38,10 @@ namespace System.Windows.Interop {
 		Settings settings;
 		Uri source_uri;
 		private Dictionary<string,string> init_params;
+		private string navigation_state;
 
 		public SilverlightHost ()
 		{
-			NavigationState = String.Empty;
 		}
 
 		public bool IsVersionSupported (string versionStr)
@@ -135,7 +135,36 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		public string NavigationState { get; set; }
+		[MonoTODO ("incomplete - would be easier from S.W.Browser.dll")]
+		public string NavigationState {
+			get {
+				if (navigation_state == null) {
+					navigation_state = String.Empty;
+#if false
+					// look for an iframe named _sl_historyFrame in the web page and throw if not found
+					HtmlDocument doc = System.Windows.Browser.HtmlPage.Document;
+					HtmlElement iframe = doc.GetElementById ("_sl_historyFrame");
+					if ((iframe == null) || (iframe.TagName != "iframe"))
+						throw new InvalidOperationException ("missing <iframe id=\"_sl_historyFrame\">");
+
+					// return the fragment of the web page URL as the initial state, if none then String.Empty
+					string state = doc.DocumentUri.Fragment;
+					if (!String.IsNullOrEmpty (state))
+						navigation_state = state.Substring (1); // remove '#'
+#endif
+				}
+				return navigation_state;
+			}
+			set {
+				string current = navigation_state;
+				if (current != value) {
+					navigation_state = value;
+					var changed = NavigationStateChanged;
+					if (changed != null)
+						changed (this, new NavigationStateChangedEventArgs (current, value));
+				}
+			}
+		}
 
 		public event EventHandler<NavigationStateChangedEventArgs> NavigationStateChanged;
 	}

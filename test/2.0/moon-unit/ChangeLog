@@ -1,3 +1,8 @@
+2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Interop/SilverlightHostTest.cs: Add test case
+	for NavigationStateChanged
+
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTestBase.cs: SL4 has
