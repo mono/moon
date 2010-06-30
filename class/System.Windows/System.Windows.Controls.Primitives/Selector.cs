@@ -274,7 +274,7 @@ namespace System.Windows.Controls.Primitives {
 					// is that if we set the selected value to the same thing twice we'd end up
 					// unselecting the item instead of maintaining the selection.
 					if (!Selection.SelectedItems.Contains (item))
-						Selection.Select (item);
+						Selection.Select (item, ignoreSelectedValue);
 					return;
 				}
 			}
