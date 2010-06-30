@@ -1,3 +1,9 @@
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.ComponentModel/DesignerPropertiesTest.cs: Add a few
+	  more asserts to check the behaviour of
+	  DesignerProperties.SetIsInDesignMode
+
 2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/RichTextBoxTest.cs: New. Test cases

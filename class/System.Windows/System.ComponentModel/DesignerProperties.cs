@@ -37,7 +37,8 @@ namespace System.ComponentModel {
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
-
+			if (element != Application.Current.RootVisual)
+				return false;
 			return (bool) element.GetValue (IsInDesignModeProperty);
 		}
 
@@ -45,7 +46,8 @@ namespace System.ComponentModel {
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
-
+			if (element != Application.Current.RootVisual)
+				throw new NotImplementedException ();
 			element.SetValue (IsInDesignModeProperty, value);
 		}
 

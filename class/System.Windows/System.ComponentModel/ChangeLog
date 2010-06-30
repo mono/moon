@@ -1,3 +1,8 @@
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* DesignerProperties.cs: Fix a regression in
+	  DesignerProperties and bring it closer to SLs behaviour.
+
 2010-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* DesignerProperties.cs: Implement the getter/setter for

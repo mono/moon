@@ -62,6 +62,8 @@ namespace MoonTest.System.ComponentModel {
 			}, "Rectangle/True");
 
 			rect.SetValue (DesignerProperties.IsInDesignModeProperty, true);
+			Assert.IsInstanceOfType<bool>(rect.ReadLocalValue(DesignerProperties.IsInDesignModeProperty), "locally set");
+			Assert.IsTrue((bool) rect.GetValue(DesignerProperties.IsInDesignModeProperty), "#getter true");
 			Assert.IsFalse (DesignerProperties.GetIsInDesignMode (rect), "Rectangle/SetValue/False/1");
 			Assert.IsTrue ((bool) rect.GetValue (DesignerProperties.IsInDesignModeProperty), "Rectangle/GetValue/True");
 
@@ -72,6 +74,13 @@ namespace MoonTest.System.ComponentModel {
 			rect.SetValue (DesignerProperties.IsInDesignModeProperty, false);
 			Assert.IsFalse (DesignerProperties.GetIsInDesignMode (rect), "Rectangle/SetValue/False/2");
 			Assert.IsFalse ((bool) rect.GetValue (DesignerProperties.IsInDesignModeProperty), "Rectangle/GetValue/False");
+
+			DesignerProperties.SetIsInDesignMode(Application.Current.RootVisual, true);
+			Assert.IsTrue(DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual), "Is in design");
+
+			Assert.Throws<NotImplementedException>(delegate {
+				DesignerProperties.SetIsInDesignMode(rect, true);
+			}, "Rectangle/False");
 		}
 	}
 }
