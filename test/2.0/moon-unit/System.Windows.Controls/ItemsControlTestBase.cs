@@ -178,7 +178,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Containers generated from ItemContainerGenerator copy 'Content' to 'DataContext'")]
 		public void ContainerItemTest7 ()
 		{
 			// Force all elements to *not* be their own container
@@ -194,7 +193,7 @@ namespace MoonTest.System.Windows.Controls
 				Assert.IsInstanceOfType<ContentPresenter> (c.LastCreatedContainer, "#1");
 				item = (ContentPresenter) c.LastCreatedContainer;
 				Assert.AreEqual (content, item.Content, "#2");
-				Assert.AreEqual (content, item.DataContext, "#3");
+				Assert.IsNull (item.DataContext, "#3");
 				c.LastCreatedContainer = null;
 
 				content = "I'm a string";

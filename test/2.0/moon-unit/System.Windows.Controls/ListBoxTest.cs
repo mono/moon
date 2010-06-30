@@ -146,6 +146,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			base.ContainerItemTest2 ();
 			IPoker c = CurrentControl;
+			Enqueue(() => { }); // SL4 has decided it needs an extra tick before generating containers. This allows
+								// the test to pass now.
 			Enqueue (() => {
 				Assert.IsInstanceOfType<ListBoxItem> (c.LastCreatedContainer, "#1");
 				ListBoxItem lbi = (ListBoxItem) c.LastCreatedContainer;

@@ -1,5 +1,13 @@
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemsControlTestBase.cs: SL4 has
+	  reverted that horrible change SL3 introduced, awesome!
+
+	* System.Windows.Controls/ListBoxTest.cs: Add an extra tick to
+	  allow the test to work properly on SL4.
+
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ListBoxTest.cs: Refactor this test
 	  for SL4 compatibility. Woo, we already pass it :)
 
