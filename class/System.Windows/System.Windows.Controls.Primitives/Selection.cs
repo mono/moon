@@ -188,10 +188,8 @@ namespace System.Windows.Controls.Primitives
 		{
 			SelectedItems.Add (item);
 			if (SelectedItems.Count == 1) {
-				Owner.SelectedItem = item;
-				Owner.SelectedIndex  = Owner.Items.IndexOf (item);
-				Owner.SelectedValue = Owner.GetValueFromItem (item);
 				SelectedItem = item;
+				UpdateOwner (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));
 			}
 
 			UpdateOwnerSelectedItems ();
@@ -204,10 +202,7 @@ namespace System.Windows.Controls.Primitives
 
 			SelectedItems.Clear ();
 			SelectedItem = null;
-			Owner.SelectedItem = null;
-			Owner.SelectedIndex = -1;
-			if (!ignoreSelectedValue)
-				Owner.SelectedValue = null;
+			UpdateOwner (null, -1, ignoreSelectedValue ? Owner.SelectedValue : null);
 
 			if (oldSelection.Length > 0) {
 				UpdateOwnerSelectedItems ();
@@ -220,10 +215,8 @@ namespace System.Windows.Controls.Primitives
 			SelectedItems.Remove (item);
 			if (SelectedItem == item) {
 				var newItem = SelectedItems.Count == 0 ? null : SelectedItems [0];
-				Owner.SelectedItem = newItem;
-				Owner.SelectedIndex = newItem == null ? -1 : Owner.Items.IndexOf (newItem);
-				Owner.SelectedValue = Owner.GetValueFromItem (item);
 				SelectedItem = newItem;
+				UpdateOwner (newItem,newItem == null ? -1 : Owner.Items.IndexOf (newItem), Owner.GetValueFromItem (item));
 			}
 
 			UpdateOwnerSelectedItems ();
@@ -252,9 +245,7 @@ namespace System.Windows.Controls.Primitives
 			// Alwayus update the selection properties to keep everything nicely in sync. These could get out of sync
 			// if (for example) the user inserts an item at the start of the ItemsControl.Items collection.
 			SelectedItem = item;
-			Owner.SelectedItem  = item;
-			Owner.SelectedIndex = Owner.Items.IndexOf (item);
-			Owner.SelectedValue = Owner.GetValueFromItem (item);
+			UpdateOwner (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));
 
 			if (addedItems != Empty || oldItems != Empty) {
 				// Refresh the Selector.SelectedItems list
@@ -263,6 +254,18 @@ namespace System.Windows.Controls.Primitives
 				// Raise our SelectionChanged event
 				Owner.RaiseSelectionChanged (oldItems, addedItems);
 			}
+		}
+
+		void UpdateOwner (object item, int index, object value)
+		{
+			if (Owner.SelectedItem != item)
+				Owner.SelectedItem = item;
+
+			if (Owner.SelectedIndex != index)
+				Owner.SelectedIndex = index;
+
+			if (Owner.SelectedValue != value)
+				Owner.SelectedValue = value;
 		}
 	}
 }

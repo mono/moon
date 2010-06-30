@@ -1,5 +1,13 @@
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
+	* Selection.cs: Be less aggressive when updating the selection
+	  properties on Selector. This fixes parts of cs2 where we'd
+	  set a Binding on one of the selection properties and then
+	  clear it too soon by setting the property to the value it
+	  already had.
+
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: Don't ignore 'ignoreSelectedValue' here.
 
 2010-06-29  Alan McGovern  <amcgovern@novell.com>
