@@ -1,5 +1,11 @@
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: When changing Selector.ItemContainerStyle
+	  ensure we replace all uses of the old style with the new
+	  style regardless of whether the item is its own container.
+
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
 	* Selection.cs: Be less aggressive when updating the selection
 	  properties on Selector. This fixes parts of cs2 where we'd
 	  set a Binding on one of the selection properties and then
