@@ -185,7 +185,14 @@ namespace System.Windows.Controls {
 
 		void OnDisplayMemberPathChanged (string oldPath, string newPath)
 		{
+			// refresh the display member template.
 			displayMemberTemplate = null;
+			var newTemplate = DisplayMemberTemplate;
+
+			int count = Items.Count;
+			for (int i = 0; i < count; i ++) {
+				UpdateContentTemplateOnContainer (ItemContainerGenerator.ContainerFromIndex (i), items [i]);
+			}
 		}
 
 		internal void ClearContainerForItem (DependencyObject element, object item)
@@ -270,7 +277,10 @@ namespace System.Windows.Controls {
 
 		internal virtual void OnItemTemplateChanged (DataTemplate oldValue, DataTemplate newValue)
 		{
-
+			int count = Items.Count;
+			for (int i = 0; i < count; i++) {
+				UpdateContentTemplateOnContainer (ItemContainerGenerator.ContainerFromIndex (i), Items [i]);
+			}
 		}
 
 		void SetLogicalParent (IntPtr parent, IList items)
@@ -331,14 +341,19 @@ namespace System.Windows.Controls {
 
 		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
+			if (DisplayMemberPath != null && ItemTemplate != null)
+				throw new InvalidOperationException ("Cannot set 'DisplayMemberPath' and 'ItemTemplate' simultaenously");
+
+			UpdateContentTemplateOnContainer (element, item);
+		}
+
+		void UpdateContentTemplateOnContainer (DependencyObject element, object item)
+		{
 			if (element == item)
 				return;
 
 			ContentPresenter presenter = element as ContentPresenter;
 			ContentControl control = element as ContentControl;
-
-			if (DisplayMemberPath != null && ItemTemplate != null)
-				throw new InvalidOperationException ("Cannot set 'DisplayMemberPath' and 'ItemTemplate' simultaenously");
 
 			DataTemplate template = null;
 			if (!(item is UIElement)) {

@@ -140,16 +140,6 @@ namespace System.Windows.Controls
             IsSelectionActive = false; 
         }
 
-        internal override void OnItemTemplateChanged (DataTemplate oldValue, DataTemplate newValue)
-        {
-            int count = Items.Count;
-            for (int i = 0; i < count; i++) {
-                var container = (ListBoxItem) ItemContainerGenerator.ContainerFromIndex (i);
-                if (container != Items [i])
-                    container.ContentTemplate = newValue;
-            }
-        }
-
         /// <summary> 
         /// Causes the object to scroll into view.
         /// </summary>

@@ -1,5 +1,12 @@
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: When the DisplayMemberPath or ItemTemplate
+	  properties change we should update all generated containers.
+	  Note: We explicitly do not update ComboBox.SelectedItem as
+	  Silverlight has a bug and doesn't update it.
+
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: When ItemsControl.ItemTemplate changes we
 	  need to update all the generated containers in the Listbox
 	  (but not combobox!).
