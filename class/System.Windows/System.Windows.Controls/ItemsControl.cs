@@ -47,7 +47,12 @@ namespace System.Windows.Controls {
 			DependencyProperty.RegisterCore ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl),
 						     new PropertyMetadata (null, new PropertyChangedCallback (ItemsSourceChanged)));
 		public static readonly DependencyProperty ItemTemplateProperty =
-			DependencyProperty.RegisterCore ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
+			DependencyProperty.RegisterCore ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), new PropertyMetadata (ItemTemplateChanged));
+
+		static void ItemTemplateChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			((ItemsControl) sender).OnItemTemplateChanged ((DataTemplate) e.OldValue, (DataTemplate) e.NewValue);
+		}
 
 		public static ItemsControl GetItemsOwner (DependencyObject element)
 		{
@@ -261,6 +266,11 @@ namespace System.Windows.Controls {
 				AddItemsToPresenter (e.Position, e.ItemCount);
 				break;
 			}
+		}
+
+		internal virtual void OnItemTemplateChanged (DataTemplate oldValue, DataTemplate newValue)
+		{
+
 		}
 
 		void SetLogicalParent (IntPtr parent, IList items)

@@ -1,3 +1,9 @@
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: When ItemsControl.ItemTemplate changes we
+	  need to update all the generated containers in the Listbox
+	  (but not combobox!).
+
 2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* RichTextBox.cs: Add missing null checks on SSC code
