@@ -1,5 +1,12 @@
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: Don't try to handle
+	  ItemContainerStyle change events in Selector as ComboBox and
+	  ListBox have different semantics for some reason and it's
+	  impossible to do it simply. Unregresses the ComboBox test.
+
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs: When the DisplayMemberPath
 	  or ItemTemplate properties change we should update all
 	  generated containers. Note: We explicitly do not update

@@ -60,7 +60,7 @@ namespace System.Windows.Controls
 		// ComboBox really does ignore property changes here 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
 			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox),
-		                                 new PropertyMetadata (OnItemContainerStyleChanged));
+		                                 new PropertyMetadata (ItemContainerStyleChanged));
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
 			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
@@ -309,6 +309,17 @@ namespace System.Windows.Controls
 			base.OnGotFocus (e);
 			isFocused = true;
 			UpdateVisualState (true);
+		}
+
+		internal override void OnItemContainerStyleChanged (Style oldStyle, Style newStyle)
+		{
+			int count = Items.Count;
+			for (int i = 0; i < count; i++) {
+				var item = Items [i];
+				var container = (ListBoxItem) ItemContainerGenerator.ContainerFromIndex (i);
+				if (container != null && item != container)
+					container.Style = newStyle;
+			}
 		}
 
 		protected override void OnLostFocus (RoutedEventArgs e)

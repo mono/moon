@@ -93,18 +93,9 @@ namespace System.Windows.Controls.Primitives {
 			selector.SelectItemFromValue (selector.SelectedValue, true);
 		}
 
-		internal static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		internal static void ItemContainerStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			Selector s = (Selector) d;
-			Style style = (Style) e.NewValue;
-
-			int count = s.Items.Count;
-			for (int i = 0; i < count; i++)
-			{ 
-				ListBoxItem item = (ListBoxItem) s.ItemContainerGenerator.ContainerFromIndex (i);
-				if (item != null && item.Style == e.OldValue)  // May be null if GetContainerForItemOverride has not been called yet
-					item.Style = style;
-			}	
+			((Selector) sender).OnItemContainerStyleChanged ((Style) e.OldValue, (Style) e.NewValue);
 		}
 
 		internal ObservableCollection <object> SelectedItems {
@@ -181,7 +172,12 @@ namespace System.Windows.Controls.Primitives {
 				}
 			}
 		}
-		
+
+		internal virtual void OnItemContainerStyleChanged(Style oldStyle, Style newStyle)
+		{
+
+		}
+
 		internal override void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
 		{
 			base.OnItemsSourceChanged (oldSource, newSource);

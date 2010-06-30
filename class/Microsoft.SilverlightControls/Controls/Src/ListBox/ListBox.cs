@@ -29,7 +29,7 @@ namespace System.Windows.Controls
     {
         public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.RegisterCore( 
                 "ItemContainerStyle", typeof(Style), typeof(ListBox),
-                new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
+                new PropertyMetadata(new PropertyChangedCallback(ItemContainerStyleChanged)));
 
         public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
@@ -120,6 +120,16 @@ namespace System.Windows.Controls
         void SelectionModeChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Selection.Mode = (SelectionMode) e.NewValue;
+        }
+
+        internal override void OnItemContainerStyleChanged (Style oldStyle, Style newStyle)
+        {
+            int count = Items.Count;
+            for (int i = 0; i < count; i++) {
+                ListBoxItem item = (ListBoxItem) ItemContainerGenerator.ContainerFromIndex (i);
+                if (item != null && item.Style == oldStyle)
+                    item.Style = newStyle;
+            }
         }
 
         /// <summary> 
