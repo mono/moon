@@ -95,6 +95,9 @@ namespace System.Windows.Documents {
 
 		public int CompareTo (TextPointer position)
 		{
+			if (position == null)
+				throw new ArgumentNullException ("position");
+
 			return NativeMethods.text_pointer_compare_to (native, position.NativeHandle);
 		}
 

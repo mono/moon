@@ -83,6 +83,9 @@ namespace System.Windows.Controls {
 
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
+
 			if (!e.Handled)
 				NativeMethods.rich_text_box_on_mouse_left_button_down (native, e.NativeHandle);
 
@@ -91,6 +94,9 @@ namespace System.Windows.Controls {
 
 		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
+
 			if (!e.Handled)
 				NativeMethods.rich_text_box_on_mouse_left_button_up (native, e.NativeHandle);
 
@@ -99,6 +105,9 @@ namespace System.Windows.Controls {
 
 		protected override void OnMouseMove (MouseEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
+
 			NativeMethods.rich_text_box_on_mouse_move (native, e.NativeHandle);
 			base.OnMouseMove (e);
 		}

@@ -1,3 +1,10 @@
+2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/RichTextBoxTest.cs: New. Test cases
+	that check for null events args
+	* System.Windows.Documents/TextPointerTest.cs: New. Test cases
+	that check for null parameters.
+
 2010-06-28  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Update the binding tests

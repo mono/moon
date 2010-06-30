@@ -130,11 +130,19 @@ namespace System.Windows.Documents {
 
 		public void Insert (TextElement element)
 		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
 			NativeMethods.text_selection_insert (native, element.native);
 		}
 
 		public void Select (TextPointer anchorPosition, TextPointer movingPosition)
 		{
+			if (anchorPosition == null)
+				throw new ArgumentNullException ("anchorPosition");
+			if (movingPosition == null)
+				throw new ArgumentNullException ("movingPosition");
+
 			NativeMethods.text_selection_select (native, anchorPosition.native, movingPosition.native);
 		}
 
