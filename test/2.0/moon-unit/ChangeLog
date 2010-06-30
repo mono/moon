@@ -1,5 +1,10 @@
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs: Refactor this test
+	  for SL4 compatibility. Woo, we already pass it :)
+
+2010-06-30  Alan McGovern  <amcgovern@novell.com>
+
 	* System.ComponentModel/DesignerPropertiesTest.cs: Add a few
 	  more asserts to check the behaviour of
 	  DesignerProperties.SetIsInDesignMode

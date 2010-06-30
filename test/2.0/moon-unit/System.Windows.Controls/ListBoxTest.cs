@@ -617,9 +617,9 @@ namespace MoonTest.System.Windows.Controls {
 				lb.IsSynchronizedWithCurrentItem = true;
 			}, "#1");
 
-			Assert.Throws<ArgumentException>(() => {
-				lb.SetValue (Selector.IsSynchronizedWithCurrentItemProperty,true);
-			}, "#2");
+
+			lb.SetValue (Selector.IsSynchronizedWithCurrentItemProperty,true);
+			Assert.IsTrue((bool) lb.GetValue(Selector.IsSynchronizedWithCurrentItemProperty), "#2");
 		}
 
 		[TestMethod]
