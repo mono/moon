@@ -782,7 +782,7 @@ namespace Moonlight {
 				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null },
 				{ "out=|output-dir=", v => mxap.OutputDir = v },
 				{ "inplace:", "Don't use a temporary directory", v => mxap.InPlace = ParseBool (v, mxap.InPlace) },
-				{ "runtime-version=|rv=", String.Format ("Select the Silverlight Runtime Version (2 = {0}, 3 = {1}, or use the full version string)", RuntimeVersion2, RuntimeVersion3), v => mxap.SetRuntimeVersion (v) }
+				{ "runtime-version=|rv=", String.Format ("Select the Silverlight Runtime Version (2 = {0}, 3 = {1} 4 = {2}, or use the full version string)", RuntimeVersion2, RuntimeVersion3, RuntimeVersion4), v => mxap.SetRuntimeVersion (v) }
 			};
 
 			List<string> extra = null;
