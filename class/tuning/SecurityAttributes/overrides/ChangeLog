@@ -1,3 +1,8 @@
+2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Add SSC to System.Attribute::GetHashCode() 
+	since it use reflection
+
 2010-06-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Add SC to FrameworkTemplate::SetXamlBuffer

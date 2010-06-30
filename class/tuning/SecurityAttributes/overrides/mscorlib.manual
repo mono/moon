@@ -416,3 +416,6 @@
 # create instance of [SecurityCritical] RuntimeResourceSet
 +SSC-M: System.Resources.ResourceSet System.Resources.ResourceManager::InternalGetResourceSet(System.Globalization.CultureInfo,System.Boolean,System.Boolean)
 
+# use reflection to compute hash code based on fields values (since r159666)
++SSC-M: System.Int32 System.Attribute::GetHashCode()
+
