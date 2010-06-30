@@ -646,7 +646,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				if (args != NULL) {
 					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-					GetDeployment ()->GetSurface ()->EmitError (args);
+					EmitAsync (ImageFailedEvent, args); // just like ImageBrush does, also see DRT#171 and #173
 				}
 			}
 		}

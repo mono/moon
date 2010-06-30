@@ -1,3 +1,8 @@
+2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.cpp: Use ImageFailed, no the page OnError, for invalid
+	paths or policy violations. Fix remaining issue on DRT171 and 173
+
 2010-06-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (HandleDzParsed): You can't pass a DO as the
