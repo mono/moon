@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 620 methods
+# 624 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -93,6 +93,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::geometry_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::geometry_group_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::glyphs_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::glyph_typeface_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::gradient_brush_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::gradient_stop_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::gradient_stop_collection_new()
@@ -392,6 +393,7 @@
 +SSC-M: System.Void System.Windows.DependencyPropertyChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: Mono.Surface System.Windows.Deployment::get_Surface()
 +SSC-M: System.Windows.Deployment System.Windows.Deployment::get_Current()
++SSC-M: System.Windows.Media.GlyphTypefaceCollection System.Windows.Deployment::get_SystemTypefaces()
 +SSC-M: System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
 +SSC-M: System.Void System.Windows.Documents.FontSource::.ctor(System.IO.Stream)
 +SSC-M: System.Void System.Windows.Documents.TextPointer::.ctor(System.IntPtr,System.Boolean)
@@ -494,6 +496,8 @@
 +SSC-M: System.Void System.Windows.Media.Effects.ShaderEffect::UpdateShaderSampler(System.IntPtr,System.Int32,System.Int32,System.IntPtr)
 +SSC-M: System.Windows.Point System.Windows.Media.GeneralTransform::Transform(System.Windows.Point)
 +SSC-M: System.Windows.Rect System.Windows.Media.Geometry::get_Bounds()
++SSC-M: System.String System.Windows.Media.GlyphTypeface::get_FontFileName()
++SSC-M: System.Double System.Windows.Media.GlyphTypeface::get_Version()
 +SSC-M: System.Void System.Windows.Media.Imaging.BitmapSource::SetSource(System.IO.Stream)
 +SSC-M: System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Windows.Media.Imaging.BitmapSource)

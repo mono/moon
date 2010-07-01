@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 486 methods needs to be decorated.
+# 490 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -287,6 +287,9 @@
 +SC-M: System.Double Mono.NativeMethods::easing_function_base_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::glyph_typeface_get_version(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_collection_add_stylus_points(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -506,6 +509,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_surface_reffed(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::deployment_get_system_typefaces(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_types(System.IntPtr)
 
 # p/invoke declaration
@@ -518,6 +524,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::event_object_get_type_name_(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::font_manager_get_system_glyph_typefaces(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_element_get_logical_parent(System.IntPtr)
 
 # p/invoke declaration
@@ -525,6 +534,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::general_transform_get_matrix(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::glyph_typeface_get_font_uri_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::http_request_get_response(System.IntPtr)
