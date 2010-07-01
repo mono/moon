@@ -1,5 +1,10 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* control.h: Added validators to Control.FontSize and
+	  Control.FontFamily. All Control tests now pass under SL4.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* provider.h:
 	* template.h:
 	* provider.cpp: ControlTemplate.TargetType has a default value

@@ -301,29 +301,26 @@ namespace MoonTest.System.Windows.Controls {
 		public void InvalidValues()
 		{
 			ConcreteControl c = new ConcreteControl();
-			c.FontSize = -1;
-			c.FontSize = 0;
+			Assert.Throws<ArgumentException>(() => {
+				c.FontSize = -1;
+			}, "#1");
+			Assert.Throws<ArgumentException>(() => {
+				c.FontSize = 0;
+			}, "#2");
 			c.FontSize = 1000000;
 
 			c.Foreground = null;
-			c.FontFamily = null;
+			Assert.Throws<ArgumentException>(() => {
+				c.FontFamily = null;
+			}, "#3");
 		}
 
 		[TestMethod]
-		[MoonlightBug ("SetValue should not call DO.ClearValue when value is null")]
 		public void NullifyFontFamily()
 		{
-			ConcreteControl c = new ConcreteControl();
-			c.FontFamily = null;
-			Assert.Throws<NullReferenceException>(delegate {
-				object o = c.FontFamily;
-			}, "#1");
-			Assert.Throws<NullReferenceException>(delegate {
-				c.SetValue (ConcreteControl.FontFamilyProperty, null);
+			Assert.Throws<ArgumentException>(delegate {
+				new ConcreteControl().SetValue (ConcreteControl.FontFamilyProperty, null);
 			}, "#2");
-			Assert.Throws<NullReferenceException>(delegate {
-				Assert.IsNull (c.GetValue (ConcreteControl.FontFamilyProperty), "#3");
-			}, "#3");
 		}
 
 		[TestMethod]

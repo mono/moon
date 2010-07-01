@@ -1,5 +1,11 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ControlTest.cs: Added validators to
+	  Control.FontSize and Control.FontFamily. All Control tests
+	  now pass under SL4.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ControlTemplateTest.cs: Add the
 	  missing MoonlightBug
 

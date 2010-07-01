@@ -139,9 +139,9 @@ public:
 	const static int BorderBrushProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
 	const static int BorderThicknessProperty;
-	/* @PropertyType=FontFamily,DefaultValue=FontFamily(CONTROL_FONT_FAMILY),GenerateAccessors */
+	/* @PropertyType=FontFamily,DefaultValue=FontFamily(CONTROL_FONT_FAMILY),GenerateAccessors,Validator=NonNullValidator*/
 	const static int FontFamilyProperty;
-	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
+	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
 	const static int FontSizeProperty;
 	/* @PropertyType=FontStretch,DefaultValue=FontStretch(CONTROL_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
