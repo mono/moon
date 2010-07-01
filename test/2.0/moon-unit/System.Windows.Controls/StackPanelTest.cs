@@ -265,9 +265,9 @@ namespace MoonTest.System.Windows.Controls
 					Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0");
 					Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1");
 					Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2");
-					Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
-					Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
-					
+					Assert.AreEqual (new Rect (0,0,50,TestPanel.ActualHeight).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "slot3");
+					Assert.AreEqual(new Rect(0, 0, TestPanel.ActualWidth, TestPanel.ActualHeight).ToString(), LayoutInformation.GetLayoutSlot((FrameworkElement)b).ToString(), "slot4");
+
 					Assert.AreEqual (new Size (50,99),b.DesiredSize, "b desired async");
 					Assert.AreEqual (new Size (25,99),stack.DesiredSize, "stack desired async");
 				});

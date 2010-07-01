@@ -1,5 +1,10 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/StackPanelTest.cs: Update stackpanel
+	  tests to SL4.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/TextBlockTest.cs: Update the
 	  TextBlock tests to SL4 compatibility.
 
