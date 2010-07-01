@@ -1380,6 +1380,12 @@ Deployment::GetFontManager ()
 	return font_manager;
 }
 
+GlyphTypefaceCollection *
+Deployment::GetSystemTypefaces ()
+{
+	return font_manager->GetSystemGlyphTypefaces ();
+}
+
 Application*
 Deployment::GetCurrentApplication ()
 {

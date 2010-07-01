@@ -115,18 +115,23 @@ class GlyphTypeface {
 	//
 	int GetMajorVersion () { return ver_major; }
 	int GetMinorVersion () { return ver_minor; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	double GetVersion ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetFontUri ();
 	
 	bool operator== (const GlyphTypeface &v) const;
 };
 
 /* @IncludeInKinds */
-/* @Namespace=None */
+/* @Namespace=System.Windows.Media */
 class GlyphTypefaceCollection : public Collection {
  protected:
 	virtual ~GlyphTypefaceCollection () { }
 	
  public:
+	/* @GenerateCBinding,GeneratePInvoke */
 	GlyphTypefaceCollection ();
 	
 	virtual Type::Kind GetElementType () { return Type::GLYPHTYPEFACE; }
@@ -157,6 +162,7 @@ class FontManager {
 	FontFace *OpenFont (const char *name, int index);
 	FontFace *OpenFont (const GlyphTypeface *typeface);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	GlyphTypefaceCollection *GetSystemGlyphTypefaces ();
 };
 

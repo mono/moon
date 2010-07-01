@@ -764,6 +764,19 @@ GlyphTypeface::GetFontUri ()
 	return resource;
 }
 
+double
+GlyphTypeface::GetVersion ()
+{
+	double version = (double) (ver_minor >= 0 ? ver_minor : 0);
+	
+	while (version >= 1)
+		version /= 10;
+	
+	version += ver_major;
+	
+	return version;
+}
+
 bool
 GlyphTypeface::operator== (const GlyphTypeface &v) const
 {

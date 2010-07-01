@@ -1,3 +1,11 @@
+2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deployment.cpp (GetSystemTypefaces): New method to bypass
+	needing to create a managed wrapper for FontManager.
+
+	* fontmanager.cpp (GetVersion): New method that managed code
+	needs.
+
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
 	* textblock.h: Add validators to TextBlock.FontSize and

@@ -317,6 +317,9 @@ public:
 	
 	FontManager *GetFontManager ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	GlyphTypefaceCollection *GetSystemTypefaces ();
+	
 	CrossDomainAccess GetExternalCallersFromCrossDomain ();
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
