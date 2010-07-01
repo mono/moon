@@ -33,8 +33,15 @@ using System.Windows.Media;
 using Mono;
 
 namespace System.Windows.Documents {
+	internal enum FontSourceType {
+		ManagedStream,
+		GlyphTypeface,
+	}
+	
 	public class FontSource {
+		internal GlyphTypeface typeface;
 		internal StreamWrapper wrapper;
+		internal FontSourceType type;
 		
 		public FontSource (Stream stream)
 		{
@@ -42,12 +49,14 @@ namespace System.Windows.Documents {
 				wrapper = new StreamWrapper (stream);
 			else
 				wrapper = null;
+			
+			type = FontSourceType.ManagedStream;
 		}
-
-		public FontSource (GlyphTypeface glyphtypeface)
+		
+		public FontSource (GlyphTypeface glyphTypeface)
 		{
-			Console.WriteLine ("System.Windows.Documents.FontSource:.ctor (GlyphTypeface)");
-			throw new NotImplementedException ();
+			type = FontSourceType.GlyphTypeface;
+			typeface = glyphTypeface;
 		}
 	}
 }

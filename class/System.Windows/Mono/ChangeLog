@@ -1,6 +1,7 @@
 2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Value.cs (ToObject): Added support for GlyphTypeface.
+	(FromObject): Same.
 
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 

@@ -35,6 +35,10 @@ namespace System.Windows.Media {
 			native = raw;
 		}
 		
+		internal IntPtr Native {
+			get { return native; }
+		}
+		
 		// Properties
 		public string FontFileName {
 			get {

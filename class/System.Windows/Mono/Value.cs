@@ -54,9 +54,16 @@ namespace Mono {
 	internal struct UnmanagedFontStretch {
 		public FontStretchKind stretch;
 	}
-
+	
+	[StructLayout(LayoutKind.Explicit)]
+	internal struct FontSourceUnion {
+		[FieldOffset(0)] public IntPtr stream;
+		[FieldOffset(0)] public IntPtr typeface;
+	}
+	
 	internal struct UnmanagedFontSource {
-		public IntPtr stream;
+		public FontSourceUnion source;
+		public FontSourceType type;
 	}
 
 	internal struct UnmanagedStreamCallbacks {
@@ -295,15 +302,25 @@ namespace Mono {
 			}
 
 			case Kind.FONTSOURCE: {
-				UnmanagedFontSource *source = (UnmanagedFontSource *) value->u.p;
+				UnmanagedFontSource *fs = (UnmanagedFontSource *) value->u.p;
 				ManagedStreamCallbacks callbacks;
+				GlyphTypeface typeface;
 				StreamWrapper wrapper;
+				
+				switch (fs->type) {
+				case FontSourceType.ManagedStream:
+					callbacks = (ManagedStreamCallbacks) Marshal.PtrToStructure (fs->source.stream, typeof (ManagedStreamCallbacks));
 					
-				callbacks = (ManagedStreamCallbacks) Marshal.PtrToStructure (source->stream, typeof (ManagedStreamCallbacks));
+					wrapper = (StreamWrapper) GCHandle.FromIntPtr (callbacks.handle).Target;
 					
-				wrapper = (StreamWrapper) GCHandle.FromIntPtr (callbacks.handle).Target;
-					
-				return new FontSource (wrapper.stream);
+					return new FontSource (wrapper.stream);
+				case FontSourceType.GlyphTypeface:
+					typeface = new GlyphTypeface (fs->source.typeface);
+					return new FontSource (typeface);
+				default:
+					throw new Exception (String.Format ("Do not know how to create a FontSource of type {0}",
+									    fs->type.ToString ()));
+				}
 			}
 
 			case Kind.GLYPHTYPEFACE: {
@@ -626,12 +643,21 @@ namespace Mono {
 					
 					value.k = Kind.FONTSOURCE;
 					
-					if (source.wrapper != null) {
+					if (source.wrapper != null || source.typeface != null) {
 						value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontSource));
 						UnmanagedFontSource *ufs = (UnmanagedFontSource *) value.u.p;
-						ManagedStreamCallbacks callbacks = source.wrapper.GetCallbacks ();
-						ufs->stream = Marshal.AllocHGlobal (sizeof (UnmanagedStreamCallbacks));
-						Marshal.StructureToPtr (callbacks, ufs->stream, false);
+						ufs->type = source.type;
+						
+						switch (source.type) {
+						case FontSourceType.ManagedStream:
+							ManagedStreamCallbacks callbacks = source.wrapper.GetCallbacks ();
+							ufs->source.stream = Marshal.AllocHGlobal (sizeof (UnmanagedStreamCallbacks));
+							Marshal.StructureToPtr (callbacks, ufs->source.stream, false);
+							break;
+						case FontSourceType.GlyphTypeface:
+							ufs->source.typeface = source.typeface.Native;
+							break;
+						}
 					} else {
 						value.IsNull = true;
 					}
