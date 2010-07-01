@@ -42,7 +42,7 @@ using System.Windows.Media;
 namespace System.Windows {
 	public abstract partial class DependencyObject : INativeDependencyObjectWrapper {
 		internal static Thread moonlight_thread;
-		internal IntPtr _native;
+		IntPtr _native;
 		EventHandlerList event_list;
 		bool free_mapping;
 
@@ -312,7 +312,7 @@ namespace System.Windows {
 				throw new ArgumentNullException ("name");
 			if (scope == null)
 				throw new ArgumentNullException ("scope");
-			return NativeMethods.dependency_object_set_name_on_scope (_native, name, scope.NativeHandle);
+			return NativeMethods.dependency_object_set_name_on_scope (native, name, scope.NativeHandle);
 		}
 
 		Kind INativeEventObjectWrapper.GetKind ()

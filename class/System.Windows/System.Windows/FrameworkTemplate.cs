@@ -53,7 +53,7 @@ namespace System.Windows {
 		{
 			Value v = Value.FromObject (context);
 
-			NativeMethods.framework_template_set_xaml_buffer (_native, func, ref v, xaml);
+			NativeMethods.framework_template_set_xaml_buffer (native, func, ref v, xaml);
 		}
 	}
 }

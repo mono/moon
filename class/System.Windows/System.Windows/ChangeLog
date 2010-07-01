@@ -1,5 +1,11 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyObject.cs:
+	* FrameworkTemplate.cs: Hide the actual "_native" field and
+	  only access it through the property.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* Application.cs: As every method in
 	  INativeDependencyObjectWrapper is stateless and 100%
 	  identical for every implementor, implement these as
