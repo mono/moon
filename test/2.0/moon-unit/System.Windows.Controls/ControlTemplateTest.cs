@@ -39,6 +39,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("SL4 requires you to specify the assembly now")]
 		public void TargetTypeWithNamespace()
 		{
 			Assert.Throws<XamlParseException>(() =>
