@@ -1252,11 +1252,16 @@ FontManager::FontManager ()
 		dpi = 72.0;
 	
 	FcPatternDestroy (pattern);
+	
+	typefaces = NULL;
 	root = NULL;
 }
 
 FontManager::~FontManager ()
 {
+	if (typefaces)
+		typefaces->unref ();
+	
 	g_hash_table_destroy (system_faces);
 	g_hash_table_destroy (resources);
 	g_hash_table_destroy (faces);
@@ -1480,10 +1485,10 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	
 	// write the managed stream to disk
 	pos = stream->Position (stream->handle);
-
+	
 	if (stream->CanSeek (stream->handle))
 		stream->Seek (stream->handle, 0, SEEK_SET);
-
+	
 	while ((nread = stream->Read (stream->handle, buf, 0, sizeof (buf))) > 0) {
 		if (write_all (fd, buf, (size_t) nread) == -1) {
 			g_free (resource);
@@ -1918,6 +1923,9 @@ FontManager::GetSystemGlyphTypefaces ()
 	FontFace *face;
 	int index, i;
 	char *key;
+	
+	if (typefaces)
+		return typefaces;
 	
 	typefaces = new GlyphTypefaceCollection ();
 	

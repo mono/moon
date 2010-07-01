@@ -140,9 +140,10 @@ class GlyphTypefaceCollection : public Collection {
 class FontManager {
 	friend class FontFace;
 	
+	GlyphTypefaceCollection *typefaces;
+	GHashTable *system_faces;
 	GHashTable *resources;
 	GHashTable *faces;
-	GHashTable *system_faces;
 	FT_Library libft2;
 	char *root;
 	double dpi;

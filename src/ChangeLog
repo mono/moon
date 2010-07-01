@@ -1,5 +1,10 @@
 2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fontmanager.cpp (GetSystemGlyphTypefaces): Cache the
+	GlyphTypefaceCollection.
+
+2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
 	* value.cpp: Updated for FontSource changes.
 
 	* textbox.cpp (TextBox::OnPropertyChanged): Updated for FontSource
