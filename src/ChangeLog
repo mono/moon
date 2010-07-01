@@ -1,3 +1,8 @@
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* textblock.h: Add validators to TextBlock.FontSize and
+	  TextBlock.FontFamily.
+
 2010-07-01  David Reveman  <davidr@novell.com>
 
 	New Effect/Projection code with hit testing support

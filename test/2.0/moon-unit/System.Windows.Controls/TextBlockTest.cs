@@ -61,7 +61,21 @@ namespace MoonTest.System.Windows.Controls {
 		public void NullifyFontFamily ()
 		{
 			TextBlock tb = new TextBlock ();
-			tb.FontFamily = null;
+			Assert.Throws<ArgumentException>(() =>
+				tb.FontFamily = null
+			);
+		}
+
+		[TestMethod]
+		public void NegativeFontSize()
+		{
+			TextBlock tb = new TextBlock();
+			Assert.Throws<ArgumentException>(() =>
+				tb.FontSize = 0
+			);
+			Assert.Throws<ArgumentException>(() =>
+				tb.FontSize = -1
+			);
 		}
 		
 		[TestMethod]
@@ -100,13 +114,14 @@ namespace MoonTest.System.Windows.Controls {
 			
 			CreateAsyncTest (parent, () => {
 					Assert.AreEqual (new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), new Size (tb.ActualWidth, tb.ActualHeight), "actual are equal");
-					Assert.AreEqual (sub_tb.RenderSize, new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), "render size == actual size");
-					Assert.AreNotEqual (sub_tb.RenderSize, tb.RenderSize, "rendersizes are notequal");
+					Assert.AreEqualWithDelta (sub_tb.RenderSize.Width, sub_tb.ActualWidth, 1, "RenderWidth");
+					Assert.AreEqualWithDelta(sub_tb.RenderSize.Height, sub_tb.ActualHeight, 1, "RenderHeight");
+					Assert.AreNotEqual(sub_tb.RenderSize, tb.RenderSize, "rendersizes are notequal");
 					Assert.AreEqual (new Size (0,0), tb.RenderSize, "tb 0,0 rendersize");
 					Assert.IsNull (LayoutInformation.GetLayoutClip (tb), "tb null clip");
-					Assert.IsNotNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has clip");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has no clip");
 					Rect slot = LayoutInformation.GetLayoutSlot (sub_tb);
-					Assert.IsTrue (Math.Round (sub_tb.ActualWidth) == slot.Width, "slot is rounded down from actual");
+					Assert.IsTrue (Math.Ceiling (sub_tb.ActualWidth) == slot.Width, "slot is rounded up to actual");
 			});
 		}
 
@@ -132,14 +147,16 @@ namespace MoonTest.System.Windows.Controls {
 			CreateAsyncTest (parent, () => {
 					Assert.IsTrue (tb.UseLayoutRounding, "use layout rounding");
 					Assert.IsTrue (sub_tb.UseLayoutRounding, "use layout rounding");
-					Assert.AreEqual (new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), new Size (tb.ActualWidth, tb.ActualHeight), "actual are equal");
-					Assert.AreNotEqual (sub_tb.RenderSize, tb.RenderSize, "rendersizes are notequal");
+					Assert.AreEqual (new Size(sub_tb.ActualWidth, sub_tb.ActualHeight), new Size(tb.ActualWidth, tb.ActualHeight), "actual are equal");
+					Assert.AreEqual(new Size(sub_tb.ActualWidth, sub_tb.ActualHeight), new Size(tb.ActualWidth, tb.ActualHeight), "actual are equal");
+					Assert.AreNotEqual(sub_tb.RenderSize, tb.RenderSize, "rendersizes are notequal");
 					Assert.AreEqual (new Size (0,0), tb.RenderSize, "tb 0,0 rendersize");
-					Assert.AreEqual (sub_tb.RenderSize, new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), "render size == actual size");
+					Assert.AreEqualWithDelta(sub_tb.RenderSize.Width, sub_tb.ActualWidth, 1, "RenderWidth");
+					Assert.AreEqualWithDelta(sub_tb.RenderSize.Height, sub_tb.ActualHeight, 1, "RenderHeight");
 					Assert.IsNull (LayoutInformation.GetLayoutClip (tb), "tb null clip");
-					Assert.IsNotNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has clip");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has no clip");
 					Rect slot = LayoutInformation.GetLayoutSlot (sub_tb);
-					Assert.IsTrue (Math.Round (sub_tb.ActualWidth) == slot.Width, "slot is rounded down from actual");
+					Assert.IsTrue (Math.Ceiling (sub_tb.ActualWidth) == slot.Width, "slot is rounded up to actual");
 			});
 		}
 
@@ -330,9 +347,9 @@ namespace MoonTest.System.Windows.Controls {
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
 			Assert.IsTrue (tb.ActualWidth > 10.8 && tb.ActualWidth < 10.9, "textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "line count based on tb.ActualHeight");
+			Assert.AreEqual (28, GetLineCount (tb.ActualHeight), "line count based on tb.ActualHeight");
 			
-			Assert.AreEqual (33, tb.DesiredSize.Width, "textblock.DesiredSize.Width is " + tb.DesiredSize.Width.ToString ());
+			Assert.AreEqual (34, tb.DesiredSize.Width, "textblock.DesiredSize.Width is " + tb.DesiredSize.Width.ToString ());
 			Assert.AreEqual (7, GetLineCount (tb.DesiredSize.Height), "line count based on tb.DesiredSize");
 			//Assert.AreEqual (new Size (33,112), tb.DesiredSize, "tb.DesiredSize");
 		}
@@ -413,7 +430,7 @@ namespace MoonTest.System.Windows.Controls {
 			
 			// note: need to fix ActualWidth values to be within moonlight's tolerance
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
+			Assert.AreEqual (28, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (560, tb.ActualHeight, "2. tb.ActualHeight");
 		}
 
@@ -452,7 +469,7 @@ namespace MoonTest.System.Windows.Controls {
 			
 			// note: need to fix ActualWidth values to be within moonlight's tolerance
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
+			Assert.AreEqual (28, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (560, tb.ActualHeight, "2. tb.ActualHeight");
 		}
 
@@ -490,7 +507,7 @@ namespace MoonTest.System.Windows.Controls {
 			
 			// note: need to fix ActualWidth values to be within moonlight's tolerance
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
+			Assert.AreEqual (28, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
 		}
 
@@ -517,20 +534,20 @@ namespace MoonTest.System.Windows.Controls {
 			// FIXME: wrong after this point
 			
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
+			Assert.AreEqual (28, GetLineCount (tb.ActualHeight), "2. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (560, tb.ActualHeight, "2. tb.ActualHeight");
 
 			tb.Text = "Hello and don't you forget Who I am.";
 
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "3. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (36, GetLineCount (tb.ActualHeight), "3. line count based on textblock.ActualHeight");
+			Assert.AreEqual (29, GetLineCount (tb.ActualHeight), "3. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (576, tb.ActualHeight, "3. tb.ActualHeight");
 
 			tb.Width = 70;
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "4. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (36, GetLineCount (tb.ActualHeight), "4. line count based on textblock.ActualHeight");
+			Assert.AreEqual (29, GetLineCount (tb.ActualHeight), "4. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (576, tb.ActualHeight, "4. tb.ActualHeight");
 
 			b.InvalidateMeasure ();
@@ -539,7 +556,7 @@ namespace MoonTest.System.Windows.Controls {
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "5. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (36, GetLineCount (tb.ActualHeight), "5. line count based on textblock.ActualHeight");
+			Assert.AreEqual (29, GetLineCount (tb.ActualHeight), "5. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (576, tb.ActualHeight, "5. tb.ActualHeight");
 		}
 

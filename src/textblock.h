@@ -69,9 +69,9 @@ class TextBlock : public FrameworkElement {
 	virtual ~TextBlock ();
 	
  public:
-	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
+	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors,Validator=NonNullValidator */
 	const static int FontFamilyProperty;
-	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
+	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
 	const static int FontSizeProperty;
 	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
