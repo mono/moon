@@ -54,6 +54,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Filter ()
 		{
 			OpenFileDialog ofd = new OpenFileDialog ();
@@ -73,7 +74,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void FilterIndex ()
 		{
 			OpenFileDialog ofd = new OpenFileDialog ();
