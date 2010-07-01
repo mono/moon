@@ -1,11 +1,3 @@
-//
-// Fonts.cs
-//
-// Contact:
-//   Moonlight List (moonlight-list@lists.ximian.com)
-//
-// Copyright 2010 Novell, Inc.
-//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -16,7 +8,7 @@
 // 
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -25,24 +17,18 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+//
+// Contact:
+//   Moonlight Team (moonlight-list@lists.ximian.com)
+//
 
+using Mono;
+using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
 namespace System.Windows.Media {
-	public static class Fonts {
-		static ICollection<Typeface> typefaces;
-		
-		public static ICollection<Typeface> SystemTypefaces {
-			get {
-				if (typefaces == null) {
-					Deployment deployment = Deployment.Current;
-					typefaces = new List<Typeface> ();
-					foreach (GlyphTypeface gtf in deployment.SystemTypefaces)
-						typefaces.Add (new Typeface (gtf));
-				}
-				
-				return typefaces;
-			}
-		}
+	internal partial class GlyphTypefaceCollection : PresentationFrameworkCollection<GlyphTypeface> {
 	}
 }

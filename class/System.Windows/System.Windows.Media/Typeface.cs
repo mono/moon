@@ -12,15 +12,17 @@
 
 namespace System.Windows.Media {
 	public class Typeface {
-		internal Typeface ()
+		GlyphTypeface typeface;
+		
+		internal Typeface (GlyphTypeface gtf)
 		{
-			// This ctor is here to prevent the compiler from adding a default ctor
+			typeface = gtf;
 		}
-
+		
 		public bool TryGetGlyphTypeface (out GlyphTypeface glyphTypeface)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Media.Typeface:.TryGetGlyphTypeface");
-			throw new NotImplementedException ();
+			glyphTypeface = typeface;
+			return typeface != null;
 		}
 	}
 }

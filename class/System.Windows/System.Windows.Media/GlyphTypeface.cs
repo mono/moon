@@ -23,30 +23,29 @@
 //   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
+using Mono;
 using System;
 
-namespace System.Windows.Media
-{
+namespace System.Windows.Media {
 	public sealed class GlyphTypeface {
-		internal GlyphTypeface ()
+		IntPtr native;
+		
+		internal GlyphTypeface (IntPtr raw)
 		{
-			// This ctor is here to prevent the compiler from adding a default, public ctor
+			native = raw;
 		}
-
+		
 		// Properties
 		public string FontFileName {
 			get {
-				Console.WriteLine ("NIEX: System.Windows.Media.GlyphTypeface:get_FontFileName");
-				throw new NotImplementedException ();
+				return NativeMethods.glyph_typeface_get_font_uri (native);
 			}
 		}
-
+		
 		public double Version {
 			get {
-				Console.WriteLine ("NIEX: System.Windows.Media.GlyphTypeface:get_Version");
-				throw new NotImplementedException ();
+				return NativeMethods.glyph_typeface_get_version (native);
 			}
 		}
 	}
 }
-

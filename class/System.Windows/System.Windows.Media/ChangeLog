@@ -1,3 +1,14 @@
+2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* GlyphTypefaceCollection.cs: New internal collection as we'd get
+	from c++.
+
+	* Fonts.cs (SystemTypefaces): Implemented.
+
+	* Typeface.cs: Implemented.
+
+	* GlyphTypeface.cs: Implemented.
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Fonts.cs:
