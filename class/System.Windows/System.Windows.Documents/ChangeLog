@@ -1,3 +1,8 @@
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* TextPointer.cs: This should be internal so other classes can
+	  use it.
+
 2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* TextPointer.cs: Add missing null checks on SSC code
