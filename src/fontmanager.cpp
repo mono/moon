@@ -1913,7 +1913,6 @@ typeface_free (gpointer typeface)
 GlyphTypefaceCollection *
 FontManager::GetSystemGlyphTypefaces ()
 {
-	GlyphTypefaceCollection *typefaces;
 	GlyphTypeface *typeface;
 	const char *path, *name;
 	FcObjectSet *objects;
