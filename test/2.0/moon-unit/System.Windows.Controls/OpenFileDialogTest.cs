@@ -59,16 +59,20 @@ namespace MoonTest.System.Windows.Controls {
 			ofd.Filter = null;
 			Assert.AreEqual (String.Empty, ofd.Filter, "Null->Empty");
 
-			ofd.Filter = "a|b";
-			Assert.AreEqual ("a|b", ofd.Filter, "Filter");
+			Assert.Throws<ArgumentException>(() =>
+				ofd.Filter = "a|b"
+			);
 
 			Assert.Throws<ArgumentException> (delegate {
 				ofd.Filter = "a|b|";
 			}, "Even |");
-			Assert.AreEqual ("a|b", ofd.Filter, "Unchanged");
+
+			ofd.Filter = "a|*.b";
+			Assert.AreEqual ("a|*.b", ofd.Filter, "Unchanged");
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void FilterIndex ()
 		{
 			OpenFileDialog ofd = new OpenFileDialog ();
