@@ -1,3 +1,9 @@
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* contentcontrol.cpp: We no longer clear the template when
+	  setting a new value to the Content property on a
+	  ContentControl.
+
 2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* media.cpp: Use ImageFailed, no the page OnError, for invalid

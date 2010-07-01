@@ -1,3 +1,9 @@
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: If there is a ContentTemplate on the
+	  content presenter we use it regardless of whether or not its
+	  root element is null.
+
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Don't try to handle ItemContainerStyle change

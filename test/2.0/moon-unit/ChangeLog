@@ -1,3 +1,14 @@
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Update the
+	  ContentControl tests to SL4 compatibility.
+
+	* System.Windows/FrameworkElementTest.cs: These tests all pass
+	  now.
+
+	* System.Windows.Controls/ContentPresenterTest.cs: Update the
+	  ContentPresenterTests to SL4 compatibility.
+
 2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Interop/SilverlightHostTest.cs: Add test case

@@ -48,7 +48,6 @@ ContentControl::GetDefaultTemplate ()
 void
 ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	bool clearTemplate = false;
 	if (args->GetProperty ()->GetOwnerType () != Type::CONTENTCONTROL) {
 		Control::OnPropertyChanged (args, error);
 		return;
@@ -56,7 +55,6 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
 		if (args->GetOldValue() && args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
-			clearTemplate = true;
 			if (GetContentSetsParent ()) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 				if (error->number)
@@ -64,26 +62,11 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 			}
 		}
 		if (args->GetNewValue() && args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
-			clearTemplate = true;
 			if (GetContentSetsParent ()) {
 				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
 				if (error->number)
 					return;
 			}
-		}
-		// I'm not sure why this check is here, but it breaks some Silverlight Toolkit 2.0 (July edition)
-		//tests (databinding a SolidColourBrush from FrameworkElement.Background to ContentControl.Content) and
-		// nothing regresses when I comment this out.
-		//if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT)) {
-		//	MoonError::FillIn (error, MoonError::ARGUMENT, "");
-		//	return;
-		//}
-		
-		if (clearTemplate && GetSubtreeObject ()) {
-			UIElement *sub = (UIElement *) GetSubtreeObject ();
-			sub->ref ();
-			ElementRemoved (sub);
-			sub->unref ();
 		}
 
 		if (HasHandlers (ContentControl::ContentControlChangedEvent))

@@ -195,13 +195,12 @@ namespace System.Windows.Controls
 			}
 
 			// Expand the ContentTemplate if it exists
-			DataTemplate template = ContentTemplate; 
-			object content = Content;
+			DataTemplate template = ContentTemplate;
 			if (template != null)
-				content = template.LoadContent () ?? content;
+				return template.LoadContent () as UIElement;
 
-			// Add the new content
-			_contentRoot = content as UIElement; 
+			var content = Content;
+			_contentRoot = content as UIElement;
 			if (_contentRoot == null && content != null)
 				_contentRoot = FallbackRoot;
 

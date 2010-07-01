@@ -178,7 +178,6 @@ namespace MoonTest.System.Windows {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ChangeContentChangesTemplate ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -216,7 +215,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ChangeContentChangesTemplate2 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -254,7 +252,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ChangeContentChangesTemplate3 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -343,7 +340,6 @@ namespace MoonTest.System.Windows {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ChangeContentChangesTemplate5 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"

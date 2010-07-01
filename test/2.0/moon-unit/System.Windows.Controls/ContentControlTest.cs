@@ -99,7 +99,6 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void ChangeDefaultTemplate ()
 		{
-			// Fails in Silverlight 3
 			ContentControl c = (ContentControl) XamlReader.Load (@"
 <ContentControl xmlns=""http://schemas.microsoft.com/client/2007"">
     <ContentControl.Template>
@@ -114,7 +113,7 @@ namespace MoonTest.System.Windows.Controls {
 			ContentPresenter p = null;
 			CreateAsyncTest (c,
 				() => Assert.VisualChildren (c, "#1",
-						new VisualNode<ContentPresenter> ("#2", (pr) => p = pr, (VisualNode[]) null)
+						new VisualNode<ContentPresenter> ("#2", (pr) => p = pr)
 					),
 				() => {
 					Assert.IsNull (p.DataContext, "#3");
@@ -127,7 +126,9 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.AreSame (c.ContentTemplate, p.ContentTemplate);
 					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentTemplateProperty), "#6");
 				},
-				() => Assert.VisualChildren (p, new VisualNode <ConcreteFrameworkElement> ("#7"))
+				() => {
+					Assert.VisualChildren (p, "#7");
+				}
 			);
 		}
 		
@@ -351,12 +352,12 @@ namespace MoonTest.System.Windows.Controls {
 			ContentControl c = new ContentControl ();
 			c.Content = new ConcreteFrameworkElement ();
 			c.ContentTemplate = new DataTemplate ();
-			CreateAsyncTest (c, () =>
-				Assert.VisualChildren (c, "#1",
-					new VisualNode<ContentPresenter> ("#a",
-						new VisualNode<ConcreteFrameworkElement> ("#b")
-					)
-				)
+			CreateAsyncTest (c, 
+				() => c.ApplyTemplate (),
+				() =>
+				    Assert.VisualChildren (c, "#1",
+					    new VisualNode<ContentPresenter> ("#1a")
+				    )
 			);
 		}
 
@@ -928,16 +929,22 @@ namespace MoonTest.System.Windows.Controls {
 				)
 			);
 
-			// This clears the template completely
 			c.Content = new Rectangle ();
 
-			// No children
-			Assert.VisualChildren (c, "#8"); // Fails in Silverlight 3
-			Assert.IsTrue (c.ApplyTemplate (), "#9");
-
+			Assert.VisualChildren(c, "#8",
+				new VisualNode<ContentPresenter>("#8a")
+			);
+			Assert.IsFalse (c.ApplyTemplate (), "#9");
 			// Templated contents have been attached
 			Assert.VisualChildren (c, "#10",
-				new VisualNode<ContentPresenter> ("#11")
+				new VisualNode<ContentPresenter> ("#10b")
+			);
+
+			c.Measure(new Size(150, 150));
+			Assert.VisualChildren(c, "#11",
+				new VisualNode<ContentPresenter>("#11a",
+					new VisualNode<Rectangle>("#11b")
+				)
 			);
 
 			// The Presenter attaches itself on the call to Measure
@@ -972,7 +979,7 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.VisualChildren (c, "#3",
 						new VisualNode<ContentPresenter> ("#b", p => presenter = p, null)
 					);
-					Assert.AreNotSame (old, presenter, "#4"); // Fails in Silverlight 3
+					Assert.AreSame (old, presenter, "#4");
 					Assert.IsNull (presenter.DataContext, "#5");
 				}
 			);
