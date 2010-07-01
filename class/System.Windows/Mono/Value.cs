@@ -306,6 +306,10 @@ namespace Mono {
 				return new FontSource (wrapper.stream);
 			}
 
+			case Kind.GLYPHTYPEFACE: {
+				return new GlyphTypeface (value->u.p);
+			}
+
 			case Kind.PROPERTYPATH: {
 				UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) value->u.p;
 				if (propertypath == null)
