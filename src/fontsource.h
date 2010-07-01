@@ -18,9 +18,19 @@
 
 #include "utils.h"
 
+enum FontSourceType {
+	FontSourceTypeManagedStream,
+	FontSourceTypeGlyphTypeface,
+};
+
 /* @IncludeInKinds */
 struct FontSource {
-	ManagedStreamCallbacks *stream;
+	union {
+		ManagedStreamCallbacks *stream;
+		GlyphTypeface *typeface;
+	} source;
+	
+	FontSourceType type;
 };
 
 #endif /* __FONT_SOURCE_H__ */

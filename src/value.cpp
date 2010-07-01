@@ -262,8 +262,18 @@ Value::Value (FontSource source)
 	Init ();
 	k = Type::FONTSOURCE;
 	u.fontsource = g_new (FontSource, 1);
-	u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
-	memcpy (u.fontsource->stream, source.stream, sizeof (ManagedStreamCallbacks));
+	u.fontsource->type = source.type;
+	
+	switch (source.type) {
+	case FontSourceTypeManagedStream:
+		u.fontsource->source.stream = g_new (ManagedStreamCallbacks, 1);
+		memcpy (u.fontsource->source.stream, source.source.stream, sizeof (ManagedStreamCallbacks));
+		break;
+	case FontSourceTypeGlyphTypeface:
+		u.fontsource->source.typeface = new GlyphTypeface (source.source.typeface);
+		break;
+	}
+	
 	SetIsNull (false);
 }
 
@@ -448,8 +458,17 @@ Value::Copy (const Value& v)
 	case Type::FONTSOURCE:
 		if (v.u.fontsource) {
 			u.fontsource = g_new (FontSource, 1);
-			u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
-			memcpy (u.fontsource->stream, v.u.fontsource->stream, sizeof (ManagedStreamCallbacks));
+			u.fontsource->type = v.u.fontsource->type;
+			
+			switch (u.fontsource->type) {
+			case FontSourceTypeManagedStream:
+				u.fontsource->source.stream = g_new (ManagedStreamCallbacks, 1);
+				memcpy (u.fontsource->source.stream, v.u.fontsource->source.stream, sizeof (ManagedStreamCallbacks));
+				break;
+			case FontSourceTypeGlyphTypeface:
+				u.fontsource->source.typeface = new GlyphTypeface (v.u.fontsource->source.typeface);
+				break;
+			}
 		}
 		break;
 	case Type::FONTWEIGHT:
@@ -611,7 +630,14 @@ Value::FreeValue ()
 		break;
 	case Type::FONTSOURCE:
 		if (u.fontsource) {
-			g_free (u.fontsource->stream);
+			switch (u.fontsource->type) {
+			case FontSourceTypeManagedStream:
+				g_free (u.fontsource->source.stream);
+				break;
+			case FontSourceTypeGlyphTypeface:
+				delete u.fontsource->source.typeface;
+			}
+			
 			g_free (u.fontsource);
 		}
 		break;
@@ -758,7 +784,7 @@ Value::operator== (const Value &v) const
 		if (u.s == NULL){
 			return v.u.s == NULL;
 		} else if (v.u.s == NULL)
-			return FALSE;
+			return false;
 
 		return !strcmp (u.s, v.u.s);
 	/* don't use memcmp for comparing structures, structures may have uninitialized padding,
@@ -772,8 +798,18 @@ Value::operator== (const Value &v) const
 	case Type::FONTSTRETCH:
 		return *u.fontstretch == *v.u.fontstretch;
 	case Type::FONTSOURCE:
-		if (u.fontsource && v.u.fontsource)
-			return u.fontsource->stream->handle == v.u.fontsource->stream->handle;
+		if (u.fontsource && v.u.fontsource) {
+			if (u.fontsource->type != v.u.fontsource->type)
+				return false;
+			
+			switch (u.fontsource->type) {
+			case FontSourceTypeManagedStream:
+				return u.fontsource->source.stream->handle == v.u.fontsource->source.stream->handle;
+			case FontSourceTypeGlyphTypeface:
+				return u.fontsource->source.typeface == v.u.fontsource->source.typeface;
+			}
+		}
+		
 		return u.fontsource == v.u.fontsource;
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;

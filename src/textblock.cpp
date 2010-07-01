@@ -632,19 +632,26 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontSourceProperty) {
-		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		FontSource *fs = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
 		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 		
 		// FIXME: ideally we'd remove the old item from the cache (or,
 		// rather, 'unref' it since some other textblocks/boxes might
 		// still be using it).
-		
 		g_free (font_source);
+		font_source = NULL;
 		
-		if (source && source->stream)
-			font_source = manager->AddResource (source->stream);
-		else
-			font_source = NULL;
+		if (fs != NULL) {
+			switch (fs->type) {
+			case FontSourceTypeManagedStream:
+				if (fs->source.stream)
+					font_source = manager->AddResource (fs->source.stream);
+				break;
+			case FontSourceTypeGlyphTypeface:
+				// FIXME: probably need to support this...
+				break;
+			}
+		}
 		
 		UpdateFontDescriptions (true);
 		dirty = true;

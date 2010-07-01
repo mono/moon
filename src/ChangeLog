@@ -1,5 +1,22 @@
 2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* value.cpp: Updated for FontSource changes.
+
+	* textbox.cpp (TextBox::OnPropertyChanged): Updated for FontSource
+	changes.
+	(PasswordBox::OnPropertyChanged): Updated for FontSource changes.
+
+	* glyphs.cpp (SetFontSource): New method for setting a managed
+	stream font source.
+	(OnPropertyChanged): Updated for FontSource changes.
+
+	* textblock.cpp (OnPropertyChanged): Updated for FontSource
+	changes.
+
+	* fontsource.h: FontSources can now be made from GlyphTypefaces.
+
+2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
 	* deployment.cpp (GetSystemTypefaces): New method to bypass
 	needing to create a managed wrapper for FontManager.
 

@@ -19,6 +19,7 @@
 #include "frameworkelement.h"
 #include "downloader.h"
 #include "fontfamily.h"
+#include "fontsource.h"
 #include "fontstretch.h"
 #include "fontstyle.h"
 #include "fontweight.h"
@@ -100,6 +101,7 @@ class Glyphs : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
 	void SetFontSource (Downloader *downloader, const char *part_name);
+	void SetFontSource (ManagedStreamCallbacks *stream);
 	void SetFontSource (GlyphTypeface *typeface);
 	
 	//

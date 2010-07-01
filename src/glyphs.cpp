@@ -765,6 +765,30 @@ Glyphs::SetFontResource (const Uri *uri)
 }
 
 void
+Glyphs::SetFontSource (ManagedStreamCallbacks *stream)
+{
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	StyleSimulations simulate = GetStyleSimulations ();
+	double size = GetFontRenderingEmSize ();
+	char *resource;
+	
+	CleanupDownloader ();
+	delete font;
+	
+	if (stream) {
+		resource = manager->AddResource (stream);
+		font = TextFont::Load (resource, 0, size, simulate);
+		g_free (resource);
+	} else {
+		font = NULL;
+	}
+	
+	UpdateBounds (true);
+	Invalidate ();
+	dirty = true;
+}
+
+void
 Glyphs::SetFontSource (GlyphTypeface *typeface)
 {
 	StyleSimulations simulate = GetStyleSimulations ();
@@ -889,6 +913,24 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 		} else {
 			uri_changed = false;
+		}
+	} else if (args->GetId () == Glyphs::FontSourceProperty) {
+		FontSource *fs = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		
+		if (fs != NULL) {
+			switch (fs->type) {
+			case FontSourceTypeManagedStream:
+				SetFontSource (fs->source.stream);
+				break;
+			case FontSourceTypeGlyphTypeface:
+				SetFontSource (fs->source.typeface);
+				break;
+			}
+		} else {
+			CleanupDownloader ();
+			dirty = true;
+			delete font;
+			font = NULL;
 		}
 	} else if (args->GetId () == Glyphs::FillProperty) {
 		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
