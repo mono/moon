@@ -186,7 +186,7 @@ namespace System.Windows.Controls {
 				return new GeneratorPosition (RealizedElements.IndexOf (itemIndex), 0);
 			}
 			else if (itemIndex > Owner.Items.Count) {
-				return new GeneratorPosition (-1, 1);
+				return new GeneratorPosition (-1, 0);
 			}
 
 			if (RealizedElements.Count == 0)

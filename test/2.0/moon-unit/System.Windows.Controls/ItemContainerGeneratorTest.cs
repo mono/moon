@@ -178,7 +178,7 @@ namespace MoonTest.System.Windows.Controls
 		{
 			GeneratorPosition p = Generator.GeneratorPositionFromIndex (100);
 			Assert.AreEqual (-1, p.Index, "#1");
-			Assert.AreEqual (1, p.Offset, "#2");
+			Assert.AreEqual (0, p.Offset, "#2");
 		}
 
 		[TestMethod]
@@ -189,7 +189,7 @@ namespace MoonTest.System.Windows.Controls
 
 			GeneratorPosition p = Generator.GeneratorPositionFromIndex (100);
 			Assert.AreEqual (-1, p.Index, "#1");
-			Assert.AreEqual (1, p.Offset, "#2");
+			Assert.AreEqual (0, p.Offset, "#2");
 		}
 
 		[TestMethod]
@@ -204,7 +204,7 @@ namespace MoonTest.System.Windows.Controls
 				() => {
 					GeneratorPosition p = Generator.GeneratorPositionFromIndex (100);
 					Assert.AreEqual (-1, p.Index, "#1");
-					Assert.AreEqual (1, p.Offset, "#2");
+					Assert.AreEqual (0, p.Offset, "#2");
 				}
 			);
 		}

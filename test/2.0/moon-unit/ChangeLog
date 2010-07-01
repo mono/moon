@@ -1,5 +1,11 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/MediaElementTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
+	  Updated to SL4 compatibility.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/OpenFileDialogTest.cs: Whoops!
 
 2010-07-01  Alan McGovern  <amcgovern@novell.com>

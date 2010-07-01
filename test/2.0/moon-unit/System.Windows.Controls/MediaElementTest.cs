@@ -279,9 +279,9 @@ namespace MoonTest.System.Windows.Controls
 		public void TestInvalidValues()
 		{
 			MediaElement m = new MediaElement();
-			Assert.Throws<Exception>(delegate {
+			Assert.Throws<InvalidOperationException>(delegate {
 				m.SetValue (MediaElement.AttributesProperty, null);
-			}, "#1"); // Fails in Silverlight 3 (got InvalidOperationException)
+			}, "#1");
 			m.AudioStreamIndex = -1000;
 			Assert.AreEqual (-1000, m.AudioStreamIndex, "#2");
 			m.AudioStreamIndex = -1;

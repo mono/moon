@@ -1,5 +1,9 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: Updated to SL4 compatibility.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: If there is a ContentTemplate on the
 	  content presenter we use it regardless of whether or not its
 	  root element is null.
