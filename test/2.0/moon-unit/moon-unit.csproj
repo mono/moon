@@ -290,7 +290,14 @@
     <Compile Include="System.Windows.Data\BindingExpressionTest.cs" />
     <Compile Include="System.Windows.Data\BindingOperationsTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
+    <Compile Include="System.Windows.Data\BindingTest_CollectionView.cs" />
+    <Compile Include="System.Windows.Data\CollectionViewGroupTest.cs" />
+    <Compile Include="System.Windows.Data\CollectionViewSourceTest.cs" />
+    <Compile Include="System.Windows.Data\CollectionViewTest.cs" />
+    <Compile Include="System.Windows.Data\CollectionViewTest_IEditable.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
+    <Compile Include="System.Windows.Data\MultiwayBindings.cs" />
+    <Compile Include="System.Windows.Data\PropertyGroupDescriptionTest.cs" />
     <Compile Include="System.Windows.Documents\FontSourceTest.cs" />
     <Compile Include="System.Windows.Documents\GlyphsTest.cs" />
     <Compile Include="System.Windows.Documents\InlineTest.cs" />
