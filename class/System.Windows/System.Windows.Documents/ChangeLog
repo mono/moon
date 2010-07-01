@@ -1,5 +1,13 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* TextSelection.cs: As every method in
+	  INativeDependencyObjectWrapper is stateless and 100%
+	  identical for every implementor, implement these as
+	  extension methods to INativeDependencyObjectWrapper and make
+	  the interface itself empty.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* TextPointer.cs:
 	* TextSelection.cs: Fix the issue properly. TextSelection
 	  should use TextPointer.NativeHandle. The fact this compiled

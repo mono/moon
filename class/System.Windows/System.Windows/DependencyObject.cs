@@ -145,19 +145,16 @@ namespace System.Windows {
 			Mono.NativeMethods.dependency_object_remove_property_change_handler (native, property.Native, handler);
 		}
 
-		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public object GetValue (DependencyProperty dp)
 		{
 			return NativeDependencyObjectHelper.GetValue (this, dp);
 		}
 		
-		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public object GetAnimationBaseValue (DependencyProperty dp)
 		{
 			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
 		}
 		
-		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public object ReadLocalValue (DependencyProperty dp)
 		{
 			return ReadLocalValueImpl (dp);
@@ -192,7 +189,7 @@ namespace System.Windows {
 			}
 		}
 
-		internal virtual object ReadLocalValueImpl (DependencyProperty dp)
+		internal object ReadLocalValueImpl (DependencyProperty dp)
 		{
 			Expression expression;
 			if (expressions.TryGetValue (dp, out expression))
@@ -200,7 +197,6 @@ namespace System.Windows {
 			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
 		}
 		
-		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public void ClearValue (DependencyProperty dp)
 		{
 			if (dp == null)
@@ -211,7 +207,7 @@ namespace System.Windows {
 			ClearValueImpl (dp);
 		}
 
-		internal virtual void ClearValueImpl (DependencyProperty dp)
+		internal void ClearValueImpl (DependencyProperty dp)
 		{
 			RemoveExpression (dp);
 			NativeDependencyObjectHelper.ClearValue (this, dp);
@@ -224,8 +220,6 @@ namespace System.Windows {
 			}
 		}
 		
-		
-		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public void SetValue (DependencyProperty dp, object value)
 		{
 			if (dp == null)
@@ -239,7 +233,7 @@ namespace System.Windows {
 			SetValueImpl (dp, value);
 		}
 
-		internal virtual void SetValueImpl (DependencyProperty dp, object value)
+		internal void SetValueImpl (DependencyProperty dp, object value)
 		{
 			bool updateTwoWay = false;
 			bool addingExpression = false;
@@ -331,7 +325,6 @@ namespace System.Windows {
 			return Deployment.Current.Types.Find (GetType()).native_handle;
 		}
 		
-		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Never)]
 		public bool CheckAccess ()
 		{

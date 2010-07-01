@@ -1,3 +1,11 @@
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* INativeDependencyObjectWrapper.cs: As every method in
+	  INativeDependencyObjectWrapper is stateless and 100%
+	  identical for every implementor, implement these as
+	  extension methods to INativeDependencyObjectWrapper and make
+	  the interface itself empty.
+
 2010-06-29  Mario Carrion  <mcarrion@novell.com>
 
 	* A11yHelper.cs:

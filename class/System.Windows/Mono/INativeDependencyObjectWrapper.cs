@@ -28,18 +28,44 @@
 
 using System;
 using System.Windows;
+using System.Threading;
 
 namespace Mono {
 
-	internal interface INativeDependencyObjectWrapper : INativeEventObjectWrapper {
-		object GetValue (DependencyProperty dp);
-		void SetValue (DependencyProperty dp, object value);
+	static class INativeDependencyObjectWrapperExtensions
+	{
+		public static object GetValue (this INativeDependencyObjectWrapper native_do, DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetValue (native_do, dp);
+		}
 
-		object ReadLocalValue (DependencyProperty dp);
-		object GetAnimationBaseValue (DependencyProperty dp);
-		void ClearValue (DependencyProperty dp);
+		public static void SetValue (this INativeDependencyObjectWrapper native_do, DependencyProperty dp, object value)
+		{
+			NativeDependencyObjectHelper.SetValue (native_do, dp, value);
+		}
 
-		bool CheckAccess ();
+		public static object ReadLocalValue (this INativeDependencyObjectWrapper native_do, DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.ReadLocalValue (native_do, dp);
+		}
+
+		public static object GetAnimationBaseValue (this INativeDependencyObjectWrapper native_do, DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetAnimationBaseValue (native_do, dp);
+		}
+
+		public static void ClearValue (this INativeDependencyObjectWrapper native_do, DependencyProperty dp)
+		{
+			NativeDependencyObjectHelper.ClearValue (native_do, dp);
+		}
+
+		public static bool CheckAccess (this INativeDependencyObjectWrapper native_do)
+		{
+			return Thread.CurrentThread == DependencyObject.moonlight_thread;
+		}
 	}
 
+	interface INativeDependencyObjectWrapper : INativeEventObjectWrapper {
+
+	}
 }

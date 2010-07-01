@@ -119,7 +119,6 @@ namespace System.Windows.Messaging {
 
 		bool free_mapping;
 
-#region "INativeDependencyObjectWrapper interface"
 		IntPtr _native;
 
 		internal IntPtr NativeHandle {
@@ -140,41 +139,10 @@ namespace System.Windows.Messaging {
 			set { NativeHandle = value; }
 		}
 
-		object INativeDependencyObjectWrapper.GetValue (DependencyProperty dp)
-		{
-			return NativeDependencyObjectHelper.GetValue (this, dp);
-		}
-
-		void INativeDependencyObjectWrapper.SetValue (DependencyProperty dp, object value)
-		{
-			NativeDependencyObjectHelper.SetValue (this, dp, value);
-		}
-
-		object INativeDependencyObjectWrapper.GetAnimationBaseValue (DependencyProperty dp)
-		{
-			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
-		}
-
-		object INativeDependencyObjectWrapper.ReadLocalValue (DependencyProperty dp)
-		{
-			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
-		}
-
-		void INativeDependencyObjectWrapper.ClearValue (DependencyProperty dp)
-		{
-			NativeDependencyObjectHelper.ClearValue (this, dp);
-		}
-
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.LOCALMESSAGERECEIVER;
 		}
-
-		bool INativeDependencyObjectWrapper.CheckAccess ()
-		{
-			return Thread.CurrentThread == DependencyObject.moonlight_thread;
-		}
-#endregion
 
 		private EventHandlerList EventList = new EventHandlerList ();
 

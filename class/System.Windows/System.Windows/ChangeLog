@@ -1,3 +1,14 @@
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs: As every method in
+	  INativeDependencyObjectWrapper is stateless and 100%
+	  identical for every implementor, implement these as
+	  extension methods to INativeDependencyObjectWrapper and make
+	  the interface itself empty.
+
+	* DependencyObject.cs: These methods no longer get emitted as
+	  virtual :)
+
 2010-06-28  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: Add MoonError* parameters to our
