@@ -17,7 +17,8 @@
 struct ManagedTypeInfo {
 	char *full_name;
 	Type::Kind kind;
-	
+
+	ManagedTypeInfo (Type::Kind kind, const char *full_name);
 	ManagedTypeInfo (const ManagedTypeInfo& v);
 	~ManagedTypeInfo ();
 

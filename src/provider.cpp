@@ -661,6 +661,13 @@ AutoCreators::CreateBlackBrush (Type::Kind kind, DependencyProperty *property)
 	return Value::CreateUnrefPtr (brush);
 }
 
+Value *
+AutoCreators::ControlTypeCreator (Type::Kind kind, DependencyProperty *property)
+{
+	ManagedTypeInfo info (Type::CONTROL, "System.Windows.Controls.Control");
+	return new Value (info);
+}
+
 InheritedDataContextValueProvider::InheritedDataContextValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
 	: PropertyValueProvider (obj, precedence)
 {

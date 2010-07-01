@@ -18396,7 +18396,7 @@ namespace MoonTest.System.Windows.Controls
         {
             ControlTemplate widget = new ControlTemplate ();
 
-            Assert.IsNull(widget.TargetType, "TargetType should have returned null");
+            Assert.IsNotNull(widget.TargetType, "TargetType should have returned null");
         }
 
     }

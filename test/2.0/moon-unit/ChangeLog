@@ -1,5 +1,11 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs:
+	* System.Windows.Controls/ControlTemplateTest.cs: Update the
+	  ControlTemplate tests for SL4 compatibility.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Update the
 	  ContentControl tests to SL4 compatibility.
 

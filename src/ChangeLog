@@ -1,5 +1,17 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* provider.h:
+	* template.h:
+	* provider.cpp: ControlTemplate.TargetType has a default value
+	  now so use an AutoCreator to populate it
+
+	* managedtypeinfo.h:
+	* managedtypeinfo.cpp: Add a (Type::Kind, const char*) ctor to
+	  ManagedTypeInfo so the default value creator can create one.
+
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* contentcontrol.cpp: We no longer clear the template when
 	  setting a new value to the Content property on a
 	  ContentControl.

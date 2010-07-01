@@ -14,6 +14,11 @@
 
 #include "managedtypeinfo.h"
 
+ManagedTypeInfo::ManagedTypeInfo (Type::Kind kind, const char *full_name)
+{
+	Initialize (kind, full_name);
+}
+
 ManagedTypeInfo::ManagedTypeInfo (const ManagedTypeInfo& v)
 {
 	Initialize (v.kind, v.full_name);

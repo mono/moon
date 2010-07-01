@@ -33,12 +33,33 @@ namespace MoonTest.System.Windows.Controls
 	public partial class ControlTemplateTest
 	{
 		[TestMethod]
-		public void TargetTypeWithNamespace ()
+		public void DefaultTypeTest()
+		{
+			Assert.AreEqual(typeof(Control), new ControlTemplate().TargetType, "#1");
+		}
+
+		[TestMethod]
+		public void TargetTypeWithNamespace()
+		{
+			Assert.Throws<XamlParseException>(() =>
+				XamlReader.Load(@"
+<ResourceDictionary
+	xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:T=""clr-namespace:System.Windows.Shapes"">
+	<ControlTemplate Name=""Name"" TargetType=""T:Rectangle""> 
+		<Grid />
+	</ControlTemplate>
+</ResourceDictionary>")
+			);
+		}
+
+		[TestMethod]
+		public void TargetTypeWithNamespaceAndAssembly ()
 		{
 			object o = XamlReader.Load (@"
 <ResourceDictionary
 	xmlns=""http://schemas.microsoft.com/client/2007""
-	xmlns:T=""clr-namespace:System.Windows.Shapes"">
+	xmlns:T=""clr-namespace:System.Windows.Shapes;assembly=System.Windows"">
 	<ControlTemplate Name=""Name"" TargetType=""T:Rectangle""> 
 		<Grid />
 	</ControlTemplate>

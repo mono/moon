@@ -126,6 +126,7 @@ public:
 
 	static AutoCreator CreateDefaultFontSize;
 	static AutoCreator CreateBlackBrush;
+	static AutoCreator ControlTypeCreator;
 };
 
 class AutoCreatePropertyValueProvider : public PropertyValueProvider {
