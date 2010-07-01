@@ -1,5 +1,9 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/OpenFileDialogTest.cs: Whoops!
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/OpenFileDialogTest.cs: Update the
 	  OpenFileDialog tests.
 

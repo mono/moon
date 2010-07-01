@@ -35,6 +35,7 @@ using System.Threading;
 
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
 
