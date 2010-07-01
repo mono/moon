@@ -108,6 +108,10 @@ public:
 	static Effect *GetProjectionEffect ();
 	static void SetShaderMatrix (cairo_surface_t *surface,
 				     double          *matrix);
+	static void SetShaderOffsetX (cairo_surface_t *surface,
+				      double          x);
+	static void SetShaderOffsetY (cairo_surface_t *surface,
+				      double          y);
 
 protected:
 	virtual ~Effect () {}
@@ -115,6 +119,8 @@ protected:
 	pipe_texture_t *GetShaderTexture (cairo_surface_t *surface);
 	pipe_surface_t *GetShaderSurface (cairo_surface_t *surface);
 	double         *GetShaderMatrix (cairo_surface_t *surface);
+	double         GetShaderOffsetX (cairo_surface_t *surface);
+	double         GetShaderOffsetY (cairo_surface_t *surface);
 	pipe_buffer_t  *GetShaderVertexBuffer (float    x1,
 					       float    y1,
 					       float    x2,
@@ -122,8 +128,6 @@ protected:
 					       unsigned stride,
 					       float    **ptr);
 	void DrawVertices (pipe_surface_t *surface,
-			   int            x,
-			   int            y,
 			   pipe_buffer_t  *vertices,
 			   int            nattrib,
 			   int            blend_enable);
@@ -146,6 +150,8 @@ protected:
 	static cairo_user_data_key_t textureKey;
 	static cairo_user_data_key_t surfaceKey;
 	static cairo_user_data_key_t matrixKey;
+	static cairo_user_data_key_t offsetXKey;
+	static cairo_user_data_key_t offsetYKey;
 
 	static int filtertable0[256];
 

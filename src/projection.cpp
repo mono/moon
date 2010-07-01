@@ -27,8 +27,7 @@ Matrix3D::Matrix3D ()
 	SetObjectType (Type::MATRIX3D);
 
 	// initialize the matrix as the identity
-	memset (matrix, 0, sizeof (double) * 16);
-	matrix[0] = matrix[5] = matrix[10] = matrix[15] = 1.0;
+	Identity (matrix);
 }
 
 Matrix3D::Matrix3D (double *m)
@@ -99,6 +98,13 @@ Matrix3D::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 }
 
 void
+Matrix3D::Identity (double *out)
+{
+	memset (out, 0, sizeof (double) * 16);
+	out[0] = out[5] = out[10] = out[15] = 1.0;
+}
+
+void
 Matrix3D::TransformPoint (double *out, const double *m, const double *in)
 {
 	double tmp[4];
@@ -111,6 +117,170 @@ Matrix3D::TransformPoint (double *out, const double *m, const double *in)
 #undef M
 
 	memcpy (out, tmp, 4 * sizeof (double));
+}
+
+static void
+lerp (double *fdst, double t, const double *fin, const double *fout)
+{
+	double tin = t;
+	double tout = 1.0 - t;
+
+	fdst[0] = tin * fin[0] + tout * fout[0];
+	fdst[1] = tin * fin[1] + tout * fout[1];
+	fdst[2] = tin * fin[2] + tout * fout[2];
+	fdst[3] = tin * fin[3] + tout * fout[3];
+}
+
+static double
+dot4 (const double *a, const double *b)
+{
+	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+}
+
+static unsigned
+clipmask (const double *clip)
+{
+	unsigned mask = 0;
+
+	if (-clip[2] + clip[3] < 0) mask |= (1 << 0);
+	if ( clip[2] + clip[3] < 0) mask |= (1 << 1);
+
+	return mask;
+}
+
+#define MAX_CLIPPED_VERTICES ((2 * 2) + 1)
+
+static Rect
+ExtendBoundsTo (Rect     bounds,
+		double   *p1,
+		double   *p2,
+		double   *p3,
+		unsigned clipmask)
+{
+	double *a[MAX_CLIPPED_VERTICES];
+	double *b[MAX_CLIPPED_VERTICES];
+	double **inlist = a;
+	double **outlist = b;
+	unsigned tmpnr = 0;
+	double tmp0[4], tmp1[4], tmp2[4], tmp3[4];
+	double *tmp_vert[] = { tmp0, tmp1, tmp2, tmp3 };
+	double plane0[] = { 0.0, 0.0, -1.0, 1.0 };
+	double plane1[] = { 0.0, 0.0, 1.0, 1.0 };
+	double *clip_plane[] = { plane0, plane1 };
+	unsigned n = 3;
+	unsigned i;
+
+	inlist[0] = p1;
+	inlist[1] = p2;
+	inlist[2] = p3;
+
+	while (clipmask && n >= 3) {
+		const unsigned plane_idx = ffs (clipmask) - 1;
+		const double *plane = clip_plane[plane_idx];
+		double *vert_prev = inlist[0];
+		double dp_prev = dot4 (vert_prev, plane);
+		unsigned outcount = 0;
+
+		clipmask &= ~(1 << plane_idx);
+
+		inlist[n] = inlist[0];
+
+		for (i = 1; i <= n; i++) {
+			double *vert = inlist[i];
+			double dp = dot4 (vert, plane);
+
+			if (dp_prev >= 0.0)
+				outlist[outcount++] = vert_prev;
+
+			if (dp * dp_prev <= 0.0 && dp - dp_prev != 0.0) {
+				double *new_vert = tmp_vert[tmpnr++];
+				outlist[outcount++] = new_vert;
+
+				if (dp < 0.0) {
+					double t = dp / (dp - dp_prev);
+					lerp (new_vert, t, vert_prev, vert);
+				}
+				else {
+					double t = dp_prev / (dp_prev - dp);
+					lerp (new_vert, t, vert, vert_prev);
+				}
+			}
+
+			vert_prev = vert;
+			dp_prev = dp;
+		}
+
+		/* swap in/out lists */
+		{
+			double **tmp = inlist;
+			inlist = outlist;
+			outlist = tmp;
+			n = outcount;
+		}
+	}
+
+	if (n >= 3) {
+		for (i = 0; i < n; i++) {
+			double *v = inlist[i];
+			double w = 1.0 / v[3];
+
+			bounds = bounds.ExtendTo (v[0] * w, v[1] * w);
+		}
+	}
+
+	return bounds;
+}
+
+Rect
+Matrix3D::TransformBounds (const double *m, Rect bounds)
+{
+	Rect     r = bounds.RoundOut ();
+	double   p1[4] = { r.x, r.y, 0.0, 1.0 };
+	double   p2[4] = { r.x + r.width, r.y, 0.0, 1.0 };
+	double   p3[4] = { r.x + r.width, r.y + r.height, 0.0, 1.0 };
+	double   p4[4] = { r.x, r.y + r.height, 0.0, 1.0 };
+	unsigned cm1;
+	unsigned cm2;
+	unsigned cm3;
+	unsigned cm4;
+
+	Matrix3D::TransformPoint (p1, m, p1);
+	Matrix3D::TransformPoint (p2, m, p2);
+	Matrix3D::TransformPoint (p3, m, p3);
+	Matrix3D::TransformPoint (p4, m, p4);
+
+	cm1 = clipmask (p1);
+	cm2 = clipmask (p2);
+	cm3 = clipmask (p3);
+	cm4 = clipmask (p4);
+
+	if ((cm1 | cm2 | cm3 | cm4) != 0) {
+		bounds = Rect ();
+		if ((cm1 & cm2 & cm3 & cm4) == 0) {
+			bounds = ExtendBoundsTo (bounds, p1, p2, p3, cm1 | cm2 | cm3);
+			bounds = ExtendBoundsTo (bounds, p1, p3, p4, cm1 | cm3 | cm4);
+		}
+	}
+	else {
+		p1[0] /= p1[3];
+		p1[1] /= p1[3];
+
+		p2[0] /= p2[3];
+		p2[1] /= p2[3];
+
+		p3[0] /= p3[3];
+		p3[1] /= p3[3];
+
+		p4[0] /= p4[3];
+		p4[1] /= p4[3];
+
+		bounds = Rect (p1[0], p1[1], 0, 0);
+		bounds = bounds.ExtendTo (p2[0], p2[1]);
+		bounds = bounds.ExtendTo (p3[0], p3[1]);
+		bounds = bounds.ExtendTo (p4[0], p4[1]);
+	}
+
+	return bounds;
 }
 
 void
@@ -292,6 +462,19 @@ Matrix3D::Inverse (double *out, const double *m)
 	return true;
 }
 
+void
+Matrix3D::Affine (double *out, double xx, double xy, double yx, double yy, double x0, double y0)
+{
+
+#define M(row, col) out[col * 4 + row]
+	M (0, 0) = xx;  M (1, 0) = xy;  M (2, 0) = 0.0; M (3, 0) = 0.0;
+	M (0, 1) = yx;  M (1, 1) = yy;  M (2, 1) = 0.0; M (3, 1) = 0.0;
+	M (0, 2) = 0.0; M (1, 2) = 0.0; M (2, 2) = 1.0; M (3, 2) = 0.0;
+	M (0, 3) = x0;  M (1, 3) = y0;  M (2, 3) = 0.0; M (3, 3) = 1.0;
+#undef M
+
+}
+
 Projection::Projection ()
 {
 	SetObjectType (Type::PROJECTION);
@@ -321,178 +504,6 @@ Projection::GetTransform (double *value)
 		memset (value, 0, sizeof (value));
 		value[0] = value[5] = value[10] = value[15] = 1.0;
 	}
-}
-
-static void
-lerp (double *fdst, double t, const double *fin, const double *fout)
-{
-	double tin = t;
-	double tout = 1.0 - t;
-
-	fdst[0] = tin * fin[0] + tout * fout[0];
-	fdst[1] = tin * fin[1] + tout * fout[1];
-	fdst[2] = tin * fin[2] + tout * fout[2];
-	fdst[3] = tin * fin[3] + tout * fout[3];
-}
-
-static double
-dot4 (const double *a, const double *b)
-{
-	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
-}
-
-static unsigned
-clipmask (const double *clip)
-{
-	unsigned mask = 0;
-
-	if (-clip[2] + clip[3] < 0) mask |= (1 << 0);
-	if ( clip[2] + clip[3] < 0) mask |= (1 << 1);
-
-	return mask;
-}
-
-#define MAX_CLIPPED_VERTICES ((2 * 2) + 1)
-
-static Rect
-ExtendBoundsTo (Rect     bounds,
-		double   *p1,
-		double   *p2,
-		double   *p3,
-		unsigned clipmask)
-{
-	double *a[MAX_CLIPPED_VERTICES];
-	double *b[MAX_CLIPPED_VERTICES];
-	double **inlist = a;
-	double **outlist = b;
-	unsigned tmpnr = 0;
-	double tmp0[4], tmp1[4], tmp2[4], tmp3[4];
-	double *tmp_vert[] = { tmp0, tmp1, tmp2, tmp3 };
-	double plane0[] = { 0.0, 0.0, -1.0, 1.0 };
-	double plane1[] = { 0.0, 0.0, 1.0, 1.0 };
-	double *clip_plane[] = { plane0, plane1 };
-	unsigned n = 3;
-	unsigned i;
-
-	inlist[0] = p1;
-	inlist[1] = p2;
-	inlist[2] = p3;
-
-	while (clipmask && n >= 3) {
-		const unsigned plane_idx = ffs (clipmask) - 1;
-		const double *plane = clip_plane[plane_idx];
-		double *vert_prev = inlist[0];
-		double dp_prev = dot4 (vert_prev, plane);
-		unsigned outcount = 0;
-
-		clipmask &= ~(1 << plane_idx);
-
-		inlist[n] = inlist[0];
-
-		for (i = 1; i <= n; i++) {
-			double *vert = inlist[i];
-			double dp = dot4 (vert, plane);
-
-			if (dp_prev >= 0.0)
-				outlist[outcount++] = vert_prev;
-
-			if (dp * dp_prev <= 0.0 && dp - dp_prev != 0.0) {
-				double *new_vert = tmp_vert[tmpnr++];
-				outlist[outcount++] = new_vert;
-
-				if (dp < 0.0) {
-					double t = dp / (dp - dp_prev);
-					lerp (new_vert, t, vert_prev, vert);
-				}
-				else {
-					double t = dp_prev / (dp_prev - dp);
-					lerp (new_vert, t, vert, vert_prev);
-				}
-			}
-
-			vert_prev = vert;
-			dp_prev = dp;
-		}
-
-		/* swap in/out lists */
-		{
-			double **tmp = inlist;
-			inlist = outlist;
-			outlist = tmp;
-			n = outcount;
-		}
-	}
-
-	if (n >= 3) {
-		for (i = 0; i < n; i++) {
-			double *v = inlist[i];
-			double w = 1.0 / v[3];
-
-			bounds = bounds.ExtendTo (v[0] * w, v[1] * w);
-		}
-	}
-
-	return bounds;
-}
-
-Rect
-Projection::ProjectBounds (Rect bounds)
-{
-	Rect     r = bounds.RoundOut ();
-	double   p1[4] = { 0.0, 0.0, 0.0, 1.0 };
-	double   p2[4] = { r.width, 0.0, 0.0, 1.0 };
-	double   p3[4] = { r.width, r.height, 0.0, 1.0 };
-	double   p4[4] = { 0.0, r.height, 0.0, 1.0 };
-	double   m[16];
-	unsigned cm1;
-	unsigned cm2;
-	unsigned cm3;
-	unsigned cm4;
-
-	SetObjectSize (r.width, r.height);
-
-	GetTransform (m);
-
-	Matrix3D::TransformPoint (p1, m, p1);
-	Matrix3D::TransformPoint (p2, m, p2);
-	Matrix3D::TransformPoint (p3, m, p3);
-	Matrix3D::TransformPoint (p4, m, p4);
-
-	cm1 = clipmask (p1);
-	cm2 = clipmask (p2);
-	cm3 = clipmask (p3);
-	cm4 = clipmask (p4);
-
-	if ((cm1 | cm2 | cm3 | cm4) != 0) {
-		bounds = Rect ();
-		if ((cm1 & cm2 & cm3 & cm4) == 0) {
-			bounds = ExtendBoundsTo (bounds, p1, p2, p3, cm1 | cm2 | cm3);
-			bounds = ExtendBoundsTo (bounds, p1, p3, p4, cm1 | cm3 | cm4);
-		}
-	}
-	else {
-		p1[0] /= p1[3];
-		p1[1] /= p1[3];
-
-		p2[0] /= p2[3];
-		p2[1] /= p2[3];
-
-		p3[0] /= p3[3];
-		p3[1] /= p3[3];
-
-		p4[0] /= p4[3];
-		p4[1] /= p4[3];
-
-		bounds = Rect (p1[0], p1[1], 0, 0);
-		bounds = bounds.ExtendTo (p2[0], p2[1]);
-		bounds = bounds.ExtendTo (p3[0], p3[1]);
-		bounds = bounds.ExtendTo (p4[0], p4[1]);
-	}
-
-	bounds.x += r.x;
-	bounds.y += r.y;
-
-	return bounds;
 }
 
 void
@@ -547,7 +558,7 @@ PlaneProjection::SetObjectSize (double width, double height)
 #define FIELD_OF_VIEW (57.0 / 180.0 * M_PI)
 #define CAMERA_DIST   999.0
 #define NEAR_VAL      1.0
-#define FAR_VAL       1000000.0
+#define FAR_VAL       65536.0
 
 double
 PlaneProjection::DistanceFromXYPlane ()

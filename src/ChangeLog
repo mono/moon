@@ -1,3 +1,72 @@
+2010-07-01  David Reveman  <davidr@novell.com>
+
+	New Effect/Projection code with hit testing support
+	---------------------------------------------------
+
+	 * Element Bounds
+
+	Introduces 'local' and 'global' element bounds to more elegantly
+	handle rendering to intermediate buffers.
+
+	The 'local' bounds of an element exclude element and ancestor
+	element properties as effects and perspective transformations.
+	'local' bounds are used when rendering to an intermediate buffer.
+	Intermediate buffers are required by Effect, Projection and
+	BitmapCache properties.
+
+	The 'global' bounds of an element exclude ancestor element
+	properties as effects and perspective transformations.
+	'global' bounds are used when computing 'local' bounds of
+	ancestors.
+
+	'surface' bounds (as returned by GetBounds and GetSubtreeBounds) are
+	always in surface coordinates and include all ancestor properties.
+
+	 * Rendering Order
+
+	Element properties are applied as follows:
+	1. OpacityMask
+	2. Opacity
+	3. Effect
+	4. Projection
+	5. RenderTransform
+	6. LayoutTransform
+	7. Parent Properties
+
+	* dirty.cpp:
+	* dirty.h: Add DirtyLocalProjection flag.
+	Compute global/surface bounds and global bounds instead of
+	surface bounds to determine when parent bounds need an update.
+
+	* effect.cpp:
+	* effect.h: Add shader offset properties and fix issues with
+	X/Y viewport clipping.
+
+	* frameworkelement.cpp:
+	* frameworkelement.h: Add appropriate functions for computing
+	local, global and surface bounds. Call UpdateProjection when
+	properties that might affect the Projection property changes.
+
+	* glyphs.cpp:
+	* grid.cpp:
+	* shape.cpp:
+	* panel.cpp:
+	* shape.cpp:
+	* textblock.cpp: Compute local bounds correctly.
+
+	* projection.cpp:
+	* projection.h: Use more appropriate value for FAR_VAL to improve
+	perspective transformation precision. Add Matrix3D::Identity,
+	Matrix3D::Affine and Matrix3D::TransformPoint functions. Remove
+	Projection::ProjectBounds.
+
+	* uielement.cpp:
+	* uielement.h: Add appropriate functions for computing
+	local, global and surface bounds. Add RENDER_PROJECTION hint and
+	render_projection variable for efficient rendering of intermediate
+	buffers. Add absolute_projection for properly handle perspective
+	transformations by UIElement::TransformPoint.
+
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h: Added validators to Control.FontSize and

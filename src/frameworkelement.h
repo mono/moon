@@ -74,6 +74,10 @@ public:
 	virtual void ElementRemoved (UIElement *obj);
 	
 	virtual void ComputeBounds ();
+	virtual void ComputeGlobalBounds ();
+	virtual void ComputeSurfaceBounds ();
+	virtual Rect GetLocalBounds ();
+	virtual Rect GetGlobalBounds ();
 	virtual Rect GetSubtreeBounds ();
 	virtual void Dispose ();
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
@@ -186,6 +190,8 @@ public:
 protected:
 	GetDefaultTemplateCallback get_default_template_cb;
 	Rect bounds_with_children;
+	Rect global_bounds_with_children;
+	Rect surface_bounds_with_children;
 	GHashTable *styles;
 
 	virtual ~FrameworkElement ();

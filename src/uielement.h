@@ -82,7 +82,10 @@ public:
 		// the layout update pass knows which branches need processing.
 		DIRTY_ARRANGE_HINT = 0x800,
 		DIRTY_MEASURE_HINT = 0x1000,
-		DIRTY_SIZE_HINT = 0x2000
+		DIRTY_SIZE_HINT = 0x2000,
+
+		// this flag is preset when render_projection member is set
+		RENDER_PROJECTION = 0x4000
 	};
 	
 	virtual TimeManager *GetTimeManager ();
@@ -151,6 +154,13 @@ public:
 	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
 
 	//
+	// UpdateProjection:
+	//   Updates the projection for this item
+	//
+	void UpdateProjection ();
+	void ComputeLocalProjection ();
+
+	//
 	// IsLoaded:
 	//   Returns true if the element has been attached to a
 	//   surface and is part of the visual hierarchy.
@@ -186,6 +196,7 @@ public:
 	void FrontToBack (Region *surface_region, List *render_list);
 	void DoRender (List *ctx, Region *region);
 	bool UseOcclusionCulling ();
+	bool RenderToIntermediate ();
 
 	//
 	// GetSizeForBrush:
@@ -228,18 +239,38 @@ public:
 	virtual void ComputeBounds ();
 
 	// 
+	// ComputeGlobalBounds:
+	//   Updates the global bounding box for the given item.
+	//
+	// Output:
+	//   item->global_bounds is updated
+	//
+	virtual void ComputeGlobalBounds ();
+
+	//
+	// ComputeSurfaceBounds:
+	//   Updates the surface bounding box for the given item, this uses
+	//   the parent chain to compute the composite projection.
+	//
+	// Output:
+	//   item->surface_bounds is updated
+	//
+	virtual void ComputeSurfaceBounds ();
+
+
+	//
 	// GetBounds:
 	//   returns the current bounding box for the given item in surface 
 	//   coordinates.
 	// 
-	Rect GetBounds () { return bounds; }
+	Rect GetBounds () { return surface_bounds; }
 
 	// 
 	// GetSubtreeBounds:
 	//   returns the bounding box including all sub-uielements.
 	//   implemented by containers in surface coordinates.
 	// 
-	virtual Rect GetSubtreeBounds () { return bounds; }
+	virtual Rect GetSubtreeBounds () { return surface_bounds; }
 
 	//
 	// GetRenderBounds:
@@ -253,6 +284,20 @@ public:
 	// returns the bounding box in global coordinates that opaquely covered by this object
 	//
 	virtual Rect GetCoverageBounds () { return Rect (); }
+
+	//
+	// GetLocalBounds:
+	//   returns the bounding box including all sub-uielements.
+	//   implemented by containers in local projection coordinates.
+	//
+	virtual Rect GetLocalBounds () { return bounds; }
+
+	//
+	// GetGlobalBounds:
+	//   returns the bounding box including all sub-uielements.
+	//   implemented by containers in global projection coordinates.
+	//
+	virtual Rect GetGlobalBounds () { return global_bounds; }
 
 
 	//
@@ -588,21 +633,20 @@ public:
 	// Helper method which checks recursively checks this element and its visual
 	// parents to see if any are loaded.
 	static bool IsSubtreeLoaded (UIElement *element);
-	
+
 protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr, bool path_only = false);
-	Rect TransformBoundsThroughEffect (Rect bounds);
-	Rect ProjectBounds (Rect bounds);
 
 	void SetDesiredSize (Size s) { desired_size = s; }
 	void SetRenderSize (Size s) { render_size = s; }
 
 	// The computed bounding box
 	Size hidden_desire;
-	Rect unprojected_bounds;
 	Rect bounds;
+	Rect global_bounds;
+	Rect surface_bounds;
 	Rect extents;
 
 	int flags;
@@ -616,6 +660,12 @@ protected:
 
 	static void CallPreRender (List *ctx, UIElement *element, Region *region, bool skip_children);
 	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool skip_children);
+
+	// Absolute perspective transform, precomputed with all of its data
+	double absolute_projection[16];
+
+	// The perspective render transformation
+	double render_projection[16];
 
 private:
 	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);

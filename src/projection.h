@@ -122,7 +122,9 @@ public:
 	void SetM44 (double m44);
 	double GetM44 ();
 
+	static void Identity (double *out);
 	static void TransformPoint (double *out, const double *m, const double *in);
+	static Rect TransformBounds (const double *m, Rect bounds);
 	static void Multiply (double *out, const double *a, const double *b);
 	static void Translate (double *out, double tx, double ty, double tz);
 	static void Scale (double *out, double sx, double sy, double sz);
@@ -132,6 +134,7 @@ public:
 	static void Perspective (double *out, double fieldOfViewY, double aspectRatio, double zNearPlane, double zFarPlane);
 	static void Viewport (double *out, double width, double height);
 	static bool Inverse (double *out, const double *m);
+	static void Affine (double *out, double xx, double xy, double yx, double yy, double x0, double y0);
 };
 
 /* @Namespace=System.Windows.Media.Media3D */
@@ -155,7 +158,6 @@ public:
 
 	virtual void SetObjectSize (double width, double height) {}
 	void GetTransform (double *value);
-	Rect ProjectBounds (Rect bounds);
 	virtual double DistanceFromXYPlane () { return 0.0; }
 
 protected:

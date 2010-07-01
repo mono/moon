@@ -283,6 +283,14 @@ Surface::ProcessDownDirtyElements ()
 			el->ComputeLocalTransform ();
 		}
 
+		if (el->dirty_flags & DirtyLocalProjection) {
+			el->dirty_flags &= ~DirtyLocalProjection;
+
+			el->dirty_flags |= DirtyTransform;
+
+			el->ComputeLocalProjection ();
+		}
+
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
 			
@@ -352,16 +360,19 @@ Surface::ProcessUpDirtyElements ()
 			el->dirty_flags &= ~DirtyBounds;
 
 			Rect obounds = el->GetBounds ();
-			Rect osubtreebounds = el->GetSubtreeBounds ();
+			Rect oglobalbounds = el->GetGlobalBounds ();
 			bool parent_bounds_updated = false;
 
 			el->ComputeBounds ();
+			el->ComputeGlobalBounds ();
+			el->ComputeSurfaceBounds ();
+
 
 // 				printf (" + + obounds = %f %f %f %f, nbounds = %f %f %f %f\n",
 // 					obounds.x, obounds.y, obounds.w, obounds.h,
 // 					el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
 
-			if (osubtreebounds != el->GetSubtreeBounds ()) {
+			if (oglobalbounds != el->GetGlobalBounds ()) {
 				if (el->GetVisualParent ()) {
 					el->GetVisualParent ()->UpdateBounds ();
 					parent_bounds_updated = true;

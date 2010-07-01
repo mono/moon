@@ -50,10 +50,13 @@ UIElement::UIElement ()
 
 	hidden_desire = Size (-INFINITY, -INFINITY);
 	bounds = Rect (0,0,0,0);
-	unprojected_bounds = Rect (0,0,0,0);
+	global_bounds = Rect (0,0,0,0);
+	surface_bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 	cairo_matrix_init_identity (&layout_xform);
 	cairo_matrix_init_identity (&local_xform);
+	Matrix3D::Identity (absolute_projection);
+	Matrix3D::Identity (render_projection);
 
 	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;
@@ -66,6 +69,7 @@ UIElement::UIElement ()
 	render_size = Size (0, 0);
 	
 	ComputeLocalTransform ();
+	ComputeLocalProjection ();
 	ComputeTotalRenderVisibility ();
 	ComputeTotalHitTestVisibility ();
 }
@@ -178,28 +182,6 @@ UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 		cairo_clip (cr);
 }
 
-Rect
-UIElement::TransformBoundsThroughEffect (Rect bounds)
-{
-	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
-
-	if (!effect)
-		return bounds;
-	
-	return effect->TransformBounds (bounds);
-}
-
-Rect
-UIElement::ProjectBounds (Rect bounds)
-{
-	Projection *projection = GetProjection ();
-
-	if (!projection)
-		return bounds;
-
-	return projection->ProjectBounds (bounds);
-}
-
 void
 UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
@@ -261,7 +243,9 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == UIElement::EffectProperty) {
 		FullInvalidate (false);
 	} else if (args->GetId () == UIElement::ProjectionProperty) {
-		FullInvalidate (false);
+		InvalidateSubtreePaint ();
+		UpdateProjection ();
+		UpdateBounds (true);
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -431,6 +415,31 @@ UIElement::ComputeLocalTransform ()
 }
 
 void
+UIElement::UpdateProjection ()
+{
+	if (IsAttached ()) {
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyLocalProjection);
+	}
+}
+
+void
+UIElement::ComputeLocalProjection ()
+{
+	Projection *projection = GetProjection ();
+	double width, height;
+
+	if (projection == NULL) {
+		Canvas::SetZ (this, 0.0);
+		return;
+	}
+
+	GetSizeForBrush (NULL, &width, &height);
+	projection->SetObjectSize (width, height);
+	Canvas::SetZ (this, projection->DistanceFromXYPlane ());
+}
+
+
+void
 UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 {
 	Rect updated;
@@ -461,11 +470,17 @@ UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 void
 UIElement::ComputeTransform ()
 {
+	Projection *projection = GetProjection ();
 	cairo_matrix_t old = absolute_xform;
+	double m[16];
 	cairo_matrix_init_identity (&absolute_xform);
+	Matrix3D::Identity (absolute_projection);
 
 	if (GetVisualParent () != NULL) {
 		absolute_xform = GetVisualParent ()->absolute_xform;
+		memcpy (absolute_projection,
+			GetVisualParent ()->absolute_projection,
+			sizeof (double) * 16);
 	} else if (GetParent () != NULL && GetParent ()->Is (Type::POPUP)) {  
 		// FIXME we shouldn't be examing a subclass type here but we'll do this
 		// for now to get popups in something approaching the right place while
@@ -473,11 +488,59 @@ UIElement::ComputeTransform ()
 		Popup *popup = (Popup *)GetParent ();
 		absolute_xform = popup->absolute_xform;
 		cairo_matrix_translate (&absolute_xform, popup->GetHorizontalOffset (), popup->GetVerticalOffset ());
+		memcpy (absolute_projection,
+			popup->absolute_projection,
+			sizeof (double) * 16);
+		Matrix3D::Translate (m,
+				     popup->GetHorizontalOffset (),
+				     popup->GetVerticalOffset (),
+				     0.0);
+		Matrix3D::Multiply (absolute_projection, m, absolute_projection);
 	}
 
 	cairo_matrix_multiply (&absolute_xform, &layout_xform, &absolute_xform);
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
-	
+
+	Matrix3D::Affine (m,
+			  layout_xform.xx, layout_xform.xy,
+			  layout_xform.yx, layout_xform.yy,
+			  layout_xform.x0, layout_xform.y0);
+	Matrix3D::Multiply (absolute_projection, m, absolute_projection);
+
+	Matrix3D::Affine (m,
+			  local_xform.xx, local_xform.xy,
+			  local_xform.yx, local_xform.yy,
+			  local_xform.x0, local_xform.y0);
+	Matrix3D::Multiply (absolute_projection, m, absolute_projection);
+
+	if (projection) {
+		projection->GetTransform (render_projection);
+		Matrix3D::Multiply (absolute_projection, render_projection,
+				    absolute_projection);
+		flags |= UIElement::RENDER_PROJECTION;
+	}
+	else {
+		Matrix3D::Identity (render_projection);
+		flags &= ~UIElement::RENDER_PROJECTION;
+	}
+
+	// add render transformation to perspective render transformation
+	// when intermediate rendering is performed and skew/rotation or
+	// projection is present
+	if (RenderToIntermediate () && (projection ||
+					absolute_xform.xx != 1.0 ||
+					absolute_xform.xy != 0.0 ||
+					absolute_xform.yx != 0.0 ||
+					absolute_xform.yy != 1.0)) {
+		Matrix3D::Affine (m,
+				  absolute_xform.xx, absolute_xform.xy,
+				  absolute_xform.yx, absolute_xform.yy,
+				  absolute_xform.x0, absolute_xform.y0);
+		Matrix3D::Multiply (render_projection, render_projection, m);
+		flags |= UIElement::RENDER_PROJECTION;
+		cairo_matrix_init_identity (&absolute_xform);
+	}
+
 	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
 		TransformBounds (&old, &absolute_xform);
 	else {
@@ -490,6 +553,38 @@ UIElement::ComputeBounds ()
 {
 	g_warning ("UIElement:ComputeBounds has been called. The derived class %s should have overridden it.",
 		   GetTypeName ());
+}
+
+void
+UIElement::ComputeGlobalBounds ()
+{
+	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+
+	global_bounds = bounds;
+
+	if (effect)
+		global_bounds = effect->TransformBounds (global_bounds);
+
+	if (flags & UIElement::RENDER_PROJECTION)
+		global_bounds = Matrix3D::TransformBounds (render_projection, global_bounds);
+}
+
+void
+UIElement::ComputeSurfaceBounds ()
+{
+	FrameworkElement *element = (FrameworkElement *) this;
+
+	surface_bounds = global_bounds;
+
+	while ((element = (FrameworkElement *) element->GetVisualParent ())) {
+		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? element->GetEffect () : NULL;
+
+		if (effect)
+			surface_bounds = effect->TransformBounds (surface_bounds);
+
+		if (element->flags & UIElement::RENDER_PROJECTION)
+			surface_bounds = Matrix3D::TransformBounds (element->render_projection, surface_bounds);
+	}
 }
 
 void
@@ -515,7 +610,9 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		FullInvalidate (false);
 	}
 	else if (prop && prop->GetId () == UIElement::ProjectionProperty) {
-		FullInvalidate (false);
+		InvalidateSubtreePaint ();
+		UpdateProjection ();
+		UpdateBounds (true);
 	}
 
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
@@ -617,6 +714,7 @@ UIElement::ElementAdded (UIElement *item)
 	ClearValue (LayoutInformation::PreviousConstraintProperty);
 	item->SetRenderSize (Size (0,0));
 	item->UpdateTransform ();
+	item->UpdateProjection ();
 	item->InvalidateMeasure ();
 	item->InvalidateArrange ();
 	if (item->HasFlag (DIRTY_SIZE_HINT) || item->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
@@ -922,8 +1020,10 @@ void
 UIElement::FullInvalidate (bool rendertransform)
 {
 	Invalidate ();
-	if (rendertransform)
+	if (rendertransform) {
 		UpdateTransform ();
+		UpdateProjection ();
+	}
 	UpdateBounds (true /* force an invalidate here, even if the bounds don't change */);
 }
 
@@ -942,12 +1042,9 @@ UIElement::Invalidate (Rect r)
 
 
 	if (IsAttached ()) {
-		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
-		Projection *projection = GetProjection ();
-
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
-		if (effect || projection)
+		if (RenderToIntermediate ())
 			dirty_region->Union (GetSubtreeBounds ());
 		else
 			dirty_region->Union (r);
@@ -965,12 +1062,9 @@ UIElement::Invalidate (Region *region)
 		return;
 
 	if (IsAttached ()) {
-		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
-		Projection *projection = GetProjection ();
-
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
-		if (effect || projection)
+		if (RenderToIntermediate ())
 			dirty_region->Union (GetSubtreeBounds ());
 		else
 			dirty_region->Union (region);
@@ -984,7 +1078,7 @@ UIElement::Invalidate (Region *region)
 void
 UIElement::Invalidate ()
 {
-	Invalidate (bounds);
+	Invalidate (GetBounds ());
 }
 
 /*
@@ -1162,8 +1256,9 @@ UIElement::ReleaseMouseCapture ()
 void
 UIElement::DoRender (List *ctx, Region *parent_region)
 {
-	Region *region = new Region (GetSubtreeBounds ());
-	region->Intersect (parent_region);
+	Region *region = new Region (GetLocalBounds ());
+	if (!RenderToIntermediate ())
+		region->Intersect (parent_region);
 
 	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) {
 		delete region;
@@ -1198,6 +1293,15 @@ UIElement::UseOcclusionCulling ()
 	return TRUE;
 }
 
+bool
+UIElement::RenderToIntermediate ()
+{
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return TRUE;
+	if (GetProjection ()) return TRUE;
+
+	return FALSE;
+}
+
 void
 UIElement::FrontToBack (Region *surface_region, List *render_list)
 {
@@ -1211,19 +1315,14 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		return;
 
 	if (!UseOcclusionCulling ()) {
-		Region *self_region = new Region (surface_region);
-		Projection *projection = GetProjection ();
-		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+		Region *self_region;
 
-		if (projection) {
-			self_region = new Region (unprojected_bounds.RoundOut ());
-		}
-		else if (effect) {
-			self_region = new Region (GetSubtreeBounds ().RoundOut ());
+		if (RenderToIntermediate ()) {
+			self_region = new Region (GetLocalBounds ().RoundOut ());
 		}
 		else {
 			self_region = new Region (surface_region);
-			self_region->Intersect (GetSubtreeBounds ().RoundOut ());
+			self_region->Intersect (GetLocalBounds ().RoundOut ());
 		}
 
 		// we need to include our children in this one, since
@@ -1273,7 +1372,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 			self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
 		}
 	} else {
-		self_region->Intersect (GetSubtreeBounds().RoundOut ()); // note the RoundOut
+		self_region->Intersect (GetLocalBounds().RoundOut ()); // note the RoundOut
 	}
 
 	if (render_list->First() == cleanup_node) {
@@ -1317,7 +1416,38 @@ void
 UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 {
 	double local_opacity = GetOpacity ();
+	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
+	Rect intermediate = GetLocalBounds ();
+
+	if (effect)
+		intermediate = effect->TransformBounds (intermediate.RoundOut ());
+
+	if (flags & UIElement::RENDER_PROJECTION) {
+		cairo_surface_t *group_surface;
+		Rect            r = intermediate.RoundOut ();
+
+		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
+							      CAIRO_CONTENT_COLOR_ALPHA,
+							      r.width,
+							      r.height);
+		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
+		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+	}
+
+	if (effect) {
+		cairo_surface_t *group_surface;
+		Rect            r = intermediate.RoundOut ();
+
+		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
+							      CAIRO_CONTENT_COLOR_ALPHA,
+							      r.width,
+							      r.height);
+		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
+		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+	}
 
 	cairo_save (cr);
 
@@ -1325,7 +1455,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	RenderClipPath (cr);
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
-		Rect r = GetSubtreeBounds ().RoundOut();
+		Rect r = GetLocalBounds ().RoundOut ();
 		cairo_identity_matrix (cr);
 
 		// we need this check because ::PreRender can (and
@@ -1364,30 +1494,6 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	if (opacityMask != NULL)
 		cairo_push_group (cr);
 
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) {
-		cairo_surface_t *group_surface;
-		Rect            r = GetSubtreeBounds ().RoundOut ();
-
-		group_surface = cairo_surface_create_similar (cairo_get_target (cr),
-							      CAIRO_CONTENT_COLOR_ALPHA,
-							      r.width,
-			 				      r.height);
-		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
-		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
-	}
-
-	if (GetProjection ()) {
-		cairo_surface_t *group_surface;
-		Rect            r = unprojected_bounds.RoundOut ();
-
-		group_surface = cairo_surface_create_similar (cairo_get_target (cr),
-							      CAIRO_CONTENT_COLOR_ALPHA,
-							      r.width,
-							      r.height);
-		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
-		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
-	}
-
 	cairo_t *redirected = ((ContextNode *) ctx->First ())->GetCr ();
 
 	if (cr != redirected)
@@ -1406,103 +1512,12 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	}
 
 	double local_opacity = GetOpacity ();
-	Projection *projection = GetProjection ();
 	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
-	cairo_t *cr;
-
-	if (projection)
-	{
-		List::Node *node = ctx->First ();
-		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
-		cairo_surface_t *src = cairo_get_target (group_cr);
-
-		ctx->Unlink (node);
-
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
-
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Effect          *effect = Effect::GetProjectionEffect ();
-			cairo_surface_t *dst = cairo_get_target (cr);
-			double          dst_x, dst_y;
-			int             x, y;
-			Rect            r = unprojected_bounds.RoundOut ();
-			double          m[16];
-
-			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
-
-			x = r.x + dst_x;
-			y = r.y + dst_y;
-
-			projection->SetObjectSize (r.width, r.height);
-			projection->GetTransform (m);
-			Effect::SetShaderMatrix (src, m);
-
-			if (!effect->Composite (dst, src, x, y))
-			{
-				cairo_save (cr);
-				cairo_identity_matrix (cr);
-				cairo_reset_clip (cr);
-				cairo_surface_set_device_offset (dst, 0, 0);
-				cairo_surface_set_device_offset (src, 0, 0);
-				cairo_rectangle (cr, x, y, r.width, r.height);
-				cairo_set_source_surface (cr, src, x, y);
-				cairo_fill (cr);
-				cairo_surface_set_device_offset (dst, dst_x, dst_y);
-				cairo_restore (cr);
-			}
-		}
-
-		cairo_destroy (group_cr);
-		cairo_surface_destroy (src);
-		delete node;
-	}
-	else {
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
-	}
+	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
+	Rect intermediate = GetLocalBounds ();
 
 	if (effect)
-	{
-		List::Node *node = ctx->First ();
-		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
-		cairo_surface_t *src = cairo_get_target (group_cr);
-
-		ctx->Unlink (node);
-
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
-
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			cairo_surface_t *dst = cairo_get_target (cr);
-			double          dst_x, dst_y;
-			int             x, y;
-			Rect            r = GetSubtreeBounds ().RoundOut ();
-
-			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
-
-			x = r.x + dst_x;
-			y = r.y + dst_y;
-
-			if (!effect->Composite (dst, src, x, y))
-			{
-				cairo_save (cr);
-				cairo_identity_matrix (cr);
-				cairo_reset_clip (cr);
-				cairo_surface_set_device_offset (dst, 0, 0);
-				cairo_surface_set_device_offset (src, 0, 0);
-				cairo_rectangle (cr, x, y, r.width, r.height);
-				cairo_set_source_surface (cr, src, x, y);
-				cairo_fill (cr);
-				cairo_surface_set_device_offset (dst, dst_x, dst_y);
-				cairo_restore (cr);
-			}
-		}
-
-		cairo_destroy (group_cr);
-		cairo_surface_destroy (src);
-		delete node;
-	}
-	else {
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
-	}
+		intermediate = effect->TransformBounds (intermediate.RoundOut ());
 
 	if (opacityMask != NULL) {
 		cairo_pattern_t *data = cairo_pop_group (cr);
@@ -1531,7 +1546,100 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	}
 
 	cairo_restore (cr);
-	
+
+	if (effect)
+	{
+		List::Node *node = ctx->First ();
+		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
+		cairo_surface_t *src = cairo_get_target (group_cr);
+
+		ctx->Unlink (node);
+
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			cairo_surface_t *dst = cairo_get_group_target (cr);
+			double          dst_x, dst_y;
+			int             x, y;
+			Rect            r = intermediate.RoundOut ();
+
+			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
+
+			x = r.x + dst_x;
+			y = r.y + dst_y;
+
+			if (!effect->Composite (dst, src, x, y))
+			{
+				cairo_save (cr);
+				cairo_identity_matrix (cr);
+				cairo_reset_clip (cr);
+				cairo_surface_set_device_offset (dst, 0, 0);
+				cairo_surface_set_device_offset (src, 0, 0);
+				cairo_rectangle (cr, x, y, r.width, r.height);
+				cairo_set_source_surface (cr, src, x, y);
+				cairo_fill (cr);
+				cairo_surface_set_device_offset (dst, dst_x, dst_y);
+				cairo_restore (cr);
+			}
+		}
+
+		cairo_destroy (group_cr);
+		cairo_surface_destroy (src);
+		delete node;
+	}
+	else {
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+	}
+
+	if (flags & UIElement::RENDER_PROJECTION)
+	{
+		List::Node *node = ctx->First ();
+		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
+		cairo_surface_t *src = cairo_get_target (group_cr);
+
+		ctx->Unlink (node);
+
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			Effect          *effect = Effect::GetProjectionEffect ();
+			cairo_surface_t *dst = cairo_get_group_target (cr);
+			double          dst_x, dst_y;
+			int             x, y;
+			Rect            r = intermediate.RoundOut ();
+
+			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
+
+			x = r.x + dst_x;
+			y = r.y + dst_y;
+
+			Effect::SetShaderMatrix (src, render_projection);
+			Effect::SetShaderOffsetX (src, r.x);
+			Effect::SetShaderOffsetY (src, r.y);
+
+			if (!effect->Composite (dst, src, x, y))
+			{
+				cairo_save (cr);
+				cairo_identity_matrix (cr);
+				cairo_reset_clip (cr);
+				cairo_surface_set_device_offset (dst, 0, 0);
+				cairo_surface_set_device_offset (src, 0, 0);
+				cairo_rectangle (cr, x, y, r.width, r.height);
+				cairo_set_source_surface (cr, src, x, y);
+				cairo_fill (cr);
+				cairo_surface_set_device_offset (dst, dst_x, dst_y);
+				cairo_restore (cr);
+			}
+		}
+
+		cairo_destroy (group_cr);
+		cairo_surface_destroy (src);
+		delete node;
+	}
+	else {
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+	}
+
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
 		cairo_save (cr);
 		cairo_new_path (cr);
@@ -1722,8 +1830,27 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 void
 UIElement::TransformPoint (double *x, double *y)
 {
-	cairo_matrix_t inverse = absolute_xform;
-	cairo_matrix_invert (&inverse);
-	
-	cairo_matrix_transform_point (&inverse, x, y);
+	double inverse[16];
+
+	if (Matrix3D::Inverse (inverse, absolute_projection)) {
+		double p[4];
+
+		//
+		// use value for Z that gives us zero when
+		// multiplied by inverse
+		//
+#define M(row, col) inverse[col * 4 + row]
+		p[0] = *x;
+		p[1] = *y;
+		p[2] = -(M (2, 0) * p[0] +
+			 M (2, 1) * p[1] +
+			 M (2, 3) * 1.0) / M (2, 2);
+		p[3] = 1.0;
+#undef M
+
+		Matrix3D::TransformPoint (p, inverse, p);
+
+		*x = p[0] / p[3];
+		*y = p[1] / p[3];
+	}
 }

@@ -48,8 +48,6 @@ static int levelb = 0;
 void
 Panel::ComputeBounds ()
 {
-	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
-	Projection *projection = GetProjection ();
 
 #if DEBUG_BOUNDS
 	levelb += 4;
@@ -67,7 +65,7 @@ Panel::ComputeBounds ()
 		if (!item->GetRenderVisible ())
 			continue;
 
-		Rect r = item->GetSubtreeBounds ();
+		Rect r = item->GetGlobalBounds ();
 		r = IntersectBoundsWithClipPath (r, true);
 
 #if DEBUG_BOUNDS
@@ -84,18 +82,6 @@ Panel::ComputeBounds ()
 		bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 		bounds_with_children = bounds_with_children.Union (bounds);
 	}
-
-	unprojected_bounds = bounds_with_children;
-	if (projection) {
-		bounds = bounds_with_children = projection->ProjectBounds (unprojected_bounds);
-		Canvas::SetZ (this, projection->DistanceFromXYPlane ());
-	}
-	else {
-		Canvas::SetZ (this, 0.0);
-	}
-
-	if (effect)
-		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);
 
 #if DEBUG_BOUNDS
 	space (levelb);

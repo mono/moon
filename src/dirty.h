@@ -51,36 +51,42 @@ enum DirtyType {
 	// its parent).  This implies DirtyTransform.
 	DirtyLocalTransform    = 0x00000002,
 
+	// DirtyLocalProjection
+	//
+	// This node needs to update its local projection (relative to
+	// its parent).  This implies DirtyTransform.
+	DirtyLocalProjection    = 0x00000004,
+
 	// DirtyClip
 	//
 	// This node needs to communicate its clip to its children.
 	// this can happen either when the parent's clip changes or
 	// when this node's clip changes.
-	DirtyClip              = 0x00000004,
+	DirtyClip              = 0x00000008,
 
 	// DirtyLocalClip
 	//
 	// This node needs to update its local clip (relative to
 	// its parent).  This implies DirtyClip.
-	DirtyLocalClip         = 0x00000008,
+	DirtyLocalClip         = 0x00000010,
 
 	// Dirty*Visibility
 	//
 	// The visibility (either render or hit-test) of this node has
 	// changed, and we need to communicate this change to all its
 	// children.
-	DirtyRenderVisibility  = 0x00000010,
-	DirtyHitTestVisibility = 0x00000020,
+	DirtyRenderVisibility  = 0x00000020,
+	DirtyHitTestVisibility = 0x00000040,
 
 	// DirtyMeasure
 	//
 	// InvalidateMeasure was called on this element.
-	DirtyMeasure           = 0x00000040,
+	DirtyMeasure           = 0x00000080,
 
 	// DirtyMeasure
 	//
 	// InvalidateMeasure was called on this element.
-	DirtyArrange           = 0x00000080,
+	DirtyArrange           = 0x00000100,
 	
 	// DirtyChildrenZIndices
 	//
@@ -88,9 +94,10 @@ enum DirtyType {
 	// anything to children.  It's just so we can delay resorting
 	// by ZIndex until the dirty passes run.
 	//
-	DirtyChildrenZIndices  = 0x00000100,
+	DirtyChildrenZIndices  = 0x00000200,
 
 	DownDirtyState         = (DirtyLocalTransform |
+				  DirtyLocalProjection |
 				  DirtyTransform |
 				  DirtyRenderVisibility |
 				  DirtyHitTestVisibility |

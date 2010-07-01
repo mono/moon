@@ -95,6 +95,8 @@ FrameworkElement::FrameworkElement ()
 	arrange_cb = NULL;
 	loaded_cb = NULL;
 	bounds_with_children = Rect ();
+	global_bounds_with_children = Rect ();
+	surface_bounds_with_children = Rect ();
 	logical_parent = NULL;
 
 	providers[PropertyPrecedence_LocalStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle, dispose_value);
@@ -256,8 +258,6 @@ FrameworkElement::ApplySizeConstraints (const Size &size)
 void
 FrameworkElement::ComputeBounds ()
 {
-	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
-	Projection *projection = GetProjection ();
 	Size size (GetActualWidth (), GetActualHeight ());
 	size = ApplySizeConstraints (size);
 
@@ -271,30 +271,82 @@ FrameworkElement::ComputeBounds ()
 		if (!item->GetRenderVisible ())
 			continue;
 
-		bounds_with_children = bounds_with_children.Union (item->GetSubtreeBounds ());
+		bounds_with_children = bounds_with_children.Union (item->GetGlobalBounds ());
 	}
+}
 
-	unprojected_bounds = bounds_with_children;
-	if (projection) {
-		bounds = bounds_with_children = projection->ProjectBounds (unprojected_bounds);
-		Canvas::SetZ (this, projection->DistanceFromXYPlane ());
-	}
-	else {
-		Canvas::SetZ (this, 0.0);
-	}
+void
+FrameworkElement::ComputeGlobalBounds ()
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
 
-	if (effect)
-		bounds = bounds_with_children = effect->TransformBounds (bounds_with_children);
+	UIElement::ComputeGlobalBounds ();
+
+	if (GetSubtreeObject () != NULL) {
+		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+
+		global_bounds_with_children = bounds_with_children;
+
+		if (effect)
+			global_bounds_with_children = effect->TransformBounds (global_bounds_with_children);
+
+		if (flags & UIElement::RENDER_PROJECTION)
+			global_bounds_with_children = Matrix3D::TransformBounds (render_projection, global_bounds_with_children);
+	}
+}
+
+void
+FrameworkElement::ComputeSurfaceBounds ()
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
+
+	UIElement::ComputeSurfaceBounds ();
+
+	if (GetSubtreeObject () != NULL) {
+		FrameworkElement *element = (FrameworkElement *) this;
+
+		surface_bounds_with_children = global_bounds_with_children;
+
+		while ((element = (FrameworkElement *) element->GetVisualParent ())) {
+			Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? element->GetEffect () : NULL;
+
+			if (effect)
+				surface_bounds_with_children = effect->TransformBounds (surface_bounds_with_children);
+
+			if (element->flags & UIElement::RENDER_PROJECTION)
+				surface_bounds_with_children = Matrix3D::TransformBounds (element->render_projection, surface_bounds_with_children);
+		}
+	}
 }
 
 Rect
-FrameworkElement::GetSubtreeBounds ()
+FrameworkElement::GetLocalBounds ()
 {
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	if (GetSubtreeObject () != NULL) 
 		return bounds_with_children;
 
 	return bounds;
+}
+
+Rect
+FrameworkElement::GetGlobalBounds ()
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	if (GetSubtreeObject () != NULL)
+		return global_bounds_with_children;
+
+	return global_bounds;
+}
+
+Rect
+FrameworkElement::GetSubtreeBounds ()
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	if (GetSubtreeObject () != NULL)
+		return surface_bounds_with_children;
+
+	return surface_bounds;
 }
 
 Size
@@ -648,6 +700,7 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 
 	cairo_matrix_init_translate (&layout_xform, child_rect.x, child_rect.y);
 	UpdateTransform ();
+	UpdateProjection ();
 	UpdateBounds ();
 
 	Size offer = hidden_desire;

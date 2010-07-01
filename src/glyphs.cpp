@@ -459,9 +459,7 @@ Glyphs::ComputeBounds ()
 	if (dirty)
 		Layout ();
 	
-	bounds = unprojected_bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
-	bounds = ProjectBounds (unprojected_bounds);
-	bounds = TransformBoundsThroughEffect (bounds);
+	bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
 }
 
 Point
