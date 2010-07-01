@@ -755,6 +755,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Provider/ITextProvider.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Provider/ITextRangeProvider.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/GlyphTypeface.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/GlyphTypefaceCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/InputScopeConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/InputScopeName.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/InputScopeNameConverter.cs" />

@@ -636,6 +636,11 @@ namespace System.Windows.Media {
 		internal GeometryGroup (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class GlyphTypefaceCollection {
+		public GlyphTypefaceCollection () : base (SafeNativeMethods.glyph_typeface_collection_new (), true) {}
+		internal GlyphTypefaceCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	[ContentProperty ("GradientStops")]
 	partial class GradientBrush {
 		protected GradientBrush () : base (SafeNativeMethods.gradient_brush_new (), true) {}

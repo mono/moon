@@ -35,6 +35,7 @@ using System.Security;
 using System.Threading;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Interop;
 using Mono;
 using Mono.Xaml;
@@ -42,11 +43,12 @@ using Mono.Xaml;
 namespace System.Windows {
 
 	public sealed partial class Deployment : DependencyObject {
-		Types types;
-		List<Assembly> assemblies;
+		GlyphTypefaceCollection typefaces;
 		Assembly entry_point_assembly;
-		string xap_dir;
+		List<Assembly> assemblies;
 		int pending_assemblies;
+		string xap_dir;
+		Types types;
 		
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
@@ -136,6 +138,17 @@ namespace System.Windows {
 				Application.Current.Free ();
 
 			NativeMethods.deployment_set_current_application (Current.native, application == null ? IntPtr.Zero : application.NativeHandle);
+		}
+
+		internal GlyphTypefaceCollection SystemTypefaces {
+			get {
+				if (typefaces == null) {
+					IntPtr retval = NativeMethods.deployment_get_system_typefaces (native);
+					typefaces = new GlyphTypefaceCollection (retval, false);
+				}
+				
+				return typefaces;
+			}
 		}
 
 		internal Types Types {

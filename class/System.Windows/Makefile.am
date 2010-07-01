@@ -609,12 +609,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\
 	$(srcdir)/System.Windows.Media/FontFamily.cs				\
-	$(srcdir)/System.Windows.Media/Fonts.cs						\
+	$(srcdir)/System.Windows.Media/Fonts.cs					\
 	$(srcdir)/System.Windows.Media/GeneralTransform.cs			\
 	$(srcdir)/System.Windows.Media/Geometry.cs				\
 	$(srcdir)/System.Windows.Media/GeometryCollection.cs			\
 	$(srcdir)/System.Windows.Media/GeometryGroup.cs				\
-	$(srcdir)/System.Windows.Media/GlyphTypeface.cs			\
+	$(srcdir)/System.Windows.Media/GlyphTypeface.cs				\
+	$(srcdir)/System.Windows.Media/GlyphTypefaceCollection.cs		\
 	$(srcdir)/System.Windows.Media/GradientBrush.cs				\
 	$(srcdir)/System.Windows.Media/GradientSpreadMethod.cs			\
 	$(srcdir)/System.Windows.Media/GradientStop.cs				\
@@ -623,8 +624,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/ImageSource.cs				\
 	$(srcdir)/System.Windows.Media/ImageSourceConverter.cs			\
 	$(srcdir)/System.Windows.Media/ImplicitInputBrush.cs			\
-	$(srcdir)/System.Windows.Media/JoinDomainCompletedEventArgs.cs	\
-	$(srcdir)/System.Windows.Media/LeaveDomainCompletedEventArgs.cs	\
+	$(srcdir)/System.Windows.Media/JoinDomainCompletedEventArgs.cs		\
+	$(srcdir)/System.Windows.Media/LeaveDomainCompletedEventArgs.cs		\
 	$(srcdir)/System.Windows.Media/LicenseAcquirer.cs			\
 	$(srcdir)/System.Windows.Media/LicenseManagement.cs			\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
