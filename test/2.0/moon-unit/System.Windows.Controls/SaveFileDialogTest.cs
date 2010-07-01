@@ -35,6 +35,7 @@ using System.Threading;
 
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -77,19 +78,24 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Filter ()
 		{
 			SaveFileDialog sfd = new SaveFileDialog ();
+
 			sfd.Filter = null;
 			Assert.AreEqual (String.Empty, sfd.Filter, "Null->Empty");
 
-			sfd.Filter = "a|b";
-			Assert.AreEqual ("a|b", sfd.Filter, "Filter");
+			Assert.Throws<ArgumentException>(() =>
+				sfd.Filter = "a|b"
+			, "Invalid 1");
 
 			Assert.Throws<ArgumentException> (delegate {
 				sfd.Filter = "a|b|";
 			}, "Even |");
-			Assert.AreEqual ("a|b", sfd.Filter, "Unchanged");
+
+			sfd.Filter = "a|*.b";
+			Assert.AreEqual("a|*.b", sfd.Filter, "Unchanged");
 		}
 
 		[TestMethod]

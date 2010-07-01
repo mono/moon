@@ -1,5 +1,10 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/SaveFileDialogTest.cs: Update the
+	  SaveFileDialog tests
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/StackPanelTest.cs: Update stackpanel
 	  tests to SL4.
 
