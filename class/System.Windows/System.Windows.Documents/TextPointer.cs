@@ -32,7 +32,7 @@ using Mono;
 namespace System.Windows.Documents {
 	public class TextPointer : INativeEventObjectWrapper {
 		bool free_mapping;
-		internal IntPtr native;
+		IntPtr native;
 		
 		internal TextPointer (IntPtr raw, bool dropref)
 		{

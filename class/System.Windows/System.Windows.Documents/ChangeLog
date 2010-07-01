@@ -1,5 +1,12 @@
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
+	* TextPointer.cs:
+	* TextSelection.cs: Fix the issue properly. TextSelection
+	  should use TextPointer.NativeHandle. The fact this compiled
+	  before is a bug in gmcs which is being worked on currently.
+
+2010-07-01  Alan McGovern  <amcgovern@novell.com>
+
 	* TextPointer.cs: This should be internal so other classes can
 	  use it.
 

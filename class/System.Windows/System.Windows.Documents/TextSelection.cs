@@ -143,7 +143,7 @@ namespace System.Windows.Documents {
 			if (movingPosition == null)
 				throw new ArgumentNullException ("movingPosition");
 
-			NativeMethods.text_selection_select (native, anchorPosition.native, movingPosition.native);
+			NativeMethods.text_selection_select (native, anchorPosition.NativeHandle, movingPosition.NativeHandle);
 		}
 
 		public string Text {
