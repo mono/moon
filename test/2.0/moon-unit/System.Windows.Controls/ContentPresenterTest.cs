@@ -81,6 +81,7 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Black) };
 			ContentPresenter c = new ContentPresenter { Content = r };
+			Assert.IsNull(c.Parent, "#1");
 			TestPanel.Children.Add (r);
 		}
 

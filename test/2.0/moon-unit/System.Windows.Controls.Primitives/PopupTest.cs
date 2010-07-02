@@ -287,11 +287,13 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			Rectangle r = new Rectangle ();
 			Popup p = new Popup { Child = r };
 			Assert.AreEqual (p, r.Parent, "#1");
-			TestPanel.Children.Add (r);
-			Assert.AreEqual (p, r.Parent, "#2");
+			Assert.Throws<InvalidOperationException>(() =>
+				TestPanel.Children.Add(r)
+			, "#2");
+			Assert.AreEqual (p, r.Parent, "#3");
 			p.Child = null;
-			Assert.AreEqual (TestPanel, r.Parent, "#3");
-			Assert.Throws<ArgumentException> (() => p.Child = r, "#4");
+			Assert.IsNull (r.Parent, "#4");
+			p.Child = r; // no exception thrown
 		}
 
 		[TestMethod]
@@ -303,11 +305,12 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void VisualTree4 ()
 		{
 			Rectangle r = new Rectangle ();
 			Popup p1 = new Popup { Child = r };
-			Assert.Throws<InvalidOperationException> (() => new Popup { Child = r }); 
+			Assert.Throws<ArgumentException> (() => new Popup { Child = r }); 
 		}
 
 		[TestMethod]
