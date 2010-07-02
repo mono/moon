@@ -60,6 +60,12 @@
 
 2010-07-01  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp:
+	* runtime.h:
+	* runtime.cpp: Add RUNTIME_INIT_ENABLE_PROJECTIONS.
+
+2010-07-01  David Reveman  <davidr@novell.com>
+
 	New Effect/Projection code with hit testing support
 	---------------------------------------------------
 

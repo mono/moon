@@ -425,7 +425,7 @@ UIElement::UpdateProjection ()
 void
 UIElement::ComputeLocalProjection ()
 {
-	Projection *projection = GetProjection ();
+	Projection *projection = (moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) ? GetProjection () : NULL;
 	double width, height;
 
 	if (projection == NULL) {
@@ -470,7 +470,7 @@ UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 void
 UIElement::ComputeTransform ()
 {
-	Projection *projection = GetProjection ();
+	Projection *projection = (moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) ? GetProjection () : NULL;
 	cairo_matrix_t old = absolute_xform;
 	double m[16];
 	cairo_matrix_init_identity (&absolute_xform);
@@ -1288,7 +1288,7 @@ UIElement::UseOcclusionCulling ()
 	// for now the only things that drop us out of the occlusion
 	// culling pass for a subtree are projections and effects.
 	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return FALSE;
-	if (GetProjection ()) return FALSE;
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) && GetProjection ()) return FALSE;
 
 	return TRUE;
 }
@@ -1297,7 +1297,7 @@ bool
 UIElement::RenderToIntermediate ()
 {
 	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return TRUE;
-	if (GetProjection ()) return TRUE;
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) && GetProjection ()) return TRUE;
 
 	return FALSE;
 }
