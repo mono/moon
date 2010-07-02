@@ -60,6 +60,9 @@
 
 2010-07-01  David Reveman  <davidr@novell.com>
 
+	* runtime.cpp: Disable all effects and perspective transformations
+	when building without gallium support.
+
 	* uielement.cpp: Image backend is required for effects and
 	perspective transformations.
 
