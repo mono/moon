@@ -60,6 +60,9 @@
 
 2010-07-01  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Image backend is required for effects and
+	perspective transformations.
+
 	* uielement.cpp|h (GetRenderEffect): Add helper method.
 	* uielement.cpp|h (GetProjectionEffect): Add helper method.
 

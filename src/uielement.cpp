@@ -1855,14 +1855,18 @@ UIElement::TransformPoint (double *x, double *y)
 	}
 }
 
+#define EFFECT_FLAGS (RUNTIME_INIT_ENABLE_EFFECTS | RUNTIME_INIT_USE_BACKEND_IMAGE)
+
 Effect *
 UIElement::GetRenderEffect ()
 {
-	return (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+	return (moonlight_flags & EFFECT_FLAGS) == (EFFECT_FLAGS) ? GetEffect () : NULL;
 }
+
+#define PROJECTION_FLAGS (RUNTIME_INIT_ENABLE_PROJECTIONS | RUNTIME_INIT_USE_BACKEND_IMAGE)
 
 Projection *
 UIElement::GetRenderProjection ()
 {
-	return (moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) ? GetProjection () : NULL;
+	return (moonlight_flags & PROJECTION_FLAGS) == (PROJECTION_FLAGS) ? GetProjection () : NULL;
 }
