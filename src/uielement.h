@@ -634,6 +634,11 @@ public:
 	// parents to see if any are loaded.
 	static bool IsSubtreeLoaded (UIElement *element);
 
+	// Helper methods for properties that should be ignored when runtime
+	// flags are not present
+	Effect *GetRenderEffect ();
+	Projection *GetRenderProjection ();
+
 protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);

@@ -60,7 +60,9 @@
 
 2010-07-01  David Reveman  <davidr@novell.com>
 
-	* uielement.cpp:
+	* uielement.cpp|h (GetRenderEffect): Add helper method.
+	* uielement.cpp|h (GetProjectionEffect): Add helper method.
+
 	* runtime.h:
 	* runtime.cpp: Add RUNTIME_INIT_ENABLE_PROJECTIONS.
 

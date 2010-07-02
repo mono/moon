@@ -425,7 +425,7 @@ UIElement::UpdateProjection ()
 void
 UIElement::ComputeLocalProjection ()
 {
-	Projection *projection = (moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) ? GetProjection () : NULL;
+	Projection *projection = GetRenderProjection ();
 	double width, height;
 
 	if (projection == NULL) {
@@ -470,7 +470,7 @@ UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 void
 UIElement::ComputeTransform ()
 {
-	Projection *projection = (moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) ? GetProjection () : NULL;
+	Projection *projection = GetRenderProjection ();
 	cairo_matrix_t old = absolute_xform;
 	double m[16];
 	cairo_matrix_init_identity (&absolute_xform);
@@ -558,7 +558,7 @@ UIElement::ComputeBounds ()
 void
 UIElement::ComputeGlobalBounds ()
 {
-	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+	Effect *effect = GetRenderEffect ();
 
 	global_bounds = bounds;
 
@@ -577,7 +577,7 @@ UIElement::ComputeSurfaceBounds ()
 	surface_bounds = global_bounds;
 
 	while ((element = (FrameworkElement *) element->GetVisualParent ())) {
-		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? element->GetEffect () : NULL;
+		Effect *effect = element->GetRenderEffect ();
 
 		if (effect)
 			surface_bounds = effect->TransformBounds (surface_bounds);
@@ -1287,8 +1287,8 @@ UIElement::UseOcclusionCulling ()
 {
 	// for now the only things that drop us out of the occlusion
 	// culling pass for a subtree are projections and effects.
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return FALSE;
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) && GetProjection ()) return FALSE;
+	if (GetRenderEffect ()) return FALSE;
+	if (GetRenderProjection ()) return FALSE;
 
 	return TRUE;
 }
@@ -1296,8 +1296,8 @@ UIElement::UseOcclusionCulling ()
 bool
 UIElement::RenderToIntermediate ()
 {
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return TRUE;
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) && GetProjection ()) return TRUE;
+	if (GetRenderEffect ()) return TRUE;
+	if (GetRenderProjection ()) return TRUE;
 
 	return FALSE;
 }
@@ -1416,7 +1416,7 @@ void
 UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 {
 	double local_opacity = GetOpacity ();
-	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+	Effect *effect = GetRenderEffect ();
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 	Rect intermediate = GetLocalBounds ();
 
@@ -1512,7 +1512,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	}
 
 	double local_opacity = GetOpacity ();
-	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+	Effect *effect = GetRenderEffect ();
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 	Rect intermediate = GetLocalBounds ();
 
@@ -1853,4 +1853,16 @@ UIElement::TransformPoint (double *x, double *y)
 		*x = p[0] / p[3];
 		*y = p[1] / p[3];
 	}
+}
+
+Effect *
+UIElement::GetRenderEffect ()
+{
+	return (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+}
+
+Projection *
+UIElement::GetRenderProjection ()
+{
+	return (moonlight_flags & RUNTIME_INIT_ENABLE_PROJECTIONS) ? GetProjection () : NULL;
 }
