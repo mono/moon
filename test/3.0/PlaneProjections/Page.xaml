@@ -1,0 +1,98 @@
+<Canvas x:Class="PlaneProjections.Page"
+	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="400" Height="640">
+  <Canvas.Resources>
+    <SolidColorBrush x:Key="CanvasBackground" Color="#66A5DFEC" />
+  </Canvas.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Grid Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="0" >
+      <Canvas Height="50" HorizontalAlignment="Left" Margin="74,60,0,0" VerticalAlignment="Top" Width="50" Background="{StaticResource CanvasBackground}">
+	<Canvas.Effect>
+	  <DropShadowEffect ShadowDepth="25"/>
+	</Canvas.Effect>
+	<Rectangle Fill="#FFB5FA42" Stroke="#FF000000" Height="25" Width="25" Opacity="0.75" StrokeThickness="0"/>
+      </Canvas>
+      <Canvas Height="50" HorizontalAlignment="Left" Margin="268,60,0,0" VerticalAlignment="Top" Width="50" Background="{StaticResource CanvasBackground}">
+	<Canvas.Effect>
+	  <DropShadowEffect ShadowDepth="25"/>
+	</Canvas.Effect>
+	<Canvas.Projection>
+	  <PlaneProjection RotationZ="45"/>
+	</Canvas.Projection>
+	<Rectangle Fill="#FFB5FA42" Stroke="#FF000000" Height="25" Width="25" Opacity="0.75" StrokeThickness="0"/>
+      </Canvas>
+      <Rectangle Fill="#FF000000" Height="2" Margin="0,85,0,0" Width="400" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    </Grid>
+    <Grid Margin="0,114,0,-2" >
+      <Canvas Height="50" HorizontalAlignment="Left" Margin="74,60,0,0" VerticalAlignment="Top" Width="50" Background="{StaticResource CanvasBackground}">
+	<Canvas.Projection>
+	  <PlaneProjection RotationZ="-25"/>
+	</Canvas.Projection>
+	<Rectangle Fill="#FFB5FA42" Stroke="#FF000000" Height="25" Width="25" Opacity="0.75" StrokeThickness="0">
+	  <Rectangle.RenderTransform>
+	    <TransformGroup>
+	      <ScaleTransform ScaleX="6" ScaleY="1"/>
+	    </TransformGroup>
+	  </Rectangle.RenderTransform>
+	</Rectangle>
+      </Canvas>
+      <Rectangle Fill="#FF000000" Height="2" Margin="0,85,0,0" Width="400" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    </Grid>
+    <Grid Margin="0,0,0,0" Grid.Row="1" >
+      <Canvas Height="50" HorizontalAlignment="Left" Margin="74,60,0,0" VerticalAlignment="Top" Width="250" Background="{StaticResource CanvasBackground}">
+	<Canvas.Projection>
+	  <PlaneProjection RotationZ="20"/>
+	</Canvas.Projection>
+	<Rectangle Fill="#FFB5FA42" Stroke="#FF000000" Height="25" Width="25" Opacity="0.5" StrokeThickness="0" Canvas.Top="25" Canvas.Left="225"/>
+      </Canvas>
+      <Rectangle Fill="#FF000000" Height="2" Margin="0,85,0,0" Width="400" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    </Grid>
+    <Grid Margin="0,0,0,0" Grid.Row="2" >
+      <Canvas Height="50" Width="250" HorizontalAlignment="Left" Margin="74,60,0,0" VerticalAlignment="Top">
+	<Canvas.Projection>
+	  <PlaneProjection RotationZ="20"/>
+	</Canvas.Projection>
+	<Rectangle Fill="#FFB5FA42" Stroke="#FF000000" Height="25" Width="25" Opacity="0.5" StrokeThickness="0" Canvas.Top="25" Canvas.Left="225">
+	  <Rectangle.Projection>
+	    <PlaneProjection GlobalOffsetZ="0"/>
+	  </Rectangle.Projection>
+	</Rectangle>
+      </Canvas>
+      <Rectangle Fill="#FF000000" Height="2" Margin="0,85,0,0" Width="400" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    </Grid>
+    <Grid Margin="0,0,0,0" Grid.Row="3" >
+      <Canvas Height="50" HorizontalAlignment="Left" Margin="74,60,0,0" VerticalAlignment="Top" Width="50" Background="{StaticResource CanvasBackground}">
+	<Canvas.Projection>
+	  <PlaneProjection RotationZ="90"/>
+	</Canvas.Projection>
+	<Canvas.RenderTransform>
+	  <TransformGroup>
+	    <ScaleTransform ScaleX="2" ScaleY="1"/>
+	  </TransformGroup>
+	</Canvas.RenderTransform>
+	<Rectangle Fill="#FFB5FA42" Stroke="#FF000000" Height="25" Width="25" Opacity="0.5" StrokeThickness="0"/>
+      </Canvas>
+      <Canvas Height="12.5" HorizontalAlignment="Left" Margin="268,60,0,0" VerticalAlignment="Top" Width="12.5" Background="{StaticResource CanvasBackground}">
+	<Canvas.Projection>
+	  <PlaneProjection RotationZ="25"/>
+	</Canvas.Projection>
+	<Canvas.RenderTransform>
+	  <TransformGroup>
+	    <ScaleTransform ScaleX="4" ScaleY="4"/>
+	  </TransformGroup>
+	</Canvas.RenderTransform>
+	<Rectangle Fill="#FFB5FA42" Stroke="#FF000000" Height="6.25" Width="6.25" Opacity="0.5" StrokeThickness="0"/>
+	<TextBlock Text="@" FontSize="12.5"/>
+      </Canvas>
+      <Rectangle Fill="#FF000000" Height="2" Margin="0,85,0,0" Width="400" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    </Grid>
+  </Grid>
+</Canvas>

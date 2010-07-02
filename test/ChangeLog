@@ -1,3 +1,7 @@
+2010-07-02  David Reveman  <davidr@novell.com>
+
+	* 3.0/PlaneProjections: Add perspective transformation test.
+
 2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* supp/mono.supp: Updated with new warnings to ignore.
