@@ -2895,7 +2895,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
     <ContentControl.Template>
         <ControlTemplate>
             <Canvas>
-                <ContentControl x:Name=""Parent"" Content=""{TemplateBinding Content}"" />
+                <ContentControl x:Name=""Parent"" Width=""{TemplateBinding Width}"" />
             </Canvas>
         </ControlTemplate>
     </ContentControl.Template>
@@ -2903,7 +2903,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 
 			c.ApplyTemplate ();
 			var cc = c.FindFirstChild<ContentControl> ();
-			var binding = (TemplateBindingExpression) cc.ReadLocalValue (ContentControl.ContentProperty);
+			var binding = (TemplateBindingExpression) cc.ReadLocalValue (ContentControl.WidthProperty);
 			cc.ClearValue (ContentControl.ContentProperty);
 			cc = new ContentControl ();
 

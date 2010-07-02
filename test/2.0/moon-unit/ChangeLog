@@ -1,5 +1,9 @@
 2010-07-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Update to SL4.
+
+2010-07-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls.Primitives/PopupTest.cs: Update the
 	  popup tests to SL4. They proved hard to fix without
 	  regressing other tests.
