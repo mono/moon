@@ -1547,8 +1547,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 
 	cairo_restore (cr);
 
-	if (effect)
-	{
+	if (effect) {
 		List::Node *node = ctx->First ();
 		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
 		cairo_surface_t *src = cairo_get_target (group_cr);
@@ -1568,8 +1567,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			x = r.x + dst_x;
 			y = r.y + dst_y;
 
-			if (!effect->Composite (dst, src, x, y))
-			{
+			if (!effect->Composite (dst, src, x, y)) {
 				cairo_save (cr);
 				cairo_identity_matrix (cr);
 				cairo_reset_clip (cr);
@@ -1591,8 +1589,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
-	if (flags & UIElement::RENDER_PROJECTION)
-	{
+	if (flags & UIElement::RENDER_PROJECTION) {
 		List::Node *node = ctx->First ();
 		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
 		cairo_surface_t *src = cairo_get_target (group_cr);
@@ -1618,18 +1615,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			Effect::SetShaderOffsetY (src, r.y);
 
 			if (!effect->Composite (dst, src, x, y))
-			{
-				cairo_save (cr);
-				cairo_identity_matrix (cr);
-				cairo_reset_clip (cr);
-				cairo_surface_set_device_offset (dst, 0, 0);
-				cairo_surface_set_device_offset (src, 0, 0);
-				cairo_rectangle (cr, x, y, r.width, r.height);
-				cairo_set_source_surface (cr, src, x, y);
-				cairo_fill (cr);
-				cairo_surface_set_device_offset (dst, dst_x, dst_y);
-				cairo_restore (cr);
-			}
+				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
 		}
 
 		cairo_destroy (group_cr);

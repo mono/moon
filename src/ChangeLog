@@ -60,6 +60,11 @@
 
 2010-07-01  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (PostRender): Remove fall-back rendering for
+	perspective transformation. We should only reach this code when
+	perspective transformations are properly supported. Using cairo as
+	a fall-back would only lead to rendering artifacts.
+
 	* runtime.cpp: Disable all effects and perspective transformations
 	when building without gallium support.
 
