@@ -1,3 +1,8 @@
+2010-07-02  Jackson Harper  <jackson@ximian.com>
+
+	* XamlPropertySetter.cs: Add the ability to lookup the
+	DependencyProperty that corresponds to a property setter.
+
 2010-06-24  Jackson Harper  <jackson@ximian.com>
 
 	* XamlContext.cs: New class, used with parsing templates.

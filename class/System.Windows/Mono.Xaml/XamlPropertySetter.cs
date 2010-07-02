@@ -72,6 +72,10 @@ namespace Mono.Xaml {
 			get;
 		}
 
+		public abstract Type DeclaringType {
+			get;
+		}
+
 		public TypeConverter Converter {
 			get;
 			private set;
@@ -113,6 +117,26 @@ namespace Mono.Xaml {
 			return value;
 		}
 
+		/// Find the dependency property that corresponds to this
+		/// property. Technically a property does not need a
+		/// corresponding 
+		public DependencyProperty LookupDependencyProperty ()
+		{
+			Type type = DeclaringType;
+
+			Types.Ensure (type);
+
+			Kind kind = Deployment.Current.Types.TypeToNativeKind (type);
+			if (kind == Kind.INVALID)
+				return null;
+
+			try {
+				return DependencyProperty.Lookup (kind, Name);
+			} catch {
+				return null;
+			}
+		}
+
 		public abstract void SetValue (XamlObjectElement obj, object value);
 	}
 
@@ -131,6 +155,10 @@ namespace Mono.Xaml {
 			get { return prop.PropertyType; }
 		}
 
+		public override Type DeclaringType {
+			get { return prop.DeclaringType; }
+		}
+
 		public PropertyInfo PropertyInfo {
 			get { return prop; }
 		}
@@ -143,24 +171,26 @@ namespace Mono.Xaml {
 		public override void SetValue (XamlObjectElement obj, object value)
 		{
 			// We do this first to cover the case where you are setting a list to a list or
-			// a resource dictionary to a resource dictionary, as opposed to adding items
-			// to the dictionary.
+			// a resource dictionary to a resource dictionary, binding to a binding, ect
+			// as opposed to adding items to the list or dictionary.
 			if (prop.PropertyType.IsAssignableFrom (value.GetType ())) {
 				prop.SetValue (target, ConvertValue (Type, value), null);
 				return;
 			}
 
 			if (typeof (IList).IsAssignableFrom (Type)) {
+				Console.WriteLine (" -- adding to a collection");
 				AddToCollection (obj, value);
 				return;
 			}
 
 			if (typeof (IDictionary).IsAssignableFrom (Type)) {
+				Console.WriteLine (" -- adding to a dictionary");
 				AddToDictionary (obj, value);
 				return;
 			}
 
-			Parser.ParseException ("Unable to set property {0} to value {1}.", Name, value);
+			throw Parser.ParseException ("Unable to set property {0} to value {1}.", Name, value);
 		}
 
 		private void AddToCollection (XamlObjectElement obj, object value)
@@ -196,6 +226,10 @@ namespace Mono.Xaml {
 
 		public override Type Type {
 			get { return getter.ReturnType; }
+		}
+
+		public override Type DeclaringType {
+			get { return getter.DeclaringType; }
 		}
 
 		public override void SetValue (XamlObjectElement obj, object value)
