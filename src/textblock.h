@@ -33,11 +33,11 @@ class TextBlockDynamicPropertyValueProvider;
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
+	FontResource *font_resource;
 	TextFontDescription *font;
 	GPtrArray *downloaders;
 	Downloader *source;
 	TextLayout *layout;
-	char *font_source;
 	
 	double actual_height;
 	double actual_width;

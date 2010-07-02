@@ -371,12 +371,13 @@ TextFont *
 TextFont::Load (const TextFontDescription *desc)
 {
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	const FontResource *resource = desc->GetResource ();
 	FontStretches stretch = desc->GetStretch ();
 	FontWeights weight = desc->GetWeight ();
-	const char *source = desc->GetSource ();
 	const char *lang = desc->GetLanguage ();
 	char **families = desc->GetFamilies ();
 	FontStyles style = desc->GetStyle ();
+	const char *resource_id = NULL;
 	int lucida, master = -1;
 	bool gapless = false;
 	GHashTable *loaded;
@@ -385,6 +386,16 @@ TextFont::Load (const TextFontDescription *desc)
 	TextFont *font;
 	char *name;
 	int i;
+	
+	if (resource != NULL) {
+		switch (resource->GetType ()) {
+		case FontResourceTypeGlyphTypeface:
+			return Load (resource->GetGlyphTypeface (), desc->GetSize (), StyleSimulationsNone);
+		case FontResourceTypeResourceId:
+			resource_id = resource->GetId ();
+			break;
+		}
+	}
 	
 	loaded = g_hash_table_new (strcase_hash, strcase_equal);
 	
@@ -403,9 +414,9 @@ TextFont::Load (const TextFontDescription *desc)
 			} else {
 				face = NULL;
 				
-				if (source && !strchr (families[i], '#')) {
-					// if there is a font source, try loading from the font source first
-					name = g_strdup_printf ("%s#%s", source, families[i]);
+				if (resource_id && !strchr (families[i], '#')) {
+					// if there is a font resource, try loading from the font resource first
+					name = g_strdup_printf ("%s#%s", resource_id, families[i]);
 					face = manager->OpenFont (name, stretch, weight, style);
 					g_free (name);
 				}
@@ -423,8 +434,8 @@ TextFont::Load (const TextFontDescription *desc)
 			
 			g_hash_table_insert (loaded, families[i], GINT_TO_POINTER (true));
 		}
-	} else if (source) {
-		if ((face = manager->OpenFont (source, 0))) {
+	} else if (resource_id) {
+		if ((face = manager->OpenFont (resource_id, 0))) {
 			g_ptr_array_add (faces, face);
 			master = 0;
 		}
@@ -718,9 +729,9 @@ TextFontDescription::TextFontDescription ()
 	changed = true;
 	font = NULL;
 	
+	resource = NULL;
 	language = NULL;
 	family = NULL;
-	source = NULL;
 	
 	style = FontStylesNormal;
 	weight = FontWeightsNormal;
@@ -731,8 +742,8 @@ TextFontDescription::TextFontDescription ()
 TextFontDescription::~TextFontDescription ()
 {
 	g_free (language);
-	g_free (source);
 	g_free (family);
+	delete resource;
 	delete font;
 }
 
@@ -755,31 +766,34 @@ TextFontDescription::GetFont ()
 	return font;
 }
 
-const char *
-TextFontDescription::GetSource () const
+const FontResource *
+TextFontDescription::GetResource () const
 {
-	return source;
+	return resource;
 }
 
 bool
-TextFontDescription::SetSource (const char *source)
+TextFontDescription::SetResource (const FontResource *resource)
 {
 	bool changed;
 	
-	if (source) {
-		if (!this->source || g_ascii_strcasecmp (this->source, source) != 0) {
-			g_free (this->source);
-			this->source = g_strdup (source);
-			this->changed = true;
-			changed = true;
+	if (this->resource) {
+		if (resource) {
+			if (this->resource == resource) {
+				changed = false;
+			} else {
+				delete this->resource;
+				this->resource = new FontResource (resource);
+				changed = true;
+			}
 		} else {
-			changed = false;
+			delete this->resource;
+			this->resource = NULL;
+			changed = true;
 		}
 	} else {
-		if (this->source) {
-			g_free (this->source);
-			this->source = NULL;
-			this->changed = true;
+		if (resource) {
+			this->resource = new FontResource (resource);
 			changed = true;
 		} else {
 			changed = false;

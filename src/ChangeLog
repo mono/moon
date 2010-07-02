@@ -1,3 +1,28 @@
+2010-07-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (FontResource): New class to wrap a
+	GlyphTypeface and a resource id (identifying a ManagedStream).
+	(FontManager::AddResource): Return a FontResource instead of a
+	string.
+	(GlyphTypeface::GetVersion): Looks like Silverlight just divides
+	the minor version by 100.
+
+	* fonts.cpp (TextFont::Load): If the FontDescription's resource is
+	a GlyphTypeface, shortcut by calling the Load() method for
+	GlyphTypefaces.
+	(TextFontDescription::[G,S]etResource): Renamed
+	from [G,S]etSource().
+
+	* textblock.cpp (OnPropertyChanged): Updated to use FontResources
+	and added support for GlyphTypeface resources.
+
+	* textbox.cpp (TextBox::OnPropertyChanged): Updated to use
+	FontResources and added support for GlyphTypeface resources.
+	(PasswordBox::OnPropertyChanged): Same.
+
+	* glyphs.cpp (SetFontSource): Updated for changes made to
+	FontManager::AddResource().
+
 2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (GetSystemGlyphTypefaces): Cache the

@@ -113,13 +113,13 @@ class GlyphTypeface {
 	//
 	// Public Accessors
 	//
-	int GetMajorVersion () { return ver_major; }
-	int GetMinorVersion () { return ver_minor; }
+	int GetMajorVersion () const { return ver_major; }
+	int GetMinorVersion () const { return ver_minor; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	double GetVersion ();
+	double GetVersion () const;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetFontUri ();
+	const char *GetFontUri () const;
 	
 	bool operator== (const GlyphTypeface &v) const;
 };
@@ -135,6 +135,32 @@ class GlyphTypefaceCollection : public Collection {
 	GlyphTypefaceCollection ();
 	
 	virtual Type::Kind GetElementType () { return Type::GLYPHTYPEFACE; }
+};
+
+enum FontResourceType {
+	FontResourceTypeResourceId,
+	FontResourceTypeGlyphTypeface,
+};
+
+class FontResource {
+	FontResourceType type;
+	union {
+		GlyphTypeface *typeface;
+		char *id;
+	} resource;
+	
+ public:
+	FontResource (const FontResource *resource);
+	FontResource (const GlyphTypeface *typeface);
+	FontResource (const char *id);
+	~FontResource ();
+	
+	FontResourceType GetType () const { return type; }
+	
+	const GlyphTypeface *GetGlyphTypeface () const { return resource.typeface; }
+	const char *GetId () const { return resource.id; }
+	
+	bool operator== (const FontResource &v) const;
 };
 
 class FontManager {
@@ -156,8 +182,8 @@ class FontManager {
 	FontManager ();
 	~FontManager ();
 	
-	void AddResource (const char *resource, const char *path);
-	char *AddResource (ManagedStreamCallbacks *stream);
+	void AddResource (const char *resource_id, const char *path);
+	FontResource *AddResource (ManagedStreamCallbacks *stream);
 	
 	FontFace *OpenFont (const char *name, FontStretches stretch, FontWeights weight, FontStyles style);
 	FontFace *OpenFont (const char *name, int index);

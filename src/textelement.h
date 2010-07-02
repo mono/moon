@@ -114,7 +114,7 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	//
 	// Convenience Methods
 	//
-	bool UpdateFontDescription (const char *source, bool force);
+	bool UpdateFontDescription (const FontResource *resource, bool force);
 };
 
 

@@ -770,15 +770,15 @@ Glyphs::SetFontSource (ManagedStreamCallbacks *stream)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	StyleSimulations simulate = GetStyleSimulations ();
 	double size = GetFontRenderingEmSize ();
-	char *resource;
+	FontResource *resource;
 	
 	CleanupDownloader ();
 	delete font;
 	
 	if (stream) {
 		resource = manager->AddResource (stream);
-		font = TextFont::Load (resource, 0, size, simulate);
-		g_free (resource);
+		font = TextFont::Load (resource->GetId (), 0, size, simulate);
+		delete resource;
 	} else {
 		font = NULL;
 	}

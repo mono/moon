@@ -176,7 +176,6 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 
 			if (visual) {
 				GdkEventExpose expose;
-				int width, height;
 
 				expose.type = GDK_EXPOSE;
 				expose.window = NULL;

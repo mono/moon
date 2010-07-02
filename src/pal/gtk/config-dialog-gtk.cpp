@@ -17,7 +17,6 @@
 
 #include "config-dialog-gtk.h"
 
-#include "authors.h"
 #include "window-gtk.h"
 #include "openfile.h"
 #include "pipeline.h"
@@ -916,7 +915,7 @@ DebugConfigDialogPage::~DebugConfigDialogPage ()
 GtkWidget*
 DebugConfigDialogPage::GetContentWidget ()
 {
-	GtkBox *vbox, *hbox, *label;
+	GtkBox *vbox, *hbox;
 	GtkWidget *button;
 	GtkWidget *align;
 
@@ -960,6 +959,7 @@ AdvancedConfigDialogPage::~AdvancedConfigDialogPage ()
 {
 }
 
+#if 0
 static void
 table_add (GtkWidget *table, int row, const char *label, const char *value)
 {
@@ -974,6 +974,7 @@ table_add (GtkWidget *table, int row, const char *label, const char *value)
 	gtk_misc_set_alignment (GTK_MISC (v), 0.0, 0.5);
 	gtk_table_attach (GTK_TABLE(table), v, 1, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
 }
+#endif
 
 static GtkWidget *
 title (const char *txt)

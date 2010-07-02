@@ -754,7 +754,7 @@ GlyphTypeface::~GlyphTypeface ()
 }
 
 const char *
-GlyphTypeface::GetFontUri ()
+GlyphTypeface::GetFontUri () const
 {
 	const char *uri;
 	
@@ -765,16 +765,9 @@ GlyphTypeface::GetFontUri ()
 }
 
 double
-GlyphTypeface::GetVersion ()
+GlyphTypeface::GetVersion () const
 {
-	double version = (double) (ver_minor >= 0 ? ver_minor : 0);
-	
-	while (version >= 1)
-		version /= 10;
-	
-	version += ver_major;
-	
-	return version;
+	return (double) ver_major + ((double) ver_minor / 100.0);
 }
 
 bool
@@ -1232,6 +1225,62 @@ font_face_destroy (gpointer data)
 
 
 //
+// FontResource
+//
+
+FontResource::FontResource (const FontResource *resource)
+{
+	type = resource->type;
+	switch (type) {
+	case FontResourceTypeGlyphTypeface:
+		this->resource.typeface = new GlyphTypeface (resource->resource.typeface);
+		break;
+	case FontResourceTypeResourceId:
+		this->resource.id = g_strdup (resource->resource.id);
+		break;
+	}
+}
+
+FontResource::FontResource (const GlyphTypeface *typeface)
+{
+	resource.typeface = new GlyphTypeface (typeface);
+	type = FontResourceTypeGlyphTypeface;
+}
+
+FontResource::FontResource (const char *id)
+{
+	type = FontResourceTypeResourceId;
+	resource.id = g_strdup (id);
+}
+
+FontResource::~FontResource ()
+{
+	switch (type) {
+	case FontResourceTypeGlyphTypeface:
+		delete resource.typeface;
+		break;
+	case FontResourceTypeResourceId:
+		g_free (resource.id);
+		break;
+	}
+}
+
+bool
+FontResource::operator== (const FontResource &v) const
+{
+	if (v.type != type)
+		return false;
+	
+	switch (type) {
+	case FontResourceTypeGlyphTypeface:
+		return v.resource.typeface == resource.typeface;
+	case FontResourceTypeResourceId:
+		return strcmp (v.resource.id, resource.id) == 0;
+	}
+}
+
+
+//
 // FontManager
 //
 
@@ -1431,23 +1480,23 @@ IndexFontFile (FT_Library libft2, const char *name, const char *path)
 }
 
 void
-FontManager::AddResource (const char *resource, const char *path)
+FontManager::AddResource (const char *resource_id, const char *path)
 {
 	FontIndex *index;
 	struct stat st;
 	
-	LOG_FONT (stderr, "Adding font resource '%s' at %s\n", resource, path);
+	LOG_FONT (stderr, "Adding font resource '%s' at %s\n", resource_id, path);
 	
-	if ((index = (FontIndex *) g_hash_table_lookup (resources, resource)))
+	if ((index = (FontIndex *) g_hash_table_lookup (resources, resource_id)))
 		return;
 	
 	if (stat (path, &st) == -1)
 		return;
 	
 	if (S_ISDIR (st.st_mode))
-		index = IndexFontDirectory (libft2, resource, path);
+		index = IndexFontDirectory (libft2, resource_id, path);
 	else if (S_ISREG (st.st_mode))
-		index = IndexFontFile (libft2, resource, path);
+		index = IndexFontFile (libft2, resource_id, path);
 	else
 		return;
 	
@@ -1455,10 +1504,11 @@ FontManager::AddResource (const char *resource, const char *path)
 		g_hash_table_insert (resources, index->name, index);
 }
 
-char *
+FontResource *
 FontManager::AddResource (ManagedStreamCallbacks *stream)
 {
-	char buf[4096], *resource, *dirname, *path;
+	char buf[4096], *uid, *dirname, *path;
+	FontResource *resource;
 	unzFile zipfile;
 	int nread, fd;
 	gint64 pos;
@@ -1470,16 +1520,20 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		return NULL;
 	
 	// check if we've already added this resource
-	resource = g_strdup_printf ("font-source://%p", stream->handle);
-	if (g_hash_table_lookup (resources, resource) != NULL)
+	uid = g_strdup_printf ("font-source://%p", stream->handle);
+	if (g_hash_table_lookup (resources, uid) != NULL) {
+		resource = new FontResource (uid);
+		g_free (uid);
+		
 		return resource;
+	}
 	
 	snprintf (buf, sizeof (buf), "%p", stream->handle);
 	path = g_build_filename (root, buf, NULL);
 	
 	if ((fd = g_open (path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1) {
-		g_free (resource);
 		g_free (path);
+		g_free (uid);
 		return NULL;
 	}
 	
@@ -1491,10 +1545,10 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	
 	while ((nread = stream->Read (stream->handle, buf, 0, sizeof (buf))) > 0) {
 		if (write_all (fd, buf, (size_t) nread) == -1) {
-			g_free (resource);
 			close (fd);
 			g_unlink (path);
 			g_free (path);
+			g_free (uid);
 			return NULL;
 		}
 	}
@@ -1513,10 +1567,10 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		// create a directory to contain our unzipped content
 		if (g_mkdir (dirname, 0700) == -1) {
 			unzClose (zipfile);
-			g_free (resource);
 			g_free (dirname);
 			g_unlink (path);
 			g_free (path);
+			g_free (uid);
 			return NULL;
 		}
 		
@@ -1524,10 +1578,10 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		if (!ExtractAll (zipfile, dirname, CanonModeNone)) {
 			RemoveDir (dirname);
 			unzClose (zipfile);
-			g_free (resource);
 			g_free (dirname);
 			g_unlink (path);
 			g_free (path);
+			g_free (uid);
 			return NULL;
 		}
 		
@@ -1538,9 +1592,12 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		path = dirname;
 	}
 	
-	AddResource (resource, path);
+	resource = new FontResource (uid);
+	
+	AddResource (uid, path);
 	
 	g_free (path);
+	g_free (uid);
 	
 	return resource;
 }

@@ -570,7 +570,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	font->SetSize (GetFontSize ());
 	
 	downloaders = g_ptr_array_new ();
-	font_source = NULL;
+	font_resource = NULL;
 	
 	contentElement = NULL;
 	
@@ -617,7 +617,7 @@ TextBoxBase::~TextBoxBase ()
 	
 	CleanupDownloaders ();
 	g_ptr_array_free (downloaders, true);
-	g_free (font_source);
+	delete font_resource;
 	
 	delete buffer;
 	delete undo;
@@ -2535,23 +2535,22 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// rather, 'unref' it since some other textblocks/boxes might
 		// still be using it).
 		
-		g_free (font_source);
-		font_source = NULL;
+		delete font_resource;
+		font_resource = NULL;
 		
 		if (fs != NULL) {
 			switch (fs->type) {
 			case FontSourceTypeManagedStream:
-				if (fs->source.stream)
-					font_source = manager->AddResource (fs->source.stream);
+				font_resource = manager->AddResource (fs->source.stream);
 				break;
 			case FontSourceTypeGlyphTypeface:
-				// FIXME: probably need to support this...
+				font_resource = new FontResource (fs->source.typeface);
 				break;
 			}
 		}
 		
 		changed = TextBoxModelChangedFont;
-		font->SetSource (font_source);
+		font->SetResource (font_resource);
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
 		is_read_only = args->GetNewValue ()->AsBool ();
@@ -2969,23 +2968,22 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		// rather, 'unref' it since some other textblocks/boxes might
 		// still be using it).
 		
-		g_free (font_source);
-		font_source = NULL;
+		delete font_resource;
+		font_resource = NULL;
 		
 		if (fs != NULL) {
 			switch (fs->type) {
 			case FontSourceTypeManagedStream:
-				if (fs->source.stream)
-					font_source = manager->AddResource (fs->source.stream);
+				font_resource = manager->AddResource (fs->source.stream);
 				break;
 			case FontSourceTypeGlyphTypeface:
-				// FIXME: probably need to support this...
+				font_resource = new FontResource (fs->source.typeface);
 				break;
 			}
 		}
 		
 		changed = TextBoxModelChangedFont;
-		font->SetSource (font_source);
+		font->SetResource (font_resource);
 	} else if (args->GetId () == PasswordBox::MaxLengthProperty) {
 		// update max_length state
 		max_length = args->GetNewValue()->AsInt32 ();

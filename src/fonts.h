@@ -80,7 +80,8 @@ class TextFontDescription {
 	TextFont *font;
 	bool changed;
 	
-	char *source;
+	FontResource *resource;
+	
 	char *family;
 	char *language;
 	FontStretches stretch;
@@ -95,8 +96,8 @@ class TextFontDescription {
 	TextFont *GetFont ();
 	void Reload ();
 	
-	bool SetSource (const char *source);
-	const char *GetSource () const;
+	bool SetResource (const FontResource *resource);
+	const FontResource *GetResource () const;
 	
 	bool SetFamily (const char *family);
 	const char *GetFamily () const;

@@ -184,12 +184,12 @@ TextElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 }
 
 bool
-TextElement::UpdateFontDescription (const char *source, bool force)
+TextElement::UpdateFontDescription (const FontResource *resource, bool force)
 {
 	FontFamily *family = GetFontFamily ();
 	bool changed = false;
 	
-	if (font->SetSource (source))
+	if (font->SetResource (resource))
 		changed = true;
 	
 	if (font->SetFamily (family ? family->source : NULL))

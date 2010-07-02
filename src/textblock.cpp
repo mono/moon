@@ -47,7 +47,7 @@ TextBlock::TextBlock ()
 	
 	downloaders = g_ptr_array_new ();
 	layout = new TextLayout ();
-	font_source = NULL;
+	font_resource = NULL;
 	source = NULL;
 	
 	actual_height = 0.0;
@@ -106,8 +106,8 @@ TextBlock::CleanupDownloaders (bool all)
 	}
 	
 	if (all) {
-		g_free (font_source);
-		font_source = NULL;
+		delete font_resource;
+		font_resource = NULL;
 	}
 }
 
@@ -130,12 +130,16 @@ TextBlock::AddFontSource (Downloader *downloader)
 void
 TextBlock::SetFontSource (Downloader *downloader)
 {
+	char *resource_id;
+	
 	CleanupDownloaders (true);
 	source = downloader;
 	
 	if (downloader) {
-		font_source = downloader->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+		resource_id = downloader->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+		font_resource = new FontResource (resource_id);
 		AddFontSource (downloader);
+		g_free (resource_id);
 		return;
 	}
 	
@@ -286,7 +290,7 @@ TextBlock::UpdateLayoutAttributes ()
 		int inlines_count = inlines->GetCount ();
 		for (int i = 0; i < inlines_count; i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-			item->UpdateFontDescription (font_source, false);
+			item->UpdateFontDescription (font_resource, false);
 			
  			switch (item->GetObjectType ()) {
 			case Type::RUN:
@@ -325,7 +329,7 @@ TextBlock::UpdateFontDescription (bool force)
 	FontFamily *family = GetFontFamily ();
 	bool changed = false;
 	
-	if (font->SetSource (font_source))
+	if (font->SetResource (font_resource))
 		changed = true;
 	
 	if (font->SetFamily (family ? family->source : NULL))
@@ -370,7 +374,7 @@ TextBlock::UpdateFontDescriptions (bool force)
 		int inlines_count = inlines->GetCount ();
 		for (int i = 0; i < inlines_count; i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-			if (item->UpdateFontDescription (font_source, force))
+			if (item->UpdateFontDescription (font_resource, force))
 				changed = true;
 		}
 		
@@ -638,17 +642,16 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// FIXME: ideally we'd remove the old item from the cache (or,
 		// rather, 'unref' it since some other textblocks/boxes might
 		// still be using it).
-		g_free (font_source);
-		font_source = NULL;
+		delete font_resource;
+		font_resource = NULL;
 		
 		if (fs != NULL) {
 			switch (fs->type) {
 			case FontSourceTypeManagedStream:
-				if (fs->source.stream)
-					font_source = manager->AddResource (fs->source.stream);
+				font_resource = manager->AddResource (fs->source.stream);
 				break;
 			case FontSourceTypeGlyphTypeface:
-				// FIXME: probably need to support this...
+				font_resource = new FontResource (fs->source.typeface);
 				break;
 			}
 		}
@@ -729,7 +732,7 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 			UpdateLayoutAttributes ();
 		} else {
 			// likely a font property change...
-			((Inline *) obj)->UpdateFontDescription (font_source, true);
+			((Inline *) obj)->UpdateFontDescription (font_resource, true);
 		}
 		
 		// All non-Foreground property changes require

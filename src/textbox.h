@@ -112,9 +112,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	DependencyObject *contentElement;
 	
+	FontResource *font_resource;
 	TextFontDescription *font;
 	GPtrArray *downloaders;
-	char *font_source;
 	
 	TextBoxUndoStack *undo;
 	TextBoxUndoStack *redo;
