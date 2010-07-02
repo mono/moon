@@ -173,8 +173,14 @@ namespace Mono.Xaml {
 			// We do this first to cover the case where you are setting a list to a list or
 			// a resource dictionary to a resource dictionary, binding to a binding, ect
 			// as opposed to adding items to the list or dictionary.
-			if (prop.PropertyType.IsAssignableFrom (value.GetType ())) {
+			if (Type.IsAssignableFrom (value.GetType ())) {
 				prop.SetValue (target, ConvertValue (Type, value), null);
+				return;
+			}
+
+			Binding binding = value as Binding;
+			if (binding != null) {
+				SetBinding (binding);
 				return;
 			}
 
@@ -191,6 +197,26 @@ namespace Mono.Xaml {
 			}
 
 			throw Parser.ParseException ("Unable to set property {0} to value {1}.", Name, value);
+		}
+
+		private void SetBinding (Binding binding)
+		{
+			DependencyProperty prop = LookupDependencyProperty ();
+
+			if (prop == null)
+				throw Parse.ParseException ("Invalid Binding, can not find DependencyProperty {0}.", Name);
+
+			DependencyObject dob = target as DependencyObject;
+
+			if (dob == null)
+				throw Parse.ParseException ("Bindings can not be used on non DependencyObject types.");
+
+			BindingOperations.SetBinding (dob, prop, binding);
+		}
+
+		private void SetTemplateBinding (TemplateBindingExpression binding)
+		{
+
 		}
 
 		private void AddToCollection (XamlObjectElement obj, object value)

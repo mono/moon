@@ -1,5 +1,9 @@
 2010-07-02  Jackson Harper  <jackson@ximian.com>
 
+	* XamlPropertySetter.cs: Fix typo, add in the Binding setter code.
+
+2010-07-02  Jackson Harper  <jackson@ximian.com>
+
 	* XamlPropertySetter.cs: Add the ability to lookup the
 	DependencyProperty that corresponds to a property setter.
 
