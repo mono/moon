@@ -42,7 +42,6 @@ using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows {
 
-	
 	[TestClass]
 	public class FrameworkElementTest : SilverlightTest {
 
@@ -155,25 +154,19 @@ namespace MoonTest.System.Windows {
 			Assert.IsNull (fe.Foo, "Foo is null");
 		}
 
-		[MoonlightBug ("Tag doesn't clear the value on ClearValue calls")]
 		[TestMethod]
-		public void SetUnsetClear_Tag () 
+		public void SetUnsetClear_Tag ()
 		{
 			var obj = new object ();
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement () {
 					Tag = obj
 				};
 			fe.SetValue(FrameworkElement.TagProperty, DependencyProperty.UnsetValue);			
-			Assert.IsNotNull (fe.Tag, "Tag is not null (the default value)");
-			Assert.AreNotEqual (DependencyProperty.UnsetValue, fe.Tag, "Tag is not UnsetValue");
-			Assert.AreEqual (obj, fe.Tag, "Tag is obj");
+			Assert.IsNull (fe.Tag, "Tag is not null (the default value)");
 			fe.Tag = 3;
 			Assert.AreEqual (3, fe.Tag, "Tag can change though");
 			fe.SetValue(FrameworkElement.TagProperty, DependencyProperty.UnsetValue);			
-			Assert.AreEqual (3, fe.Tag, "Tag is 3 after unset still");
-			fe.ClearValue (FrameworkElement.TagProperty);
-			Assert.AreEqual (3, fe.Tag, "Tag is 3 after clear still");
-			Assert.AreEqual (3, fe.GetValue (FrameworkElement.TagProperty), "The property is 3 too");
+			Assert.IsNull (fe.Tag, "Tag is null");
 		}
 		
 		[TestMethod]
@@ -1143,7 +1136,7 @@ namespace MoonTest.System.Windows {
 			} catch (Exception ex) {
 				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
 				Assert.AreEqual ("ArrangeException", ex.InnerException.Message, "#2");
-				Assert.IsNull (LayoutInformation.GetLayoutExceptionElement (TestPanel.Dispatcher), "#3");
+				Assert.AreSame (TestPanel.Children [0], LayoutInformation.GetLayoutExceptionElement (TestPanel.Dispatcher), "#3");
 			} finally {
 				TestPanel.Children.Clear ();
 			}
@@ -1165,7 +1158,7 @@ namespace MoonTest.System.Windows {
 			} catch (Exception ex) {
 				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
 				Assert.AreEqual ("MeasureException", ex.InnerException.Message, "#2");
-				Assert.IsNull (LayoutInformation.GetLayoutExceptionElement (TestPanel.Dispatcher));
+				Assert.AreSame (TestPanel.Children[0], LayoutInformation.GetLayoutExceptionElement (TestPanel.Dispatcher));
 			} finally {
 				TestPanel.Children.Clear ();
 			}

@@ -1,5 +1,10 @@
 2010-07-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: Update these two
+	  SL4.
+
+2010-07-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyPropertyTest.cs: Update to SL4.
 
 2010-07-02  Alan McGovern  <amcgovern@novell.com>
