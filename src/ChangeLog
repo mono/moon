@@ -1,5 +1,9 @@
 2010-07-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp (GALLIUM_RUNTIME_INIT): If USE_GALLIUM is undefined,
+	we need to define GALLIUM_RUNTIME_INIT so that it expnds to
+	something that can be bitwise-or'd.
+
 	* fontmanager.cpp (FontResource): New class to wrap a
 	GlyphTypeface and a resource id (identifying a ManagedStream).
 	(FontManager::AddResource): Return a FontResource instead of a
