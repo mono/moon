@@ -176,7 +176,8 @@ done
 if [ $configure_mono -eq 1 ] ; then
   if test -d $mcs_path/../mono; then
     echo Running $mcs_path/../mono/autogen.sh ...
-    (cd $mcs_path/../mono ; ./autogen.sh "$@" --with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger)
+    # we build --with-sgen=no to not build both boehm and sgen (and we build with boehm instead of sgen because sgen has a problem nobody has investigated much into yet)
+    (cd $mcs_path/../mono ; ./autogen.sh "$@" --with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger --with-sgen=no)
     echo Done running $mcs_path/../mono/autogen.sh ...
   fi
 fi
