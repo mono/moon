@@ -1,3 +1,8 @@
+2010-07-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/UIElementTest.cs: Fix this test so that it
+	  gives predictable results.
+
 2010-07-02  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: Update these two

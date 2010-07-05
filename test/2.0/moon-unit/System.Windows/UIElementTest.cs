@@ -204,20 +204,22 @@ namespace MoonTest.System.Windows {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TransformToVisual_InVisualTree4 ()
 		{
+			// Set explicit widths/heights on all elements so that the values of the MatrixTransform are predictable
 			Rectangle a = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Red) };
-			StackPanel panel = new StackPanel ();
+			StackPanel panel = new StackPanel { Width = 100, Height = 100 };
+			TestPanel.Width = 200;
+			TestPanel.Height = 200;
 			panel.Children.Add (a);
 			CreateAsyncTest (panel, () => {
 				GeneralTransform m = a.TransformToVisual (TestPanel);
 				Assert.IsTrue (m is MatrixTransform, "#1");
-				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, 431, 0, "#2"); // Fails in Silverlight 3
+				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, 95, 50, "#2"); // Fails in Silverlight 3
 
 				m = TestPanel.TransformToVisual (a);
 				Assert.IsTrue (m is MatrixTransform, "#3");
-				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, -431, 0, "#4");
+				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, -95, -50, "#4");
 			});
 		}
 
