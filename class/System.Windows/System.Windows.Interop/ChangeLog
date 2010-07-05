@@ -1,3 +1,8 @@
+2010-07-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SilverlightHost.cs: Reflect into S.W.Browser.dll (to avoid
+	lot of code duplication) and complete NavigationState implementation
+
 2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SilverlightHost.cs: Implement NavigationStateChanged and

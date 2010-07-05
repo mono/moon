@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008, 2009 Novell, Inc.
+// Copyright 2008-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Reflection;
 using System.Windows.Media;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
@@ -135,23 +136,21 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		[MonoTODO ("incomplete - would be easier from S.W.Browser.dll")]
+		const string HtmlPage = "System.Windows.Browser.HtmlPage, System.Windows.Browser, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB";
+		const BindingFlags StaticNonPublic = BindingFlags.Static | BindingFlags.NonPublic;
+
 		public string NavigationState {
 			get {
 				if (navigation_state == null) {
-					navigation_state = String.Empty;
-#if false
-					// look for an iframe named _sl_historyFrame in the web page and throw if not found
-					HtmlDocument doc = System.Windows.Browser.HtmlPage.Document;
-					HtmlElement iframe = doc.GetElementById ("_sl_historyFrame");
-					if ((iframe == null) || (iframe.TagName != "iframe"))
-						throw new InvalidOperationException ("missing <iframe id=\"_sl_historyFrame\">");
-
-					// return the fragment of the web page URL as the initial state, if none then String.Empty
-					string state = doc.DocumentUri.Fragment;
-					if (!String.IsNullOrEmpty (state))
-						navigation_state = state.Substring (1); // remove '#'
-#endif
+					// the default value for 'NavigationState' comes from the HTML page hosting the plugin
+					try {
+						Type htmlpage = Type.GetType (HtmlPage);
+						MethodInfo mi = htmlpage.GetMethod ("get_NavigationState", StaticNonPublic);
+						navigation_state = (string) mi.Invoke (null, null);
+					}
+					catch (TargetInvocationException tie) {
+						throw tie.InnerException;
+					}
 				}
 				return navigation_state;
 			}

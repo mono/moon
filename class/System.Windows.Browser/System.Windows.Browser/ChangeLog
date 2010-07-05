@@ -1,3 +1,8 @@
+2010-07-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlPage.cs: Add helper method for S.W.dll to initialize the 
+	default value for SilverlightHost.NavigationState property
+
 2010-05-31  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlElement.cs: make the style attribute setter and getter to use

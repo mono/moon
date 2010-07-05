@@ -44,6 +44,7 @@ namespace System.Windows.Browser {
 		private static HtmlElement plugin;
 		private static Dictionary<string, Type> scriptableTypes;
 		private static int last_user_initiated_event;
+		private static string navigation_state;
 
 		static HtmlPage ()
 		{
@@ -234,6 +235,30 @@ namespace System.Windows.Browser {
 		{
 			if (!IsEnabled)
 				throw new InvalidOperationException ("HTML Bridge is not enabled or available.");
+		}
+
+		static internal string NavigationState {
+			get {
+				// if not enabled (e.g. OoB) then return Empty (i.e. not an exception)
+				if (!IsEnabled)
+					navigation_state = String.Empty;
+
+				if (navigation_state != null)
+					return navigation_state;
+
+				// look for an iframe named '_sl_historyFrame' in the web page and throw if not found
+				HtmlDocument doc = HtmlPage.Document;
+				HtmlElement iframe = doc.GetElementById ("_sl_historyFrame");
+				if ((iframe == null) || (String.Compare (iframe.TagName, "iframe", StringComparison.OrdinalIgnoreCase) != 0))
+					throw new InvalidOperationException ("missing <iframe id=\"_sl_historyFrame\">");
+
+				// return the fragment of the web page URL as the default initial state, if none then String.Empty
+				string state = doc.DocumentUri.Fragment;
+				if (!String.IsNullOrEmpty (state))
+					navigation_state = state.Substring (1); // remove '#'
+
+				return navigation_state ?? String.Empty;
+			}
 		}
 	}
 }

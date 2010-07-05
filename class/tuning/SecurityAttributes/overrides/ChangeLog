@@ -1,3 +1,8 @@
+2010-07-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Add SSC to SilverlightHost.NavigationState
+	getter so it can call (non-critical) code into S.W.Browser.dll
+
 2010-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Add SSC to System.Attribute::GetHashCode() 

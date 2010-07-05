@@ -1,3 +1,10 @@
+2010-07-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* site/[index|test].html: When 'moon-unit' project is executed with
+	VS.NET the generated web page contains the iframe that allows
+	navigation state to work (without an exception). We duplicate this
+	here to allow testing the feature.
+
 2010-07-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls.Primitives/SelectorTest.cs: Update

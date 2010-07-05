@@ -198,3 +198,6 @@
 # Elevated Trust related overrides
 +SSC-M: System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()
 
+# use reflection to call into System.Windows.Browser.dll to get DOM access
++SSC-M: System.String System.Windows.Interop.SilverlightHost::get_NavigationState()
+
