@@ -1,5 +1,11 @@
 2010-07-05  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Update
+	  the tests to not deliberately create unverifiable code. Mono
+	  doesn't like that anymore.
+
+2010-07-05  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/UIElementTest.cs: Fix this test so that it
 	  gives predictable results.
 

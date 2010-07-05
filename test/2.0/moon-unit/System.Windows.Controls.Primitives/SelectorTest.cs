@@ -45,29 +45,49 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		public override void ClearContainerForItemOverride ()
 		{
 			Assert.Throws<NullReferenceException> (() => {
-				base.ClearContainerForItemOverride (); 
+				ClearContainerForItemOverrideBase ();
 			});
+		}
+
+		void ClearContainerForItemOverrideBase ()
+		{
+			base.ClearContainerForItemOverride ();
 		}
 
 		public override void ClearContainerForItemOverride2 ()
 		{
 			Assert.Throws<NullReferenceException> (() => {
-				base.ClearContainerForItemOverride2 ();
+				ClearContainerForItemOverride2Base ();
 			});
+		}
+
+		void ClearContainerForItemOverride2Base ()
+		{
+			base.ClearContainerForItemOverride2 ();
 		}
 
 		public override void ClearContainerForItemOverride3 ()
 		{
 			Assert.Throws<InvalidCastException> (() => {
-				base.ClearContainerForItemOverride3 ();
+				ClearContainerForItemOverride3Base ();
 			});
+		}
+
+		void ClearContainerForItemOverride3Base ()
+		{
+			base.ClearContainerForItemOverride3 ();
 		}
 
 		public override void ClearContainerForItemOverride4 ()
 		{
 			Assert.Throws<InvalidCastException> (() => {
-				base.ClearContainerForItemOverride4 ();
+				ClearContainerForItemOverride4Base ();
 			});
+		}
+
+		void ClearContainerForItemOverride4Base ()
+		{
+			base.ClearContainerForItemOverride4 ();
 		}
 
 		[TestMethod]
@@ -353,36 +373,61 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		public override void PrepareContainerForItemOverrideTest ()
 		{
 			Assert.Throws<NullReferenceException> (() => {
-				base.PrepareContainerForItemOverrideTest ();
+				PrepareContainerForItemOverrideTestBase ();
 			}, "#1");
+		}
+
+		void PrepareContainerForItemOverrideTestBase ()
+		{
+			base.PrepareContainerForItemOverrideTest ();
 		}
 
 		public override void PrepareContainerForItemOverrideTest2 ()
 		{
 			Assert.Throws<InvalidCastException> (() => {
-				base.PrepareContainerForItemOverrideTest2 ();
+				PrepareContainerForItemOverrideTest2Base ();
 			});
+		}
+
+		void PrepareContainerForItemOverrideTest2Base ()
+		{
+			base.PrepareContainerForItemOverrideTest2 ();
 		}
 
 		public override void PrepareContainerForItemOverrideTest2b ()
 		{
 			Assert.Throws<InvalidCastException> (() => {
-				base.PrepareContainerForItemOverrideTest2b ();
+				PrepareContainerForItemOverrideTest2bBase ();
 			});
+		}
+
+		void PrepareContainerForItemOverrideTest2bBase ()
+		{
+			base.PrepareContainerForItemOverrideTest2b ();
 		}
 
 		public override void PrepareContainerForItemOverrideTest3c ()
 		{
 			Assert.Throws<InvalidCastException> (() => {
-				base.PrepareContainerForItemOverrideTest3c ();
+				PrepareContainerForItemOverrideTest3cBase ();
 			});
+		}
+
+		void PrepareContainerForItemOverrideTest3cBase ()
+		{
+			base.PrepareContainerForItemOverrideTest3c ();
 		}
 
 		public override void PrepareContainerForItemOverrideTest6 ()
 		{
 			Assert.Throws<InvalidCastException> (() => {
-				base.PrepareContainerForItemOverrideTest6 ();
+				PrepareContainerForItemOverrideTest6Base ();
 			});
+		}
+
+		void PrepareContainerForItemOverrideTest6Base ()
+		{
+			base.PrepareContainerForItemOverrideTest6 ();
 		}
 
 
