@@ -469,12 +469,12 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		// Moonlight addition
 		public static void Matrix (Matrix matrix, int m11, int m12, int m21, int m22, int offsetX, int offsetY, string message, params object [] paramters)
 		{
-			Assert.AreEqual (matrix.M11, m11, "{0} - {1}", message, "M11");
-			Assert.AreEqual (matrix.M12, m12, "{0} - {1}", message, "M12");
-			Assert.AreEqual (matrix.M21, m21, "{0} - {1}", message, "M21");
-			Assert.AreEqual (matrix.M22, m22, "{0} - {1}", message, "M22");
-			Assert.AreEqual (matrix.OffsetX, offsetX, "{0} - {1}", message, "OffsetX");
-			Assert.AreEqual (matrix.OffsetY, offsetY, "{0} - {1}", message, "OffsetY");
+			Assert.AreEqual (m11, matrix.M11, "{0} - {1}", message, "M11");
+			Assert.AreEqual (m12, matrix.M12, "{0} - {1}", message, "M12");
+			Assert.AreEqual (m21, matrix.M21, "{0} - {1}", message, "M21");
+			Assert.AreEqual (m22, matrix.M22, "{0} - {1}", message, "M22");
+			Assert.AreEqual (offsetX, matrix.OffsetX, "{0} - {1}", message, "OffsetX");
+			Assert.AreEqual (offsetY, matrix.OffsetY, "{0} - {1}", message, "OffsetY");
 		}
 
 		// Moonlight addition
