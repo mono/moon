@@ -1,5 +1,9 @@
 2010-07-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* README: Bump mono/mcs/mono-basic to r159895.
+
+2010-07-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* autogen.sh: Disable sgen to speed up the mono build.
 
 2010-06-22  Sebastien Pouliot  <sebastien@ximian.com>
