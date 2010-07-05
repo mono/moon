@@ -42,6 +42,7 @@ using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows
 {
+    // FIXME: This tests are non deterministic. I get random failures on SL4.
 	[TestClass]
 	public class LoadedTest : SilverlightTest
 	{
