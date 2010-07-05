@@ -2,7 +2,8 @@
 System.Object System.Runtime.Serialization.SerializationMap::DeserializeContent(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer,System.Boolean)
 	r143412		spouliot - calls FormatterServices.GetUninitializedObject (mscorlib)
 
-!SSC-9BA0AE2C7F0AE23C0B285474E8544577
+!SSC-21EBA9C8A8EBD4BCF040411AC8AD4673
 System.Type System.Runtime.Serialization.XmlFormatterDeserializer::GetTypeFromNamePair(System.String,System.String)
+	r159460		spouliot - deal with null entries (in Assembly.GetTypes) and [TypeLoad|FileNotFound]Exception when an assembly is missing
 	r143653		spouliot - calls AppDomain.GetAssemblies (to iterate types) which is not public in SL API
 

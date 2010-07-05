@@ -58,8 +58,9 @@ System.Boolean System.Globalization.CompareInfo::IsSuffix(System.String,System.S
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
 	r142142		spouliot - call construct_internal_locale_from_current_locale (icall in locales.c)
 
-!SSC-D18136B75F634FB02FFB3941C4AE961C
+!SSC-28493045BA0EB269A8F5EF2F20281BE8
 System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator0::MoveNext()
+	r159898		spouliot - no source change (compiler?)
 	r155643		spouliot - validatations splitted outside EnumerateKind (in EnumerateCheck)
 	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
 	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
@@ -68,8 +69,9 @@ System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator0::MoveNext()
 System.Boolean System.IO.Directory::Exists(System.String)
 	r155643		spouliot - call SecurityManager.CheckElevatedPermissions [SecurityCritical] to return FALSE unless executing under elevated trust (no exception)
 
-!SSC-B9195C794666243F8C78ECB2610983F6
+!SSC-5504470B5FB941D0835807D708DCE10B
 System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::MoveNext()
+	r159898		spouliot - no source change (compiler?)
 	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
 
@@ -595,6 +597,10 @@ System.Int32 System.Array::MoveNullKeysToFront(System.Array,System.Array,System.
 !SSC-54D9BE064A35261BD2AA4C730C4A4F29
 System.Int32 System.Array::System.Collections.IList.IndexOf(System.Object)
 	r142142		spouliot - call GetValueImpl (icall without bounds checking) with non user-controlled, valid values (0, length)
+
+!SSC-4908716E79E7B25ADF3231E5BF468F6F
+System.Int32 System.Attribute::GetHashCode()
+	r159666		spouliot - use reflection to include attributes instance fields into the hash code
 
 !SSC-26AB7C41889BC032441F970CF67C7487
 System.Int32 System.BitConverter::ToInt32(System.Byte[],System.Int32)
@@ -1342,8 +1348,9 @@ System.String System.Reflection.MonoModule::ResolveString(System.Int32)
 	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
 	r142142		spouliot - call ResolveStringToken (icall w/FIXME)
 
-!SSC-9E681DEBC28627FB3A441412EA1A657D
+!SSC-D4DBB01D28F3DE9429578B30AA781752
 System.String System.String::Concat(System.Collections.Generic.IEnumerable`1<System.String>)
+	r159898		spouliot - no source change (compiler?)
 	r153874		spouliot - (new SL4/FX4) check parameter (non-null) then call ConcatInternal [SecurityCritical] with valid parameters
 
 !SSC-C91F9004B127B1349399FABB6DD9C4EC
@@ -1366,8 +1373,9 @@ System.String System.String::Concat(System.String,System.String,System.String,Sy
 System.String System.String::Concat(System.String[])
 	r144912		spouliot - call ConcatInternal [SecurityCritical] with a validated (non-null) 'values' string array and a computed 'len'
 
-!SSC-5BF39EC1231D594C6CDDFFB6851D9C38
+!SSC-3D94900AAAA0F9333C1DC6E0AEDE3675
 System.String System.String::Concat<T>(System.Collections.Generic.IEnumerable`1<T>)
+	r159898		spouliot - no source change (compiler?)
 	r153874		spouliot - (new SL4/FX4) check parameter (non-null) then call ConcatInternal [SecurityCritical] with valid parameters
 
 !SSC-7BB0D935F74DBAAFF03A7538C43AC400
@@ -1398,8 +1406,9 @@ System.String System.String::Intern(System.String)
 System.String System.String::IsInterned(System.String)
 	r142142		spouliot - call InternalIsInterned (icall) on non-null value
 
-!SSC-44B1752019B5D61D27D4BCBBA7EEBCD6
+!SSC-A1DFFB6BCCA48B08784D96F937691801
 System.String System.String::Join(System.String,System.Collections.Generic.IEnumerable`1<System.String>)
+	r159898		spouliot - no source change (compiler?)
 	r153874		spouliot - (new SL4/FX4) check parameters (non-null) then call JoinUnchecked [SecurityCritical] with valid parameters
 
 !SSC-6597B639313E212B2CFED772F8B2AD15
@@ -1414,8 +1423,9 @@ System.String System.String::Join(System.String,System.String[])
 System.String System.String::Join(System.String,System.String[],System.Int32,System.Int32)
 	r144912		spouliot - call JoinUnchecked [SecurityCritical] with validated parameters
 
-!SSC-618ECA3936D7D543EB6EBFC1E23268C2
+!SSC-7A1008228A8BC96DFFE98710DBBA1F9A
 System.String System.String::Join<T>(System.String,System.Collections.Generic.IEnumerable`1<T>)
+	r159898		spouliot - no source change (compiler?)
 	r153874		spouliot - (new SL4/FX4) check parameters (non-null) then call JoinUnchecked [SecurityCritical] with valid parameters
 
 !SSC-85FA0C0EB3C9C77A277CD8A0337B2A0F
@@ -1778,8 +1788,9 @@ System.Void System.Array::SetValue(System.Object,System.Int32)
 System.Void System.Array::SetValue(System.Object,System.Int32[])
 	r144558		spouliot - visible icall. null-check/exception-thrown in unmanaged code for 'idxs'
 
-!SSC-ABB3CFF696DE42C445ED22120BBEFE54
+!SSC-2B7672883897BC474E8F521B9B5FB2BE
 System.Void System.Array::SortImpl(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
+	r159551		spouliot - additional condition (type check) on 'items' parameter before enable the fast-path
 	r145677		spouliot - new method refactored from Sort (see below)
 	r144307		spouliot - call get_swapper and qsort - both leading to calls to [G|S]etValueImpl (icalls)
 
@@ -1883,8 +1894,9 @@ System.Void System.Globalization.RegionInfo::.ctor(System.String)
 System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
-!SSC-8041E7DBB147424B54276D8511EF7573
+!SSC-15C1E33160A09E3BDE1EC4C7671F155F
 System.Void System.IO.Directory/<EnumerateKind>c__Iterator0::Dispose()
+	r159898		spouliot - no source change (compiler?)
 	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
 	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
 
@@ -1904,8 +1916,9 @@ System.Void System.IO.Directory::EnumerateCheck(System.String,System.String,Syst
 System.Void System.IO.Directory::Move(System.String,System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-06FF10845CE470042477C05BFE3F37A3
+!SSC-09B4983D1D03C9D6B999F909B2664050
 System.Void System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::Dispose()
+	r159898		spouliot - no source change (compiler?)
 	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
 

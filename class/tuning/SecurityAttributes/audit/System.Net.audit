@@ -71,8 +71,9 @@ System.Void System.Net.Sockets.SocketAsyncEventArgs::ConnectCallback()
 System.Void System.Net.Sockets.SocketAsyncEventArgs::ReceiveCallback()
 	r142747		spouliot - calls Socket.ReceiveFrom_nochecks (icall), validations are fixed (unit tests)
 
-!SSC-76746FC4FEF84CAFE5EDBBE074047606
+!SSC-216CB21312C2A87D62AC602D6D7CD54A
 System.Void System.Net.Sockets.SocketAsyncEventArgs::SendCallback()
+	r159898		spouliot - no source change (compiler?)
 	r142747		spouliot - calls Socket.Send_nochecks (icall), validations are fixed (unit tests)
 
 !SSC-EDEFDC8F89EC33B2D6A1CBF4C2D8F8C3
