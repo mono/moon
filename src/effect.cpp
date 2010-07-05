@@ -52,6 +52,7 @@ extern "C" {
 #include "util/u_simple_shaders.h"
 #include "util/u_debug.h"
 #include "softpipe/sp_public.h"
+#define template templat
 #include "state_tracker/sw_winsys.h"
 #include "cso_cache/cso_context.h"
 #include "tgsi/tgsi_ureg.h"
@@ -65,11 +66,11 @@ extern "C" {
 
 struct st_winsys
 {
-	struct pipe_screen  *(*screen_create)  (void);
-	struct pipe_texture *(*texture_create) (struct pipe_screen *screen,
-						const struct pipe_texture *templat,
-						void *data,
-						unsigned stride);
+	struct pipe_screen   *(*screen_create)  (void);
+	struct pipe_resource *(*resource_create) (struct pipe_screen *screen,
+						  const struct pipe_resource *templat,
+						  void *data,
+						  unsigned stride);
 };
 
 struct st_context {
@@ -84,7 +85,7 @@ struct st_context {
 	void *vs;
 	void *fs;
 
-	struct pipe_texture *default_texture;
+	struct pipe_resource *default_texture;
 	struct pipe_sampler_view *fragment_sampler_views[PIPE_MAX_SAMPLERS];
 	struct pipe_sampler_view *vertex_sampler_views[PIPE_MAX_VERTEX_SAMPLERS];
 
@@ -160,7 +161,7 @@ st_context_really_destroy (struct st_context *st_ctx)
 		for (i = 0; i < PIPE_MAX_VERTEX_SAMPLERS; i++)
 			pipe_sampler_view_reference (&st_ctx->vertex_sampler_views[i], NULL);
 
-		pipe_texture_reference (&st_ctx->default_texture, NULL);
+		pipe_resource_reference (&st_ctx->default_texture, NULL);
 
 		if (st_ctx->cso) {
 			cso_delete_vertex_shader (st_ctx->cso, st_ctx->vs);
@@ -226,8 +227,7 @@ st_context_create (struct st_device *st_dev)
 	{
 		struct pipe_rasterizer_state rasterizer;
 		memset(&rasterizer, 0, sizeof(rasterizer));
-		rasterizer.front_winding = PIPE_WINDING_CW;
-		rasterizer.cull_mode = PIPE_WINDING_NONE;
+		rasterizer.cull_face = PIPE_FACE_NONE;
 		cso_set_rasterizer(st_ctx->cso, &rasterizer);
 	}
 
@@ -272,46 +272,43 @@ st_context_create (struct st_device *st_dev)
 	/* default textures */
 	{
 		struct pipe_screen *screen = st_dev->screen;
-		struct pipe_texture templat;
-		struct pipe_transfer *transfer;
-		struct pipe_sampler_view view_templ;
+		struct pipe_resource templat;
+		struct pipe_sampler_view view_templat;
 		struct pipe_sampler_view *view;
 		unsigned i;
 
-		memset( &templat, 0, sizeof( templat ) );
+		memset (&templat, 0, sizeof (templat));
 		templat.target = PIPE_TEXTURE_2D;
 		templat.format = PIPE_FORMAT_A8R8G8B8_UNORM;
 		templat.width0 = 1;
 		templat.height0 = 1;
 		templat.depth0 = 1;
 		templat.last_level = 0;
+		templat.bind = PIPE_BIND_SAMPLER_VIEW;
 
-		st_ctx->default_texture = screen->texture_create (screen, &templat);
+		st_ctx->default_texture = screen->resource_create (screen, &templat);
 		if(st_ctx->default_texture) {
-			transfer = st_ctx->pipe->get_tex_transfer (st_ctx->pipe,
-								   st_ctx->default_texture,
-								   0, 0, 0,
-								   PIPE_TRANSFER_WRITE,
-								   0, 0,
-								   st_ctx->default_texture->width0,
-								   st_ctx->default_texture->height0);
-			if (transfer) {
-				uint32_t *map;
-				map = (uint32_t *) st_ctx->pipe->transfer_map (st_ctx->pipe, transfer);
-				if(map) {
-					*map = 0x00000000;
-					st_ctx->pipe->transfer_unmap (st_ctx->pipe, transfer);
-				}
-				st_ctx->pipe->tex_transfer_destroy (st_ctx->pipe, transfer);
-			}
+			struct pipe_box box;
+			uint32_t zero = 0;
+	 
+			u_box_origin_2d (1, 1, &box);
+
+			st_ctx->pipe->transfer_inline_write (st_ctx->pipe,
+							     st_ctx->default_texture,
+							     u_subresource (0, 0),
+							     PIPE_TRANSFER_WRITE,
+							     &box,
+							     &zero,
+							     sizeof (zero),
+							     0);
 		}
 
-		u_sampler_view_default_template (&view_templ,
+		u_sampler_view_default_template (&view_templat,
 						 st_ctx->default_texture,
 						 st_ctx->default_texture->format);
 		view = st_ctx->pipe->create_sampler_view (st_ctx->pipe,
 							  st_ctx->default_texture,
-							  &view_templ);
+							  &view_templat);
 
 		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
 			pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[i], view);
@@ -341,7 +338,7 @@ st_context_create (struct st_device *st_dev)
 
 	/* fragment shader */
 	{
-		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D);
+		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D, TGSI_INTERPOLATE_PERSPECTIVE);
 		cso_set_fragment_shader_handle (st_ctx->cso, st_ctx->fs);
 	}
 
@@ -370,37 +367,37 @@ st_context_reference (struct st_context **ptr, struct st_context *st_ctx)
 	*ptr = st_ctx;
 }
 
-static struct pipe_texture *
-st_create_texture (struct st_device *st_dev,
-		   const struct pipe_texture *templat,
-		   void *data,
-		   unsigned stride)
+static struct pipe_resource *
+st_create_resource (struct st_device *st_dev,
+		    const struct pipe_resource *templat,
+		    void *data,
+		    unsigned stride)
 {
-	return st_dev->st_ws->texture_create (st_dev->screen,
-					      templat,
-					      data,
-					      stride);
+	return st_dev->st_ws->resource_create (st_dev->screen,
+					       templat,
+					       data,
+					       stride);
 }
 
 static void
 st_set_fragment_sampler_texture (struct st_context *st_ctx,
 				 unsigned index,
-				 struct pipe_texture *texture)
+				 struct pipe_resource *texture)
 {
-      struct pipe_sampler_view templ;
+      struct pipe_sampler_view templat;
 
       if (!texture)
 	      texture = st_ctx->default_texture;
 
       pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[index], NULL);
 
-      u_sampler_view_default_template (&templ,
+      u_sampler_view_default_template (&templat,
 				       texture,
 				       texture->format);
 
       st_ctx->fragment_sampler_views[index] = st_ctx->pipe->create_sampler_view (st_ctx->pipe,
 										 texture,
-										 &templ);
+										 &templat);
 
       st_ctx->pipe->set_fragment_sampler_views (st_ctx->pipe,
 						PIPE_MAX_SAMPLERS,
@@ -498,11 +495,11 @@ st_softpipe_screen_create (void)
 	return screen;
 }
 
-static struct pipe_texture *
-st_softpipe_texture_create (struct pipe_screen *screen,
-			    const struct pipe_texture *templat,
-			    void *data,
-			    unsigned stride)
+static struct pipe_resource *
+st_softpipe_resource_create (struct pipe_screen *screen,
+			     const struct pipe_resource *templat,
+			     void *data,
+			     unsigned stride)
 {
 	struct st_softpipe_winsys *st_ws =
 		(struct st_softpipe_winsys *) screen->winsys;
@@ -510,20 +507,20 @@ st_softpipe_texture_create (struct pipe_screen *screen,
 	st_ws->user_data = data;
 	st_ws->user_stride = stride;
 
-	return screen->texture_create (screen, templat);
+	return screen->resource_create (screen, templat);
 }
 
 const struct st_winsys st_softpipe_winsys = {
 	st_softpipe_screen_create,
-	st_softpipe_texture_create
+	st_softpipe_resource_create
 };
 
 static void
-st_texture_destroy_callback (void *data)
+st_resource_destroy_callback (void *data)
 {
-	struct pipe_texture *texture = (struct pipe_texture *) data;
+	struct pipe_resource *resource = (struct pipe_resource *) data;
 
-	pipe_texture_reference (&texture, NULL);
+	pipe_resource_reference (&resource, NULL);
 }
 
 static void
@@ -1223,15 +1220,15 @@ Effect::Effect ()
 	need_update = true;
 }
 
-struct pipe_texture *
+struct pipe_resource *
 Effect::GetShaderTexture (cairo_surface_t *surface)
 {
 
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	struct pipe_texture *tex, templat;
+	struct st_context    *ctx = st_context;
+	struct pipe_resource *tex, templat;
 
-	tex = (struct pipe_texture *) cairo_surface_get_user_data (surface, &textureKey);
+	tex = (struct pipe_resource *) cairo_surface_get_user_data (surface, &textureKey);
 	if (tex)
 		return tex;
 
@@ -1244,8 +1241,8 @@ Effect::GetShaderTexture (cairo_surface_t *surface)
 	templat.height0 = cairo_image_surface_get_height (surface);
 	templat.depth0 = 1;
 	templat.last_level = 0;
+	templat.bind = PIPE_BIND_SAMPLER_VIEW | PIPE_BIND_DISPLAY_TARGET;
 	templat.target = PIPE_TEXTURE_2D;
-	templat.tex_usage = PIPE_TEXTURE_USAGE_SAMPLER | PIPE_TEXTURE_USAGE_DISPLAY_TARGET;
 
 	switch (cairo_image_surface_get_format (surface)) {
 		case CAIRO_FORMAT_ARGB32:
@@ -1257,15 +1254,15 @@ Effect::GetShaderTexture (cairo_surface_t *surface)
 			return NULL;
 	}
 
-	tex = st_create_texture (ctx->st_dev,
-				 &templat,
-				 cairo_image_surface_get_data (surface),
-				 cairo_image_surface_get_stride (surface));
+	tex = st_create_resource (ctx->st_dev,
+				  &templat,
+				  cairo_image_surface_get_data (surface),
+				  cairo_image_surface_get_stride (surface));
 
 	cairo_surface_set_user_data (surface,
 				     &textureKey,
 				     (void *) tex,
-				     st_texture_destroy_callback);
+				     st_resource_destroy_callback);
 
 	return tex;
 #else
@@ -1279,9 +1276,9 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 {
 	
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	struct pipe_surface *sur;
-	struct pipe_texture *tex;
+	struct st_context    *ctx = st_context;
+	struct pipe_surface  *sur;
+	struct pipe_resource *tex;
 
 	sur = (struct pipe_surface *) cairo_surface_get_user_data (surface, &surfaceKey);
 	if (sur)
@@ -1295,8 +1292,8 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 		return NULL;
 
 	sur = ctx->st_dev->screen->get_tex_surface (ctx->st_dev->screen, tex, 0, 0, 0,
-						    PIPE_BUFFER_USAGE_GPU_WRITE |
-						    PIPE_BUFFER_USAGE_GPU_READ);
+						    PIPE_BIND_TRANSFER_WRITE |
+						    PIPE_BIND_TRANSFER_READ);
 
 	cairo_surface_set_user_data (surface,
 				     &surfaceKey,
@@ -1310,34 +1307,37 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 
 }
 
-struct pipe_buffer *
-Effect::GetShaderVertexBuffer (float    x1,
-			       float    y1,
-			       float    x2,
-			       float    y2,
-			       unsigned n_attrib,
-			       float    **ptr)
+struct pipe_resource *
+Effect::GetShaderVertexBuffer (float           x1,
+			       float           y1,
+			       float           x2,
+			       float           y2,
+			       unsigned        n_attrib,
+			       float           **ptr,
+			       pipe_transfer_t **ptr_transfer)
 {
 	
 #ifdef USE_GALLIUM
-	struct st_context  *ctx = st_context;
-	struct pipe_buffer *buffer;
-	float              *verts;
-	int                stride = (1 + n_attrib) * 4;
-	int                idx;
+	struct st_context    *ctx = st_context;
+	struct pipe_resource *buffer;
+	float                *verts;
+	int                  stride = (1 + n_attrib) * 4;
+	int                  idx;
+	struct pipe_transfer *transfer = NULL;
 
-	buffer = pipe_buffer_create (ctx->pipe->screen, 32,
-				     PIPE_BUFFER_USAGE_VERTEX,
+	buffer = pipe_buffer_create (ctx->pipe->screen,
+				     PIPE_BIND_VERTEX_BUFFER,
 				     sizeof (float) * stride * 4);
 	if (!buffer)
 		return NULL;
 
-	verts = (float *) pipe_buffer_map (ctx->pipe->screen,
+	verts = (float *) pipe_buffer_map (ctx->pipe,
 					   buffer,
-					   PIPE_BUFFER_USAGE_CPU_WRITE);
+					   PIPE_TRANSFER_WRITE,
+					   &transfer);
 	if (!verts)
 	{
-		pipe_buffer_reference (&buffer, NULL);
+		pipe_resource_reference (&buffer, NULL);
 		return NULL;
 	}
 
@@ -1365,10 +1365,12 @@ Effect::GetShaderVertexBuffer (float    x1,
 	verts[idx + 2] = 0.f;
 	verts[idx + 3] = 1.f;
 
-	if (ptr)
-		*ptr = verts;
+	if (ptr) {
+		*ptr          = verts;
+		*ptr_transfer = transfer;
+	}
 	else
-		pipe_buffer_unmap (ctx->pipe->screen, buffer);
+		pipe_buffer_unmap (ctx->pipe, buffer, transfer);
 
 	return buffer;
 #else
@@ -1378,10 +1380,10 @@ Effect::GetShaderVertexBuffer (float    x1,
 }
 
 void
-Effect::DrawVertices (struct pipe_surface *surface,
-		      struct pipe_buffer  *vertices,
-		      int                 nattrib,
-		      int                 blend_enable)
+Effect::DrawVertices (struct pipe_surface  *surface,
+		      struct pipe_resource *vertices,
+		      int                  nattrib,
+		      int                  blend_enable)
 {
 
 #ifdef USE_GALLIUM
@@ -1485,8 +1487,8 @@ BlurEffect::Clear ()
 #ifdef USE_GALLIUM
 	struct st_context *ctx = st_context;
 
-	pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
-	pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+	pipe_resource_reference (&horz_pass_constant_buffer, NULL);
+	pipe_resource_reference (&vert_pass_constant_buffer, NULL);
 
 	if (fs) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
@@ -1538,13 +1540,14 @@ BlurEffect::Composite (cairo_surface_t *dst,
 {
 	
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	cairo_surface_t     *intermediate;
-	struct pipe_texture *texture, *intermediate_texture;
-	struct pipe_surface *surface, *intermediate_surface;
-	struct pipe_buffer  *vertices, *intermediate_vertices;
-	float               *verts;
-	int                 idx;
+	struct st_context    *ctx = st_context;
+	cairo_surface_t      *intermediate;
+	struct pipe_resource *texture, *intermediate_texture;
+	struct pipe_surface  *surface, *intermediate_surface;
+	struct pipe_resource *vertices, *intermediate_vertices;
+	struct pipe_transfer *transfer;
+	float                *verts;
+	int                  idx;
 #endif
 
 	MaybeUpdateFilter ();
@@ -1609,7 +1612,8 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					  (1.0 / scale[0]) * texture->width0,
 					  (1.0 / scale[1]) * texture->height0,
 					  1,
-					  &verts);
+					  &verts,
+					  &transfer);
 	if (!vertices) {
 		cairo_surface_destroy (intermediate);
 		return 0;
@@ -1644,11 +1648,11 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	verts[idx + 2] = 0.f;
 	verts[idx + 3] = 1.f;
 
-	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
 
-	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts);
+	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts, &transfer);
 	if (!intermediate_vertices) {
-		pipe_buffer_reference (&vertices, NULL);
+		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
@@ -1682,11 +1686,11 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	verts[idx + 2] = 0.f;
 	verts[idx + 3] = 1.f;
 
-	pipe_buffer_unmap (ctx->pipe->screen, intermediate_vertices);
+	pipe_buffer_unmap (ctx->pipe, intermediate_vertices, transfer);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
-		pipe_buffer_reference (&intermediate_vertices, NULL);
-		pipe_buffer_reference (&vertices, NULL);
+		pipe_resource_reference (&intermediate_vertices, NULL);
+		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
@@ -1708,7 +1712,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
 					0, horz_pass_constant_buffer);
-
 
 	struct pipe_viewport_state viewport;
 	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
@@ -1748,8 +1751,8 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
-	pipe_buffer_reference (&intermediate_vertices, NULL);
-	pipe_buffer_reference (&vertices, NULL);
+	pipe_resource_reference (&intermediate_vertices, NULL);
+	pipe_resource_reference (&vertices, NULL);
 
 	cairo_surface_destroy (intermediate);
 
@@ -1767,10 +1770,11 @@ BlurEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
-	int               width = nfiltervalues;
-	float             *horz, *vert;
-	int               i;
+	struct st_context    *ctx = st_context;
+	int                  width = nfiltervalues;
+	float                *horz, *vert;
+	struct pipe_transfer *horz_transfer = NULL, *vert_transfer = NULL;
+	int                  i;
 
 	if (width != filter_size && width > 0) {
 		struct ureg_program *ureg;
@@ -1811,8 +1815,8 @@ BlurEffect::UpdateShader ()
 			return;
 
 		horz_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen, 16,
-					    PIPE_BUFFER_USAGE_CONSTANT,
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
 					    sizeof (float) * 4 * (width * 2 + 1));
 		if (!horz_pass_constant_buffer) {
 			Clear ();
@@ -1820,8 +1824,8 @@ BlurEffect::UpdateShader ()
 		}
 
 		vert_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen, 16,
-					    PIPE_BUFFER_USAGE_CONSTANT,
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
 					    sizeof (float) * 4 * (width * 2 + 1));
 		if (!vert_pass_constant_buffer) {
 			Clear ();
@@ -1834,19 +1838,21 @@ BlurEffect::UpdateShader ()
 			return;
 	}
 
-	horz = (float *) pipe_buffer_map (ctx->pipe->screen,
+	horz = (float *) pipe_buffer_map (ctx->pipe,
 					  horz_pass_constant_buffer,
-					  PIPE_BUFFER_USAGE_CPU_WRITE);
+					  PIPE_TRANSFER_WRITE,
+					  &horz_transfer);
 	if (!horz) {
 		Clear ();
 		return;
 	}
 
-	vert = (float *) pipe_buffer_map (ctx->pipe->screen,
+	vert = (float *) pipe_buffer_map (ctx->pipe,
 					  vert_pass_constant_buffer,
-					  PIPE_BUFFER_USAGE_CPU_WRITE);
+					  PIPE_TRANSFER_WRITE,
+					  &vert_transfer);
 	if (!vert) {
-		pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
+		pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
 		Clear ();
 		return;
 	}
@@ -1875,8 +1881,8 @@ BlurEffect::UpdateShader ()
 		*vert++ = filtervalues[i];
 	}
 
-	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
-	pipe_buffer_unmap (ctx->pipe->screen, vert_pass_constant_buffer);
+	pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
+	pipe_buffer_unmap (ctx->pipe, vert_pass_constant_buffer, vert_transfer);
 #endif
 
 }
@@ -1908,8 +1914,8 @@ DropShadowEffect::Clear ()
 #ifdef USE_GALLIUM
 	struct st_context *ctx = st_context;
 
-	pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
-	pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+	pipe_resource_reference (&horz_pass_constant_buffer, NULL);
+	pipe_resource_reference (&vert_pass_constant_buffer, NULL);
 
 	if (horz_fs) {
 		ctx->pipe->delete_fs_state (ctx->pipe, horz_fs);
@@ -1981,13 +1987,14 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	cairo_surface_t     *intermediate;
-	struct pipe_texture *texture, *intermediate_texture;
-	struct pipe_surface *surface, *intermediate_surface;
-	struct pipe_buffer  *vertices, *intermediate_vertices;
-	float               *verts;
-	int                 idx;
+	struct st_context    *ctx = st_context;
+	cairo_surface_t      *intermediate;
+	struct pipe_resource *texture, *intermediate_texture;
+	struct pipe_surface  *surface, *intermediate_surface;
+	struct pipe_resource *vertices, *intermediate_vertices;
+	float                *verts;
+	struct pipe_transfer *transfer;
+	int                  idx;
 #endif
 		
 	MaybeUpdateFilter ();
@@ -2066,7 +2073,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					  (1.0 / scale[0]) * texture->width0,
 					  (1.0 / scale[1]) * texture->height0,
 					  1,
-					  &verts);
+					  &verts,
+					  &transfer);
 	if (!vertices) {
 		cairo_surface_destroy (intermediate);
 		return 0;
@@ -2101,11 +2109,11 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	verts[idx + 2] = 0.f;
 	verts[idx + 3] = 1.f;
 
-	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
 
-	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts);
+	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts, &transfer);
 	if (!intermediate_vertices) {
-		pipe_buffer_reference (&vertices, NULL);
+		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
@@ -2139,11 +2147,11 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	verts[idx + 2] = 0.f;
 	verts[idx + 3] = 1.f;
 
-	pipe_buffer_unmap (ctx->pipe->screen, intermediate_vertices);
+	pipe_buffer_unmap (ctx->pipe, intermediate_vertices, transfer);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, horz_fs) != PIPE_OK) {
-		pipe_buffer_reference (&intermediate_vertices, NULL);
-		pipe_buffer_reference (&vertices, NULL);
+		pipe_resource_reference (&intermediate_vertices, NULL);
+		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
@@ -2182,8 +2190,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
-		pipe_buffer_reference (&intermediate_vertices, NULL);
-		pipe_buffer_reference (&vertices, NULL);
+		pipe_resource_reference (&intermediate_vertices, NULL);
+		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
@@ -2213,8 +2221,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	st_set_fragment_sampler_texture (ctx, 1, NULL);
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
-	pipe_buffer_reference (&intermediate_vertices, NULL);
-	pipe_buffer_reference (&vertices, NULL);
+	pipe_resource_reference (&intermediate_vertices, NULL);
+	pipe_resource_reference (&vertices, NULL);
 
 	cairo_surface_destroy (intermediate);
 
@@ -2232,16 +2240,17 @@ DropShadowEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
-	Color             *color = GetColor ();
-	double            direction = GetDirection () * (M_PI / 180.0);
-	double            opacity = GetOpacity ();
-	double            depth = GetShadowDepth ();
-	double            dx = -cos (direction) * depth;
-	double            dy = sin (direction) * depth;
-	int               width = nfiltervalues;
-	float             *horz, *vert;
-	int               i;
+	struct st_context    *ctx = st_context;
+	Color                *color = GetColor ();
+	double               direction = GetDirection () * (M_PI / 180.0);
+	double               opacity = GetOpacity ();
+	double               depth = GetShadowDepth ();
+	double               dx = -cos (direction) * depth;
+	double               dy = sin (direction) * depth;
+	int                  width = nfiltervalues;
+	float                *horz, *vert;
+	struct pipe_transfer *horz_transfer = NULL, *vert_transfer = NULL;
+	int                  i;
 
 	if (width != filter_size) {
 		struct ureg_program *ureg;
@@ -2346,8 +2355,8 @@ DropShadowEffect::UpdateShader ()
 		}
 
 		horz_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen, 16,
-					    PIPE_BUFFER_USAGE_CONSTANT,
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
 					    sizeof (float) * 4 * (width * 2 + 2));
 		if (!horz_pass_constant_buffer) {
 			Clear ();
@@ -2355,8 +2364,8 @@ DropShadowEffect::UpdateShader ()
 		}
 
 		vert_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen, 16,
-					    PIPE_BUFFER_USAGE_CONSTANT,
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
 					    sizeof (float) * 4 * (width * 2 + 2));
 		if (!vert_pass_constant_buffer) {
 			Clear ();
@@ -2364,19 +2373,21 @@ DropShadowEffect::UpdateShader ()
 		}
 	}
 
-	horz = (float *) pipe_buffer_map (ctx->pipe->screen,
+	horz = (float *) pipe_buffer_map (ctx->pipe,
 					  horz_pass_constant_buffer,
-					  PIPE_BUFFER_USAGE_CPU_WRITE);
+					  PIPE_TRANSFER_WRITE,
+					  &horz_transfer);
 	if (!horz) {
 		Clear ();
 		return;
 	}
 
-	vert = (float *) pipe_buffer_map (ctx->pipe->screen,
+	vert = (float *) pipe_buffer_map (ctx->pipe,
 					  vert_pass_constant_buffer,
-					  PIPE_BUFFER_USAGE_CPU_WRITE);
+					  PIPE_TRANSFER_WRITE,
+					  &vert_transfer);
 	if (!vert) {
-		pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
+		pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
 		Clear ();
 		return;
 	}
@@ -2417,8 +2428,8 @@ DropShadowEffect::UpdateShader ()
 		}
 	}
 
-	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
-	pipe_buffer_unmap (ctx->pipe->screen, vert_pass_constant_buffer);
+	pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
+	pipe_buffer_unmap (ctx->pipe, vert_pass_constant_buffer, vert_transfer);
 #endif
 
 }
@@ -2837,7 +2848,7 @@ ShaderEffect::Clear ()
 #ifdef USE_GALLIUM
 	struct st_context *ctx = st_context;
 
-	pipe_buffer_reference (&constant_buffer, NULL);
+	pipe_resource_reference (&constant_buffer, NULL);
 
 	if (fs) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
@@ -2875,8 +2886,9 @@ ShaderEffect::TransformBounds (Rect bounds)
 			      bottom ? ceil (bottom->AsDouble ()) : 0.0);
 }
 
-pipe_buffer_t *
-ShaderEffect::GetShaderConstantBuffer (float **ptr)
+pipe_resource_t *
+ShaderEffect::GetShaderConstantBuffer (float           **ptr,
+				       pipe_transfer_t **ptr_transfer)
 {
 
 #ifdef USE_GALLIUM
@@ -2884,8 +2896,8 @@ ShaderEffect::GetShaderConstantBuffer (float **ptr)
 
 	if (!constant_buffer) {
 		constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen, 16,
-					    PIPE_BUFFER_USAGE_CONSTANT,
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
 					    sizeof (float) * MAX_CONSTANTS);
 		if (!constant_buffer)
 			return NULL;
@@ -2894,12 +2906,13 @@ ShaderEffect::GetShaderConstantBuffer (float **ptr)
 	if (ptr) {
 		float *v;
 
-		v = (float *) pipe_buffer_map (ctx->pipe->screen,
+		v = (float *) pipe_buffer_map (ctx->pipe,
 					       constant_buffer,
-					       PIPE_BUFFER_USAGE_CPU_WRITE);
+					       PIPE_TRANSFER_WRITE,
+					       ptr_transfer);
 		if (!v) {
 			if (constant_buffer)
-				pipe_buffer_reference (&constant_buffer, NULL);
+				pipe_resource_reference (&constant_buffer, NULL);
 		}
 
 		*ptr = v;
@@ -2917,16 +2930,17 @@ ShaderEffect::UpdateShaderConstant (int reg, double x, double y, double z, doubl
 {
 
 #ifdef USE_GALLIUM
-	struct st_context  *ctx = st_context;
-	struct pipe_buffer *constants;
-	float              *v;
+	struct st_context    *ctx = st_context;
+	struct pipe_resource *constants;
+	float                *v;
+	struct pipe_transfer *transfer = NULL;
 
 	if (reg >= MAX_CONSTANTS) {
 		g_warning ("UpdateShaderConstant: invalid register number %d", reg);
 		return;
 	}
 
-	constants = GetShaderConstantBuffer (&v);
+	constants = GetShaderConstantBuffer (&v, &transfer);
 	if (!constants)
 		return;
 
@@ -2935,7 +2949,7 @@ ShaderEffect::UpdateShaderConstant (int reg, double x, double y, double z, doubl
 	v[reg * 4 + 2] = z;
 	v[reg * 4 + 3] = w;
 
-	pipe_buffer_unmap (ctx->pipe->screen, constants);
+	pipe_buffer_unmap (ctx->pipe, constants, transfer);
 #endif
 
 }
@@ -2972,15 +2986,16 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	cairo_surface_t     *input[PIPE_MAX_SAMPLERS];
-	struct pipe_texture *texture;
-	struct pipe_surface *surface;
-	struct pipe_buffer  *vertices;
-	struct pipe_buffer  *constants;
-	float               *verts;
-	unsigned int        i, idx;
-	Value               *ddxDdyReg;
+	struct st_context    *ctx = st_context;
+	cairo_surface_t      *input[PIPE_MAX_SAMPLERS];
+	struct pipe_resource *texture;
+	struct pipe_surface  *surface;
+	struct pipe_resource *vertices;
+	struct pipe_resource *constants;
+	float                *verts;
+	struct pipe_transfer *transfer = NULL;
+	unsigned int         i, idx;
+	Value                *ddxDdyReg;
 
 	MaybeUpdateShader ();
 
@@ -3000,7 +3015,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		int   reg = ddxDdyReg->AsInt32 ();
 		float *v;
 
-		constants = GetShaderConstantBuffer (&v);
+		constants = GetShaderConstantBuffer (&v, &transfer);
 		if (!constants)
 			return 0;
 
@@ -3009,10 +3024,10 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		v[reg * 4 + 2] = 0.f;
 		v[reg * 4 + 3] = 1.f / texture->height0;
 
-		pipe_buffer_unmap (ctx->pipe->screen, constants);
+		pipe_buffer_unmap (ctx->pipe, constants, transfer);
 	}
 	else {
-		constants = GetShaderConstantBuffer (NULL);
+		constants = GetShaderConstantBuffer (NULL, NULL);
 		if (!constants)
 			return 0;
 	}
@@ -3030,7 +3045,8 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 					  (1.0 / scale[0]) * texture->width0,
 					  (1.0 / scale[1]) * texture->height0,
 					  1,
-					  &verts);
+					  &verts,
+					  &transfer);
 	if (!vertices)
 		return 0;
 
@@ -3063,7 +3079,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	verts[idx + 2] = 0.f;
 	verts[idx + 3] = 1.f;
 
-	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
 
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
@@ -3082,7 +3098,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler_done (ctx->cso);
 
 	for (i = 0; i <= sampler_last; i++) {
-		struct pipe_texture *sampler_texture = NULL;
+		struct pipe_resource *sampler_texture = NULL;
 
 		if (sampler_input[i]) {
 			input[i] = cairo_surface_create_similar (src,
@@ -3142,7 +3158,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		if (input[i])
 			cairo_surface_destroy (input[i]);
 
-	pipe_buffer_reference (&vertices, NULL);
+	pipe_resource_reference (&vertices, NULL);
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
@@ -4063,14 +4079,15 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	struct pipe_texture *texture;
-	struct pipe_surface *surface;
-	struct pipe_buffer  *vertices;
-	float               *verts;
-	double              *m = GetShaderMatrix (src);
-	double              srcX = GetShaderOffsetX (src);
-	double              srcY = GetShaderOffsetY (src);
+	struct st_context    *ctx = st_context;
+	struct pipe_resource *texture;
+	struct pipe_surface  *surface;
+	struct pipe_resource *vertices;
+	float                *verts;
+	struct pipe_transfer *transfer = NULL;
+	double               *m = GetShaderMatrix (src);
+	double               srcX = GetShaderOffsetX (src);
+	double               srcY = GetShaderOffsetY (src);
 
 	if (!m)
 		return 0;
@@ -4085,18 +4102,19 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	if (!texture)
 		return 0;
 
-	vertices = pipe_buffer_create (ctx->pipe->screen, 32,
-				       PIPE_BUFFER_USAGE_VERTEX,
+	vertices = pipe_buffer_create (ctx->pipe->screen,
+				       PIPE_BIND_VERTEX_BUFFER,
 				       sizeof (float) * 8 * 4);
 	if (!vertices)
 		return 0;
 
-	verts = (float *) pipe_buffer_map (ctx->pipe->screen,
+	verts = (float *) pipe_buffer_map (ctx->pipe,
 					   vertices,
-					   PIPE_BUFFER_USAGE_CPU_WRITE);
+					   PIPE_TRANSFER_WRITE,
+					   &transfer);
 	if (!verts)
 	{
-		pipe_buffer_reference (&vertices, NULL);
+		pipe_resource_reference (&vertices, NULL);
 		return 0;
 	}
 
@@ -4170,7 +4188,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	*verts++ = 0.f;
 	*verts++ = 0.f;
 
-	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
 
 	struct pipe_sampler_state sampler;
 	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
@@ -4190,7 +4208,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
-	pipe_buffer_reference (&vertices, NULL);
+	pipe_resource_reference (&vertices, NULL);
 
 	return 1;
 #else

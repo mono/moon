@@ -28,9 +28,9 @@
 #endif
 
 typedef struct st_context st_context_t;
-typedef struct pipe_buffer pipe_buffer_t;
-typedef struct pipe_texture pipe_texture_t;
+typedef struct pipe_resource pipe_resource_t;
 typedef struct pipe_surface pipe_surface_t;
+typedef struct pipe_transfer pipe_transfer_t;
 
 typedef struct _d3d_swizzle {
 	unsigned int x;
@@ -116,21 +116,22 @@ public:
 protected:
 	virtual ~Effect () {}
 
-	pipe_texture_t *GetShaderTexture (cairo_surface_t *surface);
-	pipe_surface_t *GetShaderSurface (cairo_surface_t *surface);
-	double         *GetShaderMatrix (cairo_surface_t *surface);
-	double         GetShaderOffsetX (cairo_surface_t *surface);
-	double         GetShaderOffsetY (cairo_surface_t *surface);
-	pipe_buffer_t  *GetShaderVertexBuffer (float    x1,
-					       float    y1,
-					       float    x2,
-					       float    y2,
-					       unsigned stride,
-					       float    **ptr);
-	void DrawVertices (pipe_surface_t *surface,
-			   pipe_buffer_t  *vertices,
-			   int            nattrib,
-			   int            blend_enable);
+	pipe_resource_t *GetShaderTexture (cairo_surface_t *surface);
+	pipe_surface_t  *GetShaderSurface (cairo_surface_t *surface);
+	double          *GetShaderMatrix (cairo_surface_t *surface);
+	double          GetShaderOffsetX (cairo_surface_t *surface);
+	double          GetShaderOffsetY (cairo_surface_t *surface);
+	pipe_resource_t *GetShaderVertexBuffer (float           x1,
+						float           y1,
+						float           x2,
+						float           y2,
+						unsigned        stride,
+						float           **ptr,
+						pipe_transfer_t **ptr_transfer);
+	void DrawVertices (pipe_surface_t  *surface,
+			   pipe_resource_t *vertices,
+			   int             nattrib,
+			   int             blend_enable);
 
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
@@ -202,8 +203,8 @@ protected:
 
 	void *fs;
 
-	pipe_buffer_t *horz_pass_constant_buffer;
-	pipe_buffer_t *vert_pass_constant_buffer;
+	pipe_resource_t *horz_pass_constant_buffer;
+	pipe_resource_t *vert_pass_constant_buffer;
 
 	int filter_size;
 
@@ -277,8 +278,8 @@ protected:
 	void *horz_fs;
 	void *vert_fs;
 
-	pipe_buffer_t *horz_pass_constant_buffer;
-	pipe_buffer_t *vert_pass_constant_buffer;
+	pipe_resource_t *horz_pass_constant_buffer;
+	pipe_resource_t *vert_pass_constant_buffer;
 
 	int filter_size;
 
@@ -407,9 +408,10 @@ protected:
 	virtual ~ShaderEffect () { Clear (); }
 	void Clear ();
 
-	pipe_buffer_t *GetShaderConstantBuffer (float **ptr);
+	pipe_resource_t *GetShaderConstantBuffer (float           **ptr,
+						  pipe_transfer_t **ptr_transfer);
 
-	pipe_buffer_t *constant_buffer;
+	pipe_resource_t *constant_buffer;
 	Brush *sampler_input[MAX_SAMPLERS];
 	unsigned int sampler_filter[MAX_SAMPLERS];
 	unsigned int sampler_last;

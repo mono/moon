@@ -1,3 +1,8 @@
+2010-07-05  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Update mesa revision.
+
 2010-07-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (GALLIUM_RUNTIME_INIT): If USE_GALLIUM is undefined,

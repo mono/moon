@@ -94,7 +94,7 @@ Configuration options
 
                 git clone git://anongit.freedesktop.org/mesa/mesa
                 cd mesa
-                git checkout 59e743b8d393f2bdf023e3a5ad8fe848a7459ec9 -b moonlight
+                git checkout 3ed0a099c70e9d771e60e0ddf70bc0b5ba83a483 -b moonlight
                 ./autogen.sh --with-driver=xlib && cd src/gallium && make
 
 	There is no need to do a make install this.
