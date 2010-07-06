@@ -1,3 +1,7 @@
+2010-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Make both mesa sha1s we have in this file consistent with eachother.
+
 2010-07-05  David Reveman  <davidr@novell.com>
 
 	* README: Update mesa revision.

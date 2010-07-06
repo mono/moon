@@ -88,7 +88,7 @@ Configuration options
 
 	To build Moonlight with pixel shader support, you need to get the mesa
 	module from freedesktop.org. Last known revision to work is
-	59e743b8d393f2bdf023e3a5ad8fe848a7459ec9
+	3ed0a099c70e9d771e60e0ddf70bc0b5ba83a483
 
 	Do this like this:
 
