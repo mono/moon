@@ -9895,7 +9895,7 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(FrameworkElement.ActualWidthProperty);
             Assert.IsNotNull(retval, "GetValue(FrameworkElement.ActualWidthProperty) should not have returned null");
             Assert.IsInstanceOfType<double>(retval, "GetValue(FrameworkElement.ActualWidthProperty) is not of the correct type");
-            Assert.AreEqual((double) 1.65436122510606E-24, retval, "GetValue(FrameworkElement.ActualWidthProperty) does not match the default value");
+            Assert.AreEqual((double) 0, retval, "GetValue(FrameworkElement.ActualWidthProperty) does not match the default value");
             Assert.IsNotNull(FrameworkElement.ActualHeightProperty.GetMetadata (typeof (Glyphs)), "#metadata should not be null for: FrameworkElement.ActualHeightProperty.Glyphs");
             retval = FrameworkElement.ActualHeightProperty.GetMetadata (typeof (Glyphs)).DefaultValue;
             Assert.IsNotNull(retval, "PropertyMetadata.DefaultValue for FrameworkElement.ActualHeightProperty should be non-null value");
@@ -10140,7 +10140,7 @@ namespace MoonTest.System.Windows.Documents
             Assert.IsInstanceOfType<TriggerCollection>(widget.Triggers, "Triggers is not of the correct type");
             Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
             Assert.IsInstanceOfType<ResourceDictionary>(widget.Resources, "Resources is not of the correct type");
-            Assert.AreEqual((double) 1.65436122510606E-24, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
             Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
             Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
             Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
