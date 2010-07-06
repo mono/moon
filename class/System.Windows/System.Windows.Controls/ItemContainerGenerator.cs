@@ -171,7 +171,9 @@ namespace System.Windows.Controls {
 
 			RealizedElements.Add (index);
 			ContainerIndexMap.Add (container, index);
-			ContainerItemMap.Add (container, item, true);
+			DependencyObject cc;
+			if (!ContainerItemMap.TryMap (item, out cc))
+				ContainerItemMap.Add (container, item, true);
 			
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
 			return container;

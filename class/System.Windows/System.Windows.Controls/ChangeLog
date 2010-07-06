@@ -1,5 +1,13 @@
 2010-07-06  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: If the item has already been
+	  added to the ContainerItemMap we shouldn't replace the
+	  existing one. This can happen if you do something like:
+	  itemsControl.ItemsSource = new [] { 5, 5, 5, 5 }. Fixes
+	  PPC.ItemContainerGeneratorTest and a new moon-unit.
+
+2010-07-06  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: Simply this a little so that we always
 	  set _contentRoot before returning. Fixes a regression in
 	  cs2.

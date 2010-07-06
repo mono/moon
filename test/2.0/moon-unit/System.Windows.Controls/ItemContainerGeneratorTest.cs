@@ -120,6 +120,19 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void ContainerFromItem_ValueType()
+		{
+			int[] items = new[] { 5, 5, 5, 5, 5 };
+			Control.ItemsSource = items;
+			CreateAsyncTest (Control,
+				() => Control.ApplyTemplate (),
+				() => Assert.IsNotNull (Generator.ContainerFromIndex (0), "#1"),
+				() => Assert.AreEqual (Generator.ContainerFromIndex (0), Generator.ContainerFromItem (5), "#2")
+			);
+		}
+
+		[TestMethod]
 		public void ContainerFromItem_Unrealised ()
 		{
 			object o = new object ();
