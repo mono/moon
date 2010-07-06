@@ -775,6 +775,14 @@
     <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlLoaderCallbacks.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlPropertySetter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlTypeConverter.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/Matrix3DProjection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/PlaneProjection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/Projection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/SampleReadyEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/TextHintingMode.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/TextOptions.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoFormatChangedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoFormatCollection.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

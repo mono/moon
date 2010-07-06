@@ -1,5 +1,9 @@
 2010-07-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.mdp: Add files to the build
+
+2010-07-06  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.mdp: Update the solution file.
 
 2010-06-29  Mario Carrion  <mcarrion@novell.com>
