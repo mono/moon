@@ -195,7 +195,6 @@ namespace Mono.Xaml {
 			}
 
 			XamlReflectionPropertySetter content_property = FindContentProperty ();
-			Console.WriteLine (" -- content property:  {0}  for {1}", content_property.Name, Name);
 			if (content_property == null)
 				throw Parser.ParseException ("Unable to add element {0} to element {1}.", obj.Name, Name);
 
