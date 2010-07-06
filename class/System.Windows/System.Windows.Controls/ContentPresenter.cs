@@ -196,14 +196,14 @@ namespace System.Windows.Controls
 
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate;
-			if (template != null)
-				return template.LoadContent () as UIElement;
-
-			var content = Content;
-			_contentRoot = content as UIElement;
-			if (_contentRoot == null && content != null)
-				_contentRoot = FallbackRoot;
-
+			if (template != null) {
+				_contentRoot = template.LoadContent () as UIElement;
+			} else {
+				var content = Content;
+				_contentRoot = content as UIElement;
+				if (_contentRoot == null && content != null)
+					_contentRoot = FallbackRoot;
+			}
 			return _contentRoot;
 		}
 	}

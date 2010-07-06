@@ -1,3 +1,9 @@
+2010-07-06  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Simply this a little so that we always
+	  set _contentRoot before returning. Fixes a regression in
+	  cs2.
+
 2010-07-01  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemContainerGenerator.cs: Updated to SL4 compatibility.
