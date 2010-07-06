@@ -1,3 +1,7 @@
+2010-07-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Update the solution file.
+
 2010-06-29  Mario Carrion  <mcarrion@novell.com>
 
 	* Makefile.am: Deprecate A11yHelper class in favor of

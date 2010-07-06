@@ -27,12 +27,10 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyObject.g.cs" />
     <File subtype="Code" buildaction="Compile" name="Assembly/MonoTODOAttribute.cs" />
     <File subtype="Code" buildaction="Compile" name="Assembly/AssemblyInfo.cs" />
-    <File subtype="Code" buildaction="Compile" name="Mono/A11yHelper.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/DispatcherTimer.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/EventHandlerList.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/Events.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/Hosting.cs" />
-    <File subtype="Code" buildaction="Compile" name="Mono/ManagedXamlLoader.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyObject.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyProperty.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/Duration.cs" />
@@ -380,7 +378,6 @@
     <File subtype="Code" buildaction="Compile" name="Mono/Types.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/Types.g.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/Value.cs" />
-    <File subtype="Code" buildaction="Compile" name="Mono/XamlLoaderCallbacks.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ComboBox.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ComboBoxItem.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/Selector.cs" />
@@ -401,7 +398,6 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/HitTestCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ApplicationLauncher.cs" />
     <File subtype="Code" buildaction="Nothing" name="Mono/ChangeLog" />
-    <File subtype="Code" buildaction="Compile" name="Mono/MarkupExpressionParser.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/MoonlightTypeConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/MoonlightValueConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ToggleRef.cs" />
@@ -772,6 +768,13 @@
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/RangeBase.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/Thumb.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/RepeatButton.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/ManagedXamlLoader.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/MarkupExpressionParser.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlContext.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlElement.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlLoaderCallbacks.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlPropertySetter.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlTypeConverter.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
