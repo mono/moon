@@ -18,7 +18,7 @@
 
 /* @IncludeInKinds,Namespace=System.Windows.Media */
 class TextOptions {
- 	/* @PropertyType=TextHintingMode,Attached,GenerateAccessors */
+ 	/* @PropertyType=TextHintingMode,DefaultValue=TextHintingModeFixed,Attached,GenerateAccessors */
 	const static int TextHintingModeProperty;
 
 	//
