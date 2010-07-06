@@ -204,12 +204,12 @@ namespace Mono.Xaml {
 			DependencyProperty prop = LookupDependencyProperty ();
 
 			if (prop == null)
-				throw Parse.ParseException ("Invalid Binding, can not find DependencyProperty {0}.", Name);
+				throw Parser.ParseException ("Invalid Binding, can not find DependencyProperty {0}.", Name);
 
 			DependencyObject dob = target as DependencyObject;
 
 			if (dob == null)
-				throw Parse.ParseException ("Bindings can not be used on non DependencyObject types.");
+				throw Parser.ParseException ("Bindings can not be used on non DependencyObject types.");
 
 			BindingOperations.SetBinding (dob, prop, binding);
 		}
