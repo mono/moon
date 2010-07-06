@@ -1,3 +1,9 @@
+2010-07-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Add a test
+	  which explicitly verifies that the Content is used as the
+	  visual child if it's a UIElement.
+
 2010-07-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* site/[index|test].html: When 'moon-unit' project is executed with

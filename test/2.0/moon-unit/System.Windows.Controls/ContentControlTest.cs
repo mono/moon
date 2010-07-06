@@ -172,6 +172,16 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void ContentIsRoot ()
+		{
+			var c = new ContentControl { Content = new Rectangle () };
+
+			Assert.IsTrue (c.ApplyTemplate (), "#1");
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#2");
+			Assert.AreSame (c.Content, VisualTreeHelper.GetChild (c, 0), "#3");
+		}
+
+		[TestMethod]
 		public void ContentTemplate ()
 		{
 			ContentControlPoker cc = new ContentControlPoker ();
