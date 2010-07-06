@@ -1,3 +1,9 @@
+2010-07-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SilverlightHost.cs: More reflection into S.W.Browser.dll to set
+	the NavigationState (which affects bookmarks) and the event (that
+	can only be set if the iframe is present).
+
 2010-07-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SilverlightHost.cs: Reflect into S.W.Browser.dll (to avoid

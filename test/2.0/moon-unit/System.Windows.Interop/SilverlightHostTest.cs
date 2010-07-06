@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Browser;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Resources;
@@ -100,24 +101,55 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (n, Application.Current.Host.InitParams.Count, "Count-2");
 		}
 
+		// Fragment is Empty by default but is easy to change to a single '#' on Silverlight - not that it should change things...
+		static bool IsFragmentEmptyOrSharp (string s)
+		{
+			return ((s.Length == 0) || (s == "#"));
+		}
+
 		[TestMethod]
 		public void StateChange ()
 		{
 			SilverlightHost host = Application.Current.Host;
-			int n = 0;
+			Assert.AreEqual (String.Empty, host.NavigationState, "NavigationState-original");
+			Assert.AreEqual (String.Empty, HtmlPage.Window.CurrentBookmark, "CurrentBookmark-original");
+			// Empty by default - but some other (previous) test may have already changed it to '#'
+			Assert.IsTrue (IsFragmentEmptyOrSharp (HtmlPage.Document.DocumentUri.Fragment), "Fragment-original");
 
+			int n = 0;
 			host.NavigationStateChanged += delegate (object sender, NavigationStateChangedEventArgs e) {
 				Assert.AreSame (host, sender, "sender");
 				Assert.AreEqual (n == 0 ? "a" : String.Empty, e.NewNavigationState, "NewNavigationState");
 				Assert.AreEqual (n == 0 ? String.Empty : "a", e.PreviousNavigationState, "PreviousNavigationState");
 				n++;
 			};
+		
 			host.NavigationState = host.NavigationState;
 			Assert.AreEqual (n, 0, "same state");
+			Assert.AreEqual (String.Empty, HtmlPage.Window.CurrentBookmark, "CurrentBookmark-same");
+			// resetting NavigationState to same (even empty) value introduced a '#' for fragment
+			Assert.IsTrue (IsFragmentEmptyOrSharp (HtmlPage.Document.DocumentUri.Fragment), "Fragment-same");
+			
 			host.NavigationState = "a";
 			Assert.AreEqual (n, 1, "different state");
+			Assert.AreEqual ("a", HtmlPage.Window.CurrentBookmark, "CurrentBookmark-a");
+			Assert.AreEqual ("#a", HtmlPage.Document.DocumentUri.Fragment, "Fragment-a");
+
 			host.NavigationState = String.Empty;
 			Assert.AreEqual (n, 2, "back to original");
+			Assert.AreEqual (String.Empty, HtmlPage.Window.CurrentBookmark, "CurrentBookmark-b");
+			Assert.IsTrue (IsFragmentEmptyOrSharp (HtmlPage.Document.DocumentUri.Fragment), "Fragment-b");
+
+			// using CurrentBookmark will change NavigationState but won't fire the event
+			HtmlPage.Window.CurrentBookmark = "a";
+			Assert.AreEqual (n, 2, "different state using CurrentBookmark");
+			Assert.AreEqual ("a", host.NavigationState, "Document-a2");
+			Assert.AreEqual ("#a", HtmlPage.Document.DocumentUri.Fragment, "Fragment-a2");
+
+			HtmlPage.Window.CurrentBookmark = String.Empty;
+			Assert.AreEqual (n, 2, "back to original using CurrentBookmark");
+			Assert.AreEqual (String.Empty, host.NavigationState, "Document-b2");
+			Assert.IsTrue (IsFragmentEmptyOrSharp (HtmlPage.Document.DocumentUri.Fragment), "Fragment-b2");
 		}
 	}
 }

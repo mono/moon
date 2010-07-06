@@ -1,3 +1,9 @@
+2010-07-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Add SSC to SilverlightHost.NavigationState
+	setter and (internal) EnsureHistoryIframePresence methods so they 
+	can call/refeclt (non-critical) code into S.W.Browser.dll
+
 2010-07-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Add SSC to SilverlightHost.NavigationState
