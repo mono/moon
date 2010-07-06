@@ -101,7 +101,7 @@ namespace Mono.Xaml {
 
 		protected override FrameworkTemplate GetParentTemplate ()
 		{
-			return null;
+			return parser.GetParentTemplate (target_element);
 		}
 
 	}
