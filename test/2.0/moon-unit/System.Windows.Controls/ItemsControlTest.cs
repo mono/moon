@@ -320,6 +320,24 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentControl ()), "ContentControl");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsSourceIsEmptyEnumerable()
+		{
+			int count = 0;
+			var c = (Control)CurrentControl;
+
+			c.LayoutUpdated += (o, e) => count++;
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => count = 0,
+				() => CurrentControl.ItemsSource = new string[0],
+				() => Assert.AreEqual (1, count, "#1"),
+				() => CurrentControl.ItemsSource = new string[0],
+				() => Assert.AreEqual (2, count, "#2")
+			);
+		}
+
 		[Asynchronous]
 		public override void ItemTemplateTest3 ()
 		{

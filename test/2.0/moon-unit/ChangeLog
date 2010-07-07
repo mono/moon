@@ -1,3 +1,10 @@
+2010-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs: Make sure empty
+	  collections in ItemsSource result in a LayoutUpdated event
+	  being raised. Fixes part of DRT 348 and the new moon-unit
+
 2010-07-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Interop/SilverlightHostTest.cs: Add async test

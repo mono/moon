@@ -152,6 +152,10 @@ namespace System.Windows.Controls {
 				Items.SetIsReadOnly (false);		
 				Items.ClearImpl ();
 			}
+			// Yes this is stupid and shouldn't be here, but DRT 348 sets an empty collection as the ItemsSource
+			// and expects the LayoutUpdated event to be raised. This is the only way that makes sense for this
+			// to happen. It's all very strange.
+			InvalidateMeasure ();
 		}
 
 		void OnSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)

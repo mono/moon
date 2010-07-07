@@ -433,7 +433,23 @@ namespace MoonTest.System.Windows {
 			EnqueueConditional (() => c.Arranged, "#5");
 			EnqueueTestComplete ();
 		}
-		
+
+		[TestMethod]
+		[Asynchronous]
+		public void InvalidateMeasureRaisesLayoutUpdated()
+		{
+			int count = 0;
+			var c = new ConcreteFrameworkElement ();
+			c.LayoutUpdated += (o, e) =>  count++;
+			CreateAsyncTest (c,
+				() => count = 0,
+				() => c.InvalidateMeasure(),
+				() => Assert.AreEqual(1, count, "#1"),
+				() => c.InvalidateMeasure(),
+				() => Assert.AreEqual(2, count, "#2")
+			);
+		}
+
 		[TestMethod]
 		public void InvalidValues()
 		{
