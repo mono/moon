@@ -1,5 +1,12 @@
 2010-07-07  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: The Container->Item mapping
+	  dictionary can't be a doublekeyed dictionary because we
+	  sometimes have the same item in multiple containers. Fixes
+	  most of drt 348, just two minor glitches left in it.
+
+2010-07-07  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: Make sure empty collections in ItemsSource
 	  result in a LayoutUpdated event being raised. Fixes part of
 	  DRT 348 and the new moon-unit

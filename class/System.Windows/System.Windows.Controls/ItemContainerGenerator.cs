@@ -34,6 +34,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 
 using Hyena.Collections;
+using Mono;
 
 namespace System.Windows.Controls {
 
@@ -45,7 +46,7 @@ namespace System.Windows.Controls {
 			get; set;
 		}
 
-		DoubleKeyedDictionary <DependencyObject, object> ContainerItemMap {
+		Dictionary <DependencyObject, object> ContainerItemMap {
 			get; set;
 		}
 
@@ -73,7 +74,7 @@ namespace System.Windows.Controls {
 		{
 			Cache = new Queue <DependencyObject> ();
 			ContainerIndexMap = new DoubleKeyedDictionary <DependencyObject, int> ();
-			ContainerItemMap  = new DoubleKeyedDictionary <DependencyObject, object> ();
+			ContainerItemMap  = new Dictionary <DependencyObject, object> ();
 			Owner = owner;
 			RealizedElements = new RangeCollection ();
 		}
@@ -91,8 +92,10 @@ namespace System.Windows.Controls {
 				return null;
 
 			DependencyObject container;
-			ContainerItemMap.TryMap (item, out container);
-			return container;
+			foreach (var v in ContainerItemMap)
+				if (Helper.AreEqual (v.Value, item))
+					return v.Key;
+			return null;
 		}
 
 		void CheckOffsetAndRealized (GeneratorPosition position, int count)
@@ -163,8 +166,6 @@ namespace System.Windows.Controls {
 					c.ContentSetsParent = false;
 			}
 
-			// We copy the item to the DataContext regardless of whether or not it's a UIElement
-			// This is *different* to the old behaviour
 			FrameworkElement f = container as FrameworkElement;
 			if (f != null && !(item is UIElement))
 				f.DataContext = item;
@@ -172,8 +173,7 @@ namespace System.Windows.Controls {
 			RealizedElements.Add (index);
 			ContainerIndexMap.Add (container, index);
 			DependencyObject cc;
-			if (!ContainerItemMap.TryMap (item, out cc))
-				ContainerItemMap.Add (container, item, true);
+			ContainerItemMap.Add (container, item);
 			
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
 			return container;
@@ -244,7 +244,7 @@ namespace System.Windows.Controls {
 		public object ItemFromContainer (DependencyObject container)
 		{
 			object item;
-			ContainerItemMap.TryMap (container, out item);
+			ContainerItemMap.TryGetValue (container, out item);
 			return item ?? DependencyProperty.UnsetValue;
 		}
 
@@ -315,6 +315,7 @@ namespace System.Windows.Controls {
 		{
 			var index = ContainerIndexMap [container];
 			var item = Owner.Items [index];
+
 			Owner.PrepareContainerForItem (container, item);
 		}
 
@@ -327,7 +328,7 @@ namespace System.Windows.Controls {
 				var container = ContainerIndexMap [index + i];
 				var item = ContainerItemMap [container];
 				ContainerIndexMap.Remove (container, index + i);
-				ContainerItemMap.Remove (container, item, true);
+				ContainerItemMap.Remove (container);
 				RealizedElements.Remove (index + i);
 				Owner.ClearContainerForItem (container, item);
 			}
