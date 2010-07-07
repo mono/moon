@@ -77,6 +77,7 @@ namespace Mono.Xaml {
 
 	}
 
+#if NOTYET
 	internal class SL4MarkupExpressionParser : MarkupExpressionParser {
 
 		private XamlParser parser;
@@ -105,7 +106,8 @@ namespace Mono.Xaml {
 		}
 
 	}
-
+#endif
+	
 	internal abstract class MarkupExpressionParser {
 
 		private StringBuilder piece;
