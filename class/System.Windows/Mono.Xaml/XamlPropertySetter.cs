@@ -195,13 +195,11 @@ namespace Mono.Xaml {
 			}
 
 			if (typeof (IList).IsAssignableFrom (Type)) {
-				Console.WriteLine (" -- adding to a collection");
 				AddToCollection (obj, value);
 				return;
 			}
 
 			if (typeof (IDictionary).IsAssignableFrom (Type)) {
-				Console.WriteLine (" -- adding to a dictionary");
 				AddToDictionary (obj, value);
 				return;
 			}
