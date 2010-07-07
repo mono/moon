@@ -95,6 +95,7 @@ class RotateTransform : public Transform {
 class CompositeTransform : public Transform {
 protected:
 	virtual ~CompositeTransform () {}
+	virtual void UpdateTransform ();
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke */

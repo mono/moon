@@ -1,3 +1,8 @@
+2010-07-07  Larry Ewing  <lewing@novell.com>
+
+	* transform.h:
+	* transform.cpp (UpdateTransform): implement CompositeTransform.
+
 2010-07-06  Alan McGovern  <amcgovern@novell.com>
 
 	* textoptions.h: Add a missing default value.

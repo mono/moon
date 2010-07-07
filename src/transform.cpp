@@ -26,6 +26,50 @@ CompositeTransform::CompositeTransform ()
 	SetObjectType (Type::COMPOSITETRANSFORM);
 }
 
+void
+CompositeTransform::UpdateTransform ()
+{
+	double sx = GetScaleX ();
+	double sy = GetScaleY ();
+
+	// XXX you don't want to know.  don't make these 0.00001, or
+	// else cairo spits out errors about non-invertable matrices
+	// (or worse, crashes)
+	//
+	// the 0.0 scales are caused in at least one instance by us
+	// being too aggressive at starting animations at time=0 when
+	// they're supposed to (unset, or 0:0:0 BeginTime)
+	//
+	if (sx == 0.0) sx = 0.00002;
+	if (sy == 0.0) sy = 0.00002;
+
+	double cx = GetCenterX ();
+	double cy = GetCenterY ();
+
+	cairo_matrix_init_translate (&_matrix, cx, cy);
+	cairo_matrix_translate (&_matrix, GetTranslateX (), GetTranslateY ());
+
+	double radians = GetRotation () / 180 * M_PI;
+	cairo_matrix_rotate (&_matrix, radians);
+
+	cairo_matrix_t skew;
+	cairo_matrix_init_identity (&skew);
+
+	double ax = GetSkewX ();
+	if (ax != 0.0)
+		skew.xy = tan (ax * M_PI / 180);
+
+	double ay = GetSkewY ();
+	if (ay != 0.0)
+		skew.yx = tan (ay * M_PI / 180);
+	cairo_matrix_multiply (&_matrix, &skew, &_matrix);
+
+	cairo_matrix_scale (&_matrix, sx, sy);
+
+	cairo_matrix_translate (&_matrix, -cx, -cy);
+}
+
+
 //
 // GeneralTransform
 //
