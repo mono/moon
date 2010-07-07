@@ -43,8 +43,8 @@ class SubImage {
  	int id;
 	int n;
 	Uri *source;
-	long width;
-	long height;
+	int width;
+	int height;
 	double vp_x;
 	double vp_y;
 	double vp_w;
@@ -427,11 +427,14 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 #define DZParsedSource        (1 << 8)
 #define DZParsedId            (1 << 9)
 #define DZParsedN             (1 << 10)
+#define DZParsedX             (1 << 11)
+#define DZParsedY             (1 << 12)
 
 #define DZParsedCollection (DZParsedServerFormat | DZParsedFormat | DZParsedTileSize | DZParsedMaxLevel)
 #define DZParsedImage (DZParsedServerFormat | DZParsedFormat | DZParsedTileSize | DZParsedOverlap)
+#define DZParsedRect (DZParsedWidth | DZParsedHeight | DZParsedX | DZParsedY)
 #define DZParsedDisplayRect (DZParsedMinLevel | DZParsedMaxLevel)
-#define DZParsedI (DZParsedSource | DZParsedId | DZParsedN)
+#define DZParsedViewport (DZParsedWidth | DZParsedX | DZParsedY)
 #define DZParsedSize (DZParsedWidth | DZParsedHeight)
 
 // DeepZoomParsing
@@ -487,8 +490,10 @@ start_element (void *data, const char *el, const char **attr)
 				}
 			}
 			
-			if (failed || parsed != DZParsedImage)
+			if (failed || parsed != DZParsedImage) {
+				//printf ("DeepZoom Image error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 				info->error = true;
+			}
 		} else if (!g_ascii_strcasecmp ("Collection", el)) {
 			info->is_collection = true;
 			
@@ -512,17 +517,20 @@ start_element (void *data, const char *el, const char **attr)
 					} else
 						failed = true;
 				} else if (!g_ascii_strcasecmp ("MaxLevel", attr[i])) {
-					if (!(parsed & DZParsedMaxLevel))
+					if (!(parsed & DZParsedMaxLevel)) {
 						failed = !Int32TryParse (attr[i+1], &info->max_level, &err) || info->max_level <= 0;
-					else
+						parsed |= DZParsedMaxLevel;
+					} else
 						failed = true;
 				} else {
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 				}
 			}
 			
-			if (failed || parsed != DZParsedCollection)
+			if (failed || parsed != DZParsedCollection) {
+				//printf ("DeepZoom Collection error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 				info->error = true;
+			}
 		} else {
 			g_warning ("Unexpected element %s\n", el);
 			info->error = true;
@@ -550,8 +558,10 @@ start_element (void *data, const char *el, const char **attr)
 					}
 				}
 				
-				if (failed || parsed != DZParsedSize)
+				if (failed || parsed != DZParsedSize) {
+					//printf ("DeepZoom Image Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
+				}
 			} else if (!g_ascii_strcasecmp ("DisplayRects", el)) {
 				// no attributes, only contains DisplayRect element
 			} else {
@@ -592,6 +602,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 				
 				if (failed || parsed != DZParsedDisplayRect) {
+					//printf ("DeepZoom DisplayRect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 					break;
 				}
@@ -615,14 +626,14 @@ start_element (void *data, const char *el, const char **attr)
 							failed = true;
 					} else if (!g_ascii_strcasecmp ("Id", attr[i])) {
 						if (!(parsed & DZParsedId)) {
-							failed = Int32TryParse (attr[i+1], &info->current_subimage->id, &err) ||
+							failed = !Int32TryParse (attr[i+1], &info->current_subimage->id, &err) ||
 								info->current_subimage->id < 0;
 							parsed |= DZParsedId;
 						} else
 							failed = true;
 					} else if (!g_ascii_strcasecmp ("N", attr[i])) {
 						if (!(parsed & DZParsedN)) {
-							failed = Int32TryParse (attr[i+1], &info->current_subimage->n, &err) ||
+							failed = !Int32TryParse (attr[i+1], &info->current_subimage->n, &err) ||
 								info->current_subimage->n < 0;
 							parsed |= DZParsedN;
 						} else
@@ -631,8 +642,11 @@ start_element (void *data, const char *el, const char **attr)
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
 					}
 					
-					if (failed || parsed != DZParsedI)
+					// we only need Id, the others are optional
+					if (failed || !(parsed & DZParsedId)) {
+						//printf ("DeepZoom I error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 						info->error = true;
+					}
 				}
 			} else {
 				g_warning ("Unexpected element %d %s\n", info->depth, el);
@@ -644,22 +658,51 @@ start_element (void *data, const char *el, const char **attr)
 		if (!info->is_collection) {
 			// Rect element
 			if (!g_ascii_strcasecmp ("Rect", el)) {
+				int val = 0;
+				
 				if (!info->current_rect) {
 					info->error = true;
 					break;
 				}
 				
 				for (int i = 0; attr[i]; i += 2) {
-					if (!g_ascii_strcasecmp ("X", attr[i]))
-						info->current_rect->rect.x = (double)atol (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Y", attr[i]))
-						info->current_rect->rect.y = (double)atol (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Width", attr[i]))
-						info->current_rect->rect.width = (double)atol (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Height", attr[i]))
-						info->current_rect->rect.height = (double)atol (attr[i+1]);
-					else
+					if (!g_ascii_strcasecmp ("Height", attr[i])) {
+						if (!(parsed & DZParsedHeight)) {
+							failed = !Int32TryParse (attr[i+1], &val, &err) || val <= 0;
+							info->current_rect->rect.height = (double) val;
+							parsed |= DZParsedHeight;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("Width", attr[i])) {
+						if (!(parsed & DZParsedWidth)) {
+							failed = !Int32TryParse (attr[i+1], &val, &err) || val <= 0;
+							info->current_rect->rect.width = (double) val;
+							parsed |= DZParsedWidth;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("X", attr[i])) {
+						if (!(parsed & DZParsedX)) {
+							failed = !Int32TryParse (attr[i+1], &val, &err) || val <= 0;
+							info->current_rect->rect.x = (double) val;
+							parsed |= DZParsedX;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("Y", attr[i])) {
+						if (!(parsed & DZParsedY)) {
+							failed = !Int32TryParse (attr[i+1], &val, &err) || val <= 0;
+							info->current_rect->rect.y = (double) val;
+							parsed |= DZParsedY;
+						} else
+							failed = true;
+					} else {
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+					}
+					
+					if (failed || !(parsed & DZParsedRect)) {
+						//printf ("DeepZoom Rect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+						info->error = true;
+						break;
+					}
 				}
 				
 				g_ptr_array_add (info->display_rects, info->current_rect);
@@ -674,34 +717,85 @@ start_element (void *data, const char *el, const char **attr)
 					info->error = true;
 					break;
 				}
-
+				
 				info->current_subimage->has_size = true;
 				
 				for (int i = 0; attr [i]; i += 2) {
-					if (!g_ascii_strcasecmp ("Width", attr[i]))
-						info->current_subimage->width = atol (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Height", attr[i]))
-						info->current_subimage->height = atol (attr[i+1]);
-					else
+					if (!g_ascii_strcasecmp ("Width", attr[i])) {
+						if (!(parsed & DZParsedWidth)) {
+							failed = !Int32TryParse (attr[i+1], &info->current_subimage->width, &err) ||
+								info->current_subimage->width <= 0;
+							parsed |= DZParsedWidth;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("Height", attr[i])) {
+						if (!(parsed & DZParsedHeight)) {
+							failed = !Int32TryParse (attr[i+1], &info->current_subimage->height, &err) ||
+								info->current_subimage->height <= 0;
+							parsed |= DZParsedHeight;
+						} else
+							failed = true;
+					} else {
 						LOG_MSI ("\tunparsed attr %s.%s: %s\n", el, attr[i], attr[i+1]);
+					}
+				}
+				
+				if (failed || parsed != DZParsedSize) {
+					//printf ("DeepZoom Subimage Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+					info->error = true;
 				}
 			} else if (!g_ascii_strcasecmp ("Viewport", el)) {
+				char *inend;
+				
 				if (!info->current_subimage) {
 					info->error = true;
 					break;
 				}
-
+				
 				info->current_subimage->has_viewport = true;
 				
 				for (int i = 0; attr [i]; i += 2) {
-					if (!g_ascii_strcasecmp ("X", attr[i]))
-						info->current_subimage->vp_x = g_ascii_strtod (attr[i+1], NULL);
-					else if (!g_ascii_strcasecmp ("Y", attr[i]))
-						info->current_subimage->vp_y = g_ascii_strtod (attr[i+1], NULL);
-					else if (!g_ascii_strcasecmp ("Width", attr[i]))
-						info->current_subimage->vp_w = g_ascii_strtod (attr[i+1], NULL);
-					else
+					inend = (char *) "";
+					
+					if (!g_ascii_strcasecmp ("Width", attr[i])) {
+						if (!(parsed & DZParsedWidth)) {
+							info->current_subimage->vp_w = g_ascii_strtod (attr[i+1], &inend);
+							if (info->current_subimage->vp_w < 0)
+								failed = true;
+							parsed |= DZParsedWidth;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("X", attr[i])) {
+						if (!(parsed & DZParsedX)) {
+							info->current_subimage->vp_x = g_ascii_strtod (attr[i+1], &inend);
+							if (info->current_subimage->vp_x < 0)
+								failed = true;
+							parsed |= DZParsedX;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("Y", attr[i])) {
+						if (!(parsed & DZParsedY)) {
+							info->current_subimage->vp_y = g_ascii_strtod (attr[i+1], &inend);
+							if (info->current_subimage->vp_y < 0)
+								failed = true;
+							parsed |= DZParsedY;
+						} else
+							failed = true;
+					} else {
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+					}
+					
+					// make sure there is no trailing data (except lwsp)
+					while (*inend == ' ')
+						inend++;
+					
+					if (*inend)
+						failed = true;
+				}
+				
+				if (failed || parsed != DZParsedViewport) {
+					//printf ("DeepZoom Viewport error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+					info->error = true;
 				}
 			} else {
 				g_warning ("Unexpected element %s\n", el);
