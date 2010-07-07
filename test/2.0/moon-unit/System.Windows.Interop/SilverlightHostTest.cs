@@ -33,13 +33,16 @@ using System.Windows.Browser;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Resources;
+using System.Threading;
+
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class SilverlightHostTest {
+	public class SilverlightHostTest : SilverlightTest {
 
 		static private Uri uri = new Uri ("http://www.mono-project.com");
 
@@ -150,6 +153,70 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (n, 2, "back to original using CurrentBookmark");
 			Assert.AreEqual (String.Empty, host.NavigationState, "Document-b2");
 			Assert.IsTrue (IsFragmentEmptyOrSharp (HtmlPage.Document.DocumentUri.Fragment), "Fragment-b2");
+		}
+
+		void host_NavigationStateChanged (object sender, NavigationStateChangedEventArgs e)
+		{
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void AsyncStateChange_Dispatch ()
+		{
+			SilverlightHost host = Application.Current.Host;
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Application.Current.RootVisual.Dispatcher.BeginInvoke (() => {
+				try {
+					Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					host.NavigationStateChanged += host_NavigationStateChanged;
+					host.NavigationState = "dispatch"; // set
+					Assert.AreEqual ("dispatch", host.NavigationState, "get");
+					host.NavigationStateChanged -= host_NavigationStateChanged;
+					status = true;
+				}
+				finally {
+					complete = true;
+					host.NavigationState = String.Empty;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void AsyncStateChange_UserThread ()
+		{
+			SilverlightHost host = Application.Current.Host;
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						host.NavigationStateChanged += host_NavigationStateChanged;
+					}, "add_NavigationStateChanged");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						Assert.IsNotNull (host.NavigationState, "get");
+					}, "get_NavigationState");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						host.NavigationState = "user thread";
+					}, "set_NavigationState");
+					host.NavigationStateChanged -= host_NavigationStateChanged;
+					status = true;
+				}
+				finally {
+					complete = true;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
 		}
 	}
 }

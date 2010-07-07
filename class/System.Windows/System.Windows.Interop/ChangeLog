@@ -1,3 +1,8 @@
+2010-07-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SilverlightHost.cs: Ensure that NavigationState[Changed] cannot
+	be used outside the main thread
+
 2010-07-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SilverlightHost.cs: More reflection into S.W.Browser.dll to set

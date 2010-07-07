@@ -1,3 +1,8 @@
+2010-07-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Interop/SilverlightHostTest.cs: Add async test
+	cases for NavigationState[Changed]
+
 2010-07-06  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs: Update the default values tests for

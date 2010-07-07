@@ -147,8 +147,11 @@ namespace System.Windows.Interop {
 
 		public string NavigationState {
 			get {
+				EnsureMainThread ();
+
 				if (get_navigation_state == null)
 					get_navigation_state = htmlpage.GetMethod ("get_NavigationState", StaticNonPublic);
+
 				// the default value for 'NavigationState' comes from the HTML page hosting the plugin
 				try {
 					return (string) get_navigation_state.Invoke (null, null);
@@ -158,6 +161,8 @@ namespace System.Windows.Interop {
 				}
 			}
 			set {
+				EnsureMainThread ();
+
 				if (set_navigation_state == null)
 					set_navigation_state = htmlpage.GetMethod ("set_NavigationState", StaticNonPublic);
 
@@ -180,6 +185,12 @@ namespace System.Windows.Interop {
 			}
 		}
 
+		static void EnsureMainThread ()
+		{
+			if (!Helper.CheckAccess ())
+				throw new UnauthorizedAccessException ();
+		}
+
 		static void EnsureHistoryIframePresence ()
 		{
 			if (ensure_history_iframe_presence == null)
@@ -195,6 +206,7 @@ namespace System.Windows.Interop {
 
 		public event EventHandler<NavigationStateChangedEventArgs> NavigationStateChanged {
 			add {
+				EnsureMainThread ();
 				EnsureHistoryIframePresence ();
 				lock (locker) {
 					navigation_state_changed += value;
