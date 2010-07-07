@@ -39,6 +39,11 @@ namespace Mono.Xaml
 {
 	internal class XamlContext {
 
+		internal XamlContext ()
+		{
+			Resources = new List<DependencyObject> ();
+		}
+
 		internal XamlContext (XamlContext parent, List<DependencyObject> resources, FrameworkTemplate template)
 		{
 			Parent = parent;
@@ -59,6 +64,16 @@ namespace Mono.Xaml
 		public FrameworkTemplate Template {
 			get;
 			private set;
+		}
+
+		public FrameworkElement TemplateBindingSource {
+			get;
+			set;
+		}
+
+		public bool IsExpandingTemplate {
+			get;
+			set;
 		}
 
 		public object LookupNamedItem (string name)

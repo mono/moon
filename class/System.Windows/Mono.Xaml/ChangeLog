@@ -1,3 +1,13 @@
+2010-07-07  Jackson Harper  <jackson@ximian.com>
+
+	* XamlContext.cs: Add some properties for tempalate binding. Also
+	add a default constructor.  The XamlParser will always have a
+	XamlContext now by default, it will just be empty.
+
+	* XamlPropertySetter.cs: Support setting
+	TemplateBindingExpressions, also scope out the temp binding vars
+	so we dont pollute local.
+
 2010-07-02  Jackson Harper  <jackson@ximian.com>
 
 	* XamlPropertySetter.cs: Fix typo, add in the Binding setter code.
