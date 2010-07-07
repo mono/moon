@@ -1,3 +1,19 @@
+2010-07-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	Crash fixes for drt Seadragon-InvalidXml
+
+	* deepzoomimagetilesource.cpp (EndElement): Don't even try
+	creating a SubImage if the uri is NULL.
+
+	* multiscalesubimage.cpp (MultiScaleSubImage): No-op if the source
+	uri is NULL (don't crash!).
+
+	* multiscaleimage.cpp (RenderSingle): Do sanity checks on x and y
+	to make sure they are smaller than 2^layer in the loop conditional
+	rather than in qtree_lookup_image() so as to avoid looping over
+	invalid ranges.
+	(RenderCollection): Same.
+
 2010-07-07  Larry Ewing  <lewing@novell.com>
 
 	* transform.h:

@@ -611,11 +611,16 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 		switch (info->depth) {
 		case 2:
 			if (info->is_collection && !g_ascii_strcasecmp ("I", el)) {
-				DeepZoomImageTileSource *subsource = new DeepZoomImageTileSource (info->current_subimage->source, TRUE);
-				MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (),
-										   subsource, 
-										   info->current_subimage->id, 
-										   info->current_subimage->n);
+				Uri *uri = info->source->GetUriSource ();
+				DeepZoomImageTileSource *subsource;
+				MultiScaleSubImage *subi;
+				
+				if (!uri)
+					break;
+				
+				subsource = new DeepZoomImageTileSource (info->current_subimage->source, TRUE);
+				subi = new MultiScaleSubImage (uri, subsource, info->current_subimage->id, 
+							       info->current_subimage->n);
 				subsource->SetImageWidth (info->current_subimage->width);
 				subsource->SetImageHeight (info->current_subimage->height);
 				subsource->format = info->format;

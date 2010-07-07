@@ -151,7 +151,7 @@ qtree_lookup (QTree *root, int level, guint64 x, guint64 y)
 #if DEBUG
  		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
  		// abort to get a stack trace. 
-		abort ();
+		//abort ();
 #endif
 		return NULL;
 	}
@@ -874,8 +874,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			
 			//LOG_MSI ("virtual tile size at layer %d; %fx%f\n", from_layer, v_tile_w, v_tile_h);
 			
-			for (int i = (int) minx; i * v_tile_w < maxx; i++) {
-				for (int j = (int) miny; j * v_tile_h < maxy; j++) {
+			for (guint64 i = (guint64) minx; i < from_layer2 && i * v_tile_w < maxx; i++) {
+				for (guint64 j = (guint64) miny; j < from_layer2 && j * v_tile_h < maxy; j++) {
 					cairo_surface_t *image = NULL;
 					
 					count++;
@@ -935,7 +935,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
 				int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 				int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
-				guint64 layer_to_render2 = pow2 (layer_to_render);
+				guint64 render_layer2 = pow2 (layer_to_render);
 				guint64 layers2 = pow2 (layers - layer_to_render);
 				double v_scale = (double) layers2 * sub_vp.width / sub_w;
 				double v_tile_w = tile_width * v_scale;
@@ -945,26 +945,26 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				double miny = (MAX (msivp_oy, sub_vp.y) - sub_vp.y) / v_tile_h;
 				double maxy = MIN (msivp_oy + msivp_w / msi_ar, sub_vp.y + sub_vp.width / sub_ar) - sub_vp.y;
 				
-				for (int i = (int) minx; i * v_tile_w < maxx; i++) {
-					for (int j = (int) miny; j * v_tile_h < maxy; j++) {
+				for (guint64 i = (guint64) minx; i < render_layer2 && i * v_tile_w < maxx; i++) {
+					for (guint64 j = (guint64) miny; j < render_layer2 && j * v_tile_h < maxy; j++) {
 						cairo_surface_t *image = NULL;
 						bool shared_tile = false;
 						
 						if (layer_to_render > dzits->GetMaxLevel())
 							image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
 						else {
-							//Check in the shared levels
+							// Check in the shared levels
 							shared_tile = true;
 							
 							image = qtree_lookup_image (shared_cache, layer_to_render,
-										    morton_x (sub_image->n) * layer_to_render2 / tile_width,
-										    morton_y (sub_image->n) * layer_to_render2 / tile_height);
+										    morton_x (sub_image->n) * render_layer2 / tile_width,
+										    morton_y (sub_image->n) * render_layer2 / tile_height);
 						}
 						
 						if (!image)
 							continue;
 						
-						LOG_MSI ("rendering subimage %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
+						LOG_MSI ("rendering subimage %d %d %ld %ld\n", sub_image->id, layer_to_render, i, j);
 						cairo_save (cr);
 						
 						cairo_scale (cr, layers2, layers2);
@@ -973,8 +973,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						
 						if (shared_tile) {
 							cairo_translate (cr,
-									 (int)(-morton_x(sub_image->n) * layer_to_render2) % tile_width,
-									 (int)(-morton_y(sub_image->n) * layer_to_render2) % tile_height);
+									 (int)(-morton_x(sub_image->n) * render_layer2) % tile_width,
+									 (int)(-morton_y(sub_image->n) * render_layer2) % tile_height);
 						}
 						
 						cairo_set_source_surface (cr, image, 0, 0);
@@ -1116,6 +1116,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 	while (from_layer >= 0) {
 		guint64 layers2 = pow2 (layers - from_layer);
+		guint64 from_layer2 = pow2 (from_layer);
 		double v_scale = (double) layers2 / im_w;
 		double v_tile_w = tile_width * v_scale;
 		double v_tile_h = tile_height * v_scale;
@@ -1128,8 +1129,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		int found = 0;
 		
 		// This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
-		for (int i = (int) minx; i * v_tile_w < maxx; i++) {
-			for (int j = (int) miny; j * v_tile_h < maxy; j++) {
+		for (guint64 i = (guint64) minx; i < from_layer2 && i * v_tile_w < maxx; i++) {
+			for (guint64 j = (guint64) miny; j < from_layer2 && j * v_tile_h < maxy; j++) {
 				cairo_surface_t *image = qtree_lookup_image (subimage_cache, from_layer, i, j);
 				
 				count++;
@@ -1185,6 +1186,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	int layer_to_render = MAX (0, from_layer);
 	while (layer_to_render <= to_layer) {
 		guint64 layers2 = pow2 (layers - layer_to_render);
+		guint64 render_layer2 = pow2 (layer_to_render);
 		double v_scale = (double) layers2 / im_w;
 		double v_tile_w = tile_width * v_scale;
 		double v_tile_h = tile_height * v_scale;
@@ -1193,13 +1195,13 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		double miny = MAX (0, (vp_oy / v_tile_h));
 		double maxy = MIN (vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar);
 		
-		for (int i = (int) minx; i * v_tile_w < maxx; i++) {
-			for (int j = (int) miny; j * v_tile_h < maxy; j++) {
+		for (guint64 i = (guint64) minx; i < render_layer2 && i * v_tile_w < maxx; i++) {
+			for (guint64 j = (guint64) miny; j < render_layer2 && j * v_tile_h < maxy; j++) {
 				cairo_surface_t *image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
 				if (!image)
 					continue;
 				
-				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
+				LOG_MSI ("rendering %d %ld %ld\n", layer_to_render, i, j);
 				cairo_save (cr);
 				
 				// scale to image size
