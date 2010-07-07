@@ -1,5 +1,18 @@
 2010-07-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes for Seadragon-InvalidXml
+
+	* deepzoomimagetilesource.cpp (start_element): Validate all
+	element attribute values and make sure all expected attributes
+	were present. Set the error flag if anything goes wrong.
+	(DownloaderComplete): If the error flag is set, raise the
+	DownloaderFailed handler.
+
+	* utils.cpp ([U]Int32TryParse): New functions to make parsing
+	integers easier.
+
+2010-07-07  Jeffrey Stedfast  <fejj@novell.com>
+
 	Crash fixes for drt Seadragon-InvalidXml
 
 	* deepzoomimagetilesource.cpp (EndElement): Don't even try

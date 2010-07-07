@@ -27,11 +27,11 @@
 
 class DisplayRect {
  public:
-	long min_level;
-	long max_level;
+	int min_level;
+	int max_level;
 	Rect rect;
-
-	DisplayRect (long minLevel, long maxLevel)
+	
+	DisplayRect (int minLevel, int maxLevel)
 	{
 		min_level = minLevel;
 		max_level = maxLevel;
@@ -68,29 +68,29 @@ class SubImage {
 
 class DZParserInfo {
  public:
+	DeepZoomImageTileSource *source;
+	bool error;
 	int depth;
 	int skip;
-	bool error;
-	DeepZoomImageTileSource *source;
-
+	
 	bool is_collection;
-
+	
 	// Image attributes
-	int overlap;
-	long image_width, image_height;
+	int image_width, image_height;
 	DisplayRect *current_rect;
 	GPtrArray *display_rects;
-
+	int overlap;
+	
 	// Collection attributes
-	int max_level;
 	SubImage *current_subimage;
 	GPtrArray *subimages;
-
+	int max_level;
+	
 	// Common attributes
-	char *format;
 	char *server_format;
+	char *format;
 	int tile_size;
-
+	
 	DZParserInfo ()
 	{
 		depth = 0;
@@ -295,7 +295,7 @@ DeepZoomImageTileSource::XmlWrite (char* buffer, gint32 offset, gint32 n)
 	DZParserInfo *info;
 	
 	if (offset == 0) {
-		//Init xml parser
+		// Init xml parser
 		LOG_MSI ("Start parsing DeepZoom\n");
 		parser = XML_ParserCreate (NULL);
 		XML_SetElementHandler (parser, start_element, end_element);
@@ -333,16 +333,22 @@ DeepZoomImageTileSource::Download ()
 void
 DeepZoomImageTileSource::DownloaderComplete ()
 {
-	//set isFinal for the parser to complete
+	DZParserInfo *info = (DZParserInfo *) XML_GetUserData (parser);
+	
+	// set isFinal for the parser to complete
 	if (!XML_Parse (parser, NULL, 0, 1)) {
 		g_warning ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (parser), XML_ErrorString(XML_GetErrorCode(parser)));
 		Abort ();
 		DownloaderFailed ();
 		return;
 	}
-
-	DZParserInfo *info = (DZParserInfo *) XML_GetUserData (parser);
-
+	
+	if (info->error) {
+		Abort ();
+		DownloaderFailed ();
+		return;
+	}
+	
 	if (!info->is_collection) {
 		SetImageWidth (info->image_width);
 		SetImageHeight (info->image_height);
@@ -410,12 +416,36 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-//DeepZoomParsing
+#define DZParsedServerFormat  (1 << 0)
+#define DZParsedFormat        (1 << 1)
+#define DZParsedTileSize      (1 << 2)
+#define DZParsedOverlap       (1 << 3)
+#define DZParsedMinLevel      (1 << 4)
+#define DZParsedMaxLevel      (1 << 5)
+#define DZParsedHeight        (1 << 6)
+#define DZParsedWidth         (1 << 7)
+#define DZParsedSource        (1 << 8)
+#define DZParsedId            (1 << 9)
+#define DZParsedN             (1 << 10)
+
+#define DZParsedCollection (DZParsedServerFormat | DZParsedFormat | DZParsedTileSize | DZParsedMaxLevel)
+#define DZParsedImage (DZParsedServerFormat | DZParsedFormat | DZParsedTileSize | DZParsedOverlap)
+#define DZParsedDisplayRect (DZParsedMinLevel | DZParsedMaxLevel)
+#define DZParsedI (DZParsedSource | DZParsedId | DZParsedN)
+#define DZParsedSize (DZParsedWidth | DZParsedHeight)
+
+// DeepZoomParsing
 static void
 start_element (void *data, const char *el, const char **attr)
 {
 	DZParserInfo *info = (DZParserInfo *) data;
-
+	bool failed = false;
+	guint32 parsed = 0;
+	int err;
+	
+	if (info->error)
+		return;
+	
 	if (info->skip >= 0) {
 		(info->depth)++;
 		return;
@@ -423,37 +453,76 @@ start_element (void *data, const char *el, const char **attr)
 	
 	switch (info->depth) {
 	case 0:
-		//Image or Collection
+		// Image or Collection
 		if (!g_ascii_strcasecmp ("Image", el)) {
 			info->is_collection = false;
 			
-			for (int i = 0; attr[i]; i += 2) {
-				if (!g_ascii_strcasecmp ("Format", attr[i]))
-					info->format = g_strdup (attr[i+1]);
-			        else if (!g_ascii_strcasecmp ("ServerFormat", attr[i]))
-					info->server_format = g_strdup (attr[i+1]);
-				else if (!g_ascii_strcasecmp ("TileSize", attr[i]))
-					info->tile_size = atoi (attr[i+1]);
-				else if (!g_ascii_strcasecmp ("Overlap", attr[i]))
-					info->overlap = atoi (attr[i+1]);
-				else
+			for (int i = 0; attr[i] && !failed; i += 2) {
+				if (!g_ascii_strcasecmp ("ServerFormat", attr[i])) {
+					if (!(parsed & DZParsedServerFormat)) {
+						info->server_format = g_strdup (attr[i+1]);
+						parsed |= DZParsedServerFormat;
+					} else
+						failed = true;
+				} else if (!g_ascii_strcasecmp ("Format", attr[i])) {
+					if (!(parsed & DZParsedFormat)) {
+						info->format = g_strdup (attr[i+1]);
+						parsed |= DZParsedFormat;
+					} else
+						failed = true;
+				} else if (!g_ascii_strcasecmp ("TileSize", attr[i])) {
+					if (!(parsed & DZParsedTileSize)) {
+						failed = !Int32TryParse (attr[i+1], &info->tile_size, &err) || info->tile_size <= 0;
+						parsed |= DZParsedTileSize;
+					} else
+						failed = true;
+				} else if (!g_ascii_strcasecmp ("Overlap", attr[i])) {
+					if (!(parsed & DZParsedOverlap)) {
+						failed = !Int32TryParse (attr[i+1], &info->overlap, &err) || info->overlap <= 0;
+						parsed |= DZParsedOverlap;
+					} else
+						failed = true;
+				} else {
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+				}
 			}
+			
+			if (failed || parsed != DZParsedImage)
+				info->error = true;
 		} else if (!g_ascii_strcasecmp ("Collection", el)) {
 			info->is_collection = true;
 			
-			for (int i = 0; attr[i]; i += 2) {
-				if (!g_ascii_strcasecmp ("Format", attr[i]))
-					info->format = g_strdup (attr[i+1]);
-				else if (!g_ascii_strcasecmp ("ServerFormat", attr[i]))
-					info->server_format = g_strdup (attr[i+1]);
-				else if (!g_ascii_strcasecmp ("TileSize", attr[i]))
-					info->tile_size = atoi (attr[i+1]);
-				else if (!g_ascii_strcasecmp ("MaxLevel", attr[i]))
-					info->max_level = atoi (attr[i+1]);
-				else
+			for (int i = 0; attr[i] && !failed; i += 2) {
+				if (!g_ascii_strcasecmp ("ServerFormat", attr[i])) {
+					if (!(parsed & DZParsedServerFormat)) {
+						info->server_format = g_strdup (attr[i+1]);
+						parsed |= DZParsedServerFormat;
+					} else
+						failed = true;
+				} else if (!g_ascii_strcasecmp ("Format", attr[i])) {
+					if (!(parsed & DZParsedFormat)) {
+						info->format = g_strdup (attr[i+1]);
+						parsed |= DZParsedFormat;
+					} else
+						failed = true;
+				} else if (!g_ascii_strcasecmp ("TileSize", attr[i])) {
+					if (!(parsed & DZParsedTileSize)) {
+						failed = !Int32TryParse (attr[i+1], &info->tile_size, &err) || info->tile_size <= 0;
+						parsed |= DZParsedTileSize;
+					} else
+						failed = true;
+				} else if (!g_ascii_strcasecmp ("MaxLevel", attr[i])) {
+					if (!(parsed & DZParsedMaxLevel))
+						failed = !Int32TryParse (attr[i+1], &info->max_level, &err) || info->max_level <= 0;
+					else
+						failed = true;
+				} else {
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+				}
 			}
+			
+			if (failed || parsed != DZParsedCollection)
+				info->error = true;
 		} else {
 			g_warning ("Unexpected element %s\n", el);
 			info->error = true;
@@ -461,25 +530,37 @@ start_element (void *data, const char *el, const char **attr)
 		break;
 	case 1:
 		if (!info->is_collection) {
-			//Size or DisplayRects
+			// Size or DisplayRects
 			if (!g_ascii_strcasecmp ("Size", el)) {
-				for (int i = 0; attr[i]; i += 2) {
-					if (!g_ascii_strcasecmp ("Width", attr[i]))
-						info->image_width = atol (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Height", attr[i]))
-						info->image_height = atol (attr[i+1]);
-					else
+				for (int i = 0; attr[i] && !failed; i += 2) {
+					if (!g_ascii_strcasecmp ("Width", attr[i])) {
+						if (!(parsed & DZParsedWidth)) {
+							failed = !Int32TryParse (attr[i+1], &info->image_width, &err) || info->image_width <= 0;
+							parsed |= DZParsedWidth;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("Height", attr[i])) {
+						if (!(parsed & DZParsedHeight)) {
+							failed = !Int32TryParse (attr[i+1], &info->image_height, &err) || info->image_height <= 0;
+							parsed |= DZParsedHeight;
+						} else
+							failed = true;
+					} else {
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
+					}
 				}
+				
+				if (failed || parsed != DZParsedSize)
+					info->error = true;
 			} else if (!g_ascii_strcasecmp ("DisplayRects", el)) {
-				//no attributes, only contains DisplayRect element
+				// no attributes, only contains DisplayRect element
 			} else {
 				g_warning ("Unexpected element %s\n", el);
 				info->error = true;
 			}
 		} else {
 			if (!g_ascii_strcasecmp ("Items", el)) {
-				//no attributes, only contains <I> elements
+				// no attributes, only contains <I> elements
 			} else {
 				g_warning ("Unexpected element %d %s\n", info->depth, el);
 				info->error = true;
@@ -488,18 +569,33 @@ start_element (void *data, const char *el, const char **attr)
 		break;
 	case 2:
 		if (!info->is_collection) {
-			//DisplayRect elts
+			// DisplayRect elements
 			if (!g_ascii_strcasecmp ("DisplayRect", el)) {
-				long min_level = 0, max_level = 0;
+				int min_level = 0, max_level = 0;
 				
 				for (int i = 0; attr[i]; i += 2) {
-					if (!g_ascii_strcasecmp ("MinLevel", attr[i]))
-						min_level = atol (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("MaxLevel", attr[i]))
-						max_level = atol (attr[i+1]);
-					else
+					if (!g_ascii_strcasecmp ("MinLevel", attr[i])) {
+						if (!(parsed & DZParsedMinLevel)) {
+							failed = !Int32TryParse (attr[i+1], &min_level, &err) || min_level <= 0;
+							parsed |= DZParsedMinLevel;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("MaxLevel", attr[i])) {
+						if (!(parsed & DZParsedMaxLevel)) {
+							failed = !Int32TryParse (attr[i+1], &max_level, &err) || max_level < min_level;
+							parsed |= DZParsedMaxLevel;
+						} else
+							failed = true;
+					} else {
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+					}
 				}
+				
+				if (failed || parsed != DZParsedDisplayRect) {
+					info->error = true;
+					break;
+				}
+				
 				info->current_rect = new DisplayRect (min_level, max_level);
 			} else {
 				g_warning ("Unexpected element %s\n", el);
@@ -510,15 +606,33 @@ start_element (void *data, const char *el, const char **attr)
 				info->current_subimage = new SubImage ();
 				
 				for (int i = 0; attr[i]; i += 2) {
-					if (!g_ascii_strcasecmp ("N", attr[i]))
-						info->current_subimage->n = atoi (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Id", attr[i]))
-						info->current_subimage->id = atoi (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Source", attr[i])) {
-						info->current_subimage->source = new Uri ();
-						info->current_subimage->source->Parse (attr[i+1]);
-					} else
+					if (!g_ascii_strcasecmp ("Source", attr[i])) {
+						if (!(parsed & DZParsedSource)) {
+							info->current_subimage->source = new Uri ();
+							failed = !info->current_subimage->source->Parse (attr[i+1]);
+							parsed |= DZParsedSource;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("Id", attr[i])) {
+						if (!(parsed & DZParsedId)) {
+							failed = Int32TryParse (attr[i+1], &info->current_subimage->id, &err) ||
+								info->current_subimage->id < 0;
+							parsed |= DZParsedId;
+						} else
+							failed = true;
+					} else if (!g_ascii_strcasecmp ("N", attr[i])) {
+						if (!(parsed & DZParsedN)) {
+							failed = Int32TryParse (attr[i+1], &info->current_subimage->n, &err) ||
+								info->current_subimage->n < 0;
+							parsed |= DZParsedN;
+						} else
+							failed = true;
+					} else {
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+					}
+					
+					if (failed || parsed != DZParsedI)
+						info->error = true;
 				}
 			} else {
 				g_warning ("Unexpected element %d %s\n", info->depth, el);
@@ -528,7 +642,7 @@ start_element (void *data, const char *el, const char **attr)
 		break;
 	case 3:
 		if (!info->is_collection) {
-			//Rect elt
+			// Rect element
 			if (!g_ascii_strcasecmp ("Rect", el)) {
 				if (!info->current_rect) {
 					info->error = true;
@@ -604,6 +718,9 @@ void
 DeepZoomImageTileSource::EndElement (void *data, const char *el)
 {
 	DZParserInfo *info = (DZParserInfo *) data;
+	
+	if (info->error)
+		return;
 	
 	(info->depth)--;
 

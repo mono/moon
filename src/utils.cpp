@@ -377,6 +377,117 @@ g_ptr_array_insert (GPtrArray *array, guint index, void *item)
 	array->pdata[index] = item;
 }
 
+#define UINTTRYPARSE(bits, max)                                         \
+bool                                                                    \
+UInt##bits##TryParse (const char *str, guint##bits *retval, int *err)   \
+{                                                                       \
+	register const char *inptr = str;                               \
+	guint##bits val = 0;                                            \
+	guint digit;                                                    \
+	                                                                \
+	while (*inptr == ' ')                                           \
+		inptr++;                                                \
+	                                                                \
+	str = inptr;                                                    \
+	while (*inptr >= '0' && *inptr <= '9') {                        \
+		digit = (*inptr - '0');                                 \
+		if (val > (max / 10)) {                                 \
+			*err = EOVERFLOW;                               \
+			return false;                                   \
+		} else if (val == (max / 10) && digit > (max % 10)) {   \
+			*err = EOVERFLOW;                               \
+			return false;                                   \
+		} else {                                                \
+			val = (val * 10) + digit;                       \
+		}                                                       \
+		                                                        \
+		inptr++;                                                \
+	}                                                               \
+	                                                                \
+	while (*inptr == ' ')                                           \
+		inptr++;                                                \
+	                                                                \
+	if (inptr == str || *inptr) {                                   \
+		*err = EINVAL;                                          \
+		return false;                                           \
+	}                                                               \
+	                                                                \
+	*retval = val;                                                  \
+	                                                                \
+	return true;                                                    \
+}
+
+//UINTTRYPARSE(8, 255)
+//UINTTRYPARSE(16, 65535)
+UINTTRYPARSE(32, 4294967295UL)
+//UINTTRYPARSE(64, 18446744073709551615ULL)
+
+#define INTTRYPARSE(bits, max)                                          \
+bool                                                                    \
+Int##bits##TryParse (const char *str, gint##bits *retval, int *err)     \
+{                                                                       \
+	register const char *inptr = str;                               \
+	gint##bits val = 0;                                             \
+	int digit, sign = 1;                                            \
+	                                                                \
+	while (*inptr == ' ')                                           \
+		inptr++;                                                \
+	                                                                \
+	if (*inptr == '-') {                                            \
+		sign = -1;                                              \
+		inptr++;                                                \
+	}                                                               \
+	                                                                \
+	str = inptr;                                                    \
+	while (*inptr >= '0' && *inptr <= '9') {                        \
+		digit = (*inptr - '0');                                 \
+		if (val > (max / 10)) {                                 \
+			*err = EOVERFLOW;                               \
+			return false;                                   \
+		} else if (val == (max / 10)) {                         \
+			if (digit > (max % 10) &&                       \
+			    (sign > 0 || digit > ((max % 10) + 1))) {   \
+				*err = EOVERFLOW;                       \
+				return false;                           \
+			}                                               \
+			                                                \
+			if (sign < 0)                                   \
+				val = (val * sign * 10) - digit;        \
+			else                                            \
+				val = (val * 10) + digit;               \
+			                                                \
+			inptr++;                                        \
+			                                                \
+			goto done;                                      \
+		} else {                                                \
+			val = (val * 10) + digit;                       \
+		}                                                       \
+		                                                        \
+		inptr++;                                                \
+	}                                                               \
+	                                                                \
+	val *= sign;                                                    \
+	                                                                \
+ done:                                                                  \
+	                                                                \
+	while (*inptr == ' ')                                           \
+		inptr++;                                                \
+	                                                                \
+	if (inptr == str || *inptr) {                                   \
+		*err = EINVAL;                                          \
+		return false;                                           \
+	}                                                               \
+	                                                                \
+	*retval = val;                                                  \
+	                                                                \
+	return true;                                                    \
+}
+
+//INTTRYPARSE(8, 127)
+//INTTRYPARSE(16, 32767)
+INTTRYPARSE(32, 2147483647L)
+//INTTRYPARSE(64, 9223372036854775807LL)
+
 int
 write_all (int fd, const char *buf, size_t len)
 {
@@ -983,7 +1094,8 @@ TextStream::ReadInternal (char *buffer, ssize_t size)
 }
 
 
-GArray *double_garray_from_str (const char *s, gint max)
+GArray *
+double_garray_from_str (const char *s, gint max)
 {
 	char *next = (char *)s;
 	GArray *values = g_array_sized_new (false, true, sizeof (double), max > 0 ? max : 16);
@@ -1014,7 +1126,8 @@ error:
 	return values;
 }
 
-char * parse_rfc_1945_quoted_string (char *input, char *c, char **end)
+char *
+parse_rfc_1945_quoted_string (char *input, char *c, char **end)
 {
 	char *start;
 	

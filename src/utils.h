@@ -76,6 +76,9 @@ int RemoveDir (const char *dir);
 
 int CopyFileTo (const char *filename, int fd);
 
+bool UInt32TryParse (const char *str, gint32 *retval, int *err);
+bool Int32TryParse (const char *str, gint32 *retval, int *err);
+
 int write_all (int fd, const char *buf, size_t len);
 
 cairo_t *measuring_context_create (void);
