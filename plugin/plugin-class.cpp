@@ -2531,6 +2531,8 @@ moonlight_settings_mapping [] = {
 	{ "background", MoonId_Background },
 	{ "enableframeratecounter", MoonId_EnableFramerateCounter },
 	{ "enablehtmlaccess", MoonId_EnableHtmlAccess },
+	// http://msdn.microsoft.com/en-us/library/dd833071(v=VS.95).aspx
+	{ "enablenavigation", MoonId_EnableNavigation },
 	{ "enableredrawregions", MoonId_EnableRedrawRegions },
 	{ "getsystemglyphtypefaces", MoonId_GetSystemGlyphTypefaces },
 	{ "maxframerate", MoonId_MaxFrameRate },
@@ -2558,6 +2560,10 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *resu
 
 	case MoonId_EnableHtmlAccess:
 		BOOLEAN_TO_NPVARIANT (plugin->GetEnableHtmlAccess (), *result);
+		return true;
+
+	case MoonId_EnableNavigation:
+		BOOLEAN_TO_NPVARIANT (plugin->GetEnableNavigation (), *result);
 		return true;
 
 	case MoonId_MaxFrameRate:
@@ -2605,6 +2611,10 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 
 	// Cant be set after initialization so return true
 	case MoonId_EnableHtmlAccess:
+		return true;
+
+	// Cant be set after initialization so return true
+	case MoonId_EnableNavigation:
 		return true;
 
 	// not implemented yet.

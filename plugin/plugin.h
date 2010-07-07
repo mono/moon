@@ -113,6 +113,8 @@ class PluginInstance
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetEnableHtmlAccess ();
 	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetEnableNavigation ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetAllowHtmlPopupWindow ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetWindowless ();
@@ -252,6 +254,7 @@ private:
 	bool allow_html_popup_window;
 	bool enable_framerate_counter;
 	bool enable_redraw_regions;
+	bool enable_navigation;
 	bool loading_splash;
 	bool is_splash;
 	bool is_reentrant_mess;

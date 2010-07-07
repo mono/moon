@@ -98,5 +98,11 @@ namespace System.Windows.Interop {
 				throw new NotImplementedException ();
 			}
 		}
+
+		internal static bool EnableNavigation {
+			get {
+				return NativeMethods.plugin_instance_get_enable_navigation (XamlLoader.PluginInDomain);
+			}
+		}
 	}
 }

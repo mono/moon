@@ -1,3 +1,10 @@
+2010-07-07  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Settings.cs: Add EnableNavigation internal property
+	* SilverlightHost.cs: Throw InvalidOperationException if 
+	NavigationState[Changed] is used when 'navigationEnabled' is 
+	'none'
+
 2010-07-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SilverlightHost.cs: Ensure that NavigationState[Changed] cannot

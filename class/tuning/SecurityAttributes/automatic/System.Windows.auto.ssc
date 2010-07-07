@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 624 methods
+# 625 methods
 
 +SSC-M: System.Void Mono.Events::SafeAction(System.Action)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
@@ -447,6 +447,7 @@
 +SSC-M: System.Int32 System.Windows.Interop.Settings::get_MaxFrameRate()
 +SSC-M: System.Void System.Windows.Interop.Settings::set_MaxFrameRate(System.Int32)
 +SSC-M: System.Boolean System.Windows.Interop.Settings::get_Windowless()
++SSC-M: System.Boolean System.Windows.Interop.Settings::get_EnableNavigation()
 +SSC-M: System.Boolean System.Windows.Interop.SilverlightHost::IsVersionSupported(System.String)
 +SSC-M: System.Windows.Media.Color System.Windows.Interop.SilverlightHost::get_Background()
 +SSC-M: System.Boolean System.Windows.Interop.SilverlightHost::get_IsLoaded()

@@ -1,3 +1,7 @@
+2010-07-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Add support for EnableNavigation
+
 2010-06-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: Regenerated for new override

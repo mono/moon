@@ -79,6 +79,7 @@ enum PluginPropertyId {
 	MoonId_EnableFramerateCounter,
 	MoonId_EnableRedrawRegions,
 	MoonId_EnableHtmlAccess,
+	MoonId_EnableNavigation,
 	MoonId_MaxFrameRate,
 	MoonId_Version,
 	MoonId_MajorVersion,

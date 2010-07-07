@@ -147,7 +147,7 @@ namespace System.Windows.Interop {
 
 		public string NavigationState {
 			get {
-				EnsureMainThread ();
+				CheckNavigation ();
 
 				if (get_navigation_state == null)
 					get_navigation_state = htmlpage.GetMethod ("get_NavigationState", StaticNonPublic);
@@ -161,7 +161,7 @@ namespace System.Windows.Interop {
 				}
 			}
 			set {
-				EnsureMainThread ();
+				CheckNavigation ();
 
 				if (set_navigation_state == null)
 					set_navigation_state = htmlpage.GetMethod ("set_NavigationState", StaticNonPublic);
@@ -185,10 +185,12 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		static void EnsureMainThread ()
+		static void CheckNavigation ()
 		{
 			if (!Helper.CheckAccess ())
 				throw new UnauthorizedAccessException ();
+			if (!Settings.EnableNavigation)
+				throw new InvalidOperationException ("enabledNavigation is set to false");
 		}
 
 		static void EnsureHistoryIframePresence ()
@@ -206,7 +208,7 @@ namespace System.Windows.Interop {
 
 		public event EventHandler<NavigationStateChangedEventArgs> NavigationStateChanged {
 			add {
-				EnsureMainThread ();
+				CheckNavigation ();
 				EnsureHistoryIframePresence ();
 				lock (locker) {
 					navigation_state_changed += value;

@@ -111,6 +111,7 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	default_allow_html_popup_window = true;	// use the default value (popup allowed on same-domain, limited on xdomain)
 	allow_html_popup_window = false;
 	enable_redraw_regions = false;
+	enable_navigation = true;		// true (all / default), false (none)
 	xembed_supported = FALSE;
 	loading_splash = false;
 	is_splash = false;
@@ -167,6 +168,7 @@ PluginInstance::Recreate (const char *source)
 		"source", "background", "windowless", "maxFramerate", "id",
 		"enableFrameRateCounter", "enableRedrawRegions",
 		"enablehtmlaccess", "allowhtmlpopupwindow", "splashscreensource",
+		"enablenavigation",
 		"onSourceDownloadProgressChanged", "onSourceDownloadComplete",
 		"culture", "uiculture", NULL };
 	const char *argv [] = 
@@ -175,6 +177,7 @@ PluginInstance::Recreate (const char *source)
 		GetEnableFrameRateCounter () ? "true" : "false",
 		GetEnableRedrawRegions () ? "true" : "false",
 		enable_html_access ? "true" : "false", allow_html_popup_window ? "true" : "false", splashscreensource,
+		GetEnableNavigation () ? "all" : "none",
 		onSourceDownloadProgressChanged, onSourceDownloadComplete,
 		culture, uiCulture, NULL };
 
@@ -470,6 +473,10 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		else if (!g_ascii_strcasecmp (argn [i], "enablehtmlaccess")) {
 			default_enable_html_access = false; // we're using the application value, not the default one
 			enable_html_access = parse_bool_arg (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "enablenavigation")) {
+			// default value is 'all', 'none' means navigation is disabled
+			enable_navigation = g_ascii_strcasecmp (argv [i], "none");
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
 			default_allow_html_popup_window = false; // we're using the application value, not the default one
@@ -1769,6 +1776,12 @@ bool
 PluginInstance::GetEnableHtmlAccess ()
 {
 	return enable_html_access;
+}
+
+bool
+PluginInstance::GetEnableNavigation ()
+{
+	return enable_navigation;
 }
 
 bool
