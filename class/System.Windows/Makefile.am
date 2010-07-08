@@ -92,6 +92,10 @@ system_windows_sources =							\
 	$(srcdir)/Mono.Xaml/MarkupExpressionParser.cs				\
 	$(srcdir)/Mono.Xaml/XamlContext.cs					\
 	$(srcdir)/Mono.Xaml/XamlLoaderCallbacks.cs				\
+	$(srcdir)/Mono.Xaml/XamlParser.cs					\
+	$(srcdir)/Mono.Xaml/XamlPropertySetter.cs				\
+	$(srcdir)/Mono.Xaml/XamlElement.cs					\
+	$(srcdir)/Mono.Xaml/XamlTypeConverter.cs				\
 	$(srcdir)/System.ComponentModel/AlternateContentPropertyAttribute.cs	\
 	$(srcdir)/System.ComponentModel/ClosingEventArgs.cs						\
 	$(srcdir)/System.ComponentModel/CurrentChangingEventArgs.cs		\

@@ -37,8 +37,17 @@
 +SC-T: Mono.Hosting
 +SC-T: Mono.StreamWrapper
 +SC-T: Mono.MoonlightTypeConverter
++SC-T: Mono.Xaml.XamlParser
++SC-T: Mono.Xaml.XamlObject
++SC-T: Mono.Xaml.XamlObjectElement
++SC-T: Mono.Xaml.XamlObjectProperty
++SC-T: Mono.Xaml.XamlPropertySetter
++SC-T: Mono.Xaml.XamlReflectionPropertySetter
++SC-T: Mono.Xaml.XamlAttachedPropertySetter
++SC-T: Mono.Xaml.XamlTypeConverter
 +SC-T: Mono.Xaml.MarkupExpressionParser
 +SC-T: Mono.Xaml.SL3MarkupExpressionParser
++SC-T: Mono.Xaml.SL4MarkupExpressionParser
 +SC-T: Mono.ManagedStreamCallbacks
 +SC-T: Mono.MoonlightValueConverter
 +SC-T: Mono.ToggleRef

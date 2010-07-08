@@ -1,3 +1,8 @@
+2010-07-08  Jackson Harper  <jackson@ximian.com>
+
+	* SecurityAttributes/overrides/System.Windows.manual: Update, add
+	the internal parser types.
+
 2010-04-27  Andreia Gaita  <avidigal@novell.com>
 
 	* System.ServiceModel.info: Added ClientRuntimeChannel class definition
