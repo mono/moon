@@ -1,5 +1,11 @@
 2010-07-08  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Update these two tests
+	  so they don't make me think that exceptions are being thrown
+	  inside the SetBinding () path.
+
+2010-07-08  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
 	  Commit the test for the last ItemContainerGenerator fix.
 

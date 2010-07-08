@@ -63,27 +63,25 @@ namespace System.Windows.Data
 				dpChanged = null;
 			}
 
-			if (Source == null) {
-				DependencyProperty = null;
-				PropertyInfo = null;
-			} else {
-				var type = Source.GetType ();
-				if (TypeName != null) {
-					type = Application.GetComponentTypeFromName (TypeName);
-					if (type == null)
-						throw new Exception (string.Format ("The type '{0}' could not be found", TypeName));
-					PropertyInfo = null;
-				} else {
-					PropertyInfo = type.GetProperty (PropertyName);
-				}
-				DependencyProperty prop;
-				Types.Ensure (type);
-				if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
-					DependencyProperty = prop;
-					dpChanged = DPChanged;
-						
-					new_do.AddPropertyChangedHandler (DependencyProperty, dpChanged);
-				}
+			DependencyProperty = null;
+			PropertyInfo = null;
+			if (Source == null)
+				return;
+
+			var type = Source.GetType ();
+			if (TypeName != null)
+				type = Application.GetComponentTypeFromName (TypeName);
+
+			if (type == null)
+				return;
+
+			PropertyInfo = type.GetProperty (PropertyName);
+			DependencyProperty prop;
+			Types.Ensure (type);
+			if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
+				DependencyProperty = prop;
+				dpChanged = DPChanged;
+				new_do.AddPropertyChangedHandler (DependencyProperty, dpChanged);
 			}
 		}
 

@@ -371,6 +371,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void AttachedProperty_CLR_FullyQualified ()
 		{
 			// You can't specify the fully qualified object type
@@ -379,14 +380,15 @@ namespace MoonTest.System.Windows.Data
 
 			var target = new OpacityObject ();
 			Assert.Throws<Exception> (() => {
-				target.SetBinding (Rectangle.WidthProperty, new Binding {
+				new Binding {
 					Path = new PropertyPath ("(MoonTest.System.Windows.Data.OpacityObject.Attached)"),
 					Source = data,
-				});
+				};
 			});
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void AttachedProperty_CLR ()
 		{
 			// You can't specify just the class name unless it's
@@ -397,10 +399,10 @@ namespace MoonTest.System.Windows.Data
 
 			var target = new OpacityObject ();
 			Assert.Throws<Exception> (() => {
-				target.SetBinding (Rectangle.WidthProperty, new Binding {
+				new Binding {
 					Path = new PropertyPath ("(OpacityObject.Attached)"),
 					Source = data,
-				});
+				};
 			});
 		}
 

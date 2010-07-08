@@ -1,5 +1,11 @@
 2010-07-08  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardPropertyPathNode.cs: If TypeName cannot be resolved
+	  to a type, treat the binding as a regular broken binding
+	  node. Don't throw an exception.
+
+2010-07-08  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: An FE is mentor bound if it has a
 	  binding on it's DataContext and it's Parent element is null.
 
