@@ -1,3 +1,8 @@
+2010-07-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* PolicyBasedHttpWebRequest.cs: Special case for Proxy-Authorization.
+	Fix DRT664
+
 2010-06-21  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* PolicyBasedHttpWebRequest.cs: Implement ContentLength for both

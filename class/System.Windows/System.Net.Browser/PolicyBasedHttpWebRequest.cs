@@ -164,6 +164,11 @@ namespace System.Net.Browser {
 				return async_result;
 			}
 
+			// new in SL4 - unlike others it can be set (earlier) and is not checked later (CheckProtocolViolation)
+			// but still throws a SecurityException here
+			if (Headers.ContainsKey ("Proxy-Authorization"))
+				throw new SecurityException ();
+
 			if (!sendHeaders)
 				wreq.Headers.Clear ();
 			wreq.progress = progress;

@@ -251,15 +251,50 @@ namespace MoonTest.System.Net.Browser {
 
 		[TestMethod]
 		[Asynchronous]
-		public void HeadersPostThrowingInGetResponse ()
+		public void HeadersPost_CacheControl ()
 		{
-			Type se = typeof (SecurityException);
-			TryWebRequest ("POST", "Cache-Control", se);
-			TryWebRequest ("POST", "Content-Encoding", se);
-			TryWebRequest ("POST", "Content-Language", se);
-			TryWebRequest ("POST", "Content-MD5", se);
-			TryWebRequest ("POST", "Expires", se);
+			TryWebRequest ("POST", "Cache-Control", typeof (SecurityException));
+			EnqueueTestComplete ();
+		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void HeadersPost_ContentEncoding ()
+		{
+			TryWebRequest ("POST", "Content-Encoding", typeof (SecurityException));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HeadersPost_ContentLanguage ()
+		{
+			TryWebRequest ("POST", "Content-Language", typeof (SecurityException));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HeadersPost_ContentMD5 ()
+		{
+			TryWebRequest ("POST", "Content-MD5", typeof (SecurityException));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HeadersPost_Expires ()
+		{
+			TryWebRequest ("POST", "Expires", typeof (SecurityException));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HeadersPost_ProxyAuthorization ()
+		{
+			// new in SL4
+			TryWebRequest ("POST", "Proxy-Authorization", typeof (SecurityException));
 			EnqueueTestComplete ();
 		}
 

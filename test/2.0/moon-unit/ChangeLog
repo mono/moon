@@ -1,3 +1,8 @@
+2010-07-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.Browser/BaseHttpWebRequestTest.cs: Split some test
+	cases and add a new one for Proxy-Authorization
+
 2010-07-08  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Update these two tests
