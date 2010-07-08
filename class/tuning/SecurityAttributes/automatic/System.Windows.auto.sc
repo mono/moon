@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 491 methods needs to be decorated.
+# 502 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -273,6 +273,9 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
+
+# overrides 'System.Boolean Mono.MoonlightTypeConverter::CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)'.
++SC-M: System.Boolean Mono.Xaml.XamlTypeConverter::CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_height(System.IntPtr)
@@ -845,6 +848,9 @@
 +SC-M: System.IntPtr Mono.Xaml.ParseTemplateFunc::Invoke(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
++SC-M: System.IntPtr Mono.Xaml.XamlParser::ParseTemplate(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
+
+# using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Value::ToObject(System.Type,Mono.Value*)
 
 # overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromFile(System.String,System.Boolean)'.
@@ -861,6 +867,12 @@
 
 # overrides 'System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)'.
 +SC-M: System.Object Mono.Xaml.SL3MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
+
+# overrides 'System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)'.
++SC-M: System.Object Mono.Xaml.SL4MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
+
+# overrides 'System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)'.
++SC-M: System.Object Mono.Xaml.XamlTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetGetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
@@ -879,6 +891,18 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(Mono.Xaml.XamlCallbackData*,System.String,System.String)
+
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_DeclaringType()'.
++SC-M: System.Type Mono.Xaml.XamlAttachedPropertySetter::get_DeclaringType()
+
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_Type()'.
++SC-M: System.Type Mono.Xaml.XamlAttachedPropertySetter::get_Type()
+
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_DeclaringType()'.
++SC-M: System.Type Mono.Xaml.XamlReflectionPropertySetter::get_DeclaringType()
+
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_Type()'.
++SC-M: System.Type Mono.Xaml.XamlReflectionPropertySetter::get_Type()
 
 # p/invoke declaration
 +SC-M: System.UInt32 Mono.NativeMethods::http_request_write_event_args_get_count(System.IntPtr)
@@ -1408,6 +1432,12 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)
 
+# overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
++SC-M: System.Void Mono.Xaml.XamlAttachedPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
+
+# overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
++SC-M: System.Void Mono.Xaml.XamlReflectionPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
+
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
 
@@ -1443,6 +1473,9 @@
 
 # overrides 'System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()'.
 +SC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL3MarkupExpressionParser::GetParentTemplate()
+
+# overrides 'System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()'.
++SC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL4MarkupExpressionParser::GetParentTemplate()
 
 # p/invoke declaration
 +SC-M: System.Windows.InstallState Mono.NativeMethods::application_get_install_state(System.IntPtr)
