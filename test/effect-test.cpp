@@ -17,6 +17,7 @@ main (int argc, char **argv)
 	CustomEffect *effect;
 	PixelShader *shader;
 	int stride = width * 4;
+        Rect bounds = Rect (0, 0, width, height);
 	gpointer data;
 	bool status;
 
@@ -30,9 +31,9 @@ main (int argc, char **argv)
 	runtime_init_desktop ();
 
 	data = g_malloc0 (height * stride);
-	dst = cairo_image_surface_create_for_data ((unsigned char *) data,
-						   CAIRO_FORMAT_ARGB32,
-						   width, height, stride);
+        dst = cairo_image_surface_create_for_data ((unsigned char *) data,
+                                                   CAIRO_FORMAT_ARGB32,
+                                                   width, height, stride);
 	src = cairo_surface_create_similar (dst,
 					    CAIRO_CONTENT_COLOR_ALPHA,
 					    width, height);
@@ -43,7 +44,7 @@ main (int argc, char **argv)
 	shader->SetTokensFromPath (argv[1]);
 	effect->SetPixelShader (shader);
 
-	status = effect->Composite (dst, src, 0, 0);
+	status = effect->Composite (dst, src, &bounds, 0, 0);
 
 	effect->unref ();
 	shader->unref ();

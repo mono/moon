@@ -1,3 +1,7 @@
+2010-07-08  David Reveman  <davidr@novell.com>
+
+	* effect-test.cpp: Track changes to effect framework.
+
 2010-07-02  David Reveman  <davidr@novell.com>
 
 	* 3.0/PlaneProjections: Add perspective transformation test.
