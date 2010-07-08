@@ -1,3 +1,20 @@
+2010-07-08  David Reveman  <davidr@novell.com>
+
+	* uielement.cpp:
+	* effect.h:
+	* effect.cpp: Add proper clipping support to effect framework. The
+	local clip is applied after any pixel effects but before any
+	perspective transformation. This makes the rendering order:
+
+	1. OpacityMask
+	2. Opacity
+	3. Effect
+	4. Clip
+	5. Projection
+	6. RenderTransform
+	7. LayoutTransform
+	8. Parent Properties
+
 2010-07-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (Emit*): Only emit the event if it has

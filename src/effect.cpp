@@ -1439,11 +1439,66 @@ Effect::DrawVertices (struct pipe_surface  *surface,
 bool
 Effect::Composite (cairo_surface_t *dst,
 		   cairo_surface_t *src,
-		   int             x,
-		   int             y)
+		   Rect            *bounds,
+		   double          x,
+		   double          y)
 {
 	g_warning ("Effect::Composite has been called. The derived class should have overridden it.");
 	return 0;
+}
+
+bool
+Effect::ClipAndComposite (cairo_t         *cr,
+			  cairo_surface_t *src,
+			  double          x,
+			  double          y)
+{
+	cairo_rectangle_list_t *clip;
+	cairo_surface_t        *dst;
+	Rect                   bounds = Rect (-32768, -32768, 65536, 65536);
+	double                 dstX, dstY;
+	bool                   status;
+
+	clip = cairo_copy_clip_rectangle_list (cr);
+
+	if (clip->status == CAIRO_STATUS_SUCCESS) {
+		if (clip->num_rectangles == 0) {
+			return 1; // all clipped
+		}
+		else if (clip->num_rectangles == 1) {
+			bounds = Rect (clip->rectangles[0].x,
+				       clip->rectangles[0].y,
+				       clip->rectangles[0].width,
+				       clip->rectangles[0].height);
+
+			cairo_rectangle_list_destroy (clip);
+			clip = NULL;
+		}
+	}
+
+	if (clip)
+		cairo_push_group (cr);
+
+	dst = cairo_get_group_target (cr);
+	cairo_surface_get_device_offset (dst, &dstX, &dstY);
+
+	bounds.x += dstX;
+	bounds.y += dstY;
+	bounds = bounds.Intersection (Rect (0, 0, 65535, 65535));
+
+	status = Composite (dst, src, &bounds, x + dstX, y + dstY);
+
+	if (clip) {
+		cairo_pattern_t *data = cairo_pop_group (cr);
+		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+			cairo_set_source (cr, data);
+			cairo_paint (cr);
+		}
+		cairo_pattern_destroy (data);
+		cairo_rectangle_list_destroy (clip);
+	}
+
+	return status;
 }
 
 void
@@ -1535,8 +1590,9 @@ BlurEffect::TransformBounds (Rect bounds)
 bool
 BlurEffect::Composite (cairo_surface_t *dst,
 		       cairo_surface_t *src,
-		       int             x,
-		       int             y)
+		       Rect            *bounds,
+		       double          x,
+		       double          y)
 {
 	
 #ifdef USE_GALLIUM
@@ -1548,29 +1604,8 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	struct pipe_transfer *transfer;
 	float                *verts;
 	int                  idx;
-#endif
 
 	MaybeUpdateFilter ();
-
-	if (!nfiltervalues)
-		return 0;
-
-	/* table based filter code when possible */
-	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
-
-		/* modifies the source surface */
-		sw_filter_blur (cairo_image_surface_get_data (src),
-				cairo_image_surface_get_width (src),
-				cairo_image_surface_get_height (src),
-				cairo_image_surface_get_stride (src),
-				nfiltervalues,
-				filtertable);
-
-		/* UIElement::PostRender will composite modified source surface */
-		return 0;
-	}
-
-#ifdef USE_GALLIUM
 	MaybeUpdateShader ();
 
 	if (!fs)
@@ -1725,6 +1760,11 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
+	struct pipe_rasterizer_state rasterizer;
+	memset (&rasterizer, 0, sizeof (rasterizer));
+	rasterizer.cull_face = PIPE_FACE_NONE;
+	cso_set_rasterizer (ctx->cso, &rasterizer);
+
 	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
 
 	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
@@ -1742,6 +1782,18 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
+
+	struct pipe_scissor_state scissor;
+	scissor.minx = bounds->x;
+	scissor.miny = bounds->y;
+	scissor.maxx = bounds->x + bounds->width;
+	scissor.maxy = bounds->y + bounds->height;
+	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
+
+	memset (&rasterizer, 0, sizeof (rasterizer));
+	rasterizer.cull_face = PIPE_FACE_NONE;
+	rasterizer.scissor = 1;
+	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	DrawVertices (surface, vertices, 1, 1);
 
@@ -1763,6 +1815,36 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	return 0;
 #endif
 
+}
+
+bool
+BlurEffect::ClipAndComposite (cairo_t         *cr,
+			      cairo_surface_t *src,
+			      double          x,
+			      double          y)
+{
+	MaybeUpdateFilter ();
+
+	/* table based filter code when possible */
+	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+
+		/* modifies the source surface */
+		if (nfiltervalues)
+			sw_filter_blur (cairo_image_surface_get_data (src),
+					cairo_image_surface_get_width (src),
+					cairo_image_surface_get_height (src),
+					cairo_image_surface_get_stride (src),
+					nfiltervalues,
+					filtertable);
+
+		/* paint clip */
+		cairo_set_source_surface (cr, src, 0, 0);
+		cairo_paint (cr);
+
+		return 1;
+	}
+
+	return Effect::ClipAndComposite (cr, src, x, y);
 }
 
 void
@@ -1982,8 +2064,9 @@ DropShadowEffect::TransformBounds (Rect bounds)
 bool
 DropShadowEffect::Composite (cairo_surface_t *dst,
 			     cairo_surface_t *src,
-			     int             x,
-			     int             y)
+			     Rect            *bounds,
+			     double          x,
+			     double          y)
 {
 
 #ifdef USE_GALLIUM
@@ -1995,43 +2078,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	float                *verts;
 	struct pipe_transfer *transfer;
 	int                  idx;
-#endif
-		
+
 	MaybeUpdateFilter ();
-
-	/* table based filter code when possible */
-	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
-		double direction = GetDirection () * (M_PI / 180.0);
-		double depth = GetShadowDepth ();
-		double dx = -cos (direction) * depth;
-		double dy = sin (direction) * depth;
-		Color  *color = GetColor ();
-		double opacity = GetOpacity ();
-		int    rgba[4];
-		int    *table0 = filtertable0;
-		int    **table = filtertable ? filtertable : &table0;
-
-		rgba[SW_RED]   = (int) ((color->r / opacity) * 255.0);
-		rgba[SW_GREEN] = (int) ((color->g / opacity) * 255.0);
-		rgba[SW_BLUE]  = (int) ((color->b / opacity) * 255.0);
-		rgba[SW_ALPHA] = (int) (opacity * 255.0);
-
-		/* modifies the source surface */
-		sw_filter_drop_shadow (cairo_image_surface_get_data (src),
-				       cairo_image_surface_get_width (src),
-				       cairo_image_surface_get_height (src),
-				       cairo_image_surface_get_stride (src),
-				       (int) (dx + 0.5),
-				       (int) (dy + 0.5),
-				       nfiltervalues,
-				       table,
-				       rgba);
-
-		/* UIElement::PostRender will composite modified source surface */
-		return 0;
-	}
-
-#ifdef USE_GALLIUM
 	MaybeUpdateShader ();
 
 	if (!vert_fs || !horz_fs)
@@ -2187,6 +2235,11 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
+	struct pipe_rasterizer_state rasterizer;
+	memset (&rasterizer, 0, sizeof (rasterizer));
+	rasterizer.cull_face = PIPE_FACE_NONE;
+	cso_set_rasterizer (ctx->cso, &rasterizer);
+
 	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
@@ -2212,6 +2265,18 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
+	struct pipe_scissor_state scissor;
+	scissor.minx = bounds->x;
+	scissor.miny = bounds->y;
+	scissor.maxx = bounds->x + bounds->width;
+	scissor.maxy = bounds->y + bounds->height;
+	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
+
+	memset (&rasterizer, 0, sizeof (rasterizer));
+	rasterizer.cull_face = PIPE_FACE_NONE;
+	rasterizer.scissor = 1;
+	cso_set_rasterizer (ctx->cso, &rasterizer);
+
 	DrawVertices (surface, vertices, 1, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
@@ -2233,6 +2298,52 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	return 0;
 #endif
 
+}
+
+bool
+DropShadowEffect::ClipAndComposite (cairo_t         *cr,
+				    cairo_surface_t *src,
+				    double          x,
+				    double          y)
+{
+	MaybeUpdateFilter ();
+
+	/* table based filter code when possible */
+	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+		double direction = GetDirection () * (M_PI / 180.0);
+		double depth = GetShadowDepth ();
+		double dx = -cos (direction) * depth;
+		double dy = sin (direction) * depth;
+		Color  *color = GetColor ();
+		double opacity = GetOpacity ();
+		int    rgba[4];
+		int    *table0 = filtertable0;
+		int    **table = filtertable ? filtertable : &table0;
+
+		rgba[SW_RED]   = (int) ((color->r / opacity) * 255.0);
+		rgba[SW_GREEN] = (int) ((color->g / opacity) * 255.0);
+		rgba[SW_BLUE]  = (int) ((color->b / opacity) * 255.0);
+		rgba[SW_ALPHA] = (int) (opacity * 255.0);
+
+		/* modifies the source surface */
+		sw_filter_drop_shadow (cairo_image_surface_get_data (src),
+				       cairo_image_surface_get_width (src),
+				       cairo_image_surface_get_height (src),
+				       cairo_image_surface_get_stride (src),
+				       (int) (dx + 0.5),
+				       (int) (dy + 0.5),
+				       nfiltervalues,
+				       table,
+				       rgba);
+
+		/* paint clip */
+		cairo_set_source_surface (cr, src, 0, 0);
+		cairo_paint (cr);
+
+		return 1;
+	}
+
+	return Effect::ClipAndComposite (cr, src, x, y);
 }
 
 void
@@ -2981,8 +3092,9 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 bool
 ShaderEffect::Composite (cairo_surface_t *dst,
 			 cairo_surface_t *src,
-			 int             x,
-			 int             y)
+			 Rect            *bounds,
+			 double          x,
+			 double          y)
 {
 
 #ifdef USE_GALLIUM
@@ -3144,6 +3256,19 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
+
+	struct pipe_scissor_state scissor;
+	scissor.minx = bounds->x;
+	scissor.miny = bounds->y;
+	scissor.maxx = bounds->x + bounds->width;
+	scissor.maxy = bounds->y + bounds->height;
+	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
+
+	struct pipe_rasterizer_state rasterizer;
+	memset (&rasterizer, 0, sizeof (rasterizer));
+	rasterizer.cull_face = PIPE_FACE_NONE;
+	rasterizer.scissor = 1;
+	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	DrawVertices (surface, vertices, 1, 1);
 
@@ -4074,20 +4199,21 @@ ProjectionEffect::~ProjectionEffect ()
 bool
 ProjectionEffect::Composite (cairo_surface_t *dst,
 			     cairo_surface_t *src,
-			     int             x,
-			     int             y)
+			     Rect            *bounds,
+			     double          x,
+			     double          y)
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
-	struct pipe_resource *texture;
-	struct pipe_surface  *surface;
-	struct pipe_resource *vertices;
-	float                *verts;
-	struct pipe_transfer *transfer = NULL;
-	double               *m = GetShaderMatrix (src);
-	double               srcX = GetShaderOffsetX (src);
-	double               srcY = GetShaderOffsetY (src);
+	struct st_context      *ctx = st_context;
+	struct pipe_resource   *texture;
+	struct pipe_surface    *surface;
+	struct pipe_resource   *vertices;
+	float                  *verts;
+	struct pipe_transfer   *transfer = NULL;
+	double                 *m = GetShaderMatrix (src);
+	double                 srcX = GetShaderOffsetX (src);
+	double                 srcY = GetShaderOffsetY (src);
 
 	if (!m)
 		return 0;
@@ -4203,6 +4329,19 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler_done (ctx->cso);
 
 	st_set_fragment_sampler_texture (ctx, 0, texture);
+
+	struct pipe_scissor_state scissor;
+	scissor.minx = bounds->x;
+	scissor.miny = bounds->y;
+	scissor.maxx = bounds->x + bounds->width;
+	scissor.maxy = bounds->y + bounds->height;
+	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
+
+	struct pipe_rasterizer_state rasterizer;
+	memset (&rasterizer, 0, sizeof (rasterizer));
+	rasterizer.cull_face = PIPE_FACE_NONE;
+	rasterizer.scissor = 1;
+	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	DrawVertices (surface, vertices, 1, 1);
 

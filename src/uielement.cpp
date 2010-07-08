@@ -1436,6 +1436,11 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
+	cairo_save (cr);
+
+	ApplyTransform (cr);
+	RenderClipPath (cr);
+
 	if (effect) {
 		cairo_surface_t *group_surface;
 		Rect            r = intermediate.RoundOut ();
@@ -1448,11 +1453,6 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
-
-	cairo_save (cr);
-
-	ApplyTransform (cr);
-	RenderClipPath (cr);
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		Rect r = GetLocalBounds ().RoundOut ();
@@ -1545,8 +1545,6 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		cairo_pattern_destroy (data);
 	}
 
-	cairo_restore (cr);
-
 	if (effect) {
 		List::Node *node = ctx->First ();
 		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
@@ -1557,28 +1555,17 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			cairo_surface_t *dst = cairo_get_group_target (cr);
-			double          dst_x, dst_y;
-			int             x, y;
-			Rect            r = intermediate.RoundOut ();
+			Rect r = intermediate.RoundOut ();
 
-			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
+			cairo_save (cr);
+			cairo_identity_matrix (cr);
+			r.Draw (cr);
+			cairo_clip (cr);
 
-			x = r.x + dst_x;
-			y = r.y + dst_y;
+			if (!effect->ClipAndComposite (cr, src, r.x, r.y))
+				g_warning ("UIElement::PostRender failed to apply pixel effect.");
 
-			if (!effect->Composite (dst, src, x, y)) {
-				cairo_save (cr);
-				cairo_identity_matrix (cr);
-				cairo_reset_clip (cr);
-				cairo_surface_set_device_offset (dst, 0, 0);
-				cairo_surface_set_device_offset (src, 0, 0);
-				cairo_rectangle (cr, x, y, r.width, r.height);
-				cairo_set_source_surface (cr, src, x, y);
-				cairo_fill (cr);
-				cairo_surface_set_device_offset (dst, dst_x, dst_y);
-				cairo_restore (cr);
-			}
+			cairo_restore (cr);
 		}
 
 		cairo_destroy (group_cr);
@@ -1588,6 +1575,8 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	else {
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
+
+	cairo_restore (cr);
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		List::Node *node = ctx->First ();
@@ -1600,22 +1589,21 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Effect          *effect = Effect::GetProjectionEffect ();
-			cairo_surface_t *dst = cairo_get_group_target (cr);
-			double          dst_x, dst_y;
-			int             x, y;
 			Rect            r = intermediate.RoundOut ();
 
-			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
-
-			x = r.x + dst_x;
-			y = r.y + dst_y;
+			cairo_save (cr);
+			cairo_identity_matrix (cr);
+			GetGlobalBounds ().RoundOut ().Draw (cr);
+			cairo_clip (cr);
 
 			Effect::SetShaderMatrix (src, render_projection);
 			Effect::SetShaderOffsetX (src, r.x);
 			Effect::SetShaderOffsetY (src, r.y);
 
-			if (!effect->Composite (dst, src, x, y))
+			if (!effect->ClipAndComposite (cr, src, r.x, r.y))
 				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
+
+			cairo_restore (cr);
 		}
 
 		cairo_destroy (group_cr);
