@@ -1250,6 +1250,28 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void MentorTest_DataTemplate()
+		{
+			var xaml = @"<Button
+xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Button.ContentTemplate>
+		<DataTemplate>
+			<TextBlock x:Name='textBlockFromTemplate' Text='{Binding}' DataContext='{Binding}'/>
+		</DataTemplate>
+	</Button.ContentTemplate>
+</Button>";
+
+			var button = (Button)XamlReader.Load(xaml);
+			TestPanel.Children.Add(button);
+			button.Content = "In the darkness bind them";
+			TestPanel.UpdateLayout();
+
+			var textBlock = button.FindFirstChild <TextBlock>();
+			Assert.AreEqual("In the darkness bind them", textBlock.Text, "#1");
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void MentorTest_TwoMentors_SetMentorsThenBinding ()
 		{

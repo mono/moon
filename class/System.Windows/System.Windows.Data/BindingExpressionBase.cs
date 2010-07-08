@@ -66,7 +66,11 @@ namespace System.Windows.Data {
 		}
 
 		bool IsMentorBound {
-			get { return Binding.ElementName == null && Binding.Source == null && Binding.RelativeSource == null && !(Target is FrameworkElement); }
+			get { return Binding.ElementName == null
+				&& Binding.Source == null
+				&& Binding.RelativeSource == null
+				&& (!(Target is FrameworkElement) || (Target is FrameworkElement && Property == FrameworkElement.DataContextProperty));
+			}
 		}
 
 		DependencyObject Target {
@@ -108,6 +112,8 @@ namespace System.Windows.Data {
 						if (mentor != null)
 							source = mentor.DataContext;
 					}
+				} else if (IsMentorBound && Target.Mentor != null) {
+					source = Target.Mentor.DataContext;
 				}
 
 				// If DataContext is bound, then we need to read the parents datacontext or use null
@@ -137,7 +143,7 @@ namespace System.Windows.Data {
 			Target = target;
 			Property = property;
 
-			mentorDataContextChangedCallback = OnNativeMentorDataContextChanged;
+			mentorDataContextChangedCallback = OnNativeMentorDataContextChangedSafe;
 
 			bool bindsToView = property == FrameworkElement.DataContextProperty || property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
 			PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource, bindsToView);
@@ -253,6 +259,14 @@ namespace System.Windows.Data {
 			MentorDataContextChanged ();
 		}
 
+		void OnNativeMentorDataContextChangedSafe (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
+		{
+			try {
+				OnNativeMentorDataContextChanged (dependency_object, propertyChangedEventArgs, ref error, closure);
+			} catch (Exception ex) {
+				error = new MoonError (ex);
+			}
+		}
 		void OnNativeMentorDataContextChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
 		{
 			MentorDataContextChanged ();

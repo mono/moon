@@ -1,3 +1,9 @@
+2010-07-08  Alan McGovern  <amcgovern@novell.com>
+
+	* dependencyobject.cpp: Make sure FrameworkElements aren't
+	  marked as being their own mentor by never checking the
+	  'this' element when setting the mentor.
+
 2010-07-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes for Seadragon-InvalidXml

@@ -1,3 +1,8 @@
+2010-07-08  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: An FE is mentor bound if it has a
+	  binding on it's DataContext and it's Parent element is null.
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Binding.cs:

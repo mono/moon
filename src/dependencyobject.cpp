@@ -2996,7 +2996,7 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 	if (!error || error->number == 0) {
 		this->parent = parent;
 
-		DependencyObject *e = this;
+		DependencyObject *e = GetParent ();
 		Types *types = GetDeployment ()->GetTypes ();
 		while (e && !types->IsSubclassOf (e->GetObjectType (), Type::FRAMEWORKELEMENT))
 			e = e->GetParent ();
