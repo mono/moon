@@ -38,11 +38,12 @@ using System.Reflection;
 
 namespace Mono {
 
-	internal sealed class MoonlightTypeConverter : TypeConverter {
-		bool nullableDestination;
-		Kind destinationKind;
-		Type destinationType;
-		string propertyName;
+	internal class MoonlightTypeConverter : TypeConverter {
+
+		protected bool nullableDestination;
+		protected Kind destinationKind;
+		protected Type destinationType;
+		protected string propertyName;
 
 		public MoonlightTypeConverter (string propertyName, Type destinationType)
 		{
@@ -230,7 +231,7 @@ namespace Mono {
 
 			return tc.ConvertFrom (null, Helper.DefaultCulture, val);
 		}
-		
+
 		public static object ConvertObject (DependencyProperty dp, object val, Type objectType, bool doToStringConversion)
 		{
 			// Should i return default(T) if property.PropertyType is a valuetype?

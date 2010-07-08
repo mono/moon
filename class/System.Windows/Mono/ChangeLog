@@ -1,3 +1,8 @@
+2010-07-08  Jackson Harper  <jackson@ximian.com>
+
+	* MoonlightTypeConverter.cs: Open this up a bit so the
+	XamlTypeConverter can inherit from it.
+
 2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Value.cs (ToObject): Added support for GlyphTypeface.
