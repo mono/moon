@@ -121,6 +121,27 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void ContainerFromItem_Replacing ()
+		{
+			object o1 = new object();
+			object o2 = new object();
+			Control.Items.Add (o1);
+			Control.Items.Add (o2);
+			CreateAsyncTest(Control,
+				() => {
+					Control.ApplyTemplate();
+				}, () => {
+					Control.Items[1] = o1;
+					Control.Items[0] = o2;
+				}, () => {
+					Assert.AreEqual(Control.ItemContainerGenerator.ContainerFromItem(o1), Generator.ContainerFromIndex(1));
+					Assert.AreEqual(Control.ItemContainerGenerator.ContainerFromItem(o2), Generator.ContainerFromIndex(0));
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void ContainerFromItem_ValueType()
 		{
 			int[] items = new[] { 5, 5, 5, 5, 5 };

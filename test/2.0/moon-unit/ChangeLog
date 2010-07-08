@@ -1,5 +1,10 @@
 2010-07-08  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
+	  Commit the test for the last ItemContainerGenerator fix.
+
+2010-07-08  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Add an extra test to
 	  verify the mentor is used for FrameworkElements who have no
 	  parent element and have a binding on their datacontext.
