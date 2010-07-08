@@ -1,3 +1,8 @@
+2010-07-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (Emit*): Only emit the event if it has
+	listeners to avoid instantiating unneeded EventArgs.
+
 2010-07-08  Alan McGovern  <amcgovern@novell.com>
 
 	* dependencyobject.cpp: Make sure FrameworkElements aren't

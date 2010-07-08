@@ -1324,7 +1324,8 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	
 	if (args->GetId () == MultiScaleImage::InternalViewportOriginProperty ||
 	    args->GetId () == MultiScaleImage::InternalViewportWidthProperty) {
-		Emit (MultiScaleImage::ViewportChangedEvent);
+		if (HasHandlers (MultiScaleImage::ViewportChangedEvent))
+			Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::AllowDownloadingProperty) {
 		if (args->GetNewValue()->AsBool ())
@@ -1389,24 +1390,34 @@ void
 MultiScaleImage::EmitImageFailed ()
 {
 	LOG_MSI ("MSI::Emitting image failed\n");
-	Emit (MultiScaleImage::ImageFailedEvent);
+	
+	if (HasHandlers (MultiScaleImage::ImageFailedEvent))
+		Emit (MultiScaleImage::ImageFailedEvent);
 }
 
 void
 MultiScaleImage::EmitImageOpenFailed ()
 {
 	LOG_MSI ("MSI::Emitting image open failed\n");
-	MoonError moon_error;
-	MoonError::FillIn (&moon_error, MoonError::EXCEPTION, -2147467259, "");
-	Emit (MultiScaleImage::ImageOpenFailedEvent, new ErrorEventArgs (UnknownError, moon_error));
+	
+	if (HasHandlers (MultiScaleImage::ImageOpenFailedEvent)) {
+		MoonError moon_error;
+		
+		MoonError::FillIn (&moon_error, MoonError::EXCEPTION, -2147467259, "");
+		Emit (MultiScaleImage::ImageOpenFailedEvent, new ErrorEventArgs (UnknownError, moon_error));
+	}
 }
 
 void
 MultiScaleImage::EmitImageOpenSucceeded ()
 {
 	LOG_MSI ("\nMSI::Emitting open suceeded\n");
-	Emit (MultiScaleImage::ImageOpenSucceededEvent);
+	
+	if (HasHandlers (MultiScaleImage::ImageOpenSucceededEvent))
+		Emit (MultiScaleImage::ImageOpenSucceededEvent);
+	
 	EmitMotionFinished ();
+	
 	// This is a hack that removes at least one timeout (#291),
 	// possibly because an invalidation gets lost somehow.
 	// Since we only start downloading when we try to
@@ -1418,8 +1429,11 @@ void
 MultiScaleImage::EmitMotionFinished ()
 {
 	LOG_MSI ("Emitting MotionFinished\n");
+	
 	pending_motion_completed = false;
-	Emit (MultiScaleImage::MotionFinishedEvent);
+	
+	if (HasHandlers (MultiScaleImage::MotionFinishedEvent))
+		Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
 Point*
