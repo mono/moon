@@ -1206,12 +1206,7 @@ namespace Mono.Xaml
 				}
 
 				if (SL3MarkupExpressionParser.IsStaticResource (str_value)) {
-					// FIXME: The NUnit tests show we need to use the parent of the target to resolve
-					// the StaticResource, but are there any cases where we should use the actual target?
-					DependencyObject parent = Value.ToObject (null, target_parent_ptr) as DependencyObject;
-					if (parent == null)
-						return false;
-					MarkupExpressionParser p = new SL3MarkupExpressionParser (parent, "", data->parser, target_data);
+					MarkupExpressionParser p = new SL3MarkupExpressionParser (null, "", data->parser, target_data);
 					obj_value = p.ParseExpression (ref str_value);
 
 					obj_value = ConvertType (pi, pi.PropertyType, obj_value);

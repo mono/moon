@@ -1,3 +1,9 @@
+2010-07-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: When parsing static resources we don't
+	  actually care if target_parent_ptr is null or not. We don't
+	  use it. Fixes parts of drt 350.
+
 2010-07-07  Jackson Harper  <jackson@ximian.com>
 
 	* XamlContext.cs: Add some properties for tempalate binding. Also
