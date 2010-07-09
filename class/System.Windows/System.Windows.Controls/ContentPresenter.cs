@@ -162,6 +162,7 @@ namespace System.Windows.Controls
 			if (_contentRoot != null)
 				Mono.NativeMethods.uielement_element_removed (native, _contentRoot.native);
 			_contentRoot = null;
+			InvalidateMeasure ();
 		}
 
 		internal override void InvokeLoaded ()

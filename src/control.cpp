@@ -87,6 +87,7 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == Control::TemplateProperty) {
 		if (GetSubtreeObject ())
 			ElementRemoved ((UIElement *) GetSubtreeObject ());
+		InvalidateMeasure ();
 	}
 	else if (args->GetId () == Control::PaddingProperty
 		 || args->GetId () == Control::BorderThicknessProperty) {

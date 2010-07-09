@@ -1,3 +1,11 @@
+2010-07-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Whenever the ContentTemplate changes we
+	  need to invalidate the measure. We can't rely on
+	  InvalidateMeasure being called as part of clearing out the
+	  existing root element as there may be no existing root
+	  element.
+
 2010-07-07  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemContainerGenerator.cs: The Container->Item mapping

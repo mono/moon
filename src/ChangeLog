@@ -1,3 +1,11 @@
+2010-07-09  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Whenever the ContentTemplate changes we need to
+	  invalidate the measure. We can't rely on InvalidateMeasure
+	  being called as part of clearing out the existing root
+	  element as there may be no existing root element. Similarly
+	  for Control.Template. Fixes remainder of drt 350.
+
 2010-07-08  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp:
