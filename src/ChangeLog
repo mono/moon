@@ -1,5 +1,11 @@
 2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* media.cpp|h: Image: Detach from any events we may be listening for on the
+	bitmap source when disposed. Fixes a number of crashes when we'd get
+	downloader events after the image was destructed, but not the bitmap source.
+
+2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* media.cpp|h: Remove unused methods.
 
 2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>

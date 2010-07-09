@@ -157,7 +157,7 @@ class Image : public MediaBase {
 	static void source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
  protected:
-	virtual ~Image ();
+	virtual ~Image () {}
 	
  public:
  	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
@@ -174,6 +174,7 @@ class Image : public MediaBase {
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
+	virtual void Dispose ();
 	
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	

@@ -212,12 +212,15 @@ Image::Image ()
 	SetObjectType (Type::IMAGE);
 }
 
-Image::~Image ()
+void
+Image::Dispose ()
 {
 	BitmapSource *source = (BitmapSource*)GetSource ();
 
 	if (source)
-		source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+		source->RemoveAllHandlers (this);
+
+	MediaBase::Dispose ();
 }
 
 void
