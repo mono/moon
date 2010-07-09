@@ -311,11 +311,6 @@ FrameworkElement::ComputeSurfaceBounds ()
 		surface_bounds_with_children = global_bounds_with_children;
 
 		while ((element = (FrameworkElement *) element->GetVisualParent ())) {
-			Effect *effect = element->GetRenderEffect ();
-
-			if (effect)
-				surface_bounds_with_children = effect->TransformBounds (surface_bounds_with_children);
-
 			if (element->flags & UIElement::RENDER_PROJECTION)
 				surface_bounds_with_children = Matrix3D::TransformBounds (element->render_projection, surface_bounds_with_children);
 		}

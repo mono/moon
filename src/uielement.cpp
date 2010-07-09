@@ -579,11 +579,6 @@ UIElement::ComputeSurfaceBounds ()
 	surface_bounds = global_bounds;
 
 	while ((element = (FrameworkElement *) element->GetVisualParent ())) {
-		Effect *effect = element->GetRenderEffect ();
-
-		if (effect)
-			surface_bounds = effect->TransformBounds (surface_bounds);
-
 		if (element->flags & UIElement::RENDER_PROJECTION)
 			surface_bounds = Matrix3D::TransformBounds (element->render_projection, surface_bounds);
 	}
