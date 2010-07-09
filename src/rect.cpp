@@ -14,6 +14,7 @@
 #include "rect.h"
 #include "utils.h"
 #include "moon-path.h"
+#include "projection.h"
 
 bool
 Rect::FromStr (const char *s, Rect *r)
@@ -64,6 +65,16 @@ Rect::Transform (cairo_matrix_t *transform)
 	return Rect (l, t, r-l, b-t);
 }
 
+Rect
+Rect::Transform (double *projection)
+{
+	Rect rect = *this;
+
+	if (!projection)
+		return rect;
+
+	return Matrix3D::TransformBounds (projection, rect);
+}
 
 void Rect::Draw (cairo_t *cr, CornerRadius *round) const
 {

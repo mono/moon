@@ -290,7 +290,8 @@ FrameworkElement::ComputeGlobalBounds ()
 			bounds_with_children.GrowBy (effect_padding);
 
 		if (flags & UIElement::RENDER_PROJECTION)
-			global_bounds_with_children = Matrix3D::TransformBounds (render_projection, global_bounds_with_children);
+			global_bounds_with_children =
+				global_bounds_with_children.Transform (render_projection);
 	}
 }
 
@@ -308,7 +309,7 @@ FrameworkElement::ComputeSurfaceBounds ()
 
 		while ((element = (FrameworkElement *) element->GetVisualParent ())) {
 			if (element->flags & UIElement::RENDER_PROJECTION)
-				surface_bounds_with_children = Matrix3D::TransformBounds (element->render_projection, surface_bounds_with_children);
+				surface_bounds_with_children = surface_bounds_with_children.Transform (element->render_projection);
 		}
 	}
 }

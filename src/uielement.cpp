@@ -565,7 +565,7 @@ UIElement::ComputeGlobalBounds ()
 	global_bounds = bounds.GrowBy (effect_padding);
 
 	if (flags & UIElement::RENDER_PROJECTION)
-		global_bounds = Matrix3D::TransformBounds (render_projection, global_bounds);
+		global_bounds = global_bounds.Transform (render_projection);
 }
 
 void
@@ -577,7 +577,7 @@ UIElement::ComputeSurfaceBounds ()
 
 	while ((element = (FrameworkElement *) element->GetVisualParent ())) {
 		if (element->flags & UIElement::RENDER_PROJECTION)
-			surface_bounds = Matrix3D::TransformBounds (element->render_projection, surface_bounds);
+			surface_bounds = surface_bounds.Transform (element->render_projection);
 	}
 }
 
