@@ -565,7 +565,7 @@ UIElement::ComputeGlobalBounds ()
 	global_bounds = bounds;
 
 	if (effect)
-		global_bounds = effect->TransformBounds (global_bounds);
+		global_bounds = global_bounds.GrowBy (effect->Padding ());
 
 	if (flags & UIElement::RENDER_PROJECTION)
 		global_bounds = Matrix3D::TransformBounds (render_projection, global_bounds);
@@ -1418,7 +1418,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	Rect intermediate = GetLocalBounds ();
 
 	if (effect)
-		intermediate = effect->TransformBounds (intermediate.RoundOut ());
+		intermediate = intermediate.GrowBy (effect->Padding ());
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		cairo_surface_t *group_surface;
@@ -1514,7 +1514,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	Rect intermediate = GetLocalBounds ();
 
 	if (effect)
-		intermediate = effect->TransformBounds (intermediate.RoundOut ());
+		intermediate = intermediate.GrowBy (effect->Padding ());
 
 	if (opacityMask != NULL) {
 		cairo_pattern_t *data = cairo_pop_group (cr);

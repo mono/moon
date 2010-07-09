@@ -291,7 +291,8 @@ FrameworkElement::ComputeGlobalBounds ()
 		global_bounds_with_children = bounds_with_children;
 
 		if (effect)
-			global_bounds_with_children = effect->TransformBounds (global_bounds_with_children);
+			global_bounds_with_children =
+				global_bounds_with_children.GrowBy (effect->Padding ());
 
 		if (flags & UIElement::RENDER_PROJECTION)
 			global_bounds_with_children = Matrix3D::TransformBounds (render_projection, global_bounds_with_children);

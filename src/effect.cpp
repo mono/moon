@@ -1578,13 +1578,12 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-Rect
-BlurEffect::TransformBounds (Rect bounds)
+Thickness
+BlurEffect::Padding ()
 {
 	MaybeUpdateFilter ();
 
-	return bounds.GrowBy (nfiltervalues, nfiltervalues,
-			      nfiltervalues, nfiltervalues);
+	return Thickness (nfiltervalues);
 }
 
 bool
@@ -2038,8 +2037,8 @@ DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-Rect
-DropShadowEffect::TransformBounds (Rect bounds)
+Thickness
+DropShadowEffect::Padding ()
 {
 	double direction = GetDirection () * (M_PI / 180.0);
 	double depth = GetShadowDepth ();
@@ -2055,10 +2054,10 @@ DropShadowEffect::TransformBounds (Rect bounds)
 	right  =  cos (direction) * depth + nfiltervalues;
 	bottom = -sin (direction) * depth + nfiltervalues;
 
-	return bounds.GrowBy (left   < 1.0 ? 1.0 : ceil (left),
-			      top    < 1.0 ? 1.0 : ceil (top),
-			      right  < 1.0 ? 1.0 : ceil (right),
-			      bottom < 1.0 ? 1.0 : ceil (bottom));
+	return Thickness (left   < 1.0 ? 1.0 : ceil (left),
+			  top    < 1.0 ? 1.0 : ceil (top),
+			  right  < 1.0 ? 1.0 : ceil (right),
+			  bottom < 1.0 ? 1.0 : ceil (bottom));
 }
 
 bool
@@ -2983,18 +2982,18 @@ ShaderEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-Rect
-ShaderEffect::TransformBounds (Rect bounds)
+Thickness
+ShaderEffect::Padding ()
 {
 	Value *left   = GetValue (ShaderEffect::PaddingLeftProperty);
 	Value *top    = GetValue (ShaderEffect::PaddingTopProperty);
 	Value *right  = GetValue (ShaderEffect::PaddingRightProperty);
 	Value *bottom = GetValue (ShaderEffect::PaddingBottomProperty);
 
-	return bounds.GrowBy (left   ? ceil (left->AsDouble ())   : 0.0,
-			      top    ? ceil (top->AsDouble ())    : 0.0,
-			      right  ? ceil (right->AsDouble ())  : 0.0,
-			      bottom ? ceil (bottom->AsDouble ()) : 0.0);
+	return Thickness (left   ? ceil (left->AsDouble ())   : 0.0,
+			  top    ? ceil (top->AsDouble ())    : 0.0,
+			  right  ? ceil (right->AsDouble ())  : 0.0,
+			  bottom ? ceil (bottom->AsDouble ()) : 0.0);
 }
 
 pipe_resource_t *

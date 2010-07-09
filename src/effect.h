@@ -90,9 +90,9 @@ public:
 	Effect ();
 
 	//
-	// Bounds
+	// Padding
 	//
-	virtual Rect TransformBounds (Rect bounds) { return bounds; }
+	virtual Thickness Padding () { return Thickness (); }
 
 	//
 	// Composite
@@ -188,9 +188,9 @@ public:
 	double GetRadius ();
 
 	//
-	// Bounds
+	// Padding
 	//
-	Rect TransformBounds (Rect bounds);
+	Thickness Padding ();
 
 	//
 	// Composite
@@ -271,9 +271,9 @@ public:
 	double GetShadowDepth ();
 
 	//
-	// Bounds
+	// Padding
 	//
-	Rect TransformBounds (Rect bounds);
+	Thickness Padding ();
 
 	//
 	// Composite
@@ -412,9 +412,9 @@ public:
 	void UpdateShaderSampler (int reg, int mode, Brush *input);
 
 	//
-	// Bounds
+	// Padding
 	//
-	Rect TransformBounds (Rect bounds);
+	Thickness Padding ();
 
 	//
 	// Composite
