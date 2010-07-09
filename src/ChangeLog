@@ -1,3 +1,10 @@
+2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: DependencyObject::NotifyListenersOfPropertyChange:
+	clone the list of listeners to notify, and after each notification check with
+	the master list if the listener is still there before calling it. Fixes a
+	crash when the listener_list is modified as a result of notifying a listener.
+
 2010-07-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes drt Seadragon-501

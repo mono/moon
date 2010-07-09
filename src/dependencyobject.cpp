@@ -1390,18 +1390,47 @@ static bool listeners_notified;
 void
 DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args, MoonError *error)
 {
+	GSList *list;
+	GSList *node;
+	GSList *n;
+
 	g_return_if_fail (args);
 
 	listeners_notified = true;
 
-	for (GSList *l = listener_list; l != NULL; l = l->next){
-		Listener *listener = (Listener*)l->data;
+	/* The list we want to traverse, listener_list, can change when notifying listeners.
+	 * So we clone it, and when traversing it, we check for each node we process that it
+	 * still exists in listener_list. This way we will not process deleted nodes, or
+	 * nodes added after we've started. I'm not sure this is the correct behavior though. */
 
-		if (listener->Matches (args))
-			listener->Invoke (this, args, error);
-		if (error && error->number)
+	list = g_slist_copy (listener_list);
+
+	node = list;
+	while (node != NULL) {
+		/* Find the matching node in listener_list */
+		n = listener_list;
+		while (n != NULL && n->data != node->data)
+			n = n->next;
+
+		/* Notify */
+		if (n != NULL && n->data == node->data) {
+			Listener *listener = (Listener *) node->data;
+
+			if (listener->Matches (args))
+				listener->Invoke (this, args, error);
+
+			if (error && error->number)
+				break;
+		}
+
+		/* Check if all nodes have been deleted */
+		if (listener_list == NULL)
 			break;
+
+		node = node->next;
 	}
+
+	g_slist_free (list);
 }
 
 void
