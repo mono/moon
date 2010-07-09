@@ -54,34 +54,6 @@ MediaBase::~MediaBase ()
 }
 
 void
-MediaBase::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	MediaBase *media = (MediaBase *) closure;
-	
-	media->DownloaderComplete ();
-}
-
-void
-MediaBase::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	MediaBase *media = (MediaBase *) closure;
-	
-	media->DownloaderFailed (calldata);
-}
-
-void
-MediaBase::DownloaderComplete ()
-{
-	// Nothing for MediaBase to do...
-}
-
-void
-MediaBase::DownloaderFailed (EventArgs *args)
-{
-	// Nothing for MediaBase to do...
-}
-
-void
 MediaBase::DownloaderAbort ()
 {
 	if (downloader) {

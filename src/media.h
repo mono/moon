@@ -102,13 +102,8 @@ class MediaBase : public FrameworkElement {
 	int source_changed:1;
 	
 	virtual ~MediaBase ();
-	
-	virtual void DownloaderFailed (EventArgs *args);
-	virtual void DownloaderComplete ();
+
 	void DownloaderAbort ();
-	
-	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	virtual void OnEmptySource () { }
 	
