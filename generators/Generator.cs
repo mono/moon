@@ -2821,7 +2821,9 @@ class Generator {
 			text.Append ("\", EntryPoint=\"");
 			text.Append (name);
 		}
-		text.AppendLine ("\")]");
+		text.Append("\"");
+		text.Append(", CharSet=CharSet.Auto");
+		text.AppendLine (")]");
 
 		if (method.ReturnType.Value == "bool") {
 			text.Append (tabs);
