@@ -1,5 +1,8 @@
 2010-07-10  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (TransformBounds): Update surface and global
+	bounds after call to ShiftPosition.
+
 	* textblock.cpp (ComputeBounds):
 	* stylus.cpp (ComputeBounds):
 	* shape.cpp (ComputeBounds, TransformBounds):
