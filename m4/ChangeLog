@@ -1,3 +1,7 @@
+2010-07-09  Alan McGovern  <amcgovern@novell.com>
+
+	* chrome.m4: Fix some autofoo, courtesy of Mr. D. Hex.
+
 2010-06-29  Mario Carrion  <mcarrion@novell.com>
 
 	* various.m4: Add atk dependency for Accessibility support. This

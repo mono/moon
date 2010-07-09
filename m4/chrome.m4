@@ -10,13 +10,7 @@ AC_DEFUN([MOONLIGHT_CHECK_CHROME_CRX],
 
 	chrome_extension="yes"
 
-	AC_PATH_PROG(CHROME, google-chrome, no)
-	if test "x$CHROME" = "xno" ; then
-	   AC_PATH_PROG(CHROME, chromium, no)
-        fi
-	if test "x$CHROME" = "xno" ; then
-	   AC_PATH_PROG(CHROME, chromium-browser, no)
-        fi
+	AC_PATH_PROGS(CHROME, google-chrome chromium chromium-browser, no)
 
 	if test "x$CHROME" = "xno" ; then
 	   chrome_extension="no"
