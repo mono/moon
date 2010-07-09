@@ -31,6 +31,9 @@ dist-hook:
 	cp -a $(srcdir)/media $(distdir)/media
 	find $(distdir)/media -name .svn | xargs rm -rf
 
+gendarme:
+	gendarme --html gendarme.html --config gendarme.xml $(prefix)/lib/moonlight/plugin/*.dll --ignore gendarme.ignore
+
 noinst_PROGRAMS = uris effects
 
 uris_SOURCES= uri-test.cpp

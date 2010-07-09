@@ -19,3 +19,5 @@ Makefile
 /harness-output
 /effects
 /*.o
+/gendarme.html
+

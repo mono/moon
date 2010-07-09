@@ -1,0 +1,21 @@
+R: Gendarme.Rules.Interoperability.CentralizePInvokesIntoNativeMethodsTypeRule
+T: System.IO.IsolatedStorage.IsolatedStorage
+T: System.IO.IsolatedStorage.IsolatedStorageFile
+T: System.IO.Compression.DeflateStream
+T: System.Net.NetworkInformation.NetworkChange
+T: Mono.SafeNativeMethods
+
+R: Gendarme.Rules.Interoperability.DoNotAssumeIntPtrSizeRule
+T: System.Runtime.InteropServices.GCHandle
+M: System.Threading.Overlapped System.Threading.Overlapped::Unpack(System.Threading.NativeOverlapped*)
+# I think this one should be fixed, it's doing a "(int) <intptr> != -1", it's unlikely to be a real issue though
+M: System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
+
+R: Gendarme.Rules.Interoperability.MarshalBooleansInPInvokeDeclarationsRule
+M: System.IntPtr System.IO.Compression.DeflateStream::CreateZStream(System.IO.Compression.CompressionMode,System.Boolean,System.IO.Compression.DeflateStream/UnmanagedReadOrWrite,System.IntPtr)
+M: System.Boolean System.Net.NetworkInformation.NetworkChange::moon_network_service_get_is_network_available(System.IntPtr)
+
+R: Gendarme.Rules.Interoperability.MarshalStringsInPInvokeDeclarationsRule
+# Sebastien: should these iso storage issues be fixed?
+T: System.IO.IsolatedStorage.IsolatedStorage
+T: System.IO.IsolatedStorage.IsolatedStorageFile

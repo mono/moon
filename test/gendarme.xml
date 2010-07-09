@@ -1,0 +1,6 @@
+<gendarme>
+	<ruleset name="default">
+		<!--<rules include="*" from="Gendarme.Rules.Interoperability.dll"/>-->
+		<rules include="DelegatesPassedToNativeCodeMustIncludeExceptionHandlingRule" from="Gendarme.Rules.Interoperability.dll"/>
+	</ruleset>
+</gendarme>

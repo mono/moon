@@ -1,3 +1,9 @@
+2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: 
+	* gendarme.xml:
+	* gendarme.ignore: Add a gendarme target.
+
 2010-07-08  David Reveman  <davidr@novell.com>
 
 	* effect-test.cpp: Track changes to effect framework.
