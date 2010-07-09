@@ -431,7 +431,7 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 #define DZParsedY             (1 << 12)
 
 #define DZParsedCollection (DZParsedServerFormat | DZParsedFormat | DZParsedTileSize | DZParsedMaxLevel)
-#define DZParsedImage (DZParsedServerFormat | DZParsedFormat | DZParsedTileSize | DZParsedOverlap)
+#define DZParsedImage (/*DZParsedServerFormat |*/ DZParsedFormat | DZParsedTileSize | DZParsedOverlap)
 #define DZParsedRect (DZParsedWidth | DZParsedHeight | DZParsedX | DZParsedY)
 #define DZParsedDisplayRect (DZParsedMinLevel | DZParsedMaxLevel)
 #define DZParsedViewport (DZParsedWidth | DZParsedX | DZParsedY)
@@ -491,7 +491,7 @@ start_element (void *data, const char *el, const char **attr)
 			}
 			
 			if (failed || parsed != DZParsedImage) {
-				//printf ("DeepZoom Image error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+				printf ("DeepZoom Image error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 				info->error = true;
 			}
 		} else if (!g_ascii_strcasecmp ("Collection", el)) {
@@ -528,7 +528,7 @@ start_element (void *data, const char *el, const char **attr)
 			}
 			
 			if (failed || parsed != DZParsedCollection) {
-				//printf ("DeepZoom Collection error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+				printf ("DeepZoom Collection error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 				info->error = true;
 			}
 		} else {
@@ -559,7 +559,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 				
 				if (failed || parsed != DZParsedSize) {
-					//printf ("DeepZoom Image Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+					printf ("DeepZoom Image Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 				}
 			} else if (!g_ascii_strcasecmp ("DisplayRects", el)) {
@@ -602,7 +602,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 				
 				if (failed || parsed != DZParsedDisplayRect) {
-					//printf ("DeepZoom DisplayRect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+					printf ("DeepZoom DisplayRect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 					break;
 				}
@@ -644,7 +644,7 @@ start_element (void *data, const char *el, const char **attr)
 					
 					// we only need Id, the others are optional
 					if (failed || !(parsed & DZParsedId)) {
-						//printf ("DeepZoom I error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+						printf ("DeepZoom I error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 						info->error = true;
 					}
 				}
@@ -699,7 +699,7 @@ start_element (void *data, const char *el, const char **attr)
 					}
 					
 					if (failed || !(parsed & DZParsedRect)) {
-						//printf ("DeepZoom Rect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+						printf ("DeepZoom Rect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 						info->error = true;
 						break;
 					}
@@ -741,7 +741,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 				
 				if (failed || parsed != DZParsedSize) {
-					//printf ("DeepZoom Subimage Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+					printf ("DeepZoom Subimage Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 				}
 			} else if (!g_ascii_strcasecmp ("Viewport", el)) {
@@ -794,7 +794,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 				
 				if (failed || parsed != DZParsedViewport) {
-					//printf ("DeepZoom Viewport error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+					printf ("DeepZoom Viewport error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 				}
 			} else {
@@ -834,8 +834,8 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 							       info->current_subimage->n);
 				subsource->SetImageWidth (info->current_subimage->width);
 				subsource->SetImageHeight (info->current_subimage->height);
+				subsource->server_format = info->server_format;
 				subsource->format = info->format;
-				subsource->server_format = info->format;
 				if (info->current_subimage->has_viewport) {
 					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
 					subi->SetViewportWidth (info->current_subimage->vp_w);

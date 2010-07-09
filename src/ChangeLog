@@ -1,3 +1,9 @@
+2010-07-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deepzoomimagetilesource.cpp (EndElement): Set the subsource's
+	server_format to info->server_format, not info->format.
+	(DZParsedImage): ServerFormat is not a required attr.
+
 2010-07-09  Alan McGovern  <amcgovern@novell.com>
 
 	* control.cpp: Whenever the ContentTemplate changes we need to

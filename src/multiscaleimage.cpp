@@ -10,10 +10,16 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-//TODO
+// TODO
 //
-//- only invalidate regions
-//- only render changed regions
+// - only invalidate regions
+// - only render changed regions
+//
+// - load images in TileOpened(?) instead of Render
+// - render all images to a single surface to cache, and do scaling
+//   on that rather than scaling each individual image and piecing
+//   them together.
+//
 
 #include <config.h>
 
