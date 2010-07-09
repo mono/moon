@@ -135,16 +135,6 @@ namespace System.Windows {
 			Free ();
 		}
 
-		internal void AddPropertyChangedHandler (DependencyProperty property, UnmanagedPropertyChangeHandler handler)
-		{
-			Mono.NativeMethods.dependency_object_add_property_change_handler (native, property.Native, handler, IntPtr.Zero);
-		}
-
-		internal void RemovePropertyChangedHandler (DependencyProperty property, UnmanagedPropertyChangeHandler handler)
-		{
-			Mono.NativeMethods.dependency_object_remove_property_change_handler (native, property.Native, handler);
-		}
-
 		public object GetValue (DependencyProperty dp)
 		{
 			return NativeDependencyObjectHelper.GetValue (this, dp);

@@ -63,7 +63,11 @@ namespace Mono
 					tref.Toggle (isLastRef);
 			} catch (Exception e) {
 				//ExceptionManager.RaiseUnhandledException (e, false);
-				Console.WriteLine (e);
+				try {
+					Console.WriteLine (e);
+				} catch {
+					// Ignore
+				}
 			}
 		}
 

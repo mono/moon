@@ -564,12 +564,11 @@ namespace System.Windows.Browser {
 		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanagedSafe);
 		static GetPropertyDelegate get_prop = new GetPropertyDelegate (GetPropertyFromUnmanagedSafe);
 
-		delegate bool BridgeAction ();
-
-		private static bool SafeBridgeAction (BridgeAction action)
+		private static bool InvalidateHandleFromUnmanagedSafe (IntPtr obj_handle)
 		{
 			try {
-				return action ();
+				ScriptObject obj = LookupScriptObject (obj_handle);
+				return obj.InvalidateHandle ();
 			}
 			catch (Exception ex) {
 				try {
@@ -580,31 +579,36 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		private static bool InvalidateHandleFromUnmanagedSafe (IntPtr obj_handle)
-		{
-			return SafeBridgeAction ( () => {
-					ScriptObject obj = LookupScriptObject (obj_handle);
-					return obj.InvalidateHandle ();
-				});
-		}
-
 		private static bool HasPropertyFromUnmanagedSafe (IntPtr obj_handle, string name)
 		{
-			return SafeBridgeAction ( () => {
-					ScriptObject obj = LookupScriptObject (obj_handle);
-					return obj.HasProperty (name);
-				});
+			try {
+				ScriptObject obj = LookupScriptObject (obj_handle);
+				return obj.HasProperty (name);
+			}
+			catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in HTML bridge: {0}", ex);
+				} catch {
+				}
+				return true;
+			}
 		}
 
 		private static bool HasMethodFromUnmanagedSafe (IntPtr obj_handle, string name)
 		{
-			return SafeBridgeAction ( () => {
-					ScriptObject obj = LookupScriptObject (obj_handle);
-					return obj.HasMethod (name);
-				});
+			try {
+				ScriptObject obj = LookupScriptObject (obj_handle);
+				return obj.HasMethod (name);
+			}
+			catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in HTML bridge: {0}", ex);
+				} catch {
+				}
+				return true;
+			}
 		}
 
-		// can't use SafeBridgeAction because of the ref Value parameter, alas
 		private static bool InvokeFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value, out string exc_string)
 		{
 			exc_string = null;
@@ -622,7 +626,6 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		// can't use SafeBridgeAction because of the ref Value parameter, alas
 		private static bool SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value, out string exc_string)
 		{
 			exc_string = null;
@@ -640,7 +643,6 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		// can't use SafeBridgeAction because of the ref Value parameter, alas
 		private static bool GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value, out string exc_string)
 		{
 			exc_string = null;

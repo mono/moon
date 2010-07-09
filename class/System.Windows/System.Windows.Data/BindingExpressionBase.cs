@@ -165,10 +165,18 @@ namespace System.Windows.Data {
 
 			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
 				updateDataSourceCallback = delegate {
-					if (!Updating)
-						TryUpdateSourceObject (Target.GetValue (Property));
+					try {
+						if (!Updating)
+							TryUpdateSourceObject (Target.GetValue (Property));
+					} catch (Exception ex) {
+						try {
+							Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.OnAttached's updateDataSourceCallback: {0}", ex);
+						} catch {
+							// Ignore
+						}
+					}
 				};
-				Target.AddPropertyChangedHandler (Property, updateDataSourceCallback);
+				NativeMethods.dependency_object_add_property_change_handler (Target.native, Property.Native, updateDataSourceCallback, IntPtr.Zero);
 			}
 		}
 
@@ -185,7 +193,7 @@ namespace System.Windows.Data {
 			}
 
 			if (updateDataSourceCallback != null)
-				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
+				NativeMethods.dependency_object_remove_property_change_handler (Target.native, Property.Native, updateDataSourceCallback);
 
 			PropertyPathWalker.Update (null);
 		}
@@ -193,13 +201,13 @@ namespace System.Windows.Data {
 		void AttachDataContextHandlers (FrameworkElement mentor)
 		{
 			if (mentor != null)
-				mentor.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, mentorDataContextChangedCallback);
+				NativeMethods.dependency_object_add_property_change_handler (mentor.native, FrameworkElement.DataContextProperty.Native, mentorDataContextChangedCallback, IntPtr.Zero);
 		}
 
 		void DetachDataContextHandlers (FrameworkElement mentor)
 		{
 			if (mentor != null)
-				mentor.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, mentorDataContextChangedCallback);
+				NativeMethods.dependency_object_remove_property_change_handler (mentor.native, FrameworkElement.DataContextProperty.Native, mentorDataContextChangedCallback);
 		}
 
 		void AttachToNotifyError (INotifyDataErrorInfo element)
@@ -253,10 +261,18 @@ namespace System.Windows.Data {
 
 		void MentorChanged (object sender, EventArgs e)
 		{
-			DetachDataContextHandlers (mentor);
-			mentor = Target.Mentor;
-			AttachDataContextHandlers (mentor);
-			MentorDataContextChanged ();
+			try {
+				DetachDataContextHandlers (mentor);
+				mentor = Target.Mentor;
+				AttachDataContextHandlers (mentor);
+				MentorDataContextChanged ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.MentorChanged: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
 		}
 
 		void OnNativeMentorDataContextChangedSafe (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
@@ -269,7 +285,15 @@ namespace System.Windows.Data {
 		}
 		void OnNativeMentorDataContextChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
 		{
-			MentorDataContextChanged ();
+			try {
+				MentorDataContextChanged ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.OnNativeMentorDataContextChanged: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
 		}
 
 		void MentorDataContextChanged ()

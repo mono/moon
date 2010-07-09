@@ -108,7 +108,7 @@ namespace System.Windows {
 			// Note that Target.TemplateOwner is a weak reference - it can be GC'ed at any time
 			var source = Target.TemplateOwner;
 			if (source != null)
-				source.AddPropertyChangedHandler (SourceProperty, change_handler);
+				NativeMethods.dependency_object_add_property_change_handler (source.native, SourceProperty.Native, change_handler, IntPtr.Zero);
 		}
 
 		internal override void OnDetached (DependencyObject element)
@@ -125,7 +125,7 @@ namespace System.Windows {
 			// Note that Target.TemplateOwner is a weak reference - it can be GC'ed at any time
 			var source = Target.TemplateOwner;
 			if (source != null)
-				source.RemovePropertyChangedHandler (SourceProperty, change_handler);
+				NativeMethods.dependency_object_remove_property_change_handler (source.native, SourceProperty.Native, change_handler);
 			Target = null;
 		}
 	}

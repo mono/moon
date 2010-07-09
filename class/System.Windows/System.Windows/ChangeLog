@@ -1,3 +1,11 @@
+2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* FrameworkElement.cs: Make sure we don't leak exceptions to native code.
+
+	* DependencyObject.cs: 
+	* TemplateBindingExpression.cs: Remove [Add|Remove]PropertyChangedHandler,
+	since it hides unsafe delegates from gendarme.
+
 2010-07-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Deployment.cs (SystemTypefaces): New internal property binding

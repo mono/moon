@@ -59,7 +59,7 @@ namespace System.Windows.Data
 			var old_do = oldSource as DependencyObject;
 			var new_do = newSource as DependencyObject;
 			if (dpChanged != null) {
-				((DependencyObject) oldSource).RemovePropertyChangedHandler (DependencyProperty, dpChanged);
+				Mono.NativeMethods.dependency_object_remove_property_change_handler (((DependencyObject) oldSource).native, DependencyProperty.Native, dpChanged);
 				dpChanged = null;
 			}
 
@@ -81,15 +81,23 @@ namespace System.Windows.Data
 			if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
 				DependencyProperty = prop;
 				dpChanged = DPChanged;
-				new_do.AddPropertyChangedHandler (DependencyProperty, dpChanged);
+				Mono.NativeMethods.dependency_object_add_property_change_handler (new_do.native, DependencyProperty.Native, dpChanged, IntPtr.Zero);
 			}
 		}
 
 		void DPChanged (IntPtr dependency_object, IntPtr property_changed_event_args, ref MoonError error, IntPtr closure)
 		{
-			UpdateValue ();
-			if (Next != null)
-				Next.SetSource (Value);
+			try {
+				UpdateValue ();
+				if (Next != null)
+					Next.SetSource (Value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Unhandled exception in StandardPropertyPathNode.DBChanged: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
 		}
 
 		protected override void OnSourcePropertyChanged (object o, PropertyChangedEventArgs e)

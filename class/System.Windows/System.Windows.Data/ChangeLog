@@ -1,3 +1,11 @@
+2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* CollectionViewNode.cs:
+	* BindingExpressionBase.cs: 
+	* StandardPropertyPathNode.cs: Make sure we don't leak exceptions to native
+	code. Update to call p/invoke directly instead of a wrapper method on
+	DependencyObject to set any delegate callbacks.
+
 2010-07-08  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardPropertyPathNode.cs: If TypeName cannot be resolved

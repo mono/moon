@@ -1,3 +1,9 @@
+2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ScriptObject.cs: Make sure we don't leak exceptions to native code. The
+	previous code was safe, but the gendarme rule for this didn't understand it
+	and reported it as unsafe.
+
 2010-07-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* HtmlPage.cs: Add NavigationState setter and an helper method,

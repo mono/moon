@@ -193,8 +193,16 @@ namespace System.Windows {
 			try {
 				return MeasureOverride (availableSize);
 			} catch (Exception ex) {
-				LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
-				error = new MoonError (ex);
+				try {
+					LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
+					error = new MoonError (ex);
+				} catch (Exception ex2) {
+					try {
+						Console.WriteLine ("Leaked exception: {0}", ex2);
+					} catch {
+						// Ignore
+					}
+				}
 			}
 			return new Size (); 
 		}
@@ -204,18 +212,29 @@ namespace System.Windows {
 			try {
 				return ArrangeOverride (finalSize);
 			} catch (Exception ex) {
-				LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
-				error = new MoonError (ex);
+				try {
+					LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
+					error = new MoonError (ex);
+				} catch (Exception ex2) {
+					try {
+						Console.WriteLine ("Leaked exception: {0}", ex2);
+					} catch {
+						// Ignore
+					}
+				}
 			}
 			return new Size ();
 		}
 		
 		static IntPtr InvokeGetDefaultTemplate (IntPtr fwe_ptr)
 		{
+			IntPtr result = IntPtr.Zero;
 			UIElement root = null;
 			try {
 				FrameworkElement element = (FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (fwe_ptr);
 				root = element.GetDefaultTemplate ();
+				if (root != null)
+					result = root.native;
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeGetDefaultTemplate: {0}", ex);
@@ -223,7 +242,7 @@ namespace System.Windows {
 					// Ignore
 				}
 			}
-			return root == null ? IntPtr.Zero : root.native;
+			return result;
 		}
 
 		static void InvokeLoadedHook (IntPtr fwe_ptr)

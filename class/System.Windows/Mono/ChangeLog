@@ -1,3 +1,7 @@
+2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* EventObjectToggleRef.cs: Make sure we don't leak exceptions to native code.
+
 2010-07-09  Alan McGovern  <amcgovern@novell.com>
 
 	* IWeakListener.cs:
