@@ -1,5 +1,11 @@
 2010-07-09  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: Make ItemsControl IListenCollectionChanged
+	  and make it use the WeakNotifyCollectionChangedListener.
+	  Fixes the last of 348 :D
+
+2010-07-09  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: Whenever the ContentTemplate changes we
 	  need to invalidate the measure. We can't rely on
 	  InvalidateMeasure being called as part of clearing out the

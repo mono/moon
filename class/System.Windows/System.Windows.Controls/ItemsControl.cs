@@ -36,7 +36,7 @@ using System.Windows.Controls.Primitives;
 namespace System.Windows.Controls {
 
 	[ContentPropertyAttribute("Items", true)]
-	public class ItemsControl : Control {
+	public class ItemsControl : Control, IListenCollectionChanged {
 		
 		public static readonly DependencyProperty DisplayMemberPathProperty =
 			DependencyProperty.RegisterCore ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
@@ -96,6 +96,10 @@ namespace System.Windows.Controls {
 			get { return _presenter == null ? null : _presenter._elementRoot; }
 		}
 
+		IWeakListener CollectionListener {
+			get; set;
+		}
+
 		public ItemsControl ()
 		{
 			DefaultStyleKey = typeof (ItemsControl);
@@ -129,13 +133,14 @@ namespace System.Windows.Controls {
 
 		internal virtual void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
 		{
-			if (oldSource is INotifyCollectionChanged) {
-				((INotifyCollectionChanged)oldSource).CollectionChanged -= OnSourceCollectionChanged;
+			if (CollectionListener != null) {
+				CollectionListener.Detach ();
+				CollectionListener = null;
 			}
 
 			if (newSource != null) {
 				if (newSource is INotifyCollectionChanged) {
-					((INotifyCollectionChanged)newSource).CollectionChanged += OnSourceCollectionChanged;
+					CollectionListener = new WeakCollectionChangedListener (((INotifyCollectionChanged)newSource), this);
 				}
 				
 				Items.ClearImpl ();
@@ -158,7 +163,7 @@ namespace System.Windows.Controls {
 			InvalidateMeasure ();
 		}
 
-		void OnSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		void IListenCollectionChanged.CollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
