@@ -1,3 +1,10 @@
+2010-07-09  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am: Implement a WeakListener for
+	  INotifyCollectionChanged objects. Classes which want to
+	  weak-listen to the event need to be of type
+	  IListenCollectionChanged.
+
 2010-07-06  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Add files to the build

@@ -69,6 +69,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/IListExtensions.cs					\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
 	$(srcdir)/Mono/INativeEventObjectWrapper.cs			\
+	$(srcdir)/Mono/IWeakListener.cs						\
 	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\
 	$(srcdir)/Mono/MoonError.cs						\
@@ -88,6 +89,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Types.cs							\
 	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/Value.cs							\
+	$(srcdir)/Mono/WeakCollectionChangedListener.cs				\
 	$(srcdir)/Mono.Xaml/ManagedXamlLoader.cs				\
 	$(srcdir)/Mono.Xaml/MarkupExpressionParser.cs				\
 	$(srcdir)/Mono.Xaml/XamlContext.cs					\
@@ -111,6 +113,7 @@ system_windows_sources =							\
 	$(srcdir)/System.ComponentModel/SortDescriptionCollection.cs 		\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.ObjectModel/ReadOnlyObservableCollection.cs \
+	$(srcdir)/System.Collections.Specialized/IListenCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
