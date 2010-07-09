@@ -725,6 +725,11 @@ static moonlight_handle_native_sigsegv (int signal)
 	/* To prevent infinite loops when the stack walk causes a crash */
 	handling_sigsegv = true;
 
+	if (getenv ("MOONLIGHT_WAIT_ON_CRASH") != 0) {
+		fprintf (stderr, "Moonlight: A crash occurred. MOONLIGHT_WAIT_ON_CRASH is set, so we'll sleep waiting for you to attach gdb to pid %i\n", getpid ());
+		sleep (1000000);
+	}
+	
 	/*
 	 * A SIGSEGV indicates something went very wrong so we can no longer depend
 	 * on anything working. So try to print out lots of diagnostics, starting 

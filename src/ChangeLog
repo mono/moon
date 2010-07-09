@@ -1,3 +1,8 @@
+2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.cpp: Add an env var to sleep for eternity after a crash, to make it
+	easier to attach gdb.
+
 2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: DependencyObject::NotifyListenersOfPropertyChange:
