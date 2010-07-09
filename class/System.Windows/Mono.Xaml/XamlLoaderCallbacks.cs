@@ -143,21 +143,7 @@ namespace Mono.Xaml
 				return surface;
 			}
 		}
-		
-		//
-		// Set whenever the loader will load dependencies synchronously using the browser
-		// This is used in cases where the user of the loader can't operate in async mode
-		// such as Control:InitializeFromXaml ()
-		//
-		public bool LoadDepsSynch {
-			get {
-				return load_deps_synch;
-			}
-			set {
-				load_deps_synch = value;
-			}
-		}
-		
+
 		public static bool AllowMultipleSurfacesPerDomain {
 			get {
 				

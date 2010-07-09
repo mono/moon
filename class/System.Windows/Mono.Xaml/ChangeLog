@@ -1,3 +1,8 @@
+2010-07-09  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: Remove unused property.  This guy was
+	left over from the SL 1.1 days.
+
 2010-07-09  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs: When parsing static resources we don't
