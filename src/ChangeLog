@@ -1,5 +1,16 @@
 2010-07-10  David Reveman  <davidr@novell.com>
 
+	* textblock.cpp (ComputeBounds):
+	* stylus.cpp (ComputeBounds):
+	* shape.cpp (ComputeBounds, TransformBounds):
+	* panel.cpp (ComputeBounds):
+	* grid.cpp (ComputeBounds):
+	* glyphs.cpp (ComputeBounds):
+	* frameworkelement.cpp (ComputeBounds):
+	* canvas.cpp (ComputeBounds):
+	* dirty.cpp (ProcessUpDirtyElements): Make it the responsibility of
+	ComputeBounds to compute global and surface bounds.
+
 	* frameworkelement.cpp (ComputeGlobalBounds, ComputeSurfaceBounds):
 	Don't use GetEffect directly. Use GetRenderEffect instead.
 

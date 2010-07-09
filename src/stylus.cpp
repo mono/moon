@@ -972,6 +972,9 @@ InkPresenter::ComputeBounds ()
 	bounds_with_children = bounds_with_children.Union (stroke_bounds);
 
 	render_bounds = render_bounds.Union (stroke_bounds);
+
+	ComputeGlobalBounds ();
+	ComputeSurfaceBounds ();
 }
 
 Rect

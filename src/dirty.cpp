@@ -364,9 +364,6 @@ Surface::ProcessUpDirtyElements ()
 			bool parent_bounds_updated = false;
 
 			el->ComputeBounds ();
-			el->ComputeGlobalBounds ();
-			el->ComputeSurfaceBounds ();
-
 
 // 				printf (" + + obounds = %f %f %f %f, nbounds = %f %f %f %f\n",
 // 					obounds.x, obounds.y, obounds.w, obounds.h,

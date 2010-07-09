@@ -460,6 +460,9 @@ Glyphs::ComputeBounds ()
 		Layout ();
 	
 	bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
+
+	ComputeGlobalBounds ();
+	ComputeSurfaceBounds ();
 }
 
 Point

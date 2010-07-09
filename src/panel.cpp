@@ -83,6 +83,9 @@ Panel::ComputeBounds ()
 		bounds_with_children = bounds_with_children.Union (bounds);
 	}
 
+	ComputeGlobalBounds ();
+	ComputeSurfaceBounds ();
+
 #if DEBUG_BOUNDS
 	space (levelb);
 	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n",

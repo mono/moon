@@ -721,6 +721,9 @@ Shape::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 	InvalidateSurfaceCache ();
 	bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (current);
         bounds_with_children = bounds;
+
+        ComputeGlobalBounds ();
+        ComputeSurfaceBounds ();
 }
 
 void
@@ -729,6 +732,9 @@ Shape::ComputeBounds ()
         bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (&absolute_xform);
         bounds_with_children = bounds;
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
+
+        ComputeGlobalBounds ();
+        ComputeSurfaceBounds ();
 }
 
 Rect

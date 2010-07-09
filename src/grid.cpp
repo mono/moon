@@ -525,6 +525,9 @@ Grid::ComputeBounds ()
 		extents = Rect (0,0,GetActualWidth (),GetActualHeight ());
 		bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 		bounds_with_children = bounds_with_children.Union (bounds);
+
+		ComputeGlobalBounds ();
+		ComputeSurfaceBounds ();
 	}
 }
 void

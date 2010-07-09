@@ -273,6 +273,9 @@ FrameworkElement::ComputeBounds ()
 
 		bounds_with_children = bounds_with_children.Union (item->GetGlobalBounds ());
 	}
+
+	ComputeGlobalBounds ();
+	ComputeSurfaceBounds ();
 }
 
 void

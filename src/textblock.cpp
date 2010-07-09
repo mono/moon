@@ -202,6 +202,9 @@ TextBlock::ComputeBounds ()
 	
         bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	bounds_with_children = bounds;
+
+	ComputeGlobalBounds ();
+	ComputeSurfaceBounds ();
 }
 
 Point
