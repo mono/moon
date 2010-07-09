@@ -630,6 +630,46 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void MultipleTemplatesInsideTemplates ()
+		{
+			var template = (ControlTemplate)XamlReader.Load(@"
+<ControlTemplate x:Name=""OuterTemplate""
+  xmlns='http://schemas.microsoft.com/client/2007'
+  xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+    <ContentControl x:Name=""InnerControl"">
+        <ContentControl.Resources>
+            <DataTemplate x:Name=""dataTemplate"">
+                <Rectangle/>
+            </DataTemplate>
+            <ControlTemplate x:Name=""controlTemplate"">
+                <ContentControl ContentTemplate=""{StaticResource dataTemplate}""/>
+            </ControlTemplate>
+        </ContentControl.Resources>
+        <ContentControl.Template>
+            <StaticResource ResourceKey=""controlTemplate""/>
+        </ContentControl.Template>
+    </ContentControl>
+</ControlTemplate>
+");
+			var control = new ConcreteControl();
+			TestPanel.Children.Add(control);
+			control.Template = template;
+			Console.WriteLine ("Argh!");
+			Console.ReadLine ();
+			control.UpdateLayout();
+
+			Assert.VisualChildren(control, "#1",
+				new VisualNode<ContentControl>("#1a",
+					new VisualNode<ContentControl>("#1b",
+						new VisualNode<ContentPresenter> ("#1c",
+							new VisualNode<Rectangle> ("#1d")
+						)
+					)
+				)
+			);
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void NewTemplateDoesNotApplyInstantly ()
 		{
