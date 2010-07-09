@@ -1,3 +1,8 @@
+2010-07-10  David Reveman  <davidr@novell.com>
+
+	* frameworkelement.cpp (ComputeGlobalBounds, ComputeSurfaceBounds):
+	Don't use GetEffect directly. Use GetRenderEffect instead.
+
 2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* media.cpp|h: Image: Detach from any events we may be listening for on the

@@ -283,7 +283,7 @@ FrameworkElement::ComputeGlobalBounds ()
 	UIElement::ComputeGlobalBounds ();
 
 	if (GetSubtreeObject () != NULL) {
-		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+		Effect *effect = GetRenderEffect ();
 
 		global_bounds_with_children = bounds_with_children;
 
@@ -308,7 +308,7 @@ FrameworkElement::ComputeSurfaceBounds ()
 		surface_bounds_with_children = global_bounds_with_children;
 
 		while ((element = (FrameworkElement *) element->GetVisualParent ())) {
-			Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? element->GetEffect () : NULL;
+			Effect *effect = element->GetRenderEffect ();
 
 			if (effect)
 				surface_bounds_with_children = effect->TransformBounds (surface_bounds_with_children);
