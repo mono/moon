@@ -1409,10 +1409,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
-	Rect intermediate = GetLocalBounds ();
-
-	if (effect)
-		intermediate = intermediate.GrowBy (effect->Padding ());
+	Rect intermediate = GetLocalBounds ().GrowBy (effect_padding);
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		cairo_surface_t *group_surface;
@@ -1505,10 +1502,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
-	Rect intermediate = GetLocalBounds ();
-
-	if (effect)
-		intermediate = intermediate.GrowBy (effect->Padding ());
+	Rect intermediate = GetLocalBounds ().GrowBy (effect_padding);
 
 	if (opacityMask != NULL) {
 		cairo_pattern_t *data = cairo_pop_group (cr);

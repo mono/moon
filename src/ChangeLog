@@ -1,5 +1,7 @@
 2010-07-10  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Use effect_padding.
+
 	* frameworkelement.cpp:
 	* uielement.cpp: No need to check UIElement::RENDER_PROJECTION
 	flag when computing bounds.
