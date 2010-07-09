@@ -1,5 +1,9 @@
 2010-07-10  David Reveman  <davidr@novell.com>
 
+	* frameworkelement.cpp (ComputeGlobalBounds):
+	* uielement.cpp:
+	* uielement.h: Add effect_padding to UIElement class.
+
 	* frameworkelement.cpp:
 	* uielement.cpp:
 	* effect.cpp:

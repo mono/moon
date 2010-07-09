@@ -57,6 +57,7 @@ UIElement::UIElement ()
 	cairo_matrix_init_identity (&local_xform);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (render_projection);
+	effect_padding = Thickness (0);
 
 	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;
@@ -241,6 +242,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	} else if (args->GetId () == UIElement::EffectProperty) {
+		effect_padding = GetRenderEffect () ? GetRenderEffect ()->Padding () : Thickness (0);
 		FullInvalidate (false);
 	} else if (args->GetId () == UIElement::ProjectionProperty) {
 		InvalidateSubtreePaint ();
@@ -560,12 +562,7 @@ UIElement::ComputeBounds ()
 void
 UIElement::ComputeGlobalBounds ()
 {
-	Effect *effect = GetRenderEffect ();
-
-	global_bounds = bounds;
-
-	if (effect)
-		global_bounds = global_bounds.GrowBy (effect->Padding ());
+	global_bounds = bounds.GrowBy (effect_padding);
 
 	if (flags & UIElement::RENDER_PROJECTION)
 		global_bounds = Matrix3D::TransformBounds (render_projection, global_bounds);
@@ -604,6 +601,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		InvalidateMask ();
 	}
 	else if (prop && prop->GetId () == UIElement::EffectProperty) {
+		effect_padding = GetRenderEffect () ? GetRenderEffect ()->Padding () : Thickness (0);
 		FullInvalidate (false);
 	}
 	else if (prop && prop->GetId () == UIElement::ProjectionProperty) {

@@ -286,13 +286,8 @@ FrameworkElement::ComputeGlobalBounds ()
 	UIElement::ComputeGlobalBounds ();
 
 	if (GetSubtreeObject () != NULL) {
-		Effect *effect = GetRenderEffect ();
-
-		global_bounds_with_children = bounds_with_children;
-
-		if (effect)
-			global_bounds_with_children =
-				global_bounds_with_children.GrowBy (effect->Padding ());
+		global_bounds_with_children =
+			bounds_with_children.GrowBy (effect_padding);
 
 		if (flags & UIElement::RENDER_PROJECTION)
 			global_bounds_with_children = Matrix3D::TransformBounds (render_projection, global_bounds_with_children);

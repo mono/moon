@@ -672,6 +672,8 @@ protected:
 	// The perspective render transformation
 	double render_projection[16];
 
+	Thickness effect_padding;
+
 private:
 	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);
 
