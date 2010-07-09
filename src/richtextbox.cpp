@@ -305,6 +305,9 @@ RichTextBox::~RichTextBox ()
 void
 RichTextBox::SetIsAttached (bool value)
 {
+	if (value == IsAttached ())
+		return;
+
 	Control::SetIsAttached (value);
 	
 	Surface *surface = GetDeployment ()->GetSurface ();

@@ -628,6 +628,9 @@ TextBoxBase::~TextBoxBase ()
 void
 TextBoxBase::SetIsAttached (bool value)
 {
+	if (value == IsAttached ())
+		return;
+
 	Control::SetIsAttached (value);
 
 	Surface *surface = GetDeployment ()->GetSurface ();

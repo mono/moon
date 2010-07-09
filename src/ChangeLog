@@ -1,3 +1,11 @@
+2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* textbox.cpp:
+	* richtextbox.cpp: SetIsAttached: don't do anything if the attached value
+	doesn't change. Fixes a crash where we attach to events on the surface more
+	than once (SetIsAttached (true) called several times), but only remove them
+	once (when SetIsAttached (false)) is called.
+
 2010-07-10  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp: Use effect_padding.
