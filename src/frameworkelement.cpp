@@ -287,11 +287,7 @@ FrameworkElement::ComputeGlobalBounds ()
 
 	if (GetSubtreeObject () != NULL) {
 		global_bounds_with_children =
-			bounds_with_children.GrowBy (effect_padding);
-
-		if (flags & UIElement::RENDER_PROJECTION)
-			global_bounds_with_children =
-				global_bounds_with_children.Transform (render_projection);
+			bounds_with_children.GrowBy (effect_padding).Transform (render_projection);
 	}
 }
 

@@ -562,10 +562,7 @@ UIElement::ComputeBounds ()
 void
 UIElement::ComputeGlobalBounds ()
 {
-	global_bounds = bounds.GrowBy (effect_padding);
-
-	if (flags & UIElement::RENDER_PROJECTION)
-		global_bounds = global_bounds.Transform (render_projection);
+	global_bounds = bounds.GrowBy (effect_padding).Transform (render_projection);
 }
 
 void
@@ -576,8 +573,7 @@ UIElement::ComputeSurfaceBounds ()
 	surface_bounds = global_bounds;
 
 	while ((element = (FrameworkElement *) element->GetVisualParent ())) {
-		if (element->flags & UIElement::RENDER_PROJECTION)
-			surface_bounds = surface_bounds.Transform (element->render_projection);
+		surface_bounds = surface_bounds.Transform (element->render_projection);
 	}
 }
 
