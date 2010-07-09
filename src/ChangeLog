@@ -1,3 +1,11 @@
+2010-07-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes drt Seadragon-501
+
+	* deepzoomimagetilesource.cpp (start_element): Image Overlap is
+	allowed to be 0. MinLevel and MaxLevel attrs for DisplayRect can
+	also be 0. As can X and Y attributes for Rect.
+
 2010-07-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* application.cpp: Use RemoveHandler twice (instead of a single

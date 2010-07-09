@@ -481,7 +481,7 @@ start_element (void *data, const char *el, const char **attr)
 						failed = true;
 				} else if (!g_ascii_strcasecmp ("Overlap", attr[i])) {
 					if (!(parsed & DZParsedOverlap)) {
-						failed = !Int32TryParse (attr[i+1], &info->overlap, &err) || info->overlap <= 0;
+						failed = !Int32TryParse (attr[i+1], &info->overlap, &err) || info->overlap < 0;
 						parsed |= DZParsedOverlap;
 					} else
 						failed = true;
@@ -518,7 +518,7 @@ start_element (void *data, const char *el, const char **attr)
 						failed = true;
 				} else if (!g_ascii_strcasecmp ("MaxLevel", attr[i])) {
 					if (!(parsed & DZParsedMaxLevel)) {
-						failed = !Int32TryParse (attr[i+1], &info->max_level, &err) || info->max_level <= 0;
+						failed = !Int32TryParse (attr[i+1], &info->max_level, &err) || info->max_level < 0;
 						parsed |= DZParsedMaxLevel;
 					} else
 						failed = true;
@@ -586,13 +586,13 @@ start_element (void *data, const char *el, const char **attr)
 				for (int i = 0; attr[i]; i += 2) {
 					if (!g_ascii_strcasecmp ("MinLevel", attr[i])) {
 						if (!(parsed & DZParsedMinLevel)) {
-							failed = !Int32TryParse (attr[i+1], &min_level, &err) || min_level <= 0;
+							failed = !Int32TryParse (attr[i+1], &min_level, &err) || min_level < 0;
 							parsed |= DZParsedMinLevel;
 						} else
 							failed = true;
 					} else if (!g_ascii_strcasecmp ("MaxLevel", attr[i])) {
 						if (!(parsed & DZParsedMaxLevel)) {
-							failed = !Int32TryParse (attr[i+1], &max_level, &err) || max_level < min_level;
+							failed = !Int32TryParse (attr[i+1], &max_level, &err) || max_level < 0;
 							parsed |= DZParsedMaxLevel;
 						} else
 							failed = true;
@@ -600,6 +600,9 @@ start_element (void *data, const char *el, const char **attr)
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
 					}
 				}
+				
+				if (max_level < min_level)
+					failed = true;
 				
 				if (failed || parsed != DZParsedDisplayRect) {
 					printf ("DeepZoom DisplayRect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
@@ -682,14 +685,14 @@ start_element (void *data, const char *el, const char **attr)
 							failed = true;
 					} else if (!g_ascii_strcasecmp ("X", attr[i])) {
 						if (!(parsed & DZParsedX)) {
-							failed = !Int32TryParse (attr[i+1], &val, &err) || val <= 0;
+							failed = !Int32TryParse (attr[i+1], &val, &err) || val < 0;
 							info->current_rect->rect.x = (double) val;
 							parsed |= DZParsedX;
 						} else
 							failed = true;
 					} else if (!g_ascii_strcasecmp ("Y", attr[i])) {
 						if (!(parsed & DZParsedY)) {
-							failed = !Int32TryParse (attr[i+1], &val, &err) || val <= 0;
+							failed = !Int32TryParse (attr[i+1], &val, &err) || val < 0;
 							info->current_rect->rect.y = (double) val;
 							parsed |= DZParsedY;
 						} else
