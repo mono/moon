@@ -239,6 +239,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		button.state = xev->xbutton.state;
 		button.button = xev->xbutton.button;
 		button.axes = NULL;
+		button.device = NULL;
 
 		if (xev->type == ButtonPress)
 			handled = MoonWindowGtk::container_button_press_callback (NULL, &button, this);

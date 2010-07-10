@@ -1,5 +1,10 @@
 2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pal/gtk/windowless-gtk.cpp: MoonWindowlessGtk::HandleEvent: null out
+	button.device. Fixes a crash with #282.
+
+2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* textbox.cpp:
 	* richtextbox.cpp: SetIsAttached: don't do anything if the attached value
 	doesn't change. Fixes a crash where we attach to events on the surface more
