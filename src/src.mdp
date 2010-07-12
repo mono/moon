@@ -330,6 +330,8 @@
     <File subtype="Code" buildaction="Nothing" name="richtextbox.h" />
     <File subtype="Code" buildaction="Compile" name="textelement.cpp" />
     <File subtype="Code" buildaction="Nothing" name="textelement.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/config-dialog-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/config-dialog-gtk.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
