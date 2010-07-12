@@ -1786,7 +1786,7 @@ start_element (void *data, const char *el, const char **attr)
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
 		// however we can't add properties to something bad, like a <Recta.gle> element
 		XamlElementInfo *prop_info = NULL;
-		if (dot) {
+		if (dot && p->current_element) {
 			gchar *prop_elem = g_strndup (el, dot - el);
 			prop_info = p->current_element->FindPropertyElement (p, el, dot);
 			g_free (prop_elem);
