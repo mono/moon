@@ -1,5 +1,10 @@
 2010-07-06  Sebastien Pouliot  <sebastien@ximian.com>
 
+	* System.Windows.manual: Add SC to Mono.Xaml.XamlPropertyElement to
+	reduce the number of SSC required
+
+2010-07-06  Sebastien Pouliot  <sebastien@ximian.com>
+
 	* System.Windows.manual: Add SSC to SilverlightHost.NavigationState
 	setter and (internal) EnsureHistoryIframePresence methods so they 
 	can call/refeclt (non-critical) code into S.W.Browser.dll
