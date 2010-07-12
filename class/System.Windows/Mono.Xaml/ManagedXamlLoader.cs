@@ -52,8 +52,16 @@ namespace Mono.Xaml
 		public ManagedXamlLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin) : base (resourceBase, surface, plugin)
 		{
 			this.assembly = assembly;
+
+			handle = GCHandle.Alloc (this);
 		}
-				
+
+
+		~ManagedXamlLoader ()
+		{
+			handle.Free ();
+		}
+
 		public override void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			base.Setup (native_loader, plugin, surface, filename, contents);
@@ -1532,10 +1540,10 @@ namespace Mono.Xaml
 			}
 		}
 
-		private void cb_create_gchandle ()
+		private IntPtr cb_create_gchandle ()
 		{
-			if (!handle.IsAllocated)
-				handle = GCHandle.Alloc (this);
+			var handle = GCHandle.Alloc (this);
+			return GCHandle.ToIntPtr (handle);
 		}
 		
 		//

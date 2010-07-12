@@ -24,6 +24,29 @@
 
 #include <expat.h>
 
+
+
+//
+// We need all this, just so we can free gchandles.
+//
+#define INCLUDED_MONO_HEADERS 1
+
+#include <glib.h>
+#include <mono/metadata/debug-helpers.h>
+G_BEGIN_DECLS
+/* because this header sucks */
+#include <mono/metadata/mono-debug.h>
+G_END_DECLS
+#include <mono/metadata/mono-config.h>
+#include <mono/metadata/mono-gc.h>
+#include <mono/metadata/threads.h>
+#include <mono/metadata/profiler.h>
+
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/appdomain.h>
+
+
+
 #include "xaml.h"
 #include "error.h"
 #include "shape.h"
@@ -56,6 +79,7 @@
 #include "bitmapcache.h"
 #include "usercontrol.h"
 
+		
 class XamlElementInfo;
 class XamlElementInstance;
 class XamlParserInfo;
@@ -207,6 +231,7 @@ class XamlContextInternal {
 	GHashTable *imported_namespaces;
 	XamlLoaderCallbacks callbacks;
 	GSList *resources;
+	uint32_t gchandle;
 	XamlContextInternal *parent_context;
 
 	DependencyObject *source;
@@ -232,6 +257,7 @@ class XamlContextInternal {
 			g_hash_table_destroy (imported_namespaces);
 		if (resources)
 			g_slist_free (resources);
+		mono_gchandle_free (gchandle);
 		delete top_element;
 	}
 
