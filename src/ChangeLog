@@ -1,3 +1,8 @@
+2010-07-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* bitmapimage.cpp: Fix crasher (Seadragon-HttpStatusCode-[HW|SW]) 
+	when loader null-check fails and no moon_error is assigned.
+
 2010-07-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* deepzoomimagetilesource.cpp (start_element): More validity-check

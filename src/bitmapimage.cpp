@@ -413,7 +413,11 @@ BitmapImage::PixmapComplete ()
 {
 	SetProgress (1.0);
 
-	if (!loader) goto failed;
+	if (!loader) {
+		if (!moon_error)
+			moon_error = new MoonError (MoonError::EXCEPTION, 4001, "no loader");
+		goto failed;
+	}
 
 	loader->Close (moon_error == NULL ? &moon_error : NULL);
 
