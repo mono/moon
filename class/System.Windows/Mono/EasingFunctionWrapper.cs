@@ -31,12 +31,6 @@ namespace Mono {
 				}
 				catch (Exception ex) {
 					try {
-#if DEBUG
-						// if running inside the plugin
-						if (System.Windows.Interop.PluginHost.Handle != IntPtr.Zero)
-							Helper.ReportException (ex);
-						else
-#endif
 							Console.WriteLine ("Moonlight: Unhandled exception in EasingHelper.CreateSafeEasingFunction: {0}",
 									   ex);
 					}

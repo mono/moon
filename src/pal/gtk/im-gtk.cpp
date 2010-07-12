@@ -8,12 +8,10 @@
 MoonIMContextGtk::MoonIMContextGtk ()
 {
 	im = gtk_im_multicontext_new ();
-	printf ("MoonIMContextGtk::MoonIMContextGtk (): this:%p created im: %p\n", this, im);
 }
 
 MoonIMContextGtk::~MoonIMContextGtk ()
 {
-	printf ("MoonIMContextGtk::~MoonIMContextGtk (): this: %p destroyed im: %p\n", this, im);
 	g_object_unref (im);
 	im = NULL;
 }
@@ -28,7 +26,6 @@ MoonIMContextGtk::SetUsePreedit (bool flag)
 void
 MoonIMContextGtk::SetClientWindow (MoonWindow* window)
 {
-	printf ("MoonIMContextGtk::SetClientWindow (%p): this: %p im: %p\n", window, this, im);
 	gtk_im_context_set_client_window (im, window ? GDK_WINDOW(window->GetPlatformWindow ()) : NULL);
 }
 

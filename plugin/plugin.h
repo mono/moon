@@ -66,8 +66,6 @@ class PluginInstance
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void ReportException (char *msg, char *details, /* @MarshalAs=string[] */ char **stack_trace, int num_frames);
-	/* @GenerateCBinding,GeneratePInvoke */
 	void *Evaluate (const char *code);
 	
 	NPObject *GetHost ();

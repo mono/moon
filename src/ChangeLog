@@ -1,3 +1,11 @@
+2010-07-12  Alan McGovern  <amcgovern@novell.com>
+
+	* pal/gtk/im-gtk.cpp: Nuke
+	  Helper.ReportException/PluginInstance::ReportException.
+	  They're only used in debug builds and they cause DRTs to
+	  fail. As they don't really have much of a use anymore,
+	  remove them. Fixes drt 357.
+
 2010-07-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/windowless-gtk.cpp: MoonWindowlessGtk::HandleEvent: null out

@@ -59,11 +59,6 @@ namespace Mono {
 				try {
 					Application.OnUnhandledException (Application.Current, ex);
 					Console.WriteLine ("Moonlight: Unhandled exception in Events.SafeDispatcher: {0}", ex);
-#if DEBUG
-					// if running inside the plugin
-					if (System.Windows.Interop.PluginHost.Handle != IntPtr.Zero)
-						Helper.ReportException (ex);
-#endif
 				} catch {
 					// Ignore
 				}

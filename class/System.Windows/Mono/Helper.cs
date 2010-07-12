@@ -187,20 +187,6 @@ namespace Mono {
 			return NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native);
 		}
 
-#if DEBUG
-		public static void ReportException (Exception ex)
-		{
-			String msg = ex.Message;
-			System.Text.StringBuilder sb = new StringBuilder (ex.GetType ().FullName);
-			sb.Append (": ").Append (ex.Message);
-			String details = sb.ToString ();
-			String[] stack_trace = ex.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
-
-			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, 
-				msg, details, stack_trace, stack_trace.Length);
-		}
-#endif
-
 #if NET_2_1
 		// only for the plugin, not for the desktop
 
