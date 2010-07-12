@@ -1,3 +1,8 @@
+2010-07-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ivt-check.cs: Open up System.ServiceModel.Web for
+	System.ServiceModel.Web.Extensions.
+
 2010-04-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* audit.cs: Don't consider icall visibility (i.e. bring all

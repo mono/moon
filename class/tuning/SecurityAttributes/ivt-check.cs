@@ -38,7 +38,7 @@ class Program {
 			retval = (ivtname == "MoonAtkBridge");
 			break;
 		case "System.ServiceModel.Web, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
-			retval = (ivtname == "System.Json");
+			retval = (ivtname == "System.Json" || ivtname == "System.ServiceModel.Web.Extensions");
 			break;
 		case "System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
 			// note: right now our System.Xml is totally transparent (no SC nor SSC) and is not,
