@@ -1,5 +1,10 @@
 2010-07-12  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs: Removed a MoonlightBug from a passing
+	  test.
+
+2010-07-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Whoops,
 	  remove a C.RL
 

@@ -9872,7 +9872,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_FrameworkElement ()
         {
             Glyphs widget = new Glyphs ();
