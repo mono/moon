@@ -215,7 +215,6 @@ namespace System.Windows.Interop {
 				}
 			}
 			remove {
-				EnsureHistoryIframePresence ();
 				lock (locker) {
 					navigation_state_changed -= value;
 				}

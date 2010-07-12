@@ -1,3 +1,8 @@
+2010-07-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* SilverlightHost.cs: No check needed to remove handler - Fix
+	moon-unit (error handler)
+
 2010-07-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Settings.cs: Add EnableNavigation internal property
