@@ -1,3 +1,8 @@
+2010-07-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deepzoomimagetilesource.cpp (start_element): More validity-check
+	fixes.
+
 2010-07-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Each XamlContext should create a gchandle on the

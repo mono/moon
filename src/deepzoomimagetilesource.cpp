@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <errno.h>
 
 #include "application.h"
 #include "debug.h"
@@ -430,7 +431,7 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 #define DZParsedX             (1 << 11)
 #define DZParsedY             (1 << 12)
 
-#define DZParsedCollection (DZParsedServerFormat | DZParsedFormat | DZParsedTileSize | DZParsedMaxLevel)
+#define DZParsedCollection (/*DZParsedServerFormat |*/ DZParsedFormat | DZParsedTileSize | DZParsedMaxLevel)
 #define DZParsedImage (/*DZParsedServerFormat |*/ DZParsedFormat | DZParsedTileSize | DZParsedOverlap)
 #define DZParsedRect (DZParsedWidth | DZParsedHeight | DZParsedX | DZParsedY)
 #define DZParsedDisplayRect (DZParsedMinLevel | DZParsedMaxLevel)
@@ -645,8 +646,7 @@ start_element (void *data, const char *el, const char **attr)
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
 					}
 					
-					// we only need Id, the others are optional
-					if (failed || !(parsed & DZParsedId)) {
+					if (failed || !parsed) {
 						printf ("DeepZoom I error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 						info->error = true;
 					}
@@ -763,7 +763,7 @@ start_element (void *data, const char *el, const char **attr)
 					if (!g_ascii_strcasecmp ("Width", attr[i])) {
 						if (!(parsed & DZParsedWidth)) {
 							info->current_subimage->vp_w = g_ascii_strtod (attr[i+1], &inend);
-							if (info->current_subimage->vp_w < 0)
+							if (errno != 0 || info->current_subimage->vp_w < 0)
 								failed = true;
 							parsed |= DZParsedWidth;
 						} else
@@ -771,7 +771,7 @@ start_element (void *data, const char *el, const char **attr)
 					} else if (!g_ascii_strcasecmp ("X", attr[i])) {
 						if (!(parsed & DZParsedX)) {
 							info->current_subimage->vp_x = g_ascii_strtod (attr[i+1], &inend);
-							if (info->current_subimage->vp_x < 0)
+							if (errno != 0)
 								failed = true;
 							parsed |= DZParsedX;
 						} else
@@ -779,7 +779,7 @@ start_element (void *data, const char *el, const char **attr)
 					} else if (!g_ascii_strcasecmp ("Y", attr[i])) {
 						if (!(parsed & DZParsedY)) {
 							info->current_subimage->vp_y = g_ascii_strtod (attr[i+1], &inend);
-							if (info->current_subimage->vp_y < 0)
+							if (errno != 0)
 								failed = true;
 							parsed |= DZParsedY;
 						} else
