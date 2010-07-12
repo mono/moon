@@ -654,8 +654,6 @@ namespace MoonTest.System.Windows.Controls {
 			var control = new ConcreteControl();
 			TestPanel.Children.Add(control);
 			control.Template = template;
-			Console.WriteLine ("Argh!");
-			Console.ReadLine ();
 			control.UpdateLayout();
 
 			Assert.VisualChildren(control, "#1",
