@@ -1,3 +1,7 @@
+2010-07-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Bump to r160250.
+
 2010-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* README: Make both mesa sha1s we have in this file consistent with eachother.
