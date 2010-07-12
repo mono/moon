@@ -1,3 +1,8 @@
+2010-07-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Fix crash on a BitmapSource (e.g. WriteableBitmap)
+	in DRT641 (like similar change on media.cpp)
+
 2010-07-12  Alan McGovern  <amcgovern@novell.com>
 
 	* pal/gtk/im-gtk.cpp: Nuke

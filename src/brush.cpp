@@ -544,12 +544,8 @@ ImageBrush::Dispose ()
 {
 	BitmapImage *source = (BitmapImage *) GetImageSource ();
 
-	if (source) {
-		source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-		source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-		source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-		source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
-	}
+	if (source)
+		source->RemoveAllHandlers (this);
 
 	TileBrush::Dispose ();
 }
