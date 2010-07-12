@@ -1,3 +1,7 @@
+2010-07-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Enable the reverse-pinvoke-exceptions debug option.
+
 2010-07-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Fix crash on a BitmapSource (e.g. WriteableBitmap)

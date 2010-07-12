@@ -120,8 +120,8 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 #endif
 
 #if DEBUG
-		printf ("Moonlight: Enabling MONO_DEBUG=keep-delegates and MOONLIGHT_ENABLE_CONSOLE=1\n");
-		g_setenv ("MONO_DEBUG", "keep-delegates", false);
+		printf ("Moonlight: Enabling MONO_DEBUG=keep-delegates,reverse-pinvoke-exceptions and MOONLIGHT_ENABLE_CONSOLE=1\n");
+		g_setenv ("MONO_DEBUG", "keep-delegates,reverse-pinvoke-exceptions", false);
 		g_setenv ("MOONLIGHT_ENABLE_CONSOLE", "1", false);
 #endif
 
