@@ -18,6 +18,8 @@ namespace Moonlight {
 		private string application_name;
 		private List<string> external_assemblies;
 		private List<string> reference_assemblies;
+		private List<string> packages;
+		private List<string> package_assemblies;
 		private List<string> mdb_files;
 		private List<string> csharp_files;
 		private List<string> xaml_files;
@@ -122,6 +124,22 @@ namespace Moonlight {
 				if (external_assemblies == null)
 					external_assemblies = new List<string> ();
 				return external_assemblies;
+			}
+		}
+
+		public List<string> Packages {
+			get {
+				if (packages == null)
+					packages = new List<string> ();
+				return packages;
+			}
+		}
+
+		public List<string> PackageAssemblies {
+			get {
+				if (package_assemblies == null)
+					package_assemblies = new List<string> ();
+				return package_assemblies;
 			}
 		}
 
@@ -450,9 +468,12 @@ namespace Moonlight {
 				compiler_args.AppendFormat (" -r:{0} ", asm);
 			}
 
-			if (desktop && top_builddir == null) {
-				compiler_args.Append (" -pkg:moonlight-gtk-2.0");
+			foreach (string asm in PackageAssemblies) {
+				compiler_args.AppendFormat (" -r:{0} ", asm);
 			}
+
+			if (desktop && top_builddir == null)
+					compiler_args.Append (" -pkg:moonlight-gtk-2.0");
 
 			foreach (string cs in CSharpFiles) {
 				if (cs.EndsWith (".g.cs"))
@@ -572,6 +593,12 @@ namespace Moonlight {
 
 		private bool RunProcess (string filename, string args)
 		{
+			string ret;
+			return RunProcess (filename, args, out ret);
+		}
+
+		private bool RunProcess (string filename, string args, out string result)
+		{
 			if (Verbose)
 				Console.WriteLine ("Running {0} {1}", filename, args);
 
@@ -579,15 +606,21 @@ namespace Moonlight {
 
 			process.StartInfo.FileName = filename;
 			process.StartInfo.Arguments = args;
-
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.UseShellExecute = false;
+			process.StartInfo.RedirectStandardOutput = true;
 
 			process.Start ();
 
-			process.WaitForExit ();
+			result = null;
+			if (process.StandardOutput != null)
+				result = process.StandardOutput.ReadToEnd ();
 
-			return (process.ExitCode == 0);
+			process.WaitForExit ();
+			bool ret = (process.ExitCode == 0);
+
+			process.Close ();
+			return ret;
 		}
 
 		static void ShowHelp (OptionSet os)
@@ -773,6 +806,7 @@ namespace Moonlight {
 				{ "desktop:", v => mxap.Desktop = ParseBool (v, mxap.Desktop) },
 				{ "builddirhack=", v => mxap.TopBuildDir = v },
 				{ "r=|reference=", v => mxap.ExternalAssemblies.Add (v) },
+				{ "pkg=", "Use assemblies listed in .pc files to build. They won't be included in the xap, so this is only useful for extra system libraries.", v => mxap.Packages.Add (v) },
 				{ "l:|list-generated:", v => mxap.ListGenerated = ParseBool (v, mxap.ListGenerated) },
 				{ "v:|verbose:", v => mxap.Verbose =  ParseBool (v, mxap.Verbose) },
 				{ "res=|resource=", "-res=filename[,resource name]", v => resources.Add (v) },
@@ -858,6 +892,15 @@ namespace Moonlight {
 			if (!mxap.InPlace) {
 				Directory.SetCurrentDirectory (mxap.TmpDir);
 				mxap.WorkingDir = mxap.TmpDir;
+			}
+
+			foreach (string pkg in mxap.Packages) {
+				string ret;
+				mxap.RunProcess ("pkg-config", "--libs " + pkg, out ret);
+				if (ret != null) {
+					string [] libs = ret.Trim (new Char [] {' ', '\n', '\r', '\t'}).Replace("-r:", "").Split (new Char [] { ' ', '\t'});
+					mxap.PackageAssemblies.AddRange (libs);
+				}
 			}
 
 			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.dll"));

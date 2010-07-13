@@ -1,3 +1,9 @@
+2010-07-13  Andreia Gaita  <avidigal@novell.com>
+
+	* mxap.cs: new -pkg flag. uses assemblies from .pc files to build,
+	  but doesn't include them in the xap
+	  (useful for extra system libraries)
+
 2010-06-30  Jackson Harper  <jackson@ximian.com>
 
 	* mxap.cs: Add Runtime Version 4 to the usage.
