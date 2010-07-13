@@ -59,7 +59,6 @@ namespace Mono.Xaml
 
 		~ManagedXamlLoader ()
 		{
-			handle.Free ();
 		}
 
 		public override void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
@@ -71,6 +70,7 @@ namespace Mono.Xaml
 			// unmanaged code. 
 			//
 			unsafe {
+				callbacks.gchandle = GCHandle.ToIntPtr (handle);
 				callbacks.lookup_object = new LookupObjectCallback (cb_lookup_object);
 				callbacks.create_gchandle = new CreateGCHandleCallback (cb_create_gchandle);
 				callbacks.set_property = new SetPropertyCallback (cb_set_property);

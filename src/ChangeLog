@@ -1,3 +1,9 @@
+2010-07-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add a gchandle to the callbacks, let the loader and
+	the contexts own the callbacks, so callbacks dont get freed when
+	we have templates inside templates.
+
 2010-07-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp: Add a null check to fix a crash with #964.

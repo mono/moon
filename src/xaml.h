@@ -53,6 +53,7 @@ typedef bool (*xaml_add_child_callback) (XamlCallbackData *data, Value *parent_p
 
 struct XamlLoaderCallbacks {
 
+	uint32_t gchandle;
 	xaml_lookup_object_callback lookup_object;
 	xaml_create_gchandle_callback create_gchandle;
 	xaml_set_property_callback set_property;
@@ -60,6 +61,7 @@ struct XamlLoaderCallbacks {
 	xaml_add_child_callback add_child;
 
 	XamlLoaderCallbacks () :
+		gchandle (0),
 		lookup_object (NULL),
 		set_property (NULL),
 		import_xaml_xmlns (NULL),

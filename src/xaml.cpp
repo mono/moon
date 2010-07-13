@@ -1581,7 +1581,7 @@ XamlLoader::Initialize (const char *resourceBase, const char* filename, const ch
 	this->import_default_xmlns = false;
 
 	if (context) {
-		callbacks = context->internal->callbacks;		
+		callbacks = context->internal->callbacks;
 		this->vm_loaded = true;
 	}
 #if DEBUG
@@ -1603,6 +1603,11 @@ XamlLoader::~XamlLoader ()
 	str = NULL;
 	if (error_args)
 		error_args->unref();
+
+	// Only free the callbacks if we own them, ie we are the top level loader
+	// otherwise the XamlContext owns them.
+	if (!context && callbacks.gchandle)
+		mono_gchandle_free (callbacks.gchandle);
 }
 
 bool

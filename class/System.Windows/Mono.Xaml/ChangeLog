@@ -1,6 +1,12 @@
 2010-07-12  Jackson Harper  <jackson@ximian.com>
 
 	* managedxamlloader.cs:
+	* xamlLoaderCallbacks.cs: Add a gchandle to the callbacks.
+	- Obviously the loader can't free its own gchandle.
+
+2010-07-12  Jackson Harper  <jackson@ximian.com>
+
+	* managedxamlloader.cs:
 	* xamlLoaderCallbacks.cs: create_gchandle returns the handle
 	now. This way template contexts can create a new handle, hold on
 	to it, and free it when needed.

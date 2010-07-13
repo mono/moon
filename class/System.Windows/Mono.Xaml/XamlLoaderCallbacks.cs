@@ -47,6 +47,7 @@ namespace Mono.Xaml
 
 
 	internal struct XamlLoaderCallbacks {
+		public IntPtr gchandle;
 		public LookupObjectCallback lookup_object;
 		public CreateGCHandleCallback create_gchandle;
 		public SetPropertyCallback set_property;
