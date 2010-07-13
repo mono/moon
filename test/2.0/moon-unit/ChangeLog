@@ -1,3 +1,9 @@
+2010-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Undo
+	  this commit as this should be compilable under moonlight,
+	  and now it is :)
+
 2010-07-12  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/DefaultValues.cs: Removed a MoonlightBug from a passing
