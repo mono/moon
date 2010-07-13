@@ -1,3 +1,8 @@
+2010-07-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (HandleDzParsed): If width and height aren't
+	set, set the AspectRation to 1. Fixes drt Seadragon-520.
+
 2010-07-13  David Reveman  <davidr@novell.com>
 
 	* projection.cpp (ExtendBoundsTo): Fix Z clipping error in

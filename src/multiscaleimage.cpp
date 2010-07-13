@@ -518,8 +518,11 @@ MultiScaleImage::HandleDzParsed ()
 	MultiScaleSubImageCollection *subs = GetSubImages ();
 	DeepZoomImageTileSource *dzits = NULL;
 	
-	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
+	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0) {
 		SetValue (MultiScaleImage::AspectRatioProperty, Value (source->GetImageWidth () / source->GetImageHeight ()));
+	} else {
+		SetValue (MultiScaleImage::AspectRatioProperty, Value (1.0));
+	}
 	
 	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 		MultiScaleSubImage *si;
