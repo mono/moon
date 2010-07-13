@@ -1,3 +1,7 @@
+2010-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Add missing files to the solution file
+
 2010-07-09  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am: Implement a WeakListener for
