@@ -15,6 +15,8 @@
 #include "dependencyobject.h"
 #include "pal.h"
 
+namespace Moonlight {
+
 /* @Namespace=None,ManagedEvents=Manual */
 class LocalMessageReceiver : public DependencyObject {
 public:
@@ -83,4 +85,5 @@ private:
 	char *senderDomain;
 };
 
+};
 #endif /* __MOON_MESSAGING_H__ */

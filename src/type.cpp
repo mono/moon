@@ -20,6 +20,8 @@
 #include "deployment.h"
 #include "dependencyproperty.h"
 
+namespace Moonlight {
+
 /*
  * Type implementation
  */
@@ -455,3 +457,5 @@ Types::RegisterType (const char *name, const char *content_property, void *gc_ha
 	return type->GetKind ();
 }
 
+
+};

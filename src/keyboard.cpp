@@ -14,6 +14,8 @@
 
 #include "keyboard.h"
 
+namespace Moonlight {
+
 ModifierKeys Keyboard::modifiers = ModifierKeyNone;
 GHashTable  *Keyboard::pressedKeys = NULL;
 
@@ -81,3 +83,5 @@ Keyboard::IsKeyPressed (Key key)
 {
 	return pressedKeys && (g_hash_table_lookup (pressedKeys, GINT_TO_POINTER (key)) != NULL);
 }
+
+};

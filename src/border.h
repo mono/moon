@@ -16,6 +16,8 @@
 #include "frameworkelement.h"
 #include "cornerradius.h"
 
+namespace Moonlight {
+
 //
 // Border
 //
@@ -73,6 +75,8 @@ public:
 	Thickness *GetPadding ();
 	void SetPadding (Thickness *value);
 	
+};
+
 };
 
 #endif /* __MOON_BORDER_H__ */

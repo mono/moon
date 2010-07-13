@@ -14,6 +14,8 @@
 #include <glib.h>
 #include <math.h>
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 /* @Namespace=System.Windows.Media */
 struct Color {
@@ -85,5 +87,7 @@ const char *color_to_string (Color *color);
 Color *color_from_str  (const char *name);
 
 G_END_DECLS
+
+};
 
 #endif /* __MOON_COLOR_H__ */

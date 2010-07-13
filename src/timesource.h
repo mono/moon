@@ -20,6 +20,8 @@
 #define MOON_PRIORITY_DEFAULT G_PRIORITY_DEFAULT_IDLE
 #define MOON_PRIORITY_IDLE G_PRIORITY_DEFAULT_IDLE
 
+namespace Moonlight {
+
 /* @Namespace=None,ManagedEvents=Manual */
 class TimeSource : public EventObject {
  protected:
@@ -80,4 +82,5 @@ TimeSpan get_now (void);
 
 G_END_DECLS
 
+};
 #endif /* MOON_TIMESOURCE_H */

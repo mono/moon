@@ -8,6 +8,8 @@
 
 #include <gtk/gtk.h>
 
+namespace Moonlight {
+
 class MoonIMContextGtk  : public MoonIMContext {
 public:
 	MoonIMContextGtk ();
@@ -35,4 +37,5 @@ public:
 	GtkIMContext *im;
 };
 
+};
 #endif /* MOON_IM_GTK_H */

@@ -19,6 +19,8 @@
 
 #define d(x)
 
+namespace Moonlight {
+
 /*
  * BrowserHttpHandler
  */
@@ -78,3 +80,5 @@ BrowserHttpResponse::BrowserHttpResponse (HttpRequest *request)
 	: HttpResponse (Type::BROWSERHTTPRESPONSE, request)
 {
 }
+
+};

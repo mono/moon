@@ -16,6 +16,7 @@
 
 #include <pthread.h>
 
+namespace Moonlight {
 
 class List {
 public:
@@ -123,4 +124,5 @@ public:
 	void *& operator [] (int index) { return array [index]; }
 };
 
+};
 #endif /* __LIST_H__ */

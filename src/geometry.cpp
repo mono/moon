@@ -12,13 +12,14 @@
  */
 
 #include <config.h>
-
 #include <math.h>
 
 #include "deployment.h"
 #include "utils.h"
 #include "geometry.h"
 #include "shape.h"
+
+namespace Moonlight {
 
 //
 // Geometry
@@ -894,3 +895,5 @@ QuadraticBezierSegment::Append (moon_path *path)
 
 	moon_quad_curve_to (path, x1, y1, x2, y2);
 }
+
+};

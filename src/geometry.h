@@ -22,6 +22,8 @@
 #include "transform.h"
 #include "moon-path.h"
 
+namespace Moonlight {
+
 //
 // Geometry
 //
@@ -604,4 +606,5 @@ class QuadraticBezierSegment : public PathSegment {
 	Point *GetPoint2 ();
 };
 
+};
 #endif

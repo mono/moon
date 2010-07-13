@@ -5,6 +5,7 @@
 #include "gtk/gtk.h"
 #include "libmoon.h"
 
+using namespace Moonlight;
 
 bool
 parse_time_span_test ()
@@ -62,8 +63,9 @@ parse_time_span_test ()
 	return true;
 }
 
-
+namespace Moonlight {
 bool repeat_behavior_from_str (const char *str, RepeatBehavior *res);
+};
 
 bool
 parse_repeat_behavior_test ()

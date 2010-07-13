@@ -19,6 +19,8 @@
 #include "eventargs.h"
 #include "downloader.h"
 
+namespace Moonlight {
+
 class HttpHandler;
 class HttpRequest;
 class HttpResponse;
@@ -279,4 +281,5 @@ public:
 	const char *GetDownloadDir ();
 };
 
+};
 #endif /* __MOON_NETWORK_H__ */

@@ -15,6 +15,8 @@
 #include "collection.h"
 #include "uielement.h"
 
+namespace Moonlight {
+
 
 EventTrigger::EventTrigger ()
 {
@@ -99,3 +101,5 @@ event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {
 	trigger->GetActions()->Add (action);
 }
+
+};

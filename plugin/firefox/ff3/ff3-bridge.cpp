@@ -15,6 +15,8 @@
 
 #include "ff3-bridge.h"
 
+namespace Moonlight {
+
 FF3BrowserBridge::FF3BrowserBridge ()
 {
 }
@@ -23,3 +25,5 @@ BrowserBridge* CreateBrowserBridge ()
 {
 	return new FF3BrowserBridge ();
 }
+
+};

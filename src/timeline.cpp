@@ -26,6 +26,8 @@
 #include "deployment.h"
 #include "ptr.h"
 
+namespace Moonlight {
+
 /* timeline */
 
 Timeline::Timeline ()
@@ -417,3 +419,5 @@ DispatcherTimer::TeardownClock ()
 		Timeline::TeardownClock ();
 	}
 }
+
+};

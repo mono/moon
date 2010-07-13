@@ -17,6 +17,8 @@
 #include "collection.h"
 #include "managedtypeinfo.h"
 
+namespace Moonlight {
+
 //
 // Style
 //
@@ -159,4 +161,5 @@ class DeepStyleWalker {
 	static gint SetterComparer (gconstpointer left, gconstpointer right);
 };
 
+};
 #endif /* __MOON_STYLE_H__ */

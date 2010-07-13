@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @CBindingRequisite */
 typedef bool (*get_image_uri_func) (int level, int posX, int posY, Uri *uri, void* user_data);
 typedef void (*invalidate_tile_layer_func) (MultiScaleImage *msi, int level, int tilePositionX, int tilePositionY, int tileLayer);
@@ -76,4 +78,5 @@ class MultiScaleTileSource : public DependencyObject {
 	void set_invalidate_tile_layer_func (invalidate_tile_layer_func func, MultiScaleImage *user_data);
 };
 
+};
 #endif /* __TILESOURCE_H__ */

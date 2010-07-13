@@ -14,6 +14,8 @@
 #include "dependencyobject.h"
 #include "control.h"
 
+namespace Moonlight {
+
 /* @Namespace=None */
 class TabNavigationWalker {
  public:
@@ -42,4 +44,5 @@ class TabNavigationWalker {
 	static bool WalkChildren (UIElement *root, UIElement *current, bool forwards, Types *types);
 };
 
+};
 #endif /* __MOON_TABNAVIGATIONWALKER_H__ */

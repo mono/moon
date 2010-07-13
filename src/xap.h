@@ -12,6 +12,8 @@
 
 #include <glib.h>
 
+namespace Moonlight {
+
 /* @Version=2 */
 class Xap {
 	char *xap_dir;
@@ -30,4 +32,5 @@ class Xap {
 
 Xap *xap_create_from_file (XamlLoader *loader, const char *filename);
 
+};
 #endif /* __MOON_XAP_H__ */

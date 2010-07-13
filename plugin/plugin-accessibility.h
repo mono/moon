@@ -17,6 +17,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=None */
 /* @ManagedDependencyProperties=Manual */
 /* @ManagedEvents=Manual */
@@ -40,4 +42,5 @@ protected:
 	virtual ~Accessibility ();
 };
 
+};
 #endif /* MOON_PLUGIN_ACCESSIBILITY */

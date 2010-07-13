@@ -18,6 +18,8 @@
 #include <glib.h>
 #include "pipeline.h"
 
+namespace Moonlight {
+
 class AsxParser;
 class AsxParserInternal;
 
@@ -71,5 +73,5 @@ private:
 	void *user_data;
 };
 
-
+};
 #endif /*  __MOON_ASXPARSER_H__ */

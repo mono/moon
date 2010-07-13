@@ -22,6 +22,8 @@
 #include "plugin-accessibility-bridge.h"
 #include "plugin.h"
 
+namespace Moonlight {
+
 #if PAL_GTK_A11Y
 void *atk_bridge_module = NULL;
 AtkObject *accessible_root = NULL;
@@ -338,4 +340,5 @@ AccessibilityBridge::ShutdownAtkBridge ()
 		gnome_accessibility_module_shutdown ();
 }
 
+};
 #endif /* PAL_GTK_A11Y */

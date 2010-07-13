@@ -5,6 +5,8 @@
 
 #include <gtk/gtkimmulticontext.h>
 
+using namespace Moonlight;
+
 MoonIMContextGtk::MoonIMContextGtk ()
 {
 	im = gtk_im_multicontext_new ();

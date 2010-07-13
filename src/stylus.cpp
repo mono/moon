@@ -22,6 +22,8 @@
 #include "error.h"
 #include "runtime.h"
 
+namespace Moonlight {
+
 #define DEBUG_HITTEST 0
 
 
@@ -1007,3 +1009,5 @@ stroke_collection_get_bounds (StrokeCollection *collection, Rect *bounds)
 {
 	*bounds = collection->GetBounds ();
 }
+
+};

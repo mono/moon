@@ -9,7 +9,6 @@
  */
 
 #include <config.h>
-
 #include <math.h>
 
 #include "debug.h"
@@ -27,6 +26,8 @@
 #include "effect.h"
 #include "projection.h"
 #include "canvas.h"
+
+namespace Moonlight {
 
 #define MAX_LAYOUT_PASSES 250
 
@@ -1060,3 +1061,5 @@ FrameworkElement::GetDefaultTemplate ()
 		return get_default_template_cb (this);
 	return NULL;
 }
+
+};

@@ -15,6 +15,8 @@
 
 #include "enums.h"
 
+namespace Moonlight {
+
 class Keyboard {
 	static ModifierKeys modifiers;
 	static GHashTable *pressedKeys;
@@ -31,4 +33,5 @@ class Keyboard {
 	static bool IsKeyPressed (Key key);
 };
 
+};
 #endif /* __KEYBOARD_H__ */

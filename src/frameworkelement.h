@@ -17,6 +17,8 @@
 #include "uielement.h"
 #include "enums.h"
 
+namespace Moonlight {
+
 /* @CBindingRequisite */
 typedef Size (*MeasureOverrideCallback)(Size availableSize, MoonError *error);
 /* @CBindingRequisite */
@@ -217,4 +219,5 @@ class FrameworkElementProvider : public PropertyValueProvider {
 };
 
 
+};
 #endif /* __FRAMEWORKELEMENT_H__ */

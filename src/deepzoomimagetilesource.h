@@ -22,6 +22,8 @@
 #include "uri.h"
 #include "utils.h"
 
+namespace Moonlight {
+
 typedef void (* MultiScaleImageCallback) (MultiScaleImage *msi);
 
 /* @Version=2,Namespace=System.Windows.Media */
@@ -95,4 +97,5 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void EndElement (void *info, const char* el);
 };
 
+};
 #endif /* __DEEPZOOMIMAGETILESOURCE_H__ */

@@ -29,6 +29,8 @@
 #include "brush.h"
 #include "fonts.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Documents */
 class Glyphs : public FrameworkElement {
 	Downloader *downloader;
@@ -135,4 +137,5 @@ class Glyphs : public FrameworkElement {
 	const char *GetUnicodeString ();
 };
 
+};
 #endif /* __GLYPHS_H__ */

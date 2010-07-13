@@ -23,6 +23,8 @@
 #include "ptr.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 //
 // SL-Cairo convertion and helper routines
 //
@@ -2040,3 +2042,5 @@ Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pro
  * - find the largest rectangle inside the (or each) convex polygon(s)
  * 	http://cgm.cs.mcgill.ca/~athens/cs507/Projects/2003/DanielSud/complete.html
  */
+
+};

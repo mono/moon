@@ -1,3 +1,8 @@
+2010-07-13  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs: add support for c++ namespaces and put all the
+	  types in the generated headers inside a Moonlight namespace
+
 2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Set CharSet=Auto for p/invokes.

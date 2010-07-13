@@ -16,6 +16,8 @@
 #include "point.h"
 #include "utils.h"
 
+namespace Moonlight {
+
 bool
 Point::FromStr (const char *s, Point *p)
 {
@@ -41,3 +43,5 @@ Point::Transform (cairo_matrix_t *matrix)
 
 	return Point (nx, ny);
 }
+
+};

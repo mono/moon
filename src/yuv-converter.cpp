@@ -19,6 +19,8 @@
 
 #include "yuv-converter.h"
 
+namespace Moonlight {
+
 /* R = 1.164 * (Y - 16)		+ 1.596 * (V - 128)
  * G = 1.164 * (Y - 16)		- 0.813 * (V - 128)	- 0.391 * (U - 128)	
  * B = 1.164 * (Y - 16)					+ 2.018 * (U - 128)
@@ -436,3 +438,5 @@ YUVConverter::Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSli
 #endif
 	return MEDIA_SUCCESS;
 }
+
+};

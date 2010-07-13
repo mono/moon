@@ -15,6 +15,8 @@
 #include <cairo.h>
 #include <math.h>
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct Point {
 public:
@@ -65,4 +67,5 @@ public:
 	static bool FromStr (const char *s, Point *p);
 };
 
+};
 #endif /* __MOON_POINT_H__ */

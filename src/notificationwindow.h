@@ -15,6 +15,8 @@
  
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows */ 
 class Window : public DependencyObject {
 protected:
@@ -74,4 +76,5 @@ public:
 	Visibility GetVisibility ();
 };
 
+};
 #endif /* __MOON_NOTIFICATION_WINDOW_H__ */

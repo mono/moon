@@ -36,6 +36,7 @@ gettimeofday (struct timeval *tv, void *tz)
 } 
 #endif // _MSC_VER
 
+namespace Moonlight {
 
 TimeSpan
 get_now (void)
@@ -194,3 +195,4 @@ ManualTimeSource::GetNow ()
 	return current_time;
 }
 
+};

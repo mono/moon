@@ -18,6 +18,8 @@
 #include "type.h"
 #include "enums.h"
 
+namespace Moonlight {
+
 /* 
  * ugly file containing the catchall value type we use.
  */
@@ -254,5 +256,5 @@ void value_delete_value (Value *value);
 void value_delete_value2 (/* @MarshalAs=IntPtr */ Value *value);
 G_END_DECLS
 
-
+};
 #endif /* MOON_VALUE_H */

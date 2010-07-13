@@ -19,6 +19,8 @@
 #include "bitmapsource.h"
 #include "runtime.h"
 
+namespace Moonlight {
+
 BitmapSource::BitmapSource ()
 {
 	SetObjectType (Type::BITMAPSOURCE);
@@ -104,3 +106,5 @@ BitmapSource::GetSurface (cairo_t *cr)
 
 	return native_surface;
 }
+
+};

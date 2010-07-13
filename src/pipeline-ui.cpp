@@ -33,6 +33,8 @@
 #include "codec-url.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 #define EULA_URL "http://go.microsoft.com/fwlink/?LinkId=149579"
 
 bool CodecDownloader::running = false;
@@ -551,3 +553,5 @@ CodecDownloader::Close ()
 	running = false;
 }
 
+
+};

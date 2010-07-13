@@ -13,6 +13,8 @@
 #ifndef __FONT_WEIGHT_H__
 #define __FONT_WEIGHT_H__
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct FontWeight {
 	FontWeights weight;
@@ -33,7 +35,5 @@ struct FontWeight {
 	}
 };
 
+};
 #endif /* __FONT_WEIGHT_H__ */
-
-
-

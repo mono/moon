@@ -15,6 +15,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows */
 class TriggerBase : public DependencyObject {
 public:
@@ -72,4 +74,5 @@ G_BEGIN_DECLS
 void event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
 G_END_DECLS
 
+};
 #endif /* __MOON_TRIGGER_H__ */

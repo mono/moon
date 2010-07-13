@@ -25,6 +25,8 @@
 #include "validators.h"
 #include "style.h"
 
+namespace Moonlight {
+
 Control::Control ()
 {
 	SetObjectType (Type::CONTROL);
@@ -329,3 +331,5 @@ Control::UpdateEnabled ()
 		walker.SkipBranch ();
 	}
 }
+
+};

@@ -26,6 +26,8 @@
 #include "debug.h"
 #include "uri.h"
 
+namespace Moonlight {
+
 //
 // Downloader
 //
@@ -610,3 +612,5 @@ Downloader::StoppedHandler (HttpRequest *sender, HttpRequestStoppedEventArgs *ar
 		NotifyFailed (args->GetErrorMessage ());
 	}
 }
+
+};

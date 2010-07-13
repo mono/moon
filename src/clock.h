@@ -17,6 +17,8 @@
 #include <glib.h>
 #include "collection.h"
 
+namespace Moonlight {
+
 /*
  * Time units:
  *  TimeSpan: signed int64 value, 100-nanosecond units (10 000 000 ticks per second)
@@ -339,6 +341,8 @@ protected:
 
 private:
 	bool timemanager_clockgroup;
+};
+
 };
 
 #endif /* MOON_CLOCK_H */

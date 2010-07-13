@@ -26,6 +26,8 @@
 #include "uri.h"
 #include "capture.h"
 
+namespace Moonlight {
+
 //
 // SL-Cairo convertion and helper routines
 //
@@ -1353,3 +1355,5 @@ VisualBrush::IsOpaque ()
 	// XXX punt for now and return false here.
 	return false;
 }
+
+};

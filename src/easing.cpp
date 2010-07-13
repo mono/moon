@@ -25,6 +25,8 @@
 
 #include "easing.h"
 
+namespace Moonlight {
+
 // base
 
 EasingFunctionBase::EasingFunctionBase ()
@@ -284,3 +286,5 @@ SineEase::EaseInCore (double normalizedTime)
 	return 1.0 - sin ((1.0 - normalizedTime) * M_PI_2);
 }
 
+
+};

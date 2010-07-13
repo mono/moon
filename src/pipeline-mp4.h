@@ -16,6 +16,8 @@
 
 #include "pipeline.h"
 
+namespace Moonlight {
+
 struct MvhdBox;
 struct TrakBox;
 struct TkhdBox;
@@ -393,5 +395,6 @@ public:
 	virtual const char *GetName () { return "Mp4Demuxer"; }
 };
 
+};
 #endif /* __MOON_PIPELINE_MP4_H__ */
  

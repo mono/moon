@@ -23,5 +23,8 @@
 #include "uri.h"
 #include "textbox.h"
 
+namespace Moonlight {
+
 /*MAP_BODY*/
 
+};

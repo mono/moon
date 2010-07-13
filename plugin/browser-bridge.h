@@ -20,6 +20,8 @@
 #define DOWNLOADER_OK 0
 #define DOWNLOADER_ERR -1
 
+namespace Moonlight {
+
 G_BEGIN_DECLS
 
 BrowserBridge *CreateBrowserBridge ();
@@ -40,4 +42,5 @@ class BrowserBridge {
 	Surface *GetSurface () { return surface; }
 };
 
+};
 #endif /* BROWSER_BRIDGE */

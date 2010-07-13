@@ -15,6 +15,8 @@
 
 #include "control.h"
 
+namespace Moonlight {
+
 //
 // UserControl
 //
@@ -44,4 +46,5 @@ UIElement *user_control_get_content (UserControl *user_control);
 
 G_END_DECLS
 
+};
 #endif /* __MOON_USERCONTROL_H__ */

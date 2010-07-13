@@ -13,6 +13,7 @@
 
 #include <glib.h>
 
+namespace Moonlight {
 
 /* @IncludeInKinds */
 /* @Namespace=System.Windows.Media */
@@ -610,6 +611,8 @@ enum BitmapCreateOptions {
 enum ReceiverNameScope {
 	ReceiverNameScopeDomain,
 	ReceiverNameScopeGlobal
+};
+
 };
 
 G_BEGIN_DECLS

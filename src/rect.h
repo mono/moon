@@ -20,6 +20,8 @@
 #include "thickness.h"
 #include "cornerradius.h"
 
+namespace Moonlight {
+
 // map to System.Windows.Rect
 /* @IncludeInKinds */
 struct Rect {
@@ -236,4 +238,5 @@ struct Rect {
 	static bool FromStr (const char *s, Rect *r);
 };
 
+};
 #endif /* __MOON_RECT_H__ */

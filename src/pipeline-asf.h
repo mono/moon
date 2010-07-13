@@ -16,6 +16,8 @@
 
 #include <glib.h>
 
+namespace Moonlight {
+
 class ASFContext;
 class ASFDemuxer;
 class ASFDemuxerInfo;
@@ -34,6 +36,7 @@ class MmsPlaylistEntry;
 
 class WaveFormatEx;
 class WaveFormatExtensible;
+};
 
 #include "list.h"
 #include "dependencyobject.h"
@@ -41,6 +44,8 @@ class WaveFormatExtensible;
 #include "pipeline.h"
 #include "mutex.h"
 #include "http-streaming.h"
+
+namespace Moonlight {
 
 class ContentDescriptionList {
 public:
@@ -555,7 +560,7 @@ public:
 	ASFMarkerDecoder (Media *media, IMediaStream *stream) ;
 	
 	virtual const char *GetName () { return "ASFMarkerDecoder"; }
-}; 
+};
 
 /*
  * ASFMarkerDecoderInfo
@@ -695,6 +700,7 @@ extern ASFGuid asf_guids_payload_content_type;
 extern ASFGuid asf_guids_payload_pixel_aspect_ratio;
 extern ASFGuid asf_guids_payload_sample_duration;
 extern ASFGuid asf_guids_payload_encryption_sample_id;
+
 
 /*
  * WaveFormatEx
@@ -1220,4 +1226,5 @@ public:
 	guint32 GetDataCounter () { return data_counter; }
 };
 
+};
 #endif

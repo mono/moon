@@ -22,6 +22,8 @@
 #include "enums.h"
 #include "list.h"
 
+namespace Moonlight {
+
 #define EVENTHANDLER(type, event, objtype, argtype)	\
 	static void event##Callback (EventObject *sender, EventArgs *calldata, gpointer closure)	\
 	{	\
@@ -498,6 +500,8 @@ private:
 	bool registering_names;
 	
 	const char *resource_base;
+};
+
 };
 
 #endif /* __MONO_DEPOBJECT_H__ */

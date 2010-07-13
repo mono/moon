@@ -16,6 +16,8 @@
 #include "value.h"
 #include "error.h"
 
+namespace Moonlight {
+
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 
 class Validators
@@ -51,4 +53,5 @@ public:
 	static ValueValidator NonNullOnlyDuringInitializationValidator;
 };
 
+};
 #endif /* __VALIDATORS_H__ */

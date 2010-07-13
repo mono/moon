@@ -27,6 +27,8 @@
 #define IS_INSTALL_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), INSTALL_DIALOG_TYPE))
 #define INSTALL_DIALOG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), INSTALL_DIALOG_TYPE, InstallDialogClass))
 
+namespace Moonlight {
+
 typedef struct _InstallDialog InstallDialog;
 typedef struct _InstallDialogClass InstallDialogClass;
 typedef struct _InstallDialogPrivate InstallDialogPrivate;
@@ -54,4 +56,5 @@ bool install_dialog_install (InstallDialog *dialog);
 char *install_utils_get_desktop_shortcut (OutOfBrowserSettings *settings);
 char *install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings);
 
+};
 #endif /* MOON_INSTALL_DIALOG_H */

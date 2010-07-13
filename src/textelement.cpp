@@ -27,6 +27,7 @@
 #include "debug.h"
 #include "uri.h"
 
+namespace Moonlight {
 
 //
 // TextElement
@@ -415,3 +416,5 @@ InlineUIContainer::InlineUIContainer ()
 {
 	SetObjectType (Type::INLINEUICONTAINER);
 }
+
+};

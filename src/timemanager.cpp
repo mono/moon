@@ -17,6 +17,8 @@
 #include "timesource.h"
 #include "runtime.h"
 
+namespace Moonlight {
+
 #define PUT_TIME_MANAGER_TO_SLEEP 0
 
 #if TIMERS
@@ -532,3 +534,5 @@ TimeManager::SourceTick ()
 	}
 #endif
 }
+
+};

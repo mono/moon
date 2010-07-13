@@ -20,6 +20,8 @@
 #include "utils.h"
 #include "cornerradius.h"
 
+namespace Moonlight {
+
 bool
 CornerRadius::FromStr (const char *str, CornerRadius *corner)
 {
@@ -49,3 +51,5 @@ CornerRadius::FromStr (const char *str, CornerRadius *corner)
 
 	return rv;
 }
+
+};

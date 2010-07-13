@@ -26,6 +26,8 @@
 #include "window.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 class DirtyNode : public List::Node {
 public:
 	DirtyNode (UIElement *element) 
@@ -480,3 +482,5 @@ Surface::ProcessDirtyElements ()
 	ProcessUpDirtyElements ();
 	return dirty;
 }
+
+};

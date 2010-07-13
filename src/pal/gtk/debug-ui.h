@@ -13,6 +13,8 @@
 
 #include "window-gtk.h"
 
+using namespace Moonlight;
+
 G_BEGIN_DECLS
 
 void show_debug (MoonWindowGtk *window);

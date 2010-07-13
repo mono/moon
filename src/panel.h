@@ -14,6 +14,8 @@
 #include <glib.h>
 #include "frameworkelement.h"
 
+namespace Moonlight {
+
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Controls */
 class Panel : public FrameworkElement {
@@ -77,4 +79,5 @@ class Panel : public FrameworkElement {
 	bool GetIsItemsHost ();
 };
 
+};
 #endif /* __MOON_PANEL_H__ */

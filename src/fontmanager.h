@@ -21,6 +21,8 @@
 #include "collection.h"
 #include "enums.h"
 
+namespace Moonlight {
+
 struct ManagedStreamCallbacks;
 class FontManager;
 class FontFace;
@@ -193,4 +195,5 @@ class FontManager {
 	GlyphTypefaceCollection *GetSystemGlyphTypefaces ();
 };
 
+};
 #endif /* __FONT_MANAGER_H__ */

@@ -15,6 +15,8 @@
 
 #include "type.h"
 
+namespace Moonlight {
+
 class EventObject;
 class EventArgs;
 class PropertyChangedEventArgs;
@@ -161,4 +163,5 @@ private:
 	FrameworkElement *source;
 };
 
+};
 #endif /* __MOON_PROVIDER_H__ */

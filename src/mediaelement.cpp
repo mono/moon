@@ -26,6 +26,8 @@
 #include "timeline.h"
 #include "timemanager.h"
 
+namespace Moonlight {
+
 /*
  * TimelineMarkerNode
  */
@@ -1860,3 +1862,5 @@ MediaElementPropertyValueProvider::GetPosition ()
 	this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 	return this->position;
 }
+
+};

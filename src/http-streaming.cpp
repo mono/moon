@@ -12,12 +12,10 @@
  */
 
 #include <config.h>
-
 #include <string.h>
 
 #include "http-streaming.h"
 #include "debug.h"
-
 
 static const char * features [] = {"broadcast", "last", "live", "playlist", "reliable", "seekable", "skipbackwards", "skipforward", "stridable", NULL};
 

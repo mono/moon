@@ -18,6 +18,8 @@
 #include "deployment.h"
 #include "uri.h"
 
+namespace Moonlight {
+
 LocalMessageReceiver::LocalMessageReceiver (const char *receiverName,
 					    ReceiverNameScope namescope)
 {
@@ -223,3 +225,5 @@ LocalMessageSender::MessageSent (MoonError *error, const char *message, const ch
 								      managedUserState));
 	}
 }
+
+};

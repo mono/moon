@@ -15,6 +15,8 @@
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/assembly.h>
 
+namespace Moonlight {
+
 #if MONO_ENABLE_CORECLR_SECURITY
 
 static struct stat platform_stat;
@@ -153,3 +155,5 @@ security_enable_coreclr (const char *platform_dir)
 
 #endif
 
+
+};

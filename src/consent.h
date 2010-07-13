@@ -14,6 +14,8 @@
 
 #include <glib.h>
 
+namespace Moonlight {
+
 typedef enum {
 	MOON_CONSENT_CLIPBOARD,
 	MOON_CONSENT_FULLSCREEN_PINNING,
@@ -39,4 +41,5 @@ public:
 
 G_END_DECLS
 
+};
 #endif /* __MOON_CONSENT_H__ */

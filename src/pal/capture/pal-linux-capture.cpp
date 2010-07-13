@@ -19,6 +19,8 @@
 #include "pal/capture/v4l2/pal-v4l2-video-capture.h"
 #endif
 
+using namespace Moonlight;
+
 MoonCaptureServiceLinux::MoonCaptureServiceLinux ()
 {
 	// FIXME we should do both compile time and runtime checking

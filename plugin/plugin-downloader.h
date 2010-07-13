@@ -19,6 +19,8 @@
 #include "plugin-class.h"
 #include "network.h"
 
+namespace Moonlight {
+
 /*
  * BrowserHttpHandler
  */
@@ -64,4 +66,5 @@ public:
 	BrowserHttpResponse (HttpRequest *request);
 };
 
+};
 #endif // __PLUGIN_DOWNLOADER_H__

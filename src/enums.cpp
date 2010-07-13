@@ -20,6 +20,8 @@
 #include "clock.h"
 #include "stylus.h"
 
+using namespace Moonlight;
+
 static GHashTable *enum_map = NULL;
 
 #define MAP_ENUM_FULL(n,v) { (n), (v) }

@@ -22,6 +22,8 @@
 #include "eventargs.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 /*
  *	DependencyProperty
  */
@@ -542,3 +544,5 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 	*o = NULL;	
 	return NULL;
 }
+
+};

@@ -16,6 +16,8 @@
 #include "browser-bridge.h"
 #include "npstream-request.h"
 
+namespace Moonlight {
+
 /*
  * NPStreamRequest
  */
@@ -152,3 +154,5 @@ NPStreamRequest::Write (gint32 offset, gint32 len, void *buffer)
 {
 	BrowserHttpRequest::Write (offset, buffer, len);
 }
+
+};

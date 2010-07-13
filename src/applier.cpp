@@ -12,6 +12,8 @@
 #include <config.h>
 #include "applier.h"
 
+namespace Moonlight {
+
 typedef struct {
 	DependencyObject *object;
 	GList *properties_list;
@@ -183,3 +185,4 @@ Applier::Flush ()
 	}
 }
 
+};

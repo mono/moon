@@ -20,6 +20,8 @@
 #include "pal.h"
 #include "error.h"
 
+namespace Moonlight {
+
 class StylusInfo;
 class StylusPointCollection;
 class UIElement;
@@ -521,4 +523,5 @@ class CheckAndDownloadUpdateCompletedEventArgs : public EventArgs {
 	const char *GetError () { return error; }
 };
 
+};
 #endif /* __EVENTARGS_H__ */

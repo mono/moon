@@ -16,6 +16,8 @@
 #include <glib.h>
 #include <string.h>
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct PropertyPath {
 public:
@@ -66,4 +68,5 @@ public:
 	DependencyProperty *property;
 };
 
+};
 #endif

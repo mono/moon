@@ -34,6 +34,8 @@ typedef struct _MonoProperty MonoProperty;
 #endif
 #endif /* PAL_GTK_WINDOWING */
 
+namespace Moonlight {
+
 class AccessibilityBridge {
 public:
 	AccessibilityBridge ();
@@ -92,5 +94,5 @@ AtkObject* moon_atk_root_new ();
 G_END_DECLS
 
 #endif /* PAL_GTK_A11Y  */
-
+};
 #endif /* MOON_PLUGIN_ACCESSIBILITY_BRIDGE */

@@ -11,7 +11,6 @@
  */
 
 #include <config.h>
-
 #include <glib.h>
 #include <glib/gstdio.h>
 
@@ -23,6 +22,8 @@
 #include "moon-path.h"
 #include "debug.h"
 #include "fonts.h"
+
+namespace Moonlight {
 
 //
 // TextFont
@@ -966,3 +967,5 @@ TextFontDescription::SetSize (double size)
 	
 	return changed;
 }
+
+};

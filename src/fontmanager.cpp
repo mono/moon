@@ -11,7 +11,6 @@
  */
 
 #include <config.h>
-
 #include <glib/gstdio.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -31,6 +30,8 @@
 #include FT_OUTLINE_H
 #include FT_SYSTEM_H
 #include FT_GLYPH_H
+
+namespace Moonlight {
 
 
 //
@@ -2035,3 +2036,5 @@ FontManager::GetSystemGlyphTypefaces ()
 	
 	return typefaces;
 }
+
+};

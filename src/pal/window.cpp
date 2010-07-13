@@ -15,7 +15,9 @@
 
 #include "window.h"
 #include "runtime.h"
- 
+
+using namespace Moonlight;
+
 void
 MoonWindow::SetCurrentDeployment ()
 {

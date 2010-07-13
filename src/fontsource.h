@@ -18,6 +18,8 @@
 
 #include "utils.h"
 
+namespace Moonlight {
+
 enum FontSourceType {
 	FontSourceTypeManagedStream,
 	FontSourceTypeGlyphTypeface,
@@ -33,4 +35,5 @@ struct FontSource {
 	FontSourceType type;
 };
 
+};
 #endif /* __FONT_SOURCE_H__ */

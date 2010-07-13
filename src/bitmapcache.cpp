@@ -16,6 +16,7 @@
 
 #include "bitmapcache.h"
 
+namespace Moonlight {
 
 CacheMode::CacheMode ()
 {
@@ -34,3 +35,5 @@ BitmapCache::BitmapCache ()
 BitmapCache::~BitmapCache ()
 {
 }
+
+};

@@ -16,6 +16,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Input */
 class InputScope : public DependencyObject {
  public:
@@ -37,4 +39,5 @@ class InputScopeName : public DependencyObject {
 	virtual ~InputScopeName () {}
 };
 
+};
 #endif /* __MOON_INPUTSCOPE_H__ */

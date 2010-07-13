@@ -19,6 +19,8 @@
 #include "fontmanager.h"
 #include "enums.h"
 
+namespace Moonlight {
+
 #define GLYPH_CACHE_SIZE 256
 
 bool IsValidLang (const char *lang);
@@ -119,4 +121,5 @@ class TextFontDescription {
 	double GetSize () const;
 };
 
+};
 #endif /* __FONTS_H__ */

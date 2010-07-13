@@ -16,6 +16,8 @@
 
 #include "browser-bridge.h"
 
+namespace Moonlight {
+
 class FF3BrowserBridge : public BrowserBridge {
  public:
 	FF3BrowserBridge ();
@@ -23,4 +25,5 @@ class FF3BrowserBridge : public BrowserBridge {
 	virtual BrowserHttpRequest* CreateRequest (BrowserHttpHandler *handler, HttpRequest::Options options);
 };
 
+};
 #endif // FF3_BRIDGE

@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "uri.h"
 
+using namespace Moonlight;
+
 class Assert {
 public:
   static void AreEqual (const char *expected, const char *value, const char *msg = NULL) {

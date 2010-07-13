@@ -38,6 +38,11 @@
 #include "timesource.h"
 #include "pipeline-mp4.h"
 
+
+extern const char moonlight_logo [];
+
+namespace Moonlight {
+
 /*
  * Media
  */
@@ -5238,7 +5243,6 @@ NullDecoder::OpenVideo ()
 	guint32 dest_i = 0;
 	
 	// We assume that the input image is a 24 bit bitmap (bmp), stored bottum up and flipped vertically.
-	extern const char moonlight_logo [];
 	const char *image = moonlight_logo;
 
 	guint32 img_offset = *((guint32*)(image + 10));
@@ -5615,3 +5619,5 @@ MediaReadClosure::SetData (MemoryBuffer *data)
 }
 
 
+
+};

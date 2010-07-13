@@ -19,6 +19,8 @@
 #include "clock.h"
 #include "debug.h"
 
+namespace Moonlight {
+
 //
 // Relevant links to documentation:
 //  http://www.codeproject.com/KB/audio-video/mpegaudioinfo.aspx
@@ -1019,3 +1021,5 @@ Mp3DemuxerInfo::Create (Media *media, IMediaSource *source, MemoryBuffer *initia
 {
 	return new Mp3Demuxer (media, source);
 }
+
+};

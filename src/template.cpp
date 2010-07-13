@@ -17,6 +17,8 @@
 #include "namescope.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 FrameworkTemplate::FrameworkTemplate ()
 {
 	SetObjectType (Type::FRAMEWORKTEMPLATE);
@@ -97,3 +99,5 @@ DataTemplate::GetVisualTreeWithError (FrameworkElement *templateBindingSource, M
 	// DataTemplate ignores the source paramater and always uses null
 	return FrameworkTemplate::GetVisualTreeWithError (NULL, error);
 }
+
+};

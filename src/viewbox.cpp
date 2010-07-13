@@ -15,7 +15,11 @@
 
 #include "viewbox.h"
 
+namespace Moonlight {
+
 Viewbox::Viewbox ()
 {
 	SetObjectType (Type::VIEWBOX);
 }
+
+};

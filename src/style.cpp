@@ -17,6 +17,8 @@
 #include "error.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 //
 // Style
 //
@@ -260,3 +262,5 @@ DeepStyleWalker::Step ()
 		return (Setter *) setter_list->pdata [offset ++];
 	return NULL;
 }
+
+};

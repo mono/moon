@@ -14,7 +14,11 @@
 
 #include "printing.h"
 
+namespace Moonlight {
+
 PrintDocument::PrintDocument ()
 {
 	SetObjectType (Type::PRINTDOCUMENT);
 }
+
+};

@@ -26,6 +26,7 @@
 #include "fonts.h"
 #include "size.h"
 
+namespace Moonlight {
 
 /* @Namespace=None */
 class TextChangedEventArgs : public RoutedEventArgs {
@@ -36,7 +37,6 @@ class TextChangedEventArgs : public RoutedEventArgs {
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextChangedEventArgs () { SetObjectType (Type::TEXTCHANGEDEVENTARGS); }
 };
-
 
 /* @Namespace=None */
 class CursorPositionChangedEventArgs : public EventArgs {
@@ -72,7 +72,6 @@ class CursorPositionChangedEventArgs : public EventArgs {
 	/* @GenerateCBinding,GeneratePInvoke */
 	double GetCursorY () { return y; }
 };
-
 
 enum TextBoxModelChangeType {
 	TextBoxModelChangedNothing,
@@ -644,4 +643,5 @@ class TextBoxView : public FrameworkElement {
 	void SetEnableCursor (bool enable);
 };
 
+};
 #endif /* __TEXTBOX_H__ */

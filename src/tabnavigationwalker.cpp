@@ -17,6 +17,8 @@
  #include "tabnavigationwalker.h"
  #include "type.h"
 
+namespace Moonlight {
+
 TabNavigationWalker::TabNavigationWalker (UIElement *root, UIElement *current, bool forwards, Types *types)
 {
 	this->root = root;
@@ -236,3 +238,5 @@ TabNavigationWalker::WalkChildren (UIElement *root, UIElement *current, bool for
 	TabNavigationWalker walker (root, current, forwards, types);
 	return walker.FocusChild ();
 }
+
+};

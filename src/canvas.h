@@ -18,6 +18,8 @@
 
 #include "panel.h"
 
+namespace Moonlight {
+
 //
 // Canvas Class, the only purpose is to have the Left/Top properties that
 // children can use
@@ -71,4 +73,5 @@ class Canvas : public Panel {
 	static double GetZ (DependencyObject *item);
 };
 
+};
 #endif /* __MOON_CANVAS_H__ */

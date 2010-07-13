@@ -13,6 +13,8 @@
 #include "runtime.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 Popup::Popup ()
 {
 	SetObjectType (Type::POPUP);
@@ -140,3 +142,5 @@ Popup::PropagateIsEnabledState (UIElement *child, bool enabled_parent)
 		walker.SkipBranch ();
 	}
 }
+
+};

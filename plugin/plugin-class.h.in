@@ -18,6 +18,8 @@
 #include "error.h"
 #include "plugin.h"
 
+namespace Moonlight {
+
 // debug javascript
 #define DEBUG_JAVASCRIPT 1
 
@@ -208,10 +210,17 @@ struct MoonNameIdMapping {
 #define NPVARIANT_AS_DOUBLE(v) ((v).type == NPVariantType_Int32 ? (double) (v).value.intValue : (v).value.doubleValue)
 #define NPVARIANT_AS_INT32(v) ((v).type == NPVariantType_Int32 ? (v).value.intValue : (int) (v).value.doubleValue)
 
+};
+
+G_BEGIN_DECLS
+G_GNUC_INTERNAL bool check_arg_list (const char *arglist, guint32 argc, const NPVariant *argv);
+G_END_DECLS
+
+namespace Moonlight {
+
 G_BEGIN_DECLS
 G_GNUC_INTERNAL bool npobject_is_dependency_object (NPObject *obj);
 
-G_GNUC_INTERNAL bool check_arg_list (const char *arglist, guint32 argc, const NPVariant *argv);
 
 G_GNUC_INTERNAL void plugin_init_classes (void);
 G_GNUC_INTERNAL void plugin_destroy_classes (void);
@@ -1240,5 +1249,5 @@ void browser_do_alert (PluginInstance *plugin, char *msg);
 
 
 G_END_DECLS
-
+};
 #endif /* __PLUGIN_CLASS_H__ */

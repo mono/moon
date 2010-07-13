@@ -17,6 +17,8 @@
 #include "enums.h"
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=None */ // The managed Matrix3D is a struct
 /* @ManagedDependencyProperties=Manual */
 /* @ManagedEvents=None */
@@ -283,4 +285,5 @@ protected:
 	virtual ~Matrix3DProjection () {}
 };
 
+};
 #endif

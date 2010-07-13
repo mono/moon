@@ -11,7 +11,6 @@
  */
 
 #include <config.h>
-
 #include <cairo.h>
 
 #include <sys/types.h>
@@ -28,6 +27,8 @@
 #include "uri.h"
 #include "geometry.h"
 #include "deployment.h"
+
+namespace Moonlight {
 
 #if DEBUG
 #define d(x) x
@@ -980,3 +981,5 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	
 	NotifyListenersOfPropertyChange (args, error);
 }
+
+};

@@ -83,6 +83,8 @@ typedef struct _d3d_dcl_instruction {
 	d3d_destination_parameter_t reg;
 } d3d_dcl_instruction_t;
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Media.Effects */
 class Effect : public DependencyObject {
 public:
@@ -470,4 +472,5 @@ protected:
 	virtual ~ProjectionEffect ();
 };
 
+};
 #endif /* __MOONLIGHT_EFFECT_H__ */

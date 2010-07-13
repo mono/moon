@@ -19,6 +19,8 @@
 
 #include "audio.h"
 
+namespace Moonlight {
+
 class PulsePlayer;
 
 class PulseSource: public AudioSource {
@@ -104,6 +106,8 @@ class PulsePlayer : public AudioPlayer {
 	void SignalLoop ();
 	
 	static bool IsInstalled ();
+};
+
 };
 
 #endif /* __AUDIO_PULSE_H__ */

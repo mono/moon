@@ -33,6 +33,8 @@
 #include "uri.h"
 #include "debug.h"
 
+namespace Moonlight {
+
 typedef struct {
 	GdkPixbufLoader *loader;
 	InstallDialog *dialog;
@@ -776,3 +778,5 @@ install_utils_get_start_menu_shortcut (OutOfBrowserSettings *settings)
 	
 	return path;
 }
+
+};

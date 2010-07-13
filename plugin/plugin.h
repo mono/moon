@@ -17,6 +17,8 @@
 #include "plugin-accessibility-bridge.h"
 #include "moonlight.h"
 
+namespace Moonlight {
+
 class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
@@ -348,4 +350,5 @@ PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, const char *reso
 
 G_END_DECLS
 
+};
 #endif /* MOON_PLUGIN */

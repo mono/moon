@@ -79,7 +79,8 @@ G_END_DECLS
 #include "bitmapcache.h"
 #include "usercontrol.h"
 
-		
+namespace Moonlight {
+
 class XamlElementInfo;
 class XamlElementInstance;
 class XamlParserInfo;
@@ -5348,3 +5349,5 @@ xaml_init (void)
 	x_namespace = new XNamespace ();
 	xml_namespace = new XmlNamespace ();
 }
+
+};

@@ -20,6 +20,8 @@
 #include "color.h"
 #include "utils.h"
 
+namespace Moonlight {
+
 // match System.Windows.Media.Colors properties
 typedef struct {
 	const char *name;
@@ -477,3 +479,5 @@ Color::Darken ()
 	g = green / 255.0;
 	b = blue / 255.0;
 }
+
+};

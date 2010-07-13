@@ -27,6 +27,7 @@
 
 #define PLUGIN_OURNAME      "Novell Moonlight"
 
+using namespace Moonlight;
 
 MoonConfigDialogGtk::MoonConfigDialogGtk (MoonWindowGtk *window, Surface *surface, Deployment *deployment)
   : window (window), surface (surface), deployment (deployment)

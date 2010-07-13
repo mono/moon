@@ -28,6 +28,8 @@
 #include "pal.h"
 #include "mutex.h"
 
+namespace Moonlight {
+
 #define MAXIMUM_CACHE_SIZE 6000000
 
 #define OCCLUSION_CULLING_STATS 0
@@ -165,7 +167,6 @@ const MoonlightDebugOption * moonlight_get_debug_ex_options ();
 void moonlight_set_debug_ex_option (guint32 flag, bool set);
 bool moonlight_get_debug_ex_option (guint32 flag);
 #endif
-
 
 class TimeManager;
 class Surface;
@@ -556,4 +557,5 @@ void g_free_pinvoke (void *obj);
 
 G_END_DECLS
 
+};
 #endif

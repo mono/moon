@@ -17,6 +17,8 @@
 #include "dependencyobject.h"
 #include "control.h"
 
+namespace Moonlight {
+
 class XamlContext;
 
 //
@@ -79,4 +81,5 @@ protected:
 	virtual ~DataTemplate () {}
 };
 
+};
 #endif /* __MOON_TEMPLATE_H__ */

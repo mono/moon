@@ -13,6 +13,8 @@
 #include "size.h"
 #include "utils.h"
 
+namespace Moonlight {
+
 bool
 Size::FromStr (const char *s, Size *size)
 {
@@ -52,3 +54,5 @@ size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, Size *new_siz
 {
 	*new_size = args->GetNewSize ();
 }
+
+};

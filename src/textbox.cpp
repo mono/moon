@@ -35,6 +35,8 @@
 #include "geometry.h"
 #include "managedtypeinfo.h"
 
+namespace Moonlight {
+
 //
 // TextBuffer
 //
@@ -3663,3 +3665,5 @@ TextBoxView::SetEnableCursor (bool enable)
 	else
 		EndCursorBlink ();
 }
+
+};

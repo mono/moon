@@ -14,6 +14,8 @@
 #include <glib.h>
 #include "panel.h"
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 /* @Namespace=System.Windows */
 struct GridLength {
@@ -261,5 +263,7 @@ public:
 		this->col = col;
 		this->size = size;
 	}
+};
+
 };
 #endif /* __MOON_PANEL_H__ */

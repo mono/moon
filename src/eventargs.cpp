@@ -35,6 +35,8 @@ G_END_DECLS
 #include "deployment.h"
 #include "writeablebitmap.h"
 
+namespace Moonlight {
+
 EventArgs::EventArgs ()
 	: DependencyObject (Type::EVENTARGS)
 {
@@ -574,3 +576,5 @@ CheckAndDownloadUpdateCompletedEventArgs::~CheckAndDownloadUpdateCompletedEventA
 {
 	g_free (error);
 }
+
+};

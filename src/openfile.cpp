@@ -24,6 +24,8 @@
 #include "runtime.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 #define MOONLIGHT_MINIMUM_FILE_ENTRY_COST	1024
 #define MOONLIGHT_FILE_SIZE_MASK		(MOONLIGHT_MINIMUM_FILE_ENTRY_COST - 1)
 
@@ -99,3 +101,5 @@ isolated_storage_get_current_usage (const char* root)
 	return get_size (root);
 }
 
+
+};

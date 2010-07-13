@@ -12,12 +12,15 @@
 
 #include <config.h>
 
+
 #include <ctype.h>
 #include <math.h>
 
 #include "moon-path.h"
 #include "layout.h"
 #include "debug.h"
+
+namespace Moonlight {
 
 
 #if DEBUG
@@ -2336,3 +2339,5 @@ TextLayout::GetCursor (const Point &offset, int index)
 	
 	return Rect (x0, y0, 1.0, height);
 }
+
+};

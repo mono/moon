@@ -41,6 +41,7 @@ G_END_DECLS
 #endif
 #include "uri.h"
 
+namespace Moonlight {
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 extern gint64 provider_property_lookups;
@@ -1775,3 +1776,5 @@ IconCollection::IconCollection ()
 IconCollection::~IconCollection ()
 {
 }
+
+};

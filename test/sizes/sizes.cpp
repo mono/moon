@@ -4,6 +4,8 @@
 #include "gtk/gtk.h"
 #include "libmoon.h"
 
+using namespace Moonlight;
+
 int
 main()
 {

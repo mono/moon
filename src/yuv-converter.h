@@ -18,6 +18,8 @@
 
 #include "pipeline.h"
 
+namespace Moonlight {
+
 class YUVConverter : public IImageConverter {
 public:
 	YUVConverter (Media* media, VideoStream* stream);	
@@ -37,5 +39,6 @@ public:
 	virtual IImageConverter* Create (Media* media, VideoStream* stream);
 	virtual const char* GetName () { return "YUVConverter"; }
 };
- 
+
+};
 #endif // __MOON_YUV_CONVERTER__

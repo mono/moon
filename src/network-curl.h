@@ -28,6 +28,8 @@
 #include "timemanager.h"
 #include "ptr.h"
 
+namespace Moonlight {
+
 class ResponseClosure;
 class CurlDownloaderRequest;
 class CurlDownloaderResponse;
@@ -203,6 +205,7 @@ public:
 	CurlDownloaderResponse *res;
 };
 
+};
 #endif /* __MOON_NETWORK_CURL__ */
 
 #endif /* HAVE_CURL */

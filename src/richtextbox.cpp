@@ -24,6 +24,7 @@
 #include "window.h"
 #include "panel.h"
 
+namespace Moonlight {
 
 //
 // RichTextBoxUndoActions
@@ -1782,3 +1783,5 @@ RichTextBoxView::SetEnableCursor (bool enable)
 	else
 		EndCursorBlink ();
 }
+
+};

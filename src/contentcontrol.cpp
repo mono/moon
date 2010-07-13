@@ -17,6 +17,8 @@
 #include "contentcontrol.h"
 #include "managedtypeinfo.h"
 
+namespace Moonlight {
+
 ContentControl::ContentControl ()
 {
 	SetContentSetsParent (true);
@@ -96,3 +98,5 @@ ContentControlChangedEventArgs::GetNewContent ()
 {
 	return new_content;
 }
+
+};

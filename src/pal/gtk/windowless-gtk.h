@@ -19,6 +19,8 @@
 #include "runtime.h"
 #include "plugin.h"
 
+using namespace Moonlight;
+
 /* @Namespace=System.Windows */
 class MoonWindowlessGtk : public MoonWindowGtk {
 public:

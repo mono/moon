@@ -21,6 +21,8 @@
 #include "effect.h"
 #include "projection.h"
 
+namespace Moonlight {
+
 Panel::Panel ()
 {
 	SetObjectType (Type::PANEL);
@@ -311,3 +313,5 @@ Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Property
 	FrameworkElement::OnCollectionItemChanged (col, obj, args);
 }
 
+
+};

@@ -15,6 +15,8 @@
 #include "control.h"
 
 
+namespace Moonlight {
+
 /* @Namespace=None */
 class ContentControlChangedEventArgs : public EventArgs {
 	Value *old_content;
@@ -73,6 +75,8 @@ class ContentControl : public Control {
 
   private:
 	bool content_sets_parent;
+};
+
 };
 
 #endif /* __CONTENT_CONTROL_H__ */

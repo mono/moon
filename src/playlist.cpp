@@ -23,6 +23,7 @@
 #include "media.h"
 #include "mediaplayer.h"
 
+namespace Moonlight {
 
 /*
  * PlaylistParserInternal
@@ -2794,3 +2795,5 @@ PlaylistParser::KindToString (PlaylistKind::Kind kind)
 
 	return result;
 }
+
+};

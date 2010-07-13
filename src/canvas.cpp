@@ -23,6 +23,8 @@
 #include "window.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 Canvas::Canvas ()
 {
 	SetObjectType (Type::CANVAS);
@@ -159,3 +161,5 @@ Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 
 	Panel::OnCollectionItemChanged (col, obj, args);
 }
+
+};

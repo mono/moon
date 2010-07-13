@@ -14,7 +14,11 @@
 
 #include "webbrowser.h"
 
+namespace Moonlight {
+
 WebBrowser::WebBrowser ()
 {
 	SetObjectType (Type::WEBBROWSER);
 }
+
+};

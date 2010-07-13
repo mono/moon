@@ -15,6 +15,8 @@
 #include <glib.h>
 #include "list.h"
 
+namespace Moonlight {
+
 
 List::Node::Node ()
 {
@@ -666,3 +668,5 @@ int main (int argc, char **argv)
 }
 
 #endif /* TEST_PROGRAM */
+
+};

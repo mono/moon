@@ -26,6 +26,8 @@
 #define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
 
+namespace Moonlight {
+
 class TextBlockDynamicPropertyValueProvider;
 
 /* @ContentProperty="Inlines" */
@@ -169,4 +171,5 @@ class TextBlock : public FrameworkElement {
 	TextWrapping GetTextWrapping ();
 };
 
+};
 #endif /* __TEXTBLOCK_H__ */

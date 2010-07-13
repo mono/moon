@@ -14,6 +14,8 @@
 #include <config.h>
 #include "tilesource.h"
 
+namespace Moonlight {
+
 
 MultiScaleTileSource::MultiScaleTileSource ()
 {
@@ -46,3 +48,5 @@ MultiScaleTileSource::set_invalidate_tile_layer_func (invalidate_tile_layer_func
 	invalidate_data = user_data;
 }
 
+
+};

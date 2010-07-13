@@ -16,6 +16,8 @@
 #include "collection.h"
 #include "value.h"
 
+namespace Moonlight {
+
 class ResourceDictionaryIterator : public CollectionIterator {
 #ifdef HAVE_G_HASH_TABLE_ITER
 	GHashTableIter iter;
@@ -95,4 +97,5 @@ private:
 	bool from_resource_dictionary_api;
 };
 
+};
 #endif /* __MOON_RESOURCES_H__ */

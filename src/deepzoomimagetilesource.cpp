@@ -26,6 +26,8 @@
 #include "multiscalesubimage.h"
 #include "uri.h"
 
+namespace Moonlight {
+
 class DisplayRect {
  public:
 	int min_level;
@@ -884,3 +886,5 @@ DeepZoomImageTileSource::GetSubImageCount ()
 {
 	return subimages ? subimages->len : 0;
 }
+
+};

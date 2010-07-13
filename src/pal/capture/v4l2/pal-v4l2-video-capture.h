@@ -13,6 +13,8 @@
 
 #include "pal.h"
 
+namespace Moonlight {
+
 class MoonVideoCaptureServiceV4L2;
 
 class MoonVideoFormatV4L2 : public MoonVideoFormat {
@@ -117,4 +119,5 @@ private:
 	MoonVideoCaptureDeviceV4L2* default_device;
 };
 
+};
 #endif /* MOON_PAL_VIDEO_CAPTURE_V4L2_H */

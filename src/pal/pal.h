@@ -25,6 +25,8 @@
 // the default for MoonWindowingSystem::GetCursorBlinkTimeout
 #define CURSOR_BLINK_TIMEOUT_DEFAULT  900
 
+namespace Moonlight {
+
 class Surface;
 class UIElement;
 class Deployment;
@@ -540,4 +542,5 @@ public:
 	virtual bool GetIsNetworkAvailable () = 0;
 };
 
+};
 #endif /* MOON_PAL_H */

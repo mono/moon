@@ -16,6 +16,8 @@
 
 #include "transform.h"
 
+namespace Moonlight {
+
 
 //
 // Composite Transform
@@ -393,3 +395,5 @@ TransformGroup::UpdateTransform ()
 		cairo_matrix_multiply (&_matrix, &_matrix, &matrix);
 	}
 }
+
+};

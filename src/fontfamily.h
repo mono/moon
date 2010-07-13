@@ -16,6 +16,8 @@
 #include <glib.h>
 #include <string.h>
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct FontFamily {
 	char *source;
@@ -41,4 +43,5 @@ struct FontFamily {
 	}
 };
 
+};
 #endif /* __FONT_FAMILY_H__ */

@@ -16,6 +16,8 @@
 #include "eventargs.h"
 #include "thickness.h"
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct Size {
 	double width, height;
@@ -110,4 +112,5 @@ void                  size_changed_event_args_get_new_size  (SizeChangedEventArg
 
 G_END_DECLS
 
+};
 #endif /* __MOON_POINT_H__ */

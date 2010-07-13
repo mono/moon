@@ -66,6 +66,8 @@
 #include "pipeline.h"
 #include "effect.h"
 
+namespace Moonlight {
+
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
 #define DEBUG_REFCNT 0
@@ -2741,3 +2743,5 @@ g_free_pinvoke (void *obj)
 {
 	g_free (obj);
 }
+
+};

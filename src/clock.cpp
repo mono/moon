@@ -29,6 +29,8 @@
 #include "runtime.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 #define CLOCK_DEBUG 0
 
 RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
@@ -812,3 +814,5 @@ ClockGroup::Dispose ()
 	}
 	Clock::Dispose ();
 }
+
+};

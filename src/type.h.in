@@ -16,6 +16,8 @@
 #include <glib.h>
 #include "list.h"
 
+namespace Moonlight {
+
 class Deployment;
 class DependencyObject;
 class DependencyProperty;
@@ -169,4 +171,5 @@ bool type_is_dependency_object (Type::Kind type);
 
 G_END_DECLS
 
+};
 #endif

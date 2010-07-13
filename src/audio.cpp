@@ -24,6 +24,8 @@
 #include "mediaplayer.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 /*
  * AudioSource::AudioFrame
  */
@@ -1210,3 +1212,5 @@ AudioPlayer::ShutdownImpl ()
 
 	FinishShutdownInternal ();
 }
+
+};

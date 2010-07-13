@@ -26,6 +26,8 @@
 #include "debug.h"
 #include "playlist.h"
 
+namespace Moonlight {
+
 /*
  * MediaPlayer
  */
@@ -1386,3 +1388,5 @@ MediaPlayer::EmitBufferUnderflowAsync (EventObject *obj)
 {
 	((MediaPlayer *) obj)->EmitBufferUnderflow ();
 }
+
+};

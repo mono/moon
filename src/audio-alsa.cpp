@@ -19,6 +19,8 @@
 #include "clock.h"
 #include "debug.h"
 
+namespace Moonlight {
+
 typedef int               (dyn_snd_pcm_open)                           (snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode);
 typedef int               (dyn_snd_pcm_close)                          (snd_pcm_t *pcm);
 typedef int               (dyn_snd_pcm_get_params)                     (snd_pcm_t *pcm, snd_pcm_uframes_t *buffer_size, snd_pcm_uframes_t *period_size);
@@ -1105,3 +1107,5 @@ AlsaPlayer::WakeUp ()
 	LOG_ALSA_EX ("AlsaPlayer::WakeUp (): thread should now wake up (or have woken up already).\n");
 	
 }
+
+};

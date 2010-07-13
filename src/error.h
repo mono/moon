@@ -14,10 +14,13 @@
 #ifndef __MOON_ERROR_H__
 #define __MOON_ERROR_H__
 
+namespace Moonlight {
 class ErrorEventArgs;
-
+};
 
 #include "enums.h"
+
+namespace Moonlight {
 
 class ParserErrorEventArgs;
 
@@ -68,4 +71,5 @@ public:
 	static void FillIn (MoonError *error, ParserErrorEventArgs *error_args);
 };
 
+};
 #endif /* __MOON_ERROR_H__ */

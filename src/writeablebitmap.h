@@ -19,6 +19,8 @@
 #include "dependencyobject.h"
 #include "bitmapsource.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Media.Imaging */
 class WriteableBitmap : public BitmapSource {
  private:
@@ -44,4 +46,5 @@ class WriteableBitmap : public BitmapSource {
 	virtual cairo_surface_t *GetSurface (cairo_t *cr);
 };
 
+};
 #endif /* __WRITEABLEBITMAP_H__ */

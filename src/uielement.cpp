@@ -35,6 +35,8 @@
 
 cairo_user_data_key_t uielement_xform_key;
 
+namespace Moonlight {
+
 //#define DEBUG_INVALIDATE 0
 
 UIElement::UIElement ()
@@ -1829,3 +1831,5 @@ UIElement::GetRenderProjection ()
 {
 	return (moonlight_flags & PROJECTION_FLAGS) == (PROJECTION_FLAGS) ? GetProjection () : NULL;
 }
+
+};

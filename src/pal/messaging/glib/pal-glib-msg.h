@@ -13,6 +13,8 @@
 
 #include "pal.h"
 
+namespace Moonlight {
+
 /* @Version=2 */
 class MoonMessagingServiceGlib : public MoonMessagingService {
 public:
@@ -23,4 +25,5 @@ public:
 	virtual MoonMessageSender* CreateMessagingSender (const char *listenerName, const char *listenerDomain, const char *domain, MoonError *error);
 };
 
+};
 #endif /* MOON_PAL_GLIB_MSG_H */

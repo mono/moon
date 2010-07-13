@@ -23,6 +23,8 @@
 // according to http://msdn.microsoft.com/en-us/library/cc307965(VS.85).aspx the maximum size is 10 MB
 #define ASF_OBJECT_MAX_SIZE (10 * 1024 * 1024)
 
+namespace Moonlight {
+
 #define VIDEO_BITRATE_PERCENTAGE 75
 #define AUDIO_BITRATE_PERCENTAGE 25
 #define INVALID_START_PTS ((guint64) -1)
@@ -5710,3 +5712,5 @@ ASFFrameReader::Remove (ASFFrameReaderData* data)
 	
 	delete data;
 }
+
+};

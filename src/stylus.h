@@ -19,6 +19,8 @@
 #include "canvas.h"
 #include "collection.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Input */
 class StylusInfo : public DependencyObject {
  protected:
@@ -344,7 +346,6 @@ class InkPresenter : public Canvas {
 	StrokeCollection *GetStrokes ();
 };
 
-
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
@@ -354,4 +355,5 @@ void stroke_collection_get_bounds (StrokeCollection *collection, /* @MarshalAs=R
 
 G_END_DECLS
 
+};
 #endif /* __STYLUS_H__ */

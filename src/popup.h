@@ -15,6 +15,7 @@
 
 #include "panel.h"
 
+namespace Moonlight {
 
 /* @ContentProperty="Child" */
 /*@Namespace=System.Windows.Controls.Primitives*/
@@ -65,4 +66,5 @@ class Popup : public FrameworkElement {
 };
 
 
+};
 #endif /* __POPUP_H__ */

@@ -18,6 +18,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 // Reference:	URL Access Restrictions in Silverlight 2
 //		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 enum DownloaderAccessPolicy {
@@ -30,8 +32,11 @@ enum DownloaderAccessPolicy {
 	NoPolicy
 	// Keep in sync with the DownloaderAccessPolicy enum in NativeMethods.cs
 };
+};
 
 #include "network.h"
+
+namespace Moonlight {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
@@ -121,4 +126,5 @@ class Downloader : public DependencyObject {
 	Uri *GetUri ();
 };
 
+};
 #endif

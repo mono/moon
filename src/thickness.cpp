@@ -18,6 +18,8 @@
 #include "utils.h"
 #include "thickness.h"
 
+namespace Moonlight {
+
 bool
 Thickness::FromStr (const char *str, Thickness *thickness)
 {
@@ -48,3 +50,5 @@ Thickness::FromStr (const char *str, Thickness *thickness)
 		g_array_free (values, TRUE);
 	return rv;
 }
+
+};

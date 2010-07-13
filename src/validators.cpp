@@ -25,6 +25,8 @@
 #include "deployment.h"
 #include "fonts.h"
 
+namespace Moonlight {
+
 bool
 Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
@@ -439,3 +441,4 @@ Validators::NonNullOnlyDuringInitializationValidator (DependencyObject* instance
 	return false;
 }
 
+};

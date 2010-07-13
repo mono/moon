@@ -13,6 +13,8 @@
 
 #include "namescope.h"
 
+namespace Moonlight {
+
 NameScope::NameScope ()
 {
 	SetObjectType (Type::NAMESCOPE);
@@ -205,3 +207,5 @@ NameScope::Dump ()
 	fprintf (stderr, "  ns = %p\n", this);
 	g_hash_table_foreach (names, dump_namescope_helper, NULL);
 }
+
+};

@@ -7,6 +7,8 @@
 
 #include "pixbuf-gtk.h"
 
+using namespace Moonlight;
+
 MoonPixbufLoaderGtk::MoonPixbufLoaderGtk (const char *imageType)
 {
 	gdk_loader = gdk_pixbuf_loader_new_with_type (imageType, NULL);

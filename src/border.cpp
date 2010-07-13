@@ -18,6 +18,8 @@
 #include "border.h"
 #include "thickness.h"
 
+namespace Moonlight {
+
 Border::Border()
 {
 	SetObjectType (Type::BORDER);
@@ -203,3 +205,5 @@ Border::InsideObject (cairo_t *cr, double x, double y)
 
 	return inside;
 }
+
+};

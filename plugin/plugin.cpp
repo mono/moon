@@ -45,6 +45,8 @@
 // Debug NPStreams
 #define nps(x)//x
 
+namespace Moonlight {
+
 extern guint32 moonlight_flags;
 
 char *
@@ -2080,3 +2082,4 @@ PluginInstance::SplashStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 	unref ();
 }
 
+};

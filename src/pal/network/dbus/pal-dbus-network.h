@@ -14,6 +14,8 @@
 #include "pal.h"
 #include "dbus/dbus-glib.h"
 
+namespace Moonlight {
+
 /* @Version=2 */
 class MoonNetworkServiceDbus : public MoonNetworkService {
 public:
@@ -35,4 +37,5 @@ private:
 	static void state_changed_handler (gpointer sender, guint state, gpointer data);
 };
 
+};
 #endif /* MOON_PAL_DBUS_NETWORK_H */

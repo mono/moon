@@ -17,6 +17,8 @@
 #include "pipeline.h"
 #include "debug.h"
 
+namespace Moonlight {
+
 #define ds(x) 1
 
 #ifdef SANITY
@@ -835,7 +837,7 @@ CurlHttpHandler::GetData ()
 			GList* tmp = g_list_copy (calls);
 			g_list_free (calls);
 			calls = NULL;
-			g_idle_add (::Emit, tmp);
+			g_idle_add (Moonlight::Emit, tmp);
 		}
 
 		if (running > 0) {
@@ -930,3 +932,5 @@ CallData::~CallData ()
 	if (bridge)
 		bridge->unref ();
 }
+
+};

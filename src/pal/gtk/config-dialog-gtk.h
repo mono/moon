@@ -17,6 +17,8 @@
 #include "window-gtk.h"
 #include "moonlightconfiguration.h"
 
+namespace Moonlight {
+
 class ConfigDialogPage;
 
 class MoonConfigDialogGtk {
@@ -160,6 +162,6 @@ public:
 	virtual GtkWidget* GetContentWidget ();
 };
 
-
+};
 #endif /* __MOON_CONFIG_DIALOG_GTK_H__ */
 

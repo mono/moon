@@ -27,6 +27,8 @@
 #include "tilesource.h"
 #include "deepzoomimagetilesource.h"
 
+namespace Moonlight {
+
 #ifdef DEBUG
 #define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s) " G_STRLOC "\n", x)
 #define d(x) x
@@ -5537,3 +5539,5 @@ plugin_destroy_classes (void)
 	delete MoonlightGridLengthClass; MoonlightGridLengthClass = NULL;
 	delete MoonlightTimelineMarkerRoutedEventArgsClass; MoonlightTimelineMarkerRoutedEventArgsClass = NULL;
 }
+
+};

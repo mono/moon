@@ -21,6 +21,7 @@
 #include "error.h"
 #include "value.h"
 
+namespace Moonlight {
 
 class XamlLoader;
 
@@ -246,4 +247,5 @@ class XamlLoader {
 };
 
 
+};
 #endif /* __MOON_XAML_H__ */

@@ -20,6 +20,8 @@
 #include "downloader.h"
 #include "bitmapsource.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Media.Imaging */
 class BitmapImage : public BitmapSource {
  private:
@@ -90,6 +92,8 @@ class BitmapImage : public BitmapSource {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void pixbuf_write (EventObject *sender, EventArgs *calldata, gpointer data);
+};
+
 };
 
 #endif /* __BITMAPIMAGE_H__ */

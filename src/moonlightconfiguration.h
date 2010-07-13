@@ -15,6 +15,8 @@
 
 #include <glib.h>
 
+namespace Moonlight {
+
 class MoonlightConfiguration {
 private:
 	GKeyFile *data;
@@ -38,4 +40,5 @@ public:
 	bool GetBooleanValue (const char *group, const char *key);
 };
 
+};
 #endif /* __MOON_MOONLIGHT_CONFIGURATION_H__ */

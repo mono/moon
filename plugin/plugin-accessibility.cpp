@@ -17,6 +17,8 @@
 #include "plugin-accessibility.h"
 #include "moonlight.h"
 
+namespace Moonlight {
+
 Accessibility::Accessibility ()
 {
 	SetObjectType (Type::ACCESSIBILITY);
@@ -31,3 +33,4 @@ Accessibility::PerformAction ()
 {
 	Emit (PerformActionEvent);
 }
+};

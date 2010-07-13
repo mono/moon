@@ -23,6 +23,7 @@
 #include "utils.h"
 #include "uri.h"
 
+namespace Moonlight {
 
 Application::Application ()
 {
@@ -490,3 +491,5 @@ Application::Uninstall ()
 	
 	SetInstallState (InstallStateNotInstalled);
 }
+
+};

@@ -15,6 +15,8 @@
 
 #include <glib.h>
 
+namespace Moonlight {
+
 enum UriToStringFlags {
 	UriHidePasswd   = 1 << 0,
 	UriHideFragment = 1 << 1,
@@ -94,4 +96,5 @@ public:
 	char *originalString;
 };
 
+};
 #endif /* __URI_H__ */

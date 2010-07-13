@@ -1001,6 +1001,7 @@ class Generator {
 			text.Append (h);
 			text.AppendLine ("\"");
 		}
+		text.AppendLine ("namespace Moonlight {");
 		text.AppendLine ();
 		text.AppendLine ("void");
 		text.AppendLine ("Types::RegisterNativeProperties ()");
@@ -1315,6 +1316,7 @@ class Generator {
 			}
 		}
 
+		text.AppendLine ("};");
 		Helper.WriteAllText (Path.Combine (moon_dir, "dependencyproperty.g.cpp"), text.ToString ());
 
 	}
@@ -1351,6 +1353,10 @@ class Generator {
 
 		try {
 			while (ParseMembers (all, tokenizer)) {
+				try {
+					tokenizer.Accept (Token2Type.Punctuation, "}");
+					tokenizer.Accept (Token2Type.Punctuation, ";");
+				} catch {}
 			}
 		} catch (Exception ex) {
 			throw new Exception (string.Format ("{0}({1}): {2}", tokenizer.CurrentFile, tokenizer.CurrentLine, ex.Message), ex);
@@ -1615,8 +1621,12 @@ class Generator {
 			else
 				accessibility = "public";
 
-			if (tokenizer.Accept (Token2Type.Punctuation, ";"))
-				continue;
+			try {
+				if (tokenizer.Accept (Token2Type.Punctuation, ";"))
+					continue;
+			} catch {
+				return false;
+			}
 
 			if (tokenizer.CurrentToken.value == "}")
 				return true;
@@ -1687,6 +1697,14 @@ class Generator {
 					tokenizer.AcceptOrThrow (Token2Type.Identifier, "typename");
 					tokenizer.GetIdentifier ();
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ">");
+					continue;
+				case "using":
+					tokenizer.Advance (true);
+					continue;
+				case "namespace":
+					tokenizer.Advance (true);
+					tokenizer.GetIdentifier ();
+					tokenizer.Accept (Token2Type.Punctuation, "{");
 					continue;
 				}
 			}
@@ -1794,8 +1812,15 @@ class Generator {
 							// ... variable argument declaration
 							parameter.ParameterType = new TypeReference ("...");
 						} else {
+							if (tokenizer.CurrentToken.type == Token2Type.Identifier) {
+								if (tokenizer.Accept (Token2Type.Identifier, "Moonlight")) {
+									tokenizer.Accept (Token2Type.Punctuation, ":");
+									tokenizer.Accept (Token2Type.Punctuation, ":");
+								}
+							}
 							parameter.ParameterType = ParseTypeReference (tokenizer);
 						}
+
 						if (tokenizer.CurrentToken.value != "," && tokenizer.CurrentToken.value != ")") {
 							parameter.Name = tokenizer.GetIdentifier ();
 							if (tokenizer.Accept (Token2Type.Punctuation, "[")) {
@@ -2167,6 +2192,7 @@ class Generator {
 		header.AppendLine ("#include \"pal/gtk/window-gtk.h\"");
 		header.AppendLine ("#include \"enums.h\"");
 		header.AppendLine ();
+		header.AppendLine ("namespace Moonlight {");
 		foreach (MemberInfo member in info.Children.Values) {
 			TypeInfo type = member as TypeInfo;
 			if (type == null)
@@ -2240,6 +2266,9 @@ class Generator {
 			impl.AppendLine ("\"");
 		}
 
+		impl.AppendLine ();
+		impl.AppendLine ("namespace Moonlight {");
+
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;
 
@@ -2267,7 +2296,11 @@ class Generator {
 		header.AppendLine ();
 		header.AppendLine ("G_END_DECLS");
 		header.AppendLine ();
+		header.AppendLine ("};");
 		header.AppendLine ("#endif");
+
+		impl.AppendLine ("");
+		impl.AppendLine ("};");
 
 		Helper.WriteAllText (Path.Combine (dir, "cbinding.h"), header.ToString ());
 		Helper.WriteAllText (Path.Combine (dir, "cbinding.cpp"), impl.ToString ());
@@ -2425,6 +2458,8 @@ class Generator {
 			text.AppendLine ("\"");
 		}
 		text.AppendLine ();
+		text.AppendLine ("namespace Moonlight {");
+		text.AppendLine ();
 
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
 			if (t.GetEventCount () == 0)
@@ -2538,6 +2573,9 @@ class Generator {
 
 		text.AppendLine ("}");
 
+		text.AppendLine ();
+
+		text.AppendLine ("};");
 		text.AppendLine ();
 
 		Helper.WriteAllText ("src/type-generated.cpp", text.ToString ());

@@ -25,6 +25,8 @@
 #include "deployment.h"
 #include "multiscalesubimage.h"
 
+namespace Moonlight {
+
 //
 // BlockCollection
 //
@@ -999,3 +1001,5 @@ collection_new (Type::Kind kind)
 	
 	return (Collection *) t->CreateInstance();
 }
+
+};

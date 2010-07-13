@@ -15,6 +15,8 @@
 
 #include "frameworkelement.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Controls */
 class WebBrowser : public FrameworkElement {
 protected:
@@ -33,5 +35,5 @@ public:
 	const static int ScriptNotifyEvent;
 };
 
+};
 #endif /* __MOON_WEBBROWSER_H__ */
-

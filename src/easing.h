@@ -14,6 +14,8 @@
 #include "dependencyobject.h"
 #include "enums.h"
 
+namespace Moonlight {
+
 /* @CBindingRequisite */
 typedef double (*EasingFunction) (double normalizedTime);
 
@@ -228,4 +230,5 @@ protected:
 	virtual ~SineEase ();
 };
 
+};
 #endif /* __MOON_EASING_H__ */

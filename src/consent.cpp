@@ -18,6 +18,8 @@
 #include "deployment.h"
 #include "moonlightconfiguration.h"
 
+namespace Moonlight {
+
 static const char *consent_name[] = {
 	"clipboard",
 	"fullscreen",
@@ -140,3 +142,5 @@ Consent::PromptUserFor (MoonConsentType consent, const char *question, const cha
 	g_free (config_key);
 	return rv;
 }
+
+};

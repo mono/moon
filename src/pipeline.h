@@ -47,6 +47,8 @@
 #define MAX_VIDEO_HEIGHT	2048
 #define MAX_VIDEO_WIDTH		2048
 
+namespace Moonlight {
+
 typedef void (*register_codec) (int abi_version);
 
 class Media;
@@ -98,6 +100,8 @@ typedef gint32 MediaResult;
 
 typedef MediaResult MediaCallback (MediaClosure *closure);
 
+};
+
 #include "list.h"
 #include "debug.h"
 #include "dependencyobject.h"
@@ -105,6 +109,8 @@ typedef MediaResult MediaCallback (MediaClosure *closure);
 #include "type.h"
 #include "enums.h"
 #include "application.h"
+
+namespace Moonlight {
 
 /*
  * Range
@@ -1779,4 +1785,5 @@ public:
 	virtual const char *GetName () { return "NullDecoder"; }
 };
 
+};
 #endif

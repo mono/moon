@@ -20,6 +20,8 @@
 #include "debug.h"
 #include "timesource.h"
 
+namespace Moonlight {
+
 // stream.h
 typedef pa_stream*            (dyn_pa_stream_new)                    (pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map);
 typedef void                  (dyn_pa_stream_set_state_callback)     (pa_stream *s, pa_stream_notify_cb_t cb, void *userdata);
@@ -894,3 +896,5 @@ PulsePlayer::FinishShutdownInternal ()
 		loop = NULL;
 	}
 }
+
+};

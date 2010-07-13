@@ -18,6 +18,8 @@
 #include "dependencyobject.h"
 #include "downloader.h"
 
+namespace Moonlight {
+
 /* @CBindingRequisite */
 typedef Style *(*GetDefaultStyleCallback)(ManagedTypeInfo *key);
 /* @CBindingRequisite */
@@ -100,6 +102,8 @@ private:
 	char *resource_root;
 	
 	static void update_complete (bool updated, const char *error, gpointer user_data);
+};
+
 };
 
 #endif /* __APPLICATION_H__ */

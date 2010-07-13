@@ -19,6 +19,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows */
 class SecuritySettings : public DependencyObject {
 protected:
@@ -41,5 +43,6 @@ G_GNUC_INTERNAL void security_enable_coreclr (const char *platform_dir);
 
 G_END_DECLS
 
+};
 #endif
 

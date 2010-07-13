@@ -9,6 +9,8 @@
 #include "window-gtk.h"
 #include "pal.h"
 
+namespace Moonlight {
+
 class MoonClipboardGtk : public MoonClipboard {
 public:
 	MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipboardType);
@@ -23,4 +25,5 @@ private:
 	GtkClipboard *clipboard;
 };
 
+};
 #endif

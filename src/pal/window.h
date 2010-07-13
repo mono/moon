@@ -20,6 +20,8 @@
 #include "color.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 class MoonEvent;
 class MoonWindowingSystem;
 
@@ -89,4 +91,5 @@ class MoonWindow {
 	MoonWindowingSystem* windowingSystem;
 };
 
+};
 #endif /* __MOON_WINDOW__ */

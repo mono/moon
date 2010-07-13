@@ -27,6 +27,8 @@
 #include "deployment.h"
 #include "textbox.h"
 
+namespace Moonlight {
+
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 gint64 provider_property_lookups = 0;
 
@@ -3107,3 +3109,5 @@ DependencyObject::GetContent()
 
 	return content_value->AsDependencyObject();
 }
+
+};

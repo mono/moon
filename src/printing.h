@@ -15,6 +15,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Printing */
 class PrintDocument : public DependencyObject {
 protected:
@@ -43,5 +45,5 @@ public:
 	gint32 GetPrintedPageCount ();
 };
 
+};
 #endif /*  __MOON_PRINTING_H__ */
-

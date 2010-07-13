@@ -27,6 +27,8 @@
 #include <xpcom/nsIStorageStream.h>
 #endif
 
+namespace Moonlight {
+
 class GECKO_SYM(BrowserHttpRequest);
 
 /*
@@ -381,3 +383,5 @@ GECKO_SYM(BrowserBridge)::CreateRequest (BrowserHttpHandler *handler, HttpReques
 {
 	return new GECKO_SYM(BrowserHttpRequest) (handler, options);
 }
+
+};

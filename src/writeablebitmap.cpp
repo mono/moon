@@ -19,6 +19,8 @@
 #include "panel.h"
 #include "writeablebitmap.h"
 
+namespace Moonlight {
+
 WriteableBitmap::WriteableBitmap ()
 {
 	SetObjectType (Type::WRITEABLEBITMAP);
@@ -108,3 +110,5 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 	cairo_destroy (cr);
 	cairo_surface_flush (surface);
 }
+
+};

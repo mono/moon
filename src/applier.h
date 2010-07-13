@@ -23,6 +23,8 @@
 #define APPLIER_PRECEDENCE_ANIMATION 100
 #define APPLIER_PRECEDENCE_ANIMATION_RESET APPLIER_PRECEDENCE_INSTANT
 
+namespace Moonlight {
+
 class Applier {
 
  private:
@@ -36,6 +38,8 @@ class Applier {
 	void AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence);
 	void Apply ();
 	void Flush ();
+};
+
 };
 	
 #endif /* MOON_APPLIER_H */

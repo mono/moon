@@ -40,6 +40,8 @@
 #include "deployment.h"
 #include "managedtypeinfo.h"
 
+namespace Moonlight {
+
 /**
  * Value implementation
  */
@@ -955,4 +957,6 @@ Value::GetName ()
 
 	return g_string_free (str, FALSE);
 }
+
+};
 #endif

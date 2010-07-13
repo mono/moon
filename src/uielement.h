@@ -35,6 +35,8 @@
 #define IS_INVISIBLE(x) (x <= 0.0)
 #endif
 
+namespace Moonlight {
+
 class Surface;
 
 // return false to skip the subtree rooted at el
@@ -687,6 +689,8 @@ private:
 
 	// The local render transform including tranform origin
 	cairo_matrix_t local_xform;
+};
+
 };
 
 extern cairo_user_data_key_t uielement_xform_key;

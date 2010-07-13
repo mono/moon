@@ -17,6 +17,8 @@
 
 #include "asxparser.h"
 
+namespace Moonlight {
+
 #define MAX_ELEMENT_LEN 15
 
 
@@ -901,3 +903,4 @@ int main (int argc, const char* argv[])
 
 #endif
 
+};

@@ -24,6 +24,8 @@
 #include "uri.h"
 #include "debug.h"
 
+namespace Moonlight {
+
 #ifdef WORDS_BIGENDIAN
 #define set_pixel_bgra(pixel,index,b,g,r,a) \
 	G_STMT_START { \
@@ -536,3 +538,5 @@ BitmapImage::pixbuf_write (EventObject *sender, EventArgs *calldata, gpointer da
 			source->Emit (ImageFailedEvent, args);
 	}
 }
+
+};

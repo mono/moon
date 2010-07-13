@@ -27,6 +27,8 @@
 #include "easing.h"
 #include "applier.h"
 
+namespace Moonlight {
+
 // misc types
 /* @Namespace=System.Windows.Media.Animation */
 class KeySpline : public DependencyObject {
@@ -1024,6 +1026,8 @@ protected:
 private:
 	Animation *timeline;
 	AnimationStorage *storage;
+};
+
 };
 
 #endif /* MOON_ANIMATION_H */

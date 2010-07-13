@@ -16,6 +16,8 @@
 #include <glib.h>
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @IncludeInKinds,Namespace=System.Windows.Media */
 class TextOptions {
  	/* @PropertyType=TextHintingMode,DefaultValue=TextHintingModeFixed,Attached,GenerateAccessors */
@@ -29,4 +31,5 @@ class TextOptions {
 	static TextHintingMode GetTextHintingMode (DependencyObject *item);
 };
 
+};
 #endif /* __TEXTOPTIONS_H__ */

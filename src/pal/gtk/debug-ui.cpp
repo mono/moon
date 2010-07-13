@@ -32,6 +32,8 @@
 #include "mediaplayer.h"
 #include "pipeline-asf.h"
 
+using namespace Moonlight;
+
 enum TreeColumns {
 	COL_NAME,
 	COL_TYPE_NAME,

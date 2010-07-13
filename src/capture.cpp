@@ -16,6 +16,8 @@
 #include "writeablebitmap.h"
 #include "bitmapimage.h"
 
+namespace Moonlight {
+
 #define d(x)
 
 /*
@@ -399,3 +401,4 @@ VideoCaptureDevice::Stop ()
 
 }
 
+};

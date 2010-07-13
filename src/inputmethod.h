@@ -17,6 +17,8 @@
 #include "inputscope.h"
 #include "pal.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Input */
 class InputMethod : public DependencyObject {
  protected:
@@ -40,4 +42,5 @@ class InputMethod : public DependencyObject {
 	static void SetPreferredImeState (DependencyObject *obj, InputMethodState value);
 };
 
+};
 #endif /* __INPUTMETHOD_H__ */

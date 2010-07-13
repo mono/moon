@@ -14,6 +14,8 @@
 #include "collection.h"
 #include "runtime.h"
 
+namespace Moonlight {
+
 UserControl::UserControl ()
 {
 	SetObjectType (Type::USERCONTROL);
@@ -101,3 +103,5 @@ UserControl::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 	}
 	return arranged;
 }
+
+};

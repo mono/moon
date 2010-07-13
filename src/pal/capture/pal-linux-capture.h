@@ -13,6 +13,8 @@
 
 #include "pal.h"
 
+namespace Moonlight {
+
 /* @Version=2 */
 class MoonCaptureServiceLinux : public MoonCaptureService {
 public:
@@ -36,4 +38,5 @@ private:
 	MoonAudioCaptureService *audio_service;
 };
 
+};
 #endif /* MOON_PAL_LINUX_CAPTURE_H */

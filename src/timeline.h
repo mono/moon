@@ -16,6 +16,7 @@
 
 #include "clock.h"
 
+namespace Moonlight {
 
 /* @Namespace=System.Windows.Media.Animation */
 class Timeline : public DependencyObject {
@@ -216,4 +217,5 @@ private:
 	bool ontick;
 };
 
+};
 #endif /* MOON_TIMELINE_H */

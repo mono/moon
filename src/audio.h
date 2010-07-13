@@ -14,6 +14,8 @@
 #ifndef __AUDIO_H__
 #define __AUDIO_H__
 
+namespace Moonlight {
+
 class AudioStream;
 class MediaPlayer;
 class MediaFrame;
@@ -22,9 +24,13 @@ class AudioSource;
 class AudioSources;
 class AudioPlayer;
 
+};
+
 #include "dependencyobject.h"
 #include "pipeline.h"
 #include "mutex.h"
+
+namespace Moonlight {
 
 // uncomment to dump raw audio data to /tmp.
 // the exact command to play the raw audio file will be printed to stdout
@@ -298,6 +304,8 @@ class AudioPlayer {
 	static void Remove (AudioSource *source);
 	// Shuts down the audio engine
 	static void Shutdown ();
+};
+
 };
 
 #endif /* __AUDIO_H__ */

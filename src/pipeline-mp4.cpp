@@ -25,6 +25,8 @@
 #include "clock.h"
 #include "pipeline-mp4.h"
 
+namespace Moonlight {
+
 #define GETBETYPE(a,b,c,d) (d + (c << 8) + (b << 16) + (a << 24))
 #define MOOV_4CC GETBETYPE('m', 'o', 'o', 'v')
 #define MVHD_4CC GETBETYPE('m', 'v', 'h', 'd')
@@ -2806,3 +2808,5 @@ Mp4DemuxerInfo::Create (Media *media, IMediaSource *source, MemoryBuffer *buffer
 {
 	return new Mp4Demuxer (media, source, buffer);
 }
+
+};

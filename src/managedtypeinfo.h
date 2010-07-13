@@ -13,6 +13,8 @@
 
 #include "type.h"
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct ManagedTypeInfo {
 	char *full_name;
@@ -34,4 +36,5 @@ private:
 	ManagedTypeInfo (); // we don't want this one to be called
 };
 
+};
 #endif /* __MANAGEDTYPEINFO_H__ */

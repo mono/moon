@@ -17,6 +17,8 @@
 #include "enums.h"
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Media */
 class CacheMode : public DependencyObject {
 public:
@@ -43,5 +45,6 @@ protected:
 	virtual ~BitmapCache ();
 };
 
-#endif /* __MOONLIGHT_BITMAPCACHE_H__ */
+};
 
+#endif /* __MOONLIGHT_BITMAPCACHE_H__ */

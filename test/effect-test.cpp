@@ -5,6 +5,8 @@
 #include "runtime.h"
 #include "effect.h"
 
+using namespace Moonlight;
+
 class CustomEffect : public ShaderEffect {};
 
 const int width = 256;

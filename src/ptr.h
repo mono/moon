@@ -16,6 +16,8 @@
 
 #include "debug.h"
 
+namespace Moonlight {
+
 // to prevent unwanted assignments
 class PtrBase {
 private:
@@ -75,4 +77,5 @@ private:
 
 #undef ds
 
+};
 #endif

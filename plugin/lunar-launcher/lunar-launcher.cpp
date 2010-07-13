@@ -38,6 +38,8 @@
 
 #include <mono/metadata/mono-config.h>
 
+using namespace Moonlight;
+
 extern guint32 moonlight_flags;
 static const char *geometry = NULL;
 

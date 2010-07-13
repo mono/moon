@@ -15,6 +15,8 @@
 
 #include <glib.h>
 
+namespace Moonlight {
+
 G_BEGIN_DECLS
 
 // NOTE: this is used from 'mscorlib.dll' System.IO.IsolatedStorage/MoonIsolatedStorageFile.cs
@@ -25,4 +27,5 @@ long isolated_storage_get_current_usage (const char* root);
 
 G_END_DECLS
 
+};
 #endif

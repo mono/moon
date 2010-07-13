@@ -16,6 +16,8 @@
 #include "moonlight.h"
 #include "plugin-downloader.h"
 
+namespace Moonlight {
+
 class NPStreamRequest : public BrowserHttpRequest {
 private:
 	NPStream *stream;
@@ -35,4 +37,5 @@ public:
 	void NewStream (NPStream *stream);
 };
 
+};
 #endif /* __NPSTREAM_DOWNLOADER_H */

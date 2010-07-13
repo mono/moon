@@ -40,6 +40,8 @@
 //
 #define FULLSCREEN_BACKING_STORE_SOPTIMIZATION 0
 
+using namespace Moonlight;
+
 MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (fullscreen, w, h, parent, surface)
 {

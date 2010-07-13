@@ -35,6 +35,8 @@
 #define IOCHANNEL_READY_FOR_WRITE(condition) (COND_HAS(condition,G_IO_OUT))
 #define IOCHANNEL_ERROR(condition) (COND_HAS(condition,G_IO_ERR) || COND_HAS(condition,G_IO_NVAL) || COND_HAS(condition,G_IO_HUP))
 
+using namespace Moonlight;
+
 static char*
 create_listener_path (const char *domain,
 		      const char *receiverName)

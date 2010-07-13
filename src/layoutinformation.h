@@ -14,6 +14,8 @@
 #ifndef __MOON_LAYOUTINFORMATION_H__ 
 #define __MOON_LAYOUTINFORMATION_H__
 
+namespace Moonlight {
+
 /* @IncludeInKinds,Namespace=System.Windows.Controls.Primitives,ManagedDependencyProperties=Manual */
 class LayoutInformation {
 public:
@@ -57,5 +59,6 @@ public:
 	static Rect *GetBounds (DependencyObject *item);
 
 	static Geometry *GetCompositeClip (FrameworkElement *item);
+};
 };
 #endif /* __MOON_LAYOUTINFORMATION_H__ */

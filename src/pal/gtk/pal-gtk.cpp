@@ -25,6 +25,8 @@
 #include <gdk/gdkkeysyms.h>
 #include <sys/stat.h>
 
+using namespace Moonlight;
+
 static Key
 MapKeyvalToKey (guint keyval)
 {

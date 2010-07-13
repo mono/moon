@@ -38,6 +38,8 @@
 #include "bitmapimage.h"
 #include "ptr.h"
 
+namespace Moonlight {
+
 #if LOGGING
 #include "clock.h"
 #define MSI_STARTTIMER(id)    if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_start = get_now()
@@ -1691,3 +1693,5 @@ MultiScaleImagePropertyValueProvider::GetViewportWidth ()
 	viewport_width = new Value (msi->GetInternalViewportWidth ());	
 	return viewport_width;
 }
+
+};

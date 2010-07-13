@@ -11,11 +11,12 @@
  */
 
 #include <config.h>
-
  
 #include "error.h"
 #include "eventargs.h"
 #include "mono/metadata/object.h"
+
+namespace Moonlight {
 
 //
 // MoonError
@@ -111,3 +112,5 @@ MoonError::FillIn (MoonError *error, ParserErrorEventArgs *error_args)
 	error->char_position = error_args->char_position;
 	error->line_number = error_args->line_number;
 }
+
+};

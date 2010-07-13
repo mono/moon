@@ -21,6 +21,8 @@
 #include "application.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 static gpointer
 managed_stream_open (gpointer context, const char *filename, int mode)
 {
@@ -1295,3 +1297,5 @@ Cancellable::SetCancelFuncAndData (CancelCallback cb, HttpRequest *request, void
 	if (this->request)
 		this->request->ref ();
 }
+
+};

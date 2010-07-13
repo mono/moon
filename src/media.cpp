@@ -31,6 +31,8 @@
 #include "debug.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 /*
  * MediaBase
  */
@@ -724,3 +726,5 @@ TimelineMarkerCollection::InsertWithError (int index, Value *value, MoonError *e
 	return AddWithError (value, error) != -1;
 }
 
+
+};

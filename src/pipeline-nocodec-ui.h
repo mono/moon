@@ -21,6 +21,8 @@
 #include "runtime.h"
 #include "moonlightconfiguration.h"
 
+namespace Moonlight {
+
 class CodecDownloader : public EventObject {
 private:
 	static bool running; // If there already is another CodecDownloader running
@@ -55,4 +57,5 @@ public:
 	static void ShowUI (Surface *surface); 
 };
 
+};
 #endif /* __MOON_PIPELINE_UI_H__ */

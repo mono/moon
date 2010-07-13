@@ -18,6 +18,8 @@
 
 #include "collection.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Media */
 class GeneralTransform : public DependencyObject {
  protected:
@@ -390,4 +392,5 @@ void   general_transform_transform_point (GeneralTransform *t, /* @MarshalAs=Poi
 
 G_END_DECLS
 
+};
 #endif

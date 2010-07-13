@@ -18,6 +18,8 @@
 
 #include "pipeline.h"
 
+namespace Moonlight {
+
 struct MpegFrameHeader {
 	guint8 version:2;
 	guint8 layer:2;
@@ -148,5 +150,5 @@ public:
 
 bool mpeg_parse_header (MpegFrameHeader *mpeg, const guint8 *buffer);
 double mpeg_frame_length (MpegFrameHeader *mpeg);
-
+};
 #endif

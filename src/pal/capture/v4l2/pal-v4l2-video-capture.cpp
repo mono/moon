@@ -23,6 +23,8 @@
 
 #include "pal/capture/v4l2/pal-v4l2-video-capture.h"
 
+using namespace Moonlight;
+
 MoonVideoCaptureServiceV4L2::MoonVideoCaptureServiceV4L2 ()
 {
 	default_device = NULL;

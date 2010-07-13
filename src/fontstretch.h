@@ -13,6 +13,8 @@
 #ifndef __FONT_STRETCH_H__
 #define __FONT_STRETCH_H__
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct FontStretch {
 	FontStretches stretch;
@@ -33,7 +35,5 @@ struct FontStretch {
 	}
 };
 
+};
 #endif /* __FONT_STRETCH_H__ */
-
-
-

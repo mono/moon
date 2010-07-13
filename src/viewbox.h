@@ -15,6 +15,8 @@
 
 #include "frameworkelement.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Controls */
 /* @ContentProperty=Child */
 class Viewbox : public FrameworkElement {
@@ -44,4 +46,5 @@ public:
 	void SetStretchDirection (StretchDirection value);
 };
 
+};
 #endif /* __MOON_VIEWBOX_H__ */

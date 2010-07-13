@@ -22,6 +22,7 @@
 #include "downloader.h"
 #include "bitmapsource.h"
 
+namespace Moonlight {
 
 /* @Namespace=System.Windows.Media */
 class MediaAttribute : public DependencyObject {
@@ -206,4 +207,5 @@ class Image : public MediaBase {
 	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
 };
 
+};
 #endif /* __MEDIA_H__ */

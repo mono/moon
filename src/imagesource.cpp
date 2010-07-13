@@ -12,10 +12,13 @@
  */
 #include <config.h>
 
+#include <config.h>
 #include <stdio.h>
 
 #include "application.h"
 #include "bitmapsource.h"
+
+namespace Moonlight {
 
 ImageSource::ImageSource ()
 {
@@ -63,3 +66,5 @@ ImageSource::GetSurface (cairo_t *cr)
 {
 	return NULL;
 }
+
+};

@@ -25,6 +25,8 @@
 #include "pal.h"
 #include "debug.h"
 
+namespace Moonlight {
+
 void
 MoonWindowingSystem::SetWindowlessCtor (MoonWindowlessCtor ctor)
 {
@@ -891,3 +893,5 @@ MoonInstallerService::Uninstall (Deployment *deployment)
 	
 	return true;
 }
+
+};

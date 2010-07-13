@@ -21,6 +21,8 @@
 #include "frameworkelement.h"
 #include "moon-path.h"
 
+namespace Moonlight {
+
 class Brush;
 
 //
@@ -421,4 +423,5 @@ class Path : public Shape {
 	Geometry *GetData ();
 };
 
+};
 #endif /* __SHAPE_H__ */

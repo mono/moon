@@ -4,6 +4,8 @@
 
 #include "pal-dbus-network.h"
 
+using namespace Moonlight;
+
 MoonNetworkServiceDbus::MoonNetworkServiceDbus ()
 {
 	this->nm_proxy = NULL;

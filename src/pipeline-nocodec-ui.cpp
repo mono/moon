@@ -22,6 +22,8 @@
 #include "pipeline.h"
 #include "debug.h"
 
+namespace Moonlight {
+
 bool CodecDownloader::running = false;
 
 CodecDownloader::CodecDownloader (Surface *surf)
@@ -226,3 +228,5 @@ CodecDownloader::Close ()
 	running = false;
 }
 
+
+};

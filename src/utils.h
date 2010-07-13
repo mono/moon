@@ -21,6 +21,8 @@
 #include "downloader.h"
 #include "zip/unzip.h"
 
+namespace Moonlight {
+
 G_BEGIN_DECLS
 
 typedef gboolean (*Stream_CanSeek)  (void *handle);
@@ -158,4 +160,5 @@ class Cancellable {
 	HttpRequest *GetRequest ()  { return request; }
 };
 
+};
 #endif /* __UTILS_H__ */

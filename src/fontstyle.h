@@ -13,6 +13,8 @@
 #ifndef __FONT_STYLE_H__
 #define __FONT_STYLE_H__
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct FontStyle {
 	FontStyles style;
@@ -33,7 +35,5 @@ struct FontStyle {
 	}
 };
 
+};
 #endif /* __FONT_STYLE_H__ */
-
-
-

@@ -15,6 +15,8 @@
  
 #include <pthread.h>
  
+namespace Moonlight {
+
 class Mutex {
 private:
 	pthread_mutex_t mutex;
@@ -46,4 +48,5 @@ public:
 	}
 };
 
+};
 #endif /* __MOON_MUTEX_H */

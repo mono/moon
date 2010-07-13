@@ -17,6 +17,8 @@
 
 #include "moonlightconfiguration.h"
 
+namespace Moonlight {
+
 MoonlightConfiguration::MoonlightConfiguration ()
 {
 	filename = g_build_filename (g_get_user_config_dir (), "moonlight", "configuration", NULL);;
@@ -98,3 +100,5 @@ MoonlightConfiguration::GetBooleanValue (const char *group, const char *key)
 	return (bool)g_key_file_get_boolean (data, group, key, NULL);
 }
 
+
+};

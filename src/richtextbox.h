@@ -21,6 +21,8 @@
 #include "control.h"
 #include "layout.h"
 
+namespace Moonlight {
+
 /* @Namespace=None */
 class ContentChangedEventArgs : public RoutedEventArgs {
  protected:
@@ -478,4 +480,5 @@ class RichTextBoxView : public FrameworkElement {
 	void SetEnableCursor (bool enable);
 };
 
+};
 #endif /* __RICHTEXTBOX_H__ */

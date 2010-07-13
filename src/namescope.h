@@ -16,6 +16,8 @@
 #include "error.h"
 #include "list.h"
 
+namespace Moonlight {
+
 /* @Namespace=Mono */
 /* @ManagedEvents=None */
 class NameScope : public EventObject {
@@ -64,4 +66,5 @@ class NameScope : public EventObject {
 	GHashTable *GetNames () { return names; }
 };
 
+};
 #endif /* __MOON_NAMESCOPE_H__ */

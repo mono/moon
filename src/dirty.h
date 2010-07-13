@@ -13,6 +13,8 @@
 #ifndef __DIRTY_H__
 #define __DIRTY_H__
 
+namespace Moonlight {
+
 class DirtyList;
 
 class DirtyLists {
@@ -130,4 +132,5 @@ enum DirtyType {
 	DirtyInDownDirtyList   = 0x80000000
 };
 
+};
 #endif // __DIRTY_H__

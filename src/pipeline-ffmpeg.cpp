@@ -29,6 +29,8 @@
 #include "debug.h"
 #include "deployment.h"
 
+namespace Moonlight {
+
 #define AUDIO_BUFFER_SIZE (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
 pthread_mutex_t ffmpeg_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -1075,3 +1077,5 @@ FfmpegDemuxerInfo::Create (Media *media, IMediaSource *source, MemoryBuffer *ini
 {
 	return new FfmpegDemuxer (media, source, initial_buffer);
 }
+
+};

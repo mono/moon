@@ -29,6 +29,8 @@
 #define CONTROL_FONT_WEIGHT  FontWeightsNormal
 #define CONTROL_FONT_STYLE   FontStylesNormal
 
+namespace Moonlight {
+
 //
 // Control Class
 //
@@ -182,5 +184,6 @@ private:
 	UIElement *template_root;
 };
 
+};
 
 #endif /* __CONTROL_H__ */

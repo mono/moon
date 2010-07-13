@@ -20,6 +20,8 @@
 #include "audio.h"
 #include "mutex.h"
 
+namespace Moonlight {
+
 /* @Namespace=None,ManagedEvents=Manual */
 class MediaPlayer : public EventObject {
  public:
@@ -203,4 +205,5 @@ class MediaPlayer : public EventObject {
 	const static int BufferUnderflowEvent;
 };
 
+};
 #endif /* __MOON_MPLAYER_H__ */

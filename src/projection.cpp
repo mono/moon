@@ -18,6 +18,8 @@
 #include "projection.h"
 #include "eventargs.h"
 
+namespace Moonlight {
+
 //
 // Matrix3D
 //
@@ -648,3 +650,5 @@ PlaneProjection::UpdateProjection ()
 
 	SetProjectionMatrix (new Matrix3D (m));
 }
+
+};

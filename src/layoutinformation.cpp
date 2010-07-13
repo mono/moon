@@ -14,6 +14,8 @@
 #include "rect.h"
 #include "point.h"
 
+namespace Moonlight {
+
 Geometry *
 LayoutInformation::GetCompositeClip (FrameworkElement *item)
 {
@@ -50,3 +52,5 @@ LayoutInformation::GetCompositeClip (FrameworkElement *item)
 
 	return geom;
 }
+
+};

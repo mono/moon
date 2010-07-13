@@ -22,6 +22,8 @@
 #include "mutex.h"
 #include "enums.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Controls */
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
@@ -363,4 +365,5 @@ class MediaElementPropertyValueProvider : public FrameworkElementProvider {
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
+};
 #endif /* __MEDIAELEMENT_H__ */

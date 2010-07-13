@@ -12,7 +12,6 @@
  */
 
 #include <config.h>
-
 #include <glib.h>
 
 #include <stdlib.h>
@@ -26,6 +25,8 @@
 #include "color.h"
 #include "runtime.h"
 #include "utils.h"
+
+namespace Moonlight {
 
 #define LERP(f,t,p) ((f) + ((t) - (f)) * (p))
 
@@ -2084,3 +2085,4 @@ ObjectAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (GetKeyFrames ());
 }
 
+};

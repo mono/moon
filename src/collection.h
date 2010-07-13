@@ -17,6 +17,8 @@
 #include "eventargs.h"
 #include "point.h"
 
+namespace Moonlight {
+
 class CollectionIterator;
 
 //
@@ -359,5 +361,7 @@ G_BEGIN_DECLS
 Collection *collection_new (Type::Kind kind);
 
 G_END_DECLS
+
+};
 
 #endif /* __MOON_COLLECTION_H__ */

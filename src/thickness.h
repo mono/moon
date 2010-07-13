@@ -13,6 +13,8 @@
 
 #include <glib.h>
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct Thickness {
 	double left;
@@ -90,4 +92,5 @@ struct Thickness {
 	static bool FromStr (const char *s, Thickness *t);
 };
 
+};
 #endif /* __MOON_THICKNESS_H__ */

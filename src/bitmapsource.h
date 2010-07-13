@@ -19,6 +19,8 @@
 #include "dependencyobject.h"
 #include "imagesource.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Media.Imaging */
 class BitmapSource : public ImageSource {
  private:
@@ -57,6 +59,8 @@ class BitmapSource : public ImageSource {
 	virtual cairo_surface_t *GetSurface (cairo_t *cr);
 
 	cairo_surface_t *GetImageSurface () { return image_surface; }
+};
+
 };
 
 #endif /* __BITMAPSOURCE_H__ */

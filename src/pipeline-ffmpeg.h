@@ -31,6 +31,8 @@ G_END_DECLS
 
 #include "pipeline.h"
  
+namespace Moonlight {
+
 void register_ffmpeg ();
 
 /*
@@ -151,5 +153,6 @@ public:
 	virtual const char* GetName () { return "FfmpegDecoder"; }
 };
 
+};
 #endif // __MOON_PIPELINE_FFMPEG__
 #endif // INCLUDE_FFMPEG

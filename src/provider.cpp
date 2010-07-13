@@ -20,6 +20,8 @@
 #include "deployment.h"
 #include "error.h"
 
+namespace Moonlight {
+
 //
 // LocalPropertyValueProvider
 //
@@ -751,3 +753,5 @@ InheritedDataContextValueProvider::source_destroyed (EventObject *sender, EventA
 	InheritedDataContextValueProvider *p = (InheritedDataContextValueProvider *) closure;
 	p->SetDataSource (NULL);
 }
+
+};

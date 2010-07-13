@@ -17,6 +17,8 @@
 #include "namescope.h"
 #include "error.h"
 
+namespace Moonlight {
+
 
 //
 // ResourceDictionaryIterator
@@ -515,3 +517,5 @@ ResourceDictionary::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error
 	
 	Collection::RegisterAllNamesRootedAt (to_ns, error);
 }
+
+};

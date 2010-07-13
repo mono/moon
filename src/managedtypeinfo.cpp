@@ -14,6 +14,8 @@
 
 #include "managedtypeinfo.h"
 
+namespace Moonlight {
+
 ManagedTypeInfo::ManagedTypeInfo (Type::Kind kind, const char *full_name)
 {
 	Initialize (kind, full_name);
@@ -68,3 +70,5 @@ ManagedTypeInfo::Free (ManagedTypeInfo *mti)
 	g_free (mti->full_name);
 	g_free (mti);
 }
+
+};

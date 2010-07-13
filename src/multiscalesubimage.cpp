@@ -20,6 +20,8 @@
 #include "deepzoomimagetilesource.h"
 #include "multiscalesubimage.h"
 
+namespace Moonlight {
+
 MultiScaleSubImage::MultiScaleSubImage ()
 {
 	SetObjectType (Type::MULTISCALESUBIMAGE);
@@ -53,3 +55,5 @@ MultiScaleSubImage::GetViewportHeight ()
 {
 	return GetAspectRatio () * GetViewportWidth ();
 }
+
+};

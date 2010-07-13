@@ -15,6 +15,8 @@
 #include <gdk/gdk.h> // for GdkRegion
 #include "rect.h"
 
+namespace Moonlight {
+
 class Region {
 	GdkRegion *gdkregion;
 
@@ -50,4 +52,5 @@ public:
 	void Draw (cairo_t *cr);
 };
      
+};
 #endif /* __MOON_REGION_H__ */

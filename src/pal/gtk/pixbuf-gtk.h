@@ -5,6 +5,8 @@
 
 #include "pal.h"
 
+namespace Moonlight {
+
 class MoonPixbufGtk : public MoonPixbuf {
 public:
 	MoonPixbufGtk (GdkPixbuf *pixbuf);
@@ -34,4 +36,5 @@ private:
 	GdkPixbufLoader *gdk_loader;
 };
 
+};
 #endif /* MOON_PIXBUF_GTK_H */

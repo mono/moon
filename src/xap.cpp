@@ -25,6 +25,8 @@
 #include "type.h"
 #include "xap.h"
 
+namespace Moonlight {
+
 char *
 Xap::Unpack (const char *fname)
 {
@@ -92,3 +94,5 @@ xap_create_from_file (XamlLoader *loader, const char *filename)
 	Xap *xap = new Xap (loader, xap_dir, element);
 	return xap;
 }
+
+};

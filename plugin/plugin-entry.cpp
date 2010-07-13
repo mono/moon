@@ -19,6 +19,8 @@
 
 #include "plugin-class.h"
 
+using namespace Moonlight;
+
 // Global function table
 static NPNetscapeFuncs MozillaFuncs;
 

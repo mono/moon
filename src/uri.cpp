@@ -19,6 +19,7 @@
 #include "deployment.h"
 #include "uri.h"
 
+namespace Moonlight {
 
 /* see rfc1738, section 2.2 */
 static bool
@@ -881,3 +882,5 @@ Uri::SameDomain (const Uri *uri1, const Uri *uri2)
 	
 	return false;
 }
+
+};

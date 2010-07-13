@@ -13,6 +13,8 @@
 
 #include "region.h"
 
+namespace Moonlight {
+
 
 Region::Region ()
 { 
@@ -144,3 +146,5 @@ Region::Draw (cairo_t *cr)
 	g_free (rects);
 }
 
+
+};

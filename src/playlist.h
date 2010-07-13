@@ -13,9 +13,13 @@
 #ifndef __PLAYLIST_H__
 #define __PLAYLIST_H__
 
+namespace Moonlight {
+
 class PlaylistEntry;
 class Playlist;
 class PlaylistRoot;
+
+};
 
 #include <expat.h>
 
@@ -25,6 +29,8 @@ class PlaylistRoot;
 #include "uri.h"
 #include "pipeline.h"
 #include "asxparser.h"
+
+namespace Moonlight {
 
 class PlaylistKind {
 public:
@@ -453,4 +459,5 @@ public:
 	static const char *KindToString (PlaylistKind::Kind kind);
 };
 
+};
 #endif /* __PLAYLIST_H__ */

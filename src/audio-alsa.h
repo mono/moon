@@ -22,6 +22,8 @@
 #include "audio.h"
 #include "mutex.h"
 
+namespace Moonlight {
+
 class AlsaPlayer;
 
 class AlsaSource : public AudioSource {
@@ -128,6 +130,7 @@ class AlsaPlayer : public AudioPlayer {
 	static bool IsInstalled ();
 };
 
+};
 #endif /* __AUDI_ALSA_H__ */
 
 #endif /* INCLUDE_ALSA */

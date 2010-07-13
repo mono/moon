@@ -18,6 +18,8 @@
 #include "timesource.h"
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
 /* @Namespace=None,ManagedEvents=Manual */
@@ -124,4 +126,5 @@ bool find_tick_call (List::Node *node, void *data);
 
 G_END_DECLS
 
+};
 #endif /* MOON_TIMEMANAGER_H */

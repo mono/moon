@@ -16,6 +16,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Version=2,Namespace=System.Windows.Controls */
 class MultiScaleSubImage : public DependencyObject {
 	friend class MultiScaleImage;
@@ -65,4 +67,5 @@ class MultiScaleSubImage : public DependencyObject {
 	int GetId () {return id;};
 };
 
+};
 #endif /* __MULTISCALESUBIMAGE_H__ */

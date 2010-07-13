@@ -13,6 +13,8 @@
 
 #include <math.h>
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct CornerRadius {
 	double topLeft;
@@ -55,6 +57,8 @@ struct CornerRadius {
 	//   true if this was successful, false otherwise.
 	//
 	static bool FromStr (const char *s, CornerRadius *p);
+};
+
 };
 
 #endif /* __MOON_POINT_H__ */

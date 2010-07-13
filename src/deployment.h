@@ -31,6 +31,8 @@ typedef struct _MonoObject MonoObject;
 typedef struct _MonoProperty MonoProperty;
 #endif
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
 public:
@@ -518,6 +520,8 @@ public:
 
 private:
 	Deployment *deployment;
+};
+
 };
 
 #endif /* __DEPLOYMENT_H__ */

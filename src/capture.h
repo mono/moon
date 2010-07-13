@@ -18,6 +18,8 @@
 #include "collection.h"
 #include "pal.h"
 
+namespace Moonlight {
+
 /* @IncludeInKinds */
 struct VideoFormat {
 public:
@@ -323,4 +325,5 @@ private:
 	Collection *supported_formats;
 };
 
+};
 #endif /* __MOON_CAPTURE_H__ */

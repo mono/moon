@@ -16,6 +16,8 @@
 #include "moon-path.h"
 #include "projection.h"
 
+namespace Moonlight {
+
 bool
 Rect::FromStr (const char *s, Rect *r)
 {
@@ -124,3 +126,5 @@ void Rect::Draw (cairo_t *cr, CornerRadius *round) const
 	}
 }
 
+
+};

@@ -18,6 +18,8 @@
 #include "enums.h"
 #include "list.h"
 
+namespace Moonlight {
+
 class PropertyChangedEventArgs;
 class MoonError;
 
@@ -121,5 +123,7 @@ G_BEGIN_DECLS
 DependencyProperty *resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTable *promoted_values);
 
 G_END_DECLS
+
+};
 
 #endif /* __DEPENDENCY_PROPERTY_H__ */

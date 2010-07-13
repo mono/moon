@@ -20,6 +20,8 @@
 #include "collection.h"
 #include "imagesource.h"
 
+namespace Moonlight {
+
 class MediaElement;
 
 /* @Namespace=System.Windows.Media */
@@ -453,5 +455,5 @@ void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, d
 					 
 G_END_DECLS
 
-
+};
 #endif /* __BRUSH_H__ */

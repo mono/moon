@@ -8,6 +8,8 @@
 #include "runtime.h"
 #include "window-gtk.h"
 
+using namespace Moonlight;
+
 MoonClipboardGtk::MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipboardType)
 {
 	GdkWindow *window = GDK_WINDOW (win->GetPlatformWindow ());

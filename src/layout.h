@@ -22,6 +22,8 @@
 #include <fonts.h>
 #include <list.h>
 
+namespace Moonlight {
+
 class TextLayout;
 
 class ITextAttributes {
@@ -215,5 +217,5 @@ class TextLayout {
 	Rect GetRenderExtents ();
 };
 
+};
 #endif /* __LAYOUT_H__ */
-

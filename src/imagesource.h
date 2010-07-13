@@ -16,6 +16,8 @@
 
 #include "dependencyobject.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Media */
 class ImageSource : public DependencyObject {
  protected:
@@ -36,4 +38,5 @@ class ImageSource : public DependencyObject {
 	virtual cairo_surface_t *GetSurface (cairo_t *cr);
 };
 
+};
 #endif /* __IMAGESOURCE_H__ */

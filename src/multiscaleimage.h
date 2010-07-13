@@ -24,6 +24,8 @@
 #include "animation.h"
 #include "ptr.h"
 
+namespace Moonlight {
+
 struct BitmapImageContext;
 
 /* @Namespace=System.Windows.Controls */
@@ -228,4 +230,5 @@ class MultiScaleImagePropertyValueProvider : public FrameworkElementProvider {
 };
 
 
+};
 #endif /* __MULTISCALIMAGE_H__ */

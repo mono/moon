@@ -25,6 +25,8 @@
 #include "window.h"
 #include "runtime.h"
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows */
 class MoonWindowGtk : public MoonWindow {
 public:
@@ -105,4 +107,5 @@ private:
 	static void install_application (MoonWindowGtk *window);
 };
 
+};
 #endif /* __MOON_WINDOW_GTK_H__ */

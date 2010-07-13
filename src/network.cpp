@@ -21,6 +21,8 @@
 #include "utils.h"
 #include "uri.h"
 
+namespace Moonlight {
+
 /*
  * HttpRequest
  */
@@ -647,3 +649,5 @@ HttpHandler::GetDownloadDir ()
 
 	return download_dir;
 }
+
+};

@@ -5,6 +5,8 @@
 
 #include "pal.h"
 
+namespace Moonlight {
+
 class MoonWindowingSystemGtk : public MoonWindowingSystem {
 public:
 	MoonWindowingSystemGtk ();
@@ -63,4 +65,5 @@ public:
 	virtual bool Uninstall (Deployment *deployment);
 };
 
+};
 #endif /* MOON_PAL_GTK_H */

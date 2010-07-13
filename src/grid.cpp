@@ -12,7 +12,6 @@
  */
 
 #include <config.h>
-
 #include <math.h>
 
 #include "deployment.h"
@@ -23,6 +22,8 @@
 #include "runtime.h"
 #include "namescope.h"
 #include "collection.h"
+
+namespace Moonlight {
 
 Grid::Grid ()
 {
@@ -785,3 +786,5 @@ GridWalker::GridWalker (Grid *grid, Segment **row_matrix, int row_count, Segment
 		has_auto_star |= auto_row && star_col;
 	}
 }
+
+};

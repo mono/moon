@@ -21,6 +21,8 @@
 #include "projection.h"
 #include "debug.h"
 
+using namespace Moonlight;
+
 struct st_context *Effect::st_context;
 
 cairo_user_data_key_t Effect::textureKey;

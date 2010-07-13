@@ -18,6 +18,8 @@
 #include "plugin-class.h"
 #include "plugin-downloader.h"
 
+using namespace Moonlight;
+
 /* the number of plugin instances running in the browser */
 static int browser_plugins = 0;
 
@@ -272,4 +274,3 @@ MOON_NPP_Shutdown (void)
 {
 	shutdown_moonlight (NULL);
 }
-

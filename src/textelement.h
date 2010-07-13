@@ -34,6 +34,8 @@
 #define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
 
+namespace Moonlight {
+
 /* @Namespace=System.Windows.Documents */
 class TextElement : public DependencyObject, public ITextAttributes {
 	TextFontDescription *font;
@@ -369,4 +371,5 @@ class InlineUIContainer : public Inline {
 	UIElement *GetChild ();
 };
 
+};
 #endif /* __TEXTELEMENT_H__ */
