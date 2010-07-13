@@ -2,6 +2,7 @@
 
 	* projection.cpp (ExtendBoundsTo): Fix Z clipping error in
 	bounds calculations for perspective transformations.
+	(GetTransform): Use Matrix3D::Identity.
 
 2010-07-12  Jackson Harper  <jackson@ximian.com>
 

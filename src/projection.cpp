@@ -501,8 +501,7 @@ Projection::GetTransform (double *value)
 		memcpy (value, matrix->GetMatrixValues (), sizeof (double) * 16);
 	}
 	else {
-		memset (value, 0, sizeof (value));
-		value[0] = value[5] = value[10] = value[15] = 1.0;
+		Matrix3D::Identity (value);
 	}
 }
 
