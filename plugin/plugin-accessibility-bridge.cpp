@@ -11,6 +11,9 @@
 *
  */
 
+#ifndef __PLUGIN_ACCESSIBILITY_BRIDGE_H__
+#define __PLUGIN_ACCESSIBILITY_BRIDGE_H__
+
 #define INCLUDED_MONO_HEADERS 1
 
 #include <mono/metadata/assembly.h>
@@ -340,5 +343,7 @@ AccessibilityBridge::ShutdownAtkBridge ()
 		gnome_accessibility_module_shutdown ();
 }
 
-};
 #endif /* PAL_GTK_A11Y */
+
+};
+#endif /* __PLUGIN_ACCESSIBILITY_BRIDGE_H__ */
