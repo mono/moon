@@ -1,3 +1,8 @@
+2010-07-13  David Reveman  <davidr@novell.com>
+
+	* projection.cpp (ExtendBoundsTo): Fix Z clipping error in
+	bounds calculations for perspective transformations.
+
 2010-07-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Add a gchandle to the callbacks, let the loader and

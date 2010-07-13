@@ -198,11 +198,11 @@ ExtendBoundsTo (Rect     bounds,
 
 				if (dp < 0.0) {
 					double t = dp / (dp - dp_prev);
-					lerp (new_vert, t, vert_prev, vert);
+					lerp (new_vert, t, vert, vert_prev);
 				}
 				else {
 					double t = dp_prev / (dp_prev - dp);
-					lerp (new_vert, t, vert, vert_prev);
+					lerp (new_vert, t, vert_prev, vert);
 				}
 			}
 
