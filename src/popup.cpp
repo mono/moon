@@ -33,11 +33,11 @@ Popup::Dispose ()
 }
 
 void
-Popup::ClearLoaded ()
+Popup::OnIsAttachedChanged (bool attached)
 {
-	if (GetIsOpen ())
+	FrameworkElement::OnIsAttachedChanged (attached);
+	if (!attached && GetIsOpen ())
 		SetIsOpen (false);
-	FrameworkElement::ClearLoaded ();
 }
 
 void

@@ -35,7 +35,7 @@ class Popup : public FrameworkElement {
 	Popup ();
 	virtual void Dispose ();
 
-	virtual void ClearLoaded ();
+	virtual void OnIsAttachedChanged (bool attached);
 	//
 	// Property Accessors
 	//

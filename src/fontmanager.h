@@ -130,12 +130,17 @@ class GlyphTypeface {
 /* @Namespace=System.Windows.Media */
 class GlyphTypefaceCollection : public Collection {
  protected:
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	virtual void RemovedFromCollection (Value *value);
+
 	virtual ~GlyphTypefaceCollection () { }
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	GlyphTypefaceCollection ();
-	
+
+	virtual void OnIsAttachedChanged (bool attached);
+
 	virtual Type::Kind GetElementType () { return Type::GLYPHTYPEFACE; }
 };
 

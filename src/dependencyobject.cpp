@@ -250,10 +250,9 @@ void
 EventObject::SetIsAttached (bool attached)
 {
 	VERIFY_MAIN_THREAD;
-	if (attached) {
-		flags |= Attached;
-	} else {
-		flags &= ~Attached;
+	if (IsAttached () != attached) {
+		flags ^= Attached;
+		OnIsAttachedChanged (attached);
 	}
 }
 
@@ -2907,17 +2906,14 @@ set_is_attached (gpointer key, gpointer value, gpointer data)
 }
 
 void
-DependencyObject::SetIsAttached (bool value)
+DependencyObject::OnIsAttachedChanged (bool value)
 {
+	EventObject::OnIsAttachedChanged (value);
+
 	AutoCreatePropertyValueProvider *autocreate;
 	attach_data data;
-	
-	if (IsAttached () == value)
-		return;
-	
+
 	autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
-	
-	EventObject::SetIsAttached (value);
 
 	data.deployment = GetDeployment ();
 	data.value = value;

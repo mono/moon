@@ -125,22 +125,28 @@ UIElement::ClearWalkedForLoaded ()
 }
 
 void
-UIElement::SetIsAttached (bool value)
+UIElement::OnIsAttachedChanged (bool value)
 {
-	if (IsAttached () == value)
-		return;
+	DependencyObject::OnIsAttachedChanged (value);
 
-	if (!value && IsAttached ()) {
+	if (!value) {
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
 		Surface *surface = GetDeployment ()->GetSurface ();
-		if (surface)
+		if (surface) {
 			surface->RemoveDirtyElement (this);
+			if (surface->GetFocusedElement () == this)
+				surface->FocusElement (NULL);
+		}
+
+		CacheInvalidateHint ();
+		ClearForeachGeneration (UIElement::LoadedEvent);
+		ClearWalkedForLoaded ();
+
+		Emit (UIElement::UnloadedEvent);
 	}
 
-	if (subtree_object != NULL && subtree_object->Is(Type::UIELEMENT))
+	if (subtree_object != NULL)
 		subtree_object->SetIsAttached (value);
-
-	DependencyObject::SetIsAttached (value);
 }
 
 Rect
@@ -620,9 +626,6 @@ void
 UIElement::SetVisualParent (UIElement *visual_parent)
 {
 	this->visual_parent = visual_parent;
-
-	if (visual_parent && visual_parent->IsAttached () != IsAttached ())
-		SetIsAttached (visual_parent->IsAttached ());
 }
 
 void
@@ -640,14 +643,6 @@ UIElement::SetSubtreeObject (DependencyObject *value)
 	  subtree_object->ref ();
 }
 
-static bool
-clear_loaded_and_cache_invalidate_hint (UIElement *el, gpointer data)
-{
-	el->CacheInvalidateHint ();
-	el->ClearLoaded ();
-	return TRUE; // we never prune subtrees
-}
-
 void
 UIElement::VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data)
 {
@@ -663,12 +658,8 @@ UIElement::ElementRemoved (UIElement *item)
 {
 	// Invalidate ourself in the size of the item's subtree
 	Invalidate (item->GetSubtreeBounds());
-
-	if (IsAttached ())
-		GetDeployment ()->GetSurface ()->RemoveDirtyElement (item);
 	item->SetVisualParent (NULL);
-
-	item->VisitVisualTree (clear_loaded_and_cache_invalidate_hint, item);
+	item->SetIsAttached (false);
 
 	Rect emptySlot (0,0,0,0);
 	LayoutInformation::SetLayoutSlot (item, &emptySlot);
@@ -690,8 +681,8 @@ UIElement::ElementAdded (UIElement *item)
 	item->Invalidate ();
 	
 	InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
-	
-	if ((flags & (UIElement::IS_LOADED)) != 0) {
+	item->SetIsAttached (IsAttached ());
+	if (IsLoaded ()) {
 		bool post = false;
 
 		item->WalkTreeForLoadedHandlers (&post, true, false);
@@ -910,7 +901,6 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 				post_loaded = true; //XXX do we need this? control->ReadLocalValue (Control::TemplateProperty) == NULL;
 		}
 
-		element->OnLoaded ();
 		if (element->HasHandlers (UIElement::LoadedEvent)) {
 			post_loaded = true;
 			subtree_list->Prepend (new UIElementNode (element));
@@ -977,26 +967,6 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 	delete subtree_list;
 }
 
-
-void
-UIElement::OnLoaded ()
-{
-	flags |= UIElement::IS_LOADED;
-}
-
-void
-UIElement::ClearLoaded ()
-{
-	Surface *s = Deployment::GetCurrent ()->GetSurface ();
-	if (s->GetFocusedElement () == this)
-		s->FocusElement (NULL);
-		
-	ClearForeachGeneration (UIElement::LoadedEvent);
-	ClearWalkedForLoaded ();
-
-	flags &= ~UIElement::IS_LOADED;
-	Emit (UIElement::UnloadedEvent);
-}
 
 bool
 UIElement::Focus (bool recurse)

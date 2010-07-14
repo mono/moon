@@ -262,11 +262,11 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 
 
 void
-Panel::OnLoaded ()
+Panel::OnIsAttachedChanged (bool attached)
 {
-	FrameworkElement::OnLoaded ();
+	FrameworkElement::OnIsAttachedChanged (attached);
 
-	if (IsAttached ()) {
+	if (attached) {
 		// queue a resort based on ZIndex
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
 	}

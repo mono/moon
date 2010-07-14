@@ -714,7 +714,6 @@ class XamlParserInfo {
 	{
 		// if we have a loader, set the surface and base resource location
 		if (loader) {
-			element->SetIsAttached (true); /* Some glyphs (DRT 0/Test5, 58) do not show up without this */ 
 			element->SetResourceBase (loader->GetResourceBase());
 		}
 

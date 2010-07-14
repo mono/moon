@@ -61,7 +61,6 @@ public:
 
 	enum UIElementFlags {
 		NONE             = 0x00,
-		IS_LOADED        = 0x01,
 
 		// these two flags correspond to the 2 states of VisibilityProperty
 		RENDER_VISIBLE   = 0x02,
@@ -114,7 +113,7 @@ public:
 	
 	virtual bool EnableAntiAlias() { return true; }
 
-	virtual void SetIsAttached (bool value);
+	virtual void OnIsAttachedChanged (bool value);
 
 	// UpdateTotalRenderVisibility:
 	//   Updates the opacity and render visibility on this item based on 
@@ -167,8 +166,7 @@ public:
 	//   Returns true if the element has been attached to a
 	//   surface and is part of the visual hierarchy.
 	//
-	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
-	virtual void ClearLoaded ();
+	bool IsLoaded () { return IsAttached (); }
 
 	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
 	void ClearWalkedForLoaded ();
@@ -435,8 +433,6 @@ public:
 
 	void WalkTreeForLoadedHandlers (bool *delay, bool only_unemitted, bool force_walk_up);
 
-	virtual void OnLoaded ();
-	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

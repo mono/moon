@@ -192,7 +192,9 @@ public:
 	 * - If you really want the surface, use GetDeployment ()->GetSurface ()
 	 */
 	bool IsAttached ();
-	virtual void SetIsAttached (bool value);
+	void SetIsAttached (bool value);
+	virtual void OnIsAttachedChanged (bool newValue) { }
+
 	bool IsDisposed ();
 	bool IsMultiThreadedSafe () { return (flags & MultiThreadedSafe) != 0; }
 	
@@ -349,7 +351,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool SetNameOnScope (const char *name, NameScope *scope);
 
-	virtual void SetIsAttached (bool value);
+	virtual void OnIsAttachedChanged (bool value);
 
 	void SetParent (DependencyObject *parent, MoonError *error);
 	void SetParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error);

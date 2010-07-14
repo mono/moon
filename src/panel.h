@@ -40,7 +40,7 @@ class Panel : public FrameworkElement {
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
 
-	virtual void OnLoaded ();
+	virtual void OnIsAttachedChanged (bool attached);
 
 	virtual void ComputeBounds ();
 	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);

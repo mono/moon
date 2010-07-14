@@ -80,7 +80,7 @@ public:
 	ResourceDictionaryCollection *GetMergedDictionaries ();
 	void SetMergedDictionaries (ResourceDictionaryCollection* value);
 
-	virtual void SetIsAttached (bool value);
+	virtual void OnIsAttachedChanged (bool value);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 

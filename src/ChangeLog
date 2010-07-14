@@ -1,3 +1,49 @@
+2010-07-14  Alan McGovern  <amcgovern@novell.com>
+
+	* panel.h:
+	* media.h:
+	* popup.h:
+	* glyphs.h:
+	* popup.cpp:
+	* textbox.h:
+	* media.cpp:
+	* control.h:
+	* panel.cpp:
+	* uielement.h:
+	* textbox.cpp:
+	* control.cpp:
+	* resources.h:
+	* collection.h:
+	* uielement.cpp:
+	* richtextbox.h:
+	* resources.cpp:
+	* mediaelement.h:
+	* richtextbox.cpp:
+	* mediaelement.cpp:
+	* dependencyobject.h:
+	* frameworkelement.h:
+	* dependencyobject.cpp:
+	* frameworkelement.cpp: DependencyObject::IsAttached and
+	  UIElement::IsLoaded mean exactly the same thing - the object
+	  is in the live tree. Combine these two and refactor the
+	  methods so that there's a SetIsAttached method and separate
+	  'OnIsAttachedChanged' method so DOs can easily handle when
+	  their attached status changes.
+
+	* fontmanager.h:
+	* fontmanager.cpp: Always treat the typefaces collection as
+	  being attached. This means Glyphs and whatnot end up being
+	  attached properly so glyphs download. 
+
+	* xaml.cpp: Remove the hack which sets all elements to be
+	  Attached as the glyph issue has been fixed properly now.
+
+	* glyphs.cpp: When a glyph is attached, fire the downloaders.
+	  SetParent was the wrong place to be doing this before.
+
+	* collection.cpp: Make sure IsAttached is only set if the
+	  object is actually added to the collection.
+
 2010-07-14  David Reveman  <davidr@novell.com>
 
 	* projection.cpp: Fix perspective transform clip

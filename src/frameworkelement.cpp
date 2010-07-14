@@ -993,13 +993,14 @@ FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, 
 }
 
 void
-FrameworkElement::OnLoaded ()
+FrameworkElement::OnIsAttachedChanged (bool attached)
 {
-	UIElement::OnLoaded ();
+	UIElement::OnIsAttachedChanged (attached);
 	InheritedDataContextValueProvider *p = (InheritedDataContextValueProvider *) providers[PropertyPrecedence_InheritedDataContext];
-	p->EmitChanged ();
+	if (p)
+		p->EmitChanged ();
 
-	if (loaded_cb)
+	if (attached && loaded_cb)
 		(*loaded_cb) (this);
 }
 

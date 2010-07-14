@@ -405,11 +405,6 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 	DependencyObject *obj = value->AsDependencyObject ();
 	
 	DependencyObject *parent = obj->GetParent();
-	
-	// Attach /before/ setting the logical parent
-	// because Storyboard::SetIsAttached () needs to be able to
-	// distinguish between the two cases.
-	obj->SetIsAttached (IsAttached ());
 
 	if (parent) {
 		if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
@@ -425,7 +420,10 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 
 	obj->AddPropertyChangeListener (this);
 	
+	// Only set the IsAttached state when the object has successfully been
+	// added to the collection.
 	bool rv = Collection::AddedToCollection (value, error);
+	obj->SetIsAttached (rv && IsAttached ());
 	
 	if (!rv && parent == NULL) {
 		/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
@@ -448,10 +446,9 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 }
 
 void
-DependencyObjectCollection::SetIsAttached (bool attached)
+DependencyObjectCollection::OnIsAttachedChanged (bool attached)
 {
-	if (IsAttached () == attached)
-		return;
+	Collection::OnIsAttachedChanged (attached);
 
 	DependencyObject *obj;
 	Value *value;
@@ -461,8 +458,6 @@ DependencyObjectCollection::SetIsAttached (bool attached)
 		obj = value->AsDependencyObject ();
 		obj->SetIsAttached (attached);
 	}
-	
-	Collection::SetIsAttached (attached);
 }
 
 void

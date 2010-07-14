@@ -787,6 +787,38 @@ GlyphTypefaceCollection::GlyphTypefaceCollection ()
 	SetObjectType (Type::GLYPHTYPEFACE_COLLECTION);
 }
 
+bool
+GlyphTypefaceCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	bool res = Collection::AddedToCollection (value, error);
+	if (res && !Value::IsNull (value))
+		value->AsDependencyObject ()->SetIsAttached (IsAttached ());
+
+	return res;
+}
+
+void
+GlyphTypefaceCollection::RemovedFromCollection (Value *value)
+{
+	Collection::RemovedFromCollection (value);
+	if (!Value::IsNull (value))
+		value->AsDependencyObject ()->SetIsAttached (false);
+}
+
+void
+GlyphTypefaceCollection::OnIsAttachedChanged (bool attached)
+{
+	DependencyObject *obj;
+	Value *value;
+	Collection::OnIsAttachedChanged (value);
+
+	for (guint i = 0; i < array->len; i++) {
+		value = (Value *) array->pdata[i];
+		obj = value->AsDependencyObject ();
+		obj->SetIsAttached (attached);
+	}
+}
+
 
 //
 // FontFace
@@ -1985,6 +2017,7 @@ FontManager::GetSystemGlyphTypefaces ()
 		return typefaces;
 	
 	typefaces = new GlyphTypefaceCollection ();
+	typefaces->SetIsAttached (true);
 	
 	objects = FcObjectSetBuild (FC_FILE, FC_INDEX, NULL);
 	pattern = FcPatternCreate ();

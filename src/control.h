@@ -50,7 +50,6 @@ public:
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
-	virtual void OnLoaded ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	
@@ -60,7 +59,7 @@ public:
 	void ApplyDefaultStyle ();
 	virtual bool DoApplyTemplateWithError (MoonError *error);
 	virtual void SetVisualParent (UIElement *visual_parent);
-
+	virtual void OnIsAttachedChanged (bool attached);
 	virtual bool Focus (bool recurse = true);
 
 	/* @GenerateCBinding,GeneratePInvoke */

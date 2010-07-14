@@ -133,7 +133,7 @@ class MediaBase : public FrameworkElement {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
-	virtual void OnLoaded ();
+	virtual void OnIsAttachedChanged (bool attached);
 	
 	//
 	// Property Accessors

@@ -98,7 +98,7 @@ class Glyphs : public FrameworkElement {
 	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
-	virtual void SetParent (DependencyObject *parent, MoonError *error);
+	virtual void OnIsAttachedChanged (bool attached);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	

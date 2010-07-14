@@ -66,19 +66,6 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-Control::OnLoaded ()
-{
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
-	UIElement *e = GetVisualParent ();
-	while (e && !types->IsSubclassOf (e->GetObjectType (), Type::CONTROL))
-		e = e->GetVisualParent ();
-	if (e)
-		((Control *)e)->UpdateEnabled ();
-
-	FrameworkElement::OnLoaded (); 
-}
-
-void
 Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::CONTROL) {
@@ -114,14 +101,34 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 }
 
 void
+Control::OnIsAttachedChanged (bool attached)
+{
+	FrameworkElement::OnIsAttachedChanged (attached);
+
+	if (attached) {
+		Types *types = GetDeployment ()->GetTypes ();
+		UIElement *visual_parent = GetVisualParent ();
+		while (visual_parent && !types->IsSubclassOf (visual_parent->GetObjectType (), Type::CONTROL))
+			visual_parent = visual_parent->GetVisualParent ();
+		if (visual_parent)
+			((Control *) visual_parent)->UpdateEnabled ();
+	}
+}
+
+void
 Control::SetVisualParent (UIElement *visual_parent)
 {
 	FrameworkElement::SetVisualParent (visual_parent);
 	if (!UIElement::IsSubtreeLoaded (this))
 		return;
 
-	this->enabled_parent = GetParentEnabledState (this);
-	SetValue (Control::IsEnabledProperty, Value (enabled_local));
+	if (IsAttached ()) {
+		Types *types = GetDeployment ()->GetTypes ();
+		while (visual_parent && !types->IsSubclassOf (visual_parent->GetObjectType (), Type::CONTROL))
+			visual_parent = visual_parent->GetVisualParent ();
+		if (visual_parent)
+			((Control *) visual_parent)->UpdateEnabled ();
+	}
 }
 
 bool

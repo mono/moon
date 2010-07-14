@@ -97,9 +97,11 @@ MediaBase::SetAllowDownloads (bool allow)
 }
 
 void
-MediaBase::OnLoaded ()
+MediaBase::OnIsAttachedChanged (bool attached)
 {
-	FrameworkElement::OnLoaded ();
+	// Should this be 'true' or should it be 'attached' ?
+	// Old code used 'true' so I left it as-is.
+	FrameworkElement::OnIsAttachedChanged (attached);
 	SetAllowDownloads (true);
 }
 

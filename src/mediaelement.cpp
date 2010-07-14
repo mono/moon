@@ -446,13 +446,11 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 }
 
 void
-MediaElement::SetIsAttached (bool value)
+MediaElement::OnIsAttachedChanged (bool value)
 {
 	VERIFY_MAIN_THREAD;
-	
-	if (IsAttached () == value)
-		return;
-	
+	FrameworkElement::OnIsAttachedChanged (value);
+
 	if (!value) {
 		LOG_MEDIAELEMENT ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
 		detached_state = state;
@@ -466,9 +464,7 @@ MediaElement::SetIsAttached (bool value)
 		Duration duration = Duration (0);
 		SetNaturalDuration (&duration);
 	}
-	
-	FrameworkElement::SetIsAttached (value);
-	
+
 	if (value) {
 		LOG_MEDIAELEMENT ("MediaElement reattached, detached state: %s state: %s\n", GetStateName (detached_state), GetStateName (state));
 		if (detached_state == MediaElementStatePlaying) {

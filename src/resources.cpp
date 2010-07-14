@@ -463,10 +463,9 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
 void
-ResourceDictionary::SetIsAttached (bool attached)
+ResourceDictionary::OnIsAttachedChanged (bool attached)
 {
-	if (IsAttached () == attached)
-		return;
+	Collection::OnIsAttachedChanged (attached);
 
 	Value *value;
 	
@@ -477,8 +476,6 @@ ResourceDictionary::SetIsAttached (bool attached)
 			obj->SetIsAttached (attached);
 		}
 	}
-	
-	Collection::SetIsAttached (attached);
 }
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection

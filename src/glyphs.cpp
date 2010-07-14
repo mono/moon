@@ -854,23 +854,19 @@ Glyphs::SetFontSource (Downloader *downloader, const char *part_name)
 }
 
 void
-Glyphs::SetParent (DependencyObject *parent, MoonError *error)
+Glyphs::OnIsAttachedChanged (bool attached)
 {
-	if (parent && IsAttached () && uri_changed) {
+	FrameworkElement::OnIsAttachedChanged (attached);
+	if (attached && uri_changed) {
 		// we've been added to the tree, kick off any pending
 		// download we may have
 		Uri *uri;
-		
+		MoonError error;
 		if ((uri = GetFontUri ()))
-			DownloadFont (uri, error);
+			DownloadFont (uri, &error);
 		
 		uri_changed = false;
-		
-		if (error && error->number)
-			return;
 	}
-	
-	FrameworkElement::SetParent (parent, error);
 }
 
 void

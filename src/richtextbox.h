@@ -307,7 +307,7 @@ class RichTextBox : public Control {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	virtual void SetIsAttached (bool value);
+	virtual void OnIsAttachedChanged (bool value);
 	virtual void OnApplyTemplate ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
