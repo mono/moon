@@ -1,5 +1,5 @@
 //
-// InputScope.cs
+// Unit tests for ManipulationDeltaEventArgs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -27,28 +27,49 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
 
-namespace System.Windows.Input
-{
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[TypeConverter ("System.Windows.Input.InputScopeConverter")]
-	public partial class InputScope : DependencyObject {
+using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-		private List<InputScopeName> names;
+namespace MoonTest.System.Windows.Input {
 
-		public void Initialize ()
+	[TestClass]
+	public class ManipulationDeltaEventArgsTest {
+
+		[TestMethod]
+		public void NonDesign ()
 		{
-			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
-				throw new NotImplementedException ();
-
-			names = new List<InputScopeName> ();
+			Assert.Throws<NotImplementedException> (delegate {
+				new ManipulationDeltaEventArgs ();
+			}, "ctor");
 		}
 
-		public IList Names {
-			get { return names; }
+		[TestMethod]
+		public void InDesign ()
+		{
+			ManipulationDeltaEventArgs mdea = null;
+
+			DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, true);
+			try {
+				// creation time limitation only
+				mdea = new ManipulationDeltaEventArgs ();
+			}
+			finally {
+				DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, false);
+			}
+
+			Assert.IsNull (mdea.CumulativeManipulation, "CumulativeManipulation");
+			Assert.IsNull (mdea.DeltaManipulation, "DeltaManipulation");
+			Assert.IsFalse (mdea.Handled, "Handled");
+			Assert.IsFalse (mdea.IsInertial, "IsInertial");
+			Assert.IsNull (mdea.ManipulationContainer, "ManipulationContainer");
+			Assert.AreEqual (new Point (0, 0), mdea.ManipulationOrigin, "ManipulationOrigin");
+			Assert.IsNull (mdea.OriginalSource, "OriginalSource");
+			Assert.IsNull (mdea.Velocities, "Velocities");
 		}
 	}
 }

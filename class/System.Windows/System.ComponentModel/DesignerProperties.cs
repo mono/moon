@@ -29,9 +29,7 @@
 using System.Windows;
 
 namespace System.ComponentModel {
-	public static class DesignerProperties {
-		public static readonly DependencyProperty IsInDesignModeProperty = DependencyProperty.RegisterAttachedCore (
-			"IsInDesignMode", typeof (bool), typeof (DependencyObject), null);
+	public static partial class DesignerProperties {
 
 		public static bool GetIsInDesignMode (DependencyObject element)
 		{

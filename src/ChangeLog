@@ -1,3 +1,16 @@
+2010-07-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* designmode.h: New. Allow generation of IsInDesignModeProperty
+	on the managed side and its existsance in the unmanaged side
+	* error.h: Add NOT_IMPLEMENTED_EXCEPTION
+	* inputscope.h: Add @CallInitialize to InputScope and InputScopeName
+	* textbox.h: Add GenerateManagedAccessors=false and Validator=
+	NullOrInDesignMode to InputScopeProperty and WatermarkProperty
+	* uielement.h: Add GenerateManagedEvent=false to Manupulation* events
+	* validators.h|cpp: Add NullOrInDesignMode that allow changes only
+	if null or in design-more
+	* Makefile.am: Add designmode.h to the build
+
 2010-07-14  Alan McGovern  <amcgovern@novell.com>
 
 	* panel.h:

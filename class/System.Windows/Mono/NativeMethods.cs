@@ -169,6 +169,8 @@ namespace Mono {
 				return new ListenFailedException (msg);
 			case 11:
 				return new SendFailedException (msg);
+			case 12:
+				return new NotImplementedException (msg);
 			}
 		}
 	}

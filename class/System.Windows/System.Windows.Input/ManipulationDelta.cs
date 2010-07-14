@@ -28,37 +28,35 @@ using System.ComponentModel;
 namespace System.Windows.Input {
 	[EditorBrowsable (EditorBrowsableState.Never)]
 	public sealed class ManipulationDelta : DependencyObject {
+
+		// FIXME: the DPs need to be initialized
 		public static readonly DependencyProperty ScaleProperty;
 		public static readonly DependencyProperty TranslationProperty;
 
-		static ManipulationDelta ()
-		{
-			// the DPs need to be initialized
-			Console.WriteLine ("NIEX: System.Windows.Input.ManipulationDelta");
-			throw new NotImplementedException ("System.Windows.Input.ManipulationDelta::.cctor");
-		}
-
 		public ManipulationDelta (Point translation, Point scale)
 		{
+			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+				throw new NotImplementedException ();
+
 			Translation = translation;
 			Scale = scale;
 		}
 
+		[MonoTODO ("design-mode time not supported")]
 		public Point Scale {
 			get {
-				return (Point) GetValue (ScaleProperty);
+				throw new NotImplementedException ();
 			}
 			private set {
-				SetValue (ScaleProperty, value);
 			}
 		}
 
+		[MonoTODO ("design-mode time not supported")]
 		public Point Translation {
 			get {
-				return (Point) GetValue (TranslationProperty);
+				throw new NotImplementedException ();
 			}
 			private set {
-				SetValue (TranslationProperty, value);
 			}
 		}
 	}

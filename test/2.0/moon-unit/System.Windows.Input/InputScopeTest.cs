@@ -1,5 +1,5 @@
 //
-// InputScopeName.cs
+// Unit tests for InputScope
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -27,30 +27,50 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
 
-namespace System.Windows.Input {
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[TypeConverter ("System.Windows.Input.InputScopeNameConverter")]
-	public partial class InputScopeName : DependencyObject {
-		public InputScopeName (InputScopeNameValue nameValue)
+using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace MoonTest.System.Windows.Input {
+
+	[TestClass]
+	public class InputScopeTest {
+
+		[TestMethod]
+		public void NonDesign ()
 		{
-			EnsureInDesign ();
-			NameValue = nameValue;
+			Assert.Throws<NotImplementedException> (delegate {
+				new InputScope ();
+			}, "ctor");
 		}
 
-		public void Initialize ()
+		[TestMethod]
+		public void InDesign ()
 		{
-			EnsureInDesign ();
-			NameValue = InputScopeNameValue.Default;
-		}
+			InputScope i = null;
+			InputScopeName isn = null;
 
-		public InputScopeNameValue NameValue { get; set; }
+			DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, true);
+			try {
+				// creation time limitation only
+				i = new InputScope ();
+				isn = new InputScopeName (InputScopeNameValue.AddressCity);
+			}
+			finally {
+				DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, false);
+			}
 
-		static void EnsureInDesign ()
-		{
-			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
-				throw new NotImplementedException ();
+			Assert.AreEqual (0, i.Names.Count, "Count");
+			Assert.IsFalse (i.Names.IsFixedSize, "IsFixedSize");
+			Assert.IsFalse (i.Names.IsReadOnly, "IsReadOnly");
+			Assert.IsInstanceOfType<List<InputScopeName>> (i.Names, "type");
+
+			i.Names.Add (isn);
+			Assert.AreEqual (1, i.Names.Count, "1");
 		}
 	}
 }

@@ -1,3 +1,15 @@
+2010-07-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.ComponentModel/DesignerPropertiesTest.cs: Add test case
+	specific to Application.Current.RootVisual
+	* System.Windows.Input/InputScopeTest.cs: New
+	* System.Windows.Input/InputScopeNameTest.cs: New
+	* System.Windows.Input/ManipulationCompletedEventArgsTest.cs: New
+	* System.Windows.Input/ManipulationDeltaEventArgsTest.cs: New
+	* System.Windows.Input/ManipulationStartedEventArgsTest.cs: New
+	* System.Windows.Controls/TextBoxTest.cs: Add test case for 
+	InputScope and Watermark (throw NIE outside design mode)
+
 2010-07-13  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls.Primitives/SelectorTest.cs: Undo

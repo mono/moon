@@ -1,7 +1,10 @@
+//
+// Unit tests for ManipulationStartedEventArgs
+//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2010 Novell, Inc.
+// Copyright (C) 2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -10,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,42 +26,47 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
 
-namespace System.Windows.Input {
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	public sealed class ManipulationVelocities : DependencyObject {
-	
-		// FIXME: the DPs need to be initialized
-		public static readonly DependencyProperty ExpansionVelocityProperty;
-		public static readonly DependencyProperty LinearVelocityProperty;
+using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-		public ManipulationVelocities (Point linear, Point expansion)
+namespace MoonTest.System.Windows.Input {
+
+	[TestClass]
+	public class ManipulationStartedEventArgsTest {
+
+		[TestMethod]
+		public void NonDesign ()
 		{
-			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
-				throw new NotImplementedException ();
-
-			LinearVelocity = linear;
-			ExpansionVelocity = expansion;
+			Assert.Throws<NotImplementedException> (delegate {
+				new ManipulationStartedEventArgs ();
+			}, "ctor");
 		}
 
-		public Point ExpansionVelocity {
-			get {
-				throw new NotImplementedException ();
-			}
-			private set {
-			}
-		}
+		[TestMethod]
+		public void InDesign ()
+		{
+			ManipulationStartedEventArgs msea = null;
 
-		public Point LinearVelocity {
-			get {
-				throw new NotImplementedException ();
+			DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, true);
+			try {
+				// creation time limitation only
+				msea = new ManipulationStartedEventArgs ();
 			}
-			private set {
+			finally {
+				DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, false);
 			}
+
+			Assert.IsFalse (msea.Handled, "Handled");
+			Assert.IsNull (msea.ManipulationContainer, "ManipulationContainer");
+			Assert.AreEqual (new Point (0, 0), msea.ManipulationOrigin, "ManipulationOrigin");
+			Assert.IsNull (msea.OriginalSource, "OriginalSource");
 		}
 	}
 }
-
-
 

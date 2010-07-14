@@ -24,6 +24,8 @@
 #include "namescope.h"
 #include "deployment.h"
 #include "fonts.h"
+#include "designmode.h"
+#include "runtime.h"
 
 namespace Moonlight {
 
@@ -439,6 +441,21 @@ Validators::NonNullOnlyDuringInitializationValidator (DependencyObject* instance
 	if (OnlyDuringInitializationValidator (instance, property, value, error))
 		return NonNullValidator (instance, property, value, error);
 	return false;
+}
+
+bool
+Validators::NullOrInDesignMode (DependencyObject* instance, DependencyProperty *GetIsInDesignModeproperty, Value *value, MoonError *error)
+{
+	if (!value || value->GetIsNull ())
+		return true;
+
+	// this state is kept only in "Application.Current.RootVisual"
+	UIElement *top = instance->GetDeployment ()->GetSurface ()->GetToplevel ();
+	if (!top || !top->GetValue (DesignerProperties::IsInDesignModeProperty)->AsBool ()) {
+		MoonError::FillIn (error, MoonError::NOT_IMPLEMENTED_EXCEPTION, 1001, "Value can only be null if not in design mode");
+		return false;
+	}
+	return true;
 }
 
 };

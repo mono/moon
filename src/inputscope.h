@@ -19,6 +19,7 @@
 namespace Moonlight {
 
 /* @Namespace=System.Windows.Input */
+/* @CallInitialize */
 class InputScope : public DependencyObject {
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -30,6 +31,7 @@ class InputScope : public DependencyObject {
 
 /* @Namespace=System.Windows.Input */
 /* @ContentProperty=NameValue */
+/* @CallInitialize */
 class InputScopeName : public DependencyObject {
  public:
 	/* @GenerateCBinding,GeneratePInvoke */

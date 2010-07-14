@@ -39,6 +39,7 @@ public:
 		GCHANDLE_EXCEPTION = 9,
 		LISTEN_FAILED = 10,
 		SEND_FAILED = 11,
+		NOT_IMPLEMENTED_EXCEPTION = 12,
 	};
 
 	// non-zero if an error occurred.

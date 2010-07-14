@@ -233,15 +233,17 @@ namespace System.Windows.Controls {
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		public Rect GetRectFromCharacterIndex (int charIndex)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Controls.TextBox:.GetRectFromCharacterIndex");
-			throw new NotImplementedException ();
+			EnsureDesignMode ();
+			// design-mode is not really supported by Moonlight but some tests requires it to "work"
+			return Rect.Empty;
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		public Rect GetRectFromCharacterIndex (int charIndex, bool trailingEdge)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Controls.TextBox:.GetRectFromCharacterIndex");
-			throw new NotImplementedException ();
+			EnsureDesignMode ();
+			// design-mode is not really supported by Moonlight but some tests requires it to "work"
+			return Rect.Empty;
 		}
 
 		void OnCursorPositionChanged (object sender, CursorPositionChangedEventArgs args)
@@ -307,6 +309,38 @@ namespace System.Windows.Controls {
 				VisualStateManager.GoToState (this, "Focused", useTransitions);
 			} else {
 				VisualStateManager.GoToState (this, "Unfocused", useTransitions);
+			}
+		}
+
+		// InputScope and Watermark properties are not supported, outside of design-mode, in SL4
+
+		static void EnsureDesignMode ()
+		{
+			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+				throw new NotImplementedException ();
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public InputScope InputScope {
+			get {
+				EnsureDesignMode ();
+				return (InputScope) GetValue (InputScopeProperty);
+			}
+			set {
+				EnsureDesignMode ();
+				SetValue (InputScopeProperty, value);
+			}
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public object Watermark {
+			get {
+				EnsureDesignMode ();
+				return GetValue (WatermarkProperty);
+			}
+			set {
+				EnsureDesignMode ();
+				SetValue (WatermarkProperty, value);
 			}
 		}
 

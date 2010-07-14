@@ -28,8 +28,12 @@ using System.ComponentModel;
 namespace System.Windows.Input {
 	[EditorBrowsable (EditorBrowsableState.Never)]
 	public sealed class ManipulationCompletedEventArgs : RoutedEventArgs {
+
+		[MonoTODO ("design-mode time not supported")]
 		public ManipulationCompletedEventArgs ()
 		{
+			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+				throw new NotImplementedException ();
 		}
 
 		public ManipulationVelocities FinalVelocities { get; private set; }

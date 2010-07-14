@@ -28,10 +28,12 @@ using System.ComponentModel;
 namespace System.Windows.Input {
 	[EditorBrowsable (EditorBrowsableState.Never)]
 	public sealed class ManipulationDeltaEventArgs : RoutedEventArgs {
+
+		[MonoTODO ("design-mode time not supported")]
 		public ManipulationDeltaEventArgs ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.ManipulationDeltaEventArgs:.ctor");
-			throw new NotImplementedException ();
+			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+				throw new NotImplementedException ();
 		}
 
 		public void Complete ()

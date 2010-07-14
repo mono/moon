@@ -35,31 +35,28 @@ namespace System.Windows.Input {
 	public class InputScopeConverter : TypeConverter {
 		public InputScopeConverter ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeConverter:.ctor");
-			throw new NotImplementedException ();
 		}
 
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeConverter:CanConvertFrom");
-			throw new NotImplementedException ();
+			return sourceType == typeof (string);
 		}
 
 		public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeConverter:CanConvertTo");
-			throw new NotImplementedException ();
+			return false; // as documented on MSDN
 		}
 
 		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object source)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeConverter:ConvertFrom");
-			throw new NotImplementedException ();
+			InputScope i = new InputScope ();
+			i.Names.Add (new InputScopeName (InputScopeNameConverter.Parse (source as string)));
+			return i;
 		}
 
 		public override object ConvertTo (ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeConverter:ConvertTo");
+			// match CanConvertTo
 			throw new NotImplementedException ();
 		}
 	}

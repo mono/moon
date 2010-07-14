@@ -615,11 +615,11 @@ public:
 	const static int DragOverEvent;
 	/* @DelegateType=DragEventHandler */
 	const static int DropEvent;
-	/* @DelegateType=EventHandler<ManipulationStartedEventArgs>,GenerateManagedEventField=true,Browsable=Never */
+	/* @DelegateType=EventHandler<ManipulationStartedEventArgs>,GenerateManagedEventField=true,GenerateManagedEvent=false */
 	const static int ManipulationStartedEvent;
-	/* @DelegateType=EventHandler<ManipulationDeltaEventArgs>,GenerateManagedEventField=true,Browsable=Never */
+	/* @DelegateType=EventHandler<ManipulationDeltaEventArgs>,GenerateManagedEventField=true,GenerateManagedEvent=false */
 	const static int ManipulationDeltaEvent;
-	/* @DelegateType=EventHandler<ManipulationCompletedEventArgs>,GenerateManagedEventField=true,Browsable=Never */
+	/* @DelegateType=EventHandler<ManipulationCompletedEventArgs>,GenerateManagedEventField=true,GenerateManagedEvent=false */
 	const static int ManipulationCompletedEvent;
 
 	// these we turn off generation for and handle manually since

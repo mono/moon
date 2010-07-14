@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008, 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -81,6 +81,24 @@ namespace MoonTest.System.ComponentModel {
 			Assert.Throws<NotImplementedException>(delegate {
 				DesignerProperties.SetIsInDesignMode(rect, true);
 			}, "Rectangle/False");
+		}
+
+		[TestMethod]
+		public void CurrentApplication ()
+		{
+			Assert.IsFalse (DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual), "Current");
+			DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, true);
+			try {
+				Assert.IsTrue (DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual), "GetIsInDesignMode/true");
+				Assert.IsTrue ((bool) Application.Current.RootVisual.GetValue (DesignerProperties.IsInDesignModeProperty), "GetValue/true");
+
+				Application.Current.RootVisual.SetValue (DesignerProperties.IsInDesignModeProperty, false);
+				Assert.IsFalse (DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual), "GetIsInDesignMode/false");
+				Assert.IsFalse ((bool) Application.Current.RootVisual.GetValue (DesignerProperties.IsInDesignModeProperty), "GetValue/false");
+			}
+			finally {
+				DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, false);
+			}
 		}
 	}
 }

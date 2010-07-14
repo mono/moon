@@ -1,3 +1,17 @@
+2010-07-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* InputScopeConverter.cs:
+	* InputScopeNameConverter.cs:
+		Implemented
+	* InputScope.cs:
+	* InputScopeName.cs:
+	* ManipulationCompletedEventArgs.cs:
+	* ManipulationDelta.cs:
+	* ManipulationDeltaEventArgs.cs:
+	* ManipulationStartedEventArgs.cs:
+	* ManipulationVelocities.cs:
+		Ensure instances can only be created when in design-mode
+
 2010-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Cursor.cs:

@@ -35,32 +35,82 @@ namespace System.Windows.Input {
 	public class InputScopeNameConverter : TypeConverter {
 		public InputScopeNameConverter ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeNameConverter:.ctor");
-			throw new NotImplementedException ();
 		}
 
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeNameConverter:CanConvertFrom");
-			throw new NotImplementedException ();
+			return sourceType == typeof (string);
 		}
 
 		public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeNameConverter:CanConvertTo");
-			throw new NotImplementedException ();
+			if ((context == null) || (context.Instance == null) || !(context.Instance is InputScopeName))
+				return false;
+
+			return (destinationType == typeof (string));
 		}
 
 		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object source)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeNameConverter:ConvertFrom");
+			InputScopeName isn = new InputScopeName ();
+			if (source == null)
+				return isn;
+
+			Type type = source.GetType ();
+			if (!CanConvertFrom (type))
+				return isn;
+
+			if (type == typeof (string)) {
+				string value = (source as string);
+				if (value.Length == 0)
+					return isn;
+
+				if (value.IndexOf (',') == -1) {
+					isn.NameValue = Parse (value);
+				} else {
+					string[] values = value.Split (new char [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (string v in values)
+						Parse (v);
+					isn.NameValue = InputScopeNameValue.PhraseList;
+				}
+				return isn;
+			}
+
 			throw new NotImplementedException ();
 		}
 
 		public override object ConvertTo (ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.InputScopeNameConverter:ConvertTo");
-			throw new NotImplementedException ();
+			InputScopeName isn = (value as InputScopeName);
+			if ((isn == null) || (destinationType != typeof (string)))
+				throw new NotImplementedException ();
+
+			return isn.NameValue.ToString ();
+		}
+
+		internal static InputScopeNameValue Parse (string s)
+		{
+			if (String.IsNullOrEmpty (s))
+				return InputScopeNameValue.Default;
+
+			if (s.IndexOf (',') == -1)
+				return ParseValue (s);
+
+			string[] values = s.Split (new char [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string v in values)
+				ParseValue (v);
+
+			return InputScopeNameValue.PhraseList;
+		}
+
+		static InputScopeNameValue ParseValue (string s)
+		{
+			for (int i = (int) InputScopeNameValue.EnumString; i <= (int) InputScopeNameValue.ApplicationEnd; i++) {
+				InputScopeNameValue isnv = (InputScopeNameValue) i;
+				if (String.Compare (s, isnv.ToString (), StringComparison.Ordinal) == 0)
+					return isnv;
+			}
+			throw new ArgumentException ();
 		}
 	}
 }

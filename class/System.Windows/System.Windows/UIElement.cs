@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -150,14 +151,78 @@ namespace System.Windows {
 		
 		public void AddHandler (RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
 		{
+			if (IsManipulation (routedEvent))
+				EnsureDesignMode ();
 			// FIXME: we don't handle handledEventsToo
 			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler));
 		}
 		
 		public void RemoveHandler (RoutedEvent routedEvent, Delegate handler)
 		{
+			if (IsManipulation (routedEvent))
+				EnsureDesignMode ();
 			UnregisterEvent (routedEvent.EventId, handler);
 		}
+
+		// Manipulation* events are not supported, outside of design-mode, in SL4
+		static bool IsManipulation (RoutedEvent routedEvent)
+		{
+			switch (routedEvent.EventId) {
+			case EventIds.UIElement_ManipulationCompletedEvent:
+			case EventIds.UIElement_ManipulationDeltaEvent:
+			case EventIds.UIElement_ManipulationStartedEvent:
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		static void EnsureDesignMode ()
+		{
+			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+				throw new NotImplementedException ();
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public event EventHandler<ManipulationCompletedEventArgs> ManipulationCompleted {
+			add {
+				EnsureDesignMode ();
+				RegisterEvent (EventIds.UIElement_ManipulationCompletedEvent, value, Events.CreateManipulationCompletedEventArgsEventHandlerDispatcher (value)); }
+			remove {
+				EnsureDesignMode ();
+				UnregisterEvent (EventIds.UIElement_ManipulationCompletedEvent, value);
+			}
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public static readonly RoutedEvent ManipulationCompletedEvent = new RoutedEvent (EventIds.UIElement_ManipulationCompletedEvent);
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public event EventHandler<ManipulationDeltaEventArgs> ManipulationDelta {
+			add {
+				EnsureDesignMode ();
+				RegisterEvent (EventIds.UIElement_ManipulationDeltaEvent, value, Events.CreateManipulationDeltaEventArgsEventHandlerDispatcher (value)); }
+			remove {
+				EnsureDesignMode ();
+				UnregisterEvent (EventIds.UIElement_ManipulationDeltaEvent, value);
+			}
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public static readonly RoutedEvent ManipulationDeltaEvent = new RoutedEvent (EventIds.UIElement_ManipulationDeltaEvent);
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public event EventHandler<ManipulationStartedEventArgs> ManipulationStarted {
+			add {
+				EnsureDesignMode ();
+				RegisterEvent (EventIds.UIElement_ManipulationStartedEvent, value, Events.CreateManipulationStartedEventArgsEventHandlerDispatcher (value)); }
+			remove {
+				EnsureDesignMode ();
+				UnregisterEvent (EventIds.UIElement_ManipulationStartedEvent, value);
+			}
+		}
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		public static readonly RoutedEvent ManipulationStartedEvent = new RoutedEvent (EventIds.UIElement_ManipulationStartedEvent);
 		
 		#region UIA Events
 

@@ -28,10 +28,12 @@ using System.ComponentModel;
 namespace System.Windows.Input {
 	[EditorBrowsable (EditorBrowsableState.Never)]
 	public sealed class ManipulationStartedEventArgs : RoutedEventArgs {
+
+		[MonoTODO ("design-mode time not supported")]
 		public ManipulationStartedEventArgs ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Input.ManipulationStartedEventArgs:.ctor");
-			throw new NotImplementedException ();
+			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+				throw new NotImplementedException ();
 		}
 
 		public void Complete ()

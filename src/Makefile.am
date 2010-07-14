@@ -34,6 +34,7 @@ libmoon_include_headers = 	\
 	dependencyproperty.h	\
 	deployment.h		\
 	deepzoomimagetilesource.h	\
+	designmode.h		\
 	dirty.h			\
 	downloader.h		\
 	easing.h		\

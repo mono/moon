@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008, 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.ComponentModel;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -315,5 +316,50 @@ namespace Mono.Moonlight.UnitTesting
 				Assert.AreEqual (ScrollBarVisibility.Visible, scroller.VerticalScrollBarVisibility, "#2");
 			});
 		}
-    }
+
+		[TestMethod]
+		public void InputScope ()
+		{
+			Assert.Throws<NotImplementedException> (delegate {
+				Assert.IsNull (box.InputScope); // get
+			}, "get_InputScope");
+			Assert.Throws<NotImplementedException> (delegate {
+				box.InputScope = null;
+			}, "set_InputScope");
+
+			Assert.IsNull (box.GetValue (TextBox.InputScopeProperty), "GetValue");
+
+			InputScope i = null;
+			box.SetValue (TextBox.InputScopeProperty, i); // null works
+
+			DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, true);
+			try {
+				i = new InputScope ();
+			}
+			finally {
+				DesignerProperties.SetIsInDesignMode (Application.Current.RootVisual, false);
+			}
+
+			Assert.Throws<NotImplementedException> (delegate {
+				box.SetValue (TextBox.InputScopeProperty, i);
+			}, "SetValue");
+		}
+
+		[TestMethod]
+		public void Watermark ()
+		{
+			Assert.Throws<NotImplementedException> (delegate {
+				Assert.IsNull (box.Watermark); // get
+			}, "get_Watermark");
+			Assert.Throws<NotImplementedException> (delegate {
+				box.Watermark = null;
+			}, "set_Watermark");
+
+			Assert.IsNull (box.GetValue (TextBox.WatermarkProperty), "GetValue");
+			box.SetValue (TextBox.WatermarkProperty, null); // null works
+			Assert.Throws<NotImplementedException> (delegate {
+				box.SetValue (TextBox.WatermarkProperty, new object ());
+			}, "SetValue");
+		}
+	}
 }

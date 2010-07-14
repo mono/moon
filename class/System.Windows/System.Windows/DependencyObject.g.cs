@@ -508,14 +508,26 @@ namespace System.Windows.Input {
 	}
 
 	partial class InputScope {
-		public InputScope () : base (SafeNativeMethods.input_scope_new (), true) {}
-		internal InputScope (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public InputScope () : base (SafeNativeMethods.input_scope_new (), true)
+		{
+			Initialize ();
+		}
+		internal InputScope (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	[ContentProperty ("NameValue")]
 	partial class InputScopeName {
-		public InputScopeName () : base (SafeNativeMethods.input_scope_name_new (), true) {}
-		internal InputScopeName (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public InputScopeName () : base (SafeNativeMethods.input_scope_name_new (), true)
+		{
+			Initialize ();
+		}
+		internal InputScopeName (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class StylusInfo {

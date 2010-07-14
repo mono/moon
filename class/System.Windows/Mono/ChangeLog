@@ -1,3 +1,8 @@
+2010-07-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* NativeMethods.cs: throw a NotImplementedException if the
+	runtime requested it
+
 2010-07-12  Alan McGovern  <amcgovern@novell.com>
 
 	* Events.cs:
