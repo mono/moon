@@ -1,3 +1,9 @@
+2010-07-14  Alan McGovern  <amcgovern@novell.com>
+
+	* value.h.in: Add sanity checks so we don't accidentally treat
+	  a GCHandled object as being the actual object in native
+	  code.
+
 2010-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* animation.cpp: Always go into managed land to convert keyframes. Fixes a
