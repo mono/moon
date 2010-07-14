@@ -825,6 +825,7 @@ ShockerScriptableControlObject::GetRenderDataCapturer (const NPVariant *args, ui
 		render_data_capturer = (RenderDataCapturerObject *) Browser::Instance ()->CreateObject (instance, RenderDataCapturerClass);
 	}
 	OBJECT_TO_NPVARIANT (render_data_capturer, *result);
+	Browser::Instance ()->RetainObject (render_data_capturer);
 }
 
 void

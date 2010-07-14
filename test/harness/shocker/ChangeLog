@@ -1,3 +1,7 @@
+2010-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: Ensure we retain any NPObjects we return to the browser.
+
 2010-06-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shutdown-manager.cpp: Make a few printfs somewhat better and fix a compiler
