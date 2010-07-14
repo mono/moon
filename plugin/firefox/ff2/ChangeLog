@@ -1,3 +1,8 @@
+2010-07-14  Andreia Gaita  <avidigal@novell.com>
+
+	* ff2-bridge.[h|cpp]: Put all types inside a Moonlight namespace
+	  to avoid conflicts with external libraries
+
 2010-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ff2-http.cpp: Move method into browser-http.inc.

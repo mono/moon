@@ -15,6 +15,8 @@
 
 #include "ff2-bridge.h"
 
+namespace Moonlight {
+
 FF2BrowserBridge::FF2BrowserBridge ()
 {
 }
@@ -23,3 +25,5 @@ BrowserBridge* CreateBrowserBridge ()
 {
 	return new FF2BrowserBridge ();
 }
+
+};
