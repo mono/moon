@@ -1,3 +1,9 @@
+2010-07-14  David Reveman  <davidr@novell.com>
+
+	* projection.cpp: Fix perspective transform clip
+	calculations. Added X/Y-plane clipping as Z-plane clipping
+	alone wont produce correct results.
+
 2010-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp: Add a null-check to fix a crash in #873.

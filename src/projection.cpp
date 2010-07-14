@@ -121,16 +121,15 @@ Matrix3D::TransformPoint (double *out, const double *m, const double *in)
 	memcpy (out, tmp, 4 * sizeof (double));
 }
 
-static void
-lerp (double *fdst, double t, const double *fin, const double *fout)
-{
-	double tin = t;
-	double tout = 1.0 - t;
+#define LINTERP(T, OUT, IN) ((OUT) + (T) * ((IN) - (OUT)))
 
-	fdst[0] = tin * fin[0] + tout * fout[0];
-	fdst[1] = tin * fin[1] + tout * fout[1];
-	fdst[2] = tin * fin[2] + tout * fout[2];
-	fdst[3] = tin * fin[3] + tout * fout[3];
+static void
+interp (double *dst, double t, const double *out, const double *in)
+{
+	dst[0] = LINTERP (t, out[0], in[0]);
+	dst[1] = LINTERP (t, out[1], in[1]);
+	dst[2] = LINTERP (t, out[2], in[2]);
+	dst[3] = LINTERP (t, out[3], in[3]);
 }
 
 static double
@@ -144,31 +143,42 @@ clipmask (const double *clip)
 {
 	unsigned mask = 0;
 
-	if (-clip[2] + clip[3] < 0) mask |= (1 << 0);
-	if ( clip[2] + clip[3] < 0) mask |= (1 << 1);
+	if (-clip[0] + clip[3] < 0) mask |= (1 << 0);
+	if ( clip[0] + clip[3] < 0) mask |= (1 << 1);
+	if (-clip[1] + clip[3] < 0) mask |= (1 << 2);
+	if ( clip[1] + clip[3] < 0) mask |= (1 << 3);
+	if ( clip[2] + clip[3] < 0) mask |= (1 << 4);
+	if (-clip[2] + clip[3] < 0) mask |= (1 << 5);
 
 	return mask;
 }
 
-#define MAX_CLIPPED_VERTICES ((2 * 2) + 1)
+#define MAX_CLIPPED_VERTICES ((2 * 6) + 1)
+
+#define VIEWPORT_SCALE            (65536.0)
+#define VIEWPORT_SCALE_RECIPROCAL (1.0 / VIEWPORT_SCALE)
 
 static Rect
-ExtendBoundsTo (Rect     bounds,
-		double   *p1,
-		double   *p2,
-		double   *p3,
-		unsigned clipmask)
+ClipToBounds (double   *p1,
+	      double   *p2,
+	      double   *p3,
+	      unsigned clipmask)
 {
+	Rect bounds = Rect ();
 	double *a[MAX_CLIPPED_VERTICES];
 	double *b[MAX_CLIPPED_VERTICES];
 	double **inlist = a;
 	double **outlist = b;
 	unsigned tmpnr = 0;
-	double tmp0[4], tmp1[4], tmp2[4], tmp3[4];
-	double *tmp_vert[] = { tmp0, tmp1, tmp2, tmp3 };
-	double plane0[] = { 0.0, 0.0, -1.0, 1.0 };
-	double plane1[] = { 0.0, 0.0, 1.0, 1.0 };
-	double *clip_plane[] = { plane0, plane1 };
+	double tmp_vert[MAX_CLIPPED_VERTICES + 1][4];
+	double clip_plane[][4] = {
+		{ -1.0,  0.0,  0.0, 1.0 },
+		{  1.0,  0.0,  0.0, 1.0 },
+		{  0.0, -1.0,  0.0, 1.0 },
+		{  0.0,  1.0,  0.0, 1.0 },
+		{  0.0,  0.0,  1.0, 1.0 },
+		{  0.0,  0.0, -1.0, 1.0 }
+	};
 	unsigned n = 3;
 	unsigned i;
 
@@ -194,17 +204,17 @@ ExtendBoundsTo (Rect     bounds,
 			if (dp_prev >= 0.0)
 				outlist[outcount++] = vert_prev;
 
-			if (dp * dp_prev <= 0.0 && dp - dp_prev != 0.0) {
+			if ((dp * dp_prev) <= 0.0 && (dp - dp_prev) != 0.0) {
 				double *new_vert = tmp_vert[tmpnr++];
 				outlist[outcount++] = new_vert;
 
 				if (dp < 0.0) {
 					double t = dp / (dp - dp_prev);
-					lerp (new_vert, t, vert, vert_prev);
+					interp (new_vert, t, vert, vert_prev);
 				}
 				else {
 					double t = dp_prev / (dp_prev - dp);
-					lerp (new_vert, t, vert_prev, vert);
+					interp (new_vert, t, vert_prev, vert);
 				}
 			}
 
@@ -222,11 +232,19 @@ ExtendBoundsTo (Rect     bounds,
 	}
 
 	if (n >= 3) {
-		for (i = 0; i < n; i++) {
-			double *v = inlist[i];
-			double w = 1.0 / v[3];
+		double *v = inlist[0];
+		double w = 1.0 / v[3];
 
-			bounds = bounds.ExtendTo (v[0] * w, v[1] * w);
+		bounds = Rect (v[0] * w * VIEWPORT_SCALE,
+			       v[1] * w * VIEWPORT_SCALE,
+			       0, 0);
+
+		for (i = 1; i < n; i++) {
+			v = inlist[i];
+			w = 1.0 / v[3];
+
+			bounds = bounds.ExtendTo (v[0] * w * VIEWPORT_SCALE,
+						  v[1] * w * VIEWPORT_SCALE);
 		}
 	}
 
@@ -251,6 +269,18 @@ Matrix3D::TransformBounds (const double *m, Rect bounds)
 	Matrix3D::TransformPoint (p3, m, p3);
 	Matrix3D::TransformPoint (p4, m, p4);
 
+	p1[0] *= VIEWPORT_SCALE_RECIPROCAL;
+	p1[1] *= VIEWPORT_SCALE_RECIPROCAL;
+
+	p2[0] *= VIEWPORT_SCALE_RECIPROCAL;
+	p2[1] *= VIEWPORT_SCALE_RECIPROCAL;
+
+	p3[0] *= VIEWPORT_SCALE_RECIPROCAL;
+	p3[1] *= VIEWPORT_SCALE_RECIPROCAL;
+
+	p4[0] *= VIEWPORT_SCALE_RECIPROCAL;
+	p4[1] *= VIEWPORT_SCALE_RECIPROCAL;
+
 	cm1 = clipmask (p1);
 	cm2 = clipmask (p2);
 	cm3 = clipmask (p3);
@@ -259,22 +289,33 @@ Matrix3D::TransformBounds (const double *m, Rect bounds)
 	if ((cm1 | cm2 | cm3 | cm4) != 0) {
 		bounds = Rect ();
 		if ((cm1 & cm2 & cm3 & cm4) == 0) {
-			bounds = ExtendBoundsTo (bounds, p1, p2, p3, cm1 | cm2 | cm3);
-			bounds = ExtendBoundsTo (bounds, p1, p3, p4, cm1 | cm3 | cm4);
+			Rect r1;
+			Rect r2;
+
+			r1 = ClipToBounds (p1, p2, p3, cm1 | cm2 | cm3);
+			r2 = ClipToBounds (p1, p3, p4, cm1 | cm3 | cm4);
+
+			if (!r1.IsEmpty ()) bounds = bounds.Union (r1);
+			if (!r2.IsEmpty ()) bounds = bounds.Union (r2);
 		}
 	}
 	else {
-		p1[0] /= p1[3];
-		p1[1] /= p1[3];
+		double p1w = 1.0 / p1[3];
+		double p2w = 1.0 / p2[3];
+		double p3w = 1.0 / p3[3];
+		double p4w = 1.0 / p4[3];
 
-		p2[0] /= p2[3];
-		p2[1] /= p2[3];
+		p1[0] *= p1w * VIEWPORT_SCALE;
+		p1[1] *= p1w * VIEWPORT_SCALE;
 
-		p3[0] /= p3[3];
-		p3[1] /= p3[3];
+		p2[0] *= p2w * VIEWPORT_SCALE;
+		p2[1] *= p2w * VIEWPORT_SCALE;
 
-		p4[0] /= p4[3];
-		p4[1] /= p4[3];
+		p3[0] *= p3w * VIEWPORT_SCALE;
+		p3[1] *= p3w * VIEWPORT_SCALE;
+
+		p4[0] *= p4w * VIEWPORT_SCALE;
+		p4[1] *= p4w * VIEWPORT_SCALE;
 
 		bounds = Rect (p1[0], p1[1], 0, 0);
 		bounds = bounds.ExtendTo (p2[0], p2[1]);
