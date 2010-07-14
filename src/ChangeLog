@@ -1,5 +1,10 @@
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* application.cpp: Make gdb's life easier by not having multiple
+	c (even static) methods with the same name.
+
+2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: RemoveAllHandlers: remove handlers for all events, not
 	just almost all events.
 
