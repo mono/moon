@@ -1,3 +1,8 @@
+2010-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* animation.cpp: Always go into managed land to convert keyframes. Fixes a
+	crash with #561.
+
 2010-07-14  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.cpp: Rearrange the order of things in

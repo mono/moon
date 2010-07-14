@@ -1992,9 +1992,6 @@ ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 		if (!value || value->GetIsNull ()) {
 			// If the value is null, don't convert
 			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, NULL);
-		} else if (value->GetKind () == property->GetPropertyType ()) {
-			// If the value is of the correct type already, don't convert
-			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, value);
 		} else {
 			Value converted;
 			Application::GetCurrent ()->ConvertKeyframeValue (target->GetObjectType (), property, value, &converted);
