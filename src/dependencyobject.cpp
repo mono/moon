@@ -746,7 +746,7 @@ EventObject::RemoveAllHandlers (gpointer data)
 
 	int count = GetType ()->GetEventCount ();
 	
-	for (int i = 0; i < count - 1; i++) {
+	for (int i = 0; i < count; i++) {
 		EventClosure *closure = (EventClosure *) events->lists [i].event_list->First ();
 		while (closure) {
 			if (closure->data == data) {

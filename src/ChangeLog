@@ -1,3 +1,11 @@
+2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: RemoveAllHandlers: remove handlers for all events, not
+	just almost all events.
+
+	* application.cpp: Go back to RemoveAllHandlers, since the bug there is now
+	fixed.
+
 2010-07-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* tilesource.cpp (InvalidateTileLayer): Instead of calling a

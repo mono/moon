@@ -235,8 +235,7 @@ downloader_stopped (EventObject *sender, EventArgs *calldata, gpointer closure)
 	NotifyCtx *ctx = (NotifyCtx *) closure;
 	if (ctx->notify_cb)
 		ctx->notify_cb (args->IsSuccess () ? NotifyCompleted : NotifyFailed, NULL, ctx->user_data);
-	ctx->request->RemoveHandler (HttpRequest::WriteEvent, downloader_write, ctx);
-	ctx->request->RemoveHandler (HttpRequest::StoppedEvent, downloader_stopped, ctx);
+	ctx->request->RemoveAllHandlers (ctx);
 	ctx->request->unref ();
 	g_free (ctx);
 }
