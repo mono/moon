@@ -208,20 +208,20 @@ void
 BitmapImage::UriSourceChanged ()
 {
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	Application *current = Application::GetCurrent ();
+	Application *app = Application::GetCurrent ();
 	Uri *uri = GetUriSource ();
 	
 	if (surface == NULL) {
 		SetBitmapData (NULL, false);
 		return;
 	}
-
-	if (current && uri) {
+	
+	if (app && uri) {
 		if (get_res_aborter)
 			delete get_res_aborter;
 		get_res_aborter = new Cancellable ();
-		if (!current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy, HttpRequest::DisableFileStorage, get_res_aborter, this))
-			DownloaderFailed ();
+		app->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy,
+				  HttpRequest::DisableFileStorage, get_res_aborter, this);
 	}
 }
 
@@ -324,7 +324,7 @@ void
 BitmapImage::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	BitmapImage *media = (BitmapImage *) closure;
-
+	
 	media->DownloaderFailed ();
 }
 
@@ -344,7 +344,6 @@ BitmapImage::DownloaderComplete ()
 
 	if (downloader && loader == NULL) {
 		char *filename = downloader->GetDownloadedFilename (part_name);
-
 		guchar b[4096];
 		int offset = 0;
 		ssize_t n;
@@ -413,6 +412,8 @@ failed:
 void
 BitmapImage::PixmapComplete ()
 {
+	MoonPixbuf *pixbuf;
+	
 	SetProgress (1.0);
 
 	if (!loader) {
@@ -426,37 +427,33 @@ BitmapImage::PixmapComplete ()
 	if (moon_error)
 		goto failed;
 
-	{
-		MoonPixbuf *pixbuf = loader->GetPixbuf ();
-		
-		if (pixbuf == NULL) {
-			moon_error = new MoonError (MoonError::EXCEPTION, 4001, "failed to create image data");
-			goto failed;
-		}
-
-		SetPixelWidth (pixbuf->GetWidth ());
-		SetPixelHeight (pixbuf->GetHeight ());
-
-		// PixelFormat has been dropped and only Pbgra32 is supported
-		// http://blogs.msdn.com/silverlight_sdk/archive/2009/07/01/breaking-changes-document-errata-silverlight-3.aspx
-		// not clear if '3' channel is still supported (converted to 4) in SL3
-		if (pixbuf->GetNumChannels () == 4) {
-			SetBitmapData (premultiply_rgba (pixbuf), true);
-		} else {
-			SetBitmapData (expand_rgb_to_argb (pixbuf), true);
-		}
-
-		Invalidate ();
-
-		delete loader;
-		loader = NULL;
-
-		if (HasHandlers (ImageOpenedEvent))
-			Emit (ImageOpenedEvent, new RoutedEventArgs ());
-
-		return;
+	if (!(pixbuf = loader->GetPixbuf ())) {
+		moon_error = new MoonError (MoonError::EXCEPTION, 4001, "failed to create image data");
+		goto failed;
 	}
-
+	
+	SetPixelWidth (pixbuf->GetWidth ());
+	SetPixelHeight (pixbuf->GetHeight ());
+	
+	// PixelFormat has been dropped and only Pbgra32 is supported
+	// http://blogs.msdn.com/silverlight_sdk/archive/2009/07/01/breaking-changes-document-errata-silverlight-3.aspx
+	// not clear if '3' channel is still supported (converted to 4) in SL3
+	if (pixbuf->GetNumChannels () == 4) {
+		SetBitmapData (premultiply_rgba (pixbuf), true);
+	} else {
+		SetBitmapData (expand_rgb_to_argb (pixbuf), true);
+	}
+	
+	Invalidate ();
+	
+	delete loader;
+	loader = NULL;
+	
+	if (HasHandlers (ImageOpenedEvent))
+		Emit (ImageOpenedEvent, new RoutedEventArgs ());
+	
+	return;
+	
 failed:
 	ImageErrorEventArgs *args = NULL;
 
@@ -470,6 +467,9 @@ failed:
 void
 BitmapImage::DownloaderFailed ()
 {
+	//Uri *uri = GetUriSource ();
+	//printf ("\tBitmapImage::DownloaderFailed() for %s\n", uri ? uri->ToString () : "null?");
+	
 	Abort ();
 	if (HasHandlers (ImageFailedEvent))
 		Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
@@ -482,9 +482,11 @@ BitmapImage::CleanupLoader ()
 	SetPixelHeight (0);
 
 	if (loader) {
+		loader->Close (NULL);
 		delete loader;
 		loader = NULL;
 	}
+	
 	if (moon_error) {
 		delete moon_error;
 		moon_error = NULL;

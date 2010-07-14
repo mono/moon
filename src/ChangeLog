@@ -1,3 +1,29 @@
+2010-07-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes toward getting drt 2004 to work (and likely a number of
+	others).
+
+	* deepzoomimagetilesource.cpp: Replace custom callback solution
+	with events. This is needed in case the same DZITS is the source
+	for multiple MSI's.
+	(element_start): More bitmask fixes.
+
+	* multiscaleimage.cpp: Remove DZITS callbacks (now event handlers)
+	when the source gets replaced and immediately add new event
+	handlers to the new source when it gets set. Same for subimage
+	sources.
+
+	* bitmapimage.cpp (CleanupLoader): Close the loader before
+	deleting it so gtk doesn't freak out.
+	(UriSourceChanged): In case of failure, we don't need to call
+	DownloaderFailed because our resource_notify() callback should do
+	that for us.
+
+	* application.cpp (GetResource): If a notify_cb is provided,
+	always call it with NotifyFailed before returning failure. This
+	way BitmapImage doesn't emit failures events twice for the same
+	failure.
+
 2010-07-14  Alan McGovern  <amcgovern@novell.com>
 
 	* value.h.in: Add sanity checks so we don't accidentally treat

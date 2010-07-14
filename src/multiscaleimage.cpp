@@ -403,7 +403,12 @@ MultiScaleImage::MultiScaleImage ()
 
 MultiScaleImage::~MultiScaleImage ()
 {
+	MultiScaleTileSource *source = GetSource ();
+	
 	StopDownloading ();
+	
+	if (source)
+		DisconnectSourceEvents (source);
 	
 	g_ptr_array_free (downloaders, true);
 	g_hash_table_destroy (cache);
@@ -673,34 +678,74 @@ invalidate_tile_layer (MultiScaleImage *msi, int level, int tilePositionX, int t
 	msi->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
 }
 
-static void
-handle_dz_parsed (MultiScaleImage *msi)
+void
+MultiScaleImage::downloader_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	msi->HandleDzParsed ();
+	((MultiScaleImage *) closure)->HandleDzParsed ();
 }
 
-static void
-emit_image_open_failed (MultiScaleImage *msi)
+void
+MultiScaleImage::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	msi->EmitImageOpenFailed ();
+	((MultiScaleImage *) closure)->EmitImageOpenFailed ();
 }
 
-static void
-emit_image_failed (MultiScaleImage *msi)
+void
+MultiScaleImage::DisconnectSourceEvents (MultiScaleTileSource *source)
 {
-	msi->EmitImageFailed ();
+	if (source && source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+		DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) source;
+		dzits->RemoveHandler (DeepZoomImageTileSource::DownloaderCompletedEvent, downloader_completed, this);
+		dzits->RemoveHandler (DeepZoomImageTileSource::DownloaderFailedEvent, downloader_failed, this);
+		dzits->RemoveHandler (DeepZoomImageTileSource::UriSourceChangedEvent, uri_source_changed, this);
+	}
+}
+
+void
+MultiScaleImage::ConnectSourceEvents (MultiScaleTileSource *source)
+{
+	if (source && source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+		DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) source;
+		dzits->AddHandler (DeepZoomImageTileSource::DownloaderCompletedEvent, downloader_completed, this);
+		dzits->AddHandler (DeepZoomImageTileSource::DownloaderFailedEvent, downloader_failed, this);
+		dzits->AddHandler (DeepZoomImageTileSource::UriSourceChangedEvent, uri_source_changed, this);
+	}
+}
+
+void
+MultiScaleImage::subdownloader_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((UIElement *) closure)->Invalidate ();
+}
+
+void
+MultiScaleImage::subdownloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((MultiScaleImage *) closure)->EmitImageFailed ();
+}
+
+void
+MultiScaleImage::DisconnectSubImageEvents (MultiScaleSubImage *subimage)
+{
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) subimage->source;
+	
+	dzits->RemoveHandler (DeepZoomImageTileSource::DownloaderCompletedEvent, subdownloader_completed, this);
+	dzits->RemoveHandler (DeepZoomImageTileSource::DownloaderFailedEvent, subdownloader_failed, this);
+}
+
+void
+MultiScaleImage::ConnectSubImageEvents (MultiScaleSubImage *subimage)
+{
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) subimage->source;
+	
+	dzits->AddHandler (DeepZoomImageTileSource::DownloaderCompletedEvent, subdownloader_completed, this);
+	dzits->AddHandler (DeepZoomImageTileSource::DownloaderFailedEvent, subdownloader_failed, this);
 }
 
 static void
 emit_motion_finished (MultiScaleImage *msi)
 {
 	msi->EmitMotionFinished ();
-}
-
-static void
-on_source_property_changed (MultiScaleImage *msi)
-{
-	msi->OnSourcePropertyChanged ();
 }
 
 void
@@ -771,10 +816,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	if (source->GetImageWidth () < 0 && !is_collection) {
 		LOG_MSI ("nothing to render so far...\n");
-		if (dzits != NULL) {
-			dzits->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
+		if (dzits != NULL)
 			dzits->Download ();
-		}
 		
 		return;
 	}
@@ -813,6 +856,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	}
 	
 	dzits = (DeepZoomImageTileSource *) source;
+	
+	if (!dzits->IsParsed ())
+		return;
 	
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
@@ -1029,7 +1075,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			// if the subimage is unparsed, trigger the download
 			if (from_layer > dzits->GetMaxLevel () && !sub_dzits->IsDownloaded ()) {
-				sub_dzits->set_callbacks ((MultiScaleImageCallback) uielement_invalidate, emit_image_failed, NULL, this);
 				sub_dzits->Download ();
 				break;
 			}
@@ -1285,7 +1330,13 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 }
 
 void
-MultiScaleImage::OnSourcePropertyChanged ()
+MultiScaleImage::uri_source_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((MultiScaleImage *) closure)->UriSourceChanged ();
+}
+
+void
+MultiScaleImage::UriSourceChanged ()
 {
 	DeepZoomImageTileSource *dzits = NULL;
 	MultiScaleTileSource *source;
@@ -1296,7 +1347,6 @@ MultiScaleImage::OnSourcePropertyChanged ()
 	if ((source = GetSource ())) {
 		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 			dzits = (DeepZoomImageTileSource *) source;
-			dzits->set_callbacks (handle_dz_parsed, emit_image_open_failed, on_source_property_changed, this);
 			dzits->Download ();
 		} else {
 			EmitImageOpenSucceeded ();	
@@ -1358,7 +1408,15 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		// Both options are unfortunately quite expensive :(
 		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::SourceProperty) {
-		OnSourcePropertyChanged ();
+		// disconnect event handlers from the old source
+		if (args->GetOldValue ())
+			DisconnectSourceEvents (args->GetOldValue ()->AsMultiScaleTileSource ());
+		
+		// connect event handlers to the new source
+		if (args->GetNewValue ())
+			ConnectSourceEvents (args->GetNewValue ()->AsMultiScaleTileSource ());
+		
+		UriSourceChanged ();
 	} else if (args->GetId () == MultiScaleImage::UseSpringsProperty) {
 		if (!args->GetNewValue()->AsBool ()) {
 			if (zoom_sb) {
@@ -1380,6 +1438,38 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 void
 MultiScaleImage::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	MultiScaleSubImage *subimage;
+	int count;
+	
+	switch (args->GetChangedAction ()) {
+	case CollectionChangedActionReplace:
+		// Disconnect events from the replaced item
+		subimage = args->GetOldItem ()->AsMultiScaleSubImage ();
+		DisconnectSubImageEvents (subimage);
+		// now fall thru to Add
+	case CollectionChangedActionAdd:
+		// Connect to events on the new item
+		subimage = args->GetNewItem ()->AsMultiScaleSubImage ();
+		ConnectSubImageEvents (subimage);
+		break;
+	case CollectionChangedActionRemove:
+		// Disconnect events from the replaced item
+		subimage = args->GetOldItem ()->AsMultiScaleSubImage ();
+		DisconnectSubImageEvents (subimage);
+		break;
+	case CollectionChangedActionClearing:
+		// Disconnect events from all subitems
+		count = col->GetCount ();
+		for (int i = 0; i < count; i++) {
+			subimage = col->GetValueAt (i)->AsMultiScaleSubImage ();
+			DisconnectSubImageEvents (subimage);
+		}
+		break;
+	case CollectionChangedActionCleared:
+		// no-op
+		break;
+	}
+	
 	subimages_sorted = false;
 	Invalidate ();
 }

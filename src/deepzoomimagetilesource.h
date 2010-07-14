@@ -24,15 +24,8 @@
 
 namespace Moonlight {
 
-typedef void (* MultiScaleImageCallback) (MultiScaleImage *msi);
-
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
-	MultiScaleImageCallback parsed_callback;
-	MultiScaleImageCallback failed_callback;
-	MultiScaleImageCallback sourcechanged_callback;
-	MultiScaleImage *cb_userdata;
-	
 	Cancellable *get_resource_aborter;
 	bool is_collection;
 	bool downloaded;
@@ -78,23 +71,21 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
-	void XmlWrite (char* buffer, gint32 offset, gint32 n);
-
-	void set_callbacks (MultiScaleImageCallback parsed, MultiScaleImageCallback failed, MultiScaleImageCallback source_changed, MultiScaleImage *userdata)
-	{
-		parsed_callback = parsed;
-		failed_callback = failed;
-		sourcechanged_callback = source_changed;
-		cb_userdata = userdata;
-	}
-
+	void XmlWrite (char *buffer, gint32 offset, gint32 n);
+	void EndElement (void *info, const char *el);
+	
 	//
 	// Property Accessors
 	//
 	void SetUriSource (Uri *value);
 	Uri *GetUriSource ();
-
-	void EndElement (void *info, const char* el);
+	
+	//
+	// Events
+	//
+	const static int DownloaderCompletedEvent;
+	const static int DownloaderFailedEvent;
+	const static int UriSourceChangedEvent;
 };
 
 };

@@ -112,6 +112,9 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 {
 	if (!uri) {
 		g_warning ("Passing a null uri to Application::GetResource");
+		if (notify_cb)
+			notify_cb (NotifyFailed, NULL, user_data);
+		
 		return false;
 	}
 
@@ -164,14 +167,22 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	// FIXME: drt 171 and 173 expect this to fail simply because the uri
 	// begins with a '/', but other drts (like 238) depend on this
 	// working. I give up.
-	if (!uri->isAbsolute && uri->path && uri->path[0] == '/')
+	if (!uri->isAbsolute && uri->path && uri->path[0] == '/') {
+		if (notify_cb)
+			notify_cb (NotifyFailed, NULL, user_data);
+		
 		return false;
+	}
 #endif
 	
 	//no get_resource_cb or empty stream
 	HttpRequest *request;
-	if (!(request = GetDeployment ()->CreateHttpRequest (options)))
+	if (!(request = GetDeployment ()->CreateHttpRequest (options))) {
+		if (notify_cb)
+			notify_cb (NotifyFailed, NULL, user_data);
+		
 		return false;
+	}
 	
 	NotifyCtx *ctx = g_new (NotifyCtx, 1);
 	ctx->user_data = user_data;

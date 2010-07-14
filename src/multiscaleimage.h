@@ -60,13 +60,24 @@ class MultiScaleImage : public MediaBase {
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int InternalViewportWidthProperty;
 	
-	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void subdownloader_completed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void subdownloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
+	static void downloader_completed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void uri_source_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
 	static void fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void tile_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
+	void DisconnectSubImageEvents (MultiScaleSubImage *subimage);
+	void ConnectSubImageEvents (MultiScaleSubImage *subimage);
+	
+	void DisconnectSourceEvents (MultiScaleTileSource *source);
+	void ConnectSourceEvents (MultiScaleTileSource *source);
 	
 	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);
@@ -75,7 +86,7 @@ class MultiScaleImage : public MediaBase {
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);
 	
-	Point* GetInternalViewportOrigin ();
+	Point *GetInternalViewportOrigin ();
 	void SetInternalViewportOrigin (Point* p);
 
 	double GetInternalViewportWidth ();
@@ -125,7 +136,10 @@ class MultiScaleImage : public MediaBase {
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 
 	virtual bool CanFindElement () { return GetSource () != NULL; }
-
+	
+	void UriSourceChanged ();
+	void HandleDzParsed ();
+	
 	//
 	// Methods
 	//
@@ -172,14 +186,14 @@ class MultiScaleImage : public MediaBase {
 
 	bool GetIsDownloading ();
 
-	MultiScaleTileSource* GetSource ();
-	void SetSource (MultiScaleTileSource* source);
-
+	MultiScaleTileSource *GetSource ();
+	void SetSource (MultiScaleTileSource *source);
+	
 	bool GetUseSprings ();
 	void SetUseSprings (bool spring);
-
-	Point* GetViewportOrigin ();
-	void SetViewportOrigin (Point* p);
+	
+	Point *GetViewportOrigin ();
+	void SetViewportOrigin (Point *p);
 
 	double GetViewportWidth ();
 	void SetViewportWidth (double width);
@@ -203,10 +217,6 @@ class MultiScaleImage : public MediaBase {
 	void DownloadTile (Uri *tile, void *user_data);
 	bool CanDownloadMoreTiles ();
 	void StopDownloading ();
-	
-	void HandleDzParsed ();
-	
-	void OnSourcePropertyChanged ();
 	
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };

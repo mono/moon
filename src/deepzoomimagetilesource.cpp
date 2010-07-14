@@ -130,6 +130,9 @@ class DZParserInfo {
 			
 			g_ptr_array_free (subimages, true);
 		}
+		
+		g_free (server_format);
+		g_free (format);
 	}
 };
 
@@ -149,13 +152,10 @@ DeepZoomImageTileSource::Init ()
 
 	downloaded = false;
 	parsed = false;
-	format = g_strdup ("");
+	format = NULL;
 	server_format = NULL;
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
-	parsed_callback = NULL;
-	failed_callback = NULL;
-	sourcechanged_callback = NULL;
 	is_collection = false;
 	max_level = 0;
 	subimages = NULL;
@@ -219,7 +219,7 @@ DeepZoomImageTileSource::Abort ()
 bool
 DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 {
-	//check if there tile is listed in DisplayRects
+	// check if there tile is listed in DisplayRects
 	if (display_rects && display_rects->len > 0) {
 		int tile_width = GetTileWidth ();
 		DisplayRect *cur;
@@ -265,6 +265,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 			return false;
 		
 		image = g_strdup_printf ("%.*s_files/%d/%d_%d.%s", (int) (ext - filename), filename, level, x, y, format);
+		//printf ("%p requesting image %s\n", this, image);
 	}
 
 	Uri::Copy (baseUri, uri);
@@ -329,6 +330,7 @@ DeepZoomImageTileSource::Download ()
 		if (get_resource_aborter)
 			delete get_resource_aborter;
 		get_resource_aborter = new Cancellable ();
+		//printf ("Dzits %p fetching %s\n", this, uri->ToString ());
 		current->GetResource (GetResourceBase(), uri, resource_notify, dz_write, MediaPolicy, HttpRequest::DisableFileStorage, get_resource_aborter, this);
 	}
 }
@@ -369,7 +371,6 @@ DeepZoomImageTileSource::DownloaderComplete ()
 	SetTileHeight (info->tile_size);
 	format = g_strdup (info->format);
 	server_format = g_strdup (info->server_format);
-
 	parsed = true;
 
 	LOG_MSI ("Done parsing...\n");
@@ -378,29 +379,29 @@ DeepZoomImageTileSource::DownloaderComplete ()
 	parser = NULL;
 	delete info;
 	
-	if (parsed_callback)
-		parsed_callback (cb_userdata);
+	if (HasHandlers (DownloaderCompletedEvent))
+		Emit (DownloaderCompletedEvent);
 }
 
 void
 DeepZoomImageTileSource::DownloaderFailed ()
 {
 	LOG_MSI ("DZITS::dl failed\n");
-	if (failed_callback)
-		failed_callback (cb_userdata);
+	if (HasHandlers (DownloaderFailedEvent))
+		Emit (DownloaderFailedEvent);
 }
 
 void
 DeepZoomImageTileSource::UriSourceChanged ()
 {
-	parsed = false;
 	downloaded = false;
-	if (!nested) {
+	parsed = false;
+	
+	if (!nested)
 		Download ();
-	}	
-		
-	if (sourcechanged_callback)
-		sourcechanged_callback (cb_userdata);
+	
+	if (HasHandlers (UriSourceChangedEvent))
+		Emit (UriSourceChangedEvent);
 }
 
 void
@@ -493,7 +494,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 			}
 			
-			if (failed || parsed != DZParsedImage) {
+			if (failed || (parsed & DZParsedImage) != DZParsedImage) {
 				printf ("DeepZoom Image error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 				info->error = true;
 			}
@@ -530,7 +531,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 			}
 			
-			if (failed || parsed != DZParsedCollection) {
+			if (failed || (parsed & DZParsedCollection) != DZParsedCollection) {
 				printf ("DeepZoom Collection error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 				info->error = true;
 			}
@@ -561,7 +562,7 @@ start_element (void *data, const char *el, const char **attr)
 					}
 				}
 				
-				if (failed || parsed != DZParsedSize) {
+				if (failed || (parsed & DZParsedSize) != DZParsedSize) {
 					printf ("DeepZoom Image Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 				}
@@ -607,7 +608,7 @@ start_element (void *data, const char *el, const char **attr)
 				if (max_level < min_level)
 					failed = true;
 				
-				if (failed || parsed != DZParsedDisplayRect) {
+				if (failed || (parsed & DZParsedDisplayRect) != DZParsedDisplayRect) {
 					printf ("DeepZoom DisplayRect error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 					break;
@@ -745,7 +746,7 @@ start_element (void *data, const char *el, const char **attr)
 					}
 				}
 				
-				if (failed || parsed != DZParsedSize) {
+				if (failed || (parsed & DZParsedSize) != DZParsedSize) {
 					printf ("DeepZoom Subimage Size error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 				}
@@ -798,7 +799,7 @@ start_element (void *data, const char *el, const char **attr)
 						failed = true;
 				}
 				
-				if (failed || parsed != DZParsedViewport) {
+				if (failed || (parsed & DZParsedViewport) != DZParsedViewport) {
 					printf ("DeepZoom Viewport error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 					info->error = true;
 				}
@@ -839,8 +840,9 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 							       info->current_subimage->n);
 				subsource->SetImageWidth (info->current_subimage->width);
 				subsource->SetImageHeight (info->current_subimage->height);
-				subsource->server_format = info->server_format;
-				subsource->format = info->format;
+				subsource->server_format = g_strdup (info->server_format);
+				subsource->format = g_strdup (info->format);
+				
 				if (info->current_subimage->has_viewport) {
 					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
 					subi->SetViewportWidth (info->current_subimage->vp_w);
