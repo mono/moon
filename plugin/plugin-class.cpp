@@ -260,8 +260,12 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 	}
 	case Type::NPOBJ: {
 		NPObject *npobj = (NPObject *) v->AsNPObj ();
-		OBJECT_TO_NPVARIANT (npobj, *result);
-		MOON_NPN_RetainObject (npobj);
+		if (npobj == NULL) {
+			NULL_TO_NPVARIANT (*result);
+		} else {
+			OBJECT_TO_NPVARIANT (npobj, *result);
+			MOON_NPN_RetainObject (npobj);
+		}
 		break;
 	}
 	default:

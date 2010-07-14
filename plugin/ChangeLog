@@ -1,3 +1,8 @@
+2010-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: An NPObj null value is a null npvariant, not an object
+	npvariant with a null value. Fixes a crash in #970.2.
+
 2010-07-13  Andreia Gaita  <avidigal@novell.com>
 
 	Put all types inside a Moonlight namespace to avoid conflicts
