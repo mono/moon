@@ -41,6 +41,8 @@ G_END_DECLS
 #include <demangle.h>
 #endif
 
+using namespace Moonlight;
+
 #ifdef HAVE_UNWIND
 static char*
 get_method_name_from_ip (void *ip)

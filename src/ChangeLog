@@ -1,3 +1,13 @@
+2010-07-13  Andreia Gaita  <avidigal@novell.com>
+
+	* debug.cpp: include the Moonlight namespace, it's needed in
+	libunwind blocks
+
+2010-07-13  Andreia Gaita  <avidigal@novell.com>
+
+	Put all types inside a Moonlight namespace to avoid conflicts
+	with external libraries
+
 2010-07-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (HandleDzParsed): If width and height aren't
