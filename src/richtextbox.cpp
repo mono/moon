@@ -307,7 +307,10 @@ void
 RichTextBox::OnIsAttachedChanged (bool value)
 {
 	Control::OnIsAttachedChanged (value);
-	
+
+	// Manually propagate the state change to the blocks property because it's a dynamically
+	// provided value and not a local/autocreated value.
+	GetBlocks ()->SetIsAttached (value);
 	Surface *surface = GetDeployment ()->GetSurface ();
 	
 	if (value) {
