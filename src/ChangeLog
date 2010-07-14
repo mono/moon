@@ -1,5 +1,12 @@
 2010-07-14  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.cpp: Rearrange the order of things in
+	  UIElement::OnIsAttachedChanged so that we emit Unloaded
+	  events before propagating the change to the subtree. This
+	  fixes the order of event emission when unloading.
+
+2010-07-14  Alan McGovern  <amcgovern@novell.com>
+
 	* richtextbox.cpp: Propagate IsAttached through
 	  RichTextBlock::Blocks manually as it is a dynamically
 	  provided value (not a local or auto value) so the normal

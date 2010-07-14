@@ -127,9 +127,11 @@ UIElement::ClearWalkedForLoaded ()
 void
 UIElement::OnIsAttachedChanged (bool value)
 {
-	DependencyObject::OnIsAttachedChanged (value);
-
 	if (!value) {
+		CacheInvalidateHint ();
+		ClearForeachGeneration (UIElement::LoadedEvent);
+		ClearWalkedForLoaded ();
+
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
 		Surface *surface = GetDeployment ()->GetSurface ();
 		if (surface) {
@@ -138,13 +140,10 @@ UIElement::OnIsAttachedChanged (bool value)
 				surface->FocusElement (NULL);
 		}
 
-		CacheInvalidateHint ();
-		ClearForeachGeneration (UIElement::LoadedEvent);
-		ClearWalkedForLoaded ();
-
 		Emit (UIElement::UnloadedEvent);
 	}
 
+	DependencyObject::OnIsAttachedChanged (value);
 	if (subtree_object != NULL)
 		subtree_object->SetIsAttached (value);
 }
