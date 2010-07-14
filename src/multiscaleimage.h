@@ -60,6 +60,8 @@ class MultiScaleImage : public MediaBase {
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int InternalViewportWidthProperty;
 	
+	static void tile_layer_invalidated (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
 	static void subdownloader_completed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void subdownloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	

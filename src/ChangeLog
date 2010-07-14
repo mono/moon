@@ -1,5 +1,10 @@
 2010-07-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* tilesource.cpp (InvalidateTileLayer): Instead of calling a
+	callback function, emit an event.
+
+2010-07-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes toward getting drt 2004 to work (and likely a number of
 	others).
 

@@ -672,10 +672,13 @@ MultiScaleImage::StopDownloading ()
 	g_ptr_array_set_size (downloaders, 0);
 }
 
-static void
-invalidate_tile_layer (MultiScaleImage *msi, int level, int tilePositionX, int tilePositionY, int tileLayer)
+void
+MultiScaleImage::tile_layer_invalidated (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	msi->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
+	TileLayerInvalidatedEventArgs *args = (TileLayerInvalidatedEventArgs *) calldata;
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	
+	msi->InvalidateTileLayer (args->GetLevel (), args->GetTilePositionX (), args->GetTilePositionY (), args->GetTileLayer ());
 }
 
 void
@@ -693,7 +696,12 @@ MultiScaleImage::downloader_failed (EventObject *sender, EventArgs *calldata, gp
 void
 MultiScaleImage::DisconnectSourceEvents (MultiScaleTileSource *source)
 {
-	if (source && source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+	if (!source)
+		return;
+	
+	source->RemoveHandler (MultiScaleTileSource::TileLayerInvalidatedEvent, tile_layer_invalidated, this);
+	
+	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 		DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) source;
 		dzits->RemoveHandler (DeepZoomImageTileSource::DownloaderCompletedEvent, downloader_completed, this);
 		dzits->RemoveHandler (DeepZoomImageTileSource::DownloaderFailedEvent, downloader_failed, this);
@@ -704,7 +712,12 @@ MultiScaleImage::DisconnectSourceEvents (MultiScaleTileSource *source)
 void
 MultiScaleImage::ConnectSourceEvents (MultiScaleTileSource *source)
 {
-	if (source && source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+	if (!source)
+		return;
+	
+	source->AddHandler (MultiScaleTileSource::TileLayerInvalidatedEvent, tile_layer_invalidated, this);
+	
+	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 		DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) source;
 		dzits->AddHandler (DeepZoomImageTileSource::DownloaderCompletedEvent, downloader_completed, this);
 		dzits->AddHandler (DeepZoomImageTileSource::DownloaderFailedEvent, downloader_failed, this);
@@ -1368,10 +1381,6 @@ MultiScaleImage::UriSourceChanged ()
 	// Reset the subimages
 	GetSubImages()->Clear ();
 	
-	// register the callback for InvalidateTileLayers
-	if (source)
-		source->set_invalidate_tile_layer_func (invalidate_tile_layer, this);
-
 	Invalidate ();
 }
 

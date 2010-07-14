@@ -15,13 +15,30 @@
 #define __TILESOURCE_H__
 
 #include <stdio.h>
+
 #include "dependencyobject.h"
+#include "eventargs.h"
 
 namespace Moonlight {
 
 /* @CBindingRequisite */
 typedef bool (*get_image_uri_func) (int level, int posX, int posY, Uri *uri, void* user_data);
-typedef void (*invalidate_tile_layer_func) (MultiScaleImage *msi, int level, int tilePositionX, int tilePositionY, int tileLayer);
+
+class TileLayerInvalidatedEventArgs : public EventArgs {
+	int level, x, y, layer;
+	
+ protected:
+	virtual ~TileLayerInvalidatedEventArgs () {}
+	
+ public:
+	TileLayerInvalidatedEventArgs (int level, int x, int y, int layer);
+	
+	int GetLevel () { return level; }
+	
+	int GetTilePositionX () { return x; }
+	int GetTilePositionY () { return y; }
+	int GetTileLayer () { return layer; }
+};
 
 /* @Version=2,Namespace=System.Windows.Media */
 /* @CallInitialize */
@@ -39,12 +56,9 @@ class MultiScaleTileSource : public DependencyObject {
 	const static int TileOverlapProperty;
 	/* @PropertyType=TimeSpan,Version=2.0,DefaultValue=(gint64) TimeSpan_FromSecondsFloat (0.5)\,Type::TIMESPAN,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Protected,ManagedFieldAccess=Private */
 	const static int TileBlendTimeProperty;
-
+	
 	virtual ~MultiScaleTileSource () {}
-
-	invalidate_tile_layer_func invalidate_cb;
-	MultiScaleImage *invalidate_data;
-
+	
  public:
 	get_image_uri_func get_tile_func;
 
@@ -74,8 +88,11 @@ class MultiScaleTileSource : public DependencyObject {
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
-
-	void set_invalidate_tile_layer_func (invalidate_tile_layer_func func, MultiScaleImage *user_data);
+	
+	//
+	// Events
+	//
+	const static int TileLayerInvalidatedEvent;
 };
 
 };
