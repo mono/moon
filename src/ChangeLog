@@ -1,3 +1,7 @@
+2010-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml.cpp: Add a null-check to fix a crash in #873.
+
 2010-07-13  Andreia Gaita  <avidigal@novell.com>
 
 	* debug.cpp: include the Moonlight namespace, it's needed in
