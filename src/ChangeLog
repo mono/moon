@@ -1,5 +1,10 @@
 2010-07-15  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (PostRender):
+	* effect.h:
+	* effect.cpp: Add projection parameters to Effect::Composite
+	interface.
+
 	* effect.h:
 	* effect.cpp: Remove blend_enable argument from
 	DrawVertexBuffer function and remove unnecessary framebuffer

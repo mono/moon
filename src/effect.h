@@ -101,37 +101,36 @@ public:
 	//
 	virtual bool Composite (cairo_surface_t *dst,
 				cairo_surface_t *src,
-				const Rect      *bounds,
+				double          *matrix,
+				double          dstX,
+				double          dstY,
+				const Rect      *clip,
 				double          x,
-				double          y);
+				double          y,
+				double          width,
+				double          height);
 
 	//
 	// ClipAndComposite
 	//
 	virtual bool ClipAndComposite (cairo_t         *cr,
 				       cairo_surface_t *src,
+				       double          *matrix,
 				       double          x,
-				       double          y);
+				       double          y,
+				       double          width,
+				       double          height);
 
 	static void Initialize ();
 	static void Shutdown ();
 
 	static Effect *GetProjectionEffect ();
-	static void SetShaderMatrix (cairo_surface_t *surface,
-				     double          *matrix);
-	static void SetShaderOffsetX (cairo_surface_t *surface,
-				      double          x);
-	static void SetShaderOffsetY (cairo_surface_t *surface,
-				      double          y);
 
 protected:
 	virtual ~Effect () {}
 
 	pipe_resource_t *GetShaderTexture (cairo_surface_t *surface);
 	pipe_surface_t  *GetShaderSurface (cairo_surface_t *surface);
-	double          *GetShaderMatrix (cairo_surface_t *surface);
-	double          GetShaderOffsetX (cairo_surface_t *surface);
-	double          GetShaderOffsetY (cairo_surface_t *surface);
 	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
 					     double          *matrix,
 					     double          x,
@@ -220,17 +219,25 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			const Rect      *bounds,
+			double          *matrix,
+			double          dstX,
+			double          dstY,
+			const Rect      *clip,
 			double          x,
-			double          y);
+			double          y,
+			double          width,
+			double          height);
 
 	//
 	// ClipAndComposite
 	//
 	bool ClipAndComposite (cairo_t         *cr,
 			       cairo_surface_t *src,
+			       double          *matrix,
 			       double          x,
-			       double          y);
+			       double          y,
+			       double          width,
+			       double          height);
 
 	//
 	// Shader
@@ -303,17 +310,25 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			const Rect      *bounds,
+			double          *matrix,
+			double          dstX,
+			double          dstY,
+			const Rect      *clip,
 			double          x,
-			double          y);
+			double          y,
+			double          width,
+			double          height);
 
 	//
 	// ClipAndComposite
 	//
 	bool ClipAndComposite (cairo_t         *cr,
 			       cairo_surface_t *src,
+			       double          *matrix,
 			       double          x,
-			       double          y);
+			       double          y,
+			       double          width,
+			       double          height);
 
 	//
 	// Shader
@@ -444,9 +459,14 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			const Rect      *bounds,
+			double          *matrix,
+			double          dstX,
+			double          dstY,
+			const Rect      *clip,
 			double          x,
-			double          y);
+			double          y,
+			double          width,
+			double          height);
 
 	//
 	// Shader
@@ -480,9 +500,14 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			const Rect      *bounds,
+			double          *matrix,
+			double          dstX,
+			double          dstY,
+			const Rect      *clip,
 			double          x,
-			double          y);
+			double          y,
+			double          width,
+			double          height);
 
 	//
 	// Shader

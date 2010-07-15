@@ -1449,7 +1449,10 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			r.Draw (cr);
 			cairo_clip (cr);
 
-			if (!effect->ClipAndComposite (cr, src, r.x, r.y))
+			if (!effect->ClipAndComposite (cr, src,
+						       NULL,
+						       r.x, r.y,
+						       r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply pixel effect.");
 
 			cairo_restore (cr);
@@ -1483,11 +1486,10 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			GetGlobalBounds ().RoundOut ().Draw (cr);
 			cairo_clip (cr);
 
-			Effect::SetShaderMatrix (src, render_projection);
-			Effect::SetShaderOffsetX (src, r.x);
-			Effect::SetShaderOffsetY (src, r.y);
-
-			if (!effect->ClipAndComposite (cr, src, r.x, r.y))
+			if (!effect->ClipAndComposite (cr, src,
+						       render_projection,
+						       r.x, r.y,
+						       r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
 
 			cairo_restore (cr);
