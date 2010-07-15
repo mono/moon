@@ -99,8 +99,8 @@ public:
 	//
 	// Composite
 	//
-	virtual bool Composite (cairo_surface_t *dst,
-				cairo_surface_t *src,
+	virtual bool Composite (pipe_surface_t  *dst,
+				pipe_resource_t *src,
 				double          *matrix,
 				double          dstX,
 				double          dstY,
@@ -217,8 +217,8 @@ public:
 	//
 	// Composite
 	//
-	bool Composite (cairo_surface_t *dst,
-			cairo_surface_t *src,
+	bool Composite (pipe_surface_t  *dst,
+			pipe_resource_t *src,
 			double          *matrix,
 			double          dstX,
 			double          dstY,
@@ -308,8 +308,8 @@ public:
 	//
 	// Composite
 	//
-	bool Composite (cairo_surface_t *dst,
-			cairo_surface_t *src,
+	bool Composite (pipe_surface_t  *dst,
+			pipe_resource_t *src,
 			double          *matrix,
 			double          dstX,
 			double          dstY,
@@ -457,8 +457,8 @@ public:
 	//
 	// Composite
 	//
-	bool Composite (cairo_surface_t *dst,
-			cairo_surface_t *src,
+	bool Composite (pipe_surface_t  *dst,
+			pipe_resource_t *src,
 			double          *matrix,
 			double          dstX,
 			double          dstY,
@@ -498,8 +498,8 @@ public:
 	//
 	// Composite
 	//
-	bool Composite (cairo_surface_t *dst,
-			cairo_surface_t *src,
+	bool Composite (pipe_surface_t  *dst,
+			pipe_resource_t *src,
 			double          *matrix,
 			double          dstX,
 			double          dstY,

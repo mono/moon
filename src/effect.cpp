@@ -1413,8 +1413,8 @@ Effect::DrawVertexBuffer (struct pipe_surface  *dst,
 }
 
 bool
-Effect::Composite (cairo_surface_t *dst,
-		   cairo_surface_t *src,
+Effect::Composite (pipe_surface_t  *dst,
+		   pipe_resource_t *src,
 		   double          *matrix,
 		   double          dstX,
 		   double          dstY,
@@ -1437,11 +1437,13 @@ Effect::ClipAndComposite (cairo_t         *cr,
 			  double          width,
 			  double          height)
 {
+	struct pipe_surface    *surface;
+	struct pipe_resource   *texture;
 	cairo_rectangle_list_t *clip;
 	cairo_surface_t        *dst;
 	Rect                   bounds = Rect (-32768, -32768, 65536, 65536);
 	double                 dstX, dstY;
-	bool                   status;
+	bool                   status = 0;
 
 	clip = cairo_copy_clip_rectangle_list (cr);
 
@@ -1470,8 +1472,16 @@ Effect::ClipAndComposite (cairo_t         *cr,
 	bounds.y += dstY;
 	bounds = bounds.Intersection (Rect (0, 0, 65535, 65535));
 
-	status = Composite (dst, src, matrix, dstX, dstY, &bounds,
-			    x, y, width, height);
+	MaybeUpdateShader ();
+
+	surface = GetShaderSurface (dst);
+	texture = GetShaderTexture (src);
+
+	if (surface && texture)
+		status = Composite (surface, texture, matrix,
+				    dstX, dstY,
+				    &bounds,
+				    x, y, width, height);
 
 	if (clip) {
 		cairo_pattern_t *data = cairo_pop_group (cr);
@@ -1572,8 +1582,8 @@ BlurEffect::Padding ()
 }
 
 bool
-BlurEffect::Composite (cairo_surface_t *dst,
-		       cairo_surface_t *src,
+BlurEffect::Composite (pipe_surface_t  *dst,
+		       pipe_resource_t *src,
 		       double          *matrix,
 		       double          dstX,
 		       double          dstY,
@@ -1587,32 +1597,18 @@ BlurEffect::Composite (cairo_surface_t *dst,
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
 	cairo_surface_t      *intermediate;
-	struct pipe_resource *texture, *intermediate_texture;
-	struct pipe_surface  *surface, *intermediate_surface;
+	struct pipe_resource *intermediate_texture;
+	struct pipe_surface  *intermediate_surface;
 	struct pipe_resource *vertices, *intermediate_vertices;
-	double               s;
-	double               t;
-
-	MaybeUpdateFilter ();
-	MaybeUpdateShader ();
+	double               s = src->width0;
+	double               t = src->height0;
 
 	if (!fs)
 		return 0;
 
-	surface = GetShaderSurface (dst);
-	if (!surface)
-		return 0;
-
-	texture = GetShaderTexture (src);
-	if (!texture)
-		return 0;
-
-	s = texture->width0;
-	t = texture->height0;
-
 	intermediate = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-						   texture->width0,
-						   texture->height0);
+						   src->width0,
+						   src->height0);
 	if (!intermediate)
 		return 0;
 
@@ -1637,7 +1633,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	intermediate_vertices = CreateVertexBuffer (texture, NULL,
+	intermediate_vertices = CreateVertexBuffer (src, NULL,
 						    0.0, 0.0,
 						    s, t,
 						    s, t);
@@ -1666,7 +1662,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler(ctx->cso, 0, &sampler);
 	cso_single_sampler_done(ctx->cso);
 
-	st_set_fragment_sampler_texture (ctx, 0, texture);
+	st_set_fragment_sampler_texture (ctx, 0, src);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1700,7 +1696,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, dstX, dstY, clip);
+	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1969,8 +1965,8 @@ DropShadowEffect::Padding ()
 }
 
 bool
-DropShadowEffect::Composite (cairo_surface_t *dst,
-			     cairo_surface_t *src,
+DropShadowEffect::Composite (pipe_surface_t  *dst,
+			     pipe_resource_t *src,
 			     double          *matrix,
 			     double          dstX,
 			     double          dstY,
@@ -1984,32 +1980,18 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
 	cairo_surface_t      *intermediate;
-	struct pipe_resource *texture, *intermediate_texture;
-	struct pipe_surface  *surface, *intermediate_surface;
+	struct pipe_resource *intermediate_texture;
+	struct pipe_surface  *intermediate_surface;
 	struct pipe_resource *vertices, *intermediate_vertices;
-	double               s;
-	double               t;
-
-	MaybeUpdateFilter ();
-	MaybeUpdateShader ();
+	double               s = src->width0;
+	double               t = src->height0;
 
 	if (!vert_fs || !horz_fs)
 		return 0;
 
-	surface = GetShaderSurface (dst);
-	if (!surface)
-		return 0;
-
-	texture = GetShaderTexture (src);
-	if (!texture)
-		return 0;
-
-	s = texture->width0;
-	t = texture->height0;
-
 	intermediate = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-						   texture->width0,
-						   texture->height0);
+						   src->width0,
+						   src->height0);
 	if (!intermediate)
 		return 0;
 
@@ -2034,7 +2016,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	intermediate_vertices = CreateVertexBuffer (texture, NULL,
+	intermediate_vertices = CreateVertexBuffer (src, NULL,
 						    0.0, 0.0,
 						    s, t,
 						    s, t);
@@ -2064,7 +2046,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler (ctx->cso, 1, &sampler);
 	cso_single_sampler_done (ctx->cso);
 
-	st_set_fragment_sampler_texture (ctx, 0, texture);
+	st_set_fragment_sampler_texture (ctx, 0, src);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2105,7 +2087,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, dstX, dstY, clip);
+	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2920,8 +2902,8 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 }
 
 bool
-ShaderEffect::Composite (cairo_surface_t *dst,
-			 cairo_surface_t *src,
+ShaderEffect::Composite (pipe_surface_t  *dst,
+			 pipe_resource_t *src,
 			 double          *matrix,
 			 double          dstX,
 			 double          dstY,
@@ -2935,24 +2917,14 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
 	cairo_surface_t      *input[PIPE_MAX_SAMPLERS];
-	struct pipe_resource *texture;
-	struct pipe_surface  *surface;
 	struct pipe_resource *vertices;
 	struct pipe_resource *constants;
 	unsigned int         i;
 	Value                *ddxDdyReg;
-
-	MaybeUpdateShader ();
+	double               s = src->width0;
+	double               t = src->height0;
 
 	if (!fs)
-		return 0;
-
-	surface = GetShaderSurface (dst);
-	if (!surface)
-		return 0;
-
-	texture = GetShaderTexture (src);
-	if (!texture)
 		return 0;
 
 	ddxDdyReg = GetValue (ShaderEffect::DdxUvDdyUvRegisterIndexProperty);
@@ -2965,10 +2937,10 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		if (!constants)
 			return 0;
 
-		v[reg * 4 + 0] = 1.f / texture->width0;
+		v[reg * 4 + 0] = 1.f / s;
 		v[reg * 4 + 1] = 0.f;
 		v[reg * 4 + 2] = 0.f;
-		v[reg * 4 + 3] = 1.f / texture->height0;
+		v[reg * 4 + 3] = 1.f / t;
 
 		pipe_buffer_unmap (ctx->pipe, constants, transfer);
 	}
@@ -2978,7 +2950,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 			return 0;
 	}
 
-	vertices = CreateVertexBuffer (texture, matrix, x, y, width, height);
+	vertices = CreateVertexBuffer (src, matrix, x, y, width, height);
 	if (!vertices)
 		return 0;
 
@@ -3007,13 +2979,12 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		struct pipe_resource *sampler_texture = NULL;
 
 		if (sampler_input[i]) {
-			input[i] = cairo_surface_create_similar (src,
-								 CAIRO_CONTENT_COLOR_ALPHA,
-								 texture->width0,
-								 texture->height0);
+			input[i] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+							       src->width0,
+							       src->height0);
 			if (input[i]) {
 				cairo_t *cr = cairo_create (input[i]);
-				Rect area = Rect (0.0, 0.0, texture->width0, texture->height0);
+				Rect area = Rect (0.0, 0.0, s, t);
 
 				sampler_input[i]->SetupBrush (cr, area);
 				cairo_paint (cr);
@@ -3024,12 +2995,12 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		}
 		else {
 			input[i] = NULL;
-			sampler_texture = texture;
+			sampler_texture = src;
 		}
 
 		if (!sampler_texture) {
 			g_warning ("Composite: failed to generate input texture for sampler register %d", i);
-			sampler_texture = texture;
+			sampler_texture = src;
 		}
 
 		st_set_fragment_sampler_texture (ctx, i, sampler_texture);
@@ -3049,7 +3020,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, dstX, dstY, clip);
+	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -3976,8 +3947,8 @@ ProjectionEffect::~ProjectionEffect ()
 }
 
 bool
-ProjectionEffect::Composite (cairo_surface_t *dst,
-			     cairo_surface_t *src,
+ProjectionEffect::Composite (pipe_surface_t  *dst,
+			     pipe_resource_t *src,
 			     double          *matrix,
 			     double          dstX,
 			     double          dstY,
@@ -3991,21 +3962,9 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
-	struct pipe_resource *texture;
-	struct pipe_surface  *surface;
 	struct pipe_resource *vertices;
 
-	MaybeUpdateShader ();
-
-	surface = GetShaderSurface (dst);
-	if (!surface)
-		return 0;
-
-	texture = GetShaderTexture (src);
-	if (!texture)
-		return 0;
-
-	vertices = CreateVertexBuffer (texture, matrix, x, y, width, height);
+	vertices = CreateVertexBuffer (src, matrix, x, y, width, height);
 	if (!vertices)
 		return 0;
 
@@ -4021,7 +3980,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler (ctx->cso, 0, &sampler);
 	cso_single_sampler_done (ctx->cso);
 
-	st_set_fragment_sampler_texture (ctx, 0, texture);
+	st_set_fragment_sampler_texture (ctx, 0, src);
 
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
@@ -4033,10 +3992,9 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, dstX, dstY, clip);
+	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
-
 	pipe_resource_reference (&vertices, NULL);
 
 	return 1;
