@@ -15,6 +15,7 @@ const int height = 256;
 int
 main (int argc, char **argv)
 {
+	cairo_t *cr;
 	cairo_surface_t *dst, *src;
 	CustomEffect *effect;
 	PixelShader *shader;
@@ -39,6 +40,7 @@ main (int argc, char **argv)
 	src = cairo_surface_create_similar (dst,
 					    CAIRO_CONTENT_COLOR_ALPHA,
 					    width, height);
+        cr = cairo_create (dst);
 
 	effect = new CustomEffect ();
 	shader = new PixelShader ();
@@ -46,11 +48,12 @@ main (int argc, char **argv)
 	shader->SetTokensFromPath (argv[1]);
 	effect->SetPixelShader (shader);
 
-	status = effect->Composite (dst, src, &bounds, 0, 0);
+	status = effect->Render (cr, src, NULL, 0, 0, width, height);
 
 	effect->unref ();
 	shader->unref ();
 
+        cairo_destroy (cr);
 	cairo_surface_destroy (src);
 	cairo_surface_destroy (dst);
 	g_free (data);
