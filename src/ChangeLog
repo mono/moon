@@ -1,5 +1,11 @@
 2010-07-15  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp: If we're already loaded when we change
+	  the datacontext source, emit a changed event. Fixes some
+	  regressions in the drts.
+
+2010-07-15  Alan McGovern  <amcgovern@novell.com>
+
 	* fontmanager.cpp: Fixes a crasher regression in 962
 
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>

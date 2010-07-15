@@ -159,8 +159,11 @@ void FrameworkElement::SetVisualParent (UIElement *visual_parent)
 	UIElement::SetVisualParent (visual_parent);
 
 	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
-	if (!logical_parent && (!visual_parent || visual_parent->Is (Type::FRAMEWORKELEMENT)))
+	if (!logical_parent && (!visual_parent || visual_parent->Is (Type::FRAMEWORKELEMENT))) {
 		provider->SetDataSource ((FrameworkElement *) visual_parent);
+		if (IsLoaded ())
+			provider->EmitChanged ();
+	}
 }
 
 void
@@ -179,6 +182,8 @@ FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 		provider->SetDataSource ((FrameworkElement *)GetVisualParent ());
 	else
 		provider->SetDataSource (NULL);
+	if (IsLoaded ())
+		provider->EmitChanged ();
 }
 
 void
