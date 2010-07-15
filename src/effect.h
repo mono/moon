@@ -153,7 +153,13 @@ protected:
 	}
 
 	void DrawVertexBuffer (pipe_surface_t  *surface,
-			       pipe_resource_t *vertices);
+			       pipe_resource_t *vertices,
+			       const Rect      *clip);
+	void DrawVertexBuffer (pipe_surface_t  *surface,
+			       pipe_resource_t *vertices)
+	{
+		DrawVertexBuffer (surface, vertices, NULL);
+	}
 
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();

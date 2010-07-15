@@ -1406,13 +1406,32 @@ Effect::CreateVertexBuffer (struct pipe_resource *texture,
 
 void
 Effect::DrawVertexBuffer (struct pipe_surface  *surface,
-			  struct pipe_resource *vertices)
+			  struct pipe_resource *vertices,
+			  const Rect           *clip)
 {
 
 #ifdef USE_GALLIUM
 	struct st_context             *ctx = st_context;
 	struct pipe_fence_handle      *fence = NULL;
 	struct pipe_framebuffer_state fb;
+	struct pipe_rasterizer_state  rasterizer;
+
+	memset (&rasterizer, 0, sizeof (rasterizer));
+	rasterizer.cull_face = PIPE_FACE_NONE;
+	rasterizer.gl_rasterization_rules = 1;
+	if (clip) {
+		struct pipe_scissor_state scissor;
+
+		scissor.minx = clip->x;
+		scissor.miny = clip->y;
+		scissor.maxx = clip->x + clip->width;
+		scissor.maxy = clip->y + clip->height;
+
+		(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
+
+		rasterizer.scissor = 1;
+	}
+	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
 	fb.width = surface->width;
@@ -1684,12 +1703,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
-	struct pipe_rasterizer_state rasterizer;
-	memset (&rasterizer, 0, sizeof (rasterizer));
-	rasterizer.cull_face = PIPE_FACE_NONE;
-	rasterizer.gl_rasterization_rules = 1;
-	cso_set_rasterizer (ctx->cso, &rasterizer);
-
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -1718,19 +1731,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
-	struct pipe_scissor_state scissor;
-	scissor.minx = bounds->x;
-	scissor.miny = bounds->y;
-	scissor.maxx = bounds->x + bounds->width;
-	scissor.maxy = bounds->y + bounds->height;
-	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
-
-	memset (&rasterizer, 0, sizeof (rasterizer));
-	rasterizer.cull_face = PIPE_FACE_NONE;
-	rasterizer.scissor = 1;
-	rasterizer.gl_rasterization_rules = 1;
-	cso_set_rasterizer (ctx->cso, &rasterizer);
-
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
 	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
@@ -1740,7 +1740,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices);
+	DrawVertexBuffer (surface, vertices, bounds);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2098,12 +2098,6 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
-	struct pipe_rasterizer_state rasterizer;
-	memset (&rasterizer, 0, sizeof (rasterizer));
-	rasterizer.cull_face = PIPE_FACE_NONE;
-	rasterizer.gl_rasterization_rules = 1;
-	cso_set_rasterizer (ctx->cso, &rasterizer);
-
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -2138,19 +2132,6 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
-	struct pipe_scissor_state scissor;
-	scissor.minx = bounds->x;
-	scissor.miny = bounds->y;
-	scissor.maxx = bounds->x + bounds->width;
-	scissor.maxy = bounds->y + bounds->height;
-	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
-
-	memset (&rasterizer, 0, sizeof (rasterizer));
-	rasterizer.cull_face = PIPE_FACE_NONE;
-	rasterizer.scissor = 1;
-	rasterizer.gl_rasterization_rules = 1;
-	cso_set_rasterizer (ctx->cso, &rasterizer);
-
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
 	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
@@ -2160,7 +2141,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices);
+	DrawVertexBuffer (surface, vertices, bounds);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -3102,20 +3083,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
-	struct pipe_scissor_state scissor;
-	scissor.minx = bounds->x;
-	scissor.miny = bounds->y;
-	scissor.maxx = bounds->x + bounds->width;
-	scissor.maxy = bounds->y + bounds->height;
-	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
-
-	struct pipe_rasterizer_state rasterizer;
-	memset (&rasterizer, 0, sizeof (rasterizer));
-	rasterizer.cull_face = PIPE_FACE_NONE;
-	rasterizer.scissor = 1;
-	rasterizer.gl_rasterization_rules = 1;
-	cso_set_rasterizer (ctx->cso, &rasterizer);
-
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -3126,7 +3093,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices);
+	DrawVertexBuffer (surface, vertices, bounds);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -4116,20 +4083,6 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	st_set_fragment_sampler_texture (ctx, 0, texture);
 
-	struct pipe_scissor_state scissor;
-	scissor.minx = bounds->x;
-	scissor.miny = bounds->y;
-	scissor.maxx = bounds->x + bounds->width;
-	scissor.maxy = bounds->y + bounds->height;
-	(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
-
-	struct pipe_rasterizer_state rasterizer;
-	memset (&rasterizer, 0, sizeof (rasterizer));
-	rasterizer.cull_face = PIPE_FACE_NONE;
-	rasterizer.scissor = 1;
-	rasterizer.gl_rasterization_rules = 1;
-	cso_set_rasterizer (ctx->cso, &rasterizer);
-
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -4140,7 +4093,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices);
+	DrawVertexBuffer (surface, vertices, bounds);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 

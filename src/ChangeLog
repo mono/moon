@@ -4,6 +4,8 @@
 	* effect.cpp: Remove blend_enable argument from
 	DrawVertexBuffer function and remove unnecessary framebuffer
 	state changes.
+	Move scissor and rasterizer state changes into
+        DrawVertexBuffer.
 
 	* effect.cpp: Major cleanup by using GL rasterization rules
 	and adding CreateVertexBuffer.
