@@ -45,7 +45,7 @@ namespace Microsoft.Silverlight.Testing
             bool isLoaded = false;
             element.Loaded += delegate { isLoaded = true; };
             TestPanel.Children.Add(element);
-            EnqueueConditional(() => isLoaded);
+            EnqueueConditional(() => isLoaded, "#Waiting for element to load");
 
             // Perform the test actions
             foreach (Action action in actions)

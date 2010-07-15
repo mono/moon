@@ -1,3 +1,7 @@
+2010-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* PresentationTest.cs: Add a handy message to this assert.
+
 2010-05-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* UnitTestHarness.csproj: Upgrade to VS 2010.
