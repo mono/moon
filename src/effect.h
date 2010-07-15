@@ -152,9 +152,9 @@ protected:
 					   1.0, 1.0);
 	}
 
-	void DrawVertices (pipe_surface_t  *surface,
-			   pipe_resource_t *vertices,
-			   int             blend_enable);
+	void DrawVertexBuffer (pipe_surface_t  *surface,
+			       pipe_resource_t *vertices,
+			       int             blend_enable);
 
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();

@@ -3,6 +3,7 @@
 	* effect.h:
 	* effect.cpp: Major cleanup by using GL rasterization rules
 	and adding CreateVertexBuffer.
+	Rename DrawVertices to DrawVertexBuffer.
 
 	* effect.cpp (Composite): Use VIEWPORT_SCALE.
 
