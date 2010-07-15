@@ -1,6 +1,9 @@
 2010-07-15  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (PostRender):
 	* effect.h:
+	* effect.cpp: Rename Effect::ClipAndComposite to Effect::Render.
+
 	* effect.cpp: Composite now takes a pipe_surface_t and
 	pipe_resource_t instead of two cairo surfaces.
 	Call MaybeUpdateShader outside Composite.

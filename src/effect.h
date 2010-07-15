@@ -111,15 +111,15 @@ public:
 				double          height);
 
 	//
-	// ClipAndComposite
+	// Render
 	//
-	virtual bool ClipAndComposite (cairo_t         *cr,
-				       cairo_surface_t *src,
-				       double          *matrix,
-				       double          x,
-				       double          y,
-				       double          width,
-				       double          height);
+	virtual bool Render (cairo_t         *cr,
+			     cairo_surface_t *src,
+			     double          *matrix,
+			     double          x,
+			     double          y,
+			     double          width,
+			     double          height);
 
 	static void Initialize ();
 	static void Shutdown ();
@@ -229,15 +229,15 @@ public:
 			double          height);
 
 	//
-	// ClipAndComposite
+	// Render
 	//
-	bool ClipAndComposite (cairo_t         *cr,
-			       cairo_surface_t *src,
-			       double          *matrix,
-			       double          x,
-			       double          y,
-			       double          width,
-			       double          height);
+	bool Render (cairo_t         *cr,
+		     cairo_surface_t *src,
+		     double          *matrix,
+		     double          x,
+		     double          y,
+		     double          width,
+		     double          height);
 
 	//
 	// Shader
@@ -320,15 +320,15 @@ public:
 			double          height);
 
 	//
-	// ClipAndComposite
+	// Render
 	//
-	bool ClipAndComposite (cairo_t         *cr,
-			       cairo_surface_t *src,
-			       double          *matrix,
-			       double          x,
-			       double          y,
-			       double          width,
-			       double          height);
+	bool Render (cairo_t         *cr,
+		     cairo_surface_t *src,
+		     double          *matrix,
+		     double          x,
+		     double          y,
+		     double          width,
+		     double          height);
 
 	//
 	// Shader

@@ -1429,13 +1429,13 @@ Effect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-Effect::ClipAndComposite (cairo_t         *cr,
-			  cairo_surface_t *src,
-			  double          *matrix,
-			  double          x,
-			  double          y,
-			  double          width,
-			  double          height)
+Effect::Render (cairo_t         *cr,
+		cairo_surface_t *src,
+		double          *matrix,
+		double          x,
+		double          y,
+		double          width,
+		double          height)
 {
 	struct pipe_surface    *surface;
 	struct pipe_resource   *texture;
@@ -1718,13 +1718,13 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-BlurEffect::ClipAndComposite (cairo_t         *cr,
-			      cairo_surface_t *src,
-			      double          *matrix,
-			      double          x,
-			      double          y,
-			      double          width,
-			      double          height)
+BlurEffect::Render (cairo_t         *cr,
+		    cairo_surface_t *src,
+		    double          *matrix,
+		    double          x,
+		    double          y,
+		    double          width,
+		    double          height)
 {
 	MaybeUpdateFilter ();
 
@@ -1747,7 +1747,7 @@ BlurEffect::ClipAndComposite (cairo_t         *cr,
 		return 1;
 	}
 
-	return Effect::ClipAndComposite (cr, src, matrix, x, y, width, height);
+	return Effect::Render (cr, src, matrix, x, y, width, height);
 }
 
 void
@@ -2110,13 +2110,13 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-DropShadowEffect::ClipAndComposite (cairo_t         *cr,
-				    cairo_surface_t *src,
-				    double          *matrix,
-				    double          x,
-				    double          y,
-				    double          width,
-				    double          height)
+DropShadowEffect::Render (cairo_t         *cr,
+			  cairo_surface_t *src,
+			  double          *matrix,
+			  double          x,
+			  double          y,
+			  double          width,
+			  double          height)
 {
 	MaybeUpdateFilter ();
 
@@ -2155,7 +2155,7 @@ DropShadowEffect::ClipAndComposite (cairo_t         *cr,
 		return 1;
 	}
 
-	return Effect::ClipAndComposite (cr, src, matrix, x, y, width, height);
+	return Effect::Render (cr, src, matrix, x, y, width, height);
 }
 
 void
