@@ -791,7 +791,7 @@ bool
 GlyphTypefaceCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	bool res = Collection::AddedToCollection (value, error);
-	if (res && !Value::IsNull (value))
+	if (res && !Value::IsNull (value) && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 		value->AsDependencyObject ()->SetIsAttached (IsAttached ());
 
 	return res;
@@ -801,21 +801,20 @@ void
 GlyphTypefaceCollection::RemovedFromCollection (Value *value)
 {
 	Collection::RemovedFromCollection (value);
-	if (!Value::IsNull (value))
+	if (!Value::IsNull (value) && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 		value->AsDependencyObject ()->SetIsAttached (false);
 }
 
 void
 GlyphTypefaceCollection::OnIsAttachedChanged (bool attached)
 {
-	DependencyObject *obj;
 	Value *value;
 	Collection::OnIsAttachedChanged (value);
 
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
-		obj = value->AsDependencyObject ();
-		obj->SetIsAttached (attached);
+		if (!Value::IsNull (value) && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
+			value->AsDependencyObject ()->SetIsAttached (attached);
 	}
 }
 
