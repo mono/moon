@@ -1,3 +1,8 @@
+2010-07-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebHeaderCollectionTest.cs: Use IEnumerable in a test
+	case to ensure it works properly (it did not before r160387)
+
 2010-07-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/LoadedTest.cs:

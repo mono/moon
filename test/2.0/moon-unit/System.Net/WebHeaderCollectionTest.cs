@@ -338,8 +338,7 @@ namespace MoonTest.System.Net {
 					whc [HttpRequestHeaderToString (hrh).ToUpper ()] = hrh.ToString ().ToUpper ();
 			}
 			Assert.AreEqual (41, whc.Count, "Count");
-			string [] keys = whc.AllKeys;
-			foreach (string key in keys) {
+			foreach (string key in whc) {
 				// some names are equals to Enum.ToString
 				if (whc [key] == key)
 					continue;

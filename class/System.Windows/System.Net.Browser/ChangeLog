@@ -1,3 +1,8 @@
+2010-07-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Custom headers cannot be used with 
+	browser	stack so we move to whitelisting.
+
 2010-07-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* PolicyBasedHttpWebRequest.cs: Special case for Proxy-Authorization.

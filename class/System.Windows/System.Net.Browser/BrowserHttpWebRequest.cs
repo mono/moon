@@ -112,21 +112,59 @@ namespace System.Net.Browser {
 			}
 		}
 
-		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires", "Content-Type" };
-
 		protected override void CheckProtocolViolation ()
 		{
 			if (String.Compare (Method, "GET", StringComparison.OrdinalIgnoreCase) != 0)
 				return;
 
-			if (Headers.ContainsKey ("Cache-Control"))
-				throw new NotSupportedException ();
-
-			// most headers are checked when set, but some are checked much later
-			foreach (string header in bad_get_headers) {
-				// case insensitive check to internal Headers dictionary
-				if (Headers.ContainsKey (header))
+			foreach (string header in Headers) {
+				switch (header.ToLowerInvariant ()) {
+				case "content-encoding":
+				case "content-language":
+				case "content-md5":
+				case "expires":
+				case "content-type":
 					throw new ProtocolViolationException ();
+				case "connection":
+				case "date":
+				case "keep-alive":
+				case "pragma":
+				case "trailer":
+				case "transfer-encoding":
+				case "upgrade":
+				case "via":
+				case "warning":
+				case "allow":
+				case "content-length":
+				case "content-location":
+				case "content-range":
+				case "last-modified":
+				case "accept":
+				case "accept-charset":
+				case "accept-encoding":
+				case "accept-language":
+				case "authorization":
+				case "cookie":
+				case "expect":
+				case "from":
+				case "host":
+				case "if-match":
+				case "if-modified-since":
+				case "if-none-match":
+				case "if-range":
+				case "if-unmodified-since":
+				case "max-forwards":
+				case "proxy-authorization":
+				case "referer":
+				case "range":
+				case "te":
+				case "translate":
+				case "user-agent":
+					break;
+				case "cache-control":
+				default:
+					throw new NotSupportedException ();
+				}
 			}
 		}
 	}
