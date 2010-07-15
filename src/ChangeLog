@@ -1,3 +1,8 @@
+2010-07-15  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Add missing const modifier.
+
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* glyphs.cpp: Add a null check. Fixes a crash with #txd74.

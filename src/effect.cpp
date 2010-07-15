@@ -1441,7 +1441,7 @@ Effect::DrawVertices (struct pipe_surface  *surface,
 bool
 Effect::Composite (cairo_surface_t *dst,
 		   cairo_surface_t *src,
-		   Rect            *bounds,
+		   const Rect      *bounds,
 		   double          x,
 		   double          y)
 {
@@ -1591,7 +1591,7 @@ BlurEffect::Padding ()
 bool
 BlurEffect::Composite (cairo_surface_t *dst,
 		       cairo_surface_t *src,
-		       Rect            *bounds,
+		       const Rect      *bounds,
 		       double          x,
 		       double          y)
 {
@@ -2065,7 +2065,7 @@ DropShadowEffect::Padding ()
 bool
 DropShadowEffect::Composite (cairo_surface_t *dst,
 			     cairo_surface_t *src,
-			     Rect            *bounds,
+			     const Rect      *bounds,
 			     double          x,
 			     double          y)
 {
@@ -3093,7 +3093,7 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 bool
 ShaderEffect::Composite (cairo_surface_t *dst,
 			 cairo_surface_t *src,
-			 Rect            *bounds,
+			 const Rect      *bounds,
 			 double          x,
 			 double          y)
 {
@@ -4200,7 +4200,7 @@ ProjectionEffect::~ProjectionEffect ()
 bool
 ProjectionEffect::Composite (cairo_surface_t *dst,
 			     cairo_surface_t *src,
-			     Rect            *bounds,
+			     const Rect      *bounds,
 			     double          x,
 			     double          y)
 {

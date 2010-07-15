@@ -101,7 +101,7 @@ public:
 	//
 	virtual bool Composite (cairo_surface_t *dst,
 				cairo_surface_t *src,
-				Rect            *bounds,
+				const Rect      *bounds,
 				double          x,
 				double          y);
 
@@ -199,7 +199,7 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			Rect            *bounds,
+			const Rect      *bounds,
 			double          x,
 			double          y);
 
@@ -282,7 +282,7 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			Rect            *bounds,
+			const Rect      *bounds,
 			double          x,
 			double          y);
 
@@ -423,7 +423,7 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			Rect            *bounds,
+			const Rect      *bounds,
 			double          x,
 			double          y);
 
@@ -459,7 +459,7 @@ public:
 	//
 	bool Composite (cairo_surface_t *dst,
 			cairo_surface_t *src,
-			Rect            *bounds,
+			const Rect      *bounds,
 			double          x,
 			double          y);
 
