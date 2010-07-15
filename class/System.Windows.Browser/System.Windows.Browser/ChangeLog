@@ -1,3 +1,7 @@
+2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlPage.cs: Add lots of main thread checks. Fixes a crash in #984.
+
 2010-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ScriptObject.cs: Make sure we don't leak exceptions to native code. The

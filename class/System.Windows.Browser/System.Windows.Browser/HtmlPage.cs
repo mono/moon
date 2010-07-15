@@ -80,6 +80,7 @@ namespace System.Windows.Browser {
 		
 		public static HtmlDocument Document {
 			get {
+				CheckThread ();
 				CheckHtmlAccess();
 
 				if (document == null)
@@ -97,8 +98,15 @@ namespace System.Windows.Browser {
 				throw new ArgumentException (parameterName);
 		}
 
+		static void CheckThread ()
+		{
+			if (!System.Windows.Threading.Dispatcher.Main.CheckAccess ())
+				throw new InvalidOperationException ("This operation can only occur on the UI Thread.");
+		}
+
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
+			CheckThread ();
 			// no call to CheckHtmlAccess(); -- see DRT364
 			CheckName (scriptKey, "scriptKey");
 			if (instance == null)
@@ -119,6 +127,7 @@ namespace System.Windows.Browser {
 
 		public static void RegisterCreateableType (string scriptAlias, Type type)
 		{
+			CheckThread ();
 			// no call to CheckHtmlAccess(); -- see DRT365
 			CheckName (scriptAlias, "scriptAlias");
 			if (type == null)
@@ -135,6 +144,7 @@ namespace System.Windows.Browser {
 
 		public static void UnregisterCreateableType (string scriptAlias)
 		{
+			CheckThread ();
 			CheckName (scriptAlias, "scriptAlias");
 
 			if (!ScriptableTypes.ContainsKey (scriptAlias))
@@ -145,6 +155,7 @@ namespace System.Windows.Browser {
 
 		public static HtmlWindow Window {
 			get {
+				CheckThread ();
 				CheckHtmlAccess();
 				return UnsafeWindow;
 			}
@@ -153,6 +164,7 @@ namespace System.Windows.Browser {
 		// some features, like PopupWindow, works (within some limits) without EnableHtmlAccess
 		static HtmlWindow UnsafeWindow {
 			get {
+				CheckThread ();
 				if (window == null)
 					window = ScriptObject.GetPropertyInternal<HtmlWindow> (IntPtr.Zero, "window");
 
@@ -162,6 +174,7 @@ namespace System.Windows.Browser {
 
 		public static HtmlElement Plugin {
 			get {
+				CheckThread ();
 				CheckHtmlAccess();
 
 				if (plugin == null)
@@ -199,6 +212,8 @@ namespace System.Windows.Browser {
 			// http://msdn.microsoft.com/en-us/library/system.windows.browser.htmlpage.popupwindow(VS.95).aspx
 			// and if JavaScript's window.open is restricted then we should return null (not the HtmlWindow)
 			// On FF this looks controlled by privacy.popups.policy and privacy.popups.disable_from_plugins
+
+			CheckThread ();
 
 			if (navigateToUri == null)
 				throw new ArgumentNullException ("navigateToUri");
