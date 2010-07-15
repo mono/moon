@@ -152,13 +152,17 @@ protected:
 					   1.0, 1.0);
 	}
 
-	void DrawVertexBuffer (pipe_surface_t  *surface,
+	void DrawVertexBuffer (pipe_surface_t  *dst,
 			       pipe_resource_t *vertices,
+			       double          dstX,
+			       double          dstY,
 			       const Rect      *clip);
-	void DrawVertexBuffer (pipe_surface_t  *surface,
-			       pipe_resource_t *vertices)
+	void DrawVertexBuffer (pipe_surface_t  *dst,
+			       pipe_resource_t *vertices,
+			       double          dstX,
+			       double          dstY)
 	{
-		DrawVertexBuffer (surface, vertices, NULL);
+		DrawVertexBuffer (dst, vertices, dstX, dstY, NULL);
 	}
 
 	virtual void UpdateShader ();

@@ -1405,8 +1405,10 @@ Effect::CreateVertexBuffer (struct pipe_resource *texture,
 }
 
 void
-Effect::DrawVertexBuffer (struct pipe_surface  *surface,
+Effect::DrawVertexBuffer (struct pipe_surface  *dst,
 			  struct pipe_resource *vertices,
+			  double               dstX,
+			  double               dstY,
 			  const Rect           *clip)
 {
 
@@ -1415,6 +1417,18 @@ Effect::DrawVertexBuffer (struct pipe_surface  *surface,
 	struct pipe_fence_handle      *fence = NULL;
 	struct pipe_framebuffer_state fb;
 	struct pipe_rasterizer_state  rasterizer;
+	struct pipe_viewport_state    viewport;
+
+	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
+	viewport.scale[0] = VIEWPORT_SCALE;
+	viewport.scale[1] = VIEWPORT_SCALE;
+	viewport.scale[2] = 1.0;
+	viewport.scale[3] = 1.0;
+	viewport.translate[0] = dstX;
+	viewport.translate[1] = dstY;
+	viewport.translate[2] = 0.0;
+	viewport.translate[3] = 0.0;
+	cso_set_viewport (ctx->cso, &viewport);
 
 	memset (&rasterizer, 0, sizeof (rasterizer));
 	rasterizer.cull_face = PIPE_FACE_NONE;
@@ -1434,10 +1448,10 @@ Effect::DrawVertexBuffer (struct pipe_surface  *surface,
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
-	fb.width = surface->width;
-	fb.height = surface->height;
+	fb.width = dst->width;
+	fb.height = dst->height;
 	fb.nr_cbufs = 1;
-	fb.cbufs[0] = surface;
+	fb.cbufs[0] = dst;
 	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
 	cso_set_framebuffer (ctx->cso, &fb);
 
@@ -1691,18 +1705,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, horz_pass_constant_buffer);
 
-	struct pipe_viewport_state viewport;
-	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0;
-	viewport.scale[3] = 1.0;
-	viewport.translate[0] = 0.0;
-	viewport.translate[1] = 0.0;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
-
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -1713,23 +1715,13 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (intermediate_surface, vertices);
+	DrawVertexBuffer (intermediate_surface, vertices, 0.0, 0.0);
 
 	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
 					0, vert_pass_constant_buffer);
-
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0;
-	viewport.scale[3] = 1.0;
-	viewport.translate[0] = x;
-	viewport.translate[1] = y;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
 
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -1740,7 +1732,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, bounds);
+	DrawVertexBuffer (surface, vertices, x, y, bounds);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2086,18 +2078,6 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, horz_pass_constant_buffer);
 
-	struct pipe_viewport_state viewport;
-	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0;
-	viewport.scale[3] = 1.0;
-	viewport.translate[0] = 0.0;
-	viewport.translate[1] = 0.0;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
-
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -2108,7 +2088,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (intermediate_surface, vertices);
+	DrawVertexBuffer (intermediate_surface, vertices, 0.0, 0.0);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
 		pipe_resource_reference (&vertices, NULL);
@@ -2122,16 +2102,6 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, vert_pass_constant_buffer);
 
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0;
-	viewport.scale[3] = 1.0;
-	viewport.translate[0] = x;
-	viewport.translate[1] = y;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
-
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
 	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
@@ -2141,7 +2111,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, bounds);
+	DrawVertexBuffer (surface, vertices, x, y, bounds);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -3071,18 +3041,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, constants);
 
-	struct pipe_viewport_state viewport;
-	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0;
-	viewport.scale[3] = 1.0;
-	viewport.translate[0] = x;
-	viewport.translate[1] = y;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
-
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
 	blend.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -3093,7 +3051,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, bounds);
+	DrawVertexBuffer (surface, vertices, x, y, bounds);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -4057,18 +4015,6 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	if (!vertices)
 		return 0;
 
-	struct pipe_viewport_state viewport;
-	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0;
-	viewport.scale[3] = 1.0;
-	viewport.translate[0] = x - srcX;
-	viewport.translate[1] = y - srcY;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
-
 	struct pipe_sampler_state sampler;
 	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
 	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
@@ -4093,7 +4039,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
-	DrawVertexBuffer (surface, vertices, bounds);
+	DrawVertexBuffer (surface, vertices, x - srcX, y - srcY, bounds);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
