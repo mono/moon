@@ -1,5 +1,10 @@
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* eventargs.cpp: MouseEventArgs ctors: add null checks. Fixes a crash ith
+	#XamlReflection.2.
+
+2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* application.cpp: Make gdb's life easier by not having multiple
 	c (even static) methods with the same name.
 

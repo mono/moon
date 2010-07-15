@@ -2563,7 +2563,7 @@ class Generator {
 							type.Interfaces.Count,
 							interfaces,
 							type.DefaultCtorVisible || type.IsValueType || type.IsEnum ? "true" : "false",
-							(type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL",
+							(type.C_Constructor != null && type.GenerateCBindingCtor && (all.GetDependencyObjects ().Contains (type) || type.Name == "DependencyObject")) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL",
 							type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
 							)
 					 );

@@ -246,13 +246,21 @@ LogReadyRoutedEventArgs::LogReadyRoutedEventArgs ()
 MouseEventArgs::MouseEventArgs (MoonMouseEvent *event)
 	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {
-	this->event = (MoonMouseEvent*)event->Clone();
+	if (event != NULL) {
+		this->event = (MoonMouseEvent*)event->Clone();
+	} else {
+		this->event = NULL;
+	}
 }
 
 MouseEventArgs::MouseEventArgs (Type::Kind kind, MoonMouseEvent *event)
 	: RoutedEventArgs (kind)
 {
-	this->event = (MoonMouseEvent*)event->Clone();
+	if (event != NULL) {
+		this->event = (MoonMouseEvent *) event->Clone();
+	} else {
+		this->event = NULL;
+	}
 }
 
 MouseEventArgs::MouseEventArgs ()
