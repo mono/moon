@@ -1384,7 +1384,6 @@ Effect::GetShaderVertexBuffer (float           x1,
 void
 Effect::DrawVertices (struct pipe_surface  *surface,
 		      struct pipe_resource *vertices,
-		      int                  nattrib,
 		      int                  blend_enable)
 {
 
@@ -1422,7 +1421,7 @@ Effect::DrawVertices (struct pipe_surface  *surface,
 	util_draw_vertex_buffer (ctx->pipe, vertices, 0,
 				 PIPE_PRIM_TRIANGLE_FAN,
 				 4,
-				 1 + nattrib);
+				 2);
 	
 	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
 	if (fence) {
@@ -1766,7 +1765,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	rasterizer.cull_face = PIPE_FACE_NONE;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
+	DrawVertices (intermediate_surface, intermediate_vertices, 0);
 
 	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
 
@@ -1796,7 +1795,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	rasterizer.scissor = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, vertices, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2241,7 +2240,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	rasterizer.cull_face = PIPE_FACE_NONE;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
+	DrawVertices (intermediate_surface, intermediate_vertices, 0);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
 		pipe_resource_reference (&intermediate_vertices, NULL);
@@ -2278,7 +2277,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	rasterizer.scissor = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, vertices, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -3271,7 +3270,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	rasterizer.scissor = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, vertices, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -4344,7 +4343,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	rasterizer.scissor = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (surface, vertices, 1, 1);
+	DrawVertices (surface, vertices, 1);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 

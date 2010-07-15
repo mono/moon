@@ -141,7 +141,6 @@ protected:
 						pipe_transfer_t **ptr_transfer);
 	void DrawVertices (pipe_surface_t  *surface,
 			   pipe_resource_t *vertices,
-			   int             nattrib,
 			   int             blend_enable);
 
 	virtual void UpdateShader ();
