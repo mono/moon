@@ -1450,6 +1450,11 @@ MultiScaleImage::OnCollectionChanged (Collection *col, CollectionChangedEventArg
 	MultiScaleSubImage *subimage;
 	int count;
 	
+	if (!PropertyHasValueNoAutoCreate (MultiScaleImage::SubImagesProperty, col)) {
+		MediaBase::OnCollectionChanged (col, args);
+		return;
+	}
+	
 	switch (args->GetChangedAction ()) {
 	case CollectionChangedActionReplace:
 		// Disconnect events from the replaced item

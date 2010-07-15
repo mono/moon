@@ -1,3 +1,11 @@
+2010-07-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (OnCollectionChanged): If the collection
+	that changed was not the subimages property, then chain up
+	immediately. Fixes some bugs introduced yesterday and should also
+	help with performance since we don't need to re-sort the subimages
+	unnecessarily.
+
 2010-07-15  David Reveman  <davidr@novell.com>
 
 	* effect.h: Composite and UpdateShader should be protected.
