@@ -746,11 +746,13 @@ Surface::AttachLayer (UIElement *layer)
 		layers->Insert (0, Value(layer));
 	else {
 		layers->Add (Value (layer));
-		layer->SetIsAttached (true);
 	}
 
 	layer->FullInvalidate (true);
 	layer->InvalidateMeasure ();
+	bool delay;
+	layer->SetIsAttached (true);
+	layer->WalkTreeForLoadedHandlers (&delay, true, false);
 	Deployment::GetCurrent()->EmitLoaded ();
 }
 

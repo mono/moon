@@ -1,3 +1,8 @@
+2010-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: Make sure we always walk new layers for loaded
+	  handlers to ensure our warning popups vanish.
+
 2010-07-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (OnCollectionChanged): If the collection
