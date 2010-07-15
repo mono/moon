@@ -4257,8 +4257,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_viewport_state viewport;
 	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = 65536.0;
-	viewport.scale[1] = 65536.0;
+	viewport.scale[0] = VIEWPORT_SCALE;
+	viewport.scale[1] = VIEWPORT_SCALE;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
 	viewport.translate[0] = x - srcX;
@@ -4267,11 +4267,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
 
-	double xnorm = 1.0 / viewport.scale[0];
-	double ynorm = 1.0 / viewport.scale[1];
-
-	*verts++ = p1[0] * xnorm;
-	*verts++ = p1[1] * ynorm;
+	*verts++ = p1[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p1[1] * VIEWPORT_SCALE_RECIPROCAL;
 	*verts++ = p1[2];
 	*verts++ = p1[3];
 
@@ -4280,8 +4277,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	*verts++ = 0.f;
 	*verts++ = 0.f;
 
-	*verts++ = p2[0] * xnorm;
-	*verts++ = p2[1] * ynorm;
+	*verts++ = p2[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p2[1] * VIEWPORT_SCALE_RECIPROCAL;
 	*verts++ = p2[2];
 	*verts++ = p2[3];
 
@@ -4290,8 +4287,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	*verts++ = 0.f;
 	*verts++ = 0.f;
 
-	*verts++ = p3[0] * xnorm;
-	*verts++ = p3[1] * ynorm;
+	*verts++ = p3[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p3[1] * VIEWPORT_SCALE_RECIPROCAL;
 	*verts++ = p3[2];
 	*verts++ = p3[3];
 
@@ -4300,8 +4297,8 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	*verts++ = 0.f;
 	*verts++ = 0.f;
 
-	*verts++ = p4[0] * xnorm;
-	*verts++ = p4[1] * ynorm;
+	*verts++ = p4[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p4[1] * VIEWPORT_SCALE_RECIPROCAL;
 	*verts++ = p4[2];
 	*verts++ = p4[3];
 

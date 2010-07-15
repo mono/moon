@@ -1,5 +1,7 @@
 2010-07-15  David Reveman  <davidr@novell.com>
 
+	* effect.cpp (Composite): Use VIEWPORT_SCALE.
+
 	* projection.h:
 	* projection.cpp: Move VIEWPORT_SCALE into projection.h.
 
