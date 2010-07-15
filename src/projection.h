@@ -17,6 +17,9 @@
 #include "enums.h"
 #include "dependencyobject.h"
 
+#define VIEWPORT_SCALE            (65536.0)
+#define VIEWPORT_SCALE_RECIPROCAL (1.0 / VIEWPORT_SCALE)
+
 namespace Moonlight {
 
 /* @Namespace=None */ // The managed Matrix3D is a struct

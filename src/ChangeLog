@@ -1,5 +1,8 @@
 2010-07-15  David Reveman  <davidr@novell.com>
 
+	* projection.h:
+	* projection.cpp: Move VIEWPORT_SCALE into projection.h.
+
 	* effect.h:
 	* effect.cpp: Add missing const modifier.
 	Remove nattrib argument from DrawVertices.

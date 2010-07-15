@@ -155,9 +155,6 @@ clipmask (const double *clip)
 
 #define MAX_CLIPPED_VERTICES ((2 * 6) + 1)
 
-#define VIEWPORT_SCALE            (65536.0)
-#define VIEWPORT_SCALE_RECIPROCAL (1.0 / VIEWPORT_SCALE)
-
 static Rect
 ClipToBounds (double   *p1,
 	      double   *p2,
