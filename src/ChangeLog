@@ -1,3 +1,7 @@
+2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* glyphs.cpp: Add a null check. Fixes a crash with #txd74.
+
 2010-07-15  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: Ensure that we only emit loaded events for the

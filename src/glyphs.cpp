@@ -781,7 +781,11 @@ Glyphs::SetFontSource (ManagedStreamCallbacks *stream)
 	
 	if (stream) {
 		resource = manager->AddResource (stream);
-		font = TextFont::Load (resource->GetId (), 0, size, simulate);
+		if (resource) {
+			font = TextFont::Load (resource->GetId (), 0, size, simulate);
+		} else {
+			font = NULL;
+		}
 		delete resource;
 	} else {
 		font = NULL;
