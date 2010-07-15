@@ -1,5 +1,7 @@
 2010-07-15  David Reveman  <davidr@novell.com>
 
+	* effect.h: Composite and UpdateShader should be protected.
+
 	* uielement.cpp (PostRender):
 	* effect.h:
 	* effect.cpp: Rename Effect::ClipAndComposite to Effect::Render.

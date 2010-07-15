@@ -97,20 +97,6 @@ public:
 	virtual Thickness Padding () { return Thickness (); }
 
 	//
-	// Composite
-	//
-	virtual bool Composite (pipe_surface_t  *dst,
-				pipe_resource_t *src,
-				double          *matrix,
-				double          dstX,
-				double          dstY,
-				const Rect      *clip,
-				double          x,
-				double          y,
-				double          width,
-				double          height);
-
-	//
 	// Render
 	//
 	virtual bool Render (cairo_t         *cr,
@@ -164,6 +150,17 @@ protected:
 		DrawVertexBuffer (dst, vertices, dstX, dstY, NULL);
 	}
 
+	virtual bool Composite (pipe_surface_t  *dst,
+				pipe_resource_t *src,
+				double          *matrix,
+				double          dstX,
+				double          dstY,
+				const Rect      *clip,
+				double          x,
+				double          y,
+				double          width,
+				double          height);
+
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
 
@@ -215,8 +212,21 @@ public:
 	Thickness Padding ();
 
 	//
-	// Composite
+	// Render
 	//
+	bool Render (cairo_t         *cr,
+		     cairo_surface_t *src,
+		     double          *matrix,
+		     double          x,
+		     double          y,
+		     double          width,
+		     double          height);
+
+protected:
+	virtual ~BlurEffect ();
+	void Clear ();
+	void MaybeUpdateFilter ();
+
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
 			double          *matrix,
@@ -228,26 +238,7 @@ public:
 			double          width,
 			double          height);
 
-	//
-	// Render
-	//
-	bool Render (cairo_t         *cr,
-		     cairo_surface_t *src,
-		     double          *matrix,
-		     double          x,
-		     double          y,
-		     double          width,
-		     double          height);
-
-	//
-	// Shader
-	//
 	void UpdateShader ();
-
-protected:
-	virtual ~BlurEffect ();
-	void Clear ();
-	void MaybeUpdateFilter ();
 
 	void *fs;
 
@@ -306,8 +297,21 @@ public:
 	Thickness Padding ();
 
 	//
-	// Composite
+	// Render
 	//
+	bool Render (cairo_t         *cr,
+		     cairo_surface_t *src,
+		     double          *matrix,
+		     double          x,
+		     double          y,
+		     double          width,
+		     double          height);
+
+protected:
+	virtual ~DropShadowEffect ();
+	void Clear ();
+	void MaybeUpdateFilter ();
+
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
 			double          *matrix,
@@ -319,26 +323,7 @@ public:
 			double          width,
 			double          height);
 
-	//
-	// Render
-	//
-	bool Render (cairo_t         *cr,
-		     cairo_surface_t *src,
-		     double          *matrix,
-		     double          x,
-		     double          y,
-		     double          width,
-		     double          height);
-
-	//
-	// Shader
-	//
 	void UpdateShader ();
-
-protected:
-	virtual ~DropShadowEffect ();
-	void Clear ();
-	void MaybeUpdateFilter ();
 
 	void *horz_fs;
 	void *vert_fs;
@@ -454,9 +439,15 @@ public:
 	//
 	Thickness Padding ();
 
-	//
-	// Composite
-	//
+	void ShaderError (const char *format, ...);
+
+protected:
+	virtual ~ShaderEffect () { Clear (); }
+	void Clear ();
+
+	pipe_resource_t *GetShaderConstantBuffer (float           **ptr,
+						  pipe_transfer_t **ptr_transfer);
+
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
 			double          *matrix,
@@ -468,19 +459,8 @@ public:
 			double          width,
 			double          height);
 
-	//
-	// Shader
-	//
 	void UpdateShader ();
 
-	void ShaderError (const char *format, ...);
-
-protected:
-	virtual ~ShaderEffect () { Clear (); }
-	void Clear ();
-
-	pipe_resource_t *GetShaderConstantBuffer (float           **ptr,
-						  pipe_transfer_t **ptr_transfer);
 
 	pipe_resource_t *constant_buffer;
 	Brush *sampler_input[MAX_SAMPLERS];
@@ -495,9 +475,9 @@ class ProjectionEffect : public Effect {
 public:
 	ProjectionEffect ();
 
-	//
-	// Composite
-	//
+protected:
+	virtual ~ProjectionEffect ();
+
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
 			double          *matrix,
@@ -509,13 +489,7 @@ public:
 			double          width,
 			double          height);
 
-	//
-	// Shader
-	//
 	void UpdateShader ();
-
-protected:
-	virtual ~ProjectionEffect ();
 };
 
 };
