@@ -687,7 +687,7 @@ UIElement::ElementAdded (UIElement *item)
 		item->WalkTreeForLoadedHandlers (&post, true, false);
 
 		if (post)
-			Deployment::GetCurrent()->PostLoaded ();
+			GetDeployment ()->EmitLoaded ();
 	}
 
 	UpdateBounds (true);
@@ -829,8 +829,8 @@ int
 UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	int rv = DependencyObject::AddHandler (event_id, handler, data, data_dtor);
-	if (event_id == UIElement::LoadedEvent) {
-		ClearWalkedForLoaded ();
+	if (IsLoaded () && event_id == UIElement::LoadedEvent) {
+		GetDeployment ()->AddAllLoadedHandlers (this, true);// (this, FindHandlerToken (UIElement::LoadedEvent, handler, data));
 	}
 	return rv;
 }
@@ -871,99 +871,30 @@ int walk_count = 0;
 void
 UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool force_walk_up)
 {
-	List *walk_list = new List();
-	List *subtree_list = new List ();
-
 	bool post_loaded = false;
-	Deployment *deployment = GetDeployment ();
-
-	DeepTreeWalker *walker = new DeepTreeWalker (this);
+	VisualTreeWalker walker (this);
 
 	// we need to make sure to apply the default style to all
 	// controls in the subtree
-	while (UIElement *element = (UIElement*)walker->Step ()) {
-#if WALK_METRICS
-		walk_count ++;
-#endif
+	while (UIElement *element = (UIElement*)walker.Step ())
+		element->WalkTreeForLoadedHandlers (post, only_unemitted, force_walk_up);
 
-		if (element->HasBeenWalkedForLoaded ()) {
-			walker->SkipBranch ();
-			continue;
-		}
+	if (Is(Type::CONTROL)) {
+		Control *control = (Control*)this;
+		control->ApplyDefaultStyle ();
 
-		if (element->Is(Type::CONTROL)) {
-			Control *control = (Control*)element;
-			control->ApplyDefaultStyle ();
-
-			if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
-			    && control->GetTemplate())
-				post_loaded = true; //XXX do we need this? control->ReadLocalValue (Control::TemplateProperty) == NULL;
-		}
-
-		if (element->HasHandlers (UIElement::LoadedEvent)) {
-			post_loaded = true;
-			subtree_list->Prepend (new UIElementNode (element));
-		}
-		element->SetWalkedForLoaded ();
+		if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
+		    && control->GetTemplate())
+			post_loaded = true; //XXX do we need this? control->ReadLocalValue (Control::TemplateProperty) == NULL;
 	}
 
-	if (force_walk_up || !post_loaded || HasHandlers (UIElement::LoadedEvent)) {
-		// we need to walk back up to the root to collect all loaded events
-		UIElement *parent = this;
-		while (parent->GetVisualParent())
-			parent = parent->GetVisualParent();
-		delete walker;
-		walker = new DeepTreeWalker (parent, Logical/*Reverse*/);
-
-		while (UIElement *element = (UIElement*)walker->Step ()) {
-#if WALK_METRICS
-			walk_count ++;
-#endif
-
-			if (element == this) {
-				// we already walked this, so add our subtree list here.
-				walk_list->Prepend (subtree_list);
-				subtree_list->Clear (false);
-				walker->SkipBranch ();
-			}
-			else if (element->HasBeenWalkedForLoaded ()) {
-				walker->SkipBranch ();
-			}
-			else {
-				walk_list->Prepend (new UIElementNode (element));
-				element->SetWalkedForLoaded ();
-			}
-		}
-
-		// if we didn't add the subtree's loaded handlers
-		// (because somewhere up above the subtree we skipped
-		// the branch) add it here.
-		if (walk_list->IsEmpty ()) {
-			walk_list->Prepend (subtree_list);
-			subtree_list->Clear (false);
-		}
-	}
-	else {
-		// otherwise we only copy the events from the subtree
-		walk_list->Prepend (subtree_list);
-		subtree_list->Clear (false);
-	}
-
-	while (UIElementNode *ui = (UIElementNode*)walk_list->First ()) {
-		// remove it from the walk list
-		walk_list->Unlink (ui);
-
-		deployment->AddAllLoadedHandlers (ui->uielement, only_unemitted);
-
-		delete ui;
+	if (HasHandlers (UIElement::LoadedEvent)) {
+		post_loaded = true;
+		GetDeployment ()->AddAllLoadedHandlers (this, only_unemitted);
 	}
 
 	if (post)
-		*post = post_loaded;
-
-	delete walker;
-	delete walk_list;
-	delete subtree_list;
+		*post = *post || post_loaded;
 }
 
 

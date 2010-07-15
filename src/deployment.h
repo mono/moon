@@ -330,14 +330,11 @@ public:
 	void DestroyManagedXamlLoader (gpointer xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
 
-	void PostLoaded ();
 	void EmitLoaded ();
 	void AddAllLoadedHandlers (UIElement *el, bool only_unemitted);
 	void RemoveAllLoadedHandlers (UIElement *el);
 	void AddLoadedHandler (UIElement *el, int token);
 	void RemoveLoadedHandler (UIElement *el, int token);
-
-	static void emit_delayed_loaded (EventObject *data);
 
 	static void add_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);
 	static void remove_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);

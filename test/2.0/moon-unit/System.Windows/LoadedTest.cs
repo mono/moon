@@ -382,7 +382,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("we don't emit Loaded events in insertion order")]
 		public void ForceEventEmission ()
 		{
 			// If we add a control which does *not* have a loaded handler
@@ -393,7 +392,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("we don't emit Loaded events in insertion order")]
 		public void ForceEventEmission2 ()
 		{
 			// If we add a control which *does* have a loaded handler

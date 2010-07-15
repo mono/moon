@@ -234,9 +234,7 @@ Control::DoApplyTemplateWithError (MoonError *error)
 		bool post = false;
 
 		((UIElement*)root)->WalkTreeForLoadedHandlers (&post, true, true);
-
-		if (post)
-			Deployment::GetCurrent()->PostLoaded ();
+		GetDeployment ()->EmitLoaded ();
 	}
 	
 	root->unref ();

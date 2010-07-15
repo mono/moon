@@ -1,5 +1,26 @@
 2010-07-15  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.cpp: Ensure that we only emit loaded events for the
+	  root element after we emit the loaded event for the surface.
+
+	* uielement.cpp: Rewrite how we add loaded handlers so that
+	  when a subtree is added to the live tree, we walk down it
+	  and add the loaded handlers in the correct order. If an
+	  element is already in the live tree, just add the new
+	  handler to the loaded list directly so that we never have to
+	  walk up the tree. Fixes some more loaded corner cases.
+
+	* deployment.h:
+	* deployment.cpp: Change the code which emits the Loaded event
+	  asynchronously to just use EmitAsync. It fixes some corner
+	  cases where we'd end up invoking handlers which should not
+	  be invoked til later.
+
+	* control.cpp: Always emit loaded when the template is
+	  applied.
+
+2010-07-15  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.cpp: If we're already loaded when we change
 	  the datacontext source, emit a changed event. Fixes some
 	  regressions in the drts.

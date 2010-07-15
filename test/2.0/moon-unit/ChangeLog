@@ -1,3 +1,9 @@
+2010-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/LoadedTest.cs:
+	* System.Windows/FrameworkElementTest.cs: These tests pass
+	  now.
+
 2010-07-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.ComponentModel/DesignerPropertiesTest.cs: Add test case

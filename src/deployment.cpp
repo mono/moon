@@ -1344,29 +1344,10 @@ Deployment::RemoveLoadedHandler (UIElement *el, int token)
 }
 
 void
-Deployment::emit_delayed_loaded (EventObject *data)
-{
-	Deployment *deployment = (Deployment*)data;
-	deployment->EmitLoaded ();
-}
-
-void
-Deployment::PostLoaded ()
-{
- 	if (pending_loaded)
- 		return;
-	GetSurface()->GetTimeManager()->AddTickCall (emit_delayed_loaded, this);
-	pending_loaded = true;
-}
-
-void
 Deployment::EmitLoaded ()
 {
-	if (pending_loaded) {
-		GetSurface()->GetTimeManager()->RemoveTickCall (emit_delayed_loaded, this);
-		pending_loaded = false;
-	}
-	Emit (Deployment::LoadedEvent, NULL, true);
+	if (GetSurface ()->IsLoaded ())
+		EmitAsync (Deployment::LoadedEvent, NULL, true);
 }
 
 void

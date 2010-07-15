@@ -666,7 +666,6 @@ Surface::Attach (UIElement *element)
 	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
 
 	AttachLayer (toplevel);
-
 	ticked_after_attach = false;
 	time_manager->RemoveTickCall (tick_after_attach_reached, this);
 	time_manager->AddTickCall (tick_after_attach_reached, this);
@@ -689,6 +688,10 @@ Surface::tick_after_attach_reached (EventObject *data)
 
 	surface->ticked_after_attach = true;
 	surface->Emit (Surface::LoadEvent);
+	surface->toplevel->SetIsAttached (true);
+	bool delay;
+	surface->toplevel->WalkTreeForLoadedHandlers (&delay, true, false);
+	Deployment::GetCurrent()->EmitLoaded ();
 }
 
 void
@@ -741,14 +744,14 @@ Surface::AttachLayer (UIElement *layer)
 {
 	if (layer == toplevel)
 		layers->Insert (0, Value(layer));
-	else
+	else {
 		layers->Add (Value (layer));
+		layer->SetIsAttached (true);
+	}
 
-	layer->SetIsAttached (true);
 	layer->FullInvalidate (true);
 	layer->InvalidateMeasure ();
-	layer->WalkTreeForLoadedHandlers (NULL, false, false);
-	Deployment::GetCurrent()->PostLoaded ();
+	Deployment::GetCurrent()->EmitLoaded ();
 }
 
 void

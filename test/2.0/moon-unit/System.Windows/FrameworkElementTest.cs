@@ -560,7 +560,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Loaded_styledChildOfNonStyledParent_nonStyledSiblingAfter ()
 		{
 			Canvas c = new Canvas ();
@@ -597,7 +596,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Loaded_styledChildOfNonStyledParent_nonStyledSiblingBefore ()
 		{
 			Canvas c = new Canvas ();
