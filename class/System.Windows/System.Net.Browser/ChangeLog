@@ -1,3 +1,9 @@
+2010-07-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* PolicyBasedHttpWebRequest.cs: Throw a SecurityException (instead
+	of a WebException) if a resource is not found using HTTPS. Fix 
+	DRT #3002
+
 2010-07-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Custom headers cannot be used with 

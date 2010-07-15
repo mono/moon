@@ -232,7 +232,10 @@ namespace System.Net.Browser {
 					// policy file could be missing, but then it means no policy
 					if (!IsDownloadingPolicy ()) {
 						async_result.Response = wres;
-						async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.Success, wres);
+						if (wres.ResponseUri.Scheme == "https")
+							async_result.Exception = new SecurityException ();
+						else
+							async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.Success, wres);
 						async_result.SetComplete ();
 					} else {
 						async_result.SetComplete ();
