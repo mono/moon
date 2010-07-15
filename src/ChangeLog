@@ -1,5 +1,9 @@
 2010-07-15  David Reveman  <davidr@novell.com>
 
+	* effect.h:
+	* effect.cpp: Major cleanup by using GL rasterization rules
+	and adding CreateVertexBuffer.
+
 	* effect.cpp (Composite): Use VIEWPORT_SCALE.
 
 	* projection.h:

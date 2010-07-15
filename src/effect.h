@@ -132,12 +132,26 @@ protected:
 	double          *GetShaderMatrix (cairo_surface_t *surface);
 	double          GetShaderOffsetX (cairo_surface_t *surface);
 	double          GetShaderOffsetY (cairo_surface_t *surface);
-	pipe_resource_t *GetShaderVertexBuffer (float           x1,
-						float           y1,
-						float           x2,
-						float           y2,
-						float           **ptr,
-						pipe_transfer_t **ptr_transfer);
+	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
+					     double          *matrix,
+					     double          x,
+					     double          y,
+					     double          width,
+					     double          height,
+					     double          s,
+					     double          t);
+	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
+					     double          *matrix,
+					     double          x,
+					     double          y,
+					     double          width,
+					     double          height)
+	{
+		return CreateVertexBuffer (texture, matrix,
+					   x, y, width, height,
+					   1.0, 1.0);
+	}
+
 	void DrawVertices (pipe_surface_t  *surface,
 			   pipe_resource_t *vertices,
 			   int             blend_enable);

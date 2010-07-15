@@ -230,6 +230,7 @@ st_context_create (struct st_device *st_dev)
 		struct pipe_rasterizer_state rasterizer;
 		memset(&rasterizer, 0, sizeof(rasterizer));
 		rasterizer.cull_face = PIPE_FACE_NONE;
+		rasterizer.gl_rasterization_rules = 1;
 		cso_set_rasterizer(st_ctx->cso, &rasterizer);
 	}
 
@@ -1310,70 +1311,93 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 }
 
 struct pipe_resource *
-Effect::GetShaderVertexBuffer (float           x1,
-			       float           y1,
-			       float           x2,
-			       float           y2,
-			       float           **ptr,
-			       pipe_transfer_t **ptr_transfer)
+Effect::CreateVertexBuffer (struct pipe_resource *texture,
+			    double               *matrix,
+			    double               x,
+			    double               y,
+			    double               width,
+			    double               height,
+			    double               s,
+			    double               t)
 {
-	
+
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
-	struct pipe_resource *buffer;
+	struct pipe_resource *vertices;
 	float                *verts;
-	int                  stride = 2 * 4;
-	int                  idx;
 	struct pipe_transfer *transfer = NULL;
+	double               p1[4] = { x, y, 0.0, 1.0 };
+	double               p2[4] = { x + width, y, 0.0, 1.0 };
+	double               p3[4] = { x + width, y + height, 0.0, 1.0 };
+	double               p4[4] = { x, y + height, 0.0, 1.0 };
 
-	buffer = pipe_buffer_create (ctx->pipe->screen,
-				     PIPE_BIND_VERTEX_BUFFER,
-				     sizeof (float) * stride * 4);
-	if (!buffer)
+	vertices = pipe_buffer_create (ctx->pipe->screen,
+				       PIPE_BIND_VERTEX_BUFFER,
+				       sizeof (float) * 8 * 4);
+	if (!vertices)
 		return NULL;
 
 	verts = (float *) pipe_buffer_map (ctx->pipe,
-					   buffer,
+					   vertices,
 					   PIPE_TRANSFER_WRITE,
 					   &transfer);
 	if (!verts)
 	{
-		pipe_resource_reference (&buffer, NULL);
+		pipe_resource_reference (&vertices, NULL);
 		return NULL;
 	}
 
-	idx = 0;
-	verts[idx + 0] = x1;
-	verts[idx + 1] = y2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += stride;
-	verts[idx + 0] = x1;
-	verts[idx + 1] = y1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += stride;
-	verts[idx + 0] = x2;
-	verts[idx + 1] = y1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += stride;
-	verts[idx + 0] = x2;
-	verts[idx + 1] = y2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	if (ptr) {
-		*ptr          = verts;
-		*ptr_transfer = transfer;
+	if (matrix) {
+		Matrix3D::TransformPoint (p1, matrix, p1);
+		Matrix3D::TransformPoint (p2, matrix, p2);
+		Matrix3D::TransformPoint (p3, matrix, p3);
+		Matrix3D::TransformPoint (p4, matrix, p4);
 	}
-	else
-		pipe_buffer_unmap (ctx->pipe, buffer, transfer);
 
-	return buffer;
+	*verts++ = p1[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p1[1] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p1[2];
+	*verts++ = p1[3];
+
+	*verts++ = 0.0;
+	*verts++ = 0.0;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	*verts++ = p2[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p2[1] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p2[2];
+	*verts++ = p2[3];
+
+	*verts++ = s;
+	*verts++ = 0.0;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	*verts++ = p3[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p3[1] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p3[2];
+	*verts++ = p3[3];
+
+	*verts++ = s;
+	*verts++ = t;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	*verts++ = p4[0] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p4[1] * VIEWPORT_SCALE_RECIPROCAL;
+	*verts++ = p4[2];
+	*verts++ = p4[3];
+
+	*verts++ = 0.0;
+	*verts++ = t;
+	*verts++ = 0.f;
+	*verts++ = 0.f;
+
+	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
+
+	return vertices;
+
 #else
 	return NULL;
 #endif
@@ -1599,10 +1623,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	cairo_surface_t      *intermediate;
 	struct pipe_resource *texture, *intermediate_texture;
 	struct pipe_surface  *surface, *intermediate_surface;
-	struct pipe_resource *vertices, *intermediate_vertices;
-	struct pipe_transfer *transfer;
-	float                *verts;
-	int                  idx;
+	struct pipe_resource *vertices;
 
 	MaybeUpdateFilter ();
 	MaybeUpdateShader ();
@@ -1636,93 +1657,16 @@ BlurEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	double scale[2] = {
-		MAX (surface->width, texture->width0),
-		MAX (surface->height, texture->height0)
-	};
-
-	vertices = GetShaderVertexBuffer (0.0,
-					  0.0,
-					  (1.0 / scale[0]) * texture->width0,
-					  (1.0 / scale[1]) * texture->height0,
-					  &verts,
-					  &transfer);
+	vertices = CreateVertexBuffer (texture, NULL,
+				       0.0, 0.0,
+				       texture->width0, texture->height0,
+				       texture->width0, texture->height0);
 	if (!vertices) {
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
 
-	double s1 = 0.5;
-	double t1 = 0.5;
-	double s2 = texture->width0 + 0.5;
-	double t2 = texture->height0 + 0.5;
-
-	idx = 4;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
-
-	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, &verts, &transfer);
-	if (!intermediate_vertices) {
-		pipe_resource_reference (&vertices, NULL);
-		cairo_surface_destroy (intermediate);
-		return 0;
-	}
-
-	s1 = 0.5;
-	t1 = 0.5;
-	s2 = intermediate_texture->width0  + 0.5;
-	t2 = intermediate_texture->height0 + 0.5;
-
-	idx = 4;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	pipe_buffer_unmap (ctx->pipe, intermediate_vertices, transfer);
-
 	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
-		pipe_resource_reference (&intermediate_vertices, NULL);
 		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
@@ -1748,8 +1692,8 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_viewport_state viewport;
 	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = intermediate_surface->width;
-	viewport.scale[1] = intermediate_surface->height;
+	viewport.scale[0] = VIEWPORT_SCALE;
+	viewport.scale[1] = VIEWPORT_SCALE;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
 	viewport.translate[0] = 0.0;
@@ -1761,9 +1705,10 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	struct pipe_rasterizer_state rasterizer;
 	memset (&rasterizer, 0, sizeof (rasterizer));
 	rasterizer.cull_face = PIPE_FACE_NONE;
+	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (intermediate_surface, intermediate_vertices, 0);
+	DrawVertices (intermediate_surface, vertices, 0);
 
 	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
 
@@ -1771,8 +1716,8 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, vert_pass_constant_buffer);
 
-	viewport.scale[0] = scale[0];
-	viewport.scale[1] = scale[1];
+	viewport.scale[0] = VIEWPORT_SCALE;
+	viewport.scale[1] = VIEWPORT_SCALE;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
 	viewport.translate[0] = x;
@@ -1791,6 +1736,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	memset (&rasterizer, 0, sizeof (rasterizer));
 	rasterizer.cull_face = PIPE_FACE_NONE;
 	rasterizer.scissor = 1;
+	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	DrawVertices (surface, vertices, 1);
@@ -1801,7 +1747,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
-	pipe_resource_reference (&intermediate_vertices, NULL);
 	pipe_resource_reference (&vertices, NULL);
 
 	cairo_surface_destroy (intermediate);
@@ -2072,10 +2017,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	cairo_surface_t      *intermediate;
 	struct pipe_resource *texture, *intermediate_texture;
 	struct pipe_surface  *surface, *intermediate_surface;
-	struct pipe_resource *vertices, *intermediate_vertices;
-	float                *verts;
-	struct pipe_transfer *transfer;
-	int                  idx;
+	struct pipe_resource *vertices;
 
 	MaybeUpdateFilter ();
 	MaybeUpdateShader ();
@@ -2109,93 +2051,16 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	double scale[2] = {
-		MAX (surface->width, texture->width0),
-		MAX (surface->height, texture->height0)
-	};
-
-	vertices = GetShaderVertexBuffer (0.0,
-					  0.0,
-					  (1.0 / scale[0]) * texture->width0,
-					  (1.0 / scale[1]) * texture->height0,
-					  &verts,
-					  &transfer);
+	vertices = CreateVertexBuffer (texture, NULL,
+				       0.0, 0.0,
+				       texture->width0, texture->height0,
+				       texture->width0, texture->height0);
 	if (!vertices) {
 		cairo_surface_destroy (intermediate);
 		return 0;
 	}
 
-	double s1 = 0.5;
-	double t1 = 0.5;
-	double s2 = texture->width0 + 0.5;
-	double t2 = texture->height0 + 0.5;
-
-	idx = 4;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
-
-	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, &verts, &transfer);
-	if (!intermediate_vertices) {
-		pipe_resource_reference (&vertices, NULL);
-		cairo_surface_destroy (intermediate);
-		return 0;
-	}
-
-	s1 = 0.5;
-	t1 = 0.5;
-	s2 = intermediate_texture->width0  + 0.5;
-	t2 = intermediate_texture->height0 + 0.5;
-
-	idx = 4;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	pipe_buffer_unmap (ctx->pipe, intermediate_vertices, transfer);
-
 	if (cso_set_fragment_shader_handle (ctx->cso, horz_fs) != PIPE_OK) {
-		pipe_resource_reference (&intermediate_vertices, NULL);
 		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
@@ -2222,8 +2087,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_viewport_state viewport;
 	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = intermediate_surface->width;
-	viewport.scale[1] = intermediate_surface->height;
+	viewport.scale[0] = VIEWPORT_SCALE;
+	viewport.scale[1] = VIEWPORT_SCALE;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
 	viewport.translate[0] = 0.0;
@@ -2235,12 +2100,12 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	struct pipe_rasterizer_state rasterizer;
 	memset (&rasterizer, 0, sizeof (rasterizer));
 	rasterizer.cull_face = PIPE_FACE_NONE;
+	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertices (intermediate_surface, intermediate_vertices, 0);
+	DrawVertices (intermediate_surface, vertices, 0);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
-		pipe_resource_reference (&intermediate_vertices, NULL);
 		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
 		return 0;
@@ -2252,8 +2117,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, vert_pass_constant_buffer);
 
-	viewport.scale[0] = scale[0];
-	viewport.scale[1] = scale[1];
+	viewport.scale[0] = VIEWPORT_SCALE;
+	viewport.scale[1] = VIEWPORT_SCALE;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
 	viewport.translate[0] = x;
@@ -2272,6 +2137,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	memset (&rasterizer, 0, sizeof (rasterizer));
 	rasterizer.cull_face = PIPE_FACE_NONE;
 	rasterizer.scissor = 1;
+	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	DrawVertices (surface, vertices, 1);
@@ -2283,7 +2149,6 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	st_set_fragment_sampler_texture (ctx, 1, NULL);
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
-	pipe_resource_reference (&intermediate_vertices, NULL);
 	pipe_resource_reference (&vertices, NULL);
 
 	cairo_surface_destroy (intermediate);
@@ -3101,9 +2966,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	struct pipe_surface  *surface;
 	struct pipe_resource *vertices;
 	struct pipe_resource *constants;
-	float                *verts;
-	struct pipe_transfer *transfer = NULL;
-	unsigned int         i, idx;
+	unsigned int         i;
 	Value                *ddxDdyReg;
 
 	MaybeUpdateShader ();
@@ -3121,8 +2984,9 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	ddxDdyReg = GetValue (ShaderEffect::DdxUvDdyUvRegisterIndexProperty);
 	if (ddxDdyReg) {
-		int   reg = ddxDdyReg->AsInt32 ();
-		float *v;
+		struct pipe_transfer *transfer = NULL;
+		int                  reg = ddxDdyReg->AsInt32 ();
+		float                *v;
 
 		constants = GetShaderConstantBuffer (&v, &transfer);
 		if (!constants)
@@ -3141,53 +3005,18 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 			return 0;
 	}
 
-	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
-		return 0;
-
-	double scale[2] = {
-		MAX (surface->width, texture->width0),
-		MAX (surface->height, texture->height0)
-	};
-
-	vertices = GetShaderVertexBuffer (0.0,
-					  0.0,
-					  (1.0 / scale[0]) * texture->width0,
-					  (1.0 / scale[1]) * texture->height0,
-					  &verts,
-					  &transfer);
+	vertices = CreateVertexBuffer (texture, NULL,
+				       0.0,
+				       0.0,
+				       texture->width0,
+				       texture->height0);
 	if (!vertices)
 		return 0;
 
-	double s1 = 0.5 / texture->width0;
-	double t1 = 0.5 / texture->height0;
-	double s2 = (texture->width0 + 0.5) / texture->width0;
-	double t2 = (texture->height0 + 0.5) / texture->height0;
-
-	idx = 4;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 0.f;
-
-	idx += 8;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
+	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
+		pipe_resource_reference (&vertices, NULL);
+		return 0;
+	}
 
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
@@ -3243,8 +3072,8 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_viewport_state viewport;
 	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = scale[0];
-	viewport.scale[1] = scale[1];
+	viewport.scale[0] = VIEWPORT_SCALE;
+	viewport.scale[1] = VIEWPORT_SCALE;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
 	viewport.translate[0] = x;
@@ -3264,6 +3093,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	memset (&rasterizer, 0, sizeof (rasterizer));
 	rasterizer.cull_face = PIPE_FACE_NONE;
 	rasterizer.scissor = 1;
+	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	DrawVertices (surface, vertices, 1);
@@ -4205,8 +4035,6 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	struct pipe_resource   *texture;
 	struct pipe_surface    *surface;
 	struct pipe_resource   *vertices;
-	float                  *verts;
-	struct pipe_transfer   *transfer = NULL;
 	double                 *m = GetShaderMatrix (src);
 	double                 srcX = GetShaderOffsetX (src);
 	double                 srcY = GetShaderOffsetY (src);
@@ -4224,36 +4052,13 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	if (!texture)
 		return 0;
 
-	vertices = pipe_buffer_create (ctx->pipe->screen,
-				       PIPE_BIND_VERTEX_BUFFER,
-				       sizeof (float) * 8 * 4);
+	vertices = CreateVertexBuffer (texture, m,
+				       srcX,
+				       srcY,
+				       texture->width0,
+				       texture->height0);
 	if (!vertices)
 		return 0;
-
-	verts = (float *) pipe_buffer_map (ctx->pipe,
-					   vertices,
-					   PIPE_TRANSFER_WRITE,
-					   &transfer);
-	if (!verts)
-	{
-		pipe_resource_reference (&vertices, NULL);
-		return 0;
-	}
-
-	double s1 = 0.5 / texture->width0;
-	double t1 = 0.5 / texture->height0;
-	double s2 = (texture->width0 + 0.5) / texture->width0;
-	double t2 = (texture->height0 + 0.5) / texture->height0;
-
-	double p1[4] = { srcX, srcY, 0.0, 1.0 };
-	double p2[4] = { srcX + texture->width0, srcY, 0.0, 1.0 };
-	double p3[4] = { srcX + texture->width0, srcY + texture->height0, 0.0, 1.0 };
-	double p4[4] = { srcX, srcY + texture->height0, 0.0, 1.0 };
-
-	Matrix3D::TransformPoint (p1, m, p1);
-	Matrix3D::TransformPoint (p2, m, p2);
-	Matrix3D::TransformPoint (p3, m, p3);
-	Matrix3D::TransformPoint (p4, m, p4);
 
 	struct pipe_viewport_state viewport;
 	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
@@ -4266,48 +4071,6 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
-
-	*verts++ = p1[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p1[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p1[2];
-	*verts++ = p1[3];
-
-	*verts++ = s1;
-	*verts++ = t1;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	*verts++ = p2[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p2[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p2[2];
-	*verts++ = p2[3];
-
-	*verts++ = s2;
-	*verts++ = t1;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	*verts++ = p3[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p3[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p3[2];
-	*verts++ = p3[3];
-
-	*verts++ = s2;
-	*verts++ = t2;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	*verts++ = p4[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p4[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p4[2];
-	*verts++ = p4[3];
-
-	*verts++ = s1;
-	*verts++ = t2;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
 
 	struct pipe_sampler_state sampler;
 	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
@@ -4334,6 +4097,7 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	memset (&rasterizer, 0, sizeof (rasterizer));
 	rasterizer.cull_face = PIPE_FACE_NONE;
 	rasterizer.scissor = 1;
+	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
 	DrawVertices (surface, vertices, 1);
