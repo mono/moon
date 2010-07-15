@@ -136,7 +136,6 @@ protected:
 						float           y1,
 						float           x2,
 						float           y2,
-						unsigned        stride,
 						float           **ptr,
 						pipe_transfer_t **ptr_transfer);
 	void DrawVertices (pipe_surface_t  *surface,

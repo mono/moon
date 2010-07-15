@@ -3,6 +3,7 @@
 	* effect.h:
 	* effect.cpp: Add missing const modifier.
 	Remove nattrib argument from DrawVertices.
+	Remove nattrib argument from GetShaderVertexBuffer.
 
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

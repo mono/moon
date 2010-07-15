@@ -1314,7 +1314,6 @@ Effect::GetShaderVertexBuffer (float           x1,
 			       float           y1,
 			       float           x2,
 			       float           y2,
-			       unsigned        n_attrib,
 			       float           **ptr,
 			       pipe_transfer_t **ptr_transfer)
 {
@@ -1323,7 +1322,7 @@ Effect::GetShaderVertexBuffer (float           x1,
 	struct st_context    *ctx = st_context;
 	struct pipe_resource *buffer;
 	float                *verts;
-	int                  stride = (1 + n_attrib) * 4;
+	int                  stride = 2 * 4;
 	int                  idx;
 	struct pipe_transfer *transfer = NULL;
 
@@ -1646,7 +1645,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					  0.0,
 					  (1.0 / scale[0]) * texture->width0,
 					  (1.0 / scale[1]) * texture->height0,
-					  1,
 					  &verts,
 					  &transfer);
 	if (!vertices) {
@@ -1685,7 +1683,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
 
-	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts, &transfer);
+	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, &verts, &transfer);
 	if (!intermediate_vertices) {
 		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
@@ -2120,7 +2118,6 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 					  0.0,
 					  (1.0 / scale[0]) * texture->width0,
 					  (1.0 / scale[1]) * texture->height0,
-					  1,
 					  &verts,
 					  &transfer);
 	if (!vertices) {
@@ -2159,7 +2156,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
 
-	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts, &transfer);
+	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, &verts, &transfer);
 	if (!intermediate_vertices) {
 		pipe_resource_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
@@ -3156,7 +3153,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 					  0.0,
 					  (1.0 / scale[0]) * texture->width0,
 					  (1.0 / scale[1]) * texture->height0,
-					  1,
 					  &verts,
 					  &transfer);
 	if (!vertices)
