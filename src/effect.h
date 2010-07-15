@@ -153,8 +153,7 @@ protected:
 	}
 
 	void DrawVertexBuffer (pipe_surface_t  *surface,
-			       pipe_resource_t *vertices,
-			       int             blend_enable);
+			       pipe_resource_t *vertices);
 
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();

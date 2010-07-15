@@ -1406,14 +1406,12 @@ Effect::CreateVertexBuffer (struct pipe_resource *texture,
 
 void
 Effect::DrawVertexBuffer (struct pipe_surface  *surface,
-			  struct pipe_resource *vertices,
-			  int                  blend_enable)
+			  struct pipe_resource *vertices)
 {
 
 #ifdef USE_GALLIUM
 	struct st_context             *ctx = st_context;
 	struct pipe_fence_handle      *fence = NULL;
-	struct pipe_blend_state       blend;
 	struct pipe_framebuffer_state fb;
 
 	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
@@ -1423,22 +1421,6 @@ Effect::DrawVertexBuffer (struct pipe_surface  *surface,
 	fb.cbufs[0] = surface;
 	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
 	cso_set_framebuffer (ctx->cso, &fb);
-
-	memset (&blend, 0, sizeof (blend));
-	blend.rt[0].colormask |= PIPE_MASK_RGBA;
-	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	if (blend_enable) {
-		blend.rt[0].blend_enable = 1;
-		blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-		blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	}
-	else {
-		blend.rt[0].blend_enable = 0;
-		blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
-		blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
-	}
-	cso_set_blend (ctx->cso, &blend);
 
 	cso_set_vertex_elements (ctx->cso, 2, ctx->velems);
 	util_draw_vertex_buffer (ctx->pipe, vertices, 0,
@@ -1708,7 +1690,17 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertexBuffer (intermediate_surface, vertices, 0);
+	struct pipe_blend_state blend;
+	memset (&blend, 0, sizeof (blend));
+	blend.rt[0].colormask |= PIPE_MASK_RGBA;
+	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].blend_enable = 0;
+	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	cso_set_blend (ctx->cso, &blend);
+
+	DrawVertexBuffer (intermediate_surface, vertices);
 
 	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
 
@@ -1739,7 +1731,16 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertexBuffer (surface, vertices, 1);
+	memset (&blend, 0, sizeof (blend));
+	blend.rt[0].colormask |= PIPE_MASK_RGBA;
+	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].blend_enable = 1;
+	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	cso_set_blend (ctx->cso, &blend);
+
+	DrawVertexBuffer (surface, vertices);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2103,7 +2104,17 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertexBuffer (intermediate_surface, vertices, 0);
+	struct pipe_blend_state blend;
+	memset (&blend, 0, sizeof (blend));
+	blend.rt[0].colormask |= PIPE_MASK_RGBA;
+	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].blend_enable = 0;
+	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	cso_set_blend (ctx->cso, &blend);
+
+	DrawVertexBuffer (intermediate_surface, vertices);
 
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
 		pipe_resource_reference (&vertices, NULL);
@@ -2140,7 +2151,16 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertexBuffer (surface, vertices, 1);
+	memset (&blend, 0, sizeof (blend));
+	blend.rt[0].colormask |= PIPE_MASK_RGBA;
+	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].blend_enable = 1;
+	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	cso_set_blend (ctx->cso, &blend);
+
+	DrawVertexBuffer (surface, vertices);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -3096,7 +3116,17 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertexBuffer (surface, vertices, 1);
+	struct pipe_blend_state blend;
+	memset (&blend, 0, sizeof (blend));
+	blend.rt[0].colormask |= PIPE_MASK_RGBA;
+	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].blend_enable = 1;
+	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	cso_set_blend (ctx->cso, &blend);
+
+	DrawVertexBuffer (surface, vertices);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -4100,7 +4130,17 @@ ProjectionEffect::Composite (cairo_surface_t *dst,
 	rasterizer.gl_rasterization_rules = 1;
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
-	DrawVertexBuffer (surface, vertices, 1);
+	struct pipe_blend_state blend;
+	memset (&blend, 0, sizeof (blend));
+	blend.rt[0].colormask |= PIPE_MASK_RGBA;
+	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rt[0].blend_enable = 1;
+	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	cso_set_blend (ctx->cso, &blend);
+
+	DrawVertexBuffer (surface, vertices);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 
