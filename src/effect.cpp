@@ -2582,7 +2582,7 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 			g_free (path);
 		}
 		else {
-			g_warning ("invalid uri: %s", uri->ToString ());
+			g_warning ("invalid uri: %s", uri ? uri->ToString () : "null");
 		}
 	}
 

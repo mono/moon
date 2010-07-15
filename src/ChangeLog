@@ -1,5 +1,10 @@
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* effect.cpp: Add a null check. Fixes a crash with #XamlReflection.27 and
+	#XamlReflection.28.
+
+2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml.cpp: Give an error ptr to xaml_set_property_from_str. Fixes a crash
 	with #XamlReflection.8.
 
