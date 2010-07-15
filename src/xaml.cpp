@@ -4403,6 +4403,7 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	char **prop_name = g_strsplit (property->element_name, ".", -1);
 	Type *owner = Type::Find (p->deployment, prop_name [0]);
 	DependencyProperty *dep;
+	MoonError error;
 
 	if (!owner)
 		return false;
@@ -4411,7 +4412,7 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	if (!dep) 
 		return false;
 
-	return xaml_set_property_from_str (item, dep, value, NULL/*XXX*/);
+	return xaml_set_property_from_str (item, dep, value, &error);
 }
 
 void
