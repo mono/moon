@@ -56,12 +56,14 @@ private:
 /* @Namespace=System.Windows.Controls */
 class ControlTemplate : public FrameworkTemplate {
 public:
-	/* @PropertyType=ManagedTypeInfo,AutoCreator=ControlTypeCreator,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
+	/* @PropertyType=ManagedTypeInfo,AutoCreator=ControlTypeCreator,GenerateAccessors,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
 	const static int TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ControlTemplate ();
 
+	void SetTargetType (ManagedTypeInfo *info);
+	ManagedTypeInfo *GetTargetType ();
 protected:
 	virtual ~ControlTemplate () {}
 };

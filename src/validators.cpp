@@ -164,17 +164,17 @@ Validators::MediaAttributeCollectionValidator (DependencyObject* instance, Depen
 bool
 Validators::TemplateValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-#if false
-	// this causes DRT #438 to throw an exception and subsequently
-	// timeout.
-	if (!value || value->GetIsNull ()) {
-		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
-		return false;
-	}
-#endif
 	if (instance->Is(Type::USERCONTROL)) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, 1001, "Cannot set the template property on a UserControl");
 		return false;
+	}
+	if (!Value::IsNull (value)) {
+		Types *types = instance->GetDeployment ()->GetTypes ();
+		ControlTemplate *t = value->AsControlTemplate (types);
+		if (!types->IsSubclassOf (instance->GetObjectType (), t->GetTargetType ()->kind)) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "ControlTemplate.TargetType is not compatible with the Controls type");
+			return false;
+		}
 	}
 	return true;
 }
