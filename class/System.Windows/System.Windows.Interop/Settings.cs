@@ -88,14 +88,14 @@ namespace System.Windows.Interop {
 			}
 		}
 
+		[MonoTODO]
 		public bool EnableAutoZoom {
 			get {
 				Console.WriteLine ("System.Windows.Interop.Settings.get_EnableAutoZoom: NIEX");
-				throw new NotImplementedException ();
+				return false;
 			}
 			set {
 				Console.WriteLine ("System.Windows.Interop.Settings.set_EnableAutoZoom: NIEX");
-				throw new NotImplementedException ();
 			}
 		}
 

@@ -1,3 +1,8 @@
+2010-07-16  Larry Ewing  <lewing@novell.com>
+
+	* Settings.cs: don't throw an exception on EnableAutoZoom just
+	mark it as a todo and return false.
+
 2010-07-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* SilverlightHost.cs: No check needed to remove handler - Fix
