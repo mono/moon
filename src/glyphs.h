@@ -63,6 +63,7 @@ class Glyphs : public FrameworkElement {
 	void LoadFont (const Uri *uri, const char *path);
 	void DownloadFont (Uri *uri, MoonError *error);
 	bool SetFontResource (const Uri *uri);
+	bool ValidateUri (Uri *uri, MoonError *error);
 	
  protected:
 	virtual ~Glyphs ();
@@ -101,7 +102,8 @@ class Glyphs : public FrameworkElement {
 	virtual void OnIsAttachedChanged (bool attached);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	
+	//virtual void SetParent (DependencyObject *parent, MoonError *error);
+
 	void SetFontSource (Downloader *downloader, const char *part_name);
 	void SetFontSource (ManagedStreamCallbacks *stream);
 	void SetFontSource (GlyphTypeface *typeface);

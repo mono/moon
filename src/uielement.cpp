@@ -890,7 +890,7 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 
 	if (HasHandlers (UIElement::LoadedEvent)) {
 		post_loaded = true;
-		GetDeployment ()->AddAllLoadedHandlers (this, only_unemitted);
+		GetDeployment ()->AddAllLoadedHandlers (this, true);
 	}
 
 	if (post)

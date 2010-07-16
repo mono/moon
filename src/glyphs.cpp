@@ -857,6 +857,34 @@ Glyphs::SetFontSource (Downloader *downloader, const char *part_name)
 	}
 }
 
+//void
+//Glyphs::SetParent (DependencyObject *parent, MoonError *error)
+//{
+//	if (parent && !ValidateUri (GetFontUri (), error))
+//		return;
+//
+//	FrameworkElement::SetParent (parent, error);
+//}
+
+bool
+Glyphs::ValidateUri (Uri *uri, MoonError *error)
+{
+	// We need to validate the URI at certain places
+	// so split out the validation logic to here so that
+	// it can be simplified in future if required.
+	if (uri) {
+		Downloader *downloader = GetDeployment ()->CreateDownloader ();
+		char *str = uri->ToString (UriHideFragment);
+		downloader->Open ("GET", str, FontPolicy);
+		g_free (str);
+
+		if (downloader->GetFailedMessage () != NULL)
+			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1000, downloader->GetFailedMessage ());
+		downloader->unref ();
+	}
+	return error->number == 0;
+}
+
 void
 Glyphs::OnIsAttachedChanged (bool attached)
 {
@@ -899,11 +927,15 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 						
 						// FIXME: I'm guessing, based on moon-unit tests, that this event should only be emitted
 						// when being parsed from javascript as opposed to managed land...
-						if (IsAttached () && uri->IsUncPath ())
+						if (uri->IsUncPath ())
 							GetDeployment ()->GetSurface ()->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
+						return;
 					}
 				} else {
 					// need to create a downloader for this font...
+					if (!ValidateUri (uri, error))
+						return;
+
 					if (IsAttached ()) {
 						DownloadFont (uri, IsBeingParsed () ? error : NULL);
 						uri_changed = false;

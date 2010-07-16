@@ -614,7 +614,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 			
 			// can uri ever be null?
-			if (IsBeingParsed () && uri && IsAttached ()) {
+			if (IsBeingParsed () && uri) {
 				ImageErrorEventArgs *args = NULL;
 				
 				if (uri->IsInvalidPath ()) {

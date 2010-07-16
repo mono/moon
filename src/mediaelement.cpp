@@ -1594,7 +1594,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		const char *location;
 		
 		if (uri != NULL) {
-			if (!(location = GetDeployment ()->GetXapLocation ()) && IsAttached ())
+			if (!(location = GetDeployment ()->GetXapLocation ()))
 				location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
 			
 			if (uri->scheme && (!strcmp (uri->scheme, "mms") || !strcmp (uri->scheme, "rtsp") || !strcmp (uri->scheme, "rtsps")))

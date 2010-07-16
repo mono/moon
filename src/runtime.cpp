@@ -687,7 +687,7 @@ Surface::tick_after_attach_reached (EventObject *data)
 	Surface *surface = (Surface*)data;
 
 	surface->ticked_after_attach = true;
-	surface->Emit (Surface::LoadEvent);
+
 	surface->toplevel->SetIsAttached (true);
 	bool delay;
 	surface->toplevel->WalkTreeForLoadedHandlers (&delay, true, false);
@@ -698,6 +698,8 @@ void
 Surface::toplevel_loaded (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	((Surface*)closure)->ToplevelLoaded ((UIElement*)sender);
+	((Surface*)closure)->EmitAsync(Surface::LoadEvent);
+
 }
 
 void

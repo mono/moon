@@ -2515,7 +2515,6 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 		parser_info->hydrating = true;
 		if (Type::IsSubclassOf (parser_info->deployment, object->GetKind (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *dob = object->AsDependencyObject ();
-			dob->SetIsAttached (true);
 			dob->SetResourceBase (GetResourceBase());
 		}
 	} else {

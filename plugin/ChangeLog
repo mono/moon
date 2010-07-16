@@ -1,3 +1,8 @@
+2010-07-16  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin.cpp: Make sure we don't accidentally double-add
+	  loaded handlers.
+
 2010-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: An NPObj null value is a null npvariant, not an object

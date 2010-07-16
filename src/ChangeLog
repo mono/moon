@@ -1,5 +1,25 @@
 2010-07-16  Alan McGovern  <amcgovern@novell.com>
 
+	* glyphs.h:
+	* glyphs.cpp: Always validate the Uri when it changes
+	  regardless of whether the element is loaded. This way we
+	  don't need the validation in SetParent and nothing appears
+	  to have regressed...
+
+	* media.cpp:
+	* mediaelement.cpp: Don't check if the element is attached
+	  when verifying the uri. Needed to allow drt 171/173 to pass.
+
+	* runtime.cpp: Surface::LoadEvent has to be emitted after the
+	  top level has loaded according to drt 21.
+
+	* uielement.cpp: Make sure we don't accidentally double-add
+	  loaded handlers.
+
+	* xaml.cpp: Don't set every element as being attached.
+
+2010-07-16  Alan McGovern  <amcgovern@novell.com>
+
 	* template.h:
 	* validators.cpp: Validate ControlTemplate::TargetType to make
 	  drt 349 a bit happier.
