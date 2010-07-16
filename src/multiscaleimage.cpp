@@ -405,6 +405,7 @@ MultiScaleImage::~MultiScaleImage ()
 {
 	MultiScaleTileSource *source = GetSource ();
 	
+	printf ("MultiScaleImage::~MultiScaleImage (); aborting image downloaders\n");
 	StopDownloading ();
 	
 	if (source)
@@ -670,6 +671,9 @@ MultiScaleImage::StopDownloading ()
 	}
 	
 	g_ptr_array_set_size (downloaders, 0);
+	n_downloading = 0;
+	
+	UpdateIsDownloading ();
 }
 
 void
@@ -1362,16 +1366,16 @@ MultiScaleImage::UriSourceChanged ()
 			dzits = (DeepZoomImageTileSource *) source;
 			dzits->Download ();
 		} else {
-			EmitImageOpenSucceeded ();	
+			EmitImageOpenSucceeded ();
 		}
 	}
-
+	
 	// Reset the viewport
 	ClearValue (MultiScaleImage::InternalViewportWidthProperty, true);
 	ClearValue (MultiScaleImage::InternalViewportOriginProperty, true);
 	//SetValue (MultiScaleImage::ViewportOriginProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportOriginProperty)->GetDefaultValue());
 	//SetValue (MultiScaleImage::ViewportWidthProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportWidthProperty)->GetDefaultValue());
-
+	
 	// Invalidate the whole cache
 	if (cache) {
 		g_hash_table_destroy (cache);
@@ -1737,7 +1741,8 @@ MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePosi
 		g_warning ("calling InvalidateTileLayer on DeepZoom Images makes no sense\n");
 		return;
 	}
-
+	
+	printf ("MultiScaleImage::InvalidateTileLayer(); aborting image downloaders\n");
 	StopDownloading ();
 
 	int index = -1;

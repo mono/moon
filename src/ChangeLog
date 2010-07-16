@@ -1,3 +1,11 @@
+2010-07-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes drt 2004.
+
+	* multiscaleimage.cpp (StopDownloading): Need to reset
+	n_downloading to 0 so that any future download requests can
+	happen.
+
 2010-07-16  Alan McGovern  <amcgovern@novell.com>
 
 	* glyphs.h:
