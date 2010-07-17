@@ -689,7 +689,7 @@ Surface::tick_after_attach_reached (EventObject *data)
 	surface->ticked_after_attach = true;
 
 	surface->toplevel->SetIsAttached (true);
-	bool delay;
+	bool delay = false;
 	surface->toplevel->WalkTreeForLoadedHandlers (&delay, true, false);
 	Deployment::GetCurrent()->EmitLoaded ();
 }

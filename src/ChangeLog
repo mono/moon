@@ -1,3 +1,7 @@
+2010-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: Initialize a variable to make valgrind happy.
+
 2010-07-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes drt 2004.
