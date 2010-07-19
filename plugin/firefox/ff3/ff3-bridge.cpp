@@ -11,6 +11,7 @@
  *
  */
 
+#include <config.h>
 #include "plugin.h"
 
 #include "ff3-bridge.h"

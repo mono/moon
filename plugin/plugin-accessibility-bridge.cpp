@@ -14,6 +14,8 @@
 #ifndef __PLUGIN_ACCESSIBILITY_BRIDGE_H__
 #define __PLUGIN_ACCESSIBILITY_BRIDGE_H__
 
+#include <config.h>
+
 #define INCLUDED_MONO_HEADERS 1
 
 #include <mono/metadata/assembly.h>

@@ -1,7 +1,11 @@
+2010-07-19  Andreia Gaita  <avidigal@novell.com>
+
+	* ff3-bridge.cpp, ff3-http.cpp: add missing config.h includes
+
 2010-07-13  Andreia Gaita  <avidigal@novell.com>
 
-	Put all types inside a Moonlight namespace to avoid conflicts
-	with external libraries
+	* ff3-bridge.[h|cpp]: Put all types inside a Moonlight namespace
+	  to avoid conflicts with external libraries
 
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

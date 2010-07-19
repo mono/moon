@@ -1,3 +1,7 @@
+2010-07-19  Andreia Gaita  <avidigal@novell.com>
+
+	* ff2-bridge.cpp, ff2-http.cpp: add missing config.h includes
+
 2010-07-14  Andreia Gaita  <avidigal@novell.com>
 
 	* ff2-bridge.[h|cpp]: Put all types inside a Moonlight namespace

@@ -11,6 +11,8 @@
  *
  */
 
+#include <config.h>
+
 // define this here so that protypes.h isn't included (and doesn't
 // muck with our npapi.h)
 #define NO_NSPR_10_SUPPORT
