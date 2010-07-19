@@ -1,3 +1,8 @@
+2010-07-19  David Reveman  <davidr@novell.com>
+
+	* frameworkelement.cpp: Use GetBounds/GetSubtreeBounds and
+	absolute projection in FindElementsInHostCoordinates.
+
 2010-07-19  Larry Ewing  <lewing@novell.com>
 
 	* thickness.h:

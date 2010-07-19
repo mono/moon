@@ -444,7 +444,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 	if (!GetHitTestVisible ())
 		return;
 		
-	if (bounds_with_children.height <= 0)
+	if (GetSubtreeBounds ().height <= 0)
 		return;
 
 	/* the clip property is global so we can short out here */
@@ -482,10 +482,10 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 	if (!GetHitTestVisible ())
 		return;
 		
-	if (bounds_with_children.height <= 0)
+	if (GetSubtreeBounds ().height <= 0)
 		return;
 		
-	if (!bounds_with_children.IntersectsWith (r))
+	if (!GetSubtreeBounds ().IntersectsWith (r))
 		return;
 	
 	cairo_save (cr);
@@ -493,11 +493,11 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 
 	Geometry *clip = GetClip ();
 	if (clip) {
-		if (!r.IntersectsWith (clip->GetBounds ().Transform (&absolute_xform))) {
+		if (!r.IntersectsWith (clip->GetBounds ().Transform (absolute_projection))) {
 			cairo_restore (cr);
 			return;
 		}
-		r = r.Intersection (clip->GetBounds ().Transform (&absolute_xform));
+		r = r.Intersection (clip->GetBounds ().Transform (absolute_projection));
 	}
 
 	/* create our node and stick it on front */
@@ -513,7 +513,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 
 		res = false;
 		if (CanFindElement ()) {
-			res = bounds.Intersection (r) == bounds;
+			res = GetBounds ().Intersection (r) == GetBounds ();
 			
 			for (int i= r.x; i < (r.x + r.width) && !res; i++)
 				for (int j= r.y; j < (r.y + r.height) && !res; j++)
