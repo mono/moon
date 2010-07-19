@@ -1,3 +1,8 @@
+2010-07-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp: Fixed to properly handle NULL returns from
+	qtree_insert(). Fixes a crash in the Seadragon-InvalidXml drt.
+
 2010-07-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/im-gtk.cpp|h: Fix the random shutdown crash here by clearing the

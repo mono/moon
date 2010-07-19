@@ -83,18 +83,11 @@ qtree_insert (QTree *root, int level, guint64 x, guint64 y)
 	guint64 level2 = pow2 (level);
 	QTree *node = root;
 	
-	if (x >= level2 || y >= level2) {
-		g_warning ("QuadTree index out of range.");
-#if DEBUG
-		abort ();
-#endif
+	if (x >= level2 || y >= level2)
 		return NULL;
-	}
 	
-	if (!root) {
-		g_warning ("passing a NULL QTree to qtree_insert");
+	if (!root)
 		return NULL;
-	}
 	
 	while (node && level-- > 0) {
 		level2 = pow2 (level);
@@ -547,7 +540,7 @@ MultiScaleImage::HandleDzParsed ()
 	
 	// Get the first tiles
 	int shared_index = -1;
-	QTree *shared_cache = (QTree*)g_hash_table_lookup (cache, &shared_index);
+	QTree *shared_cache = (QTree *) g_hash_table_lookup (cache, &shared_index);
 	if (!shared_cache)
 		g_hash_table_insert (cache, new int(shared_index), (shared_cache = qtree_new ()));
 	
@@ -556,12 +549,14 @@ MultiScaleImage::HandleDzParsed ()
 		Uri *tile = new Uri ();
 		
 		if (source->get_tile_func (layer, 0, 0, tile, source)) {
-			QTree *node = qtree_insert (shared_cache, layer, 0, 0);
-			DownloadTile (tile, node);
+			QTree *node;
+			
+			if ((node = qtree_insert (shared_cache, layer, 0, 0)))
+				DownloadTile (tile, node);
 		}
 		
 		delete tile;
-		layer ++;
+		layer++;
 	}
 
 	EmitImageOpenSucceeded ();
@@ -1107,6 +1102,10 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			double maxx = MIN (msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;
 			double miny = (MAX (msivp_oy, sub_vp.y) - sub_vp.y) / v_tile_h;
 			double maxy = MIN (msivp_oy + msivp_w / msi_ar, sub_vp.y + sub_vp.width / sub_ar) - sub_vp.y;
+			MultiScaleTileSource *tile_source;
+			QTree *cache, *node;
+			guint64 x, y;
+			Uri *tile;
 			
 			for (int i = (int) minx; i * v_tile_w < maxx; i++) {
 				if (!CanDownloadMoreTiles ())
@@ -1116,25 +1115,28 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					if (!CanDownloadMoreTiles ())
 						break;
 					
-					Uri *tile = new Uri ();
-					
 					if (from_layer <= dzits->GetMaxLevel ()) {
 						guint64 from_layer2 = pow2 (from_layer);
-						guint64 x = morton_x (sub_image->n) * from_layer2 / tile_width;
-						guint64 y = morton_y (sub_image->n) * from_layer2 / tile_height;
-						QTree *node = qtree_insert (shared_cache, from_layer, x, y);
-						
-						if (!qtree_has_image (node)
-						    && dzits->get_tile_func (from_layer, x, y, tile, dzits))
-							DownloadTile (tile, node);
+						x = morton_x (sub_image->n) * from_layer2 / tile_width;
+						y = morton_y (sub_image->n) * from_layer2 / tile_height;
+						cache = shared_cache;
+						tile_source = dzits;
 					} else {
-						QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
-						if (!qtree_has_image (node)
-						    && dzits->get_tile_func (from_layer, i, j, tile, sub_image->source))
-							DownloadTile (tile, node);
+						tile_source = sub_image->source;
+						cache = subimage_cache;
+						x = i;
+						y = j;
 					}
 					
-					delete tile;
+					if (!(node = qtree_insert (cache, from_layer, x, y)))
+						continue;
+					
+					if (!qtree_has_image (node)) {
+						tile = new Uri ();
+						if (dzits->get_tile_func (from_layer, x, y, tile, tile_source))
+							DownloadTile (tile, node);
+						delete tile;
+					}
 				}
 			}
 		}
@@ -1320,6 +1322,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		double maxx = MIN (vp_ox + vp_w, 1.0);
 		double miny = MAX (0, (vp_oy / v_tile_h));
 		double maxy = MIN (vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar);
+		QTree *node;
 		
 		for (int i = (int) minx; i * v_tile_w < maxx; i++) {
 			if (!CanDownloadMoreTiles ())
@@ -1329,7 +1332,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (!CanDownloadMoreTiles ())
 					return;
 				
-				QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
+				if (!(node = qtree_insert (subimage_cache, from_layer, i, j)))
+					continue;
 				
 				if (!qtree_has_image (node)) {
 					Uri *tile = new Uri ();
