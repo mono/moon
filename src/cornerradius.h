@@ -41,6 +41,18 @@ struct CornerRadius {
 	{
 	}
 
+	CornerRadius ApplyFlow (FlowDirection dir) const
+	{
+		CornerRadius adjusted = *this;
+		if (dir == FlowDirectionRightToLeft) {
+			adjusted.topLeft = topRight;
+			adjusted.bottomLeft = bottomRight;
+			adjusted.bottomRight = bottomLeft;
+			adjusted.topRight = topLeft;
+		}
+		return adjusted;
+	}
+
 	bool operator == (const CornerRadius &corner)
 	{
 		return fabs (topLeft-corner.topLeft) < DBL_EPSILON && fabs (bottomLeft-corner.bottomLeft) < DBL_EPSILON && fabs(topRight-corner.topRight) < DBL_EPSILON && fabs(bottomRight-corner.bottomRight) < DBL_EPSILON; 

@@ -200,7 +200,8 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 	    args->GetId () == FrameworkElement::MaxHeightProperty ||
 	    args->GetId () == FrameworkElement::MinHeightProperty ||
 	    args->GetId () == FrameworkElement::HeightProperty ||
-	    args->GetId () == FrameworkElement::MarginProperty) {
+	    args->GetId () == FrameworkElement::MarginProperty ||
+	    args->GetId () == FrameworkElement::FlowDirectionProperty) {
 
 		Point *p = GetRenderTransformOrigin ();
 

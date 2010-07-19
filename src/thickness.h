@@ -12,6 +12,7 @@
 #define __MOON_THICKNESS_H__
 
 #include <glib.h>
+#include "enums.h"
 
 namespace Moonlight {
 
@@ -58,6 +59,17 @@ struct Thickness {
 		right = thickness.right;
 		left = thickness.left;
 		top = thickness.top;
+	}
+
+	Thickness ApplyFlow (FlowDirection dir) const
+	{
+		Thickness adjusted = *this;
+		if (dir == FlowDirectionRightToLeft) {
+			adjusted.left = right;
+			adjusted.right = left;
+		}
+
+		return adjusted;
 	}
 
 	Thickness operator- ()
