@@ -147,15 +147,8 @@ qtree_lookup (QTree *root, int level, guint64 x, guint64 y)
 	guint64 level2 = pow2 (level);
 	QTree *node = root;
 	
-	if (x >= level2 || y >= level2) {
-		g_warning ("QuadTree index out of range.");
-#if DEBUG
- 		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
- 		// abort to get a stack trace. 
-		//abort ();
-#endif
+	if (x >= level2 || y >= level2)
 		return NULL;
-	}
 	
 	while (node && level-- > 0) {
 		level2 = pow2 (level);
