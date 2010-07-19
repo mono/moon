@@ -206,35 +206,6 @@ namespace Mono.Xaml
 			}			 
 		}
 
-		public void CreateNativeLoader (string filename, string contents)
-		{
-			if (!AllowMultipleSurfacesPerDomain) {
-				if (surface == IntPtr.Zero)
-					surface = SurfaceInDomain;
-				if (plugin == IntPtr.Zero)
-					plugin = PluginInDomain;
-			}
-			
-			if (surface == IntPtr.Zero)
-				throw new Exception ("The surface where the xaml should be loaded is not set.");
-			
-			//Console.WriteLine ("ManagedXamlLoader::CreateNativeLoader (): surface: {0}", surface);
-			native_loader = NativeMethods.xaml_loader_new (resourceBase, filename, contents, surface);
-			
-			if (native_loader == IntPtr.Zero)
-				throw new Exception ("Unable to create native loader.");
-			
-			Setup (native_loader, plugin, surface, filename, contents);
-		}
-		
-		public void FreeNativeLoader ()
-		{
-			if (native_loader == IntPtr.Zero)
-				return;
-			NativeMethods.xaml_loader_free (native_loader);
-			native_loader = IntPtr.Zero;
-		}
-		
 		//
 		// Creates a native object for the given xaml.
 		//
@@ -253,24 +224,11 @@ namespace Mono.Xaml
 		// Caller is responsible for calling value_free_value on the returned value
 		public IntPtr CreateFromString (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind)
 		{
-			if (xaml == null)
-				throw new ArgumentNullException ("xaml");
-
-			try {
-				CreateNativeLoader (null, xaml);
-
-				XamlLoaderFlags flags = 0;
-				if (validateTemplates)
-					flags |= XamlLoaderFlags.ValidateTemplates;
-				if (import_default_xmlns)
-					flags |= XamlLoaderFlags.ImportDefaultXmlns;
-				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind, (int) flags);
-			}
-			finally {
-				FreeNativeLoader ();
-			}
+			return CreateFromStringInternal (xaml, createNamescope, validateTemplates, import_default_xmlns, out kind);
 		}
 
+		
+		
 		//
 		// Hydrates the object dob from the given xaml
 		//
@@ -291,22 +249,7 @@ namespace Mono.Xaml
 
 		public void Hydrate (Value value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
 		{
-			try {
-				Kind k;
-				CreateNativeLoader (null, xaml);
-
-				XamlLoaderFlags flags = 0;
-				if (validateTemplates)
-					flags |= XamlLoaderFlags.ValidateTemplates;
-				if (import_default_xmlns)
-					flags |= XamlLoaderFlags.ImportDefaultXmlns;
-				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref value, createNamescope, out k, (int) flags);
-				if (ret == IntPtr.Zero)
-					throw new Exception ("Invalid XAML file");
-			}
-			finally {
-				FreeNativeLoader ();
-			}
+			HydrateInternal (value, xaml, createNamescope, validateTemplates, import_default_xmlns);
 		}
 		
 		//
@@ -315,17 +258,13 @@ namespace Mono.Xaml
 		// Caller is responsible for calling value_free_value on the returned value
 		public IntPtr CreateFromFile (string path, bool createNamescope, out Kind kind)
 		{
-			if (path == null)
-				throw new ArgumentNullException ("path");
-
-			try {
-				CreateNativeLoader (null, path);
-				return NativeMethods.xaml_loader_create_from_file (NativeLoader, path, createNamescope, out kind);
-			}
-			finally {
-				FreeNativeLoader ();
-			}
+			return CreateFromFileInternal (path, createNamescope, out kind);
 		}
+
+
+		protected abstract IntPtr CreateFromFileInternal (string path, bool createNamescope, out Kind kind);
+		protected abstract void HydrateInternal (Value value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns);
+		protected abstract IntPtr CreateFromStringInternal (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind);
 
 		// 
 		// Creates a managed dependency object from the xaml.

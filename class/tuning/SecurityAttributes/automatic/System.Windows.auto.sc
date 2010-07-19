@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 501 methods needs to be decorated.
+# 504 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -844,6 +844,12 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xap_unpack_(System.String)
 
+# overrides 'System.IntPtr Mono.Xaml.XamlLoader::CreateFromFileInternal(System.String,System.Boolean,Mono.Kind&)'.
++SC-M: System.IntPtr Mono.Xaml.ManagedXamlLoader::CreateFromFileInternal(System.String,System.Boolean,Mono.Kind&)
+
+# overrides 'System.IntPtr Mono.Xaml.XamlLoader::CreateFromStringInternal(System.String,System.Boolean,System.Boolean,System.Boolean,Mono.Kind&)'.
++SC-M: System.IntPtr Mono.Xaml.ManagedXamlLoader::CreateFromStringInternal(System.String,System.Boolean,System.Boolean,System.Boolean,Mono.Kind&)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.IntPtr Mono.Xaml.ParseTemplateFunc::Invoke(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
 
@@ -1419,6 +1425,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_mark_property_as_set(System.IntPtr,System.IntPtr,System.String)
+
+# overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(Mono.Value,System.String,System.Boolean,System.Boolean,System.Boolean)'.
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::HydrateInternal(Mono.Value,System.String,System.Boolean,System.Boolean,System.Boolean)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetCLRPropertyFromString(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Object,System.Reflection.PropertyInfo,System.String,System.String&,System.IntPtr&)

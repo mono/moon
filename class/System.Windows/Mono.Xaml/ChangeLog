@@ -1,3 +1,9 @@
+2010-07-19  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs:
+	* XamlLoaderCallbacks.cs: Abstract out a little more of the
+	XamlLoader interface so I can easily add the SL4XamlLoader.
+
 2010-07-12  Jackson Harper  <jackson@ximian.com>
 
 	* managedxamlloader.cs:

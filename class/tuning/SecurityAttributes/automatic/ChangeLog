@@ -1,3 +1,7 @@
+2010-07-19  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.auto.sc: regen with Mono.Xaml updates.
+
 2010-07-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.ssc: regenerated wrt manual entries
