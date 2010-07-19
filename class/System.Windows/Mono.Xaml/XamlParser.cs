@@ -389,20 +389,33 @@ namespace Mono.Xaml {
 			var parser = new XamlParser (context);
 
 			var source = NativeDependencyObjectHelper.FromIntPtr (binding_source);
-			if (source == null)
-				throw parser.ParseException ("Attempting to parse a template with an invalid binding source.");
+			if (source == null) {
+				error = new MoonError (parser.ParseException ("Attempting to parse a template with an invalid binding source."));
+				return IntPtr.Zero;
+			}
 
 			FrameworkElement fwe = source as FrameworkElement;
-			if (fwe == null)
-				throw parser.ParseException ("Only FrameworkElements can be used as TemplateBinding sources.");
+			if (fwe == null) {
+				error = new MoonError (parser.ParseException ("Only FrameworkElements can be used as TemplateBinding sources."));
+				return IntPtr.Zero;
+			}
 
 			context.IsExpandingTemplate = true;
 			context.TemplateBindingSource = fwe;
 
-			var dob = parser.ParseString (xaml) as INativeEventObjectWrapper;
+			INativeEventObjectWrapper dob = null;
+			try {
+				dob = parser.ParseString (xaml) as INativeEventObjectWrapper;
+			} catch (Exception e) {
+				error = new MoonError (e);
+				return IntPtr.Zero;
+			}
 
-			if (dob == null)
-				throw parser.ParseException ("Unable to parse template item.");
+			if (dob == null) {
+				error = new MoonError (parser.ParseException ("Unable to parse template item."));
+				return IntPtr.Zero;
+			}
+
 			return dob.NativeHandle;
 		}
 

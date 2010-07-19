@@ -1,5 +1,10 @@
 2010-07-19  Jackson Harper  <jackson@ximian.com>
 
+	* XamlParser.cs: This function is called by unmanaged so it can't
+	throw exceptions.
+
+2010-07-19  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs:
 	* XamlLoaderCallbacks.cs: Abstract out a little more of the
 	XamlLoader interface so I can easily add the SL4XamlLoader.
