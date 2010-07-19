@@ -1,3 +1,9 @@
+2010-07-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (OnPropertyChanged): Only emit
+	ViewportChanged event if UseSprings is enabled. Don't update
+	InternalViewport properties unless they've actually changed.
+
 2010-07-19  David Reveman  <davidr@novell.com>
 
 	* frameworkelement.cpp: Use GetBounds/GetSubtreeBounds and

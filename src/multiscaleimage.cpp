@@ -398,7 +398,6 @@ MultiScaleImage::~MultiScaleImage ()
 {
 	MultiScaleTileSource *source = GetSource ();
 	
-	printf ("MultiScaleImage::~MultiScaleImage (); aborting image downloaders\n");
 	StopDownloading ();
 	
 	if (source)
@@ -433,7 +432,7 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 	SetViewportWidth (width);
 	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY)) {
 		SetViewportOrigin (new Point (zoomCenterLogicalX - (zoomCenterLogicalX - viewport_origin.x) / zoomIncrementFactor,
-					  zoomCenterLogicalY - (zoomCenterLogicalY - viewport_origin.y) / zoomIncrementFactor));
+					      zoomCenterLogicalY - (zoomCenterLogicalY - viewport_origin.y) / zoomIncrementFactor));
 	}
 }
 
@@ -1402,8 +1401,9 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	
 	if (args->GetId () == MultiScaleImage::InternalViewportOriginProperty ||
 	    args->GetId () == MultiScaleImage::InternalViewportWidthProperty) {
-		if (HasHandlers (MultiScaleImage::ViewportChangedEvent))
+		if (GetUseSprings () && HasHandlers (MultiScaleImage::ViewportChangedEvent))
 			Emit (MultiScaleImage::ViewportChangedEvent);
+		
 		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::AllowDownloadingProperty) {
 		if (args->GetNewValue()->AsBool ())
@@ -1411,12 +1411,22 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		else
 			StopDownloading ();
 	} else if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
-		pan_target = Point (args->GetNewValue ()->AsPoint ()->x, args->GetNewValue ()->AsPoint ()->y);
-		SetInternalViewportOrigin (args->GetNewValue ()->AsPoint ());
+		Point *origin = args->GetNewValue ()->AsPoint ();
+		
+		if (pan_target != *origin) {
+			pan_target = Point (origin->x, origin->y);
+			SetInternalViewportOrigin (origin);
+		}
+		
 		ClearValue (MultiScaleImage::ViewportOriginProperty, false);
 	} else if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
-		zoom_target = args->GetNewValue ()->AsDouble ();
-		SetInternalViewportWidth (args->GetNewValue ()->AsDouble ());
+		double target = args->GetNewValue ()->AsDouble ();
+		
+		if (zoom_target != target) {
+			SetInternalViewportWidth (target);
+			zoom_target = target;
+		}
+		
 		ClearValue (MultiScaleImage::ViewportWidthProperty, false);
 	} else if (args->GetId () == MultiScaleImage::TileFadeProperty) {
 		// There's 2 options here,
@@ -1627,7 +1637,7 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 }
 
 void
-MultiScaleImage::SetInternalViewportOrigin (Point* value)
+MultiScaleImage::SetInternalViewportOrigin (Point *value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
@@ -1746,7 +1756,6 @@ MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePosi
 		return;
 	}
 	
-	printf ("MultiScaleImage::InvalidateTileLayer(); aborting image downloaders\n");
 	StopDownloading ();
 
 	int index = -1;
