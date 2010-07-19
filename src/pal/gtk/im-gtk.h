@@ -1,4 +1,12 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * im-gtk.h
+ *
+ * Copyright 2010 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ *
+ */
 
 #ifndef MOON_IM_GTK_H
 #define MOON_IM_GTK_H
@@ -35,6 +43,9 @@ public:
 
  private:
 	GtkIMContext *im;
+	GtkWidget *im_widget;
+
+	static void ImWindowDestroyed (GtkWindow *window, gpointer data);
 };
 
 };

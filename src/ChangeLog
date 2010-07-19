@@ -1,3 +1,8 @@
+2010-07-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/gtk/im-gtk.cpp|h: Fix the random shutdown crash here by clearing the
+	client window when the parent widget is destroyed.
+
 2010-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: Initialize a variable to make valgrind happy.
