@@ -330,6 +330,9 @@ namespace System.Windows.Browser {
 
 		private bool HasProperty (string scriptAlias)
 		{
+			if (ManagedObject is IDictionary) {
+				return true;
+			}
 			return properties.ContainsKey (scriptAlias) || events.ContainsKey (scriptAlias);
 		}
 

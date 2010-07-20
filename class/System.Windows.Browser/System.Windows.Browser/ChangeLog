@@ -1,5 +1,11 @@
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObject.cs: a dictionary["AKey"] access from javascript
+	  is equivalent to doing IDictionary.AKey, which obviously fails,
+	  so always return true in property lookups on an IDictionary.
+
+2010-07-20  Andreia Gaita  <avidigal@novell.com>
+
 	* ManagedObject.cs: Add IDictionary scripting support via a string
 	  indexer
 
