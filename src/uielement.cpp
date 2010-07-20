@@ -250,7 +250,15 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	} else if (args->GetId () == UIElement::EffectProperty) {
+		bool old_effect = args->GetOldValue () != NULL;
+		bool new_effect = args->GetNewValue () != NULL;
+
 		InvalidateEffect ();
+
+		/* need to update transform when whether we render to
+		   an intermediate buffer or not change */
+		if (old_effect != new_effect && IsAttached ())
+			GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyTransform);
 	} else if (args->GetId () == UIElement::ProjectionProperty) {
 		UpdateProjection ();
 	}

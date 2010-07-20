@@ -1,5 +1,8 @@
 2010-07-22  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (OnPropertyChanged): Need to update transform
+	when whether we render to an intermediate buffer or not change.
+
 	* uielement.cpp: A call to UpdateProjection is enough when
 	projection property changes.
 
