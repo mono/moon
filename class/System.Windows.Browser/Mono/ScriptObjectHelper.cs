@@ -92,11 +92,18 @@ namespace Mono {
 					return null;
 
 				ScriptObject reference = ScriptObject.LookupScriptObject (v.u.p);
-				if (reference != null)
+				if (reference != null) {
+					if (reference.ManagedObject != null)
+						return reference.ManagedObject;
 					return reference;
+				}
 
 				if (!isobject && typeof (ScriptObject).IsAssignableFrom (type)) {
-					return CreateInstance<T> (v.u.p);
+					object obj = CreateInstance<T> (v.u.p);
+					reference = (ScriptObject) obj;
+					if (reference.ManagedObject != null)
+						return reference.ManagedObject;
+					return reference;
 				} else if (isobject) {
 					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "nodeType")) {
 						Value val;
