@@ -304,13 +304,7 @@ variant_to_value (const NPVariant *v, Value **result)
 		break;
 	}
 	case NPVariantType_Void:
-		DEBUG_WARN_NOTIMPLEMENTED ("void variant type");
-		*result = NULL;
-		break;
 	case NPVariantType_Null:
-		DEBUG_WARN_NOTIMPLEMENTED ("null variant type");
-		*result = new Value (Type::DEPENDENCY_OBJECT);
-		break;
 	case NPVariantType_Object:
 		*result = new Value (Type::NPOBJ, NPVARIANT_TO_OBJECT (*v));
 		break;
