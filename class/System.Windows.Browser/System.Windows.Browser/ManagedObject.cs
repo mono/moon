@@ -210,10 +210,43 @@ namespace System.Windows.Browser {
 			return ret;
 		}
 
-		private static void RegisterScriptableType (Type type)
+		static string ScriptName (Type type) {
+			if (type.IsGenericType) {
+				string str = "";
+				foreach (Type t in type.GetGenericArguments()) {
+					if (str != "")
+						str += ",";
+					str += ScriptName(t);
+				}
+				return (type.Name.Substring(0, type.Name.IndexOf('`')) + "<" + str + ">");
+			} else if (type.IsArray) {
+				return ScriptName (type.GetElementType ()) + "[]";
+			} else if (type.IsPrimitive) {
+				if (type == typeof(int))
+					return "int";
+				if (type == typeof(bool))
+					return "bool";
+				if (type == typeof(long))
+					return "long";
+				if (type == typeof(short))
+					return "short";
+				if (type == typeof(float))
+					return "float";
+				if (type == typeof(uint))
+					return "uint";
+				if (type == typeof(ulong))
+					return "ulong";
+				if (type == typeof(ushort))
+					return "ushort";
+			}
+			return type.Name;
+		}
+
+		static void RegisterScriptableType (Type type)
 		{
-			if (!HtmlPage.ScriptableTypes.ContainsKey (type.Name))
-				HtmlPage.ScriptableTypes[type.Name] = type;
+			string name = ScriptName (type);
+			if (!HtmlPage.ScriptableTypes.ContainsKey (name))
+				HtmlPage.ScriptableTypes[name] = type;
 		}
 
 		public static bool IsSupportedType (Type t)

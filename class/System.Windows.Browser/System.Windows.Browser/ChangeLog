@@ -1,5 +1,11 @@
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
+	* ManagedObject.cs: Generate a proper script alias from the type name
+	  (add <> and arguments for generics, use a simple name for the
+	  primitives)
+
+2010-07-20  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs: Change the property registration to optionally use
 	custom properties on helper objects (like the methods)
 	* ManagedObject.cs: Add an indexer to ListOps to support arrays
