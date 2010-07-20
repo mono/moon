@@ -1,3 +1,7 @@
+2010-07-20  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptObject.cs: add missing null check
+
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* HtmlPage.cs: Add lots of main thread checks. Fixes a crash in #984.

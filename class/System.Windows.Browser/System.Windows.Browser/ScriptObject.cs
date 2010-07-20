@@ -148,6 +148,7 @@ namespace System.Windows.Browser {
 		{
 			CheckHandle ();
 			// XXX this is likely wrong, as it needs to call into the plugin using an ordinal, not a string - toshok
+			// XXX SL does the same half-assed conversion, so shrugging and keeping this one as-is - shana
 			return GetPropertyInternal <object> (Handle, index.ToString ());
 		}
 
@@ -386,7 +387,7 @@ namespace System.Windows.Browser {
 
 			object v = GetProperty (scriptAlias, args);
 
-			if (Type.GetTypeCode (v.GetType ()) == TypeCode.Object)
+			if (v != null && Type.GetTypeCode (v.GetType ()) == TypeCode.Object)
 				v = new ManagedObject (v);
 
 			ScriptObjectHelper.ValueFromObject (ref value, v);
