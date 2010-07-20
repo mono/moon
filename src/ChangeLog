@@ -1,6 +1,9 @@
 2010-07-22  David Reveman  <davidr@novell.com>
 
 	* uielement.h:
+	* uielement.cpp: Add InvalidateEffect.
+
+	* uielement.h:
 	* uielement.cpp:
 	* textblock.cpp (ComputeBounds):
 	* stylus.cpp (ComputeBounds):

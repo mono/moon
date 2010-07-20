@@ -250,8 +250,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	} else if (args->GetId () == UIElement::EffectProperty) {
-		effect_padding = GetRenderEffect () ? GetRenderEffect ()->Padding () : Thickness (0);
-		FullInvalidate (false);
+		InvalidateEffect ();
 	} else if (args->GetId () == UIElement::ProjectionProperty) {
 		InvalidateSubtreePaint ();
 		UpdateProjection ();
@@ -598,8 +597,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		InvalidateMask ();
 	}
 	else if (prop && prop->GetId () == UIElement::EffectProperty) {
-		effect_padding = GetRenderEffect () ? GetRenderEffect ()->Padding () : Thickness (0);
-		FullInvalidate (false);
+		InvalidateEffect ();
 	}
 	else if (prop && prop->GetId () == UIElement::ProjectionProperty) {
 		InvalidateSubtreePaint ();
@@ -1000,6 +998,23 @@ UIElement::InvalidateVisibility ()
 {
 	UpdateTotalRenderVisibility ();
 	InvalidateSubtreePaint ();
+}
+
+void
+UIElement::InvalidateEffect ()
+{
+	Effect    *effect = GetRenderEffect ();
+	Thickness old_effect_padding = effect_padding;
+
+	if (effect)
+		effect_padding = effect->Padding ();
+	else
+		effect_padding = Thickness (0);
+
+	InvalidateSubtreePaint ();
+
+	if (old_effect_padding != effect_padding)
+		UpdateBounds ();
 }
 
 /*

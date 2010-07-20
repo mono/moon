@@ -373,6 +373,7 @@ public:
 	void InvalidateMask ();
 	void InvalidateClip ();
 	void InvalidateVisibility ();
+	void InvalidateEffect ();
 
 	//
 	// GetTransformOrigin:
