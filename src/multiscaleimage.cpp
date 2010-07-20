@@ -133,7 +133,6 @@ qtree_insert (QTree *root, int level, guint64 x, guint64 y)
 static void
 qtree_set_image (QTree *node, cairo_surface_t *image)
 {
-	//FIXME: the destroy method should be a ctor argument
 	if (node->has_image && node->image)
 		cairo_surface_destroy (node->image);
 	
@@ -1440,14 +1439,17 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	} else if (args->GetId () == MultiScaleImage::UseSpringsProperty) {
 		if (!args->GetNewValue()->AsBool ()) {
 			if (zoom_sb) {
-				double endpoint = GetZoomAnimationEndPoint ();
+				double endpoint = zoom_target;
 				zoom_sb->StopWithError (NULL);
+				zoom_target = NAN;
 				SetViewportWidth (endpoint);
 			}
+			
 			if (pan_sb) {
-				Point *endpoint = GetPanAnimationEndPoint ();
+				Point endpoint = pan_target;
 				pan_sb->StopWithError (NULL);
-				SetViewportOrigin (endpoint);
+				pan_target = Point (NAN, NAN);
+				SetViewportOrigin (&endpoint);
 			}
 		}
 	}
@@ -1562,7 +1564,7 @@ MultiScaleImage::EmitMotionFinished ()
 		Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
-Point*
+Point *
 MultiScaleImage::GetPanAnimationEndPoint ()
 {
 	return pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->GetValue ();

@@ -1,3 +1,11 @@
+2010-07-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (OnPropertyChanged): Since setting
+	ViewportOrigin/Width checks against the pan/zoom targets to check
+	if the values have changed, set these targets to NAN before
+	calling SetViewportOrigin/Width() when the UseSprings property is
+	disabled. Fixes the ChangeUseSprings moon-unit test.
+
 2010-07-20  Alan McGovern  <amcgovern@novell.com>
 
 	* fontmanager.cpp: Use the correct value when calling the base
