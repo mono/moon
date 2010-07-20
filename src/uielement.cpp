@@ -57,6 +57,7 @@ UIElement::UIElement ()
 	cairo_matrix_init_identity (&absolute_xform);
 	cairo_matrix_init_identity (&layout_xform);
 	cairo_matrix_init_identity (&local_xform);
+	Matrix3D::Identity (local_projection);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
@@ -486,6 +487,7 @@ UIElement::ComputeTransform ()
 	double m[16];
 	cairo_matrix_init_identity (&absolute_xform);
 	Matrix3D::Identity (absolute_projection);
+	Matrix3D::Identity (local_projection);
 
 	if (GetVisualParent () != NULL) {
 		absolute_xform = GetVisualParent ()->absolute_xform;
@@ -516,24 +518,27 @@ UIElement::ComputeTransform ()
 			  layout_xform.xx, layout_xform.xy,
 			  layout_xform.yx, layout_xform.yy,
 			  layout_xform.x0, layout_xform.y0);
-	Matrix3D::Multiply (absolute_projection, m, absolute_projection);
+	Matrix3D::Multiply (local_projection, m, local_projection);
 
 	Matrix3D::Affine (m,
 			  local_xform.xx, local_xform.xy,
 			  local_xform.yx, local_xform.yy,
 			  local_xform.x0, local_xform.y0);
-	Matrix3D::Multiply (absolute_projection, m, absolute_projection);
+	Matrix3D::Multiply (local_projection, m, local_projection);
 
 	if (projection) {
 		projection->GetTransform (render_projection);
-		Matrix3D::Multiply (absolute_projection, render_projection,
-				    absolute_projection);
+		Matrix3D::Multiply (local_projection, render_projection,
+				    local_projection);
 		flags |= UIElement::RENDER_PROJECTION;
 	}
 	else {
 		Matrix3D::Identity (render_projection);
 		flags &= ~UIElement::RENDER_PROJECTION;
 	}
+
+	Matrix3D::Multiply (absolute_projection, local_projection,
+			    absolute_projection);
 
 	// add render transformation to perspective render transformation
 	// when intermediate rendering is performed and skew/rotation or
