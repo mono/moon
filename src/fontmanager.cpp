@@ -809,7 +809,7 @@ void
 GlyphTypefaceCollection::OnIsAttachedChanged (bool attached)
 {
 	Value *value;
-	Collection::OnIsAttachedChanged (value);
+	Collection::OnIsAttachedChanged (attached);
 
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
