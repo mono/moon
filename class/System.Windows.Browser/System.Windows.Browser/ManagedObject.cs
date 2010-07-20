@@ -99,17 +99,6 @@ namespace System.Windows.Browser {
 				else if (type.GetProperty ("Count") != null)
 					RegisterScriptableProperty (type.GetProperty ("Count"), "length");
 
-				if (type.GetProperty ("Item") != null)
-					RegisterScriptableProperty (type.GetProperty ("Item"), "item");
-
-#if notused
-				TypeCode inner;
-				if (type.IsGenericType)
-					inner = Type.GetTypeCode (type.GetGenericArguments()[0]);
-				else
-					inner = Type.GetTypeCode (type.GetElementType ());
-#endif
-
 				foreach (MethodInfo mi in type.GetMethods ()) {
 					switch (mi.Name) {
 					case "IndexOf":
@@ -127,6 +116,11 @@ namespace System.Windows.Browser {
 				ListOps listOps = new ListOps ((IList)ManagedObject);
 				Type listOpsType = typeof (ListOps);
 
+				if (type.GetProperty ("Item") != null)
+					RegisterScriptableProperty (type.GetProperty ("Item"), "item");
+				else
+					RegisterScriptableProperty (listOpsType.GetProperty ("Item"), "item", listOps);
+
 				RegisterScriptableMethod (listOpsType.GetMethod ("Pop"), "pop", listOps);
 				RegisterScriptableMethod (listOpsType.GetMethod ("Push"), "push", listOps);
 				RegisterScriptableMethod (listOpsType.GetMethod ("Reverse"), "reverse", listOps);
@@ -140,15 +134,17 @@ namespace System.Windows.Browser {
 
 		public override void SetProperty (string name, object value)
 		{
-			PropertyInfo pi = properties[name];
-			pi.SetValue (ManagedObject, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
+			PropertyInfo pi = properties[name].property;
+			object obj = properties[name].obj;
+			pi.SetValue (obj, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
 		}
 
 		internal override void SetProperty (string name, object[] args)
 		{
-			PropertyInfo pi = properties[name];
+			PropertyInfo pi = properties[name].property;
+			object obj = properties[name].obj;
 			MethodInfo mi = pi.GetSetMethod ();
-			Invoke (mi, ManagedObject, args);
+			Invoke (mi, obj, args);
 		}
 
 		public override object GetProperty (string name)
@@ -356,6 +352,11 @@ namespace System.Windows.Browser {
 			public ListOps (IList obj)
 			{
 				col = obj;
+			}
+
+			public object this[int index] {
+				get { return col[index]; }
+				set { col[index] = value; }
 			}
 
 			public object Pop ()

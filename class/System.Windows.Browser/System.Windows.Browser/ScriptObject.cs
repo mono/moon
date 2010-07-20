@@ -43,6 +43,11 @@ namespace System.Windows.Browser {
 		public object obj;
 	}
 
+	class Property {
+		public PropertyInfo property;
+		public object obj;
+	}
+
 	public class ScriptObject {
 		IntPtr _handle;
 		bool free_mapping;
@@ -50,7 +55,7 @@ namespace System.Windows.Browser {
 
 		internal Dictionary<string, EventInfo> events = new Dictionary<string, EventInfo> ();
 		internal Dictionary<string, List<Method>> methods = new Dictionary<string, List<Method>> ();
-		internal Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo> ();
+		internal Dictionary<string, Property> properties = new Dictionary<string, Property> ();
 		internal Dictionary<string, List<ScriptObjectEventInfo>> event_handlers;
 		
 		internal bool HasTypes { get; set; }
@@ -315,7 +320,12 @@ namespace System.Windows.Browser {
 
 		internal void RegisterScriptableProperty (PropertyInfo pi, string scriptAlias)
 		{
-			properties[scriptAlias] = pi;
+			RegisterScriptableProperty (pi, scriptAlias, ManagedObject);
+		}
+
+		internal void RegisterScriptableProperty (PropertyInfo pi, string scriptAlias, object target)
+		{
+			properties[scriptAlias] = new Property () {property = pi, obj = target};
 		}
 
 		private bool HasProperty (string scriptAlias)
@@ -365,12 +375,13 @@ namespace System.Windows.Browser {
 
 		internal object GetProperty (string scriptAlias, object[] args)
 		{
-			PropertyInfo pi = properties[scriptAlias];
+			PropertyInfo pi = properties[scriptAlias].property;
+			object obj = properties[scriptAlias].obj;
 			if (pi.GetIndexParameters().Length > 0) {
 				MethodInfo mi = pi.GetGetMethod ();
-				return Invoke (mi, ManagedObject, args);
+				return Invoke (mi, obj, args);
 			}
-			return pi.GetValue (ManagedObject, null);
+			return pi.GetValue (obj, null);
 		}
 
 		private bool GetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)

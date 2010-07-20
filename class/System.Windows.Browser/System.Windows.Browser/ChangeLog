@@ -1,5 +1,12 @@
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObject.cs: Change the property registration to optionally use
+	custom properties on helper objects (like the methods)
+	* ManagedObject.cs: Add an indexer to ListOps to support arrays
+	(no Item property on []s)
+
+2010-07-20  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs: add missing null check
 
 2010-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
