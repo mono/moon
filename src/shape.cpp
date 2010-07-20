@@ -721,7 +721,7 @@ void
 Shape::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 {
 	InvalidateSurfaceCache ();
-	bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (current);
+	bounds = IntersectBoundsWithClipPath (GetStretchExtents ().GrowBy (effect_padding), false).Transform (current);
         bounds_with_children = bounds;
 
         ComputeGlobalBounds ();
@@ -731,7 +731,7 @@ Shape::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 void
 Shape::ComputeBounds ()
 {
-        bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (&absolute_xform);
+        bounds = IntersectBoundsWithClipPath (GetStretchExtents ().GrowBy (effect_padding), false).Transform (&absolute_xform);
         bounds_with_children = bounds;
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 
@@ -906,6 +906,7 @@ void
 Shape::InvalidateStretch ()
 {
 	extents = Rect (0, 0, -INFINITY, -INFINITY);
+        extents_with_children = extents;
 	cairo_matrix_init_identity (&stretch_transform);
 	InvalidatePathCache ();
 }
@@ -913,8 +914,10 @@ Shape::InvalidateStretch ()
 Rect 
 Shape::GetStretchExtents ()
 {
-	if (extents.IsEmpty ())
+	if (extents.IsEmpty ()) {
 		extents = ComputeStretchBounds ();
+		extents_with_children = extents;
+	}
 	
 	return extents;
 }

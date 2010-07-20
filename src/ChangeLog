@@ -1,5 +1,27 @@
 2010-07-22  David Reveman  <davidr@novell.com>
 
+	* uielement.h:
+	* uielement.cpp:
+	* textblock.cpp (ComputeBounds):
+	* stylus.cpp (ComputeBounds):
+	* shape.cpp:
+	* panel.cpp (ComputeBounds):
+	* grid.cpp (ComputeBounds):
+	* glyphs.cpp (ComputeBounds):
+	* frameworkelement.h:
+	* frameworkelement.cpp:
+	* canvas.cpp (ComputeBounds): Add extents_with_children and
+	adjust bounds computations to properly update extents for
+	rendering to intermediate buffers. GetGlobalBounds now
+	returns subtree bounds in parent coordinate space.
+
+	* uielement.h:
+	* uielement.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Add GetSubtreeExtents function which
+	returns un-clipped extents required when rendering to an
+	intermediate buffer.
+
 	* uielement.cpp (ComputeTransform): Always add affine
 	transformation to perspective transformation when intermediate
 	rendering is performed.

@@ -39,8 +39,8 @@ Canvas::ComputeBounds ()
 	coverage_bounds = bounds;
 	if (surface && IsAttached () && surface->IsTopLevel (this)) {
 		// toplevel canvas don't subscribe to the same bounds computation as others
-		bounds = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
-		bounds_with_children = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
+		bounds = extents = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
+		bounds_with_children = extents_with_children = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 
 		ComputeGlobalBounds ();
 		ComputeSurfaceBounds ();

@@ -81,6 +81,7 @@ public:
 	virtual Rect GetLocalBounds ();
 	virtual Rect GetGlobalBounds ();
 	virtual Rect GetSubtreeBounds ();
+	virtual Rect GetSubtreeExtents ();
 	virtual void Dispose ();
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
@@ -194,6 +195,7 @@ protected:
 	Rect bounds_with_children;
 	Rect global_bounds_with_children;
 	Rect surface_bounds_with_children;
+	Rect extents_with_children;
 	GHashTable *styles;
 
 	virtual ~FrameworkElement ();

@@ -196,13 +196,15 @@ TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 void
 TextBlock::ComputeBounds ()
 {
-	Rect extents = layout->GetRenderExtents ();
+	extents = layout->GetRenderExtents ();
 	Thickness padding = *GetPadding ();
 	
 	extents.x += padding.left;
 	extents.y += padding.top;
+
+	extents_with_children = extents;
 	
-        bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+        bounds = IntersectBoundsWithClipPath (extents.GrowBy (effect_padding), false).Transform (&absolute_xform);
 	bounds_with_children = bounds;
 
 	ComputeGlobalBounds ();

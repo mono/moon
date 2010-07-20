@@ -290,17 +290,18 @@ FrameworkElement::ComputeBounds ()
 	size = ApplySizeConstraints (size);
 
 	extents = Rect (0, 0, size.width, size.height);
-
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	bounds_with_children = bounds;
+	extents_with_children = extents;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *item = walker.Step ()) {
 		if (!item->GetRenderVisible ())
 			continue;
 
-		bounds_with_children = bounds_with_children.Union (item->GetGlobalBounds ());
+		extents_with_children = extents_with_children.Union (item->GetGlobalBounds ());
 	}
+
+	bounds = IntersectBoundsWithClipPath (extents.GrowBy (effect_padding), false).Transform (&absolute_xform);
+	bounds_with_children = extents_with_children.GrowBy (effect_padding).Transform (&absolute_xform);
 
 	ComputeGlobalBounds ();
 	ComputeSurfaceBounds ();
@@ -309,33 +310,15 @@ FrameworkElement::ComputeBounds ()
 void
 FrameworkElement::ComputeGlobalBounds ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
-
 	UIElement::ComputeGlobalBounds ();
-
-	if (GetSubtreeObject () != NULL) {
-		global_bounds_with_children =
-			bounds_with_children.GrowBy (effect_padding).Transform (render_projection);
-	}
+	global_bounds_with_children = extents_with_children.GrowBy (effect_padding).Transform (local_projection);
 }
 
 void
 FrameworkElement::ComputeSurfaceBounds ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
-
 	UIElement::ComputeSurfaceBounds ();
-
-	if (GetSubtreeObject () != NULL) {
-		FrameworkElement *element = (FrameworkElement *) this;
-
-		surface_bounds_with_children = global_bounds_with_children;
-
-		while ((element = (FrameworkElement *) element->GetVisualParent ())) {
-			if (element->flags & UIElement::RENDER_PROJECTION)
-				surface_bounds_with_children = surface_bounds_with_children.Transform (element->render_projection);
-		}
-	}
+	surface_bounds_with_children = extents_with_children.GrowBy (effect_padding).Transform (absolute_projection);
 }
 
 Rect
@@ -366,6 +349,16 @@ FrameworkElement::GetSubtreeBounds ()
 		return surface_bounds_with_children;
 
 	return surface_bounds;
+}
+
+Rect
+FrameworkElement::GetSubtreeExtents ()
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	if (GetSubtreeObject () != NULL)
+		return extents_with_children;
+
+	return extents;
 }
 
 Size

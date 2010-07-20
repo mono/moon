@@ -295,9 +295,16 @@ public:
 	//
 	// GetGlobalBounds:
 	//   returns the bounding box including all sub-uielements.
-	//   implemented by containers in global projection coordinates.
+	//   implemented by containers in parent coordinates.
 	//
 	virtual Rect GetGlobalBounds () { return global_bounds; }
+
+	//
+	// GetSubtreeExtents:
+	//   returns the extents including all sub-uielements.
+	//   implemented by containers in local coordinates.
+	//
+	virtual Rect GetSubtreeExtents () { return extents; }
 
 
 	//

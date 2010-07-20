@@ -58,7 +58,7 @@ Panel::ComputeBounds ()
 #endif
 
 	// Clear the previous values
-	extents = bounds = bounds_with_children = Rect ();
+	extents = extents_with_children = bounds = bounds_with_children = Rect ();
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *item = walker.Step ()) {
@@ -67,23 +67,17 @@ Panel::ComputeBounds ()
 		if (!item->GetRenderVisible ())
 			continue;
 
-		Rect r = item->GetGlobalBounds ();
-		r = IntersectBoundsWithClipPath (r, true);
-
-#if DEBUG_BOUNDS
-		space (levelb + 4);
-		printf ("Item (%s, %s) bounds %g %g %g %g\n", item->GetName (), item->GetTypeName (),
-			r.x, r.y, r.width, r.height);
-#endif
-		bounds_with_children = bounds_with_children.Union (r);
+		extents_with_children = extents_with_children.Union (item->GetGlobalBounds ());
 	}
 
 	Brush *bg = GetBackground();
 	if (bg) {
 		extents = Rect (0,0,GetActualWidth (),GetActualHeight ());
-		bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-		bounds_with_children = bounds_with_children.Union (bounds);
+		extents_with_children = extents_with_children.Union (extents);
 	}
+
+	bounds = IntersectBoundsWithClipPath (extents.GrowBy (effect_padding), false).Transform (&absolute_xform);
+	bounds_with_children = IntersectBoundsWithClipPath (extents_with_children.GrowBy (effect_padding).Transform (&absolute_xform), true);
 
 	ComputeGlobalBounds ();
 	ComputeSurfaceBounds ();
