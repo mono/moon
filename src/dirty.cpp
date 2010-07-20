@@ -452,8 +452,8 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
-	int layers_count = layers->GetCount ();
-	for (int i = 0; i < layers_count; i++) {
+	// Caching layers->GetCount causes a crash in #869 since the # of layers can change while measuring.
+	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 		if (!layer->HasFlag (UIElement::DIRTY_MEASURE_HINT) && !layer->HasFlag (UIElement::DIRTY_ARRANGE_HINT))
 			continue;
