@@ -540,14 +540,9 @@ UIElement::ComputeTransform ()
 	Matrix3D::Multiply (absolute_projection, local_projection,
 			    absolute_projection);
 
-	// add render transformation to perspective render transformation
-	// when intermediate rendering is performed and skew/rotation or
-	// projection is present
-	if (RenderToIntermediate () && (projection ||
-					absolute_xform.xx != 1.0 ||
-					absolute_xform.xy != 0.0 ||
-					absolute_xform.yx != 0.0 ||
-					absolute_xform.yy != 1.0)) {
+	// add affine transformation to perspective transformation
+	// when intermediate rendering is performed
+	if (RenderToIntermediate ()) {
 		Matrix3D::Affine (m,
 				  absolute_xform.xx, absolute_xform.xy,
 				  absolute_xform.yx, absolute_xform.yy,

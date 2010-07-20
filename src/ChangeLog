@@ -1,5 +1,9 @@
 2010-07-22  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (ComputeTransform): Always add affine
+	transformation to perspective transformation when intermediate
+	rendering is performed.
+
 	* uielement.h:
 	* uielement.cpp: Add local_projection for transforming local
 	coordinates to parent coordinate space.
