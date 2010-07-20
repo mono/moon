@@ -389,13 +389,19 @@ namespace System.Windows.Browser {
 
 		private bool GetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)
 		{
-			object[] args = new object[arg_count];
-			for (int i = 0; i < arg_count; i++) {
-				if (uargs[i] == IntPtr.Zero) {
-					args[i] = null;
-				} else {
-					Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
-					args[i] = ScriptObjectHelper.ObjectFromValue<object> (val);
+			object[] args;
+			if (ManagedObject is IDictionary) {
+				args = new object[]{scriptAlias};
+				scriptAlias = "item";
+			} else {
+				args = new object[arg_count];
+				for (int i = 0; i < arg_count; i++) {
+					if (uargs[i] == IntPtr.Zero) {
+						args[i] = null;
+					} else {
+						Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
+						args[i] = ScriptObjectHelper.ObjectFromValue<object> (val);
+					}
 				}
 			}
 
