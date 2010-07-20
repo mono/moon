@@ -252,9 +252,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == UIElement::EffectProperty) {
 		InvalidateEffect ();
 	} else if (args->GetId () == UIElement::ProjectionProperty) {
-		InvalidateSubtreePaint ();
 		UpdateProjection ();
-		UpdateBounds (true);
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -600,9 +598,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		InvalidateEffect ();
 	}
 	else if (prop && prop->GetId () == UIElement::ProjectionProperty) {
-		InvalidateSubtreePaint ();
 		UpdateProjection ();
-		UpdateBounds (true);
 	}
 
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);

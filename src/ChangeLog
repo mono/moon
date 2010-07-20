@@ -1,5 +1,8 @@
 2010-07-22  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: A call to UpdateProjection is enough when
+	projection property changes.
+
 	* uielement.h:
 	* uielement.cpp: Add InvalidateEffect.
 
