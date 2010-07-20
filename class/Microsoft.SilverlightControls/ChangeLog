@@ -1,3 +1,10 @@
+2010-07-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ToolTip/ToolTip.cs: This property should be a
+	  custom (non parenting) property. Fixes bug #623708 and
+	  regressions in the Silverlight 3 toolkit demo with the
+	  TreeView.
+
 2010-06-30  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs: Don't try to handle

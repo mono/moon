@@ -84,7 +84,7 @@ namespace System.Windows.Controls
         /// Identifies the HorizontalOffset dependency property.
         /// </summary>
         public static readonly DependencyProperty PlacementTargetProperty = 
-            DependencyProperty.RegisterCore( 
+            DependencyProperty.Register ( 
                 "PlacementTarget",
                 typeof(UIElement), 
                 typeof(ToolTip),
