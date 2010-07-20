@@ -1,5 +1,10 @@
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObject.cs: use the actual object instead of the wrapper
+	  when invoking methods from script
+
+2010-07-20  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs: Map any IDictionary property access to the
 	  custom item indexer (on DictOps)
 

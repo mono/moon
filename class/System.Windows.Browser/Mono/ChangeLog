@@ -1,5 +1,10 @@
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObjectHelper.cs: revert previous change (r160617), too broad.
+	  Instead, it's done at invoke level.
+
+2010-07-20  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObjectHelper.cs: return the actual managed object instead
 	  of the wrapper, if there is one (fixes some of drt 983 tests,
 	  like the ByRefGenericContainerInstance weakly typed variants)
