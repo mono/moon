@@ -127,10 +127,13 @@ namespace System.Windows.Browser {
 				RegisterScriptableMethod (listOpsType.GetMethod ("Shift"), "shift", listOps);
 				RegisterScriptableMethod (listOpsType.GetMethod ("Unshift"), "unshift", listOps);
 				RegisterScriptableMethod (listOpsType.GetMethod ("Splice"), "splice", listOps);
+			} else if (ManagedObject is IDictionary) {
+				DictOps dictOps = new DictOps ((IDictionary)ManagedObject);
+				Type dictOpsType = typeof (DictOps);
+
+				RegisterScriptableProperty (dictOpsType.GetProperty ("Item"), "item", dictOps);
 			}
 		}
-
-
 
 		public override void SetProperty (string name, object value)
 		{
@@ -458,9 +461,25 @@ namespace System.Windows.Browser {
 						col.Insert (startIndex + i - 1, args[i]);
 			}
 		}
+
+		class DictOps {
+			IDictionary col;
+
+			public DictOps (IDictionary obj)
+			{
+				col = obj;
+			}
+
+			public object this[string index] {
+				get {
+					if (col.Contains (index))
+						return col[index];
+					return null;
+				}
+				set { col[index] = value; }
+			}
+		}
 #endregion
-
-
 	}
 
 }
