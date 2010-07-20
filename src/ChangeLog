@@ -1,3 +1,8 @@
+2010-07-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (OnPropertyChanged): Need to update
+	InternalViewport properties afterall. Re-fixes drts 291 and 509.
+
 2010-07-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dirty.cpp: UpdateLayout: don't cache the # of layers, it may change while

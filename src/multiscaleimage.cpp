@@ -1404,20 +1404,14 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 			StopDownloading ();
 	} else if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
 		Point *origin = args->GetNewValue ()->AsPoint ();
-		
-		if (pan_target != *origin) {
-			pan_target = Point (origin->x, origin->y);
-			SetInternalViewportOrigin (origin);
-		}
+		pan_target = Point (origin->x, origin->y);
+		SetInternalViewportOrigin (origin);
 		
 		ClearValue (MultiScaleImage::ViewportOriginProperty, false);
 	} else if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
 		double target = args->GetNewValue ()->AsDouble ();
-		
-		if (zoom_target != target) {
-			SetInternalViewportWidth (target);
-			zoom_target = target;
-		}
+		SetInternalViewportWidth (target);
+		zoom_target = target;
 		
 		ClearValue (MultiScaleImage::ViewportWidthProperty, false);
 	} else if (args->GetId () == MultiScaleImage::TileFadeProperty) {
