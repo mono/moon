@@ -199,6 +199,7 @@ protected:
 	virtual ~FrameworkElement ();
 	
 private:
+	static void logical_parent_destroyed (EventObject *sender, EventArgs *args, gpointer closure);
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
 	LoadedCallback loaded_cb;

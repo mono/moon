@@ -1,3 +1,10 @@
+2010-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.h:
+	* frameworkelement.cpp: Add a destroyed listener to
+	  FrameworkElement::LogicalParent so we don't end up with
+	  dangling pointers if the parent is collected˙
+
 2010-07-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (OnPropertyChanged): Need to update

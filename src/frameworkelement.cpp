@@ -47,6 +47,10 @@ FrameworkElementProvider::~FrameworkElementProvider ()
 void
 FrameworkElement::Dispose ()
 {
+	if (logical_parent) {
+		logical_parent->RemoveHandler (EventObject::DestroyedEvent, FrameworkElement::logical_parent_destroyed, this);
+		logical_parent = NULL;
+	}
 	if (default_template != NULL) {
 		default_template->SetParent (NULL, NULL);
 		default_template->unref ();
@@ -169,12 +173,22 @@ void FrameworkElement::SetVisualParent (UIElement *visual_parent)
 void
 FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError *error)
 {
+	if (logical_parent == this->logical_parent)
+		return;
+
 	if (logical_parent && this->logical_parent && this->logical_parent != logical_parent) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is a child of another element");
 		return;
-	}			
+	}
 
+	DependencyObject *old_parent = this->logical_parent;
 	this->logical_parent = logical_parent;
+
+	if (old_parent)
+		old_parent->RemoveHandler (EventObject::DestroyedEvent, FrameworkElement::logical_parent_destroyed, this);
+	if (logical_parent)
+		logical_parent->AddHandler (EventObject::DestroyedEvent, FrameworkElement::logical_parent_destroyed, this);
+
 	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
 	if (logical_parent && logical_parent->Is (Type::FRAMEWORKELEMENT))
 		provider->SetDataSource ((FrameworkElement *) logical_parent);
@@ -184,6 +198,13 @@ FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 		provider->SetDataSource (NULL);
 	if (IsLoaded ())
 		provider->EmitChanged ();
+}
+
+void
+FrameworkElement::logical_parent_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	FrameworkElement *o = (FrameworkElement *) closure;
+	o->SetLogicalParent (NULL, NULL);
 }
 
 void
