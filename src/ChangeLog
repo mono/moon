@@ -1,5 +1,9 @@
 2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Correctly pass bool arguments to mono_runtime_invoke.
+
+2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* security.h: Set correct object type in ctor.
 
 2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
