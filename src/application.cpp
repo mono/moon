@@ -245,6 +245,7 @@ char *
 Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 {
 	char *dirname, *path, *filename, *url;
+	char *canonicalized_filename;
 	ManagedStreamCallbacks stream;
 	unzFile zipfile;
 	struct stat st;
@@ -257,15 +258,16 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	
 	// construct the path name for this resource
 	filename = uri->ToString ();
-	CanonicalizeFilename (filename, -1, CanonModeResource);
+	canonicalized_filename = Deployment::GetCurrent ()->CanonicalizeFileName (filename, false);
 	if (uri->GetQuery () != NULL) {
-		char *sc = strchr (filename, ';');
+		char *sc = strchr (canonicalized_filename, ';');
 		if (sc)
 			*sc = '/';
 	}
 	
-	path = g_build_filename (GetResourceRoot(), filename, NULL);
+	path = g_build_filename (GetResourceRoot(), canonicalized_filename, NULL);
 	g_free (filename);
+	g_free (canonicalized_filename);
 	
 	if (g_stat (path, &st) != -1) {
 		// path exists, we're done

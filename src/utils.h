@@ -66,8 +66,6 @@ enum CanonMode {
 
 bool UnzipByteArrayToDir (GByteArray *array, const char *dir, CanonMode mode);
 
-const char *CanonicalizeFilename (char *filename, int n, CanonMode mode);
-
 bool ExtractFile (unzFile zip, int fd);
 bool ExtractAll (unzFile zip, const char *dir, CanonMode mode);
 

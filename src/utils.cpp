@@ -516,45 +516,6 @@ is_dll_or_mdb (const char *filename, int n)
 	return n > 4 && (!g_ascii_strcasecmp (filename + (n - 4), ".dll") || !g_ascii_strcasecmp (filename + (n - 4), ".mdb"));
 }
 
-const char *
-CanonicalizeFilename (char *filename, int n, CanonMode mode)
-{
-	char *inptr = filename;
-	char *inend;
-	
-	if (n < 0)
-		n = strlen (filename);
-	
-	inend = inptr + n;
-	
-	if (mode == CanonModeXap && is_dll_or_mdb (filename, n)) {
-		// Note: We don't want to change the casing of the dll's
-		// basename since Mono requires the basename to match the
-		// expected case.
-		
-		inend -= 5;
-		while (inend > inptr && *inend != '\\' && *inend != '/')
-			inend--;
-		
-		if (*inend == '\\') {
-			// include the trailing '\\'
-			inend++;
-		}
-	}
-	
-	while (inptr < inend) {
-		if (*inptr != '\\') {
-			if (mode != CanonModeNone)
-				*inptr = g_ascii_tolower (*inptr);
-		} else
-			*inptr = G_DIR_SEPARATOR;
-		
-		inptr++;
-	}
-	
-	return filename;
-}
-
 bool
 ExtractFile (unzFile zip, int fd)
 {
@@ -585,6 +546,7 @@ bool
 ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 {
 	char *filename, *dirname, *path, *altpath;
+	char *canonicalized_filename;
 	unz_file_info info;
 	int fd;
 	
@@ -601,14 +563,15 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		
 		unzGetCurrentFileInfo (zip, NULL, filename, info.size_filename + 1, NULL, 0, NULL, 0);
 		
-		CanonicalizeFilename (filename, info.size_filename, mode);
+		canonicalized_filename = Deployment::GetCurrent ()->CanonicalizeFileName (filename, mode == CanonModeXap);
 		
-		path = g_build_filename (dir, filename, NULL);
+		path = g_build_filename (dir, canonicalized_filename, NULL);
 		
 		dirname = g_path_get_dirname (path);
 		if (g_mkdir_with_parents (dirname, 0700) == -1 && errno != EEXIST) {
 			g_free (filename);
 			g_free (dirname);
+			g_free (canonicalized_filename);
 			g_free (path);
 			return false;
 		}
@@ -617,12 +580,14 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		
 		if ((fd = g_open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1) {
 			g_free (filename);
+			g_free (canonicalized_filename);
 			g_free (path);
 			return false;
 		}
 		
 		if (unzOpenCurrentFile (zip) != UNZ_OK) {
 			g_free (filename);
+			g_free (canonicalized_filename);
 			g_free (path);
 			close (fd);
 			return false;
@@ -631,6 +596,7 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		if (!ExtractFile (zip, fd)) {
 			unzCloseCurrentFile (zip);
 			g_free (filename);
+			g_free (canonicalized_filename);
 			g_free (path);
 			return false;
 		}
@@ -638,14 +604,16 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		unzCloseCurrentFile (zip);
 		
 		if (mode == CanonModeXap && is_dll_or_mdb (filename, info.size_filename)) {
-			CanonicalizeFilename (filename, info.size_filename, CanonModeResource);
-			altpath = g_build_filename (dir, filename, NULL);
+			g_free (canonicalized_filename);
+			canonicalized_filename = Deployment::GetCurrent ()->CanonicalizeFileName (filename, false);
+			altpath = g_build_filename (dir, canonicalized_filename, NULL);
 			if (strcmp (path, altpath) != 0)
 				symlink (path, altpath);
 			g_free (altpath);
 		}
 		
 		g_free (filename);
+		g_free (canonicalized_filename);
 		g_free (path);
 	} while (unzGoToNextFile (zip) == UNZ_OK);
 	

@@ -394,6 +394,9 @@ public:
 	void UnregisterHttpRequest (HttpRequest *request);
 	void AbortAllHttpRequests ();
 
+	/* Managed helpers */
+	char *CanonicalizeFileName (const char *filename, bool is_xap_mode);
+
 protected:
 	virtual ~Deployment ();
 

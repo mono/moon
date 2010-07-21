@@ -1665,6 +1665,68 @@ Deployment::GetDeploymentCount ()
 	return deployment_count;
 }
 
+char *
+Deployment::CanonicalizeFileName (const char *filename, bool is_xap_mode)
+{
+	MonoObject *exc = NULL;
+	MonoObject *result;
+	MonoClass *mono_helper;
+	MonoClass *system_boolean;
+	MonoMethod *canonicalize_filename;
+	MonoImage *corlib_image;
+	MonoAssembly *corlib_assembly;
+	void *params [2];
+
+	LOG_DEPLOYMENT ("Deployment::CanonicalizeFileName (%s, %i)\n", filename, is_xap_mode);
+
+	corlib_assembly = mono_assembly_load_with_partial_name ("mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
+	if (corlib_assembly == NULL) {
+		printf ("Moonlight: could not find mscorlib.\n");
+		return g_strdup (filename);
+	}
+
+	corlib_image = mono_assembly_get_image (corlib_assembly);
+	if (corlib_image == NULL) {
+		printf ("Moonlight: could not find mscorlib image.\n");
+		return g_strdup (filename);
+	}
+
+	system_boolean = mono_class_from_name (corlib_image, "System", "Boolean");
+	if (system_boolean == NULL) {
+		printf ("Moonlight: Could not find managed System.Boolean type.\n");
+		return g_strdup (filename);
+	}
+
+	mono_helper = mono_class_from_name (system_windows_image, "Mono", "Helper");
+	if (mono_helper == NULL) {
+		printf ("Moonlight: Could not find managed Mono.Helper type.\n");
+		return g_strdup (filename);
+	}
+
+	canonicalize_filename  = MonoGetMethodFromName (mono_helper, "CanonicalizeFileName", 2);
+
+	if (!canonicalize_filename) {
+		printf ("Moonlight: Could not find managed method Mono.Helper.CanonicalizeFileName.\n");
+		return g_strdup (filename);
+	}
+
+	params [0] = mono_string_new (domain, filename);
+	params [1] = mono_value_box (domain, system_boolean, &is_xap_mode);
+	result = mono_runtime_invoke (canonicalize_filename, NULL, params, &exc);
+
+	if (exc) {
+		printf ("Moonlight: Exception in call to Mono.Helper.CanonicalizeFileName.\n");
+		// surface->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return g_strdup (filename);
+	}
+
+	char *r = mono_string_to_utf8 ((MonoString *) result);
+
+	LOG_DEPLOYMENT ("Deployment::CanonicalizeFileName (%s, %i) => %s\n", filename, is_xap_mode, r);
+
+	return r;
+}
+
 /*
  * AssemblyPart
  */

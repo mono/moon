@@ -139,6 +139,34 @@ namespace Mono {
 			return buf;
 		}
 		
+		static string CanonicalizeFileName (string filename, bool is_xap_mode)
+		{
+			StringBuilder result = new StringBuilder (filename.Length);
+			string extension;
+			string dir;
+			string append = null;
+			string original_filename = filename;
+
+			if (is_xap_mode) {
+				extension = Path.GetExtension (filename).ToLower ();
+				if (extension == ".dll" || extension == ".mdb") {
+					// Note: We don't want to change the casing of the dll's
+					// basename since Mono requires the basename to match the
+					// expected case.
+
+					append = Path.GetFileName (filename);
+					filename = filename.Substring (0, filename.Length - append.Length);
+				}
+			}
+
+			CanonicalizeName (result, filename, filename.Length);
+
+			if (append != null)
+				result.Append (append);
+
+			return result.ToString ();
+		}
+
 		static void CanonicalizeName (StringBuilder sb, string str, int n)
 		{
 			// Fix path separators and capitalization
