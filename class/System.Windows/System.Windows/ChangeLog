@@ -1,3 +1,9 @@
+2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Application.cs: GetResourceStream: Only the uri when fetching embedded
+	resources, otherwise it breaks the #GB18030* tests since we end up
+	looking for files in the filesystem using the escaped characters.
+
 2010-07-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DependencyObject.g.cs: Regenerated

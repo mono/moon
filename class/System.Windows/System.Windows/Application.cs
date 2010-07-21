@@ -457,7 +457,7 @@ namespace System.Windows {
 			Assembly assembly;
 			string assembly_name;
 			string resource;
-			string loc = Uri.EscapeUriString (uriResource.ToString ());
+			string loc = uriResource.ToString ();
 			int p = loc.IndexOf (';');
 
 			/* We have a resource of the format /assembly;component/resourcename */
@@ -483,7 +483,7 @@ namespace System.Windows {
 
 			try {
 				var manager = new ResourceManager (assembly_name + ".g", assembly) { IgnoreCase = true };
-				var stream = manager.GetStream (resource);
+				var stream = manager.GetStream (Uri.EscapeUriString (resource));
 				if (stream != null)
 					return new StreamResourceInfo (stream, string.Empty);
 			} catch {}
