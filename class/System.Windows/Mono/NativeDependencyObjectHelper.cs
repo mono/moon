@@ -394,6 +394,7 @@ namespace Mono {
 			case Kind.ROWDEFINITION_COLLECTION: return new RowDefinitionCollection (raw, false);
 			case Kind.RUN: return new Run (raw, false);
 			case Kind.SECTION: return new Section (raw, false);
+			case Kind.SECURITYSETTINGS: return new SecuritySettings (raw, false);
 			case Kind.SETTERBASE_COLLECTION: return new SetterBaseCollection (raw, false);
 			case Kind.SETTER: return new Setter (raw, false);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw, false);

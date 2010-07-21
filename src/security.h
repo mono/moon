@@ -28,7 +28,7 @@ protected:
 
 public:
 	/* @GeneratePInvoke,GenerateCBinding */
-	SecuritySettings () {}
+	SecuritySettings () : DependencyObject (Type::SECURITYSETTINGS) {}
 
 	/* @PropertyType=ElevatedPermissions,DefaultValue=ElevatedPermissionsNone,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int ElevatedPermissionsProperty;

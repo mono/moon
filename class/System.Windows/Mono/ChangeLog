@@ -1,5 +1,9 @@
 2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* NativeDependencyObjectHelper.cs: Add switch entry for SecuritySettings.
+
+2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Helper.cs: Move CanonicalizeFileName here.
 
 2010-07-14  Sebastien Pouliot  <sebastien@ximian.com>
