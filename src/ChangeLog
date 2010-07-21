@@ -1,3 +1,17 @@
+2010-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp:
+	* control.cpp:
+	* deployment.h:
+	* uielement.cpp:
+	* deployment.cpp: Add a second method to emit loaded events
+	  which does it synchronously. This is required for flushing
+	  loaded events from the splash screen as if we do it
+	  asynchronously, the events might not actually be able to
+	  emit anymore if we set cross_domain_app to true in the
+	  meantime. Change existing calls to EmitLoaded to use
+	  EmitLoadedAsync.
+
 2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Correctly pass bool arguments to mono_runtime_invoke.

@@ -687,7 +687,7 @@ UIElement::ElementAdded (UIElement *item)
 		item->WalkTreeForLoadedHandlers (&post, true, false);
 
 		if (post)
-			GetDeployment ()->EmitLoaded ();
+			GetDeployment ()->EmitLoadedAsync ();
 	}
 
 	UpdateBounds (true);

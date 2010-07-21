@@ -1346,6 +1346,14 @@ Deployment::RemoveLoadedHandler (UIElement *el, int token)
 void
 Deployment::EmitLoaded ()
 {
+	// Sometimes we need to force emission of loaded events, like when flushing
+	// the splashscreen events.
+	Emit (Deployment::LoadedEvent, NULL, true);
+}
+
+void
+Deployment::EmitLoadedAsync ()
+{
 	if (GetSurface ()->IsLoaded ())
 		EmitAsync (Deployment::LoadedEvent, NULL, true);
 }

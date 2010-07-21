@@ -691,7 +691,7 @@ Surface::tick_after_attach_reached (EventObject *data)
 	surface->toplevel->SetIsAttached (true);
 	bool delay = false;
 	surface->toplevel->WalkTreeForLoadedHandlers (&delay, true, false);
-	Deployment::GetCurrent()->EmitLoaded ();
+	Deployment::GetCurrent()->EmitLoadedAsync ();
 }
 
 void
@@ -755,7 +755,7 @@ Surface::AttachLayer (UIElement *layer)
 	bool delay;
 	layer->SetIsAttached (true);
 	layer->WalkTreeForLoadedHandlers (&delay, true, false);
-	Deployment::GetCurrent()->EmitLoaded ();
+	Deployment::GetCurrent()->EmitLoadedAsync ();
 }
 
 void

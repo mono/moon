@@ -331,6 +331,7 @@ public:
 	void DestroyManagedApplication (gpointer plugin_instance);
 
 	void EmitLoaded ();
+	void EmitLoadedAsync ();
 	void AddAllLoadedHandlers (UIElement *el, bool only_unemitted);
 	void RemoveAllLoadedHandlers (UIElement *el);
 	void AddLoadedHandler (UIElement *el, int token);
