@@ -90,7 +90,7 @@ class ResourcePacker {
 				key = file.Substring (comma + 1);
 				file = file.Substring (0, comma);
 			} else {
-				key = Path.GetFileName (file).ToLower ();
+				key = Path.GetFileName (file);
 			}
 
 			
@@ -103,7 +103,7 @@ class ResourcePacker {
 
 				MemoryStream value = new MemoryStream (buffer);
 
-				output.AddResource (key.ToLowerInvariant (), value);
+				output.AddResource (Uri.EscapeUriString (key).ToLowerInvariant (), value);
 			}
 		}
 
