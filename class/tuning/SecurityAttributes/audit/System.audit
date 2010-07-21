@@ -1,6 +1,46 @@
+!SSC-953691D1076B1EC21180364F39B01551
+System.Boolean Mono.Security.Protocol.Tls.HttpsClientStream::RaiseServerCertificateValidation(System.Security.Cryptography.X509Certificates.X509Certificate,System.Int32[])
+	r137255		spouliot - call several ServicePointManager [SecurityCritical] methods
+
+!SSC-939B2CCB175E617A2D5EEFEE6F1F3FFB
+System.Boolean System.Net.DefaultCertificatePolicy::CheckValidationResult(System.Net.ServicePoint,System.Security.Cryptography.X509Certificates.X509Certificate,System.Net.WebRequest,System.Int32)
+	r137253		spouliot - check if ServicePointManager.ServerCertificateValidationCallback [SecurityCritical] is non-null
+
+!SSC-1291552493A550C5DDB77908CABBB7B5
+System.Int32 Mono.Security.Protocol.Tls.SslStreamBase::EndRead(System.IAsyncResult)
+	r58433		spouliot - call WaitHandle.WaitOne(int,bool) [SecurityCritical] with 'false'
+
+!SSC-9B69810567AFA75AF550B5BF97544BB7
+System.Net.Authorization Mono.Http.NtlmClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
+	r140690		spouliot - typecast WebRequest parameter into HttpWebRequest which is [SecurityCritical] in System.dll
+
+!SSC-5DB5DB63AF873D2D711D5979F78C50C4
+System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
+	r140690		spouliot - typecast WebRequest parameter into HttpWebRequest which is [SecurityCritical] in System.dll
+
 !SSC-A53B0E89D6CEDABBF2FCA539CFFBAA0D
 System.Threading.SynchronizationContext System.ComponentModel.AsyncOperationManager::get_SynchronizationContext()
 	r142142		spouliot, getter only, return same as SynchronizationContext.Current
+
+!SSC-AE2E277B0B545EAED08DC3A4C165521C
+System.Void Mono.Security.Protocol.Ntlm.Type1Message::.ctor()
+	r20676		spouliot - call Environment.UserDomainName and MachineName [SecurityCritical] properties (icalls)
+
+!SSC-02DAC67B2C0569D1FAD3C85E087DA1F0
+System.Void Mono.Security.Protocol.Ntlm.Type3Message::.ctor()
+	r20676		spouliot - call Environment.UserName, UserDomainName and MachineName [SecurityCritical] properties (icalls)
+
+!SSC-5213F3E11B701DCE993A1447A68ED46A
+System.Void Mono.Security.Protocol.Tls.ClientSessionInfo::.cctor()
+	r69236		spouliot - read MONO_TLS_SESSION_CACHE_TIMEOUT environment variable (to be removed)
+
+!SSC-F0A0A0FD0B066672E43A98317C2B67AC
+System.Void Mono.Security.Protocol.Tls.HttpsClientStream::.ctor(System.IO.Stream,System.Security.Cryptography.X509Certificates.X509CertificateCollection,System.Net.HttpWebRequest,System.Byte[])
+	r23764		spouliot - use HttpWebRequest which is [SecurityCritical] in System.dll and call ServicePointManager.CheckCertificateRevocationList [SecurityCritical]
+
+!SSC-3E3E0749A6F9C3BD0B982359EA8F4BE3
+System.Void Mono.Security.Protocol.Tls.SslStreamBase::EndWrite(System.IAsyncResult)
+	r58433		spouliot - call WaitHandle.WaitOne(int,bool) [SecurityCritical] with 'false'
 
 !SSC-EDEFDC8F89EC33B2D6A1CBF4C2D8F8C3
 System.Void System.Net.Sockets.SocketException::.ctor()

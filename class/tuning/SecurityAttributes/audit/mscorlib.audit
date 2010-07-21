@@ -590,10 +590,6 @@ System.Int32 System.Array::InternalArray__IndexOf<T>(T)
 System.Int32 System.Array::LastIndexOf(System.Array,System.Object,System.Int32,System.Int32)
 	r142142		spouliot - call GetValueImpl (icall without bounds checking) with a validated 'startIndex' and 'count'
 
-!SSC-8CD4E61637041811C698E53CD64FBA33
-System.Int32 System.Array::MoveNullKeysToFront(System.Array,System.Array,System.Int32,System.Int32,System.Boolean)
-	r145677		spouliot - call GetValueImpl (icall without bounds checking) with non user-controlled, valid values
-
 !SSC-54D9BE064A35261BD2AA4C730C4A4F29
 System.Int32 System.Array::System.Collections.IList.IndexOf(System.Object)
 	r142142		spouliot - call GetValueImpl (icall without bounds checking) with non user-controlled, valid values (0, length)
@@ -965,6 +961,10 @@ System.Object System.Reflection.MonoProperty::GetRawConstantValue()
 !SSC-4DD9FCF0E239E379546DA74A5F6DBCF2
 System.Object System.Runtime.CompilerServices.RuntimeHelpers::GetObjectValue(System.Object)
 	r144558		spouliot - visible icall. called with potentially null value
+
+!SSC-9EDC3E7D1DA66916480D47259466B4F8
+System.Object System.Security.Cryptography.CryptoConfig::CreateFromName(System.String)
+	r160673		spouliot - using Activator.CreateInstance (SecurityCritical) to create AesManaged from System.Core.dll
 
 !SSC-614DD8AE12D0E30A84C3A66580ED233F
 System.Object System.Threading.Interlocked::CompareExchange(System.Object&,System.Object,System.Object)
@@ -1764,6 +1764,11 @@ System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
 	r142142		spouliot - creates a static SimpleCollator instance for CultureInfo.InvariantCulture
 
+!SSC-E3A7742691A707EC4B05EB711435F901
+System.Void System.Array::CheckComparerAvailable(System.Array,System.Int32,System.Int32)
+	r160636		spouliot - renamed (and fixed) from MoveNullKeysToFront - same icall still called under same conditions
+	r145677		spouliot - call GetValueImpl (icall without bounds checking) with non user-controlled, valid values
+
 !SSC-020AAE9122FFBC5470D93CF6372114D4
 System.Void System.Array::Clear(System.Array,System.Int32,System.Int32)
 	r142142		spouliot - call ClearInternal (icall) after validating the parameters
@@ -1788,8 +1793,9 @@ System.Void System.Array::SetValue(System.Object,System.Int32)
 System.Void System.Array::SetValue(System.Object,System.Int32[])
 	r144558		spouliot - visible icall. null-check/exception-thrown in unmanaged code for 'idxs'
 
-!SSC-2B7672883897BC474E8F521B9B5FB2BE
+!SSC-DE3F4E69BE9146A698BADC1F7523F950
 System.Void System.Array::SortImpl(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
+	r160527		spouliot - changed to call CheckComparerAvailable (instead of MoveNullKeysToFront) only when comparer is null
 	r159551		spouliot - additional condition (type check) on 'items' parameter before enable the fast-path
 	r145677		spouliot - new method refactored from Sort (see below)
 	r144307		spouliot - call get_swapper and qsort - both leading to calls to [G|S]etValueImpl (icalls)
