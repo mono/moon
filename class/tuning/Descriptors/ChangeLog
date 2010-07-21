@@ -1,3 +1,7 @@
+2010-07-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.xml: Make sure HTTPS support is not removed
+
 2010-06-22  Jb Evain  <jbevain@novell.com>
 
 	* System.Core.xml: protect some dlr methods.

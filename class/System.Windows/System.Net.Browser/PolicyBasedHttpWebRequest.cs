@@ -157,9 +157,12 @@ namespace System.Net.Browser {
 			// Console.WriteLine ("{0} '{1}' using policy: {2}", method, uri, policy);
 			HttpWebRequest wreq = GetHttpWebRequest (uri);
 			wreq.Method = method;
-			// store SecurityException, to throw later, if we have no policy or are not allowed by the policy
+			// store exception, to throw later, if we have no policy or are not allowed by the policy
 			if ((policy == null) || !policy.IsAllowed (wreq)) {
-				async_result.Exception = new SecurityException ();
+				if ((policy == null) || (policy.Exception == null))
+					async_result.Exception = new SecurityException ();
+				else
+					async_result.Exception = policy.Exception;
 				async_result.SetComplete ();
 				return async_result;
 			}
@@ -203,6 +206,16 @@ namespace System.Net.Browser {
 			GetResponse (this.Method, uri, true);
 		}
 
+		private Exception NotFound (string scheme, WebResponse wres)
+		{
+			if (scheme == "https")
+				return new SecurityException ();
+
+			return new WebException ("NotFound", null, 
+				wres == null ? WebExceptionStatus.UnknownError : WebExceptionStatus.Success, 
+				wres);
+		}
+
 		private void EndCallback (IAsyncResult result)
 		{
 			WebRequest wreq = (result.AsyncState as WebRequest);
@@ -232,10 +245,7 @@ namespace System.Net.Browser {
 					// policy file could be missing, but then it means no policy
 					if (!IsDownloadingPolicy ()) {
 						async_result.Response = wres;
-						if (wres.ResponseUri.Scheme == "https")
-							async_result.Exception = new SecurityException ();
-						else
-							async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.Success, wres);
+						async_result.Exception = NotFound (wres.ResponseUri.Scheme, wres);
 						async_result.SetComplete ();
 					} else {
 						async_result.SetComplete ();
@@ -247,7 +257,8 @@ namespace System.Net.Browser {
 				}
 			}
 			catch (Exception e) {
-				async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.UnknownError, null);
+				async_result.Response = null;
+				async_result.Exception = NotFound (wreq.RequestUri.Scheme, null);
 				async_result.SetComplete ();
 			}
 		}

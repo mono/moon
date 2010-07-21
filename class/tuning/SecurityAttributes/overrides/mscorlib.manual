@@ -419,3 +419,6 @@
 # use reflection to compute hash code based on fields values (since r159666)
 +SSC-M: System.Int32 System.Attribute::GetHashCode()
 
+# AES support (AesManaged resides in System.Core)
++SSC-M: System.Object System.Security.Cryptography.CryptoConfig::CreateFromName(System.String)
+

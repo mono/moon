@@ -10,5 +10,6 @@
 		<type fullname="System.Net.HttpWebResponse" preserve="all" />
 		<type fullname="System.Net.WebHeaderCollection" preserve="all" />
 		<type fullname="System.Net.WebRequest" preserve="all" />
+		<type fullname="Mono.Security.Protocol.Tls.HttpsClientStream" preserve="all" />
 	</assembly>
 </linker>

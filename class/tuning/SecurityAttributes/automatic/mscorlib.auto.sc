@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 448 methods needs to be decorated.
+# 450 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -840,6 +840,12 @@
 
 # internal call
 +SC-M: System.String System.AppDomain::InternalGetProcessGuid(System.String)
+
+# internal call
++SC-M: System.String System.Environment::get_MachineName()
+
+# internal call
++SC-M: System.String System.Environment::get_UserName()
 
 # internal call
 +SC-M: System.String System.Environment::GetMachineConfigPath()

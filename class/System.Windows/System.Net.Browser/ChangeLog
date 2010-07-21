@@ -1,3 +1,10 @@
+2010-07-21  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Revert previous change as it regressed
+	DRT #664 (and was not quite right)
+	* PolicyBasedHttpWebRequest.cs: Correct fix for DRT #3002 Also 
+	fix DRT #3011 and, hopefully, progress a few others 30xx
+
 2010-07-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* PolicyBasedHttpWebRequest.cs: Throw a SecurityException (instead

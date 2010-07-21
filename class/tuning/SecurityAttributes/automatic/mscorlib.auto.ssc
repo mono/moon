@@ -39,7 +39,7 @@
 +SSC-M: System.Int32 System.Array::LastIndexOf(System.Array,System.Object,System.Int32,System.Int32)
 +SSC-M: System.Void System.Array::Reverse(System.Array,System.Int32,System.Int32)
 +SSC-M: System.Void System.Array::SortImpl(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
-+SSC-M: System.Int32 System.Array::MoveNullKeysToFront(System.Array,System.Array,System.Int32,System.Int32,System.Boolean)
++SSC-M: System.Void System.Array::CheckComparerAvailable(System.Array,System.Int32,System.Int32)
 +SSC-M: System.Byte[] System.BitConverter::GetBytes(System.Boolean)
 +SSC-M: System.Byte[] System.BitConverter::GetBytes(System.Char)
 +SSC-M: System.Byte[] System.BitConverter::GetBytes(System.Int16)
