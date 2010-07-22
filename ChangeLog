@@ -1,3 +1,7 @@
+2010-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Update to include Silverlight 3.0.
+
 2010-07-19  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-accessibility-bridge.cpp: add missing config.h includes
