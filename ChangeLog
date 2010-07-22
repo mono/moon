@@ -1,5 +1,9 @@
 2010-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* README: Update manual mono build instructions since we disable sgen now.
+
+2010-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* README: Update dependency checkout instructions to git.
 
 2010-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>

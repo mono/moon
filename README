@@ -45,6 +45,7 @@ Compiling Mono for Moonlight
 
 		--with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter
 		--with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger
+		--with-sgen=no
 
 	This Mono configuration will not be suitable for anything except Moonlight.
 
