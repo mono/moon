@@ -1,3 +1,10 @@
+2010-07-22  Alan McGovern  <amcgovern@novell.com>
+
+	* eventargs.h: Always clone the Value* inside of
+	  PropertyChangedEventArgs in case we want to emit a change
+	  notification asynchronously. Previously if this was done,
+	  old_value and new_value would point to freed memory.
+
 2010-07-21  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp:

@@ -44,8 +44,19 @@ protected:
 /* @Namespace=None */
 class PropertyChangedEventArgs : public EventArgs {
 public:
-	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv
-) { }
+	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv)
+	{
+		if (new_value)
+			new_value = new Value (*new_value);
+		if (old_value)
+			old_value = new Value (*old_value);
+	}
+
+	~PropertyChangedEventArgs ()
+	{
+		delete new_value;
+		delete old_value;
+	}
 
 	PropertyChangedEventArgs () : obj (NULL), id (0), old_value(NULL), new_value (NULL) { }
 
@@ -60,8 +71,8 @@ public:
 
 	void SetProperty (DependencyProperty *prop) { obj = prop; }
 	void SetId (int id) { this->id = id; }
-	void SetOldValue (Value* old_value) { this->old_value = old_value; }
-	void SetNewValue (Value* new_value) { this->new_value = new_value; }
+	void SetOldValue (Value* old_value) { delete this->old_value; this->old_value = old_value ? new Value (*old_value) : NULL; }
+	void SetNewValue (Value* new_value) { delete this->new_value; this->new_value = new_value ? new Value (*new_value) : NULL; }
 private:
 	DependencyProperty *obj;
 	int id;
