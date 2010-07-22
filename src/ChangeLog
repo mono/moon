@@ -1,5 +1,8 @@
 2010-07-22  David Reveman  <davidr@novell.com>
 
+	* projection.cpp (TransformBounds): Don't round out bounds
+	before transforming.
+
 	* projection.cpp (Affine): Properly initialize affine matrix.
 
 	* uielement.cpp (OnPropertyChanged): Need to update transform

@@ -251,7 +251,7 @@ ClipToBounds (double   *p1,
 Rect
 Matrix3D::TransformBounds (const double *m, Rect bounds)
 {
-	Rect     r = bounds.RoundOut ();
+	Rect     r = bounds;
 	double   p1[4] = { r.x, r.y, 0.0, 1.0 };
 	double   p2[4] = { r.x + r.width, r.y, 0.0, 1.0 };
 	double   p3[4] = { r.x + r.width, r.y + r.height, 0.0, 1.0 };
