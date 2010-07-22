@@ -507,8 +507,8 @@ Matrix3D::Affine (double *out, double xx, double xy, double yx, double yy, doubl
 {
 
 #define M(row, col) out[col * 4 + row]
-	M (0, 0) = xx;  M (1, 0) = xy;  M (2, 0) = 0.0; M (3, 0) = 0.0;
-	M (0, 1) = yx;  M (1, 1) = yy;  M (2, 1) = 0.0; M (3, 1) = 0.0;
+	M (0, 0) = xx;  M (1, 0) = yx;  M (2, 0) = 0.0; M (3, 0) = 0.0;
+	M (0, 1) = xy;  M (1, 1) = yy;  M (2, 1) = 0.0; M (3, 1) = 0.0;
 	M (0, 2) = 0.0; M (1, 2) = 0.0; M (2, 2) = 1.0; M (3, 2) = 0.0;
 	M (0, 3) = x0;  M (1, 3) = y0;  M (2, 3) = 0.0; M (3, 3) = 1.0;
 #undef M

@@ -1,5 +1,7 @@
 2010-07-22  David Reveman  <davidr@novell.com>
 
+	* projection.cpp (Affine): Properly initialize affine matrix.
+
 	* uielement.cpp (OnPropertyChanged): Need to update transform
 	when whether we render to an intermediate buffer or not change.
 
