@@ -94,7 +94,7 @@ dnl Export Variables
 dnl
 
 AC_PATH_PROG(GACUTIL, gacutil)
-AC_SUBST([MOONLIGHT_MONO], [$MCS_PATH/../mono/mono/mini/mono])
+AC_SUBST([MOONLIGHT_MONO], [$MONO_PATH/mono/mini/mono])
 AC_SUBST([SYSTEM_MONO], mono)
 AC_PATH_PROG(ZIP, zip, no)
 if test "x$ZIP" = "xno" ; then
@@ -106,8 +106,8 @@ PERF_TOOL_LIBS="$MONO_LIBS $GTK_LIBS $XULRUNNER_LIBS"
 AC_SUBST(PERF_TOOL_CFLAGS)
 AC_SUBST(PERF_TOOL_LIBS)
 
-MONO_LIBS="-lmono-2.0 -L$MCS_PATH/../mono/mono/mini -L$MCS_PATH/../mono/mono/mini/.libs"
-MONO_STATIC_LIBS="-lmono-moon -L$MCS_PATH/../mono/mono/mini"
+MONO_LIBS="-lmono-2.0 -L$MONO_PATH/mono/mini -L$MONO_PATH/mono/mini/.libs"
+MONO_STATIC_LIBS="-lmono-moon -L$MONO_PATH/mono/mini"
 MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $MONO_CFLAGS $DBUS_CFLAGS $CURL_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
 MOON_LIBS="$MOON_LIBS $FFMPEG_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS $UNWIND_LIBS $DBUS_LIBS $CURL_LIBS"
@@ -312,7 +312,8 @@ cat <<EOF
 EOF
 if test x$browser_support = xyes; then
 cat <<EOF
-            Path to mcs tree: $with_mcspath
+            Path to mcs tree: $with_mcs_path
+            Path to mono tree: $with_mono_path
             Path to mono-basic tree: $with_mono_basic_path
 EOF
 fi

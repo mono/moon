@@ -1,3 +1,9 @@
+2010-07-23  Andreia Gaita  <avidigal@novell.com>
+
+	* autogen.sh: fix default paths for mcs, and accept a with_mono_path
+	  flag to optionally specify an alternate mono path
+	* configure.ac: fix the MOONLIGHT_MONO var to use the correct mono path
+
 2010-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* README: Update manual mono build instructions since we disable sgen now.

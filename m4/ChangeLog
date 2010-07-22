@@ -1,3 +1,8 @@
+2010-07-23  Andreia Gaita  <avidigal@novell.com>
+
+	* mono.m4: fix default mcs path, rename it to --with-mcs-path and
+	  add a new --with-mono-path option
+
 2010-07-09  Alan McGovern  <amcgovern@novell.com>
 
 	* chrome.m4: Fix some autofoo, courtesy of Mr. D. Hex.

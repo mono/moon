@@ -3,29 +3,37 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	MONO_REQUIRED_VERSION=2.0
 	MONO_REQUIRED_BROWSER_VERSION=2.5
 
+	AC_ARG_WITH([mcs-path],
+		    [  --with-mcs-path=/path/to/mcs      Specify an alternate mcs source tree],
+		[],
+		[with_mcs_path=$srcdir/../mono/mcs]
+	)
+
+	AC_ARG_WITH([mono-path],
+		    [  --with-mono-path=/path/to/mono      Specify an alternate mono source tree],
+		[],
+		[with_mono_path=$srcdir/../mono]
+	)
+
 	MOON_ARG_ENABLED_BY_DEFAULT([browser-support], [Disable the browser plugin])
 	browser_support=$enableval
 	if test "x$browser_support" = xyes; then
 		MONO_REQUIRED_VERSION=$MONO_REQUIRED_BROWSER_VERSION
 
-		dnl 
-		dnl path to mcs checkout
-		dnl mcs/moon needs to live next to moon for autogen.sh to work
-		dnl 
-
-		with_mcspath=$srcdir/../mcs
-			
-		if test ! -d "$with_mcspath"; then
-			AC_ERROR($with_mcspath doesn't exist)
+		if test ! -d "$with_mcs_path"; then
+			AC_ERROR($with_mcs_path doesn't exist)
 		fi
 
-		if test ! -d $with_mcspath/../mono; then
-			AC_ERROR($with_mcspath/../mono doesn't exist)
+		if test ! -d $with_mono_path; then
+			with_mono_path=$with_mcs_path/..
 		fi
 
-		MCS_PATH=$(cd "$with_mcspath" && pwd)
+		MCS_PATH=$(cd "$with_mcs_path" && pwd)
 		AC_SUBST(MCS_PATH)
 	
+		MONO_PATH=$(cd "$with_mono_path" && pwd)
+		AC_SUBST(MONO_PATH)
+
 		dnl
 		dnl path to mono-basic checkout
 		dnl
@@ -70,7 +78,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		AC_ERROR(You cannot disable both Browser and Desktop support)
 	fi
 
-	MONO_CFLAGS=-I$MCS_PATH/../mono
+	MONO_CFLAGS=-I$MONO_PATH
 
 	AC_DEFINE([MONO_ENABLE_APP_DOMAIN_CONTROL], [1], [Whether Mono 2.5 is available and Deployment should create/destroy App Domains])
 	AC_DEFINE([MONO_ENABLE_CORECLR_SECURITY], [1], [Whether Mono 2.5 is available and CoreCLR security should be enabled])
