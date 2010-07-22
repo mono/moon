@@ -13,14 +13,15 @@ Requirements
 ============
 
 	At this time, Moonlight trunk (this release) requires you to use
-	Mono trunk. To build Moonlight, you need to get the mono, mcs and
-	mono-basic modules from trunk at the following revison: 160675
+	Mono trunk. To build Moonlight, you need to get the mono and
+	mono-basic repositories from a specific revision from trunk.
 
 	Do this like this:
-            svn co http://anonsvn.mono-project.com/source/trunk/moon
-            svn co -r 160675 http://anonsvn.mono-project.com/source/trunk/mono
-            svn co -r 160675 http://anonsvn.mono-project.com/source/trunk/mcs
-            svn co -r 160675 http://anonsvn.mono-project.com/source/trunk/mono-basic
+            git clone git://github.com/mono/moon.git moon
+            git clone git://github.com/mono/mono.git mono
+            cd mono && git reset --hard 9c8cb87fe336e678e902 && cd ..
+            git clone git://github.com/mono/mono-basic.git mono-basic
+            cd mono-basic && git reset --hard HEAD && cd ..
 
 
 Compiling Mono for Moonlight
