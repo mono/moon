@@ -1,9 +1,15 @@
+2010-07-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* WriteableBitmap.cs (ctor): I think we need to use
+	fe.ActualWidth,Height as opposed with Width,Height since Width and
+	Height can be 0 even when the element has non-zero render bounds.
+
 2010-03-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BitmapImage.cs
 	* WriteableBitmap.cs:
 		Call SafeNativeMethods so the default ctor are not
-		decorated with a [SecuritySafeCritical] attribtue	
+		decorated with a [SecuritySafeCritical] attribute
 
 2010-02-13  Sebastien Pouliot  <sebastien@ximian.com>
 
