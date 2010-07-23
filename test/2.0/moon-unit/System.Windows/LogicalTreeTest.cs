@@ -39,20 +39,28 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
 
+    public class ConcreteFrameworkElement : FrameworkElement
+    {
+        public static readonly DependencyProperty LocalContentProperty = DependencyProperty.Register("LocalContent",
+                                                          typeof(FrameworkElement),
+                                                          typeof(ConcreteFrameworkElement),
+                                                          null);
+
+        public FrameworkElement LocalContent
+        {
+            get { return (FrameworkElement)GetValue(LocalContentProperty); }
+            set { SetValue(LocalContentProperty, value); }
+        }
+
+        public FrameworkElement NoDP
+        {
+            get;
+            set;
+        }
+    }
+
 	[TestClass]
 	public class LogicalTreeTest {
-
-		class ConcreteFrameworkElement : FrameworkElement {
-			public static readonly DependencyProperty LocalContentProperty = DependencyProperty.Register ("LocalContent",
-														      typeof (FrameworkElement),
-														      typeof (ConcreteFrameworkElement),
-														      null);
-
-			public FrameworkElement LocalContent {
-				get { return (FrameworkElement)GetValue(LocalContentProperty); }
-				set { SetValue(LocalContentProperty, value); }
-			}
-		}
 
 		[TestMethod]
 		public void LogicalParentTest1 ()
@@ -273,6 +281,28 @@ namespace MoonTest.System.Windows {
 			cf1.LocalContent = cf2;
 
 			Assert.IsNull (cf1.FindName ("MyName"), "1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void CustomPropertyFindName_XamlReader()
+		{
+			// Let alan know when this is fixed as drt 869 relies on this.
+			var cf = (ConcreteFrameworkElement)XamlReader.Load(@"
+<clr:ConcreteFrameworkElement
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:clr=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"">
+    <clr:ConcreteFrameworkElement.LocalContent>
+        <Rectangle x:Name=""Registered""/>
+    </clr:ConcreteFrameworkElement.LocalContent>
+    <clr:ConcreteFrameworkElement.NoDP>
+        <Rectangle x:Name=""Hidden""/>
+    </clr:ConcreteFrameworkElement.NoDP>
+</clr:ConcreteFrameworkElement>
+");
+			Assert.IsNotNull(cf.FindName ("Registered"), "#1");
+			Assert.IsNull(cf.FindName ("Hidden"), "#2");
 		}
 
 		class UserControlPoker : UserControl 
