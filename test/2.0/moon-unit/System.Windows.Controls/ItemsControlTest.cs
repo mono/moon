@@ -662,6 +662,19 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void NameIsRegisteredTest_VisualTree ()
+		{
+			// Once the template expands and the Items are put
+			// in the visual tree, their names are registered.
+			string name = "MyRectInItemsControl";
+			ItemsControl c = (ItemsControl)CurrentControl;
+			TestPanel.Children.Add(c);
+			c.Items.Add(new Rectangle { Name = name });
+			TestPanel.UpdateLayout();
+			Assert.IsNotNull(c.FindName(name), "#1");
+		}
+
+		[TestMethod]
 		public void OnItemsChanged_Null ()
 		{
 			ItemsControlPoker ic = new ItemsControlPoker ();
