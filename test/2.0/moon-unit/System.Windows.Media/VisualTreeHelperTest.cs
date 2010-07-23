@@ -536,7 +536,6 @@ namespace MoonTest.System.Windows.Media
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("Regressed in r159772")]
 		public void HitTest20()
 		{
 			Rectangle r = new Rectangle {
@@ -557,7 +556,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("Regressed in r159772")]
 		public void HitTest21()
 		{
 			Rectangle r = new Rectangle {
@@ -687,7 +685,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("Regressed in r159772")]
 		public void HitTest27()
 		{
 			Root.Children.Add(new TestControl());
@@ -706,7 +703,6 @@ namespace MoonTest.System.Windows.Media
 					
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("Regressed in r159772")]
 		public void HitTest27b()
 		{
 			// Same test as 27 except we hittest 2 pixels outside the border instead of 1

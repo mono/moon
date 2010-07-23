@@ -1,3 +1,8 @@
+2010-07-23  David Reveman  <davidr@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: These tests pass
+	now.
+
 2010-07-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebHeaderCollectionTest.cs: Use IEnumerable in a test
