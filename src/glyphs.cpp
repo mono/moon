@@ -459,8 +459,12 @@ Glyphs::ComputeBounds ()
 {
 	if (dirty)
 		Layout ();
-	
-	bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
+
+	extents = Rect (left, top, width, height);
+	extents_with_children = extents;
+
+	bounds = IntersectBoundsWithClipPath (extents.GrowBy (effect_padding), false).Transform (&absolute_xform);
+	bounds_with_children = bounds;
 
 	ComputeGlobalBounds ();
 	ComputeSurfaceBounds ();

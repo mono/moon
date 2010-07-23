@@ -1,3 +1,66 @@
+2010-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	Initial work to fix Seadragon-513
+
+	* multiscaleimage.cpp (ComputeActualSize): Implemented.
+	(MeasureOverrideWithError): Implemented (might not be 100%
+	correct).
+	(MotionFinished): New method that gets called when all animations
+	are finished. Emits the MotionFinishedEvent and updates the IsIdle
+	status.
+	(FadeFinished,PanFinished,ZoomFinished): Call MotionFinished() if
+	all animations are complete instead of EmitMotionFinished().
+
+	* media.cpp (Moonlight): Check if we can chain up first (makes no
+	difference logically, but is more consistent with other code and
+	might be "faster".
+
+2010-07-22  David Reveman  <davidr@novell.com>
+
+	* projection.cpp (TransformBounds): Don't round out bounds
+	before transforming.
+
+	* projection.cpp (Affine): Properly initialize affine matrix.
+
+	* uielement.cpp (OnPropertyChanged): Need to update transform
+	when whether we render to an intermediate buffer or not change.
+
+	* uielement.cpp: A call to UpdateProjection is enough when
+	projection property changes.
+
+	* uielement.h:
+	* uielement.cpp: Add InvalidateEffect.
+
+	* uielement.h:
+	* uielement.cpp:
+	* textblock.cpp (ComputeBounds):
+	* stylus.cpp (ComputeBounds):
+	* shape.cpp:
+	* panel.cpp (ComputeBounds):
+	* grid.cpp (ComputeBounds):
+	* glyphs.cpp (ComputeBounds):
+	* frameworkelement.h:
+	* frameworkelement.cpp:
+	* canvas.cpp (ComputeBounds): Add extents_with_children and
+	adjust bounds computations to properly update extents for
+	rendering to intermediate buffers. GetGlobalBounds now
+	returns subtree bounds in parent coordinate space.
+
+	* uielement.h:
+	* uielement.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Add GetSubtreeExtents function which
+	returns un-clipped extents required when rendering to an
+	intermediate buffer.
+
+	* uielement.cpp (ComputeTransform): Always add affine
+	transformation to perspective transformation when intermediate
+	rendering is performed.
+
+	* uielement.h:
+	* uielement.cpp: Add local_projection for transforming local
+	coordinates to parent coordinate space.
+
 2010-07-22  Alan McGovern  <amcgovern@novell.com>
 
 	* eventargs.h: Always clone the Value* inside of

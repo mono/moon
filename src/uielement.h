@@ -295,9 +295,16 @@ public:
 	//
 	// GetGlobalBounds:
 	//   returns the bounding box including all sub-uielements.
-	//   implemented by containers in global projection coordinates.
+	//   implemented by containers in parent coordinates.
 	//
 	virtual Rect GetGlobalBounds () { return global_bounds; }
+
+	//
+	// GetSubtreeExtents:
+	//   returns the extents including all sub-uielements.
+	//   implemented by containers in local coordinates.
+	//
+	virtual Rect GetSubtreeExtents () { return extents; }
 
 
 	//
@@ -366,6 +373,7 @@ public:
 	void InvalidateMask ();
 	void InvalidateClip ();
 	void InvalidateVisibility ();
+	void InvalidateEffect ();
 
 	//
 	// GetTransformOrigin:
@@ -663,6 +671,9 @@ protected:
 
 	static void CallPreRender (List *ctx, UIElement *element, Region *region, bool skip_children);
 	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool skip_children);
+
+	// Local perspective transform, including local affine transforms
+	double local_projection[16];
 
 	// Absolute perspective transform, precomputed with all of its data
 	double absolute_projection[16];

@@ -118,8 +118,6 @@ class MediaBase : public FrameworkElement {
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
 	
-	const static int DownloadProgressChangedEvent;
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MediaBase ();
 
@@ -141,6 +139,11 @@ class MediaBase : public FrameworkElement {
 	double GetDownloadProgress ();
 	
 	const char *GetSource ();
+	
+	//
+	// Events
+	//
+	const static int DownloadProgressChangedEvent;
 };
 
 
@@ -163,18 +166,14 @@ class Image : public MediaBase {
  public:
  	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
 	const static int SourceProperty;
-
-	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
-	const static int ImageFailedEvent;
-
-	/* @DelegateType=EventHandler<RoutedEventArgs> */
-	const static int ImageOpenedEvent;
-
- 	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
+	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
+	
+	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
+	
 	virtual void Dispose ();
 	
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
@@ -197,14 +196,23 @@ class Image : public MediaBase {
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
+	//
+	// Property Accessors
+	//
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource (ImageSource *source);
 	ImageSource *GetSource ();
 
 	void SetStretch (Stretch stretch);
 	Stretch GetStretch ();
-
-	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
+	
+	//
+	//Events
+	//
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
+	const static int ImageFailedEvent;
+	/* @DelegateType=EventHandler<RoutedEventArgs> */
+	const static int ImageOpenedEvent;
 };
 
 };

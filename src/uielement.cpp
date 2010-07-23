@@ -57,6 +57,7 @@ UIElement::UIElement ()
 	cairo_matrix_init_identity (&absolute_xform);
 	cairo_matrix_init_identity (&layout_xform);
 	cairo_matrix_init_identity (&local_xform);
+	Matrix3D::Identity (local_projection);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
@@ -249,12 +250,17 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	} else if (args->GetId () == UIElement::EffectProperty) {
-		effect_padding = GetRenderEffect () ? GetRenderEffect ()->Padding () : Thickness (0);
-		FullInvalidate (false);
+		bool old_effect = args->GetOldValue () != NULL;
+		bool new_effect = args->GetNewValue () != NULL;
+
+		InvalidateEffect ();
+
+		/* need to update transform when whether we render to
+		   an intermediate buffer or not change */
+		if (old_effect != new_effect && IsAttached ())
+			GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyTransform);
 	} else if (args->GetId () == UIElement::ProjectionProperty) {
-		InvalidateSubtreePaint ();
 		UpdateProjection ();
-		UpdateBounds (true);
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -486,6 +492,7 @@ UIElement::ComputeTransform ()
 	double m[16];
 	cairo_matrix_init_identity (&absolute_xform);
 	Matrix3D::Identity (absolute_projection);
+	Matrix3D::Identity (local_projection);
 
 	if (GetVisualParent () != NULL) {
 		absolute_xform = GetVisualParent ()->absolute_xform;
@@ -516,18 +523,18 @@ UIElement::ComputeTransform ()
 			  layout_xform.xx, layout_xform.xy,
 			  layout_xform.yx, layout_xform.yy,
 			  layout_xform.x0, layout_xform.y0);
-	Matrix3D::Multiply (absolute_projection, m, absolute_projection);
+	Matrix3D::Multiply (local_projection, m, local_projection);
 
 	Matrix3D::Affine (m,
 			  local_xform.xx, local_xform.xy,
 			  local_xform.yx, local_xform.yy,
 			  local_xform.x0, local_xform.y0);
-	Matrix3D::Multiply (absolute_projection, m, absolute_projection);
+	Matrix3D::Multiply (local_projection, m, local_projection);
 
 	if (projection) {
 		projection->GetTransform (render_projection);
-		Matrix3D::Multiply (absolute_projection, render_projection,
-				    absolute_projection);
+		Matrix3D::Multiply (local_projection, render_projection,
+				    local_projection);
 		flags |= UIElement::RENDER_PROJECTION;
 	}
 	else {
@@ -535,14 +542,12 @@ UIElement::ComputeTransform ()
 		flags &= ~UIElement::RENDER_PROJECTION;
 	}
 
-	// add render transformation to perspective render transformation
-	// when intermediate rendering is performed and skew/rotation or
-	// projection is present
-	if (RenderToIntermediate () && (projection ||
-					absolute_xform.xx != 1.0 ||
-					absolute_xform.xy != 0.0 ||
-					absolute_xform.yx != 0.0 ||
-					absolute_xform.yy != 1.0)) {
+	Matrix3D::Multiply (absolute_projection, local_projection,
+			    absolute_projection);
+
+	// add affine transformation to perspective transformation
+	// when intermediate rendering is performed
+	if (RenderToIntermediate ()) {
 		Matrix3D::Affine (m,
 				  absolute_xform.xx, absolute_xform.xy,
 				  absolute_xform.yx, absolute_xform.yy,
@@ -569,19 +574,13 @@ UIElement::ComputeBounds ()
 void
 UIElement::ComputeGlobalBounds ()
 {
-	global_bounds = bounds.GrowBy (effect_padding).Transform (render_projection);
+	global_bounds = IntersectBoundsWithClipPath (extents.GrowBy (effect_padding), false).Transform (local_projection);
 }
 
 void
 UIElement::ComputeSurfaceBounds ()
 {
-	FrameworkElement *element = (FrameworkElement *) this;
-
-	surface_bounds = global_bounds;
-
-	while ((element = (FrameworkElement *) element->GetVisualParent ())) {
-		surface_bounds = surface_bounds.Transform (element->render_projection);
-	}
+	surface_bounds = IntersectBoundsWithClipPath (extents.GrowBy (effect_padding), false).Transform (absolute_projection);
 }
 
 void
@@ -604,13 +603,10 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		InvalidateMask ();
 	}
 	else if (prop && prop->GetId () == UIElement::EffectProperty) {
-		effect_padding = GetRenderEffect () ? GetRenderEffect ()->Padding () : Thickness (0);
-		FullInvalidate (false);
+		InvalidateEffect ();
 	}
 	else if (prop && prop->GetId () == UIElement::ProjectionProperty) {
-		InvalidateSubtreePaint ();
 		UpdateProjection ();
-		UpdateBounds (true);
 	}
 
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
@@ -1008,6 +1004,23 @@ UIElement::InvalidateVisibility ()
 	InvalidateSubtreePaint ();
 }
 
+void
+UIElement::InvalidateEffect ()
+{
+	Effect    *effect = GetRenderEffect ();
+	Thickness old_effect_padding = effect_padding;
+
+	if (effect)
+		effect_padding = effect->Padding ();
+	else
+		effect_padding = Thickness (0);
+
+	InvalidateSubtreePaint ();
+
+	if (old_effect_padding != effect_padding)
+		UpdateBounds ();
+}
+
 /*
 void
 UIElement::InvalidateIntrisicSize ()
@@ -1149,9 +1162,15 @@ UIElement::ReleaseMouseCapture ()
 void
 UIElement::DoRender (List *ctx, Region *parent_region)
 {
-	Region *region = new Region (GetLocalBounds ());
-	if (!RenderToIntermediate ())
+	Region *region;
+
+	if (RenderToIntermediate ()) {
+		region = new Region (GetSubtreeExtents ());
+	}
+	else {
+		region = new Region (GetLocalBounds ());
 		region->Intersect (parent_region);
+	}
 
 	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) {
 		delete region;
@@ -1211,7 +1230,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		Region *self_region;
 
 		if (RenderToIntermediate ()) {
-			self_region = new Region (GetLocalBounds ().RoundOut ());
+			self_region = new Region (GetSubtreeExtents ().RoundOut ());
 		}
 		else {
 			self_region = new Region (surface_region);
@@ -1311,11 +1330,10 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
-	Rect intermediate = GetLocalBounds ().GrowBy (effect_padding);
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		cairo_surface_t *group_surface;
-		Rect            r = intermediate.RoundOut ();
+		Rect            r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
 
 		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
 							      CAIRO_CONTENT_COLOR_ALPHA,
@@ -1333,7 +1351,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 
 	if (effect) {
 		cairo_surface_t *group_surface;
-		Rect            r = intermediate.RoundOut ();
+		Rect            r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
 
 		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
 							      CAIRO_CONTENT_COLOR_ALPHA,
@@ -1404,7 +1422,6 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
-	Rect intermediate = GetLocalBounds ().GrowBy (effect_padding);
 
 	if (opacityMask != NULL) {
 		cairo_pattern_t *data = cairo_pop_group (cr);
@@ -1442,7 +1459,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect r = intermediate.RoundOut ();
+			Rect r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
 
 			cairo_save (cr);
 			cairo_identity_matrix (cr);
@@ -1478,13 +1495,11 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Effect          *effect = Effect::GetProjectionEffect ();
-			Rect            r = intermediate.RoundOut ();
+			Effect *effect = Effect::GetProjectionEffect ();
+			Rect   r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
 
 			cairo_save (cr);
 			cairo_identity_matrix (cr);
-			GetGlobalBounds ().RoundOut ().Draw (cr);
-			cairo_clip (cr);
 
 			if (!effect->Render (cr, src,
 					     render_projection,

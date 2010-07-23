@@ -79,8 +79,8 @@ namespace System.Windows.Media.Imaging
 			// descendant since there's no usable ctor to inherit from it (at least outside S.W.dll)
 			FrameworkElement fe = (element as FrameworkElement);
 			if (fe != null) {
-			        bounds.Width = fe.Width;
-				bounds.Height = fe.Height;
+				bounds.Width = fe.ActualWidth;
+				bounds.Height = fe.ActualHeight;
 			}
 
 			if (transform != null)

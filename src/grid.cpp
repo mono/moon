@@ -524,7 +524,8 @@ Grid::ComputeBounds ()
 	
 	if (GetShowGridLines ()) {
 		extents = Rect (0,0,GetActualWidth (),GetActualHeight ());
-		bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+		extents_with_children = extents_with_children.Union (extents);
+		bounds = IntersectBoundsWithClipPath (extents.GrowBy (effect_padding), false).Transform (&absolute_xform);
 		bounds_with_children = bounds_with_children.Union (bounds);
 
 		ComputeGlobalBounds ();
