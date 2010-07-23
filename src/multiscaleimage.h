@@ -136,7 +136,9 @@ class MultiScaleImage : public MediaBase {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
-
+	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
+	virtual Size ComputeActualSize ();
+	
 	virtual bool CanFindElement () { return GetSource () != NULL; }
 	
 	void UriSourceChanged ();
@@ -169,6 +171,7 @@ class MultiScaleImage : public MediaBase {
 	void EmitImageOpenFailed ();
 	void EmitMotionFinished ();
 	void EmitImageFailed ();
+	void MotionFinished ();
 	void FadeFinished ();
 	void ZoomFinished ();
 	void PanFinished ();

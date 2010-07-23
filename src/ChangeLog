@@ -1,3 +1,20 @@
+2010-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	Initial work to fix Seadragon-513
+
+	* multiscaleimage.cpp (ComputeActualSize): Implemented.
+	(MeasureOverrideWithError): Implemented (might not be 100%
+	correct).
+	(MotionFinished): New method that gets called when all animations
+	are finished. Emits the MotionFinishedEvent and updates the IsIdle
+	status.
+	(FadeFinished,PanFinished,ZoomFinished): Call MotionFinished() if
+	all animations are complete instead of EmitMotionFinished().
+
+	* media.cpp (Moonlight): Check if we can chain up first (makes no
+	difference logically, but is more consistent with other code and
+	might be "faster".
+
 2010-07-22  David Reveman  <davidr@novell.com>
 
 	* projection.cpp (TransformBounds): Don't round out bounds

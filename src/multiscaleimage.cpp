@@ -281,8 +281,7 @@ qtree_destroy (QTree *root)
 {
 	if (!root)
 		return;
-
-	//FIXME: the destroy func should be a qtree ctor option
+	
 	if (root->image) {
 		cairo_surface_destroy (root->image);
 		root->image = NULL;
@@ -497,6 +496,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	SetIsDownloading (true);
 	ctx->image->SetDownloadPolicy (MsiPolicy);
 	ctx->image->SetUriSource (tile);
+	SetIsIdle (false);
 	
 	n_downloading++;
 }
@@ -565,7 +565,7 @@ MultiScaleImage::FadeFinished ()
 {
 	is_fading = false;
 	if (!is_fading && !is_zooming && !is_panning)
-		EmitMotionFinished ();
+		MotionFinished ();
 }
 
 void
@@ -580,7 +580,7 @@ MultiScaleImage::ZoomFinished ()
 {
 	is_zooming = false;
 	if (!is_fading && !is_zooming && !is_panning)
-		EmitMotionFinished ();
+		MotionFinished ();
 }
 
 void
@@ -595,7 +595,7 @@ MultiScaleImage::PanFinished ()
 {
 	is_panning = false;
 	if (!is_fading && !is_zooming && !is_panning)
-		EmitMotionFinished ();
+		MotionFinished ();
 }
 
 void
@@ -745,10 +745,44 @@ MultiScaleImage::ConnectSubImageEvents (MultiScaleSubImage *subimage)
 	dzits->AddHandler (DeepZoomImageTileSource::DownloaderFailedEvent, subdownloader_failed, this);
 }
 
-static void
-emit_motion_finished (MultiScaleImage *msi)
+Size
+MultiScaleImage::ComputeActualSize ()
 {
-	msi->EmitMotionFinished ();
+	Size result = MediaBase::ComputeActualSize ();
+	UIElement *parent = GetVisualParent ();
+	Size available;
+	
+	if (parent && !parent->Is (Type::CANVAS))
+		if (ReadLocalValue (LayoutInformation::LayoutSlotProperty))
+			return result;
+	
+	available = Size (INFINITY, INFINITY);
+	available = ApplySizeConstraints (available);
+	result = MeasureOverrideWithError (available, NULL);
+	result = ApplySizeConstraints (result);
+	
+	return result;
+}
+
+Size
+MultiScaleImage::MeasureOverrideWithError (Size availableSize, MoonError *error)
+{
+	double vp_w = GetViewportWidth ();
+	double vp_ar = GetAspectRatio ();
+	Size desired = availableSize;
+	
+	if (isinf (desired.width)) {
+		if (isinf (desired.height)) {
+			desired.height = vp_w / vp_ar;
+			desired.width = vp_w;
+		} else {
+			desired.width = desired.height * vp_ar;
+		}
+	} else if (isinf (desired.height)) {
+		desired.height = desired.width / vp_ar;
+	}
+	
+	return desired;
 }
 
 void
@@ -797,11 +831,11 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		double tile_fade = GetTileFade ();
 		fadein_animation->SetFrom (tile_fade);
 		fadein_animation->SetTo (tile_fade + 0.9);
-
-		is_fading = true;
-
+		
 		fadein_sb->BeginWithError(NULL);
-
+		SetIsIdle (false);
+		is_fading = true;
+		
 		cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
 		LOG_MSI ("caching %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_image (ctx->node, surface);
@@ -1445,6 +1479,8 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 				pan_target = Point (NAN, NAN);
 				SetViewportOrigin (&endpoint);
 			}
+			
+			SetIsIdle (n_downloading == 0 && !is_fading);
 		}
 	}
 	
@@ -1558,6 +1594,19 @@ MultiScaleImage::EmitMotionFinished ()
 		Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
+void
+MultiScaleImage::MotionFinished ()
+{
+	SetIsIdle (n_downloading == 0);
+	EmitMotionFinished ();
+}
+
+static void
+motion_finished (MultiScaleImage *msi)
+{
+	msi->MotionFinished ();
+}
+
 Point *
 MultiScaleImage::GetPanAnimationEndPoint ()
 {
@@ -1587,7 +1636,7 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall ((TickCallHandler) emit_motion_finished);
+			AddTickCall ((TickCallHandler) motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportWidthProperty, Value (value));
@@ -1623,6 +1672,7 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 
 	SetZoomAnimationEndPoint (value);
 	zoom_sb->BeginWithError (NULL);
+	SetIsIdle (false);
 }
 
 void
@@ -1630,7 +1680,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point *value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall ((TickCallHandler) emit_motion_finished);
+			AddTickCall ((TickCallHandler) motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportOriginProperty, Value (*value));
@@ -1662,6 +1712,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point *value)
 	is_panning = true;
 	SetPanAnimationEndPoint (*value);
 	pan_sb->BeginWithError (NULL);
+	SetIsIdle (false);
 }
 
 void
@@ -1679,23 +1730,8 @@ MultiScaleImage::SetIsDownloading (bool value)
 void
 MultiScaleImage::UpdateIsDownloading ()
 {
-#if 0
-	BitmapImageContext *ctx;
-	bool value = false;
-	
-	for (guint i = 0; i < downloaders->len; i++) {
-		ctx = (BitmapImageContext *) downloaders->pdata[i];
-		
-		if (ctx->state == BitmapImageBusy) {
-			value = true;
-			break;
-		}
-	}
-	
-	SetIsDownloading (value);
-#else
+	SetIsIdle (n_downloading == 0 && !is_fading && !is_panning && !is_zooming);
 	SetIsDownloading (n_downloading > 0);
-#endif
 }
 
 int

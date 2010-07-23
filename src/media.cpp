@@ -179,6 +179,11 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 void
 MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	if (args->GetProperty ()->GetOwnerType() != Type::MEDIABASE) {
+		FrameworkElement::OnPropertyChanged (args, error);
+		return;
+	}
+	
 	if (args->GetId () == MediaBase::SourceProperty) {
 		const char *uri = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		
@@ -198,11 +203,8 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		} else {
 			source_changed = true;
 		}
-	}
-	
-	if (args->GetProperty ()->GetOwnerType() != Type::MEDIABASE) {
-		FrameworkElement::OnPropertyChanged (args, error);
-		return;
+		
+		InvalidateMeasure ();
 	}
 	
 	NotifyListenersOfPropertyChange (args, error);
@@ -425,7 +427,7 @@ Image::ComputeActualSize ()
 	if (parent && !parent->Is (Type::CANVAS))
 		if (ReadLocalValue (LayoutInformation::LayoutSlotProperty))
 			return result;
-		
+	
 	if (source && source->GetSurface (NULL)) {
 		Size available = Size (INFINITY, INFINITY);
 		available = ApplySizeConstraints (available);
@@ -499,7 +501,6 @@ Image::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 	ImageSource *source = GetSource ();
 	double sx = 1.0;
 	double sy = 1.0;
-
 
 	if (source)
 		shape_bounds = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
@@ -583,6 +584,11 @@ Image::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	if (args->GetProperty ()->GetOwnerType() != Type::IMAGE) {
+		MediaBase::OnPropertyChanged (args, error);
+		return;
+	}
+	
 	if (args->GetId () == Image::SourceProperty) {
 		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL; 
 		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
@@ -590,15 +596,17 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (old && old->Is(Type::BITMAPSOURCE)) {
 			old->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 		}
+		
 		if (source && source->Is(Type::BITMAPSOURCE)) {
 			source->AddHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 		}
-
+		
 		if (old && old->Is(Type::BITMAPIMAGE)) {
 			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
+		
 		if (source && source->Is(Type::BITMAPIMAGE)) {
 			BitmapImage *bitmap = (BitmapImage *) source;
 			Uri *uri = bitmap->GetUriSource ();
@@ -629,12 +637,8 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				}
 			}
 		}
+		
 		InvalidateMeasure ();
-	}
-
-	if (args->GetProperty ()->GetOwnerType() != Type::IMAGE) {
-		MediaBase::OnPropertyChanged (args, error);
-		return;
 	}
 	
 	// we need to notify attachees if our DownloadProgress changed.
