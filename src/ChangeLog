@@ -1,3 +1,11 @@
+2010-07-26  David Reveman  <davidr@novell.com>
+
+	* uielement.h:
+	* uielement.cpp: Add GetRenderCacheMode.
+
+	* runtime.h:
+	* runtime.cpp: Add RUNTIME_INIT_ENABLE_CACHE_MODE.
+
 2010-07-26  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp: 

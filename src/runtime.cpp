@@ -125,6 +125,7 @@ static MoonlightRuntimeOption options [] = {
 #ifdef USE_GALLIUM
 	{ RUNTIME_INIT_ENABLE_EFFECTS,        "effects",           "yes",        "no",     true,            "Enable Pixel Effects" },
 	{ RUNTIME_INIT_ENABLE_PROJECTIONS,    "projections",       "yes",        "no",     true,            "Enable Perspective Transformations" },
+	{ RUNTIME_INIT_ENABLE_CACHE_MODE,     "cachemode",         "yes",        "no",     true,            "Enable Bitmap Caching" },
 #endif
 
 	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",        "yes",        "no",     true,            "Prefer Curl bridge" },
@@ -172,7 +173,7 @@ moonlight_get_runtime_option (RuntimeInitFlag flag)
 }
 
 #ifdef USE_GALLIUM
-#define GALLIUM_RUNTIME_INIT RUNTIME_INIT_ENABLE_EFFECTS | RUNTIME_INIT_ENABLE_PROJECTIONS
+#define GALLIUM_RUNTIME_INIT RUNTIME_INIT_ENABLE_EFFECTS | RUNTIME_INIT_ENABLE_PROJECTIONS | RUNTIME_INIT_ENABLE_CACHE_MODE
 #else
 #define GALLIUM_RUNTIME_INIT 0
 #endif
@@ -525,6 +526,7 @@ Surface::SetRuntimeOption (RuntimeInitFlag flag, bool value)
 	// many shouldn't
 	case RUNTIME_INIT_ENABLE_EFFECTS:
 	case RUNTIME_INIT_ENABLE_PROJECTIONS:
+	case RUNTIME_INIT_ENABLE_CACHE_MODE:
 	case RUNTIME_INIT_SHOW_CACHE_SIZE:
 	case RUNTIME_INIT_SHOW_CLIPPING:
 	case RUNTIME_INIT_SHOW_BOUNDING_BOXES:

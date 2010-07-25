@@ -644,6 +644,7 @@ public:
 	// flags are not present
 	Effect *GetRenderEffect ();
 	Projection *GetRenderProjection ();
+	CacheMode *GetRenderCacheMode ();
 
 protected:
 	virtual ~UIElement ();

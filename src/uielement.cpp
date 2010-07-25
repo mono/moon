@@ -1749,4 +1749,12 @@ UIElement::GetRenderProjection ()
 	return (moonlight_flags & PROJECTION_FLAGS) == (PROJECTION_FLAGS) ? GetProjection () : NULL;
 }
 
+#define CACHE_MODE_FLAGS (RUNTIME_INIT_ENABLE_CACHE_MODE | RUNTIME_INIT_USE_BACKEND_IMAGE)
+
+CacheMode *
+UIElement::GetRenderCacheMode ()
+{
+	return (moonlight_flags & CACHE_MODE_FLAGS) == (CACHE_MODE_FLAGS) ? GetCacheMode () : NULL;
+}
+
 };
