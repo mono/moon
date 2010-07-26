@@ -4,6 +4,8 @@
 	* XamlLoaderCallbacks.cs: Hydration is now done on an object, not
 	a Value. This means the new parser doesn't have to create temp
 	Values just to match the old interface.
+	* XamlParser.cs: Add Api for setting the hydrate object and other
+	parser options.
 
 2010-07-19  Jackson Harper  <jackson@ximian.com>
 
