@@ -1336,6 +1336,8 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
+		r.Transform (render_projection).RoundOut ().Draw (cr);
+		cairo_clip (cr);
 
 		ctx->Prepend (new ContextNode (r));
 
