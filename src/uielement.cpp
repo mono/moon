@@ -1335,6 +1335,9 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		cairo_surface_t *group_surface;
 		Rect            r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
 
+		cairo_save (cr);
+		cairo_identity_matrix (cr);
+
 		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
 							      CAIRO_CONTENT_COLOR_ALPHA,
 							      r.width,
@@ -1352,6 +1355,10 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	if (effect) {
 		cairo_surface_t *group_surface;
 		Rect            r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
+
+		cairo_identity_matrix (cr);
+		r.Draw (cr);
+		cairo_clip (cr);
 
 		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
 							      CAIRO_CONTENT_COLOR_ALPHA,
@@ -1489,18 +1496,11 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Rect r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
 
-			cairo_save (cr);
-			cairo_identity_matrix (cr);
-			r.Draw (cr);
-			cairo_clip (cr);
-
 			if (!effect->Render (cr, src,
 					     NULL,
 					     r.x, r.y,
 					     r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply pixel effect.");
-
-			cairo_restore (cr);
 		}
 
 		cairo_destroy (group_cr);
@@ -1526,17 +1526,14 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			Effect *effect = Effect::GetProjectionEffect ();
 			Rect   r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
 
-			cairo_save (cr);
-			cairo_identity_matrix (cr);
-
 			if (!effect->Render (cr, src,
 					     render_projection,
 					     r.x, r.y,
 					     r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
-
-			cairo_restore (cr);
 		}
+
+		cairo_restore (cr);
 
 		cairo_destroy (group_cr);
 		cairo_surface_destroy (src);
