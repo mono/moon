@@ -511,7 +511,7 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 }
 
 gpointer
-Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str)
+Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase)
 {
 	MonoObject *loader;
 	MonoObject *exc = NULL;
@@ -528,8 +528,6 @@ Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* nativ
 	params [1] = &plugin_instance;
 	params [2] = &surface;
 	params [3] = resourceBase ? mono_string_new (mono_domain_get (), resourceBase) : NULL;
-	params [4] = file ? mono_string_new (mono_domain_get (), file) : NULL;
-	params [5] = str ? mono_string_new (mono_domain_get (), str) : NULL;
 	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
 
 	if (exc) {

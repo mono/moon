@@ -1,3 +1,8 @@
+2010-07-26  Jackson Harper  <jackson@ximian.com>
+
+	* Application.cs: We don't need to create a Value when hydrating
+	anymore.  That is the XamlLoader's problem.
+
 2010-07-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Application.cs: GetResourceStream: Only the uri when fetching embedded

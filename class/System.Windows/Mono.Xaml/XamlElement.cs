@@ -149,7 +149,7 @@ namespace Mono.Xaml {
 
 		public object Object {
 			get;
-			private set;
+			set;
 		}
 
 		public string X_Key {

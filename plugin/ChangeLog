@@ -1,3 +1,10 @@
+2010-07-26  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: The XamlLoader really doesn't need to know if we
+	are dealing with a string or a file, this is just an
+	implementation detail of the PluginXamlLoader, so its been moved
+	here and removed from the XamlLoader interface.
+
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.cpp: wrap void and null values as a normal object

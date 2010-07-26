@@ -1,3 +1,12 @@
+2010-07-26  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp: 
+	* deployment.cpp|h: The XamlLoader no longer needs the string/file
+	on instantiation.
+	* xaml.cpp|h: The XamlLoader doesn't have to track the string/file
+	its created with anymore. There was never any reason for this,
+	since the input is passed in via a CreateFromString/File method.
+
 2010-07-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	Initial work to fix Seadragon-513

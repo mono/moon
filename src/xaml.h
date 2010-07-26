@@ -182,14 +182,12 @@ class XamlLoader {
 	bool expanding_template;
 	DependencyObject *template_owner;
 	Surface *surface;
-	char *filename;
 	const char *resource_base;
-	char *str;
 	XamlContext *context;
 	bool import_default_xmlns;
 
 	
-	void Initialize (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context);
+	void Initialize (const char *resourceBase, Surface *surface, XamlContext *context);
  public:
 
 	enum XamlLoaderFlags {
@@ -198,8 +196,8 @@ class XamlLoader {
 		IMPORT_DEFAULT_XMLNS = 4
 	};
 
-	XamlLoader (const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
-	XamlLoader (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
+	XamlLoader (Surface *surface, XamlContext *context = NULL);
+	XamlLoader (const char *resourceBase, Surface *surface, XamlContext *context = NULL);
 	virtual ~XamlLoader ();
 	
 	virtual bool LoadVM ();
@@ -212,8 +210,6 @@ class XamlLoader {
 	virtual bool ImportDefaultXmlns () { return import_default_xmlns; }
 	void SetImportDefaultXmlns (bool v) { import_default_xmlns = v; }
 
-	char *GetFilename () { return filename; }
-	char *GetString () { return str; }
 	Surface *GetSurface () { return surface; }
 	const char *GetResourceBase () { return resource_base; }
 

@@ -326,7 +326,7 @@ public:
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
 	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
-	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
+	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase);
 	void DestroyManagedXamlLoader (gpointer xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
 

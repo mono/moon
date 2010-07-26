@@ -180,8 +180,9 @@ namespace Mono.Xaml
 			native_loader = IntPtr.Zero;
 		}
 		
-		protected override void HydrateInternal (Value value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
+		protected override void HydrateInternal (object value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
 		{
+			Value v = Value.FromObject (value);
 			try {
 				Kind k;
 				CreateNativeLoader (null, xaml);
@@ -191,11 +192,12 @@ namespace Mono.Xaml
 					flags |= XamlLoaderFlags.ValidateTemplates;
 				if (import_default_xmlns)
 					flags |= XamlLoaderFlags.ImportDefaultXmlns;
-				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref value, createNamescope, out k, (int) flags);
+				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref v, createNamescope, out k, (int) flags);
 				if (ret == IntPtr.Zero)
 					throw new Exception ("Invalid XAML file");
 			}
 			finally {
+				v.Dispose ();
 				FreeNativeLoader ();
 			}
 		}

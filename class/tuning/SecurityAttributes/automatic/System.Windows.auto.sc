@@ -1426,8 +1426,8 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_mark_property_as_set(System.IntPtr,System.IntPtr,System.String)
 
-# overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(Mono.Value,System.String,System.Boolean,System.Boolean,System.Boolean)'.
-+SC-M: System.Void Mono.Xaml.ManagedXamlLoader::HydrateInternal(Mono.Value,System.String,System.Boolean,System.Boolean,System.Boolean)
+# overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)'.
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetCLRPropertyFromString(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Object,System.Reflection.PropertyInfo,System.String,System.String&,System.IntPtr&)

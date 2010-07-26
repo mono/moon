@@ -1784,10 +1784,8 @@ PluginXamlLoader::InitializeLoader ()
 	if (managed_loader)
 		return true;
 
-	if (GetFilename ()) {
-		managed_loader = plugin->ManagedCreateXamlLoaderForFile (this, GetResourceBase(), GetFilename ());
-	} else if (GetString ()) {
-		managed_loader = plugin->ManagedCreateXamlLoaderForString (this, GetResourceBase(), GetString ());
+	if (GetXamlFile () || GetXamlString ()) {
+		managed_loader = plugin->CreateManagedXamlLoader (this, GetResourceBase());
 	} else {
 		return false;
 	}
@@ -1809,14 +1807,14 @@ PluginXamlLoader::TryLoad (int *error)
 	
 	*error = 0;
 	
-	//d(printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ()));
+	//d(printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetXamlFile (), GetXamlString ()));
 	
 	GetSurface ()->Attach (NULL);
 	
-	if (GetFilename ()) {
-		element = CreateDependencyObjectFromFile (GetFilename (), true, &element_type);
-	} else if (GetString ()) {
-		element = CreateDependencyObjectFromString (GetString (), true, &element_type);
+	if (GetXamlFile ()) {
+		element = CreateDependencyObjectFromFile (GetXamlFile (), true, &element_type);
+	} else if (GetXamlString ()) {
+		element = CreateDependencyObjectFromString (GetXamlString (), true, &element_type);
 	} else {
 		*error = 1;
 		return;
@@ -1825,7 +1823,7 @@ PluginXamlLoader::TryLoad (int *error)
 	if (!element) {
 		if (error_args && error_args->GetErrorCode() != -1) {
 			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s attr=%s)\n",
-				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
+				  GetXamlFile () ? "file" : "string", GetXamlFile () ? GetXamlFile () : GetXamlString (),
 				  error_args->xml_element, error_args->xml_attribute));
 			error_args->ref ();
 			GetSurface ()->EmitError (error_args);
@@ -1886,8 +1884,8 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	return true;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface)
-	: XamlLoader (resourceBase, filename, str, surface)
+PluginXamlLoader::PluginXamlLoader (const char *resourceBase, PluginInstance *plugin, Surface *surface)
+	: XamlLoader (resourceBase, surface)
 {
 	this->plugin = plugin;
 	xaml_is_managed = false;
@@ -1895,6 +1893,8 @@ PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filena
 	error_args = NULL;
 
 	xap = NULL;
+	xaml_string = NULL;
+	xaml_file = NULL;
 
 	managed_loader = NULL;
 }
@@ -1952,15 +1952,9 @@ PluginInstance::AppDomainUnloadedEventHandler (Deployment *deployment, EventArgs
 }
 
 gpointer
-PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *resourceBase, const char *file)
+PluginInstance::CreateManagedXamlLoader (XamlLoader *native_loader, const char *resourceBase)
 {
-	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase, file, NULL);
-}
-
-gpointer
-PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *resourceBase, const char *str)
-{
-	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase, NULL, str);
+	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase);
 }
 
 gint32

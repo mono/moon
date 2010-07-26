@@ -149,8 +149,7 @@ class PluginInstance
 	
 	bool CreatePluginDeployment ();
 
-	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
-	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
+	gpointer CreateManagedXamlLoader (XamlLoader* loader, const char *resourceBase);
 	static void progress_changed_handler (EventObject *sender, EventArgs *args, gpointer closure);
 	int progress_changed_token;
 
@@ -306,12 +305,15 @@ extern GSList *plugin_instances;
 
 class PluginXamlLoader : public XamlLoader
 {
-	PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface);
+	PluginXamlLoader (const char *resourceBase, PluginInstance *plugin, Surface *surface);
 	bool InitializeLoader ();
 	PluginInstance *plugin;
 	bool initialized;
 	bool xaml_is_managed;
-	
+
+	char* xaml_string;
+	char* xaml_file;
+
 	gpointer managed_loader;
 	Xap *xap;
  public:
@@ -320,14 +322,30 @@ class PluginXamlLoader : public XamlLoader
 
 	bool SetProperty (void *parser, Value *top_level, const char *xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data, int flags = 0);
 
+	const char* GetXamlString ()
+	{
+		return xaml_string;
+	}
+
+	const char* GetXamlFile ()
+	{
+		return xaml_file;
+	}
+	
 	static PluginXamlLoader *FromFilename (const char *resourceBase, const char *filename, PluginInstance *plugin, Surface *surface)
 	{
-		return new PluginXamlLoader (resourceBase, filename, NULL, plugin, surface);
+		PluginXamlLoader *loader = new PluginXamlLoader (resourceBase, plugin, surface);
+
+		loader->xaml_file = g_strdup (filename);
+		return loader;
 	}
 	
 	static PluginXamlLoader *FromStr (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
 	{
-		return new PluginXamlLoader (resourceBase, NULL, str, plugin, surface);
+		PluginXamlLoader *loader = new PluginXamlLoader (resourceBase, plugin, surface);
+
+		loader->xaml_string = g_strdup (str);
+		return loader;
 	}
 	
 	bool IsManaged () { return xaml_is_managed; }

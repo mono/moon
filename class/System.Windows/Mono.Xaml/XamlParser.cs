@@ -105,9 +105,24 @@ namespace Mono.Xaml {
 			private set;
 		}
 
+		public object HydrateObject {
+			get;
+			set;
+		}
+
 		public NameScope NameScope {
 			get;
 			private set;
+		}
+
+		public bool CreateNameScope {
+			get;
+			set;
+		}
+
+		public bool ValidateTemplates {
+			get;
+			set;
 		}
 
 		public object ParseString (string str)
@@ -691,9 +706,19 @@ namespace Mono.Xaml {
 		{
 			XamlObjectElement obj = element as XamlObjectElement;
 
-			if (obj != null && typeof (DependencyObject).IsAssignableFrom (obj.Type)) {
-				DependencyObject dob = (DependencyObject) obj.Object;
-				NameScope.SetNameScope (dob, NameScope);
+			
+			if (obj != null) {
+
+				if (HydrateObject != null) {
+					if (!obj.Type.IsAssignableFrom (HydrateObject.GetType ()))
+						throw ParseException ("Invalid top-level element found {0}, expecting {1}", obj.Type, HydrateObject.GetType ());
+					obj.Object = HydrateObject;
+				}
+
+				if (typeof (DependencyObject).IsAssignableFrom (obj.Type)) {
+					DependencyObject dob = (DependencyObject) obj.Object;
+					NameScope.SetNameScope (dob, NameScope);
+				}
 			}
 		}
 	
@@ -986,9 +1011,9 @@ namespace Mono.Xaml {
 				o = Activator.CreateInstance (type);
 
 			// TODO: Why did I need this? 
-			// INativeEventObjectWrapper evo = o as INativeEventObjectWrapper;
-			// if (evo != null)
-			//	NativeMethods.event_object_ref (evo.NativeHandle);
+			INativeEventObjectWrapper evo = o as INativeEventObjectWrapper;
+			if (evo != null)
+				NativeMethods.event_object_ref (evo.NativeHandle);
 
 			return o;
 		}

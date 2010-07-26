@@ -212,6 +212,7 @@ namespace Mono.Xaml
 		// Caller is responsible for calling value_free_value on the returned value
 		public IntPtr CreateFromString (string xaml, bool createNamescope, out Kind kind)
 		{
+			
 			return CreateFromString (xaml, createNamescope, false, false, out kind);
 		}
 
@@ -232,23 +233,24 @@ namespace Mono.Xaml
 		//
 		// Hydrates the object dob from the given xaml
 		//
-		public void Hydrate (Value value, string xaml)
+		public void Hydrate (object value, string xaml)
 		{
 			Hydrate (value, xaml, true, false, false);
 		}
 
-		public void Hydrate (Value value, string xaml, bool createNamescope)
+		public void Hydrate (object value, string xaml, bool createNamescope)
 		{
 			Hydrate (value, xaml, createNamescope, false, false);
 		}
 
-		public void Hydrate (Value value, string xaml, bool createNamescope, bool validateTemplates)
+		public void Hydrate (object value, string xaml, bool createNamescope, bool validateTemplates)
 		{
 			Hydrate (value, xaml, createNamescope, validateTemplates, false);
 		}
 
-		public void Hydrate (Value value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
+		public void Hydrate (object value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
 		{
+			Console.WriteLine ("hydrating:  {0}", xaml);
 			HydrateInternal (value, xaml, createNamescope, validateTemplates, import_default_xmlns);
 		}
 		
@@ -263,7 +265,7 @@ namespace Mono.Xaml
 
 
 		protected abstract IntPtr CreateFromFileInternal (string path, bool createNamescope, out Kind kind);
-		protected abstract void HydrateInternal (Value value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns);
+		protected abstract void HydrateInternal (object value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns);
 		protected abstract IntPtr CreateFromStringInternal (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind);
 
 		// 

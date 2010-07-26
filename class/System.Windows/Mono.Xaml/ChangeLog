@@ -1,3 +1,10 @@
+2010-07-26  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs:
+	* XamlLoaderCallbacks.cs: Hydration is now done on an object, not
+	a Value. This means the new parser doesn't have to create temp
+	Values just to match the old interface.
+
 2010-07-19  Jackson Harper  <jackson@ximian.com>
 
 	* XamlParser.cs: This function is called by unmanaged so it can't

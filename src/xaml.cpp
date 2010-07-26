@@ -324,7 +324,7 @@ DependencyObject *
 parse_template (Value *data, const char *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error)
 {
 	XamlContext *xaml_context = (XamlContext *) data->AsEventObject ();
-	XamlLoader *loader = new XamlLoader (resource_base, NULL, xaml, surface, xaml_context);
+	XamlLoader *loader = new XamlLoader (resource_base, surface, xaml_context);
 	Type::Kind dummy;
 
 	loader->SetExpandingTemplate (true);
@@ -831,7 +831,7 @@ class XamlParserInfo {
 
 	void ValidateTemplate (const char* buffer, XamlContext* context, FrameworkTemplate *binding_source)
 	{
-		XamlLoader *loader = new XamlLoader (NULL, buffer, NULL, context);
+		XamlLoader *loader = new XamlLoader (NULL, NULL, context);
 		Type::Kind dummy;
 
 		context->SetTemplateBindingSource (binding_source);
@@ -1554,22 +1554,20 @@ XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool pare
 	return false;
 }
 
-XamlLoader::XamlLoader (const char *resourceBase, const char* filename, const char* str, Surface* surface, XamlContext *context)
+XamlLoader::XamlLoader (const char *resourceBase, Surface* surface, XamlContext *context)
 {
-	Initialize (resourceBase, filename, str, surface, context);
+	Initialize (resourceBase, surface, context);
 }
 
-XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface, XamlContext *context)
+XamlLoader::XamlLoader (Surface* surface, XamlContext *context)
 {
-	Initialize (NULL, filename, str, surface, context);
+	Initialize (NULL, surface, context);
 }
 
 void
-XamlLoader::Initialize (const char *resourceBase, const char* filename, const char* str, Surface* surface, XamlContext *context)
+XamlLoader::Initialize (const char *resourceBase, Surface* surface, XamlContext *context)
 {
-	this->filename = g_strdup (filename);
 	this->resource_base = Deployment::GetCurrent()->InternString (resourceBase);
-	this->str = g_strdup (str);
 	this->surface = surface;
 	if (surface)
 		surface->ref ();
@@ -1586,21 +1584,17 @@ XamlLoader::Initialize (const char *resourceBase, const char* filename, const ch
 	}
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
-		printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n",
-			filename, str, surface);
+		// printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n",
+		//	filename, str, surface);
 	}
 #endif
 }
 
 XamlLoader::~XamlLoader ()
 {
-	g_free (filename);
-	g_free (str);
 	if (surface)
 		surface->unref ();
 	surface = NULL;
-	filename = NULL;
-	str = NULL;
 	if (error_args)
 		error_args->unref();
 
@@ -1619,7 +1613,7 @@ XamlLoader::LoadVM ()
 XamlLoader* 
 xaml_loader_new (const char *resourceBase, const char* filename, const char* str, Surface* surface)
 {
-	return new XamlLoader (resourceBase, filename, str, surface);
+	return new XamlLoader (resourceBase, surface);
 }
 
 void

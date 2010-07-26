@@ -394,16 +394,11 @@ namespace System.Windows {
 			if (sr == null)
 				return;
 
-			using (var v = Value.FromObject (component)) {
-				// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
-				// Application app = component as Application;
+			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
+			Assembly loading_asm = component.GetType ().Assembly;
 	
-				string xaml = new StreamReader (sr.Stream).ReadToEnd ();
-				Assembly loading_asm = component.GetType ().Assembly;
-	
-				ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
-				loader.Hydrate (v, xaml);
-			}
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
+			loader.Hydrate (component, xaml);
 		}
 
 		private static Dictionary<string,byte[]> local_xap_resources = new Dictionary<string,byte[]> ();
