@@ -57,12 +57,12 @@ namespace System.Windows.Controls
 	public class ContentPresenter : FrameworkElement
 	{ 
 		internal UIElement _contentRoot;
-		Grid _fallbackRoot;
+		UIElement _fallbackRoot;
 
-		Grid FallbackRoot {
+		UIElement FallbackRoot {
 			get {
 				if (_fallbackRoot == null)
-					_fallbackRoot = ContentControl.CreateFallbackRoot ();
+					_fallbackRoot = (UIElement) ContentControl.FallbackTemplate.GetVisualTree (null);
 				return _fallbackRoot;
 			}
 		}

@@ -383,7 +383,31 @@ namespace MoonTest.System.Windows.Controls {
 				);
 			});
 		}
-		
+
+		[TestMethod]
+		public void DefaultTemplate_FindName ()
+		{
+			ContentPresenter presenter = new ContentPresenter { Content = "Content" };
+			presenter.Measure(Size.Empty);
+
+			Grid grid = null;
+			Assert.VisualChildren(presenter, "#1",
+				new VisualNode<Grid>("#a", g => grid = g,
+					new VisualNode<TextBlock>("#b")
+				)
+			);
+
+			var child = (TextBlock) grid.Children[0];
+			child.Name = "TestName";
+			Assert.IsNull(child.FindName("TestName"), "#2");
+			Assert.IsNull(grid.FindName("TestName"), "#3");
+			Assert.IsNull(presenter.FindName("TestName"), "#4");
+
+			grid.Children.Clear();
+			TestPanel.Children.Add(child);
+			Assert.IsNull(TestPanel.FindName("TestName"), "#5");
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void VisualTreeTest3 ()

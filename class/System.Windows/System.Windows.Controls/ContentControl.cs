@@ -28,10 +28,12 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using Mono;
+using System.Windows.Markup;
 
 namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
-		static UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
+		static readonly UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
+		internal static readonly ControlTemplate FallbackTemplate = CreateFallbackTemplate ();
 
 		static void content_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
@@ -62,7 +64,7 @@ namespace System.Windows.Controls {
 		UIElement FallbackRoot {
 			get {
 				if (_fallbackRoot == null)
-					_fallbackRoot = CreateFallbackRoot ();
+					_fallbackRoot = (UIElement) FallbackTemplate.GetVisualTree (this);
 				return _fallbackRoot;
 			}
 		}
@@ -77,13 +79,15 @@ namespace System.Windows.Controls {
 			return FallbackRoot;
 		}
 		
-		internal static Grid CreateFallbackRoot ()
+		internal static ControlTemplate CreateFallbackTemplate ()
 		{
-			Grid grid = new Grid ();
-			TextBlock block = new TextBlock ();
-			block.SetBinding (TextBlock.TextProperty, new Binding ());
-			grid.Children.Add (block);
-			return grid;
+			// Note - we're not specifying a TargetType as we don't need it.
+			return (ControlTemplate) XamlReader.Load (@"
+<ControlTemplate xmlns=""http://schemas.microsoft.com/client/2007"">
+	<Grid>
+	    <TextBlock Text=""{Binding}"" />
+	</Grid>
+</ControlTemplate>");
 		}
 
 		protected virtual void OnContentChanged (object oldContent, object newContent)
