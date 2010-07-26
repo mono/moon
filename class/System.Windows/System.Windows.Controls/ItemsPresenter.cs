@@ -27,11 +27,13 @@ using Mono;
 using System;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Markup;
 
 namespace System.Windows.Controls
 {
 	public sealed class ItemsPresenter : FrameworkElement
 	{
+		static ItemsPanelTemplate FallbackTemplate = CreateFallbackTemplate ();
 		internal Panel _elementRoot;
 
 		public ItemsPresenter ()
@@ -72,13 +74,22 @@ namespace System.Windows.Controls
 			}
 #else
 			if (_elementRoot == null)
-				_elementRoot = new StackPanel ();
+				_elementRoot =  (Panel) FallbackTemplate.GetVisualTree (c);
 #endif
 			
 			_elementRoot.IsItemsHost = true;
 			_elementRoot.TemplateOwner = c;
 
 			return _elementRoot;
+		}
+
+
+		internal static ItemsPanelTemplate CreateFallbackTemplate ()
+		{
+			return (ItemsPanelTemplate) XamlReader.Load (@"
+<ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007"">
+	<StackPanel />
+</ItemsPanelTemplate>");
 		}
 	}
 }
