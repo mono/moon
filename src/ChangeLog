@@ -1,5 +1,8 @@
 2010-07-26  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Use context list instead of cairo_push/pop group
+	for local opacity and opacity mask.
+
 	* uielement.h:
 	* uielement.cpp: Add GetRenderCacheMode.
 

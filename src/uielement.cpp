@@ -1365,6 +1365,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		Rect r = GetLocalBounds ().RoundOut ();
 		cairo_identity_matrix (cr);
+		cairo_surface_t *group_surface;
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
@@ -1380,27 +1381,34 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		// will keep all descendents from drawing to the
 		// screen.
 		// 
-		if (!region->IsEmpty()) {
-			region->Draw (cr);
-			cairo_clip (cr);
-		}
+		if (!region->IsEmpty ())
+			r = r.Intersection (region->ClipBox ());
+
 		r.Draw (cr);
 		cairo_clip (cr);
+
+		if (IS_TRANSLUCENT (local_opacity)) {
+			group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
+								      CAIRO_CONTENT_COLOR_ALPHA,
+								      r.width,
+								      r.height);
+			cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
+			ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+			cr = ((ContextNode *) ctx->First ())->GetCr ();
+		}
+
+		if (opacityMask != NULL) {
+			group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
+								      CAIRO_CONTENT_COLOR_ALPHA,
+								      r.width,
+								      r.height);
+			cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
+			ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+			cr = ((ContextNode *) ctx->First ())->GetCr ();
+		}
 	}
+
 	ApplyTransform (cr);
-
-	/*
-	if (ClipToExtents ()) {
-		extents.Draw (cr); 
-		cairo_clip (cr);
-	}
-	*/
-
-	if (IS_TRANSLUCENT (local_opacity))
-		cairo_push_group (cr);
-
-	if (opacityMask != NULL)
-		cairo_push_group (cr);
 
 	cairo_t *redirected = ((ContextNode *) ctx->First ())->GetCr ();
 
@@ -1424,8 +1432,15 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 
 	if (opacityMask != NULL) {
-		cairo_pattern_t *data = cairo_pop_group (cr);
-		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+		List::Node *node = ctx->First ();
+		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
+		cairo_surface_t *src = cairo_get_target (group_cr);
+
+		ctx->Unlink (node);
+
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			cairo_pattern_t *mask = NULL;
 			Point p = GetOriginPoint ();
 			Rect area = Rect (p.x, p.y, 0.0, 0.0);
@@ -1433,20 +1448,33 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			opacityMask->SetupBrush (cr, area);
 			mask = cairo_get_source (cr);
 			cairo_pattern_reference (mask);
-			cairo_set_source (cr, data);
+			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_mask (cr, mask);
 			cairo_pattern_destroy (mask);
 		}
-		cairo_pattern_destroy (data);
+
+		cairo_destroy (group_cr);
+		cairo_surface_destroy (src);
+		delete node;
 	}
 
 	if (IS_TRANSLUCENT (local_opacity)) {
-		cairo_pattern_t *data = cairo_pop_group (cr);
-		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
-			cairo_set_source (cr, data);
+		List::Node *node = ctx->First ();
+		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
+		cairo_surface_t *src = cairo_get_target (group_cr);
+
+		ctx->Unlink (node);
+
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_paint_with_alpha (cr, local_opacity);
 		}
-		cairo_pattern_destroy (data);
+
+		cairo_destroy (group_cr);
+		cairo_surface_destroy (src);
+		delete node;
 	}
 
 	if (effect) {
