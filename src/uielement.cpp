@@ -1332,18 +1332,13 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 
 	if (flags & UIElement::RENDER_PROJECTION) {
-		cairo_surface_t *group_surface;
-		Rect            r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
+		Rect r = GetSubtreeExtents ().GrowBy (effect_padding);
 
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
 
-		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
-							      CAIRO_CONTENT_COLOR_ALPHA,
-							      r.width,
-							      r.height);
-		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
-		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+		ctx->Prepend (new ContextNode (r));
+
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
@@ -1353,26 +1348,19 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	RenderClipPath (cr);
 
 	if (effect) {
-		cairo_surface_t *group_surface;
-		Rect            r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
+		Rect r = GetSubtreeExtents ().GrowBy (effect_padding);
 
 		cairo_identity_matrix (cr);
-		r.Draw (cr);
+		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
 
-		group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
-							      CAIRO_CONTENT_COLOR_ALPHA,
-							      r.width,
-							      r.height);
-		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
-		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+		ctx->Prepend (new ContextNode (r));
+
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
-		Rect r = GetLocalBounds ().RoundOut ();
-		cairo_identity_matrix (cr);
-		cairo_surface_t *group_surface;
+		Rect r = GetLocalBounds ();
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
@@ -1391,28 +1379,17 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		if (!region->IsEmpty ())
 			r = r.Intersection (region->ClipBox ());
 
-		r.Draw (cr);
+		cairo_identity_matrix (cr);
+		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
 
-		if (IS_TRANSLUCENT (local_opacity)) {
-			group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
-								      CAIRO_CONTENT_COLOR_ALPHA,
-								      r.width,
-								      r.height);
-			cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
-			ctx->Prepend (new ContextNode (cairo_create (group_surface)));
-			cr = ((ContextNode *) ctx->First ())->GetCr ();
-		}
+		if (IS_TRANSLUCENT (local_opacity))
+			ctx->Prepend (new ContextNode (r));
 
-		if (opacityMask != NULL) {
-			group_surface = cairo_surface_create_similar (cairo_get_group_target (cr),
-								      CAIRO_CONTENT_COLOR_ALPHA,
-								      r.width,
-								      r.height);
-			cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
-			ctx->Prepend (new ContextNode (cairo_create (group_surface)));
-			cr = ((ContextNode *) ctx->First ())->GetCr ();
-		}
+		if (opacityMask != NULL)
+			ctx->Prepend (new ContextNode (r));
+
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
 	ApplyTransform (cr);

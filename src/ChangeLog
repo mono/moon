@@ -1,5 +1,8 @@
 2010-07-26  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (PreRender): Use lazy intermediate target
+	allocation.
+
 	* runtime.h:
 	* runtime.cpp: Add lazy target allocation to ContextNode. If
 	a ContextNode is created from some extents instead of from a
