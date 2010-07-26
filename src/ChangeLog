@@ -1,5 +1,11 @@
 2010-07-26  David Reveman  <davidr@novell.com>
 
+	* runtime.h:
+	* runtime.cpp: Add lazy target allocation to ContextNode. If
+	a ContextNode is created from some extents instead of from a
+	cairo context, the target surface and cairo context is not
+	allocated until GetCr is called.
+
 	* uielement.cpp: Use context list instead of cairo_push/pop group
 	for local opacity and opacity mask. Set clip and transform
 	in PreRender instead of PostRender.

@@ -503,10 +503,12 @@ public:
 
 class ContextNode : public List::Node {
 public:
-	ContextNode (cairo_t *cr) { context = cr; }
-	cairo_t *GetCr () { return context; }
+	ContextNode (cairo_t *cr);
+	ContextNode (Rect extents);
+	cairo_t *GetCr ();
 
 private:
+	Rect    box;
 	cairo_t *context;
 };
 

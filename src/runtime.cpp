@@ -1614,6 +1614,35 @@ UIElementNode::~UIElementNode ()
 	uielement = NULL;
 }
 
+ContextNode::ContextNode (cairo_t *cr)
+{
+	context = cr;
+	box     = Rect ();
+}
+
+ContextNode::ContextNode (Rect extents)
+{
+	context = NULL;
+	box     = extents;
+}
+
+cairo_t *
+ContextNode::GetCr ()
+{
+	if (!context) {
+		Rect            r = box.RoundOut ();
+		cairo_surface_t *target;
+
+		target = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+						     r.width,
+						     r.height);
+		cairo_surface_set_device_offset (target, -r.x, -r.y);
+		context = cairo_create (target);
+	}
+
+	return context;
+}
+
 void
 Surface::PerformCapture (UIElement *capture)
 {
