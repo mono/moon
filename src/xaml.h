@@ -186,7 +186,6 @@ class XamlLoader {
 	XamlContext *context;
 	bool import_default_xmlns;
 
-	
 	void Initialize (const char *resourceBase, Surface *surface, XamlContext *context);
  public:
 
@@ -238,7 +237,9 @@ class XamlLoader {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
 	
-	XamlLoaderCallbacks callbacks;
+	XamlLoaderCallbacks GetCallbacks ();
+	void SetCallbacks (XamlLoaderCallbacks callbacks);
+
 	ParserErrorEventArgs *error_args;
 };
 

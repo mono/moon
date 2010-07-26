@@ -8,6 +8,12 @@
 
 2010-07-26  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp|h: The callbacks are now stored on the XamlContext and
+	we always have a default XamlContext.  Cleans up the memory
+	management of the callbacks a little.
+
+2010-07-26  Jackson Harper  <jackson@ximian.com>
+
 	* runtime.cpp: 
 	* deployment.cpp|h: The XamlLoader no longer needs the string/file
 	on instantiation.

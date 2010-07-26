@@ -251,6 +251,14 @@ class XamlContextInternal {
 		g_hash_table_foreach (namespaces, add_namespace_data, imported_namespaces);
 	}
 
+	XamlContextInternal ()
+	{
+		this->top_element = NULL;
+		this->template_parent = NULL;
+		this->resources = NULL;
+		this->parent_context = NULL;
+		imported_namespaces = NULL;
+	}
 	
 	~XamlContextInternal ()
 	{
@@ -1505,12 +1513,12 @@ class ManagedNamespace : public XamlNamespace {
 bool
 XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* xmlns, const char* type_name, bool create, bool is_property, Value *value)
 {
-	if (callbacks.lookup_object) {
+	if (GetCallbacks ().lookup_object) {
 		if (!vm_loaded && !LoadVM ())
 			return false;
 		MoonError error;
 		XamlCallbackData data = XamlCallbackData (this, p, top_level);
-		bool res = callbacks.lookup_object (&data, parent, xmlns, type_name, create, is_property, value, &error);
+		bool res = GetCallbacks ().lookup_object (&data, parent, xmlns, type_name, create, is_property, value, &error);
 		return res;
 	}
 		
@@ -1520,10 +1528,10 @@ XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* 
 bool
 XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char* prop_xmlns, const char *name, Value *value, void* value_data, int flags)
 {
-	if (callbacks.set_property) {
+	if (GetCallbacks ().set_property) {
 		MoonError error;
 		XamlCallbackData data = XamlCallbackData (this, p, top_level, flags);
-		bool res = callbacks.set_property (&data, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
+		bool res = GetCallbacks ().set_property (&data, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
 
 		if (error.number != MoonError::NO_ERROR) {
 			parser_error ((XamlParserInfo *) p, ((XamlElementInstance *) target_data)->element_name, NULL, error.code, error.message);
@@ -1539,10 +1547,10 @@ XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *ta
 bool
 XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data)
 {
-	if (callbacks.add_child) {
+	if (GetCallbacks ().add_child) {
 		MoonError error;
 		XamlCallbackData data = XamlCallbackData (this, p, top_level);
-		bool res = callbacks.add_child (&data, parent_parent, parent_is_property, parent_xmlns, parent, parent_data, child, child_data, &error);
+		bool res = GetCallbacks ().add_child (&data, parent_parent, parent_is_property, parent_xmlns, parent, parent_data, child, child_data, &error);
 
 		if (error.number != MoonError::NO_ERROR) {
 			parser_error ((XamlParserInfo *) p, ((XamlElementInstance *) child_data)->element_name, NULL, error.code, error.message);
@@ -1578,10 +1586,11 @@ XamlLoader::Initialize (const char *resourceBase, Surface* surface, XamlContext 
 	this->template_owner = NULL;
 	this->import_default_xmlns = false;
 
-	if (context) {
-		callbacks = context->internal->callbacks;
+	if (context)
 		this->vm_loaded = true;
-	}
+	else
+		context = new XamlContext (new XamlContextInternal ());
+
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
 		// printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n",
@@ -1597,11 +1606,18 @@ XamlLoader::~XamlLoader ()
 	surface = NULL;
 	if (error_args)
 		error_args->unref();
+}
 
-	// Only free the callbacks if we own them, ie we are the top level loader
-	// otherwise the XamlContext owns them.
-	if (!context && callbacks.gchandle)
-		mono_gchandle_free (callbacks.gchandle);
+XamlLoaderCallbacks
+XamlLoader::GetCallbacks ()
+{
+	return context->internal->callbacks;
+}
+
+void
+XamlLoader::SetCallbacks (XamlLoaderCallbacks callbacks)
+{
+	context->internal->callbacks = callbacks;
 }
 
 bool
@@ -1630,7 +1646,7 @@ xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 		return;
 	}
 
-	loader->callbacks = callbacks;
+	loader->SetCallbacks (callbacks);
 	loader->vm_loaded = true;
 }
 
@@ -1995,7 +2011,7 @@ static XamlContext *
 create_xaml_context (XamlParserInfo *p, FrameworkTemplate *template_, XamlContext *parent_context)
 {
 	GSList *resources = create_resource_list (p);
-	XamlContextInternal *ic =  new XamlContextInternal (p->loader->callbacks, p->GetTopElementPtr (), template_, p->namespace_map, resources, parent_context ? parent_context->internal : NULL);
+	XamlContextInternal *ic =  new XamlContextInternal (p->loader->GetCallbacks (), p->GetTopElementPtr (), template_, p->namespace_map, resources, parent_context ? parent_context->internal : NULL);
 	return new XamlContext (ic);
 }
 
@@ -2173,10 +2189,10 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	if (p->error_args)
 		return;
 
-	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL) {
+	if (p->loader != NULL && p->loader->GetCallbacks ().import_xaml_xmlns != NULL) {
 		MoonError error;
 		XamlCallbackData data = XamlCallbackData (p->loader, p, p->GetTopElementPtr ());
-		if (!p->loader->callbacks.import_xaml_xmlns (&data, uri, &error))
+		if (!p->loader->GetCallbacks ().import_xaml_xmlns (&data, uri, &error))
 			return parser_error (p, p->current_element ? p->current_element->element_name : NULL, prefix, 2005, "Unknown namespace %s", uri);
 	}
 
