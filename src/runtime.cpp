@@ -1649,6 +1649,12 @@ ContextNode::GetCr ()
 	return context;
 }
 
+cairo_surface_t *
+ContextNode::GetTarget ()
+{
+	return cairo_get_target (GetCr ());
+}
+
 void
 Surface::PerformCapture (UIElement *capture)
 {

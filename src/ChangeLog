@@ -1,5 +1,8 @@
 2010-07-27  David Reveman  <davidr@novell.com>
 
+	* runtime.h:
+	* runtime.cpp: Add GetTarget method to ContextNode class.
+
 	* uielement.cpp (PostRender):
 	* runtime.h:
 	* runtime.cpp: ContextNode should own the cairo context and

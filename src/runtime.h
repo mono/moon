@@ -508,6 +508,7 @@ public:
 	virtual ~ContextNode ();
 
 	cairo_t *GetCr ();
+	cairo_surface_t *GetTarget ();
 
 private:
 	Rect    box;
