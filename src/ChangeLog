@@ -1,5 +1,10 @@
 2010-07-27  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (PostRender):
+	* runtime.h:
+	* runtime.cpp: ContextNode should own the cairo context and
+	any target surfaces implicitly created.
+
 	* uielement.cpp (PreRender): Only save state and render clip
 	path when clip is present.
 

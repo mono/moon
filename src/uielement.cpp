@@ -1441,8 +1441,6 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			cairo_pattern_destroy (mask);
 		}
 
-		cairo_destroy (group_cr);
-		cairo_surface_destroy (src);
 		delete node;
 	}
 
@@ -1460,8 +1458,6 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 			cairo_paint_with_alpha (cr, local_opacity);
 		}
 
-		cairo_destroy (group_cr);
-		cairo_surface_destroy (src);
 		delete node;
 	}
 
@@ -1488,9 +1484,6 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		}
 
 		cairo_restore (cr);
-
-		cairo_destroy (group_cr);
-		cairo_surface_destroy (src);
 		delete node;
 	}
 	else {
@@ -1521,9 +1514,6 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		}
 
 		cairo_restore (cr);
-
-		cairo_destroy (group_cr);
-		cairo_surface_destroy (src);
 		delete node;
 	}
 	else {

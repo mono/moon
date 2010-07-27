@@ -505,6 +505,8 @@ class ContextNode : public List::Node {
 public:
 	ContextNode (cairo_t *cr);
 	ContextNode (Rect extents);
+	virtual ~ContextNode ();
+
 	cairo_t *GetCr ();
 
 private:

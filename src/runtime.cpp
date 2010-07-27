@@ -1616,7 +1616,7 @@ UIElementNode::~UIElementNode ()
 
 ContextNode::ContextNode (cairo_t *cr)
 {
-	context = cr;
+	context = cairo_reference (cr);
 	box     = Rect ();
 }
 
@@ -1624,6 +1624,11 @@ ContextNode::ContextNode (Rect extents)
 {
 	context = NULL;
 	box     = extents;
+}
+
+ContextNode::~ContextNode ()
+{
+	if (context) cairo_destroy (context);
 }
 
 cairo_t *
@@ -1638,6 +1643,7 @@ ContextNode::GetCr ()
 						     r.height);
 		cairo_surface_set_device_offset (target, -r.x, -r.y);
 		context = cairo_create (target);
+		cairo_surface_destroy (target);
 	}
 
 	return context;
