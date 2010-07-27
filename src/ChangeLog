@@ -28,6 +28,10 @@
 
 2010-07-27  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Mark whether or not to use the ignorable element.
+
+2010-07-27  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp|h: We dont need the file/string anymore
 	when creating a xaml loader.
 
