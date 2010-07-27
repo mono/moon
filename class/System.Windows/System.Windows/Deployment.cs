@@ -236,12 +236,10 @@ namespace System.Windows {
 			using (StreamReader r = new StreamReader (app_manifest))
 				app_manifest_contents = r.ReadToEnd();
 
-			using (var v = Value.FromObject (this)) {
-				try {
-					loader.Hydrate (v, app_manifest_contents);
-				} catch (Exception e) {
-					throw new MoonException (7016, e.Message);
-				}
+			try {
+				loader.Hydrate (this, app_manifest_contents);
+			} catch (Exception e) {
+				throw new MoonException (7016, e.Message);
 			}
 
 			if (RuntimeVersion == null)
