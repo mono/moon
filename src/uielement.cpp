@@ -1421,8 +1421,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 
 	if (opacityMask != NULL) {
 		List::Node *node = ctx->First ();
-		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
-		cairo_surface_t *src = cairo_get_target (group_cr);
+		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
 
 		ctx->Unlink (node);
 
@@ -1446,8 +1445,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 
 	if (IS_TRANSLUCENT (local_opacity)) {
 		List::Node *node = ctx->First ();
-		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
-		cairo_surface_t *src = cairo_get_target (group_cr);
+		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
 
 		ctx->Unlink (node);
 
@@ -1466,8 +1464,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 
 	if (effect) {
 		List::Node *node = ctx->First ();
-		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
-		cairo_surface_t *src = cairo_get_target (group_cr);
+		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
 
 		ctx->Unlink (node);
 
@@ -1495,8 +1492,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		List::Node *node = ctx->First ();
-		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
-		cairo_surface_t *src = cairo_get_target (group_cr);
+		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
 
 		ctx->Unlink (node);
 
