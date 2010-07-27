@@ -1396,8 +1396,6 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
-	ApplyTransform (cr);
-
 	cairo_t *redirected = ((ContextNode *) ctx->Top ())->GetCr ();
 
 	if (cr != redirected)
