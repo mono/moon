@@ -885,9 +885,10 @@ class XamlParserInfo {
 	Value *GetTopElementPtr ()
 	{
 		XamlContext *context = loader->GetContext ();
-		if (context)
-			return context->internal->top_element;
 
+		if (context->internal->top_element)
+			return context->internal->top_element;
+			
 		if (top_element)
 			return top_element->GetAsValue ();
  
