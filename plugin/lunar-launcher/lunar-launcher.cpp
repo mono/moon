@@ -326,8 +326,8 @@ static GetOptsOption options[] = {
 };
 
 #if DEBUG
-void
-static lunar_handle_native_sigsegv (int signal, siginfo_t *info, void *ptr)
+static void
+lunar_handle_native_sigsegv (int signal, siginfo_t *info, void *ptr)
 {
 	const char *signal_str;
 
