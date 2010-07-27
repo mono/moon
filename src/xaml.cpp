@@ -1627,7 +1627,7 @@ XamlLoader::LoadVM ()
 }
 
 XamlLoader* 
-xaml_loader_new (const char *resourceBase, const char* filename, const char* str, Surface* surface)
+xaml_loader_new (const char *resourceBase, Surface* surface)
 {
 	return new XamlLoader (resourceBase, surface);
 }

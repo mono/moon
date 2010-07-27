@@ -120,7 +120,7 @@ namespace Mono.Xaml
 			this.plugin = plugin;
 		}
 				
-		public virtual void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
+		protected virtual void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface)
 		{
 			this.native_loader = native_loader;
 			this.plugin = plugin;

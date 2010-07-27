@@ -61,9 +61,9 @@ namespace Mono.Xaml
 		{
 		}
 
-		public override void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
+		public void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface)
 		{
-			base.Setup (native_loader, plugin, surface, filename, contents);
+			base.Setup (native_loader, plugin, surface);
 
 			//
 			// Registers callbacks that are invoked from the
@@ -151,7 +151,7 @@ namespace Mono.Xaml
 		}
 
 		
-		public void CreateNativeLoader (string filename, string contents)
+		public void CreateNativeLoader ()
 		{
 			if (!AllowMultipleSurfacesPerDomain) {
 				if (surface == IntPtr.Zero)
@@ -164,12 +164,12 @@ namespace Mono.Xaml
 				throw new Exception ("The surface where the xaml should be loaded is not set.");
 			
 			//Console.WriteLine ("ManagedXamlLoader::CreateNativeLoader (): surface: {0}", surface);
-			native_loader = NativeMethods.xaml_loader_new (resourceBase, filename, contents, surface);
+			native_loader = NativeMethods.xaml_loader_new (resourceBase, surface);
 			
 			if (native_loader == IntPtr.Zero)
 				throw new Exception ("Unable to create native loader.");
 			
-			Setup (native_loader, plugin, surface, filename, contents);
+			Setup (native_loader, plugin, surface);
 		}
 		
 		public void FreeNativeLoader ()
@@ -185,7 +185,7 @@ namespace Mono.Xaml
 			Value v = Value.FromObject (value);
 			try {
 				Kind k;
-				CreateNativeLoader (null, xaml);
+				CreateNativeLoader ();
 
 				XamlLoaderFlags flags = 0;
 				if (validateTemplates)
@@ -208,7 +208,7 @@ namespace Mono.Xaml
 				throw new ArgumentNullException ("path");
 
 			try {
-				CreateNativeLoader (null, path);
+				CreateNativeLoader ();
 				return NativeMethods.xaml_loader_create_from_file (NativeLoader, path, createNamescope, out kind);
 			}
 			finally {
@@ -223,7 +223,7 @@ namespace Mono.Xaml
 				throw new ArgumentNullException ("xaml");
 
 			try {
-				CreateNativeLoader (null, xaml);
+				CreateNativeLoader ();
 
 				XamlLoaderFlags flags = 0;
 				if (validateTemplates)

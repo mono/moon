@@ -122,7 +122,7 @@ bool        xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, c
 bool        xaml_bool_from_str (const char *s, bool *res);
 
 /* @GeneratePInvoke */
-XamlLoader *xaml_loader_new (const char *resourceBase, const char *filename, const char *str, Surface *surface);
+XamlLoader *xaml_loader_new (const char *resourceBase, Surface *surface);
 /* @GeneratePInvoke */
 void	    xaml_loader_free (XamlLoader *loader);
 /* @GeneratePInvoke */
