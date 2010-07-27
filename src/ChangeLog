@@ -1,5 +1,7 @@
 2010-07-27  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Call GetCr only when necessary.
+
 	* uielement.cpp (PreRender): It should not be necessary to call
 	ApplyTransform in PreRender.
 

@@ -1329,10 +1329,10 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 {
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
-	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 	if (flags & UIElement::RENDER_PROJECTION) {
-		Rect r = GetSubtreeExtents ().GrowBy (effect_padding);
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
 
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
@@ -1340,17 +1340,18 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_clip (cr);
 
 		ctx->Push (new ContextNode (r));
-
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
 	if (GetClip ()) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
 		cairo_save (cr);
 		RenderClipPath (cr);
 	}
 
 	if (effect) {
-		Rect r = GetSubtreeExtents ().GrowBy (effect_padding);
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
 
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
@@ -1358,12 +1359,13 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_clip (cr);
 
 		ctx->Push (new ContextNode (r));
-
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
+	void *xform = NULL;
+
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
-		Rect r = GetLocalBounds ();
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		Rect    r = GetLocalBounds ();
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
@@ -1387,21 +1389,28 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
 
+		// affine transformations are unaffected by opacity
+		// masks and local opacity so make sure the current
+		// xform property is transferred to the top context.
+		xform = cairo_get_user_data (cr, &uielement_xform_key);
+
 		if (IS_TRANSLUCENT (local_opacity))
 			ctx->Push (new ContextNode (r));
 
 		if (opacityMask != NULL)
 			ctx->Push (new ContextNode (r));
-
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
-	cairo_t *redirected = ((ContextNode *) ctx->Top ())->GetCr ();
+	// xform is set when it needs to be transferred to the
+	// top context.
+	if (xform) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
-	if (cr != redirected)
-		cairo_set_user_data (redirected, &uielement_xform_key, cairo_get_user_data (cr, &uielement_xform_key), NULL);
+		cairo_set_user_data (cr, &uielement_xform_key, xform, NULL);
+	}
 
-	//printf ("setting xform: xform key addr = %p", &uielement_xform_key);
+	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+	ApplyTransform (cr);
 }
 
 void
@@ -1415,13 +1424,11 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
-	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 	if (opacityMask != NULL) {
-		ContextNode *node = (ContextNode *) ctx->Pop ();
+		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetTarget ();
-
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			cairo_pattern_t *mask = NULL;
@@ -1440,10 +1447,9 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 	}
 
 	if (IS_TRANSLUCENT (local_opacity)) {
-		ContextNode *node = (ContextNode *) ctx->Pop ();
+		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetTarget ();
-
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			cairo_set_source_surface (cr, src, 0, 0);
@@ -1453,14 +1459,16 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 
-	if (opacityMask || IS_TRANSLUCENT (local_opacity))
+	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
 		cairo_restore (cr);
+	}
 
 	if (effect) {
-		ContextNode *node = (ContextNode *) ctx->Pop ();
+		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetTarget ();
-
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Rect r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
@@ -1475,18 +1483,17 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_restore (cr);
 		delete node;
 	}
-	else {
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+	if (GetClip ()) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+		cairo_restore (cr);
 	}
 
-	if (GetClip ())
-		cairo_restore (cr);
-
 	if (flags & UIElement::RENDER_PROJECTION) {
-		ContextNode *node = (ContextNode *) ctx->Pop ();
+		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetTarget ();
-
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Effect *effect = Effect::GetProjectionEffect ();
@@ -1502,11 +1509,10 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_restore (cr);
 		delete node;
 	}
-	else {
-		cr = ((ContextNode *) ctx->Top ())->GetCr ();
-	}
 
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
 		cairo_save (cr);
 		cairo_new_path (cr);
 		ApplyTransform (cr);
@@ -1530,6 +1536,8 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 	}
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
 		cairo_save (cr);
 		cairo_new_path (cr);
 		//RenderClipPath (cr);
