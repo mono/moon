@@ -233,6 +233,7 @@ class XamlContextInternal {
 	XamlLoaderCallbacks callbacks;
 	GSList *resources;
 	uint32_t gchandle;
+	bool create_ignorable;
 	XamlContextInternal *parent_context;
 
 	DependencyObject *source;
@@ -244,6 +245,7 @@ class XamlContextInternal {
 		this->template_parent = template_parent;
 		this->resources = resources;
 		this->parent_context = parent_context;
+		this->create_ignorable = true;
 
 		if (this->callbacks.create_gchandle) 
 			this->callbacks.create_gchandle ();
@@ -258,6 +260,8 @@ class XamlContextInternal {
 		this->resources = NULL;
 		this->parent_context = NULL;
 		imported_namespaces = NULL;
+
+		create_ignorable = false;
 	}
 	
 	~XamlContextInternal ()
@@ -1589,7 +1593,7 @@ XamlLoader::Initialize (const char *resourceBase, Surface* surface, XamlContext 
 	if (context)
 		this->vm_loaded = true;
 	else
-		context = new XamlContext (new XamlContextInternal ());
+		this->context = new XamlContext (new XamlContextInternal ());
 
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
@@ -2546,7 +2550,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 	XML_SetProcessingInstructionHandler (p, proc_handler);
 	*/
 
-	if (context) {
+	if (context->internal->create_ignorable) {
 		prepend = context->internal->CreateIgnorableTagOpen ();
 		append = context->internal->CreateIgnorableTagClose ();
 
