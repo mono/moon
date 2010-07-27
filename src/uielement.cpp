@@ -1344,14 +1344,15 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
-	cairo_save (cr);
-
-	ApplyTransform (cr);
-	RenderClipPath (cr);
+	if (GetClip ()) {
+		cairo_save (cr);
+		RenderClipPath (cr);
+	}
 
 	if (effect) {
 		Rect r = GetSubtreeExtents ().GrowBy (effect_padding);
 
+		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
@@ -1381,6 +1382,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		if (!region->IsEmpty ())
 			r = r.Intersection (region->ClipBox ());
 
+		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
@@ -1463,6 +1465,9 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 
+	if (opacityMask || IS_TRANSLUCENT (local_opacity))
+		cairo_restore (cr);
+
 	if (effect) {
 		List::Node *node = ctx->First ();
 		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
@@ -1482,6 +1487,8 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 				g_warning ("UIElement::PostRender failed to apply pixel effect.");
 		}
 
+		cairo_restore (cr);
+
 		cairo_destroy (group_cr);
 		cairo_surface_destroy (src);
 		delete node;
@@ -1490,7 +1497,8 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
-	cairo_restore (cr);
+	if (GetClip ())
+		cairo_restore (cr);
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		List::Node *node = ctx->First ();
