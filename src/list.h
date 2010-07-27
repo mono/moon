@@ -103,6 +103,25 @@ public:
 	void  MoveTo (Queue &queue);
 };
 
+class Stack {
+protected:
+	List *list;
+
+public:
+	Stack ();
+	~Stack ();
+
+	bool IsEmpty ();
+
+	void Clear (bool freeNodes);
+
+	void Push (List::Node *node);
+	List::Node *Pop ();
+
+	List::Node *Top ();
+};
+
+
 class ArrayList {
 private:
 	void **array;

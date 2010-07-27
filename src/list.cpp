@@ -487,6 +487,50 @@ Queue::MoveTo (Queue &queue)
 	}
 }
 
+Stack::Stack ()
+{
+	list = new List ();
+}
+
+Stack::~Stack ()
+{
+	delete list;
+}
+
+bool
+Stack::IsEmpty ()
+{
+	return list->IsEmpty ();
+}
+
+void
+Stack::Clear (bool freeNodes)
+{
+	list->Clear (freeNodes);
+}
+
+void
+Stack::Push (List::Node *node)
+{
+	list->Append (node);
+}
+
+List::Node *
+Stack::Pop ()
+{
+	List::Node *node;
+
+	if ((node = list->Last ()))
+		list->Unlink (node);
+
+	return node;
+}
+
+List::Node *
+Stack::Top ()
+{
+        return list->Last ();
+}
 
 /*
  * ArrayList
