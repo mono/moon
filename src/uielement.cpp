@@ -1434,13 +1434,16 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 			cairo_pattern_t *mask = NULL;
 			Point p = GetOriginPoint ();
 			Rect area = Rect (p.x, p.y, 0.0, 0.0);
+			cairo_save (cr);
 			GetSizeForBrush (cr, &(area.width), &(area.height));
 			opacityMask->SetupBrush (cr, area);
 			mask = cairo_get_source (cr);
 			cairo_pattern_reference (mask);
 			cairo_set_source_surface (cr, src, 0, 0);
+			ApplyTransform (cr);
 			cairo_mask (cr, mask);
 			cairo_pattern_destroy (mask);
+			cairo_restore (cr);
 		}
 
 		delete node;
