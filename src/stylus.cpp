@@ -835,7 +835,7 @@ InkPresenter::InkPresenter ()
 }
 
 void
-InkPresenter::PostRender (List *ctx, Region *region, bool skip_children)
+InkPresenter::PostRender (Stack *ctx, Region *region, bool skip_children)
 {
 	// render our chidren if we need to
 	if (!skip_children) {
@@ -844,7 +844,7 @@ InkPresenter::PostRender (List *ctx, Region *region, bool skip_children)
 			child->DoRender (ctx, region);
 	}
 
-	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
+	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	
 	ApplyTransform (cr);
 	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);

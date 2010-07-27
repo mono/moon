@@ -320,7 +320,7 @@ class InkPresenter : public Canvas {
  protected:
 	virtual ~InkPresenter () {}
 
-	virtual void PostRender (List *ctx, Region *region, bool skip_children);
+	virtual void PostRender (Stack *ctx, Region *region, bool skip_children);
 
  public:
 	/* @PropertyType=StrokeCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */

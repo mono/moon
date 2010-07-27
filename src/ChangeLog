@@ -1,5 +1,14 @@
 2010-07-27  David Reveman  <davidr@novell.com>
 
+	* src/grid.cpp:
+	* src/grid.h:
+	* src/runtime.cpp:
+	* src/runtime.h:
+	* src/stylus.cpp:
+	* src/stylus.h:
+	* src/uielement.cpp:
+	* src/uielement.h: Use Stack instead of List for ContextNodes.
+
 	* list.h:
 	* list.cpp: Add simple Stack class.
 

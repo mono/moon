@@ -516,13 +516,13 @@ private:
 };
 
 /* for rendering */
-typedef void (*RenderFunc) (List *ctx, UIElement *uielement, Region *region, bool skip_children);
+typedef void (*RenderFunc) (Stack *ctx, UIElement *uielement, Region *region, bool skip_children);
 
 class RenderNode : public List::Node {
 public:
 	RenderNode (UIElement *el, Region *region, bool render_element, RenderFunc pre, RenderFunc post);
 	
-	void Render (List *ctx);
+	void Render (Stack *ctx);
 
 	virtual ~RenderNode ();
 

@@ -194,7 +194,7 @@ public:
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
 	void FrontToBack (Region *surface_region, List *render_list);
-	void DoRender (List *ctx, Region *region);
+	void DoRender (Stack *ctx, Region *region);
 	bool UseOcclusionCulling ();
 	bool RenderToIntermediate ();
 
@@ -667,11 +667,11 @@ protected:
 	cairo_matrix_t absolute_xform;
 	cairo_matrix_t layout_xform;
 
-	virtual void PreRender (List *ctx, Region *region, bool skip_children);
-	virtual void PostRender (List *ctx, Region *region, bool skip_children);
+	virtual void PreRender (Stack *ctx, Region *region, bool skip_children);
+	virtual void PostRender (Stack *ctx, Region *region, bool skip_children);
 
-	static void CallPreRender (List *ctx, UIElement *element, Region *region, bool skip_children);
-	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool skip_children);
+	static void CallPreRender (Stack *ctx, UIElement *element, Region *region, bool skip_children);
+	static void CallPostRender (Stack *ctx, UIElement *element, Region *region, bool skip_children);
 
 	// Local perspective transform, including local affine transforms
 	double local_projection[16];

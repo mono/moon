@@ -889,12 +889,12 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 	uielements_rendered_with_painters = 0;
 #endif
 
-	List *ctx = new List ();
+	Stack *ctx = new Stack ();
 	List *render_list = new List ();
 
 	bool did_occlusion_culling = false;
 
-	ctx->Append (new ContextNode (cr));
+	ctx->Push (new ContextNode (cr));
 
 	int layer_count = layers->GetCount ();
 
@@ -1571,7 +1571,7 @@ RenderNode::RenderNode (UIElement *el,
 }
 
 void
-RenderNode::Render (List *ctx)
+RenderNode::Render (Stack *ctx)
 {
 	bool use_occlusion_culling = uielement->UseOcclusionCulling ();
 
@@ -1584,7 +1584,7 @@ RenderNode::Render (List *ctx)
 		pre_render (ctx, uielement, region, use_occlusion_culling);
 
 	if (render_element) {
-		uielement->Render (((ContextNode *) ctx->First ())->GetCr (), region);
+		uielement->Render (((ContextNode *) ctx->Top ())->GetCr (), region);
 	}
 	
 	if (post_render)

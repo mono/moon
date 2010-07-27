@@ -1160,7 +1160,7 @@ UIElement::ReleaseMouseCapture ()
 }
 
 void
-UIElement::DoRender (List *ctx, Region *parent_region)
+UIElement::DoRender (Stack *ctx, Region *parent_region)
 {
 	Region *region;
 
@@ -1185,7 +1185,7 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 
 	PreRender (ctx, region, false);
 
-	Render (((ContextNode *) ctx->First ())->GetCr (), region);
+	Render (((ContextNode *) ctx->Top ())->GetCr (), region);
 
 	PostRender (ctx, region, false);
 
@@ -1325,11 +1325,11 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 
 void
-UIElement::PreRender (List *ctx, Region *region, bool skip_children)
+UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 {
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
-	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
+	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		Rect r = GetSubtreeExtents ().GrowBy (effect_padding);
@@ -1339,9 +1339,9 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		r.Transform (render_projection).RoundOut ().Draw (cr);
 		cairo_clip (cr);
 
-		ctx->Prepend (new ContextNode (r));
+		ctx->Push (new ContextNode (r));
 
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
 	if (GetClip ()) {
@@ -1357,9 +1357,9 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
 
-		ctx->Prepend (new ContextNode (r));
+		ctx->Push (new ContextNode (r));
 
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
@@ -1388,17 +1388,17 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 		cairo_clip (cr);
 
 		if (IS_TRANSLUCENT (local_opacity))
-			ctx->Prepend (new ContextNode (r));
+			ctx->Push (new ContextNode (r));
 
 		if (opacityMask != NULL)
-			ctx->Prepend (new ContextNode (r));
+			ctx->Push (new ContextNode (r));
 
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
 	ApplyTransform (cr);
 
-	cairo_t *redirected = ((ContextNode *) ctx->First ())->GetCr ();
+	cairo_t *redirected = ((ContextNode *) ctx->Top ())->GetCr ();
 
 	if (cr != redirected)
 		cairo_set_user_data (redirected, &uielement_xform_key, cairo_get_user_data (cr, &uielement_xform_key), NULL);
@@ -1407,7 +1407,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 }
 
 void
-UIElement::PostRender (List *ctx, Region *region, bool skip_children)
+UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 {
 	if (!skip_children) {
 		VisualTreeWalker walker (this, ZForward);
@@ -1417,15 +1417,13 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
-	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
+	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 	if (opacityMask != NULL) {
-		List::Node *node = ctx->First ();
-		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
+		ContextNode *node = (ContextNode *) ctx->Pop ();
+		cairo_surface_t *src = node->GetTarget ();
 
-		ctx->Unlink (node);
-
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			cairo_pattern_t *mask = NULL;
@@ -1444,12 +1442,10 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 	}
 
 	if (IS_TRANSLUCENT (local_opacity)) {
-		List::Node *node = ctx->First ();
-		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
+		ContextNode *node = (ContextNode *) ctx->Pop ();
+		cairo_surface_t *src = node->GetTarget ();
 
-		ctx->Unlink (node);
-
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			cairo_set_source_surface (cr, src, 0, 0);
@@ -1463,12 +1459,10 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		cairo_restore (cr);
 
 	if (effect) {
-		List::Node *node = ctx->First ();
-		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
+		ContextNode *node = (ContextNode *) ctx->Pop ();
+		cairo_surface_t *src = node->GetTarget ();
 
-		ctx->Unlink (node);
-
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Rect r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
@@ -1484,19 +1478,17 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 	else {
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
 	if (GetClip ())
 		cairo_restore (cr);
 
 	if (flags & UIElement::RENDER_PROJECTION) {
-		List::Node *node = ctx->First ();
-		cairo_surface_t *src = ((ContextNode *) node)->GetTarget ();
+		ContextNode *node = (ContextNode *) ctx->Pop ();
+		cairo_surface_t *src = node->GetTarget ();
 
-		ctx->Unlink (node);
-
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Effect *effect = Effect::GetProjectionEffect ();
@@ -1513,7 +1505,7 @@ UIElement::PostRender (List *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 	else {
-		cr = ((ContextNode *) ctx->First ())->GetCr ();
+		cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	}
 
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
@@ -1573,11 +1565,11 @@ UIElement::Paint (cairo_t *cr,  Rect bounds, cairo_matrix_t *xform)
 	GetDeployment ()->GetSurface ()->uielements_rendered_with_painters = 0;
 #endif
 
-	List *ctx = new List ();
+	Stack *ctx = new Stack ();
 	bool did_occlusion_culling = false;
 	List *render_list = new List ();
 
-	ctx->Append (new ContextNode (cr));
+	ctx->Push (new ContextNode (cr));
 
 	if (moonlight_flags & RUNTIME_INIT_OCCLUSION_CULLING) {
 		Region *copy = new Region (&region);
@@ -1610,13 +1602,13 @@ UIElement::Paint (cairo_t *cr,  Rect bounds, cairo_matrix_t *xform)
 }
 
 void
-UIElement::CallPreRender (List *ctx, UIElement *element, Region *region, bool skip_children)
+UIElement::CallPreRender (Stack *ctx, UIElement *element, Region *region, bool skip_children)
 {
 	element->PreRender (ctx, region, skip_children);
 }
 
 void
-UIElement::CallPostRender (List *ctx, UIElement *element, Region *region, bool skip_children)
+UIElement::CallPostRender (Stack *ctx, UIElement *element, Region *region, bool skip_children)
 {
 	element->PostRender (ctx, region, skip_children);
 }
