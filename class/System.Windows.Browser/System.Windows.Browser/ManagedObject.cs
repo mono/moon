@@ -147,7 +147,10 @@ namespace System.Windows.Browser {
 			PropertyInfo pi = properties[name].property;
 			object obj = properties[name].obj;
 			MethodInfo mi = pi.GetSetMethod ();
-			Invoke (mi, obj, args);
+			if (ValidateArguments (mi, args))
+				Invoke (mi, obj, args);
+			else
+				throw new ArgumentException ("args");
 		}
 
 		public override object GetProperty (string name)

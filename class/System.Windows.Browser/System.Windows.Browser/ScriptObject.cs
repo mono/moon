@@ -387,7 +387,10 @@ namespace System.Windows.Browser {
 			object obj = properties[scriptAlias].obj;
 			if (pi.GetIndexParameters().Length > 0) {
 				MethodInfo mi = pi.GetGetMethod ();
-				return Invoke (mi, obj, args);
+				if (ValidateArguments (mi, args))
+					return Invoke (mi, obj, args);
+				else
+					throw new ArgumentException ("args");
 			}
 			return pi.GetValue (obj, null);
 		}
@@ -697,7 +700,7 @@ namespace System.Windows.Browser {
 			return pi.IsOptional || pi.GetCustomAttributes(typeof (ParamArrayAttribute), false).Length > 0;
 		}
 
-		bool ValidateArguments (MethodInfo mi, object[] args)
+		protected bool ValidateArguments (MethodInfo mi, object[] args)
 		{
 			if (mi.GetParameters().Length != args.Length) {
 				int required_paramcount = 0;
