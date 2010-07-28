@@ -1,5 +1,11 @@
 2010-07-28  Andreia Gaita  <avidigal@novell.com>
 
+	* HostServices.cs, ManagedObject.cs: Add CreateObject overload
+	  which creates an object and populates it with data from another
+	  object (not necessarily of the same type), using the json serializer.	
+
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
 	* HostServices.cs: Implement JsonSerialize and RequiresManagedSerializer
 	  scriptable methods and a JsonDeserialize helper, using json.js and
 	  DataContractJsonSerializer

@@ -334,8 +334,10 @@ namespace System.Windows.Browser {
 			{
 			}
 
-			public ScriptObject CreateManagedObject (string type)
+			public ScriptObject CreateManagedObject (string type, params object [] args)
 			{
+				if (args != null)
+					return HostServices.Services.CreateObject (type, (ScriptObject)args[0]);
 				return HostServices.Services.CreateObject (type);
 			}
 		}

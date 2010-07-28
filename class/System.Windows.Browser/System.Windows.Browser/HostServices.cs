@@ -47,6 +47,15 @@ namespace System.Windows.Browser {
 			return new ManagedObject (o);
 		}
 
+		[ScriptableMember(ScriptAlias="createObject")]
+		public ScriptObject CreateObject (string name, ScriptObject obj)
+		{
+			if (!HtmlPage.ScriptableTypes.ContainsKey (name))
+				return null;
+
+			return new ManagedObject (JsonDeserialize (obj, HtmlPage.ScriptableTypes[name]));
+		}
+
 		[ScriptableMember(ScriptAlias="jsonSerialize")]
 		public string JsonSerialize (ScriptObject obj)
 		{
