@@ -238,8 +238,18 @@ namespace System.Windows.Browser {
 			} else if (type.IsPrimitive) {
 				if (type == typeof(int))
 					return "int";
+				if (type == typeof(byte))
+					return "byte";
+				if (type == typeof(char))
+					return "char";
 				if (type == typeof(bool))
 					return "bool";
+				if (type == typeof(decimal))
+					return "decimal";
+				if (type == typeof(double))
+					return "double";
+				if (type == typeof(sbyte))
+					return "sbyte";
 				if (type == typeof(long))
 					return "long";
 				if (type == typeof(short))
@@ -252,7 +262,8 @@ namespace System.Windows.Browser {
 					return "ulong";
 				if (type == typeof(ushort))
 					return "ushort";
-			}
+			} else if (type == typeof(string))
+				return "string";
 			return type.Name;
 		}
 

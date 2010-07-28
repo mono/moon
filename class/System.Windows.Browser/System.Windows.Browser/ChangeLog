@@ -1,5 +1,10 @@
 2010-07-28  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObject.cs: Add more friendly type names to the ScriptName
+	  conversion method
+
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs: remove useless ScriptObject unwrapping, it's
 	  done later on the JSFriendlyBinder
 
