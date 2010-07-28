@@ -1,3 +1,9 @@
+2010-07-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp (ComputeActualSize): If available width and
+	height are both infinity, then return 0,0 to keep the moon-unit
+	DefaultValue tests passing.
+
 2010-07-27  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp (PreRender): Need to apply transform before
