@@ -3,6 +3,8 @@
 	* multiscaleimage.cpp (ComputeActualSize): If available width and
 	height are both infinity, then return 0,0 to keep the moon-unit
 	DefaultValue tests passing.
+	(OnPropertyChanged): If the AspectRatio changes, we need to call
+	InvalidateMeasure(). Another fix toward making Seadragon-513 pass.
 
 2010-07-27  David Reveman  <davidr@novell.com>
 

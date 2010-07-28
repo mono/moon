@@ -759,7 +759,7 @@ MultiScaleImage::ComputeActualSize ()
 	available = Size (INFINITY, INFINITY);
 	available = ApplySizeConstraints (available);
 	
-	// this keeps the moon-unit DefaultValue tests passing.
+	// FIXME: this keeps the moon-unit DefaultValue tests passing.
 	if (isinf (available.width) && isinf (available.height))
 		return Size (0, 0);
 	
@@ -1441,6 +1441,9 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 			Invalidate();
 		else
 			StopDownloading ();
+	} else if (args->GetId () == MultiScaleImage::AspectRatioProperty) {
+		InvalidateMeasure ();
+		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
 		Point *origin = args->GetNewValue ()->AsPoint ();
 		pan_target = Point (origin->x, origin->y);
