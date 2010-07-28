@@ -184,8 +184,7 @@ namespace System.Windows {
 
 		internal virtual void InvokeLoaded ()
 		{
-			InvalidateLocalBindings ();
-			InvalidateSubtreeBindings ();
+
 		}
 
 		private Size InvokeMeasureOverride (Size availableSize, ref MoonError error)

@@ -898,6 +898,69 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void BindToInheritedProperty_AfterLiveTree_Inheritance()
+		{
+			// The 'Langauge' property is used if the binding culture isn't set
+			TestPanel.Language = XmlLanguage.GetLanguage("en-GB");
+
+			var target = new TextBlock();
+			TestPanel.Children.Add(target);
+
+			Assert.AreEqual(TestPanel.Language.IetfLanguageTag, target.Language.IetfLanguageTag, "#1");
+		}
+
+		[TestMethod]
+		public void BindToInheritedProperty_AfterLiveTree()
+		{
+			// The 'Langauge' property is used if the binding culture isn't set
+			TestPanel.Language = XmlLanguage.GetLanguage("en-GB");
+			var binding = new Binding("") { StringFormat = "C", Source = 16.00 };
+
+			var target = new TextBlock();
+			TestPanel.Children.Add(target);
+			target.SetBinding(TextBlock.TextProperty, binding);
+
+			Assert.AreEqual("£16.00", target.Text, "#1");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void BindToInheritedProperty_BeforeLiveTree()
+		{
+			// If we set the binding first nothing causes it to refresh so we don't pick up
+			// the Language
+			TestPanel.Language = XmlLanguage.GetLanguage("en-GB");
+			var binding = new Binding("") { StringFormat = "C", Source = 16.00 };
+
+			var target = new TextBlock();
+			target.SetBinding(TextBlock.TextProperty, binding);
+			TestPanel.Children.Add(target);
+
+			Assert.AreEqual("$16.00", target.Text, "#1");
+			Enqueue(() => Assert.AreEqual("$16.00", target.Text, "#2"));
+			Enqueue(() => {
+				Assert.AreEqual("$16.00", target.Text, "#3");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		public void BindToInheritedProperty_BeforeLiveTree_DataContext ()
+		{
+			// If we set the binding first nothing causes it to refresh so we don't pick up
+			// the Language
+			TestPanel.DataContext = 16.00;
+			TestPanel.Language = XmlLanguage.GetLanguage("en-GB");
+			var binding = new Binding("") { StringFormat = "C" };
+
+			var target = new TextBlock();
+			target.SetBinding(TextBlock.TextProperty, binding);
+			TestPanel.Children.Add(target);
+
+			Assert.AreEqual("£16.00", target.Text, "#1");
+		}
+
+		[TestMethod]
 		public void ChangeSourceValue()
 		{
 			Data data = new Data { Opacity = 0.5 };
@@ -937,7 +1000,6 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("We call FrameworkElement::OnLoaded synchronously instead of asynchronously")]
 		public void ElementName_BeforeAddToTree ()
 		{
 			var source = new Rectangle {
@@ -1796,7 +1858,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TestOnceOffBinding_SourceName ()
 		{
 			var source = new Rectangle { Name = "Element", Width = 100 };

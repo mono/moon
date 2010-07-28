@@ -100,8 +100,12 @@ namespace System.Windows.Data {
 					source = Binding.Source;
 				} else if (Binding.ElementName != null) {
 					source = Target.FindName (Binding.ElementName);
-					if (source == null)
-						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName ('{0}') could not be found", Binding.ElementName);
+					var feTarget = Target as FrameworkElement ?? Target.Mentor;
+					if (feTarget == null) {
+						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName ('{0}') could not be found and no FrameworkElement could be found", Binding.ElementName);
+					} else {
+						feTarget.Loaded += HandleFeTargetLoaded;
+					}
 				} else if (Binding.RelativeSource != null) {
 					if (Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
 						source = Target;
@@ -135,6 +139,14 @@ namespace System.Windows.Data {
 					PropertyPathWalker.Update (source);
 				return source;
 			}
+		}
+
+		void HandleFeTargetLoaded (object sender, RoutedEventArgs e)
+		{
+			FrameworkElement fe = (FrameworkElement) sender;
+			fe.Loaded -= HandleFeTargetLoaded;
+			Invalidate ();
+			Target.SetValue (Property, this);
 		}
 
 		internal BindingExpressionBase (Binding binding, DependencyObject target, DependencyProperty property)
