@@ -53,7 +53,6 @@ public:
 	List::Node *down_dirty_node;
 
 	bool force_invalidate_of_new_bounds;
-	bool emitting_loaded;
 
 	Region *dirty_region;
 
@@ -166,7 +165,9 @@ public:
 	//   Returns true if the element has been attached to a
 	//   surface and is part of the visual hierarchy.
 	//
-	bool IsLoaded () { return IsAttached (); }
+	bool IsLoaded () { return loaded; }
+	bool SetIsLoaded (bool value);
+	virtual void OnIsLoadedChanged (bool loaded);
 
 	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
 	void ClearWalkedForLoaded ();
@@ -687,6 +688,7 @@ protected:
 private:
 	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);
 
+	bool loaded;
 	int visual_level;
 	UIElement *visual_parent;
 	DependencyObject *subtree_object;

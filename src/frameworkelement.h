@@ -145,6 +145,7 @@ public:
 	virtual void UpdateLayoutWithError (MoonError *error);
 
 	virtual void OnIsAttachedChanged (bool attached);
+	virtual void OnIsLoadedChanged (bool loaded);
 
 	/* @DelegateType=SizeChangedEventHandler */
 	const static int SizeChangedEvent;

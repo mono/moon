@@ -43,6 +43,8 @@ UIElement::UIElement ()
 {
 	SetObjectType (Type::UIELEMENT);
 
+
+	loaded = false;
 	visual_level = 0;
 	visual_parent = NULL;
 	subtree_object = NULL;
@@ -62,7 +64,6 @@ UIElement::UIElement ()
 	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
 
-	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;
 	PropagateFlagUp (DIRTY_MEASURE_HINT);
 	up_dirty_node = down_dirty_node = NULL;
@@ -82,6 +83,24 @@ UIElement::~UIElement()
 {
 	delete dirty_region;
 }
+
+bool
+UIElement::SetIsLoaded (bool value)
+{
+	if (IsLoaded () != value) {
+		loaded = value;
+		OnIsLoadedChanged (loaded);
+	}
+}
+
+void
+UIElement::OnIsLoadedChanged (bool loaded)
+{
+	VisualTreeWalker walker (this);
+	while (UIElement *element = walker.Step ())
+		element->SetIsLoaded (loaded);
+}
+
 
 bool
 UIElement::IsSubtreeLoaded (UIElement *element)
@@ -654,6 +673,7 @@ UIElement::ElementRemoved (UIElement *item)
 	// Invalidate ourself in the size of the item's subtree
 	Invalidate (item->GetSubtreeBounds());
 	item->SetVisualParent (NULL);
+	item->SetIsLoaded (false);
 	item->SetIsAttached (false);
 
 	Rect emptySlot (0,0,0,0);
@@ -677,6 +697,7 @@ UIElement::ElementAdded (UIElement *item)
 	
 	InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
 	item->SetIsAttached (IsAttached ());
+	item->SetIsLoaded (IsLoaded ());
 	if (IsLoaded ()) {
 		bool post = false;
 

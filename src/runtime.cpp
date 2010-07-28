@@ -431,6 +431,7 @@ Surface::~Surface ()
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		
 	if (toplevel) {
+		toplevel->SetIsLoaded (false);
 		toplevel->SetIsAttached (false);
 		toplevel->unref ();
 	}
@@ -471,6 +472,7 @@ void
 Surface::Dispose ()
 {
 	if (toplevel) {
+		toplevel->SetIsLoaded (false);
 		toplevel->SetIsAttached (false);
 		toplevel->Dispose ();
 	}
@@ -691,6 +693,7 @@ Surface::tick_after_attach_reached (EventObject *data)
 	surface->ticked_after_attach = true;
 
 	surface->toplevel->SetIsAttached (true);
+	surface->toplevel->SetIsLoaded (true);
 	bool delay = false;
 	surface->toplevel->WalkTreeForLoadedHandlers (&delay, true, false);
 	Deployment::GetCurrent()->EmitLoadedAsync ();
@@ -756,6 +759,7 @@ Surface::AttachLayer (UIElement *layer)
 	layer->InvalidateMeasure ();
 	bool delay;
 	layer->SetIsAttached (true);
+	layer->SetIsLoaded (true);
 	layer->WalkTreeForLoadedHandlers (&delay, true, false);
 	Deployment::GetCurrent()->EmitLoadedAsync ();
 }
@@ -787,6 +791,7 @@ Surface::DetachLayer (UIElement *layer)
 	// XXX should we also clear out the focus_changed_events list?
 
 	layers->Remove (Value (layer));
+	layer->SetIsLoaded (false);
 	layer->SetIsAttached (false);
 	if (active_window)
 		Invalidate (layer->GetBounds ());

@@ -1016,11 +1016,18 @@ void
 FrameworkElement::OnIsAttachedChanged (bool attached)
 {
 	UIElement::OnIsAttachedChanged (attached);
+}
+
+
+void
+FrameworkElement::OnIsLoadedChanged (bool loaded)
+{
+	UIElement::OnIsLoadedChanged (loaded);
 	InheritedDataContextValueProvider *p = (InheritedDataContextValueProvider *) providers[PropertyPrecedence_InheritedDataContext];
 	if (p)
 		p->EmitChanged ();
 
-	if (attached && loaded_cb)
+	if (loaded && loaded_cb)
 		(*loaded_cb) (this);
 }
 
