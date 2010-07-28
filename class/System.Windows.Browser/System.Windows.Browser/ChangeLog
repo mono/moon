@@ -1,5 +1,10 @@
 2010-07-28  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObject.cs: remove useless ScriptObject unwrapping, it's
+	  done later on the JSFriendlyBinder
+
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
 	* ManagedObject.cs, ScriptObject.cs: Validate parameters
 	  when invoking indexed properties from js
 

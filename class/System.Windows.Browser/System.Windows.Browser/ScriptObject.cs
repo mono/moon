@@ -349,8 +349,6 @@ namespace System.Windows.Browser {
 					} else {
 						Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
 						args[i] = ScriptObjectHelper.ObjectFromValue<object> (val);
-						if (args[i] is ScriptObject && ((ScriptObject)args[i]).ManagedObject != null)
-							args[i] = ((ScriptObject)args[i]).ManagedObject;
 					}
 				}
 
@@ -409,8 +407,6 @@ namespace System.Windows.Browser {
 					} else {
 						Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
 						args[i] = ScriptObjectHelper.ObjectFromValue<object> (val);
-						if (args[i] is ScriptObject && ((ScriptObject)args[i]).ManagedObject != null)
-							args[i] = ((ScriptObject)args[i]).ManagedObject;
 					}
 				}
 			}
@@ -806,8 +802,6 @@ namespace System.Windows.Browser {
 				else {
 					Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
 					args[i] = ScriptObjectHelper.ObjectFromValue<object> (v);
-					if (args[i] is ScriptObject && ((ScriptObject)args[i]).ManagedObject != null)
-						args[i] = ((ScriptObject)args[i]).ManagedObject;
 				}
 			}
 
