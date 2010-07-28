@@ -1,3 +1,21 @@
+2010-07-28  David Reveman  <davidr@novell.com>
+
+	* grid.cpp:
+	* runtime.cpp:
+	* stylus.cpp:
+	* uielement.h:
+	* uielement.cpp: Have GetCr return NULL for contexts with
+	pre-rendered bitmaps and in that way prevent unnecessary
+	rendering of cached elements.
+
+	* uielement.h:
+	* uielement.cpp: Add initial bitmap cache support.
+	New functions InvalidateBitmapCache and InvalidateCacheMode.
+
+	* runtime.h:
+	* runtime.cpp: Remove ContextNode::GetTarget.
+	Add ContextNode::GetBitmap and ContextNode::SetBitmap.
+
 2010-07-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (ComputeActualSize): If available width and

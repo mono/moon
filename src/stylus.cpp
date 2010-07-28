@@ -844,27 +844,30 @@ InkPresenter::PostRender (Stack *ctx, Region *region, bool skip_children)
 			child->DoRender (ctx, region);
 	}
 
-	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-	
-	ApplyTransform (cr);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-
 	StrokeCollection *strokes = GetStrokes ();
 	int strokes_count = strokes->GetCount ();
-	// for each stroke in collection
-	for (int i = 0; i < strokes_count; i++) {
-		Stroke *stroke = strokes->GetValueAt (i)->AsStroke ();
-		DrawingAttributes *da = stroke->GetDrawingAttributes ();
-		StylusPointCollection *spc = stroke->GetStylusPoints ();
+
+	if (strokes_count > 0 && ((ContextNode *) ctx->Top ())->GetCr ()) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+	
+		ApplyTransform (cr);
+		cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+		cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+
+		// for each stroke in collection
+		for (int i = 0; i < strokes_count; i++) {
+			Stroke *stroke = strokes->GetValueAt (i)->AsStroke ();
+			DrawingAttributes *da = stroke->GetDrawingAttributes ();
+			StylusPointCollection *spc = stroke->GetStylusPoints ();
 			
-		if (da) {
-			da->Render (cr, spc);
-		} else {
-			DrawingAttributes::RenderWithoutDrawingAttributes (cr, spc);
-		}
+			if (da) {
+				da->Render (cr, spc);
+			} else {
+				DrawingAttributes::RenderWithoutDrawingAttributes (cr, spc);
+			}
 		
-		stroke->ResetDirty ();
+			stroke->ResetDirty ();
+		}
 	}
 
 	// Chain up, but skip children since we've already rendered them here.

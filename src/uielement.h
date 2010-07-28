@@ -375,6 +375,8 @@ public:
 	void InvalidateClip ();
 	void InvalidateVisibility ();
 	void InvalidateEffect ();
+	void InvalidateBitmapCache ();
+	void InvalidateCacheMode ();
 
 	//
 	// GetTransformOrigin:
@@ -684,6 +686,8 @@ protected:
 	double render_projection[16];
 
 	Thickness effect_padding;
+
+	cairo_surface_t *bitmap_cache;
 
 private:
 	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);

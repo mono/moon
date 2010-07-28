@@ -542,7 +542,7 @@ Grid::PostRender (Stack *ctx, Region *region, bool skip_children)
 			child->DoRender (ctx, region);
 	}
 	
-	if (GetShowGridLines ()) {
+	if (GetShowGridLines () && ((ContextNode *) ctx->Top ())->GetCr ()) {
 		double offset = 0;
 		double dash = 4;
 		ColumnDefinitionCollection *cols = GetColumnDefinitionsNoAutoCreate ();

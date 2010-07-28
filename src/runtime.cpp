@@ -1588,7 +1588,7 @@ RenderNode::Render (Stack *ctx)
 	if (pre_render)
 		pre_render (ctx, uielement, region, use_occlusion_culling);
 
-	if (render_element) {
+	if (render_element && ((ContextNode *) ctx->Top ())->GetCr ()) {
 		uielement->Render (((ContextNode *) ctx->Top ())->GetCr (), region);
 	}
 	
@@ -1621,43 +1621,68 @@ UIElementNode::~UIElementNode ()
 
 ContextNode::ContextNode (cairo_t *cr)
 {
-	context = cairo_reference (cr);
 	box     = Rect ();
+	context = cairo_reference (cr);
+	bitmap  = NULL;
 }
 
 ContextNode::ContextNode (Rect extents)
 {
-	context = NULL;
 	box     = extents;
+	context = NULL;
+	bitmap  = NULL;
 }
 
 ContextNode::~ContextNode ()
 {
-	if (context) cairo_destroy (context);
+	if (context)
+		cairo_destroy (context);
+
+	if (bitmap)
+		cairo_surface_destroy (bitmap);
 }
 
 cairo_t *
 ContextNode::GetCr ()
 {
 	if (!context) {
-		Rect            r = box.RoundOut ();
-		cairo_surface_t *target;
+		Rect r = box.RoundOut ();
 
-		target = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+		if (bitmap)
+			return NULL;
+
+		bitmap = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 						     r.width,
 						     r.height);
-		cairo_surface_set_device_offset (target, -r.x, -r.y);
-		context = cairo_create (target);
-		cairo_surface_destroy (target);
+		cairo_surface_set_device_offset (bitmap, -r.x, -r.y);
+		context = cairo_create (bitmap);
 	}
 
 	return context;
 }
 
 cairo_surface_t *
-ContextNode::GetTarget ()
+ContextNode::GetBitmap ()
 {
-	return cairo_get_target (GetCr ());
+	return bitmap;
+}
+
+void
+ContextNode::SetBitmap (cairo_surface_t *surface)
+{
+	cairo_surface_t *ref;
+
+	if (context) {
+		g_warning ("ContextNode::SetBitmap context present.");
+		return;
+	}
+
+	ref = cairo_surface_reference (surface);
+
+	if (bitmap)
+		cairo_surface_destroy (bitmap);
+
+	bitmap = ref;
 }
 
 void

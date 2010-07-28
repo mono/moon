@@ -508,11 +508,13 @@ public:
 	virtual ~ContextNode ();
 
 	cairo_t *GetCr ();
-	cairo_surface_t *GetTarget ();
+	cairo_surface_t *GetBitmap ();
+	void SetBitmap (cairo_surface_t *surface);
 
 private:
-	Rect    box;
-	cairo_t *context;
+	Rect            box;
+	cairo_t         *context;
+	cairo_surface_t *bitmap;
 };
 
 /* for rendering */

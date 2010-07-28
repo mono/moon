@@ -63,6 +63,7 @@ UIElement::UIElement ()
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
+	bitmap_cache = NULL;
 
 	dirty_flags = DirtyMeasure;
 	PropagateFlagUp (DIRTY_MEASURE_HINT);
@@ -81,6 +82,7 @@ UIElement::UIElement ()
 
 UIElement::~UIElement()
 {
+	InvalidateBitmapCache ();
 	delete dirty_region;
 }
 
@@ -280,8 +282,18 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyTransform);
 	} else if (args->GetId () == UIElement::ProjectionProperty) {
 		UpdateProjection ();
-	}
+	} else if (args->GetId () == UIElement::CacheModeProperty) {
+		bool old_mode = args->GetOldValue () != NULL;
+		bool new_mode = args->GetNewValue () != NULL;
 
+		InvalidateCacheMode ();
+
+		/* need to update transform when whether we render to
+		   an intermediate buffer or not change */
+		if (old_mode != new_mode && IsAttached ())
+			GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyTransform);
+	}
+	
 	NotifyListenersOfPropertyChange (args, error);
 }
 
@@ -954,6 +966,8 @@ UIElement::Invalidate (Rect r)
 	if (IsAttached ()) {
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
+		InvalidateBitmapCache ();
+
 		if (RenderToIntermediate ())
 			dirty_region->Union (GetSubtreeBounds ());
 		else
@@ -973,6 +987,8 @@ UIElement::Invalidate (Region *region)
 
 	if (IsAttached ()) {
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
+
+		InvalidateBitmapCache ();
 
 		if (RenderToIntermediate ())
 			dirty_region->Union (GetSubtreeBounds ());
@@ -1040,6 +1056,22 @@ UIElement::InvalidateEffect ()
 
 	if (old_effect_padding != effect_padding)
 		UpdateBounds ();
+}
+
+void
+UIElement::InvalidateBitmapCache ()
+{
+	if (bitmap_cache) {
+		cairo_surface_destroy (bitmap_cache);
+		bitmap_cache = NULL;
+	}
+}
+
+void
+UIElement::InvalidateCacheMode ()
+{
+	InvalidateBitmapCache ();
+	InvalidateSubtreePaint ();
 }
 
 /*
@@ -1193,7 +1225,7 @@ UIElement::DoRender (Stack *ctx, Region *parent_region)
 		region->Intersect (parent_region);
 	}
 
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) {
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty () || !((ContextNode *) ctx->Top ())->GetCr ()) {
 		delete region;
 		return;
 	}
@@ -1222,6 +1254,7 @@ UIElement::UseOcclusionCulling ()
 	// culling pass for a subtree are projections and effects.
 	if (GetRenderEffect ()) return FALSE;
 	if (GetRenderProjection ()) return FALSE;
+	if (GetRenderCacheMode ()) return FALSE;
 
 	return TRUE;
 }
@@ -1231,6 +1264,7 @@ UIElement::RenderToIntermediate ()
 {
 	if (GetRenderEffect ()) return TRUE;
 	if (GetRenderProjection ()) return TRUE;
+	if (GetRenderCacheMode ()) return TRUE;
 
 	return FALSE;
 }
@@ -1422,16 +1456,20 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 			ctx->Push (new ContextNode (r));
 	}
 
+	if (GetRenderCacheMode () && bitmap_cache) {
+		ContextNode *node = (ContextNode *) ctx->Top ();
+
+		node->SetBitmap (bitmap_cache);
+	}
+
 	// xform is set when it needs to be transferred to the
 	// top context.
 	if (xform) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
-		cairo_set_user_data (cr, &uielement_xform_key, xform, NULL);
+		if (cr)
+			cairo_set_user_data (cr, &uielement_xform_key, xform, NULL);
 	}
-
-	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-	ApplyTransform (cr);
 }
 
 void
@@ -1446,9 +1484,17 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetRenderEffect ();
 
+	if (GetRenderCacheMode () && bitmap_cache == NULL) {
+		cairo_surface_t *bitmap;
+
+		bitmap = ((ContextNode *) ctx->Top ())->GetBitmap ();
+		if (bitmap)
+			bitmap_cache = cairo_surface_reference (bitmap);
+	}
+
 	if (opacityMask != NULL) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetTarget ();
+		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
@@ -1472,7 +1518,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (IS_TRANSLUCENT (local_opacity)) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetTarget ();
+		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
@@ -1491,7 +1537,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (effect) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetTarget ();
+		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
@@ -1516,7 +1562,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetTarget ();
+		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
