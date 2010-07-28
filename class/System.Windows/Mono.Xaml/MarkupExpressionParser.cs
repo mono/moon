@@ -349,6 +349,9 @@ namespace Mono.Xaml {
 					throw new Exception ("A Binding Converter must be of type IValueConverter.");
 				b.Converter = value_converter;
 				break;
+			case "ConverterCulture":
+				b.ConverterCulture = new System.Globalization.CultureInfo (str_value);
+				break;
 			case "ConverterParameter":
 				b.ConverterParameter = value ?? str_value;
 				break;
