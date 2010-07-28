@@ -70,23 +70,18 @@ namespace Mono
 			if (value.GetType() == type)
 				return true;
 
-			// we need to do this before the ScriptObject
-			// block because we might be passing
-			// ManagedObject arguments to a method that
-			// takes ScriptObjects, and therefore we
-			// shouldn't "unwrap" the ScriptObject's
-			// ManagedObject field.
-			if (type.IsAssignableFrom (value.GetType ()))
-				return true;
-
 			script_object = value as ScriptObject;
 			if (script_object != null) {
-				value = script_object.ManagedObject;
-				if (value == null && type == typeof(HtmlElement))
-					value = new HtmlElement (script_object.Handle);
-				ret = value;
-				if (value.GetType () == type)
+				if (typeof(ScriptObject).IsAssignableFrom (type))
 					return true;
+				else {
+					value = script_object.ManagedObject;
+					if (value == null && type == typeof(HtmlElement))
+						value = new HtmlElement (script_object.Handle);
+					ret = value;
+					if (value.GetType () == type)
+						return true;
+				}
 			}
 
 			if (type.IsAssignableFrom (value.GetType ()))

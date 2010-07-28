@@ -1,3 +1,10 @@
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
+	* JSFriendlyMethodBinder.cs: Change the cast checks so that when the
+	  target type is "object", if the original object is a ScriptObject
+	  wrapper, the actual managed object is returned instead of the
+	  wrapper.
+
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptObjectHelper.cs: revert previous change (r160617), too broad.
