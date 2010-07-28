@@ -732,6 +732,8 @@ namespace Mono {
 					value.k = Kind.MANAGEDTYPEINFO;
 					value.u.p = Marshal.AllocHGlobal (sizeof (ManagedTypeInfo));
 					Marshal.StructureToPtr (mti, value.u.p, false);
+				} else if (v is Value) {
+					throw new InvalidOperationException ("You can not create a Mono.Value from a Mono.Value.");
 				}
 				else {
 					//Console.WriteLine ("Do not know how to encode {0} yet, boxing it", v.GetType ());
