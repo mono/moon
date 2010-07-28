@@ -137,6 +137,14 @@ namespace Mono {
 			}
 
 			switch (Type.GetTypeCode (o.GetType())) {
+				case TypeCode.Byte:
+					v.k = Kind.UINT32;
+					v.u.ui32 = Convert.ToUInt32 (o);
+					break;
+				case TypeCode.SByte:
+					v.k = Kind.INT32;
+					v.u.i32 = Convert.ToInt32 (o);
+					break;
 				case TypeCode.Object:
 	//				Console.WriteLine ("Trying to marshal managed object {0}...", o.GetType ().FullName);
 					ScriptObject so = o as ScriptObject;
