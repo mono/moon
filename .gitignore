@@ -35,6 +35,7 @@ xdb.*
 /class/System.Windows/System.Windows/DependencyObject.g.cs
 /class/System.Windows/System.Windows/DependencyProperty.g.cs
 /class/System.Windows/System.Windows/Events.g.cs
+/class/System.Windows.Browser/System.Windows.Browser.g.resources
 /plugin/cbinding.cpp
 /plugin/cbinding.h
 /plugin/plugin-class.g.cpp

@@ -162,6 +162,9 @@ namespace System.Windows.Browser {
 			if (targetType.IsAssignableFrom (GetType()))
 				return this;
 
+			if (allowSerialization)
+				return HostServices.Services.JsonDeserialize (this, targetType);
+
 			return null;
 		}
 		

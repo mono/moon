@@ -55,6 +55,10 @@ system_windows_browser_sources =					\
 test_sources = \
 	$(srcdir)/Test/System.Windows/WebApplicationTest.cs
 
+
+JS_RESOURCES = $(srcdir)/System.Windows.Browser/json.js,json.js
+JS_RESOURCES_DEPS = $(srcdir)/System.Windows.Browser/json.js
+
 EXTRA_DIST = $(system_windows_browser_sources) 				\
 	$(test_sources)							\
 	Assembly/ChangeLog						\
@@ -67,8 +71,13 @@ CLEANFILES =			\
 	TestResult-net_3_0.log	\
 	TestResult-net_3_0.xml
 
-$(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll
-	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -keyfile:$(srcdir)/../silverlight.pub -delaysign+
+$(assembly).g.resources: $(JS_RESOURCES_DEPS)
+	mono $(top_builddir)/tools/respack/respack.exe $@ $(JS_RESOURCES)
+
+$(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll $(assembly).g.resources
+	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -r:System.ServiceModel.Web \
+		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
+		-resource:$(assembly).g.resources
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 LINKER = ../lib/tuner/monolinker.exe
@@ -87,12 +96,15 @@ $(assemblysl): $(assemblysl_raw) $(sl_secattr)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll
-	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -keyfile:$(srcdir)/../mono.snk
+$(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources
+	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -r:System.ServiceModel.Web \
+		-resource:$(assembly).g.resources \
+		-keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies) 
 	-rm -rf *.dll *.mdb tester.cs
+	-rm -rf $(assembly).g.resources
 
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:

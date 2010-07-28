@@ -1,3 +1,7 @@
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser.auto.ssc: add JsonSerializer getter
+
 2010-07-21  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.sc: new SC needed for NTLM support

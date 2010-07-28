@@ -1,3 +1,14 @@
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
+	* HostServices.cs: Implement JsonSerialize and RequiresManagedSerializer
+	  scriptable methods and a JsonDeserialize helper, using json.js and
+	  DataContractJsonSerializer
+	* json.js: Added, serializes objects to json, and calls into managed to
+	  use a managed serializer if any types require them (ManagedObject,
+	  HtmlObject)
+	* ManagedObject.cs: Implement ConvertTo using the json serializer
+	* ScriptObject.cs: Finish ConvertTo using the json serializer	
+
 2010-07-20  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptObject.cs: use the actual object instead of the wrapper

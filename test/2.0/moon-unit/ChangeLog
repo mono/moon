@@ -1,3 +1,8 @@
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableTest.cs: remove MoonlightBug from the json tests and add
+	  two new ones
+
 2010-07-23  David Reveman  <davidr@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: These tests pass

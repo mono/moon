@@ -25,10 +25,17 @@
 //
 
 using System.Reflection;
+using System.IO;
+using System.Windows.Resources;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace System.Windows.Browser {
 
 	internal class HostServices {
+
+		ScriptObject jsonSerializer;
+
 		[ScriptableMember(ScriptAlias="createObject")]
 		public ScriptObject CreateObject (string name)
 		{
@@ -43,13 +50,30 @@ namespace System.Windows.Browser {
 		[ScriptableMember(ScriptAlias="jsonSerialize")]
 		public string JsonSerialize (ScriptObject obj)
 		{
-			throw new NotImplementedException ();
+			if (obj is HtmlObject)
+				return "{}";
+
+			if (obj.ManagedObject != null)
+			{
+				DataContractJsonSerializer serializer = new DataContractJsonSerializer(obj.ManagedObject.GetType());
+				using (MemoryStream ms = new MemoryStream()) {
+					serializer.WriteObject(ms, obj.ManagedObject);
+					ms.Position = 0L;
+					using (StreamReader reader = new StreamReader(ms)) {
+						return reader.ReadToEnd();
+					}
+				}
+			}
+
+			return (string) JsonSerializer.Invoke("serialize", new object[] { obj });
 		}
 
 		[ScriptableMember(ScriptAlias="requiresManagedSerializer")]
 		public bool RequiresManagedSerializer (ScriptObject obj)
 		{
-			throw new NotImplementedException ();
+			if (obj.ManagedObject == null)
+				return (obj is HtmlObject);
+			return true;
 		}
 
 		public override string ToString ()
@@ -58,10 +82,45 @@ namespace System.Windows.Browser {
 		}
 
 
+		string JsonSerialize (object obj)
+		{
+			ScriptObject o = obj as ScriptObject;
+			if (o != null)
+				return JsonSerialize (o);
+			return (string) JsonSerializer.Invoke("serialize", new object[] { obj });
+		}
+
+		public object JsonDeserialize (object obj, Type type)
+		{
+			string jsgraph = JsonSerialize (obj);
+			DataContractJsonSerializer deserializer = new DataContractJsonSerializer (type);
+			using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes (jsgraph))) {
+				return deserializer.ReadObject (ms);
+			}
+		}
+
 		static HostServices services = new HostServices ();
 
 		public static HostServices Services {
 			get { return services; }
+		}
+
+
+		ScriptObject JsonSerializer {
+			get {
+				if (jsonSerializer == null) {
+					Deployment.RegisterAssembly (this.GetType().Assembly);
+					StreamResourceInfo info = Application.GetResourceStream (new Uri ("/System.Windows.Browser;component/json.js", UriKind.Relative));
+
+					string json;
+					using (StreamReader sr = new StreamReader (info.Stream)) {
+						json = sr.ReadToEnd();
+					}
+					jsonSerializer = (ScriptObject) HtmlPage.Window.Eval (json);
+					jsonSerializer.SetProperty("_managedServices", this);
+				}
+				return jsonSerializer;
+			}
 		}
 	}
 

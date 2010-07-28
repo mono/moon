@@ -128,7 +128,13 @@ namespace System.Windows {
 	
 		public static void RegisterAssembly (Assembly assembly)
 		{
-			throw new System.NotImplementedException ();
+			Current.AddAssembly (assembly);
+		}
+
+		void AddAssembly (Assembly asm)
+		{
+			if (!assemblies.Contains (asm))
+				assemblies.Add (asm);
 		}
 		
 		public static void SetCurrentApplication (Application application)

@@ -160,8 +160,16 @@ namespace System.Windows.Browser {
 
 		protected override object ConvertTo (Type targetType, bool allowSerialization)
 		{
-			// hmmm, yeah what?
-			throw new NotImplementedException ();
+			if (typeof (ScriptObject).IsAssignableFrom (targetType))
+				return this;
+
+			if (targetType.IsAssignableFrom (ManagedObject.GetType ()))
+				return ManagedObject;
+
+			if (allowSerialization)
+				return HostServices.Services.JsonDeserialize (ManagedObject, targetType);
+
+			return null;
 		}
 
 		public override object Invoke (string name, params object [] args)

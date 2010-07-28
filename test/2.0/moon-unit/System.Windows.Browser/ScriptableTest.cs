@@ -95,7 +95,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug ("no serializer yet")]
 		public void JsonSerializerTest ()
 		{
 			ScriptObject services = (ScriptObject)content.GetProperty ("services");
@@ -115,7 +114,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug ("no serializer yet")]
 		public void JsonSerializerFromJSTest ()
 		{
 			ScriptObject services = (ScriptObject)content.GetProperty ("services");
@@ -124,6 +122,32 @@ namespace MoonTest.System.Windows.Browser
 			}}");
 
 			object ret = so.Invoke ("test1", new object[] {services, new List<int> {4, 5, 6}});
+			Assert.AreEqual ("[4,5,6]", ret, "serialize #1");
+		}
+
+		[TestMethod]
+		public void JsonSerializerFromJSTest2 ()
+		{
+			ScriptObject services = (ScriptObject)content.GetProperty ("services");
+			ScriptObject so = (ScriptObject) HtmlPage.Window.Eval (@"new function () { this.test1 = function (arg1) {
+				var arr = []; arr.push (4); arr.push (5); arr.push (6);
+				return arg1.jsonSerialize (arr);
+			}}");
+
+			object ret = so.Invoke ("test1", new object[] {services});
+			Assert.AreEqual ("[4,5,6]", ret, "serialize #1");
+		}
+
+		[TestMethod]
+		public void JsonSerializerFromJSTest3 ()
+		{
+			ScriptObject services = (ScriptObject)content.GetProperty ("services");
+			ScriptObject data = (ScriptObject) HtmlPage.Window.Eval ("new function () { var arr = []; arr.push(4); arr.push(5); arr.push(6); return arr; }");
+			ScriptObject so = (ScriptObject) HtmlPage.Window.Eval (@"new function () { this.test1 = function (arg1, arg2) {
+				return arg1.jsonSerialize (arg2);
+			}}");
+
+			object ret = so.Invoke ("test1", new object[] {services, data});
 			Assert.AreEqual ("[4,5,6]", ret, "serialize #1");
 		}
 

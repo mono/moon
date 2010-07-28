@@ -1,3 +1,8 @@
+2010-07-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: Added new resources generation step and added json.js
+	  to the resources
+
 2010-05-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.mdp: Updated.
