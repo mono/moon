@@ -250,7 +250,6 @@ namespace Mono.Xaml
 
 		public void Hydrate (object value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
 		{
-			Console.WriteLine ("hydrating:  {0}", xaml);
 			HydrateInternal (value, xaml, createNamescope, validateTemplates, import_default_xmlns);
 		}
 		
