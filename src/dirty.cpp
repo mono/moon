@@ -295,14 +295,12 @@ Surface::ProcessDownDirtyElements ()
 
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
-			
-			el->Invalidate ();
+
 			el->ComputeTransform ();
 
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->UpdateBounds ();
 			
-			AddDirtyElement (el, DirtyNewBounds);
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
 
@@ -361,35 +359,24 @@ Surface::ProcessUpDirtyElements ()
 //			printf (" + bounds\n");
 			el->dirty_flags &= ~DirtyBounds;
 
-			Rect obounds = el->GetBounds ();
+			Rect oextents = el->GetSubtreeExtents ();
 			Rect oglobalbounds = el->GetGlobalBounds ();
-			bool parent_bounds_updated = false;
+			Rect osubtreebounds = el->GetSubtreeBounds ();
 
 			el->ComputeBounds ();
-
-// 				printf (" + + obounds = %f %f %f %f, nbounds = %f %f %f %f\n",
-// 					obounds.x, obounds.y, obounds.w, obounds.h,
-// 					el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
 
 			if (oglobalbounds != el->GetGlobalBounds ()) {
 				if (el->GetVisualParent ()) {
 					el->GetVisualParent ()->UpdateBounds ();
-					parent_bounds_updated = true;
+					el->GetVisualParent ()->Invalidate (osubtreebounds);
+					el->GetVisualParent ()->Invalidate (el->GetSubtreeBounds ());
 				}
 			}
 
-			if (obounds != el->GetBounds()) {
-				if (el->GetVisualParent ()) {
-// 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
-					if (!parent_bounds_updated)
-						el->GetVisualParent ()->UpdateBounds();
-
-					Region oregion = Region (obounds);
-					el->GetVisualParent ()->Invalidate (&oregion);
-				}
-				el->Invalidate ();
+			if (oextents != el->GetSubtreeExtents ()) {
+				el->Invalidate (el->GetSubtreeBounds ());
 			}
-				
+
 			if (el->force_invalidate_of_new_bounds) {
 				el->force_invalidate_of_new_bounds = false;
 				// Invalidate everything including the
@@ -398,7 +385,8 @@ Surface::ProcessUpDirtyElements ()
 			}
 		}
 		if (el->dirty_flags & DirtyNewBounds) {
-			el->Invalidate ();
+			if (el->GetVisualParent ())
+				el->GetVisualParent ()->Invalidate (el->GetSubtreeBounds ());
 			el->dirty_flags &= ~DirtyNewBounds;
 		}
 		if (el->dirty_flags & DirtyInvalidate) {

@@ -520,7 +520,8 @@ UIElement::ComputeTransform ()
 {
 	Projection *projection = GetRenderProjection ();
 	cairo_matrix_t old = absolute_xform;
-	double m[16];
+	double m[16], old_projection[16];
+	memcpy (old_projection, local_projection, sizeof (double) * 16);
 	cairo_matrix_init_identity (&absolute_xform);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (local_projection);
@@ -586,6 +587,14 @@ UIElement::ComputeTransform ()
 		Matrix3D::Multiply (render_projection, render_projection, m);
 		flags |= UIElement::RENDER_PROJECTION;
 		cairo_matrix_init_identity (&absolute_xform);
+	}
+
+	if (memcmp (old_projection, local_projection, sizeof (double) * 16)) {
+		if (GetVisualParent ())
+			GetVisualParent ()->Invalidate (GetSubtreeBounds ());
+
+		if (IsAttached ())
+			GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyNewBounds);
 	}
 
 	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
@@ -1024,21 +1033,25 @@ UIElement::InvalidateSubtreePaint ()
 void
 UIElement::InvalidateClip ()
 {
-	InvalidateSubtreePaint ();
+	if (GetVisualParent ())
+		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
+
 	UpdateBounds (true);
 }
 
 void
 UIElement::InvalidateMask ()
 {
-	InvalidateSubtreePaint ();
+	if (GetVisualParent ())
+		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
 }
 
 void
 UIElement::InvalidateVisibility ()
 {
 	UpdateTotalRenderVisibility ();
-	InvalidateSubtreePaint ();
+	if (GetVisualParent ())
+		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
 }
 
 void
@@ -1052,7 +1065,8 @@ UIElement::InvalidateEffect ()
 	else
 		effect_padding = Thickness (0);
 
-	InvalidateSubtreePaint ();
+	if (GetVisualParent ())
+		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
 
 	if (old_effect_padding != effect_padding)
 		UpdateBounds ();

@@ -1,5 +1,13 @@
 2010-07-28  David Reveman  <davidr@novell.com>
 
+	* dirty.cpp:
+	* uielement.cpp: Invalidate the parent instead of the
+	element itself whenever the change causing the
+	invalidation doesn't require the bitmap cache to be
+	invalidated.
+
+2010-07-28  David Reveman  <davidr@novell.com>
+
 	* grid.cpp:
 	* runtime.cpp:
 	* stylus.cpp:
