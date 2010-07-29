@@ -64,11 +64,11 @@ pow2 (int pow)
 struct QTree {
 	cairo_surface_t *image;
 	bool has_image;
-	QTree* l0; //N-E
-	QTree* l1; //N-W
-	QTree* l2; //S-E
-	QTree* l3; //S-W
-	QTree* parent;
+	QTree *parent;
+	QTree *l0; //N-E
+	QTree *l1; //N-W
+	QTree *l2; //S-E
+	QTree *l3; //S-W
 };
 
 static QTree *
@@ -912,7 +912,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 	// using the "-1" index for the shared cache
 	int shared_index = -1;
-	QTree *shared_cache = (QTree*)g_hash_table_lookup (cache, &shared_index);
+	QTree *shared_cache = (QTree *) g_hash_table_lookup (cache, &shared_index);
 	if (!shared_cache)
 		g_hash_table_insert (cache, new int(shared_index), (shared_cache = qtree_new ()));
 
@@ -923,7 +923,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		DeepZoomImageTileSource *sub_dzits = (DeepZoomImageTileSource *) sub_image->source;
 
 		int index = sub_image->GetId();
-		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
+		QTree *subimage_cache = (QTree *) g_hash_table_lookup (cache, &index);
 		if (!subimage_cache)
 			g_hash_table_insert (cache, new int(index), (subimage_cache = qtree_new ()));
 		
@@ -953,7 +953,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 		
 		int to_layer = -1;
-		int from_layer = optimal_layer;	
+		int from_layer = optimal_layer;
 		while (from_layer >= 0) {
 			bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
 			int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
@@ -1199,8 +1199,9 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		layers --;
 	
 	// optimal layer for this... aka "best viewed at"
-	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar))  , &optimal_layer) == 0.5)
+	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar)), &optimal_layer) == 0.5)
 		optimal_layer--;
+	
 	optimal_layer = MIN (optimal_layer, layers);
 	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
@@ -1215,7 +1216,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	
 	// using the "-1" index for the single image case
 	int index = -1;
-	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
+	QTree *subimage_cache = (QTree *) g_hash_table_lookup (cache, &index);
 	if (!subimage_cache)
 		g_hash_table_insert (cache, new int(index), (subimage_cache = qtree_new ()));
 
@@ -1792,7 +1793,7 @@ MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePosi
 	StopDownloading ();
 
 	int index = -1;
-	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
+	QTree *subimage_cache = (QTree *) g_hash_table_lookup (cache, &index);
 	if (subimage_cache)
 		qtree_remove_at (subimage_cache, level, tilePositionX, tilePositionY, 0);
 
