@@ -475,6 +475,17 @@ class ProjectionEffect : public Effect {
 public:
 	ProjectionEffect ();
 
+	//
+	// Render
+	//
+	bool Render (cairo_t         *cr,
+		     cairo_surface_t *src,
+		     double          *matrix,
+		     double          x,
+		     double          y,
+		     double          width,
+		     double          height);
+
 protected:
 	virtual ~ProjectionEffect ();
 

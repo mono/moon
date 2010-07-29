@@ -3947,6 +3947,32 @@ ProjectionEffect::~ProjectionEffect ()
 }
 
 bool
+ProjectionEffect::Render (cairo_t         *cr,
+			  cairo_surface_t *src,
+			  double          *matrix,
+			  double          x,
+			  double          y,
+			  double          width,
+			  double          height)
+{
+	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+		int x0, y0;
+
+		if (Matrix3D::IsIntegerTranslation (matrix, &x0, &y0)) {
+			cairo_save (cr);
+			cairo_translate (cr, x0, y0);
+			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_paint (cr);
+			cairo_restore (cr);
+
+			return 1;
+		}
+	}
+
+	return Effect::Render (cr, src, matrix, x, y, width, height);
+}
+
+bool
 ProjectionEffect::Composite (pipe_surface_t  *dst,
 			     pipe_resource_t *src,
 			     double          *matrix,

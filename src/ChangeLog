@@ -1,5 +1,11 @@
 2010-07-28  David Reveman  <davidr@novell.com>
 
+	* effect.c:
+	* effect.cpp: Use cairo for integer translation.
+
+	* projection.h:
+	* projection.cpp: Add IsTranslation and IsIntegerTranslation.
+
 	* dirty.cpp:
 	* uielement.cpp: Invalidate the parent instead of the
 	element itself whenever the change causing the
