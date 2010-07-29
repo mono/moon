@@ -86,7 +86,7 @@ UIElement::~UIElement()
 	delete dirty_region;
 }
 
-bool
+void
 UIElement::SetIsLoaded (bool value)
 {
 	if (IsLoaded () != value) {

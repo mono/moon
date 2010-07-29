@@ -164,7 +164,7 @@ public:
 	//   surface and is part of the visual hierarchy.
 	//
 	bool IsLoaded () { return loaded; }
-	bool SetIsLoaded (bool value);
+	void SetIsLoaded (bool value);
 	virtual void OnIsLoadedChanged (bool loaded);
 
 	void ClearFlag (UIElementFlags flag) { flags &= ~flag; }
