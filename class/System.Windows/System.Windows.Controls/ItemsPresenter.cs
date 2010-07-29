@@ -78,8 +78,10 @@ namespace System.Windows.Controls
 #endif
 			
 			_elementRoot.IsItemsHost = true;
-			_elementRoot.TemplateOwner = c;
-
+#if SANITY
+			if (_elementRoot.TemplateOwner != c)
+				Console.WriteLine ("Error: TemplateOwner was not set on ItemsPresenter root element");
+#endif
 			return _elementRoot;
 		}
 
