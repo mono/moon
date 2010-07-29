@@ -515,6 +515,41 @@ Matrix3D::Affine (double *out, double xx, double xy, double yx, double yy, doubl
 
 }
 
+bool
+Matrix3D::IsTranslation (double *m)
+{
+
+#define M(row, col) m[col * 4 + row]
+	return (M (0, 0) == 1.0 && M (1, 0) == 0.0 && M (2, 0) == 0.0 && M (3, 0) == 0.0 &&
+		M (0, 1) == 0.0 && M (1, 1) == 1.0 && M (2, 1) == 0.0 && M (3, 1) == 0.0 &&
+		M (0, 2) == 0.0 && M (1, 2) == 0.0 && M (2, 2) == 1.0 && M (3, 2) == 0.0 &&
+		M (2, 3) == 0.0 && M (3, 3) == 1.0);
+#undef M
+
+}
+
+bool
+Matrix3D::IsIntegerTranslation (double *m, int *x0, int *y0)
+{
+
+#define M(row, col) m[col * 4 + row]
+	if (IsTranslation (m)) {
+		double x0i = round (M (0, 3));
+		double y0i = round (M (1, 3));
+		
+		if (fabs (x0i - M (0, 3)) < DBL_EPSILON &&
+		    fabs (y0i - M (1, 3)) < DBL_EPSILON) {
+			if (x0) *x0 = (int) x0i;
+			if (y0) *y0 = (int) y0i;
+
+			return true;
+		}
+	}
+#undef M
+
+	return false;
+}
+
 Projection::Projection ()
 {
 	SetObjectType (Type::PROJECTION);
