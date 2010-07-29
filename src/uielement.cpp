@@ -98,9 +98,21 @@ UIElement::SetIsLoaded (bool value)
 void
 UIElement::OnIsLoadedChanged (bool loaded)
 {
+	// If we unload, emit the Unloaded event before the children
+	if (!loaded) {
+		Emit (UIElement::UnloadedEvent);
+	}
+
+	// Then propagate the state change to the children
 	VisualTreeWalker walker (this);
 	while (UIElement *element = walker.Step ())
 		element->SetIsLoaded (loaded);
+
+	// Finally if we're loading, emit the Loaded event after the children
+	if (loaded && HasHandlers (UIElement::LoadedEvent)) {
+		GetDeployment ()->AddAllLoadedHandlers (this, true);
+		GetDeployment ()->EmitLoadedAsync ();
+	}
 }
 
 
@@ -161,8 +173,6 @@ UIElement::OnIsAttachedChanged (bool value)
 			if (surface->GetFocusedElement () == this)
 				surface->FocusElement (NULL);
 		}
-
-		Emit (UIElement::UnloadedEvent);
 	}
 
 	DependencyObject::OnIsAttachedChanged (value);
@@ -719,14 +729,6 @@ UIElement::ElementAdded (UIElement *item)
 	InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
 	item->SetIsAttached (IsAttached ());
 	item->SetIsLoaded (IsLoaded ());
-	if (IsLoaded ()) {
-		bool post = false;
-
-		item->WalkTreeForLoadedHandlers (&post, true, false);
-
-		if (post)
-			GetDeployment ()->EmitLoadedAsync ();
-	}
 
 	UpdateBounds (true);
 	
@@ -900,39 +902,6 @@ UIElement::RemoveHandler (int event_id, int token)
 	if (event_id == UIElement::LoadedEvent)
 		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
 	DependencyObject::RemoveHandler (event_id, token);
-}
-
-#if WALK_METRICS
-int walk_count = 0;
-#endif
-
-void
-UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool force_walk_up)
-{
-	bool post_loaded = false;
-	VisualTreeWalker walker (this);
-
-	// we need to make sure to apply the default style to all
-	// controls in the subtree
-	while (UIElement *element = (UIElement*)walker.Step ())
-		element->WalkTreeForLoadedHandlers (post, only_unemitted, force_walk_up);
-
-	if (Is(Type::CONTROL)) {
-		Control *control = (Control*)this;
-		control->ApplyDefaultStyle ();
-
-		if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
-		    && control->GetTemplate())
-			post_loaded = true; //XXX do we need this? control->ReadLocalValue (Control::TemplateProperty) == NULL;
-	}
-
-	if (HasHandlers (UIElement::LoadedEvent)) {
-		post_loaded = true;
-		GetDeployment ()->AddAllLoadedHandlers (this, true);
-	}
-
-	if (post)
-		*post = *post || post_loaded;
 }
 
 

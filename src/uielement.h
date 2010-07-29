@@ -442,8 +442,6 @@ public:
 	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	virtual void RemoveHandler (int event_id, int token);
 
-	void WalkTreeForLoadedHandlers (bool *delay, bool only_unemitted, bool force_walk_up);
-
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

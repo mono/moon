@@ -115,6 +115,15 @@ Control::OnIsAttachedChanged (bool attached)
 	}
 }
 
+
+void
+Control::OnIsLoadedChanged (bool loaded)
+{
+	if (loaded)
+		ApplyDefaultStyle ();
+	FrameworkElement::OnIsLoadedChanged (loaded);
+}
+
 void
 Control::SetVisualParent (UIElement *visual_parent)
 {
@@ -230,13 +239,9 @@ Control::DoApplyTemplateWithError (MoonError *error)
 
 	ElementAdded (template_root);
 
-	if (IsAttached ()) {
-		bool post = false;
-
-		((UIElement*)root)->WalkTreeForLoadedHandlers (&post, true, true);
+	if (IsLoaded ())
 		GetDeployment ()->EmitLoadedAsync ();
-	}
-	
+
 	root->unref ();
 	
 	return true;

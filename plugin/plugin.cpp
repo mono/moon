@@ -1536,7 +1536,9 @@ PluginInstance::FlushSplash ()
 
 	UIElement *toplevel = GetSurface ()->GetToplevel ();
 	if (toplevel != NULL) {
-		toplevel->WalkTreeForLoadedHandlers (NULL, true, false);
+		// FIXME: We shouldn't need this SetIsLoaded,
+		// it should always be loaded already
+		toplevel->SetIsLoaded (true);
 		deployment->EmitLoaded ();
 	}
 	loading_splash = false;

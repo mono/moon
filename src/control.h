@@ -60,6 +60,7 @@ public:
 	virtual bool DoApplyTemplateWithError (MoonError *error);
 	virtual void SetVisualParent (UIElement *visual_parent);
 	virtual void OnIsAttachedChanged (bool attached);
+	virtual void OnIsLoadedChanged (bool loaded);
 	virtual bool Focus (bool recurse = true);
 
 	/* @GenerateCBinding,GeneratePInvoke */
