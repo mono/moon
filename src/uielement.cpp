@@ -525,6 +525,8 @@ UIElement::ComputeTransform ()
 	cairo_matrix_init_identity (&absolute_xform);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (local_projection);
+	Matrix3D::Identity (render_projection);
+	flags &= ~UIElement::RENDER_PROJECTION;
 
 	if (GetVisualParent () != NULL) {
 		absolute_xform = GetVisualParent ()->absolute_xform;
@@ -536,16 +538,42 @@ UIElement::ComputeTransform ()
 		// for now to get popups in something approaching the right place while
 		// we figure out a cleaner way to handle it long term.
 		Popup *popup = (Popup *)GetParent ();
-		absolute_xform = popup->absolute_xform;
-		cairo_matrix_translate (&absolute_xform, popup->GetHorizontalOffset (), popup->GetVerticalOffset ());
-		memcpy (absolute_projection,
-			popup->absolute_projection,
-			sizeof (double) * 16);
-		Matrix3D::Translate (m,
-				     popup->GetHorizontalOffset (),
-				     popup->GetVerticalOffset (),
-				     0.0);
-		Matrix3D::Multiply (absolute_projection, m, absolute_projection);
+		UIElement *el = (UIElement *) popup;
+
+		// determine whether we inherit an affine or a perspective
+		// transformation from our parent.
+		while (el) {
+			if (el->GetRenderProjection ()) {
+				flags |= UIElement::RENDER_PROJECTION;
+				break;
+			}
+
+			el = (UIElement *) el->GetVisualParent ();
+		}
+
+		if (flags & UIElement::RENDER_PROJECTION) {
+			memcpy (render_projection,
+				popup->absolute_projection,
+				sizeof (double) * 16);
+			Matrix3D::Translate (m,
+					     popup->GetHorizontalOffset (),
+					     popup->GetVerticalOffset (),
+					     0.0);
+			Matrix3D::Multiply (render_projection, m,
+					    render_projection);
+			memcpy (local_projection, render_projection,
+				sizeof (double) * 16);
+		}
+		else {
+			absolute_xform = popup->absolute_xform;
+			cairo_matrix_translate (&absolute_xform,
+						popup->GetHorizontalOffset (),
+						popup->GetVerticalOffset ());
+			Matrix3D::Affine (local_projection,
+					  absolute_xform.xx, absolute_xform.xy,
+					  absolute_xform.yx, absolute_xform.yy,
+					  absolute_xform.x0, absolute_xform.y0);
+		}
 	}
 
 	cairo_matrix_multiply (&absolute_xform, &layout_xform, &absolute_xform);
@@ -563,20 +591,6 @@ UIElement::ComputeTransform ()
 			  local_xform.x0, local_xform.y0);
 	Matrix3D::Multiply (local_projection, m, local_projection);
 
-	if (projection) {
-		projection->GetTransform (render_projection);
-		Matrix3D::Multiply (local_projection, render_projection,
-				    local_projection);
-		flags |= UIElement::RENDER_PROJECTION;
-	}
-	else {
-		Matrix3D::Identity (render_projection);
-		flags &= ~UIElement::RENDER_PROJECTION;
-	}
-
-	Matrix3D::Multiply (absolute_projection, local_projection,
-			    absolute_projection);
-
 	// add affine transformation to perspective transformation
 	// when intermediate rendering is performed
 	if (RenderToIntermediate ()) {
@@ -584,10 +598,20 @@ UIElement::ComputeTransform ()
 				  absolute_xform.xx, absolute_xform.xy,
 				  absolute_xform.yx, absolute_xform.yy,
 				  absolute_xform.x0, absolute_xform.y0);
-		Matrix3D::Multiply (render_projection, render_projection, m);
+		Matrix3D::Multiply (render_projection, m, render_projection);
 		flags |= UIElement::RENDER_PROJECTION;
 		cairo_matrix_init_identity (&absolute_xform);
 	}
+
+	if (projection) {
+		projection->GetTransform (m);
+		Matrix3D::Multiply (render_projection, m, render_projection);
+		Matrix3D::Multiply (local_projection, m, local_projection);
+		flags |= UIElement::RENDER_PROJECTION;
+	}
+
+	Matrix3D::Multiply (absolute_projection, local_projection,
+			    absolute_projection);
 
 	if (memcmp (old_projection, local_projection, sizeof (double) * 16)) {
 		if (GetVisualParent ())
@@ -1226,6 +1250,7 @@ UIElement::UseOcclusionCulling ()
 	if (GetRenderEffect ()) return FALSE;
 	if (GetRenderProjection ()) return FALSE;
 	if (GetRenderCacheMode ()) return FALSE;
+	if (flags & UIElement::RENDER_PROJECTION) return FALSE;
 
 	return TRUE;
 }
@@ -1236,6 +1261,7 @@ UIElement::RenderToIntermediate ()
 	if (GetRenderEffect ()) return TRUE;
 	if (GetRenderProjection ()) return TRUE;
 	if (GetRenderCacheMode ()) return TRUE;
+	if (flags & UIElement::RENDER_PROJECTION) return TRUE;
 
 	return FALSE;
 }
