@@ -100,6 +100,7 @@ UIElement::OnIsLoadedChanged (bool loaded)
 {
 	// If we unload, emit the Unloaded event before the children
 	if (!loaded) {
+		ClearForeachGeneration (UIElement::LoadedEvent);
 		Emit (UIElement::UnloadedEvent);
 	}
 
@@ -150,21 +151,10 @@ UIElement::Dispose()
 }
 
 void
-UIElement::ClearWalkedForLoaded ()
-{
-	UIElement *parent = GetVisualParent ();
-	if (parent)
-		parent->ClearWalkedForLoaded ();
-	flags &= ~UIElement::WALKED_FOR_LOADED;
-}
-
-void
 UIElement::OnIsAttachedChanged (bool value)
 {
 	if (!value) {
 		CacheInvalidateHint ();
-		ClearForeachGeneration (UIElement::LoadedEvent);
-		ClearWalkedForLoaded ();
 
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
 		Surface *surface = GetDeployment ()->GetSurface ();
@@ -717,8 +707,6 @@ UIElement::ElementRemoved (UIElement *item)
 void
 UIElement::ElementAdded (UIElement *item)
 {
-	ClearWalkedForLoaded ();
-		
 	item->SetVisualLevel (GetVisualLevel() + 1);
 	item->SetVisualParent (this);
 	item->UpdateTotalRenderVisibility ();

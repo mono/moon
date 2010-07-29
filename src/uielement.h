@@ -76,8 +76,6 @@ public:
 		SHAPE_RADII      = 0x100,
 		SHAPE_MASK       = (SHAPE_EMPTY | SHAPE_NORMAL | SHAPE_DEGENERATE | SHAPE_RADII),
 
-		WALKED_FOR_LOADED = 0x400,
-		
 		// These are flags which are propagated up the visual tree so that
 		// the layout update pass knows which branches need processing.
 		DIRTY_ARRANGE_HINT = 0x800,
@@ -169,10 +167,6 @@ public:
 	bool SetIsLoaded (bool value);
 	virtual void OnIsLoadedChanged (bool loaded);
 
-	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
-	void ClearWalkedForLoaded ();
-	void SetWalkedForLoaded () { flags |= UIElement::WALKED_FOR_LOADED; }
-	
 	void ClearFlag (UIElementFlags flag) { flags &= ~flag; }
 	bool HasFlag (UIElementFlags flag) { return (flags & flag) == flag; }
 	void SetFlag (UIElementFlags flag) { flags |= flag; }
