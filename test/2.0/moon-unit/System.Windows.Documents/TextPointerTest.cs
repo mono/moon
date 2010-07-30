@@ -39,7 +39,13 @@ namespace MoonTest.System.Windows.Documents {
 	[TestClass]
 	public partial class TextPointerTest {
 
-		RichTextBox rtb = new RichTextBox ();
+		RichTextBox rtb;
+
+		[TestInitialize]
+		public void Setup ()
+		{
+			rtb = new RichTextBox ();
+		}
 
 		TextPointer GetTextPointer ()
 		{
