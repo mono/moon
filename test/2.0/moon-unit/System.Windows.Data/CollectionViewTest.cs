@@ -263,12 +263,38 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("wtf?!")]
 		public void HiddenINPCEvents ()
 		{
 			// These INPC events don't have publicly visible properties so I don't know why/how they're being raised.
 			INotifyPropertyChanged source = (INotifyPropertyChanged)View;
 			VerifyPropertyChanged ("#2", source, () => View.Filter = delegate { return true; }, "Count");
+		}
+
+		[TestMethod]
+		public void HiddenINPCEvents_Remove ()
+		{
+			SetSource(Rectangles);
+			// These INPC events don't have publicly visible properties so I don't know why/how they're being raised.
+			INotifyPropertyChanged source = (INotifyPropertyChanged)View;
+			VerifyPropertyChanged("#2", source, () => Rectangles.RemoveAt (1), "Count");
+		}
+
+		[TestMethod]
+		public void HiddenINPCEvents_Add()
+		{
+			SetSource(Rectangles);
+			// These INPC events don't have publicly visible properties so I don't know why/how they're being raised.
+			INotifyPropertyChanged source = (INotifyPropertyChanged)View;
+			VerifyPropertyChanged("#2", source, () => Rectangles.Add(new Rectangle ()), "Count");
+		}
+
+		[TestMethod]
+		public void HiddenINPCEvents_Replace()
+		{
+			SetSource(Rectangles);
+			// These INPC events don't have publicly visible properties so I don't know why/how they're being raised.
+			INotifyPropertyChanged source = (INotifyPropertyChanged)View;
+			VerifyPropertyChanged("#2", source, () => Rectangles[1] = new Rectangle ());
 		}
 
 		void VerifyPropertyChanged (string message, INotifyPropertyChanged source, Action action, params string[] expectedProperties)

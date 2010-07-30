@@ -125,6 +125,9 @@ namespace System.Windows {
 			var h = CollectionChanged;
 			if (h != null)
 				h (this, e);
+
+			if (e.Action != NotifyCollectionChangedAction.Replace)
+				RaisePropertyChanged ("Count");
 		}
 
 		protected void RaiseCurrentChanged (EventArgs e)
