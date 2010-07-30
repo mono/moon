@@ -1,3 +1,16 @@
+2010-07-30  David Reveman  <davidr@novell.com>
+
+	* collection.cpp (UIElementZIndexComparer): Only compare
+	Z values when both elements have perspective transformations
+	attached to them.
+
+	* canvas.h: Use FP_NAN as default value for Z property.
+
+	* projection.h:
+	* projection.cpp: Return NaN instead of zero from
+	DistanceFromXYPlane when distance can't be properly
+	calculated.
+
 2010-07-29  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp (ComputeTransform): Fix inheritance of

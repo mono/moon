@@ -39,7 +39,7 @@ class Canvas : public Panel {
 	const static int TopProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	const static int ZIndexProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Attached,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=FP_NAN,Attached,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int ZProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */

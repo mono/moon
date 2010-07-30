@@ -645,7 +645,7 @@ PlaneProjection::DistanceFromXYPlane ()
 	Matrix3D::TransformPoint (p, m, p);
 
 	if (p[3] == 0.0)
-		return 0.0;
+		return FP_NAN;
 
 	return xyPlaneZ - (p[2] / p[3]);
 }

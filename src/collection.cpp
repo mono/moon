@@ -560,6 +560,9 @@ UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 		double z1 = Canvas::GetZ (*((UIElement **) ui1));
 		double z2 = Canvas::GetZ (*((UIElement **) ui2));
 
+		if (z1 == FP_NAN || z2 == FP_NAN)
+			return 0;
+
 		return z1 > z2 ? 1 : z1 < z2 ? -1 : 0;
 	}
 

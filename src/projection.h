@@ -165,7 +165,7 @@ public:
 
 	virtual void SetObjectSize (double width, double height) {}
 	void GetTransform (double *value);
-	virtual double DistanceFromXYPlane () { return 0.0; }
+	virtual double DistanceFromXYPlane () { return FP_NAN; }
 
 protected:
 	virtual ~Projection () {}
