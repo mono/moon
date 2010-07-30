@@ -48,11 +48,18 @@ namespace System.Windows.Browser {
 		}
 
 		[ScriptableMember(ScriptAlias="createObject")]
-		public ScriptObject CreateObject (string name, ScriptObject obj)
+		public ScriptObject CreateObject (string name, object obj)
 		{
 			if (!HtmlPage.ScriptableTypes.ContainsKey (name))
 				return null;
 
+			if (obj is double || obj is int) {
+				int size = int.Parse (obj.ToString());
+				Type t = HtmlPage.ScriptableTypes[name].GetElementType ();
+				if (t == null)
+					return null;
+				return new ManagedObject (Array.CreateInstance (t, size));
+			}
 			return new ManagedObject (JsonDeserialize (obj, HtmlPage.ScriptableTypes[name]));
 		}
 
