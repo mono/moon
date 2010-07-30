@@ -59,7 +59,7 @@ namespace System.Windows.Controls
 				return _elementRoot;
 
 			if (c.ItemsPanel != null) {
-				DependencyObject root = c.ItemsPanel.GetVisualTree ();
+				DependencyObject root = c.ItemsPanel.GetVisualTree (c);
 				if (root != null && !(root is Panel))
 					throw new InvalidOperationException ("The root element of an ItemsPanelTemplate must be a Panel subclass");
 				_elementRoot = (Panel) root;
