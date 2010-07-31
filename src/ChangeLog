@@ -1,3 +1,12 @@
+2010-07-31  David Reveman  <davidr@novell.com>
+
+	* collection.cpp (UIElementZIndexComparer): Use isnan as NaN is
+	never equal to Nan.
+
+	* canvas.h:
+	* projection.h:
+	* projection.cpp: Use NAN, FP_NAN is not a floating point value.
+
 2010-07-30  David Reveman  <davidr@novell.com>
 
 	* collection.cpp (UIElementZIndexComparer): Only compare
