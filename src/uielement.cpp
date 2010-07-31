@@ -475,7 +475,7 @@ UIElement::ComputeLocalProjection ()
 	double width, height;
 
 	if (projection == NULL) {
-		Canvas::SetZ (this, 0.0);
+		Canvas::SetZ (this, NAN);
 		return;
 	}
 
@@ -483,7 +483,6 @@ UIElement::ComputeLocalProjection ()
 	projection->SetObjectSize (width, height);
 	Canvas::SetZ (this, projection->DistanceFromXYPlane ());
 }
-
 
 void
 UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)

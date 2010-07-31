@@ -1,5 +1,8 @@
 2010-07-31  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (ComputeLocalProjection): Canvas Z property
+	should be set to NaN when no projection is present.
+
 	* collection.cpp (UIElementZIndexComparer): Use isnan as NaN is
 	never equal to Nan.
 
