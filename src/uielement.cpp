@@ -1374,6 +1374,10 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		delete region;
 }
 
+#define IS_IDENTITY(matrix) \
+	((matrix)->xx == 1.0 && (matrix)->yx == 0.0 && \
+	 (matrix)->xy == 0.0 && (matrix)->yy == 1.0 && \
+	 (matrix)->x0 == 0.0 && (matrix)->y0 == 0.0)
 
 void
 UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
@@ -1391,6 +1395,13 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_clip (cr);
 
 		ctx->Push (new ContextNode (r));
+	}
+
+	if (!IS_IDENTITY (&absolute_xform)) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+		cairo_save (cr);
+		ApplyTransform (cr);
 	}
 
 	if (GetClip ()) {
@@ -1412,7 +1423,9 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		ctx->Push (new ContextNode (r));
 	}
 
-	void *xform = NULL;
+	bool set_matrix = false;
+	cairo_matrix_t matrix;
+	void *xform;
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
@@ -1435,15 +1448,17 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		if (!region->IsEmpty ())
 			r = r.Intersection (region->ClipBox ());
 
+		// affine transformations are unaffected by opacity
+		// masks and local opacity so make sure the current
+		// matrix transferred to the top context.
+		set_matrix = true;
+		cairo_get_matrix (cr, &matrix);
+		xform = cairo_get_user_data (cr, &uielement_xform_key);
+
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
-
-		// affine transformations are unaffected by opacity
-		// masks and local opacity so make sure the current
-		// xform property is transferred to the top context.
-		xform = cairo_get_user_data (cr, &uielement_xform_key);
 
 		if (IS_TRANSLUCENT (local_opacity))
 			ctx->Push (new ContextNode (r));
@@ -1458,13 +1473,14 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		node->SetBitmap (bitmap_cache);
 	}
 
-	// xform is set when it needs to be transferred to the
-	// top context.
-	if (xform) {
+	// set matrix on top context
+	if (set_matrix) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
-		if (cr)
+		if (cr) {
+			cairo_set_matrix (cr, &matrix);
 			cairo_set_user_data (cr, &uielement_xform_key, xform, NULL);
+		}
 	}
 }
 
@@ -1494,16 +1510,14 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			Rect            r = node->GetBitmapExtents ();
 			cairo_pattern_t *mask = NULL;
-			Point p = GetOriginPoint ();
-			Rect area = Rect (p.x, p.y, 0.0, 0.0);
+			
 			cairo_save (cr);
-			GetSizeForBrush (cr, &(area.width), &(area.height));
-			opacityMask->SetupBrush (cr, area);
+			opacityMask->SetupBrush (cr, r);
 			mask = cairo_get_source (cr);
 			cairo_pattern_reference (mask);
 			cairo_set_source_surface (cr, src, 0, 0);
-			ApplyTransform (cr);
 			cairo_mask (cr, mask);
 			cairo_pattern_destroy (mask);
 			cairo_restore (cr);
@@ -1537,7 +1551,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
+			Rect r = node->GetBitmapExtents ();
 
 			if (!effect->Render (cr, src,
 					     NULL,
@@ -1556,6 +1570,12 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_restore (cr);
 	}
 
+	if (!IS_IDENTITY (&absolute_xform)) {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+		cairo_restore (cr);
+	}
+
 	if (flags & UIElement::RENDER_PROJECTION) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ();
@@ -1563,7 +1583,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Effect *effect = Effect::GetProjectionEffect ();
-			Rect   r = GetSubtreeExtents ().GrowBy (effect_padding).RoundOut ();
+			Rect   r = node->GetBitmapExtents ();
 
 			if (!effect->Render (cr, src,
 					     render_projection,

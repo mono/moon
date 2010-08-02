@@ -1,5 +1,9 @@
 2010-08-02  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Apply affine transformation in PreRender
+	and cleanup intermediate rendering by using GetBitmapExtents
+	function.
+
 	* runtime.h:
 	* runtime.cpp: Add GetBitmapExtents function to ContextNode
 	class.
