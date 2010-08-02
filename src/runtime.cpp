@@ -1682,6 +1682,12 @@ ContextNode::SetBitmap (cairo_surface_t *surface)
 	bitmap = ref;
 }
 
+Rect
+ContextNode::GetBitmapExtents (void)
+{
+	return box.RoundOut ();
+}
+
 void
 Surface::PerformCapture (UIElement *capture)
 {

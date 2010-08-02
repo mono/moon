@@ -510,6 +510,7 @@ public:
 	cairo_t *GetCr ();
 	cairo_surface_t *GetBitmap ();
 	void SetBitmap (cairo_surface_t *surface);
+	Rect GetBitmapExtents (void);
 
 private:
 	Rect            box;
