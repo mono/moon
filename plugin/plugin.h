@@ -303,9 +303,10 @@ extern GSList *plugin_instances;
 #define STRDUP_FROM_VARIANT(v) (g_strndup ((char *) NPVARIANT_TO_STRING (v).utf8characters, NPVARIANT_TO_STRING (v).utf8length))
 #define STRLEN_FROM_VARIANT(v) ((size_t) NPVARIANT_TO_STRING (v).utf8length)
 
-class PluginXamlLoader : public XamlLoader
+class PluginXamlLoader : public SL3XamlLoader
 {
 	PluginXamlLoader (const char *resourceBase, PluginInstance *plugin, Surface *surface);
+
 	bool InitializeLoader ();
 	PluginInstance *plugin;
 	bool initialized;

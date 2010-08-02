@@ -503,7 +503,7 @@ namespace Mono.Xaml
 
 				TemplateBindingExpression tb = o as TemplateBindingExpression;
 
-				IntPtr context = NativeMethods.xaml_loader_get_context (data->loader);
+				IntPtr context = NativeMethods.sl3_xaml_loader_get_context (data->loader);
 				IntPtr source_ptr = NativeMethods.xaml_context_get_template_binding_source (context);
 
 				DependencyObject templateSourceObject = NativeDependencyObjectHelper.FromIntPtr (source_ptr) as DependencyObject;

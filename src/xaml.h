@@ -24,6 +24,7 @@
 namespace Moonlight {
 
 class XamlLoader;
+class SL3XamlLoader;
 
 struct XamlCallbackData {
 	void *loader;
@@ -126,7 +127,7 @@ XamlLoader *xaml_loader_new (const char *resourceBase, Surface *surface);
 /* @GeneratePInvoke */
 void	    xaml_loader_free (XamlLoader *loader);
 /* @GeneratePInvoke */
-void        xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks);
+void        xaml_loader_set_callbacks (SL3XamlLoader *loader, XamlLoaderCallbacks callbacks);
 
 /* @GeneratePInvoke */
 char*       xaml_uri_for_prefix (void *parser, char* prefix);
@@ -178,7 +179,43 @@ G_END_DECLS
 */
 
 
+class XamlLoaderFactory {
+
+ public:
+	static XamlLoader *CreateLoader (const char* resource_base, Surface *surface);
+	static XamlLoader *CreateLoader (const char* resource_base, Surface *surface, XamlContext *context);
+};
+
+
+
+
+
 class XamlLoader {
+
+ public:
+	
+	enum XamlLoaderFlags {
+		NONE,
+		VALIDATE_TEMPLATES = 2,
+		IMPORT_DEFAULT_XMLNS = 4
+	};
+
+	virtual DependencyObject* CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type) = 0;
+	virtual DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type) = 0;
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error) = 0;
+
+        /* @GenerateCBinding,GeneratePInvoke */
+	virtual Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error) = 0;
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error) = 0;
+};
+
+
+
+class SL3XamlLoader : public XamlLoader {
 	bool expanding_template;
 	DependencyObject *template_owner;
 	Surface *surface;
@@ -187,17 +224,17 @@ class XamlLoader {
 	bool import_default_xmlns;
 
 	void Initialize (const char *resourceBase, Surface *surface, XamlContext *context);
+
+ protected:
+	
+	
+
  public:
 
-	enum XamlLoaderFlags {
-		NONE,
-		VALIDATE_TEMPLATES = 2,
-		IMPORT_DEFAULT_XMLNS = 4
-	};
-
-	XamlLoader (Surface *surface, XamlContext *context = NULL);
-	XamlLoader (const char *resourceBase, Surface *surface, XamlContext *context = NULL);
-	virtual ~XamlLoader ();
+	SL3XamlLoader (Surface *surface, XamlContext *context = NULL);
+	SL3XamlLoader (const char *resourceBase, Surface *surface, XamlContext *context = NULL);
+	
+	virtual ~SL3XamlLoader ();
 	
 	virtual bool LoadVM ();
 

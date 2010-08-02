@@ -1144,7 +1144,7 @@ Surface::ShowIncompleteSilverlightSupportMessage ()
 	g_return_if_fail (incomplete_support_message == NULL);
 
 	Type::Kind dummy;
-	XamlLoader *loader = new XamlLoader (NULL, this);
+	XamlLoader *loader = XamlLoaderFactory::CreateLoader (NULL, this);
 	DependencyObject* message = loader->CreateDependencyObjectFromString (INCOMPLETE_SUPPORT_MESSAGE, false, &dummy);
 	delete loader;
 
@@ -1203,7 +1203,7 @@ Surface::ShowDrmMessage ()
 	}
 
 	Type::Kind dummy;
-	XamlLoader *loader = new XamlLoader (NULL, this);
+	XamlLoader *loader = XamlLoaderFactory::CreateLoader (NULL, this);
 	DependencyObject* message = loader->CreateDependencyObjectFromString (DRM_MESSAGE, false, &dummy);
 	delete loader;
 
@@ -1250,7 +1250,7 @@ Surface::ShowFullScreenMessage ()
 	g_return_if_fail (full_screen_message == NULL);
 	
 	Type::Kind dummy;
-	XamlLoader *loader = new XamlLoader (NULL, this);
+	XamlLoader *loader = XamlLoaderFactory::CreateLoader (NULL, this);
 	DependencyObject* message = loader->CreateDependencyObjectFromString (FULLSCREEN_MESSAGE, false, &dummy);
 	delete loader;
 	
@@ -1383,7 +1383,7 @@ Surface::ShowFrameRateCounter ()
 	g_return_if_fail (framerate_counter_display == NULL);
 
 	Type::Kind dummy;
-	XamlLoader *loader = new XamlLoader (NULL, this);
+	XamlLoader *loader = XamlLoaderFactory::CreateLoader (NULL, this);
 	DependencyObject* display = loader->CreateDependencyObjectFromString (FRAMERATE_COUNTER_DISPLAY, false, &dummy);
 	delete loader;
 

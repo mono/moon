@@ -336,7 +336,7 @@ DependencyObject *
 parse_template (Value *data, const char *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error)
 {
 	XamlContext *xaml_context = (XamlContext *) data->AsEventObject ();
-	XamlLoader *loader = new XamlLoader (resource_base, surface, xaml_context);
+	SL3XamlLoader *loader = new SL3XamlLoader (resource_base, surface, xaml_context);
 	Type::Kind dummy;
 
 	loader->SetExpandingTemplate (true);
@@ -669,7 +669,7 @@ class XamlParserInfo {
 
 	ParserErrorEventArgs *error_args;
 
-	XamlLoader *loader;
+	SL3XamlLoader *loader;
 
 	
         //
@@ -843,7 +843,7 @@ class XamlParserInfo {
 
 	void ValidateTemplate (const char* buffer, XamlContext* context, FrameworkTemplate *binding_source)
 	{
-		XamlLoader *loader = new XamlLoader (NULL, NULL, context);
+		SL3XamlLoader *loader = new SL3XamlLoader (NULL, NULL, context);
 		Type::Kind dummy;
 
 		context->SetTemplateBindingSource (binding_source);
@@ -1516,7 +1516,7 @@ class ManagedNamespace : public XamlNamespace {
 };
 
 bool
-XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* xmlns, const char* type_name, bool create, bool is_property, Value *value)
+SL3XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* xmlns, const char* type_name, bool create, bool is_property, Value *value)
 {
 	if (GetCallbacks ().lookup_object) {
 		if (!vm_loaded && !LoadVM ())
@@ -1531,7 +1531,7 @@ XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* 
 }
 
 bool
-XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char* prop_xmlns, const char *name, Value *value, void* value_data, int flags)
+SL3XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char* prop_xmlns, const char *name, Value *value, void* value_data, int flags)
 {
 	if (GetCallbacks ().set_property) {
 		MoonError error;
@@ -1550,7 +1550,7 @@ XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *ta
 }
 
 bool
-XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data)
+SL3XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data)
 {
 	if (GetCallbacks ().add_child) {
 		MoonError error;
@@ -1567,18 +1567,18 @@ XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool pare
 	return false;
 }
 
-XamlLoader::XamlLoader (const char *resourceBase, Surface* surface, XamlContext *context)
+SL3XamlLoader::SL3XamlLoader (const char *resourceBase, Surface* surface, XamlContext *context)
 {
 	Initialize (resourceBase, surface, context);
 }
 
-XamlLoader::XamlLoader (Surface* surface, XamlContext *context)
+SL3XamlLoader::SL3XamlLoader (Surface* surface, XamlContext *context)
 {
 	Initialize (NULL, surface, context);
 }
 
 void
-XamlLoader::Initialize (const char *resourceBase, Surface* surface, XamlContext *context)
+SL3XamlLoader::Initialize (const char *resourceBase, Surface* surface, XamlContext *context)
 {
 	this->resource_base = Deployment::GetCurrent()->InternString (resourceBase);
 	this->surface = surface;
@@ -1598,13 +1598,13 @@ XamlLoader::Initialize (const char *resourceBase, Surface* surface, XamlContext 
 
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
-		// printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n",
+		// printf ("SL3XamlLoader::SL3XamlLoader ('%s', '%s', %p): Initializing SL3XamlLoader without a surface.\n",
 		//	filename, str, surface);
 	}
 #endif
 }
 
-XamlLoader::~XamlLoader ()
+SL3XamlLoader::~SL3XamlLoader ()
 {
 	if (surface)
 		surface->unref ();
@@ -1614,19 +1614,19 @@ XamlLoader::~XamlLoader ()
 }
 
 XamlLoaderCallbacks
-XamlLoader::GetCallbacks ()
+SL3XamlLoader::GetCallbacks ()
 {
 	return context->internal->callbacks;
 }
 
 void
-XamlLoader::SetCallbacks (XamlLoaderCallbacks callbacks)
+SL3XamlLoader::SetCallbacks (XamlLoaderCallbacks callbacks)
 {
 	context->internal->callbacks = callbacks;
 }
 
 bool
-XamlLoader::LoadVM ()
+SL3XamlLoader::LoadVM ()
 {
 	return false;
 }
@@ -1634,7 +1634,7 @@ XamlLoader::LoadVM ()
 XamlLoader* 
 xaml_loader_new (const char *resourceBase, Surface* surface)
 {
-	return new XamlLoader (resourceBase, surface);
+	return XamlLoaderFactory::CreateLoader (resourceBase, surface);
 }
 
 void
@@ -1644,7 +1644,7 @@ xaml_loader_free (XamlLoader* loader)
 }
 
 void 
-xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
+xaml_loader_set_callbacks (SL3XamlLoader* loader, XamlLoaderCallbacks callbacks)
 {
 	if (!loader) {
 		LOG_XAML ("Trying to set callbacks for a null object\n");
@@ -2333,7 +2333,7 @@ xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembl
 }
 
 Value *
-XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
+SL3XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 			    Type::Kind *element_type)
 {
 	Value *res = NULL;
@@ -2444,7 +2444,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 }
 
 Value *
-XamlLoader::CreateFromString (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags)
+SL3XamlLoader::CreateFromString (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags)
 {
 	return HydrateFromString (xaml, NULL, create_namescope, element_type, flags);
 }
@@ -2458,7 +2458,7 @@ value_to_dependency_object (Value *value)
 }
 
 DependencyObject *
-XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type)
+SL3XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
 	Value *v = CreateFromFile (xaml, create_namescope, element_type);
 	DependencyObject *obj = value_to_dependency_object (v);
@@ -2469,7 +2469,7 @@ XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namesc
 }
 
 DependencyObject *
-XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
+SL3XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
 	Value *v = CreateFromString (xaml, create_namescope, element_type, IMPORT_DEFAULT_XMLNS);
 	DependencyObject *obj = value_to_dependency_object (v);
@@ -2484,7 +2484,7 @@ XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_name
  * data
  */
 Value *
-XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags)
+SL3XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
@@ -2626,7 +2626,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 }
 
 Value *
-XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescope, Type::Kind *element_type, MoonError *error)
+SL3XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
 	Value *res = CreateFromFile (xaml_file, create_namescope, element_type);
 	if (error_args && error_args->GetErrorCode () != -1)
@@ -2635,7 +2635,7 @@ XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescop
 }
 
 Value *
-XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
+SL3XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
 {
 	Value *res = CreateFromString (xaml, create_namescope, element_type, flags);
 	if (error_args && error_args->GetErrorCode () != -1)
@@ -2644,13 +2644,22 @@ XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope,
 }
 
 Value *
-XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
+SL3XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
 {
 	Value *res = HydrateFromString (xaml, object, create_namescope, element_type, flags);
 	if (error_args && error_args->GetErrorCode () != -1)
 		MoonError::FillIn (error, error_args);
 	return res;
 }
+
+
+XamlLoader *
+XamlLoaderFactory::CreateLoader (const char* resource_base, Surface *surface)
+{
+	return new SL3XamlLoader (resource_base, surface);
+}
+
+
 
 static int
 parse_int (const char **pp, const char *end)
