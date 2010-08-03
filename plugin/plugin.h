@@ -310,7 +310,6 @@ class PluginXamlLoader : public SL3XamlLoader
 	bool InitializeLoader ();
 	PluginInstance *plugin;
 	bool initialized;
-	bool xaml_is_managed;
 
 	char* xaml_string;
 	char* xaml_file;
@@ -348,8 +347,6 @@ class PluginXamlLoader : public SL3XamlLoader
 		return loader;
 	}
 	
-	bool IsManaged () { return xaml_is_managed; }
-
 	virtual bool LoadVM ();
 };
 
