@@ -1894,7 +1894,6 @@ PluginXamlLoader::PluginXamlLoader (const char *resourceBase, PluginInstance *pl
 	initialized = false;
 	error_args = NULL;
 
-	xap = NULL;
 	xaml_string = NULL;
 	xaml_file = NULL;
 
@@ -1903,9 +1902,6 @@ PluginXamlLoader::PluginXamlLoader (const char *resourceBase, PluginInstance *pl
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
-	if (xap)
-		delete xap;
-	
 	if (managed_loader)
 		plugin->GetDeployment ()->DestroyManagedXamlLoader (managed_loader);
 }

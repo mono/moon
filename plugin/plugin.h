@@ -316,7 +316,6 @@ class PluginXamlLoader : public SL3XamlLoader
 	char* xaml_file;
 
 	gpointer managed_loader;
-	Xap *xap;
  public:
 	virtual ~PluginXamlLoader ();
 	void TryLoad (int *error);
