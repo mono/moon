@@ -1,5 +1,23 @@
 2010-08-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* multiscaleimage.cpp (UpdateIdleStatus): Renamed from
+	UpdateIsDownloading().
+	(TileOpened): Don't update IsIdle/IsDownloading status here, wait
+	for ::Render(). We don't want IsIdle to be set to true or
+	IsDownloading to be set to false before we get a chance to render
+	the result.
+	(TileFailed): Same.
+	(StopDownloading): Same.
+	(OnPropertyChanged): Instead of calling UpdateIsDownloading()
+	here, Invalidate () and let the next render take care of that.
+	(Render): Only ever allow IsIdle to be set to true and
+	IsDownloading to be set to false here, *after* we've rendered the
+	scene.
+	(ProcessTile): Cache a NULL image if we fail to get the tile's
+	image surface.
+
+2010-08-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* bitmapsource.cpp (GetSurface): If the cairo context is NULL,
 	then assume that the native surface is an image surface.
 

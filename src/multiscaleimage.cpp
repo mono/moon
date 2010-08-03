@@ -608,8 +608,6 @@ MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 	ctx->image->SetUriSource (NULL);
 	ctx->avail = true;
 	n_downloading--;
-	
-	UpdateIsDownloading ();
 	Invalidate ();
 }
 
@@ -632,8 +630,6 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 		qtree_set_image (ctx->node, NULL);
 		ctx->avail = true;
 		n_downloading--;
-		
-		UpdateIsDownloading ();
 		Invalidate ();
 	}
 	
@@ -655,8 +651,6 @@ MultiScaleImage::StopDownloading ()
 	
 	g_ptr_array_set_size (downloaders, 0);
 	n_downloading = 0;
-	
-	UpdateIsDownloading ();
 }
 
 void
@@ -793,8 +787,11 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	cairo_surface_t *surface;
 	double tile_fade;
 	
-	if (!(surface = cairo_surface_reference (ctx->image->GetSurface (NULL))))
+	if (!(surface = cairo_surface_reference (ctx->image->GetSurface (NULL)))) {
+		LOG_MSI ("caching NULL for %s\n", ctx->image->GetUriSource ()->ToString ());
+		qtree_set_image (ctx->node, NULL);
 		return;
+	}
 	
 	cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), int_free);
 	cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), int_free);
@@ -840,7 +837,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	if (!source) {
 		LOG_MSI ("no sources set, nothing to render\n");
-		return;	
+		UpdateIdleStatus ();
+		return;
 	}
 	
 	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE))
@@ -855,6 +853,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		if (dzits != NULL)
 			dzits->Download ();
 		
+		UpdateIdleStatus ();
 		return;
 	}
 	
@@ -869,6 +868,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		RenderCollection (cr, region);
 	else
 		RenderSingle (cr, region);
+	
+	UpdateIdleStatus ();
 }
 
 void
@@ -1432,10 +1433,10 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		
 		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::AllowDownloadingProperty) {
-		if (args->GetNewValue()->AsBool ())
-			Invalidate();
-		else
+		if (!args->GetNewValue ()->AsBool ())
 			StopDownloading ();
+		
+		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::AspectRatioProperty) {
 		InvalidateMeasure ();
 		Invalidate ();
@@ -1483,7 +1484,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 				SetViewportOrigin (&endpoint);
 			}
 			
-			SetIsIdle (n_downloading == 0 && !is_fading);
+			Invalidate ();
 		}
 	}
 	
@@ -1731,7 +1732,7 @@ MultiScaleImage::SetIsDownloading (bool value)
 }
 
 void
-MultiScaleImage::UpdateIsDownloading ()
+MultiScaleImage::UpdateIdleStatus ()
 {
 	SetIsIdle (n_downloading == 0 && !is_fading && !is_panning && !is_zooming);
 	SetIsDownloading (n_downloading > 0);
