@@ -496,10 +496,12 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		
 		cached_surface = image_brush_create_similar (cr, (int) cache_extents.width, (int) cache_extents.height);
 		if (cairo_surface_status (cached_surface) == CAIRO_STATUS_SUCCESS) {
+			cairo_matrix_t matrix;
 			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 			cached_cr = cairo_create (cached_surface);
-			
-			ApplyTransform (cached_cr);
+
+                        cairo_get_matrix (cr, &matrix);
+                        cairo_set_matrix (cached_cr, &matrix);
 		
 			ret = DrawShape (cached_cr, do_op);
 			
@@ -517,7 +519,6 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_pattern_t *cached_pattern = NULL;
 
 		cached_pattern = cairo_pattern_create_for_surface (cached_surface);
-		ApplyTransform (cr);
 
 		if (do_op)
 			Clip (cr);
@@ -531,8 +532,6 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_pattern_destroy (cached_pattern);
 		cairo_paint (cr);
 	} else {
-		ApplyTransform (cr);
-
 		if (do_op)
 			Clip (cr);
 		
@@ -811,6 +810,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 		return false;
 
 	cairo_save (cr);
+        ApplyTransform (cr);
 	DoDraw (cr, false);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)

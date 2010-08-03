@@ -207,7 +207,6 @@ void
 UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 {
 	cairo_new_path (cr);
-	ApplyTransform (cr);
 
 	Geometry *geometry = GetClip();
 	if (!geometry)

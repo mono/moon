@@ -850,7 +850,6 @@ InkPresenter::PostRender (Stack *ctx, Region *region, bool skip_children)
 	if (strokes_count > 0 && ((ContextNode *) ctx->Top ())->GetCr ()) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 	
-		ApplyTransform (cr);
 		cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
 		cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
 

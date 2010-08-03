@@ -1629,7 +1629,6 @@ RichTextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 	
 	cairo_save (cr);
-	ApplyTransform (cr);
 	
 	if (!path_only)
 		RenderLayoutClip (cr);

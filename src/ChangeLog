@@ -1,3 +1,17 @@
+2010-08-06  David Reveman  <davidr@novell.com>
+
+	* border.cpp (Render):
+	* glyphs.cpp (Render):
+	* media.cpp (Render):
+	* mediaelement.cpp (Render):
+	* panel.cpp (Render):
+	* richtextbox.cpp (Render):
+	* shape.cpp (DoDraw):
+	* stylus.cpp (PostRender):
+	* textbox.cpp (Render):
+	* uielement.cpp (RenderClipPath): Remove unnecessary use of
+	ApplyTransform.
+
 2010-08-05  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp (ComputeTransform): Use Matrix3D::Init instead

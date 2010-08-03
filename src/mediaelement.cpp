@@ -751,7 +751,6 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 
 	cairo_save (cr);
-	ApplyTransform (cr);
 
         Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);

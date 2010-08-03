@@ -361,7 +361,6 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	source->Lock ();
 
 	cairo_save (cr);
-	ApplyTransform (cr);
        
 	Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);

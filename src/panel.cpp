@@ -121,8 +121,6 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Brush *background = GetBackground ();
 	
-	ApplyTransform (cr);
-	
 	Size framework (GetActualWidth (), GetActualHeight ());
 	framework = ApplySizeConstraints (framework);
 	Rect area = Rect (0.0, 0.0, framework.width, framework.height);

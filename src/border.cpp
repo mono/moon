@@ -78,8 +78,6 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	Brush *background = GetBackground ();
 	Brush *border_brush = GetBorderBrush ();
 
-	ApplyTransform (cr);
-	
 	cairo_save (cr);
 	if (!path_only)
 		RenderLayoutClip (cr);
