@@ -298,17 +298,11 @@ qtree_destroy (QTree *root)
  * BitmapImageContext
  */
 
-enum BitmapImageStatus {
-	BitmapImageFree = 0,
-	BitmapImageBusy,
-	BitmapImageDone
-};
-
 struct BitmapImageContext {
-	BitmapImageStatus state;
 	MultiScaleImage *msi;
 	BitmapImage *image;
 	QTree *node;
+	bool avail;
 	int retry;
 };
 
@@ -463,7 +457,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	for (guint i = 0; i < downloaders->len; i++) {
 		ctx = (BitmapImageContext *) downloaders->pdata[i];
 		
-		if (ctx->state == BitmapImageFree) {
+		if (ctx->avail) {
 			if (!avail)
 				avail = ctx;
 			
@@ -489,8 +483,8 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	} else
 		ctx = avail;
 	
-	ctx->state = BitmapImageBusy;
 	ctx->node = (QTree *) user_data;
+	ctx->avail = false;
 	ctx->retry = 0;
 	
 	SetIsDownloading (true);
@@ -609,7 +603,10 @@ MultiScaleImage::tile_opened (EventObject *sender, EventArgs *calldata, gpointer
 void
 MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 {
-	ctx->state = BitmapImageDone;
+	ProcessTile (ctx);
+	
+	ctx->image->SetUriSource (NULL);
+	ctx->avail = true;
 	n_downloading--;
 	
 	UpdateIsDownloading ();
@@ -633,7 +630,7 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 	} else {
 		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_image (ctx->node, NULL);
-		ctx->state = BitmapImageFree;
+		ctx->avail = true;
 		n_downloading--;
 		
 		UpdateIsDownloading ();
@@ -791,12 +788,53 @@ MultiScaleImage::MeasureOverrideWithError (Size availableSize, MoonError *error)
 }
 
 void
+MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
+{
+	cairo_surface_t *surface;
+	double tile_fade;
+	
+	if (!(surface = cairo_surface_reference (ctx->image->GetSurface (NULL))))
+		return;
+	
+	cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), int_free);
+	cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), int_free);
+	
+	if (!fadein_sb) {
+		fadein_sb = new Storyboard ();
+		fadein_sb->SetManualTarget (this);
+		fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
+		fadein_animation = new DoubleAnimation ();
+		fadein_animation->SetDuration (Duration (GetSource ()->GetTileBlendTime ()));
+		TimelineCollection *tlc = new TimelineCollection ();
+		tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
+		fadein_sb->SetChildren (tlc);
+		fadein_sb->AddHandler (Storyboard::CompletedEvent, fade_finished, this);
+#if DEBUG
+		fadein_sb->SetName ("Multiscale Fade-In");
+#endif
+	} else {
+		fadein_sb->PauseWithError (NULL);
+	}
+	
+	tile_fade = GetTileFade ();
+	//LOG_MSI ("animating Fade from %f to %f\n\n", tile_fade, tile_fade + 0.9);
+	fadein_animation->SetFrom (tile_fade);
+	fadein_animation->SetTo (tile_fade + 0.9);
+	
+	fadein_sb->BeginWithError (NULL);
+	SetIsIdle (false);
+	is_fading = true;
+	
+	cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
+	LOG_MSI ("caching %s\n", ctx->image->GetUriSource ()->ToString ());
+	qtree_set_image (ctx->node, surface);
+}
+
+void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	MultiScaleTileSource *source = GetSource ();
 	DeepZoomImageTileSource *dzits;
-	cairo_surface_t *surface;
-	BitmapImageContext *ctx;
 	
 	LOG_MSI ("MSI::Render\n");
 	
@@ -805,51 +843,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		return;	
 	}
 	
-	// Process downloaded tiles
-	for (guint i = 0; i < downloaders->len; i++) {
-		ctx = (BitmapImageContext *) downloaders->pdata[i];
-		
-		if (ctx->state != BitmapImageDone || !(surface = cairo_surface_reference (ctx->image->GetSurface (cr))))
-			continue;
-		
-		cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), int_free);
-		cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), int_free);
-		
-		if (!fadein_sb) {
-			fadein_sb = new Storyboard ();
-			fadein_sb->SetManualTarget (this);
-			fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
-			fadein_animation = new DoubleAnimation ();
-			fadein_animation->SetDuration (Duration (source->GetTileBlendTime ()));
-			TimelineCollection *tlc = new TimelineCollection ();
-			tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
-			fadein_sb->SetChildren(tlc);
-			fadein_sb->AddHandler (Storyboard::CompletedEvent, fade_finished, this);
-#if DEBUG
-			fadein_sb->SetName ("Multiscale Fade-In");
-#endif
-		} else {
-			fadein_sb->PauseWithError (NULL);
-		}
-
-		//LOG_MSI ("animating Fade from %f to %f\n\n", GetTileFade (), GetTileFade () + 0.9);
-		double tile_fade = GetTileFade ();
-		fadein_animation->SetFrom (tile_fade);
-		fadein_animation->SetTo (tile_fade + 0.9);
-		
-		fadein_sb->BeginWithError(NULL);
-		SetIsIdle (false);
-		is_fading = true;
-		
-		cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
-		LOG_MSI ("caching %s\n", ctx->image->GetUriSource()->ToString ());
-		qtree_set_image (ctx->node, surface);
-
-		ctx->image->SetUriSource (NULL);
-		ctx->state = BitmapImageFree;
-	}
-	
-	if (source && source->Is (Type::DEEPZOOMIMAGETILESOURCE))
+	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE))
 		dzits = (DeepZoomImageTileSource *) source;
 	else
 		dzits = NULL;
@@ -863,14 +857,14 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		
 		return;
 	}
-
+	
 #if DEBUG
 	if (!source->get_tile_func) {
 		g_warning ("no get_tile_func set\n");
 		return;
 	}
 #endif
-
+	
 	if (is_collection)
 		RenderCollection (cr, region);
 	else

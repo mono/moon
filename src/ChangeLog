@@ -1,3 +1,11 @@
+2010-08-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* bitmapsource.cpp (GetSurface): If the cairo context is NULL,
+	then assume that the native surface is an image surface.
+
+	* multiscaleimage.cpp (ProcessTile): Split out from Render(); now
+	called from TileOpened() rather than waiting until Render().
+
 2010-08-02  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp: Apply affine transformation in PreRender
