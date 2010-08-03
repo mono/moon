@@ -1890,7 +1890,6 @@ PluginXamlLoader::PluginXamlLoader (const char *resourceBase, PluginInstance *pl
 	: SL3XamlLoader (resourceBase, surface)
 {
 	this->plugin = plugin;
-	xaml_is_managed = false;
 	initialized = false;
 	error_args = NULL;
 
