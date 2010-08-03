@@ -2458,9 +2458,16 @@ value_to_dependency_object (Value *value)
 }
 
 DependencyObject *
-SL3XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type)
+XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
-	Value *v = CreateFromFile (xaml, create_namescope, element_type);
+	MoonError error;
+	Value *v = CreateFromFileWithError (xaml, create_namescope, element_type, &error);
+
+	if (error.code) {
+		delete v;
+		return NULL;
+	}
+
 	DependencyObject *obj = value_to_dependency_object (v);
 	if (obj)
 		obj->ref ();
@@ -2469,10 +2476,17 @@ SL3XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_nam
 }
 
 DependencyObject *
-SL3XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
+XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
-	Value *v = CreateFromString (xaml, create_namescope, element_type, IMPORT_DEFAULT_XMLNS);
+	MoonError error;
+	Value *v = CreateFromStringWithError (xaml, create_namescope, element_type, IMPORT_DEFAULT_XMLNS, &error);
 	DependencyObject *obj = value_to_dependency_object (v);
+
+	if (error.code) {
+		delete v;
+		return NULL;
+	}
+
 	if (obj)
 		obj->ref ();
 	delete v;

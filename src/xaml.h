@@ -200,8 +200,8 @@ class XamlLoader {
 		IMPORT_DEFAULT_XMLNS = 4
 	};
 
-	virtual DependencyObject* CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type) = 0;
-	virtual DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type) = 0;
+	DependencyObject* CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type);
+	DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error) = 0;
@@ -259,9 +259,6 @@ class SL3XamlLoader : public XamlLoader {
 	XamlContext *GetContext () { return context; }
 
 	bool vm_loaded;
-
-	DependencyObject* CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type);
-	DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 
 	Value* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 	Value* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags);
