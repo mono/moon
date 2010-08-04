@@ -12,8 +12,10 @@
 
 #include <config.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "network.h"
 #include "debug.h"
@@ -47,6 +49,7 @@ HttpRequest::HttpRequest (Type::Kind type, HttpHandler *handler, HttpRequest::Op
 	notified_size = -1;
 	written_size = 0;
 	access_policy = (DownloaderAccessPolicy) -1;
+	local_file = NULL;
 }
 
 HttpRequest::~HttpRequest ()
@@ -94,6 +97,9 @@ HttpRequest::Dispose ()
 		tmpfile_fd = -1;
 	}
 
+	g_free (local_file);
+	local_file = NULL;
+
 	EventObject::Dispose ();
 }
 
@@ -116,6 +122,7 @@ HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 	Application *application;
 	const char *source_location;
 	Uri *src_uri = NULL;
+	Uri *final_uri = NULL;
 
 	VERIFY_MAIN_THREAD;
 	LOG_DOWNLOADER ("HttpRequest::Open (%s, %p = %s, %i)\n", verb, uri, uri == NULL ? NULL : uri->ToString (), policy);
@@ -161,11 +168,21 @@ HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 		src_uri->Combine (uri);
 		g_free (this->uri);
 		this->uri = src_uri->ToString ();
-		delete src_uri;
+		final_uri = src_uri;
 		LOG_DOWNLOADER ("HttpRequest::Open (%s, %p = %s, %i) Url was absolutified to '%s' using source location '%s'\n", verb, uri, uri == NULL ? NULL : uri->ToString (), policy, this->uri, source_location);
+	} else {
+		final_uri = uri;
 	}
 
-	OpenImpl ();
+	if (!strcmp (final_uri->scheme, "file")) {
+		local_file = g_strdup (final_uri->GetPath ());
+		NotifyFinalUri (this->uri);
+	}
+
+	delete src_uri;
+
+	if (local_file == NULL)
+		OpenImpl ();
 }
 
 void
@@ -191,34 +208,76 @@ HttpRequest::SendAsync ()
 	if (is_aborted || is_completed)
 		return;
 
-	/* create tmp file */
-	if ((options & DisableFileStorage) == 0) {
-		const char *dir = handler->GetDownloadDir ();
-		if (dir == NULL) {
-			Failed ("Could not create temporary download directory");
-			return;
-		}
-	
-		templ = g_build_filename (dir, "XXXXXX", NULL);
-		tmpfile_fd = g_mkstemp (templ);
+	if (local_file != NULL) {
+		LOG_DOWNLOADER ("HttpRequest::Send (): we're serving the local file: '%s' without going through a network/browser bridge\n", local_file);
+		tmpfile = g_strdup (local_file);
+		tmpfile_fd = open (local_file, O_RDONLY);
 		if (tmpfile_fd == -1) {
-			char *msg = g_strdup_printf ("Could not create temporary download file %s for url %s\n", templ, GetUri ());
+			char *msg = g_strdup_printf ("Failed to open '%s': %s\n", local_file, strerror (errno));
 			Failed (msg);
 			g_free (msg);
-			g_free (templ);
 			return;
 		}
-		tmpfile = templ;
-		LOG_DOWNLOADER ("HttpRequest::Send () uri %s is being saved to %s\n", GetUri (), tmpfile);
+
+		/* File is here and we can report start request */
+		HttpResponse *response = new HttpResponse (this);
+		response->SetStatus (200, "OK"); /* Not sure if this is expected or not */
+		Started (response);
+
+		/* TODO: Opt-in for write events unless we're serving a local file. */
+		/* Serve the file if needed */
+		if (HasHandlers (WriteEvent)) {
+			void *buffer = g_malloc (4096);
+			int n;
+			while ((n = read (tmpfile_fd, buffer, 4096)) > 0) {
+				Write (-1, buffer, n);
+			}
+			g_free (buffer);
+			if (n == -1) {
+				char *msg = g_strdup_printf ("Could not read from '%s': %s\n", local_file, strerror (errno));
+				Failed (msg);
+				g_free (msg);
+				return;
+			}
+		}
+
+		if (HasHandlers (ProgressChangedEvent)) {
+			Emit (ProgressChangedEvent, new HttpRequestProgressChangedEventArgs (1.0));
+		}
+
+		/* We're done */
+		Succeeded ();
 	} else {
-		LOG_DOWNLOADER ("HttpRequest::Send () uri %s is not being saved to disk\n", GetUri ());
+		/* create tmp file */
+		if ((options & DisableFileStorage) == 0) {
+			const char *dir = handler->GetDownloadDir ();
+			if (dir == NULL) {
+				Failed ("Could not create temporary download directory");
+				return;
+			}
+
+			templ = g_build_filename (dir, "XXXXXX", NULL);
+			tmpfile_fd = g_mkstemp (templ);
+			if (tmpfile_fd == -1) {
+				char *msg = g_strdup_printf ("Could not create temporary download file %s for url %s\n", templ, GetUri ());
+				Failed (msg);
+				g_free (msg);
+				g_free (templ);
+				return;
+			}
+			tmpfile = templ;
+			LOG_DOWNLOADER ("HttpRequest::Send () uri %s is being saved to %s\n", GetUri (), tmpfile);
+		} else {
+			LOG_DOWNLOADER ("HttpRequest::Send () uri %s is not being saved to disk\n", GetUri ());
+		}
 	}
 
 #if DEBUG
 	GetDeployment ()->AddSource (GetOriginalUri (), tmpfile == NULL ? "Not stored on disk" : tmpfile);
 #endif
 
-	SendImpl ();
+	if (local_file == NULL)
+		SendImpl ();
 }
 
 void
@@ -272,7 +331,7 @@ HttpRequest::Write (gint64 offset, void *buffer, gint32 length)
 	written_size += length;
 
 	/* write to tmp file */
-	if (tmpfile_fd != -1) {
+	if (local_file == NULL && tmpfile_fd != -1) {
 		if (offset != -1 && lseek (tmpfile_fd, offset, SEEK_SET) == -1) {
 			printf ("Moonlight: error while seeking to %" G_GINT64_FORMAT " in temporary file '%s': %s\n", offset, tmpfile, strerror (errno));
 		} else if (write (tmpfile_fd, buffer, length) != length) {
@@ -444,6 +503,15 @@ HttpRequest::SetHeader (const char *header, const char *value, bool disable_fold
 
 HttpResponse::HttpResponse (Type::Kind type, HttpRequest *request)
 	: EventObject (type)
+{
+	/* We don't actually store the HttpRequest, it'd introduce a circular ref */
+	headers = NULL;
+	response_status = -1;
+	response_status_text = NULL;
+}
+
+HttpResponse::HttpResponse (HttpRequest *request)
+	: EventObject (Type::HTTPRESPONSE)
 {
 	/* We don't actually store the HttpRequest, it'd introduce a circular ref */
 	headers = NULL;

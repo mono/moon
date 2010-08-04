@@ -193,6 +193,7 @@ private:
 	gint64 notified_size;
 	gint64 written_size;
 	DownloaderAccessPolicy access_policy;
+	char *local_file; /* the local file we're to serve */
 
 	bool CheckRedirectionPolicy (const char *url);
 	static void SendAsyncCallback (EventObject *obj);
@@ -241,6 +242,7 @@ protected:
 	virtual ~HttpResponse () {}
 
 public:
+	HttpResponse (HttpRequest *request);
 	virtual void Dispose ();
 
 	/* @GeneratePInvoke,GenerateCBinding */

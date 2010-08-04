@@ -304,6 +304,17 @@ error_dialog_response (GtkDialog *dialog, int response_id, gpointer user_data)
 	gtk_widget_destroy ((GtkWidget *) dialog);
 }
 
+static gboolean
+click_ok_button (gpointer user_data)
+{
+	LOG_OOB ("OOB install: clicking ok button for real.\n");
+	/* If we end up crashing here since the gtk dialog has been destroyed,
+	 * have in mind that it can only happen while running tests, since the user
+	 * can't install unattended */
+	gtk_dialog_response ((GtkDialog *) user_data, GTK_RESPONSE_OK);
+	return false;
+}
+
 static void
 downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data)
 {
@@ -317,8 +328,12 @@ downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data)
 	if (ea->IsSuccess ()) {
 		gtk_widget_set_sensitive (priv->ok_button, true);
 		gtk_widget_hide ((GtkWidget *) priv->progress);
-		if (priv->unattended)
-			gtk_button_clicked ((GtkButton *) priv->ok_button);
+		if (priv->unattended) {
+			LOG_OOB ("OOB install: downloader_stopped (): async clicking ok button since we're doing an unattended install\n");
+			/* We can't click directly, for some reason the click is lost when running from file:// urls
+			 * (maybe it's all happening too fast? it happens with #422). */
+			g_timeout_add (1000, click_ok_button, installer);
+		}
 	} else {
 		dialog = gtk_message_dialog_new ((GtkWindow *) installer,
 						 (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
