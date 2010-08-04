@@ -1,5 +1,8 @@
 2010-08-04  David Reveman  <davidr@novell.com>
 
+	* projection.cpp (UpdateProjection): Fix translate direction of
+	LocalOffsetY.
+
 	* uielement.cpp (DoRender): Only call Render when
 	ContextNode::GetCr return a valid cairo context.
 

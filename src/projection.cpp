@@ -695,7 +695,7 @@ PlaneProjection::UpdateProjection ()
 			     -objectHeight * GetCenterOfRotationY (),
 			     -GetCenterOfRotationZ ());
 	Matrix3D::Scale (invertY, 1.0, -1.0, 1.0);
-	Matrix3D::Translate (localOffset, localX, localY, localZ);
+	Matrix3D::Translate (localOffset, localX, -localY, localZ);
 	Matrix3D::RotateX (rotateX, radiansX);
 	Matrix3D::RotateY (rotateY, -radiansY);
 	Matrix3D::RotateZ (rotateZ, radiansZ);
