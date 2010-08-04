@@ -1128,7 +1128,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			double miny = (MAX (msivp_oy, sub_vp.y) - sub_vp.y) / v_tile_h;
 			double maxy = MIN (msivp_oy + msivp_w / msi_ar, sub_vp.y + sub_vp.width / sub_ar) - sub_vp.y;
 			MultiScaleTileSource *tile_source;
-			QTree *cache, *node;
+			QTree *tile_cache, *node;
 			guint64 x, y;
 			Uri *tile;
 			
@@ -1144,16 +1144,16 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						guint64 from_layer2 = pow2 (from_layer);
 						x = morton_x (sub_image->n) * from_layer2 / tile_width;
 						y = morton_y (sub_image->n) * from_layer2 / tile_height;
-						cache = shared_cache;
+						tile_cache = shared_cache;
 						tile_source = dzits;
 					} else {
 						tile_source = sub_image->source;
-						cache = subimage_cache;
+						tile_cache = subimage_cache;
 						x = i;
 						y = j;
 					}
 					
-					if (!(node = qtree_insert (cache, from_layer, x, y)))
+					if (!(node = qtree_insert (tile_cache, from_layer, x, y)))
 						continue;
 					
 					if (!qtree_has_image (node)) {

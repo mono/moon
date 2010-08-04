@@ -91,7 +91,7 @@ class MultiScaleImage : public MediaBase {
 	
 	Point *GetInternalViewportOrigin ();
 	void SetInternalViewportOrigin (Point* p);
-
+	
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
 	
