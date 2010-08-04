@@ -699,33 +699,34 @@ Uri::ToString (UriToStringFlags flags) const
 	char *uri;
 	
 	string = g_string_new ("");
-	
-	if (this->host) {
+
+	if (this->scheme) {
 		g_string_append (string, this->scheme);
 		g_string_append (string, "://");
+	}
+
+	if (this->user) {
+		append_url_encoded (string, this->user, ":;@/");
 		
-		if (this->user) {
-			append_url_encoded (string, this->user, ":;@/");
-			
-			if (this->auth) {
-				g_string_append (string, ";auth=");
-				append_url_encoded (string, this->auth, ":@/");
-			}
-			
-			if (this->passwd && !(flags & UriHidePasswd)) {
-				g_string_append_c (string, ':');
-				append_url_encoded (string, this->passwd, "@/");
-			}
-			
-			g_string_append_c (string, '@');
+		if (this->auth) {
+			g_string_append (string, ";auth=");
+			append_url_encoded (string, this->auth, ":@/");
 		}
 		
+		if (this->passwd && !(flags & UriHidePasswd)) {
+			g_string_append_c (string, ':');
+			append_url_encoded (string, this->passwd, "@/");
+		}
+		
+		g_string_append_c (string, '@');
+	}
+
+	if (this->host)
 		g_string_append (string, this->host);
 		
-		if (this->port > 0)
-			g_string_append_printf (string, ":%d", this->port);
-	}
-	
+	if (this->port > 0)
+		g_string_append_printf (string, ":%d", this->port);
+
 	if (this->path) {
 		if (this->host && *this->path != '/')
 			g_string_append_c (string, '/');
