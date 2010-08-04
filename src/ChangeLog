@@ -1,3 +1,8 @@
+2010-08-04  David Reveman  <davidr@novell.com>
+
+	* uielement.cpp (DoRender): Only call Render when
+	ContextNode::GetCr return a valid cairo context.
+
 2010-08-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp (UpdateIdleStatus): Renamed from

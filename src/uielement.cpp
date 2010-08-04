@@ -1232,7 +1232,8 @@ UIElement::DoRender (Stack *ctx, Region *parent_region)
 
 	PreRender (ctx, region, false);
 
-	Render (((ContextNode *) ctx->Top ())->GetCr (), region);
+	if (((ContextNode *) ctx->Top ())->GetCr ())
+		Render (((ContextNode *) ctx->Top ())->GetCr (), region);
 
 	PostRender (ctx, region, false);
 
