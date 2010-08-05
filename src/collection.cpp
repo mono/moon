@@ -24,6 +24,7 @@
 #include "error.h"
 #include "deployment.h"
 #include "multiscalesubimage.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -197,7 +198,7 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 		index = count;
 	
 	added = new Value (*value);
-	
+
 	if (AddedToCollection (added, error)) {
 		g_ptr_array_insert (array, index, added);
 	
@@ -207,8 +208,13 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 
 		EmitChanged (CollectionChangedActionAdd, added_copy, NULL, index);
 
+		if (addStrongRef && added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+			added->AsDependencyObject()->unref();
+			added->SetNeedUnref (false);
+		}
+
 		delete added_copy;
-	
+
 		return true;
 	}
 	else {
@@ -331,7 +337,12 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 		RemovedFromCollection (removed);
 	
 		EmitChanged (CollectionChangedActionReplace, added, removed, index);
-	
+
+		if (addStrongRef && added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+			added->AsDependencyObject()->unref();
+			added->SetNeedUnref (false);
+		}
+
 		delete removed;
 
 		return true;
@@ -344,8 +355,11 @@ void
 Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
 {
 #if EVENT_ARG_REUSE
+	if (!HasHandlers (Collection::ChangedEvent))
+		return;
+
 	if (!changedEventArgs)
-		changedEventArgs = new CollectionChangedEventArgs ();
+		changedEventArgs = MoonUnmanagedFactory::CreateCollectionChangedEventArgs ();
 
 	changedEventArgs->SetChangedAction (action);
 	changedEventArgs->SetNewItem (new_value);
@@ -355,8 +369,12 @@ Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value
 	changedEventArgs->ref ();
 
 	Emit (Collection::ChangedEvent, changedEventArgs);
+
+	changedEventArgs->SetNewItem (NULL);
+	changedEventArgs->SetOldItem (NULL);
 #else
-	Emit (Collection::ChangedEvent, new CollectionChangedEventArgs (action, new_value, old_value, index));
+	if (HasHandlers (Collection::ChangedEvent))
+		Emit (Collection::ChangedEvent, new CollectionChangedEventArgs (action, new_value, old_value, index));
 #endif
 }
 
@@ -364,6 +382,9 @@ void
 Collection::EmitItemChanged (DependencyObject *object, DependencyProperty *property, Value *newValue, Value *oldValue)
 {
 #if EVENT_ARG_REUSE
+	if (!HasHandlers (Collection::ItemChangedEvent))
+		return;
+
 	if (!itemChangedEventArgs)
 		itemChangedEventArgs = new CollectionItemChangedEventArgs ();
 
@@ -374,8 +395,14 @@ Collection::EmitItemChanged (DependencyObject *object, DependencyProperty *prope
 
 	itemChangedEventArgs->ref ();
 	Emit (Collection::ItemChangedEvent, itemChangedEventArgs);
+
+	itemChangedEventArgs->SetCollectionItem (NULL);
+	itemChangedEventArgs->SetProperty (NULL);
+	itemChangedEventArgs->SetOldValue (NULL);
+	itemChangedEventArgs->SetNewValue (NULL);
 #else
-	Emit (Collection::ItemChangedEvent, new CollectionItemChangedEventArgs (object, property, oldValue, newValue));
+	if (HasHandlers (Collection::ItemChangedEvent))
+		Emit (Collection::ItemChangedEvent, new CollectionItemChangedEventArgs (object, property, oldValue, newValue));
 #endif
 }
 
@@ -437,10 +464,12 @@ void
 DependencyObjectCollection::RemovedFromCollection (Value *value)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
-	
-	obj->RemovePropertyChangeListener (this);
-	obj->SetParent (NULL, NULL);
-	obj->SetIsAttached (false);
+
+	if (obj && !GetDeployment()->IsShuttingDown ()) {
+		obj->RemovePropertyChangeListener (this);
+		obj->SetParent (NULL, NULL);
+		obj->SetIsAttached (false);
+	}
 	
 	Collection::RemovedFromCollection (value);
 }
@@ -456,7 +485,8 @@ DependencyObjectCollection::OnIsAttachedChanged (bool attached)
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		obj = value->AsDependencyObject ();
-		obj->SetIsAttached (attached);
+		if (obj)
+			obj->SetIsAttached (attached);
 	}
 }
 
@@ -472,11 +502,12 @@ DependencyObjectCollection::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	DependencyObject *obj;
 	Value *value;
 	
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	Types *types = GetDeployment()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		obj = value->AsDependencyObject (types);
-		obj->UnregisterAllNamesRootedAt (from_ns);
+		if (obj)
+			obj->UnregisterAllNamesRootedAt (from_ns);
 	}
 	
 	Collection::UnregisterAllNamesRootedAt (from_ns);
@@ -488,14 +519,15 @@ DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonErro
 	DependencyObject *obj;
 	Value *value;
 	
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	Types *types = GetDeployment()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) {
 		if (error->number)
 			break;
 
 		value = (Value *) array->pdata[i];
 		obj = value->AsDependencyObject (types);
-		obj->RegisterAllNamesRootedAt (to_ns, error);
+		if (obj)
+			obj->RegisterAllNamesRootedAt (to_ns, error);
 	}
 	
 	Collection::RegisterAllNamesRootedAt (to_ns, error);
@@ -522,7 +554,7 @@ InlineCollection::Equals (InlineCollection *inlines)
 	if (inlines->array->len != array->len)
 		return false;
 
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	Types *types = GetDeployment()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) {
 		run1 = ((Value *) inlines->array->pdata[i])->AsInline (types);
 		run0 = ((Value *) array->pdata[i])->AsInline (types);
@@ -577,7 +609,7 @@ UIElementCollection::ResortByZIndex ()
 	if (array->len == 0)
 		return;
 	
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	Types *types = GetDeployment()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) 
 		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsUIElement (types);
 	
@@ -738,7 +770,7 @@ MultiScaleSubImageCollection::ResortByZIndex ()
 	if (array->len == 0)
 		return;
 	
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	Types *types = GetDeployment()->GetTypes ();
 	for (guint i = 0; i < array->len; i++)
 		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsMultiScaleSubImage (types);
 	

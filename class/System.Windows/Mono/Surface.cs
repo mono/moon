@@ -38,7 +38,7 @@ namespace Mono
 	/*
 	 *  The managed equivalent of the unmanaged Surface
 	 */
-	internal sealed partial class Surface : INativeEventObjectWrapper
+	internal sealed partial class Surface : INativeEventObjectWrapper, IRefContainer
 	{
 		private IntPtr native;
 		bool free_mapping;
@@ -60,6 +60,11 @@ namespace Mono
 		public Surface (IntPtr native, bool dropref)
 		{
 			this.Native = native;
+
+			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
+
+			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
+
 			if (dropref)
 				NativeMethods.event_object_unref (native);
 		}
@@ -73,9 +78,59 @@ namespace Mono
 			get { return Native; }
 			set { Native = value; }
 		}
+
+		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
+
+		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		{
+			if (strongRefs.ContainsKey (referent))
+				return;
+
+			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			if (o != null) {
+#if DEBUG_REF
+				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+#endif
+				strongRefs.Add (referent, o);
+			}
+		}
+
+		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		{
+#if DEBUG_REF
+			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+#endif
+			strongRefs.Remove (referent);
+		}
+
+#if HEAPVIZ
+		System.Collections.ICollection IRefContainer.GetManagedRefs ()
+		{
+			List<HeapRef> refs = new List<HeapRef> ();
+			foreach (IntPtr nativeref in strongRefs.Keys)
+				refs.Add (new HeapRef (strongRefs[nativeref]));
+				
+			return refs;
+		}
+#endif
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
+		}
 		
 		internal void Free ()
 		{
+			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
+
 			if (free_mapping) {
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);

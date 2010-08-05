@@ -36,7 +36,9 @@ public:
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Timeline ();
-	
+
+	virtual void Dispose ();
+
 	void SetAutoReverse (bool autoreverse);
 	bool GetAutoReverse ();
 	
@@ -78,7 +80,7 @@ public:
 	DependencyObject* GetManualTarget () { return manual_target; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetManualTarget (DependencyObject *o) { manual_target = o; }
+	void SetManualTarget (DependencyObject *o);
 
 	// events
 	const static int CompletedEvent;
@@ -109,7 +111,7 @@ class TimelineCollection : public DependencyObjectCollection {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineCollection ();
-	
+
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 
 protected:
@@ -170,7 +172,7 @@ public:
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineMarker ();
-	
+
 	//
 	// Property Accessors
 	//
@@ -192,9 +194,6 @@ protected:
 /* @ManagedEvents=Manual */
 class DispatcherTimer : public Timeline {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */
-	DispatcherTimer ();
-
 	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
 	void Start ();
 
@@ -209,7 +208,15 @@ public:
 	virtual void TeardownClock ();
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */
+	DispatcherTimer ();
+
+	virtual ~DispatcherTimer() {}
+
 	virtual void OnClockCompleted ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	bool stopped;

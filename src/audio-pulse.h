@@ -60,6 +60,7 @@ class PulseSource: public AudioSource {
 	virtual void CloseInternal ();
 
  public:
+	/* @SkipFactories */
 	PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 };
 

@@ -27,8 +27,6 @@ class XamlContext;
 /* @Namespace=System.Windows */
 class FrameworkTemplate : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	FrameworkTemplate ();
 	virtual void Dispose ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -39,11 +37,17 @@ public:
 	void SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *buffer);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	FrameworkTemplate ();
+
 	virtual ~FrameworkTemplate () {}
 
 	char *xaml_buffer;
 	parse_template_func *parse_template;
 	Value *parse_template_data;
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	EVENTHANDLER (FrameworkTemplate, ShuttingDownEvent, Deployment, EventArgs);
@@ -58,14 +62,17 @@ class ControlTemplate : public FrameworkTemplate {
 public:
 	/* @PropertyType=ManagedTypeInfo,AutoCreator=ControlTypeCreator,GenerateAccessors,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
 	const static int TargetTypeProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ControlTemplate ();
 
 	void SetTargetType (ManagedTypeInfo *info);
 	ManagedTypeInfo *GetTargetType ();
+
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ControlTemplate ();
 	virtual ~ControlTemplate () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 //
@@ -74,13 +81,16 @@ protected:
 /* @Namespace=System.Windows */
 class DataTemplate : public FrameworkTemplate {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DataTemplate ();
-
 	/* This method always returns a reffed object */
 	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DataTemplate ();
+
 	virtual ~DataTemplate () {}
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 };

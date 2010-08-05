@@ -28,6 +28,7 @@ G_END_DECLS
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/appdomain.h>
 
+#include "factory.h"
 #include "downloader.h"
 #include "deployment.h"
 #include "timemanager.h"
@@ -180,7 +181,7 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		Deployment::desktop_deployment = new Deployment (root_domain);
 		Deployment::SetCurrent (Deployment::desktop_deployment);
 
-		Application *desktop_app = new Application ();
+		Application *desktop_app = MoonUnmanagedFactory::CreateApplication ();
 		desktop_deployment->SetCurrentApplication (desktop_app);
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	}
@@ -510,6 +511,32 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
 }
 
+void
+Deployment::EnsureManagedPeer ()
+{
+	EnsureManagedPeer (this);
+}
+
+void
+Deployment::EnsureManagedPeer (EventObject *forObj)
+{
+	MonoObject *loader;
+	MonoObject *exc = NULL;
+	
+	if (moon_ensure_managed_peer == NULL)
+		return;
+
+	void *params [1];
+
+	Deployment::SetCurrent (this);
+
+	params [0] = &forObj;
+	loader = mono_runtime_invoke (moon_ensure_managed_peer, NULL, params, &exc);
+
+	if (exc)
+		surface->EmitError (ManagedExceptionToErrorEventArgs (exc));
+}
+
 gpointer
 Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase)
 {
@@ -593,11 +620,12 @@ Deployment::InitializeAppDomain ()
 		}
 		
 		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
+		moon_ensure_managed_peer  = MonoGetMethodFromName (app_launcher, "EnsureManagedPeer", -1);
 		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 4);
 		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
 		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
-		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
+		if (moon_load_xaml == NULL || moon_ensure_managed_peer == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
 			g_warning ("Lookup of ApplicationLauncher methods failed.");
 			result = false;
 		}
@@ -783,6 +811,9 @@ Deployment::~Deployment()
 	printf ("at Deployment::dtor time, there were %lld property lookups\n", provider_property_lookups);
 #endif
 
+	if (this == Deployment::GetCurrent())
+		Deployment::SetCurrent(NULL);
+
 	deployment_count--;
 }
 
@@ -903,7 +934,7 @@ void
 Deployment::Reinitialize ()
 {
 	http_requests.Clear (true);
-	AssemblyPartCollection * parts = new AssemblyPartCollection ();
+	AssemblyPartCollection * parts = MoonUnmanagedFactory::CreateAssemblyPartCollection ();
 	SetParts (parts);
 	parts->unref ();
 #if DEBUG
@@ -919,16 +950,34 @@ Deployment::IsShuttingDown ()
 	return is_shutting_down;
 }
 
+bool
+Deployment::IsSafeToDie ()
+{
+#if OBJECT_TRACKING
+	bool ok;
+
+	pthread_mutex_lock (&objects_alive_mutex);
+
+	ok = !objects_alive || g_hash_table_size (objects_alive) == 0;
+
+	pthread_mutex_unlock (&objects_alive_mutex);
+
+	return ok;
+#else
+	return true;
+#endif
+}
+
 void
 Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
-	
+
+	Deployment::SetCurrent (this);
+
 	surface_mutex.Lock ();
-	if (surface) {
-		surface->unref ();
-		surface = NULL;
-	}
+	if (surface)
+		MOON_CLEAR_FIELD_NAMED (surface, "Surface");
 	surface_mutex.Unlock ();
 
 #if EVENT_ARG_REUSE
@@ -945,12 +994,12 @@ Deployment::Dispose ()
 		g_hash_table_destroy (interned_strings);
 	interned_strings = NULL;
 
-	DependencyObject::Dispose ();
 #if OBJECT_TRACKING
 	printf ("Deployment disposing, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
 	if (objects_created != objects_destroyed)
 		ReportLeaks ();
 #endif
+	DependencyObject::Dispose ();
 }
 
 void
@@ -1014,8 +1063,7 @@ Deployment::Shutdown ()
 	
 	if (current_app != NULL) {
 		current_app->Dispose ();
-		current_app->unref ();
-		current_app = NULL;
+		MOON_CLEAR_FIELD_NAMED (current_app, "CurrentApplication");
 	}
 
 	StringNode *node;
@@ -1209,7 +1257,7 @@ Deployment::ShutdownManaged ()
 		
 		/* Clear out the domain ptr to detect any illegal uses asap */
 		/* CHECK: do we need to call mono_domain_free? */
-		domain = NULL;
+		//domain = NULL;
 
 		if (exc) {
 			shutdown_state = ShutdownFailed;
@@ -1287,9 +1335,10 @@ Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer cl
 // 		lclosure->obj->OnLoaded ();
 
 	if (lclosure->handler) {
-		RoutedEventArgs *rea = new RoutedEventArgs (lclosure->obj);
-		lclosure->handler (lclosure->obj, rea, lclosure->handler_data);
-		rea->unref ();
+		// RoutedEventArgs *rea = MoonUnmanagedFactory::CreateRoutedEventArgs ();
+		// rea->SetSource (lclosure->obj);
+		lclosure->handler (lclosure->obj, /*rea*/NULL, lclosure->handler_data);
+		// rea->unref ();
 	}
 	
 	deployment->RemoveHandler (Deployment::LoadedEvent, proxy_loaded_event, lclosure);
@@ -1386,13 +1435,8 @@ Deployment::SetCurrentApplication (Application* value)
 	if (current_app == value)
 		return;
 
-	if (current_app)
-		current_app->unref ();
-
-	current_app = value;
-
-	if (current_app)
-	  current_app->ref ();
+	MOON_CLEAR_FIELD_NAMED (current_app, "CurrentApplication");
+	MOON_SET_FIELD_NAMED (current_app, "CurrentApplication", value);
 }
 
 void
@@ -1517,8 +1561,8 @@ Deployment::DrainUnrefs (gpointer context)
 	Deployment::SetCurrent (deployment);
 	deployment->DrainUnrefs ();
 	deployment->unref ();
-	Deployment::SetCurrent (NULL);
-	return false;
+	//Deployment::SetCurrent (NULL);
+	return FALSE;
 }
 
 void

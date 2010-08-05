@@ -22,6 +22,7 @@
 #include "utils.h"
 #include "ptr.h"
 #include "deployment.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -123,7 +124,7 @@ Shape::GetGeometryTransform ()
 {
 	Matrix *matrix = new Matrix (&stretch_transform);
 	
-	MatrixTransform *transform = new MatrixTransform ();
+	MatrixTransform *transform = MoonUnmanagedFactory::CreateMatrixTransform ();
 
 	transform->SetValue (MatrixTransform::MatrixProperty, matrix);
 	matrix->unref ();
@@ -862,6 +863,11 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InvalidateStrokeBounds ();
                } else
 			InvalidateSurfaceCache ();
+
+		if (this->fill)
+			MOON_CLEAR_FIELD_NAMED (this->stroke, "cachedStroke");
+		if (new_stroke)
+			MOON_SET_FIELD_NAMED (this->stroke, "cachedStroke", new_stroke);
 		
 		stroke = new_stroke;
 	} else if (args->GetId () == Shape::FillProperty) {
@@ -871,8 +877,12 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InvalidateFillBounds ();
 		} else
 			InvalidateSurfaceCache ();
-			
-		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
+
+		if (this->fill)
+			MOON_CLEAR_FIELD_NAMED (this->fill, "cachedFill");
+		if (new_fill)
+			MOON_SET_FIELD_NAMED (this->fill, "cachedFill", new_fill);
+
 	} else if (args->GetId () == Shape::StrokeThicknessProperty) {
 		// do we invalidate the path here for Type::RECT and Type::ELLIPSE 
 		// in case they degenerate?  Or do we need it for line caps too

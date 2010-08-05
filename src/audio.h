@@ -109,6 +109,7 @@ class AudioSource : public EventObject {
 #endif
 
  protected:
+	/* @SkipFactories */
 	AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 	virtual ~AudioSource ();
 		

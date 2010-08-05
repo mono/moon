@@ -37,6 +37,7 @@
 #include "deployment.h"
 #include "timesource.h"
 #include "pipeline-mp4.h"
+#include "factory.h"
 
 
 extern const char moonlight_logo [];
@@ -1000,8 +1001,8 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 			}
 			char *msg = g_strdup_printf ("No demuxers registered to handle the media source '%s'.", source_name);
 			ReportErrorOccurred (new ErrorEventArgs (MediaError,
-								 MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT"),
-								 MEDIA_UNKNOWN_CODEC, msg));
+											 MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT"),
+											 MEDIA_UNKNOWN_CODEC, msg));
 			g_free (msg);
 			g_free (source_name);
 			return false;
@@ -1102,7 +1103,7 @@ Media::SelectDecodersAsync ()
 		
 		if (decoder == NULL) {
 			ReportErrorOccurred (new ErrorEventArgs (MediaError,
-								 MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT")));
+											 MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT")));
 			return false;
 		}
 		

@@ -25,6 +25,7 @@
 #include "bitmapimage.h"
 #include "uri.h"
 #include "capture.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -63,9 +64,9 @@ brush_matrix_invert (cairo_matrix_t *matrix)
 //
 
 Value *
-Brush::CreateDefaultMatrixTransform (Type::Kind type, DependencyProperty *property)
+Brush::CreateDefaultMatrixTransform (Type::Kind type, DependencyProperty *property, DependencyObject *forObj)
 {
-	return Value::CreateUnrefPtr (new MatrixTransform ());
+	return Value::CreateUnrefPtr (MoonUnmanagedFactory::CreateMatrixTransform ());
 }
 
 void
@@ -142,6 +143,8 @@ SolidColorBrush::SolidColorBrush (const char *color)
 	Color *c = color_from_str (color);
 	SetColor (c);
 	delete c;
+
+	EnsureManagedPeer ();
 }
 
 void
@@ -225,7 +228,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, const Rect &area, bool s
 	GradientStop *outofbounds_stop = NULL;	//the smallest stop > 1
 	double out_offset = 0.0;		//idem
 
-	int children_count = children->GetCount();
+	int children_count = children ? children->GetCount() : 0;
 	for ( ; index < children_count; index++) {
 		stop = children->GetValueAt (index)->AsGradientStop ();
 		offset = stop->GetOffset ();
@@ -553,9 +556,9 @@ ImageBrush::Dispose ()
 }
 
 Value *
-ImageBrush::CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property)
+ImageBrush::CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
-	return Value::CreateUnrefPtr (new BitmapImage ());
+	return Value::CreateUnrefPtr (MoonUnmanagedFactory::CreateBitmapImage ());
 }
 
 void
@@ -637,7 +640,7 @@ ImageBrush::SetSource (Downloader *downloader, const char *PartName)
 	BitmapImage *source = (BitmapImage *) GetImageSource ();
 
 	if (source == NULL) {
-		source = new BitmapImage ();
+		source = MoonUnmanagedFactory::CreateBitmapImage ();
 		SetImageSource (source);
 	}
 
@@ -966,12 +969,12 @@ VideoBrush::~VideoBrush ()
 		if (source->Is (Type::MEDIAELEMENT)) {
 			source->RemovePropertyChangeListener (this);
 			source->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
-			source->unref ();
+			MOON_CLEAR_FIELD_NAMED (source, "Source");
 		}
 		else /* Is (Type::CAPTURESOURCE) */ {
 			source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
 			source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
-			source->unref ();
+			MOON_CLEAR_FIELD_NAMED (source, "Source");
 		}
 	}
 
@@ -1082,8 +1085,7 @@ VideoBrush::SetupBrushFromMediaElement (cairo_t *cr, const Rect &area)
 			media = (MediaElement *) obj;
 			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			mplayer = media->GetMediaPlayer ();
-			obj->ref ();
-			source = obj;
+			MOON_SET_FIELD_NAMED (source, "Source", obj);
 		} else if (obj == NULL) {
 			printf ("could not find element `%s'\n", name);
 		} else {
@@ -1143,16 +1145,14 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
 				source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
 			}
-
-			source->unref ();
-			source = NULL;
+			
+			MOON_CLEAR_FIELD_NAMED (source, "Source");
 		}
 		
-		if (name && (obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
-			obj->AddPropertyChangeListener (this);
-			source = obj;
+		if (name && *name && (obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
+			MOON_SET_FIELD_NAMED (source, "Source", obj);
+			source->AddPropertyChangeListener (this);
 			source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
-			obj->ref ();
 		} else {
 			// Note: This may have failed because the parser hasn't set the
 			// toplevel element yet, we'll try again in SetupBrush()
@@ -1191,27 +1191,25 @@ VideoBrush::SetSource (DependencyObject *source)
 			this->source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
 		}
 
-		this->source->unref ();
-		this->source = NULL;
+		MOON_CLEAR_FIELD_NAMED (this->source, "Source");
 	}
 
 	if (source) {
 		if (source->Is (Type::MEDIAELEMENT)) {
-			source->ref ();
-			source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
-
 			SetSourceName ("");
 
-			this->source = source;
+			MOON_SET_FIELD_NAMED (this->source, "Source", source);
+
+			this->source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		}
 		else if (source->Is (Type::CAPTURESOURCE)) {
-			source->ref ();
-			source->AddHandler (CaptureSource::SampleReadyEvent, update_brush, this);
-			source->AddHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
 
 			SetSourceName ("");
 
-			this->source = source;
+			MOON_SET_FIELD_NAMED (this->source, "Source", source);
+
+			this->source->AddHandler (CaptureSource::SampleReadyEvent, update_brush, this);
+			this->source->AddHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
 		}
 		else {
 			g_warning ("invalid object of type '%s' passed to VideoBrush::SetSource", source->GetTypeName());

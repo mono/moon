@@ -123,66 +123,69 @@ public:
 	// does a deep copy of DependencyObjects.
 	static Value* Clone (Value *v, Types *types = NULL);
 
-	bool GetIsManaged ();
+	bool GetIsManaged () const;
 
 	static bool IsNull (Value *value) { return value == NULL ? true : value->GetIsNull (); }
-	bool GetIsNull ();
+	bool GetIsNull () const;
 	void SetIsNull (bool isNull);
+
+	bool GetNeedUnref () const;
+	void SetNeedUnref (bool needUnref);
 
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;
 
 	Value& operator= (const Value& other);
 	
-	bool		Is (Deployment *deployment, Type::Kind type) { return Type::IsSubclassOf (deployment, k, type); }
+	bool		Is (Deployment *deployment, Type::Kind type) const { return Type::IsSubclassOf (deployment, k, type); }
 
-	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
-	gunichar	AsChar ()       { checked_get_exact (Type::CHAR, 0, u.c); }
-	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
-	gint64		AsEnum (Types *types = NULL) { checked_get_enum (); }
-	float 		AsFloat ()	{ checked_get_exact (Type::FLOAT, 0.0, u.f); }
-	guint64		AsUInt64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
-	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
-	TimeSpan	AsTimeSpan ()	{ checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
-	guint32		AsUInt32 ()	{ checked_get_exact (Type::UINT32, 0, u.ui32); }
-	gint32		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
-	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
-	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
-	Uri*		AsUri ()	{ checked_get_exact (Type::URI, NULL, u.uri); }
-	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
-	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
-	FontFamily*	AsFontFamily ()	{ checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
-	FontWeight*	AsFontWeight ()	{ checked_get_exact (Type::FONTWEIGHT, NULL, u.fontweight); }
-	FontStyle*	AsFontStyle ()	{ checked_get_exact (Type::FONTSTYLE, NULL, u.fontstyle); }
-	FontStretch*	AsFontStretch() { checked_get_exact (Type::FONTSTRETCH, NULL, u.fontstretch); }
-	FontSource*	AsFontSource ()	{ checked_get_exact (Type::FONTSOURCE, NULL, u.fontsource); }
-	PropertyPath*	AsPropertyPath ()	{ checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
-	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
-	DependencyProperty*		AsDependencyProperty ()	{ checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
+	bool		AsBool () const	            { checked_get_exact (Type::BOOL, false, (bool)u.i32); }
+	gunichar	AsChar () const             { checked_get_exact (Type::CHAR, 0, u.c); }
+	double 		AsDouble () const           { checked_get_exact (Type::DOUBLE, 0.0, u.d); }
+	gint64		AsEnum (Types *types = NULL) const { checked_get_enum (); }
+	float 		AsFloat () const	    { checked_get_exact (Type::FLOAT, 0.0, u.f); }
+	guint64		AsUInt64 () const	    { checked_get_exact (Type::UINT64, 0, u.ui64); }
+	gint64		AsInt64 () const	    { checked_get_exact (Type::INT64, 0, u.i64); }
+	TimeSpan	AsTimeSpan () const	    { checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
+	guint32		AsUInt32 () const	    { checked_get_exact (Type::UINT32, 0, u.ui32); }
+	gint32		AsInt32 () const	    { checked_get_exact (Type::INT32, 0, u.i32); }
+	Color*		AsColor () const	    { checked_get_exact (Type::COLOR, NULL, u.color); }
+	Point*		AsPoint () const	    { checked_get_exact (Type::POINT, NULL, u.point); }
+	Uri*		AsUri () const	            { checked_get_exact (Type::URI, NULL, u.uri); }
+	Rect*		AsRect () const	            { checked_get_exact (Type::RECT, NULL, u.rect); }
+	Size*		AsSize () const	            { checked_get_exact (Type::SIZE, NULL, u.size); }
+	FontFamily*	AsFontFamily () const	    { checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
+	FontWeight*	AsFontWeight ()	const       { checked_get_exact (Type::FONTWEIGHT, NULL, u.fontweight); }
+	FontStyle*	AsFontStyle () const	    { checked_get_exact (Type::FONTSTYLE, NULL, u.fontstyle); }
+	FontStretch*	AsFontStretch() const       { checked_get_exact (Type::FONTSTRETCH, NULL, u.fontstretch); }
+	FontSource*	AsFontSource ()	const       { checked_get_exact (Type::FONTSOURCE, NULL, u.fontsource); }
+	PropertyPath*	AsPropertyPath () const	    { checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
+	char*		AsString () const	    { checked_get_exact (Type::STRING, NULL, u.s); }
+	DependencyProperty* AsDependencyProperty () const { checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
 	
-	void *		AsManagedObject () { g_return_val_if_fail (GetIsManaged (), NULL); return u.managed_object; }
-	void *		AsNPObj () { checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
+	void *		AsManagedObject () const    { g_return_val_if_fail (GetIsManaged (), NULL); return u.managed_object; }
+	void *		AsNPObj () const            { checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
 	
-	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
-	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
-	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
-	GridLength*     AsGridLength () { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
-	Thickness*      AsThickness () { checked_get_exact (Type::THICKNESS, NULL, u.thickness); }
-	CornerRadius*   AsCornerRadius () { checked_get_exact (Type::CORNERRADIUS, NULL, u.corner); }
-	AudioFormat*    AsAudioFormat () { checked_get_exact (Type::AUDIOFORMAT, NULL, u.audioformat); }
-	VideoFormat*    AsVideoFormat () { checked_get_exact (Type::VIDEOFORMAT, NULL, u.videoformat); }
-	ManagedTypeInfo* AsManagedTypeInfo () { checked_get_exact (Type::MANAGEDTYPEINFO, NULL, u.type_info); }
+	RepeatBehavior*	AsRepeatBehavior () const   { checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
+	Duration*	AsDuration () const	    { checked_get_exact (Type::DURATION, NULL, u.duration); }
+	KeyTime*	AsKeyTime () const	    { checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
+	GridLength*     AsGridLength () const       { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
+	Thickness*      AsThickness () const        { checked_get_exact (Type::THICKNESS, NULL, u.thickness); }
+	CornerRadius*   AsCornerRadius () const     { checked_get_exact (Type::CORNERRADIUS, NULL, u.corner); }
+	AudioFormat*    AsAudioFormat () const      { checked_get_exact (Type::AUDIOFORMAT, NULL, u.audioformat); }
+	VideoFormat*    AsVideoFormat () const      { checked_get_exact (Type::VIDEOFORMAT, NULL, u.videoformat); }
+	ManagedTypeInfo* AsManagedTypeInfo () const { checked_get_exact (Type::MANAGEDTYPEINFO, NULL, u.type_info); }
 	/* nullable primitives (all but bool) */
-	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
-	guint64*	AsNullableUint64 ()	{ checked_get_exact (Type::UINT64, NULL, &u.ui64); }
-	gint64* 	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
-	gint32* 	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
+	double*		AsNullableDouble ()         { checked_get_exact (Type::DOUBLE, NULL, &u.d); }
+	guint64*	AsNullableUint64 ()         { checked_get_exact (Type::UINT64, NULL, &u.ui64); }
+	gint64* 	AsNullableInt64 ()          { checked_get_exact (Type::INT64, NULL, &u.i64); }
+	gint32* 	AsNullableInt32 ()          { checked_get_exact (Type::INT32, NULL, &u.i32); }
 	
 /*DO_AS*/
 	
-	char *ToString ();
+	char *ToString () const;
 	
-  	Type::Kind GetKind ();
+  	Type::Kind GetKind () const;
 	
 	void FreeValue ();
 	

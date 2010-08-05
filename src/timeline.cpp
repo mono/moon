@@ -44,6 +44,14 @@ Timeline::~Timeline ()
 {
 }
 
+void
+Timeline::Dispose ()
+{
+	//	printf ("timeline %s for clock '%s' being destroyed...\n", GetTypeName(), clock ? clock->GetName() : "null clock");
+	TeardownClock ();
+	DependencyObject::Dispose ();
+}
+
 Clock*
 Timeline::AllocateClock ()
 {
@@ -137,6 +145,15 @@ Timeline::GetBeginTime ()
 }
 
 void
+Timeline::SetManualTarget (DependencyObject *o)
+{
+	if (manual_target)
+		MOON_CLEAR_FIELD_NAMED (manual_target, "ManualTarget");
+	if (o)
+		MOON_SET_FIELD_NAMED (manual_target, "ManualTarget", o);
+}
+
+void
 Timeline::AttachCompletedHandler ()
 {
 	clock->AddHandler (Clock::CompletedEvent, clock_completed, this);
@@ -171,7 +188,6 @@ Timeline::TeardownClock ()
 		if (group)
 			group->RemoveChild (c);
 		clock = NULL;
-		c->unref ();
 	}
 }
 
@@ -351,12 +367,18 @@ DispatcherTimer::Start ()
 		clock->SetRootParentTime (surface->GetTimeManager()->GetCurrentTime());
 	} else {
 		AllocateClock ();
+
 		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
 		clock->SetName (name);
 
 		surface->GetTimeManager()->AddClock (clock);
 
 		clock->BeginOnTick ();
+
+		// we unref ourselves when we're stopped, but we have
+		// to force ourselves to remain alive while the timer
+		// is active
+		ref ();
 	}
 }
 
@@ -367,8 +389,10 @@ DispatcherTimer::Stop ()
 		clock->Stop ();
 	stopped = true;
 	started = false;
-	if (!ontick)
+	if (!ontick) {
 		Timeline::TeardownClock ();
+		unref_delayed ();
+	}
 }
 
 void
@@ -401,8 +425,10 @@ DispatcherTimer::OnClockCompleted ()
 	*/
 	if (!stopped && !started)
 		Restart ();
-	else if (stopped && !started)
+	else if (stopped && !started) {
 		Timeline::TeardownClock ();
+		unref_delayed ();
+	}
 }
 
 Duration
@@ -417,6 +443,7 @@ DispatcherTimer::TeardownClock ()
 	if (clock) {
 		Stop ();
 		Timeline::TeardownClock ();
+		unref_delayed ();
 	}
 }
 

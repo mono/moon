@@ -15,12 +15,52 @@
 //#define PROPERTY_LOOKUP_DIAGNOSTICS 1
 
 #include <glib.h>
+#include <stdio.h>
 
 #include "provider.h"
 #include "dependencyproperty.h"
 #include "value.h"
 #include "enums.h"
 #include "list.h"
+
+#define MOON_SET_FIELD(f,v) MOON_SET_FIELD_NAMED(f,"",v)
+#define MOON_SET_FIELD_NO_WEAKREF(f,v) MOON_SET_FIELD_NAMED_NO_WEAKREF(f,"",v)
+#define MOON_SET_FIELD_UNREF(f,v) MOON_SET_FIELD_NAMED_UNREF(f,"",v)
+#define MOON_CLEAR_FIELD(f) MOON_CLEAR_FIELD_NAMED(f,"")
+
+
+#define MOON_SET_FIELD_NAMED(f,n,v) G_STMT_START {			\
+		f = v;							\
+		if (f && addStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) { \
+			addStrongRef (this, f, n);			\
+			if (!weakRefs) weakRefs = new WeakRefManager (this); \
+			weakRefs->Add ((EventObject**)&f, n);		\
+		}							\
+	} G_STMT_END
+
+#define MOON_SET_FIELD_NAMED_NO_WEAKREF(f,n,v) G_STMT_START {		\
+		f = v;							\
+		if (f && addStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) \
+			addStrongRef (this, f, n);			\
+	} G_STMT_END
+
+#define MOON_SET_FIELD_NAMED_UNREF(f,n,v) G_STMT_START {		\
+		f = v;							\
+		if (f && addStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) { \
+			addStrongRef (this, f, n);			\
+			if (!weakRefs) weakRefs = new WeakRefManager (this); \
+			weakRefs->Add ((EventObject**)&f, n);		\
+			f->unref ();					\
+		}							\
+	} G_STMT_END
+
+#define MOON_CLEAR_FIELD_NAMED(f,n) G_STMT_START {			\
+		if (weakRefs) weakRefs->Clear ((EventObject**)&f, n);	\
+		if (f && clearStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) { \
+			clearStrongRef (this, f, n);			\
+		}							\
+		f = NULL;						\
+	} G_STMT_END
 
 namespace Moonlight {
 
@@ -45,6 +85,10 @@ typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer cl
 typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
 typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
+
+typedef void (* StrongRefCallback) (EventObject *referer, EventObject *referent, const char *name);
+typedef void (* AttachCallback) (EventObject *object);
+typedef void (* MentorChangedCallback) (EventObject *object, EventObject *mentor);
 
 class EventLists;
 
@@ -86,6 +130,23 @@ private:
 	ToggleNotifyHandler callback;
 };
 
+class WeakRefManager {
+public:
+	WeakRefManager (EventObject *forObj);
+	~WeakRefManager ();
+
+	void Add (EventObject **obj, const char *name);
+	void Clear (EventObject **obj, const char *name);
+
+private:
+	EventObject *forObj;
+
+	List *weakrefs;
+
+	static void clear_weak_ref (EventObject *sender, EventArgs *callData, gpointer closure);
+	void ClearWeakRef (EventObject **obj, const char *name, bool nullRef, bool removeHandler);
+};
+
 /* @Namespace=None,ManagedEvents=Manual */
 class EventObject {
 private:
@@ -98,7 +159,7 @@ private:
 public:
 #if OBJECT_TRACKING
 	static GHashTable *objects_alive;
-	void PrintStackTrace ();
+	static void PrintStackTrace ();
 	void Track (const char *done, const char *typname);
 #endif
 	
@@ -172,9 +233,17 @@ public:
 	void SetObjectType (Type::Kind value) { object_type = value; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
+	void SetManagedPeerCallbacks (StrongRefCallback add_strong_ref,
+				      StrongRefCallback clear_strong_ref,
+				      MentorChangedCallback mentor_changed,
+				      AttachCallback attached,
+				      AttachCallback detached);
+
+	virtual void EnsureManagedPeer ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	Type::Kind GetObjectType () { return object_type; }
 
-	const static int MentorChangedEvent;
 	const static int DestroyedEvent;
 	
 	void unref_delayed ();
@@ -216,12 +285,34 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void RemoveToggleRefNotifier ();
 
+	StrongRefCallback addStrongRef;
+	StrongRefCallback clearStrongRef;
+	MentorChangedCallback mentorChanged;
+	AttachCallback attached;
+	AttachCallback detached;
+
+	bool hadManagedPeer;
+
+	static void ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closure)
+	{
+#if DEBUG_WEAKREF
+		printf ("Clearing weakref to %p/%s\n", sender, sender->GetTypeName());
+#endif
+		EventObject **eo_ptr = (EventObject**)closure;
+		*eo_ptr = NULL;
+	}
+
 protected:
 	virtual ~EventObject ();
+	/* @SkipFactories */
 	EventObject ();
+	/* @SkipFactories */
 	EventObject (Type::Kind type);
+	/* @SkipFactories */
 	EventObject (Type::Kind type, bool multi_threaded_safe);
+	/* @SkipFactories */
 	EventObject (Deployment *deployment);
+	/* @SkipFactories */
 	EventObject (Deployment *deployment, Type::Kind type);
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
@@ -242,6 +333,9 @@ protected:
 	 * in ref () about reffing an object with a refcount of 0 (and trust that the warning means
 	 * something really bad has happened) */
 	void Resurrect ();
+
+	WeakRefManager *weakRefs;
+
 private:
 	void AddTickCallInternal (TickCallHandler handler, EventObject *data = NULL);
 	void Initialize (Deployment *deployment, Type::Kind type);
@@ -251,6 +345,7 @@ private:
 		
 	EventLists *events;
 	Deployment *deployment;
+	bool unref_deployment;
 	gint32 refcount;
 	gint32 flags; // Don't define as Flags, we need to keep this reliably at 32 bits.
 
@@ -261,8 +356,6 @@ private:
 /* @Namespace=System.Windows */
 class DependencyObject : public EventObject {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject ();
 	virtual void Dispose ();
 
 	void Freeze ();
@@ -273,7 +366,6 @@ public:
 	
 	GHashTable *GetLocalValues () { return local_values; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetMentor ();
 	void SetMentor (DependencyObject *value);
 
@@ -436,12 +528,15 @@ public:
 	// state will be set.
 	void SetIsBeingParsed (bool v) { is_being_parsed = v; }
 	bool IsBeingParsed () { return is_being_parsed; }
-	
+
 protected:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject ();
+
 	virtual ~DependencyObject ();
 	DependencyObject (Deployment *deployment, Type::Kind object_type = Type::DEPENDENCY_OBJECT);
 	DependencyObject (Type::Kind object_type);
-	
+
 	//
 	// Returns true if a value is valid.  If the value is invalid return false.
 	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
@@ -462,9 +557,11 @@ protected:
 	PropertyValueProvider *providers[PropertyPrecedence_Count];
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
 
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
 private:
 	void DetachTemplateOwnerDestroyed ();
-	void DetachMentorDestroyed ();
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
@@ -478,7 +575,9 @@ private:
 	static void clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data);
 	void CloneAnimationStorageList (DependencyProperty *key, List *list);
 
-	static void MentorDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor, bool old_disposed);
+	static void OnMentorDisposed (EventObject *sender, EventArgs *args, gpointer closure);
+
 	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS

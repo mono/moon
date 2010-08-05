@@ -80,6 +80,12 @@ DependencyProperty::Dispose ()
 Value *
 DependencyProperty::GetDefaultValue (Type::Kind kind)
 {
+	return GetDefaultValue (kind, NULL);
+}
+
+Value *
+DependencyProperty::GetDefaultValue (Type::Kind kind, DependencyObject *forObj)
+{
 	if (default_value_overrides) {
 		Value *value = (Value *) g_hash_table_lookup (default_value_overrides, GINT_TO_POINTER (kind));
 		if (value)
@@ -95,7 +101,7 @@ DependencyProperty::GetDefaultValue (Type::Kind kind)
 	}
 
 	if (autocreator) {
-		return autocreator (kind, this);
+		return autocreator (kind, this, forObj);
 	} else {
 		return default_value ? new Value (*default_value) : NULL;
 	}

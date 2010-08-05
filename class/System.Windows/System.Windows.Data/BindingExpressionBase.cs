@@ -165,6 +165,9 @@ namespace System.Windows.Data {
 
 		internal override void OnAttached (DependencyObject element)
 		{
+			if (Attached)
+				return;
+
 			base.OnAttached (element);
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus += TextBoxLostFocus;
@@ -194,6 +197,9 @@ namespace System.Windows.Data {
 
 		internal override void OnDetached (DependencyObject element)
 		{
+			if (!Attached)
+				return;
+
 			base.OnDetached (element);
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus -= TextBoxLostFocus;
@@ -204,8 +210,10 @@ namespace System.Windows.Data {
 				Target.MentorChanged -= MentorChanged;;
 			}
 
-			if (updateDataSourceCallback != null)
+			if (updateDataSourceCallback != null) {
 				NativeMethods.dependency_object_remove_property_change_handler (Target.native, Property.Native, updateDataSourceCallback);
+				updateDataSourceCallback = null;
+			}
 
 			PropertyPathWalker.Update (null);
 		}

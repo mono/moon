@@ -45,6 +45,7 @@ typedef bool (*VisualTreeVisitor)(UIElement *el, gpointer data);
 /* @Namespace=System.Windows */
 class UIElement : public DependencyObject {
 public:
+	/* @SkipFactories */
 	UIElement ();
 	virtual void Dispose ();
 	

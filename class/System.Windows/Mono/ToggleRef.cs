@@ -35,6 +35,9 @@ namespace Mono
 	internal abstract class ToggleRef
 	{
 		protected IntPtr handle;
+#if HEAPVIZ
+		internal
+#endif
 		protected object reference;
 		protected GCHandle gch;
 
@@ -96,12 +99,20 @@ namespace Mono
 		{
 			WeakReference weak = reference as WeakReference;
 			if (!isLastRef) {
-				if (weak != null && weak.IsAlive)
+				if (weak != null && weak.IsAlive) {
 					reference = weak.Target;
+#if DEBUG_REF
+					Console.WriteLine ("Toggling weak to strong for {0}/{1}", reference.GetHashCode (), reference);
+#endif
+				}
 			}
 			else {
-				if (weak == null)
+				if (weak == null) {
+#if DEBUG_REF
+					Console.WriteLine ("Toggling strong to weak for {0}/{1}", reference.GetHashCode (), reference);
+#endif
 					reference = new WeakReference (reference);
+				}
 			}
 		}
 

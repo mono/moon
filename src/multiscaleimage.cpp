@@ -37,6 +37,7 @@
 #include "multiscalesubimage.h"
 #include "bitmapimage.h"
 #include "ptr.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -474,7 +475,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	
 	if (!avail) {
 		ctx = new BitmapImageContext ();
-		ctx->image = new BitmapImage ();
+		ctx->image = MoonUnmanagedFactory::CreateBitmapImage ();
 		ctx->msi = this;
 		
 		ctx->image->AddHandler (ctx->image->ImageOpenedEvent, tile_opened, ctx);
@@ -797,10 +798,10 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), int_free);
 	
 	if (!fadein_sb) {
-		fadein_sb = new Storyboard ();
+		fadein_sb = MoonUnmanagedFactory::CreateStoryboard ();
 		fadein_sb->SetManualTarget (this);
 		fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
-		fadein_animation = new DoubleAnimation ();
+		fadein_animation = MoonUnmanagedFactory::CreateDoubleAnimation ();
 		fadein_animation->SetDuration (Duration (GetSource ()->GetTileBlendTime ()));
 		TimelineCollection *tlc = new TimelineCollection ();
 		tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
@@ -1648,14 +1649,14 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 	}
 
 	if (!zoom_sb) {
-		zoom_sb = new Storyboard ();
+		zoom_sb = MoonUnmanagedFactory::CreateStoryboard ();
 		zoom_sb->SetManualTarget (this);
 		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.InternalViewportWidth)"));
 		zoom_sb->AddHandler (Storyboard::CompletedEvent, zoom_finished, this);
-		zoom_animation = new DoubleAnimationUsingKeyFrames ();
+		zoom_animation = MoonUnmanagedFactory::CreateDoubleAnimationUsingKeyFrames ();
 		zoom_animation->SetDuration (Duration::FromSeconds (4));
-		zoom_animation->SetKeyFrames (DOPtr<DoubleKeyFrameCollection> (new DoubleKeyFrameCollection ()));
-		DOPtr<SplineDoubleKeyFrame> keyframe (new SplineDoubleKeyFrame ());
+		zoom_animation->SetKeyFrames (DOPtr<DoubleKeyFrameCollection> (MoonUnmanagedFactory::CreateDoubleKeyFrameCollection ()));
+		DOPtr<SplineDoubleKeyFrame> keyframe (MoonUnmanagedFactory::CreateSplineDoubleKeyFrame ());
 		keyframe->SetKeySpline (DOPtr<KeySpline> (new KeySpline (.05, .5, 0, 1.0)));
 		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
 		zoom_animation->GetKeyFrames ()->Add (static_cast<SplineDoubleKeyFrame*>(keyframe));
@@ -1692,14 +1693,14 @@ MultiScaleImage::SetInternalViewportOrigin (Point *value)
 	}
 
 	if (!pan_sb) {
-		pan_sb = new Storyboard ();
+		pan_sb = MoonUnmanagedFactory::CreateStoryboard ();
 		pan_sb->SetManualTarget (this);
 		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.InternalViewportOrigin)"));
 		pan_sb->AddHandler (Storyboard::CompletedEvent, pan_finished, this);
-		pan_animation = new PointAnimationUsingKeyFrames ();
+		pan_animation = MoonUnmanagedFactory::CreatePointAnimationUsingKeyFrames ();
 		pan_animation->SetDuration (Duration::FromSeconds (4));
-		pan_animation->SetKeyFrames (DOPtr<PointKeyFrameCollection> (new PointKeyFrameCollection ()));
-		SplinePointKeyFrame *keyframe = new SplinePointKeyFrame ();
+		pan_animation->SetKeyFrames (DOPtr<PointKeyFrameCollection> (MoonUnmanagedFactory::CreatePointKeyFrameCollection ()));
+		SplinePointKeyFrame *keyframe = MoonUnmanagedFactory::CreateSplinePointKeyFrame ();
 		keyframe->SetKeySpline (DOPtr<KeySpline> (new KeySpline (.05, .5, 0, 1.0)));
 		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
 		pan_animation->GetKeyFrames ()->Add (keyframe);

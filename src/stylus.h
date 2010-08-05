@@ -61,7 +61,7 @@ class StylusPoint : public DependencyObject {
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int YProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
 	StylusPoint () { SetObjectType (Type::STYLUSPOINT); }
 	
 	//
@@ -91,7 +91,7 @@ class UnmanagedStylusPoint : public StylusPoint {
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	UnmanagedStylusPoint () {  SetObjectType (Type::UNMANAGEDSTYLUSPOINT); }
+	UnmanagedStylusPoint () { SetObjectType (Type::UNMANAGEDSTYLUSPOINT); }
 };
 
 /* @Namespace=System.Windows.Input */
@@ -265,7 +265,6 @@ class Stroke : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Stroke ();
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool HitTest (StylusPointCollection *stylusPoints);
 	

@@ -23,6 +23,7 @@
 #include "runtime.h"
 #include "uri.h"
 #include "debug.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -450,7 +451,7 @@ BitmapImage::PixmapComplete ()
 	loader = NULL;
 	
 	if (HasHandlers (ImageOpenedEvent))
-		Emit (ImageOpenedEvent, new RoutedEventArgs ());
+		Emit (ImageOpenedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
 	
 	return;
 	
@@ -472,7 +473,8 @@ BitmapImage::DownloaderFailed ()
 	
 	Abort ();
 	if (HasHandlers (ImageFailedEvent))
-		Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
+		Emit (ImageFailedEvent,
+		      new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
 }
 
 void

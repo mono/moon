@@ -100,7 +100,7 @@ public:
 	virtual void SetVisualParent (UIElement *visual_parent);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetLogicalParent (DependencyObject *logical_parent, MoonError *error);
+	void SetLogicalParent (DependencyObject *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetLogicalParent () { return logical_parent; }
 
@@ -202,7 +202,8 @@ protected:
 	virtual ~FrameworkElement ();
 	
 private:
-	static void logical_parent_destroyed (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent, bool old_disposed);
+	static void OnLogicalParentDisposed (EventObject *sender, EventArgs *args, gpointer closure);
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
 	LoadedCallback loaded_cb;

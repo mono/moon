@@ -776,7 +776,7 @@ PluginInstance::CreateWindow ()
 	}
 
 	surface = new Surface (moon_window);
-	deployment->SetSurface (surface);
+	//	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 	if (bridge)
 		bridge->SetSurface (surface);
@@ -1118,10 +1118,15 @@ PluginInstance::LoadXAML ()
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
 
+	deployment->SetSurface (surface);
+
 	if (!deployment->InitializeManagedDeployment (this, culture, uiCulture)) {
 		RemoveCleanupPointer (&our_surface);
 		return false;
 	}
+
+	deployment->EnsureManagedPeer (surface);
+	deployment->SetSurface (surface);
 
 	xaml_loader->LoadVM ();
 
@@ -1171,7 +1176,13 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
 	GetDeployment()->SetXapFilename (fname);
-	return GetDeployment ()->InitializeManagedDeployment (this, culture, uiCulture);
+
+	bool rv = GetDeployment ()->InitializeManagedDeployment (this, culture, uiCulture);
+
+	deployment->EnsureManagedPeer (surface);
+	deployment->SetSurface (surface);
+
+	return rv;
 }
 
 void
@@ -1934,6 +1945,7 @@ PluginInstance::CreatePluginDeployment ()
 
 	if (!deployment->InitializeAppDomain ()) {
 		g_warning ("Moonlight: Couldn't initialize the AppDomain");
+		unref ();
 		return false;
 	}
 

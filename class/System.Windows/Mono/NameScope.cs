@@ -29,12 +29,13 @@
 
 using System;
 using System.Windows;
-
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Mono
 {
 
-	internal partial class NameScope : INativeEventObjectWrapper {
+	internal partial class NameScope : INativeEventObjectWrapper, IRefContainer {
 
 		private IntPtr _native;
 		private bool free_mapping;
@@ -92,5 +93,33 @@ namespace Mono
 		}
 
 		public Kind GetKind () { return Kind.NAMESCOPE; }
+
+		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		{
+		}
+
+		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		{
+		}
+
+#if HEAPVIZ
+		System.Collections.ICollection IRefContainer.GetManagedRefs ()
+		{
+			return new List<HeapRef> ();
+		}
+#endif
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
+		}
+
 	}
 }

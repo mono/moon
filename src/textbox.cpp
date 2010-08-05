@@ -29,6 +29,7 @@
 #include "panel.h"
 #include "utils.h"
 #include "uri.h"
+#include "factory.h"
 
 #include "window.h"
 
@@ -557,10 +558,8 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 {
 	SetObjectType (type);
 
-	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
-	type_info->Initialize (GetObjectType (), type_name);
-	SetDefaultStyleKey (type_info);
-	ManagedTypeInfo::Free (type_info);
+	ManagedTypeInfo type_info (GetObjectType (), type_name);
+	SetDefaultStyleKey (&type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	
@@ -2226,7 +2225,7 @@ TextBoxBase::OnApplyTemplate ()
 		return;
 	}
 	
-	view = new TextBoxView ();
+	view = MoonUnmanagedFactory::CreateTextBoxView ();
 	
 	view->SetEnableCursor (!is_read_only);
 	view->SetTextBox (this);
@@ -2471,13 +2470,13 @@ TextBox::TextBox ()
 void
 TextBox::EmitSelectionChanged ()
 {
-	EmitAsync (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	EmitAsync (TextBox::SelectionChangedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
 }
 
 void
 TextBox::EmitTextChanged ()
 {
-	EmitAsync (TextBox::TextChangedEvent, new TextChangedEventArgs ());
+	EmitAsync (TextBox::TextChangedEvent, MoonUnmanagedFactory::CreateTextChangedEventArgs ());
 }
 
 void
@@ -2895,7 +2894,7 @@ PasswordBox::CursorPrevWord (int cursor)
 void
 PasswordBox::EmitTextChanged ()
 {
-	EmitAsync (PasswordBox::PasswordChangedEvent, new RoutedEventArgs ());
+	EmitAsync (PasswordBox::PasswordChangedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
 }
 
 void

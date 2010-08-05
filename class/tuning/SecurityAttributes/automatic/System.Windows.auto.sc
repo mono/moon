@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 503 methods needs to be decorated.
+# 510 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -69,6 +69,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_is_read_only(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::deployment_is_safe_to_die(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::framework_element_apply_template_with_error_(System.IntPtr,Mono.MoonError&)
@@ -464,10 +467,10 @@
 +SC-M: System.IntPtr Mono.NativeMethods::control_get_template_child(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_find_name(System.IntPtr,System.String,Mono.Kind&)
++SC-M: System.IntPtr Mono.NativeMethods::control_get_template_root(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_mentor(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_find_name(System.IntPtr,System.String,Mono.Kind&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_name_(System.IntPtr)
@@ -731,6 +734,18 @@
 +SC-M: System.IntPtr Mono.NativeMethods::shape_get_geometry_transform(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_file_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_get_context(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::storyboard_get_target_dependency_property(System.IntPtr)
 
 # p/invoke declaration
@@ -825,9 +840,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_get_context(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
@@ -965,6 +977,9 @@
 +SC-M: System.Void Mono.NativeMethods::capture_source_stop(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::collection_changed_event_args_set_changed_action(System.IntPtr,System.Windows.CollectionChangedAction)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::collection_changed_event_args_set_index(System.IntPtr,System.Int32)
 
 # p/invoke declaration
@@ -1038,6 +1053,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_remove_toggle_ref_notifier(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::event_object_set_managed_peer_callbacks(System.IntPtr,Mono.StrongRefCallback,Mono.StrongRefCallback,Mono.MentorChangedCallback,Mono.AttachCallback,Mono.AttachCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_set_object_type(System.IntPtr,Mono.Kind)
@@ -1467,6 +1485,9 @@
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Windows.CollectionChangedAction Mono.NativeMethods::collection_changed_event_args_get_changed_action(System.IntPtr)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::DependencyPropertyFromString(Mono.Xaml.XamlCallbackData*,System.Object,Mono.Value*,System.String)

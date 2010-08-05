@@ -27,12 +27,13 @@
 using Mono;
 using System;
 using System.Threading;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace System.Windows.Messaging {
 
-	public sealed class LocalMessageSender : INativeDependencyObjectWrapper
+	public sealed class LocalMessageSender : INativeEventObjectWrapper
 	{
 		public const string Global = "*";
 
@@ -116,6 +117,18 @@ namespace System.Windows.Messaging {
 		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
+		}
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
 		}
 
 		Kind INativeEventObjectWrapper.GetKind ()

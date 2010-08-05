@@ -604,6 +604,9 @@ PermissionsConfigDialogPage::PopulateModel ()
 
 	gchar **permission_keys = configuration->GetKeys ("Permissions");
 
+	if (!permission_keys)
+		return;
+
 	int i;
 	for (i = 0; permission_keys && permission_keys[i] != NULL; i ++) {
 		gchar *key = permission_keys[i];

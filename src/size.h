@@ -92,11 +92,18 @@ struct Size {
 class SizeChangedEventArgs : public RoutedEventArgs {
 	Size prev_size;
 	Size new_size;
-	
-public:
+
+protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	SizeChangedEventArgs ();
+
+	virtual ~SizeChangedEventArgs () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
+public:
+	/* @SkipFactories */
 	SizeChangedEventArgs (Size prev_size, Size new_size);
 	
 	Size GetPrevSize () { return prev_size; }

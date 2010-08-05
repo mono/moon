@@ -1,8 +1,11 @@
+
+//
+// INativeEventObjectWrapper.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -24,45 +27,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Mono;
+using System;
+using System.Collections;
 
-namespace System.Windows.Media.Animation 
-{
-	public abstract partial class EasingFunctionBase : DependencyObject, IEasingFunction
-	{
-		private new void Initialize ()
-		{
-			callback = EasingFunctionWrapper.CreateSafeEasingFunction (new EasingFunctionCallback (Ease));
+namespace Mono {
 
-			NativeMethods.easing_function_base_set_easing_function (native, callback);
-		}
+	internal interface IRefContainer {
+		void AddStrongRef (IntPtr referent, string name);
+		void ClearStrongRef (IntPtr referent, string name);
 
-		~EasingFunctionBase ()
-		{
-			NativeMethods.easing_function_base_set_easing_function (native, null);
-		}
-
-		public double Ease (double normalizedTime)
-		{
-			switch (EasingMode) {
-			case EasingMode.EaseIn:
-				return EaseInCore (normalizedTime);
-			case EasingMode.EaseOut:
-				return 1.0 - EaseInCore (1 - normalizedTime);
-			case EasingMode.EaseInOut:
-				return (normalizedTime <= 0.5
-
-					? EaseInCore (normalizedTime * 2) * 0.5
-
-					: 1.0 - EaseInCore ((1 - normalizedTime) * 2) * 0.5);
-			}
-
-			// XXX
-			throw new Exception();
-		}
-
-		protected abstract double EaseInCore (double normalizedTime);
-
-		EasingFunctionCallback callback;
+#if HEAPVIZ
+		ICollection GetManagedRefs ();
+#endif
 	}
 }

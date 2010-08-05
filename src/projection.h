@@ -66,9 +66,10 @@ public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int M44Property;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
 	Matrix3D ();
 
+	/* @SkipFactories */
 	Matrix3D (double *m);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -151,7 +152,7 @@ class UnmanagedMatrix3D : public Matrix3D {
 	virtual ~UnmanagedMatrix3D () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
 	UnmanagedMatrix3D () {  SetObjectType (Type::UNMANAGEDMATRIX3D); }
 };
 

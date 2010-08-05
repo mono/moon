@@ -197,6 +197,9 @@ class TypeReference {
 					managed_type = "Value";
 				}
 				break;
+			case "CollectionChangedAction":
+				managed_type = "CollectionChangedAction";
+				break;
 			case "MoonMessageBoxResult":
 				managed_type = "MessageBoxResult";
 				break;
@@ -244,6 +247,15 @@ class TypeReference {
 				break;
 			case "SetValueCallback":
 				managed_type = "Mono.SetValueCallback";
+				break;
+			case "StrongRefCallback":
+				managed_type = "Mono.StrongRefCallback";
+				break;
+			case "AttachCallback":
+				managed_type = "Mono.AttachCallback";
+				break;
+			case "MentorChangedCallback":
+				managed_type = "Mono.MentorChangedCallback";
 				break;
 			case "parse_template_func":
 				managed_type = "Mono.Xaml.ParseTemplateFunc";

@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Mono {
 
@@ -43,7 +44,7 @@ namespace Mono {
 	sealed class EventHandlerData {
 		public int Token;
 		public Delegate ManagedDelegate;
-		public UnmanagedEventHandler NativeHandler;
+		public GCHandle NativeHandler;
 	}
 
 	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
@@ -59,7 +60,7 @@ namespace Mono {
 				Add (eventId, events);
 			}
 
-			events.Add (token, new EventHandlerData () { Token = token, ManagedDelegate = managedDelegate, NativeHandler = nativeHandler });
+			events.Add (token, new EventHandlerData () { Token = token, ManagedDelegate = managedDelegate, NativeHandler = GCHandle.Alloc (nativeHandler) });
 		}
 
 		public UnmanagedEventHandler RemoveHandler (int eventId, Delegate managedDelegate)
@@ -71,7 +72,11 @@ namespace Mono {
 					if (data.ManagedDelegate == managedDelegate) {
 						events.Remove (data.Token);
 
-						return data.NativeHandler;
+						UnmanagedEventHandler nativeHandler = data.NativeHandler.Target as UnmanagedEventHandler;
+
+						data.NativeHandler.Free ();
+
+						return nativeHandler;
 					}
 				}
 			}

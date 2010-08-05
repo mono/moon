@@ -386,6 +386,8 @@ PathGeometry::PathGeometry (moon_path *pml)
 {
 	SetObjectType (Type::PATHGEOMETRY);
 	path = pml;
+
+	EnsureManagedPeer ();
 }
 
 void

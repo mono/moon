@@ -26,6 +26,7 @@
 #include "effect.h"
 #include "projection.h"
 #include "canvas.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -44,21 +45,6 @@ FrameworkElementProvider::~FrameworkElementProvider ()
 	delete actual_width_value;
 }
 
-void
-FrameworkElement::Dispose ()
-{
-	if (logical_parent) {
-		logical_parent->RemoveHandler (EventObject::DestroyedEvent, FrameworkElement::logical_parent_destroyed, this);
-		logical_parent = NULL;
-	}
-	if (default_template != NULL) {
-		default_template->SetParent (NULL, NULL);
-		default_template->unref ();
-		default_template = NULL;
-	}
-	UIElement::Dispose ();
-}
-	
 Value *
 FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
 {
@@ -112,6 +98,15 @@ FrameworkElement::FrameworkElement ()
 
 FrameworkElement::~FrameworkElement ()
 {
+}
+
+void
+FrameworkElement::Dispose ()
+{
+	SetLogicalParent (NULL, NULL);
+	if (default_template != NULL)
+		default_template->SetParent (NULL, NULL);
+	UIElement::Dispose ();
 }
 
 void
@@ -171,27 +166,48 @@ void FrameworkElement::SetVisualParent (UIElement *visual_parent)
 }
 
 void
-FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError *error)
+FrameworkElement::SetLogicalParent (DependencyObject *value, MoonError *error)
 {
-	if (logical_parent == this->logical_parent)
+	if (logical_parent == value)
 		return;
 
-	if (logical_parent && this->logical_parent && this->logical_parent != logical_parent) {
+	if (Deployment::GetCurrent()->IsShuttingDown ()) {
+		// for sanity's sake, we should verify that value is
+		// NULL, but we don't care, we're going away anyway.
+		logical_parent = NULL;
+		return;
+	}
+
+	if (value && logical_parent && logical_parent != value) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is a child of another element");
 		return;
 	}
 
-	DependencyObject *old_parent = this->logical_parent;
-	this->logical_parent = logical_parent;
+	DependencyObject *old_parent = logical_parent;
+
 
 	if (old_parent)
-		old_parent->RemoveHandler (EventObject::DestroyedEvent, FrameworkElement::logical_parent_destroyed, this);
-	if (logical_parent)
-		logical_parent->AddHandler (EventObject::DestroyedEvent, FrameworkElement::logical_parent_destroyed, this);
+		MOON_CLEAR_FIELD_NAMED (logical_parent, "LogicalParent");
+
+	if (value)
+		MOON_SET_FIELD_NAMED (logical_parent, "LogicalParent", value);
+
+	OnLogicalParentChanged (old_parent, value, false);
+}
+
+void
+FrameworkElement::OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent, bool old_disposed)
+{
+	if (old_logical_parent && !old_disposed)
+ 		old_logical_parent->RemoveHandler (EventObject::DestroyedEvent, OnLogicalParentDisposed, this);
+
+	if (new_logical_parent)
+ 		new_logical_parent->AddHandler (EventObject::DestroyedEvent, OnLogicalParentDisposed, this);
+
 
 	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
-	if (logical_parent && logical_parent->Is (Type::FRAMEWORKELEMENT))
-		provider->SetDataSource ((FrameworkElement *) logical_parent);
+	if (new_logical_parent && new_logical_parent->Is (Type::FRAMEWORKELEMENT))
+		provider->SetDataSource ((FrameworkElement *) new_logical_parent);
 	else if (GetVisualParent () && GetVisualParent ()->Is(Type::FRAMEWORKELEMENT))
 		provider->SetDataSource ((FrameworkElement *)GetVisualParent ());
 	else
@@ -201,10 +217,10 @@ FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 }
 
 void
-FrameworkElement::logical_parent_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
+FrameworkElement::OnLogicalParentDisposed (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	FrameworkElement *o = (FrameworkElement *) closure;
-	o->SetLogicalParent (NULL, NULL);
+	FrameworkElement *this_ = (FrameworkElement *) closure;
+	this_->OnLogicalParentChanged ((DependencyObject*)sender, NULL, true);
 }
 
 void
@@ -813,7 +829,7 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 	if (((!toplevel && element != element.Intersection (layout_clip)) || constrainedResponse != response) && !Is (Type::CANVAS) && ((parent && !parent->Is (Type::CANVAS)) || IsContainer ())) {
 		Size framework_clip = ApplySizeConstraints (Size (INFINITY, INFINITY));
 		layout_clip = layout_clip.Intersection (Rect (0, 0, framework_clip.width, framework_clip.height));
-		RectangleGeometry *rectangle = new RectangleGeometry ();
+		RectangleGeometry *rectangle = MoonUnmanagedFactory::CreateRectangleGeometry ();
 		rectangle->SetRect (&layout_clip);
 		LayoutInformation::SetLayoutClip (this, rectangle);
 		rectangle->unref ();
@@ -1054,11 +1070,11 @@ FrameworkElement::DoApplyTemplateWithError (MoonError *error)
 
 		if (default_template) {
 			default_template->SetParent (NULL, NULL);
-			default_template->unref ();
+			MOON_CLEAR_FIELD_NAMED (this->default_template, "DefaultTemplate");
 		}
-		default_template = e;
-		if (default_template != NULL)
-			default_template->ref ();
+
+		MOON_SET_FIELD_NAMED (this->default_template, "DefaultTemplate", e);
+
 		SetSubtreeObject (e);
 		ElementAdded (e);
 	}

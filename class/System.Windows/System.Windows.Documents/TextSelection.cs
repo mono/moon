@@ -29,6 +29,8 @@
 using System;
 using System.Threading;
 using Mono;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace System.Windows.Documents {
 	public sealed class TextSelection : INativeDependencyObjectWrapper {
@@ -77,6 +79,18 @@ namespace System.Windows.Documents {
 		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
+		}
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
 		}
 
 		Kind INativeEventObjectWrapper.GetKind ()

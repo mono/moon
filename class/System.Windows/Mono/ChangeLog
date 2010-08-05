@@ -84,6 +84,17 @@
 
 	* Value.cs: Handle EventObjects not just DependencyObjects.
 
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs: add
+	Attached/Detached/MentorChanged callbacks here.
+	(SetManagedPeerCallbacks): add this so we can stop having to
+	modify 50 different calls to
+	NativeMethods.event_object_set_managed_peer_callbacks whenever the
+	signature changes.
+	(ClearManagedPeerCallbacks): same.
+	(CreateObject): add VIDEOFORMAT_COLLECTION to the switch.
+
 2010-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs: add RichTextBoxView to the

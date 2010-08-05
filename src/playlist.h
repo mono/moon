@@ -109,7 +109,9 @@ private:
 	void OpenMediaPlayer ();
 	
 protected:
+	/* @SkipFactories */
 	PlaylistEntry (Type::Kind kind);
+	/* @SkipFactories */
 	PlaylistEntry (Type::Kind kind, Playlist *parent);
 	virtual ~PlaylistEntry () {}
 
@@ -230,6 +232,7 @@ private:
 	void MergeWith (PlaylistEntry *entry);
 
 protected:
+	/* @SkipFactories */
 	Playlist (Type::Kind kind);
 	virtual ~Playlist () {}
 

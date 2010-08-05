@@ -32,7 +32,7 @@ class Panel : public FrameworkElement {
  public:
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int BackgroundProperty;
- 	/* @PropertyType=UIElementCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=UIElementCollection,AutoCreator=Panel::CreateChildren,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ChildrenProperty;
 	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IsItemsHostProperty;
@@ -77,6 +77,9 @@ class Panel : public FrameworkElement {
 	
 	void SetIsItemsHost (bool value);
 	bool GetIsItemsHost ();
+
+	// Autocreator for the Children property
+	static Value *CreateChildren (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 };
 
 };

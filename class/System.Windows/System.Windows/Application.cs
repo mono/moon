@@ -48,7 +48,7 @@ using System.ComponentModel;
 
 namespace System.Windows {
 
-	public partial class Application : INativeDependencyObjectWrapper {
+	public partial class Application : INativeDependencyObjectWrapper, IRefContainer {
 		//
 		// Application instance fields
 		//
@@ -74,6 +74,10 @@ namespace System.Windows {
 			NativeHandle = raw;
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
+
+			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
+
+			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
 			get_default_style = new GetDefaultStyleCallback (get_default_style_cb_safe);
 			convert_setter_values = new ConvertSetterValuesCallback (convert_setter_values_cb_safe);
@@ -151,6 +155,8 @@ namespace System.Windows {
 
 		internal void Free ()
 		{
+			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
+
 			if (free_mapping) {
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
@@ -375,6 +381,7 @@ namespace System.Windows {
 					rd = new ResourceDictionary();
 
 				assemblyToGenericXaml[type.Assembly] = rd;
+
 			}
 
 			return rd[type.FullName] as Style;
@@ -800,6 +807,55 @@ namespace System.Windows {
 		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
+		}
+
+		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
+
+		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		{
+			if (strongRefs.ContainsKey (referent))
+				return;
+
+			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			if (o != null) {
+#if DEBUG_REF
+				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+#endif
+				strongRefs.Add (referent, o);
+			}
+		}
+
+		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		{
+#if DEBUG_REF
+			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+			Console.WriteLine (Environment.StackTrace);
+#endif
+			strongRefs.Remove (referent);
+		}
+
+#if HEAPVIZ
+		ICollection IRefContainer.GetManagedRefs ()
+		{
+			List<HeapRef> refs = new List<HeapRef> ();
+			foreach (IntPtr nativeref in strongRefs.Keys)
+				refs.Add (new HeapRef (strongRefs[nativeref]));
+				
+			return refs;
+		}
+#endif
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
 		}
 
 		Kind INativeEventObjectWrapper.GetKind ()

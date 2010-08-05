@@ -57,7 +57,7 @@ namespace Mono
 		static void RefToggled (IntPtr obj, bool isLastRef)
 		{
 			try {
-				EventObjectToggleRef tref = null;
+				EventObjectToggleRef tref;
 				NativeDependencyObjectHelper.objects.TryGetValue (obj, out tref);
 				if (tref != null)
 					tref.Toggle (isLastRef);

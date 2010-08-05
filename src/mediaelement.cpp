@@ -25,6 +25,7 @@
 #include "mediaplayer.h"
 #include "timeline.h"
 #include "timemanager.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -476,9 +477,6 @@ MediaElement::OnIsAttachedChanged (bool value)
 void
 MediaElement::Reinitialize ()
 {
-	TimelineMarkerCollection *markers;
-	MediaAttributeCollection *attrs;
-	
 	LOG_MEDIAELEMENT ("MediaElement::Reinitialize ()\n");
 	VERIFY_MAIN_THREAD;
 	
@@ -528,12 +526,15 @@ MediaElement::Reinitialize ()
 	previous_position = 0;
 	
 	SetMarkerTimeout (false);
-	if ((markers = GetMarkers ()))
-		markers->Clear ();
-	
-	if ((attrs = GetAttributes ()))
-		attrs->Clear ();
-	
+
+	Value *v = GetValueNoAutoCreate (MediaElement::MarkersProperty);
+	if (v && v->AsTimelineMarkerCollection())
+		v->AsTimelineMarkerCollection()->Clear();
+
+	v = GetValueNoAutoCreate (MediaElement::AttributesProperty);
+	if (v && v->AsMediaAttributeCollection())
+		v->AsMediaAttributeCollection()->Clear();
+
 	cairo_matrix_init_identity (&matrix);
 }
 
@@ -1042,7 +1043,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 		progress = MAX (progress, GetDownloadProgress ());
 		progress = MIN (progress + 0.00000001, 1.0);
 		SetDownloadProgress (progress);
-		Emit (MediaOpenedEvent, new RoutedEventArgs ());
+		Emit (MediaOpenedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
 		Emit (DownloadProgressChangedEvent);
 	}
 }

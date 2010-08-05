@@ -31,6 +31,7 @@ class Generator {
 		GenerateKindCs ();
 
 		GenerateTypeStaticCpp (info);
+		GenerateFactories (info);
 		GenerateCBindings (info);
 		GeneratePInvokes (info);
 		GenerateTypes_G (info);
@@ -2258,6 +2259,8 @@ class Generator {
 		impl.AppendLine ("#include <stdlib.h>");
 		impl.AppendLine ();
 		impl.AppendLine ("#include \"cbinding.h\"");
+		if (!dir.Contains ("plugin"))
+			impl.AppendLine ("#include \"factory.h\"");
 		impl.AppendLine ();
 		headers.Sort ();
 		foreach (string h in headers) {
@@ -2316,6 +2319,140 @@ class Generator {
 		GenerateCBindings (info, plugin_dir);
 	}
 
+	public static void GenerateFactories (GlobalInfo info)
+	{
+		string base_dir = Environment.CurrentDirectory;
+		string dir = Path.Combine (base_dir, "src/");
+
+		List<MethodInfo> methods;
+		StringBuilder header = new StringBuilder ();
+		List <string> headers = new List<string> ();
+
+		methods = info.AllCtors;
+
+		Helper.WriteWarningGenerated (header);;
+
+		header.AppendLine ("#ifndef __MOONLIGHT_FACTORY_H__");
+		header.AppendLine ("#define __MOONLIGHT_FACTORY_H__");
+		header.AppendLine ();
+		header.AppendLine ("#include <glib.h>");
+		header.AppendLine ("#include <cairo.h>");
+		header.AppendLine ();
+
+		foreach (MemberInfo method in methods) {
+			string h;
+
+			if (string.IsNullOrEmpty (method.Header))
+				continue;
+			if (!method.Header.StartsWith (dir))
+				continue;
+
+			h = method.Header.Substring (dir.Length);
+
+			if (!headers.Contains (h) &&
+			    h != "pipeline-ui.h" &&
+			    h != "pipeline-nocodec-ui.h" &&
+			    !h.Contains ("pal/")) {
+				headers.Add (h);
+			}
+		}
+		headers.Sort ();
+		foreach (string h in headers) {
+			header.Append ("#include \"");
+			header.Append (h);
+			header.AppendLine ("\"");
+		}
+
+		header.AppendLine ("namespace Moonlight {");
+
+		header.AppendLine ();
+		header.AppendLine ("class MoonUnmanagedFactory {");
+		header.AppendLine ("public:");
+		header.AppendLine ();
+
+		foreach (MemberInfo member in methods) {
+			MethodInfo method = (MethodInfo) member;
+
+			if (!method.Header.StartsWith (dir))
+				continue;
+
+			if (method.CMethod.IsConstructor) {
+				TypeInfo type = method.ParentType;
+				bool emit = false;
+				bool ensure = false;
+
+				do {
+					if (type.Name == "EventObject") {
+						emit = true;
+						break;
+					}
+					else if (type.Name == "DependencyObject") {
+						emit = true;
+						ensure = true;
+						break;
+					}
+
+					MemberInfo m = null;
+					if (type.Base != null && type.Base.Value != null && info.Children.TryGetValue (type.Base.Value, out m))
+						type = (TypeInfo) m;
+					else
+						break;
+				} while (type != null);
+
+				if (emit && !method.Annotations.ContainsKey ("SkipFactories")) {
+					WriteFactoryHeaderMethod (method.CMethod, method, header, info, ensure);
+
+					header.AppendLine ();
+				}
+			}
+		}
+
+		header.AppendLine ("};");
+		header.AppendLine ();
+		header.AppendLine ("class MoonManagedFactory {");
+		header.AppendLine ("public:");
+		header.AppendLine ();
+
+		foreach (MemberInfo member in methods) {
+			MethodInfo method = (MethodInfo) member;
+
+			if (!method.Header.StartsWith (dir))
+				continue;
+
+			if (method.CMethod.IsConstructor) {
+				TypeInfo type = method.ParentType;
+				bool emit = false;
+
+				do {
+					if (type.Name == "EventObject") {
+						emit = true;
+						break;
+					}
+
+					MemberInfo m = null;
+					if (type.Base != null && type.Base.Value != null && info.Children.TryGetValue (type.Base.Value, out m))
+						type = (TypeInfo) m;
+					else
+						break;
+				} while (type != null);
+
+				if (emit && !method.Annotations.ContainsKey ("SkipFactories")) {
+					WriteFactoryHeaderMethod (method.CMethod, method, header, info, false);
+
+					header.AppendLine ();
+				}
+			}
+		}
+
+		header.AppendLine ("};");
+		header.AppendLine ();
+		header.AppendLine ("};");
+		header.AppendLine ();
+		header.AppendLine ("#endif");
+
+		Helper.WriteAllText (Path.Combine (dir, "factory.h"), header.ToString ());
+	}
+
 	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)
 	{
 		Log.WriteLine ("Writing header: {0}::{1} (Version: '{2}', GenerateManaged: {3})",
@@ -2357,7 +2494,28 @@ class Generator {
 		text.AppendLine ("{");
 
 		if (is_ctor) {
-			text.Append ("\treturn new ");
+			TypeInfo type = cppmethod.ParentType;
+			bool use_factory = false;
+
+			if (!cppmethod.Annotations.ContainsKey ("SkipFactories")) {
+				do {
+					if (type.Name == "EventObject") {
+						use_factory = true;
+						break;
+					}
+
+					MemberInfo m = null;
+					if (type.Base != null && type.Base.Value != null && info.Children.TryGetValue (type.Base.Value, out m))
+						type = (TypeInfo) m;
+					else
+						break;
+				} while (type != null);
+			}
+
+			if (use_factory)
+				text.Append ("\treturn MoonManagedFactory::Create");
+			else
+				text.Append ("\treturn new ");
 			text.Append (cmethod.Parent.Name);
 			cmethod.Parameters.Write (text, SignatureType.NativeC, true);
 			text.AppendLine (";");
@@ -2415,6 +2573,22 @@ class Generator {
 		text.AppendLine ("}");
 	}
 
+	static void WriteFactoryHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info, bool ensure)
+	{
+		text.Append ("\t static ");
+		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
+		text.AppendFormat ("Create{0}", cmethod.Parent.Name);
+		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
+		text.Append (" { ");
+		text.AppendFormat ("{0}* o = new {0}", cmethod.Parent.Name);
+		cmethod.Parameters.Write (text, SignatureType.NativeC, true);
+		text.Append ("; ");
+		if (ensure)
+			text.Append ("o->EnsureManagedPeer (); ");
+		text.Append ("return o;");
+		text.AppendLine (" }");
+	}
+
 	static void GenerateTypeStaticCpp (GlobalInfo all)
 	{
 		string header;
@@ -2428,6 +2602,7 @@ class Generator {
 		text.AppendLine ();
 		text.AppendLine ("#include <stdlib.h>");
 
+		headers.Add ("factory.h");
 		headers.Add ("cbinding.h");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
 			if (t.C_Constructor == string.Empty || t.C_Constructor == null || !t.GenerateCBindingCtor) {
@@ -2563,7 +2738,11 @@ class Generator {
 							type.Interfaces.Count,
 							interfaces,
 							type.DefaultCtorVisible || type.IsValueType || type.IsEnum ? "true" : "false",
-							(type.C_Constructor != null && type.GenerateCBindingCtor && (all.GetDependencyObjects ().Contains (type) || type.Name == "DependencyObject")) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL",
+							((type.C_Constructor != null && type.GenerateCBindingCtor && (all.GetDependencyObjects ().Contains (type) || type.Name == "DependencyObject"))
+							 ? (type.ConstructorSkipsFactories
+							    ? string.Concat ("(create_inst_func *) ", type.C_Constructor)
+							    : string.Concat ("(create_inst_func *) MoonUnmanagedFactory::Create", type.Name))
+							 : "NULL"),
 							type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
 							)
 					 );
@@ -2670,7 +2849,7 @@ class Generator {
 						result.Append (' ', 40 - type.Name.Length);
 						result.Append ("As");
 						result.Append (type.Name);
-						result.Append (" (Types *types = NULL) { checked_get_subclass (Type::");
+						result.Append (" (Types *types = NULL) const { checked_get_subclass (Type::");
 						result.Append (type.KindName);
 						result.Append (", ");
 						result.Append (type.Name);
@@ -2681,7 +2860,7 @@ class Generator {
 						if (!type.IsEnum || !type.Annotations.ContainsKey ("IncludeInKinds"))
 							continue;
 						
-						result.AppendFormat ("\t{0} As{0} ()\t", type.Name);
+						result.AppendFormat ("\t{0} As{0} () const\t", type.Name);
 						result.Append ("\t{ ");
 						result.Append ("checked_get_exact (Type::");
 						result.Append (type.KindName);
@@ -2973,6 +3152,7 @@ class Generator {
 	{
 		files.Remove (Path.Combine (srcdir, "authors.h"));
 		files.Remove (Path.Combine (srcdir, "cbinding.h"));
+		files.Remove (Path.Combine (srcdir, "factory.h"));
 		files.Remove (Path.Combine (srcdir, "ptr.h"));
 		files.Remove (Path.Combine (plugindir, "plugin-domevents.h"));
 	}

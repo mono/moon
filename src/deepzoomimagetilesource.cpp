@@ -175,6 +175,8 @@ DeepZoomImageTileSource::DeepZoomImageTileSource (Uri *uri, bool nested)
 	this->nested = nested;
 	if (uri)
 		SetUriSource (uri);
+
+	EnsureManagedPeer ();
 }
 
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()

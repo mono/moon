@@ -30,7 +30,13 @@ class MultiScaleSubImage : public DependencyObject {
 	double GetViewportHeight ();
 
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	MultiScaleSubImage ();
+
 	virtual ~MultiScaleSubImage () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,ReadOnly,GenerateGetter */
@@ -45,8 +51,7 @@ class MultiScaleSubImage : public DependencyObject {
 	const static int ZIndexProperty;
 
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	MultiScaleSubImage ();
+	/* @SkipFactories */
 	MultiScaleSubImage (const Uri* parent_uri, MultiScaleTileSource *source, int id, int n);
 
 	double GetAspectRatio ();

@@ -25,6 +25,7 @@
 #include "utils.h"
 #include "debug.h"
 #include "uri.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -510,8 +511,9 @@ Downloader::SendInternal ()
 	if (failed_msg != NULL) {
 		if (HasHandlers (DownloadFailedEvent)) {
 			// Consumer is re-sending a request which failed.
-			Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
-								       MoonError (MoonError::EXCEPTION, 4001, failed_msg)));
+			Emit (DownloadFailedEvent,
+			      new ErrorEventArgs (DownloadError,
+						  MoonError (MoonError::EXCEPTION, 4001, failed_msg)));
 		}
 		return;
 	}
@@ -596,8 +598,9 @@ Downloader::NotifyFailed (const char *msg)
 	// For some reason the status is 0, not updated on errors?
 	
 	if (HasHandlers (DownloadFailedEvent))
-		Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
-							       MoonError (MoonError::EXCEPTION, 4001, msg)));
+		Emit (DownloadFailedEvent,
+		      new ErrorEventArgs (DownloadError,
+					  MoonError (MoonError::EXCEPTION, 4001, msg)));
 	
 	failed_msg = g_strdup (msg);
 }

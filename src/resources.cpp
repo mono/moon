@@ -16,6 +16,7 @@
 #include "resources.h"
 #include "namescope.h"
 #include "error.h"
+#include "deployment.h"
 
 namespace Moonlight {
 
@@ -223,8 +224,16 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 	from_resource_dictionary_api = true;
 	bool result = Collection::AddWithError (v, error) != -1;
 	from_resource_dictionary_api = false;
-	if (result)
+	if (result) {
 		g_hash_table_insert (hash, g_strdup (key), v);
+
+		if (addStrongRef && v->Is (GetDeployment(), Type::DEPENDENCY_OBJECT)) {
+			addStrongRef (this, v->AsDependencyObject(), key);
+			v->AsDependencyObject()->unref();
+			v->SetNeedUnref (false);
+		}
+
+	}
 	return result;
 }
 
@@ -243,6 +252,8 @@ ResourceDictionary::Clear ()
 	else
 #endif
 	g_hash_table_foreach_remove (hash, (GHRFunc) _true, NULL);
+
+	// FIXME: we need to clearStrongRef
 
 	from_resource_dictionary_api = true;
 	bool rv = Collection::Clear ();
@@ -282,6 +293,9 @@ ResourceDictionary::Remove (const char *key)
 	Collection::Remove (orig_value);
 	from_resource_dictionary_api = false;
 
+	if (clearStrongRef && orig_value->Is (GetDeployment(), Type::DEPENDENCY_OBJECT))
+		clearStrongRef (this, orig_value->AsDependencyObject(), key);
+
 	g_hash_table_remove (hash, key);
 
 	return true;
@@ -303,7 +317,11 @@ ResourceDictionary::Set (const char *key, Value *value)
 
 	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
+	if (clearStrongRef && orig_value->Is (GetDeployment(), Type::DEPENDENCY_OBJECT))
+		clearStrongRef (this, orig_value->AsDependencyObject(), key);
 	Collection::Add (v);
+	if (addStrongRef && v->Is (GetDeployment(), Type::DEPENDENCY_OBJECT))
+		addStrongRef (this, v->AsDependencyObject(), key);
 	from_resource_dictionary_api = false;
 
 	g_hash_table_replace (hash, g_strdup (key), v);
@@ -418,7 +436,15 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 	if (rv && !from_resource_dictionary_api && obj != NULL) {
 		const char *key = obj->GetName();
 
-		g_hash_table_insert (hash, g_strdup (key), new Value (obj));
+		Value *obj_value = new Value (obj);
+
+		obj->unref ();
+		obj_value->SetNeedUnref (false);
+
+		g_hash_table_insert (hash, g_strdup (key), obj_value);
+
+		if (addStrongRef)
+			addStrongRef (this, obj, key);
 	}
 
 cleanup:
@@ -440,6 +466,7 @@ remove_from_hash_by_value (gpointer  key,
 {
 	Value *v = (Value*)value;
 	DependencyObject *obj = (DependencyObject *) user_data;
+	// FIXME: clearStrongRef
 	return (v->GetKind () == obj->GetObjectType () && v->AsDependencyObject() == obj);
 }
 
@@ -448,15 +475,21 @@ void
 ResourceDictionary::RemovedFromCollection (Value *value)
 {
 	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *obj = value->AsDependencyObject ();
-		
-		obj->RemovePropertyChangeListener (this);
-		obj->SetParent (NULL, NULL);
-		obj->SetIsAttached (false);
-		
-		Collection::RemovedFromCollection (value);
+		if (!GetDeployment()->IsShuttingDown ()) {
+			DependencyObject *obj = value->AsDependencyObject ();
 
-		if (!from_resource_dictionary_api)
+			if (obj) {
+				obj->RemovePropertyChangeListener (this);
+				obj->SetParent (NULL, NULL);
+				obj->SetIsAttached (false);
+			}
+		}
+	}
+
+	Collection::RemovedFromCollection (value);
+
+	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+		if (!from_resource_dictionary_api && value->AsDependencyObject())
 			g_hash_table_foreach_remove (hash, remove_from_hash_by_value, value->AsDependencyObject ());
 	}
 }
@@ -473,7 +506,8 @@ ResourceDictionary::OnIsAttachedChanged (bool attached)
 		value = (Value *) array->pdata[i];
 		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
-			obj->SetIsAttached (attached);
+			if (obj)
+				obj->SetIsAttached (attached);
 		}
 	}
 }
@@ -488,7 +522,8 @@ ResourceDictionary::UnregisterAllNamesRootedAt (NameScope *from_ns)
 		value = (Value *) array->pdata[i];
 		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
-			obj->UnregisterAllNamesRootedAt (from_ns);
+			if (obj)
+				obj->UnregisterAllNamesRootedAt (from_ns);
 		}
 	}
 	

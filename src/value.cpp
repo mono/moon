@@ -48,6 +48,9 @@ namespace Moonlight {
 
 static const int NullFlag = 1;
 static const int GCHandleFlag = 1 << 1;
+static const int NoUnrefFlag = 1 << 2;
+
+static const int EqualityMask = NullFlag | GCHandleFlag;
 
 Value*
 Value::CreateUnrefPtr (EventObject* dob)
@@ -86,19 +89,34 @@ Value::Clone (Value *v, Types *types)
 }
 
 Type::Kind
-Value::GetKind ()
+Value::GetKind () const
 {
 	return k;
 }
 
 bool
-Value::GetIsManaged ()
+Value::GetNeedUnref () const
+{
+	return (padding & NoUnrefFlag) == 0;
+}
+
+void
+Value::SetNeedUnref (bool needUnref)
+{
+	if (needUnref)
+		padding &= ~NoUnrefFlag;
+	else
+		padding |= NoUnrefFlag;
+}
+
+bool
+Value::GetIsManaged () const
 {
 	return (padding & GCHandleFlag) == GCHandleFlag;
 }
 
 bool
-Value::GetIsNull ()
+Value::GetIsNull () const
 {
 	return (padding & NullFlag) == NullFlag;
 }
@@ -219,6 +237,8 @@ Value::Value (EventObject* obj)
 		LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
 		obj->ref ();
 		SetIsNull (false);
+
+		obj->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
 	}
 	u.dependency_object = obj;
 }
@@ -593,8 +613,16 @@ Value::Copy (const Value& v)
 		break;
 	default:
 		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
-			LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
-			u.dependency_object->ref ();
+
+			if (v.GetNeedUnref ()) {
+				LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
+				u.dependency_object->ref ();
+			}
+			else {
+				SetNeedUnref (false);
+			}
+
+			u.dependency_object->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
 		}
 		break;
 	}
@@ -695,16 +723,24 @@ Value::FreeValue ()
 	case Type::MANAGEDTYPEINFO:
 		ManagedTypeInfo::Free (u.type_info);
 		break;
-	default:
-		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
-			LOG_VALUE ("unref Value [%p] %s\n", this, GetName());
-			u.dependency_object->unref ();
+	default: {
+		Deployment *depl = Deployment::GetCurrent();
+		if (Is (depl, Type::EVENTOBJECT)) {
+			if (u.dependency_object) {
+				if (!depl->IsShuttingDown ())
+					u.dependency_object->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
+				if (GetNeedUnref ()) {
+					LOG_VALUE ("unref Value [%p] %s\n", this, GetName());
+					u.dependency_object->unref ();
+				}
+			}
 		}
+	}
 	}
 }
 
 char *
-Value::ToString ()
+Value::ToString () const
 {
 	GString *str = g_string_new ("");
 	
@@ -770,7 +806,7 @@ Value::operator== (const Value &v) const
 	if (k != v.k)
 		return false;
 	
-	if (padding != v.padding)
+	if ((padding & EqualityMask) != (v.padding & EqualityMask))
 		return false;
 
 	if ((padding & GCHandleFlag) == GCHandleFlag) {

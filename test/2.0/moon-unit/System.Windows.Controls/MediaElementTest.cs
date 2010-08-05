@@ -20,9 +20,21 @@ namespace MoonTest.System.Windows.Controls
 	[TestClass]
 	public partial class MediaElementTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
-		MediaElement media = new MediaElement ();
+		MediaElement media;
 		WebClient client = new WebClient ();
 		bool completed = false;
+
+		[TestInitialize]
+		public void Setup ()
+		{
+			media = new MediaElement ();
+		}
+
+		[TestCleanup]
+		public void Cleanup ()
+		{
+			media = null;
+		}
 
 		[TestMethod]
 		[Asynchronous]

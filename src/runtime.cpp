@@ -13,6 +13,22 @@
 
 #include <config.h>
 
+#define INCLUDED_MONO_HEADERS 1
+
+#include <glib.h>
+#include <mono/mini/jit.h>
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+G_BEGIN_DECLS
+/* because this header sucks */
+#include <mono/metadata/mono-debug.h>
+G_END_DECLS
+#include <mono/metadata/mono-config.h>
+#include <mono/metadata/threads.h>
+#include <mono/metadata/mono-gc.h>
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
@@ -42,6 +58,7 @@
 #include "drm.h"
 #include "utils.h"
 #include "timemanager.h"
+#include "factory.h"
 
 #include "contentcontrol.h"
 #include "usercontrol.h"
@@ -348,7 +365,9 @@ runtime_flags_set_show_fps (gboolean flag)
 Surface::Surface (MoonWindow *window)
 	: EventObject (Type::SURFACE)
 {
-	GetDeployment ()->SetSurface (this);
+	//	GetDeployment ()->SetSurface (this);
+
+	// EnsureManagedPeer ();
 
 	main_thread = pthread_self ();
 	main_thread_inited = true;
@@ -370,7 +389,7 @@ Surface::Surface (MoonWindow *window)
 		g_warning ("Surfaces cannot be initialized with fullscreen windows.");
 	window->SetSurface (this);
 	
-	layers = new HitTestCollection ();
+	layers = NULL;
 	toplevel = NULL;
 	input_list = new List ();
 	captured = NULL;
@@ -431,14 +450,12 @@ Surface::~Surface ()
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		
 	if (toplevel) {
-		toplevel->SetIsLoaded (false);
 		toplevel->SetIsAttached (false);
-		toplevel->unref ();
 	}
 	
 #if DEBUG
 	if (debug_selected_element) {
-		debug_selected_element->unref ();
+		// FIXME remove destroyed handler
 		debug_selected_element = NULL;
 	}
 #endif
@@ -463,7 +480,8 @@ Surface::~Surface ()
 	delete up_dirty;
 	delete down_dirty;
 	
-	layers->unref ();
+	// FIXME remove destroyed handler
+	// layers->unref ();
 	
 	surface_list = g_list_remove (surface_list, this);
 }
@@ -617,7 +635,7 @@ Surface::Attach (UIElement *element)
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->Stop ();
 		int maxframerate = time_manager->GetMaximumRefreshRate ();
-		toplevel->unref ();
+		MOON_CLEAR_FIELD_NAMED (toplevel, "Toplevel");
 		time_manager_mutex.Lock ();
 		/* We might end up here as a result of something that happens in a tick call. When control returns
 		 * to the time manager's tick call code, we might crash since the time manager will get destroyed here.
@@ -640,7 +658,6 @@ Surface::Attach (UIElement *element)
 		if (active_window)
 			active_window->Invalidate();
 
-		toplevel = NULL;
 		return;
 	}
 
@@ -649,14 +666,11 @@ Surface::Attach (UIElement *element)
 		return;
 	}
 
-	UIElement *new_toplevel = element;
-	new_toplevel->ref ();
-
 	// make sure we have a namescope at the toplevel so that names
 	// can be registered/resolved properly.
-	if (NameScope::GetNameScope (new_toplevel) == NULL) {
+	if (NameScope::GetNameScope (element) == NULL) {
 		NameScope *ns = new NameScope ();
-		NameScope::SetNameScope (new_toplevel, ns);
+		NameScope::SetNameScope (element, ns);
 		ns->unref ();
 	}
 
@@ -667,7 +681,7 @@ Surface::Attach (UIElement *element)
 	if (zombie)
 		return;
 
-	toplevel = new_toplevel;
+	MOON_SET_FIELD_NAMED (toplevel, "Toplevel", element);
 
 	this->ref ();
 	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
@@ -750,6 +764,9 @@ Surface::ToplevelLoaded (UIElement *element)
 void
 Surface::AttachLayer (UIElement *layer)
 {
+	if (layers == NULL)
+		MOON_SET_FIELD_UNREF(layers, MoonUnmanagedFactory::CreateHitTestCollection ());
+
 	if (layer == toplevel)
 		layers->Insert (0, Value(layer));
 	else {
@@ -767,6 +784,9 @@ Surface::AttachLayer (UIElement *layer)
 void
 Surface::DetachLayer (UIElement *layer)
 {
+	if (layers == NULL)
+		MOON_SET_FIELD_UNREF(layers, MoonUnmanagedFactory::CreateHitTestCollection ());
+
 	// if the layer contained the last UIElement receiving mouse input, clear the input list.
 	if (!input_list->IsEmpty() && ((UIElementNode*)input_list->Last())->uielement == layer) {
 		delete input_list;
@@ -1125,7 +1145,7 @@ Surface::SetUserInitiatedEvent (bool value)
 bool
 Surface::IsTopLevel (UIElement* top)
 {
-	if (top == NULL)
+	if (top == NULL || layers == NULL)
 		return false;
 
 	bool ret = top == full_screen_message;
@@ -1763,11 +1783,11 @@ Surface::CreateArgsForEvent (int event_id, MoonEvent *event)
 	if (event_id ==UIElement::InvalidatedEvent
 	    || event_id ==UIElement::GotFocusEvent
 	    || event_id ==UIElement::LostFocusEvent)
-		return new RoutedEventArgs ();
+		return MoonUnmanagedFactory::CreateRoutedEventArgs ();
 	else if (event_id == UIElement::MouseLeaveEvent
 		 || event_id ==UIElement::MouseMoveEvent
 		 || event_id ==UIElement::MouseEnterEvent)
-		return new MouseEventArgs((MoonMouseEvent*)event);
+		return new MouseEventArgs ((MoonMouseEvent*)event);
 	else if (event_id ==UIElement::MouseLeftButtonMultiClickEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
@@ -1778,7 +1798,7 @@ Surface::CreateArgsForEvent (int event_id, MoonEvent *event)
 		return new MouseWheelEventArgs((MoonScrollWheelEvent*)event);
 	else if (event_id == UIElement::KeyDownEvent
 		 || event_id == UIElement::KeyUpEvent)
-		return new KeyEventArgs((MoonKeyEvent*)event);
+		return new KeyEventArgs ((MoonKeyEvent*)event);
 	else {
 		g_warning ("Unknown event id %d\n", event_id);
 		return new EventArgs();

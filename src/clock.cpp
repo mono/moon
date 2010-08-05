@@ -73,7 +73,6 @@ CallRaiseAccumulatedCompleted (Clock *clock)
 	clock->RaiseAccumulatedCompleted ();
 }
 
-
 Clock::Clock (Timeline *tl)
   : natural_duration (Duration::Automatic)
 {
@@ -93,7 +92,7 @@ Clock::Clock (Timeline *tl)
 	accumulated_pause_time = 0;
 	has_started = false;
 	timeline = tl;
-	timeline->ref();
+	timeline->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &timeline);
 	queued_events = 0;
 	root_parent_time = 0;
 
@@ -106,7 +105,6 @@ Clock::Clock (Timeline *tl)
 
 Clock::~Clock ()
 {
-	timeline->unref();
 	g_free (name);
 }
 
@@ -114,8 +112,13 @@ void
 Clock::Dispose ()
 {
 	if (!IsDisposed ()) {
+		if (GetTimeline () && !Deployment::GetCurrent()->IsShuttingDown ()) {
+			timeline->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &timeline);
+
+			GetTimeline()->TeardownClock ();
+		}
+
 		EventObject::Dispose ();
-		GetTimeline()->TeardownClock ();
 	}
 }
 
@@ -171,6 +174,12 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// and [0-$forever] for Forever durations.  Automatic
 	// durations are translated into timespans.
 
+	if (timeline == NULL) {
+		// printf ("timeline is null!?  fuck yeah! (clock = %s)\n", name);
+		Stop ();
+		return false;
+	}
+		
 	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= parentTime)) {
 		if (GetBeginOnTick())
 			BeginOnTick (false);

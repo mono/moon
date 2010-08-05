@@ -45,7 +45,7 @@ namespace System.Windows {
 	public partial class ResourceDictionary	: DependencyObject, IDictionary, IDictionary<object, object> {
 		object sync_root = new object ();
 		Uri source;
-		
+
 		//
 		// Properties
 		//

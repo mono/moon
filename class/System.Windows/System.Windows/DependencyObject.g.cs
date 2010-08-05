@@ -126,7 +126,10 @@ namespace System.Windows {
 	}
 
 	partial class PresentationFrameworkCollection<T> {
-		internal PresentationFrameworkCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		internal PresentationFrameworkCollection (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class ResourceDictionary {
@@ -414,8 +417,14 @@ namespace System.Windows.Documents {
 	}
 
 	partial class Hyperlink {
-		public Hyperlink () : base (SafeNativeMethods.hyperlink_new (), true) {}
-		internal Hyperlink (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public Hyperlink () : base (SafeNativeMethods.hyperlink_new (), true)
+		{
+			Initialize ();
+		}
+		internal Hyperlink (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class Inline {

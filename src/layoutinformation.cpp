@@ -13,6 +13,7 @@
 #include "geometry.h"
 #include "rect.h"
 #include "point.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -47,7 +48,7 @@ LayoutInformation::GetCompositeClip (FrameworkElement *item)
 	if (isinf (composite.width) || isinf (composite.height))
 		return NULL;
 
-	RectangleGeometry *geom = new RectangleGeometry ();
+	RectangleGeometry *geom = MoonUnmanagedFactory::CreateRectangleGeometry ();
 	geom->SetRect (&composite);
 
 	return geom;

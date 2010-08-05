@@ -33,10 +33,9 @@ namespace Moonlight {
 /* @Namespace=System.Windows.Media.Animation */
 class KeySpline : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	KeySpline ();
-	
+	/* @SkipFactories */
 	KeySpline (Point controlPoint1, Point controlPoint2);
+	/* @SkipFactories */
 	KeySpline (double x1, double y1, double x2, double y2);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -56,8 +55,13 @@ public:
 	void SetControlPoint2 (Point *controlPoint2);
 	
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	KeySpline ();
+	
 	virtual ~KeySpline ();
 
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	moon_quadratic *quadraticsArray;
@@ -171,9 +175,6 @@ public:
 	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
 	const static int EasingFunctionProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	DoubleAnimation ();
-	
 	virtual Type::Kind GetValueKind () { return Type::DOUBLE; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -201,7 +202,13 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DoubleAnimation ();
+	
 	virtual ~DoubleAnimation () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	double *doubleToCached;
@@ -225,9 +232,6 @@ class ColorAnimation : public Animation {
 	const static int ToProperty;
 	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
 	const static int EasingFunctionProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ColorAnimation ();
 	
 	virtual Type::Kind GetValueKind () { return Type::COLOR; };
 
@@ -256,7 +260,13 @@ class ColorAnimation : public Animation {
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ColorAnimation ();
+
 	virtual ~ColorAnimation () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	Color *colorToCached;
@@ -280,9 +290,6 @@ public:
 	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
 	const static int EasingFunctionProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
- 	PointAnimation ();
- 	
 	virtual Type::Kind GetValueKind () { return Type::POINT; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -310,7 +317,13 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+ 	PointAnimation ();
+ 	
 	virtual ~PointAnimation ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	Point *pointToCached;
@@ -340,6 +353,7 @@ public:
 
 protected:
 	virtual ~KeyFrame ();
+	/* @SkipFactories */
 	KeyFrame ();
 };
 
@@ -348,9 +362,6 @@ class KeyFrameCollection : public DependencyObjectCollection {
 public:
 	GPtrArray *sorted_list;
 	bool resolved;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	KeyFrameCollection ();
 	
 	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
 	
@@ -364,55 +375,73 @@ protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	KeyFrameCollection ();
+	
 	virtual ~KeyFrameCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class ColorKeyFrameCollection : public KeyFrameCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	ColorKeyFrameCollection ();
-	
 	virtual Type::Kind GetElementType() { return Type::COLORKEYFRAME; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ColorKeyFrameCollection ();
+	
 	virtual ~ColorKeyFrameCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class DoubleKeyFrameCollection : public KeyFrameCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DoubleKeyFrameCollection ();
-	
 	virtual Type::Kind GetElementType() { return Type::DOUBLEKEYFRAME; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DoubleKeyFrameCollection ();
+	
 	virtual ~DoubleKeyFrameCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class PointKeyFrameCollection : public KeyFrameCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	PointKeyFrameCollection ();
-	
 	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PointKeyFrameCollection ();
+
 	virtual ~PointKeyFrameCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrameCollection : public KeyFrameCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	ObjectKeyFrameCollection ();
-
 	virtual Type::Kind GetElementType() { return Type::OBJECTKEYFRAME; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ObjectKeyFrameCollection ();
+
 	virtual ~ObjectKeyFrameCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -422,9 +451,6 @@ public:
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	DoubleKeyFrame ();
 	
 	//
 	// Property Accessors
@@ -437,7 +463,13 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	DoubleKeyFrame ();
+	
 	virtual ~DoubleKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -447,9 +479,6 @@ public:
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	ColorKeyFrame ();
 	
 	//
 	// Property Accessors
@@ -463,15 +492,18 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	ColorKeyFrame ();
+	
 	virtual ~ColorKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrame : public KeyFrame /* The managed class derives directly from DependencyObject */ {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	ObjectKeyFrame ();
-	
 	/* @PropertyType=object,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Internal */
 	const static int ConvertedValueProperty;
 	/* @PropertyType=object,ManagedPropertyType=object */
@@ -488,7 +520,13 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	ObjectKeyFrame ();
+	
 	virtual ~ObjectKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -498,9 +536,6 @@ public:
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	PointKeyFrame ();
 	
 	//
 	// Property Accessors
@@ -514,7 +549,13 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	PointKeyFrame ();
+	
 	virtual ~PointKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
@@ -522,13 +563,16 @@ protected:
 /* @Namespace=System.Windows.Media.Animation */
 class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DiscreteDoubleKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DiscreteDoubleKeyFrame ();
+	
 	virtual ~DiscreteDoubleKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
@@ -537,51 +581,63 @@ protected:
 /* @Namespace=System.Windows.Media.Animation */
 class DiscreteColorKeyFrame : public ColorKeyFrame {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DiscreteColorKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DiscreteColorKeyFrame ();
+	
 	virtual ~DiscreteColorKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class DiscreteObjectKeyFrame : public ObjectKeyFrame {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DiscreteObjectKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DiscreteObjectKeyFrame ();
+	
 	virtual ~DiscreteObjectKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class DiscretePointKeyFrame : public PointKeyFrame {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DiscretePointKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DiscretePointKeyFrame ();
+	
 	virtual ~DiscretePointKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	LinearDoubleKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	LinearDoubleKeyFrame ();
+	
 	virtual ~LinearDoubleKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
@@ -589,13 +645,16 @@ protected:
 /* @Namespace=System.Windows.Media.Animation */
 class LinearColorKeyFrame : public ColorKeyFrame {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	LinearColorKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	LinearColorKeyFrame ();
+	
 	virtual ~LinearColorKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
@@ -603,13 +662,16 @@ protected:
 /* @Namespace=System.Windows.Media.Animation */
 class LinearPointKeyFrame : public PointKeyFrame {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	LinearPointKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	LinearPointKeyFrame ();
+	
 	virtual ~LinearPointKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
@@ -620,9 +682,6 @@ public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	const static int KeySplineProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	SplineDoubleKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -632,7 +691,13 @@ public:
 	void SetKeySpline (KeySpline* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	SplineDoubleKeyFrame ();
+	
 	virtual ~SplineDoubleKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
@@ -643,9 +708,6 @@ public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	const static int KeySplineProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	SplineColorKeyFrame ();
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -655,7 +717,13 @@ public:
 	void SetKeySpline (KeySpline* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	SplineColorKeyFrame ();
+	
 	virtual ~SplineColorKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
@@ -666,9 +734,6 @@ public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	const static int KeySplineProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	SplinePointKeyFrame ();
-
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -678,7 +743,13 @@ public:
 	void SetKeySpline (KeySpline* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	SplinePointKeyFrame ();
+
 	virtual ~SplinePointKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -687,9 +758,6 @@ public:
  	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
 	const static int EasingFunctionProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	EasingColorKeyFrame ();
-
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -699,7 +767,13 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	EasingColorKeyFrame ();
+
 	virtual ~EasingColorKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -708,9 +782,6 @@ public:
  	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
 	const static int EasingFunctionProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	EasingDoubleKeyFrame ();
-
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -720,7 +791,13 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	EasingDoubleKeyFrame ();
+
 	virtual ~EasingDoubleKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -729,9 +806,6 @@ public:
  	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
 	const static int EasingFunctionProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	EasingPointKeyFrame ();
-
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -741,7 +815,13 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	EasingPointKeyFrame ();
+
 	virtual ~EasingPointKeyFrame ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -750,9 +830,6 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 public:
  	/* @PropertyType=DoubleKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int KeyFramesProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	DoubleAnimationUsingKeyFrames ();
 	
 	void AddKeyFrame (DoubleKeyFrame *frame);
 	void RemoveKeyFrame (DoubleKeyFrame *frame);
@@ -772,7 +849,13 @@ public:
 	void SetKeyFrames (DoubleKeyFrameCollection* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DoubleAnimationUsingKeyFrames ();
+	
 	virtual ~DoubleAnimationUsingKeyFrames ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -781,9 +864,6 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 public:
  	/* @PropertyType=ColorKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int KeyFramesProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ColorAnimationUsingKeyFrames ();
 	
 	void AddKeyFrame (ColorKeyFrame *frame);
 	void RemoveKeyFrame (ColorKeyFrame *frame);
@@ -803,7 +883,13 @@ public:
 	void SetKeyFrames (ColorKeyFrameCollection* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ColorAnimationUsingKeyFrames ();
+	
 	virtual ~ColorAnimationUsingKeyFrames ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Version=2 */
@@ -814,9 +900,6 @@ public:
  	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors,AutoCreateValue */
 	const static int KeyFramesProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ObjectAnimationUsingKeyFrames ();
-
 	void AddKeyFrame (ObjectKeyFrame *frame);
 	void RemoveKeyFrame (ObjectKeyFrame *frame);
 
@@ -835,7 +918,13 @@ public:
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ObjectAnimationUsingKeyFrames ();
+
 	virtual ~ObjectAnimationUsingKeyFrames ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -844,9 +933,6 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 public:
  	/* @PropertyType=PointKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int KeyFramesProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PointAnimationUsingKeyFrames ();
 	
 	void AddKeyFrame (PointKeyFrame *frame);
 	void RemoveKeyFrame (PointKeyFrame *frame);
@@ -866,7 +952,13 @@ public:
 	void SetKeyFrames (PointKeyFrameCollection* value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PointAnimationUsingKeyFrames ();
+	
 	virtual ~PointAnimationUsingKeyFrames ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -877,9 +969,6 @@ public:
 	const static int TargetNameProperty;
  	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=StoryboardTargetPropertyValidator */
 	const static int TargetPropertyProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	Storyboard ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool BeginWithError (MoonError *error);
@@ -917,8 +1006,13 @@ public:
 	static PropertyPath *GetTargetProperty (DependencyObject *o);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Storyboard ();
+	
 	virtual ~Storyboard ();
 
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 private:
 	bool HookupAnimationsRecurse (Clock *clock,
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
@@ -933,9 +1027,6 @@ public:
  	/* @PropertyType=Storyboard,GenerateAccessors */
 	const static int StoryboardProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	BeginStoryboard ();
-	
 	virtual void Fire ();
 	
 	//
@@ -945,7 +1036,13 @@ public:
 	Storyboard *GetStoryboard ();
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	BeginStoryboard ();
+	
 	virtual ~BeginStoryboard ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 // internal WPF class gleaned from stack traces

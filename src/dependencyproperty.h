@@ -24,7 +24,7 @@ class PropertyChangedEventArgs;
 class MoonError;
 
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
-typedef Value* AutoCreator  (Type::Kind type, DependencyProperty *property);
+typedef Value* AutoCreator  (Type::Kind type, DependencyProperty *property, DependencyObject *forObj);
 
 /* @CBindingRequisite */
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
@@ -70,6 +70,7 @@ class DependencyProperty {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetDefaultValue (Type::Kind kind);
+	Value *GetDefaultValue (Type::Kind kind, DependencyObject *forObj);
 	void AddDefaultValueOverride (Type::Kind kind, Value *value);
 
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);

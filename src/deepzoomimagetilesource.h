@@ -45,14 +45,19 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void Abort ();
 	
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DeepZoomImageTileSource ();
+
 	virtual ~DeepZoomImageTileSource ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=Uri,GenerateAccessors */
 	const static int UriSourceProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	DeepZoomImageTileSource ();
+
+	/* @SkipFactories */
 	DeepZoomImageTileSource (Uri *uri, bool nested = false);
 	
 	bool IsCollection () { return is_collection; }

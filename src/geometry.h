@@ -49,15 +49,17 @@ class Geometry : public DependencyObject {
 
 	Rect local_bounds;
 	
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	Geometry ();
+
 	virtual ~Geometry ();
 	virtual Rect ComputePathBounds ();
-	
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
  public:
  	/* @PropertyType=Transform,GenerateAccessors */
 	const static int TransformProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	Geometry ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
@@ -92,11 +94,14 @@ class Geometry : public DependencyObject {
 /* @Namespace=System.Windows.Media */
 class GeometryCollection : public DependencyObjectCollection {
  protected:
-	virtual ~GeometryCollection ();
-
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	GeometryCollection ();
+
+	virtual ~GeometryCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+ public:
 
 	virtual Type::Kind GetElementType () { return Type::GEOMETRY; }
 };
@@ -109,17 +114,19 @@ class GeometryCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class GeometryGroup : public Geometry {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	GeometryGroup ();
+
 	virtual ~GeometryGroup ();
 	virtual Rect ComputePathBounds ();
 
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
  	/* @PropertyType=GeometryCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int ChildrenProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	GeometryGroup ();
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
@@ -145,8 +152,14 @@ class EllipseGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	EllipseGeometry ();
+	
 	virtual ~EllipseGeometry ();
 	virtual Rect ComputePathBounds ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
@@ -156,9 +169,6 @@ class EllipseGeometry : public Geometry {
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RadiusYProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	EllipseGeometry ();
-	
 	//
 	// Property Accessors
 	//
@@ -181,17 +191,20 @@ class LineGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	LineGeometry ();
+	
 	virtual ~LineGeometry ();
 	virtual Rect ComputePathBounds ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int EndPointProperty;
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int StartPointProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	LineGeometry ();
 	
 	//
 	// Property Accessors
@@ -229,17 +242,22 @@ class PathGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	PathGeometry ();
+
 	virtual ~PathGeometry ();
 	virtual Rect ComputePathBounds ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
  	/* @PropertyType=PathFigureCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int FiguresProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PathGeometry ();
+
+	/* @SkipFactories */
 	PathGeometry (moon_path *pml_path);
 
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
@@ -267,8 +285,14 @@ class RectangleGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	RectangleGeometry ();
+	
 	virtual ~RectangleGeometry ();
 	virtual Rect ComputePathBounds ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
@@ -277,9 +301,6 @@ class RectangleGeometry : public Geometry {
 	const static int RadiusYProperty;
  	/* @PropertyType=Rect,DefaultValue=Rect(),GenerateAccessors */
 	const static int RectProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	RectangleGeometry ();
 	
 	//
 	// Property Accesors
@@ -301,12 +322,15 @@ class RectangleGeometry : public Geometry {
 /* @Namespace=System.Windows.Media */
 class PathSegmentCollection : public DependencyObjectCollection {
  protected:
-	virtual ~PathSegmentCollection ();
-
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	PathSegmentCollection ();
 	
+	virtual ~PathSegmentCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	virtual Type::Kind GetElementType () { return Type::PATHSEGMENT; }
 };
 
@@ -318,7 +342,13 @@ class PathSegmentCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class PathFigure : public DependencyObject {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PathFigure ();
+	
 	virtual ~PathFigure ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -331,9 +361,6 @@ class PathFigure : public DependencyObject {
 	const static int IsFilledProperty;
 	
 	moon_path *path;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PathFigure ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
@@ -368,12 +395,15 @@ class PathSegment : public DependencyObject {
  protected:
 	virtual void Build ();
 	
-	virtual ~PathSegment ();
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	PathSegment ();
+
+	virtual ~PathSegment ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
+ public:
 	virtual void Append (moon_path *path);
 	virtual int GetPathSize () { return 0; }
 };
@@ -385,7 +415,13 @@ class PathSegment : public DependencyObject {
 /* @Namespace=System.Windows.Media */
 class ArcSegment : public PathSegment {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ArcSegment ();
+	
 	virtual ~ArcSegment ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -398,9 +434,6 @@ class ArcSegment : public PathSegment {
 	const static int SizeProperty;
  	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise,GenerateAccessors */
 	const static int SweepDirectionProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ArcSegment ();
 	
 	virtual int GetPathSize () { return 4 * MOON_PATH_CURVE_TO_LENGTH; } // non-optimal size, depends on angle
 	
@@ -432,7 +465,13 @@ class ArcSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class BezierSegment : public PathSegment {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	BezierSegment ();
+	
 	virtual ~BezierSegment ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
@@ -441,9 +480,6 @@ class BezierSegment : public PathSegment {
 	const static int Point2Property;
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point3Property;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	BezierSegment ();
 	
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 	
@@ -469,14 +505,16 @@ class BezierSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class LineSegment : public PathSegment {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	LineSegment ();
+	
 	virtual ~LineSegment ();
 
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
  public:
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int PointProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	LineSegment ();
 	
 	virtual int GetPathSize () { return MOON_PATH_LINE_TO_LENGTH; }
 	
@@ -496,17 +534,20 @@ class LineSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class PolyBezierSegment : public PathSegment {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PolyBezierSegment ();
+
 	virtual ~PolyBezierSegment ();
 	
 	PointCollection *GetPoints ();
-	
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
  	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PolyBezierSegment ();
-
 	virtual int GetPathSize ();
 	
 	virtual void Append (moon_path *path);
@@ -525,17 +566,20 @@ class PolyBezierSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class PolyLineSegment : public PathSegment {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PolyLineSegment ();
+
 	virtual ~PolyLineSegment ();
 	
 	PointCollection *GetPoints ();
-	
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
  	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PolyLineSegment ();
-
 	virtual int GetPathSize ();
 	
 	virtual void Append (moon_path *path);
@@ -553,17 +597,20 @@ class PolyLineSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class PolyQuadraticBezierSegment : public PathSegment {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PolyQuadraticBezierSegment ();
+
 	virtual ~PolyQuadraticBezierSegment ();
 	
 	PointCollection *GetPoints ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
  	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PolyQuadraticBezierSegment ();
-
 	virtual int GetPathSize ();
 
 	virtual void Append (moon_path *path);
@@ -581,16 +628,19 @@ class PolyQuadraticBezierSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class QuadraticBezierSegment : public PathSegment {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	QuadraticBezierSegment ();
+	
 	virtual ~QuadraticBezierSegment ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point1Property;
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int Point2Property;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	QuadraticBezierSegment ();
 	
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 	

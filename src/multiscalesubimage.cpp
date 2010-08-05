@@ -48,6 +48,7 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	delete original_uri;
 	LOG_MSI (" to %s\n", source_uri->ToString());
 
+	EnsureManagedPeer ();
 }
 
 double

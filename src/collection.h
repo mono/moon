@@ -29,6 +29,7 @@ class CollectionIterator;
 //
 /* @Namespace=System.Windows */
 /* @ManagedName=PresentationFrameworkCollection`1 */
+/* @CallInitialize */
 /* @ManagedDependencyProperties=Manual */
 /* @ManagedEvents=Manual */
 class Collection : public DependencyObject {
@@ -105,6 +106,7 @@ protected:
 
 	virtual void CloneCore (Types *types, DependencyObject* fromObj);
 
+	/* @SkipFactories */
 	Collection ();
 	virtual ~Collection ();
 	virtual void Dispose ();
@@ -115,9 +117,6 @@ protected:
 /* @ManagedName=DependencyObjectCollection`1 */
 class DependencyObjectCollection : public Collection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObjectCollection ();
-	
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
 	virtual void OnIsAttachedChanged (bool value);
@@ -130,35 +129,47 @@ protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObjectCollection ();
+	
 	virtual ~DependencyObjectCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media */
 class DoubleCollection : public Collection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DoubleCollection ();
-	
 	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
 
 	static DoubleCollection* FromStr (const char *str);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DoubleCollection ();
+	
 	virtual ~DoubleCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media */
 class PointCollection : public Collection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	PointCollection ();
-	
 	virtual Type::Kind GetElementType () { return Type::POINT; }
 
 	static PointCollection* FromStr (const char *str);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PointCollection ();
+
 	virtual ~PointCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 class CollectionIterator {
@@ -224,24 +235,30 @@ protected:
 /* @Namespace=System.Windows */
 class TriggerCollection : public DependencyObjectCollection {
  protected:
-	virtual ~TriggerCollection ();
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	TriggerCollection ();
 	
+	virtual ~TriggerCollection ();
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
 };
 
 /* @Namespace=System.Windows */
 class TriggerActionCollection : public DependencyObjectCollection {
  protected:
-	virtual ~TriggerActionCollection ();
-
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TriggerActionCollection ();
 	
+	virtual ~TriggerActionCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	/* this may seem wrong, but it's what the TriggerActionCollection mandates */
 	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
 };
@@ -249,12 +266,15 @@ class TriggerActionCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Documents */
 class InlineCollection : public DependencyObjectCollection {
  protected:
-	virtual ~InlineCollection ();
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	InlineCollection ();
+
+	virtual ~InlineCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
+ public:
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
 	
 	bool Equals (InlineCollection *inlines);
@@ -263,13 +283,16 @@ class InlineCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class UIElementCollection : public DependencyObjectCollection {
  protected:
-	virtual ~UIElementCollection ();
-	
- public:
-	GPtrArray *z_sorted;
-	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	UIElementCollection ();
+
+	virtual ~UIElementCollection ();
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
+	GPtrArray *z_sorted;
 	
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
 	
@@ -281,12 +304,15 @@ class UIElementCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class ItemCollection : public Collection {
  protected:
-	virtual ~ItemCollection ();
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	ItemCollection ();
 	
+	virtual ~ItemCollection ();
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	virtual Type::Kind GetElementType () { return Type::OBJECT; }
 };
 
@@ -295,9 +321,6 @@ class MultiScaleSubImageCollection : public DependencyObjectCollection {
 public:
 	GPtrArray *z_sorted;
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	MultiScaleSubImageCollection ();
-	
 	virtual Type::Kind GetElementType () { return Type::MULTISCALESUBIMAGE; }
 
 	virtual bool Clear ();
@@ -305,7 +328,13 @@ public:
 	void ResortByZIndex ();
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	MultiScaleSubImageCollection ();
+	
 	virtual ~MultiScaleSubImageCollection ();
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Controls */
@@ -313,21 +342,28 @@ class HitTestCollection : public UIElementCollection {
  protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
 	virtual void RemovedFromCollection (Value *value) {}
-	virtual ~HitTestCollection () {}
- public:
+
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	HitTestCollection ();
+
+	virtual ~HitTestCollection () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 class ResourceDictionaryCollection : public DependencyObjectCollection {
  protected:
-	virtual ~ResourceDictionaryCollection ();
-
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ResourceDictionaryCollection ();
 	
+	virtual ~ResourceDictionaryCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	virtual Type::Kind GetElementType () { return Type::RESOURCE_DICTIONARY; }
 };
 
@@ -335,24 +371,30 @@ class ResourceDictionaryCollection : public DependencyObjectCollection {
 /* @ManagedName=TextElementCollection`1 */
 class TextElementCollection : public DependencyObjectCollection {
 protected:
-	virtual ~TextElementCollection () {}
- 
-public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextElementCollection ();
 
+	virtual ~TextElementCollection () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+ 
+public:
 	virtual Type::Kind GetElementType () { return Type::TEXTELEMENT; }
 };
 
 /* @Namespace=System.Windows.Documents */
 class BlockCollection : public TextElementCollection {
 protected:
-	virtual ~BlockCollection () {}
- 
-public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	BlockCollection ();
  
+	virtual ~BlockCollection () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+ 
+public:
 	virtual Type::Kind GetElementType () { return Type::BLOCK; }
 };
 

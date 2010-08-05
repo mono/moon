@@ -159,6 +159,19 @@ AnimationStorage::SetStopValue (Value *value)
 	else
 		stopValue = NULL;
 }
+
+AnimationClock*
+AnimationStorage::GetClock ()
+{
+	return clock;
+}
+
+Animation*
+AnimationStorage::GetTimeline ()
+{
+	return timeline;
+}
+
 // End of public methods
 
 // Private methods
@@ -207,7 +220,10 @@ AnimationStorage::ResetPropertyValue ()
 	if (timeline->GetTimelineStatus () != Timeline::TIMELINE_STATUS_OK)
 		return;
 
-	Applier *applier = clock->GetTimeManager ()->GetApplier ();
+	Applier *applier = NULL;
+
+	if (clock->GetTimeManager ())
+		applier = clock->GetTimeManager()->GetApplier ();
 
 	if (applier)
 		applier->AddPropertyChange (targetobj, targetprop,
@@ -391,7 +407,6 @@ Animation::GetNaturalDurationCore (Clock* clock)
 
 
 /* storyboard */
-
 Storyboard::Storyboard ()
 {
 	SetObjectType (Type::STORYBOARD);
@@ -399,9 +414,6 @@ Storyboard::Storyboard ()
 
 Storyboard::~Storyboard ()
 {
-	if (clock) {
-		StopWithError (/* ignore any error */ NULL);
-	}
 }
 
 TimeSpan
@@ -517,7 +529,8 @@ Storyboard::BeginWithError (MoonError *error)
 	   hierarchy */
 	if (clock) {
 		DetachCompletedHandler ();
-		clock->Dispose ();
+		clock->unref ();
+		clock = NULL;
 	}
 
 	if (Validate () == false)
@@ -527,7 +540,7 @@ Storyboard::BeginWithError (MoonError *error)
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
 	AllocateClock ();
-	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
+	char *name = g_strdup_printf ("Storyboard %p, named '%s'", this, GetName());
 	clock->SetName (name);
 
 
@@ -614,7 +627,8 @@ Storyboard::StopWithError (MoonError *error)
 	if (clock) {
 		DetachCompletedHandler ();
 		clock->Stop ();
-		clock->Dispose ();
+		clock->unref ();
+		clock = NULL;
 	}
 }
 
@@ -938,6 +952,8 @@ KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 	quadraticsArray = NULL;
 	SetControlPoint1 (&controlPoint1);
 	SetControlPoint2 (&controlPoint2);
+
+	EnsureManagedPeer ();
 }
 
 KeySpline::KeySpline (double x1, double y1,
@@ -952,6 +968,8 @@ KeySpline::KeySpline (double x1, double y1,
 
 	SetControlPoint1 (&p1);
 	SetControlPoint2 (&p2);
+
+	EnsureManagedPeer ();
 }
 
 KeySpline::~KeySpline ()
@@ -1182,7 +1200,6 @@ DoubleKeyFrame::~DoubleKeyFrame ()
 ColorKeyFrame::ColorKeyFrame ()
 {
 	SetObjectType (Type::COLORKEYFRAME);
-	static Color c = Color (0, 0, 0, 1);
 }
 
 ColorKeyFrame::~ColorKeyFrame ()
@@ -1253,7 +1270,6 @@ DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 	else
 		return new Value (*baseValue->AsPoint());
 }
-
 
 LinearDoubleKeyFrame::LinearDoubleKeyFrame ()
 {
@@ -1330,7 +1346,6 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 
 	return new Value (LERP (start, end, splineProgress));
 }
-
 
 SplineColorKeyFrame::SplineColorKeyFrame ()
 {
@@ -1592,7 +1607,6 @@ generic_keyframe_validator (KeyFrameCollection *col)
 	return true;
 }
 
-
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames ()
 {
 	SetObjectType (Type::DOUBLEANIMATIONUSINGKEYFRAMES);
@@ -1701,7 +1715,7 @@ DoubleAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (GetKeyFrames ());
 }
 
-ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
+ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames ()
 {
 	SetObjectType (Type::COLORANIMATIONUSINGKEYFRAMES);
 }
@@ -1806,7 +1820,7 @@ ColorAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (GetKeyFrames ());
 }
 
-PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
+PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames ()
 {
 	SetObjectType (Type::POINTANIMATIONUSINGKEYFRAMES);
 }

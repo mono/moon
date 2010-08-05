@@ -38,6 +38,7 @@ public:
 
 protected:
 	virtual ~EventArgs ();
+	/* @SkipFactories */
 	EventArgs (Type::Kind type);
 };
 
@@ -52,13 +53,14 @@ public:
 			old_value = new Value (*old_value);
 	}
 
+	PropertyChangedEventArgs () : obj (NULL), id (0), old_value(NULL), new_value (NULL) { }
+
+
 	~PropertyChangedEventArgs ()
 	{
 		delete new_value;
 		delete old_value;
 	}
-
-	PropertyChangedEventArgs () : obj (NULL), id (0), old_value(NULL), new_value (NULL) { }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyProperty *GetProperty () { return obj; }
@@ -110,9 +112,10 @@ enum CollectionChangedAction {
 /* @Namespace=None */
 class CollectionChangedEventArgs : public EventArgs {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,SkipTypeConstructor */
 	CollectionChangedEventArgs ();
 
+	/* @SkipFactories */
 	CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -157,6 +160,7 @@ public:
 					DependencyProperty *property,
 					Value *oldValue,
 					Value *newValue)
+		: EventArgs (Type::COLLECTIONITEMCHANGEDEVENTARGS)
 	{
 		this->collectionItem = collectionItem;
 		this->property = property;
@@ -165,6 +169,7 @@ public:
 	}
 
 	CollectionItemChangedEventArgs ()
+		: EventArgs (Type::COLLECTIONITEMCHANGEDEVENTARGS)
 	{
 		this->collectionItem = NULL;
 		this->property = NULL;
@@ -210,11 +215,6 @@ class DownloadProgressEventArgs : public EventArgs {
 /* @Namespace=None */
 class RoutedEventArgs : public EventArgs {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
-	RoutedEventArgs ();
-	
-	RoutedEventArgs (DependencyObject *source);
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetSource ();
 	
@@ -227,11 +227,24 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetHandled ();
 
+	/* @SkipFactories */
+	RoutedEventArgs (DependencyObject *source);
+
 protected:
-	virtual ~RoutedEventArgs ();
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	RoutedEventArgs ();
+
+	/* @SkipFactories */
 	RoutedEventArgs (DependencyObject *source, Type::Kind kind);
+
+	/* @SkipFactories */
 	RoutedEventArgs (Type::Kind kind);
-	
+
+	virtual ~RoutedEventArgs ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
 private:
 	DependencyObject *source;
 	bool handled;
@@ -240,8 +253,7 @@ private:
 /* @Namespace=None */
 class KeyEventArgs : public RoutedEventArgs {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
-	KeyEventArgs ();
+ 	/* @SkipFactories */
 	KeyEventArgs (MoonKeyEvent *event);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -252,7 +264,13 @@ public:
 	
 	MoonKeyEvent *GetEvent () { return event; }
 protected:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	KeyEventArgs ();
+
 	virtual ~KeyEventArgs ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
 private:
 	MoonKeyEvent *event;
@@ -261,8 +279,7 @@ private:
 /* @Namespace=None */
 class MouseEventArgs : public RoutedEventArgs {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
-	MouseEventArgs ();
+	/* @SkipFactories */
 	MouseEventArgs (MoonMouseEvent *event);
 	
 	MoonMouseEvent *GetEvent () { return event; }
@@ -277,8 +294,16 @@ public:
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
 	
 protected:
-	virtual ~MouseEventArgs ();
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	MouseEventArgs ();
+
+	/* @SkipFactories */
 	MouseEventArgs (Type::Kind kind, MoonMouseEvent *event);
+
+	virtual ~MouseEventArgs ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
 private:
 	MoonMouseEvent *event;
@@ -287,11 +312,17 @@ private:
 /* @Namespace=None */
 class LogReadyRoutedEventArgs : public RoutedEventArgs {
 public:
+	const char *GetLog () { return log; }
+	LogSource GetLogSource () { return log_source; }
+
+protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	LogReadyRoutedEventArgs ();
 	
-	const char *GetLog () { return log; }
-	LogSource GetLogSource () { return log_source; }
+	virtual ~LogReadyRoutedEventArgs () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	const char *log;
@@ -303,6 +334,8 @@ class MouseButtonEventArgs : public MouseEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseButtonEventArgs ();
+
+	/* @SkipFactories */
 	MouseButtonEventArgs (MoonButtonEvent *event);
 
 protected:
@@ -314,6 +347,8 @@ class MouseWheelEventArgs : public MouseEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseWheelEventArgs ();
+
+	/* @SkipFactories */
 	MouseWheelEventArgs (MoonScrollWheelEvent *event);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -335,10 +370,13 @@ private:
 
 protected:
 	virtual ~ErrorEventArgs ();
-	ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error);
-	
+
 public:
+	/* @SkipFactories */
+	ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error);
+	/* @SkipFactories */
 	ErrorEventArgs (ErrorEventArgsType type, MoonError error);
+	/* @SkipFactories */
 	ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_code, const char *extended_msg);
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -363,6 +401,7 @@ public:
 /* @Namespace=None,ManagedDependencyProperties=None */
 class ImageErrorEventArgs : public ErrorEventArgs {
 public:
+	/* @SkipFactories */
 	ImageErrorEventArgs (MoonError error);
 
 protected:

@@ -27,11 +27,12 @@
 using Mono;
 using System;
 using System.Threading;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Windows.Messaging {
 
-	public sealed partial class LocalMessageReceiver : INativeDependencyObjectWrapper, IDisposable
+	public sealed partial class LocalMessageReceiver : INativeEventObjectWrapper, IDisposable
 	{
 		public static readonly IEnumerable<string> AnyDomain = new List<string> { "*" };
 
@@ -137,6 +138,18 @@ namespace System.Windows.Messaging {
 		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
+		}
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
 		}
 
 		Kind INativeEventObjectWrapper.GetKind ()

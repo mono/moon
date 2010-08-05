@@ -41,16 +41,19 @@ class ContentControlChangedEventArgs : public EventArgs {
 /* @CallInitialize */
 class ContentControl : public Control {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ContentControl ();
+	
 	virtual ~ContentControl ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
  	/* @PropertyType=object,Validator=ContentControlContentValidator */
 	const static int ContentProperty;
  	/* @PropertyType=DataTemplate,GenerateAccessors */
 	const static int ContentTemplateProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ContentControl ();
 	
 	virtual UIElement *GetDefaultTemplate ();
 	

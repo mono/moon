@@ -136,6 +136,7 @@ class MediaElement : public FrameworkElement {
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MediaElement ();
+
 	virtual void Dispose ();
 	
 	// properties

@@ -28,6 +28,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Automation.Peers;
 
 namespace System.Windows.Documents {
@@ -36,6 +37,12 @@ namespace System.Windows.Documents {
 		protected override AutomationPeer OnCreateAutomationPeer()
 		{
 		    return base.OnCreateAutomationPeer ();
+		}
+
+		void Initialize ()
+		{
+			MouseOverForeground = new SolidColorBrush (Colors.Black);
+			Foreground = new SolidColorBrush (Color.FromArgb (0xff, 0x33, 0x7c, 0xbb));
 		}
 	}
 }

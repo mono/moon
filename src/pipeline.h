@@ -159,6 +159,7 @@ private:
 	
 protected:
 	virtual ~MediaClosure () {}
+	/* @SkipFactories */
 	MediaClosure (Type::Kind object_type, Media *media, MediaCallback *callback, EventObject *context);
 	
 public:
@@ -923,7 +924,9 @@ private:
 protected:
 	IMediaSource *source;
 	
+	/* @SkipFactories */
 	IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *source);
+	/* @SkipFactories */
 	IMediaDemuxer (Type::Kind kind, Media *media);
 	
 	virtual ~IMediaDemuxer () {}
@@ -1046,6 +1049,7 @@ protected:
 	virtual void InputEnded () { };
 	
 public:
+	/* @SkipFactories */
 	IMediaDecoder (Type::Kind kind, Media *media, IMediaStream *stream);
 	virtual void Dispose ();
 	
@@ -1091,6 +1095,7 @@ public:
 	MoonPixelFormat input_format;
 	VideoStream *stream;
 	
+	/* @SkipFactories */
 	IImageConverter (Type::Kind kind, Media *media, VideoStream *stream);
 	
 	/* Opens the converter. If false is returned, ReportErrorOccurred must have been called */
@@ -1126,6 +1131,7 @@ protected:
 	void ReadFD (FILE *read_fd, MediaReadClosure *closure);
 	
 public:
+	/* @SkipFactories */
 	IMediaSource (Type::Kind kind, Media *media);
 	virtual void Dispose ();
 	

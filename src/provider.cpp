@@ -61,6 +61,9 @@ StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, P
 
 StylePropertyValueProvider::~StylePropertyValueProvider ()
 {
+	if (this->style && !Deployment::GetCurrent()->IsShuttingDown())
+		this->style->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->style);
+
 	g_hash_table_foreach_remove (style_hash, dispose_value, obj);
 	g_hash_table_destroy (style_hash);
 }
@@ -155,7 +158,11 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 		}
 	}
 
+	if (this->style)
+		this->style->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->style);
 	this->style = style;
+	if (this->style)
+		this->style->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->style);
 }
 
 //
@@ -171,7 +178,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	int parentPropertyId = -1;
 
-	Types *types =  Deployment::GetCurrent()->GetTypes();
+	Types *types =  obj->GetDeployment()->GetTypes();
 
 #define INHERIT_CT_C(p) \
 	G_STMT_START {							\
@@ -375,12 +382,12 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 	return NULL;
 }
 
-static void propagate_to_inlines (Types *types, InlineCollection *inlines, DependencyProperty *property, Value *old_value, Value *new_value);
-static void propagate_to_blocks (Types *types, BlockCollection *blocks, DependencyProperty *property, Value *old_value, Value *new_value);
-
 static void
 propagate_to_inlines (Types *types, InlineCollection *inlines, DependencyProperty *property, Value *old_value, Value *new_value)
 {
+	if (!inlines)
+		return;
+
 	int count = inlines->GetCount ();
 	
 	for (int i = 0; i < count; i++) {
@@ -395,30 +402,15 @@ propagate_to_inlines (Types *types, InlineCollection *inlines, DependencyPropert
 		
 		item->ProviderValueChanged (PropertyPrecedence_Inherited, property,
 					    old_value, new_value, false, false, false, &error);
-		
-		if (error.number) {
-			// FIXME: what do we do here?  I'm guessing we continue propagating?
-		}
-		
-		if (types->IsSubclassOf (item->GetObjectType (), Type::PARAGRAPH)) {
-			InlineCollection *children = ((Paragraph *) item)->GetInlines ();
-			
-			propagate_to_inlines (types, children, property, old_value, new_value);
-		} else if (types->IsSubclassOf (item->GetObjectType (), Type::SPAN)) {
-			InlineCollection *children = ((Span *) item)->GetInlines ();
-			
-			propagate_to_inlines (types, children, property, old_value, new_value);
-		} else if (types->IsSubclassOf (item->GetObjectType(), Type::SECTION)) {
-			BlockCollection *children = ((Section *) item)->GetBlocks ();
-			
-			propagate_to_blocks (types, children, property, old_value, new_value);
-		}
 	}
 }
 
 static void
 propagate_to_blocks (Types *types, BlockCollection *blocks, DependencyProperty *property, Value *old_value, Value *new_value)
 {
+	if (!blocks)
+		return;
+
 	int count = blocks->GetCount ();
 	
 	for (int i = 0; i < count; i++) {
@@ -427,20 +419,6 @@ propagate_to_blocks (Types *types, BlockCollection *blocks, DependencyProperty *
 		
 		block->ProviderValueChanged (PropertyPrecedence_Inherited, property,
 					     old_value, new_value, false, false, false, &error);
-		
-		if (error.number) {
-			// FIXME: what do we do here?  I'm guessing we continue propagating?
-		}
-		
-		if (types->IsSubclassOf (block->GetObjectType (), Type::PARAGRAPH)) {
-			InlineCollection *children = ((Paragraph *) block)->GetInlines ();
-			
-			propagate_to_inlines (types, children, property, old_value, new_value);
-		} else if (types->IsSubclassOf (block->GetObjectType(), Type::SECTION)) {
-			BlockCollection *children = ((Section *) block)->GetBlocks ();
-			
-			propagate_to_blocks (types, children, property, old_value, new_value);
-		}
 	}
 }
 
@@ -453,20 +431,27 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 		DependencyProperty *child_property = MapPropertyToDescendant (types, property, Type::TEXTELEMENT);
 		if (!child_property)
 			return;
-		
-		InlineCollection *inlines = ((TextBlock *) obj)->GetInlines ();
-		
+
+		Value *v = obj->GetValueNoAutoCreate (TextBlock::InlinesProperty);
+		InlineCollection *inlines = v ? v->AsInlineCollection () : NULL;
+
 		propagate_to_inlines (types, inlines, child_property, old_value, new_value);
 	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::PARAGRAPH)) {
-		InlineCollection *inlines = ((Paragraph *) obj)->GetInlines ();
+
+		Value *v = obj->GetValueNoAutoCreate (Paragraph::InlinesProperty);
+		InlineCollection *inlines = v ? v->AsInlineCollection () : NULL;
 		
 		propagate_to_inlines (types, inlines, property, old_value, new_value);
 	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::SPAN)) {
-		InlineCollection *inlines = ((Span *) obj)->GetInlines ();
+
+		Value *v = obj->GetValueNoAutoCreate (Span::InlinesProperty);
+		InlineCollection *inlines = v ? v->AsInlineCollection () : NULL;
 		
 		propagate_to_inlines (types, inlines, property, old_value, new_value);
 	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::SECTION)) {
-		BlockCollection *blocks = ((Section *) obj)->GetBlocks ();
+
+		Value *v = obj->GetValueNoAutoCreate (Section::BlocksProperty);
+		BlockCollection *blocks = v ? v->AsBlockCollection () : NULL;
 		
 		propagate_to_blocks (types, blocks, property, old_value, new_value);
 	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::UIELEMENT)) {
@@ -599,17 +584,28 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if ((value = (Value *) g_hash_table_lookup (auto_values, property)))
 		return value;
 	
-	if (!(value = property->GetDefaultValue (obj->GetObjectType ())))
+	if (!(value = property->GetDefaultValue (obj->GetObjectType (), obj)))
 		return NULL;
 
+	Deployment *deployment = obj->GetDeployment();
 #if SANITY
-	Deployment *deployment = Deployment::GetCurrent ();
 	if (!value->Is(deployment, property->GetPropertyType()))
 		g_warning ("autocreated value for property '%s' (type=%s) is of incompatible type %s\n",
 			   property->GetName(),
 			   Type::Find (deployment, property->GetPropertyType ())->GetName(),
 			   Type::Find (deployment, value->GetKind())->GetName());
 #endif
+
+	if (value->Is (deployment, Type::EVENTOBJECT)) {
+		EventObject *eo = value->AsEventObject ();
+		if (eo && eo->hadManagedPeer && obj->addStrongRef) {
+			obj->addStrongRef (obj, eo, property->GetName());
+			if (value->GetNeedUnref ()) {
+				value->SetNeedUnref (false);
+				eo->unref ();
+			}
+		}
+	}
 
 	g_hash_table_insert (auto_values, property, value);
 	
@@ -632,9 +628,11 @@ AutoCreatePropertyValueProvider::ClearValue (DependencyProperty *property)
 }
 
 Value* 
-AutoCreators::default_autocreator (Type::Kind kind, DependencyProperty *property)
+AutoCreators::default_autocreator (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
-	Type *type = Type::Find (Deployment::GetCurrent (), property->GetPropertyType ());
+	Deployment *deployment = forObj ? forObj->GetDeployment() : Deployment::GetCurrent();
+
+	Type *type = Type::Find (deployment, property->GetPropertyType ());
 	if (!type)
 		return NULL;
 
@@ -645,18 +643,18 @@ AutoCreators::default_autocreator (Type::Kind kind, DependencyProperty *property
 #define XAP_FONT_SIZE     11.0
 
 Value *
-AutoCreators::CreateDefaultFontSize (Type::Kind kind, DependencyProperty *property)
+AutoCreators::CreateDefaultFontSize (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
-	Deployment *deployment;
+	Deployment *deployment = forObj ? forObj->GetDeployment() : Deployment::GetCurrent();
 	
-	if ((deployment = Deployment::GetCurrent ()) && deployment->IsLoadedFromXap ())
+	if (deployment && deployment->IsLoadedFromXap ())
 		return new Value (XAP_FONT_SIZE);
 	
 	return new Value (XAML_FONT_SIZE);
 }
 
 Value *
-AutoCreators::CreateBlackBrush (Type::Kind kind, DependencyProperty *property)
+AutoCreators::CreateBlackBrush (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
 	SolidColorBrush *brush = new SolidColorBrush ("black");
 	brush->Freeze ();
@@ -664,7 +662,7 @@ AutoCreators::CreateBlackBrush (Type::Kind kind, DependencyProperty *property)
 }
 
 Value *
-AutoCreators::ControlTypeCreator (Type::Kind kind, DependencyProperty *property)
+AutoCreators::ControlTypeCreator (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
 	ManagedTypeInfo info (Type::CONTROL, "System.Windows.Controls.Control");
 	return new Value (info);
@@ -703,7 +701,11 @@ void
 InheritedDataContextValueProvider::DetachListener ()
 {
 	if (source != NULL) {
-		DependencyProperty *prop = obj->GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::DataContextProperty);
+		Deployment *depl = obj->GetDeployment ();
+		if (depl->IsShuttingDown ())
+			return;
+
+		DependencyProperty *prop = depl->GetTypes ()->GetProperty (FrameworkElement::DataContextProperty);
 		source->RemovePropertyChangeHandler (prop, source_data_context_changed);
 		source->RemoveHandler (EventObject::DestroyedEvent, source_destroyed, this);
 	}

@@ -45,4 +45,5 @@ xdb.*
 /src/dependencyproperty.g.cpp
 /src/type.h
 /src/value.h
+/src/factory.h
 /src/type-generated.cpp

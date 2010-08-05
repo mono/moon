@@ -21,20 +21,19 @@ namespace Moonlight {
 
 /* @Namespace=System.Windows.Media */
 class CacheMode : public DependencyObject {
-public:
+protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	CacheMode ();
 
-protected:
 	virtual ~CacheMode ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media */
 class BitmapCache : public CacheMode {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	BitmapCache ();
-
 	/* @PropertyType=double,DefaultValue=1.0,Validator=DoubleGreaterThanZeroValidator,GenerateAccessors */
 	const static int RenderAtScaleProperty;
 
@@ -42,7 +41,13 @@ public:
 	void SetRenderAtScale (double scale);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	BitmapCache ();
+
 	virtual ~BitmapCache ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 };

@@ -173,11 +173,7 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 void
 Control::Dispose ()
 {
-	if (template_root != NULL) {
-		template_root->SetParent (NULL, NULL);
-		template_root->unref ();
-		template_root = NULL;
-	}
+	template_root = NULL;
 	FrameworkElement::Dispose ();
 }
 
@@ -232,10 +228,9 @@ Control::DoApplyTemplateWithError (MoonError *error)
 	// and it is cleared when ElementRemoved is called.
 	if (template_root != root && template_root != NULL) {
 		template_root->SetParent (NULL, NULL);
-		template_root->unref ();
+		MOON_CLEAR_FIELD (template_root);
 	}
-	template_root = (UIElement *)root;
-	template_root->ref ();
+	MOON_SET_FIELD_NAMED (template_root, "TemplateRoot", (UIElement *)root);
 
 	ElementAdded (template_root);
 
@@ -262,9 +257,8 @@ Control::ElementRemoved (UIElement *item)
 	MoonError e;
 	if (template_root != NULL) {
 		template_root->SetParent (NULL, &e);
-		template_root->unref ();
+		MOON_CLEAR_FIELD_NAMED (template_root, "TemplateRoot");
 	}
-	template_root = NULL;
 	item->SetParent (NULL, &e);
 	FrameworkElement::ElementRemoved (item);
 }

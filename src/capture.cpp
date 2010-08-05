@@ -15,6 +15,7 @@
 #include "deployment.h"
 #include "writeablebitmap.h"
 #include "bitmapimage.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -238,7 +239,7 @@ CaptureSource::CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration
 	d(printf ("CaptureSource::CaptureImageReportSample (%lld, %lld, %d\n", (long long) sampleTime, (long long) frameDuration, sampleDataLength));
 
 	if (HasHandlers (CaptureSource::CaptureImageCompletedEvent)) {
-		BitmapImage *source = new BitmapImage ();
+		BitmapImage *source = MoonUnmanagedFactory::CreateBitmapImage ();
 		source->SetPixelWidth (capture_format->width);
 		source->SetPixelHeight (capture_format->height);
 
@@ -321,7 +322,7 @@ AudioCaptureDevice::SetPalDevice (MoonCaptureDevice *device)
 
 	MoonAudioCaptureDevice *audio_device = (MoonAudioCaptureDevice*)device;
 
-	AudioFormatCollection *col = new AudioFormatCollection ();
+	AudioFormatCollection *col = MoonUnmanagedFactory::CreateAudioFormatCollection ();
 
 	int num_formats;
 	MoonAudioFormat **formats = audio_device->GetSupportedFormats (&num_formats);
@@ -355,7 +356,6 @@ VideoCaptureDevice::VideoCaptureDevice ()
 	SetObjectType (Type::VIDEOCAPTUREDEVICE);
 }
 
-
 VideoCaptureDevice::~VideoCaptureDevice ()
 {
 }
@@ -367,7 +367,7 @@ VideoCaptureDevice::SetPalDevice (MoonCaptureDevice *device)
 
 	MoonVideoCaptureDevice *video_device = (MoonVideoCaptureDevice*)device;
 
-	VideoFormatCollection *col = new VideoFormatCollection ();
+	VideoFormatCollection *col = MoonUnmanagedFactory::CreateVideoFormatCollection ();
 
 	int num_formats;
 	MoonVideoFormat **formats = video_device->GetSupportedFormats (&num_formats);

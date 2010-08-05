@@ -36,7 +36,6 @@ namespace System.Windows.Threading {
 	public sealed class Dispatcher {
 		TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
-		Surface surface;
 		bool pending;
 
 		static Dispatcher main;
@@ -52,7 +51,6 @@ namespace System.Windows.Threading {
 		internal Dispatcher ()
 		{
 			queuedOperations = new Queue<DispatcherOperation>();
-			surface = Deployment.Current.Surface;
 			pending = false;
 		}
 
@@ -61,6 +59,8 @@ namespace System.Windows.Threading {
 		}
 
 		void Dispose () {
+			Surface surface = Deployment.Current.Surface;
+
 			lock (queuedOperations) {
 				if (callback != null)
 					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
@@ -97,7 +97,7 @@ namespace System.Windows.Threading {
 				if (!pending) {
 					if (callback == null)
 						callback = new TickCallHandler (dispatcher_callback);
-					NativeMethods.time_manager_add_dispatcher_call (NativeMethods.surface_get_time_manager (surface.Native),
+					NativeMethods.time_manager_add_dispatcher_call (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native),
 					                                                   callback, IntPtr.Zero);
 					pending = true;
 				}

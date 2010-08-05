@@ -20,6 +20,7 @@ class GlobalInfo : MemberInfo {
 	private List<FieldInfo> dependency_properties;
 	private List<MethodInfo> cppmethods_to_bind;
 	private List<MethodInfo> jsmethods_to_bind;
+	private List<MethodInfo> all_ctors;
 	private List<TypeInfo> dependency_objects;
 
 	/// <value>
@@ -190,6 +191,33 @@ class GlobalInfo : MemberInfo {
 		}
 	}
 
+	public List<MethodInfo> AllCtors {
+		get {
+			if (all_ctors == null) {
+				all_ctors = new List<MethodInfo> ();
+				foreach (MemberInfo member1 in Children.Values) {
+					TypeInfo type = member1 as TypeInfo;
+					if (type == null)
+						continue;
+
+					foreach (MemberInfo member2 in type.Children.Values) {
+						MethodInfo method = member2 as MethodInfo;
+						if (method == null)
+							continue;
+						if (method.Parent == null) {
+							Console.WriteLine ("The method {0} in type {1} does not have its parent set.", method.Name, type.Name);
+							continue;
+						}
+						if (!method.IsConstructor)
+							continue;
+						all_ctors.Add (method);
+					}
+				}
+				all_ctors.Sort (new Members.MembersSortedByFullName <MethodInfo> ());
+			}
+			return all_ctors;
+		}
+	}
 
 	public List<MethodInfo> CPPMethodsToBind {
 		get {

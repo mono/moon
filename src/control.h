@@ -38,9 +38,6 @@ namespace Moonlight {
 /* @CallInitialize */
 class Control : public FrameworkElement {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Control ();
-
 	virtual bool CanCaptureMouse () { return GetIsEnabled (); }
 	virtual bool CanFindElement () { return GetIsEnabled (); }
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list);
@@ -66,6 +63,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetTemplateRoot () { return template_root; }
 
 	//
@@ -176,7 +174,13 @@ public:
 	
 	bool enabled_parent;
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	Control ();
+
 	virtual ~Control ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
 private:
 	bool default_style_applied;

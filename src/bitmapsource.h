@@ -30,12 +30,15 @@ class BitmapSource : public ImageSource {
  protected:
 	cairo_surface_t *image_surface;
 
-	virtual ~BitmapSource ();
-
- public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	BitmapSource ();
 
+	virtual ~BitmapSource ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	/* @PropertyType=gint32,DefaultValue=0,ManagedSetterAccess=Internal,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int PixelWidthProperty;
 	/* @PropertyType=gint32,DefaultValue=0,ManagedSetterAccess=Internal,GenerateAccessors,Validator=IntGreaterThanZeroValidator */

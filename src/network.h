@@ -151,6 +151,7 @@ public:
 	const static int WriteEvent;
 
 protected:
+	/* @SkipFactories */
 	HttpRequest (Type::Kind type, HttpHandler *handler, Options options);
 	virtual ~HttpRequest ();
 
@@ -238,6 +239,7 @@ private:
 	char *response_status_text;
 
 protected:
+	/* @SkipFactories */
 	HttpResponse (Type::Kind type, HttpRequest *request);
 	virtual ~HttpResponse () {}
 
@@ -274,6 +276,7 @@ private:
 	char *download_dir;
 
 protected:
+	/* @SkipFactories */
 	HttpHandler (Type::Kind type);
 
 public:

@@ -37,16 +37,124 @@ using System.Collections.Specialized;
 
 namespace System.Windows {
 
+	internal enum CollectionChangedAction {
+		Add,
+		Remove,
+		Replace,
+		Clearing,
+		Cleared,
+	}
+
+	internal class InternalCollectionChangedEventArgs : RoutedEventArgs {
+
+		internal InternalCollectionChangedEventArgs (IntPtr raw, bool drop_ref) : base (raw, drop_ref)
+		{
+		}
+
+		internal InternalCollectionChangedEventArgs (IntPtr raw) : this (raw, false)
+		{
+		}
+
+		public CollectionChangedAction ChangedAction {
+			get {
+				return NativeMethods.collection_changed_event_args_get_changed_action (NativeHandle);
+			}
+		}
+
+		public object GetNewItem (Type t)
+		{
+			return Value.ToObject (t, NativeMethods.collection_changed_event_args_get_new_item (NativeHandle));
+		}
+
+		public int Index {
+			get {
+				return NativeMethods.collection_changed_event_args_get_index (NativeHandle);
+			}
+		}
+	}
+
+
 	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject, IList<T>, IList {
 		const bool BoxValueTypes = false;
 
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (double)); // <- double is not a typo
-		
+
+		List<T> managedList;
+
+		static UnmanagedEventHandler collection_changed = Events.SafeDispatcher (
+			 (IntPtr target, IntPtr calldata, IntPtr closure) => {
+				 var args = NativeDependencyObjectHelper.Lookup (calldata) as InternalCollectionChangedEventArgs;
+				 if (args == null)
+					 args = new InternalCollectionChangedEventArgs (calldata);
+				 ((PresentationFrameworkCollection<T>) NativeDependencyObjectHelper.FromIntPtr (closure)).InternalCollectionChanged (args);
+			 });
+
+		void InternalCollectionChanged (InternalCollectionChangedEventArgs args)
+		{
+			switch (args.ChangedAction) {
+			case CollectionChangedAction.Add:
+#if DEBUG_REF
+				Console.WriteLine ("collection {0}/{1} adding ref to {2}/{3}", GetHashCode(), this, ((T)args.GetNewItem(typeof (T))).GetHashCode(), ((T)args.GetNewItem(typeof (T))));
+#endif
+				managedList.Insert (args.Index, (T)args.GetNewItem(typeof (T)));
+				break;
+			case CollectionChangedAction.Remove:
+#if DEBUG_REF
+				Console.WriteLine ("collection {0}/{1} removing ref to {2}/{3}", GetHashCode(), this, managedList[args.Index].GetHashCode(), managedList[args.Index]);
+#endif
+				managedList.RemoveAt (args.Index);
+				break;
+			case CollectionChangedAction.Replace:
+#if DEBUG_REF
+				Console.WriteLine ("collection {0}/{1} replacing ref from {2}/{3} to {4}/{5}", GetHashCode(), this, managedList[args.Index].GetHashCode(), managedList[args.Index], ((T)args.GetNewItem(typeof (T))), ((T)args.GetNewItem(typeof (T))).GetHashCode());
+#endif
+				managedList[args.Index] = ((T)args.GetNewItem(typeof (T)));
+				break;
+			case CollectionChangedAction.Clearing:
+				// nothing to do
+				break;
+			case CollectionChangedAction.Cleared:
+#if DEBUG_REF
+				foreach (var o in managedList)
+					Console.WriteLine (" collection {0}/{1} removing ref to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+#endif
+				managedList.Clear();
+				break;
+			}
+		}
+
+		void Initialize ()
+		{
+			// set up our managed list and populate it
+			// from the unmanaged list if there is
+			// anything in it
+			managedList = new List<T>();
+			int c = Count;
+			for (int i = 0; i < c; i ++) {
+				managedList.Add (GetItemImpl(i));
+			}
+
+			// set up a handler to track changes to the unmanaged list
+			Events.AddHandler (this, EventIds.Collection_ChangedEvent, collection_changed);
+		}
+
+#if HEAPVIZ
+		internal override void AccumulateManagedRefs (List<HeapRef> refs)
+		{
+			for (int i = 0; i < managedList.Count; i ++) {
+				var obj = managedList[i];
+				if (typeof (INativeEventObjectWrapper).IsAssignableFrom (obj.GetType()))
+					refs.Add (new HeapRef (true, (INativeEventObjectWrapper)obj, string.Format ("[{0}]", i)));
+			}
+			base.AccumulateManagedRefs (refs);
+		}
+#endif
+
 		int IList.Add (object value)
 		{
 			Add ((T)value);
-			return Count;
+			return managedList.Count;
 		}
 		
 		void IList.Remove (object value)
@@ -74,50 +182,42 @@ namespace System.Windows {
 			return IndexOf ((T) value);
 		}
 		
-		
 		public void Clear ()
 		{
-			if (IsReadOnly)
-				throw new InvalidOperationException ("the collection is readonly");
-
+			ReadOnlyCheck ();
 			ClearImpl ();
 		}
 		
 		public void RemoveAt (int index)
 		{
-			if (IsReadOnly)
-				throw new InvalidOperationException ("the collection is readonly");
+			ReadOnlyCheck ();
 			RemoveAtImpl (index);
 		}
 
 		public void Add (T value)
 		{
-			if (IsReadOnly)
-				throw new InvalidOperationException ("the collection is readonly");
+			ReadOnlyCheck ();
 			AddImpl (value);
 		}
 		
 		public void Insert (int index, T value)
 		{
-			if (IsReadOnly)
-				throw new InvalidOperationException ("the collection is readonly");
+			ReadOnlyCheck ();
 			InsertImpl (index, value);
 		}
 		
 		public bool Remove (T value)
 		{
-			if (IsReadOnly)
-				throw new InvalidOperationException ("the collection is readonly");
+			ReadOnlyCheck ();
 			return RemoveImpl (value);
 		}
 		
 		public T this [int index] {
 			get {
-				return GetItemImpl (index);
+				return managedList[index];
 			}
 			set {
-				if (IsReadOnly)
-					throw new InvalidOperationException ("the collection is readonly");
+				ReadOnlyCheck ();
 				SetItemImpl (index, value);
 			}
 		}
@@ -130,6 +230,12 @@ namespace System.Windows {
 		public int IndexOf (T value)
 		{
 			return IndexOfImpl (value);
+		}
+
+		private void ReadOnlyCheck ()
+		{
+			if (IsReadOnly)
+				throw new InvalidOperationException ("the collection is readonly");
 		}
 
 		// most types that inherits from this throws ArgumentNullException when
@@ -195,12 +301,10 @@ namespace System.Windows {
 		
 		internal sealed class CollectionIterator : IEnumerator, IDisposable {
 			IntPtr native_iter;
-			Type type;
 			
-			public CollectionIterator(Type type, IntPtr native_iter)
+			public CollectionIterator(IntPtr native_iter)
 			{
 				this.native_iter = native_iter;
-				this.type = type;
 			}
 			
 			public bool MoveNext ()
@@ -223,7 +327,7 @@ namespace System.Windows {
 					if (val == IntPtr.Zero)
 						return null;
 					
-					return Value.ToObject (type, val);
+					return Value.ToObject (typeof (T), val);
 				}
 			}
 			
@@ -315,7 +419,7 @@ namespace System.Windows {
 		
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
-			return new CollectionIterator (typeof (T), NativeMethods.collection_get_iterator (native));
+			return new CollectionIterator (NativeMethods.collection_get_iterator (native));
 		}
 		
 		public bool IsFixedSize {

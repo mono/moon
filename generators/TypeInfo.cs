@@ -175,6 +175,27 @@ class TypeInfo : MemberInfo {
 		}
 	}
 
+	public bool ConstructorSkipsFactories {
+		get {
+			foreach (MemberInfo member in Children.Values) {
+				MethodInfo method = member as MethodInfo;
+
+				if (method == null)
+					continue;
+
+				if (!method.IsConstructor)
+					continue;
+
+				if (method.Parameters.Count != 0)
+					continue;
+
+				if (method.Annotations.ContainsKey ("SkipFactories"))
+					return true;
+			}
+			return false;
+		}
+	}
+
 	public string C_Constructor {
 		get {
 			if (IsEnum || IsAbstract)

@@ -107,10 +107,8 @@ namespace System.Windows.Controls
 
 			// If the content is a UIElement, we have to clear the Template and wait for a re-render
 			// Otherwise we directly update the text in our textbox.
-			if (e.OldValue is UIElement || newValue is UIElement) {
-				source.InvalidateMeasure ();
+			if (e.OldValue is UIElement || newValue is UIElement)
 				source.ClearRoot ();
-			}
 		}
 #endregion Content
  

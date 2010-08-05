@@ -28,7 +28,7 @@ namespace Moonlight {
 Application::Application ()
 {
 	SetObjectType (Type::APPLICATION);
-	
+
 	install_state = InstallStateUnknown;
 	resource_root = NULL;
 	

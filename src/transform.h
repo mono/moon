@@ -26,17 +26,21 @@ class GeneralTransform : public DependencyObject {
 	cairo_matrix_t _matrix;
 	bool need_update;
 	
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	GeneralTransform () : DependencyObject (Type::GENERALTRANSFORM), need_update (true) { }
+	
 	virtual ~GeneralTransform () {};
 	
 	virtual void UpdateTransform ();
 	void MaybeUpdateTransform ();
-	
+
+	/* @SkipFactories */
 	GeneralTransform (Type::Kind object_type) : DependencyObject (object_type), need_update (true) { }
 
- public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	GeneralTransform () : DependencyObject (Type::GENERALTRANSFORM), need_update (true) { }
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
+ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual void GetTransform (cairo_matrix_t *value);
@@ -54,21 +58,31 @@ class GeneralTransform : public DependencyObject {
 /* @Namespace=System.Windows.Media */
 class Transform : public GeneralTransform {
 protected:
-	virtual ~Transform () {}
-
-	Transform (Type::Kind object_type) : GeneralTransform (object_type) { }
-public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	Transform () : GeneralTransform (Type::TRANSFORM) { }
+
+	virtual ~Transform () {}
+
+	/* @SkipFactories */
+	Transform (Type::Kind object_type) : GeneralTransform (object_type) { }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 
 /* @Namespace=System.Windows.Media */
 class RotateTransform : public Transform {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	RotateTransform () { SetObjectType (Type::ROTATETRANSFORM); }
+
 	virtual ~RotateTransform () {}
 	virtual void UpdateTransform ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int AngleProperty;
@@ -76,9 +90,6 @@ class RotateTransform : public Transform {
 	const static int CenterXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int CenterYProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	RotateTransform () { SetObjectType (Type::ROTATETRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -99,10 +110,13 @@ protected:
 	virtual ~CompositeTransform () {}
 	virtual void UpdateTransform ();
 
-public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	CompositeTransform ();
 
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int CenterXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
@@ -157,17 +171,20 @@ public:
 /* @Namespace=System.Windows.Media */
 class TranslateTransform : public Transform {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	TranslateTransform () { SetObjectType (Type::TRANSLATETRANSFORM); }
+
 	virtual ~TranslateTransform () { }
 	virtual void UpdateTransform ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int XProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int YProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	TranslateTransform () { SetObjectType (Type::TRANSLATETRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -183,8 +200,14 @@ class TranslateTransform : public Transform {
 /* @Namespace=System.Windows.Media */
 class ScaleTransform : public Transform {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ScaleTransform () { SetObjectType (Type::SCALETRANSFORM); }
+	
 	virtual ~ScaleTransform () {}
 	virtual void UpdateTransform ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
@@ -195,9 +218,6 @@ class ScaleTransform : public Transform {
 	const static int ScaleXProperty;
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int ScaleYProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ScaleTransform () { SetObjectType (Type::SCALETRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -219,9 +239,15 @@ class ScaleTransform : public Transform {
 /* @Namespace=System.Windows.Media */
 class SkewTransform : public Transform {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	SkewTransform () { SetObjectType (Type::SKEWTRANSFORM); }
+
 	virtual ~SkewTransform () {}
 	virtual void UpdateTransform ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int AngleXProperty;
@@ -231,9 +257,6 @@ class SkewTransform : public Transform {
 	const static int CenterXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int CenterYProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	SkewTransform () { SetObjectType (Type::SKEWTRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -260,7 +283,7 @@ class Matrix : public DependencyObject {
 	
  protected:
 	virtual ~Matrix () {}
-	
+
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int M11Property;
@@ -274,9 +297,11 @@ class Matrix : public DependencyObject {
 	const static int OffsetXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int OffsetYProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
+
+	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
 	Matrix ();
+
+	/* @SkipFactories */
 	Matrix (cairo_matrix_t *m);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -324,16 +349,19 @@ class UnmanagedMatrix : public Matrix {
 /* @Namespace=System.Windows.Media */
 class MatrixTransform : public Transform {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	MatrixTransform () { SetObjectType (Type::MATRIXTRANSFORM); }
+	
 	virtual ~MatrixTransform () {}
 	
 	virtual void UpdateTransform ();
-	
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
 	/* @PropertyType=Matrix,AutoCreateValue,GenerateAccessors */
 	const static int MatrixProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	MatrixTransform () { SetObjectType (Type::MATRIXTRANSFORM); }
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
@@ -348,12 +376,15 @@ class MatrixTransform : public Transform {
 /* @Namespace=System.Windows.Media */
 class TransformCollection : public DependencyObjectCollection {
  protected:
-	virtual ~TransformCollection () {}
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TransformCollection () { SetObjectType (Type::TRANSFORM_COLLECTION); }
 	
+	virtual ~TransformCollection () {}
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	virtual Type::Kind GetElementType () { return Type::TRANSFORM; }
 };
 
@@ -362,16 +393,19 @@ class TransformCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class TransformGroup : public Transform {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	TransformGroup () : Transform (Type::TRANSFORMGROUP) { }
+	
 	virtual ~TransformGroup () {}
 	
 	virtual void UpdateTransform ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+	
  public:
 	/* @PropertyType=TransformCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int ChildrenProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	TransformGroup () : Transform (Type::TRANSFORMGROUP) { }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

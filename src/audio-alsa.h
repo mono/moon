@@ -70,7 +70,8 @@ class AlsaSource : public AudioSource {
  public:
 	pollfd *udfs;
 	int ndfs;
-	
+
+	/* @SkipFactories */
 	AlsaSource (AlsaPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 		
 	// Pushes data onto the pcm device if the

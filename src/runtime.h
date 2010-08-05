@@ -181,7 +181,7 @@ typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, vo
 /* @Namespace=None,ManagedEvents=Manual */
 class Surface : public EventObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
 	Surface (MoonWindow *window);
 	virtual void Dispose ();
 	

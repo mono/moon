@@ -48,7 +48,13 @@ struct GridLength {
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinition : public DependencyObject {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ColumnDefinition ();
+	
 	virtual ~ColumnDefinition ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
  	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors */
@@ -59,9 +65,6 @@ class ColumnDefinition : public DependencyObject {
 	const static int WidthProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int ActualWidthProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ColumnDefinition ();
 	
 	// property accessors
 	double GetActualWidth ();
@@ -80,8 +83,14 @@ class ColumnDefinition : public DependencyObject {
 /* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	RowDefinition ();
+
 	virtual ~RowDefinition ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
  	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
 	const static int HeightProperty;
@@ -91,9 +100,6 @@ class RowDefinition : public DependencyObject {
 	const static int MinHeightProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int ActualHeightProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	RowDefinition ();
 
 	// property accessors
 	double GetActualHeight ();
@@ -112,14 +118,17 @@ class RowDefinition : public DependencyObject {
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	ColumnDefinitionCollection ();
+
 	virtual ~ColumnDefinitionCollection ();
 	
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	ColumnDefinitionCollection ();
-
 	virtual Type::Kind GetElementType () { return Type::COLUMNDEFINITION; }
 };
 
@@ -127,14 +136,17 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	RowDefinitionCollection ();
+	
 	virtual ~RowDefinitionCollection ();
 	
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	
- public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	RowDefinitionCollection ();
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
+ public:
 	virtual Type::Kind GetElementType () { return Type::ROWDEFINITION; }
 };
 
@@ -174,8 +186,15 @@ class Grid : public Panel {
 	void RestoreMeasureResults ();
 
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Grid ();
+	
 	virtual ~Grid ();
+
 	virtual void PostRender (Stack *ctx, Region *region, bool skip_children);
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
@@ -198,9 +217,6 @@ class Grid : public Panel {
 	 */
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int ShowGridLinesProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	Grid ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

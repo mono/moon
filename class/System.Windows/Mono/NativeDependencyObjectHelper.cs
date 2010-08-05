@@ -49,6 +49,78 @@ using System.Linq.Expressions;
 namespace Mono {
 
 	internal static class NativeDependencyObjectHelper {
+
+		public static StrongRefCallback add_strong_ref = new StrongRefCallback (AddStrongRef);
+		public static StrongRefCallback clear_strong_ref = new StrongRefCallback (ClearStrongRef);
+
+		public static AttachCallback attached = new AttachCallback (Attached);
+		public static AttachCallback detached = new AttachCallback (Detached);
+
+		public static MentorChangedCallback mentor_changed = new MentorChangedCallback (MentorChanged);
+
+		static void AddStrongRef (IntPtr referer, IntPtr referent, string name)
+		{
+			IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
+			if (container == null)
+				return;
+
+			container.AddStrongRef (referent, name);
+		}
+
+		static void ClearStrongRef (IntPtr referer, IntPtr referent, string name)
+		{
+			IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
+			if (container == null)
+				return;
+
+			container.ClearStrongRef (referent, name);
+		}
+
+		static void Attached (IntPtr ptr)
+		{
+			INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
+			if (wrapper == null)
+				return;
+
+			wrapper.OnAttached ();
+		}
+
+		static void Detached (IntPtr ptr)
+		{
+			INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
+			if (wrapper == null)
+				return;
+
+			wrapper.OnDetached ();
+		}
+
+		static void MentorChanged (IntPtr ptr, IntPtr mentor_ptr)
+		{
+			INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
+			if (wrapper == null)
+				return;
+
+			wrapper.MentorChanged (mentor_ptr);
+		}
+
+		public static void SetManagedPeerCallbacks (INativeEventObjectWrapper obj)
+		{
+			IRefContainer container = obj as IRefContainer;
+			NativeMethods.event_object_set_managed_peer_callbacks (obj.NativeHandle,
+									       container == null ? null : NativeDependencyObjectHelper.add_strong_ref,
+									       container == null ? null : NativeDependencyObjectHelper.clear_strong_ref,
+									       NativeDependencyObjectHelper.mentor_changed,
+									       NativeDependencyObjectHelper.attached,
+									       NativeDependencyObjectHelper.detached);
+		}
+
+		public static void ClearManagedPeerCallbacks (INativeEventObjectWrapper obj)
+		{
+			NativeMethods.event_object_set_managed_peer_callbacks (obj.NativeHandle,
+									       null, null,
+									       null,
+									       null, null);
+		}
 #region "helpers for the INativeDependencyObjectWrapper interface"
 		public static object GetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
@@ -175,15 +247,19 @@ namespace Mono {
 
 			lock (objects) {
 				if (objects.ContainsKey (native)) {
-	#if DEBUG
-					throw new ExecutionEngineException ("multiple mappings registered for the same unmanaged peer");
-	#endif
 					Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
-					Console.WriteLine (Environment.StackTrace);
+	#if DEBUG
+					throw new ExecutionEngineException (string.Format ("multiple mappings registered for the same unmanaged peer."));
+	#endif
 					return false;
 				}
 				
 				tref = new EventObjectToggleRef (wrapper);
+
+#if DEBUG_REF
+				Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
+#endif
+
 				objects[native] = tref;
 			}
 			tref.Initialize ();
@@ -198,10 +274,14 @@ namespace Mono {
 			
 			if (native == IntPtr.Zero)
 				return;
-			
+
 			lock (objects) {
-				if (objects.TryGetValue (native, out tref))
+				if (objects.TryGetValue (native, out tref)) {
+#if DEBUG_REF
+					Console.WriteLine ("freeing native mapping for {0:x} - {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
+#endif
 					objects.Remove (native);
+				}
 			}
 			if (tref != null)
 				tref.Free ();
@@ -284,6 +364,7 @@ namespace Mono {
 			case Kind.BORDER: return new Border (raw, false);
 			case Kind.CANVAS: return new Canvas (raw, false);
 			case Kind.CIRCLEEASE: return new CircleEase (raw, false);
+			case Kind.COLLECTIONCHANGEDEVENTARGS: return new InternalCollectionChangedEventArgs (raw, false);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw, false);
 			case Kind.COLORANIMATIONUSINGKEYFRAMES: return new ColorAnimationUsingKeyFrames (raw, false);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw, false);
@@ -431,6 +512,7 @@ namespace Mono {
 			case Kind.UNDERLINE: return new Underline (raw, false);
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
+			case Kind.VIDEOFORMAT_COLLECTION: return new VideoBrush (raw, false);
 			case Kind.VIEWBOX: return new Viewbox (raw, false);
 			case Kind.WEBBROWSER: return new WebBrowser (raw, false);
 			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);
@@ -465,7 +547,7 @@ namespace Mono {
 
 			default:
 				throw new Exception (
-					String.Format ("NativeDependencyObjectHelper::CreateObject(): Kind missing from switch: {0}", k));
+						     String.Format ("NativeDependencyObjectHelper::CreateObject(): Kind missing from switch: {0}/{1} for ptr 0x{2:x}", k, Deployment.Current.Types.KindToType(k), (int)raw));
 			}
 		}
 

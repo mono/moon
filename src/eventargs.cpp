@@ -88,6 +88,8 @@ CollectionChangedEventArgs::CollectionChangedEventArgs (CollectionChangedAction 
 	this->new_item = new_item;
 	this->old_item = old_item;
 	this->index = index;
+
+	EnsureManagedPeer ();
 }
 
 CollectionChangedEventArgs::~CollectionChangedEventArgs ()
@@ -173,10 +175,10 @@ DownloadProgressEventArgs::GetProgress ()
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 	: EventArgs (Type::ROUTEDEVENTARGS)
 {
-	if (source)
-		source->ref ();
-	
-	this->source = source;
+	EnsureManagedPeer ();
+
+	MOON_SET_FIELD_NAMED (this->source, "Source", source);
+
 	handled = false;
 }
 
@@ -196,16 +198,14 @@ RoutedEventArgs::RoutedEventArgs (Type::Kind kind)
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source, Type::Kind kind)
 {
-	if (source)
-		source->ref ();
-	this->source = source;
+	EnsureManagedPeer ();
+	MOON_SET_FIELD_NAMED (this->source, "Source", source);
 	handled = false;
 }
 
 RoutedEventArgs::~RoutedEventArgs ()
 {
-	if (source)
-		source->unref ();
+	MOON_CLEAR_FIELD_NAMED (source, "Source");
 }
 
 void
@@ -229,11 +229,8 @@ RoutedEventArgs::GetSource ()
 void
 RoutedEventArgs::SetSource (DependencyObject *el)
 {
-	if (source)
-		source->unref();
-	source = el;
-	if (source)
-		source->ref();
+	MOON_CLEAR_FIELD_NAMED (source, "Source");
+	MOON_SET_FIELD_NAMED (source, "Source", el);
 }
 
 LogReadyRoutedEventArgs::LogReadyRoutedEventArgs ()
@@ -251,6 +248,7 @@ MouseEventArgs::MouseEventArgs (MoonMouseEvent *event)
 	} else {
 		this->event = NULL;
 	}
+	EnsureManagedPeer ();
 }
 
 MouseEventArgs::MouseEventArgs (Type::Kind kind, MoonMouseEvent *event)
@@ -339,6 +337,7 @@ MouseButtonEventArgs::MouseButtonEventArgs ()
 MouseButtonEventArgs::MouseButtonEventArgs (MoonButtonEvent *event)
 	: MouseEventArgs (Type::MOUSEBUTTONEVENTARGS, event)
 {
+	EnsureManagedPeer ();
 }
 
 MouseButtonEventArgs::~MouseButtonEventArgs ()
@@ -353,6 +352,7 @@ MouseWheelEventArgs::MouseWheelEventArgs ()
 MouseWheelEventArgs::MouseWheelEventArgs (MoonScrollWheelEvent *event)
 	: MouseEventArgs (Type::MOUSEWHEELEVENTARGS, event)
 {
+	EnsureManagedPeer ();
 }
 
 MouseWheelEventArgs::~MouseWheelEventArgs ()
@@ -370,6 +370,8 @@ KeyEventArgs::KeyEventArgs (MoonKeyEvent *event)
 	: RoutedEventArgs (Type::KEYEVENTARGS)
 {
 	this->event = (MoonKeyEvent*)event->Clone ();
+
+	EnsureManagedPeer ();
 }
 
 KeyEventArgs::KeyEventArgs ()
@@ -517,14 +519,14 @@ CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error
 	this->error = error ? new MoonError (*error) : NULL;
 	this->source = source;
 	if (source)
-		source->ref ();
+		addStrongRef (this, source, "Source");
 }
 
 CaptureImageCompletedEventArgs::~CaptureImageCompletedEventArgs ()
 {
 	delete error;
 	if (source)
-		source->unref ();
+		clearStrongRef (this, source, "Source");
 }
 
 //
@@ -558,15 +560,12 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 TimelineMarkerRoutedEventArgs::TimelineMarkerRoutedEventArgs (TimelineMarker *marker)
 	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS)
 {
-	this->marker = marker;
-	if (marker)
-		marker->ref ();
+	MOON_SET_FIELD_NAMED (this->marker, "Marker", marker);
 }
 
 TimelineMarkerRoutedEventArgs::~TimelineMarkerRoutedEventArgs ()
 {
-	if (marker)
-		marker->unref ();
+	MOON_CLEAR_FIELD_NAMED (marker, "Marker");
 }
 
 

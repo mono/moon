@@ -120,7 +120,7 @@ private:
 							    Type::Kind descendantKind);
 };
 
-typedef Value* AutoCreator  (Type::Kind kind, DependencyProperty *property);
+typedef Value* AutoCreator  (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 
 class AutoCreators {
 public:

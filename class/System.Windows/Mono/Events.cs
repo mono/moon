@@ -132,8 +132,8 @@ namespace Mono {
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
-						     handler (o,
-							      NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false)); } );
+						     handler (o, null ); } );
+			//			NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false)); } );
 		}
 
 		public static UnmanagedEventHandler CreateKeyEventHandlerDispatcher (KeyEventHandler handler)

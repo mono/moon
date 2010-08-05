@@ -28,6 +28,8 @@
 
 using System;
 using Mono;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace System.Windows.Documents {
 	public class TextPointer : INativeEventObjectWrapper {
@@ -79,6 +81,18 @@ namespace System.Windows.Documents {
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.TEXTPOINTER;
+		}
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
 		}
 		
 		public bool IsAtInsertionPosition {

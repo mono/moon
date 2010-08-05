@@ -20,6 +20,7 @@
 #include "deployment.h"
 #include "effect.h"
 #include "projection.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -27,12 +28,19 @@ Panel::Panel ()
 {
 	SetObjectType (Type::PANEL);
 	mouse_over = NULL;
-
-	SetSubtreeObject (GetChildren());
 }
 
 Panel::~Panel()
 {
+}
+
+Value *
+Panel::CreateChildren (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
+{
+	UIElementCollection *col = MoonUnmanagedFactory::CreateUIElementCollection ();
+	if (forObj)
+		((Panel*)forObj)->SetSubtreeObject (col);
+	return Value::CreateUnrefPtr (col);
 }
 
 #define DEBUG_BOUNDS 0

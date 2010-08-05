@@ -40,6 +40,7 @@ typedef void ( * CallHandler ) ( CallData * object ) ;
 
 class Closure : public EventObject {
 public:
+	/* @SkipFactories */
 	Closure (CurlHttpHandler *value)
 		: bridge (value)
 	{
@@ -67,6 +68,7 @@ class CurlHttpHandler : public HttpHandler {
 	Queue* handles;
 	GList *calls;
 
+	/* @SkipFactories */
 	CurlHttpHandler ();
 	virtual ~CurlHttpHandler ();
 
@@ -122,6 +124,7 @@ class CurlDownloaderRequest : public HttpRequest {
  public:
 	bool aborting;
 
+	/* @SkipFactories */
 	CurlDownloaderRequest (CurlHttpHandler *bridge, HttpRequest::Options options);
 	~CurlDownloaderRequest ();
 	virtual void AbortImpl ();
@@ -167,6 +170,7 @@ class CurlDownloaderResponse : public HttpResponse {
 	bool aborted;
 
  public:
+	/* @SkipFactories */
 	CurlDownloaderResponse (CurlHttpHandler *bridge,
 	    CurlDownloaderRequest *request);
 
@@ -195,6 +199,7 @@ class CurlDownloaderResponse : public HttpResponse {
 
 class ResponseClosure : public EventObject {
 public:
+	/* @SkipFactories */
 	ResponseClosure (CurlDownloaderResponse *value)
 		: res (value)
 	{

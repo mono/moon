@@ -33,11 +33,15 @@ class BitmapImage : public BitmapSource {
 	DownloaderAccessPolicy policy;
 
  protected:
-	virtual ~BitmapImage ();
-
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	BitmapImage ();
+
+	virtual ~BitmapImage ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	virtual void Dispose ();
 
 	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */

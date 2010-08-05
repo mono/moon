@@ -3,6 +3,8 @@
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
 
+
+using System;
 using System.Reflection;
 using Microsoft.Silverlight.Testing.UnitTesting.Metadata;
 
@@ -60,6 +62,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
             {
                 System.Console.WriteLine("{0}.{1}", _testMethod.Method.DeclaringType.FullName, _testMethod.Method.Name);
                 _testMethod.Invoke(_instance);
+		GC.Collect ();
+		GC.WaitForPendingFinalizers ();
             }
             else if (_method != null)
             {

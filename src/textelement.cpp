@@ -403,8 +403,14 @@ Hyperlink::Hyperlink ()
 {
 	SetObjectType (Type::HYPERLINK);
 	SetTextDecorations (TextDecorationsUnderline);
-	SetMouseOverForeground (new SolidColorBrush ("black"));
-	SetForeground (new SolidColorBrush ("#FF337CBB"));
+
+	// XXX these should happen here, but since they're inherited
+	// properties, they end up causing a boatload of problems with
+	// our forcing of managed refs.  They've been moved to
+	// Hyperlink.Initialize in managed code.
+	//
+	// SetMouseOverForeground (new SolidColorBrush ("black"));
+	// SetForeground (new SolidColorBrush ("#FF337CBB"));
 }
 
 

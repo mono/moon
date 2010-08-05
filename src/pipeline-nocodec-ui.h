@@ -49,6 +49,7 @@ private:
 	void Close (); // Closes the window and unrefs ourself
 	void Show ();// Shows the codec installation ui and refs ourself
 	
+	/* @SkipFactories */
 	CodecDownloader (Surface *surface);
 	virtual ~CodecDownloader ();
 

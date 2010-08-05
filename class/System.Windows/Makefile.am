@@ -63,12 +63,14 @@ system_windows_sources =							\
 	$(srcdir)/Mono/EventObjectToggleRef.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/GeneratedPInvokes.cs					\
+	$(srcdir)/Mono/HeapUtil.cs						\
 	$(srcdir)/Mono/Helper.cs						\
 	$(srcdir)/Mono/Helper.PublicKey.cs					\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/IListExtensions.cs					\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
-	$(srcdir)/Mono/INativeEventObjectWrapper.cs			\
+	$(srcdir)/Mono/INativeEventObjectWrapper.cs				\
+	$(srcdir)/Mono/IRefContainer.cs						\
 	$(srcdir)/Mono/IWeakListener.cs						\
 	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\

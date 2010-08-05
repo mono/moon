@@ -39,33 +39,41 @@ public:
  	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int SourceProperty;
 	
+protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	AssemblyPart ();
 
-protected:
 	virtual ~AssemblyPart ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 class AssemblyPartCollection : public DependencyObjectCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	AssemblyPartCollection ();
-
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	AssemblyPartCollection ();
+
 	virtual ~AssemblyPartCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 class ExternalPart : public DependencyObject {
-public:
+protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ExternalPart ();
 
-protected:
 	virtual ~ExternalPart ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
@@ -77,31 +85,34 @@ public:
 	void SetSource (Uri *value);
 	Uri* GetSource ();
 
+protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ExtensionPart ();
 
-protected:
 	virtual ~ExtensionPart ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 class ExternalPartCollection : public DependencyObjectCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	ExternalPartCollection ();
-
 	virtual Type::Kind GetElementType () { return Type::EXTERNALPART; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ExternalPartCollection ();
+
 	virtual ~ExternalPartCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 class WindowSettings : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	WindowSettings ();
-
 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private,Validator=NonNullOnlyDuringInitializationValidator */
 	const static int TitleProperty;	
 	/* @PropertyType=double,DefaultValue=600.0,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
@@ -139,16 +150,19 @@ public:
 	void SetWindowStyle (WindowStyle style);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	WindowSettings ();
+
 	virtual ~WindowSettings ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 /* @ContentProperty=Source */
 class Icon : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	Icon ();
-
 	/* @PropertyType=Uri,DefaultValue=Uri(),ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SourceProperty;
 	/* @PropertyType=Size,DefaultValue=Size(),ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
@@ -161,27 +175,33 @@ public:
 	void SetSize (Size *size);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Icon ();
+
 	virtual ~Icon ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 class IconCollection : public DependencyObjectCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	IconCollection ();
-	
 	virtual Type::Kind GetElementType () { return Type::ICON; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	IconCollection ();
+	
 	virtual ~IconCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
 class OutOfBrowserSettings : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	OutOfBrowserSettings ();
-
 	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,GenerateAccessors,Validator=NonNullOnlyDuringInitializationValidator */
 	const static int BlurbProperty;
 	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,GenerateAccessors,Validator=NonNullOnlyDuringInitializationValidator */
@@ -219,7 +239,13 @@ public:
 	void SetSecuritySettings (SecuritySettings *value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	OutOfBrowserSettings ();
+
 	virtual ~OutOfBrowserSettings ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows */
@@ -239,9 +265,6 @@ public:
 	const static int PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int RuntimeVersionProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	Deployment ();
 	
 	bool InitializeManagedDeployment (gpointer plugin_instance, const char *culture, const char *uiculture);
 	bool InitializeAppDomain ();
@@ -330,6 +353,9 @@ public:
 	void DestroyManagedXamlLoader (gpointer xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
 
+	virtual void EnsureManagedPeer ();
+	void EnsureManagedPeer (EventObject *forObj);
+
 	void EmitLoaded ();
 	void EmitLoadedAsync ();
 	void AddAllLoadedHandlers (UIElement *el, bool only_unemitted);
@@ -358,6 +384,9 @@ public:
 
 	void Shutdown (); /* main thread only */
 	bool IsShuttingDown (); /* main thread only */
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool IsSafeToDie ();
 
 	void TrackPath (char *path);
 
@@ -398,6 +427,10 @@ public:
 	/* Managed helpers */
 	char *CanonicalizeFileName (const char *filename, bool is_xap_mode);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	Deployment ();
+	
+
 protected:
 	virtual ~Deployment ();
 
@@ -417,6 +450,7 @@ private:
 		UnloadDomain = 2,
 		DisposeDeployment = 3
 	};
+	/* @SkipFactories */
 	Deployment (MonoDomain *domain);
 	void InnerConstructor ();
 
@@ -476,6 +510,7 @@ private:
 
 	// Methods
 	MonoMethod   *moon_load_xaml;
+	MonoMethod   *moon_ensure_managed_peer;
 	MonoMethod   *moon_initialize_deployment_xap;
 	MonoMethod   *moon_initialize_deployment_xaml;
 	MonoMethod   *moon_destroy_application;

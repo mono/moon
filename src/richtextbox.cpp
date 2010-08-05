@@ -23,6 +23,7 @@
 #include "border.h"
 #include "window.h"
 #include "panel.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -247,14 +248,12 @@ RichTextBox::RichTextBox ()
 
 	SetObjectType (Type::RICHTEXTBOX);
 	
-	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
-	type_info->Initialize (GetObjectType (), "System.Windows.Controls.RichTextBox");
-	SetDefaultStyleKey (type_info);
-	ManagedTypeInfo::Free (type_info);
+	ManagedTypeInfo type_info (GetObjectType (), "System.Windows.Controls.RichTextBox");
+	SetDefaultStyleKey (&type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
 	
-	rootSection = new Section();
+	rootSection = MoonUnmanagedFactory::CreateSection();
 
 	// FIXME: we should not be doing this... should the selection be autocreated?
 	SetSelection (new TextSelection());
@@ -481,7 +480,7 @@ RichTextBox::BatchPop ()
 void
 RichTextBox::EmitSelectionChanged ()
 {
-	EmitAsync (RichTextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	EmitAsync (RichTextBox::SelectionChangedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
 }
 
 void
@@ -1115,7 +1114,7 @@ RichTextBox::OnApplyTemplate ()
 	}
 	
 	// Create our view control
-	view = new RichTextBoxView ();
+	view = MoonUnmanagedFactory::CreateRichTextBoxView ();
 	
 	view->SetEnableCursor (!is_read_only);
 	view->SetTextBox (this);

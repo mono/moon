@@ -213,3 +213,5 @@
 +SSC-M: System.Void System.Windows.Interop.SilverlightHost::set_NavigationState(System.String)
 +SSC-M: System.Void System.Windows.Interop.SilverlightHost::EnsureHistoryIframePresence()
 
+# need this for heap visualization in moon-unit (when enabled)
++SC-T: Mono.HeapUtil

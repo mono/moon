@@ -100,8 +100,10 @@ SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 		return false;
 
 	SetterBase *setter = value->AsSetterBase ();
-	setter->SetAttached (true);
-	setter->Seal ();
+	if (setter) {
+		setter->SetAttached (true);
+		setter->Seal ();
+	}
 
 	return DependencyObjectCollection::AddedToCollection (value, error);
 }
@@ -109,7 +111,9 @@ SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 void
 SetterBaseCollection::RemovedFromCollection (Value *value)
 {
-	value->AsSetterBase ()->SetAttached (false);
+	SetterBase *setter = value->AsSetterBase ();
+	if (setter)
+		setter->SetAttached (false);
 	DependencyObjectCollection::RemovedFromCollection (value);
 }
 
@@ -212,7 +216,7 @@ DeepStyleWalker::DeepStyleWalker (Style *style, Types *types)
 
 	while (style != NULL) {
 		SetterBaseCollection *setters = style->GetSetters ();
-		int count = setters->GetCount ();
+		int count = setters ? setters->GetCount () : 0;
 		for (int i = 0; i < count; i++) {
 			Value *v = setters->GetValueAt (i);
 			if (Value::IsNull (v) || !types->IsSubclassOf (v->GetKind (), Type::SETTER))

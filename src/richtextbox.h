@@ -272,6 +272,12 @@ class RichTextBox : public Control {
 	const static int ModelChangedEvent;
 	
 	virtual ~RichTextBox ();
+
+	/* @GeneratePInvoke,GenerateCBinding */
+	RichTextBox ();
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -296,9 +302,6 @@ class RichTextBox : public Control {
 	const static int VerticalScrollBarVisibilityProperty;
 	/* @PropertyType=string,GenerateAccessors */
 	const static int XamlProperty;
-	
-	/* @GeneratePInvoke,GenerateCBinding */
-	RichTextBox ();
 	
 	//
 	// Overrides
@@ -442,12 +445,15 @@ class RichTextBoxView : public FrameworkElement {
 	void Paint (cairo_t *cr);
 	
  protected:
-	virtual ~RichTextBoxView ();
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	RichTextBoxView ();
 	
+	virtual ~RichTextBoxView ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+	
+ public:
 	//
 	// Overrides
 	//

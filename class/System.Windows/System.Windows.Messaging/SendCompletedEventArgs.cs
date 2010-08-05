@@ -27,6 +27,8 @@
 using Mono;
 using System;
 using System.ComponentModel;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace System.Windows.Messaging {
@@ -101,6 +103,18 @@ namespace System.Windows.Messaging {
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.SENDCOMPLETEDEVENTARGS;
+		}
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
 		}
 #endregion
 

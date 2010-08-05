@@ -397,6 +397,33 @@
 
 	* xaml.cpp: Don't set every element as being attached.
 
+2010-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlContextInternal::XamlContextInternal): don't hold
+	a strong ref to the top_element.
+
+	* runtime.cpp (Attach): use the _NAMED varieties of these macros.
+
+2010-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* shape.cpp: use MOON_SET/CLEAR_FIELD for cached instance fields.
+
+2010-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (StylePropertyValueProvider::~StylePropertyValueProvider):
+	only remove the destroyed handler if we aren't shutting down.
+	(AutoCreatePropertyValueProvider::GetPropertyValue): add a strong
+	ref from the object to the autocreated value.
+
+	* style.cpp (DeepStyleWalker::DeepStyleWalker): check setters for
+	nullness.
+
+2010-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* brush.cpp: these cached instance fields should just have
+	weakrefs attached to them, but it's easier to use the
+	MOON_SET_FIELD/MOON_CLEAR_FIELD macros.
+
 2010-07-16  Alan McGovern  <amcgovern@novell.com>
 
 	* template.h:
@@ -1341,6 +1368,103 @@
 2010-06-23  Jackson Harper  <jackson@ximian.com>
 
 	* namescope.h: Make a managed class for namescopes.
+
+2010-07-15  Chris Toshok  <toshok@ximian.com>
+
+	* mediaelement.cpp (Reinitialize): re-enable this code, but use
+	GetValueNoAutoCreate instead of Get*, since this is called from
+	the ctor, and we can't set/get DO properties there.
+
+2010-07-15  Chris Toshok  <toshok@ximian.com>
+
+	* value.cpp (FreeValue): only remove the destroyedevent handler if
+	the deployment is not shutting down.
+
+2010-07-15  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::Dispose): make sure we remove the
+	dirty element for this uielement when we're disposing.  Also, only
+	walk our subtree setting the visual parent to null if we're not
+	shutting down.  if we're shutting down, the children may have
+	already been disposed/destroyed.
+	(UIElement::SetIsAttached,UIElement::ElementRemoved,UIElement::SetVisualParent,UIElement::ElementAdded):
+	clean up all this code up such that we don't do multiple subtree
+	passes.
+
+2010-07-15  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: use the WeakRefManager in
+	MOON_SET/CLEAR_FIELD, and only do the managed delegate calls if
+	we're not shutting down.
+
+	* dependencyobject.cpp (EventObject::SetIsAttached): call managed
+	attached/detached methods.
+	(EventObject::SetManagedPeerCallbacks): add support for
+	attach/detach/mentorChanged.
+	(EventObject::Dispose): only emit the DestroyedEvent if our
+	deployment is not shutting down.
+	(DependencyObject::SetValueWithErrorImpl): use hadManagedPeer here
+	with adding/clearing the managed ref.
+	(DependencyObject::SetMentor): use MOON_SET/CLEAR_FIELD, and
+	instead of emitting MentorChanged, call the mentorChanged delegate
+	and let all that happen in managed land.
+	(DependencyObject::SetTemplateOwner): this is vastly simpler with
+	MOON_SET_FIELD, which handles all the weakref stuff for us.
+	(DependencyObject::SetParent): if we're shutting down, just clear
+	the weakRef and bow out, since we can't be sure that any pointers
+	are valid.  Also, use MOON_SET/CLEAR_FIELD instead of the simple
+	assignment.
+	(WeakRefManager): add a setup to track automatically nulled
+	weakrefs, and use this from the MOON_SET/CLEAR_FIELD code.
+
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* textelement.h: (Hyperlink): add @CallInitialize.
+
+	* textelement.cpp (Hyperlink::Hyperlink): we can't do these two
+	setter calls in unmanaged code.  They've been moved to managed.
+
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* collection.cpp (EmitChanged): use the unmanaged factory to
+	create our eventargs.
+	(RemovedFromCollection): only do this work if the deployment isn't
+	shutting down.
+
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.h (StylusPoint): add @SkipFactories to the ctor.
+
+	* projection.h (Matrix3D): same.
+	(UnmanagedMatrix3D): same.
+
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (propagate_to_inlines): we don't need to call
+	propagate_to_inlines/blocks from inside this method.  The
+	ProviderValueChanged call will result in recursion down the tree
+	if indeed it is required.
+	(propagate_to_blocks): same.
+	(PropagateInheritedProperty): we need to use GetValueNoAutoCreate
+	for the property accesses in this method, so we don't end up
+	creating objects unnecessarily.
+	(InheritedDataContextValueProvider::DetachListener): don't do
+	anything if we're shutting down.
+
+	* brush.cpp (SetSource): we need to use MOON_SET_FIELD after
+	SetSourceName, since the latter can clobber the source field.
+
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* timeline.h,cpp (Timeline::SetManualTarget): move the
+	implementation from the .h to the .cpp, and use MOON_SET_FIELD for
+	it, instead of just an assignment.
+
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* namescope.cpp (~NameScope): don't remove handlers in ~NameScope,
+	do it in ::Dispose only.  And even then, only do it if we're not
+	shutting down.
 
 2010-06-23  Jeffrey Stedfast  <fejj@novell.com>
 

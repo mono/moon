@@ -30,7 +30,13 @@ class Canvas : public Panel {
 	Rect coverage_bounds;
 
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Canvas ();
+	
 	virtual ~Canvas () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
  	/* @PropertyType=double,DefaultValue=0.0,Attached,GenerateAccessors */
@@ -42,8 +48,6 @@ class Canvas : public Panel {
 	/* @PropertyType=double,DefaultValue=NAN,Attached,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int ZProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	Canvas ();
 	
 	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
 	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);

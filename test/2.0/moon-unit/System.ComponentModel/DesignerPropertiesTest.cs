@@ -39,7 +39,19 @@ namespace MoonTest.System.ComponentModel {
 	[TestClass]
 	public class DesignerPropertiesTest {
 
-		private Rectangle rect = new Rectangle ();
+		private Rectangle rect;
+
+		[TestInitialize]
+		public void Setup ()
+		{
+			rect = new Rectangle ();
+		}
+
+		[TestCleanup]
+		public void Cleanup()
+		{
+			rect = null;
+		}
 
 		[TestMethod]
 		public void GetIsInDesignMode ()

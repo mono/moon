@@ -30,6 +30,7 @@
 #include "timeline.h"
 #include "debug.h"
 #include "deployment.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -329,7 +330,7 @@ Image::SetSourceInternal (Downloader *downloader, char *PartName)
 	// to create one here if required.
 	BitmapImage *source = (BitmapImage *) GetSource ();
 	if (!source) {
-		source = new BitmapImage ();
+		source = MoonUnmanagedFactory::CreateBitmapImage ();
 		SetSource (source);
 	}
 	MediaBase::SetSourceInternal (downloader, PartName);
@@ -616,7 +617,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 			
 			if (bitmap->GetPixelWidth () > 0 && bitmap->GetPixelHeight () > 0) {
-				RoutedEventArgs *args = new RoutedEventArgs ();
+				RoutedEventArgs *args = MoonUnmanagedFactory::CreateRoutedEventArgs ();
 				ImageOpened (args);
 				args->unref ();
 			}
@@ -674,10 +675,10 @@ Image::InsideObject (cairo_t *cr, double x, double y)
 }
 
 Value *
-Image::CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property)
+Image::CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
 	if (kind == Type::BITMAPIMAGE)
-		return Value::CreateUnrefPtr (new BitmapImage ());
+		return Value::CreateUnrefPtr (MoonUnmanagedFactory::CreateBitmapImage ());
 	return NULL;
 }
 

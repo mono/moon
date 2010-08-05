@@ -78,6 +78,7 @@ G_END_DECLS
 #include "managedtypeinfo.h"
 #include "bitmapcache.h"
 #include "usercontrol.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -241,7 +242,9 @@ class XamlContextInternal {
 	XamlContextInternal (XamlLoaderCallbacks callbacks, Value *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources, XamlContextInternal *parent_context)
 	{
 		this->callbacks = callbacks;
-		this->top_element = new Value (*top_element);
+		this->top_element = new Value (top_element->AsDependencyObject());
+		this->top_element->SetNeedUnref (false);
+		this->top_element->AsDependencyObject()->unref();
 		this->template_parent = template_parent;
 		this->resources = resources;
 		this->parent_context = parent_context;
@@ -3758,7 +3761,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		if (c == NULL)
 			break;
 
-		SolidColorBrush *scb = new SolidColorBrush ();
+		SolidColorBrush *scb = MoonUnmanagedFactory::CreateSolidColorBrush ();
 		
 		scb->SetColor (c);
 		delete c;
@@ -3799,7 +3802,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	}
 	case Type::CACHEMODE: {
 		if (!strcmp (s, "BitmapCache")) {
-			BitmapCache *bc = new BitmapCache ();
+			BitmapCache *bc = MoonUnmanagedFactory::CreateBitmapCache ();
 			*v = Value::CreateUnrefPtr (bc);
 			*v_set = true;
 		}
@@ -3819,7 +3822,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::DOUBLE_COLLECTION: {
 		DoubleCollection *doubles = DoubleCollection::FromStr (s);
 		if (!doubles) {
-			*v = Value::CreateUnrefPtr (new DoubleCollection ());
+			*v = Value::CreateUnrefPtr (MoonUnmanagedFactory::CreateDoubleCollection ());
 			*v_set = true;
 			break;
 		}
@@ -3831,7 +3834,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::POINT_COLLECTION: {
 		PointCollection *points = PointCollection::FromStr (s);
 		if (!points) {
-			*v = Value::CreateUnrefPtr (new PointCollection ());
+			*v = Value::CreateUnrefPtr (MoonUnmanagedFactory::CreatePointCollection ());
 			*v_set = true;
 			break;
 		}
@@ -3848,8 +3851,8 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		if (!mv)
 			break;
 
-		TransformGroup *tg = new TransformGroup ();
-		MatrixTransform *t = new MatrixTransform ();
+		TransformGroup *tg = MoonUnmanagedFactory::CreateTransformGroup ();
+		MatrixTransform *t = MoonUnmanagedFactory::CreateMatrixTransform ();
 		t->SetValue (MatrixTransform::MatrixProperty, Value (mv));
 
 		tg->GetChildren()->Add (t);
@@ -3879,7 +3882,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		if (!mv)
 			break;
 
-		MatrixTransform *t = new MatrixTransform ();
+		MatrixTransform *t = MoonUnmanagedFactory::CreateMatrixTransform ();
 		t->SetValue (MatrixTransform::MatrixProperty, Value (mv));
 
 		*v = new Value (t);
@@ -3987,7 +3990,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		if (!uri.Parse (s))
 			break;
 
-		BitmapImage *bi = new BitmapImage ();
+		BitmapImage *bi = MoonUnmanagedFactory::CreateBitmapImage ();
 
 		bi->SetUriSource (&uri);
 
@@ -4180,11 +4183,11 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 				g_strchug (p->cdata->str);
 		}
 
-		Run *run = new Run ();
+		Run *run = MoonUnmanagedFactory::CreateRun ();
 		run->SetText (p->cdata->str);
 		
 		if (!inlines) {
-			inlines = new InlineCollection ();
+			inlines = MoonUnmanagedFactory::CreateInlineCollection ();
 			textblock->SetInlines (inlines);
 			inlines->unref ();
 		}

@@ -45,6 +45,22 @@ namespace Mono {
 	static class ApplicationLauncher {
 
 		/// <summary>
+		///   Ensures that a managed peer has been created for a given native dependencyobject.
+		/// </summary>
+		public static void EnsureManagedPeer (IntPtr forDO)
+		{
+			var o = NativeDependencyObjectHelper.Lookup (forDO);
+			if (o == null) {
+				o = NativeDependencyObjectHelper.FromIntPtr (forDO);
+#if DEBUG_REF
+				Console.WriteLine ("Creating managed peer {0}/{1} for {2:X}", o.GetHashCode(), o.GetType(), forDO);
+#endif
+				// this next line is just to keep mcs from giving us a warning about "o" being unused
+				GC.KeepAlive (o);
+			}
+		}
+		
+		/// <summary>
 		///   Creates a new Loader for a XAML file.
 		/// </summary>
 		public static ManagedXamlLoader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string resourceBase)

@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 #include "runtime.h"
 #include "effect.h"
+#include "factory.h"
 
 using namespace Moonlight;
 
@@ -43,7 +44,7 @@ main (int argc, char **argv)
         cr = cairo_create (dst);
 
 	effect = new CustomEffect ();
-	shader = new PixelShader ();
+	shader = MoonUnmanagedFactory::CreatePixelShader ();
 
 	shader->SetTokensFromPath (argv[1]);
 	effect->SetPixelShader (shader);

@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "namescope.h"
+#include "deployment.h"
 
 namespace Moonlight {
 
@@ -34,7 +35,6 @@ NameScope::remove_handler (gpointer key, gpointer value, gpointer data)
 NameScope::~NameScope ()
 {
 	if (names) {
-		g_hash_table_foreach_remove (names, remove_handler, this);
 		g_hash_table_destroy (names);
 	}
 }
@@ -59,8 +59,10 @@ NameScope::CloneCore (Types *types, DependencyObject *fromObj)
 void
 NameScope::Dispose ()
 {
-	if (names)
-		g_hash_table_foreach_remove (names, remove_handler, this);
+	if (names) {
+		if (!GetDeployment()->IsShuttingDown())
+			g_hash_table_foreach_remove (names, remove_handler, this);
+	}
 		
 	EventObject::Dispose ();
 }

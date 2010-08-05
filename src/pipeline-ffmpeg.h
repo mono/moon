@@ -98,6 +98,7 @@ protected:
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream);
 
 public:
+	/* @SkipFactories */
 	FfmpegDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer);
 	virtual void Dispose ();
 
@@ -132,6 +133,7 @@ protected:
 	virtual void OpenDecoderAsyncInternal ();
 	
 public:
+	/* @SkipFactories */
 	FfmpegDecoder (Media* media, IMediaStream* stream);
 	virtual void Dispose ();	
 	virtual void Cleanup (MediaFrame* frame);

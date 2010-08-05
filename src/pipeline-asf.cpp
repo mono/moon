@@ -19,6 +19,7 @@
 #include "playlist.h"
 #include "clock.h"
 #include "timesource.h"
+#include "factory.h"
 
 // according to http://msdn.microsoft.com/en-us/library/cc307965(VS.85).aspx the maximum size is 10 MB
 #define ASF_OBJECT_MAX_SIZE (10 * 1024 * 1024)

@@ -116,13 +116,7 @@ private:
        
 /* @Namespace=System.Windows.Media */
 class CaptureSource : public DependencyObject {
-protected:
-	virtual ~CaptureSource ();
-
 public:
-	/* @GeneratePInvoke,GenerateCBinding */
-	CaptureSource ();
-
 	/* @PropertyType=AudioCaptureDevice,GenerateAccessors */
 	const static int AudioCaptureDeviceProperty;
 
@@ -172,6 +166,15 @@ public:
 	/* @ManagedAccess=Internal */
 	const static int CaptureStoppedEvent;
 
+protected:
+	/* @GeneratePInvoke,GenerateCBinding */
+	CaptureSource ();
+
+	virtual ~CaptureSource ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
 private:
 	static void ReportSampleCallback (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength, gpointer data);
 	void ReportSample (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength);
@@ -199,9 +202,6 @@ private:
 /* @Namespace=System.Windows.Media */
 class CaptureDevice : public DependencyObject {
 public:
-	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	CaptureDevice ();
-
 	/* @PropertyType=string,GenerateAccessors */
 	const static int FriendlyNameProperty;
 
@@ -221,7 +221,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void SetPalDevice (MoonCaptureDevice *device) { pal_device = device; }
 protected:
+	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	CaptureDevice ();
+
 	virtual ~CaptureDevice () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	MoonCaptureDevice* pal_device;
@@ -230,24 +236,21 @@ private:
 /* @Namespace=System.Windows.Media */
 class AudioFormatCollection : public Collection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	AudioFormatCollection ()
-	{
-		SetObjectType (Type::AUDIOFORMAT_COLLECTION);
-	}
-
 	virtual Type::Kind GetElementType () { return Type::AUDIOFORMAT; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	AudioFormatCollection () { SetObjectType (Type::AUDIOFORMAT_COLLECTION); }
+
 	virtual ~AudioFormatCollection () { }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media */
 class AudioCaptureDevice : public CaptureDevice {
 public:
-	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	AudioCaptureDevice ();
-
 	/* @PropertyType=gint32,GenerateAccessors */
 	const static int AudioFrameSizeProperty;
 
@@ -272,30 +275,33 @@ public:
 	void Stop ();
 
 protected:
+	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	AudioCaptureDevice ();
+
 	virtual ~AudioCaptureDevice ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media */
 class VideoFormatCollection : public Collection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	VideoFormatCollection ()
-	{
-		SetObjectType (Type::VIDEOFORMAT_COLLECTION);
-	}
-
 	virtual Type::Kind GetElementType () { return Type::VIDEOFORMAT; }
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	VideoFormatCollection () { SetObjectType (Type::VIDEOFORMAT_COLLECTION); }
+
 	virtual ~VideoFormatCollection () { }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Media */
 class VideoCaptureDevice : public CaptureDevice {
 public:
-	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	VideoCaptureDevice ();
-
 	/* @PropertyType=VideoFormatCollection,ManagedPropertyType=PresentationFrameworkCollection<VideoFormat>,ManagedFieldAccess=Private,GenerateManagedAccessors=false,GenerateAccessors */
 	const static int SupportedFormatsProperty;
 
@@ -318,7 +324,13 @@ public:
 	void Stop ();
 
 protected:
+	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	VideoCaptureDevice ();
+
 	virtual ~VideoCaptureDevice ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 

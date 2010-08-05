@@ -51,8 +51,14 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
  protected:
+	/* @GeneratePInvoke,GenerateCBinding,ManagedAccess=Protected */
+	TextElement ();
+	
 	virtual ~TextElement ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
@@ -70,9 +76,6 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	const static int LanguageProperty;
 	/* @PropertyType=TextDecorations,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;
-	
-	/* @GeneratePInvoke,GenerateCBinding,ManagedAccess=Protected */
-	TextElement ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
@@ -130,15 +133,18 @@ class Inline : public TextElement {
 	bool autogen;
 	
  protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	Inline ();
+
 	virtual ~Inline () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	// internal properties to inherit the FontSource between inlines and textblocks
 	/* @PropertyType=FontSource,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontSourceProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Inline ();
 	
 	virtual bool PermitsMultipleParents () { return false; }
 	
@@ -160,27 +166,32 @@ class Inline : public TextElement {
 /* @Namespace=System.Windows.Documents */
 class LineBreak : public Inline {
  protected:
-	virtual ~LineBreak () {}
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	LineBreak ();
+
+	virtual ~LineBreak () {}
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @ContentProperty="Text" */
 /* @Namespace=System.Windows.Documents */
 class Run : public Inline {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Run ();
+	
 	virtual ~Run () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=FlowDirection,DefaultValue=FlowDirectionLeftToRight,GenerateAccessors */
 	const static int FlowDirectionProperty;
 	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int TextProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	Run ();
 	
 	virtual bool Equals (Inline *item);
 	
@@ -208,14 +219,17 @@ class Run : public Inline {
 /* @Namespace=System.Windows.Documents */
 class Block : public TextElement {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	Block ();
+
 	virtual ~Block () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Block ();
 	
 	//
 	// Property Accessors
@@ -228,14 +242,17 @@ class Block : public TextElement {
 /* @ContentProperty=Inlines */
 class Paragraph : public Block {
  protected:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Paragraph ();
+	
 	virtual ~Paragraph () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
-	
-	/* @GeneratePInvoke,GenerateCBinding */
-	Paragraph ();
 	
 	//
 	// Property Accessors
@@ -248,16 +265,19 @@ class Paragraph : public Block {
 /* @ContentProperty=Blocks */
 class Section : public Block {
  protected:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Section ();
+	
 	virtual ~Section () {}
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
 	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal*/
 	const static int BlocksProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int HasTrailingParagraphBreakOnPasteProperty;
-	
-	/* @GeneratePInvoke,GenerateCBinding */
-	Section ();
 	
 	//
 	// Property Accessors
@@ -273,14 +293,17 @@ class Section : public Block {
 /* @ContentProperty=Inlines */
 class Span : public Inline {
  protected:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Span ();
+
 	virtual ~Span () {}
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
 	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
-	
-	/* @GeneratePInvoke,GenerateCBinding */
-	Span ();
 	
 	//
 	// Property Accessors
@@ -292,37 +315,50 @@ class Span : public Inline {
 /* @Namespace=System.Windows.Documents */
 class Bold : public Span {
  protected:
-	virtual ~Bold () {}
-	
- public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	Bold ();
+
+	virtual ~Bold () {}
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Documents */
 class Italic : public Span {
  protected:
-	virtual ~Italic () {}
-	
- public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	Italic ();
+	
+	virtual ~Italic () {}
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Documents */
 class Underline : public Span {
  protected:
-	virtual ~Underline () {}
-	
- public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	Underline ();
+
+	virtual ~Underline () {}
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Documents */
+/* @CallInitialize */
 class Hyperlink : public Span {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Hyperlink ();
+	
 	virtual ~Hyperlink () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=object */
@@ -338,9 +374,6 @@ class Hyperlink : public Span {
 	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int TargetNameProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	Hyperlink ();
-	
 	//
 	// Property Accessors
 	//
@@ -355,14 +388,17 @@ class Hyperlink : public Span {
 /* @ContentProperty=Child */
 class InlineUIContainer : public Inline {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	InlineUIContainer ();
+	
 	virtual ~InlineUIContainer () {}
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=UIElement,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int ChildProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	InlineUIContainer ();
 	
 	//
 	// Property Accessors

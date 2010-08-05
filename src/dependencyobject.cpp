@@ -186,12 +186,21 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 
 	object_type = type;
 	deployment = depl;
-	if (deployment != NULL && this != deployment)
+	if (deployment != NULL && this != deployment) {
 		deployment->ref ();
+	}
 	flags = g_atomic_int_exchange_and_add (&current_id, 1);
 	refcount = 1;
 	events = NULL;
 	toggleNotifyListener = NULL;
+	addStrongRef = NULL;
+	clearStrongRef = NULL;
+	mentorChanged = NULL;
+	attached = NULL;
+	detached = NULL;
+	hadManagedPeer = false;
+
+	weakRefs = NULL;
 
 #if OBJECT_TRACKING
 	switch (object_type) {
@@ -236,25 +245,67 @@ EventObject::~EventObject()
 	refcount = -666;
 #endif
 
+	delete weakRefs;
+	weakRefs = NULL;
+
 	delete events;
 	
 	// We can't unref the deployment in Dispose, it breaks
 	// object tracking.
-	if (deployment && this != deployment) {
+	if (deployment && this != deployment && !hadManagedPeer) {
 		deployment->unref ();
 		deployment = NULL;
 	}
 }
 
 void
-EventObject::SetIsAttached (bool attached)
+EventObject::SetIsAttached (bool value)
 {
 	VERIFY_MAIN_THREAD;
-	if (IsAttached () != attached) {
-		flags ^= Attached;
-		OnIsAttachedChanged (attached);
+
+	if (IsAttached() == value)
+		return;
+
+	if (value) {
+		flags |= Attached;
+		if (attached && deployment && !deployment->IsShuttingDown())
+			attached (this);
+	} else {
+		flags &= ~Attached;
+		if (detached && deployment && !deployment->IsShuttingDown())
+			detached (this);
+	}
+
+	OnIsAttachedChanged (value);
+}
+
+void
+EventObject::SetManagedPeerCallbacks (StrongRefCallback add_strong_ref,
+				      StrongRefCallback clear_strong_ref,
+				      MentorChangedCallback mentor_changed,
+				      AttachCallback attached,
+				      AttachCallback detached)
+{
+	hadManagedPeer = true;
+
+	this->addStrongRef = add_strong_ref;
+	this->clearStrongRef = clear_strong_ref;
+	this->mentorChanged = mentor_changed;
+	this->attached = attached;
+	this->detached = detached;
+}
+
+void
+EventObject::EnsureManagedPeer ()
+{
+	deployment->EnsureManagedPeer (this);
+	if (this != deployment) {
+		Deployment *d = deployment;
+		MOON_SET_FIELD_NAMED_NO_WEAKREF (deployment, "Deployment", d);
+		d->unref ();
 	}
 }
+
 
 void
 EventObject::AddTickCall (TickCallHandler handler, EventObject *data)
@@ -325,7 +376,10 @@ EventObject::SetCurrentDeployment (bool domain, bool register_thread)
 void
 EventObject::Dispose ()
 {
-	if (!IsDisposed () && Surface::InMainThread ()) {
+#if DEBUG_WEAKREF
+	printf ("EventObject::Dispose (this = %p/%s)\n", this, GetTypeName());
+#endif
+	if (!IsDisposed () && Surface::InMainThread () && deployment && !deployment->IsShuttingDown()) {
 		// Dispose can be called multiple times, but Emit only once. When DestroyedEvent was in the dtor, 
 		// it could only ever be emitted once, don't change that behaviour.
 		Emit (DestroyedEvent); // TODO: Rename to DisposedEvent
@@ -395,8 +449,9 @@ EventObject::ref ()
 		g_warning ("Ref was called on an object with a refcount of 0.\n");
 
 	} else if (v == 1 && toggleNotifyListener) {
-		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS)
+		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS) {
 			toggleNotifyListener->Invoke (false);
+		}
 	}
 
 	OBJECT_TRACK ("Ref", GetTypeName ());
@@ -409,8 +464,8 @@ EventObject::unref ()
 	// TODO: do we need some sort of gcc foo (volatile variables, memory barries)
 	// to ensure that gcc does not optimize the fetches below away
 	ToggleNotifyListener *toggle_listener = this->toggleNotifyListener;
-#if OBJECT_TRACKING
 	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
+#if OBJECT_TRACKING
 	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
 #endif	
 
@@ -455,8 +510,10 @@ EventObject::unref ()
 		// we know that toggle_listener hasn't been freed, since if it exists, it will have a ref to us which would prevent our destruction
 		// note that the instance field might point to garbage after decreasing the refcount above, so we access the local variable we 
 		// retrieved before decreasing the refcount.
-		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS)
-			toggle_listener->Invoke (true);
+		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS) {
+			if (!depl->IsShuttingDown())
+				toggle_listener->Invoke (true);
+		}
 	}
 
 #if SANITY
@@ -1367,9 +1424,9 @@ unregister_depobj_values (gpointer  key,
 	//DependencyProperty *prop = (DependencyProperty*)key;
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->Is (this_obj->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (this_obj->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject(this_obj->GetDeployment()->GetTypes()) != NULL) {
 		//printf ("unregistering from property %s\n", prop->name);
-		DependencyObject *obj = v->AsDependencyObject ();
+		DependencyObject *obj = v->AsDependencyObject (this_obj->GetDeployment()->GetTypes());
 		obj->RemovePropertyChangeListener (this_obj);
 		obj->SetParent (NULL, NULL);
 	}
@@ -1378,6 +1435,9 @@ unregister_depobj_values (gpointer  key,
 void
 DependencyObject::RemoveAllListeners ()
 {
+	if (GetDeployment()->IsShuttingDown ())
+		return;
+
 	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	
 	if (autocreate)
@@ -1600,10 +1660,12 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	}
 
 	if (!equal) {
-		if (current_value)
-			current_value = new Value (*current_value);
+		Deployment *deployment = GetDeployment ();
 
 		Value *new_value;
+
+		if (current_value)
+			current_value = new Value(*current_value);
 		
 		// remove the old value
 		g_hash_table_remove (local_values, property);
@@ -1611,19 +1673,47 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (property->IsAutoCreated ())
 			autocreate->ClearValue (property);
 		
-		if (value && (!property->IsAutoCreated () || !value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
+		if (value && (!property->IsAutoCreated () || !value->Is (deployment, Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
 			new_value = new Value (*value);
 		else
 			new_value = NULL;
-		
+
+		bool current_value_needs_unref = false;
+		// clear out the current value from the managed side if there's a ref to it
+		if (current_value) {
+			if (clearStrongRef && current_value->Is (deployment, Type::EVENTOBJECT)) {
+				EventObject *eo = current_value->AsEventObject();
+				if (eo && eo->hadManagedPeer) {
+					current_value_needs_unref = true;
+					eo->ref ();
+					clearStrongRef (this, eo, property->GetName());
+				}
+			}
+		}
+
 		// replace it with the new value
-		if (new_value)
+		if (new_value) {
+			if (addStrongRef && new_value->Is (deployment, Type::EVENTOBJECT)) {
+				EventObject *eo = new_value->AsEventObject();
+				if (eo && eo->hadManagedPeer) {
+					addStrongRef (this, eo, property->GetName());
+					if (new_value->GetNeedUnref ()) {
+						new_value->SetNeedUnref (false);
+						eo->unref ();
+					}
+				}
+			}
 			g_hash_table_insert (local_values, property, new_value);
+		}
 		
 		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, true, error);
 		
-		if (current_value)
-			delete current_value;
+		if (current_value_needs_unref) {
+			EventObject *eo = current_value->AsEventObject();
+			eo->unref ();
+		}
+
+		delete current_value;
 	}
 
 	return true;
@@ -2235,9 +2325,14 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 	if (Value::IsNull (v))
 		return TRUE;
 
+	Deployment *deployment = _this->GetDeployment();
+
+	if (deployment->IsShuttingDown ())
+		return TRUE;
+	Types *types = deployment->GetTypes();
 	// detach from the existing value
-	if (v->Is (_this->GetDeployment (), Type::DEPENDENCY_OBJECT)){
-		DependencyObject *dob = v->AsDependencyObject();
+	if (v->Is (deployment, Type::DEPENDENCY_OBJECT)){
+		DependencyObject *dob = v->AsDependencyObject(types);
 		
 		if (dob != NULL) {
 			if (_this == dob->GetParent()) {
@@ -2347,24 +2442,69 @@ DependencyObject::Initialize ()
 void
 DependencyObject::SetMentor (DependencyObject *value)
 {
-	if (mentor != value) {
-		if (mentor)
-			mentor->RemoveHandler (EventObject::DestroyedEvent, DependencyObject::MentorDestroyedEvent, this);
-		mentor = value;
-		if (mentor)
-			mentor->AddHandler (EventObject::DestroyedEvent, DependencyObject::MentorDestroyedEvent, this);
-		Emit (DependencyObject::MentorChangedEvent);
+	if (this->mentor == value)
+		// easy, nothing to change
+		return;
+
+	if (Deployment::GetCurrent()->IsShuttingDown ()) {
+		// for sanity's sake, we should verify that value is
+		// NULL, but we don't care, we're going away anyway.
+		mentor = NULL;
+		return;
 	}
+
+#if DEBUG_WEAKREF
+	printf ("Setting mentor for %p/%s to ", this, this->GetTypeName());
+
+	if (!value)
+		printf ("NULL\n");
+	else
+		printf ("%p/%s\n", value, value->GetTypeName());
+#endif
+
+	DependencyObject *old_mentor = this->mentor;
+	
+	if (old_mentor)
+		MOON_CLEAR_FIELD_NAMED (this->mentor, "Mentor");
+
+	if (value)
+		MOON_SET_FIELD_NAMED (this->mentor, "Mentor", value);
+
+	OnMentorChanged (old_mentor, value, false);
+}
+
+void
+DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor, bool old_disposed)
+{
+	if (old_mentor && !old_disposed)
+ 		old_mentor->RemoveHandler (EventObject::DestroyedEvent, OnMentorDisposed, this);
+
+	if (new_mentor)
+ 		new_mentor->AddHandler (EventObject::DestroyedEvent, OnMentorDisposed, this);
+
+	if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
+		mentorChanged (this, new_mentor);
+}
+
+void
+DependencyObject::OnMentorDisposed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	DependencyObject *this_ = (DependencyObject*)closure;
+
+	this_->OnMentorChanged ((DependencyObject*)sender, NULL, true);
 }
 
 void
 DependencyObject::SetTemplateOwner (DependencyObject *value)
 {
-	// you should only set template owner once.
-	g_return_if_fail (template_owner == NULL);
-	template_owner = value;
-	if (template_owner)
-		template_owner->AddHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
+	// FIXME -- you should only set template owner once.
+	//g_return_if_fail (template_owner == NULL);
+
+	if (this->template_owner)
+		MOON_CLEAR_FIELD_NAMED (this->template_owner, "TemplateOwner");
+		
+	if (value)
+		MOON_SET_FIELD_NAMED (this->template_owner, "TemplateOwner", value);
 }
 
 DependencyObject *
@@ -2389,29 +2529,6 @@ const char *
 DependencyObject::GetResourceBase ()
 {
 	return resource_base;
-}
-
-void
-DependencyObject::MentorDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	DependencyObject *o = (DependencyObject *) closure;
-	o->SetMentor (NULL);
-}
-
-void
-DependencyObject::TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	DependencyObject *o = (DependencyObject *) closure;
-	o->DetachTemplateOwnerDestroyed ();
-}
-
-void
-DependencyObject::DetachTemplateOwnerDestroyed ()
-{
-	if (template_owner) {
-		template_owner->RemoveHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
-		template_owner = NULL;
-	}
 }
 
 void
@@ -2446,8 +2563,9 @@ DependencyObject::clone_local_value (DependencyProperty *key, Value *value, gpoi
 void
 DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data)
 {
-	Deployment *deployment = Deployment::GetCurrent ();
 	CloneClosure *closure = (CloneClosure*)data;
+
+	Deployment *deployment = closure->old_do->GetDeployment();
 
 	Value *old_value = closure->old_do->GetValue (key, PropertyPrecedence_AutoCreate);
 
@@ -2579,13 +2697,14 @@ DependencyObject::Dispose ()
 {
 #if SANITY
 	/* Assert that if we still have a parent, it must be alive */
-	g_assert (parent == NULL || parent->GetRefCount () >= 0); /* #if SANITY */
+	g_assert (GetDeployment()->IsShuttingDown () || parent == NULL || parent->GetRefCount () >= 0); /* #if SANITY */
 #endif
 	if (parent != NULL) {
 		SetParent (NULL, NULL);
 	}
+
 	SetMentor (NULL);
-	DetachTemplateOwnerDestroyed ();
+	SetTemplateOwner (NULL);
 	
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);
@@ -2818,6 +2937,9 @@ DependencyObject::AttachAnimationStorage (DependencyProperty *prop, AnimationSto
 		attached_storage->Disable ();
 	}
 
+	if (addStrongRef)
+		addStrongRef (this, storage->GetTimeline(), "");
+
 	list->Append (new AnimationStorage::Node (prop, storage));
 	return attached_storage;
 }
@@ -2845,6 +2967,9 @@ DependencyObject::DetachAnimationStorage (DependencyProperty *prop, AnimationSto
 		List::Node *node = list->First ();
 		while (node) {
 			if (((AnimationStorage::Node*)node)->storage == storage) {
+				if (clearStrongRef)
+					clearStrongRef (this, storage->GetTimeline(), "");
+
 				List::Node *remove = node;
 				node = node->next;
 				((AnimationStorage::Node*)node)->storage->SetStopValue (storage->GetResetValue ());
@@ -2935,6 +3060,13 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 	if (parent == this->parent)
 		return;
 
+	if (GetDeployment()->IsShuttingDown ()) {
+		// not much we can do here... @parent should always be
+		// null, but we don't care
+		this->parent = NULL;
+		return;
+	}
+	
 #if DEBUG
 	// Check for circular families
 	DependencyObject *current = parent;
@@ -3021,7 +3153,10 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 	}
 
 	if (!error || error->number == 0) {
-		this->parent = parent;
+		if (this->parent)
+			MOON_CLEAR_FIELD_NAMED (this->parent, "Parent");
+		if (parent)
+			MOON_SET_FIELD_NAMED (this->parent, "Parent", parent);
 
 		DependencyObject *e = GetParent ();
 		Types *types = GetDeployment ()->GetTypes ();
@@ -3104,6 +3239,199 @@ DependencyObject::GetContent()
 		return NULL;
 
 	return content_value->AsDependencyObject();
+}
+
+class WeakRefNode : public List::Node
+{
+public:
+	WeakRefNode (EventObject **obj, const char *name, int token)
+	{
+		this->obj = obj;
+		this->o = *obj;
+		this->token = token;
+		this->name = name;
+	}
+
+	EventObject *o;
+	EventObject **obj;
+	int token;
+	const char *name;
+};
+
+class WeakRefClosure {
+public:
+	WeakRefClosure (WeakRefManager *mgr, EventObject **obj, const char *name)
+	{
+		this->mgr = mgr;
+		this->obj = obj;
+		this->o = *obj;
+		this->name = name;
+	}
+
+	~WeakRefClosure ()
+	{
+		this->mgr = NULL;
+		this->obj = NULL;
+		this->o = NULL;
+		this->name = NULL;
+	}
+
+	static void delete_closure (WeakRefClosure *closure)
+	{
+		delete closure;
+	}
+
+	WeakRefManager *mgr;
+	EventObject **obj;
+	EventObject *o;
+	const char *name;
+};
+
+WeakRefManager::WeakRefManager (EventObject *forObj)
+{
+	this->forObj = forObj;
+	weakrefs = new List ();
+#if DEBUG_WEAKREF
+	if (forObj->GetObjectType() == Type::DEPLOYMENT)
+		printf ("weakrefmanager %p forobj= %p/Deployment\n", this, forObj);
+	else
+		printf ("weakrefmanager %p forobj= %p/%s\n", this, forObj, forObj->GetTypeName());
+#endif
+}
+
+WeakRefManager::~WeakRefManager ()
+{
+#if DEBUG_WEAKREF
+	printf ("~weakrefmanager %p forobj= %p/%s\n", this, forObj, forObj->GetTypeName());
+#endif
+
+	Deployment *depl = Deployment::GetCurrent();
+
+	// depl can be null if we're being destroyed from ~Deployment
+	if (depl && !depl->IsShuttingDown ()) {
+		// iterate over the list unregistering handlers
+		while (weakrefs->First()) {
+			WeakRefNode *n = (WeakRefNode*)weakrefs->First();
+
+			n->o->RemoveHandler (EventObject::DestroyedEvent, n->token);
+
+			weakrefs->Remove (n);
+		}
+	}
+	delete weakrefs;
+
+	weakrefs = NULL;
+	forObj = NULL;
+}
+
+void
+WeakRefManager::Add (EventObject **obj, const char *name)
+{
+	if (!obj || !*obj)
+		return;
+
+	EventObject *o = *obj;
+
+	for (List::Node *n = weakrefs->First(); n; n = n->next) {
+		WeakRefNode *wrn = (WeakRefNode*)n;
+		if (wrn->obj == obj)
+			// we already have a weakref for this
+			// particular pointer.  we don't need another.
+			return;
+	}
+
+	int token = o->AddHandler (EventObject::DestroyedEvent,
+				   WeakRefManager::clear_weak_ref,
+				   new WeakRefClosure (this, obj, name),
+				   (GDestroyNotify)WeakRefClosure::delete_closure);
+
+#if DEBUG_WEAKREF
+	printf ("WeakRefManager %p adding ref %p, o = %p, name = %s, token = %d\n", this, obj, o, name, token);
+#endif
+
+	weakrefs->Append (new WeakRefNode (obj, name, token));
+}
+
+void
+WeakRefManager::Clear (EventObject **obj, const char *name)
+{
+	if (!obj || !*obj)
+		return;
+
+	ClearWeakRef (obj, name, false, true);
+}
+
+void
+WeakRefManager::ClearWeakRef (EventObject **obj, const char *name, bool nullRef, bool removeHandler)
+{
+	EventObject *o = *obj;
+
+#if DEBUG_WEAKREF
+	printf ("Clearing weakref %p, o = %p/%s\n", obj, o, o->GetTypeName());
+#endif
+
+	// null out the reference
+	if (nullRef) {
+#if DEBUG_WEAKREF
+		printf ("nulling out %p, o = %p\n", obj, o);
+#endif
+		*obj = NULL;
+	}
+
+	// now remove the WeakRefNode from our list
+	List::Node *n = weakrefs->First();
+	if (!n) {
+#if DEBUG_WEAKREF
+		printf ("ClearWeakRef called, but no weakrefs registered.\n");
+#endif
+		return;
+	}
+
+#if SANITY
+	bool first = true;
+#endif
+	while (n) {
+		WeakRefNode *wrn = (WeakRefNode*)n;
+		List::Node *next = n->next;
+
+		if (wrn->obj == obj) {
+#if SANITY
+			if (!first)
+				abort ();
+
+			first = true;
+#endif
+			if (removeHandler && !Deployment::GetCurrent()->IsShuttingDown())
+				o->RemoveHandler (EventObject::DestroyedEvent, wrn->token);
+
+			// remove the list node
+			weakrefs->Remove (n);
+		}
+
+		n = next;
+	}
+}
+
+void
+WeakRefManager::clear_weak_ref (EventObject *sender, EventArgs *callData, gpointer closure)
+{
+	WeakRefClosure *wrclosure = (WeakRefClosure*)closure;
+	WeakRefManager *mgr = wrclosure->mgr;
+
+#if DEBUG_WEAKREF
+	printf ("weakrefmanager::clear_weak_ref (mgr = %p,  obj = %p, name = %s)\n", mgr, wrclosure->obj, wrclosure->name);
+#endif
+
+	EventObject **obj = wrclosure->obj;
+
+	if (!obj || !*obj) {
+#if DEBUG_WEAKREF
+		printf (" + nuh uh!\n");
+#endif
+		return;
+	}
+
+	mgr->ClearWeakRef (obj, wrclosure->name, true, false);
 }
 
 };

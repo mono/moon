@@ -75,6 +75,12 @@
 	* DependencyObject.cs: Expose a function for setting an objects
 	namescope.
 
+2010-07-14  Chris Toshok  <toshok@ximian.com>
+
+	* PresentationFrameworkCollection.cs: make this a bit more
+	efficient.  call GetValueImpl to populate the initial managedList,
+	and use the managed list for all get_Item code.
+
 2010-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* Deployment.cs: make AssemblyRegistration delegate type internal

@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Mono;
@@ -34,14 +36,41 @@ namespace System.Windows.Media.Animation {
 
 	public abstract partial class Timeline : DependencyObject {
 
+		DependencyObject manualTarget;
+
 		internal DependencyObject ManualTarget {
 			get {
-				IntPtr manual = NativeMethods.timeline_get_manual_target (native);
-				return (DependencyObject) NativeDependencyObjectHelper.FromIntPtr (manual);
+				return manualTarget;
 			}
 			set {
 				NativeMethods.timeline_set_manual_target (native, value == null ? IntPtr.Zero : value.native);
 			}
 		}
+
+		internal override void AddStrongRef (IntPtr referent, string name)
+		{
+			if (name == "ManualTarget")
+				manualTarget = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+			else
+				base.AddStrongRef (referent, name);
+		}
+
+		internal override void ClearStrongRef (IntPtr referent, string name)
+		{
+			if (name == "ManualTarget")
+				manualTarget = null;
+			else
+				base.ClearStrongRef (referent, name);
+		}
+
+#if HEAPVIZ
+		internal override void AccumulateManagedRefs (List<HeapRef> refs)
+		{
+			refs.Add (new HeapRef (true,
+					       manualTarget,
+					       "ManualTarget"));
+			base.AccumulateManagedRefs (refs);
+		}
+#endif
 	}
 }

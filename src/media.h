@@ -171,8 +171,8 @@ class Image : public MediaBase {
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
-	
-	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
+
+	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 	
 	virtual void Dispose ();
 	

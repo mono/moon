@@ -42,9 +42,6 @@ public:
 	const static int ResourcesProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	Application ();
-	
-	/* @GenerateCBinding,GeneratePInvoke */
 	void RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 	
 	Style *GetDefaultStyle (ManagedTypeInfo *key);
@@ -91,8 +88,13 @@ public:
 	const static int CheckAndDownloadUpdateCompletedEvent;
 	
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Application ();
+	
 	virtual ~Application ();
 
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 private:
 	GetDefaultStyleCallback get_default_style_cb;
 	ConvertSetterValuesCallback convert_setter_values_cb;

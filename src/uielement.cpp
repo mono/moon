@@ -32,6 +32,7 @@
 #include "provider.h"
 #include "effect.h"
 #include "projection.h"
+#include "factory.h"
 
 cairo_user_data_key_t uielement_xform_key;
 
@@ -128,24 +129,28 @@ UIElement::IsSubtreeLoaded (UIElement *element)
 void
 UIElement::Dispose()
 {
-	TriggerCollection *triggers = GetTriggers ();
+	Surface *surface = GetDeployment ()->GetSurface ();
+	if (surface)
+		surface->RemoveDirtyElement (this);
+
+	Value *v = GetValueNoAutoCreate (TriggersProperty);
+	if (v && !v->IsNull) {
+		TriggerCollection *triggers = v->AsTriggerCollection ();
 	
-	if (triggers != NULL) {
-		int triggers_count = triggers->GetCount ();
-		for (int i = 0; i < triggers_count; i++)
-			triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
+		if (triggers != NULL) {
+			int triggers_count = triggers->GetCount ();
+			for (int i = 0; i < triggers_count; i++)
+				triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
+		}
 	}
 	
-	if (!IsDisposed ()) {
+	if (!GetDeployment()->IsShuttingDown()) {
 		VisualTreeWalker walker (this);
 		while (UIElement *child = walker.Step ())
 			child->SetVisualParent (NULL);
 	}
-	
-	if (subtree_object) {
-		subtree_object->unref ();
-		subtree_object = NULL;
-	}
+
+	subtree_object = NULL;
 
 	DependencyObject::Dispose();
 }
@@ -153,6 +158,11 @@ UIElement::Dispose()
 void
 UIElement::OnIsAttachedChanged (bool value)
 {
+	if (subtree_object)
+		subtree_object->SetIsAttached (value);
+	
+	DependencyObject::OnIsAttachedChanged (value);
+
 	if (!value) {
 		CacheInvalidateHint ();
 
@@ -164,10 +174,6 @@ UIElement::OnIsAttachedChanged (bool value)
 				surface->FocusElement (NULL);
 		}
 	}
-
-	DependencyObject::OnIsAttachedChanged (value);
-	if (subtree_object != NULL)
-		subtree_object->SetIsAttached (value);
 }
 
 Rect
@@ -683,22 +689,24 @@ UIElement::CacheInvalidateHint ()
 void
 UIElement::SetVisualParent (UIElement *visual_parent)
 {
-	this->visual_parent = visual_parent;
+	if (this->visual_parent)
+		MOON_CLEAR_FIELD_NAMED (this->visual_parent, "VisualParent");
+
+	if (visual_parent)
+		MOON_SET_FIELD_NAMED (this->visual_parent, "VisualParent", visual_parent);
+
+	SetIsAttached (visual_parent && visual_parent->IsAttached());
 }
 
 void
 UIElement::SetSubtreeObject (DependencyObject *value)
 {
 	if (subtree_object == value)
-	  return;
+		return;
 
-	if (subtree_object)
-	  subtree_object->unref ();
-
-	subtree_object = value;
-
-	if (subtree_object)
-	  subtree_object->ref ();
+	MOON_CLEAR_FIELD_NAMED (subtree_object, "SubtreeObject");
+	if (value != NULL)
+		MOON_SET_FIELD_NAMED (subtree_object, "SubtreeObject", value);
 }
 
 void
@@ -1179,7 +1187,7 @@ bool
 UIElement::EmitLostMouseCapture ()
 {
 	if (HasHandlers (LostMouseCaptureEvent)) {
-		MouseEventArgs *e = new MouseEventArgs ();
+		MouseEventArgs *e = MoonUnmanagedFactory::CreateMouseEventArgs ();
 		e->SetSource (this);
 		return Emit (LostMouseCaptureEvent, e);
 	}
@@ -1723,7 +1731,14 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 TimeManager *
 UIElement::GetTimeManager ()
 {
-	return GetDeployment ()->GetSurface ()->GetTimeManager ();
+	Deployment *deployment = GetDeployment();
+	Surface *surface;
+
+	if (!(deployment = GetDeployment()))
+		return NULL;
+	if (!(surface = deployment->GetSurface()))
+		return NULL;
+	return surface->GetTimeManager ();
 }
 
 GeneralTransform *
@@ -1781,7 +1796,7 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 
 	Matrix *matrix  = new Matrix (&result);
 
-	MatrixTransform *transform = new MatrixTransform ();
+	MatrixTransform *transform = MoonUnmanagedFactory::CreateMatrixTransform ();
 	transform->SetValue (MatrixTransform::MatrixProperty, matrix);
 	matrix->unref ();
 

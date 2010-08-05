@@ -25,7 +25,13 @@ namespace Moonlight {
 /* @Namespace=System.Windows.Controls */
 class Border : public FrameworkElement {
 protected:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	Border ();
+	
 	virtual ~Border () { };
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
 public:
 	/* @PropertyType=Brush,GenerateAccessors */
@@ -40,9 +46,6 @@ public:
 	const static int CornerRadiusProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0),GenerateAccessors,Validator=BorderThicknessValidator */
 	const static int PaddingProperty;
-	
- 	/* @GenerateCBinding,GeneratePInvoke */
-	Border ();
 	
 	virtual bool IsLayoutContainer () { return true; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

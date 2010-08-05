@@ -29,6 +29,8 @@
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using Mono;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace System.Windows.Media {
 
@@ -98,6 +100,20 @@ namespace System.Windows.Media {
                         get { return NativeHandle; }
                         set { NativeHandle = value; }
                 }
+
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+			throw new Exception ();
+		}
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
+			throw new Exception ();
+		}
 
                 Kind INativeEventObjectWrapper.GetKind ()
                 {

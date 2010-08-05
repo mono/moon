@@ -46,7 +46,7 @@ class CursorPositionChangedEventArgs : public EventArgs {
 	virtual ~CursorPositionChangedEventArgs () { }
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @SkipFactories */
 	CursorPositionChangedEventArgs ()
 	{
 		SetObjectType (Type::CURSORPOSITIONCHANGEDEVENTARGS);
@@ -55,6 +55,7 @@ class CursorPositionChangedEventArgs : public EventArgs {
 		this->y = 0.0;
 	}
 	
+	/* @SkipFactories */
 	CursorPositionChangedEventArgs (double height, double x, double y)
 	{
 		SetObjectType (Type::CURSORPOSITIONCHANGEDEVENTARGS);
@@ -243,6 +244,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	virtual ~TextBoxBase ();
 	
  public:
+	/* @SkipFactories */
 	TextBoxBase () { }
 	
 	//
@@ -347,7 +349,13 @@ class TextBox : public TextBoxBase {
 	virtual void SetSelectionStart (int start);
 	virtual void SetSelectionLength (int length);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextBox ();
+	
 	virtual ~TextBox () { }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -384,9 +392,6 @@ class TextBox : public TextBoxBase {
 	const static int VerticalScrollBarVisibilityProperty;
 	/* @PropertyType=object,GenerateAccessors,GenerateManagedAccessors=false,Validator=NullOrInDesignMode */
 	const static int WatermarkProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	TextBox ();
 	
 	//
 	// Overrides
@@ -495,7 +500,13 @@ class PasswordBox : public TextBoxBase {
 	virtual void SetSelectionLength (int length);
 	virtual int GetSelectionLength ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	PasswordBox ();
+	
 	virtual ~PasswordBox ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=Brush,GenerateAccessors */
@@ -518,9 +529,6 @@ class PasswordBox : public TextBoxBase {
 	const static int SelectionLengthProperty;
 	/* @PropertyType=gint32,DefaultValue=0,ManagedAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionStartProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PasswordBox ();
 	
 	//
 	// Overrides
@@ -605,11 +613,15 @@ class TextBoxView : public FrameworkElement {
 	void Paint (cairo_t *cr);
 	
  protected:
-	virtual ~TextBoxView ();
-	
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBoxView ();
+
+	virtual ~TextBoxView ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+	
+ public:
 	
 	//
 	// Overrides

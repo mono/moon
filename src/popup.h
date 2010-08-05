@@ -33,6 +33,7 @@ class Popup : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Popup ();
+
 	virtual void Dispose ();
 
 	virtual void OnIsAttachedChanged (bool attached);

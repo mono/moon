@@ -52,23 +52,59 @@ namespace System.Windows {
 		
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
+
+		~Deployment ()
+		{
+			if (!NativeMethods.deployment_is_safe_to_die (native)) {
+				should_free_in_finalizer = false;
+				GC.ReRegisterForFinalize (this);
+			}
+			else
+				should_free_in_finalizer = true;
+		}
+
+		Application current_app;
+
+		internal override void AddStrongRef (IntPtr referent, string name)
+		{
+			if (name == "CurrentApplication")
+				current_app = NativeDependencyObjectHelper.FromIntPtr (referent) as Application;
+			else
+				base.AddStrongRef (referent, name);
+		}
+
+		internal override void ClearStrongRef (IntPtr referent, string name)
+		{
+			if (name == "CurrentApplication")
+				current_app = null;
+			else
+				base.ClearStrongRef (referent, name);
+		}
+
+#if HEAPVIZ
+		public void GraphManagedHeap (string name)
+		{
+			HeapUtil.GraphManagedHeap (name);
+		}
+#endif
 		
-		/* thread-safe */
 		internal Surface Surface {
 			get {
+				// FIXME: find a way to move this to the new managed-ref stuff
+
 				/* we need to use the thread-safe version of Deployment::GetSurface since this property
 				 * may get called from several threads. */
 				IntPtr surface = NativeMethods.deployment_get_surface_reffed (this.native);
 				Surface result;
-				
+                               
 				if (surface == IntPtr.Zero)
 					return null;
-				
+                               
 				result = NativeDependencyObjectHelper.FromIntPtr (surface) as Surface;
-				
+                               
 				/* we got a reffed surface, release that ref now that we'll have a managed ref */
 				NativeMethods.event_object_unref (surface);
-				
+                               
 				return result;
 			}
 		}
@@ -298,6 +334,7 @@ namespace System.Windows {
 
 			if (plugin == IntPtr.Zero) {
 				string location = NativeMethods.surface_get_source_location (Surface.Native);
+
 				if (location != null) {
 					// full uri including xap
 					Uri source_uri = new Uri (location, UriKind.RelativeOrAbsolute);
@@ -329,6 +366,10 @@ namespace System.Windows {
 
 				NativeMethods.deployment_set_is_loaded_from_xap (native, true);
 				return LoadAssemblies ();
+			}
+			catch (Exception exc) {
+				Console.WriteLine (exc);
+				throw;
 			}
 			finally {
 				NativeMethods.deployment_set_initialization (native, false);
@@ -572,8 +613,6 @@ namespace System.Windows {
 				EmitError (2103, String.Format ("Error while creating the instance of type {0}", entry_type));
 				return false;
 			}
-
-			SetCurrentApplication (instance);
 
 			StartupEventArgs args = new StartupEventArgs();
 			instance.OnStartup (args);

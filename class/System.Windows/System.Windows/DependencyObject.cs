@@ -40,27 +40,19 @@ using System.Windows.Data;
 using System.Windows.Media;
 
 namespace System.Windows {
-	public abstract partial class DependencyObject : INativeDependencyObjectWrapper {
+	public abstract partial class DependencyObject : INativeDependencyObjectWrapper, IRefContainer {
 		internal static Thread moonlight_thread;
 		IntPtr _native;
 		EventHandlerList event_list;
+		GCHandle event_list_gchandle; /* to make sure the gchandle is valid even when the DO is about to be finalized */
 		bool free_mapping;
-
-		internal event EventHandler MentorChanged {
-			add {
-				var val = value;
-				UnmanagedEventHandler h = delegate { val (this, EventArgs.Empty); };
-				RegisterEvent (EventIds.EventObject_MentorChangedEvent, value, h);
-			}
-			remove {
-				UnregisterEvent (EventIds.EventObject_MentorChangedEvent, value);
-			}
-		}
 
 		internal EventHandlerList EventList {
 			get {
-				if (event_list == null)
+				if (event_list == null) {
 					event_list = new EventHandlerList ();
+					event_list_gchandle = GCHandle.Alloc (event_list);
+				}
 				return event_list;
 			}
 		}
@@ -88,16 +80,12 @@ namespace System.Windows {
 			}
 		}
 
-		internal FrameworkElement Mentor {
-			get { return (FrameworkElement) NativeDependencyObjectHelper.Lookup (NativeMethods.dependency_object_get_mentor (native)); }
+		internal DependencyObject TemplateOwner {
+			get; set;
 		}
 
-		internal DependencyObject TemplateOwner {
-			get { return (DependencyObject) NativeDependencyObjectHelper.Lookup (Mono.NativeMethods.dependency_object_get_template_owner (native)); }
-			set {
-				IntPtr owner = value == null ? IntPtr.Zero : value.native;
-				Mono.NativeMethods.dependency_object_set_template_owner (native, owner);
-			}
+		internal DependencyObject Parent {
+			get; set;
 		}
 
 		static DependencyObject ()
@@ -115,6 +103,10 @@ namespace System.Windows {
 		{
 			native = raw;
 			expressions = new Dictionary<DependencyProperty, Expression> ();
+			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
+			namedRefs = new Dictionary<string,INativeEventObjectWrapper> ();
+			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
+
 			NativeMethods.event_object_set_object_type (native, GetKind ());
 			// Objects created on the managed side have a normal managed lifetime,
 			// so drop the native ref hold
@@ -122,17 +114,184 @@ namespace System.Windows {
 				NativeMethods.event_object_unref (native);
 		}
 
+		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
+		Dictionary<string,INativeEventObjectWrapper> namedRefs;
+
+		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		{
+			AddStrongRef (referent, name);
+		}
+
+		internal virtual void AddStrongRef (IntPtr referent, string name)
+		{
+			if (name == "TemplateOwner") {
+				TemplateOwner = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+				return;
+			}
+			else if (name == "Parent") {
+				Parent = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+				return;
+			}
+
+			if (name == "" && strongRefs.ContainsKey (referent))
+				return;
+			if (namedRefs.ContainsKey (name))
+				return;
+
+			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			if (o != null) {
+
+				if (name == "") {
+#if DEBUG_REF
+					Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3} (referent = {4:x})", GetHashCode(), this, o.GetHashCode(), o, (int) referent);
+#endif
+
+					strongRefs.Add (referent, o);
+				}
+				else {
+#if DEBUG_REF
+					Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
+#endif
+
+					namedRefs.Add (name, o);
+				}
+			}
+		}
+
+		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		{
+			ClearStrongRef (referent, name);
+			
+		}
+
+		internal virtual void ClearStrongRef (IntPtr referent, string name)
+		{
+			if (name == "TemplateOwner") {
+				TemplateOwner = null;
+				return;
+			}
+			else if (name == "Parent") {
+				Parent = null;
+				return;
+			}
+
+			if (name == "") {
+
+#if DEBUG_REF
+				var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+				Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3} (referent = {4:x})", GetHashCode(), this, o.GetHashCode(), o, (int) referent);
+#endif
+
+				strongRefs.Remove (referent);
+			}
+			else {
+#if DEBUG_REF
+				var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+				Console.WriteLine ("Clearing ref named `{4}' from {0}/{1} to {2}/{3} (referent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
+#endif
+				namedRefs.Remove (name);
+			}
+		}
+
+#if HEAPVIZ
+		System.Collections.ICollection IRefContainer.GetManagedRefs ()
+		{
+			List<HeapRef> refs = new List<HeapRef> ();
+
+			AccumulateManagedRefs (refs);
+
+			return refs;
+		}
+
+		internal virtual void AccumulateManagedRefs (List<HeapRef> refs)
+		{
+			foreach (IntPtr nativeref in strongRefs.Keys)
+				refs.Add (new HeapRef (strongRefs[nativeref]));
+
+			foreach (string name in namedRefs.Keys)
+				refs.Add (new HeapRef (true, namedRefs[name], name));
+
+			if (TemplateOwner != null)
+				refs.Add (new HeapRef (true,
+						       TemplateOwner,
+						       "TemplateOwner"));
+
+			if (Parent != null)
+				refs.Add (new HeapRef (true,
+						       Parent,
+						       "Parent"));
+		}
+#endif
+	
+		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
+		{
+			var o = NativeDependencyObjectHelper.FromIntPtr (mentor_ptr) as FrameworkElement;
+
+			if (o == null)
+				mentor = null;
+			else
+				mentor = new WeakReference (o);
+
+			var h = MentorChanged;
+			if (h != null)
+				MentorChanged (this, EventArgs.Empty);
+		}
+
+		WeakReference mentor;
+
+		internal FrameworkElement Mentor {
+			get {
+				if (mentor == null)
+					return null;
+				return mentor.Target as FrameworkElement;
+			}
+		}
+
+		internal event EventHandler MentorChanged;
+
+		void INativeEventObjectWrapper.OnDetached ()
+		{
+#if false
+			foreach (Expression e in expressions.Values)
+				e.OnDetached (this);
+#endif
+		}
+
+		void INativeEventObjectWrapper.OnAttached ()
+		{
+			foreach (Expression e in expressions.Values) {
+				if (!e.Attached)
+					e.OnAttached (this);
+			}
+		}
+
+		void DetachAllExpressions ()
+		{
+			foreach (Expression e in expressions.Values) {
+				if (e.Attached)
+					e.OnDetached (this);
+			}
+		}
+
 		internal void Free ()
 		{
 			UnregisterAllEvents ();
+
+			event_list_gchandle.Free ();
+
+			DetachAllExpressions ();
+
+			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
 
 			if (free_mapping)
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
+		protected bool should_free_in_finalizer = true;
 		~DependencyObject ()
 		{
-			Free ();
+			if (should_free_in_finalizer)
+				Free ();
 		}
 
 		public object GetValue (DependencyProperty dp)
@@ -174,7 +333,7 @@ namespace System.Windows {
 		{
 			foreach (int eventId in EventList.Keys) {
 				foreach (EventHandlerData d in EventList[eventId].Values) {
-					Events.RemoveHandler (this, eventId, d.NativeHandler);
+					Events.RemoveHandler (this, eventId, d.NativeHandler.Target as UnmanagedEventHandler);
 				}
 			}
 		}

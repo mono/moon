@@ -27,11 +27,17 @@
 //
 
 using System;
+using System.Collections;
 
 namespace Mono {
 
 	internal interface INativeEventObjectWrapper {
 		IntPtr NativeHandle { get; set; }
 		Kind GetKind ();
+
+		void OnAttached ();
+		void OnDetached ();
+
+		void MentorChanged (IntPtr mentor_ptr);
 	}
 }

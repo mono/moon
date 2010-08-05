@@ -27,8 +27,16 @@ class MediaElement;
 /* @Namespace=System.Windows.Media */
 class Brush : public DependencyObject {
  protected:
-	virtual ~Brush () {}
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	Brush (): DependencyObject (Type::BRUSH) { }
+
+	/* @SkipFactories */
 	Brush (Type::Kind object_type) : DependencyObject (object_type) { }
+
+	virtual ~Brush () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
@@ -42,9 +50,6 @@ class Brush : public DependencyObject {
 	// used only for notifying attachees
 	/* @PropertyType=bool,Access=Internal */
 	const static int ChangedProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Brush (): DependencyObject (Type::BRUSH) { }
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 
@@ -73,21 +78,26 @@ class Brush : public DependencyObject {
 	void SetTransform (Transform *transform);
 	Transform *GetTransform ();
 	
-	static Value *CreateDefaultMatrixTransform (Type::Kind kind, DependencyProperty *property);
+	static Value *CreateDefaultMatrixTransform (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 };
 
 
 /* @Namespace=System.Windows.Media */
 class SolidColorBrush : public Brush {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	SolidColorBrush ();
+
 	virtual ~SolidColorBrush () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=Color,DefaultValue=Color (0x00000000),GenerateAccessors */
 	const static int ColorProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	SolidColorBrush ();
+	/* @SkipFactories */
 	SolidColorBrush (const char *color);
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
@@ -105,12 +115,15 @@ class SolidColorBrush : public Brush {
 /* @Namespace=System.Windows.Media */
 class GradientStopCollection : public DependencyObjectCollection {
  protected:
-	virtual ~GradientStopCollection ();
-
- public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	GradientStopCollection ();
 
+	virtual ~GradientStopCollection ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
 	virtual Type::Kind GetElementType() { return Type::GRADIENTSTOP; }
 };
 
@@ -118,16 +131,19 @@ class GradientStopCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class GradientStop : public DependencyObject {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	GradientStop ();
+	
 	virtual ~GradientStop ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=Color,DefaultValue=Color (0x00000000),GenerateAccessors */
 	const static int ColorProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int OffsetProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	GradientStop ();
 	
 	//
 	// Property Accessors
@@ -145,7 +161,13 @@ class GradientStop : public DependencyObject {
 /* @ContentProperty="GradientStops" */
 class GradientBrush : public Brush {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	GradientBrush ();
+	
 	virtual ~GradientBrush ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation,GenerateAccessors */
@@ -156,9 +178,6 @@ class GradientBrush : public Brush {
 	const static int MappingModeProperty;
 	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad,GenerateAccessors */
 	const static int SpreadMethodProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	GradientBrush ();
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
@@ -186,16 +205,19 @@ class GradientBrush : public Brush {
 /* @Namespace=System.Windows.Media */
 class LinearGradientBrush : public GradientBrush {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	LinearGradientBrush ();
+
 	virtual ~LinearGradientBrush ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=Point,DefaultValue=Point(1\,1),GenerateAccessors */
 	const static int EndPointProperty;
 	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int StartPointProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	LinearGradientBrush ();
 
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
@@ -213,7 +235,13 @@ class LinearGradientBrush : public GradientBrush {
 /* @Namespace=System.Windows.Media */
 class RadialGradientBrush : public GradientBrush {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	RadialGradientBrush ();
+	
 	virtual ~RadialGradientBrush ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=Point,DefaultValue=Point (0.5\, 0.5),GenerateAccessors */
@@ -224,9 +252,6 @@ class RadialGradientBrush : public GradientBrush {
 	const static int RadiusXProperty;
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	const static int RadiusYProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	RadialGradientBrush ();
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
@@ -250,9 +275,16 @@ class RadialGradientBrush : public GradientBrush {
 /* @Namespace=System.Windows.Media */
 class TileBrush : public Brush {
  protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	TileBrush () : Brush (Type::TILEBRUSH) {}
+
 	virtual ~TileBrush ();
 
+	/* @SkipFactories */
 	TileBrush (Type::Kind object_type) : Brush (object_type) { }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter,GenerateAccessors */
@@ -262,8 +294,6 @@ class TileBrush : public Brush {
 	/* @PropertyType=Stretch,DefaultValue=StretchFill,GenerateAccessors */
 	const static int StretchProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	TileBrush () : Brush (Type::TILEBRUSH) {}
 	virtual void Fill (cairo_t *cr, bool preserve);
 	virtual void Stroke (cairo_t *cr, bool preserve);
 	
@@ -283,22 +313,27 @@ class TileBrush : public Brush {
 /* @Namespace=System.Windows.Media */
 class ImplicitInputBrush : public Brush {
 protected:
-	virtual ~ImplicitInputBrush () {}
-
-public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ImplicitInputBrush () : Brush (Type::IMPLICITINPUTBRUSH) { }
+
+	virtual ~ImplicitInputBrush () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 /* @Namespace=System.Windows.Controls */
 class HtmlBrush : public TileBrush {
 protected:
-	virtual ~HtmlBrush () {}
-
-public:
 	/* @GeneratePInvoke,GenerateCBinding */
 	HtmlBrush () : TileBrush (Type::HTMLBRUSH) { }
 
+	virtual ~HtmlBrush () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+public:
 	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int SourceNameProperty;
 };
@@ -317,8 +352,14 @@ private:
 	static void source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ImageBrush ();
+
 	virtual ~ImageBrush ();
 	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
  public:
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
 	const static int DownloadProgressProperty;
@@ -332,8 +373,6 @@ private:
 	/* @DelegateType=EventHandler<RoutedEventArgs> */
 	const static int ImageOpenedEvent;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	ImageBrush ();
 	virtual void Dispose ();
 	
 	void SetSource (Downloader *downloader, const char *PartName);
@@ -351,7 +390,7 @@ private:
 	void SetImageSource (ImageSource *source);
 	ImageSource *GetImageSource ();
 
-	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property);
+	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 };
 
 cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int height);
@@ -372,14 +411,17 @@ class VideoBrush : public TileBrush {
 	VideoFormat *video_format;
 
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	VideoBrush ();
+	
 	virtual ~VideoBrush ();
+	
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 	
  public:
 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int SourceNameProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	VideoBrush ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
@@ -411,14 +453,17 @@ class VisualBrush : public TileBrush {
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
 
  protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	VisualBrush ();
+
 	virtual ~VisualBrush ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */
 	const static int VisualProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	VisualBrush ();
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -438,13 +483,17 @@ class WebBrowserBrush : public TileBrush {
 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int SourceNameProperty;
 
+	void SetSourceName (const char *name);
+	const char * GetSourceName ();
+
+ protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	WebBrowserBrush () { SetObjectType (Type::WEBBROWSERBRUSH); }
 
-	void SetSourceName (const char *name);
-	const char * GetSourceName ();
- protected:
 	virtual ~WebBrowserBrush () { }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 };
 
 G_BEGIN_DECLS

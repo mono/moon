@@ -88,9 +88,6 @@ namespace Moonlight {
 /* @Namespace=System.Windows.Media.Effects */
 class Effect : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Effect ();
-
 	//
 	// Padding
 	//
@@ -113,7 +110,13 @@ public:
 	static Effect *GetProjectionEffect ();
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	Effect ();
+
 	virtual ~Effect () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 	pipe_resource_t *GetShaderTexture (cairo_surface_t *surface);
 	pipe_surface_t  *GetShaderSurface (cairo_surface_t *surface);
@@ -192,9 +195,6 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class BlurEffect : public Effect {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	BlurEffect ();
-
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	/* @PropertyType=double,DefaultValue=5.0,GenerateAccessors */
@@ -223,7 +223,14 @@ public:
 		     double          height);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	BlurEffect ();
+
 	virtual ~BlurEffect ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
 	void Clear ();
 	void MaybeUpdateFilter ();
 
@@ -257,9 +264,6 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class DropShadowEffect : public Effect {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	DropShadowEffect ();
-
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	/* @PropertyType=double,DefaultValue=5.0,GenerateAccessors */
@@ -308,7 +312,14 @@ public:
 		     double          height);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DropShadowEffect ();
+
 	virtual ~DropShadowEffect ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
 	void Clear ();
 	void MaybeUpdateFilter ();
 
@@ -343,9 +354,6 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class PixelShader : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	PixelShader ();
-
 	/* @PropertyType=Uri,DefaultValue=Uri(),GenerateAccessors */
 	const static int UriSourceProperty;
 
@@ -381,7 +389,13 @@ public:
 			    d3d_dcl_instruction_t *value);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PixelShader ();
+
 	virtual ~PixelShader ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	guint32 *tokens;
@@ -391,9 +405,6 @@ private:
 /* @Namespace=System.Windows.Media.Effects */
 class ShaderEffect : public Effect {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	ShaderEffect ();
-
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,ManagedAccess=Protected,GenerateAccessors */
@@ -442,7 +453,14 @@ public:
 	void ShaderError (const char *format, ...);
 
 protected:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	ShaderEffect ();
+
 	virtual ~ShaderEffect () { Clear (); }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
 	void Clear ();
 
 	pipe_resource_t *GetShaderConstantBuffer (float           **ptr,
