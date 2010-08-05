@@ -2127,7 +2127,7 @@ DropShadowEffect::Render (cairo_t         *cr,
 		double dx = -cos (direction) * depth;
 		double dy = sin (direction) * depth;
 		Color  *color = GetColor ();
-		double opacity = GetOpacity ();
+		double opacity = CLAMP (GetOpacity (), 0.0, 1.0);
 		int    rgba[4];
 		int    *table0 = filtertable0;
 		int    **table = filtertable ? filtertable : &table0;
@@ -2166,7 +2166,7 @@ DropShadowEffect::UpdateShader ()
 	struct st_context    *ctx = st_context;
 	Color                *color = GetColor ();
 	double               direction = GetDirection () * (M_PI / 180.0);
-	double               opacity = GetOpacity ();
+	double               opacity = CLAMP (GetOpacity (), 0.0, 1.0);
 	double               depth = GetShadowDepth ();
 	double               dx = -cos (direction) * depth;
 	double               dy = sin (direction) * depth;

@@ -1,5 +1,8 @@
 2010-08-05  David Reveman  <davidr@novell.com>
 
+	* effect.cpp: Clamp drop shadow opacity value to 0.0-1.0
+	range.
+
 	* effect.cpp (UpdateShader): Pre-multiply shadow color.
 
 	* effect.cpp (Render): Fix typo that had rgba values set
