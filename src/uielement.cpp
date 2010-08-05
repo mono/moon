@@ -535,9 +535,8 @@ UIElement::ComputeTransform ()
 
 	if (GetVisualParent () != NULL) {
 		absolute_xform = GetVisualParent ()->absolute_xform;
-		memcpy (absolute_projection,
-			GetVisualParent ()->absolute_projection,
-			sizeof (double) * 16);
+		Matrix3D::Init (absolute_projection,
+				GetVisualParent ()->absolute_projection);
 	} else if (GetParent () != NULL && GetParent ()->Is (Type::POPUP)) {  
 		// FIXME we shouldn't be examing a subclass type here but we'll do this
 		// for now to get popups in something approaching the right place while
@@ -557,17 +556,15 @@ UIElement::ComputeTransform ()
 		}
 
 		if (flags & UIElement::RENDER_PROJECTION) {
-			memcpy (render_projection,
-				popup->absolute_projection,
-				sizeof (double) * 16);
+			Matrix3D::Init (render_projection,
+					popup->absolute_projection);
 			Matrix3D::Translate (m,
 					     popup->GetHorizontalOffset (),
 					     popup->GetVerticalOffset (),
 					     0.0);
 			Matrix3D::Multiply (render_projection, m,
 					    render_projection);
-			memcpy (local_projection, render_projection,
-				sizeof (double) * 16);
+			Matrix3D::Init (local_projection, render_projection);
 		}
 		else {
 			absolute_xform = popup->absolute_xform;

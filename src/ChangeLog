@@ -1,5 +1,8 @@
 2010-08-05  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (ComputeTransform): Use Matrix3D::Init instead
+	of memcpy.
+
 	* projection.h:
 	* projection.cpp: Add Matrix3D::Init.
 
