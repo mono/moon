@@ -261,6 +261,8 @@ protected:
 	bool need_filter_update;
 };
 
+#define MAX_SHADOW_DEPTH 300
+
 /* @Namespace=System.Windows.Media.Effects */
 class DropShadowEffect : public Effect {
 public:

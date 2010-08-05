@@ -1945,7 +1945,7 @@ Thickness
 DropShadowEffect::Padding ()
 {
 	double direction = GetDirection () * (M_PI / 180.0);
-	double depth = GetShadowDepth ();
+	double depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
 	double left;
 	double top;
 	double right;
@@ -2123,7 +2123,7 @@ DropShadowEffect::Render (cairo_t         *cr,
 	/* table based filter code when possible */
 	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
 		double direction = GetDirection () * (M_PI / 180.0);
-		double depth = GetShadowDepth ();
+		double depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
 		double dx = -cos (direction) * depth;
 		double dy = sin (direction) * depth;
 		Color  *color = GetColor ();
@@ -2167,7 +2167,7 @@ DropShadowEffect::UpdateShader ()
 	Color                *color = GetColor ();
 	double               direction = GetDirection () * (M_PI / 180.0);
 	double               opacity = CLAMP (GetOpacity (), 0.0, 1.0);
-	double               depth = GetShadowDepth ();
+	double               depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
 	double               dx = -cos (direction) * depth;
 	double               dy = sin (direction) * depth;
 	int                  width = nfiltervalues;
