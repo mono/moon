@@ -1,7 +1,9 @@
 2010-08-05  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp (ComputeTransform): Use Matrix3D::Init instead
-	of memcpy.
+	of memcpy. Look for RENDER_PROJECTION flag instead of
+	projection property when determening whether we inherit an
+	affine or perspective transformation.
 
 	* projection.h:
 	* projection.cpp: Add Matrix3D::Init.

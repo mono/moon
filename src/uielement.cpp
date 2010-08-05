@@ -547,11 +547,7 @@ UIElement::ComputeTransform ()
 		// determine whether we inherit an affine or a perspective
 		// transformation from our parent.
 		while (el) {
-			if (el->GetRenderProjection ()) {
-				flags |= UIElement::RENDER_PROJECTION;
-				break;
-			}
-
+			flags |= (el->flags & UIElement::RENDER_PROJECTION);
 			el = (UIElement *) el->GetVisualParent ();
 		}
 
