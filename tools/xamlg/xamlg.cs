@@ -45,10 +45,8 @@ namespace Moonlight {
 	public class XamlG {
 
 		private static readonly string help_string = "xamlg.exe - a utility for generating partial classes from XAML.\n" +
-				"xamlg.exe [/lang:NAME] [/root:FOLDER] xamlfile[,outputfile]...\n\n" +
-				"If an outputfile is not specified one will be created using the format <xamlfile>.g.cs\n" +
-				"lang may be CS for C Sharp or VB for Visual Basic\n" +
-				"root is the root folder for the application. default to current working directory";
+				"xamlg.exe [/lang:NAME] [/root:FOLDER] [sl2app:APPNAME] xamlfile[,outputfile]...\n\n" +
+				"If an outputfile is not specified one will be created using the format <xamlfile>.g.cs\n\n";
 
 		private static CodeDomProvider provider = new CSharpCodeProvider ();
 		private static bool sl2 = false;  // Silverlight 2 support
@@ -57,18 +55,28 @@ namespace Moonlight {
 
 		public static void Main (string [] args)
 		{
-			if (args.Length < 1) {
-				Console.WriteLine (help_string);
-				Environment.Exit (0);
-			}
+			
 
 			bool help = false;
 			var p = new OptionSet () {
-				{ "lang:", v => SetLang (v) },
-				{ "sl2app:", v => SetAppName (v) },
-				{ "root:", v => root_folder = Path.GetFullPath (v) },
-				{ "h|?|help", v => help = true }
+				{ "lang:",
+				  "Specify the code language to be used for the generated files. The supplied value must be CS for C# code or VB for Visual Basic code. By default C# is used.",
+				  v => SetLang (v) },
+				{ "sl2app:",
+				  "The application name used in the LoadComponent string. It is important to set this value or your LoadComponent URLs will not work correctly.",
+				  v => SetAppName (v) },
+				{ "root:",
+				  "The root directory of the application. Use this when generating code for xaml in subdirectories of your appliction.",
+				  v => root_folder = Path.GetFullPath (v) },
+				{ "h|?|help",
+				  "Print this help message.",
+				  v => help = true }
 			};
+
+			if (args.Length < 1) {
+				ShowHelp (p);
+				Environment.Exit (0);
+			}
 
 			List<string> extra = null;
 			try {
@@ -76,6 +84,11 @@ namespace Moonlight {
 			} catch (OptionException) {
 				Console.WriteLine ("Try `xamlg --help' for more information.");
 				return;
+			}
+
+			if (help) {
+				ShowHelp (p);
+				Environment.Exit (0);
 			}
 
 			foreach (string file in extra) {
@@ -94,6 +107,12 @@ namespace Moonlight {
 			}
 		}
 
+		private static void ShowHelp (OptionSet ops)
+		{
+			Console.WriteLine (help_string);
+			ops.WriteOptionDescriptions (Console.Out);
+		}
+		
 		private static void SetLang (string lang)
 		{
 			switch (lang) {
