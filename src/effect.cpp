@@ -2320,9 +2320,9 @@ DropShadowEffect::UpdateShader ()
 	*horz++ = 0.f;
 	*horz++ = 0.f;
 
-	*vert++ = color->r;
-	*vert++ = color->g;
-	*vert++ = color->b;
+	*vert++ = color->r * opacity;
+	*vert++ = color->g * opacity;
+	*vert++ = color->b * opacity;
 	*vert++ = opacity;
 
 	if (width) {
