@@ -129,6 +129,7 @@ public:
 	double GetM44 ();
 
 	static void Identity (double *out);
+	static void Init (double *out, const double *m);
 	static void TransformPoint (double *out, const double *m, const double *in);
 	static Rect TransformBounds (const double *m, Rect bounds);
 	static void Multiply (double *out, const double *a, const double *b);

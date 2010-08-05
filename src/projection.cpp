@@ -109,6 +109,12 @@ Matrix3D::Identity (double *out)
 }
 
 void
+Matrix3D::Init (double *out, const double *m)
+{
+	memcpy (out, m, sizeof (double) * 16);
+}
+
+void
 Matrix3D::TransformPoint (double *out, const double *m, const double *in)
 {
 	double tmp[4];

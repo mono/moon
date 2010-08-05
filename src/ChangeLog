@@ -1,5 +1,8 @@
 2010-08-05  David Reveman  <davidr@novell.com>
 
+	* projection.h:
+	* projection.cpp: Add Matrix3D::Init.
+
 	* effect.h:
 	* effect.cpp: Add MAX_SHADOW_DEPTH and clamp drop shadow
 	depth value to 0.0-300.0 range.
