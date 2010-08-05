@@ -395,7 +395,7 @@ Glyphs::GetOriginPoint ()
 void
 Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	if (width == 0.0 && height == 0.0)
+	if (fill == NULL || (width == 0.0 && height == 0.0))
 		return;
 	
 	if (invalid) {
@@ -408,9 +408,7 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 		// No glyphs to render
 		return;
 	}
-
-	g_return_if_fail (fill != NULL);
-		
+	
 	cairo_save (cr);
 	ApplyTransform (cr);
 	
@@ -420,6 +418,7 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 	Rect area = Rect (left, top, width, height);
 	fill->SetupBrush (cr, area);
 	
+	cairo_new_path (cr);
 	cairo_append_path (cr, &path->cairo);
 	fill->Fill (cr);
 	
