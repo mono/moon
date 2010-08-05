@@ -619,7 +619,10 @@ Surface::Attach (UIElement *element)
 		int maxframerate = time_manager->GetMaximumRefreshRate ();
 		toplevel->unref ();
 		time_manager_mutex.Lock ();
-		time_manager->unref ();
+		/* We might end up here as a result of something that happens in a tick call. When control returns
+		 * to the time manager's tick call code, we might crash since the time manager will get destroyed here.
+		 * So unref delayed to unroll the stack before destroying the time manager */
+		time_manager->unref_delayed ();
 		time_manager = new TimeManager ();
 		time_manager_mutex.Unlock ();
 		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
