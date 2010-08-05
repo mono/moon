@@ -1,4 +1,4 @@
-TH "mxap" 1
+.TH "mxap" 1
 .SH NAME
 mxap \- Moonlight XAP file Generator.
 .SH SYNOPSIS
@@ -22,16 +22,66 @@ all of the libraries and application manifest into a .xap file and
 create an html file for viewing the new application.
 .SH OPTIONS
 .TP
-.I \-\-generate\-html 
+.I \-\-runtime-version, \-\-rv=VALUE
+Select the Silverlight Runtime Version (2 = 2.0.31005.0, 3 =
+3.0.40818.0 4 = 4.0.50401.0, or use the full version string)
+.I \-\-use-existing\-manifest
+Use an existing AppManifest.xaml file.
+.I \-\-entry\-point\-type=VALUE
+Specify the entry point type for your application. This will be used
+in the <Deployment section of your AppManifest.xaml
+.I \-\-cs\-sources=VALUE
+A list of source files to compile. By default all .cs files found in
+the directory will be compiled.
+.I \-\-res\-sources=VALUE
+A list of resource files to be added to the application. By default
+all of the .xaml files found are converted to resources and embeded in
+the app.
+.I \-\-ares\-sources=VALUE
+A list of assembly resources that will be embedded into the main
+application assembly.
+.I \-\-cres\-sources=VALUE
+A list of content resources to be added to the xap. These are
+items like images or scripts that you would like to access from your
+application.
+.I \-\-generate\-html[=VALUE]
 If this option is specified, a sample HTML container file is generated
 using the 
 .B xaml2html
-command.
-.TP
-.I \-\-include\-mdb
+command.                             
+.I \-\-include\-mdb[=VALUE]
 If this option is used, the XAP file will also package the debugging
 information (the files that end with the .mdb extension).  This is
 useful to get line number information and more detailed stack traces. 
+.I \-\-application\-name=VALUE
+Specifiy the name of the application generated. The default name is
+the name of the current directory.
+.I \-\-generate\-manifest[=VALUE]
+Whether or not an AppManifest.xaml file should be generated. An
+AppManifest is created by default. Use this option if you would like
+to create your own AppManifest.xaml file.
+.I \-\-desktop[=VALUE]
+Create a xap for running desktop, non sandboxed applications. Xaps
+created with this option will not run in the browser.
+.I  \-r, \-\-reference=VALUE
+Reference the supplied assembly. Identical to the compiler -r: option.
+.I \-\-pkg=VALUE
+Use assemblies listed in .pc files to build. They won't be included in
+the xap, so this is only useful for extra system libraries.
+.I \-l, \-\-list-generated[=VALUE]
+List the generated files. This is useful for cleanup scripts that want
+to delete all of the generated files.
+.I \-v, \-\-verbose[=VALUE]
+Verbose printing.
+.I \-d, \-\-define[=VALUE]
+Define a constant value for compilation such as --define=DEBUG
+.I \-\-clean
+Removes generated files. Use with caution, this could delete important
+files like your AppManifest.xaml.
+.I \-\-out, \-\-output\-dir=VALUE
+Specify an output directory for the generated xap.
+.I \-\-inplace[=VALUE]
+Don't use a temporary directory
 .SH MAILING LIST
 The Moonlight mailing lists is at
 http://www.mono-project.com/Mailing_Lists
