@@ -2132,9 +2132,9 @@ DropShadowEffect::Render (cairo_t         *cr,
 		int    *table0 = filtertable0;
 		int    **table = filtertable ? filtertable : &table0;
 
-		rgba[SW_RED]   = (int) ((color->r / opacity) * 255.0);
-		rgba[SW_GREEN] = (int) ((color->g / opacity) * 255.0);
-		rgba[SW_BLUE]  = (int) ((color->b / opacity) * 255.0);
+		rgba[SW_RED]   = (int) ((color->r * opacity) * 255.0);
+		rgba[SW_GREEN] = (int) ((color->g * opacity) * 255.0);
+		rgba[SW_BLUE]  = (int) ((color->b * opacity) * 255.0);
 		rgba[SW_ALPHA] = (int) (opacity * 255.0);
 
 		/* modifies the source surface */

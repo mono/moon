@@ -1,3 +1,9 @@
+2010-08-05  David Reveman  <davidr@novell.com>
+
+	* effect.cpp (Render): Fix typo that had rgba values set
+	incorrectly. We should of course multiply r/g/b components
+	with the opacity value.
+
 2010-08-04  David Reveman  <davidr@novell.com>
 
 	* projection.cpp (UpdateProjection): Fix translate direction of
