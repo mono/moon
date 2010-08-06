@@ -49,6 +49,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
 	public class FrameworkElementAutomationPeerTest : SilverlightTest {
+
+		protected FrameworkElement fe;
+		protected FrameworkElementAutomationPeer peer;
+
+		[TestInitialize]
+		public void SetupTest ()
+		{
+			if (fe == null) {
+				fe = CreateConcreteFrameworkElement ();
+				peer = (FrameworkElementAutomationPeer)FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			}
+		}
+
 		[TestMethod]
 		public void CreatePeerForElement ()
 		{
@@ -76,25 +89,23 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetPattern ()
 		{
-			AutomationPeer feap = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
-
-			Assert.IsNull (feap.GetPattern (PatternInterface.Dock), "Dock");
-			Assert.IsNull (feap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Grid), "Grid");
-			Assert.IsNull (feap.GetPattern (PatternInterface.GridItem), "GridItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Invoke), "Invoke");
-			Assert.IsNull (feap.GetPattern (PatternInterface.MultipleView), "MultipleView");
-			Assert.IsNull (feap.GetPattern (PatternInterface.RangeValue), "RangeValue");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Scroll), "Scroll");
-			Assert.IsNull (feap.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Selection), "Selection");
-			Assert.IsNull (feap.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Table), "Table");
-			Assert.IsNull (feap.GetPattern (PatternInterface.TableItem), "TableItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Toggle), "Toggle");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Transform), "Transform");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Value), "Value");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Window), "Window");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
+			Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Grid), "Grid");
+			Assert.IsNull (peer.GetPattern (PatternInterface.GridItem), "GridItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Invoke), "Invoke");
+			Assert.IsNull (peer.GetPattern (PatternInterface.MultipleView), "MultipleView");
+			Assert.IsNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Scroll), "Scroll");
+			Assert.IsNull (peer.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Selection), "Selection");
+			Assert.IsNull (peer.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Table), "Table");
+			Assert.IsNull (peer.GetPattern (PatternInterface.TableItem), "TableItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Toggle), "Toggle");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Transform), "Transform");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Value), "Value");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Window), "Window");
 		}
 
 		public interface FrameworkElementAutomationPeerContract {
@@ -272,7 +283,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAcceleratorKey ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, peer.GetAcceleratorKey (), "GetAcceleratorKey");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -283,9 +293,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAcceleratorKey_AttachedProperty()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.AreEqual (string.Empty, peer.GetAcceleratorKey (), "GetAcceleratorKey #0");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -310,8 +317,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -345,7 +350,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetClassName ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, peer.GetClassName (), "GetClassNameCore");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -356,7 +360,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAccessKey ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, peer.GetAccessKey (), "GetAccessKey");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -367,9 +370,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAccessKey_AttachedProperty ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.AreEqual (string.Empty, peer.GetAccessKey (), "GetAccessKey");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -394,8 +394,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -427,7 +425,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAutomationControlType ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationControlType.Custom, peer.GetAutomationControlType (), "GetAutomationControlType");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -438,7 +435,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAutomationId ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, peer.GetAutomationId (), "GetAutomationId");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -448,9 +444,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAutomationId_AttachedProperty ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.AreEqual (string.Empty, peer.GetAutomationId (), "GetAutomationId");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -475,8 +468,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -831,9 +822,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetHelpText_AttachedProperty ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.AreEqual (string.Empty, peer.GetHelpText (), "GetHelpText");
 			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 			if (feap != null)
@@ -858,8 +846,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -891,7 +877,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetItemStatus ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, peer.GetItemStatus (), "GetItemStatus");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -902,8 +887,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetItemStatus_AttachedProperty ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			Assert.AreEqual (string.Empty, peer.GetItemStatus (), "GetItemStatus");
 			if (feap != null)
@@ -928,8 +911,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -961,7 +942,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetItemType ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, peer.GetItemType (), "GetItemType");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -971,9 +951,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetItemType_AttachedProperty ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.AreEqual (string.Empty, peer.GetItemType (), "GetItemType");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -998,8 +975,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -1031,7 +1006,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetLocalizedControlType ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			string localizedString = peer.GetAutomationControlType ().ToString ().ToLower();
 			Assert.AreEqual (localizedString, peer.GetLocalizedControlType(), 
 					string.Format ("GetLocalizedControlType: {0}", localizedString));
@@ -1045,7 +1019,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetOrientation ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationOrientation.None, peer.GetOrientation (), "GetOrientation");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -1058,13 +1031,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Ignore("This is working, but I can't test it because the green progressbar steals focus!")]
 		public virtual void HasKeyboardFocus ()
 		{
-			FrameworkElement concreteFrameworkElement = CreateConcreteFrameworkElement ();
-			Control control = concreteFrameworkElement as Control;
+			Control control = fe as Control;
 
 			if (control == null) {
 				// Some FrameworkElement subclasses are sealed, so we are doing this.
-				AutomationPeer peer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (concreteFrameworkElement);
 				FrameworkElementAutomationPeerContract feap
 					= peer as FrameworkElementAutomationPeerContract;
 				Assert.IsFalse (peer.HasKeyboardFocus (), "HasKeyboardFocus #0");
@@ -1101,8 +1071,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 				EnqueueConditional (() => controlLoaded && panelLoaded, "ControlLoaded #0");
 				Enqueue (() => {
-					AutomationPeer peer 
-						= FrameworkElementAutomationPeer.CreatePeerForElement (concreteFrameworkElement);
 					Assert.IsFalse (peer.HasKeyboardFocus (), "HasKeyboardFocus #1");
 
 					control1.Focus ();
@@ -1145,7 +1113,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void IsEnabled ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.IsTrue (peer.IsEnabled (), "IsEnabled");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -1157,13 +1124,11 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Asynchronous]
 		public virtual void IsOffScreen ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
 			bool controlLoaded = false;
 			bool layoutUpdated = false;
 			fe.Loaded += (o, e) => controlLoaded = true;
 			EventHandler layoutUpdatedHandler = (o, e) => layoutUpdated = true;
 			fe.LayoutUpdated += layoutUpdatedHandler;
-			AutomationPeer peer = null;
 			ContentControl contentControl = new ContentControl ();
 			StackPanel stackPanel = new StackPanel ();
 			contentControl.Content = stackPanel;
@@ -1172,7 +1137,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			// Grid -> StackPanel -> Control
 			EnqueueConditional (() => controlLoaded && layoutUpdated , "ControlLoaded #0");
 			Enqueue (() => {
-				peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
 
 				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1");
@@ -1199,6 +1163,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Enqueue (() => fe.Visibility = Visibility.Visible);
 			Enqueue (() => { Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #7"); });
 			Enqueue (() => fe.LayoutUpdated -= layoutUpdatedHandler );
+			Enqueue (() => stackPanel.Children.Remove (fe) );
+
 			EnqueueTestComplete ();
 		}
 
@@ -1206,7 +1172,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Asynchronous]
 		public virtual void IsOffScreen_ScrollViewer ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
 			Control control = fe as Control;
 			
 			if (control == null) {
@@ -1217,7 +1182,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			ScrollViewer scrollViewer = new ScrollViewer () { Height = 100 };
 			StackPanel panel = new StackPanel ();
 			scrollViewer.Content = panel;
-			AutomationPeer peer = null;
 
 			CreateAsyncTest (scrollViewer,
 			() => {
@@ -1225,7 +1189,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 					panel.Children.Add (new TextBlock () { Text = i.ToString () });
 				// Our control won't be visible, but still won't be offscreen
 				panel.Children.Add (control);
-				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
 				Assert.IsNotNull (peer, "#0");
 			},
 			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1"),
@@ -1245,13 +1208,11 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return;
 			}
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
 			fe.SetValue (Canvas.TopProperty, (double) 10);
 			fe.SetValue (Canvas.LeftProperty, (double) 30);
 			fe.SetValue (Canvas.WidthProperty, (double) 150);
 			fe.SetValue (Canvas.HeightProperty, (double) 230);
 
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			CreateAsyncTest (fe,
@@ -1338,13 +1299,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			parent0.Children.Add (parent1);
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-
 			fe.SetValue (Canvas.WidthProperty, (double) 150);
 			fe.SetValue (Canvas.HeightProperty, (double) 230);
 			parent1.Children.Add (fe);
 
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			TestPanel.Children.Add (parent0);
@@ -1395,14 +1353,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsFalse ((bool) tuple.NewValue, "IsOffscreen #8");
 				Assert.IsTrue ((bool) tuple.OldValue, "IsOffscreen #9");
 			});
+			Enqueue (() => parent1.Children.Remove (fe) );
+
 			EnqueueTestComplete ();
 		}
 		 
 		[TestMethod]
 		public virtual void IsPassword ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			Assert.IsFalse (peer.IsPassword (), "IsPassword");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -1413,8 +1371,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void IsRequiredForForm ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			Assert.IsFalse (peer.IsRequiredForForm (), "IsRequiredForForm");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -1425,9 +1381,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void IsRequiredForForm_AttachedProperty ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.IsFalse (peer.IsRequiredForForm (), "IsRequiredForForm");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -1450,8 +1403,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -1476,8 +1427,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetName ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			Assert.AreEqual (String.Empty, peer.GetName (), "GetName");
 
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
@@ -1488,9 +1437,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetName_AttachedProperty0 ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.AreEqual (string.Empty, peer.GetName (), "GetName");
 			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 			if (feap != null)
@@ -1515,8 +1461,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -1548,22 +1492,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetName_AttachedProperty1 ()
 		{
-			FrameworkElement element = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
-
 			string textblockName = "Hello world:";
 			string nameProperty = "TextBox name";
 
 			TextBlock textblock = new TextBlock ();
 			textblock.Text = textblockName;
 
-			element.SetValue (AutomationProperties.NameProperty, nameProperty);
+			fe.SetValue (AutomationProperties.NameProperty, nameProperty);
 			Assert.AreEqual (nameProperty, peer.GetName (), "GetName #0");
 			FrameworkElementAutomationPeerContract tbap = peer as FrameworkElementAutomationPeerContract;
 			if (tbap != null)
 				Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #0");
 
-			element.SetValue (AutomationProperties.LabeledByProperty, textblock);
+			fe.SetValue (AutomationProperties.LabeledByProperty, textblock);
 			Assert.AreEqual (textblockName, peer.GetName (), "GetName #1");
 			if (tbap != null)
 				Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #1");
@@ -1578,13 +1519,13 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (tbap != null)
 				Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #3");
 
-			element.SetValue (AutomationProperties.NameProperty, null);
+			fe.SetValue (AutomationProperties.NameProperty, null);
 
 			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #4");
 			if (tbap != null)
 				Assert.AreEqual (string.Empty, tbap.GetNameCore_ (), "GetNameCore #4");
 
-			element.SetValue (AutomationProperties.LabeledByProperty, null);
+			fe.SetValue (AutomationProperties.LabeledByProperty, null);
 
 			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #5");
 			if (tbap != null)
@@ -1597,8 +1538,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			TextBlock textblock = new TextBlock () { Text = "Hello world:" };
@@ -1655,7 +1594,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetLabeledBy ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.IsNull (peer.GetLabeledBy (), "GetLabeledBy");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -1665,9 +1603,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetLabeledBy_AttachedProperty ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
-
 			Assert.IsNull (peer.GetLabeledBy (), "GetLabeledBy");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -1693,8 +1628,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 			FrameworkElement labeledBy = new TextBlock ();
 
@@ -1720,7 +1653,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void IsContentElement ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.IsTrue (peer.IsContentElement (), "IsContentElement");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -1730,7 +1662,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void IsControlElement ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.IsTrue (peer.IsControlElement (), "IsControlElement");
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 			if (feap != null)
@@ -1740,20 +1671,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void CreatePeer ()
 		{
-			FrameworkElement b = CreateConcreteFrameworkElement ();
-			AutomationPeer peer1 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
-			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
-			Assert.IsNotNull (peer1, "#1");
-			Assert.AreSame (peer1, peer2, "#2");
+			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			Assert.IsNotNull (peer2, "#1");
+			Assert.AreSame (peer, peer2, "#2");
 		}
 
 		[TestMethod]
 		public void CreatePeer2 ()
 		{
-			FrameworkElement b = CreateConcreteFrameworkElement();
-			FrameworkElementAutomationPeer peer1 = new FrameworkElementAutomationPeer (b);
-			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
-			Assert.AreNotSame (peer1, peer2, "#2");
+			FrameworkElementAutomationPeer peer2 = new FrameworkElementAutomationPeer (fe);
+			Assert.AreNotSame (peer, peer2, "#1");
 		}
 		
 		[TestMethod]
@@ -1788,10 +1715,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void Owner ()
 		{
-			FrameworkElement element = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeer realPeer 
-				= FrameworkElementAutomationPeer.CreatePeerForElement (element) as FrameworkElementAutomationPeer;
-			Assert.AreSame (element, realPeer.Owner, "#0");
+			Assert.AreSame (fe, peer.Owner, "#0");
 		}
 
 		[TestMethod]
@@ -2057,16 +1981,13 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		protected void TestIsKeyboardFocusable ()
 		{
-			FrameworkElement element = CreateConcreteFrameworkElement ();
-			Control control = element as Control;
-			AutomationPeer peer = null;
+			Control control = fe as Control;
 			FrameworkElementAutomationPeerContract feap = null;
 			ScrollViewer viewer = new ScrollViewer ();
 
 			if (control == null) {
-				peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
 				feap = peer as FrameworkElementAutomationPeerContract;
-				CreateAsyncTest (element,
+				CreateAsyncTest (fe,
 				() => {
 					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #0");
 					if (feap != null)
@@ -2076,7 +1997,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				viewer.Content = control;
 				CreateAsyncTest (viewer,
 				() => {
-					peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
 					feap = peer as FrameworkElementAutomationPeerContract;
 					Assert.IsNotNull (peer, "Create #0");
 					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
@@ -2133,9 +2053,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		protected void TestIsNotKeyboardFocusable ()
 		{
-			FrameworkElement element = CreateConcreteFrameworkElement ();
-			Control control = element as Control;
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
+			Control control = fe as Control;
 			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 
 			if (control == null)
@@ -2193,9 +2111,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return;
 			}
 
-			FrameworkElement element = CreateConcreteFrameworkElement ();
-			Control control = element as Control;
-			AutomationPeer peer = null;
+			Control control = fe as Control;
 			AutomationPropertyEventTuple tuple = null;
 
 			ScrollViewer scrollViewer = new ScrollViewer ();
@@ -2207,7 +2123,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 				CreateAsyncTest (scrollViewer,
 				() => {
-					peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
 					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
 				},
 				() => {
