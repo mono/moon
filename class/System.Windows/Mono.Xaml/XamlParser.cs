@@ -37,6 +37,7 @@ using System.Reflection;
 using System.Collections;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 using System.Windows;
 using System.Windows.Data;
@@ -185,6 +186,53 @@ namespace Mono.Xaml {
 			}
 
 			return obj.Object;
+		}
+
+		public static IntPtr CreateFromString (string xaml, bool create_namescope, bool validate_templates)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = create_namescope,
+				ValidateTemplates = validate_templates,
+			};
+
+			object v = p.ParseString (xaml);
+
+			return ObjectToValue (v);
+		}
+
+		public static IntPtr CreateFromFile (string file, bool create_namescope, bool validate_templates)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = create_namescope,
+				ValidateTemplates = validate_templates,
+			};
+
+			object v = p.ParseFile (file);
+
+			return ObjectToValue (v);
+		}
+
+		public unsafe static IntPtr HydrateFromString (string xaml, Value *obj, bool create_namescope, bool validate_templates)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = create_namescope,
+				ValidateTemplates = validate_templates,
+				HydrateObject = Value.ToObject (null, obj),
+			};
+
+			object v = p.ParseString (xaml);
+
+			return ObjectToValue (v);
+		}
+
+		public static IntPtr ObjectToValue (object value)
+		{
+			Value v = Value.FromObject (value);
+
+			IntPtr ptr = Marshal.AllocHGlobal (Marshal.SizeOf (v));
+			Marshal.StructureToPtr (v, ptr, false);
+
+			return ptr;
 		}
 
 		internal object LookupNamedItem (XamlObjectElement target, string name)
