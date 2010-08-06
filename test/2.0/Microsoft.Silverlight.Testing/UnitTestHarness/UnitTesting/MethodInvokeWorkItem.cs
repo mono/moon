@@ -62,8 +62,10 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
             {
                 System.Console.WriteLine("{0}.{1}", _testMethod.Method.DeclaringType.FullName, _testMethod.Method.Name);
                 _testMethod.Invoke(_instance);
+#if HEAPVIZ
 		GC.Collect ();
 		GC.WaitForPendingFinalizers ();
+#endif
             }
             else if (_method != null)
             {
