@@ -1,5 +1,7 @@
 2010-08-06  David Reveman  <davidr@novell.com>
 
+	* shape.cpp (DoDraw): Use extents instead of bounds.
+
 	* uielement.cpp: Don't use GetLocalBounds in back-to-front
 	render pass.
 

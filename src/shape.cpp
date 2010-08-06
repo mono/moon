@@ -486,7 +486,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		goto cleanpath;
 
 	if (do_op && cached_surface == NULL && IsCandidateForCaching () && !has_external_xform) {
-		Rect cache_extents = bounds.RoundOut ();
+		Rect cache_extents = extents.Transform (&absolute_xform).RoundOut ();
 		cairo_t *cached_cr = NULL;
 		
 		// g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
