@@ -68,6 +68,15 @@ Rect::Transform (cairo_matrix_t *transform)
 }
 
 Rect
+Rect::Transform (cairo_t *cr)
+{
+	cairo_matrix_t matrix;
+
+	cairo_get_matrix (cr, &matrix);
+	return Transform (&matrix);
+}
+
+Rect
 Rect::Transform (double *projection)
 {
 	Rect rect = *this;

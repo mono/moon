@@ -1,5 +1,8 @@
 2010-08-06  David Reveman  <davidr@novell.com>
 
+	* rect.h:
+	* rect.cpp: Add Rect::Transform (cairo_t *cr).
+
 	* shape.cpp (DoDraw): Use extents instead of bounds.
 
 	* uielement.cpp: Don't use GetLocalBounds in back-to-front
