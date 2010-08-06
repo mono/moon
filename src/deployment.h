@@ -508,6 +508,11 @@ private:
 	MonoClass *system_windows_deployment;
 	MonoMethod *deployment_shutdown;
 
+	MonoClass *mono_xaml_parser;
+	MonoMethod *mono_xaml_parser_create_from_file;
+	MonoMethod *mono_xaml_parser_create_from_string;
+	MonoMethod *mono_xaml_parser_hydrate_from_string;
+
 	// Methods
 	MonoMethod   *moon_load_xaml;
 	MonoMethod   *moon_ensure_managed_peer;
@@ -521,7 +526,8 @@ private:
 	
 	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
 	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
-	
+
+	bool InitializeManagedXamlParser (MonoImage *system_windows_image);
 	
 	static gboolean ShutdownManagedCallback (gpointer user_data);
 	gboolean ShutdownManaged ();

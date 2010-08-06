@@ -637,6 +637,11 @@ Deployment::InitializeAppDomain ()
 			g_warning ("Lookup of MoonException properties failed.");
 			result = false;
 		}
+
+		if (!InitializeManagedXamlParser (system_windows_image)) {
+			g_warning ("Unable to Initialize the Managed Xaml Parser.");
+			result = false;
+		}
 	} else {
 		g_warning ("Plugin AppDomain Creation: could not find System.Windows.dll.");
 	}
@@ -644,6 +649,31 @@ Deployment::InitializeAppDomain ()
 	printf ("Moonlight: Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
 
 	return result;
+}
+
+bool
+Deployment::InitializeManagedXamlParser (MonoImage *system_windows_image)
+{
+	mono_xaml_parser = mono_class_from_name (system_windows_image, "Mono.Xaml", "XamlParser");
+	if (!mono_xaml_parser) {
+		g_warning ("Could not find XamlParser type.");
+		return false;
+	}
+
+	
+	mono_xaml_parser_create_from_file = MonoGetMethodFromName (mono_xaml_parser, "CreateFromFile", 4);
+	if (!mono_xaml_parser_create_from_file)
+		return false;
+
+	mono_xaml_parser_create_from_string = MonoGetMethodFromName (mono_xaml_parser, "CreateFromString", 4);
+	if (!mono_xaml_parser_create_from_string)
+		return false;
+
+	mono_xaml_parser_hydrate_from_string = MonoGetMethodFromName (mono_xaml_parser, "HydrateFromString", 5);
+	if (!mono_xaml_parser_hydrate_from_string)
+		return false;
+
+	return true;
 }
 
 bool
