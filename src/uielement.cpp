@@ -60,9 +60,9 @@ UIElement::UIElement ()
 	cairo_matrix_init_identity (&absolute_xform);
 	cairo_matrix_init_identity (&layout_xform);
 	cairo_matrix_init_identity (&local_xform);
+	cairo_matrix_init_identity (&render_xform);
 	Matrix3D::Identity (local_projection);
 	Matrix3D::Identity (absolute_projection);
-	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
 	bitmap_cache = NULL;
 
@@ -525,11 +525,11 @@ UIElement::ComputeTransform ()
 	Projection *projection = GetRenderProjection ();
 	cairo_matrix_t old = absolute_xform;
 	double m[16], old_projection[16];
-	memcpy (old_projection, local_projection, sizeof (double) * 16);
+	Matrix3D::Init (old_projection, local_projection);
 	cairo_matrix_init_identity (&absolute_xform);
+	cairo_matrix_init_identity (&render_xform);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (local_projection);
-	Matrix3D::Identity (render_projection);
 	flags &= ~UIElement::RENDER_PROJECTION;
 
 	if (GetVisualParent () != NULL) {
@@ -551,58 +551,46 @@ UIElement::ComputeTransform ()
 		}
 
 		if (flags & UIElement::RENDER_PROJECTION) {
-			Matrix3D::Init (render_projection,
+			Matrix3D::Init (local_projection,
 					popup->absolute_projection);
 			Matrix3D::Translate (m,
 					     popup->GetHorizontalOffset (),
 					     popup->GetVerticalOffset (),
 					     0.0);
-			Matrix3D::Multiply (render_projection, m,
-					    render_projection);
-			Matrix3D::Init (local_projection, render_projection);
+			Matrix3D::Multiply (local_projection, m,
+					    local_projection);
 		}
 		else {
-			absolute_xform = popup->absolute_xform;
-			cairo_matrix_translate (&absolute_xform,
+			render_xform = popup->absolute_xform;
+			cairo_matrix_translate (&render_xform,
 						popup->GetHorizontalOffset (),
 						popup->GetVerticalOffset ());
-			Matrix3D::Affine (local_projection,
-					  absolute_xform.xx, absolute_xform.xy,
-					  absolute_xform.yx, absolute_xform.yy,
-					  absolute_xform.x0, absolute_xform.y0);
 		}
 	}
 
-	cairo_matrix_multiply (&absolute_xform, &layout_xform, &absolute_xform);
-	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
+	cairo_matrix_multiply (&render_xform, &layout_xform, &render_xform);
+	cairo_matrix_multiply (&render_xform, &local_xform, &render_xform);
 
 	Matrix3D::Affine (m,
-			  layout_xform.xx, layout_xform.xy,
-			  layout_xform.yx, layout_xform.yy,
-			  layout_xform.x0, layout_xform.y0);
+			  render_xform.xx, render_xform.xy,
+			  render_xform.yx, render_xform.yy,
+			  render_xform.x0, render_xform.y0);
 	Matrix3D::Multiply (local_projection, m, local_projection);
 
-	Matrix3D::Affine (m,
-			  local_xform.xx, local_xform.xy,
-			  local_xform.yx, local_xform.yy,
-			  local_xform.x0, local_xform.y0);
-	Matrix3D::Multiply (local_projection, m, local_projection);
-
-	// add affine transformation to perspective transformation
+	// affine transformation to perspective transformation
 	// when intermediate rendering is performed
 	if (RenderToIntermediate ()) {
-		Matrix3D::Affine (m,
-				  absolute_xform.xx, absolute_xform.xy,
-				  absolute_xform.yx, absolute_xform.yy,
-				  absolute_xform.x0, absolute_xform.y0);
-		Matrix3D::Multiply (render_projection, m, render_projection);
 		flags |= UIElement::RENDER_PROJECTION;
+		cairo_matrix_init_identity (&render_xform);
 		cairo_matrix_init_identity (&absolute_xform);
+	}
+	else {
+		cairo_matrix_multiply (&absolute_xform, &render_xform,
+				       &absolute_xform);
 	}
 
 	if (projection) {
 		projection->GetTransform (m);
-		Matrix3D::Multiply (render_projection, m, render_projection);
 		Matrix3D::Multiply (local_projection, m, local_projection);
 		flags |= UIElement::RENDER_PROJECTION;
 	}
@@ -1375,11 +1363,6 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		delete region;
 }
 
-#define IS_IDENTITY(matrix) \
-	((matrix)->xx == 1.0 && (matrix)->yx == 0.0 && \
-	 (matrix)->xy == 0.0 && (matrix)->yy == 1.0 && \
-	 (matrix)->x0 == 0.0 && (matrix)->y0 == 0.0)
-
 void
 UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 {
@@ -1391,14 +1374,9 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
 
 		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		r.Transform (render_projection).RoundOut ().Draw (cr);
-		cairo_clip (cr);
-
 		ctx->Push (new ContextNode (r));
 	}
-
-	if (!IS_IDENTITY (&absolute_xform)) {
+	else {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		cairo_save (cr);
@@ -1417,10 +1395,6 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
 
 		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		r.RoundOut ().Draw (cr);
-		cairo_clip (cr);
-
 		ctx->Push (new ContextNode (r));
 	}
 
@@ -1554,6 +1528,10 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Rect r = node->GetBitmapExtents ();
 
+			cairo_identity_matrix (cr);
+			r.RoundOut ().Draw (cr);
+			cairo_clip (cr);
+
 			if (!effect->Render (cr, src,
 					     NULL,
 					     r.x, r.y,
@@ -1571,23 +1549,31 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_restore (cr);
 	}
 
-	if (!IS_IDENTITY (&absolute_xform)) {
-		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-
-		cairo_restore (cr);
-	}
-
 	if (flags & UIElement::RENDER_PROJECTION) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_matrix_t  ctm;
+
+		cairo_get_matrix (cr, &ctm);
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Effect *effect = Effect::GetProjectionEffect ();
 			Rect   r = node->GetBitmapExtents ();
+			double m[16];
+
+			Matrix3D::Affine (m,
+					  ctm.xx, ctm.xy,
+					  ctm.yx, ctm.yy,
+					  ctm.x0, ctm.y0);
+			Matrix3D::Multiply (m, local_projection, m);
+
+			cairo_identity_matrix (cr);
+			r.Transform (m).RoundOut ().Draw (cr);
+			cairo_clip (cr);
 
 			if (!effect->Render (cr, src,
-					     render_projection,
+					     m,
 					     r.x, r.y,
 					     r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
@@ -1595,6 +1581,11 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 		cairo_restore (cr);
 		delete node;
+	}
+	else {
+		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+		cairo_restore (cr);
 	}
 
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {

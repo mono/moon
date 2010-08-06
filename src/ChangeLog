@@ -1,5 +1,10 @@
 2010-08-06  David Reveman  <davidr@novell.com>
 
+	* uielement.h:
+	* uielement.cpp: Remove render_projection member and adjust
+	perspective transformation code to not rely on absolute
+	transformations during a render pass.
+
 	* rect.h:
 	* rect.cpp: Add Rect::Transform (cairo_t *cr).
 

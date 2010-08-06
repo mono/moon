@@ -83,7 +83,7 @@ public:
 		DIRTY_MEASURE_HINT = 0x1000,
 		DIRTY_SIZE_HINT = 0x2000,
 
-		// this flag is preset when render_projection member is set
+		// this flag is preset when projection effect should be used
 		RENDER_PROJECTION = 0x4000
 	};
 	
@@ -675,9 +675,6 @@ protected:
 	// Absolute perspective transform, precomputed with all of its data
 	double absolute_projection[16];
 
-	// The perspective render transformation
-	double render_projection[16];
-
 	Thickness effect_padding;
 
 	cairo_surface_t *bitmap_cache;
@@ -696,6 +693,7 @@ private:
 
 	// The local render transform including tranform origin
 	cairo_matrix_t local_xform;
+	cairo_matrix_t render_xform;
 };
 
 };
