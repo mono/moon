@@ -1,4 +1,10 @@
-SMCS = $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
+CSCFLAGS=
+
+if HEAPVIZ
+CSCFLAGS += -d:HEAPVIZ
+endif
+
+SMCS = $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe $(CSCFLAGS)
 
 SOURCES = \
     $(srcdir)/UnitTestHarness/AsynchronousAttribute.cs\

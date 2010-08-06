@@ -6,6 +6,7 @@
 
 using System;
 using System.Reflection;
+using System.Windows;
 using Microsoft.Silverlight.Testing.UnitTesting.Metadata;
 
 namespace Microsoft.Silverlight.Testing.UnitTesting
@@ -63,8 +64,11 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
                 System.Console.WriteLine("{0}.{1}", _testMethod.Method.DeclaringType.FullName, _testMethod.Method.Name);
                 _testMethod.Invoke(_instance);
 #if HEAPVIZ
+		Console.WriteLine ("yo");
 		GC.Collect ();
 		GC.WaitForPendingFinalizers ();
+
+		Deployment.Current.GraphManagedHeap (_testMethod.Method.Name);
 #endif
             }
             else if (_method != null)

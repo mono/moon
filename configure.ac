@@ -287,6 +287,7 @@ cat <<EOF
   Debug configuration: $with_debug
 	Sanity checks: $with_sanity_checks
 	Object tracking: $with_object_tracking
+	Heap Visualization: $with_heap_visualization
 	Logging support with MOONLIGHT_DEBUG: $with_logging
 EOF
 
