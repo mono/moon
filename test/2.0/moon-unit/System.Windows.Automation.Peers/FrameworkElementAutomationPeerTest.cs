@@ -62,6 +62,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			}
 		}
 
+		[TestCleanup]
+		public void CleanupTest ()
+		{
+			if (fe != null) {
+				DependencyObject p = VisualTreeHelper.GetParent (fe);
+				if (p is Panel)
+					((Panel)p).Children.Remove (fe);
+			}
+		}
+
 		[TestMethod]
 		public void CreatePeerForElement ()
 		{
@@ -2047,7 +2057,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #8");
 					if (feap != null)
 						Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #8");
-				});
+				},
+				() => viewer.Content = null );
 			}
 		}
 
