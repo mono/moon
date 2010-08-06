@@ -1,5 +1,8 @@
 2010-08-06  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Don't use GetLocalBounds in back-to-front
+	render pass.
+
 	* border.cpp (Render):
 	* glyphs.cpp (Render):
 	* media.cpp (Render):

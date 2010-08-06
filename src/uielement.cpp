@@ -1215,7 +1215,7 @@ UIElement::DoRender (Stack *ctx, Region *parent_region)
 		region = new Region (GetSubtreeExtents ());
 	}
 	else {
-		region = new Region (GetLocalBounds ());
+		region = new Region (GetSubtreeExtents ().GrowBy (effect_padding).Transform (&absolute_xform));
 		region->Intersect (parent_region);
 	}
 
@@ -1430,7 +1430,7 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-		Rect    r = GetLocalBounds ();
+		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding).Transform (&absolute_xform);
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
