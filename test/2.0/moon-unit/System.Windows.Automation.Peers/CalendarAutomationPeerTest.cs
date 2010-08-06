@@ -67,7 +67,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (new Calendar ());
 			Assert.AreEqual (AutomationControlType.Calendar, peer.GetAutomationControlType (), "GetAutomationControlType");
 		}
 
@@ -82,7 +81,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("Calendar", peer.GetClassName (), "GetClassNameCore");
 		}
 
@@ -108,8 +106,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			Calendar fe = CreateConcreteFrameworkElement () as Calendar;
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
 
 			EventsManager.Instance.Reset ();
@@ -121,7 +117,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
 			Assert.IsNotNull (tuple, "#1");
 			Assert.AreEqual ("Attached Name", (string) tuple.NewValue, "#2");
-			Assert.AreEqual (fe.DisplayDate.ToString (), tuple.OldValue, "#3");
+			Assert.AreEqual (((Calendar)fe).DisplayDate.ToString (), tuple.OldValue, "#3");
 
 			EventsManager.Instance.Reset ();
 			fe.SetValue (AutomationProperties.NameProperty, "Name");
@@ -134,15 +130,15 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			fe.SetValue (AutomationProperties.NameProperty, null);
 			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
 			Assert.IsNotNull (tuple, "#7");
-			Assert.AreEqual (fe.DisplayDate.ToString (), (string) tuple.NewValue, "#8");
+			Assert.AreEqual (((Calendar)fe).DisplayDate.ToString (), (string) tuple.NewValue, "#8");
 			Assert.AreEqual ("Name", (string) tuple.OldValue, "#9");
 		}
 
 		[TestMethod]
 		public override void GetName_AttachedProperty1 ()
 		{
-			Calendar element = CreateConcreteFrameworkElement () as Calendar;
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
+			Calendar fe = CreateConcreteFrameworkElement () as Calendar;
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
 			string textblockName = "Hello world:";
 			string nameProperty = "TextBox name";
@@ -150,10 +146,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			TextBlock textblock = new TextBlock ();
 			textblock.Text = textblockName;
 
-			element.SetValue (AutomationProperties.NameProperty, nameProperty);
+			fe.SetValue (AutomationProperties.NameProperty, nameProperty);
 			Assert.AreEqual (nameProperty, peer.GetName (), "GetName #0");
 
-			element.SetValue (AutomationProperties.LabeledByProperty, textblock);
+			fe.SetValue (AutomationProperties.LabeledByProperty, textblock);
 			Assert.AreEqual (textblockName, peer.GetName (), "GetName #1");
 
 			textblock.Text = null;
@@ -162,13 +158,13 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			textblock.Text = string.Empty;
 			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #3");
 
-			element.SetValue (AutomationProperties.NameProperty, null);
+			fe.SetValue (AutomationProperties.NameProperty, null);
 
 			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #4");
 
-			element.SetValue (AutomationProperties.LabeledByProperty, null);
+			fe.SetValue (AutomationProperties.LabeledByProperty, null);
 
-			Assert.AreEqual (element.DisplayDate.ToString (), peer.GetName (), "GetName #5");
+			Assert.AreEqual (((Calendar)fe).DisplayDate.ToString (), peer.GetName (), "GetName #5");
 		}
 
 		[TestMethod]
@@ -177,8 +173,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (!EventsManager.Instance.AutomationSingletonExists)
 				return;
 
-			Calendar fe = CreateConcreteFrameworkElement () as Calendar;
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			fe.ClearValue (AutomationProperties.NameProperty);
+
 			AutomationPropertyEventTuple tuple = null;
 
 			TextBlock textblock = new TextBlock () { Text = "Hello world:" };
@@ -193,7 +189,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
 			Assert.IsNotNull (tuple, "#1");
 			Assert.AreEqual ("My name", (string) tuple.NewValue, "#2");
-			Assert.AreEqual (fe.DisplayDate.ToString (), (string) tuple.OldValue, "#3");
+			Assert.AreEqual (((Calendar)fe).DisplayDate.ToString (), (string) tuple.OldValue, "#3");
 
 			EventsManager.Instance.Reset ();
 			fe.SetValue (AutomationProperties.LabeledByProperty, textblock);
@@ -236,16 +232,11 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Asynchronous]
 		public override void GetChildren ()
 		{
-			Calendar calendar = new Calendar ();
-			AutomationPeer peer = null;
-
-			CreateAsyncTest (calendar,
+			CreateAsyncTest (fe,
 			() => {
-				peer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
-				Assert.IsNotNull (peer, "#0");
 				Assert.IsNotNull (peer.GetChildren (), "GetChildren #0");
 
-				calendar.DisplayMode = CalendarMode.Month;
+				((Calendar)fe).DisplayMode = CalendarMode.Month;
 
 				List<AutomationPeer> children = peer.GetChildren ();
 				Assert.IsNotNull (children, "GetChildren #1");
@@ -255,7 +246,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				// 12 years: used by decade (are offscreen)
 				Assert.AreEqual (64, children.Count, "GetChildren #2");
 
-				calendar.DisplayMode = CalendarMode.Decade;
+				((Calendar)fe).DisplayMode = CalendarMode.Decade;
 
 				children = peer.GetChildren ();
 				Assert.IsNotNull (children, "GetChildren #3");
@@ -265,7 +256,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				// 12 years: used by decade (are offscreen)
 				Assert.AreEqual (64, children.Count, "GetChildren #4");
 
-				calendar.DisplayMode = CalendarMode.Year;
+				((Calendar)fe).DisplayMode = CalendarMode.Year;
 
 				children = peer.GetChildren ();
 				Assert.IsNotNull (children, "GetChildren #5");
@@ -281,13 +272,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Asynchronous]
 		public override void GetPattern ()
 		{
-			Calendar calendar = new Calendar ();
-			AutomationPeer peer = null;
-			CreateAsyncTest (calendar,
+			CreateAsyncTest (fe,
 			() => {
-				peer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
-				Assert.IsNotNull (peer, "#0");
-
 				Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
 				Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
 				Assert.IsNull (peer.GetPattern (PatternInterface.GridItem), "GridItem");
