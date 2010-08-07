@@ -11,7 +11,9 @@
 #ifndef __MONO_DEPOBJECT_H__
 #define __MONO_DEPOBJECT_H__
 
+#ifndef HEAPVIZ
 #define EVENT_ARG_REUSE 1
+#endif
 //#define PROPERTY_LOOKUP_DIAGNOSTICS 1
 
 #include <glib.h>
