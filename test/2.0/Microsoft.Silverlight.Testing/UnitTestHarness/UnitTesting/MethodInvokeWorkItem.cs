@@ -68,7 +68,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
 		GC.Collect ();
 		GC.WaitForPendingFinalizers ();
 
-		Deployment.Current.GraphManagedHeap (_testMethod.Method.Name);
+		string name = string.Format ("{0}.{1}.heap", _testMethod.Method.DeclaringType.FullName, _testMethod.Method.Name).Replace ('.','_');
+		Deployment.Current.GraphManagedHeap (name);
 #endif
             }
             else if (_method != null)
