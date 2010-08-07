@@ -94,11 +94,6 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 
 	Rect bounds (0, 0, GetPixelWidth (), GetPixelHeight ());
 
-	// FIXME is this supposed to clear the surface?
-	cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-	cairo_paint (cr);
-	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-
 	cairo_matrix_t xform;
 	cairo_matrix_init_identity (&xform);
 

@@ -1,5 +1,8 @@
 2010-08-07  David Reveman  <davidr@novell.com>
 
+	* writeablebitmap.cpp (Render): Don't clear the surface
+	everytime we render to it.
+
 	* shape.cpp (DoDraw):
 	* uielement.h:
 	* uielement.cpp: Remove ApplyTransform and use relative
