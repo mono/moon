@@ -73,7 +73,7 @@ class MediaElement : public FrameworkElement {
 	void Reinitialize (); // not thread-safe
 	
 	void SetMarkerTimeout (bool start); // not thread-safe
-	static gboolean MarkerTimeout (gpointer context); // not thread-safe
+	static bool MarkerTimeout (gpointer context); // not thread-safe
 	
 	// Media event handlers	
 		

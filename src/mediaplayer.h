@@ -110,7 +110,7 @@ class MediaPlayer : public EventObject {
 	void SetVideoBufferSize (gint32 height, gint32 width);
 	void SetTimeout (gint32 interval /* set to 0 to clear */);
 	void AdvanceFrame ();
-	static gboolean AdvanceFrameCallback (void *user_data);
+	static bool AdvanceFrameCallback (void *user_data);
 	
 	void EmitBufferUnderflow ();
 	static void EmitBufferUnderflowAsync (EventObject *obj);

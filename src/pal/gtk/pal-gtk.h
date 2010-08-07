@@ -30,6 +30,9 @@ public:
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data);
 	virtual void RemoveTimeout (guint timeoutId);
 
+	virtual guint AddIdle (MoonSourceFunc idle, gpointer data);
+	virtual void RemoveIdle (guint idle_id);
+
 	virtual MoonIMContext* CreateIMContext ();
 
 	virtual MoonEvent* CreateEventFromPlatformEvent (gpointer platformEvent);

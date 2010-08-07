@@ -790,7 +790,7 @@ MediaPlayer::LoadVideoFrame ()
 	return;
 }
 
-gboolean
+bool
 MediaPlayer::AdvanceFrameCallback (void *user_data)
 {
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;

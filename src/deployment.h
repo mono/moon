@@ -456,7 +456,7 @@ private:
 
 	void DisposeAllMedias ();
 	void DrainUnrefs ();
-	static gboolean DrainUnrefs (gpointer ptr);
+	static bool DrainUnrefs (gpointer ptr);
 
 	Types* types;
 	Surface *surface;
@@ -529,8 +529,8 @@ private:
 
 	bool InitializeManagedXamlParser (MonoImage *system_windows_image);
 	
-	static gboolean ShutdownManagedCallback (gpointer user_data);
-	gboolean ShutdownManaged ();
+	static bool ShutdownManagedCallback (gpointer user_data);
+	bool ShutdownManaged ();
 	
 	static Deployment *desktop_deployment;
 	static GHashTable *current_hash;

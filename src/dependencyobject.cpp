@@ -1062,7 +1062,7 @@ struct EmitData {
 	bool only_unemitted;
 };
 
-gboolean
+bool
 EventObject::EmitCallback (gpointer d)
 {
 	EmitData *data = (EmitData *) d;
@@ -1073,7 +1073,7 @@ EventObject::EmitCallback (gpointer d)
 #if SANITY
 	Deployment::SetCurrent (NULL);
 #endif
-	return FALSE;
+	return false;
 }
 
 bool

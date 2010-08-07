@@ -3214,7 +3214,7 @@ TextBoxView::GetCursorFromXY (double x, double y)
 	return layout->GetCursorFromXY (Point (), x, y);
 }
 
-gboolean
+bool
 TextBoxView::blink (void *user_data)
 {
 	return ((TextBoxView *) user_data)->Blink ();

@@ -1116,8 +1116,8 @@ Deployment::Shutdown ()
 	} else {
 		shutdown_state = CallManagedShutdown;
 	}
-	this->ref (); /* timemanager is dead, so we need to add timeouts directly to glib */
-	g_timeout_add_full (G_PRIORITY_DEFAULT, 1, ShutdownManagedCallback, this, NULL);
+	this->ref (); /* timemanager is dead, so we need to add timeouts directly to pal */
+	runtime_get_windowing_system()->AddTimeout (MOON_PRIORITY_DEFAULT, 1, ShutdownManagedCallback, this);
 #endif
 
 	if (types)
@@ -1131,13 +1131,13 @@ Deployment::Shutdown ()
 }
 
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
-gboolean
+bool
 Deployment::ShutdownManagedCallback (gpointer user_data)
 {
 	return ((Deployment *) user_data)->ShutdownManaged ();
 }
 
-gboolean
+bool
 Deployment::ShutdownManaged ()
 {
 	if (domain == root_domain) {
@@ -1584,7 +1584,7 @@ struct UnrefData {
 	UnrefData *next;
 };
 
-gboolean
+bool
 Deployment::DrainUnrefs (gpointer context)
 {
 	Deployment *deployment = (Deployment *) context;
@@ -1592,7 +1592,7 @@ Deployment::DrainUnrefs (gpointer context)
 	deployment->DrainUnrefs ();
 	deployment->unref ();
 	//Deployment::SetCurrent (NULL);
-	return FALSE;
+	return false;
 }
 
 void
@@ -1651,7 +1651,7 @@ Deployment::UnrefDelayed (EventObject *obj)
 	
 	// If we created a new list instead of prepending to an existing one, add a idle tick call.
 	if (list == NULL) { // don't look at item->next, item might have gotten freed already.
-		g_idle_add (DrainUnrefs, this);
+		runtime_get_windowing_system()->AddIdle (DrainUnrefs, (gpointer)this);
 		ref (); // keep us alive until we've processed the unrefs.
 	}
 }

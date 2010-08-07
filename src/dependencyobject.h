@@ -253,7 +253,7 @@ public:
 	EmitContext *StartEmit (int event_id, bool only_unemitted = false, int starting_generation = -1);
 	bool DoEmit (int event_id, EventArgs *calldata = NULL);
 	void FinishEmit (int event_id, EmitContext *ctx);
-	static gboolean EmitCallback (gpointer d);
+	static bool EmitCallback (gpointer d);
 	
 	virtual void Dispose ();
 	

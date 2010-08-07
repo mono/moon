@@ -20,6 +20,7 @@
 #endif
 #include <time.h>
 
+#include "runtime.h"
 #include "timesource.h"
 
 #ifdef _MSC_VER
@@ -141,14 +142,14 @@ SystemTimeSource::Start ()
 	if (frequency == -1)
 		g_warning ("SystemTimeSource::frequency uninitialized in ::Start()");
 	
-	timeout_id = g_timeout_add_full (MOON_PRIORITY_DEFAULT, frequency, SystemTimeSource::tick_timeout, this, NULL);
+	timeout_id = runtime_get_windowing_system()->AddTimeout (MOON_PRIORITY_DEFAULT, frequency, SystemTimeSource::tick_timeout, this);
 }
 
 void
 SystemTimeSource::Stop ()
 {
 	if (timeout_id != 0) {
-		g_source_remove (timeout_id);
+		runtime_get_windowing_system ()->RemoveTimeout (timeout_id);
 		timeout_id = 0;
 	}
 }
@@ -159,14 +160,14 @@ SystemTimeSource::GetNow ()
 	return get_now ();
 }
 
-gboolean
+bool
 SystemTimeSource::tick_timeout (gpointer data)
 {
 	SystemTimeSource *source = (SystemTimeSource *)data;
 
 	source->SetCurrentDeployment ();
 	source->Emit (TimeSource::TickEvent);
-	return TRUE;
+	return true;
 }
 
 ManualTimeSource::ManualTimeSource ()

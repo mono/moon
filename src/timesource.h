@@ -57,7 +57,7 @@ class SystemTimeSource : public TimeSource {
  private:
 	guint timeout_id;
 	int frequency;
-	static gboolean tick_timeout (gpointer data);
+	static bool tick_timeout (gpointer data);
 };
 
 class ManualTimeSource : public TimeSource {

@@ -53,7 +53,7 @@ public:
 	void InvokeTickCalls ();
 
 	/* @GenerateCBinding, GeneratePInvoke */
-	guint AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
+	guint AddTimeout (gint priority, guint ms_interval, MoonSourceFunc func, gpointer timeout_data);
 	/* @GenerateCBinding, GeneratePInvoke */
 	void RemoveTimeout (guint timeout_id);
 

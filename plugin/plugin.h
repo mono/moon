@@ -283,7 +283,7 @@ private:
 	
 	void TryLoadBridge (const char *prefix);
 
-	static gboolean IdleUpdateSourceByReference (gpointer data);
+	static bool IdleUpdateSourceByReference (gpointer data);
 
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void ReportCache (Surface *surface, long bytes, void *user_data);

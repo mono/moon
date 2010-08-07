@@ -278,13 +278,13 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 	markers->unref ();
 }
 
-gboolean
+bool
 MediaElement::MarkerTimeout (gpointer context)
 {
 	VERIFY_MAIN_THREAD;
 	((MediaElement *) context)->SetCurrentDeployment ();
 	((MediaElement *) context)->CheckMarkers ();
-	return TRUE;
+	return true;
 }
 
 void

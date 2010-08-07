@@ -5383,7 +5383,7 @@ struct release_data {
 	NPObject *npobj;
 };
 
-static gboolean
+static bool
 html_object_release_callback (gpointer user_data)
 {
 	release_data *d = (release_data *) user_data;
@@ -5404,7 +5404,9 @@ html_object_release (PluginInstance *plugin, NPObject *npobj)
 		plugin->ref ();
 		d->plugin = plugin;
 		d->npobj = npobj;
-		g_timeout_add_full (1, G_PRIORITY_DEFAULT, html_object_release_callback, d, NULL);
+		runtime_get_windowing_system()->AddTimeout (MOON_PRIORITY_DEFAULT,
+							    1,
+							    html_object_release_callback, d);
 		return;
 	}
 	

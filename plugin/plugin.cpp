@@ -835,7 +835,7 @@ PluginInstance::UpdateSource ()
 	char *pos = strchr (source, '#');
 	if (pos) {
 		this->ref ();
-		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
+		source_idle = runtime_get_windowing_system ()->AddIdle (IdleUpdateSourceByReference, this);
 
 		// we're changing the page url as well as the xaml
 		// location, so we need to call SetPageUrl.
@@ -897,7 +897,7 @@ PluginInstance::UpdateSource ()
 	}
 }
 
-gboolean
+bool
 PluginInstance::IdleUpdateSourceByReference (gpointer data)
 {	
 	PluginInstance *instance = (PluginInstance*)data;
@@ -919,7 +919,7 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 	instance->GetSurface ()->EmitSourceDownloadComplete ();
 	instance->unref ();
 
-	return FALSE;
+	return false;
 }
 
 void

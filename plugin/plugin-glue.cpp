@@ -246,7 +246,7 @@ MOON_NPP_Initialize (void)
 	return NPERR_NO_ERROR;
 }
 
-static gboolean
+static bool
 shutdown_moonlight (gpointer data)
 {
 	/* check if we still should be shutting down */
@@ -256,8 +256,11 @@ shutdown_moonlight (gpointer data)
 	/* check if all deployments and all plugins have been freed. */
 	if (Deployment::GetDeploymentCount () != 0 || PluginInstance::GetPluginCount () != 0) {
 		// printf ("shutdown_moonlight (): there are %i deployments and %i plugins left, postponing shutdown a bit.\n", Deployment::GetDeploymentCount (), PluginInstance::GetPluginCount ());
-		g_timeout_add_full (100, G_PRIORITY_DEFAULT_IDLE, shutdown_moonlight, NULL, NULL);
-		return FALSE;
+		runtime_get_windowing_system ()->AddTimeout (MOON_PRIORITY_IDLE,
+							     100,
+							     shutdown_moonlight,
+							     NULL);
+		return false;
 	}
 	
 	// printf ("shutdown_moonlight (): proceeding with shutdown, there are no more deployments nor plugins left.\n");
@@ -266,7 +269,7 @@ shutdown_moonlight (gpointer data)
 	runtime_shutdown ();
 	runtime_initialized = false;
 
-	return FALSE;
+	return false;
 }
 
 void

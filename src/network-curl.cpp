@@ -165,7 +165,7 @@ static int my_trace(CURL *handle, curl_infotype type, char *data, size_t size, v
 
 #endif
 
-static gboolean
+static bool
 Emit (void* data)
 {
 	STARTCALLTIMER (emit_call, "Emit - Call");
@@ -183,7 +183,7 @@ Emit (void* data)
 
 	ENDCALLTIMER (emit_call, "Emit - Call");
 
-	return FALSE;
+	return false;
 }
 
 static size_t
@@ -590,7 +590,7 @@ CurlDownloaderResponse::Finished ()
 		request->Succeeded ();
 }
 
-static gboolean Emit (void* data);
+static bool Emit (void* data);
 
 class CurlNode : public List::Node {
 public:
@@ -837,7 +837,7 @@ CurlHttpHandler::GetData ()
 			GList* tmp = g_list_copy (calls);
 			g_list_free (calls);
 			calls = NULL;
-			g_idle_add (Moonlight::Emit, tmp);
+			runtime_get_windowing_system ()->AddIdle (Moonlight::Emit, tmp);
 		}
 
 		if (running > 0) {

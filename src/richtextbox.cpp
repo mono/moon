@@ -1343,7 +1343,7 @@ RichTextBoxView::GetCursorFromXY (double x, double y)
 	return layout->GetCursorFromXY (Point (), x, y);
 }
 
-gboolean
+bool
 RichTextBoxView::blink (void *user_data)
 {
 	return ((RichTextBoxView *) user_data)->Blink ();

@@ -426,7 +426,7 @@ class RichTextBoxView : public FrameworkElement {
 	void OnModelChanged (RichTextBoxModelChangedEventArgs *args);
 	
 	// cursor blink
-	static gboolean blink (void *user_data);
+	static bool blink (void *user_data);
 	void ConnectBlinkTimeout (guint multiplier);
 	void DisconnectBlinkTimeout ();
 	void ResetCursorBlink (bool delay);

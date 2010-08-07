@@ -199,9 +199,9 @@ TimeManager::InvokeTickCalls ()
 }
 
 guint
-TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer tick_data)
+TimeManager::AddTimeout (gint priority, guint ms_interval, MoonSourceFunc func, gpointer tick_data)
 {
-	guint rv = g_timeout_add_full (priority, ms_interval, func, tick_data, NULL);
+	guint rv = runtime_get_windowing_system()->AddTimeout (priority, ms_interval, func, tick_data);
 	registered_timeouts = g_list_prepend (registered_timeouts, GUINT_TO_POINTER (rv));
 
 #if PUT_TIME_MANAGER_TO_SLEEP
@@ -230,7 +230,7 @@ TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpo
 void
 TimeManager::RemoveTimeout (guint timeout_id)
 {
-	g_source_remove (timeout_id);
+	runtime_get_windowing_system ()->RemoveTimeout (timeout_id);
 	registered_timeouts = g_list_remove_all (registered_timeouts, GUINT_TO_POINTER (timeout_id));
 }
 
@@ -239,7 +239,7 @@ TimeManager::RemoveAllRegisteredTimeouts ()
 {
 	GList *t;
 	for (t = registered_timeouts; t; t = t->next)
-		g_source_remove (GPOINTER_TO_UINT (t->data));
+		runtime_get_windowing_system ()->RemoveTimeout (GPOINTER_TO_UINT (t->data));
 
 	g_list_free (registered_timeouts);
 	registered_timeouts = NULL;

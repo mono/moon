@@ -1043,6 +1043,18 @@ MoonWindowingSystemGtk::RemoveTimeout (guint timeoutId)
 	g_source_remove (timeoutId);
 }
 
+guint
+MoonWindowingSystemGtk::AddIdle (MoonSourceFunc idle, gpointer data)
+{
+	return g_idle_add ((GSourceFunc)idle, data);
+}
+
+void
+MoonWindowingSystemGtk::RemoveIdle (guint idle_id)
+{
+	g_source_remove (idle_id);
+}
+
 MoonIMContext*
 MoonWindowingSystemGtk::CreateIMContext ()
 {

@@ -594,7 +594,7 @@ class TextBoxView : public FrameworkElement {
 	void OnModelChanged (TextBoxModelChangedEventArgs *args);
 	
 	// cursor blink
-	static gboolean blink (void *user_data);
+	static bool blink (void *user_data);
 	void ConnectBlinkTimeout (guint multiplier);
 	void DisconnectBlinkTimeout ();
 	void ResetCursorBlink (bool delay);
