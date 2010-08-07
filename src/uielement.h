@@ -149,7 +149,6 @@ public:
 	void UpdateTransform ();
 	void ComputeLocalTransform ();
 	void ComputeTransform ();
-	void ApplyTransform (cairo_t *cr);
 	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
 
 	//
@@ -697,7 +696,5 @@ private:
 };
 
 };
-
-extern cairo_user_data_key_t uielement_xform_key;
 
 #endif /* __MOON_UIELEMENT_H__ */

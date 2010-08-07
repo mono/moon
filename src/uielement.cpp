@@ -34,8 +34,6 @@
 #include "projection.h"
 #include "factory.h"
 
-cairo_user_data_key_t uielement_xform_key;
-
 namespace Moonlight {
 
 //#define DEBUG_INVALIDATE 0
@@ -428,21 +426,6 @@ UIElement::UpdateTransform ()
 {
 	if (IsAttached ()) {
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyLocalTransform);
-	}
-}
-
-void
-UIElement::ApplyTransform (cairo_t *cr)
-{
-	cairo_matrix_t *paint_xforms = (cairo_matrix_t *)cairo_get_user_data (cr, &uielement_xform_key);
-
-	if (paint_xforms) {
-		cairo_matrix_t xform = paint_xforms [0];
-		cairo_matrix_multiply (&xform, &xform, &absolute_xform);
-		cairo_set_matrix (cr, &paint_xforms [1]);
-		cairo_transform (cr, &xform);
-	} else {
-		cairo_set_matrix (cr, &absolute_xform);
 	}
 }
 
@@ -1197,17 +1180,21 @@ UIElement::ReleaseMouseCapture ()
 void
 UIElement::DoRender (Stack *ctx, Region *parent_region)
 {
-	Region *region;
+	Region  *region;
+	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+	if (!cr)
+		return;
 
 	if (RenderToIntermediate ()) {
 		region = new Region (GetSubtreeExtents ());
 	}
 	else {
-		region = new Region (GetSubtreeExtents ().GrowBy (effect_padding).Transform (&absolute_xform));
+		region = new Region (GetSubtreeExtents ().GrowBy (effect_padding).Transform (&render_xform).Transform (cr));
 		region->Intersect (parent_region);
 	}
 
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty () || !((ContextNode *) ctx->Top ())->GetCr ()) {
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) {
 		delete region;
 		return;
 	}
@@ -1220,8 +1207,9 @@ UIElement::DoRender (Stack *ctx, Region *parent_region)
 
 	PreRender (ctx, region, false);
 
-	if (((ContextNode *) ctx->Top ())->GetCr ())
-		Render (((ContextNode *) ctx->Top ())->GetCr (), region);
+	cr = ((ContextNode *) ctx->Top ())->GetCr ();
+	if (cr)
+		Render (cr, region);
 
 	PostRender (ctx, region, false);
 
@@ -1380,7 +1368,7 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		cairo_save (cr);
-		ApplyTransform (cr);
+		cairo_transform (cr, &render_xform);
 	}
 
 	if (GetClip ()) {
@@ -1400,11 +1388,17 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 
 	bool set_matrix = false;
 	cairo_matrix_t matrix;
-	void *xform;
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding).Transform (&absolute_xform);
+		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
+
+		// affine transformations are unaffected by opacity
+		// masks and local opacity so make sure the current
+		// matrix is transferred to the top context.
+		set_matrix = true;
+		cairo_get_matrix (cr, &matrix);
+		r = r.Transform (&matrix);
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
@@ -1422,13 +1416,6 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		// 
 		if (!region->IsEmpty ())
 			r = r.Intersection (region->ClipBox ());
-
-		// affine transformations are unaffected by opacity
-		// masks and local opacity so make sure the current
-		// matrix transferred to the top context.
-		set_matrix = true;
-		cairo_get_matrix (cr, &matrix);
-		xform = cairo_get_user_data (cr, &uielement_xform_key);
 
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
@@ -1452,10 +1439,8 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 	if (set_matrix) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
-		if (cr) {
+		if (cr)
 			cairo_set_matrix (cr, &matrix);
-			cairo_set_user_data (cr, &uielement_xform_key, xform, NULL);
-		}
 	}
 }
 
@@ -1593,7 +1578,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 		cairo_save (cr);
 		cairo_new_path (cr);
-		ApplyTransform (cr);
+		cairo_transform (cr, &render_xform);
 		cairo_set_line_width (cr, 1);
 		
 		Geometry *geometry = GetClip ();
@@ -1631,51 +1616,27 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 void
 UIElement::Paint (cairo_t *cr,  Rect bounds, cairo_matrix_t *xform)
 {
-	cairo_matrix_t paint_forms [2];
-
-	paint_forms [0] = absolute_xform;
-	if (xform)
-		paint_forms [1] = *xform;
-	else
-		cairo_matrix_init_identity (&paint_forms[1]);
-
-	cairo_matrix_invert (&paint_forms[0]);
-	cairo_set_user_data (cr, &uielement_xform_key, &paint_forms[0], NULL);
-
-	Region region (bounds.Transform (&absolute_xform));
+	Region region (bounds.RoundOut ());
 
 #if OCCLUSION_CULLING_STATS
 	GetDeployment ()->GetSurface ()->uielements_rendered_with_occlusion_culling = 0;
 	GetDeployment ()->GetSurface ()->uielements_rendered_with_painters = 0;
 #endif
 
-	Stack *ctx = new Stack ();
-	bool did_occlusion_culling = false;
-	List *render_list = new List ();
+	cairo_matrix_t inverse = layout_xform;
 
+	// reverse the effect of the layout_xform
+	cairo_matrix_invert (&inverse);
+
+	if (xform)
+		cairo_matrix_multiply (&inverse, &inverse, xform);
+
+	cairo_set_matrix (cr, &inverse);
+
+	Stack *ctx = new Stack ();
 	ctx->Push (new ContextNode (cr));
 
-	if (moonlight_flags & RUNTIME_INIT_OCCLUSION_CULLING) {
-		Region *copy = new Region (&region);
-		FrontToBack (copy, render_list);
-		
-		if (!render_list->IsEmpty ()) {
-			while (RenderNode *node = (RenderNode*)render_list->First()) {
-				node->Render (ctx);
-
-				render_list->Remove (node);
-			}
-
-			did_occlusion_culling = true;
-		}
-
-		delete render_list;
-		delete copy;
-	}
-
-	if (!did_occlusion_culling) {
-		DoRender (ctx, &region);
-	}
+	DoRender (ctx, &region);
 
 	delete ctx;
 

@@ -479,14 +479,19 @@ void
 Shape::DoDraw (cairo_t *cr, bool do_op)
 {
 	bool ret = FALSE;
-	bool has_external_xform = cairo_get_user_data (cr, &uielement_xform_key) != NULL;
+	bool has_external_xform = false;
+	cairo_matrix_t matrix;
+
+	cairo_get_matrix (cr, &matrix);
+	if (memcmp (&matrix, &absolute_xform, sizeof (cairo_matrix_t)))
+		has_external_xform = true;
 
 	// quick out if, when building the path, we detected an empty shape
 	if (IsEmpty ())
 		goto cleanpath;
 
 	if (do_op && cached_surface == NULL && IsCandidateForCaching () && !has_external_xform) {
-		Rect cache_extents = extents.Transform (&absolute_xform).RoundOut ();
+		Rect cache_extents = extents.Transform (&matrix).RoundOut ();
 		cairo_t *cached_cr = NULL;
 		
 		// g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
@@ -496,11 +501,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		
 		cached_surface = image_brush_create_similar (cr, (int) cache_extents.width, (int) cache_extents.height);
 		if (cairo_surface_status (cached_surface) == CAIRO_STATUS_SUCCESS) {
-			cairo_matrix_t matrix;
 			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 			cached_cr = cairo_create (cached_surface);
-
-                        cairo_get_matrix (cr, &matrix);
                         cairo_set_matrix (cached_cr, &matrix);
 		
 			ret = DrawShape (cached_cr, do_op);
@@ -810,7 +812,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 		return false;
 
 	cairo_save (cr);
-        ApplyTransform (cr);
+	cairo_set_matrix (cr, &absolute_xform);
 	DoDraw (cr, false);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)

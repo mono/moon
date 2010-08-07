@@ -1,3 +1,23 @@
+2010-08-07  David Reveman  <davidr@novell.com>
+
+	* shape.cpp (DoDraw):
+	* uielement.h:
+	* uielement.cpp: Remove ApplyTransform and use relative
+	instead of absolute transformations and bounds. Front-to-back
+	rendering still requires use of absolute transformations and
+	bounds.
+
+	* border.cpp (InsideObject):
+	* media.cpp (InsideObject):
+	* shape.cpp (InsideObject): Use cairo_set_matrix instead of
+	ApplyTransform.
+
+	* uielement.h:
+	* uielement.cpp: Remove uielement_xform_key, which is no
+	longer needed. Remove use of occlusion culling from
+	UIElement::Paint as absolute transformations and bounds
+	are invalid when this function is used.
+
 2010-08-06  David Reveman  <davidr@novell.com>
 
 	* uielement.h:
