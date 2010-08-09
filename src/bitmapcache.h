@@ -29,6 +29,9 @@ protected:
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+public:
+	virtual void GetTransform (cairo_matrix_t *transform);
 };
 
 /* @Namespace=System.Windows.Media */
@@ -48,6 +51,9 @@ protected:
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+public:
+	void GetTransform (cairo_matrix_t *transform);
 };
 
 };

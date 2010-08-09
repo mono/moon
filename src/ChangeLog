@@ -1,3 +1,8 @@
+2010-08-09  David Reveman  <davidr@novell.com>
+
+	* bitmapcache.h:
+	* bitmapcache.cpp: Add CacheMode::GetTransform function.
+
 2010-08-07  David Reveman  <davidr@novell.com>
 
 	* writeablebitmap.cpp (Render): Don't clear the surface
