@@ -693,6 +693,7 @@ private:
 	// The local render transform including tranform origin
 	cairo_matrix_t local_xform;
 	cairo_matrix_t render_xform;
+	cairo_matrix_t scale_xform;
 };
 
 };

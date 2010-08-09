@@ -1,5 +1,10 @@
 2010-08-09  David Reveman  <davidr@novell.com>
 
+	* uielement.h:
+	* uielement.cpp: Add scale_xform member which is used to
+	render the element at a non natural resolution when bitmap
+	caching is used.
+
 	* runtime.h:
 	* runtime.cpp: Add ContextNode constructor that takes
 	a transformation matrix. The matrix is used as the initial

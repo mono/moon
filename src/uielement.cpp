@@ -59,6 +59,7 @@ UIElement::UIElement ()
 	cairo_matrix_init_identity (&layout_xform);
 	cairo_matrix_init_identity (&local_xform);
 	cairo_matrix_init_identity (&render_xform);
+	cairo_matrix_init_identity (&scale_xform);
 	Matrix3D::Identity (local_projection);
 	Matrix3D::Identity (absolute_projection);
 	effect_padding = Thickness (0);
@@ -640,6 +641,9 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	else if (prop && prop->GetId () == UIElement::ProjectionProperty) {
 		UpdateProjection ();
 	}
+	else if (prop && prop->GetId () == UIElement::CacheModeProperty) {
+		InvalidateCacheMode ();
+	}
 
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
@@ -1035,6 +1039,13 @@ UIElement::InvalidateBitmapCache ()
 void
 UIElement::InvalidateCacheMode ()
 {
+	CacheMode *cacheMode = GetRenderCacheMode ();
+
+	if (cacheMode)
+		cacheMode->GetTransform (&scale_xform);
+	else
+		cairo_matrix_init_identity (&scale_xform);
+
 	InvalidateBitmapCache ();
 	InvalidateSubtreePaint ();
 }
@@ -1187,10 +1198,10 @@ UIElement::DoRender (Stack *ctx, Region *parent_region)
 		return;
 
 	if (RenderToIntermediate ()) {
-		region = new Region (GetSubtreeExtents ());
+		region = new Region (GetSubtreeExtents ().Transform (&scale_xform).RoundOut ());
 	}
 	else {
-		region = new Region (GetSubtreeExtents ().GrowBy (effect_padding).Transform (&render_xform).Transform (cr));
+		region = new Region (GetSubtreeExtents ().Transform (&render_xform).Transform (cr).RoundOut ());
 		region->Intersect (parent_region);
 	}
 
@@ -1258,7 +1269,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		Region *self_region;
 
 		if (RenderToIntermediate ()) {
-			self_region = new Region (GetSubtreeExtents ().RoundOut ());
+			self_region = new Region (GetSubtreeExtents ().Transform (&scale_xform).RoundOut ());
 		}
 		else {
 			self_region = new Region (surface_region);
@@ -1359,10 +1370,10 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (flags & UIElement::RENDER_PROJECTION) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
+		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
 		cairo_save (cr);
-		ctx->Push (new ContextNode (r));
+		ctx->Push (new ContextNode (r, &scale_xform));
 	}
 	else {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
@@ -1380,25 +1391,21 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (effect) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
+		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
 		cairo_save (cr);
-		ctx->Push (new ContextNode (r));
+		ctx->Push (new ContextNode (r, &scale_xform));
 	}
 
-	bool set_matrix = false;
-	cairo_matrix_t matrix;
-
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
-		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-		Rect    r = GetSubtreeExtents ().GrowBy (effect_padding);
+		cairo_t        *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		Rect           r = GetSubtreeExtents ().Transform (cr);
+		cairo_matrix_t matrix;
 
 		// affine transformations are unaffected by opacity
 		// masks and local opacity so make sure the current
 		// matrix is transferred to the top context.
-		set_matrix = true;
 		cairo_get_matrix (cr, &matrix);
-		r = r.Transform (&matrix);
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
@@ -1418,29 +1425,18 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 			r = r.Intersection (region->ClipBox ());
 
 		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		r.RoundOut ().Draw (cr);
-		cairo_clip (cr);
 
 		if (IS_TRANSLUCENT (local_opacity))
-			ctx->Push (new ContextNode (r));
+			ctx->Push (new ContextNode (r, &matrix));
 
 		if (opacityMask != NULL)
-			ctx->Push (new ContextNode (r));
+			ctx->Push (new ContextNode (r, &matrix));
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache) {
 		ContextNode *node = (ContextNode *) ctx->Top ();
 
 		node->SetBitmap (bitmap_cache);
-	}
-
-	// set matrix on top context
-	if (set_matrix) {
-		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-
-		if (cr)
-			cairo_set_matrix (cr, &matrix);
 	}
 }
 
@@ -1472,7 +1468,11 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Rect            r = node->GetBitmapExtents ();
 			cairo_pattern_t *mask = NULL;
-			
+
+			cairo_identity_matrix (cr);
+			r.RoundOut ().Draw (cr);
+			cairo_clip (cr);
+
 			cairo_save (cr);
 			opacityMask->SetupBrush (cr, r);
 			mask = cairo_get_source (cr);
@@ -1492,6 +1492,12 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			Rect r = node->GetBitmapExtents ();
+
+			cairo_identity_matrix (cr);
+			r.RoundOut ().Draw (cr);
+			cairo_clip (cr);
+
 			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_paint_with_alpha (cr, local_opacity);
 		}
@@ -1544,7 +1550,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Effect *effect = Effect::GetProjectionEffect ();
-			Rect   r = node->GetBitmapExtents ();
+			Rect   r = GetSubtreeExtents ().GrowBy (effect_padding);
 			double m[16];
 
 			Matrix3D::Affine (m,
