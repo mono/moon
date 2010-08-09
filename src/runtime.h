@@ -505,6 +505,7 @@ class ContextNode : public List::Node {
 public:
 	ContextNode (cairo_t *cr);
 	ContextNode (Rect extents);
+	ContextNode (Rect extents, cairo_matrix_t *transform);
 	virtual ~ContextNode ();
 
 	cairo_t *GetCr ();
@@ -514,6 +515,7 @@ public:
 
 private:
 	Rect            box;
+	cairo_matrix_t  matrix;
 	cairo_t         *context;
 	cairo_surface_t *bitmap;
 };

@@ -1,5 +1,10 @@
 2010-08-09  David Reveman  <davidr@novell.com>
 
+	* runtime.h:
+	* runtime.cpp: Add ContextNode constructor that takes
+	a transformation matrix. The matrix is used as the initial
+	transform for the cairo context.
+
 	* bitmapcache.h:
 	* bitmapcache.cpp: Add CacheMode::GetTransform function.
 

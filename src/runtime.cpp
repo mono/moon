@@ -1646,11 +1646,21 @@ ContextNode::ContextNode (cairo_t *cr)
 	bitmap  = NULL;
 }
 
-ContextNode::ContextNode (Rect extents)
+ContextNode::ContextNode (Rect extents, cairo_matrix_t *transform)
 {
 	box     = extents;
+	matrix  = *transform;
 	context = NULL;
 	bitmap  = NULL;
+}
+
+ContextNode::ContextNode (Rect extents)
+{
+	cairo_matrix_t m;
+
+	cairo_matrix_init_identity (&m);
+
+	ContextNode (extents, &m);
 }
 
 ContextNode::~ContextNode ()
@@ -1676,6 +1686,7 @@ ContextNode::GetCr ()
 						     r.height);
 		cairo_surface_set_device_offset (bitmap, -r.x, -r.y);
 		context = cairo_create (bitmap);
+		cairo_set_matrix (context, &matrix);
 	}
 
 	return context;
