@@ -661,15 +661,15 @@ Deployment::InitializeManagedXamlParser (MonoImage *system_windows_image)
 	}
 
 	
-	mono_xaml_parser_create_from_file = MonoGetMethodFromName (mono_xaml_parser, "CreateFromFile", 4);
+	mono_xaml_parser_create_from_file = MonoGetMethodFromName (mono_xaml_parser, "CreateFromFile", 3);
 	if (!mono_xaml_parser_create_from_file)
 		return false;
 
-	mono_xaml_parser_create_from_string = MonoGetMethodFromName (mono_xaml_parser, "CreateFromString", 4);
+	mono_xaml_parser_create_from_string = MonoGetMethodFromName (mono_xaml_parser, "CreateFromString", 3);
 	if (!mono_xaml_parser_create_from_string)
 		return false;
 
-	mono_xaml_parser_hydrate_from_string = MonoGetMethodFromName (mono_xaml_parser, "HydrateFromString", 5);
+	mono_xaml_parser_hydrate_from_string = MonoGetMethodFromName (mono_xaml_parser, "HydrateFromString", 4);
 	if (!mono_xaml_parser_hydrate_from_string)
 		return false;
 
