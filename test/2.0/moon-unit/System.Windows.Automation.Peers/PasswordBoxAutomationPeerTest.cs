@@ -225,8 +225,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("PasswordBox", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual ("PasswordBox", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
@@ -234,9 +232,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void IsPassword ()
 		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
-
 			Assert.IsTrue (feap.IsPassword (), "IsPassword");
 			Assert.IsTrue (feap.IsPasswordCore_ (), "IsPasswordCore");
 		}
@@ -244,8 +239,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationControlType.Edit, feap.GetAutomationControlType (), "GetAutomationControlType");
 			Assert.AreEqual (AutomationControlType.Edit, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}

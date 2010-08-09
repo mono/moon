@@ -184,8 +184,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("Image", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual ("Image", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}

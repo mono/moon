@@ -197,8 +197,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("Button", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual ("Button", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
@@ -206,26 +204,24 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetPattern ()
 		{
-			ButtonAutomationPeerPoker bap = new ButtonAutomationPeerPoker (new Button ());
+			Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
+			Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Grid), "Grid");
+			Assert.IsNull (peer.GetPattern (PatternInterface.GridItem), "GridItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.MultipleView), "MultipleView");
+			Assert.IsNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Scroll), "Scroll");
+			Assert.IsNull (peer.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Selection), "Selection");
+			Assert.IsNull (peer.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Table), "Table");
+			Assert.IsNull (peer.GetPattern (PatternInterface.TableItem), "TableItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Toggle), "Toggle");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Transform), "Transform");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Value), "Value");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Window), "Window");
 
-			Assert.IsNull (bap.GetPattern (PatternInterface.Dock), "Dock");
-			Assert.IsNull (bap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Grid), "Grid");
-			Assert.IsNull (bap.GetPattern (PatternInterface.GridItem), "GridItem");
-			Assert.IsNull (bap.GetPattern (PatternInterface.MultipleView), "MultipleView");
-			Assert.IsNull (bap.GetPattern (PatternInterface.RangeValue), "RangeValue");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Scroll), "Scroll");
-			Assert.IsNull (bap.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Selection), "Selection");
-			Assert.IsNull (bap.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Table), "Table");
-			Assert.IsNull (bap.GetPattern (PatternInterface.TableItem), "TableItem");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Toggle), "Toggle");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Transform), "Transform");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Value), "Value");
-			Assert.IsNull (bap.GetPattern (PatternInterface.Window), "Window");
-
-			Assert.IsNotNull (bap.GetPattern (PatternInterface.Invoke), "Invoke");
+			Assert.IsNotNull (peer.GetPattern (PatternInterface.Invoke), "Invoke");
 		}
 
 		[TestMethod]

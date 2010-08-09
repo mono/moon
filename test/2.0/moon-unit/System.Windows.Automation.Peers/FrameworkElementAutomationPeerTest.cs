@@ -52,6 +52,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		protected FrameworkElement fe;
 		protected FrameworkElementAutomationPeer peer;
+		protected FrameworkElementAutomationPeerContract feap;
 
 		[TestInitialize]
 		public void SetupTest ()
@@ -59,6 +60,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			if (fe == null) {
 				fe = CreateConcreteFrameworkElement ();
 				peer = (FrameworkElementAutomationPeer)FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+				feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 			}
 		}
 

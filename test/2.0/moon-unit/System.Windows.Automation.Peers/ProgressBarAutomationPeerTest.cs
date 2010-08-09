@@ -197,8 +197,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("ProgressBar", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual ("ProgressBar", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
@@ -206,8 +204,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationControlType.ProgressBar, feap.GetAutomationControlType (), "GetAutomationControlType");
 			Assert.AreEqual (AutomationControlType.ProgressBar, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}
@@ -215,11 +211,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetPattern ()
 		{
-			ProgressBarConcrete concrete = new ProgressBarConcrete ();
-			FrameworkElementAutomationPeer peer
-				= CreateConcreteFrameworkElementAutomationPeer (concrete)
-					as FrameworkElementAutomationPeer;
-
 			Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
 			Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
 			Assert.IsNull (peer.GetPattern (PatternInterface.Grid), "Grid");
@@ -237,11 +228,11 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNull (peer.GetPattern (PatternInterface.Window), "Window");
 			Assert.IsNull (peer.GetPattern (PatternInterface.Value), "Value");
 
-			concrete.IsIndeterminate = false;
+			((ProgressBar)fe).IsIndeterminate = false;
 			Assert.IsNotNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue #0");
 			Assert.IsTrue (Object.ReferenceEquals (peer, peer.GetPattern (PatternInterface.RangeValue)), "RangeValue #1");
 
-			concrete.IsIndeterminate = true;
+			((ProgressBar)fe).IsIndeterminate = true;
 			Assert.IsNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue #2");
 		}
 

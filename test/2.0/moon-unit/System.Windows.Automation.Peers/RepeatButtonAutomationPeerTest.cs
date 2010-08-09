@@ -72,8 +72,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("RepeatButton", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual ("RepeatButton", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
@@ -81,9 +79,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
-			RepeatButtonAutomationPeerPoker bapp = new RepeatButtonAutomationPeerPoker (new RepeatButton ());
-			Assert.AreEqual (AutomationControlType.Button, bapp.GetAutomationControlType (), "GetAutomationControlType");
-			Assert.AreEqual (AutomationControlType.Button, bapp.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
+			Assert.AreEqual (AutomationControlType.Button, feap.GetAutomationControlType (), "GetAutomationControlType");
+			Assert.AreEqual (AutomationControlType.Button, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}
 
 		[TestMethod]

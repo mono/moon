@@ -193,10 +193,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetPattern ()
 		{
-			FrameworkElementAutomationPeer peer
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ())
-					as FrameworkElementAutomationPeer;
-
 			Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
 			Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
 			Assert.IsNull (peer.GetPattern (PatternInterface.Grid), "Grid");

@@ -151,8 +151,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual("Hyperlink", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual("Hyperlink", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
@@ -160,8 +158,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual(AutomationControlType.Hyperlink, feap.GetAutomationControlType (), "GetAutomationControlType");
 			Assert.AreEqual(AutomationControlType.Hyperlink, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}
@@ -169,10 +165,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetPattern ()
 		{
-			FrameworkElementAutomationPeer peer
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement())
-					as FrameworkElementAutomationPeer;
-
 			Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
 			Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
 			Assert.IsNull (peer.GetPattern (PatternInterface.Grid), "Grid");

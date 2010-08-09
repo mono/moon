@@ -196,36 +196,31 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetPattern ()
 		{
-			ComboBoxAutomationPeerConcrete feap
-				= (ComboBoxAutomationPeerConcrete)CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+			Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Grid), "Grid");
+			Assert.IsNull (peer.GetPattern (PatternInterface.GridItem), "GridItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Invoke), "Invoke");
+			Assert.IsNull (peer.GetPattern (PatternInterface.MultipleView), "MultipleView");
+			Assert.IsNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Scroll), "Scroll");
+			Assert.IsNull (peer.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Table), "Table");
+			Assert.IsNull (peer.GetPattern (PatternInterface.TableItem), "TableItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Toggle), "Toggle");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Transform), "Transform");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Window), "Window");
 
-			Assert.IsNull (feap.GetPattern (PatternInterface.Dock), "Dock");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Grid), "Grid");
-			Assert.IsNull (feap.GetPattern (PatternInterface.GridItem), "GridItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Invoke), "Invoke");
-			Assert.IsNull (feap.GetPattern (PatternInterface.MultipleView), "MultipleView");
-			Assert.IsNull (feap.GetPattern (PatternInterface.RangeValue), "RangeValue");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Scroll), "Scroll");
-			Assert.IsNull (feap.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Table), "Table");
-			Assert.IsNull (feap.GetPattern (PatternInterface.TableItem), "TableItem");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Toggle), "Toggle");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Transform), "Transform");
-			Assert.IsNull (feap.GetPattern (PatternInterface.Window), "Window");
-
-			Assert.IsNotNull (feap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
-			Assert.IsNotNull (feap.GetPattern (PatternInterface.Selection), "Selection");
+			Assert.IsNotNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
+			Assert.IsNotNull (peer.GetPattern (PatternInterface.Selection), "Selection");
 
 			// LAMESPEC: Value should be returned because ComboBoxAutomationPeer realizes the interface
-			Assert.IsNull (feap.GetPattern (PatternInterface.Value), "Value");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Value), "Value");
 		}
 
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("ComboBox", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual ("ComboBox", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
@@ -233,8 +228,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationControlType.ComboBox, feap.GetAutomationControlType (), "GetAutomationControlType");
 			Assert.AreEqual (AutomationControlType.ComboBox, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}

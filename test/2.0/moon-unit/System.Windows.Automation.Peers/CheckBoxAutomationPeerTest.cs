@@ -183,8 +183,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual ("CheckBox", feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual ("CheckBox", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
@@ -192,8 +190,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationControlType.CheckBox, feap.GetAutomationControlType (), "GetAutomationControlType");
 			Assert.AreEqual (AutomationControlType.CheckBox, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}
