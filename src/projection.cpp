@@ -53,8 +53,6 @@ Matrix3D::Matrix3D (double *m)
 	SetOffsetY (m[13]);
 	SetOffsetZ (m[14]);
 	SetM44 (m[15]);
-
-	EnsureManagedPeer ();
 }
 
 void
