@@ -411,13 +411,14 @@ int main (int argc, char **argv)
 	
 	getopts_context_free (ctx, true);
 	deployment->Shutdown ();
-	runtime_shutdown ();
 	
 	/* Our shutdown is async, so keep processing events/timeouts until there is
 	 * nothing more to do */	
 	while (g_main_context_iteration (NULL, false)) {
 		;
 	}
+
+	runtime_shutdown ();
 
 	LOG_OOB ("[%i lunar-launcher]: Exiting\n", getpid ());
 
