@@ -28,6 +28,8 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
@@ -48,6 +50,37 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (400, FontWeights.Normal.GetHashCode (), "Normal");
 			Assert.AreEqual (600, FontWeights.SemiBold.GetHashCode (), "SemiBold");
 			Assert.AreEqual (100, FontWeights.Thin.GetHashCode (), "Thin");
+		}
+
+		[TestMethod]
+		public void XamlInteger ()
+		{
+			//
+			// if the textblock is in a managed control like the grid,
+			// its legal to set FontWeights with an int.
+			//
+
+			Grid grid = XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							       	<TextBlock x:Name=""the_box"" FontWeight=""600"" />
+							  </Grid>") as Grid;
+
+			Assert.IsNotNull (grid, "a1");
+
+			TextBlock block = grid.FindName ("the_box") as TextBlock;
+
+			Assert.IsNotNull (block, "a2");
+			Assert.AreEqual (FontWeights.SemiBold, block.FontWeight, "a3");
+
+
+			//
+			// But we can't just do this normally.
+			//
+
+			string bad_xaml = @"<TextBlock xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+						        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+					       FontWeight=""600"" />");
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (bad_xaml));
 		}
 	}
 }
