@@ -529,8 +529,12 @@ Storyboard::BeginWithError (MoonError *error)
 	   hierarchy */
 	if (clock) {
 		DetachCompletedHandler ();
-		clock->unref ();
-		clock = NULL;
+
+		Clock *myClock = clock;
+
+		clock->Dispose (); // this will null out clock.
+
+		myClock->unref ();
 	}
 
 	if (Validate () == false)
