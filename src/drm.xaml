@@ -5,6 +5,7 @@
 	x:Name="DrmMessage"
 	Visibility="Visible"
 	Opacity="1"
+	CacheMode="BitmapCache"
 	>
 	<Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="8" Padding="10" MaxWidth="458">
 		<Border.Background>

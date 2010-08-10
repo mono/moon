@@ -5,6 +5,7 @@
 	x:Name="IncompleteSupportMessage"
 	Visibility="Visible"
 	Opacity="1"
+	CacheMode="BitmapCache"
 	>
 	<Grid.Triggers>
 		<EventTrigger RoutedEvent="Grid.Loaded">

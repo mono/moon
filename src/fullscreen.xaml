@@ -5,6 +5,7 @@
 	x:Name="FullScreenMessage"
 	Visibility="Visible"
 	Opacity=".9"
+	CacheMode="BitmapCache"
 	>
 	<Grid.Triggers>
 		<EventTrigger RoutedEvent="Grid.Loaded">
