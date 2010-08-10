@@ -79,7 +79,7 @@ namespace MoonTest.System.Windows.Controls {
 
 			string bad_xaml = @"<TextBlock xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 						        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-					       FontWeight=""600"" />");
+					       FontWeight=""600"" />";
 			Assert.Throws<XamlParseException> (() => XamlReader.Load (bad_xaml));
 		}
 	}
