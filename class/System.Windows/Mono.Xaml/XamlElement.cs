@@ -166,6 +166,10 @@ namespace Mono.Xaml {
 			get { return Object as FrameworkElement; }
 		}
 
+		public DependencyObject DependencyObject {
+			get { return Object as DependencyObject; }
+		}
+
 		public override Type Type {
 			get { return Object.GetType (); }
 		}

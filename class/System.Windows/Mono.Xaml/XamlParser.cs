@@ -290,9 +290,9 @@ namespace Mono.Xaml {
 
 			element.X_Name = name;
 
-			FrameworkElement fe = element.FrameworkElement;
-			if (fe != null)
-				fe.SetNameOnScope (name, NameScope);
+			DependencyObject dob = element.DependencyObject;
+			if (dob != null)
+				dob.SetNameOnScope (name, NameScope);
 		}
 
 		internal FrameworkTemplate GetParentTemplate (XamlElement element)
