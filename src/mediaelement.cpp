@@ -90,7 +90,7 @@ MediaElement::MediaElement ()
 	marker_timeout = 0;
 	mplayer = NULL;
 	
-	Reinitialize ();
+	Reinitialize (false);
 	
 	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
@@ -110,7 +110,7 @@ MediaElement::Dispose ()
 	
 	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 
-	Reinitialize ();
+	Reinitialize (true);
 	FrameworkElement::Dispose ();
 }
 
@@ -119,7 +119,7 @@ MediaElement::ShuttingDownHandler (Deployment *sender, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ShuttingDownHandler ()\n");
 	
-	Reinitialize ();
+	Reinitialize (false);
 }
 
 const char *
@@ -475,7 +475,7 @@ MediaElement::OnIsAttachedChanged (bool value)
 }
 
 void
-MediaElement::Reinitialize ()
+MediaElement::Reinitialize (bool is_shutting_down)
 {
 	LOG_MEDIAELEMENT ("MediaElement::Reinitialize ()\n");
 	VERIFY_MAIN_THREAD;
@@ -524,16 +524,18 @@ MediaElement::Reinitialize ()
 	mutex.Unlock ();
 	
 	previous_position = 0;
+
+	if (!is_shutting_down) {
+		SetMarkerTimeout (false);
 	
-	SetMarkerTimeout (false);
-
-	Value *v = GetValueNoAutoCreate (MediaElement::MarkersProperty);
-	if (v && v->AsTimelineMarkerCollection())
-		v->AsTimelineMarkerCollection()->Clear();
-
-	v = GetValueNoAutoCreate (MediaElement::AttributesProperty);
-	if (v && v->AsMediaAttributeCollection())
-		v->AsMediaAttributeCollection()->Clear();
+		Value *v = GetValueNoAutoCreate (MediaElement::MarkersProperty);
+		if (v && v->AsTimelineMarkerCollection())
+			v->AsTimelineMarkerCollection()->Clear();
+	
+		v = GetValueNoAutoCreate (MediaElement::AttributesProperty);
+		if (v && v->AsMediaAttributeCollection())
+			v->AsMediaAttributeCollection()->Clear();
+	}
 
 	cairo_matrix_init_identity (&matrix);
 }
@@ -1292,7 +1294,7 @@ MediaElement::SetUriSource (Uri *uri)
 	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri ? uri->ToString () : NULL);
 	VERIFY_MAIN_THREAD;
 	
-	Reinitialize ();
+	Reinitialize (false);
 	
 	g_return_if_fail (playlist == NULL);
 	
@@ -1318,7 +1320,7 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	LOG_MEDIAELEMENT ("MediaElement::SetSource (%p, '%s')\n", downloader, PartName);
 	VERIFY_MAIN_THREAD;
 
-	Reinitialize ();
+	Reinitialize (false);
 	
 	g_return_if_fail (downloader != NULL);
 	g_return_if_fail (playlist == NULL);
@@ -1337,7 +1339,7 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	LOG_MEDIAELEMENT ("MediaElement::SetStreamSource (%p)\n", callbacks);
 	VERIFY_MAIN_THREAD;
 
-	Reinitialize ();
+	Reinitialize (false);
 	
 	g_return_if_fail (callbacks != NULL);
 	g_return_if_fail (playlist == NULL);
@@ -1362,7 +1364,7 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	LOG_MEDIAELEMENT ("MediaElement::SetDemuxerSource ()\n");
 	VERIFY_MAIN_THREAD;
 
-	Reinitialize ();
+	Reinitialize (false);
 	
 	g_return_val_if_fail (context != NULL, NULL);
 	g_return_val_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL, NULL);

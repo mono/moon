@@ -70,7 +70,7 @@ class MediaElement : public FrameworkElement {
 	
 	guint32 flags;
 		
-	void Reinitialize (); // not thread-safe
+	void Reinitialize (bool is_shutting_down); // not thread-safe
 	
 	void SetMarkerTimeout (bool start); // not thread-safe
 	static bool MarkerTimeout (gpointer context); // not thread-safe
