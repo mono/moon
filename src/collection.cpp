@@ -208,9 +208,14 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 
 		EmitChanged (CollectionChangedActionAdd, added_copy, NULL, index);
 
-		if (addStrongRef && added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-			added->AsDependencyObject()->unref();
-			added->SetNeedUnref (false);
+		if (addStrongRef) {
+			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+				DependencyObject *added_obj = added->AsDependencyObject();
+				if (added_obj && added_obj->hadManagedPeer) {
+					added->AsDependencyObject()->unref();
+					added->SetNeedUnref (false);
+				}
+			}
 		}
 
 		delete added_copy;
@@ -338,9 +343,14 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 	
 		EmitChanged (CollectionChangedActionReplace, added, removed, index);
 
-		if (addStrongRef && added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-			added->AsDependencyObject()->unref();
-			added->SetNeedUnref (false);
+		if (addStrongRef) {
+			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+				DependencyObject *added_obj = added->AsDependencyObject();
+				if (added_obj && added_obj->hadManagedPeer) {
+					added->AsDependencyObject()->unref();
+					added->SetNeedUnref (false);
+				}
+			}
 		}
 
 		delete removed;
