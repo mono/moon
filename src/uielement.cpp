@@ -1464,9 +1464,14 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_matrix_t  ctm;
+
+		cairo_get_matrix (cr, &ctm);
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Rect            r = node->GetBitmapExtents ();
+			Point           p = GetOriginPoint ();
+			Rect            area = Rect (p.x, p.y, 0.0, 0.0);
 			cairo_pattern_t *mask = NULL;
 
 			cairo_identity_matrix (cr);
@@ -1474,10 +1479,12 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 			cairo_clip (cr);
 
 			cairo_save (cr);
-			opacityMask->SetupBrush (cr, r);
+			GetSizeForBrush (cr, &(area.width), &(area.height));
+			opacityMask->SetupBrush (cr, area);
 			mask = cairo_get_source (cr);
 			cairo_pattern_reference (mask);
 			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_set_matrix (cr, &ctm);
 			cairo_mask (cr, mask);
 			cairo_pattern_destroy (mask);
 			cairo_restore (cr);

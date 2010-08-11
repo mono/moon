@@ -1,5 +1,8 @@
 2010-08-11  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (PostRender): Apply correct transform
+	to opacity mask.
+
 	* effect.cpp (Composite): Use UpdateShaderConstant to set
 	DdxUvDdyUv constant.
 
