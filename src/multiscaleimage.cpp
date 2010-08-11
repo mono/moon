@@ -184,62 +184,6 @@ qtree_lookup_image (QTree *root, int level, guint64 x, guint64 y)
 	return NULL;
 }
 
-//FIXME: merge qtree_next_sibling and _qtree_next_sibling in a single
-//function, with an elegant loop to avoid recursion.
-static QTree *
-_qtree_next_sibling (QTree *node, guint64 *i, guint64 *j, int l)
-{
-	QTree *next_parent;
-	guint64 pow;
-	
-	if (!node) {
-		g_warning ("Empty node");
-#if DEBUG
-		abort ();
-#endif
-		return NULL;
-	}
-	
-	if (!node->parent) //no parent, we're probably at the root
-		return NULL;
-	
-	pow = pow2 (l);
-	
-	if (node == node->parent->l0) {
-		*i += pow;
-		return node->parent->l1;
-	}
-	
-	if (node == node->parent->l1) {
-		*i -= pow;
-		*j += pow;
-		return node->parent->l2;
-	}
-	
-	if (node == node->parent->l2) {
-		*i += pow;
-		return node->parent->l3;
-	}
-	
-	if (node == node->parent->l3) {
-		*i -= pow;
-		*j -= pow;
-		
-		if (!(next_parent = _qtree_next_sibling (node->parent, i, j, l + 1)))
-			return NULL;
-		
-		return next_parent->l0;
-	}
-	
-	g_warning ("Broken parent link, this is bad");
-	
-#if DEBUG
-	abort ();
-#endif
-	
-	return NULL;
-}
-
 static void
 qtree_remove (QTree *node, int depth)
 {

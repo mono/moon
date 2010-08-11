@@ -202,8 +202,13 @@ AnimationStorage::UpdatePropertyValue ()
 
 	Value *current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
 	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
-		Applier *applier = clock->GetTimeManager ()->GetApplier ();
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
+		Applier *applier = NULL;
+		
+		if (clock->GetTimeManager ())
+			applier = clock->GetTimeManager ()->GetApplier ();
+		
+		if (applier)
+			applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
 	}
 
 	delete current_value;
