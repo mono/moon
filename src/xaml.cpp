@@ -5355,9 +5355,11 @@ char *
 xaml_get_element_key (void *parser, void *element_instance)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
-	const char *key = item->GetKey ();
+	const char *key = get_key_from_child (item);
+
 	if (!key)
-		key = item->GetName ();	
+		return NULL;
+
 	return g_strdup (key);
 }
 
