@@ -2821,7 +2821,7 @@ ShaderEffect::GetShaderConstantBuffer (float           **ptr,
 		constant_buffer =
 			pipe_buffer_create (ctx->pipe->screen,
 					    PIPE_BIND_CONSTANT_BUFFER,
-					    sizeof (float) * MAX_CONSTANTS);
+					    4 * sizeof (float) * MAX_CONSTANTS);
 		if (!constant_buffer)
 			return NULL;
 	}
