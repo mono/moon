@@ -3442,7 +3442,9 @@ kind_requires_managed_load (Type::Kind kind)
 static bool
 is_legal_top_level_kind (Type::Kind kind)
 {
-	if (kind == Type::OBJECT || Type::IsSubclassOf (Deployment::GetCurrent (), kind, Type::DEPENDENCY_OBJECT))
+	Deployment *c = Deployment::GetCurrent ();
+
+	if (Type::IsSubclassOf (c, kind, Type::OBJECT) || Type::IsSubclassOf (c, kind, Type::DEPENDENCY_OBJECT))
 		return true;
 	return false;
 }
