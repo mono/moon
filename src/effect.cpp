@@ -2928,27 +2928,16 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 
 	ddxDdyReg = GetValue (ShaderEffect::DdxUvDdyUvRegisterIndexProperty);
-	if (ddxDdyReg) {
-		struct pipe_transfer *transfer = NULL;
-		int                  reg = ddxDdyReg->AsInt32 ();
-		float                *v;
+	if (ddxDdyReg)
+		UpdateShaderConstant (ddxDdyReg->AsInt32 (),
+				      1.0 / s,
+				      0.0,
+				      0.0,
+				      1.0 / t);
 
-		constants = GetShaderConstantBuffer (&v, &transfer);
-		if (!constants)
-			return 0;
-
-		v[reg * 4 + 0] = 1.f / s;
-		v[reg * 4 + 1] = 0.f;
-		v[reg * 4 + 2] = 0.f;
-		v[reg * 4 + 3] = 1.f / t;
-
-		pipe_buffer_unmap (ctx->pipe, constants, transfer);
-	}
-	else {
-		constants = GetShaderConstantBuffer (NULL, NULL);
-		if (!constants)
-			return 0;
-	}
+	constants = GetShaderConstantBuffer (NULL, NULL);
+	if (!constants)
+		return 0;
 
 	vertices = CreateVertexBuffer (src, matrix, x, y, width, height);
 	if (!vertices)

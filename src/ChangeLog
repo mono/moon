@@ -1,5 +1,8 @@
 2010-08-11  David Reveman  <davidr@novell.com>
 
+	* effect.cpp (Composite): Use UpdateShaderConstant to set
+	DdxUvDdyUv constant.
+
 	* effect.cpp (GetShaderConstantBuffer): Fix size of constant
 	buffer. Each constant requires 4 * sizeof (float) stoarge space.
 
