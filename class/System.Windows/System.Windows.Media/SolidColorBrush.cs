@@ -31,7 +31,6 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	[ContentProperty ("Color")]
 	public sealed partial class SolidColorBrush : Brush {
 
 		public SolidColorBrush (Color color) : this ()

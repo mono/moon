@@ -827,6 +827,7 @@ namespace System.Windows.Media {
 		internal SkewTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	[ContentProperty ("Color")]
 	partial class SolidColorBrush {
 		public SolidColorBrush () : base (SafeNativeMethods.solid_color_brush_new (), true) {}
 		internal SolidColorBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}

@@ -83,6 +83,7 @@ class Brush : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media */
+/* @ContentProperty="Color" */
 class SolidColorBrush : public Brush {
  protected:
 	/* @GenerateCBinding,GeneratePInvoke */
