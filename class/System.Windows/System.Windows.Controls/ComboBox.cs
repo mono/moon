@@ -498,13 +498,21 @@ namespace System.Windows.Controls
 				return;
 			}
 			
-			Point bottom_right = new Point (child.ActualWidth, ActualHeight + child.ActualHeight);
+			Point  offset = new Point (0,ActualHeight);
+
+			if (FlowDirection == FlowDirection.RightToLeft)
+			   offset.X = ActualWidth - child.ActualWidth;
+			
+			Point bottom_right = new Point (offset.X + child.ActualWidth, offset.Y + child.ActualHeight);
 			bottom_right = xform.Transform (bottom_right);
+			Point top_left = xform.Transform (offset);
 
 			if (bottom_right.X > root.ActualWidth) {
 				_popup.HorizontalOffset = root.ActualWidth - bottom_right.X;
+			} else if (top_left.X < 0) {
+				_popup.HorizontalOffset = offset.X -top_left.X;
 			} else {
-				_popup.HorizontalOffset = 0;
+				_popup.HorizontalOffset = offset.X;
 			}
 			if (bottom_right.Y > root.ActualHeight) {
 				_popup.VerticalOffset = -child.ActualHeight;
