@@ -127,6 +127,12 @@ namespace Mono {
 						return new BitmapCache ();
 				}
 
+				if (destinationType == typeof (TextDecorationCollection)) {
+					if (str_val == "Underline") {
+						return TextDecorations.Underline;
+					}
+				}
+
 				if (destinationType == typeof (System.Globalization.CultureInfo))
 					return CultureInfo.GetCultureInfo (str_val);
 
