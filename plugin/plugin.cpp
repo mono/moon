@@ -776,7 +776,7 @@ PluginInstance::CreateWindow ()
 	}
 
 	surface = new Surface (moon_window);
-	//	deployment->SetSurface (surface);
+	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 	if (bridge)
 		bridge->SetSurface (surface);
