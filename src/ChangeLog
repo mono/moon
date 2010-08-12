@@ -1,5 +1,7 @@
 2010-08-12  David Reveman  <davidr@novell.com>
 
+	* effect.h: Remove unused user data keys.
+
 	* effect.cpp:
 	* effect.h:
 	* projection.cpp:

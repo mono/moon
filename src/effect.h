@@ -181,9 +181,6 @@ protected:
 
 	static cairo_user_data_key_t textureKey;
 	static cairo_user_data_key_t surfaceKey;
-	static cairo_user_data_key_t matrixKey;
-	static cairo_user_data_key_t offsetXKey;
-	static cairo_user_data_key_t offsetYKey;
 
 	static int filtertable0[256];
 
