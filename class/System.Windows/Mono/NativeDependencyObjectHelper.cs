@@ -40,6 +40,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
+using System.Windows.Messaging;
 using System.Windows.Shapes;
 using System.Windows.Documents;
 using System.Windows.Threading;
@@ -423,6 +424,8 @@ namespace Mono {
 			case Kind.LINEARDOUBLEKEYFRAME: return new LinearDoubleKeyFrame (raw, false);
 			case Kind.LINEARPOINTKEYFRAME: return new LinearPointKeyFrame (raw, false);
 			case Kind.LINESEGMENT: return new LineSegment (raw, false);
+			case Kind.LOCALMESSAGERECEIVER: return new LocalMessageReceiver (raw, false);
+			case Kind.LOCALMESSAGESENDER: return new LocalMessageSender (raw, false);
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw, false);
 			case Kind.MATRIX3DPROJECTION: return new Matrix3DProjection (raw, false);
 			case Kind.TIMELINEMARKERROUTEDEVENTARGS : return new TimelineMarkerRoutedEventArgs (raw, false);
