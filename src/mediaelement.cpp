@@ -525,8 +525,9 @@ MediaElement::Reinitialize (bool is_shutting_down)
 	
 	previous_position = 0;
 
+	SetMarkerTimeout (false);
+
 	if (!is_shutting_down) {
-		SetMarkerTimeout (false);
 	
 		Value *v = GetValueNoAutoCreate (MediaElement::MarkersProperty);
 		if (v && v->AsTimelineMarkerCollection())
