@@ -196,14 +196,10 @@ namespace System.Windows.Data {
 		#region ISupportInitialize implementation
 		void ISupportInitialize.BeginInit ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Data.Binding:.ISupportInitialize.BeginInit");
-			throw new System.NotImplementedException();
 		}
 
 		void ISupportInitialize.EndInit ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Data.Binding:.ISupportInitialize.EndInit");
-			throw new NotImplementedException ();
 		}
 		#endregion
 	}
