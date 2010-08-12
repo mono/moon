@@ -342,7 +342,7 @@ class UnmanagedMatrix : public Matrix {
 	virtual ~UnmanagedMatrix () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
 	UnmanagedMatrix () {  SetObjectType (Type::UNMANAGEDMATRIX); }
 };
 
