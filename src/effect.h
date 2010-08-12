@@ -98,7 +98,7 @@ public:
 	//
 	virtual bool Render (cairo_t         *cr,
 			     cairo_surface_t *src,
-			     double          *matrix,
+			     const double    *matrix,
 			     double          x,
 			     double          y,
 			     double          width,
@@ -121,7 +121,7 @@ protected:
 	pipe_resource_t *GetShaderTexture (cairo_surface_t *surface);
 	pipe_surface_t  *GetShaderSurface (cairo_surface_t *surface);
 	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
-					     double          *matrix,
+					     const double    *matrix,
 					     double          x,
 					     double          y,
 					     double          width,
@@ -129,7 +129,7 @@ protected:
 					     double          s,
 					     double          t);
 	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
-					     double          *matrix,
+					     const double    *matrix,
 					     double          x,
 					     double          y,
 					     double          width,
@@ -155,7 +155,7 @@ protected:
 
 	virtual bool Composite (pipe_surface_t  *dst,
 				pipe_resource_t *src,
-				double          *matrix,
+				const double    *matrix,
 				double          dstX,
 				double          dstY,
 				const Rect      *clip,
@@ -216,7 +216,7 @@ public:
 	//
 	bool Render (cairo_t         *cr,
 		     cairo_surface_t *src,
-		     double          *matrix,
+		     const double    *matrix,
 		     double          x,
 		     double          y,
 		     double          width,
@@ -236,7 +236,7 @@ protected:
 
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
-			double          *matrix,
+			const double    *matrix,
 			double          dstX,
 			double          dstY,
 			const Rect      *clip,
@@ -307,7 +307,7 @@ public:
 	//
 	bool Render (cairo_t         *cr,
 		     cairo_surface_t *src,
-		     double          *matrix,
+		     const double    *matrix,
 		     double          x,
 		     double          y,
 		     double          width,
@@ -327,7 +327,7 @@ protected:
 
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
-			double          *matrix,
+			const double    *matrix,
 			double          dstX,
 			double          dstY,
 			const Rect      *clip,
@@ -470,7 +470,7 @@ protected:
 
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
-			double          *matrix,
+			const double    *matrix,
 			double          dstX,
 			double          dstY,
 			const Rect      *clip,
@@ -500,7 +500,7 @@ public:
 	//
 	bool Render (cairo_t         *cr,
 		     cairo_surface_t *src,
-		     double          *matrix,
+		     const double    *matrix,
 		     double          x,
 		     double          y,
 		     double          width,
@@ -511,7 +511,7 @@ protected:
 
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
-			double          *matrix,
+			const double    *matrix,
 			double          dstX,
 			double          dstY,
 			const Rect      *clip,

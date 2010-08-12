@@ -522,7 +522,7 @@ Matrix3D::Affine (double *out, double xx, double xy, double yx, double yy, doubl
 }
 
 bool
-Matrix3D::IsTranslation (double *m)
+Matrix3D::IsTranslation (const double *m)
 {
 
 #define M(row, col) m[col * 4 + row]
@@ -535,7 +535,7 @@ Matrix3D::IsTranslation (double *m)
 }
 
 bool
-Matrix3D::IsIntegerTranslation (double *m, int *x0, int *y0)
+Matrix3D::IsIntegerTranslation (const double *m, int *x0, int *y0)
 {
 
 #define M(row, col) m[col * 4 + row]

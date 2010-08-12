@@ -142,8 +142,8 @@ public:
 	static void Viewport (double *out, double width, double height);
 	static bool Inverse (double *out, const double *m);
 	static void Affine (double *out, double xx, double xy, double yx, double yy, double x0, double y0);
-	static bool IsTranslation (double *m);
-	static bool IsIntegerTranslation (double *m, int *x0, int *y0);
+	static bool IsTranslation (const double *m);
+	static bool IsIntegerTranslation (const double *m, int *x0, int *y0);
 };
 
 /* @Namespace=System.Windows.Media.Media3D */

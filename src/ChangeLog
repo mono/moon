@@ -1,3 +1,10 @@
+2010-08-12  David Reveman  <davidr@novell.com>
+
+	* effect.cpp:
+	* effect.h:
+	* projection.cpp:
+	* projection.h: Add missing const modifier.
+
 2010-08-11  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp (PostRender): Apply correct transform
