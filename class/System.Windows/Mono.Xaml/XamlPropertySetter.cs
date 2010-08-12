@@ -92,7 +92,7 @@ namespace Mono.Xaml {
 				return null;
 
 			Type valueType = value.GetType ();
-			if (valueType == type)
+			if (type.IsAssignableFrom (valueType))
 				return value;
 
 			TypeConverter converter = Converter;
