@@ -694,8 +694,7 @@ Surface::Attach (UIElement *element)
 	const char *runtime_version = GetDeployment()->GetRuntimeVersion ();
 	
 	if (first && runtime_version
-	    && (!strncmp ("3.", runtime_version, 2)
-		|| !strncmp ("4.", runtime_version, 2))) {
+	    && !strncmp ("4.", runtime_version, 2)) {
 		// we're running a SL app, let's warn the user about
 		// moonlight's incomplete support.
 		ShowIncompleteSilverlightSupportMessage ();
