@@ -753,12 +753,6 @@ namespace Mono.Xaml {
 			
 			if (obj != null) {
 
-				if (HydrateObject != null) {
-					if (!obj.Type.IsAssignableFrom (HydrateObject.GetType ()))
-						throw ParseException ("Invalid top-level element found {0}, expecting {1}", obj.Type, HydrateObject.GetType ());
-					obj.Object = HydrateObject;
-				}
-
 				if (typeof (DependencyObject).IsAssignableFrom (obj.Type)) {
 					DependencyObject dob = (DependencyObject) obj.Object;
 					NameScope.SetNameScope (dob, NameScope);
@@ -976,7 +970,10 @@ namespace Mono.Xaml {
 
 		private bool IsValidType (Type t)
 		{
-			return (t != null && t.IsPublic);
+			bool res = (t != null && t.IsPublic);
+			if (!res)
+				Console.WriteLine ("invalid type:  {0}", t);
+			return res;
 		}
 
 		public Type LoadType (Assembly assembly, string xmlns, string name)
@@ -1048,6 +1045,12 @@ namespace Mono.Xaml {
 		{
 			object o;
 
+			if (IsTopElement && HydrateObject != null) {
+				if (!type.IsAssignableFrom (HydrateObject.GetType ()))
+					throw ParseException ("Invalid top-level element found {0}, expecting {1}", type, HydrateObject.GetType ());
+				return HydrateObject;
+			}
+			
 			// Returns null if the type isn't a collection type.
 			o = InstantiateCollectionType (type);
 
