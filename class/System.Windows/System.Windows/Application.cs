@@ -364,7 +364,7 @@ namespace System.Windows {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
 						string resource_base = NativeMethods.dependency_object_get_resource_base (NativeHandle);
-						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, resource_base, Deployment.Current.Surface.Native, PluginHost.Handle);
+						XamlLoader loader = XamlLoaderFactory.CreateLoader (type.Assembly, resource_base, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateObjectFromString (generic_xaml, false) as ResourceDictionary;
@@ -404,7 +404,7 @@ namespace System.Windows {
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
 	
-			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
+			XamlLoader loader = XamlLoaderFactory.CreateLoader (loading_asm, resourceLocator.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
 			loader.Hydrate (component, xaml);
 		}
 

@@ -267,7 +267,7 @@ namespace System.Windows {
 
 		void ReadManifest ()
 		{
-			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (null, Surface.Native, PluginHost.Handle);
+			XamlLoader loader = XamlLoaderFactory.CreateLoader (typeof (DependencyObject).Assembly, null, Surface.Native, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "appmanifest.xaml");
 
 			if (!File.Exists (app_manifest))

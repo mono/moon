@@ -1,10 +1,10 @@
 //
-// XamlReader.cs
+// XamlLoaderFactory.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,33 +25,30 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-//
+
 
 using System;
-using System.ComponentModel;
-using System.Windows.Interop;
 using System.Reflection;
-using Mono.Xaml;
 
-namespace System.Windows.Markup
-{	
-	public static class XamlReader
-	{
-		public static object Load (string xaml)
+using Mono;
+using System.Windows;
+using System.Windows.Interop;
+
+
+
+namespace Mono.Xaml {
+
+	internal class XamlLoaderFactory {
+
+		public static XamlLoader CreateLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			// if 'xaml' is null then this will throw a NullReferenceException, just like SL2 throws for null
-			if (xaml.Length == 0)
-				return null;
-
-			XamlLoader loader = XamlLoaderFactory.CreateLoader ();			
-			return loader.CreateObjectFromString (xaml, true);
+			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		public static object LoadWithInitialTemplateValidation (string xaml)
+		public static XamlLoader CreateLoader ()
 		{
-			XamlLoader loader = XamlLoaderFactory.CreateLoader ();
-			return loader.CreateObjectFromString (xaml, true, true);
+			return CreateLoader (Deployment.Current.EntryAssembly, null, Deployment.Current.Surface.Native, PluginHost.Handle);
 		}
 	}
 }
+
