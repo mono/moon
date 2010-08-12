@@ -91,6 +91,9 @@ LocalMessageReceiver::ListenWithError (MoonError *error)
 	}
 
 	listener->AddMessageReceivedCallback (MessageReceivedHandler, this);
+
+	// we unref_delayed in ::Dispose.
+	ref ();
 }
 
 char*
@@ -149,6 +152,7 @@ LocalMessageReceiver::DisposeWithError (MoonError *error)
 {
 	delete listener;
 	listener = NULL;
+	unref_delayed ();
 }
 
 //// Senders
