@@ -174,6 +174,20 @@ namespace Mono.Xaml {
 			get { return Object.GetType (); }
 		}
 
+		public string GetDictionaryKey ()
+		{
+			if (X_Key != null)
+				return X_Key;
+			if (X_Name != null)
+				return X_Name;
+
+			Style s = Object as Style;
+			if (s != null && s.TargetType != null)
+				return s.TargetType.ToString ();
+
+			return null;
+		}
+
 		public override void AddChild (XamlElement child)
 		{
 			XamlPropertyElement prop = child as XamlPropertyElement;
@@ -195,6 +209,12 @@ namespace Mono.Xaml {
 			IList list = Object as IList;
 			if (list != null) {
 				list.Add (obj.Object);
+				return;
+			}
+
+			IDictionary dict = Object as IDictionary;
+			if (dict != null) {
+				dict.Add (obj.GetDictionaryKey (), obj.Object);
 				return;
 			}
 
