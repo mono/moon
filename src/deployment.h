@@ -353,6 +353,10 @@ public:
 	void DestroyManagedXamlLoader (gpointer xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
 
+	Value *MonoXamlParserCreateFromFile (const char *file, bool create_namescope, bool validate_templates, MoonError *error);
+	Value *MonoXamlParserCreateFromString (const char *xaml, bool create_namescope, bool validate_templates, MoonError *error);
+	Value *MonoXamlParserHydrateFromString (const char *xaml, Value *obj, bool create_namescope, bool validate_templates, MoonError *error);
+
 	virtual void EnsureManagedPeer ();
 	void EnsureManagedPeer (EventObject *forObj);
 

@@ -676,6 +676,82 @@ Deployment::InitializeManagedXamlParser (MonoImage *system_windows_image)
 	return true;
 }
 
+Value *
+Deployment::MonoXamlParserCreateFromFile (const char *file, bool create_namescope, bool validate_templates, MoonError *error)
+{
+	Value *v;
+	void *params [3];
+	MonoObject *ret;
+	MonoObject *exc = NULL;
+
+	Deployment::SetCurrent (this);
+
+	params [0] = mono_string_new (mono_domain_get (), file);
+	params [1] = &create_namescope;
+	params [2] = &validate_templates;
+
+	ret = mono_runtime_invoke (mono_xaml_parser_create_from_file, NULL, params, &exc);
+
+	if (exc) {
+		g_warning ("awwww swht bitch\n");
+		return NULL;
+	}
+
+	v = (Value *) mono_object_unbox (ret);
+	return new Value (*v);
+}
+
+Value *
+Deployment::MonoXamlParserCreateFromString (const char *xaml, bool create_namescope, bool validate_templates, MoonError *error)
+{
+	Value *v;
+	void *params [3];
+	MonoObject *ret;
+	MonoObject *exc = NULL;
+
+	Deployment::SetCurrent (this);
+
+	params [0] = mono_string_new (mono_domain_get (), xaml);
+	params [1] = &create_namescope;
+	params [2] = &validate_templates;
+
+	ret = mono_runtime_invoke (mono_xaml_parser_create_from_string, NULL, params, &exc);
+
+	if (exc) {
+		g_warning ("awwwdd shit biotch\n");
+		return NULL;
+	}
+
+	v = (Value *) mono_object_unbox (ret);
+	return new Value (*v);
+}
+
+Value *
+Deployment::MonoXamlParserHydrateFromString (const char *xaml, Value *obj, bool create_namescope, bool validate_templates, MoonError *error)
+{
+	Value *v;
+	void *params [4];
+	MonoObject *ret;
+	MonoObject *exc = NULL;
+
+	Deployment::SetCurrent (this);
+
+	params [0] = mono_string_new (mono_domain_get (), xaml);
+	params [1] = obj;
+	params [2] = &create_namescope;
+	params [3] = &validate_templates;
+
+	ret = mono_runtime_invoke (mono_xaml_parser_hydrate_from_string, NULL, params, &exc);
+
+	if (exc) {
+		g_warning ("aww wshit biotch\n");
+		return NULL;
+	}
+
+	v = (Value *) mono_object_unbox (ret);
+	return new Value (*v);
+}
+
 bool
 Deployment::InitializeManagedDeployment (gpointer plugin_instance, const char *culture, const char *uiCulture)
 {
