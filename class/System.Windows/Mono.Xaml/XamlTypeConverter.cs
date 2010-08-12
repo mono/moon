@@ -61,6 +61,9 @@ namespace Mono.Xaml {
 		
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
+			if (destinationType == typeof (object))
+				return true;
+
 			if (sourceType == typeof (string) && CanConvertFromString (context))
 				return true;
 
@@ -69,6 +72,9 @@ namespace Mono.Xaml {
 
 		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
+			if (destinationType == typeof (object))
+				return true;
+
 			string str_value = value as string;
 
 			if (str_value != null) {
@@ -80,7 +86,6 @@ namespace Mono.Xaml {
 			return base.ConvertFrom (context, culture, value);
 		}
 
-		
 		private bool CanConvertFromString (ITypeDescriptorContext context)
 		{
 			return GetStringConverter () != null;
