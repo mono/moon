@@ -26,6 +26,7 @@
 #include <glib.h>
 
 #include "deployment.h"
+#include "runtime.h"
 
 #define LOCAL_MESSAGING_DIRECTORY_NAME "lm"
 
@@ -500,6 +501,7 @@ private:
 class SenderMachine : public StateMachine {
 public:
 	SenderMachine (const char *filename,
+		       const char *domain_filename,
 		       MessageSentCallback messageSentCallback,
 		       gpointer messageSentCallbackData,
 		       GFunc finishedCallback,
@@ -528,9 +530,8 @@ public:
 
 		source_id = 0;
 
-		memset (&addr, 0, sizeof (addr));
-		addr.sun_family = AF_LOCAL;
-		g_strlcpy (addr.sun_path, filename, sizeof (addr.sun_path));
+		this->filename = g_strdup (filename);
+		this->domain_filename = g_strdup (domain_filename);
 
 		current_state = INITIAL;
 	}
@@ -556,12 +557,24 @@ public:
 
 		bool add_source = false;
 
+		char *receiver_filename = filename;
+
+	try_again:
+		memset (&addr, 0, sizeof (addr));
+		addr.sun_family = AF_LOCAL;
+		g_strlcpy (addr.sun_path, receiver_filename, sizeof (addr.sun_path));
+
 		if (-1 == connect (fd, (struct sockaddr*) &addr, sizeof (addr))) {
 			if (errno == EINPROGRESS) {
 				current_state = CONNECTING;
 				add_source = true;
 			}
 			else {
+				if (domain_filename && receiver_filename != domain_filename) {
+					receiver_filename = domain_filename;
+					goto try_again;
+				}
+					
 				error = g_strdup_printf ("SenderMachine had an error connecting: %s", strerror (errno));
 				current_state = WRITE_ERROR;
 
@@ -590,7 +603,12 @@ public:
 		g_io_channel_unref (iochannel);
 		g_free (response_contents);
 		g_free (message_contents);
+		g_free (filename);
+		g_free (domain_filename);
 	}
+
+	const char *GetMessageContents () { return message_contents; }
+	Deployment *GetDeployment () { return deployment; }
 
 private:
 	void on_finished ()
@@ -762,6 +780,9 @@ private:
 	GIOChannel *iochannel;
 	guint source_id;
 
+	char *filename;
+	char *domain_filename;
+
 	int total_length;
 
 	int message_length;
@@ -783,15 +804,17 @@ private:
 
 class MoonMessageSenderGlib : public MoonMessageSender {
 public:
-	MoonMessageSenderGlib (const char *listener_path, const char *domain)
+	MoonMessageSenderGlib (const char *listener_path, const char *domain_listener_path, const char *domain)
 	{
 		this->listener_path = g_strdup (listener_path);
+		this->domain_listener_path = g_strdup (domain_listener_path);
 		this->domain = g_strdup (domain);
 	}
 
 	virtual ~MoonMessageSenderGlib ()
 	{
 		g_free (listener_path);
+		g_free (domain_listener_path);
 		g_free (domain);
 	}
 	
@@ -810,6 +833,7 @@ public:
 	virtual void SendMessageAsync (const char *msg, gpointer managedUserState, MoonError *error)
 	{
 		SenderMachine *machine = new SenderMachine (listener_path,
+							    domain_listener_path,
 							    messageSentCallback,
 							    messageSentCallbackData,
 							    MoonMessageSenderGlib::machine_finished_callback,
@@ -826,16 +850,41 @@ private:
 		delete machine;
 	}
 
-	void MachineError (const char *error_msg)
+	void MachineError (char *error, char *msg)
 	{
 		if (messageSentCallback) {
 			MoonError err;
-			MoonError::FillIn (&err, MoonError::SEND_FAILED, error_msg);
-			messageSentCallback (&err, NULL, NULL, NULL, messageSentCallbackData);
+			MoonError::FillIn (&err, MoonError::SEND_FAILED, error);
+			messageSentCallback (&err, msg, NULL, NULL, messageSentCallbackData);
 		}
+		g_free (error);
+		g_free (msg);
+	}
+
+	struct ErrorClosure {
+		char *error;
+		char *msg;
+		MoonMessageSenderGlib *sender;
+		Deployment *deployment;
+	};
+
+	static bool idle_machine_error (gpointer data)
+	{
+		ErrorClosure* error_closure = (ErrorClosure*)data;
+		char *error = error_closure->error;
+		char *msg = error_closure->msg;
+		MoonMessageSenderGlib *sender = error_closure->sender;
+		Deployment *deployment = error_closure->deployment;
+
+		delete error_closure;
+
+		Deployment::SetCurrent (deployment);
+		
+		sender->MachineError (error, msg);
+
+		return false;
 	}
 	
-
 	static void machine_error_callback (gpointer data, gpointer user_data)
 	{
 		SenderMachine *machine = (SenderMachine*)data;
@@ -843,12 +892,19 @@ private:
 		
 		g_warning ("SenderMachine had an error: %s\n", machine->GetError());
 
-		sender->MachineError (machine->GetError());
-
 		delete machine;
+
+		ErrorClosure *error_closure = new ErrorClosure();
+		error_closure->error = g_strdup (machine->GetError());
+		error_closure->msg = g_strdup (machine->GetMessageContents());
+		error_closure->sender = sender;
+		error_closure->deployment = machine->GetDeployment();
+
+		runtime_get_windowing_system()->AddIdle (idle_machine_error, error_closure);
 	}
 
 	char *listener_path;
+	char *domain_listener_path;
 	char *domain;
 
 	MessageSentCallback messageSentCallback;
@@ -867,6 +923,8 @@ MoonMessageListener*
 MoonMessagingServiceGlib::CreateMessagingListener (const char *domain, const char *listenerName, MoonError *error)
 {
 	char *listener_path = create_listener_path (domain, listenerName);
+
+	printf ("listener path = %s\n", listener_path);
 
 	struct sockaddr_un addr;
 
@@ -925,8 +983,14 @@ MoonMessageSender*
 MoonMessagingServiceGlib::CreateMessagingSender (const char *listenerName, const char *listenerDomain, const char *domain, MoonError *error)
 {
 	char *listener_path = create_listener_path (listenerDomain, listenerName);
+	char *domain_listener_path = NULL;
 
-	MoonMessageSender *sender = new MoonMessageSenderGlib (listener_path, domain);
+	if (!strcmp (listenerDomain, "*"))
+		domain_listener_path = create_listener_path (domain, listenerName);
+
+	printf ("sender path = %s\n", listener_path);
+
+	MoonMessageSender *sender = new MoonMessageSenderGlib (listener_path, domain_listener_path, domain);
 
 	g_free (listener_path);
 
