@@ -55,6 +55,8 @@ class Popup : public FrameworkElement {
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
+	void ComputeBounds () {}
+
 	const static int OpenedEvent;
 	const static int ClosedEvent;
  private:

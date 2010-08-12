@@ -1,3 +1,7 @@
+2010-08-24  David Reveman  <davidr@novell.com>
+
+	* popup.h: Popup element extents should always be empty.
+
 2010-08-20  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp (ComputeTransform): Inherit affine transformation
