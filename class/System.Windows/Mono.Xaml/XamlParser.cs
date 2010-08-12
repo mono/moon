@@ -847,8 +847,11 @@ namespace Mono.Xaml {
 				        // fix a crasher in olympics when trying to play a new video from
 				        // the recommendations list after the curreont video finishes
 					NameScope ns = NameScope.GetNameScope (uc);
-					NameScope.SetNameScope (uc.Content, ns);
-					NameScope.SetNameScope (uc.Resources, ns);
+					if (uc.Content != null)
+						NameScope.SetNameScope (uc.Content, ns);
+
+					if (uc.Resources != null)
+						NameScope.SetNameScope (uc.Resources, ns);
 				}
 				NameScope.SetNameScope (el_dob, NameScope);
 			}
@@ -971,8 +974,6 @@ namespace Mono.Xaml {
 		private bool IsValidType (Type t)
 		{
 			bool res = (t != null && t.IsPublic);
-			if (!res)
-				Console.WriteLine ("invalid type:  {0}", t);
 			return res;
 		}
 
