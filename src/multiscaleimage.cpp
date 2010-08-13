@@ -300,6 +300,13 @@ int_free (gpointer user_data)
 }
 
 
+#define MOTION_IS_FADING   (1 << 0)
+#define MOTION_IS_PANNING  (1 << 1)
+#define MOTION_IS_ZOOMING  (1 << 2)
+#define MOTION_IS_FINISHED (1 << 3)
+
+#define IS_IN_MOTION(m) (((m) & (MOTION_IS_FADING | MOTION_IS_PANNING | MOTION_IS_ZOOMING)) != 0)
+
 /*
  * MultiScaleImage
  */
@@ -314,14 +321,11 @@ MultiScaleImage::MultiScaleImage ()
 	
 	cache = g_hash_table_new_full (g_int_hash, g_int_equal, int_free, (GDestroyNotify) qtree_destroy);
 	downloaders = g_ptr_array_new ();
-	pending_motion_completed = false;
 	subimages_sorted = false;
 	pan_target = Point (0, 0);
 	zoom_target = 1.0;
 	n_downloading = 0;
-	is_panning = false;
-	is_zooming = false;
-	is_fading = false;
+	motion = 0;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -502,9 +506,11 @@ MultiScaleImage::fade_finished (EventObject *sender, EventArgs *calldata, gpoint
 void
 MultiScaleImage::FadeFinished ()
 {
-	is_fading = false;
-	if (!is_fading && !is_zooming && !is_panning)
+	motion = (motion & ~MOTION_IS_FADING) | MOTION_IS_FINISHED;
+	if (!IS_IN_MOTION (motion)) {
+		printf ("FadeFinished emitting MotionFinished\n");
 		MotionFinished ();
+	}
 }
 
 void
@@ -517,9 +523,11 @@ MultiScaleImage::zoom_finished (EventObject *sender, EventArgs *calldata, gpoint
 void
 MultiScaleImage::ZoomFinished ()
 {
-	is_zooming = false;
-	if (!is_fading && !is_zooming && !is_panning)
+	motion = (motion & ~MOTION_IS_ZOOMING) | MOTION_IS_FINISHED;
+	if (!IS_IN_MOTION (motion)) {
+		printf ("ZoomFinished emitting MotionFinished\n");
 		MotionFinished ();
+	}
 }
 
 void
@@ -532,9 +540,11 @@ MultiScaleImage::pan_finished (EventObject *sender, EventArgs *calldata, gpointe
 void
 MultiScaleImage::PanFinished ()
 {
-	is_panning = false;
-	if (!is_fading && !is_zooming && !is_panning)
+	motion = (motion & ~MOTION_IS_PANNING) | MOTION_IS_FINISHED;
+	if (!IS_IN_MOTION (motion)) {
+		printf ("PanFinished emitting MotionFinished\n");
 		MotionFinished ();
+	}
 }
 
 void
@@ -764,8 +774,8 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	fadein_animation->SetTo (tile_fade + 0.9);
 	
 	fadein_sb->BeginWithError (NULL);
+	motion |= MOTION_IS_FADING;
 	SetIsIdle (false);
-	is_fading = true;
 	
 	cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
 	LOG_MSI ("caching %s\n", ctx->image->GetUriSource ()->ToString ());
@@ -1523,7 +1533,10 @@ MultiScaleImage::EmitImageOpenSucceeded ()
 	if (HasHandlers (MultiScaleImage::ImageOpenSucceededEvent))
 		Emit (MultiScaleImage::ImageOpenSucceededEvent);
 	
-	EmitMotionFinished ();
+	if (motion == 0) {
+		motion |= MOTION_IS_FINISHED;
+		EmitMotionFinished ();
+	}
 	
 	// This is a hack that removes at least one timeout (#291),
 	// possibly because an invalidation gets lost somehow.
@@ -1537,7 +1550,7 @@ MultiScaleImage::EmitMotionFinished ()
 {
 	LOG_MSI ("Emitting MotionFinished\n");
 	
-	pending_motion_completed = false;
+	motion &= ~MOTION_IS_FINISHED;
 	
 	if (HasHandlers (MultiScaleImage::MotionFinishedEvent))
 		Emit (MultiScaleImage::MotionFinishedEvent);
@@ -1584,10 +1597,12 @@ void
 MultiScaleImage::SetInternalViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
-		if (!pending_motion_completed) {
+		if (motion == 0) {
+			printf ("SetInternalViewportWidth(): queueing MotionFinished\n");
 			AddTickCall ((TickCallHandler) motion_finished);
-			pending_motion_completed = true;
+			motion = MOTION_IS_FINISHED;
 		}
+		
 		SetValue (MultiScaleImage::InternalViewportWidthProperty, Value (value));
 		return;
 	}
@@ -1615,12 +1630,11 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 		zoom_sb->PauseWithError (NULL);
 	}
 
-	LOG_MSI ("animating zoom from %f to %f\n\n", GetInternalViewportWidth(), value)	
-
-	is_zooming = true;
-
+	LOG_MSI ("animating zoom from %f to %f\n\n", GetInternalViewportWidth(), value);
+	
 	SetZoomAnimationEndPoint (value);
 	zoom_sb->BeginWithError (NULL);
+	motion |= MOTION_IS_ZOOMING;
 	SetIsIdle (false);
 }
 
@@ -1628,10 +1642,12 @@ void
 MultiScaleImage::SetInternalViewportOrigin (Point *value)
 {
 	if (!GetUseSprings ()) {
-		if (!pending_motion_completed) {
+		if (motion == 0) {
+			printf ("SetInternalViewportOrigin(): queueing MotionFinished\n");
 			AddTickCall ((TickCallHandler) motion_finished);
-			pending_motion_completed = true;
+			motion = MOTION_IS_FINISHED;
 		}
+		
 		SetValue (MultiScaleImage::InternalViewportOriginProperty, Value (*value));
 		return;
 	}
@@ -1657,10 +1673,10 @@ MultiScaleImage::SetInternalViewportOrigin (Point *value)
 #endif
 	} else
 		pan_sb->PauseWithError (NULL);
-
-	is_panning = true;
+	
 	SetPanAnimationEndPoint (*value);
 	pan_sb->BeginWithError (NULL);
+	motion |= MOTION_IS_PANNING;
 	SetIsIdle (false);
 }
 
@@ -1679,7 +1695,7 @@ MultiScaleImage::SetIsDownloading (bool value)
 void
 MultiScaleImage::UpdateIdleStatus ()
 {
-	SetIsIdle (n_downloading == 0 && !is_fading && !is_panning && !is_zooming);
+	SetIsIdle (n_downloading == 0 && !IS_IN_MOTION (motion));
 	SetIsDownloading (n_downloading > 0);
 }
 

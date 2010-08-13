@@ -42,16 +42,13 @@ class MultiScaleImage : public MediaBase {
 	cairo_user_data_key_t full_opacity_at_key;
 	cairo_user_data_key_t height_key;
 	cairo_user_data_key_t width_key;
-	bool pending_motion_completed;
 	bool subimages_sorted;
 	GPtrArray *downloaders;
 	int n_downloading;
 	GHashTable *cache;
 	double zoom_target;
 	Point pan_target;
-	bool is_zooming;
-	bool is_panning;
-	bool is_fading;
+	int motion;
 	
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int TileFadeProperty;
