@@ -404,8 +404,6 @@ namespace Mono.Xaml {
 
 				if (parent == null)
 					throw ParseException ("Property {0} does not have a parent.", reader.LocalName);
-				if (!t.IsAssignableFrom (parent.Type))
-					throw ParseException ("Property {0} is not a descendant if its parent object {1}.", reader.LocalName, parent.Type);
 				setter = CurrentElement.LookupProperty (reader);
 				if (setter == null)
 					throw ParseException ("Property {0} was not found on type {1}.", reader.LocalName, CurrentElement.Name);
