@@ -257,26 +257,27 @@ namespace Moonlight {
 		{
 			Hashtable res = new Hashtable ();
 
-			XmlNodeList names = root.SelectNodes ("//*[@x:Name]", nsmgr);
-			foreach (XmlNode node in names)	{
+			foreach (string attrib in new string [] {"x:Name", "Name"}) {
+				XmlNodeList names = root.SelectNodes ("//*[@" + attrib  + "]", nsmgr);
+				foreach (XmlNode node in names)	{
+					// Don't take the root canvas
+					if (node == root)
+						continue;
 
-				// Don't take the root canvas
-				if (node == root)
-					continue;
+					XmlAttribute attr = node.Attributes [attrib];
+					string name = attr.Value;
+					string ns = GetNamespace (node);
+					string member_type = node.LocalName;
 
-				XmlAttribute attr = node.Attributes ["x:Name"];
-				string name = attr.Value;
-				string ns = GetNamespace (node);
-				string member_type = node.LocalName;
+					if (ns != null)
+						member_type = String.Concat (ns, ".", member_type);
 
-				if (ns != null)
-					member_type = String.Concat (ns, ".", member_type);
+					CodeTypeReference type = new CodeTypeReference (member_type);
+					if (ns != null)
+						type.Options |= CodeTypeReferenceOptions.GlobalReference;
 
-				CodeTypeReference type = new CodeTypeReference (member_type);
-				if (ns != null)
-					type.Options |= CodeTypeReferenceOptions.GlobalReference;
-
-				res [name] = type;
+					res [name] = type;
+				}
 			}
 
 			return res;
