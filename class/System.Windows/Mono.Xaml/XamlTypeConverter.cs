@@ -28,6 +28,7 @@
 
 using Mono;
 using System;
+using System.Text;
 using System.Reflection;
 using System.ComponentModel;
 using System.Globalization;
@@ -53,6 +54,7 @@ namespace Mono.Xaml {
 			string_converters [typeof (Type)] = ConvertType;
 			string_converters [typeof (DependencyProperty)] = ConvertDependencyProperty;
 			string_converters [typeof (Color)] = ConvertColor;
+			string_converters [typeof (PropertyPath)] = ConvertPropertyPath;
 		}
 
 		public XamlTypeConverter (XamlParser parser, XamlObjectElement element, string propertyName, Type destinationType) : base (propertyName, destinationType)
@@ -231,6 +233,55 @@ namespace Mono.Xaml {
 		private static object ConvertColor (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			return Color.FromString ((string) value);
+		}
+
+		private static object ConvertPropertyPath (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			string str = (string) value;
+			StringBuilder expanded = new StringBuilder (str);
+			bool has_expanded = false;
+
+			for (int i = 0; i < expanded.Length; i++) {
+				if (expanded [i] == ':') {
+					int e = i;
+					int s = i - 1;
+					int te = i + 1;
+					for ( ; s > 0; s--) {
+						if (!Char.IsLetterOrDigit (expanded [s]))
+							break;
+					}
+
+					for ( ; te < str.Length; te++) {
+						if (!Char.IsLetterOrDigit (expanded [te]) || expanded [te] == '_')
+							break;
+					}
+
+					string prefix = expanded.ToString (s + 1, e - s - 1);
+					string type = expanded.ToString (e + 1, te - e - 1);
+
+					expanded.Remove (s + 1, te - s - 1);
+
+					string ns = null;
+
+					if (!converter.parser.Xmlns.TryGetValue (prefix, out ns)) {
+						Console.WriteLine ("could not find xmlns value:  {0}", prefix);
+						return null;
+					}
+
+					Type t = converter.parser.ResolveType (prefix + ":" + type);
+					string uri = String.Format ("'{0}'", t);
+							
+					expanded.Insert (s + 1, uri);
+
+					i = s + 1 + uri.Length;
+					has_expanded = true;
+				}
+			}
+
+			if (has_expanded)
+				return new PropertyPath (str, expanded.ToString ());
+
+			return new PropertyPath (str);
 		}
 	}
 
