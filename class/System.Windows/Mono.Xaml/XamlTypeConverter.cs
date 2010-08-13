@@ -191,7 +191,6 @@ namespace Mono.Xaml {
 		{
 			string value = (string) ovalue;
 
-			Console.WriteLine ("attempting to load type:  {0}", value);
 			return converter.parser.ResolveType (value);
 		}
 
