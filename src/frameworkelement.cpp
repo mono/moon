@@ -201,19 +201,23 @@ FrameworkElement::OnLogicalParentChanged (DependencyObject *old_logical_parent, 
 	if (old_logical_parent && !old_disposed)
  		old_logical_parent->RemoveHandler (EventObject::DestroyedEvent, OnLogicalParentDisposed, this);
 
-	if (new_logical_parent)
- 		new_logical_parent->AddHandler (EventObject::DestroyedEvent, OnLogicalParentDisposed, this);
-
-
 	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
-	if (new_logical_parent && new_logical_parent->Is (Type::FRAMEWORKELEMENT))
-		provider->SetDataSource ((FrameworkElement *) new_logical_parent);
-	else if (GetVisualParent () && GetVisualParent ()->Is(Type::FRAMEWORKELEMENT))
-		provider->SetDataSource ((FrameworkElement *)GetVisualParent ());
-	else
+	if (IsDisposing ()) {
 		provider->SetDataSource (NULL);
-	if (IsLoaded ())
-		provider->EmitChanged ();
+	}
+	else {
+		if (new_logical_parent)
+			new_logical_parent->AddHandler (EventObject::DestroyedEvent, OnLogicalParentDisposed, this);
+
+		if (new_logical_parent && new_logical_parent->Is (Type::FRAMEWORKELEMENT))
+			provider->SetDataSource ((FrameworkElement *) new_logical_parent);
+		else if (GetVisualParent () && GetVisualParent ()->Is(Type::FRAMEWORKELEMENT))
+			provider->SetDataSource ((FrameworkElement *)GetVisualParent ());
+		else
+			provider->SetDataSource (NULL);
+		if (IsLoaded ())
+			provider->EmitChanged ();
+	}
 }
 
 void
