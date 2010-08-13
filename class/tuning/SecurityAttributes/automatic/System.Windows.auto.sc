@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 512 methods needs to be decorated.
+# 516 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -895,6 +895,9 @@
 # overrides 'System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)'.
 +SC-M: System.Object Mono.Xaml.SL4MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
 
+# overrides 'System.Object Mono.Xaml.XamlPropertySetter::ConvertAttributeValue(System.String)'.
++SC-M: System.Object Mono.Xaml.XamlReflectionEventSetter::ConvertAttributeValue(System.String)
+
 # overrides 'System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)'.
 +SC-M: System.Object Mono.Xaml.XamlTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
 
@@ -921,6 +924,12 @@
 
 # overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_Type()'.
 +SC-M: System.Type Mono.Xaml.XamlAttachedPropertySetter::get_Type()
+
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_DeclaringType()'.
++SC-M: System.Type Mono.Xaml.XamlReflectionEventSetter::get_DeclaringType()
+
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_Type()'.
++SC-M: System.Type Mono.Xaml.XamlReflectionEventSetter::get_Type()
 
 # overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_DeclaringType()'.
 +SC-M: System.Type Mono.Xaml.XamlReflectionPropertySetter::get_DeclaringType()
@@ -1461,6 +1470,9 @@
 
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlAttachedPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
+
+# overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
++SC-M: System.Void Mono.Xaml.XamlReflectionEventSetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
 
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlReflectionPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
