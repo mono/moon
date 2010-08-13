@@ -399,6 +399,12 @@ EventObject::IsDisposed ()
 }
 
 bool
+EventObject::IsDisposing ()
+{
+	return (flags & Disposing) != 0;
+}
+
+bool
 EventObject::IsAttached ()
 {
 	return (flags & Attached) != 0;
@@ -488,9 +494,13 @@ EventObject::unref ()
 	OBJECT_TRACK ("Unref", type_name);
 
 	if (v == 0) {
+		flags |= Disposing;
+		
 		// here we *can* access instance fields, since we know that we haven't been
 		// destructed already.
 		Dispose ();
+
+		flags &= ~Disposing;
 		
 #if SANITY
 		if ((flags & Disposed) == 0)

@@ -153,10 +153,11 @@ private:
 class EventObject {
 private:
 	enum Flags {
-		MultiThreadedSafe = 1 << 29, // if the dtor can be called on any thread
-		Attached = 1 << 30,
+		MultiThreadedSafe = 1 << 28, // if the dtor can be called on any thread
+		Attached = 1 << 29,
+		Disposing = 1 << 30,
 		Disposed = 1 << 31,
-		IdMask = ~(Attached | Disposed | MultiThreadedSafe),
+		IdMask = ~(Attached | Disposed | Disposing | MultiThreadedSafe),
 	};
 public:
 #if OBJECT_TRACKING
@@ -267,6 +268,7 @@ public:
 	virtual void OnIsAttachedChanged (bool newValue) { }
 
 	bool IsDisposed ();
+	bool IsDisposing ();
 	bool IsMultiThreadedSafe () { return (flags & MultiThreadedSafe) != 0; }
 	
 	Deployment *GetDeployment ()
