@@ -3463,7 +3463,7 @@ value_from_str_with_typename (const char *type_name, const char *prop_name, cons
 char *
 expand_property_path (XamlParserInfo *p, PropertyPath *path)
 {
-	if (!path->path)
+	if (!path->path || !p)
 		return NULL;
 
 	bool expanded = false;
