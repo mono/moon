@@ -2489,11 +2489,13 @@ DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObjec
 	if (old_mentor && !old_disposed)
  		old_mentor->RemoveHandler (EventObject::DestroyedEvent, OnMentorDisposed, this);
 
-	if (new_mentor)
- 		new_mentor->AddHandler (EventObject::DestroyedEvent, OnMentorDisposed, this);
+	if (!IsDisposing ()) {
+		if (new_mentor)
+			new_mentor->AddHandler (EventObject::DestroyedEvent, OnMentorDisposed, this);
 
-	if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
-		mentorChanged (this, new_mentor);
+		if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
+			mentorChanged (this, new_mentor);
+	}
 }
 
 void
