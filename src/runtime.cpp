@@ -264,7 +264,7 @@ moonlight_set_debug_option (guint32 flag, bool set)
 			break;
 		}
 	}
-	printf ("Moonlight: setting option %s to %i\n", index == -1 ? "?" : debugs [index].name, set);
+	//printf ("Moonlight: setting option %s to %i\n", index == -1 ? "?" : debugs [index].name, set);
 	if (set) {
 		debug_flags |= flag;
 	} else {
@@ -294,7 +294,7 @@ moonlight_set_debug_ex_option (guint32 flag, bool set)
 			break;
 		}
 	}
-	printf ("Moonlight: setting debug-ex option %s to %i\n", index == -1 ? "?" : debug_extras [index].name, set);
+	//printf ("Moonlight: setting debug-ex option %s to %i\n", index == -1 ? "?" : debug_extras [index].name, set);
 	if (set) {
 		debug_flags_ex |= flag;
 	} else {
