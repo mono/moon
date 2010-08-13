@@ -590,7 +590,7 @@ namespace Mono.Xaml {
 				return;
 			}
 
-			Xmlns [reader.Name] = reader.Value;
+			Xmlns [reader.LocalName] = reader.Value;
 		}
 
 		private void ParseXAttribute (XamlObjectElement element)
@@ -858,10 +858,10 @@ namespace Mono.Xaml {
 			string name = str;
 
 			if (colon > 0) {
-				string local = str.Substring (colon);
+				string local = str.Substring (0, colon);
 				name = str.Substring (++colon, str.Length - colon);
 				if (!Xmlns.TryGetValue (local, out xmlns))
-					throw ParseException ("Could not find namespace for type {0}.", str);
+					throw ParseException ("Could not find namespace for type {0} ({1}, {2}).", str, name, local);
 			}
 
 			return ResolveType (xmlns, name);
