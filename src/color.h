@@ -84,6 +84,7 @@ G_BEGIN_DECLS
 
 const char *color_to_string (Color *color);
 
+/* @GeneratePInvoke */
 Color *color_from_str  (const char *name);
 
 G_END_DECLS

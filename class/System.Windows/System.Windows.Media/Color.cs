@@ -26,6 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Runtime.InteropServices;
+
+using Mono;
+
+
 namespace System.Windows.Media {
 
 	public struct Color : IFormattable {
@@ -140,6 +146,21 @@ namespace System.Windows.Media {
 		public static bool operator != (Color color1, Color color2)
 		{
 			return (color1.argb != color2.argb);
+		}
+
+		internal static Color FromString (string str)
+		{
+			if (String.IsNullOrEmpty (str))
+				throw new ArgumentNullException ("str");
+
+			IntPtr ptr = NativeMethods.color_from_str (str);
+
+			if (ptr == IntPtr.Zero)
+				return new Color ();
+
+			UnmanagedColor c = (UnmanagedColor) Marshal.PtrToStructure (ptr, typeof (UnmanagedColor));
+
+			return c.ToColor ();
 		}
 	}
 }

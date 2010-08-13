@@ -32,6 +32,7 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Markup;
 using System.Collections.Generic;
 
@@ -51,6 +52,7 @@ namespace Mono.Xaml {
 			string_converters [typeof (RoutedEvent)] = ConvertRoutedEventArgs;
 			string_converters [typeof (Type)] = ConvertType;
 			string_converters [typeof (DependencyProperty)] = ConvertDependencyProperty;
+			string_converters [typeof (Color)] = ConvertColor;
 		}
 
 		public XamlTypeConverter (XamlParser parser, XamlObjectElement element, string propertyName, Type destinationType) : base (propertyName, destinationType)
@@ -225,6 +227,11 @@ namespace Mono.Xaml {
 				throw new XamlParseException ("Attempting to create a DP from a non style object.");
 
 			return s.TargetType;
+		}
+
+		private static object ConvertColor (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			return Color.FromString ((string) value);
 		}
 	}
 
