@@ -34,6 +34,8 @@ namespace System.Windows
 	public sealed class PropertyPath
 	{
 		private string path;
+		private string expanded_path;
+
 		private DependencyProperty property;
 		
 		public PropertyPath (string path, params object [] pathParameters)
@@ -44,6 +46,12 @@ namespace System.Windows
 				throw new ArgumentOutOfRangeException ();
 			
 			this.path = path;
+		}
+
+		internal PropertyPath (string path, string expanded_path)
+		{
+			this.path = path;
+			this.expanded_path = expanded_path;
 		}
 
 		public PropertyPath (object parameter)
@@ -57,6 +65,9 @@ namespace System.Windows
 		}
 		public string Path {
 			get { return property == null ? path : "(0)"; }
+		}
+		internal string ExpandedPath {
+			get { return property == null ? expanded_path : "(0)"; }
 		}
 	}
 }

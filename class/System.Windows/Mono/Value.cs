@@ -333,7 +333,7 @@ namespace Mono {
 					return new PropertyPath (null);
 				if (propertypath->property != IntPtr.Zero)
 					return null;
-				return new PropertyPath (Marshal.PtrToStringAuto (propertypath->pathString));
+				return new PropertyPath (Marshal.PtrToStringAuto (propertypath->pathString), Marshal.PtrToStringAuto (propertypath->expandedPathString));
 			}
 
 			case Kind.POINT: {
@@ -670,11 +670,11 @@ namespace Mono {
 
 					UnmanagedPropertyPath *upp = (UnmanagedPropertyPath *) value.u.p;
 					upp->property = propertypath.NativeDP;
-					if (upp->property == IntPtr.Zero)
+					if (upp->property == IntPtr.Zero) {
 						upp->pathString = StringToIntPtr (propertypath.Path);
-					else
+						upp->expandedPathString = StringToIntPtr (propertypath.ExpandedPath);
+					} else
 						upp->pathString = IntPtr.Zero;
-					upp->expandedPathString = IntPtr.Zero;
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
