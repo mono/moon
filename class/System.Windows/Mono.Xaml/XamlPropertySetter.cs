@@ -296,8 +296,24 @@ namespace Mono.Xaml {
 
 		public override void SetValue (XamlObjectElement obj, object value)
 		{
-			setter.Invoke (null, new object [] { Element.Object, value });
+			if (typeof (IList).IsAssignableFrom (Type)) {
+				AddToCollection (value);
+				return;
+			}
+
+			setter.Invoke (null, new object [] { Element.Object, ConvertValue (Type, value) });
 		}
+
+		public void AddToCollection (object value)
+		{
+			IList list = getter.Invoke (null, new object [] { Element.Object }) as IList;
+
+			if (list == null)
+				throw Parser.ParseException ("Attempt to add attached property to empty list.");
+
+			list.Add (ConvertValue (Type, value));
+		}
+
 	}
 }
 
