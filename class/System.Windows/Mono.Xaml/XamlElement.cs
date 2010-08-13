@@ -257,7 +257,7 @@ namespace Mono.Xaml {
 				return false;
 
 			Type t = Parser.ResolveType ();
-			if (Type.IsAssignableFrom (t))
+			if (t.IsAssignableFrom (Type))
 				return false;
 			return true;
 		}
