@@ -117,7 +117,10 @@ namespace System.Windows.Controls {
 					size.Height = finalSize.Height;
 					
 					Rect childFinal = new Rect (arranged.Width, 0, size.Width, size.Height);
-					
+					// reorder the elements if the the flowdirection is rtl
+					if (FlowDirection  ==  FlowDirection.RightToLeft)
+						childFinal.X = finalSize.Width - (arranged.Width + size.Width);
+
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
 					else

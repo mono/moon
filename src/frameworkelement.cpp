@@ -743,6 +743,13 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
+       
+	// feel the joy of changing the meaning of right and left
+	if (GetFlowDirection () == FlowDirectionRightToLeft) 
+		if (horiz == HorizontalAlignmentLeft)
+			horiz = HorizontalAlignmentRight;
+                else if (horiz == HorizontalAlignmentRight)
+			horiz = HorizontalAlignmentLeft;
 
 	if (horiz == HorizontalAlignmentStretch)
 		framework.width = MAX (framework.width, stretched.width);
