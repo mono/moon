@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 631 methods
+# 632 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::AddHandler(System.Int32,System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: Mono.UnmanagedEventHandler Mono.EventHandlerList::RemoveHandler(System.Int32,System.Delegate)
@@ -496,6 +496,7 @@
 +SSC-M: System.Void System.Windows.Media.CaptureSource::Start()
 +SSC-M: System.Void System.Windows.Media.CaptureSource::Stop()
 +SSC-M: System.Windows.Media.CaptureState System.Windows.Media.CaptureSource::get_State()
++SSC-M: System.Windows.Media.Color System.Windows.Media.Color::FromString(System.String)
 +SSC-M: System.Void System.Windows.Media.CompositionTarget::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.Media.CompositionTarget::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Void System.Windows.Media.Effects.ShaderEffect::UpdateShaderConstant(System.IntPtr,System.Int32,System.Double,System.Double,System.Double,System.Double)
