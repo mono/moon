@@ -714,6 +714,9 @@ InheritedDataContextValueProvider::DetachListener ()
 void
 InheritedDataContextValueProvider::SetDataSource (FrameworkElement *source)
 {
+	if (this->source == source)
+		return;
+
 	Value *old_value = this->source ? this->source->GetValue (FrameworkElement::DataContextProperty) : NULL;
 	Value *new_value = source ? source->GetValue (FrameworkElement::DataContextProperty) : NULL;
 
