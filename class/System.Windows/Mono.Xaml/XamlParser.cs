@@ -364,10 +364,7 @@ namespace Mono.Xaml {
 				ParsePropertyElement ();
 				return;
 			}
-			if (IsTemplateElement ()) {
-				ParseTemplateElement ();
-				return;
-			}
+
 			ParseObjectElement ();
 		}
 
@@ -381,6 +378,11 @@ namespace Mono.Xaml {
 			object o = InstantiateType (t);
 
 			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, o);
+
+			if (IsTemplateElement (element)) {
+				ParseTemplateElement (element);
+				return;
+			}
 
 			SetElementTemplateScopes (element);
 			OnElementBegin (element);
@@ -413,21 +415,15 @@ namespace Mono.Xaml {
 			OnElementBegin (element);
 		}
 
-		private void ParseTemplateElement ()
+		private void ParseTemplateElement (XamlObjectElement element)
 		{
-			Type t = ResolveType ();
-			if (t == null)
-				throw ParseException ("Unable to find the type {0}", t);
-			object o = InstantiateType (t);
-
-			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, o);
 			OnElementBegin (element);
 			
 			ParseElementAttributes (element);
 
 			string template_xml = reader.ReadInnerXml ();
 			
-			FrameworkTemplate template = o as FrameworkTemplate;
+			FrameworkTemplate template = (FrameworkTemplate) element.Object;
 
 			unsafe {
 				template.SetXamlBuffer (ParseTemplate, CreateXamlContext (template), template_xml);
@@ -480,9 +476,9 @@ namespace Mono.Xaml {
 			return reader.LocalName.IndexOf ('.') > 0;
 		}
 
-		private bool IsTemplateElement ()
+		private bool IsTemplateElement (XamlObjectElement element)
 		{
-			return reader.LocalName == "ControlTemplate";
+			return typeof (FrameworkTemplate).IsAssignableFrom (element.Type);
 		}
 
 		private bool IsObjectElement ()
