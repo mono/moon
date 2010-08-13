@@ -265,7 +265,15 @@ namespace Mono.Xaml {
 		private XamlPropertySetter LookupReflectionProperty (XmlReader reader)
 		{
 			Type t = Object.GetType ();
-			return XamlReflectionPropertyForName (Object, reader.LocalName);
+			XamlPropertySetter prop = XamlReflectionPropertyForName (Object, reader.LocalName);
+			if (prop != null)
+				return prop;
+
+			XamlPropertySetter evnt = XamlReflectionEventForName (Object, reader.LocalName);
+			if (evnt != null)
+				return evnt;
+
+			return null;
 		}
 
 		private XamlReflectionPropertySetter XamlReflectionPropertyForName (object target, string name)
@@ -275,6 +283,15 @@ namespace Mono.Xaml {
 				return null;
 
 			return new XamlReflectionPropertySetter (this, target, p);
+		}
+
+		public XamlReflectionEventSetter XamlReflectionEventForName (object target, string name)
+		{
+			EventInfo e = target.GetType ().GetEvent (name);
+			if (e == null)
+				return null;
+
+			return new XamlReflectionEventSetter (this, target, e);
 		}
 
 		private XamlPropertySetter LookupAttachedProperty (XmlReader reader)

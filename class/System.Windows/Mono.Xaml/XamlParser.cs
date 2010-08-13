@@ -50,6 +50,7 @@ namespace Mono.Xaml {
 
 		internal static readonly BindingFlags METHOD_BINDING_FLAGS = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 		internal static readonly BindingFlags PROPERTY_BINDING_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+		internal static readonly BindingFlags EVENT_BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
 
 		private XamlElement top_element;
 		private XamlElement current_element;
@@ -623,7 +624,7 @@ namespace Mono.Xaml {
 			if (IsMarkupExpression (reader.Value))
 				value = ParseAttributeMarkup (element, property);
 			else {
-				value = XamlTypeConverter.ConvertObject (this, element, property.Type, property.Converter, property.Name, reader.Value);
+				value = property.ConvertAttributeValue (reader.Value);
 			}
 
 			return value;

@@ -32,6 +32,7 @@
 +SC-T: Mono.UnmanagedUri
 +SC-T: Mono.Value
 +SC-T: Mono.Xaml.XamlLoader
++SC-T: Mono.Xaml.SL4XamlLoader
 +SC-T: Mono.MoonError
 +SC-T: Mono.EasingFunctionWrapper
 +SC-T: Mono.Hosting
@@ -44,6 +45,7 @@
 +SC-T: Mono.Xaml.XamlPropertyElement
 +SC-T: Mono.Xaml.XamlPropertySetter
 +SC-T: Mono.Xaml.XamlReflectionPropertySetter
++SC-T: Mono.Xaml.XamlReflectionEventSetter
 +SC-T: Mono.Xaml.XamlAttachedPropertySetter
 +SC-T: Mono.Xaml.XamlTypeConverter
 +SC-T: Mono.Xaml.MarkupExpressionParser

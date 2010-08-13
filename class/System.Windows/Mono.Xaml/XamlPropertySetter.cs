@@ -86,6 +86,11 @@ namespace Mono.Xaml {
 			SetValue (null, value);
 		}
 
+		public virtual object ConvertAttributeValue (string value)
+		{
+			return XamlTypeConverter.ConvertObject (Parser, Element, Type, Converter, Name, value);
+		}
+
 		public object ConvertValue (Type type, object value)
 		{
 			if (value == null)
@@ -272,6 +277,105 @@ namespace Mono.Xaml {
 				throw Parser.ParseException ("Collection property in non collection type.");
 
 			rd.Add (obj.GetDictionaryKey (), value);
+		}
+	}
+
+	internal class XamlReflectionEventSetter : XamlPropertySetter {
+
+		private object target;
+		private EventInfo evnt;
+
+		public XamlReflectionEventSetter (XamlObjectElement element, object target, EventInfo evnt) : base (element, evnt.Name,
+				Helper.GetConverterFor (evnt, evnt.EventHandlerType))
+		{
+			this.target = target;
+			this.evnt = evnt;
+		}
+
+		public override Type Type {
+			get { return evnt.EventHandlerType; }
+		}
+
+		public override Type DeclaringType {
+			get { return evnt.DeclaringType; }
+		}
+
+		public EventInfo EventInfo {
+			get { return evnt; }
+		}
+
+		public override object ConvertAttributeValue (string value)
+		{
+			// Just leave them as strings, we do the method
+			// lookup when SetValue is called.
+
+			return value;
+		}
+
+		public override void SetValue (XamlObjectElement obj, object value)
+		{
+			MethodInfo invoker_info = evnt.EventHandlerType.GetMethod ("Invoke");
+			ParameterInfo [] event_params = invoker_info.GetParameters ();
+			string handler_name = value as string;
+			XamlObjectElement subscriber = Parser.TopElement as XamlObjectElement;
+
+			if (subscriber == null)
+				throw Parser.ParseException ("Attempt to set an event handler on an invalid object.");
+
+			if (String.IsNullOrEmpty (handler_name))
+				throw Parser.ParseException ("Attmept to set an event handler to null.");
+
+
+			Delegate d = null;
+			MethodInfo [] methods = subscriber.Type.GetMethods (XamlParser.EVENT_BINDING_FLAGS);
+			MethodInfo candidate = null;
+			bool name_match = false;
+
+			for (int i = 0; i < methods.Length; i++) {
+				MethodInfo m = methods [i];
+				ParameterInfo [] parameters;
+				
+				if (m.Name != handler_name)
+					continue;
+
+				if (name_match)
+					throw Parser.ParseException ("Multiple event handlers found with same name.");
+
+				name_match = true;
+
+				if (m.ReturnType != typeof (void))
+					continue;
+
+				parameters = m.GetParameters ();
+				if (parameters.Length != event_params.Length)
+					continue;
+
+				bool match = true;
+				for (int p = 0; p < parameters.Length; p++) {
+					if (!event_params [p].ParameterType.IsSubclassOf (parameters [p].ParameterType) && parameters [p].ParameterType != event_params [p].ParameterType) {
+						Console.Error.WriteLine ("mismatch:  {0}  and {1}", parameters [p].ParameterType, event_params [p].ParameterType);
+						match = false;
+						break;
+					}
+				}
+
+				if (!match)
+					continue;
+
+				if (candidate != null)
+					throw Parser.ParseException ("Multiple event handler candidates found for event {0}", Name);
+
+				candidate = m;
+			}
+
+			if (candidate == null)
+				throw Parser.ParseException ("Event handler not found for event {0}.", Name);
+
+			d = Delegate.CreateDelegate (evnt.EventHandlerType, subscriber.Object, candidate, false);
+			if (d == null)
+				throw Parser.ParseException ("Unable to create event delegate for event {0}.", Name);
+
+			evnt.AddEventHandler (target, d);
 		}
 	}
 
