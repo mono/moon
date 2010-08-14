@@ -255,10 +255,10 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 	if (!baseUri)
 		return false;
 	
-	if ((filename = strrchr (baseUri->path, '/')))
+	if ((filename = strrchr (baseUri->GetPath (), '/')))
 		filename ++;
 	else
-		filename = baseUri->path;
+		filename = baseUri->GetPath ();
 	
 	if (GetServerFormat () && !g_ascii_strcasecmp (GetServerFormat (), "SmoothStreaming")) {
 		image = g_strdup_printf ("/QualityLevels(%d)/RawFragments(tile=%d)", 100+level, y*1000000000+x);

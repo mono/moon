@@ -606,8 +606,8 @@ get_common_prefix_len (GtkTreeModel *model)
 	if (!uri->Parse (url)) {
 		buf = g_strdup (filename);
 	} else {
-		buf = (char*)uri->GetPath();
-		uri->path = NULL;
+		buf = g_strdup (uri->GetPath ());
+		uri->SetPath (NULL);
 	}
 	
 	if ((p = strrchr (buf, '/')))

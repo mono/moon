@@ -452,7 +452,7 @@ Downloader::ValidateDownloadPolicy (const char *source_location, Uri *uri, Downl
 	Uri *src_uri = NULL;
 	bool valid;
 	
-	if (!uri->isAbsolute && source_location) {
+	if (!uri->IsAbsolute () && source_location) {
 		src_uri = new Uri ();
 		if (!src_uri->Parse (source_location, true)) {
 			delete src_uri;

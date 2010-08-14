@@ -1301,7 +1301,7 @@ MediaElement::SetUriSource (Uri *uri)
 	
 	flags |= Initializing;
 	
-	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
+	if (uri != NULL && uri->GetOriginalString () != NULL && uri->GetOriginalString () [0] != 0) {
 		CreatePlaylist ();
 		char *str = uri->ToString ();
 		playlist->GetCurrentEntry ()->InitializeWithUri (str);
@@ -1600,7 +1600,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 			if (!(location = GetDeployment ()->GetXapLocation ()))
 				location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
 			
-			if (uri->scheme && (!strcmp (uri->scheme, "mms") || !strcmp (uri->scheme, "rtsp") || !strcmp (uri->scheme, "rtsps")))
+			if (uri->GetScheme () && (!strcmp (uri->GetScheme (), "mms") || !strcmp (uri->GetScheme (), "rtsp") || !strcmp (uri->GetScheme (), "rtsps")))
 				policy = StreamingPolicy;
 			
 			if (uri->IsInvalidPath ()) {

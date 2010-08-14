@@ -759,7 +759,7 @@ PlaylistEntry::PopulateMediaAttributes ()
 		if (infourl == NULL)
 			infourl = current->GetInfoURL ();
 		if (baseurl == NULL && current->GetBase () != NULL)
-			baseurl = current->GetBase ()->originalString;
+			baseurl = current->GetBase ()->GetOriginalString ();
 
 		current = current->GetParent ();
 	}
@@ -814,6 +814,7 @@ PlaylistEntry::GetFullSourceName ()
 		Uri *result = NULL;
 		const char *pathsep;
 		char *base_path;
+		char *tmp;
 		
 		//printf ("PlaylistEntry::GetFullSourceName (), base: %s, current: %s\n", base ? base->ToString () : "NULL", current ? current->ToString () : "NULL");
 		
@@ -824,33 +825,39 @@ PlaylistEntry::GetFullSourceName ()
 			result = current;
 		} else if (base != NULL) {
 			result = new Uri ();
-			result->scheme = g_strdup (base->GetScheme());
-			result->user = g_strdup (base->GetUser());
-			result->passwd = g_strdup (base->GetPasswd());
-			result->host = g_strdup (base->GetHost());
-			result->port = base->GetPort();
+			result->SetScheme (base->GetScheme ());
+			result->SetUser (base->GetUser ());
+			result->SetPasswd (base->GetPasswd ());
+			result->SetHost (base->GetHost ());
+			result->SetPort (base->GetPort ());
 			// we ignore the params, query and fragment values.
 			if (current->GetPath() != NULL && current->GetPath() [0] == '/') {
 				//printf (" current path is relative to root dir on host\n");
-				result->path = g_strdup (current->GetPath());
+				result->SetPath (current->GetPath());
 			} else if (base->GetPath() == NULL) {
 				//printf (" base path is root dir on host\n");
-				result->path = g_strdup (current->GetPath());
+				result->SetPath (current->GetPath());
 			} else {
 				pathsep = strrchr (base->GetPath(), '/');
 				if (pathsep != NULL) {
 					if ((size_t) (pathsep - base->GetPath() + 1) == strlen (base->GetPath())) {
 						//printf (" last character of base path (%s) is /\n", base->path);
-						result->path = g_strjoin (NULL, base->GetPath(), current->GetPath(), NULL);
+						tmp = g_strjoin (NULL, base->GetPath(), current->GetPath(), NULL);
+						result->SetPath (tmp);
+						g_free (tmp);
 					} else {
 						//printf (" base path (%s) does not end with /, only copy path up to the last /\n", base->path);
 						base_path = g_strndup (base->GetPath(), pathsep - base->GetPath() + 1);
-						result->path = g_strjoin (NULL, base_path, current->GetPath(), NULL);
+						tmp = g_strjoin (NULL, base_path, current->GetPath(), NULL);
+						result->SetPath (tmp);
+						g_free (tmp);
 						g_free (base_path);
 					}
 				} else {
 					//printf (" base path (%s) does not contain a /\n", base->path);
-					result->path = g_strjoin (NULL, base->GetPath(), "/", current->GetPath(), NULL);
+					tmp = g_strjoin (NULL, base->GetPath(), "/", current->GetPath(), NULL);
+					result->SetPath (tmp);
+					g_free (tmp);
 				}
 			}
 		} else {

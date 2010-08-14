@@ -401,7 +401,7 @@ same_site_of_origin (const char *url1, const char *url2)
 		if (uri2->Parse (url2)) {
 			// if only one of the two URI is absolute then the second one is relative to the first, 
 			// which makes it part of the same site of origin
-			if ((uri1->isAbsolute && !uri2->isAbsolute) || (!uri1->isAbsolute && uri2->isAbsolute))
+			if ((uri1->IsAbsolute () && !uri2->IsAbsolute ()) || (!uri1->IsAbsolute () && uri2->IsAbsolute ()))
 				result = true;
 			else
 				result = Uri::SameSiteOfOrigin (uri1, uri2);
@@ -857,11 +857,11 @@ PluginInstance::UpdateSource ()
 
 			// apparently we only do this with a xap?  ugh...
 			//
-			if (source_uri->path
-			    && strlen (source_uri->path) > 4
-			    && !strncmp (source_uri->path + strlen (source_uri->path) - 4, ".xap", 4)) {
+			if (source_uri->GetPath ()
+			    && strlen (source_uri->GetPath ()) > 4
+			    && !strncmp (source_uri->GetPath () + strlen (source_uri->GetPath ()) - 4, ".xap", 4)) {
 
-				if (!source_uri->isAbsolute) {
+				if (!source_uri->IsAbsolute ()) {
 					Uri *temp = new Uri();
 					Uri::Copy (page_uri, temp);
 					temp->Combine (source_uri);
@@ -1440,7 +1440,7 @@ PluginInstance::LoadSplash ()
 			    source_uri->Parse (source, true) &&
 			    splash_uri->Parse (splashscreensource, true)) {
 			
-				if (source_uri->isAbsolute && !splash_uri->isAbsolute) {
+				if (source_uri->IsAbsolute () && !splash_uri->IsAbsolute ()) {
 					// in the case where the xap is at an
 					// absolute xdomain url and the splash
 					// xaml file is relative (to the page
@@ -1458,14 +1458,14 @@ PluginInstance::LoadSplash ()
 
 					// (see App4.xap, App9.xap from drt #283 for this bit)
 
-					if (!source_uri->isAbsolute) {
+					if (!source_uri->IsAbsolute ()) {
 						Uri *temp = new Uri();
 						Uri::Copy (page_uri, temp);
 						temp->Combine (source_uri);
 						delete source_uri;
 						source_uri = temp;
 					}
-					if (!splash_uri->isAbsolute) {
+					if (!splash_uri->IsAbsolute ()) {
 						Uri *temp = new Uri();
 						Uri::Copy (page_uri, temp);
 						temp->Combine (splash_uri);
@@ -1473,7 +1473,7 @@ PluginInstance::LoadSplash ()
 						splash_uri = temp;
 					}
 
-					if (source_uri->isAbsolute || splash_uri->isAbsolute)
+					if (source_uri->IsAbsolute () || splash_uri->IsAbsolute ())
 						cross_domain_splash = !Uri::SameSiteOfOrigin (source_uri, splash_uri);
 				}
 			}

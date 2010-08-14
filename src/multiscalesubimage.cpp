@@ -37,7 +37,7 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	n = _n;
 
 	Uri *source_uri = ((DeepZoomImageTileSource*)source)->GetUriSource ();
-	if (!source_uri || source_uri->isAbsolute)
+	if (!source_uri || source_uri->IsAbsolute ())
 		return;
 	
 	LOG_MSI ("MSSI: UriSource changed from %s", source_uri->ToString());

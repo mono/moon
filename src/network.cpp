@@ -157,7 +157,7 @@ HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 	}
 
 	/* Make the uri we request to the derived http request an absolute uri */
-	if (!uri->isAbsolute && source_location) {
+	if (!uri->IsAbsolute () && source_location) {
 		src_uri = new Uri ();
 		if (!src_uri->Parse (source_location, true)) {
 			Failed ("Could not parse source location");
@@ -174,7 +174,7 @@ HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 		final_uri = uri;
 	}
 
-	if (!strcmp (final_uri->scheme, "file")) {
+	if (!strcmp (final_uri->GetScheme (), "file")) {
 		local_file = g_strdup (final_uri->GetPath ());
 		NotifyFinalUri (this->uri);
 	}

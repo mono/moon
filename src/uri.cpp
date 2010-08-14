@@ -48,9 +48,10 @@ is_unsafe (unsigned char c)
 	return false;
 }
 
-static void
-uri_params_clear (Uri::Param **params)
+void
+Uri::ClearParams ()
 {
+	Uri::Param **params = &this->params;
 	Uri::Param *next, *param = *params;
 	
 	while (param) {
@@ -64,8 +65,8 @@ uri_params_clear (Uri::Param **params)
 	*params = NULL;
 }
 
-static Uri::Param *
-uri_params_copy (Uri::Param *params)
+Uri::Param *
+Uri::ParamsCopy (Uri::Param *params)
 {
 	Uri::Param *list, *param, *cur, *tail;
 	
@@ -88,8 +89,8 @@ uri_params_copy (Uri::Param *params)
 	return list;
 }
 
-static bool
-uri_params_equal (Uri::Param *params0, Uri::Param *params1)
+bool
+Uri::ParamsEqual (Uri::Param *params0, Uri::Param *params1)
 {
 	// Note: this might need to be changed to allow params out of order
 	Uri::Param *p0 = params0;
@@ -158,7 +159,7 @@ Uri::Free ()
 	g_free (passwd); passwd = NULL;
 	g_free (host); host = NULL;
 	g_free (path); path = NULL;
-	uri_params_clear (&params);
+	ClearParams ();
 	g_free (query); query = NULL;
 	g_free (fragment); fragment = NULL;
 	g_free (originalString); originalString = NULL;
@@ -176,7 +177,7 @@ Uri::Copy (const Uri *from, Uri *to)
 		to->host = g_strdup (from->host);
 		to->port = from->port;
 		to->path = g_strdup (from->path);
-		to->params = uri_params_copy (from->params);
+		to->params = ParamsCopy (from->params);
 		to->query = g_strdup (from->query);
 		to->fragment = g_strdup (from->fragment);
 		to->originalString = g_strdup (from->originalString);
@@ -678,8 +679,8 @@ append_url_encoded (GString *string, const char *in, const char *extra)
 	}
 }
 
-static void
-append_param (GString *string, Uri::Param *param)
+void
+Uri::AppendParam (GString *string, Uri::Param *param)
 {
 	g_string_append_c (string, ';');
 	
@@ -738,7 +739,7 @@ Uri::ToString (UriToStringFlags flags) const
 	
 	param = this->params;
 	while (param) {
-		append_param (string, param);
+		AppendParam (string, param);
 		param = param->next;
 	}
 	
@@ -789,7 +790,7 @@ Uri::operator== (const Uri &v) const
 	if (!!fragment != !!v.fragment
 	    || (fragment && strcmp (fragment, v.fragment)))
 		return false;
-	if (!uri_params_equal (params, v.params))
+	if (!ParamsEqual (params, v.params))
 		return false;
 	
 	// we intentionally don't compare original strings

@@ -73,7 +73,21 @@ public:
 	const char *GetFragment () const { return fragment; }
 	const char *GetPath () const { return path; }
 	const char *GetQuery () const { return query; }
+	const char *GetOriginalString () const { return originalString; }
 	
+	void ClearParams ();
+
+	void SetScheme (const char *value)   { g_free (scheme); scheme = g_strdup (value); }
+	void SetHost (const char *value)     { g_free (host); host = g_strdup (value); }
+	void SetPort (int value)             { port = value; }
+	void SetUser (const char *value)     { g_free (user); user = g_strdup (value); }
+	void SetAuth (const char *value)     { g_free (auth); auth = g_strdup (value); }
+	void SetPasswd (const char *value)   { g_free (passwd); passwd = g_strdup (value); }
+	void SetFragment (const char *value) { g_free (fragment); fragment = g_strdup (value); }
+	void SetPath (const char *value)     { g_free (path); path = g_strdup (value); }
+	void SetQuery (const char *value)    { g_free (query); query = g_strdup (value); }
+
+private:
 	struct Param {
 		Param *next;
 		char *value;
@@ -94,6 +108,10 @@ public:
 	char *fragment;
 
 	char *originalString;
+
+	static Param *ParamsCopy (Param *param);
+	static bool ParamsEqual (Param *params0, Param *params1);
+	static void AppendParam (GString *string, Param *param);
 };
 
 };

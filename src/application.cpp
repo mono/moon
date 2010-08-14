@@ -118,7 +118,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 		return false;
 	}
 
-	if (get_resource_cb && uri && !uri->isAbsolute) {
+	if (get_resource_cb && uri && !uri->IsAbsolute ()) {
 		char *url = uri->ToString ();
 		ManagedStreamCallbacks stream;
 		if (url != NULL && url [0] != 0) {
@@ -253,7 +253,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	int nread;
 	int fd;
 	
-	if (!get_resource_cb || !uri || uri->isAbsolute)
+	if (!get_resource_cb || !uri || uri->IsAbsolute ())
 		return NULL;
 	
 	// construct the path name for this resource
