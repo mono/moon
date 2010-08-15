@@ -136,6 +136,11 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 		background->SetupBrush (cr, area);
 		background->Fill (cr);
 	}
+
+	// make sure we don't leave a stray path in the context
+	if (!path_only)
+		cairo_new_path (cr);
+
 	cairo_restore (cr);
 }
 
