@@ -506,6 +506,8 @@ public:
 protected:
 	virtual ~ProjectionEffect ();
 
+	void Clear ();
+
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
 			const double    *matrix,
@@ -518,6 +520,8 @@ protected:
 			double          height);
 
 	void UpdateShader ();
+
+	void *fs;
 };
 
 };

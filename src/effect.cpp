@@ -338,7 +338,7 @@ st_context_create (struct st_device *st_dev)
 
 	/* fragment shader */
 	{
-		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D, TGSI_INTERPOLATE_PERSPECTIVE);
+		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D, TGSI_INTERPOLATE_LINEAR);
 		cso_set_fragment_shader_handle (st_ctx->cso, st_ctx->fs);
 	}
 
@@ -3929,10 +3929,27 @@ ShaderEffect::ShaderError (const char *format, ...)
 ProjectionEffect::ProjectionEffect ()
 {
 	SetObjectType (Type::PROJECTIONEFFECT);
+	fs = NULL;
 }
 
 ProjectionEffect::~ProjectionEffect ()
 {
+	Clear ();
+}
+
+void
+ProjectionEffect::Clear ()
+{
+
+#ifdef USE_GALLIUM
+	struct st_context *ctx = st_context;
+
+	if (fs) {
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+	}
+#endif
+
 }
 
 bool
@@ -4007,7 +4024,14 @@ ProjectionEffect::Composite (pipe_surface_t  *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
+	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
+		pipe_resource_reference (&vertices, NULL);
+		return 0;
+	}
+
 	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
+
+	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 	pipe_resource_reference (&vertices, NULL);
@@ -4022,4 +4046,40 @@ ProjectionEffect::Composite (pipe_surface_t  *dst,
 void
 ProjectionEffect::UpdateShader ()
 {
+
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	struct ureg_program *ureg;
+	struct ureg_src     tex, sampler;
+	struct ureg_dst     out;
+
+	Clear ();
+
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+	if (!ureg)
+		return;
+
+	sampler = ureg_DECL_sampler (ureg, 0);
+
+	tex = ureg_DECL_fs_input (ureg,
+				  TGSI_SEMANTIC_GENERIC, 0,
+				  TGSI_INTERPOLATE_PERSPECTIVE);
+
+	out = ureg_DECL_output (ureg,
+				TGSI_SEMANTIC_COLOR,
+				0);
+
+	ureg_TEX (ureg, out, TGSI_TEXTURE_2D, tex, sampler);
+	ureg_END (ureg);
+
+#if LOGGING
+	if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
+		printf ("ProjectionEffect::UpdateShader: TGSI shader:\n");
+		tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+	}
+#endif
+
+	fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
+#endif
+
 }
