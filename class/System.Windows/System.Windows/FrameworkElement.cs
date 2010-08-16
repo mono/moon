@@ -174,7 +174,7 @@ namespace System.Windows {
 		internal override void AddStrongRef (IntPtr referent, string name)
 		{
 			if (name == "LogicalParent")
-				LogicalParent = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+				Parent = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
 			else if (name == "SubtreeObject")
 				SubtreeObject = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
 			else
@@ -184,7 +184,7 @@ namespace System.Windows {
 		internal override void ClearStrongRef (IntPtr referent, string name)
 		{
 			if (name == "LogicalParent")
-				LogicalParent = null;
+				Parent = null;
 			else if (name == "SubtreeObject")
 				SubtreeObject = null;
 			else
