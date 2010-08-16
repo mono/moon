@@ -497,7 +497,7 @@ namespace MoonTest.Misc.Parsing
 			Enqueue (() => Assert.AreEqual (25, control.HalfWidth, "#4"));
 
 			Enqueue (() => s.Stop ());
-			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkey:HalfDimensionsControl.HalfHeigh)")));
+			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkey:HalfDimensionsControl.HalfHeight)")));
 			Enqueue (() => Assert.Throws<InvalidOperationException> (() => s.Begin ()));
 
 			EnqueueTestComplete ();
@@ -871,6 +871,5 @@ Width=""100"" Height=""100"">
 			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
 			Assert.AreEqual (@",}{ } }{", beb.ParentBinding.ConverterParameter, "#1");
 		}
-
 	}
 }
