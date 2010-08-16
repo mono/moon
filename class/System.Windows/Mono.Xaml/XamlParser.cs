@@ -35,6 +35,7 @@ using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.Collections;
+using System.Globalization;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -52,6 +53,9 @@ namespace Mono.Xaml {
 		internal static readonly BindingFlags PROPERTY_BINDING_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 		internal static readonly BindingFlags EVENT_BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
 
+		internal static readonly NumberStyles CORLIB_INTEGER_STYLES = NumberStyles.AllowLeadingWhite |  NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint;
+		internal static readonly NumberStyles CORLIB_DOUBLE_STYLES = NumberStyles.AllowLeadingWhite |  NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint;
+		
 		private XamlElement top_element;
 		private XamlElement current_element;
 		private XmlReader reader;
@@ -131,11 +135,7 @@ namespace Mono.Xaml {
 		{
 			object res = null;
 
-			try {
-				res = ParseReader (new StringReader (str));
-			} catch (Exception e) {
-				Console.WriteLine (e);
-			}
+			res = ParseReader (new StringReader (str));
 
 			return res;
 		}
@@ -145,11 +145,7 @@ namespace Mono.Xaml {
 			object res = null;
 
 			using (FileStream s = File.OpenRead (file)) {
-				try {
-					res = ParseReader (new StreamReader (s));
-				} catch (Exception e) {
-					Console.WriteLine (e);
-				}
+				res = ParseReader (new StreamReader (s));
 			}
 
 			return null;
@@ -378,6 +374,9 @@ namespace Mono.Xaml {
 
 			object o = InstantiateType (t);
 
+			if (o == null)
+				throw ParseException ("Could not create object for element {0}.", reader.LocalName);
+
 			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, o);
 
 			if (IsTemplateElement (element)) {
@@ -506,8 +505,16 @@ namespace Mono.Xaml {
 
 				XamlReflectionPropertySetter content = obj.FindContentProperty ();
 
-				if (content == null)
+				if (content == null) {
+
+					if (IsLegalCorlibType (obj.Type)) {
+						obj.Object = CorlibTypeValueFromString (obj.Type, value);
+						return;
+					}
+
 					throw ParseException ("Element {0} does not support text properties.", CurrentElement.Name);
+				}
+
 				content.SetValue (value);
 			}
 		}
@@ -1049,8 +1056,11 @@ namespace Mono.Xaml {
 			// Returns null if the type isn't a collection type.
 			o = InstantiateCollectionType (type);
 
-			if (o == null)
+			if (o == null && HasDefaultConstructor (type))
 				o = Activator.CreateInstance (type);
+
+			if (o == null && IsLegalCorlibType (type))
+				o = DefaultValueForCorlibType (type);
 
 			// TODO: Why did I need this? 
 			INativeEventObjectWrapper evo = o as INativeEventObjectWrapper;
@@ -1058,6 +1068,89 @@ namespace Mono.Xaml {
 				NativeMethods.event_object_ref (evo.NativeHandle);
 
 			return o;
+		}
+
+		private static bool HasDefaultConstructor (Type t)
+		{
+			ConstructorInfo [] ctors = t.GetConstructors ();
+
+			var def = ctors.Where (c => c.GetParameters ().Length == 0).FirstOrDefault ();
+
+			return def != null;
+		}
+
+		private static bool IsLegalCorlibType (Type t)
+		{
+			bool res = false;
+			
+			if (t == typeof (string))
+				res = true;
+			else if (t == typeof (int))
+				res = true;
+			else if (t == typeof (double))
+				res = true;
+			else if (t == typeof (bool))
+				res = true;
+
+			return res;
+		}
+
+		private static object DefaultValueForCorlibType (Type t)
+		{
+			object res = false;
+			
+			if (t == typeof (string))
+				res = String.Empty;
+			else if (t == typeof (int))
+				res = 0;
+			else if (t == typeof (double))
+				res = 0.0;
+			else if (t == typeof (bool))
+				res = false;
+
+			return res;
+		}
+
+		private object CorlibTypeValueFromString (Type dest, string value)
+		{
+			if (dest == typeof (string))
+				return value;
+			else if (dest == typeof (int)) {
+				int res;
+
+				if (value.Length == 0)
+					return 0;
+
+				if (!Int32.TryParse (value, CORLIB_INTEGER_STYLES, CultureInfo.InvariantCulture, out res))
+					throw ParseException ("Invalid integer value {0}.", value);
+				return (int) res;
+			} else if (dest == typeof (double)) {
+				double res;
+
+				if (value.Length == 0)
+					return 0.0;
+
+				if (!Double.TryParse (value, CORLIB_DOUBLE_STYLES, CultureInfo.InvariantCulture, out res))
+					throw ParseException ("Invalid double value {0}.", value);
+
+				return res;
+			} else if (dest == typeof (bool)) {
+				bool res;
+
+				if (value.Length == 0)
+					return false;
+
+				if (!Boolean.TryParse (value, out res)) {
+					double d;
+					if (!Double.TryParse (value, CORLIB_DOUBLE_STYLES, CultureInfo.InvariantCulture, out d))
+						throw ParseException ("Invalid bool value {0}.", value);
+					res = d != 0.0;
+				}
+
+				return res;
+			}
+
+			throw ParseException ("Invalid corlib type used.");
 		}
 
 		private bool IsCollectionType (Type type)
