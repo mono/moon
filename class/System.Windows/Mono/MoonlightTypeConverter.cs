@@ -90,7 +90,7 @@ namespace Mono {
 					return Enum.Parse (destinationType, str_val, true);
 				
 				if (destinationType == typeof (GridLength)) {
-					if (str_val == "Auto")
+					if (String.Compare (str_val, "Auto", true) == 0)
 						return new GridLength (1, GridUnitType.Auto);
 					else {
 						var length = 1.0;
