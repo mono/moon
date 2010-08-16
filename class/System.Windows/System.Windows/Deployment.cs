@@ -537,7 +537,6 @@ namespace System.Windows {
 		internal void EmitError (int errorCode, string message)
 		{
 			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
-			INativeDependencyObjectWrapper app = Application.Current;
 			if (Thread.CurrentThread == DependencyObject.moonlight_thread) {
 				NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
 			} else {

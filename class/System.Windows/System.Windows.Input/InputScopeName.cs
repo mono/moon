@@ -39,7 +39,7 @@ namespace System.Windows.Input {
 			NameValue = nameValue;
 		}
 
-		public void Initialize ()
+		private new void Initialize ()
 		{
 			EnsureInDesign ();
 			NameValue = InputScopeNameValue.Default;

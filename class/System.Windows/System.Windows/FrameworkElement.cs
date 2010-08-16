@@ -163,7 +163,7 @@ namespace System.Windows {
 			return NativeMethods.framework_element_arrange_override (native, finalSize);
 		}
 
-		public DependencyObject Parent {
+		public new DependencyObject Parent {
 			get; private set;
 		}
 

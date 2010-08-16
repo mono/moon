@@ -125,8 +125,6 @@ namespace Mono {
 #region "helpers for the INativeDependencyObjectWrapper interface"
 		public static object GetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
-			object result = null;
-			
 			if (dp == null)
 				throw new ArgumentNullException ("property");
 			
@@ -249,10 +247,11 @@ namespace Mono {
 			lock (objects) {
 				if (objects.ContainsKey (native)) {
 					Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
-	#if DEBUG
+#if DEBUG
 					throw new ExecutionEngineException (string.Format ("multiple mappings registered for the same unmanaged peer."));
-	#endif
+#else
 					return false;
+#endif
 				}
 				
 				tref = new EventObjectToggleRef (wrapper);

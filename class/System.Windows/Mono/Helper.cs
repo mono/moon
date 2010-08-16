@@ -143,9 +143,7 @@ namespace Mono {
 		{
 			StringBuilder result = new StringBuilder (filename.Length);
 			string extension;
-			string dir;
 			string append = null;
-			string original_filename = filename;
 
 			if (is_xap_mode) {
 				extension = Path.GetExtension (filename).ToLower ();

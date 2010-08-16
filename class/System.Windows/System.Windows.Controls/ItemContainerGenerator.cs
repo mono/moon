@@ -91,7 +91,6 @@ namespace System.Windows.Controls {
 			if (item == null)
 				return null;
 
-			DependencyObject container;
 			foreach (var v in ContainerItemMap)
 				if (Helper.AreEqual (v.Value, item))
 					return v.Key;
@@ -172,7 +171,6 @@ namespace System.Windows.Controls {
 
 			RealizedElements.Add (index);
 			ContainerIndexMap.Add (container, index);
-			DependencyObject cc;
 			ContainerItemMap.Add (container, item);
 			
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);

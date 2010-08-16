@@ -59,7 +59,7 @@ namespace System.Windows.Data
 			var old_do = oldSource as DependencyObject;
 			var new_do = newSource as DependencyObject;
 			if (dpChanged != null) {
-				Mono.NativeMethods.dependency_object_remove_property_change_handler (((DependencyObject) oldSource).native, DependencyProperty.Native, dpChanged);
+				Mono.NativeMethods.dependency_object_remove_property_change_handler (old_do.native, DependencyProperty.Native, dpChanged);
 				dpChanged = null;
 			}
 

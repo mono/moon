@@ -39,7 +39,6 @@ namespace System.Windows.Interop {
 		Settings settings;
 		Uri source_uri;
 		private Dictionary<string,string> init_params;
-		private string navigation_state;
 
 		public SilverlightHost ()
 		{

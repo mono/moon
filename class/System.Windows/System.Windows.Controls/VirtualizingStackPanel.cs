@@ -357,7 +357,7 @@ namespace System.Windows.Controls {
 			base.OnItemsChanged (sender, args);
 			IItemContainerGenerator generator = ItemContainerGenerator;
 			ItemsControl owner = ItemsControl.GetItemsOwner (this);
-			int index, offset, viewable, delta;
+			int index, offset, viewable;
 			
 			switch (args.Action) {
 			case NotifyCollectionChangedAction.Add:

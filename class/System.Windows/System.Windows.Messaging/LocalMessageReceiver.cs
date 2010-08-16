@@ -49,15 +49,13 @@ namespace System.Windows.Messaging {
 			: this (NativeMethods.local_message_receiver_new (receiverName,
 									  (int)nameScope), true)
 		{
-			int i = 0;
-			foreach (string s in allowedSenderDomains)
-				i ++;
+			this.allowedSenderDomains = allowedSenderDomains;
 
-			string[] sender_domains = new string[i];
-			i = 0;
-
+			List<string> domains = new List<string> ();
 			foreach (string s in allowedSenderDomains)
-				sender_domains[i++] = s;
+				domains.Add (s);
+
+			string[] sender_domains = domains.ToArray();
 
 			NativeMethods.local_message_receiver_set_allowed_sender_domains (NativeHandle, sender_domains, sender_domains.Length);
 		}

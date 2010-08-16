@@ -90,6 +90,7 @@ namespace System.Windows.Media
 			}
 		}
 
+#pragma warning disable 0067 // The event 'E' is never used
 		public event EventHandler <AcquireLicenseCompletedEventArgs> AcquireLicenseCompleted;
 	}
 }

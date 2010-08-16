@@ -61,16 +61,14 @@ namespace System.Windows.Documents {
 			Free ();
 		}
 
-		IntPtr _native;
-
 		internal IntPtr NativeHandle {
-			get { return _native; }
+			get { return native; }
 			set {
-				if (_native != IntPtr.Zero) {
+				if (native != IntPtr.Zero) {
 					throw new InvalidOperationException ("TextSelection.native is already set");
 				}
 
-				_native = value;
+				native = value;
 
 				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
