@@ -399,7 +399,6 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs
 
 	NPError err = NPERR_NO_ERROR;
 	guint32 supportsXEmbed = FALSE; // NPBool + padding
-	NPNToolkitType toolkit = (NPNToolkitType) 0;
 
 	// XEmbed ?
 	err = mozilla_funcs->getvalue (NULL,

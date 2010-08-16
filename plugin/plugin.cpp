@@ -1191,41 +1191,6 @@ PluginInstance::DestroyApplication ()
 	GetDeployment ()->DestroyManagedApplication (this);
 }
 
-/*
- * Prepares a string to be passed to Javascript, escapes the " and '
- * characters and maps the newline to \n sequence and cr to \r sequence
- */
-static char*
-string_to_js (char *s)
-{
-	char *res;
-	GString *result;
-
-	if (strchr (s, '\'') == NULL && strchr (s, '\n') == NULL)
-		return g_strdup (s);
-
-	result = g_string_new ("");
-
-	for (char *p = s; *p != 0; *p++){
-		if (*p == '"' || *p == '\''){
-			g_string_append_c (result, '\\');
-			g_string_append_c (result, *p);
-		} else if (*p == '\n'){
-			g_string_append_c (result, '\\');
-			g_string_append_c (result, 'n');
-		} else if (*p == '\r'){
-			g_string_append_c (result, '\\');
-			g_string_append_c (result, 'r');
-		} else
-			g_string_append_c (result, *p);
-	}
-
-	res = result->str;
-	g_string_free (result, FALSE);
-
-	return res;
-}
-
 void *
 PluginInstance::Evaluate (const char *code)
 {
