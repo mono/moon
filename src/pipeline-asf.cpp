@@ -2423,7 +2423,7 @@ MmsSource::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 		if (payload [i] == 0)
 			break;
 		if (i == packet->packet.data.size - 1)
-			payload [i] = NULL;
+			payload [i] = 0;
 	}
 
 #if 0

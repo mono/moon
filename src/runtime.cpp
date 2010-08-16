@@ -774,7 +774,6 @@ Surface::AttachLayer (UIElement *layer)
 
 	layer->FullInvalidate (true);
 	layer->InvalidateMeasure ();
-	bool delay;
 	layer->SetIsAttached (true);
 	layer->SetIsLoaded (true);
 	Deployment::GetCurrent()->EmitLoadedAsync ();

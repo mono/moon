@@ -214,7 +214,7 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, b
 int
 DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value)
 {
-	g_return_val_if_fail (default_value != NULL, NULL);
+	g_return_val_if_fail (default_value != NULL, -1);
 
 	return RegisterFull (types, type, name, is_custom, default_value, default_value->GetKind (), false, false, false, NULL, NULL, NULL, false);
 }
@@ -273,9 +273,9 @@ DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *nam
 {
 	DependencyProperty *property;
 	
-	g_return_val_if_fail (types != NULL, NULL);
-	g_return_val_if_fail (type != Type::INVALID, NULL);
-	g_return_val_if_fail (name != NULL, NULL);
+	g_return_val_if_fail (types != NULL, -1);
+	g_return_val_if_fail (type != Type::INVALID, -1);
+	g_return_val_if_fail (name != NULL, -1);
 	
 	if (!is_custom && !Value::IsNull (default_value) && types->IsSubclassOf (default_value->GetKind (), Type::DEPENDENCY_OBJECT))
 		default_value->AsDependencyObject ()->Freeze();
