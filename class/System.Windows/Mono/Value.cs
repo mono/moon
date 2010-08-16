@@ -673,8 +673,10 @@ namespace Mono {
 					if (upp->property == IntPtr.Zero) {
 						upp->pathString = StringToIntPtr (propertypath.Path);
 						upp->expandedPathString = StringToIntPtr (propertypath.ExpandedPath);
-					} else
+					} else {
 						upp->pathString = IntPtr.Zero;
+						upp->expandedPathString = IntPtr.Zero;
+					}
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
