@@ -2480,30 +2480,14 @@ DependencyObject::SetMentor (DependencyObject *value)
 	if (value)
 		MOON_SET_FIELD_NAMED (this->mentor, "Mentor", value);
 
-	OnMentorChanged (old_mentor, value, false);
+	OnMentorChanged (old_mentor, value);
 }
 
 void
-DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor, bool old_disposed)
+DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor)
 {
-	if (old_mentor && !old_disposed)
- 		old_mentor->RemoveHandler (EventObject::DestroyedEvent, OnMentorDisposed, this);
-
-	if (!IsDisposing ()) {
-		if (new_mentor)
-			new_mentor->AddHandler (EventObject::DestroyedEvent, OnMentorDisposed, this);
-
-		if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
-			mentorChanged (this, new_mentor);
-	}
-}
-
-void
-DependencyObject::OnMentorDisposed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	DependencyObject *this_ = (DependencyObject*)closure;
-
-	this_->OnMentorChanged ((DependencyObject*)sender, NULL, true);
+	if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
+		mentorChanged (this, new_mentor);
 }
 
 void

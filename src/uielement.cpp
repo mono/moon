@@ -128,9 +128,11 @@ UIElement::IsSubtreeLoaded (UIElement *element)
 void
 UIElement::Dispose()
 {
-	Surface *surface = GetDeployment ()->GetSurface ();
-	if (surface)
-		surface->RemoveDirtyElement (this);
+	if (IsAttached ()) {
+		Surface *surface = GetDeployment ()->GetSurface ();
+		if (surface)
+			surface->RemoveDirtyElement (this);
+	}
 
 	Value *v = GetValueNoAutoCreate (TriggersProperty);
 	if (v && !v->IsNull) {
@@ -143,12 +145,6 @@ UIElement::Dispose()
 		}
 	}
 	
-	if (!GetDeployment()->IsShuttingDown()) {
-		VisualTreeWalker walker (this);
-		while (UIElement *child = walker.Step ())
-			child->SetVisualParent (NULL);
-	}
-
 	subtree_object = NULL;
 
 	DependencyObject::Dispose();

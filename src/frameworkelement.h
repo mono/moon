@@ -202,8 +202,7 @@ protected:
 	virtual ~FrameworkElement ();
 	
 private:
-	void OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent, bool old_disposed);
-	static void OnLogicalParentDisposed (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent);
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
 	LoadedCallback loaded_cb;
