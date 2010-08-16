@@ -95,6 +95,8 @@ namespace Mono {
 					else {
 						var length = 1.0;
 						var type = str_val.EndsWith ("*") ? GridUnitType.Star : GridUnitType.Pixel;
+						if (str_val.Length == 0)
+							length = 0.0;
 						if (type == GridUnitType.Star)
 							str_val = str_val.Substring (0, str_val.Length - 1);
 						if (str_val.Length > 0)
