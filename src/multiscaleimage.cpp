@@ -492,7 +492,7 @@ MultiScaleImage::HandleDzParsed ()
 		delete tile;
 		layer++;
 	}
-
+	
 	EmitImageOpenSucceeded ();
 }
 
@@ -1352,6 +1352,7 @@ MultiScaleImage::UriSourceChanged ()
 			dzits->Download ();
 		} else {
 			EmitImageOpenSucceeded ();
+			EmitMotionFinished ();
 		}
 	}
 	
@@ -1532,11 +1533,6 @@ MultiScaleImage::EmitImageOpenSucceeded ()
 	
 	if (HasHandlers (MultiScaleImage::ImageOpenSucceededEvent))
 		Emit (MultiScaleImage::ImageOpenSucceededEvent);
-	
-	if (motion == 0) {
-		motion |= MOTION_IS_FINISHED;
-		EmitMotionFinished ();
-	}
 	
 	// This is a hack that removes at least one timeout (#291),
 	// possibly because an invalidation gets lost somehow.
