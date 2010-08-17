@@ -2,6 +2,7 @@
 
 # this type creates delegates to non-visible properties, events ...
 +SC-T: Mono.Xaml.ManagedXamlLoader
++SC-T: Mono.Xaml.XamlLoaderFactory
 
 # this method is called by the embedding API from moon
 +SSC-M: System.IntPtr Mono.A11yHelper::GetAccessible()
@@ -82,6 +83,8 @@
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::FreeNativeMapping(Mono.INativeEventObjectWrapper)
 +SC-M: System.Boolean Mono.NativeDependencyObjectHelper::AddNativeMapping(System.IntPtr,Mono.INativeEventObjectWrapper)
 +SC-M: System.Object Mono.NativeDependencyObjectHelper::CreateObject(Mono.Kind,System.IntPtr)
++SC-M: System.Void Mono.NativeDependencyObjectHelper::ClearManagedPeerCallbacks(Mono.INativeEventObjectWrapper)
++SC-M: System.Void Mono.NativeDependencyObjectHelper::SetManagedPeerCallbacks(Mono.INativeEventObjectWrapper)
 
 +SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Application::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
