@@ -40,6 +40,8 @@ typedef void (*module_init_func) (void);
 typedef char* (*get_id_func) (void* plug);
 
 static void* get_atk_bridge_module ();
+static gchar *get_path_from_var (const char *var);
+static gchar *find_atk_bridge (const gchar *path);
 
 // Unfortunately, we need to hardcode the GTK+ module paths, as there
 // is no method, using pkg-config or otherwise, that returns them.
@@ -58,15 +60,21 @@ get_atk_bridge_module ()
 	gchar* atk_bridge_path = NULL;
 	void* atk_bridge = NULL;
 
-	for (int i = 0; GTK_MODULE_PATHS [i] != NULL; i++) {
-		path = g_module_build_path (GTK_MODULE_PATHS [i],
-					    "atk-bridge");
-		if (g_file_test (path, G_FILE_TEST_EXISTS)) {
-			atk_bridge_path = path;
-			break;
-		}
+	/* Hack for OpenSUSE: Check GTK_PATH64 first */
+	atk_bridge_path = get_path_from_var ("GTK_PATH64");
+	if (!atk_bridge_path)
+		atk_bridge_path = get_path_from_var ("GTK_PATH");
+	if (!atk_bridge_path) {
+		for (int i = 0; GTK_MODULE_PATHS [i] != NULL; i++) {
+			path = g_module_build_path (GTK_MODULE_PATHS [i],
+						    "atk-bridge");
+			if (g_file_test (path, G_FILE_TEST_EXISTS)) {
+				atk_bridge_path = path;
+				break;
+			}
 
-		g_free (path);
+			g_free (path);
+		}
 	}
 
 	if (atk_bridge_path) {
@@ -75,6 +83,37 @@ get_atk_bridge_module ()
 	}
 
 	return atk_bridge;
+}
+
+static gchar *
+get_path_from_var (const char *var)
+{
+	const gchar *value = g_getenv (var);
+	gchar **values;
+	gchar **ptr;
+	gchar *path = NULL;
+
+	if (!value)
+		return NULL;
+
+	values = g_strsplit (value, ":", 0);
+	for (ptr = values; *ptr; ptr++) {
+		if (!path)
+			path = find_atk_bridge (*ptr);
+		g_free (*ptr);
+	}
+	g_free (values);
+	return path;
+}
+
+static gchar *
+find_atk_bridge (const gchar *path)
+{
+	gchar *full_path = g_strconcat (path, "/modules/libatk-bridge.so", NULL);
+
+	if (g_file_test (full_path, G_FILE_TEST_EXISTS))
+		return full_path;
+	return NULL;
 }
 
 G_DEFINE_TYPE (MoonAtkRoot, moon_atk_root, ATK_TYPE_OBJECT)
