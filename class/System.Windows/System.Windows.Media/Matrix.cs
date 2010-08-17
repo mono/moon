@@ -268,5 +268,13 @@ namespace System.Windows.Media {
 		public static Matrix Identity {
 			get { return new Matrix (); }
 		}
+
+		public static Matrix FromString (string str)
+		{
+			if (str == null)
+				throw new ArgumentNullException ("str");
+
+			return Matrix.Identity;
+		}
 	}
 }

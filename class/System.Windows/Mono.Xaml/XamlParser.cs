@@ -499,7 +499,7 @@ namespace Mono.Xaml {
 
 			if (obj != null) {
 				if (typeof (TextBlock).IsAssignableFrom (obj.Type)) {
-					ParseTextBlockText (obj);
+					ParseTextBlockText (obj, value);
 					return;
 				}
 
@@ -512,6 +512,11 @@ namespace Mono.Xaml {
 						return;
 					}
 
+					if (IsKnownStructType (obj.Type)) {
+						obj.Object = KnownStructValueFromString (obj.Type, value);
+						return;
+					}
+
 					throw ParseException ("Element {0} does not support text properties.", CurrentElement.Name);
 				}
 
@@ -519,8 +524,12 @@ namespace Mono.Xaml {
 			}
 		}
 
-		private void ParseTextBlockText (XamlObjectElement block)
+		private void ParseTextBlockText (XamlObjectElement block, string value)
 		{
+			TextBlock tb = block.Object as TextBlock;
+
+			if (tb != null)
+				tb.Text = value;
 		}
 
 		private void ParseWhitespace ()
@@ -1062,6 +1071,9 @@ namespace Mono.Xaml {
 			if (o == null && IsLegalCorlibType (type))
 				o = DefaultValueForCorlibType (type);
 
+			if (o == null && IsKnownStructType (type))
+				o = DefaultValueForKnownStructType (type);
+
 			// TODO: Why did I need this? 
 			INativeEventObjectWrapper evo = o as INativeEventObjectWrapper;
 			if (evo != null)
@@ -1151,6 +1163,42 @@ namespace Mono.Xaml {
 			}
 
 			throw ParseException ("Invalid corlib type used.");
+		}
+
+		private static bool IsKnownStructType (Type t)
+		{
+			bool res = false;
+			
+			if (t == typeof (System.Windows.Media.Color))
+				res = true;
+			else if (t == typeof (System.Windows.Media.Matrix))
+				res = true;
+
+			return res;
+		}
+
+		private static object DefaultValueForKnownStructType (Type t)
+		{
+			object res = false;
+			
+			if (t == typeof (System.Windows.Media.Color))
+				res = System.Windows.Media.Color.FromArgb (0, 0, 0, 0);
+			else if (t == typeof (System.Windows.Media.Matrix))
+				res = System.Windows.Media.Matrix.Identity;
+
+			return res;
+		}
+
+		private object KnownStructValueFromString (Type dest, string value)
+		{
+			object res = null;
+
+			if (dest == typeof (System.Windows.Media.Color))
+				res = System.Windows.Media.Color.FromString (value);
+			else if (dest == typeof (System.Windows.Media.Matrix))
+				res = System.Windows.Media.Matrix.Identity;
+
+			return res;
 		}
 
 		private bool IsCollectionType (Type type)
