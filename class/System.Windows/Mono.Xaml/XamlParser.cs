@@ -148,7 +148,7 @@ namespace Mono.Xaml {
 				res = ParseReader (new StreamReader (s));
 			}
 
-			return null;
+			return res;
 		}
 
 		public object ParseReader (TextReader stream)
@@ -538,7 +538,7 @@ namespace Mono.Xaml {
 
 			try {
 				int ac = reader.AttributeCount;
-				for (int i = 0; i < reader.AttributeCount; i++) {
+				for (int i = 0; i < ac; i++) {
 					reader.MoveToAttribute (i);
 					ParseAttribute (element);
 				}
@@ -768,7 +768,7 @@ namespace Mono.Xaml {
 
 		private void ParentPropertyElement (XamlElement element, XamlPropertyElement prop)
 		{
-			XamlObjectElement obj = (XamlObjectElement) element;
+			//XamlObjectElement obj = (XamlObjectElement) element;
 		}
 			       
 		private void InitializeElement (XamlElement element)

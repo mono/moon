@@ -264,7 +264,6 @@ namespace Mono.Xaml {
 
 		private XamlPropertySetter LookupReflectionProperty (XmlReader reader)
 		{
-			Type t = Object.GetType ();
 			XamlPropertySetter prop = XamlReflectionPropertyForName (Object, reader.LocalName);
 			if (prop != null)
 				return prop;

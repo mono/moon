@@ -61,7 +61,7 @@ namespace Mono.Xaml
 		{
 		}
 
-		public void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface)
+		public override void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface)
 		{
 			base.Setup (native_loader, plugin, surface);
 
