@@ -39,7 +39,7 @@ namespace System.Windows.Input
 
 		private List<InputScopeName> names;
 
-		public void Initialize ()
+		private new void Initialize ()
 		{
 			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
 				throw new NotImplementedException ();

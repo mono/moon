@@ -429,20 +429,8 @@ namespace System.Windows.Controls
         { 
             if (ScrollInfo != null) {
                 bool horizontal = orientation == Orientation.Horizontal;
-                double scrollable = horizontal ?
-                    ScrollableWidth :
-                    ScrollableHeight;
-                
-                double offset = horizontal ?
-                    ScrollInfo.HorizontalOffset : 
-                    ScrollInfo.VerticalOffset;
-                
-                double viewportDimension = horizontal ? 
-                    ScrollInfo.ViewportWidth :
-                    ScrollInfo.ViewportHeight; 
                 
                 // Calculate new offset 
-                double newValue = Math.Min (scrollable, offset);
                 switch (e.ScrollEventType) {
                 case ScrollEventType.ThumbPosition:
                 case ScrollEventType.ThumbTrack:

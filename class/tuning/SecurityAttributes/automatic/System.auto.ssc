@@ -1,15 +1,12 @@
 # [SecuritySafeCritical] needed inside System to call all [SecurityCritical] methods
-# 12 methods
+# 9 methods
 
 +SSC-M: System.Net.Authorization Mono.Http.NtlmClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 +SSC-M: System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 +SSC-M: System.Void Mono.Security.Protocol.Ntlm.Type1Message::.ctor()
 +SSC-M: System.Void Mono.Security.Protocol.Ntlm.Type3Message::.ctor()
-+SSC-M: System.Void Mono.Security.Protocol.Tls.ClientSessionInfo::.cctor()
 +SSC-M: System.Void Mono.Security.Protocol.Tls.HttpsClientStream::.ctor(System.IO.Stream,System.Security.Cryptography.X509Certificates.X509CertificateCollection,System.Net.HttpWebRequest,System.Byte[])
-+SSC-M: System.Boolean Mono.Security.Protocol.Tls.HttpsClientStream::RaiseServerCertificateValidation(System.Security.Cryptography.X509Certificates.X509Certificate,System.Int32[])
 +SSC-M: System.Int32 Mono.Security.Protocol.Tls.SslStreamBase::EndRead(System.IAsyncResult)
 +SSC-M: System.Void Mono.Security.Protocol.Tls.SslStreamBase::EndWrite(System.IAsyncResult)
 +SSC-M: System.Threading.SynchronizationContext System.ComponentModel.AsyncOperationManager::get_SynchronizationContext()
-+SSC-M: System.Boolean System.Net.DefaultCertificatePolicy::CheckValidationResult(System.Net.ServicePoint,System.Security.Cryptography.X509Certificates.X509Certificate,System.Net.WebRequest,System.Int32)
 +SSC-M: System.Void System.Net.Sockets.SocketException::.ctor()

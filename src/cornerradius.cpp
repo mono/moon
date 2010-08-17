@@ -28,7 +28,7 @@ CornerRadius::FromStr (const char *str, CornerRadius *corner)
 	GArray *values = double_garray_from_str (str, 0);
 	bool rv = true;
 
-	*corner = NULL;
+	*corner = CornerRadius();
 
 	switch (values->len) {
 	case 1:

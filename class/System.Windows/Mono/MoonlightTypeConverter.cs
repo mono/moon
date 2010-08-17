@@ -90,11 +90,13 @@ namespace Mono {
 					return Enum.Parse (destinationType, str_val, true);
 				
 				if (destinationType == typeof (GridLength)) {
-					if (str_val == "Auto")
+					if (String.Compare (str_val, "Auto", true) == 0)
 						return new GridLength (1, GridUnitType.Auto);
 					else {
 						var length = 1.0;
 						var type = str_val.EndsWith ("*") ? GridUnitType.Star : GridUnitType.Pixel;
+						if (str_val.Length == 0)
+							length = 0.0;
 						if (type == GridUnitType.Star)
 							str_val = str_val.Substring (0, str_val.Length - 1);
 						if (str_val.Length > 0)

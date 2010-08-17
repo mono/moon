@@ -26,7 +26,7 @@ MoonIMContextGtk::~MoonIMContextGtk ()
 	g_object_unref (im);
 	im = NULL;
 	if (im_widget != NULL)
-		g_signal_handlers_disconnect_matched (im_widget, G_SIGNAL_MATCH_DATA, 0, NULL, NULL, NULL, this);
+		g_signal_handlers_disconnect_matched (im_widget, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, this);
 }
 
 void
@@ -70,7 +70,7 @@ MoonIMContextGtk::SetClientWindow (MoonWindow* window)
 	}
 	if (im_w != this->im_widget) {
 		if (this->im_widget != NULL)
-			g_signal_handlers_disconnect_matched (this->im_widget, G_SIGNAL_MATCH_DATA, 0, NULL, NULL, NULL, this);
+			g_signal_handlers_disconnect_matched (this->im_widget, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, this);
 
 		if (im_w != NULL)
 			g_signal_connect (im_w, "destroy", G_CALLBACK (ImWindowDestroyed), this);

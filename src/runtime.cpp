@@ -173,7 +173,7 @@ moonlight_set_runtime_option (RuntimeInitFlag flag, bool set)
 		return;
 
 	if (options[index].runtime_changeable) {
-		printf ("Moonlight: setting option %s to %i\n", index == -1 ? "?" : options [index].name, set);
+		//printf ("Moonlight: setting option %s to %i\n", index == -1 ? "?" : options [index].name, set);
 		if (set) {
 			moonlight_flags |= flag;
 		} else {
@@ -774,7 +774,6 @@ Surface::AttachLayer (UIElement *layer)
 
 	layer->FullInvalidate (true);
 	layer->InvalidateMeasure ();
-	bool delay;
 	layer->SetIsAttached (true);
 	layer->SetIsLoaded (true);
 	Deployment::GetCurrent()->EmitLoadedAsync ();

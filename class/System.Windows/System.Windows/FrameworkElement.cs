@@ -163,17 +163,33 @@ namespace System.Windows {
 			return NativeMethods.framework_element_arrange_override (native, finalSize);
 		}
 
-		public DependencyObject Parent {
-			get {
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.framework_element_get_logical_parent (native)) as DependencyObject;
-			}
+		public new DependencyObject Parent {
+			get; private set;
 		}
 
 		internal DependencyObject SubtreeObject {
-			get {
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.uielement_get_subtree_object (native)) as DependencyObject;
-			}
+			get; private set;
 		}		
+
+		internal override void AddStrongRef (IntPtr referent, string name)
+		{
+			if (name == "LogicalParent")
+				Parent = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+			else if (name == "SubtreeObject")
+				SubtreeObject = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+			else
+				base.AddStrongRef (referent, name);
+		}
+
+		internal override void ClearStrongRef (IntPtr referent, string name)
+		{
+			if (name == "LogicalParent")
+				Parent = null;
+			else if (name == "SubtreeObject")
+				SubtreeObject = null;
+			else
+				base.ClearStrongRef (referent, name);
+		}
 
 		public event EventHandler<ValidationErrorEventArgs> BindingValidationError;
 

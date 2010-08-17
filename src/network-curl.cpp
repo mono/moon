@@ -519,7 +519,7 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 	val = g_strdup (header[1]);
 	val = g_strstrip (val);
 
-	bridge->AddCallback (_visitor, this, NULL, NULL, name, val);
+	bridge->AddCallback (_visitor, this, NULL, 0, name, val);
 }
 
 size_t
@@ -534,7 +534,7 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 		return size;
 
 	if (state == STARTED)
-		bridge->AddCallback (_started, this, NULL, NULL, NULL, NULL);
+		bridge->AddCallback (_started, this, NULL, 0, NULL, NULL);
 
 	state = DATA;
 

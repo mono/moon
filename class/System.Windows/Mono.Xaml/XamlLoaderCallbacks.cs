@@ -91,7 +91,6 @@ namespace Mono.Xaml
 		private static bool allow_multiple_surfaces_per_domain;
 		
 		protected IntPtr native_loader;
-		private bool load_deps_synch = false;
 		
 		// We keep an instance copy of the surface and plugin here,
 		// since we have to support multiple surfaces for the non-browser case.
@@ -120,7 +119,7 @@ namespace Mono.Xaml
 			this.plugin = plugin;
 		}
 				
-		protected virtual void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface)
+		public virtual void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface)
 		{
 			this.native_loader = native_loader;
 			this.plugin = plugin;

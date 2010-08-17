@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 632 methods
+# 630 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::AddHandler(System.Int32,System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: Mono.UnmanagedEventHandler Mono.EventHandlerList::RemoveHandler(System.Int32,System.Delegate)
@@ -415,8 +415,6 @@
 +SSC-M: System.Boolean System.Windows.FrameworkElement::ApplyTemplate()
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::MeasureOverride(System.Windows.Size)
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::ArrangeOverride(System.Windows.Size)
-+SSC-M: System.Windows.DependencyObject System.Windows.FrameworkElement::get_Parent()
-+SSC-M: System.Windows.DependencyObject System.Windows.FrameworkElement::get_SubtreeObject()
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::InvokeMeasureOverride(System.Windows.Size,Mono.MoonError&)
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::InvokeArrangeOverride(System.Windows.Size,Mono.MoonError&)
 +SSC-M: System.Windows.DependencyObject System.Windows.FrameworkTemplate::GetVisualTree(System.Windows.DependencyObject)

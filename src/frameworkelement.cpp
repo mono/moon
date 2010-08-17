@@ -192,23 +192,17 @@ FrameworkElement::SetLogicalParent (DependencyObject *value, MoonError *error)
 	if (value)
 		MOON_SET_FIELD_NAMED (logical_parent, "LogicalParent", value);
 
-	OnLogicalParentChanged (old_parent, value, false);
+	OnLogicalParentChanged (old_parent, value);
 }
 
 void
-FrameworkElement::OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent, bool old_disposed)
+FrameworkElement::OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent)
 {
-	if (old_logical_parent && !old_disposed)
- 		old_logical_parent->RemoveHandler (EventObject::DestroyedEvent, OnLogicalParentDisposed, this);
-
 	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
 	if (IsDisposing ()) {
 		provider->SetDataSource (NULL);
 	}
 	else {
-		if (new_logical_parent)
-			new_logical_parent->AddHandler (EventObject::DestroyedEvent, OnLogicalParentDisposed, this);
-
 		if (new_logical_parent && new_logical_parent->Is (Type::FRAMEWORKELEMENT))
 			provider->SetDataSource ((FrameworkElement *) new_logical_parent);
 		else if (GetVisualParent () && GetVisualParent ()->Is(Type::FRAMEWORKELEMENT))
@@ -218,13 +212,6 @@ FrameworkElement::OnLogicalParentChanged (DependencyObject *old_logical_parent, 
 		if (IsLoaded ())
 			provider->EmitChanged ();
 	}
-}
-
-void
-FrameworkElement::OnLogicalParentDisposed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	FrameworkElement *this_ = (FrameworkElement *) closure;
-	this_->OnLogicalParentChanged ((DependencyObject*)sender, NULL, true);
 }
 
 void
@@ -745,11 +732,12 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 	VerticalAlignment vert = GetVerticalAlignment ();
        
 	// feel the joy of changing the meaning of right and left
-	if (GetFlowDirection () == FlowDirectionRightToLeft) 
+	if (GetFlowDirection () == FlowDirectionRightToLeft)  {
 		if (horiz == HorizontalAlignmentLeft)
 			horiz = HorizontalAlignmentRight;
                 else if (horiz == HorizontalAlignmentRight)
 			horiz = HorizontalAlignmentLeft;
+	}
 
 	if (horiz == HorizontalAlignmentStretch)
 		framework.width = MAX (framework.width, stretched.width);

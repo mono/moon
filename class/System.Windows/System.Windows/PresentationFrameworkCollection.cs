@@ -124,7 +124,7 @@ namespace System.Windows {
 			}
 		}
 
-		void Initialize ()
+		private new void Initialize ()
 		{
 			// set up our managed list and populate it
 			// from the unmanaged list if there is

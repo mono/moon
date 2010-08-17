@@ -113,7 +113,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	if (!uri) {
 		g_warning ("Passing a null uri to Application::GetResource");
 		if (notify_cb)
-			notify_cb (NotifyFailed, NULL, user_data);
+			notify_cb (NotifyFailed, GPOINTER_TO_INT(NULL), user_data);
 		
 		return false;
 	}
@@ -130,7 +130,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 		
 		if (stream.handle) {
 			if (notify_cb)
-				notify_cb (NotifyStarted, NULL, user_data);
+				notify_cb (NotifyStarted, GPOINTER_TO_INT(NULL), user_data);
 			
 			if (write_cb) {
 				char buf[4096];
@@ -155,7 +155,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 			}
 			
 			if (notify_cb)
-				notify_cb (NotifyCompleted, NULL, user_data);
+				notify_cb (NotifyCompleted, GPOINTER_TO_INT(NULL), user_data);
 			
 			stream.Close (stream.handle);
 			
@@ -179,7 +179,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	HttpRequest *request;
 	if (!(request = GetDeployment ()->CreateHttpRequest (options))) {
 		if (notify_cb)
-			notify_cb (NotifyFailed, NULL, user_data);
+			notify_cb (NotifyFailed, GPOINTER_TO_INT(NULL), user_data);
 		
 		return false;
 	}
@@ -234,7 +234,7 @@ application_downloader_stopped (EventObject *sender, EventArgs *calldata, gpoint
 	HttpRequestStoppedEventArgs *args = (HttpRequestStoppedEventArgs *) calldata;
 	NotifyCtx *ctx = (NotifyCtx *) closure;
 	if (ctx->notify_cb)
-		ctx->notify_cb (args->IsSuccess () ? NotifyCompleted : NotifyFailed, NULL, ctx->user_data);
+		ctx->notify_cb (args->IsSuccess () ? NotifyCompleted : NotifyFailed, GPOINTER_TO_INT (NULL), ctx->user_data);
 	ctx->request->RemoveAllHandlers (ctx);
 	ctx->request->unref ();
 	g_free (ctx);

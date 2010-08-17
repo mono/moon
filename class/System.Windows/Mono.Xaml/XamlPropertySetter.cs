@@ -175,15 +175,8 @@ namespace Mono.Xaml {
 
 		public override void SetValue (XamlObjectElement obj, object value)
 		{
-			// We do this first to cover the case where you are setting a list to a list or
-			// a resource dictionary to a resource dictionary, binding to a binding, ect
-			// as opposed to adding items to the list or dictionary.
-			if (Type.IsAssignableFrom (value.GetType ())) {
-				prop.SetValue (target, ConvertValue (Type, value), null);
-				return;
-			}
-
-			{
+			
+			if (!typeof (Binding).IsAssignableFrom (Type)) {
 				Binding binding = value as Binding;
 				if (binding != null) {
 					SetBinding (binding);
@@ -191,12 +184,20 @@ namespace Mono.Xaml {
 				}
 			}
 
-			{
+			if (!typeof (TemplateBindingExpression).IsAssignableFrom (Type)) {
 				TemplateBindingExpression tb = value as TemplateBindingExpression;
 				if (tb != null) {
 					SetTemplateBinding (tb);
 					return;
 				}
+			}
+
+			// We do this before lists to cover the case where you are setting a list to a list or
+			// a resource dictionary to a resource dictionary, ect
+			// as opposed to adding items to the list or dictionary.
+			if (Type.IsAssignableFrom (value.GetType ())) {
+				prop.SetValue (target, ConvertValue (Type, value), null);
+				return;
 			}
 
 			if (typeof (IList).IsAssignableFrom (Type)) {

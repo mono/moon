@@ -96,6 +96,8 @@ namespace System.Windows.Media {
 			}
 		}
 
+#pragma warning disable 0067 // The event 'E' is never used
+
 		public event EventHandler<JoinDomainCompletedEventArgs> JoinDomainCompleted;
 		public event EventHandler<LeaveDomainCompletedEventArgs> LeaveDomainCompleted;
 	}

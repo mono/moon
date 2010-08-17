@@ -39,7 +39,7 @@ namespace System.Windows.Documents {
 		    return base.OnCreateAutomationPeer ();
 		}
 
-		void Initialize ()
+		private new void Initialize ()
 		{
 			MouseOverForeground = new SolidColorBrush (Colors.Black);
 			Foreground = new SolidColorBrush (Color.FromArgb (0xff, 0x33, 0x7c, 0xbb));

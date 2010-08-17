@@ -579,8 +579,7 @@ private:
 	static void clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data);
 	void CloneAnimationStorageList (DependencyProperty *key, List *list);
 
-	void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor, bool old_disposed);
-	static void OnMentorDisposed (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor);
 
 	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 

@@ -72,11 +72,18 @@ class Program {
 					continue;
 
 				if (Char.IsWhiteSpace (line [0])) {
+					bool date = false;
 					int s = line.IndexOf ("\tr") + 2;
+					// newer entries uses dates, e.g. 20100817, instead of SVN revision number
+					// since GIT digests are not usuable for sorting
+					if (s == -1) {
+						s = line.IndexOf ('\t') + 1;
+						date = true;
+					}
 					int e = line.IndexOf ('\t', s);
 					int revision = -1;
 					if (Int32.TryParse (line.Substring (s, e - s), out revision)) {
-						string comments = line.Substring (e + 2).TrimStart ();
+						string comments = line.Substring (e).TrimStart ();
 						data.Comments.Add (revision, comments);
 					}
 				} else {
@@ -233,7 +240,12 @@ class Program {
 				sw.WriteLine (kvp.Value.CurrentHash);
 				sw.WriteLine (kvp.Key);
 				foreach (KeyValuePair<int, string> comments in kvp.Value.Comments) {
-					sw.WriteLine ("\tr{0}\t\t{1}", comments.Key, comments.Value);
+					// don't prefix dates with 'r' after GIT migration and keep entries aligned
+					sw.WriteLine ("\t{0}{1}\t{2}{3}", 
+						comments.Key > 20100715 ? String.Empty : "r",
+						comments.Key, 
+						comments.Key > 20100715 ? String.Empty : "\t",
+						comments.Value);
 				}
 				sw.WriteLine ();
 			}

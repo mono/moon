@@ -108,7 +108,6 @@ namespace System.Windows.Data {
 
 		void HandleSourceViewCurrentChanged (object sender, EventArgs e)
 		{
-			var old = Value;
 			UpdateValue ();
 			if (Next != null)
 				Next.SetSource (Value);
@@ -121,7 +120,6 @@ namespace System.Windows.Data {
 
 		public override void UpdateValue ()
 		{
-			var oldValue = Value;
 			// The simple case - we use the source object directly, whatever it is.
 			if (BindsDirectlyToSource) {
 				ValueType = Source == null ? null : Source.GetType ();

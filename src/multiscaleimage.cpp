@@ -492,7 +492,7 @@ MultiScaleImage::HandleDzParsed ()
 		delete tile;
 		layer++;
 	}
-
+	
 	EmitImageOpenSucceeded ();
 }
 
@@ -1013,7 +1013,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						if (!image)
 							continue;
 						
-						LOG_MSI ("rendering subimage %d %d %ld %ld\n", sub_image->id, layer_to_render, i, j);
+						LOG_MSI ("rendering subimage %d %d %llu %llu\n", sub_image->id, layer_to_render, i, j);
 						cairo_save (cr);
 						
 						cairo_scale (cr, layers2, layers2);
@@ -1257,7 +1257,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (!image)
 					continue;
 				
-				LOG_MSI ("rendering %d %ld %ld\n", layer_to_render, i, j);
+				LOG_MSI ("rendering %d %llu %llu\n", layer_to_render, i, j);
 				cairo_save (cr);
 				
 				// scale to image size
@@ -1352,6 +1352,7 @@ MultiScaleImage::UriSourceChanged ()
 			dzits->Download ();
 		} else {
 			EmitImageOpenSucceeded ();
+			EmitMotionFinished ();
 		}
 	}
 	
@@ -1532,11 +1533,6 @@ MultiScaleImage::EmitImageOpenSucceeded ()
 	
 	if (HasHandlers (MultiScaleImage::ImageOpenSucceededEvent))
 		Emit (MultiScaleImage::ImageOpenSucceededEvent);
-	
-	if (motion == 0) {
-		motion |= MOTION_IS_FINISHED;
-		EmitMotionFinished ();
-	}
 	
 	// This is a hack that removes at least one timeout (#291),
 	// possibly because an invalidation gets lost somehow.

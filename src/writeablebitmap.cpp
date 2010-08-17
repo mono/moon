@@ -76,7 +76,6 @@ void
 WriteableBitmap::Render (UIElement *element, Transform *transform)
 {
 	cairo_t *cr;
-	Region *region;
 
 	if (!element)
 		return;
