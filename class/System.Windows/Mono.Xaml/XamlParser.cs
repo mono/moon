@@ -413,6 +413,10 @@ namespace Mono.Xaml {
 
 			XamlPropertyElement element = new XamlPropertyElement (this, reader.LocalName, setter);
 			OnElementBegin (element);
+
+			// This is a self closing element ie <Deployment.Icons />
+			if (reader.IsEmptyElement)
+				OnElementEnd ();
 		}
 
 		private void ParseTemplateElement (XamlObjectElement element)
@@ -760,7 +764,6 @@ namespace Mono.Xaml {
 		{
 			XamlObjectElement obj = element as XamlObjectElement;
 
-			
 			if (obj != null) {
 
 				if (typeof (DependencyObject).IsAssignableFrom (obj.Type)) {
