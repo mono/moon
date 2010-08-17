@@ -33,6 +33,8 @@ typedef struct _MonoProperty MonoProperty;
 
 namespace Moonlight {
 
+typedef void (*EnsureManagedPeerCallback)(EventObject *forObj);
+
 /* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
 public:
@@ -302,6 +304,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCurrentApplication (Application* value);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetEnsureManagedPeerCallback (EnsureManagedPeerCallback callback);
+
 	/*
 	 * thread-safe, returns false if the media couldn't be registered (if the
 	 * deployment is already shutting down, in which case the media should
@@ -530,6 +535,8 @@ private:
 	
 	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
 	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
+
+	EnsureManagedPeerCallback ensure_managed_peer;
 
 	bool InitializeManagedXamlParser (MonoImage *system_windows_image);
 	

@@ -429,6 +429,8 @@ Deployment::InnerConstructor ()
 	system_windows_image = NULL;
 	system_windows_assembly = NULL;
 
+	ensure_managed_peer = NULL;
+
 	moon_load_xaml = NULL;
 	moon_initialize_deployment_xap = NULL;
 	moon_initialize_deployment_xaml = NULL;
@@ -514,27 +516,31 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 void
 Deployment::EnsureManagedPeer ()
 {
-	EnsureManagedPeer (this);
+	EnsureManagedPeer(this);
 }
 
 void
 Deployment::EnsureManagedPeer (EventObject *forObj)
 {
-	MonoObject *loader;
-	MonoObject *exc = NULL;
+	if (ensure_managed_peer) {
+		ensure_managed_peer (forObj);
+	}
+	else if (moon_ensure_managed_peer) {
+		MonoObject *exc = NULL;
 	
-	if (moon_ensure_managed_peer == NULL)
-		return;
+		if (moon_ensure_managed_peer == NULL)
+			return;
 
-	void *params [1];
+		void *params [1];
 
-	Deployment::SetCurrent (this);
+		Deployment::SetCurrent (this);
 
-	params [0] = &forObj;
-	loader = mono_runtime_invoke (moon_ensure_managed_peer, NULL, params, &exc);
+		params [0] = &forObj;
+		mono_runtime_invoke (moon_ensure_managed_peer, NULL, params, &exc);
 
-	if (exc)
-		surface->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		if (exc)
+			surface->EmitError (ManagedExceptionToErrorEventArgs (exc));
+	}
 }
 
 gpointer
@@ -1543,6 +1549,12 @@ Deployment::SetCurrentApplication (Application* value)
 
 	MOON_CLEAR_FIELD_NAMED (current_app, "CurrentApplication");
 	MOON_SET_FIELD_NAMED (current_app, "CurrentApplication", value);
+}
+
+void
+Deployment::SetEnsureManagedPeerCallback (EnsureManagedPeerCallback callback)
+{
+	this->ensure_managed_peer = callback;
 }
 
 void

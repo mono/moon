@@ -54,6 +54,7 @@ namespace Mono {
 	}
 
 	internal delegate void MentorChangedCallback (IntPtr doptr, IntPtr mentor_ptr);
+	internal delegate void EnsureManagedPeerCallback (IntPtr doptr);
 	internal delegate void AttachCallback (IntPtr doptr);
 	internal delegate void StrongRefCallback (IntPtr referer, IntPtr referent, string name);
 	internal delegate Size MeasureOverrideCallback (Size availableSize, ref MoonError error);

@@ -360,6 +360,7 @@ namespace System.Windows {
 			AppDomain.CurrentDomain.SetupInformationNoCopy.ApplicationBase = XapDir;
 #endif
 
+			NativeMethods.deployment_set_ensure_managed_peer_callback (native, ensure_managed_peer);
 			NativeMethods.deployment_set_initialization (native, true);
 			try {
 				ReadManifest ();
@@ -636,5 +637,23 @@ namespace System.Windows {
 			xapLocationStr = string.Empty;
 			return string.Empty;
 		}
+
+		private static EnsureManagedPeerCallback ensure_managed_peer = new EnsureManagedPeerCallback(EnsureManagedPeer);
+		/// <summary>
+		///   Ensures that a managed peer has been created for a given native dependencyobject.
+		/// </summary>
+		private static void EnsureManagedPeer (IntPtr forDO)
+		{
+			var o = NativeDependencyObjectHelper.Lookup (forDO);
+			if (o == null) {
+				o = NativeDependencyObjectHelper.FromIntPtr (forDO);
+#if DEBUG_REF
+				Console.WriteLine ("Creating managed peer {0}/{1} for {2:X}", o.GetHashCode(), o.GetType(), forDO);
+#endif
+				// this next line is just to keep mcs from giving us a warning about "o" being unused
+				GC.KeepAlive (o);
+			}
+		}
+		
 	}
 }
