@@ -377,7 +377,7 @@ namespace Mono.Xaml {
 			if (o == null)
 				throw ParseException ("Could not create object for element {0}.", reader.LocalName);
 
-			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, o);
+			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, t, o);
 
 			if (IsTemplateElement (element)) {
 				ParseTemplateElement (element);
@@ -513,7 +513,7 @@ namespace Mono.Xaml {
 					}
 
 					if (IsKnownStructType (obj.Type)) {
-						obj.Object = KnownStructValueFromString (obj.Type, value);
+						obj.Object = KnownStructValueFromString (obj, value);
 						return;
 					}
 
@@ -1167,38 +1167,22 @@ namespace Mono.Xaml {
 
 		private static bool IsKnownStructType (Type t)
 		{
-			bool res = false;
-			
-			if (t == typeof (System.Windows.Media.Color))
-				res = true;
-			else if (t == typeof (System.Windows.Media.Matrix))
-				res = true;
-
-			return res;
+			return (t.IsValueType && t.Assembly == typeof (DependencyObject).Assembly);
 		}
+
+		private class FakeValueType { }
 
 		private static object DefaultValueForKnownStructType (Type t)
 		{
-			object res = false;
-			
-			if (t == typeof (System.Windows.Media.Color))
-				res = System.Windows.Media.Color.FromArgb (0, 0, 0, 0);
-			else if (t == typeof (System.Windows.Media.Matrix))
-				res = System.Windows.Media.Matrix.Identity;
+			// Use this instead of new object so we know something has
+			// gone seriously wrong if we ever see a FakeValueType.
 
-			return res;
+			return new FakeValueType ();
 		}
 
-		private object KnownStructValueFromString (Type dest, string value)
+		private object KnownStructValueFromString (XamlObjectElement element, string value)
 		{
-			object res = null;
-
-			if (dest == typeof (System.Windows.Media.Color))
-				res = System.Windows.Media.Color.FromString (value);
-			else if (dest == typeof (System.Windows.Media.Matrix))
-				res = System.Windows.Media.Matrix.Identity;
-
-			return res;
+			return XamlTypeConverter.ConvertObject (this, element, element.Type, null, null, value);
 		}
 
 		private bool IsCollectionType (Type type)

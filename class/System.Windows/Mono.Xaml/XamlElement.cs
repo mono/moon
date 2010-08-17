@@ -142,8 +142,12 @@ namespace Mono.Xaml {
 
 	internal class XamlObjectElement : XamlElement {
 
-		public XamlObjectElement (XamlParser parser, string name, object o) : base (parser, name)
+		private Type type;
+
+		public XamlObjectElement (XamlParser parser, string name, Type type, object o) : base (parser, name)
 		{
+			this.type = type;
+
 			Object = o;
 		}
 
@@ -171,7 +175,7 @@ namespace Mono.Xaml {
 		}
 
 		public override Type Type {
-			get { return Object.GetType (); }
+			get { return type; }
 		}
 
 		public string GetDictionaryKey ()
