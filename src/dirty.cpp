@@ -296,6 +296,8 @@ Surface::ProcessDownDirtyElements ()
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
 
+			el->dirty_flags |= DirtyComposite;
+
 			el->ComputeTransform ();
 
 			if (el->GetVisualParent ())
@@ -425,6 +427,11 @@ Surface::ProcessUpDirtyElements ()
 
 			delete el->dirty_region;
 			el->dirty_region = new Region ();
+		}
+		if (el->dirty_flags & DirtyComposite) {
+			el->dirty_flags &= ~DirtyComposite;
+
+			el->ComputeComposite ();
 		}
 
 		if (!(el->dirty_flags & UpDirtyState)) {

@@ -107,8 +107,6 @@ public:
 	static void Initialize ();
 	static void Shutdown ();
 
-	static Effect *GetProjectionEffect ();
-
 protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();

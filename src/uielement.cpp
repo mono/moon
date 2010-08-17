@@ -64,6 +64,7 @@ UIElement::UIElement ()
 	Matrix3D::Identity (absolute_projection);
 	effect_padding = Thickness (0);
 	bitmap_cache = NULL;
+	composite = NULL;
 
 	dirty_flags = DirtyMeasure;
 	PropagateFlagUp (DIRTY_MEASURE_HINT);
@@ -82,6 +83,8 @@ UIElement::UIElement ()
 
 UIElement::~UIElement()
 {
+	if (composite)
+		composite->unref ();
 	InvalidateBitmapCache ();
 	delete dirty_region;
 }
@@ -617,6 +620,19 @@ UIElement::ShiftPosition (Point p)
 {
 	bounds.x = p.x;
 	bounds.y = p.y;
+}
+
+void
+UIElement::ComputeComposite ()
+{
+	if (RenderToIntermediate ()) {
+		if (!composite)
+			composite = new ProjectionEffect ();
+	}
+	else if (composite) {
+		composite->unref ();
+		composite = NULL;
+	}
 }
 
 void
@@ -1552,7 +1568,6 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_get_matrix (cr, &ctm);
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Effect *effect = Effect::GetProjectionEffect ();
 			Rect   r = GetSubtreeExtents ().GrowBy (effect_padding);
 			double m[16];
 
@@ -1566,10 +1581,10 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 			r.Transform (m).RoundOut ().Draw (cr);
 			cairo_clip (cr);
 
-			if (!effect->Render (cr, src,
-					     m,
-					     r.x, r.y,
-					     r.width, r.height))
+			if (!composite->Render (cr, src,
+						m,
+						r.x, r.y,
+						r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
 		}
 

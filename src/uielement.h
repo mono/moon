@@ -217,6 +217,14 @@ public:
 	virtual void ShiftPosition (Point p);
 
 	//
+	// ComputeComposite:
+	//
+	//   This method updates the intermediate buffer composite
+	//   effect.
+	//
+	void ComputeComposite ();
+
+	//
 	// UpdateBounds:
 	//   Recomputes the bounds of this element, and if they're
 	//   different chains up to its parent telling it to update
@@ -677,6 +685,7 @@ protected:
 	Thickness effect_padding;
 
 	cairo_surface_t *bitmap_cache;
+	Effect *composite;
 
 private:
 	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);

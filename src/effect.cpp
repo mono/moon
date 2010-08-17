@@ -30,8 +30,6 @@ cairo_user_data_key_t Effect::surfaceKey;
 
 int Effect::filtertable0[256];
 
-Effect *Effect::projection;
-
 #ifdef USE_GALLIUM
 #undef CLAMP
 
@@ -1142,15 +1140,6 @@ Effect::Shutdown ()
 	st_context_reference (&st_context, NULL);
 #endif
 
-}
-
-Effect *
-Effect::GetProjectionEffect ()
-{
-	if (!projection)
-		projection = new ProjectionEffect ();
-
-	return projection;
 }
 
 Effect::Effect ()

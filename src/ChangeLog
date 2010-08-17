@@ -1,3 +1,14 @@
+2010-08-17  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Remove static GetProjectionEffect method.
+
+	* uielement.h:
+	* uielement.cpp: Add ComputeComposite method.
+
+	* dirty.h:
+	* dirty.cpp: Add DirtyComposite flag.
+
 2010-08-15  David Reveman  <davidr@novell.com>
 
 	* effect.h:
