@@ -2699,9 +2699,6 @@ DependencyObject::Dispose ()
 		SetParent (NULL, NULL);
 	}
 
-	SetMentor (NULL);
-	SetTemplateOwner (NULL);
-	
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);
 		g_slist_free (listener_list);
