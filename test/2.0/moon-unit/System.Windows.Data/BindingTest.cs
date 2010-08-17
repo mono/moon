@@ -293,7 +293,6 @@ namespace MoonTest.System.Windows.Data
 			}
 		}
 
-
 		[TestMethod]
 		public void AttachedProperty_Invalid ()
 		{
@@ -2330,9 +2329,9 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 </Canvas>");
 
 			Assert.IsInstanceOfType (c.DataContext, typeof (string), "#1");
-			Assert.AreEqual ("string", c.DataContext, "#1");
+			Assert.AreEqual ("string", c.DataContext, "#2");
 		}
-			
+
 		[TestMethod]
 		public void XamlDataContextWithBindingElement()
 		{
