@@ -1102,6 +1102,9 @@ Surface::EmitError (int number, int code, const char *message)
 void
 Surface::Realloc ()
 {
+	if (layers == NULL)
+		return;
+
 	int layers_count = layers->GetCount ();
 	for (int i = 0; i < layers_count; i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
