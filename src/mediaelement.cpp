@@ -1600,7 +1600,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 			if (!(location = GetDeployment ()->GetXapLocation ()))
 				location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
 			
-			if (uri->GetScheme () && (!strcmp (uri->GetScheme (), "mms") || !strcmp (uri->GetScheme (), "rtsp") || !strcmp (uri->GetScheme (), "rtsps")))
+			if (uri->GetScheme () && (uri->IsScheme ("mms") || uri->IsScheme ("rtsp") || uri->IsScheme ("rtsps")))
 				policy = StreamingPolicy;
 			
 			if (uri->IsInvalidPath ()) {
