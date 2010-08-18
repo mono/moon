@@ -3919,6 +3919,9 @@ TransformEffect::TransformEffect ()
 {
 	SetObjectType (Type::TRANSFORMEFFECT);
 	fs = NULL;
+	opacity = 1.0;
+	constant_buffer = NULL;
+	type = PERSPECTIVE;
 }
 
 TransformEffect::~TransformEffect ()
@@ -3932,6 +3935,8 @@ TransformEffect::Clear ()
 
 #ifdef USE_GALLIUM
 	struct st_context *ctx = st_context;
+
+	pipe_resource_reference (&constant_buffer, NULL);
 
 	if (fs) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
@@ -3957,7 +3962,7 @@ TransformEffect::Render (cairo_t         *cr,
 			cairo_save (cr);
 			cairo_translate (cr, x0, y0);
 			cairo_set_source_surface (cr, src, 0, 0);
-			cairo_paint (cr);
+			cairo_paint_with_alpha (cr, opacity);
 			cairo_restore (cr);
 
 			return 1;
@@ -3965,6 +3970,59 @@ TransformEffect::Render (cairo_t         *cr,
 	}
 
 	return Effect::Render (cr, src, matrix, x, y, width, height);
+}
+
+void
+TransformEffect::SetType (int value)
+{
+	if (type != value)
+		need_update = true;
+
+	type = value;
+}
+
+void
+TransformEffect::SetOpacity (double value)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context    *ctx = st_context;
+	float                *v;
+	struct pipe_transfer *transfer = NULL;
+#endif
+
+	if (IS_TRANSLUCENT (opacity) != IS_TRANSLUCENT (value))
+		need_update = true;
+
+	opacity = value;
+
+#ifdef USE_GALLIUM
+	if (!IS_TRANSLUCENT (opacity))
+		return;
+
+	if (!constant_buffer) {
+		constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
+					    4 * sizeof (float));
+		if (!constant_buffer)
+			return;
+	}
+
+	v = (float *) pipe_buffer_map (ctx->pipe,
+				       constant_buffer,
+				       PIPE_TRANSFER_WRITE,
+				       &transfer);
+	if (v) {
+		v[0] = opacity;
+		v[1] = opacity;
+		v[2] = opacity;
+		v[3] = opacity;
+
+		pipe_buffer_unmap (ctx->pipe, constant_buffer, transfer);
+	}
+#endif
+
 }
 
 bool
@@ -4018,7 +4076,15 @@ TransformEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, constant_buffer);
+
 	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, NULL);
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
@@ -4031,6 +4097,19 @@ TransformEffect::Composite (pipe_surface_t  *dst,
 #endif
 
 }
+
+#ifdef USE_GALLIUM
+static int
+tgsi_interpolate_type (int type)
+{
+	switch (type) {
+		case TransformEffect::PERSPECTIVE:
+			return TGSI_INTERPOLATE_PERSPECTIVE;
+		default:
+			return TGSI_INTERPOLATE_LINEAR;
+	}
+}
+#endif
 
 void
 TransformEffect::UpdateShader ()
@@ -4052,13 +4131,26 @@ TransformEffect::UpdateShader ()
 
 	tex = ureg_DECL_fs_input (ureg,
 				  TGSI_SEMANTIC_GENERIC, 0,
-				  TGSI_INTERPOLATE_PERSPECTIVE);
+				  tgsi_interpolate_type (type));
 
 	out = ureg_DECL_output (ureg,
 				TGSI_SEMANTIC_COLOR,
 				0);
 
-	ureg_TEX (ureg, out, TGSI_TEXTURE_2D, tex, sampler);
+	if (IS_TRANSLUCENT (opacity)) {
+		struct ureg_src alpha;
+		struct ureg_dst tmp;
+
+		tmp   = ureg_DECL_temporary (ureg);
+		alpha = ureg_DECL_constant (ureg, 0);	
+
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+		ureg_MUL (ureg, out, ureg_src (tmp), alpha);
+	}
+	else {
+		ureg_TEX (ureg, out, TGSI_TEXTURE_2D, tex, sampler);
+	}
+
 	ureg_END (ureg);
 
 #if LOGGING

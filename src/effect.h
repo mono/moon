@@ -488,6 +488,11 @@ protected:
 /* @Namespace=None,ManagedDependencyProperties=None */
 class TransformEffect : public Effect {
 public:
+	enum TransformType {
+		AFFINE,
+		PERSPECTIVE
+	};
+
 	TransformEffect ();
 
 	//
@@ -500,6 +505,9 @@ public:
 		     double          y,
 		     double          width,
 		     double          height);
+
+	void SetType (int value);
+	void SetOpacity (double value);
 
 protected:
 	virtual ~TransformEffect ();
@@ -520,6 +528,11 @@ protected:
 	void UpdateShader ();
 
 	void *fs;
+
+private:
+	int             type;
+	double          opacity;
+	pipe_resource_t *constant_buffer;
 };
 
 };

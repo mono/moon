@@ -1,5 +1,9 @@
 2010-08-18  David Reveman  <davidr@novell.com>
 
+	* effect.h:
+	* effect.cpp: Add type and opacity properties to TransformEffect
+	class.
+
 	* uielement.cpp:
 	* effect.h:
 	* effect.cpp: Rename ProjectionEffect to TransformEffect.
