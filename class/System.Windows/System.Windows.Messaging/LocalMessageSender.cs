@@ -35,6 +35,7 @@ namespace System.Windows.Messaging {
 
 	public sealed class LocalMessageSender : INativeEventObjectWrapper
 	{
+		static char[] InvalidChars = { ',', ':' };
 		public const string Global = "*";
 
 		internal LocalMessageSender (IntPtr raw, bool dropref)
@@ -45,14 +46,30 @@ namespace System.Windows.Messaging {
 		}
 
 		public LocalMessageSender (string receiverName)
-			: this (receiverName, Global)
+			: this (receiverName, null, false)
 		{
 		}
 
-		public LocalMessageSender (string receiverName,
-					   string receiverDomain)
-			: this (NativeMethods.local_message_sender_new (receiverName, receiverDomain), true)
+		public LocalMessageSender (string receiverName, string receiverDomain)
+			: this (receiverName, receiverDomain, true)
 		{
+		}
+
+		private LocalMessageSender (string receiverName, string receiverDomain, bool checkDomain)
+			: this (NativeMethods.local_message_sender_new (receiverName, receiverDomain ?? "*"), true)
+		{
+			if (receiverName == null)
+				throw new ArgumentNullException ("receiverName");
+			if (receiverName.Length > 256)
+				throw new ArgumentException ("receiverName");
+
+			if (checkDomain) {
+				if (receiverDomain == null)
+					throw new ArgumentNullException ("receiverDomain");
+				if ((receiverDomain.Length > 256) || (receiverDomain.IndexOfAny (InvalidChars) != -1))
+					throw new ArgumentException ("receiverDomain");
+			}
+
 			this.receiverName = receiverName;
 			this.receiverDomain = receiverDomain;
 		}

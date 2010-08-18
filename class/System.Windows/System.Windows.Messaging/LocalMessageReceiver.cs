@@ -2,7 +2,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2009 Novell, Inc.
+// Copyright 2009-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -29,33 +29,60 @@ using System;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace System.Windows.Messaging {
 
 	public sealed partial class LocalMessageReceiver : INativeEventObjectWrapper, IDisposable
 	{
-		public static readonly IEnumerable<string> AnyDomain = new List<string> { "*" };
+		static char[] InvalidChars = { ',', ':' };
+		static List<string> any_domain = new List<string> { "*" };
+		public static readonly IEnumerable<string> AnyDomain = new ReadOnlyCollection<string> (any_domain);
 
 		public LocalMessageReceiver (string receiverName)
-			: this (receiverName,
-				ReceiverNameScope.Domain,
-				AnyDomain)
+			: this (receiverName, ReceiverNameScope.Domain, null, false)
 		{
 		}
 
 		public LocalMessageReceiver (string receiverName,
 					     ReceiverNameScope nameScope,
 					     IEnumerable<string> allowedSenderDomains)
+			: this (receiverName, nameScope, allowedSenderDomains, true)
+		{
+		}
+
+		private LocalMessageReceiver (string receiverName,
+					     ReceiverNameScope nameScope,
+					     IEnumerable<string> allowedSenderDomains,
+					     bool checkDomains)
 			: this (NativeMethods.local_message_receiver_new (receiverName,
 									  (int)nameScope), true)
 		{
-			this.allowedSenderDomains = allowedSenderDomains;
+			if (receiverName == null)
+				throw new ArgumentNullException ("receiverName");
+			if (receiverName.Length > 256)
+				throw new ArgumentException ("receiverName");
 
-			List<string> domains = new List<string> ();
-			foreach (string s in allowedSenderDomains)
-				domains.Add (s);
+			string[] sender_domains;
 
-			string[] sender_domains = domains.ToArray();
+			if (checkDomains) {
+				if (allowedSenderDomains == null)
+					throw new ArgumentNullException ("allowedSenderDomains");
+
+				List<string> domains = new List<string> ();
+				foreach (string s in allowedSenderDomains) {
+					if (s == null)
+						throw new ArgumentNullException ("allowedSenderDomains");
+					if ((s.Length > 256) || (s.IndexOfAny (InvalidChars) != -1))
+						throw new ArgumentException ("allowedSenderDomains");
+					domains.Add (s);
+				}
+				sender_domains = domains.ToArray ();
+				this.allowedSenderDomains = new ReadOnlyCollection<string> (domains);
+			} else {
+				sender_domains = new string [] { "*" };
+				// AllowedSenderDomains needs to be 'null'
+			}
 
 			NativeMethods.local_message_receiver_set_allowed_sender_domains (NativeHandle, sender_domains, sender_domains.Length);
 		}
@@ -82,11 +109,13 @@ namespace System.Windows.Messaging {
 
 		public void Listen()
 		{
+			listening = true;
 			NativeMethods.local_message_receiver_listen (NativeHandle);
 		}
 
 		public void Dispose ()
 		{
+			disposed = true;
 			NativeMethods.local_message_receiver_dispose (NativeHandle);
 		}
 
@@ -94,10 +123,16 @@ namespace System.Windows.Messaging {
 			get { return allowedSenderDomains; }
 		}
 
-		[MonoTODO ("is this IE specific?")]
+		[MonoTODO ("IE7 Protected Mode only (not applicable to Moonlight)")]
 		public bool DisableSenderTrustCheck {
 			get { return disableSenderTrustCheck; }
-			set { disableSenderTrustCheck = value; }
+			set {
+				if (disposed)
+					throw new ObjectDisposedException (String.Empty);
+				if (listening)
+					throw new InvalidOperationException ();
+				disableSenderTrustCheck = value;
+			}
 		}
 
 		public ReceiverNameScope NameScope {
@@ -117,6 +152,8 @@ namespace System.Windows.Messaging {
 		bool disableSenderTrustCheck;
 
 		bool free_mapping;
+		bool listening;
+		bool disposed;
 
 		IntPtr _native;
 
