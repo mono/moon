@@ -919,7 +919,9 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 
 	ctx->Push (new ContextNode (cr));
 
-	int layer_count = layers->GetCount ();
+	int layer_count = 0;
+	if (layers)
+		layer_count = layers->GetCount ();
 
 	if (moonlight_flags & RUNTIME_INIT_OCCLUSION_CULLING) {
 		Region *copy = new Region (region);
