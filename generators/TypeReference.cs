@@ -91,10 +91,8 @@ class TypeReference {
 				case "Point":
 				case "Rect":
 					return true;
-				break;
 				default:
 					return false;
-				break;
 			}
 		}
 	}

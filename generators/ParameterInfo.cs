@@ -18,7 +18,6 @@ class ParameterInfo : MemberInfo {
 	public TypeReference ParameterType;
 
 	public bool DisableWriteOnce;
-	public string ManagedWrapperCode;// Used by GeneratePInvoke
 
 	public ParameterInfo (MemberInfo parent)
 	{
@@ -54,16 +53,13 @@ class ParameterInfo : MemberInfo {
 			if (ParameterType.IsOut)
 				text.Append ("out ");
 		}
-		if (type == SignatureType.Managed && ManagedWrapperCode != null) {
-			text.Append (ManagedWrapperCode);
-		} else {
-			if (type == SignatureType.NativeC && GlobalInfo.IsEnum (ParameterType.Value)) {
-				text.Append ("(");
-				text.Append (ParameterType.Value);
-				text.Append (") ");
-			}
-			text.Append (Name);
+
+		if (type == SignatureType.NativeC && GlobalInfo.IsEnum (ParameterType.Value)) {
+			text.Append ("(");
+			text.Append (ParameterType.Value);
+			text.Append (") ");
 		}
+		text.Append (Name);
 	}
 
 	public void WriteFormatted (StringBuilder text)

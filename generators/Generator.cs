@@ -3079,7 +3079,7 @@ class Generator {
 			text.Append (managed_name);
 
 			foreach (ParameterInfo parameter in cmethod.Parameters)
-				parameter.DisableWriteOnce = parameter.ManagedWrapperCode != null;
+				parameter.DisableWriteOnce = false;
 
 			if (error_parameter != null)
 				error_parameter.DisableWriteOnce = true;
