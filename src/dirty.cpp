@@ -296,13 +296,13 @@ Surface::ProcessDownDirtyElements ()
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
 
-			el->dirty_flags |= DirtyComposite;
-
 			el->ComputeTransform ();
 
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->UpdateBounds ();
-			
+
+			AddDirtyElement (el, DirtyComposite);	
+
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
 

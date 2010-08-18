@@ -84,7 +84,15 @@ public:
 		DIRTY_SIZE_HINT = 0x2000,
 
 		// this flag is preset when projection effect should be used
-		RENDER_PROJECTION = 0x4000
+		RENDER_PROJECTION = 0x4000,
+
+		// these are flags which correspond to the intermediate buffer
+		// stages necessary to render the element
+		COMPOSITE_TRANSFORM = 0x8000,
+		COMPOSITE_CLIP = 0x10000,
+		COMPOSITE_EFFECT = 0x20000,
+		COMPOSITE_OPACITY = 0x40000,
+		COMPOSITE_OPACITY_MASK = 0x80000
 	};
 	
 	virtual TimeManager *GetTimeManager ();
@@ -217,10 +225,16 @@ public:
 	virtual void ShiftPosition (Point p);
 
 	//
+	// UpdateComposite:
+	//   Recomputes the composite flags of this element.
+	//
+	void UpdateComposite ();
+
+	//
 	// ComputeComposite:
 	//
-	//   This method updates the intermediate buffer composite
-	//   effect.
+	//   This method updates the composite effect and flags used
+	//   for rendering to intermediate buffers.
 	//
 	void ComputeComposite ();
 

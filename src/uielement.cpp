@@ -623,11 +623,40 @@ UIElement::ShiftPosition (Point p)
 }
 
 void
+UIElement::UpdateComposite ()
+{
+	if (IsAttached ()) {
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyComposite);
+	}
+}
+
+void
 UIElement::ComputeComposite ()
 {
+	double local_opacity = GetOpacity ();
+
+	flags &= ~(COMPOSITE_TRANSFORM |
+		   COMPOSITE_CLIP |
+		   COMPOSITE_EFFECT |
+		   COMPOSITE_OPACITY |
+		   COMPOSITE_OPACITY_MASK);
+
+	if (opacityMask)
+		flags |= COMPOSITE_OPACITY_MASK;
+		
+	if (IS_TRANSLUCENT (local_opacity))
+		flags |= COMPOSITE_OPACITY;
+
 	if (RenderToIntermediate ()) {
+		Effect *effect = GetRenderEffect ();
+
+		if (effect)
+			flags |= COMPOSITE_EFFECT;
+
 		if (!composite)
 			composite = new ProjectionEffect ();
+
+		flags |= COMPOSITE_TRANSFORM;
 	}
 	else if (composite) {
 		composite->unref ();
@@ -1004,6 +1033,7 @@ UIElement::InvalidateClip ()
 		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
 
 	UpdateBounds (true);
+	UpdateComposite ();
 }
 
 void
@@ -1011,6 +1041,8 @@ UIElement::InvalidateMask ()
 {
 	if (GetVisualParent ())
 		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
+
+	UpdateComposite ();
 }
 
 void
@@ -1019,6 +1051,8 @@ UIElement::InvalidateVisibility ()
 	UpdateTotalRenderVisibility ();
 	if (GetVisualParent ())
 		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
+
+	UpdateComposite ();
 }
 
 void
@@ -1037,6 +1071,8 @@ UIElement::InvalidateEffect ()
 
 	if (old_effect_padding != effect_padding)
 		UpdateBounds ();
+
+	UpdateComposite ();
 }
 
 void
@@ -1060,6 +1096,8 @@ UIElement::InvalidateCacheMode ()
 
 	InvalidateBitmapCache ();
 	InvalidateSubtreePaint ();
+
+	UpdateComposite ();
 }
 
 /*
@@ -1377,10 +1415,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 void
 UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 {
-	double local_opacity = GetOpacity ();
-	Effect *effect = GetRenderEffect ();
-
-	if (flags & UIElement::RENDER_PROJECTION) {
+	if (flags & COMPOSITE_TRANSFORM) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
@@ -1401,7 +1436,7 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		RenderClipPath (cr);
 	}
 
-	if (effect) {
+	if (flags & COMPOSITE_EFFECT) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
@@ -1409,7 +1444,7 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		ctx->Push (new ContextNode (r, &scale_xform));
 	}
 
-	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
+	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
 		cairo_t        *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 		Rect           r = GetSubtreeExtents ().Transform (cr);
 		cairo_matrix_t matrix;
@@ -1438,10 +1473,10 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 
 		cairo_save (cr);
 
-		if (IS_TRANSLUCENT (local_opacity))
+		if (flags & COMPOSITE_OPACITY)
 			ctx->Push (new ContextNode (r, &matrix));
 
-		if (opacityMask != NULL)
+		if (flags & COMPOSITE_OPACITY_MASK)
 			ctx->Push (new ContextNode (r, &matrix));
 	}
 
@@ -1461,9 +1496,6 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 			child->DoRender (ctx, region);
 	}
 
-	double local_opacity = GetOpacity ();
-	Effect *effect = GetRenderEffect ();
-
 	if (GetRenderCacheMode () && bitmap_cache == NULL) {
 		cairo_surface_t *bitmap;
 
@@ -1472,7 +1504,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 			bitmap_cache = cairo_surface_reference (bitmap);
 	}
 
-	if (opacityMask != NULL) {
+	if (flags & COMPOSITE_OPACITY_MASK) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
@@ -1505,13 +1537,14 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 
-	if (IS_TRANSLUCENT (local_opacity)) {
+	if (flags & COMPOSITE_OPACITY) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect r = node->GetBitmapExtents ();
+			double local_opacity = GetOpacity ();
+			Rect   r = node->GetBitmapExtents ();
 
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
@@ -1524,19 +1557,20 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 
-	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
+	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		cairo_restore (cr);
 	}
 
-	if (effect) {
+	if (flags & COMPOSITE_EFFECT) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect r = node->GetBitmapExtents ();
+			Effect *effect = GetRenderEffect ();
+			Rect   r = node->GetBitmapExtents ();
 
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
@@ -1559,7 +1593,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_restore (cr);
 	}
 
-	if (flags & UIElement::RENDER_PROJECTION) {
+	if (flags & COMPOSITE_TRANSFORM) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
