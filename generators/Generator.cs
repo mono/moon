@@ -1707,6 +1707,9 @@ class Generator {
 					tokenizer.GetIdentifier ();
 					tokenizer.Accept (Token2Type.Punctuation, "{");
 					continue;
+				case "mutable":
+					tokenizer.Advance (true);
+					continue;
 				}
 			}
 
@@ -1865,6 +1868,14 @@ class Generator {
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 					method.IsAbstract = true;
 				} else {
+					if (tokenizer.Accept (Token2Type.Identifier,  "__attribute__")) {
+						tokenizer.AcceptOrThrow (Token2Type.Punctuation, "(");
+						tokenizer.AcceptOrThrow (Token2Type.Punctuation, "(");
+						if (tokenizer.CurrentToken.type == Token2Type.Identifier)
+							tokenizer.Advance (true);
+						tokenizer.AcceptOrThrow (Token2Type.Punctuation, ")");
+						tokenizer.AcceptOrThrow (Token2Type.Punctuation, ")");
+					}
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 				}
 			} else {
