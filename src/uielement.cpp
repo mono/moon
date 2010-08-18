@@ -654,7 +654,7 @@ UIElement::ComputeComposite ()
 			flags |= COMPOSITE_EFFECT;
 
 		if (!composite)
-			composite = new ProjectionEffect ();
+			composite = new TransformEffect ();
 
 		flags |= COMPOSITE_TRANSFORM;
 	}

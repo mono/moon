@@ -1,5 +1,9 @@
 2010-08-18  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp:
+	* effect.h:
+	* effect.cpp: Rename ProjectionEffect to TransformEffect.
+
 	* uielement.cpp: Implement COMPOSITE_CLIP.
 
 	* dirty.cpp (ProcessDownDirtyElements): Use AddDirtyElement.

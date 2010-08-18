@@ -486,9 +486,9 @@ protected:
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-class ProjectionEffect : public Effect {
+class TransformEffect : public Effect {
 public:
-	ProjectionEffect ();
+	TransformEffect ();
 
 	//
 	// Render
@@ -502,7 +502,7 @@ public:
 		     double          height);
 
 protected:
-	virtual ~ProjectionEffect ();
+	virtual ~TransformEffect ();
 
 	void Clear ();
 

@@ -3915,19 +3915,19 @@ ShaderEffect::ShaderError (const char *format, ...)
 	}
 }
 
-ProjectionEffect::ProjectionEffect ()
+TransformEffect::TransformEffect ()
 {
-	SetObjectType (Type::PROJECTIONEFFECT);
+	SetObjectType (Type::TRANSFORMEFFECT);
 	fs = NULL;
 }
 
-ProjectionEffect::~ProjectionEffect ()
+TransformEffect::~TransformEffect ()
 {
 	Clear ();
 }
 
 void
-ProjectionEffect::Clear ()
+TransformEffect::Clear ()
 {
 
 #ifdef USE_GALLIUM
@@ -3942,13 +3942,13 @@ ProjectionEffect::Clear ()
 }
 
 bool
-ProjectionEffect::Render (cairo_t         *cr,
-			  cairo_surface_t *src,
-			  const double    *matrix,
-			  double          x,
-			  double          y,
-			  double          width,
-			  double          height)
+TransformEffect::Render (cairo_t         *cr,
+			 cairo_surface_t *src,
+			 const double    *matrix,
+			 double          x,
+			 double          y,
+			 double          width,
+			 double          height)
 {
 	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
 		int x0, y0;
@@ -3968,16 +3968,16 @@ ProjectionEffect::Render (cairo_t         *cr,
 }
 
 bool
-ProjectionEffect::Composite (pipe_surface_t  *dst,
-			     pipe_resource_t *src,
-			     const double    *matrix,
-			     double          dstX,
-			     double          dstY,
-			     const Rect      *clip,
-			     double          x,
-			     double          y,
-			     double          width,
-			     double          height)
+TransformEffect::Composite (pipe_surface_t  *dst,
+			    pipe_resource_t *src,
+			    const double    *matrix,
+			    double          dstX,
+			    double          dstY,
+			    const Rect      *clip,
+			    double          x,
+			    double          y,
+			    double          width,
+			    double          height)
 
 {
 
@@ -4033,7 +4033,7 @@ ProjectionEffect::Composite (pipe_surface_t  *dst,
 }
 
 void
-ProjectionEffect::UpdateShader ()
+TransformEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
@@ -4063,7 +4063,7 @@ ProjectionEffect::UpdateShader ()
 
 #if LOGGING
 	if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
-		printf ("ProjectionEffect::UpdateShader: TGSI shader:\n");
+		printf ("TransformEffect::UpdateShader: TGSI shader:\n");
 		tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
 	}
 #endif
