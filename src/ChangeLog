@@ -1,5 +1,7 @@
 2010-08-18  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp: Implement COMPOSITE_CLIP.
+
 	* dirty.cpp (ProcessDownDirtyElements): Use AddDirtyElement.
 
 	* uielement.h:

@@ -1429,7 +1429,18 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_transform (cr, &render_xform);
 	}
 
-	if (GetClip ()) {
+	if (flags & COMPOSITE_CLIP) {
+		cairo_t        *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		Rect           r = GetSubtreeExtents ().Transform (cr);
+		cairo_matrix_t matrix;
+
+		cairo_get_matrix (cr, &matrix);
+
+		cairo_save (cr);
+		RenderClipPath (cr);
+		ctx->Push (new ContextNode (r, &matrix));
+	}
+	else if (GetClip ()) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		cairo_save (cr);
@@ -1587,7 +1598,26 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 
-	if (GetClip ()) {
+	if (flags & COMPOSITE_CLIP) {
+		ContextNode     *node = (ContextNode *) ctx->Pop ();
+		cairo_surface_t *src = node->GetBitmap ();
+		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			Rect r = node->GetBitmapExtents ();
+
+			cairo_identity_matrix (cr);
+			r.RoundOut ().Draw (cr);
+			cairo_clip (cr);
+
+			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_paint (cr);
+		}
+
+		cairo_restore (cr);
+		delete node;
+	}
+	else if (GetClip ()) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		cairo_restore (cr);
