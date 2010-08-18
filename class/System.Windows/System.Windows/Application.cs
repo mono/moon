@@ -414,7 +414,12 @@ namespace System.Windows {
 		{
 			try {
 				string canon = Helper.CanonicalizeResourceName (resource);
-				string res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
+				string res_file;
+
+				if (string.IsNullOrEmpty (Deployment.Current.XapDir))
+					return null;
+
+				res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
 				// ensure the file path is rooted against the XAP directory and that it exists
 				if (!res_file.StartsWith (Deployment.Current.XapDir) || !File.Exists (res_file))
 					return null;
