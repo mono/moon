@@ -732,11 +732,12 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 	VerticalAlignment vert = GetVerticalAlignment ();
        
 	// feel the joy of changing the meaning of right and left
-	if (GetFlowDirection () == FlowDirectionRightToLeft)  {
-		if (horiz == HorizontalAlignmentLeft)
+	if (GetFlowDirection () == FlowDirectionRightToLeft) {
+		if (horiz == HorizontalAlignmentLeft) {
 			horiz = HorizontalAlignmentRight;
-                else if (horiz == HorizontalAlignmentRight)
+		} else if (horiz == HorizontalAlignmentRight) {
 			horiz = HorizontalAlignmentLeft;
+		}
 	}
 
 	if (horiz == HorizontalAlignmentStretch)
