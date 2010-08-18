@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 517 methods needs to be decorated.
+# 518 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1035,6 +1035,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::deployment_set_current_application(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::deployment_set_ensure_managed_peer_callback(System.IntPtr,Mono.EnsureManagedPeerCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::deployment_set_initialization(System.IntPtr,System.Boolean)
