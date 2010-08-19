@@ -154,6 +154,7 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("MetadataOverrides", null);
 				known_annotations.Add ("HiddenDefaultValue", null);
 				known_annotations.Add ("Browsable", null);
+				known_annotations.Add ("IsConstPropertyType", null);
 
 				dependency_properties = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {

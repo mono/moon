@@ -1177,6 +1177,9 @@ class Generator {
 				break;
 			}
 
+			if (field.Annotations.ContainsKey ("IsConstPropertyType"))
+				prop_type_str = "const " + prop_type_str;
+
 			string GetterName = string.Format ("{0}::Get{1}", field.ParentType.Name, field.GetDependencyPropertyName());
 			string SetterName = string.Format ("{0}::Set{1}", field.ParentType.Name, field.GetDependencyPropertyName());
 
