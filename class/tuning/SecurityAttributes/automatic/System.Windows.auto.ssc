@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 627 methods
+# 628 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::AddHandler(System.Int32,System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: Mono.UnmanagedEventHandler Mono.EventHandlerList::RemoveHandler(System.Int32,System.Delegate)
@@ -297,6 +297,7 @@
 +SSC-M: System.Void System.Windows.Controls.ContentPresenter::ClearRoot()
 +SSC-M: System.Void System.Windows.Controls.Control::.cctor()
 +SSC-M: System.Void System.Windows.Controls.Control::Initialize()
++SSC-M: System.Void System.Windows.Controls.Control::ApplyDefaultStyle()
 +SSC-M: System.Boolean System.Windows.Controls.Control::Focus()
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.Control::GetTemplateChild(System.String)
 +SSC-M: System.Void System.Windows.Controls.Control::EmitCurrentContext(System.Int32,System.Windows.RoutedEventArgs)
