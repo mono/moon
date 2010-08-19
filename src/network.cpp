@@ -219,6 +219,25 @@ HttpRequest::SendAsync ()
 			return;
 		}
 
+		/* Get the size of the file */
+		gint64 file_size;
+		file_size = lseek (tmpfile_fd, 0, SEEK_END);
+		if (file_size < 0) {
+			char *msg = g_strdup_printf ("Failed to get size of file '%s': %s\n", local_file, strerror (errno));
+			Failed (msg);
+			g_free (msg);
+			return;
+		};
+
+		if (lseek (tmpfile_fd, 0, SEEK_SET) != 0) {
+			char *msg = g_strdup_printf ("Failed to seek to beginning of file '%s': %s\n", local_file, strerror (errno));
+			Failed (msg);
+			g_free (msg);
+			return;
+		}
+
+		NotifySize (file_size);
+
 		/* File is here and we can report start request */
 		HttpResponse *response = new HttpResponse (this);
 		response->SetStatus (200, "OK"); /* Not sure if this is expected or not */
