@@ -647,6 +647,14 @@ UIElement::ComputeComposite ()
 	if (GetRenderEffect ())
 		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
+	if (GetClip ()) {
+		// intermediate clip is required when bitmap caching is used
+		if (GetRenderCacheMode ()) {
+			if ((flags & COMPOSITE_MASK) == COMPOSITE_TRANSFORM)
+				flags |= COMPOSITE_CLIP;
+		}
+	}
+
 	if (flags & RENDER_PROJECTION)
 		flags |= COMPOSITE_TRANSFORM;
 
