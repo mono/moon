@@ -116,6 +116,9 @@ LogProvider::LogResult (TestResult result)
 			fclose (result_fd);
 		}
 	}
+
+	if (result != PASS)
+		printf ("\033[31;49m%s: %s: %s\033[39;49m\n", test_name, "LogResult", "Test run marked as failed");
 }
 
 void
