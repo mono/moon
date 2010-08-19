@@ -679,7 +679,7 @@ namespace Mono.Xaml {
 
 			string expression = reader.Value;
 			object o = parser.ParseExpression (ref expression);
-			return o;
+			return property.ConvertValue (property.Type, o);
 		}
 
 		// Markup compatibility attribute
@@ -899,8 +899,10 @@ namespace Mono.Xaml {
 				        // fix a crasher in olympics when trying to play a new video from
 				        // the recommendations list after the curreont video finishes
 					NameScope ns = NameScope.GetNameScope (uc);
-					NameScope.SetNameScope (uc.Content, ns);
-					NameScope.SetNameScope (uc.Resources, ns);
+					if (uc.Content != null)
+						NameScope.SetNameScope (uc.Content, ns);
+					if (uc.Resources != null)
+						NameScope.SetNameScope (uc.Resources, ns);
 				}
 				NameScope.SetNameScope (el_dob, NameScope);
 			}

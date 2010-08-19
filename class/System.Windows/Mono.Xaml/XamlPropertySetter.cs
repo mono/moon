@@ -96,6 +96,9 @@ namespace Mono.Xaml {
 			if (value == null)
 				return null;
 
+			if (value is Binding || value is TemplateBindingExpression)
+				return value;
+
 			Type valueType = value.GetType ();
 			if (type.IsAssignableFrom (valueType))
 				return value;
