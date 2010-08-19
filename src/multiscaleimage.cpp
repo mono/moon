@@ -1013,7 +1013,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						if (!image)
 							continue;
 						
-						LOG_MSI ("rendering subimage %d %d %llu %llu\n", sub_image->id, layer_to_render, i, j);
+						LOG_MSI ("rendering subimage %d %d %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", sub_image->id, layer_to_render, i, j);
 						cairo_save (cr);
 						
 						cairo_scale (cr, layers2, layers2);
@@ -1257,7 +1257,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (!image)
 					continue;
 				
-				LOG_MSI ("rendering %d %llu %llu\n", layer_to_render, i, j);
+				LOG_MSI ("rendering %d %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", layer_to_render, i, j);
 				cairo_save (cr);
 				
 				// scale to image size
