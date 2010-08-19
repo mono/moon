@@ -30,8 +30,6 @@ cairo_user_data_key_t Effect::surfaceKey;
 
 int Effect::filtertable0[256];
 
-Effect *Effect::projection;
-
 #ifdef USE_GALLIUM
 #undef CLAMP
 
@@ -338,7 +336,7 @@ st_context_create (struct st_device *st_dev)
 
 	/* fragment shader */
 	{
-		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D, TGSI_INTERPOLATE_PERSPECTIVE);
+		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D, TGSI_INTERPOLATE_LINEAR);
 		cso_set_fragment_shader_handle (st_ctx->cso, st_ctx->fs);
 	}
 
@@ -1142,15 +1140,6 @@ Effect::Shutdown ()
 	st_context_reference (&st_context, NULL);
 #endif
 
-}
-
-Effect *
-Effect::GetProjectionEffect ()
-{
-	if (!projection)
-		projection = new ProjectionEffect ();
-
-	return projection;
 }
 
 Effect::Effect ()
@@ -3926,23 +3915,45 @@ ShaderEffect::ShaderError (const char *format, ...)
 	}
 }
 
-ProjectionEffect::ProjectionEffect ()
+TransformEffect::TransformEffect ()
 {
-	SetObjectType (Type::PROJECTIONEFFECT);
+	SetObjectType (Type::TRANSFORMEFFECT);
+	fs = NULL;
+	opacity = 1.0;
+	constant_buffer = NULL;
+	type = PERSPECTIVE;
 }
 
-ProjectionEffect::~ProjectionEffect ()
+TransformEffect::~TransformEffect ()
 {
+	Clear ();
+}
+
+void
+TransformEffect::Clear ()
+{
+
+#ifdef USE_GALLIUM
+	struct st_context *ctx = st_context;
+
+	pipe_resource_reference (&constant_buffer, NULL);
+
+	if (fs) {
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+	}
+#endif
+
 }
 
 bool
-ProjectionEffect::Render (cairo_t         *cr,
-			  cairo_surface_t *src,
-			  const double    *matrix,
-			  double          x,
-			  double          y,
-			  double          width,
-			  double          height)
+TransformEffect::Render (cairo_t         *cr,
+			 cairo_surface_t *src,
+			 const double    *matrix,
+			 double          x,
+			 double          y,
+			 double          width,
+			 double          height)
 {
 	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
 		int x0, y0;
@@ -3951,7 +3962,7 @@ ProjectionEffect::Render (cairo_t         *cr,
 			cairo_save (cr);
 			cairo_translate (cr, x0, y0);
 			cairo_set_source_surface (cr, src, 0, 0);
-			cairo_paint (cr);
+			cairo_paint_with_alpha (cr, opacity);
 			cairo_restore (cr);
 
 			return 1;
@@ -3961,17 +3972,70 @@ ProjectionEffect::Render (cairo_t         *cr,
 	return Effect::Render (cr, src, matrix, x, y, width, height);
 }
 
+void
+TransformEffect::SetType (int value)
+{
+	if (type != value)
+		need_update = true;
+
+	type = value;
+}
+
+void
+TransformEffect::SetOpacity (double value)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context    *ctx = st_context;
+	float                *v;
+	struct pipe_transfer *transfer = NULL;
+#endif
+
+	if (IS_TRANSLUCENT (opacity) != IS_TRANSLUCENT (value))
+		need_update = true;
+
+	opacity = value;
+
+#ifdef USE_GALLIUM
+	if (!IS_TRANSLUCENT (opacity))
+		return;
+
+	if (!constant_buffer) {
+		constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
+					    4 * sizeof (float));
+		if (!constant_buffer)
+			return;
+	}
+
+	v = (float *) pipe_buffer_map (ctx->pipe,
+				       constant_buffer,
+				       PIPE_TRANSFER_WRITE,
+				       &transfer);
+	if (v) {
+		v[0] = opacity;
+		v[1] = opacity;
+		v[2] = opacity;
+		v[3] = opacity;
+
+		pipe_buffer_unmap (ctx->pipe, constant_buffer, transfer);
+	}
+#endif
+
+}
+
 bool
-ProjectionEffect::Composite (pipe_surface_t  *dst,
-			     pipe_resource_t *src,
-			     const double    *matrix,
-			     double          dstX,
-			     double          dstY,
-			     const Rect      *clip,
-			     double          x,
-			     double          y,
-			     double          width,
-			     double          height)
+TransformEffect::Composite (pipe_surface_t  *dst,
+			    pipe_resource_t *src,
+			    const double    *matrix,
+			    double          dstX,
+			    double          dstY,
+			    const Rect      *clip,
+			    double          x,
+			    double          y,
+			    double          width,
+			    double          height)
 
 {
 
@@ -4007,7 +4071,22 @@ ProjectionEffect::Composite (pipe_surface_t  *dst,
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
 
+	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
+		pipe_resource_reference (&vertices, NULL);
+		return 0;
+	}
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, constant_buffer);
+
 	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, NULL);
+
+	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
 	st_set_fragment_sampler_texture (ctx, 0, NULL);
 	pipe_resource_reference (&vertices, NULL);
@@ -4019,7 +4098,69 @@ ProjectionEffect::Composite (pipe_surface_t  *dst,
 
 }
 
-void
-ProjectionEffect::UpdateShader ()
+#ifdef USE_GALLIUM
+static int
+tgsi_interpolate_type (int type)
 {
+	switch (type) {
+		case TransformEffect::PERSPECTIVE:
+			return TGSI_INTERPOLATE_PERSPECTIVE;
+		default:
+			return TGSI_INTERPOLATE_LINEAR;
+	}
+}
+#endif
+
+void
+TransformEffect::UpdateShader ()
+{
+
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	struct ureg_program *ureg;
+	struct ureg_src     tex, sampler;
+	struct ureg_dst     out;
+
+	Clear ();
+
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+	if (!ureg)
+		return;
+
+	sampler = ureg_DECL_sampler (ureg, 0);
+
+	tex = ureg_DECL_fs_input (ureg,
+				  TGSI_SEMANTIC_GENERIC, 0,
+				  tgsi_interpolate_type (type));
+
+	out = ureg_DECL_output (ureg,
+				TGSI_SEMANTIC_COLOR,
+				0);
+
+	if (IS_TRANSLUCENT (opacity)) {
+		struct ureg_src alpha;
+		struct ureg_dst tmp;
+
+		tmp   = ureg_DECL_temporary (ureg);
+		alpha = ureg_DECL_constant (ureg, 0);	
+
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+		ureg_MUL (ureg, out, ureg_src (tmp), alpha);
+	}
+	else {
+		ureg_TEX (ureg, out, TGSI_TEXTURE_2D, tex, sampler);
+	}
+
+	ureg_END (ureg);
+
+#if LOGGING
+	if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
+		printf ("TransformEffect::UpdateShader: TGSI shader:\n");
+		tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+	}
+#endif
+
+	fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
+#endif
+
 }

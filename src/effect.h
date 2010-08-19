@@ -107,8 +107,6 @@ public:
 	static void Initialize ();
 	static void Shutdown ();
 
-	static Effect *GetProjectionEffect ();
-
 protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();
@@ -488,9 +486,14 @@ protected:
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-class ProjectionEffect : public Effect {
+class TransformEffect : public Effect {
 public:
-	ProjectionEffect ();
+	enum TransformType {
+		AFFINE,
+		PERSPECTIVE
+	};
+
+	TransformEffect ();
 
 	//
 	// Render
@@ -503,8 +506,13 @@ public:
 		     double          width,
 		     double          height);
 
+	void SetType (int value);
+	void SetOpacity (double value);
+
 protected:
-	virtual ~ProjectionEffect ();
+	virtual ~TransformEffect ();
+
+	void Clear ();
 
 	bool Composite (pipe_surface_t  *dst,
 			pipe_resource_t *src,
@@ -518,6 +526,13 @@ protected:
 			double          height);
 
 	void UpdateShader ();
+
+	void *fs;
+
+private:
+	int             type;
+	double          opacity;
+	pipe_resource_t *constant_buffer;
 };
 
 };

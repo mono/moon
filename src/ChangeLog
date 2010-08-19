@@ -1,3 +1,53 @@
+2010-08-18  David Reveman  <davidr@novell.com>
+
+	* uielement.cpp (ComputeComposite): Fix clipping of bitmap cached
+	elements.
+
+	* uielement.cpp (ComputeTransform): Only add RENDER_PROJECTION
+	flag when perspective transformation is present.
+
+	* uielement.cpp (ComputeComposite): Use the transform stage to
+	apply opacity property and avoid one intermediate buffer stage.
+
+	* uielement.h: Add COMPOSITE_MASK.
+
+	* uielement.cpp (ComputeComposite): Improve code so that
+	optimizations can be added.
+
+	* effect.h:
+	* effect.cpp: Add type and opacity properties to TransformEffect
+	class.
+
+	* uielement.cpp:
+	* effect.h:
+	* effect.cpp: Rename ProjectionEffect to TransformEffect.
+
+	* uielement.cpp: Implement COMPOSITE_CLIP.
+
+	* dirty.cpp (ProcessDownDirtyElements): Use AddDirtyElement.
+
+	* uielement.h:
+	* uielement.cpp: Add COMPOSITE_* flags and use these in Pre/Post-
+	Render functions to determine necessary intermediate buffer
+	stages.
+
+2010-08-17  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Remove static GetProjectionEffect method.
+
+	* uielement.h:
+	* uielement.cpp: Add ComputeComposite method.
+
+	* dirty.h:
+	* dirty.cpp: Add DirtyComposite flag.
+
+2010-08-15  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Move perspective trasform fragment shader into
+	ProjectionEffect class.
+
 2010-08-12  David Reveman  <davidr@novell.com>
 
 	* effect.h: Remove unused user data keys.

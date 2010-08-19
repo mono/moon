@@ -84,7 +84,16 @@ public:
 		DIRTY_SIZE_HINT = 0x2000,
 
 		// this flag is preset when projection effect should be used
-		RENDER_PROJECTION = 0x4000
+		RENDER_PROJECTION = 0x4000,
+
+		// these are flags which correspond to the intermediate buffer
+		// stages necessary to render the element
+		COMPOSITE_TRANSFORM = 0x8000,
+		COMPOSITE_CLIP = 0x10000,
+		COMPOSITE_EFFECT = 0x20000,
+		COMPOSITE_OPACITY = 0x40000,
+		COMPOSITE_OPACITY_MASK = 0x80000,
+		COMPOSITE_MASK = (COMPOSITE_TRANSFORM | COMPOSITE_CLIP | COMPOSITE_EFFECT | COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)
 	};
 	
 	virtual TimeManager *GetTimeManager ();
@@ -215,6 +224,20 @@ public:
 	//   the opportunity to set those bounds' positions as well.
 	//
 	virtual void ShiftPosition (Point p);
+
+	//
+	// UpdateComposite:
+	//   Recomputes the composite flags of this element.
+	//
+	void UpdateComposite ();
+
+	//
+	// ComputeComposite:
+	//
+	//   This method updates the composite effect and flags used
+	//   for rendering to intermediate buffers.
+	//
+	void ComputeComposite ();
 
 	//
 	// UpdateBounds:
@@ -677,6 +700,7 @@ protected:
 	Thickness effect_padding;
 
 	cairo_surface_t *bitmap_cache;
+	Effect *composite;
 
 private:
 	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);
