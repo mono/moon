@@ -45,6 +45,20 @@ using System.Windows.Controls;
 
 namespace Mono.Xaml {
 
+	// With types like structs and strings the underlying object can be changed between the time
+	// we instantiate the object and the time we set properties on it.  This class allows us to
+	// instantiate an unmutable object such as a string, change its underlying object to a new
+	// string when its content data is set, and then perform property sets on the correct string
+	// object later, instead of using the original string.
+	internal class MutableObject {
+		public object Object;
+
+		public MutableObject (object o)
+		{
+			Object = o;
+		}
+	}
+
 	internal abstract class XamlPropertySetter {
 
 		protected XamlPropertySetter (XamlObjectElement element, string name, TypeConverter converter)
@@ -151,12 +165,16 @@ namespace Mono.Xaml {
 	internal class XamlReflectionPropertySetter : XamlPropertySetter {
 
 		private object target;
+		private bool is_mutable;
 		private PropertyInfo prop;
 
 		public XamlReflectionPropertySetter (XamlObjectElement element, object target, PropertyInfo prop) : base (element, prop.Name, Helper.GetConverterFor (prop, prop.PropertyType))
 		{
 			this.target = target;
 			this.prop = prop;
+
+			if (target is MutableObject)
+				is_mutable = true;
 		}
 
 		public override Type Type {
@@ -171,14 +189,27 @@ namespace Mono.Xaml {
 			get { return prop; }
 		}
 
+		public object Target {
+			get {
+				if (is_mutable) {
+					MutableObject obj = (MutableObject) target;
+					return obj.Object;
+				}
+				return target;
+			}
+		}
+
 		public object GetValue ()
 		{
-			return prop.GetValue (target, null);
+			return prop.GetValue (Target, null);
 		}
 
 		public override void SetValue (XamlObjectElement obj, object value)
 		{
-			
+			MutableObject mutable = value as MutableObject;
+			if (mutable != null)
+				value = mutable.Object;
+
 			if (!typeof (Binding).IsAssignableFrom (Type)) {
 				Binding binding = value as Binding;
 				if (binding != null) {
@@ -199,7 +230,7 @@ namespace Mono.Xaml {
 			// a resource dictionary to a resource dictionary, ect
 			// as opposed to adding items to the list or dictionary.
 			if (Type.IsAssignableFrom (value.GetType ())) {
-				prop.SetValue (target, ConvertValue (Type, value), null);
+				prop.SetValue (Target, ConvertValue (Type, value), null);
 				return;
 			}
 
@@ -223,7 +254,7 @@ namespace Mono.Xaml {
 			if (prop == null)
 				throw Parser.ParseException ("Invalid Binding, can not find DependencyProperty {0}.", Name);
 
-			DependencyObject dob = target as DependencyObject;
+			DependencyObject dob = Target as DependencyObject;
 
 			if (dob == null)
 				throw Parser.ParseException ("Bindings can not be used on non DependencyObject types.");
@@ -233,8 +264,8 @@ namespace Mono.Xaml {
 
 		private void SetTemplateBinding (TemplateBindingExpression tb)
 		{
-			DependencyObject dob = target as DependencyObject;
-			FrameworkElement fwe = target as FrameworkElement;
+			DependencyObject dob = Target as DependencyObject;
+			FrameworkElement fwe = Target as FrameworkElement;
 
 			if (dob == null)
 				throw Parser.ParseException ("Invalid TemplateBinding, expressions must be bound to DependendyObjects.");

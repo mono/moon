@@ -153,7 +153,7 @@ namespace Mono.Xaml {
 
 		public object Object {
 			get;
-			set;
+			private set;
 		}
 
 		public string X_Key {
@@ -237,11 +237,11 @@ namespace Mono.Xaml {
 				// attempt to use a property named Content. Will return null if the
 				// property is not found.
 				Console.WriteLine ("using baked in content property.");
-				return XamlReflectionPropertyForName (Object, "Content");
+				return XamlReflectionPropertyForName (Type, "Content");
 			}
 
 			ContentPropertyAttribute cpa = (ContentPropertyAttribute ) atts [0];
-			return XamlReflectionPropertyForName (Object, cpa.Name);
+			return XamlReflectionPropertyForName (Type, cpa.Name);
 		}
 
 		public override XamlPropertySetter LookupProperty (XmlReader reader)
@@ -268,7 +268,7 @@ namespace Mono.Xaml {
 
 		private XamlPropertySetter LookupReflectionProperty (XmlReader reader)
 		{
-			XamlPropertySetter prop = XamlReflectionPropertyForName (Object, reader.LocalName);
+			XamlPropertySetter prop = XamlReflectionPropertyForName (Type, reader.LocalName);
 			if (prop != null)
 				return prop;
 
@@ -279,13 +279,13 @@ namespace Mono.Xaml {
 			return null;
 		}
 
-		private XamlReflectionPropertySetter XamlReflectionPropertyForName (object target, string name)
+		private XamlReflectionPropertySetter XamlReflectionPropertyForName (Type target, string name)
 		{
-			PropertyInfo p = target.GetType ().GetProperty (PropertyName (name), XamlParser.PROPERTY_BINDING_FLAGS);
+			PropertyInfo p = target.GetProperty (PropertyName (name), XamlParser.PROPERTY_BINDING_FLAGS);
 			if (p == null)
 				return null;
 
-			return new XamlReflectionPropertySetter (this, target, p);
+			return new XamlReflectionPropertySetter (this, Object, p);
 		}
 
 		public XamlReflectionEventSetter XamlReflectionEventForName (object target, string name)

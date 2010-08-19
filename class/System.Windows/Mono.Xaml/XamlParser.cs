@@ -535,12 +535,14 @@ namespace Mono.Xaml {
 				if (content == null) {
 
 					if (IsLegalCorlibType (obj.Type)) {
-						obj.Object = CorlibTypeValueFromString (obj.Type, value);
+						MutableObject mutable = (MutableObject) obj.Object;
+						mutable.Object = CorlibTypeValueFromString (obj.Type, value);
 						return;
 					}
 
-					if (IsKnownStructType (obj.Type)) {
-						obj.Object = KnownStructValueFromString (obj, value);
+					if (IsStructType (obj.Type)) {
+						MutableObject mutable = (MutableObject) obj.Object;
+						mutable.Object = KnownStructValueFromString (obj, value);
 						return;
 					}
 
@@ -1112,8 +1114,8 @@ namespace Mono.Xaml {
 			if (o == null && IsLegalCorlibType (type))
 				o = DefaultValueForCorlibType (type);
 
-			if (o == null && IsKnownStructType (type))
-				o = DefaultValueForKnownStructType (type);
+			if (o == null && IsStructType (type))
+				o = DefaultValueForStructType (type);
 
 			// TODO: Why did I need this? 
 			INativeEventObjectWrapper evo = o as INativeEventObjectWrapper;
@@ -1161,6 +1163,9 @@ namespace Mono.Xaml {
 			else if (t == typeof (bool))
 				res = false;
 
+			if (res != null)
+				res = new MutableObject (res);
+
 			return res;
 		}
 
@@ -1206,19 +1211,16 @@ namespace Mono.Xaml {
 			throw ParseException ("Invalid corlib type used.");
 		}
 
-		private static bool IsKnownStructType (Type t)
+		private static bool IsStructType (Type t)
 		{
-			return (t.IsValueType && t.Assembly == typeof (DependencyObject).Assembly);
+			return t.IsValueType;
 		}
 
-		private class FakeValueType { }
-
-		private static object DefaultValueForKnownStructType (Type t)
+		private static object DefaultValueForStructType (Type t)
 		{
-			// Use this instead of new object so we know something has
-			// gone seriously wrong if we ever see a FakeValueType.
+			object o = Activator.CreateInstance (t);
 
-			return new FakeValueType ();
+			return new MutableObject (o);
 		}
 
 		private object KnownStructValueFromString (XamlObjectElement element, string value)
