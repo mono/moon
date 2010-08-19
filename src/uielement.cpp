@@ -633,35 +633,44 @@ UIElement::UpdateComposite ()
 void
 UIElement::ComputeComposite ()
 {
-	double local_opacity = GetOpacity ();
+	TransformEffect *effect = NULL;
 
-	flags &= ~(COMPOSITE_TRANSFORM |
-		   COMPOSITE_CLIP |
-		   COMPOSITE_EFFECT |
-		   COMPOSITE_OPACITY |
-		   COMPOSITE_OPACITY_MASK);
+	flags &= ~COMPOSITE_MASK;
+
+	if (GetRenderCacheMode ())
+		flags |= COMPOSITE_TRANSFORM;
 
 	if (opacityMask)
 		flags |= COMPOSITE_OPACITY_MASK;
-		
-	if (IS_TRANSLUCENT (local_opacity))
+
+	if (IS_TRANSLUCENT (GetOpacity ()))
 		flags |= COMPOSITE_OPACITY;
 
-	if (RenderToIntermediate ()) {
-		Effect *effect = GetRenderEffect ();
+	if (GetRenderEffect ())
+		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
-		if (effect)
-			flags |= COMPOSITE_EFFECT;
-
-		if (!composite)
-			composite = new TransformEffect ();
-
+	if (flags & RENDER_PROJECTION)
 		flags |= COMPOSITE_TRANSFORM;
+
+	if (flags & COMPOSITE_TRANSFORM) {
+		if (composite && composite->Is (Type::TRANSFORMEFFECT)) {
+			composite->ref ();
+			effect = (TransformEffect *) composite;
+		}
+		else {
+			effect = new TransformEffect ();
+		}
+
+		if (flags & RENDER_PROJECTION)
+			effect->SetType (TransformEffect::PERSPECTIVE);
+		else
+			effect->SetType (TransformEffect::AFFINE);
 	}
-	else if (composite) {
+
+	if (composite)
 		composite->unref ();
-		composite = NULL;
-	}
+
+	composite = effect;
 }
 
 void
