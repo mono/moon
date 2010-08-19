@@ -652,6 +652,9 @@ Deployment::InitializeAppDomain ()
 		g_warning ("Plugin AppDomain Creation: could not find System.Windows.dll.");
 	}
 
+	if (result)
+		EnsureManagedPeer ();
+
 	printf ("Moonlight: Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
 
 	return result;

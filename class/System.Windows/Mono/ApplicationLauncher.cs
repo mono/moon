@@ -43,13 +43,21 @@ namespace Mono {
 	///   Used by the plugin as an entry point.
 	/// </summary>	
 	static class ApplicationLauncher {
+		static bool deployment_initialized;
 
 		/// <summary>
 		///   Ensures that a managed peer has been created for a given native dependencyobject.
 		/// </summary>
 		public static void EnsureManagedPeer (IntPtr forDO)
 		{
-			var o = NativeDependencyObjectHelper.Lookup (forDO);
+			INativeEventObjectWrapper o;
+
+			if (!deployment_initialized) {
+				deployment_initialized = true;
+				GC.KeepAlive (Deployment.Current);
+			}
+
+			o = NativeDependencyObjectHelper.Lookup (forDO);
 			if (o == null) {
 				o = NativeDependencyObjectHelper.FromIntPtr (forDO);
 #if DEBUG_REF
