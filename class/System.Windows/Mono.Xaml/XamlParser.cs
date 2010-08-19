@@ -237,7 +237,7 @@ namespace Mono.Xaml {
 			return v;
 		}
 
-		internal object LookupNamedItem (XamlObjectElement target, string name)
+		internal object LookupNamedItem (XamlElement target, string name)
 		{
 			object o;
 			XamlElement lookup = target;
@@ -378,6 +378,11 @@ namespace Mono.Xaml {
 				return;
 			}
 
+			if (IsStaticResourceElement ()) {
+				ParseStaticResourceElement ();
+				return;
+			}
+
 			ParseObjectElement ();
 		}
 
@@ -513,6 +518,11 @@ namespace Mono.Xaml {
 			return CurrentElement is XamlObjectElement;
 		}
 
+		private bool IsStaticResourceElement ()
+		{
+			return reader.LocalName == "StaticResource";
+		}
+
 		private void ParseEndElement ()
 		{
 			OnElementEnd ();
@@ -567,6 +577,21 @@ namespace Mono.Xaml {
 
 		private void ParseSignificantWhitespace ()
 		{
+		}
+
+		private void ParseStaticResourceElement ()
+		{
+			string key = reader.GetAttribute ("ResourceKey");
+			if (key == null)
+				throw ParseException ("No ResourceKey found on StaticResource element.");
+
+			object obj = LookupNamedItem (CurrentElement, key);
+			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, obj.GetType (), obj);
+
+			OnElementBegin (element);
+
+			if (reader.IsEmptyElement)
+				OnElementEnd ();
 		}
 
 		private void ParseElementAttributes (XamlObjectElement element)
@@ -1027,7 +1052,20 @@ namespace Mono.Xaml {
 		private bool IsValidType (Type t)
 		{
 			bool res = (t != null && t.IsPublic);
+
+			if (!res && t != null && !t.IsPublic) {
+				if (typeof (DependencyObject).Assembly == t.Assembly && IsValidInternalType (t))
+					res = true;
+			}
 			return res;
+		}
+
+		private bool IsValidInternalType (Type t)
+		{
+			if (t == typeof (StaticResource))
+				return true;
+
+			return false;
 		}
 
 		public Type LoadType (Assembly assembly, string xmlns, string name)
