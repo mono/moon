@@ -1356,6 +1356,7 @@ namespace Mono.Xaml {
 					do {
 						i++;
 					} while (i < str.Length -1 && Char.IsWhiteSpace (str [i]));
+					ws = true;
 				}
 				if (ws)
 					builder.Append (' ');
