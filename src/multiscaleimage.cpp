@@ -981,7 +981,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
-				bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
+				bool parsed = (layer_to_render > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
 				int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 				int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 				guint64 render_layer2 = pow2 (layer_to_render);
