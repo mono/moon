@@ -311,7 +311,11 @@ namespace Mono.Xaml {
 			if (rd == null)
 				throw Parser.ParseException ("Collection property in non collection type.");
 
-			rd.Add (obj.GetDictionaryKey (), value);
+			string key = obj.GetDictionaryKey ();
+			if (key == null)
+				throw Parser.ParseException ("You must specify an x:Key or x:Name for elements in a ResourceDictionary");
+
+			rd.Add (key, value);
 		}
 	}
 
