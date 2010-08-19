@@ -560,10 +560,8 @@ UIElement::ComputeTransform ()
 			  render_xform.x0, render_xform.y0);
 	Matrix3D::Multiply (local_projection, m, local_projection);
 
-	// affine transformation to perspective transformation
-	// when intermediate rendering is performed
+	// reset vector transformations when rendering to intermediate buffer
 	if (RenderToIntermediate ()) {
-		flags |= UIElement::RENDER_PROJECTION;
 		cairo_matrix_init_identity (&render_xform);
 		cairo_matrix_init_identity (&absolute_xform);
 	}

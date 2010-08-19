@@ -1,5 +1,8 @@
 2010-08-18  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (ComputeTransform): Only add RENDER_PROJECTION
+	flag when perspective transformation is present.
+
 	* uielement.cpp (ComputeComposite): Use the transform stage to
 	apply opacity property and avoid one intermediate buffer stage.
 
