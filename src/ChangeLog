@@ -1,5 +1,8 @@
 2010-08-19  David Reveman  <davidr@novell.com>
 
+	* effect.cpp: Only use integer translation optimization when
+	source dimensions match output size.
+
 	* uielement.h:
 	* uielement.cpp: Replace COMPOSITE_CLIP with COMPOSITE_CACHE.
 

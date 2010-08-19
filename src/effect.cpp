@@ -4006,7 +4006,9 @@ TransformEffect::Render (cairo_t         *cr,
 			 double          width,
 			 double          height)
 {
-	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+	if (cairo_surface_get_type (src)         == CAIRO_SURFACE_TYPE_IMAGE &&
+	    cairo_image_surface_get_width (src)  == width &&
+	    cairo_image_surface_get_height (src) == height) {
 		int x0, y0;
 
 		if (Matrix3D::IsIntegerTranslation (matrix, &x0, &y0)) {
