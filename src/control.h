@@ -52,7 +52,8 @@ public:
 	
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	void ApplyDefaultStyle ();
 	virtual bool DoApplyTemplateWithError (MoonError *error);
 	virtual void SetVisualParent (UIElement *visual_parent);

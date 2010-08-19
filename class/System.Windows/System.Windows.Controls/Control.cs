@@ -234,7 +234,12 @@ namespace System.Windows.Controls {
 		{
 			return base.ApplyTemplate ();
 		}
-		
+
+		internal void ApplyDefaultStyle ()
+		{
+			NativeMethods.control_apply_default_style (native);
+		}
+
 		public bool Focus()
 		{
 			return NativeMethods.uielement_focus (native, true);
