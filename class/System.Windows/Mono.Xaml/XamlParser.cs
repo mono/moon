@@ -135,7 +135,16 @@ namespace Mono.Xaml {
 		{
 			object res = null;
 
-			res = ParseReader (new StringReader (str));
+			try {
+				res = ParseReader (new StringReader (str));
+			} catch (Exception e) {
+				Console.WriteLine ("Exception while parsing string:");
+				Console.WriteLine (e);
+				Console.WriteLine ("string:");
+				Console.WriteLine (str);
+
+				throw e;
+			}
 
 			return res;
 		}
@@ -233,12 +242,19 @@ namespace Mono.Xaml {
 			object o;
 			XamlElement lookup = target;
 
+			
 			while (lookup != null) {
 				XamlObjectElement obj = lookup as XamlObjectElement;
 				if (obj != null) {
 					FrameworkElement fe = obj.Object as FrameworkElement;
 					if (fe != null) {
 						o = fe.Resources [name];
+						if (o != null)
+							return o;
+					}
+					ResourceDictionary rd = obj.Object as ResourceDictionary;
+					if (rd != null) {
+						o = rd [name];
 						if (o != null)
 							return o;
 					}
@@ -382,6 +398,13 @@ namespace Mono.Xaml {
 			if (IsTemplateElement (element)) {
 				ParseTemplateElement (element);
 				return;
+			}
+
+			if (typeof (System.Windows.Controls.Control).IsAssignableFrom (t)) {
+				element.EndElement += delegate (object sender, EventArgs e) {
+					Control c = element.Object as Control;
+					c.ApplyDefaultStyle ();
+				};
 			}
 
 			SetElementTemplateScopes (element);
@@ -792,7 +815,13 @@ namespace Mono.Xaml {
 			ISupportInitialize init = obj.Object as ISupportInitialize;
 			if (init == null)
 				return;
-			init.BeginInit ();
+
+			try {
+				init.BeginInit ();
+			} catch (Exception e) {
+				Console.WriteLine ("Exception in initializer");
+				Console.WriteLine (e);
+			}
 		}
 
 		private void EndInitializeElement (XamlElement element)
@@ -804,12 +833,19 @@ namespace Mono.Xaml {
 			ISupportInitialize init = obj.Object as ISupportInitialize;
 			if (init == null)
 				return;
-			init.EndInit ();
+
+			try {
+				init.EndInit ();
+			} catch (Exception e) {
+				Console.WriteLine ("Exception in initializer.");
+				Console.WriteLine (e);
+			}
 		}
 
 		private void SetElementTemplateScopes (XamlObjectElement element)
 		{
 			// This whole thing is basically copied from xaml.cpp AddCreatedItem
+			object is_template = null;
 
 			DependencyObject el_dob = element.Object as DependencyObject;
 			if (el_dob == null)
@@ -837,34 +873,34 @@ namespace Mono.Xaml {
 					continue;
 				}
 
-				if (dob.ReadLocalValue (Control.IsTemplateItemProperty) == null) {
+				is_template = dob.ReadLocalValue (Control.IsTemplateItemProperty);
+				if (is_template == null || is_template == DependencyProperty.UnsetValue) {
 					instance = instance.Parent;
 					continue;
 				}
 
 				el_dob.SetValue (Control.IsTemplateItemProperty, dob.GetValue (Control.IsTemplateItemProperty));
-				el_dob.TemplateOwner = dob.TemplateOwner;
+				if (dob.TemplateOwner != null)
+					el_dob.TemplateOwner = dob.TemplateOwner;
 
 				break;
 			}
 		
-			if (instance == null) {
+			if (instance == null) {			
 				el_dob.SetValue (Control.IsTemplateItemProperty, Context.IsExpandingTemplate);
 				el_dob.TemplateOwner = Context.TemplateBindingSource;
 			}
 
-			if (el_dob.GetValue (Control.IsTemplateItemProperty) != null) {
+			is_template = el_dob.ReadLocalValue (Control.IsTemplateItemProperty);
+			if (is_template != null && is_template != DependencyProperty.UnsetValue && ((bool) is_template)) {
 				UserControl uc = el_dob as UserControl;
 				if (uc != null) {
 				        // I can't come up with a test to verify this fix. However, it does
 				        // fix a crasher in olympics when trying to play a new video from
 				        // the recommendations list after the curreont video finishes
 					NameScope ns = NameScope.GetNameScope (uc);
-					if (uc.Content != null)
-						NameScope.SetNameScope (uc.Content, ns);
-
-					if (uc.Resources != null)
-						NameScope.SetNameScope (uc.Resources, ns);
+					NameScope.SetNameScope (uc.Content, ns);
+					NameScope.SetNameScope (uc.Resources, ns);
 				}
 				NameScope.SetNameScope (el_dob, NameScope);
 			}
