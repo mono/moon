@@ -2068,15 +2068,9 @@ void
 TextBoxBase::DownloaderComplete (Downloader *downloader)
 {
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
-	char *resource, *filename;
+	char *resource;
 	const char *path;
 	Uri *uri;
-	
-	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
-	if (!(filename = downloader->GetDownloadedFilename (NULL)))
-		return;
-	
-	g_free (filename);
 	
 	uri = downloader->GetUri ();
 	
