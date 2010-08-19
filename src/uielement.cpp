@@ -647,14 +647,6 @@ UIElement::ComputeComposite ()
 	if (GetRenderEffect ())
 		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
-	if (GetClip ()) {
-		// intermediate clip is required when bitmap caching is used
-		if (GetRenderCacheMode ()) {
-			if ((flags & COMPOSITE_MASK) == COMPOSITE_TRANSFORM)
-				flags |= COMPOSITE_CLIP;
-		}
-	}
-
 	if (flags & RENDER_PROJECTION)
 		flags |= COMPOSITE_TRANSFORM;
 
@@ -663,6 +655,23 @@ UIElement::ComputeComposite ()
 	if (flags & COMPOSITE_TRANSFORM) {
 		if ((flags & COMPOSITE_EFFECT) == 0)
 			flags &= ~COMPOSITE_OPACITY;
+	}
+
+	// bitmap caching can force an extra composite stage 
+	if (GetRenderCacheMode ()) {
+
+		// need to clip and no other stages exist before the clip
+		if ((flags & COMPOSITE_MASK) == COMPOSITE_TRANSFORM) {
+			if (GetClip ())
+				flags |= COMPOSITE_CACHE;
+		}
+		
+		// effect padding
+		if ((flags & (COMPOSITE_OPACITY |
+			      COMPOSITE_OPACITY_MASK)) == 0) {
+			if (effect_padding != Thickness ())
+				flags |= COMPOSITE_CACHE;
+		}		
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
@@ -1456,18 +1465,7 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 		cairo_transform (cr, &render_xform);
 	}
 
-	if (flags & COMPOSITE_CLIP) {
-		cairo_t        *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-		Rect           r = GetSubtreeExtents ().Transform (cr);
-		cairo_matrix_t matrix;
-
-		cairo_get_matrix (cr, &matrix);
-
-		cairo_save (cr);
-		RenderClipPath (cr);
-		ctx->Push (new ContextNode (r, &matrix));
-	}
-	else if (GetClip ()) {
+	if (GetClip ()) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		cairo_save (cr);
@@ -1518,6 +1516,12 @@ UIElement::PreRender (Stack *ctx, Region *region, bool skip_children)
 			ctx->Push (new ContextNode (r, &matrix));
 	}
 
+	if (flags & COMPOSITE_CACHE) {
+		Rect r = GetSubtreeExtents ().Transform (&scale_xform);
+
+		ctx->Push (new ContextNode (r, &scale_xform));
+	}
+
 	if (GetRenderCacheMode () && bitmap_cache) {
 		ContextNode *node = (ContextNode *) ctx->Top ();
 
@@ -1540,6 +1544,25 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		bitmap = ((ContextNode *) ctx->Top ())->GetBitmap ();
 		if (bitmap)
 			bitmap_cache = cairo_surface_reference (bitmap);
+	}
+
+	if (flags & COMPOSITE_CACHE) {
+		ContextNode     *node = (ContextNode *) ctx->Pop ();
+		cairo_surface_t *src = node->GetBitmap ();
+		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
+			Rect r = node->GetBitmapExtents ();
+
+			cairo_identity_matrix (cr);
+			r.RoundOut ().Draw (cr);
+			cairo_clip (cr);
+
+			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_paint (cr);
+		}
+
+		delete node;
 	}
 
 	if (flags & COMPOSITE_OPACITY_MASK) {
@@ -1625,26 +1648,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 
-	if (flags & COMPOSITE_CLIP) {
-		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ();
-		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect r = node->GetBitmapExtents ();
-
-			cairo_identity_matrix (cr);
-			r.RoundOut ().Draw (cr);
-			cairo_clip (cr);
-
-			cairo_set_source_surface (cr, src, 0, 0);
-			cairo_paint (cr);
-		}
-
-		cairo_restore (cr);
-		delete node;
-	}
-	else if (GetClip ()) {
+	if (GetClip ()) {
 		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		cairo_restore (cr);
