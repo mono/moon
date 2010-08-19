@@ -34,7 +34,6 @@ public:
 	static const char *GetConsentDescription (MoonConsentType consent);
 	static MoonConsentType GetConsentType (const char *name);
 
-	/* @GeneratePInvoke */
 	static bool PromptUserFor (MoonConsentType consent);
 	static bool PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website);
 };

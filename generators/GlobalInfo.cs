@@ -237,7 +237,7 @@ class GlobalInfo : MemberInfo {
 							Console.WriteLine ("The method {0} in type {1} does not have its parent set.", method.Name, type.Name);
 							continue;
 						}
-						if (!method.Annotations.ContainsKey ("GenerateCBinding"))
+						if (!method.Annotations.ContainsKey ("GenerateCBinding") && !method.Annotations.ContainsKey ("GeneratePInvoke"))
 							continue;
 						cppmethods_to_bind.Add (method);
 					}
