@@ -409,7 +409,7 @@ namespace Mono.Xaml {
 
 			SetElementTemplateScopes (element);
 			OnElementBegin (element);
-			
+
 			ParseElementAttributes (element);
 
 			// This is a self closing element ie <Rectangle />
@@ -1251,7 +1251,12 @@ namespace Mono.Xaml {
 			if (prop == null)
 				return null;
 
-			return prop.GetValue ();
+			object res = prop.GetValue ();
+
+			if (res != null && !t.IsAssignableFrom (res.GetType ()))
+				return null;
+
+			return res;
 		}
 
 		internal XamlParseException ParseException (string message, params object [] p)
