@@ -684,7 +684,8 @@ sw_filter_process_8888x8888 (unsigned char *s,
 }
 
 static void
-sw_filter_blur (unsigned char *data,
+sw_filter_blur (unsigned char *src,
+		unsigned char *dst,
 		int           width,
 		int           height,
 		int           stride,
@@ -696,7 +697,7 @@ sw_filter_blur (unsigned char *data,
 	int           y = 0;
 
 	while (y < height) {
-		sw_filter_process_8888x8888 (data + y * stride,
+		sw_filter_process_8888x8888 (src + y * stride,
 					     tmp_data + y * stride,
 					     width,
 					     4,
@@ -708,7 +709,7 @@ sw_filter_blur (unsigned char *data,
 
 	while (x < width) {
 		sw_filter_process_8888x8888 (tmp_data + x * 4,
-					     data + x * 4,
+					     dst + x * 4,
 					     height,
 					     stride,
 					     filter_size,
@@ -717,7 +718,7 @@ sw_filter_blur (unsigned char *data,
 		x++;
 	}
 
-	free (tmp_data);
+	g_free (tmp_data);
 }
 
 static void
@@ -953,7 +954,8 @@ sw_filter_process_8x8888_over_color (unsigned char *s,
 }
 
 static void
-sw_filter_drop_shadow (unsigned char *data,
+sw_filter_drop_shadow (unsigned char *src,
+		       unsigned char *dst,
 		       int           width,
 		       int           height,
 		       int           stride,
@@ -978,7 +980,7 @@ sw_filter_drop_shadow (unsigned char *data,
 	bottom = height - src_y;
 
 	while (dst_y < bottom) {
-		sw_filter_process_8888x8 (data + src_y * stride,
+		sw_filter_process_8888x8 (src + src_y * stride,
 					  tmp_data + dst_y * width,
 					  width,
 					  4,
@@ -997,13 +999,15 @@ sw_filter_drop_shadow (unsigned char *data,
 		dst_y++;
 	}
 
+	memcpy (dst, src, height * stride);
+
 	if (color[SW_RED]   != 0 ||
 	    color[SW_GREEN] != 0 ||
 	    color[SW_BLUE]  != 0 ||
 	    color[SW_ALPHA] != 255) {
 		while (dst_x < width) {
 			sw_filter_process_8x8888_over_color (tmp_data + dst_x,
-							     data + dst_x * 4,
+							     dst + dst_x * 4,
 							     height,
 							     width,
 							     stride,
@@ -1017,7 +1021,7 @@ sw_filter_drop_shadow (unsigned char *data,
 	else {
 		while (dst_x < width) {
 			sw_filter_process_8x8888_over_black (tmp_data + dst_x,
-							     data + dst_x * 4,
+							     dst + dst_x * 4,
 							     height,
 							     width,
 							     stride,
@@ -1719,19 +1723,44 @@ BlurEffect::Render (cairo_t         *cr,
 
 	/* table based filter code when possible */
 	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+		int           pw = cairo_image_surface_get_width (src);
+		int           ph = cairo_image_surface_get_height (src);
+		int           stride = cairo_image_surface_get_stride (src);
+		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
 
-		/* modifies the source surface */
-		if (nfiltervalues)
+		if (nfiltervalues) {
+			const cairo_format_t format = CAIRO_FORMAT_ARGB32;
+			cairo_surface_t      *image;
+			double               srcX, srcY;
+
 			sw_filter_blur (cairo_image_surface_get_data (src),
-					cairo_image_surface_get_width (src),
-					cairo_image_surface_get_height (src),
-					cairo_image_surface_get_stride (src),
+					data,
+					pw,
+					ph,
+					stride,
 					nfiltervalues,
 					filtertable);
 
+			image = cairo_image_surface_create_for_data (data,
+								     format,
+								     pw,
+								     ph,
+								     stride);
+
+			cairo_surface_get_device_offset (src, &srcX, &srcY);
+			cairo_surface_set_device_offset (image, srcX, srcY);
+
+			cairo_set_source_surface (cr, image, 0, 0);
+			cairo_surface_destroy (image);
+		}
+		else {
+			cairo_set_source_surface (cr, src, 0, 0);
+		}
+
 		/* paint clip */
-		cairo_set_source_surface (cr, src, 0, 0);
 		cairo_paint (cr);
+
+		g_free (data);
 
 		return 1;
 	}
@@ -2111,6 +2140,15 @@ DropShadowEffect::Render (cairo_t         *cr,
 
 	/* table based filter code when possible */
 	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+		const cairo_format_t format = CAIRO_FORMAT_ARGB32;
+		cairo_surface_t      *image;
+		double               srcX, srcY;
+
+		int           pw = cairo_image_surface_get_width (src);
+		int           ph = cairo_image_surface_get_height (src);
+		int           stride = cairo_image_surface_get_stride (src);
+		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
+
 		double direction = GetDirection () * (M_PI / 180.0);
 		double depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
 		double dx = -cos (direction) * depth;
@@ -2126,20 +2164,33 @@ DropShadowEffect::Render (cairo_t         *cr,
 		rgba[SW_BLUE]  = (int) ((color->b * opacity) * 255.0);
 		rgba[SW_ALPHA] = (int) (opacity * 255.0);
 
-		/* modifies the source surface */
 		sw_filter_drop_shadow (cairo_image_surface_get_data (src),
-				       cairo_image_surface_get_width (src),
-				       cairo_image_surface_get_height (src),
-				       cairo_image_surface_get_stride (src),
+				       data,
+				       pw,
+				       ph,
+				       stride,
 				       (int) (dx + 0.5),
 				       (int) (dy + 0.5),
 				       nfiltervalues,
 				       table,
 				       rgba);
 
+		image = cairo_image_surface_create_for_data (data,
+							     format,
+							     pw,
+							     ph,
+							     stride);
+
+		cairo_surface_get_device_offset (src, &srcX, &srcY);
+		cairo_surface_set_device_offset (image, srcX, srcY);
+
+		cairo_set_source_surface (cr, image, 0, 0);
+		cairo_surface_destroy (image);
+
 		/* paint clip */
-		cairo_set_source_surface (cr, src, 0, 0);
 		cairo_paint (cr);
+
+		g_free (data);
 
 		return 1;
 	}

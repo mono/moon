@@ -1,3 +1,8 @@
+2010-08-19  David Reveman  <davidr@novell.com>
+
+	* effect.cpp: Don't allow table based filters to modify the
+	source surface.
+
 2010-08-18  David Reveman  <davidr@novell.com>
 
 	* uielement.cpp (ComputeComposite): Fix clipping of bitmap cached
