@@ -1,5 +1,8 @@
 2010-08-18  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (ComputeComposite): Use the transform stage to
+	apply opacity property and avoid one intermediate buffer stage.
+
 	* uielement.h: Add COMPOSITE_MASK.
 
 	* uielement.cpp (ComputeComposite): Improve code so that

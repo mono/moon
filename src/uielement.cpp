@@ -652,6 +652,13 @@ UIElement::ComputeComposite ()
 	if (flags & RENDER_PROJECTION)
 		flags |= COMPOSITE_TRANSFORM;
 
+	// optimization: apply local opacity at the transform stage when
+	// no effect needs to be rendered
+	if (flags & COMPOSITE_TRANSFORM) {
+		if ((flags & COMPOSITE_EFFECT) == 0)
+			flags &= ~COMPOSITE_OPACITY;
+	}
+
 	if (flags & COMPOSITE_TRANSFORM) {
 		if (composite && composite->Is (Type::TRANSFORMEFFECT)) {
 			composite->ref ();
@@ -660,6 +667,11 @@ UIElement::ComputeComposite ()
 		else {
 			effect = new TransformEffect ();
 		}
+
+		if (flags & COMPOSITE_OPACITY)
+			effect->SetOpacity (1.0);
+		else
+			effect->SetOpacity (GetOpacity ());
 
 		if (flags & RENDER_PROJECTION)
 			effect->SetType (TransformEffect::PERSPECTIVE);
