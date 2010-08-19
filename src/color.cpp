@@ -202,7 +202,7 @@ color_from_str (const char *name)
 	
 	if ((len = strlen (name)) == 0)
 		return new Color (0x00000000);
-	
+
 	if (name [0] == '#') {
 		char a [3] = "FF";
 		char r [3] = "FF";
@@ -304,27 +304,28 @@ color_to_string (Color *color)
 	guint8 v;
 	
 	buf[0] = '#';
-	
-	v = (guint8) (color->r * 255);
-	buf[1] = hex[(v >> 4) & 0x0f];
-	buf[2] = hex[v & 0x0f];
-	
-	v = (guint8) (color->g * 255);
-	buf[3] = hex[(v >> 4) & 0x0f];
-	buf[4] = hex[v & 0x0f];
-	
-	v = (guint8) (color->b * 255);
-	buf[5] = hex[(v >> 4) & 0x0f];
-	buf[6] = hex[v & 0x0f];
+
 	
 	v = (guint8) (color->a * 255);
 	if (v > 0) {
-		buf[7] = hex[(v >> 4) & 0x0f];
-		buf[8] = hex[v & 0x0f];
+		buf[1] = hex[(v >> 4) & 0x0f];
+		buf[2] = hex[v & 0x0f];
 	} else {
-		buf[7] = '\0';
-		buf[8] = '\0';
+		buf[1] = '\0';
+		buf[2] = '\0';
 	}
+	
+	v = (guint8) (color->r * 255);
+	buf[3] = hex[(v >> 4) & 0x0f];
+	buf[4] = hex[v & 0x0f];
+	
+	v = (guint8) (color->g * 255);
+	buf[5] = hex[(v >> 4) & 0x0f];
+	buf[6] = hex[v & 0x0f];
+	
+	v = (guint8) (color->b * 255);
+	buf[7] = hex[(v >> 4) & 0x0f];
+	buf[8] = hex[v & 0x0f];
 	
 	buf[9] = '\0';
 	
