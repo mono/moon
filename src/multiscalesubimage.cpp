@@ -36,15 +36,15 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	id = _id;
 	n = _n;
 
-	Uri *source_uri = ((DeepZoomImageTileSource*)source)->GetUriSource ();
+	const Uri *source_uri = ((DeepZoomImageTileSource*)source)->GetUriSource ();
 	if (!source_uri || source_uri->IsAbsolute ())
 		return;
 	
 	LOG_MSI ("MSSI: UriSource changed from %s", source_uri->ToString());
 	Uri *original_uri = new Uri ();
 	Uri::Copy (source_uri, original_uri);
-	Uri::Copy (parent_uri, source_uri);
-	source_uri->Combine (original_uri);
+	Uri::Copy (parent_uri, (Uri *) source_uri);
+	((Uri *) source_uri)->Combine (original_uri);
 	delete original_uri;
 	LOG_MSI (" to %s\n", source_uri->ToString());
 

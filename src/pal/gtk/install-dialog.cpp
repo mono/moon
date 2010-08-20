@@ -424,7 +424,7 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 			Value *value = icons->GetValueAt (i);
 			Icon *icon = value->AsIcon ();
 			Size *size = icon->GetSize ();
-			Uri *uri = icon->GetSource ();
+			const Uri *uri = icon->GetSource ();
 			
 			loader = g_new (IconLoader, 1);
 			loader->size = MAX ((int) size->width, (int) size->height);
@@ -589,7 +589,7 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 			
 			if ((int) size->width == 48 || (int) size->height == 48) {
 				/* we only need to extract the 48x48 icon for the .desktop files */
-				Uri *uri = icon->GetSource ();
+				const Uri *uri = icon->GetSource ();
 				FILE *fp;
 				
 				g_mkdir_with_parents (icons_dir, 0777);

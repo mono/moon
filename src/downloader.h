@@ -84,7 +84,7 @@ class Downloader : public DependencyObject {
 	const static int StatusProperty;
 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int StatusTextProperty;
-	/* @PropertyType=Uri,GenerateAccessors */
+	/* @PropertyType=Uri,IsConstPropertyType,GenerateAccessors */
 	const static int UriProperty;
 	
 	// Events you can AddHandler to
@@ -95,7 +95,7 @@ class Downloader : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Downloader ();
 	
-	static bool ValidateDownloadPolicy (const char *location, Uri *uri, DownloaderAccessPolicy policy);
+	static bool ValidateDownloadPolicy (const char *location, const Uri *uri, DownloaderAccessPolicy policy);
 	
 	void Abort ();
 	char *GetResponseText (const char *Partname, gint64 *size);
@@ -122,8 +122,8 @@ class Downloader : public DependencyObject {
 	const char *GetStatusText ();
 	int GetStatus ();
 	
-	void SetUri (Uri *uri);
-	Uri *GetUri ();
+	void SetUri (const Uri *uri);
+	const Uri *GetUri ();
 };
 
 };

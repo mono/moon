@@ -327,7 +327,7 @@ Value::Value (Point pt)
 	SetIsNull (false);
 }
 
-Value::Value (Uri uri)
+Value::Value (const Uri uri)
 {
 	Init ();
 	k = Type::URI;

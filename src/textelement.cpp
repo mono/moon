@@ -76,7 +76,7 @@ TextElement::DownloaderComplete (Downloader *downloader)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	char *resource;
 	const char *path;
-	Uri *uri;
+	const Uri *uri;
 	
 	uri = downloader->GetUri ();
 	

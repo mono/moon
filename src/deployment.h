@@ -81,11 +81,11 @@ protected:
 /* @Namespace=System.Windows */
 class ExtensionPart : public ExternalPart {
 public:
-	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,GenerateManagedAccessors=false,DefaultValue=Uri() */
+	/* @PropertyType=Uri,AlwaysChange,IsConstPropertyType,GenerateAccessors,GenerateManagedAccessors=false,DefaultValue=Uri() */
 	const static int SourceProperty;
 
-	void SetSource (Uri *value);
-	Uri* GetSource ();
+	void SetSource (const Uri *value);
+	const Uri* GetSource ();
 
 protected:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -165,13 +165,13 @@ protected:
 /* @ContentProperty=Source */
 class Icon : public DependencyObject {
 public:
-	/* @PropertyType=Uri,DefaultValue=Uri(),ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
+	/* @PropertyType=Uri,DefaultValue=Uri(),IsConstPropertyType,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SourceProperty;
 	/* @PropertyType=Size,DefaultValue=Size(),ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SizeProperty;
 
-	Uri* GetSource ();
-	void SetSource (Uri *source);
+	const Uri* GetSource ();
+	void SetSource (const Uri *source);
 
 	Size* GetSize ();
 	void SetSize (Size *size);

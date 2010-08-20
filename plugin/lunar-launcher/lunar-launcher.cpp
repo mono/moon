@@ -108,7 +108,7 @@ load_window_icons (GtkWindow *window, Deployment *deployment, IconCollection *ic
 		for (i = 0; i < count; i++) {
 			Value *value = icons->GetValueAt (i);
 			Icon *icon = value->AsIcon ();
-			Uri *uri = icon->GetSource ();
+			const Uri *uri = icon->GetSource ();
 			
 			loader = g_new (IconLoader, 1);
 			loader->loader = gdk_pixbuf_loader_new ();

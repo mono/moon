@@ -515,7 +515,7 @@ Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer 
 void
 Glyphs::DownloaderComplete ()
 {
-	Uri *uri = downloader->GetUri ();
+	const Uri *uri = downloader->GetUri ();
 	char *filename;
 	
 	delete font;
@@ -714,7 +714,7 @@ Glyphs::SetIndicesInternal (const char *in)
 }
 
 void
-Glyphs::DownloadFont (Uri *uri, MoonError *error)
+Glyphs::DownloadFont (const Uri *uri, MoonError *error)
 {
 	if ((downloader = GetDeployment ()->CreateDownloader ())) {
 		char *str = uri->ToString (UriHideFragment);
@@ -869,7 +869,7 @@ Glyphs::SetFontSource (Downloader *downloader, const char *part_name)
 //}
 
 bool
-Glyphs::ValidateUri (Uri *uri, MoonError *error)
+Glyphs::ValidateUri (const Uri *uri, MoonError *error)
 {
 	// We need to validate the URI at certain places
 	// so split out the validation logic to here so that
@@ -894,7 +894,7 @@ Glyphs::OnIsAttachedChanged (bool attached)
 	if (attached && uri_changed) {
 		// we've been added to the tree, kick off any pending
 		// download we may have
-		Uri *uri;
+		const Uri *uri;
 		MoonError error;
 		if ((uri = GetFontUri ()))
 			DownloadFont (uri, &error);
@@ -914,7 +914,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == Glyphs::FontUriProperty) {
-		Uri *uri = args->GetNewValue() ? args->GetNewValue()->AsUri () : NULL;
+		const Uri *uri = args->GetNewValue() ? args->GetNewValue()->AsUri () : NULL;
 		
 		CleanupDownloader ();
 		dirty = true;

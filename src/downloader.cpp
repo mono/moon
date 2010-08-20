@@ -447,7 +447,7 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 }
 
 bool
-Downloader::ValidateDownloadPolicy (const char *source_location, Uri *uri, DownloaderAccessPolicy policy)
+Downloader::ValidateDownloadPolicy (const char *source_location, const Uri *uri, DownloaderAccessPolicy policy)
 {
 	Uri *src_uri = NULL;
 	bool valid;

@@ -2443,7 +2443,7 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 
 	if (args->GetId () == PixelShader::UriSourceProperty) {
 		Application *application = Application::GetCurrent ();
-		Uri *uri = GetUriSource ();
+		const Uri *uri = GetUriSource ();
 		char *path;
 
 		g_free (tokens);

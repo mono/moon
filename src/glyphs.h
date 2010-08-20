@@ -61,9 +61,9 @@ class Glyphs : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	void LoadFont (const Uri *uri, const char *path);
-	void DownloadFont (Uri *uri, MoonError *error);
+	void DownloadFont (const Uri *uri, MoonError *error);
 	bool SetFontResource (const Uri *uri);
-	bool ValidateUri (Uri *uri, MoonError *error);
+	bool ValidateUri (const Uri *uri, MoonError *error);
 	
  protected:
 	virtual ~Glyphs ();
@@ -75,7 +75,7 @@ class Glyphs : public FrameworkElement {
 	const static int FontRenderingEmSizeProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
- 	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri(),Validator=NonNullValidator */
+	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri(),IsConstPropertyType,Validator=NonNullValidator */
 	const static int FontUriProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int IndicesProperty;
@@ -120,8 +120,8 @@ class Glyphs : public FrameworkElement {
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
 	
-	void SetFontUri (Uri *uri);
-	Uri *GetFontUri ();
+	void SetFontUri (const Uri *uri);
+	const Uri *GetFontUri ();
 	
 	void SetIndices (const char *indices);
 	const char *GetIndices ();

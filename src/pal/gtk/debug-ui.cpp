@@ -967,7 +967,7 @@ struct debug_media_data {
 	
 			GString *fmt = g_string_new ("");
 			g_string_append_printf (fmt, "MediaElement\n");
-			Uri *uri = element->GetSource ();
+			const Uri *uri = element->GetSource ();
 			char *source = uri != NULL ? uri->ToString () : NULL;
 			g_string_append_printf (fmt, "\tSource: %s\n", source);
 			g_free (source);

@@ -61,8 +61,8 @@ public:
 	bool IsScheme (const char *scheme) const;
 	bool IsAbsolute () const { return isAbsolute; }
 	
-	bool IsInvalidPath () { return path && (path[0] == '\\' || (path[0] == '.' && path[1] == '\\')); }
-	bool IsUncPath () { return path && path[0] == '\\'; }
+	bool IsInvalidPath () const { return path && (path[0] == '\\' || (path[0] == '.' && path[1] == '\\')); }
+	bool IsUncPath () const { return path && path[0] == '\\'; }
 	
 	const char *GetScheme () const { return scheme; }
 	const char *GetHost () const { return host; }

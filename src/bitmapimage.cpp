@@ -210,7 +210,7 @@ BitmapImage::UriSourceChanged ()
 {
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	Application *app = Application::GetCurrent ();
-	Uri *uri = GetUriSource ();
+	const Uri *uri = GetUriSource ();
 	
 	if (surface == NULL) {
 		SetBitmapData (NULL, false);
@@ -235,7 +235,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	}
 
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
-		Uri *uri = args->GetNewValue () ? args->GetNewValue ()->AsUri () : NULL;
+		const Uri *uri = args->GetNewValue () ? args->GetNewValue ()->AsUri () : NULL;
 
 		Abort ();
 
@@ -260,7 +260,7 @@ bool
 BitmapImage::ValidateDownloadPolicy ()
 {
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	Uri *uri = GetUriSource ();
+	const Uri *uri = GetUriSource ();
 	const char *location;
 	
 	if (!uri)

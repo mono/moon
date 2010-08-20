@@ -94,7 +94,7 @@ public:
 	Value (Point pt);
 	Value (Rect rect);
 	Value (Size size);
-	Value (Uri uri);
+	Value (const Uri uri);
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
@@ -151,7 +151,7 @@ public:
 	gint32		AsInt32 () const	    { checked_get_exact (Type::INT32, 0, u.i32); }
 	Color*		AsColor () const	    { checked_get_exact (Type::COLOR, NULL, u.color); }
 	Point*		AsPoint () const	    { checked_get_exact (Type::POINT, NULL, u.point); }
-	Uri*		AsUri () const	            { checked_get_exact (Type::URI, NULL, u.uri); }
+	const Uri*	AsUri () const	            { checked_get_exact (Type::URI, NULL, u.uri); }
 	Rect*		AsRect () const	            { checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize () const	            { checked_get_exact (Type::SIZE, NULL, u.size); }
 	FontFamily*	AsFontFamily () const	    { checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }

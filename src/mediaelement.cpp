@@ -1290,7 +1290,7 @@ MediaElement::MediaInvalidate ()
 }
 
 void
-MediaElement::SetUriSource (Uri *uri)
+MediaElement::SetUriSource (const Uri *uri)
 {
 	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri ? uri->ToString () : NULL);
 	VERIFY_MAIN_THREAD;
@@ -1593,7 +1593,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 {
 	if (args->GetId () == MediaElement::SourceProperty) {
 		DownloaderAccessPolicy policy = MediaPolicy;
-		Uri *uri = GetSource ();
+		const Uri *uri = GetSource ();
 		const char *location;
 		
 		if (uri != NULL) {

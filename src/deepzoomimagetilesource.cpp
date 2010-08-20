@@ -325,7 +325,7 @@ DeepZoomImageTileSource::Download ()
 		return;
 
 	Application *current = Application::GetCurrent ();
-	Uri *uri = GetUriSource ();
+	const Uri *uri = GetUriSource ();
 
 	if (current && uri) {
 		downloaded = true;
@@ -830,7 +830,7 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 		switch (info->depth) {
 		case 2:
 			if (info->is_collection && !g_ascii_strcasecmp ("I", el)) {
-				Uri *uri = info->source->GetUriSource ();
+				const Uri *uri = info->source->GetUriSource ();
 				DeepZoomImageTileSource *subsource;
 				MultiScaleSubImage *subi;
 				

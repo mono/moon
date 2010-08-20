@@ -609,7 +609,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (source && source->Is(Type::BITMAPIMAGE)) {
 			BitmapImage *bitmap = (BitmapImage *) source;
-			Uri *uri = bitmap->GetUriSource ();
+			const Uri *uri = bitmap->GetUriSource ();
 			
 			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);

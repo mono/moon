@@ -44,15 +44,15 @@ class BitmapImage : public BitmapSource {
  public:
 	virtual void Dispose ();
 
-	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
+	/* @PropertyType=Uri,IsConstPropertyType,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
 	const static int UriSourceProperty;
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Internal,GenerateAccessors */
 	const static int ProgressProperty;
 	/* @PropertyType=BitmapCreateOptions,DefaultValue=BitmapCreateOptionsDelayCreation,GenerateAccessors */
 	const static int CreateOptionsProperty;
 
-	void SetUriSource (Uri* value);
-	Uri* GetUriSource ();
+	void SetUriSource (const Uri* value);
+	const Uri* GetUriSource ();
 	
 	void SetProgress (double progress);
 	double GetProgress ();

@@ -54,7 +54,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	friend class MoonManagedFactory;
 
  public:
-	/* @PropertyType=Uri,GenerateAccessors */
+	/* @PropertyType=Uri,IsConstPropertyType,GenerateAccessors */
 	const static int UriSourceProperty;
 
 	/* @SkipFactories */
@@ -82,8 +82,8 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	//
 	// Property Accessors
 	//
-	void SetUriSource (Uri *value);
-	Uri *GetUriSource ();
+	void SetUriSource (const Uri *value);
+	const Uri *GetUriSource ();
 	
 	//
 	// Events

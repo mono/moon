@@ -351,7 +351,7 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class PixelShader : public DependencyObject {
 public:
-	/* @PropertyType=Uri,DefaultValue=Uri(),GenerateAccessors */
+	/* @PropertyType=Uri,DefaultValue=Uri(),IsConstPropertyType,GenerateAccessors */
 	const static int UriSourceProperty;
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -359,8 +359,8 @@ public:
 	//
 	// Property Accessors
 	//
-	Uri* GetUriSource ();
-	void SetUriSource (Uri *uri);
+	const Uri* GetUriSource ();
+	void SetUriSource (const Uri *uri);
 
 	void SetTokensFromPath (const char *path);
 
