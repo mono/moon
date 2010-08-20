@@ -544,7 +544,18 @@ UIElement::ComputeTransform ()
 					    local_projection);
 		}
 		else {
-			render_xform = popup->absolute_xform;
+			// use absolute_projection as rendering to
+			// intermediate buffer might have reset
+			// absolute_xform
+#define M(row, col) (popup->absolute_projection)[col * 4 + row]
+			render_xform.xx = M (0, 0);
+			render_xform.yx = M (1, 0);
+			render_xform.xy = M (0, 1);
+			render_xform.yy = M (1, 1);
+			render_xform.x0 = M (0, 3);
+			render_xform.y0 = M (1, 3);
+#undef M
+
 			cairo_matrix_translate (&render_xform,
 						popup->GetHorizontalOffset (),
 						popup->GetVerticalOffset ());
