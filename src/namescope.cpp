@@ -193,9 +193,6 @@ NameScope::MergeTemporaryScope (NameScope *temp, MoonError *error)
 		return;
 	}
 
-	if (temp->is_locked)
-		Lock ();
-
 	g_hash_table_foreach (temp->names, merge_name, this);
 }
 
