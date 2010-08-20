@@ -71,8 +71,6 @@ namespace Mono.Xaml {
 			Xmlns = new Dictionary<string,string> ();
 			IgnorableXmlns = new List<string> ();
 			NameScope = new NameScope ();
-
-			NameScope.Temporary = true;
 		}
 
 		public XamlContext Context {
@@ -122,8 +120,8 @@ namespace Mono.Xaml {
 		}
 
 		public bool CreateNameScope {
-			get;
-			set;
+			get { return !NameScope.Temporary; }
+			set { NameScope.Temporary = !value; }
 		}
 
 		public bool ValidateTemplates {
