@@ -4037,42 +4037,34 @@ TransformEffect::SetType (int value)
 void
 TransformEffect::SetOpacity (double value)
 {
-
-#ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
-	float                *v;
-	struct pipe_transfer *transfer = NULL;
-#endif
-
 	if (IS_TRANSLUCENT (opacity) != IS_TRANSLUCENT (value))
 		need_update = true;
+
+	if (opacity == value)
+		return;
 
 	opacity = value;
 
 #ifdef USE_GALLIUM
-	if (!IS_TRANSLUCENT (opacity))
-		return;
+	if (constant_buffer) {
+		struct st_context    *ctx = st_context;
+		float                *v;
+		struct pipe_transfer *transfer = NULL;
 
-	if (!constant_buffer) {
-		constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen,
-					    PIPE_BIND_CONSTANT_BUFFER,
-					    4 * sizeof (float));
-		if (!constant_buffer)
-			return;
-	}
+		v = (float *) pipe_buffer_map (ctx->pipe,
+					       constant_buffer,
+					       PIPE_TRANSFER_WRITE,
+					       &transfer);
+		if (v) {
+			v[0] = opacity;
+			v[1] = opacity;
+			v[2] = opacity;
+			v[3] = opacity;
 
-	v = (float *) pipe_buffer_map (ctx->pipe,
-				       constant_buffer,
-				       PIPE_TRANSFER_WRITE,
-				       &transfer);
-	if (v) {
-		v[0] = opacity;
-		v[1] = opacity;
-		v[2] = opacity;
-		v[3] = opacity;
-
-		pipe_buffer_unmap (ctx->pipe, constant_buffer, transfer);
+			pipe_buffer_unmap (ctx->pipe,
+					   constant_buffer,
+					   transfer);
+		}
 	}
 #endif
 
@@ -4169,10 +4161,12 @@ TransformEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	struct ureg_program *ureg;
-	struct ureg_src     tex, sampler;
-	struct ureg_dst     out;
+	struct st_context    *ctx = st_context;
+	float                *v;
+	struct pipe_transfer *transfer = NULL;
+	struct ureg_program  *ureg;
+	struct ureg_src      tex, sampler;
+	struct ureg_dst      out;
 
 	Clear ();
 
@@ -4190,15 +4184,36 @@ TransformEffect::UpdateShader ()
 				TGSI_SEMANTIC_COLOR,
 				0);
 
-	if (IS_TRANSLUCENT (opacity)) {
+	if (IS_TRANSLUCENT (opacity))
+		constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen,
+					    PIPE_BIND_CONSTANT_BUFFER,
+					    4 * sizeof (float));
+
+	if (constant_buffer) {
 		struct ureg_src alpha;
 		struct ureg_dst tmp;
 
 		tmp   = ureg_DECL_temporary (ureg);
-		alpha = ureg_DECL_constant (ureg, 0);	
+		alpha = ureg_DECL_constant (ureg, 0);
 
 		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
 		ureg_MUL (ureg, out, ureg_src (tmp), alpha);
+
+		v = (float *) pipe_buffer_map (ctx->pipe,
+					       constant_buffer,
+					       PIPE_TRANSFER_WRITE,
+					       &transfer);
+		if (v) {
+			v[0] = opacity;
+			v[1] = opacity;
+			v[2] = opacity;
+			v[3] = opacity;
+
+			pipe_buffer_unmap (ctx->pipe,
+					   constant_buffer,
+					   transfer);
+		}
 	}
 	else {
 		ureg_TEX (ureg, out, TGSI_TEXTURE_2D, tex, sampler);
