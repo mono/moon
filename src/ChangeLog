@@ -1,3 +1,11 @@
+2010-08-20  David Reveman  <davidr@novell.com>
+
+	* dirty.h:
+	* dirty.cpp:
+	* uielement.h:
+	* uielement.cpp: Remove DirtyComposite flag and UpdateComposite
+	method.
+
 2010-08-19  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Only use integer translation optimization when

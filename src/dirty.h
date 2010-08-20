@@ -124,14 +124,8 @@ enum DirtyType {
 	// DirtyInvalidate on the parent.
 	DirtyInvalidate        = 0x00400000,
 
-	// DirtyComposite
-	//
-	// The composite bitmap effect of this element need to be updated.
-	DirtyComposite         = 0x00800000,
-
 	UpDirtyState           = (DirtyBounds |
-				  DirtyInvalidate |
-				  DirtyComposite),
+				  DirtyInvalidate),
 
 	DirtyState             = DownDirtyState | UpDirtyState,
 	DirtyInUpDirtyList     = 0x40000000,

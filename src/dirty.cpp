@@ -301,8 +301,6 @@ Surface::ProcessDownDirtyElements ()
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->UpdateBounds ();
 
-			AddDirtyElement (el, DirtyComposite);	
-
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
 
@@ -427,11 +425,6 @@ Surface::ProcessUpDirtyElements ()
 
 			delete el->dirty_region;
 			el->dirty_region = new Region ();
-		}
-		if (el->dirty_flags & DirtyComposite) {
-			el->dirty_flags &= ~DirtyComposite;
-
-			el->ComputeComposite ();
 		}
 
 		if (!(el->dirty_flags & UpDirtyState)) {

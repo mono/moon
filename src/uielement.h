@@ -226,12 +226,6 @@ public:
 	virtual void ShiftPosition (Point p);
 
 	//
-	// UpdateComposite:
-	//   Recomputes the composite flags of this element.
-	//
-	void UpdateComposite ();
-
-	//
 	// ComputeComposite:
 	//
 	//   This method updates the composite effect and flags used

@@ -592,6 +592,8 @@ UIElement::ComputeTransform ()
 	else {
 		UpdateBounds ();
 	}
+
+	ComputeComposite ();
 }
 
 void
@@ -618,14 +620,6 @@ UIElement::ShiftPosition (Point p)
 {
 	bounds.x = p.x;
 	bounds.y = p.y;
-}
-
-void
-UIElement::UpdateComposite ()
-{
-	if (IsAttached ()) {
-		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyComposite);
-	}
 }
 
 void
@@ -1069,7 +1063,7 @@ UIElement::InvalidateClip ()
 		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
 
 	UpdateBounds (true);
-	UpdateComposite ();
+	ComputeComposite ();
 }
 
 void
@@ -1078,7 +1072,7 @@ UIElement::InvalidateMask ()
 	if (GetVisualParent ())
 		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
 
-	UpdateComposite ();
+	ComputeComposite ();
 }
 
 void
@@ -1088,7 +1082,7 @@ UIElement::InvalidateVisibility ()
 	if (GetVisualParent ())
 		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
 
-	UpdateComposite ();
+	ComputeComposite ();
 }
 
 void
@@ -1108,7 +1102,7 @@ UIElement::InvalidateEffect ()
 	if (old_effect_padding != effect_padding)
 		UpdateBounds ();
 
-	UpdateComposite ();
+	ComputeComposite ();
 }
 
 void
@@ -1133,7 +1127,7 @@ UIElement::InvalidateCacheMode ()
 	InvalidateBitmapCache ();
 	InvalidateSubtreePaint ();
 
-	UpdateComposite ();
+	ComputeComposite ();
 }
 
 /*
