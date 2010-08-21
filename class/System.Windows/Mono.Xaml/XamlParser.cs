@@ -710,7 +710,14 @@ namespace Mono.Xaml {
 			MarkupExpressionParser parser = new SL4MarkupExpressionParser (element.Object, property.Name, this, element);
 
 			string expression = reader.Value;
-			object o = parser.ParseExpression (ref expression);
+			object o = null;
+
+			try {
+				parser.ParseExpression (ref expression);
+			} catch (Exception e) {
+				throw ParseException ("Could not convert attribute value.", e);
+			}
+
 			return property.ConvertValue (property.Type, o);
 		}
 
