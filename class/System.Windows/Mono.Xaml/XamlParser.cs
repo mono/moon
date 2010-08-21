@@ -1361,19 +1361,28 @@ namespace Mono.Xaml {
 			if (reader.XmlSpace == XmlSpace.Preserve)
 				return str;
 
+			if (str.Length == 0)
+				return str;
+
+			int i = 0;
+			while (Char.IsWhiteSpace (str [i]))
+				i++;
+					
 			StringBuilder builder = new StringBuilder (str.Length);
-			for (int i = 0; i < str.Length; i++) {
+			for ( ; i < str.Length; i++) {
 				bool ws = false;
 				if (Char.IsWhiteSpace (str [i])) {
 					do {
 						i++;
-					} while (i < str.Length -1 && Char.IsWhiteSpace (str [i]));
+					} while (i < str.Length - 1 && Char.IsWhiteSpace (str [i + 1]));
 					ws = true;
+
+					if (i == str.Length - 1)
+						break;
 				}
 				if (ws)
 					builder.Append (' ');
-				else
-					builder.Append (str [i]);
+				builder.Append (str [i]);
 			}
 
 			return builder.ToString ();
