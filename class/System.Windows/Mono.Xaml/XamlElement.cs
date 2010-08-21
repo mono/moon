@@ -108,9 +108,13 @@ namespace Mono.Xaml {
 
 	internal class XamlPropertyElement : XamlElement {
 
+		private bool set_on_add;
+
 		public XamlPropertyElement (XamlParser parser, string name, XamlPropertySetter setter) : base (parser, name)
 		{
 			Setter = setter;
+
+			DetermineIfSetOnAdd ();
 		}
 
 		public XamlPropertySetter Setter {
@@ -124,7 +128,14 @@ namespace Mono.Xaml {
 
 		public override void AddChild (XamlElement child)
 		{
+			if (!set_on_add)
+				return;
 
+			XamlObjectElement element = child as XamlObjectElement;
+			if (element == null)
+				return;
+
+			Setter.SetValue (element, element.Object);
 		}
 
 		public override XamlPropertySetter LookupProperty (XmlReader reader)
@@ -134,8 +145,23 @@ namespace Mono.Xaml {
 
 		public void DoSet ()
 		{
-			foreach (XamlObjectElement obj in Children) {
-				Setter.SetValue (obj, obj.Object);
+			if (!set_on_add) {
+				foreach (XamlObjectElement obj in Children) {
+					Setter.SetValue (obj, obj.Object);
+				}
+			}
+		}
+
+		private void DetermineIfSetOnAdd ()
+		{
+			if (typeof (IList).IsAssignableFrom (Type)) {
+				set_on_add = true;
+				return;
+			}
+
+			if (typeof (IDictionary).IsAssignableFrom (Type)) {
+				set_on_add = true;
+				return;
 			}
 		}
 	}
