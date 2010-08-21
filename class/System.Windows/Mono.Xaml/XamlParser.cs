@@ -333,7 +333,6 @@ namespace Mono.Xaml {
 
 		private IDictionary CurrentDictionary (XamlElement element)
 		{
-			IDictionary rd = null;
 			XamlObjectElement obj = null;
 
 			if (element == null || element.Parent == null)
@@ -345,7 +344,7 @@ namespace Mono.Xaml {
 				// We could be in a <ResourceDictionary> tag, so we get added via ContentProperty
 				//
 				obj = element.Parent as XamlObjectElement;
-				rd = obj.Object as IDictionary;
+				IDictionary rd = obj.Object as IDictionary;
 				if (rd != null)
 					return rd;
 				return null;
@@ -366,8 +365,14 @@ namespace Mono.Xaml {
 				return null;
 
 			FrameworkElement fe = obj.Object as FrameworkElement;
-			rd = fe.Resources;
-			return rd;
+			if (fe != null)
+				return fe.Resources;
+
+			Application app = obj.Object as Application;
+			if (app != null)
+				return app.Resources;
+
+			return null;
 		}
 
 		private void ParseElement ()
