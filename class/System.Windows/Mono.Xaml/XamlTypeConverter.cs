@@ -55,6 +55,7 @@ namespace Mono.Xaml {
 			string_converters [typeof (DependencyProperty)] = ConvertDependencyProperty;
 			string_converters [typeof (Color)] = ConvertColor;
 			string_converters [typeof (PropertyPath)] = ConvertPropertyPath;
+			string_converters [typeof (Double)] = ConvertDouble;
 		}
 
 		public XamlTypeConverter (XamlParser parser, XamlObjectElement element, string propertyName, Type destinationType) : base (propertyName, destinationType)
@@ -193,13 +194,22 @@ namespace Mono.Xaml {
 		{
 			string value = (string) ovalue;
 
-			return converter.parser.ResolveType (value);
+			Type t = converter.parser.ResolveType (value);
+			return t;
 		}
 
 		private static DependencyProperty ConvertDependencyProperty (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object ovalue)
 		{
 			string value = (string) ovalue;
-			Type target_type = GetTargetType (converter);
+
+			Type target_type;
+
+			int idx = value.IndexOf ('.');
+			if (idx > 0) {
+				target_type = converter.parser.ResolveType (value.Substring (0, idx));
+				value = value.Substring (idx + 1, value.Length - idx - 1);
+			} else
+				target_type = GetTargetType (converter);
 
 			Types.Ensure (target_type);
 
@@ -232,7 +242,8 @@ namespace Mono.Xaml {
 
 		private static object ConvertColor (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
-			return Color.FromString ((string) value);
+			object res = Color.FromString ((string) value);
+			return res;
 		}
 
 		private static object ConvertPropertyPath (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
@@ -282,6 +293,16 @@ namespace Mono.Xaml {
 				return new PropertyPath (str, expanded.ToString ());
 
 			return new PropertyPath (str);
+		}
+
+		private static object ConvertDouble (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			string str = (string) value;
+
+			if (str == "Auto")
+				return Double.NaN;
+
+			return null;
 		}
 	}
 
