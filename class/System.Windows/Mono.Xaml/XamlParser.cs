@@ -60,6 +60,9 @@ namespace Mono.Xaml {
 		private XamlElement current_element;
 		private XmlReader reader;
 
+		// Don't call Read on the next pass through our loop
+		private bool skip_read;
+
 		public XamlParser () : this (new XamlContext ())
 		{
 		}
@@ -162,7 +165,9 @@ namespace Mono.Xaml {
 		{
 			reader = XmlReader.Create (stream);
 
-			while (reader.Read ()) {
+			while (skip_read || reader.Read ()) {
+				skip_read = false;
+
 				switch (reader.NodeType) {
 				case XmlNodeType.Element:
 					ParseElement ();
@@ -448,11 +453,11 @@ namespace Mono.Xaml {
 		private void ParseTemplateElement (XamlObjectElement element)
 		{
 			OnElementBegin (element);
-			
+
 			ParseElementAttributes (element);
 
 			string template_xml = reader.ReadInnerXml ();
-			
+
 			FrameworkTemplate template = (FrameworkTemplate) element.Object;
 
 			unsafe {
@@ -463,6 +468,8 @@ namespace Mono.Xaml {
 			// ReadInnerXml will read our closing </ControlTemplate> tag also, so we manually close things
 			//
 			OnElementEnd ();
+
+			skip_read = true;
 		}
 
 		private static unsafe IntPtr ParseTemplate (Value *context_ptr, string resource_base, IntPtr surface, IntPtr binding_source, string xaml, ref MoonError error)
