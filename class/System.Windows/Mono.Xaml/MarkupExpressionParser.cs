@@ -139,6 +139,11 @@ namespace Mono.Xaml {
 			return MatchExpression ("Binding", expression);
 		}
 
+		public static bool IsExplicitNull (string expression)
+		{
+			return MatchExpression ("x:Null", expression);
+		}
+
 		public delegate object ExpressionHandler (ref string expression);
 
 		public object ParseExpression (ref string expression)

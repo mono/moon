@@ -229,7 +229,10 @@ namespace Mono.Xaml {
 			// We do this before lists to cover the case where you are setting a list to a list or
 			// a resource dictionary to a resource dictionary, ect
 			// as opposed to adding items to the list or dictionary.
-			if (Type.IsAssignableFrom (value.GetType ())) {
+			//
+			// null is a legal value here because they may have done something like foo="{x:Null}"
+			//
+			if (value == null || Type.IsAssignableFrom (value.GetType ())) {
 				prop.SetValue (Target, ConvertValue (Type, value), null);
 				return;
 			}
