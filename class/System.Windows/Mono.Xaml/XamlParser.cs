@@ -571,7 +571,8 @@ namespace Mono.Xaml {
 					throw ParseException ("Element {0} does not support text properties.", CurrentElement.Name);
 				}
 
-				content.SetValue (value);
+				object converted = content.ConvertTextValue (value);
+				content.SetValue (converted);
 			}
 		}
 
@@ -723,7 +724,7 @@ namespace Mono.Xaml {
 			if (IsMarkupExpression (reader.Value))
 				value = ParseAttributeMarkup (element, property);
 			else {
-				value = property.ConvertAttributeValue (reader.Value);
+				value = property.ConvertTextValue (reader.Value);
 			}
 
 			return value;

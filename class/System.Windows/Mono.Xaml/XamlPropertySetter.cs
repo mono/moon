@@ -100,7 +100,7 @@ namespace Mono.Xaml {
 			SetValue (null, value);
 		}
 
-		public virtual object ConvertAttributeValue (string value)
+		public virtual object ConvertTextValue (string value)
 		{
 			return XamlTypeConverter.ConvertObject (Parser, Element, Type, Converter, Name, value);
 		}
@@ -121,7 +121,9 @@ namespace Mono.Xaml {
 			if (converter == null) {
 				try {
 					converter = new XamlTypeConverter (Parser, Element, Name, type);
-				} catch {
+				} catch (Exception e) {
+					Console.Error.WriteLine ("Exception while creating type converter (this is a recoverable error.)");
+					Console.Error.WriteLine (e);
 					converter = null;
 				}
 			}
@@ -346,7 +348,7 @@ namespace Mono.Xaml {
 			get { return evnt; }
 		}
 
-		public override object ConvertAttributeValue (string value)
+		public override object ConvertTextValue (string value)
 		{
 			// Just leave them as strings, we do the method
 			// lookup when SetValue is called.
