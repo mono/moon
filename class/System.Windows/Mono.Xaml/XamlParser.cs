@@ -713,7 +713,7 @@ namespace Mono.Xaml {
 			object o = null;
 
 			try {
-				parser.ParseExpression (ref expression);
+				o = parser.ParseExpression (ref expression);
 			} catch (Exception e) {
 				throw ParseException ("Could not convert attribute value.", e);
 			}
