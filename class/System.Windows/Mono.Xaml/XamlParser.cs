@@ -376,6 +376,8 @@ namespace Mono.Xaml {
 				return;
 			}
 
+			ParseXmlnsMappings ();
+
 			if (IsPropertyElement ()) {
 				ParsePropertyElement ();
 				return;
@@ -623,7 +625,7 @@ namespace Mono.Xaml {
 				return;
 			}
 			if (IsXmlnsMapping ()) {
-				ParseXmlnsMapping (element);
+				// These guys are handled when the element is first created
 				return;
 			}
 
@@ -658,7 +660,24 @@ namespace Mono.Xaml {
 			throw ParseException ("Undeclared prefix");
 		}
 
-		private void ParseXmlnsMapping (XamlElement element)
+		private void ParseXmlnsMappings ()
+		{
+			try {
+				int ac = reader.AttributeCount;
+				for (int i = 0; i < ac; i++) {
+					reader.MoveToAttribute (i);
+
+					if (!IsXmlnsMapping ())
+						continue;
+					ParseXmlnsMapping ();
+				}
+			} finally {
+				// We do this in a finally so error reporting doesn't get all jacked up
+				reader.MoveToElement();
+			}
+		}
+
+		private void ParseXmlnsMapping ()
 		{
 			if (reader.Prefix == String.Empty) {
 				DefaultXmlns = reader.Value;
