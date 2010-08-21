@@ -260,6 +260,9 @@ namespace Mono.Xaml {
 			if (dot < 0)
 				return false;
 
+			if (reader.NodeType == XmlNodeType.Attribute)
+				return true;
+
 			Type t = Parser.ResolveType ();
 			if (t.IsAssignableFrom (Type))
 				return false;
