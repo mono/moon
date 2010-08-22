@@ -161,6 +161,22 @@ namespace Mono.Xaml {
 			}
 		}
 
+		
+		public void SetBinding (Binding binding, object obj)
+		{
+			DependencyProperty prop = LookupDependencyProperty ();
+
+			if (prop == null)
+				throw Parser.ParseException ("Invalid Binding, can not find DependencyProperty {0}.", Name);
+
+			DependencyObject dob = obj as DependencyObject;
+
+			if (dob == null)
+				throw Parser.ParseException ("Bindings can not be used on non DependencyObject types.");
+
+			BindingOperations.SetBinding (dob, prop, binding);
+		}
+
 		public abstract void SetValue (XamlObjectElement obj, object value);
 	}
 
@@ -215,7 +231,7 @@ namespace Mono.Xaml {
 			if (!typeof (Binding).IsAssignableFrom (Type)) {
 				Binding binding = value as Binding;
 				if (binding != null) {
-					SetBinding (binding);
+					SetBinding (binding, Target);
 					return;
 				}
 			}
@@ -250,21 +266,6 @@ namespace Mono.Xaml {
 			}
 
 			throw Parser.ParseException ("Unable to set property {0} to value {1}.", Name, value);
-		}
-
-		private void SetBinding (Binding binding)
-		{
-			DependencyProperty prop = LookupDependencyProperty ();
-
-			if (prop == null)
-				throw Parser.ParseException ("Invalid Binding, can not find DependencyProperty {0}.", Name);
-
-			DependencyObject dob = Target as DependencyObject;
-
-			if (dob == null)
-				throw Parser.ParseException ("Bindings can not be used on non DependencyObject types.");
-
-			BindingOperations.SetBinding (dob, prop, binding);
 		}
 
 		private void SetTemplateBinding (TemplateBindingExpression tb)
@@ -447,6 +448,14 @@ namespace Mono.Xaml {
 			if (typeof (IList).IsAssignableFrom (Type)) {
 				AddToCollection (value);
 				return;
+			}
+
+			if (!typeof (Binding).IsAssignableFrom (Type)) {
+				Binding binding = value as Binding;
+				if (binding != null) {
+					SetBinding (binding, obj.Object);
+					return;
+				}
 			}
 
 			setter.Invoke (null, new object [] { Element.Object, ConvertValue (Type, value) });
