@@ -70,7 +70,7 @@ namespace Mono.Xaml {
 		public XamlParser (XamlContext context) 
 		{
 			Context = context;
-			DefaultXmlns = String.Empty;
+			DefaultXmlns = "http://schemas.microsoft.com/client/2007";
 			Xmlns = new Dictionary<string,string> ();
 			IgnorableXmlns = new List<string> ();
 			NameScope = new NameScope ();
@@ -651,9 +651,9 @@ namespace Mono.Xaml {
 
 			XamlPropertySetter prop = element.LookupProperty (reader);
 			if (prop == null)
-				throw ParseException ("The property {0} was not found.", reader.LocalName);
+				throw ParseException ("The property {0} was not found on element {1}.", reader.LocalName, element.Name);
 			object value = ParseAttributeValue (element, prop);
-			prop.SetValue (value);
+			prop.SetValue (element, value);
 		}
 
 		private void ParseMcAttribute (XamlElement element)
@@ -740,11 +740,11 @@ namespace Mono.Xaml {
 			try {
 				o = parser.ParseExpression (ref expression);
 			} catch (Exception e) {
-				throw ParseException ("Could not convert attribute value.", e);
+				throw ParseException ("Could not convert attribute value '{0}' on element {1}.", reader.Value, element.Name, e);
 			}
 
 			if (o == null && !MarkupExpressionParser.IsExplicitNull (expression))
-				throw ParseException ("Unable to convert attribute value: '{0}'.", expression);
+				throw ParseException ("Unable to convert attribute value: '{0}'.", reader.Value);
 
 			return property.ConvertValue (property.Type, o);
 		}
