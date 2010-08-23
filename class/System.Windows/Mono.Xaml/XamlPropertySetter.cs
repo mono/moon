@@ -177,6 +177,40 @@ namespace Mono.Xaml {
 			BindingOperations.SetBinding (dob, prop, binding);
 		}
 
+		
+		public void SetTemplateBinding (TemplateBindingExpression tb, object obj)
+		{
+			DependencyObject dob = obj as DependencyObject;
+			FrameworkElement fwe = obj as FrameworkElement;
+
+			if (dob == null)
+				throw Parser.ParseException ("Invalid TemplateBinding, expressions must be bound to DependendyObjects.");
+
+			// Applying a {TemplateBinding} to a DO which is not a FrameworkElement should silently discard the binding.
+			if (fwe == null)
+				return;
+
+			if (Parser.Context == null || Parser.Context.Template == null)
+				throw Parser.ParseException ("Invalid TemplateBinding, expressions can not be used outside of FrameworkTemplate.");
+
+			FrameworkElement source = Parser.Context.TemplateBindingSource;
+			if (source == null) 
+				throw Parser.ParseException ("Invalid TemplateBinding, expression can not be used outside of a FrameworkTemplate.");
+
+			DependencyProperty source_prop = DependencyProperty.Lookup (source.GetKind(), tb.SourcePropertyName);
+			if (source_prop == null)
+				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", tb.SourcePropertyName);
+
+			DependencyProperty prop = LookupDependencyProperty ();
+			if (prop == null)
+				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", Name);
+
+			tb.TargetProperty = prop;
+			tb.SourceProperty = source_prop;
+
+			fwe.SetTemplateBinding (prop, tb);
+		}
+
 		public abstract void SetValue (XamlObjectElement obj, object value);
 	}
 
@@ -239,7 +273,7 @@ namespace Mono.Xaml {
 			if (!typeof (TemplateBindingExpression).IsAssignableFrom (Type)) {
 				TemplateBindingExpression tb = value as TemplateBindingExpression;
 				if (tb != null) {
-					SetTemplateBinding (tb);
+					SetTemplateBinding (tb, Target);
 					return;
 				}
 			}
@@ -266,39 +300,6 @@ namespace Mono.Xaml {
 			}
 
 			throw Parser.ParseException ("Unable to set property {0} to value {1}.", Name, value);
-		}
-
-		private void SetTemplateBinding (TemplateBindingExpression tb)
-		{
-			DependencyObject dob = Target as DependencyObject;
-			FrameworkElement fwe = Target as FrameworkElement;
-
-			if (dob == null)
-				throw Parser.ParseException ("Invalid TemplateBinding, expressions must be bound to DependendyObjects.");
-
-			// Applying a {TemplateBinding} to a DO which is not a FrameworkElement should silently discard the binding.
-			if (fwe == null)
-				return;
-
-			if (Parser.Context == null || Parser.Context.Template == null)
-				throw Parser.ParseException ("Invalid TemplateBinding, expressions can not be used outside of FrameworkTemplate.");
-
-			FrameworkElement source = Parser.Context.TemplateBindingSource;
-			if (source == null) 
-				throw Parser.ParseException ("Invalid TemplateBinding, expression can not be used outside of a FrameworkTemplate.");
-
-			DependencyProperty source_prop = DependencyProperty.Lookup (source.GetKind(), tb.SourcePropertyName);
-			if (source_prop == null)
-				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", tb.SourcePropertyName);
-
-			DependencyProperty prop = LookupDependencyProperty ();
-			if (prop == null)
-				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", Name);
-
-			tb.TargetProperty = prop;
-			tb.SourceProperty = source_prop;
-
-			fwe.SetTemplateBinding (prop, tb);
 		}
 
 		private void AddToCollection (XamlObjectElement obj, object value)
@@ -454,6 +455,14 @@ namespace Mono.Xaml {
 				Binding binding = value as Binding;
 				if (binding != null) {
 					SetBinding (binding, obj.Object);
+					return;
+				}
+			}
+
+			if (!typeof (TemplateBindingExpression).IsAssignableFrom (Type)) {
+				TemplateBindingExpression tb = value as TemplateBindingExpression;
+				if (tb != null) {
+					SetTemplateBinding (tb, obj.Object);
 					return;
 				}
 			}
