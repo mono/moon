@@ -262,7 +262,6 @@ namespace Mono.Xaml {
 				// If there wasn't an explicitly set content property (via attributes)
 				// attempt to use a property named Content. Will return null if the
 				// property is not found.
-				Console.WriteLine ("using baked in content property.");
 				return XamlReflectionPropertyForName (Type, "Content");
 			}
 
