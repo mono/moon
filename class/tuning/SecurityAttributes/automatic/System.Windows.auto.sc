@@ -895,8 +895,8 @@
 # overrides 'System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)'.
 +SC-M: System.Object Mono.Xaml.SL4MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
 
-# overrides 'System.Object Mono.Xaml.XamlPropertySetter::ConvertAttributeValue(System.String)'.
-+SC-M: System.Object Mono.Xaml.XamlReflectionEventSetter::ConvertAttributeValue(System.String)
+# overrides 'System.Object Mono.Xaml.XamlPropertySetter::ConvertTextValue(System.String)'.
++SC-M: System.Object Mono.Xaml.XamlReflectionEventSetter::ConvertTextValue(System.String)
 
 # overrides 'System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)'.
 +SC-M: System.Object Mono.Xaml.XamlTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
