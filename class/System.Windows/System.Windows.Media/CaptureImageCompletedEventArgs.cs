@@ -115,12 +115,10 @@ namespace System.Windows.Media {
 			throw new Exception ();
 		}
 
-                Kind INativeEventObjectWrapper.GetKind ()
-                {
-                        return Kind.SENDCOMPLETEDEVENTARGS;
-                }
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return Deployment.Current.Types.TypeToKind (GetType ());
+		}
 #endregion
-
 	}
-
 }

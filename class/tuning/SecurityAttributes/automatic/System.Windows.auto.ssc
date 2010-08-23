@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 628 methods
+# 631 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::AddHandler(System.Int32,System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: Mono.UnmanagedEventHandler Mono.EventHandlerList::RemoveHandler(System.Int32,System.Delegate)
@@ -270,6 +270,7 @@
 +SSC-M: System.IAsyncResult System.Net.Browser.ClientHttpWebRequestInternal::BeginGetResponse(System.AsyncCallback,System.Object)
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.Object)
 +SSC-M: System.Void System.Windows.Application::.ctor(System.IntPtr,System.Boolean)
++SSC-M: Mono.Kind System.Windows.Application::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Void System.Windows.Application::Free()
 +SSC-M: System.Void System.Windows.Application::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.Application::UnregisterEvent(System.Int32,System.Delegate)
@@ -397,6 +398,7 @@
 +SSC-M: System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
 +SSC-M: System.Void System.Windows.Documents.FontSource::.ctor(System.IO.Stream)
 +SSC-M: System.Void System.Windows.Documents.TextPointer::.ctor(System.IntPtr,System.Boolean)
++SSC-M: Mono.Kind System.Windows.Documents.TextPointer::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Void System.Windows.Documents.TextPointer::Free()
 +SSC-M: System.Int32 System.Windows.Documents.TextPointer::CompareTo(System.Windows.Documents.TextPointer)
 +SSC-M: System.Windows.Rect System.Windows.Documents.TextPointer::GetCharacterRect(System.Windows.Documents.LogicalDirection)
@@ -486,6 +488,7 @@
 +SSC-M: System.Windows.Media.VideoCaptureDevice System.Windows.Media.CaptureDeviceConfiguration::GetDefaultVideoCaptureDevice()
 +SSC-M: System.Boolean System.Windows.Media.CaptureDeviceConfiguration::RequestDeviceAccess()
 +SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::.ctor(System.IntPtr,System.Exception,System.Boolean)
++SSC-M: Mono.Kind System.Windows.Media.CaptureImageCompletedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::Free()
 +SSC-M: System.Windows.Media.Imaging.WriteableBitmap System.Windows.Media.CaptureImageCompletedEventArgs::get_Result()
 +SSC-M: System.Void System.Windows.Media.CaptureSource::CaptureImageAsync()

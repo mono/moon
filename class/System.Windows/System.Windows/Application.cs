@@ -865,7 +865,7 @@ namespace System.Windows {
 
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			return Kind.APPLICATION;
+			return Deployment.Current.Types.TypeToKind (GetType ());
 		}
 	}
 }

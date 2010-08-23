@@ -80,7 +80,7 @@ namespace System.Windows.Documents {
 		
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			return Kind.TEXTPOINTER;
+			return Deployment.Current.Types.TypeToKind (GetType ());
 		}
 
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
