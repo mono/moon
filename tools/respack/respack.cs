@@ -140,6 +140,9 @@ class ResourcePacker {
 						if (!Regex.IsMatch (key, pattern))
 							continue;
 
+						if (verbose)
+							Console.WriteLine ("  stream: {0}", key);
+
 						MemoryStream stream = id.Value as MemoryStream;
 						if (stream == null) {
 							Console.Error.WriteLine ("Item not stored as a MemoryStream. {0}", key);
