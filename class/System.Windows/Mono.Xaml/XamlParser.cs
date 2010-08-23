@@ -70,9 +70,6 @@ namespace Mono.Xaml {
 		public XamlParser (XamlContext context) 
 		{
 			Context = context;
-			DefaultXmlns = "http://schemas.microsoft.com/client/2007";
-			Xmlns = new Dictionary<string,string> ();
-			IgnorableXmlns = new List<string> ();
 			NameScope = new NameScope ();
 		}
 
@@ -95,21 +92,6 @@ namespace Mono.Xaml {
 			get {
 				return top_element == null;
 			}
-		}
-
-		public string DefaultXmlns {
-			get;
-			private set;
-		}
-
-		public List<string> IgnorableXmlns {
-			get;
-			private set;
-		}
-
-		public Dictionary<string,string> Xmlns {
-			get;
-			private set;
 		}
 
 		public object HydrateObject {
@@ -265,15 +247,9 @@ namespace Mono.Xaml {
 				lookup = lookup.Parent;
 			}
 
-			//
-			// Didn't find it in our local tree, so try the context if one is available
-			//
-
-			if (Context != null) {
-				o = Context.LookupNamedItem (name);
-				if (o != null)
-					return o;
-			}
+			o = Context.LookupNamedItem (name);
+			if (o != null)
+				return o;
 
 			o = Application.Current.Resources [name];
 		
@@ -316,9 +292,6 @@ namespace Mono.Xaml {
 
 			if (parent != null)
 				return ((XamlObjectElement) parent).Object as FrameworkTemplate;
-
-			if (Context == null)
-				return null;
 
 			return Context.Template;
 		}
@@ -650,8 +623,10 @@ namespace Mono.Xaml {
 			}
 
 			XamlPropertySetter prop = element.LookupProperty (reader);
-			if (prop == null)
+			if (prop == null) {
+				Console.WriteLine (Environment.StackTrace);
 				throw ParseException ("The property {0} was not found on element {1}.", reader.LocalName, element.Name);
+			}
 			object value = ParseAttributeValue (element, prop);
 			prop.SetValue (element, value);
 		}
@@ -659,7 +634,7 @@ namespace Mono.Xaml {
 		private void ParseMcAttribute (XamlElement element)
 		{
 			if (reader.LocalName == "Ignorable") {
-				IgnorableXmlns.Add (reader.Value);
+				Context.IgnorableXmlns.Add (reader.Value);
 				return;
 			}
 
@@ -686,11 +661,11 @@ namespace Mono.Xaml {
 		private void ParseXmlnsMapping ()
 		{
 			if (reader.Prefix == String.Empty) {
-				DefaultXmlns = reader.Value;
+				Context.DefaultXmlns = reader.Value;
 				return;
 			}
 
-			Xmlns [reader.LocalName] = reader.Value;
+			Context.Xmlns [reader.LocalName] = reader.Value;
 		}
 
 		private void ParseXAttribute (XamlObjectElement element)
@@ -798,7 +773,7 @@ namespace Mono.Xaml {
 
 		private bool IsIgnorable ()
 		{
-			return IgnorableXmlns.Contains (reader.Prefix);
+			return Context.IgnorableXmlns.Contains (reader.Prefix);
 		}
 
 		private void OnElementBegin (XamlElement element)
@@ -855,7 +830,6 @@ namespace Mono.Xaml {
 			XamlObjectElement obj = element as XamlObjectElement;
 
 			if (obj != null) {
-
 				if (typeof (DependencyObject).IsAssignableFrom (obj.Type)) {
 					DependencyObject dob = (DependencyObject) obj.Object;
 					NameScope.SetNameScope (dob, NameScope);
@@ -978,13 +952,13 @@ namespace Mono.Xaml {
 		public Type ResolveType (string str)
 		{
 			int colon = str.IndexOf (':');
-			string xmlns = DefaultXmlns;
+			string xmlns = Context.DefaultXmlns;
 			string name = str;
 
 			if (colon > 0) {
 				string local = str.Substring (0, colon);
 				name = str.Substring (++colon, str.Length - colon);
-				if (!Xmlns.TryGetValue (local, out xmlns))
+				if (!Context.Xmlns.TryGetValue (local, out xmlns))
 					throw ParseException ("Could not find namespace for type {0} ({1}, {2}).", str, name, local);
 			}
 
@@ -1017,7 +991,7 @@ namespace Mono.Xaml {
 			}
 
 			if (String.IsNullOrEmpty (xmlns))
-				xmlns = DefaultXmlns;
+				xmlns = Context.DefaultXmlns;
 
 			ns = ResolveClrNamespace (xmlns);
 			asm_name = ResolveAssemblyName (xmlns);

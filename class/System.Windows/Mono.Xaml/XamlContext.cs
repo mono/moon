@@ -42,6 +42,10 @@ namespace Mono.Xaml
 		internal XamlContext ()
 		{
 			Resources = new List<DependencyObject> ();
+
+			DefaultXmlns = String.Empty;
+			IgnorableXmlns = new List<string> ();
+			Xmlns = new Dictionary<string,string> ();
 		}
 
 		internal XamlContext (XamlContext parent, List<DependencyObject> resources, FrameworkTemplate template)
@@ -49,6 +53,13 @@ namespace Mono.Xaml
 			Parent = parent;
 			Resources = resources;
 			Template = template;
+
+			//
+			// Its just not worth the lookup time to try accessing these on the parents, so copy them over.
+			//
+			DefaultXmlns = parent.DefaultXmlns;
+			IgnorableXmlns = new List<string> (parent.IgnorableXmlns);
+			Xmlns = new Dictionary<string,string> (parent.Xmlns);
 		}
 
 		public XamlContext Parent {
@@ -74,6 +85,21 @@ namespace Mono.Xaml
 		public bool IsExpandingTemplate {
 			get;
 			set;
+		}
+
+		public string DefaultXmlns {
+			get;
+			set;
+		}
+
+		public List<string> IgnorableXmlns {
+			get;
+			private set;
+		}
+
+		public Dictionary<string,string> Xmlns {
+			get;
+			private set;
 		}
 
 		public object LookupNamedItem (string name)
