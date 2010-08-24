@@ -34,7 +34,7 @@ dist-hook:
 gendarme:
 	gendarme --html gendarme.html --config gendarme.xml $(prefix)/lib/moonlight/plugin/*.dll --ignore gendarme.ignore
 
-noinst_PROGRAMS = uris effects
+noinst_PROGRAMS = uris effects projections
 
 uris_SOURCES= uri-test.cpp
 
@@ -47,4 +47,10 @@ effects_SOURCES= effect-test.cpp
 effects_LDADD = $(MOON_PROG_LIBS)
 
 effects_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/ -I$(top_srcdir)/src/asf
+
+projections_SOURCES= projection-test.cpp
+
+projections_LDADD = $(MOON_PROG_LIBS)
+
+projections_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/ -I$(top_srcdir)/src/asf
 
