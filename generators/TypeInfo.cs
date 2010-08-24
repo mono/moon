@@ -128,7 +128,7 @@ class TypeInfo : MemberInfo {
 				if (method.Parameters.Count != 0)
 					continue;
 
-				if (!method.Annotations.ContainsKey ("GenerateCBinding"))
+				if (!method.Annotations.ContainsKey ("GenerateCBinding") && !method.Annotations.ContainsKey ("GeneratePInvoke"))
 					continue;
 
 				if (method.IsConstructor) {
