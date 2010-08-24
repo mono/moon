@@ -135,9 +135,6 @@ namespace Mono.Xaml {
 			if (converter == null)
 				converter = new XamlTypeConverter (parser, element, prop_name, dest_type);
 
-			if (!converter.CanConvertFrom (val.GetType ()))
-				throw new Exception (string.Format ("type converter {0} can't convert from type {1} destination type: {2}", converter.GetType (), val.GetType (), dest_type));
-
 			return converter.ConvertFrom (null, Helper.DefaultCulture, val);
 		}
 
@@ -151,7 +148,7 @@ namespace Mono.Xaml {
 
 			string type_name = value.Substring (0, dot);
 			string event_name = value.Substring (dot + 1, value.Length - dot - 1);
-			Type type = converter.parser.LoadType (null, converter.parser.DefaultXmlns, type_name);
+			Type type = converter.parser.LoadType (null, converter.parser.Context.DefaultXmlns, type_name);
 
 			RoutedEvent res = null;
 			Type eventids = typeof (EventIds);
@@ -274,7 +271,7 @@ namespace Mono.Xaml {
 
 					string ns = null;
 
-					if (!converter.parser.Xmlns.TryGetValue (prefix, out ns)) {
+					if (!converter.parser.Context.Xmlns.TryGetValue (prefix, out ns)) {
 						Console.WriteLine ("could not find xmlns value:  {0}", prefix);
 						return null;
 					}
