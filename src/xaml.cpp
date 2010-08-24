@@ -4156,9 +4156,20 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 
 		item->SetValue (content, Value (uri));
 		return true;
-	} else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK)) {
-		TextBlock *textblock = (TextBlock *) item;
-		InlineCollection *inlines = textblock->GetInlines ();
+	} else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK) ||
+		   Type::IsSubclassOf (p->deployment, info->GetKind (), Type::SPAN) ||
+		   Type::IsSubclassOf (p->deployment, info->GetKind (), Type::PARAGRAPH)) {
+
+		int property = -1;
+		if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK))
+			property = TextBlock::InlinesProperty;
+		else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::SPAN))
+			property = Span::InlinesProperty;
+		else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::PARAGRAPH))
+			property = Paragraph::InlinesProperty;
+
+		Value *value = item->GetValue (property);
+		InlineCollection *inlines = value ? value->AsInlineCollection () : NULL;
 		Inline *last = NULL;
 		
 		if (inlines && inlines->GetCount () > 0)
@@ -4190,7 +4201,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 		
 		if (!inlines) {
 			inlines = MoonUnmanagedFactory::CreateInlineCollection ();
-			textblock->SetInlines (inlines);
+			item->SetValue (property, inlines);
 			inlines->unref ();
 		}
 		
