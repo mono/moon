@@ -446,11 +446,6 @@ namespace Mono.Xaml {
 
 		public override void SetValue (XamlObjectElement obj, object value)
 		{
-			if (typeof (IList).IsAssignableFrom (Type)) {
-				AddToCollection (value);
-				return;
-			}
-
 			if (!typeof (Binding).IsAssignableFrom (Type)) {
 				Binding binding = value as Binding;
 				if (binding != null) {
@@ -467,7 +462,15 @@ namespace Mono.Xaml {
 				}
 			}
 
-			setter.Invoke (null, new object [] { Element.Object, ConvertValue (Type, value) });
+			if (value == null || Type.IsAssignableFrom (value.GetType ())) {
+				setter.Invoke (null, new object [] { Element.Object, ConvertValue (Type, value) });
+				return;
+			}
+				
+			if (typeof (IList).IsAssignableFrom (Type)) {
+				AddToCollection (value);
+				return;
+			}
 		}
 
 		public void AddToCollection (object value)
