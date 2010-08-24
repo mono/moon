@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 519 methods needs to be decorated.
+# 526 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -779,10 +779,28 @@
 +SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_element_get_content_end(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_element_get_content_start(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_element_get_element_end(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_element_get_element_start(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::text_pointer_get_next_insertion_position(System.IntPtr,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_pointer_get_parent(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::text_pointer_get_position_at_offset(System.IntPtr,System.Int32,System.Windows.Documents.LogicalDirection)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_pointer_new(System.Int32,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_property_value(System.IntPtr,System.IntPtr)
@@ -1392,6 +1410,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::touch_point_set_touch_device(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::types_register_interfaces(System.IntPtr,Mono.Kind,Mono.Kind[],System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_arrange_with_error_(System.IntPtr,System.Windows.Rect,Mono.MoonError&)

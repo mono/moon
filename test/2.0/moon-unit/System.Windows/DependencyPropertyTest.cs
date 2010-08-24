@@ -11,6 +11,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Collections;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1435,6 +1436,9 @@ namespace MoonTest.System.Windows
 
 			dp.IEquatableProp = new ManagedIEquatable ();
 			Assert.IsInstanceOfType<ManagedIEquatable> (dp.IEquatableProp, "#6");
+
+			ItemsControl ic = new ItemsControl();
+			dp.ICollectionProp = ic.Items;
 		}
 		
 		[TestMethod]
@@ -1654,6 +1658,7 @@ namespace MoonTest.System.Windows
 		public static DependencyProperty IComparablePropProperty = DependencyProperty.Register ("IComparableProp", typeof (IComparable), typeof (InterfaceDPs), null);
 		public static DependencyProperty IComparableCharProperty = DependencyProperty.Register ("IComparableInt", typeof (IComparable<char>), typeof (InterfaceDPs), null);
 		public static DependencyProperty IEquatablePropProperty = DependencyProperty.Register ("IEquatableProp", typeof (IEquatable<double>), typeof (InterfaceDPs), null);
+		public static DependencyProperty ICollectionPropProperty = DependencyProperty.Register ("ICollectionProp", typeof (ICollection), typeof (InterfaceDPs), null);
 
 		public IComparable IComparableProp
 		{
@@ -1671,6 +1676,12 @@ namespace MoonTest.System.Windows
 		{
 			get { return (IComparable<char>) GetValue (IComparablePropProperty); }
 			set { SetValue (IComparablePropProperty, value); }
+		}
+
+		public ICollection ICollectionProp
+		{
+			get { return (ICollection) GetValue (ICollectionPropProperty); }
+			set { SetValue (ICollectionPropProperty, value); }
 		}
 
 		public int CompareTo (object o) { return 0; }
@@ -1907,6 +1918,93 @@ namespace MoonTest.System.Windows
 		public DependencyObjectCollection<DependencyObject> Collection {
 			get { return (DependencyObjectCollection<DependencyObject>)GetValue(CollectionProperty); }
 			set { SetValue(CollectionProperty, value); }
+		}
+	}
+
+	public class CustomIList : IList {
+		public int Add (object value)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void Clear ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool Contains (object value)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public int IndexOf (object value)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void Insert (int index, object value)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void Remove (object value)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void RemoveAt (int index)
+		{
+			throw new NotImplementedException ();
+		}
+
+		
+		public bool IsFixedSize {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public bool IsReadOnly {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public object this [int index] {
+			get {
+				throw new NotImplementedException ();
+			}
+			set {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public IEnumerator GetEnumerator ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void CopyTo (Array array, int index)
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public int Count {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public bool IsSynchronized {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public object SyncRoot {
+			get {
+				throw new NotImplementedException ();
+			}
 		}
 	}
 }

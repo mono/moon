@@ -2098,7 +2098,7 @@ class Generator {
 			text.Append (type);
 			text.AppendLine ("); ");
 
-			text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
+			text.Append ("\t\t\t\tAddBuiltinType (t, new ManagedType (t, Kind.");
 			text.Append (t.KindName);
 			text.AppendLine ("));");
 		}
@@ -2110,7 +2110,7 @@ class Generator {
 			text.AppendLine (");");
 
 
-			text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
+			text.Append ("\t\t\t\tAddBuiltinType (t, new ManagedType (t, Kind.");
 			text.Append (k);
 			text.AppendLine ("));");
 		};
@@ -2127,31 +2127,6 @@ class Generator {
 		f ("string", "STRING");
 		f ("TimeSpan", "TIMESPAN");
 		f ("Enum", "ENUM");
-
-		// all the interfaces
-		f ("IComparable", "ICOMPARABLE");
-		f ("IFormattable", "IFORMATTABLE");
-		f ("IConvertible", "ICONVERTIBLE");
-		f ("IEquatable<bool>", "IEQUATABLE_BOOL");
-		f ("IComparable<bool>", "ICOMPARABLE_BOOL");
-		f ("IEquatable<double>", "IEQUATABLE_DOUBLE");
-		f ("IComparable<double>", "ICOMPARABLE_DOUBLE");
-		f ("IEquatable<float>", "IEQUATABLE_FLOAT");
-		f ("IComparable<float>", "ICOMPARABLE_FLOAT");
-		f ("IEquatable<char>", "IEQUATABLE_CHAR");
-		f ("IComparable<char>", "ICOMPARABLE_CHAR");
-		f ("IEquatable<int>", "IEQUATABLE_INT");
-		f ("IComparable<int>", "ICOMPARABLE_INT");
-		f ("IEquatable<long>", "IEQUATABLE_LONG");
-		f ("IComparable<long>", "ICOMPARABLE_LONG");
-		f ("IEquatable<string>", "IEQUATABLE_STRING");
-		f ("IComparable<string>", "ICOMPARABLE_STRING");
-		f ("IEquatable<TimeSpan>", "IEQUATABLE_TIMESPAN");
-		f ("IComparable<TimeSpan>", "ICOMPARABLE_TIMESPAN");
-		f ("IEquatable<uint>", "IEQUATABLE_UINT");
-		f ("IComparable<uint>", "ICOMPARABLE_UINT");
-		f ("IEquatable<ulong>", "IEQUATABLE_ULONG");
-		f ("IComparable<ulong>", "ICOMPARABLE_ULONG");
 
 		f ("System.Windows.Application", "APPLICATION");
 		f ("System.Windows.Thickness", "THICKNESS");

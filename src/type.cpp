@@ -65,6 +65,22 @@ Type::~Type ()
 	delete [] interfaces;
 }
 
+void
+Type::SetInterfaces (int interface_count, const Type::Kind *interfaces)
+{
+	delete[] this->interfaces;
+
+	this->interface_count = interface_count;
+
+	if (this->interface_count) {
+		this->interfaces = new Type::Kind[interface_count];
+		memcpy (this->interfaces, interfaces, interface_count * sizeof (Type::Kind));
+	}
+	else {
+		this->interfaces = NULL;
+	}
+}
+
 int
 Type::LookupEvent (const char *event_name)
 {
@@ -184,7 +200,6 @@ Types::IsAssignableFrom (Type::Kind destination, Type::Kind type)
 	Type *type_type = Find (type);
 	while (type_type && type_type->GetKind() != Type::INVALID) {
 		for (int i = 0; i < type_type->GetInterfaceCount(); i ++) {
-			// should this be IsAssignableFrom instead of ==?  ugh
 			if (type_type->GetInterface(i) == destination)
 				return true;
 		}
@@ -455,6 +470,14 @@ Types::RegisterType (const char *name, const char *content_property, void *gc_ha
 	type->SetKind ((Type::Kind) types.Add (type));
 	
 	return type->GetKind ();
+}
+
+void
+Types::RegisterInterfaces (Type::Kind type, Type::Kind *interfaces, int interface_count)
+{
+	Type *t = Find (type);
+
+	t->SetInterfaces (interface_count, interfaces);
 }
 
 

@@ -147,6 +147,27 @@ namespace Mono
 			return info;
 		}
 		
+		private void AddBuiltinType (Type type, ManagedType managed_type)
+		{
+			// we need to collect and add the interfaces for the type
+			types.Add (type, managed_type);
+
+			Type[] interfaces = type.GetInterfaces ();
+
+			ManagedType[] interface_types = new ManagedType[interfaces.Length];
+			for (int i = 0; i < interfaces.Length; i ++)
+				interface_types[i] = Find (interfaces[i]);
+
+			Kind[] interface_kinds = new Kind[interfaces.Length];
+			for (int i = 0; i < interfaces.Length; i ++)
+				interface_kinds[i] = interface_types[i].native_handle;
+
+			NativeMethods.types_register_interfaces (native,
+								 managed_type.native_handle,
+								 interface_kinds, interface_kinds.Length);
+
+		}
+
 		public Type KindToType (Kind kind)
 		{
 			ManagedType result;

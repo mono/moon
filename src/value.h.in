@@ -137,7 +137,7 @@ public:
 
 	Value& operator= (const Value& other);
 	
-	bool		Is (Deployment *deployment, Type::Kind type) const { return Type::IsSubclassOf (deployment, k, type); }
+	bool		Is (Deployment *deployment, Type::Kind type) const { return Type::IsAssignableFrom (deployment, type, k); }
 
 	bool		AsBool () const	            { checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	gunichar	AsChar () const             { checked_get_exact (Type::CHAR, 0, u.c); }
