@@ -36,13 +36,13 @@ Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_
 	this->is_enum = is_enum;
 	this->is_value_type = is_value_type;
 	this->is_interface = is_interface;
-	this->name = name;
+	this->name = g_strdup (name);
 	this->event_count = event_count;
 	this->total_event_count = total_event_count;
 	this->events = events;
 	this->ctor_visible = ctor_visible;
 	this->create_inst = create_inst;
-	this->content_property = content_property;
+	this->content_property = g_strdup (content_property);
 	this->properties = NULL;
 	this->interface_count = interface_count;
 	if (this->interface_count) {
@@ -57,6 +57,9 @@ Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_
 		
 Type::~Type ()
 {
+	g_free (name);
+	g_free (content_property);
+
 	if (properties) {
 		g_hash_table_destroy (properties);
 		properties = NULL;
@@ -463,7 +466,7 @@ Types::Find (const char *name, bool ignore_case)
 Type::Kind
 Types::RegisterType (const char *name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind* interfaces, int interface_count)
 {
-	Type *type = new Type (Deployment::GetCurrent (), Type::INVALID, parent, false, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, content_property);
+	Type *type = new Type (Deployment::GetCurrent (), Type::INVALID, parent, false, false, is_interface, name, 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, content_property);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	

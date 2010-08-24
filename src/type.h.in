@@ -92,7 +92,7 @@ private:
 	bool is_value_type; // if this type is a value type
 	bool is_interface; // if this type is a value type
 
-	const char *name; // The name as it appears in code.
+	char *name; // The name as it appears in code.
 
 	int interface_count;
 	Type::Kind *interfaces;
@@ -104,7 +104,7 @@ private:
 	bool ctor_visible; // if the type is instantiable in xaml, basically if the managed type has a public default ctor.
 	create_inst_func *create_inst; // a function pointer to create an instance of this type
 
-	const char *content_property;
+	char *content_property;
 	
 	// The catch here is that SL allows us to register several DPs with the same name,
 	// and when looking up DP on name they seem to return the latest DP registered
