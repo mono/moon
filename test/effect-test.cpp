@@ -1,3 +1,5 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -13,6 +15,16 @@ class CustomEffect : public ShaderEffect {};
 const int width = 256;
 const int height = 256;
 
+int frames = 0;
+
+static void
+effect_alarm_handler (int sig)
+{
+	printf ("%d frames in 5.0 seconds = %f FPS\n", frames, frames / 5.0);
+	frames = 0;
+	alarm (5);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -21,12 +33,13 @@ main (int argc, char **argv)
 	CustomEffect *effect;
 	PixelShader *shader;
 	int stride = width * 4;
-        Rect bounds = Rect (0, 0, width, height);
+	Rect bounds = Rect (0, 0, width, height);
 	gpointer data;
-	bool status;
+	bool status = true;
+	int count = 1;
 
 	if (argc < 2) {
-		printf ("usage: %s SHADERFILE\n", argv[0]);
+		printf ("usage: %s SHADERFILE [COUNT]\n", argv[0]);
 		return 1;
 	}
 
@@ -35,13 +48,13 @@ main (int argc, char **argv)
 	runtime_init_desktop ();
 
 	data = g_malloc0 (height * stride);
-        dst = cairo_image_surface_create_for_data ((unsigned char *) data,
-                                                   CAIRO_FORMAT_ARGB32,
-                                                   width, height, stride);
+	dst = cairo_image_surface_create_for_data ((unsigned char *) data,
+						   CAIRO_FORMAT_ARGB32,
+						   width, height, stride);
 	src = cairo_surface_create_similar (dst,
 					    CAIRO_CONTENT_COLOR_ALPHA,
 					    width, height);
-        cr = cairo_create (dst);
+	cr = cairo_create (dst);
 
 	effect = new CustomEffect ();
 	shader = MoonUnmanagedFactory::CreatePixelShader ();
@@ -49,12 +62,27 @@ main (int argc, char **argv)
 	shader->SetTokensFromPath (argv[1]);
 	effect->SetPixelShader (shader);
 
-	status = effect->Render (cr, src, NULL, 0, 0, width, height);
+	if (argc > 2) {
+		count = atoi (argv[2]);
+		if (count > 1) {
+			signal (SIGALRM, effect_alarm_handler);
+			alarm (5);
+		}
+	}
+
+	while (status && count-- > 0) {
+		status = effect->Render (cr,
+					 src,
+					 (double *) NULL,
+					 0, 0, width, height);
+
+		frames++;
+	}
 
 	effect->unref ();
 	shader->unref ();
 
-        cairo_destroy (cr);
+	cairo_destroy (cr);
 	cairo_surface_destroy (src);
 	cairo_surface_destroy (dst);
 	g_free (data);

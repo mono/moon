@@ -1,3 +1,7 @@
+2010-08-24  David Reveman  <davidr@novell.com>
+
+	* effect-test.cpp: Add simple performance test support.
+
 2010-07-15  David Reveman  <davidr@novell.com>
 
 	* effect-test.cpp: Track changes to effects framework.
