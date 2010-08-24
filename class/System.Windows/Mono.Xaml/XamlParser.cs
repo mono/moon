@@ -476,6 +476,8 @@ namespace Mono.Xaml {
 			try {
 				dob = parser.ParseString (xaml) as INativeEventObjectWrapper;
 			} catch (Exception e) {
+				if (xaml.Trim ().Length == 0)
+					return IntPtr.Zero;
 				error = new MoonError (e);
 				return IntPtr.Zero;
 			}
