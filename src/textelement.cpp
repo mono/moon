@@ -26,6 +26,7 @@
 #include "utils.h"
 #include "debug.h"
 #include "uri.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -213,6 +214,33 @@ TextElement::UpdateFontDescription (const FontResource *resource, bool force)
 	return changed;
 }
 
+TextPointer*
+TextElement::GetContentStart ()
+{
+	return MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward);
+}
+
+TextPointer*
+TextElement::GetContentEnd ()
+{
+	return MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward);
+}
+
+TextPointer*
+TextElement::GetElementStart ()
+{
+	printf ("NIEX TextElement::GetElementStart ()");
+	// FIXME this likely requires getting the parent, then getting a TextPointer just before @this
+	return NULL;
+}
+
+TextPointer*
+TextElement::GetElementEnd ()
+{
+	printf ("NIEX TextElement::GetElementEnd ()");
+	// FIXME this likely requires getting the parent, then getting a TextPointer just after @this
+	return NULL;
+}
 
 //
 // Inline

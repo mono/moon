@@ -29,6 +29,7 @@
 using System;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
+using Mono;
 
 namespace System.Windows.Documents {
 	public abstract partial class TextElement : DependencyObject {
@@ -50,31 +51,19 @@ namespace System.Windows.Documents {
 		}
 
 		public TextPointer ContentStart {
-			get {
-				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ContentStart");
-				throw new NotImplementedException ();
-			}
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_content_start (native)) as TextPointer; }
 		}
 
 		public TextPointer ContentEnd {
-			get {
-				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ContentEnd");
-				throw new NotImplementedException ();
-			}
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_content_end (native)) as TextPointer; }
 		}
 
 		public TextPointer ElementStart {
-			get {
-				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ElementStart");
-				throw new NotImplementedException ();
-			}
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_element_start (native)) as TextPointer; }
 		}
 
 		public TextPointer ElementEnd {
-			get {
-				Console.WriteLine ("NEIX: System.Windows.Documents.TextElement:.get_ElementEnd");
-				throw new NotImplementedException ();
-			}
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_element_end (native)) as TextPointer; }
 		}
 	}
 }

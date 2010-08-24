@@ -154,6 +154,15 @@ TextPointer::GetPositionAtOffset (int offset, LogicalDirection dir)
 // TextSelection
 //
 
+TextSelection::TextSelection ()
+{
+	SetObjectType (Type::TEXTSELECTION);
+
+	// FIXME: we should not be doing this... should they be autocreated?
+	SetEnd (MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward));
+	SetStart (MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward));
+}
+
 void
 TextSelection::ApplyPropertyValue (DependencyProperty *formatting, Value *value)
 {
@@ -1146,21 +1155,21 @@ TextPointer*
 RichTextBox::GetPositionFromPoint (Point point)
 {
 	// FIXME
-	return new TextPointer ();
+	return MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionForward);
 }
 
 TextPointer*
 RichTextBox::GetContentStart ()
 {
 	// FIXME
-	return new TextPointer ();
+	return MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward);
 }
 
 TextPointer*
 RichTextBox::GetContentEnd ()
 {
 	// FIXME
-	return new TextPointer ();
+	return MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward);
 }
 
 void

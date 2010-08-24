@@ -38,6 +38,12 @@ class TextPointer : public DependencyObject {
  protected:
 	virtual ~TextPointer () {}
 	
+	/* @GeneratePInvoke */
+	TextPointer (int location, LogicalDirection direction) { SetObjectType (Type::TEXTPOINTER); SetLogicalDirection (direction); /* FIXME: location? */}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+	
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsAtInsertionPositionProperty;
@@ -46,19 +52,16 @@ class TextPointer : public DependencyObject {
 	/* @PropertyType=DependencyObject,GenerateAccessors */
 	const static int ParentProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	TextPointer () { SetObjectType (Type::TEXTPOINTER); }
-	
 	//
 	// Methods
 	//
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	int CompareTo (TextPointer *pointer);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Rect GetCharacterRect (LogicalDirection dir);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	TextPointer *GetNextInsertionPosition (LogicalDirection dir);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	TextPointer *GetPositionAtOffset (int offset, LogicalDirection dir);
 	
 	//
@@ -71,6 +74,7 @@ class TextPointer : public DependencyObject {
 	LogicalDirection GetLogicalDirection ();
 	
 	void SetParent (DependencyObject *parent);
+	/* @GeneratePInvoke */
 	DependencyObject *GetParent ();
 };
 
@@ -90,12 +94,7 @@ class TextSelection : public DependencyObject {
 	const static int XamlProperty;
 	
 	/* @GeneratePInvoke,GenerateCBinding */
-	TextSelection ()
-	{
-		SetObjectType (Type::TEXTSELECTION);
-		// FIXME: we should not be doing this... should they be autocreated?
-		SetEnd (new TextPointer()); SetStart (new TextPointer());
-	}
+	TextSelection ();
 	
 	//
 	// Methods

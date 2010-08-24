@@ -51,7 +51,7 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
  protected:
-	/* @GeneratePInvoke,GenerateCBinding,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	TextElement ();
 	
 	virtual ~TextElement ();
@@ -88,6 +88,15 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	virtual TextDecorations Decorations () { return GetTextDecorations (); }
 	virtual Brush *Foreground (bool selected) { return GetForeground (); }
 	virtual Brush *Background (bool selected) { return NULL; }
+
+	/* @GeneratePInvoke */
+	TextPointer *GetContentStart ();
+	/* @GeneratePInvoke */
+	TextPointer *GetContentEnd ();
+	/* @GeneratePInvoke */
+	TextPointer *GetElementStart ();
+	/* @GeneratePInvoke */
+	TextPointer *GetElementEnd ();
 	
 	//
 	// Property Accessors
@@ -133,7 +142,7 @@ class Inline : public TextElement {
 	bool autogen;
 	
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
 
 	virtual ~Inline () {}
@@ -166,7 +175,7 @@ class Inline : public TextElement {
 /* @Namespace=System.Windows.Documents */
 class LineBreak : public Inline {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LineBreak ();
 
 	virtual ~LineBreak () {}
@@ -179,7 +188,7 @@ class LineBreak : public Inline {
 /* @Namespace=System.Windows.Documents */
 class Run : public Inline {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Run ();
 	
 	virtual ~Run () {}
@@ -219,7 +228,7 @@ class Run : public Inline {
 /* @Namespace=System.Windows.Documents */
 class Block : public TextElement {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Block ();
 
 	virtual ~Block () {}
@@ -242,7 +251,7 @@ class Block : public TextElement {
 /* @ContentProperty=Inlines */
 class Paragraph : public Block {
  protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Paragraph ();
 	
 	virtual ~Paragraph () {}
@@ -265,7 +274,7 @@ class Paragraph : public Block {
 /* @ContentProperty=Blocks */
 class Section : public Block {
  protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Section ();
 	
 	virtual ~Section () {}
@@ -293,7 +302,7 @@ class Section : public Block {
 /* @ContentProperty=Inlines */
 class Span : public Inline {
  protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Span ();
 
 	virtual ~Span () {}
@@ -315,7 +324,7 @@ class Span : public Inline {
 /* @Namespace=System.Windows.Documents */
 class Bold : public Span {
  protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Bold ();
 
 	virtual ~Bold () {}
@@ -327,7 +336,7 @@ class Bold : public Span {
 /* @Namespace=System.Windows.Documents */
 class Italic : public Span {
  protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Italic ();
 	
 	virtual ~Italic () {}
@@ -339,7 +348,7 @@ class Italic : public Span {
 /* @Namespace=System.Windows.Documents */
 class Underline : public Span {
  protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Underline ();
 
 	virtual ~Underline () {}
@@ -352,7 +361,7 @@ class Underline : public Span {
 /* @CallInitialize */
 class Hyperlink : public Span {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Hyperlink ();
 	
 	virtual ~Hyperlink () {}
@@ -388,7 +397,7 @@ class Hyperlink : public Span {
 /* @ContentProperty=Child */
 class InlineUIContainer : public Inline {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	InlineUIContainer ();
 	
 	virtual ~InlineUIContainer () {}
