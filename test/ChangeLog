@@ -1,5 +1,8 @@
 2010-08-24  David Reveman  <davidr@novell.com>
 
+	* Makefile.am: Make sure correct cairo header is used
+	by test programs.
+
 	* effect-test.cpp: Add simple performance test support.
 
 2010-07-15  David Reveman  <davidr@novell.com>
