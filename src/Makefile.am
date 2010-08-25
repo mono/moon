@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la libmoon-static.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk -fPIC
+INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) $(LLVM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk -fPIC
 
 libmoon_include_headers = 	\
 	animation.h		\
@@ -308,10 +308,10 @@ EXTRA_DIST = \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
 
-libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GALLIUM_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
-libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GALLIUM_LIBS)
+libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
 # we do not link with gallium libs here, they are static libs, and whoever links with libmoon-static 

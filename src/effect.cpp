@@ -49,6 +49,9 @@ extern "C" {
 #include "util/u_simple_shaders.h"
 #include "util/u_debug.h"
 #include "softpipe/sp_public.h"
+#ifdef USE_LLVM
+#include "llvmpipe/lp_public.h"
+#endif
 #define template templat
 #include "state_tracker/sw_winsys.h"
 #include "cso_cache/cso_context.h"
@@ -63,7 +66,7 @@ extern "C" {
 
 struct st_winsys
 {
-	struct pipe_screen   *(*screen_create)  (void);
+	struct pipe_screen   *(*screen_create)  (const char *driver);
 	struct pipe_resource *(*resource_create) (struct pipe_screen *screen,
 						  const struct pipe_resource *templat,
 						  void *data,
@@ -136,7 +139,7 @@ st_device_create_from_st_winsys (const struct st_winsys *st_ws)
 	pipe_reference_init (&st_dev->reference, 1);
 	st_dev->st_ws = st_ws;
 
-	st_dev->screen = st_ws->screen_create ();
+	st_dev->screen = st_ws->screen_create (NULL);
 	if (!st_dev->screen) {
 		st_device_reference (&st_dev, NULL);
 		return NULL;
@@ -467,10 +470,10 @@ moon_ws_destroy (struct sw_winsys *winsys)
 }
 
 static struct pipe_screen *
-moon_sw_screen_create (void)
+moon_sw_screen_create (const char *driver)
 {
 	static struct moon_sw_winsys *winsys;
-	struct pipe_screen *screen;
+	struct pipe_screen *screen = NULL;
 
 	winsys = CALLOC_STRUCT (moon_sw_winsys);
 	if (!winsys)
@@ -485,7 +488,28 @@ moon_sw_screen_create (void)
 	winsys->base.displaytarget_display = moon_ws_displaytarget_display;
 	winsys->base.displaytarget_destroy = moon_ws_displaytarget_destroy;
 
-	screen = softpipe_create_screen (&winsys->base);
+	if (!driver) {
+		const char *default_driver;
+
+#ifdef USE_LLVM
+		default_driver = "llvmpipe";
+#else
+		default_driver = "softpipe";
+#endif
+
+		driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
+	}
+
+#ifdef USE_LLVM
+	if (strcmp (driver, "llvmpipe") == 0) {
+		screen = llvmpipe_create_screen (&winsys->base);
+	}
+#endif
+
+	if (strcmp (driver, "softpipe") == 0) {
+		screen = softpipe_create_screen (&winsys->base);
+	}
+
 	if (screen)
 		screen->winsys = (struct pipe_winsys *) winsys;
 
@@ -1040,6 +1064,7 @@ Effect::Initialize ()
 #ifdef USE_GALLIUM
 	struct st_device *dev;
 	dev = st_device_create_from_st_winsys (&sw_winsys);
+	g_assert (dev != NULL);
 	st_context = st_context_create (dev);
 	st_device_reference (&dev, NULL);
 #endif

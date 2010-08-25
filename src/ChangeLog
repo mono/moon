@@ -1,6 +1,7 @@
 2010-08-25  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Use more appropriate function names.
+	Add llvmpipe support.
 
 2010-08-24  David Reveman  <davidr@novell.com>
 

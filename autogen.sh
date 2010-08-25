@@ -203,7 +203,8 @@ fi
 if [ $configure_gallium -eq 1 ] ; then
   if test -d $gallium_path; then
     echo Running $gallium_path/autogen.sh ...
-    (cd $gallium_path/ ; ./autogen.sh --with-driver=xlib)
+    gallium_conf_flags=$(echo "$@"|sed -e 's,enable-llvm,enable-gallium-llvm,')
+    (cd $gallium_path/ ; ./autogen.sh $gallium_conf_flags --with-driver=xlib)
     echo Done running $gallium_path/autogen.sh ...
   fi
 fi
