@@ -129,7 +129,6 @@ namespace Mono.Xaml
 
 		internal void Free ()
 		{
-			Console.WriteLine ("FREEING THE XAML CONTEXT");
 		}
 	}
 }
