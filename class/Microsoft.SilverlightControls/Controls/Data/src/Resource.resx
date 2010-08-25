@@ -27,7 +27,7 @@
       </xsd:complexType>
     </xsd:element>
   </xsd:schema>
-<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="ListBox_OnItemContainerStyleChanged_CanNotSetStyle"><value>FrameworkElement.Style property can be set only one time.</value></data>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="ListBox_OnItemContainerStyleChanged_CanNotSetStyle"><value>FrameworkElement.Style property can be set only one time.</value></data>
   <data name="ToolTipService_SetTimeoutProperty_InvalidValue"><value>Value must be positive.</value></data>
   <data name="ScrollViewer_OnReadOnlyDependencyPropertyChanged_ReadOnly"><value>Unable to set a read-only DependencyProperty.</value></data>
   <data name="ContentPresenter_OnApplyTemplate_WriteOnce"><value>The template can only be applied one time.</value></data>

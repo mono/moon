@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 458 methods
+# 460 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -40,6 +40,7 @@
 +SSC-M: System.Void System.Array::Reverse(System.Array,System.Int32,System.Int32)
 +SSC-M: System.Void System.Array::SortImpl(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
 +SSC-M: System.Void System.Array::CheckComparerAvailable(System.Array,System.Int32,System.Int32)
++SSC-M: System.Void System.Array::Resize<T>(T[]&,System.Int32)
 +SSC-M: System.Byte[] System.BitConverter::GetBytes(System.Boolean)
 +SSC-M: System.Byte[] System.BitConverter::GetBytes(System.Char)
 +SSC-M: System.Byte[] System.BitConverter::GetBytes(System.Int16)
@@ -226,6 +227,7 @@
 +SSC-M: System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
 +SSC-M: System.Reflection.Module System.Reflection.Assembly::GetManifestModule()
 +SSC-M: System.Void System.Reflection.AssemblyName::.ctor(System.String)
++SSC-M: System.Void System.Reflection.CustomAttributeData::ResolveArguments()
 +SSC-M: System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Type System.Reflection.Emit.AssemblyBuilder::GetType(System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Reflection.AssemblyName[] System.Reflection.Emit.AssemblyBuilder::GetReferencedAssemblies()
@@ -266,6 +268,7 @@
 +SSC-M: System.Object System.Reflection.MonoCMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
 +SSC-M: System.String System.Reflection.MonoCMethod::get_Name()
 +SSC-M: System.Reflection.MonoEventInfo System.Reflection.MonoEventInfo::GetEventInfo(System.Reflection.MonoEvent)
++SSC-M: System.Type System.Reflection.MonoField::get_FieldType()
 +SSC-M: System.Type System.Reflection.MonoField::get_ReflectedType()
 +SSC-M: System.Type System.Reflection.MonoField::get_DeclaringType()
 +SSC-M: System.Object System.Reflection.MonoField::GetValue(System.Object)
@@ -307,7 +310,7 @@
 +SSC-M: System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.MonoMethodMessage::get_CallType()
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
-+SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.ISurrogateSelector,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.Formatters.FormatterAssemblyStyle,System.Runtime.Serialization.Formatters.FormatterTypeStyle)
++SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObjectInstance(System.IO.BinaryWriter,System.Object,System.Boolean)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObject(System.IO.BinaryWriter,System.Int64,System.Object)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::GetObjectData(System.Object,System.Runtime.Serialization.Formatters.Binary.TypeMetadata&,System.Object&)
@@ -385,8 +388,8 @@
 +SSC-M: System.Int32 System.Text.UnicodeEncoding::GetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32)
 +SSC-M: System.String System.Text.UnicodeEncoding::GetString(System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Int32 System.Text.UnicodeEncoding/UnicodeDecoder::GetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32)
-+SSC-M: System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char[],System.Int32,System.Int32,System.Char&,System.Boolean)
-+SSC-M: System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Char&,System.Boolean)
++SSC-M: System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char[],System.Int32,System.Int32,System.Text.EncoderFallback,System.Char&,System.Boolean)
++SSC-M: System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Text.EncoderFallback,System.Text.EncoderFallbackBuffer&,System.Char&,System.Boolean)
 +SSC-M: System.Int32 System.Text.UTF8Encoding::GetBytes(System.String,System.Int32,System.Int32,System.Byte[],System.Int32)
 +SSC-M: System.Int32 System.Text.UTF8Encoding::InternalGetCharCount(System.Byte[],System.Int32,System.Int32,System.UInt32,System.UInt32,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)
 +SSC-M: System.Int32 System.Text.UTF8Encoding::InternalGetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32,System.UInt32&,System.UInt32&,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)

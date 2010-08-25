@@ -11,7 +11,7 @@
 		</type>
 		<type fullname="System.Reflection.Assembly" preserve="all" />
 		<type fullname="System.Reflection.CustomAttributeData">
-			<method signature="System.Void .ctor(System.Reflection.ConstructorInfo,System.Object[],System.Object[])" />
+			<method signature="System.Void .ctor(System.Reflection.ConstructorInfo,System.Reflection.Assembly,System.IntPtr,System.UInt32)" />
 		</type>
 		<type fullname="System.Reflection.CustomAttributeNamedArgument">
 			<method signature="System.Void .ctor(System.Reflection.MemberInfo,System.Object)" />

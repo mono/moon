@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 450 methods needs to be decorated.
+# 453 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -241,6 +241,9 @@
 # internal call
 +SC-M: System.Char System.IO.MonoIO::get_VolumeSeparatorChar()
 
+# using 'System.Char*' as a parameter type
++SC-M: System.Char[] System.Text.UTF8Encoding::GetFallbackChars(System.Char*,System.Char*,System.Text.EncoderFallback,System.Text.EncoderFallbackBuffer&)
+
 # implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
 +SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ConstructionCall::get_Properties()
 
@@ -470,10 +473,10 @@
 +SC-M: System.Int32 System.Text.UTF8Encoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
 
 # using 'System.Char*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char*,System.Int32,System.Char&,System.Boolean)
++SC-M: System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char*,System.Int32,System.Text.EncoderFallback,System.Char&,System.Boolean)
 
 # using 'System.Char*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char*,System.Int32,System.Byte*,System.Int32,System.Char&,System.Boolean)
++SC-M: System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char*,System.Int32,System.Byte*,System.Int32,System.Text.EncoderFallback,System.Text.EncoderFallbackBuffer&,System.Char&,System.Boolean)
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF8Encoding::InternalGetCharCount(System.Byte*,System.Int32,System.UInt32,System.UInt32,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)
@@ -998,6 +1001,9 @@
 +SC-M: System.Type System.Reflection.MonoField::GetParentType(System.Boolean)
 
 # internal call
++SC-M: System.Type System.Reflection.MonoField::ResolveType()
+
+# internal call
 +SC-M: System.Type System.Runtime.Remoting.Proxies.RealProxy::InternalGetProxyType(System.Object)
 
 # internal call
@@ -1149,6 +1155,9 @@
 
 # internal call
 +SC-M: System.Void System.Reflection.Assembly::FillName(System.Reflection.Assembly,System.Reflection.AssemblyName)
+
+# internal call
++SC-M: System.Void System.Reflection.CustomAttributeData::ResolveArgumentsInternal(System.Reflection.ConstructorInfo,System.Reflection.Assembly,System.IntPtr,System.UInt32,System.Object[]&,System.Object[]&)
 
 # internal call
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::basic_init(System.Reflection.Emit.AssemblyBuilder)
