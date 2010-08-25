@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Mono;
+
 namespace System.Windows.Data {
 
 	sealed class ListCollectionView : EditableCollectionView, IDeferRefresh {
-
-		List<object> filteredList;
 
 		public IList ActiveList {
 			get {
@@ -27,7 +27,20 @@ namespace System.Windows.Data {
 			get { return new PropertyComparer (SortDescriptions); }
 		}
 
+		bool DeferCurrentChanged {
+			get; set;
+		}
+
+		int DeferLevel {
+			get; set;
+		}
+
 		int IDeferRefresh.DeferLevel {
+			get { return DeferLevel; }
+			set { DeferLevel = value; }
+		}
+
+		ObservableList<object> filteredList {
 			get; set;
 		}
 
@@ -63,7 +76,8 @@ namespace System.Windows.Data {
 			}
 
 			UpdateCanAddNewAndRemove ();
-			filteredList = new List <object> ();
+			filteredList = new ObservableList<object> ();
+			RootGroup = new StandardCollectionViewGroup (null, null, 0, false, SortDescriptions);
 			CurrentPosition = -1;
 			IsEmpty = ActiveList.Count == 0;
 			MoveCurrentToPosition (0);
@@ -77,6 +91,21 @@ namespace System.Windows.Data {
 					throw new InvalidOperationException ("Cannot modify SortDescriptions while adding or editing an item");
 				Refresh ();
 			};
+
+			filteredList.CollectionChanged += HandleFilteredListCollectionChanged;
+			RootGroup.CollectionChanged += HandleRootGroupCollectionChanged;
+		}
+
+		void HandleRootGroupCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (DeferLevel == 0 && Grouping)
+				RaiseCollectionChanged (e);
+		}
+
+		void HandleFilteredListCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (DeferLevel == 0 && ActiveList == filteredList && !Grouping)
+				RaiseCollectionChanged (e);
 		}
 
 		void HandleSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
@@ -93,16 +122,12 @@ namespace System.Windows.Data {
 				case NotifyCollectionChangedAction.Add:
 					foreach (object o in e.NewItems)
 						AddToFilteredAndGroupSorted (o);
-					actualNewIndex = IndexOf (e.NewItems [0]);
-					if (actualNewIndex != -1) // Maybe it was filtered out
-						RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
 					actualOldIndex = IndexOf (e.OldItems [0]);
 					foreach (object o in e.OldItems)
 						RemoveFromFilteredAndGroup (o);
-					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, e.OldItems [0], actualOldIndex));
 					break;
 
 				case NotifyCollectionChangedAction.Replace:
@@ -111,10 +136,6 @@ namespace System.Windows.Data {
 						RemoveFromFilteredAndGroup (o);
 					foreach (object o in e.NewItems)
 						AddToFilteredAndGroupSorted (o);
-					actualNewIndex = IndexOf (e.NewItems [0]);
-					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, e.OldItems[0], actualOldIndex));
-					if (actualNewIndex != -1) // Maybe it got filtered out
-						RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, e.NewItems [0], actualNewIndex));
 					break;
 	
 				case NotifyCollectionChangedAction.Reset:
@@ -122,7 +143,6 @@ namespace System.Windows.Data {
 					RootGroup.ClearSubtree ();
 					foreach (var o in SourceCollection)
 						AddToFilteredAndGroup (o);
-					RaiseCollectionChanged (e);
 					break;
 				}
 			} else {
@@ -131,19 +151,22 @@ namespace System.Windows.Data {
 			}
 
 			IsEmpty = ActiveList.Count == 0;
+		}
+
+		protected override void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
+		{
+			base.RaiseCollectionChanged (e);
 
 			// Finally update the selected item if needed.
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
-				if (originalList)
-					actualNewIndex = e.NewStartingIndex;
+				int actualNewIndex = e.NewStartingIndex;
 				if (actualNewIndex <= CurrentPosition)
 					MoveCurrentTo (CurrentPosition + 1);
 				break;
 
 			case NotifyCollectionChangedAction.Remove:
-				if (originalList)
-					actualOldIndex = e.OldStartingIndex;
+				int actualOldIndex = e.OldStartingIndex;
 				if (actualOldIndex < CurrentPosition) {
 					MoveCurrentTo (CurrentPosition - 1);
 				} else if (actualOldIndex == CurrentPosition) {
@@ -162,7 +185,6 @@ namespace System.Windows.Data {
 				MoveCurrentTo (IndexOf (CurrentItem));
 				break;
 			}
-
 		}
 
 		void AddToFilteredAndGroup (object item)
@@ -264,6 +286,9 @@ namespace System.Windows.Data {
 
 		bool MoveCurrentTo (int position, bool force)
 		{
+			if (DeferCurrentChanged)
+				return false;
+
 			object newItem = ItemAtIndex (position);
 			bool raiseEvents = force || CurrentItem != newItem;
 
@@ -317,34 +342,36 @@ namespace System.Windows.Data {
 			if (((IDeferRefresh) this).DeferLevel != 0)
 				return;
 
-			if (RootGroup == null)
-				RootGroup = new StandardCollectionViewGroup (null, null, 0, false, SortDescriptions);
-
-			Groups = null;
-			RootGroup.ClearItems ();
-
-			if (ActiveList != SourceCollection) {
-				filteredList.Clear ();
-				foreach (var item in SourceCollection)
-					AddToFiltered (item, false);
-
-				if (SortDescriptions.Count > 0)
-					filteredList.Sort (new PropertyComparer (SortDescriptions));
-
-				if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
-					foreach (var item in filteredList)
-						RootGroup.AddInSubtree (item, Culture, GroupDescriptions, false);
-					Groups = RootGroup.Items;
+			try {
+				DeferLevel ++;
+				Groups = null;
+				RootGroup.ClearItems ();
+	
+				if (ActiveList != SourceCollection) {
+					filteredList.Clear ();
+					foreach (var item in SourceCollection)
+						AddToFiltered (item, false);
+	
+					if (SortDescriptions.Count > 0)
+						filteredList.Sort (new PropertyComparer (SortDescriptions));
+	
+					if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
+						foreach (var item in filteredList)
+							RootGroup.AddInSubtree (item, Culture, GroupDescriptions, false);
+						Groups = RootGroup.Items;
+					}
 				}
+	
+				IsEmpty = ActiveList.Count == 0;
+				int index = IndexOf (CurrentItem);
+				if (index < 0 && CurrentPosition != -1 && !IsEmpty)
+					index = 0;
+	
+				RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+				MoveCurrentTo (index, true);
+			} finally {
+				DeferLevel --;
 			}
-
-			IsEmpty = ActiveList.Count == 0;
-			int index = IndexOf (CurrentItem);
-			if (index < 0 && CurrentPosition != -1 && !IsEmpty)
-				index = 0;
-
-			RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-			MoveCurrentTo (index, true);
 		}
 
 		public override object AddNew ()
@@ -457,7 +484,6 @@ namespace System.Windows.Data {
 				// If we're filtering the item out just nuke it
 				if (Filter != null && !Filter (editItem)) {
 					RemoveFromFilteredAndGroup (editItem);
-					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, editItem, originalIndex));
 					if (CurrentItem == editItem)
 						MoveCurrentTo (CurrentPosition);
 					return;
@@ -483,7 +509,7 @@ namespace System.Windows.Data {
 					newIndex = originalIndex;
 				}
 
-
+				var currentSelection = CurrentItem;
 				if (newIndex != originalIndex) {
 					if (newIndex < 0)
 						newIndex = ~newIndex;
@@ -493,22 +519,24 @@ namespace System.Windows.Data {
 					if (newIndex > originalIndex)
 						newIndex --;
 
+					DeferCurrentChanged = true;
 					filteredList.RemoveAt (originalIndex);
 					filteredList.Insert (newIndex, editItem);
+					DeferCurrentChanged = false;
 				}
 
 				// We may have edited the property which controls which group the item is in
 				// so re-seat it
 				if (Grouping) {
+					DeferCurrentChanged = true;
 					RootGroup.RemoveInSubtree (editItem);
 					RootGroup.AddInSubtree (editItem, Culture, GroupDescriptions);
-					newIndex = IndexOf (editItem);
+					DeferCurrentChanged = false;
+					newIndex = IndexOf (currentSelection);
 				}
 
 				if (originalIndex != newIndex) {
-					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, editItem, originalIndex));
-					RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, editItem, newIndex));
-					MoveCurrentTo (IndexOf (CurrentItem));
+					MoveCurrentTo (IndexOf (currentSelection));
 				}
 			}
 		}
@@ -541,12 +569,7 @@ namespace System.Windows.Data {
 							sortedIndex = ~sortedIndex;
 
 						if (actualIndex != sortedIndex) {
-							filteredList.RemoveAt (actualIndex);
-							filteredList.Insert (sortedIndex, CurrentAddItem);
-							RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, CurrentAddItem, actualIndex));
-							RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, CurrentAddItem, sortedIndex));
-							if (CurrentAddItem == CurrentItem)
-								UpdateCurrentPositionAndItem (sortedIndex, CurrentAddItem);
+							MoveAndSelectFromSorted (actualIndex, sortedIndex, CurrentItem);
 						}
 					}
 				}
@@ -554,6 +577,15 @@ namespace System.Windows.Data {
 				IsAddingNew = false;
 				UpdateCanAddNewAndRemove ();
 			}
+		}
+
+		void MoveAndSelectFromSorted (int removeIndex, int addIndex, object item)
+		{
+			DeferCurrentChanged = true;
+			filteredList.RemoveAt (removeIndex);
+			filteredList.Insert (addIndex, item);
+			DeferCurrentChanged = false;
+			UpdateCurrentPositionAndItem (IndexOf (item), item);
 		}
 
 		public override void EditItem (object item)

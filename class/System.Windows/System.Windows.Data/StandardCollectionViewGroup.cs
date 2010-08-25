@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Globalization;
 
 using Mono;
+using System.Collections.Specialized;
 
 namespace System.Windows.Data {
 
-	class StandardCollectionViewGroup : CollectionViewGroup {
+	class StandardCollectionViewGroup : CollectionViewGroup, INotifyCollectionChanged {
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		bool isBottomLevel;
 
@@ -53,6 +56,13 @@ namespace System.Windows.Data {
 			ProtectedItems.Insert (index, item);
 			if (!(item is StandardCollectionViewGroup))
 				IncrementCount ();
+
+			var x = this;
+			while (x.Parent != null)
+				x = x.Parent;
+			index = x.IndexOfSubtree (item);
+			x.CollectionChanged.Raise (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, item, index));
+
 		}
 
 		internal void AddInSubtree (object item, CultureInfo culture, IList<GroupDescription> descriptions)
@@ -109,6 +119,7 @@ namespace System.Windows.Data {
 				foreach (StandardCollectionViewGroup g in Items)
 					g.ClearSubtree ();
 			}
+			CollectionChanged.Raise (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
 		internal void DecrementCount ()
@@ -157,20 +168,30 @@ namespace System.Windows.Data {
 		internal bool RemoveInSubtree (object item)
 		{
 			bool removed = false;
-			if (IsBottomLevel) {
-				removed |= RemoveItem (item);
-			} else {
-				foreach (StandardCollectionViewGroup group in Items) {
-					if (group.RemoveInSubtree (item)) {
-						removed = true;
-					}
-				}
+			int index;
 
-				for (int i = 0; i < ProtectedItems.Count; i ++) {
-					var g = ProtectedItems [i] as StandardCollectionViewGroup;
-					if (g != null && g.ProtectedItems.Count == 0) {
-						ProtectedItems.Remove (g);
-						i --;
+			while ((index = IndexOfSubtree (item)) != -1) {
+				if (IsBottomLevel) {
+					if (RemoveItem (item)) {
+						removed = true;
+						var x = this;
+						while (x.Parent != null)
+							x = x.Parent;
+						x.CollectionChanged.Raise (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, item, index));
+					}
+				} else {
+					foreach (StandardCollectionViewGroup group in Items) {
+						if (group.RemoveInSubtree (item)) {
+							removed = true;
+						}
+					}
+	
+					for (int i = 0; i < ProtectedItems.Count; i ++) {
+						var g = ProtectedItems [i] as StandardCollectionViewGroup;
+						if (g != null && g.ProtectedItems.Count == 0) {
+							ProtectedItems.Remove (g);
+							i --;
+						}
 					}
 				}
 			}

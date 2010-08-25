@@ -598,6 +598,30 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void InsertItem_Grouped_BeforeSelection ()
+		{
+			// This should be second in our list no matter where we insert it
+			var rect = new Rectangle { Width = 1.5 };
+			SetSource (Rectangles);
+
+			View.GroupDescriptions.Add (new ConcretePropertyGroupDescription ("Width") {
+				GroupNameFromItemFunc = (item, level, culture) => ((Rectangle) item).Width < 2 ? "A" : "B"
+			});
+			View.SortDescriptions.Add (new SortDescription ("Width", ListSortDirection.Ascending));
+
+			var selection = View.Cast<object> ().Last ();
+			View.MoveCurrentTo (selection);
+			Assert.AreEqual (View.CurrentPosition, 4, "#1");
+
+			ResetCounters ();
+			Rectangles.Insert (4, rect);
+			Assert.AreSame (selection, View.CurrentItem, "#2");
+			Assert.AreEqual (5, View.CurrentPosition, "#3");
+			Assert.AreEqual (0, CurrentChanged, "#4");
+			Assert.AreEqual (0, CurrentChanging, "#5");
+		}
+
+		[TestMethod]
 		public void DifferentGroupDescriptions ()
 		{
 			Assert.AreNotSame (View.GroupDescriptions, Source.GroupDescriptions, "#1");

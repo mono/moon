@@ -523,7 +523,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("We don't get two INotifyCollectionChanged.Remove events so we don't remove the item twice from the listbox")]
 		public void ICV_OneItemTwoGroups_Remove ()
 		{
 			var o = new object();

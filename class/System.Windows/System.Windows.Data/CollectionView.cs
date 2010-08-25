@@ -120,7 +120,7 @@ namespace System.Windows {
 			return new PropertyComparer (SortDescriptions).Compare (x, y);
 		}
 
-		protected void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
+		protected virtual void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
 		{
 			var h = CollectionChanged;
 			if (h != null)
