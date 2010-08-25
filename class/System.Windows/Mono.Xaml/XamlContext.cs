@@ -119,6 +119,9 @@ namespace Mono.Xaml
 					return res;
 			}
 
+			if (Parent != null)
+				return Parent.LookupNamedItem (name);
+
 			return null;
 		}
 
