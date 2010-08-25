@@ -1,3 +1,7 @@
+2010-08-25  David Reveman  <davidr@novell.com>
+
+	* effect.cpp: Use more appropriate function names.
+
 2010-08-24  David Reveman  <davidr@novell.com>
 
 	* popup.h: Popup element extents should always be empty.

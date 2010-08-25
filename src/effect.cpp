@@ -402,7 +402,7 @@ st_set_fragment_sampler_texture (struct st_context *st_ctx,
 						st_ctx->fragment_sampler_views);
 }
 
-struct st_softpipe_winsys
+struct moon_sw_winsys
 {
 	struct sw_winsys base;
 
@@ -411,80 +411,79 @@ struct st_softpipe_winsys
 };
 
 static boolean
-softpipe_ws_is_displaytarget_format_supported (struct sw_winsys *ws,
-					       unsigned tex_usage,
-					       enum pipe_format format)
+moon_ws_is_displaytarget_format_supported (struct sw_winsys *ws,
+					   unsigned tex_usage,
+					   enum pipe_format format)
 {
 	return FALSE;
 }
 
 static void *
-softpipe_ws_displaytarget_map (struct sw_winsys *ws,
-			       struct sw_displaytarget *dt,
-			       unsigned flags)
+moon_ws_displaytarget_map (struct sw_winsys *ws,
+			   struct sw_displaytarget *dt,
+			   unsigned flags)
 {
 	return (void *) dt;
 }
 
 static void
-softpipe_ws_displaytarget_unmap (struct sw_winsys *ws,
-				 struct sw_displaytarget *dt)
+moon_ws_displaytarget_unmap (struct sw_winsys *ws,
+			     struct sw_displaytarget *dt)
 {
 }
 
 static void
-softpipe_ws_displaytarget_destroy (struct sw_winsys *winsys,
-				   struct sw_displaytarget *dt)
+moon_ws_displaytarget_destroy (struct sw_winsys *winsys,
+			       struct sw_displaytarget *dt)
 {
 }
 
 static struct sw_displaytarget *
-softpipe_ws_displaytarget_create (struct sw_winsys *winsys,
-				  unsigned tex_usage,
-				  enum pipe_format format,
-				  unsigned width,
-				  unsigned height,
-				  unsigned alignment,
-				  unsigned *stride)
+moon_ws_displaytarget_create (struct sw_winsys *winsys,
+			      unsigned tex_usage,
+			      enum pipe_format format,
+			      unsigned width,
+			      unsigned height,
+			      unsigned alignment,
+			      unsigned *stride)
 {
-	struct st_softpipe_winsys *st_ws =
-		(struct st_softpipe_winsys *) winsys;
+	struct moon_sw_winsys *ws = (struct moon_sw_winsys *) winsys;
 
-	*stride = st_ws->user_stride;
-	return (struct sw_displaytarget *) st_ws->user_data;
+	*stride = ws->user_stride;
+	return (struct sw_displaytarget *) ws->user_data;
 }
 
 static void
-softpipe_ws_displaytarget_display (struct sw_winsys *winsys,
-				   struct sw_displaytarget *dt,
-				   void *context_private)
+moon_ws_displaytarget_display (struct sw_winsys *winsys,
+			       struct sw_displaytarget *dt,
+			       void *context_private)
 {
 }
 
 static void
-softpipe_ws_destroy (struct sw_winsys *winsys)
+moon_ws_destroy (struct sw_winsys *winsys)
 {
 	FREE (winsys);
 }
 
 static struct pipe_screen *
-st_softpipe_screen_create (void)
+moon_sw_screen_create (void)
 {
-	static struct st_softpipe_winsys *winsys;
+	static struct moon_sw_winsys *winsys;
 	struct pipe_screen *screen;
 
-	winsys = CALLOC_STRUCT (st_softpipe_winsys);
+	winsys = CALLOC_STRUCT (moon_sw_winsys);
 	if (!winsys)
 		return NULL;
 
-	winsys->base.destroy = softpipe_ws_destroy;
+	winsys->base.destroy = moon_ws_destroy;
 	winsys->base.is_displaytarget_format_supported =
-		softpipe_ws_is_displaytarget_format_supported;
-	winsys->base.displaytarget_create = softpipe_ws_displaytarget_create;
-	winsys->base.displaytarget_map = softpipe_ws_displaytarget_map;
-	winsys->base.displaytarget_unmap = softpipe_ws_displaytarget_unmap;
-	winsys->base.displaytarget_display = softpipe_ws_displaytarget_display;
-	winsys->base.displaytarget_destroy = softpipe_ws_displaytarget_destroy;
+		moon_ws_is_displaytarget_format_supported;
+	winsys->base.displaytarget_create = moon_ws_displaytarget_create;
+	winsys->base.displaytarget_map = moon_ws_displaytarget_map;
+	winsys->base.displaytarget_unmap = moon_ws_displaytarget_unmap;
+	winsys->base.displaytarget_display = moon_ws_displaytarget_display;
+	winsys->base.displaytarget_destroy = moon_ws_displaytarget_destroy;
 
 	screen = softpipe_create_screen (&winsys->base);
 	if (screen)
@@ -494,23 +493,22 @@ st_softpipe_screen_create (void)
 }
 
 static struct pipe_resource *
-st_softpipe_resource_create (struct pipe_screen *screen,
-			     const struct pipe_resource *templat,
-			     void *data,
-			     unsigned stride)
+moon_sw_resource_create (struct pipe_screen *screen,
+			 const struct pipe_resource *templat,
+			 void *data,
+			 unsigned stride)
 {
-	struct st_softpipe_winsys *st_ws =
-		(struct st_softpipe_winsys *) screen->winsys;
+	struct moon_sw_winsys *ws = (struct moon_sw_winsys *) screen->winsys;
 
-	st_ws->user_data = data;
-	st_ws->user_stride = stride;
+	ws->user_data = data;
+	ws->user_stride = stride;
 
 	return screen->resource_create (screen, templat);
 }
 
-const struct st_winsys st_softpipe_winsys = {
-	st_softpipe_screen_create,
-	st_softpipe_resource_create
+const struct st_winsys sw_winsys = {
+	moon_sw_screen_create,
+	moon_sw_resource_create
 };
 
 static void
@@ -1041,7 +1039,7 @@ Effect::Initialize ()
 
 #ifdef USE_GALLIUM
 	struct st_device *dev;
-	dev = st_device_create_from_st_winsys (&st_softpipe_winsys);
+	dev = st_device_create_from_st_winsys (&sw_winsys);
 	st_context = st_context_create (dev);
 	st_device_reference (&dev, NULL);
 #endif
