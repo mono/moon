@@ -113,6 +113,10 @@ namespace Mono.Xaml {
 			if (value is Binding || value is TemplateBindingExpression)
 				return value;
 
+			MutableObject mutable = value as MutableObject;
+			if (mutable != null)
+				value = mutable.Object;
+
 			Type valueType = value.GetType ();
 			if (type.IsAssignableFrom (valueType))
 				return value;
@@ -161,7 +165,6 @@ namespace Mono.Xaml {
 			}
 		}
 
-		
 		public void SetBinding (Binding binding, object obj)
 		{
 			DependencyProperty prop = LookupDependencyProperty ();
@@ -480,7 +483,7 @@ namespace Mono.Xaml {
 			if (list == null)
 				throw Parser.ParseException ("Attempt to add attached property to empty list.");
 
-			list.Add (ConvertValue (Type, value));
+			list.Add (value);
 		}
 
 	}
