@@ -23,6 +23,13 @@ Requirements
             git clone git://github.com/mono/mono-basic.git mono-basic
             cd mono-basic && git reset --hard HEAD && cd ..
 
+	To build pixel shader support, you need to get a specific
+	revision of the mesa repository.
+
+	Do this like this:
+            git clone git://anongit.freedesktop.org/mesa/mesa
+            cd mesa && git reset --hard 3ed0a099c && cd ..
+
 
 Compiling Mono for Moonlight
 ============================
@@ -87,19 +94,6 @@ Configuration options
 
 		--with-mcs-path=/path/to/mcs
 
-
-	To build Moonlight with pixel shader support, you need to get the mesa
-	module from freedesktop.org. Last known revision to work is
-	3ed0a099c70e9d771e60e0ddf70bc0b5ba83a483
-
-	Do this like this:
-
-                git clone git://anongit.freedesktop.org/mesa/mesa
-                cd mesa
-                git checkout 3ed0a099c70e9d771e60e0ddf70bc0b5ba83a483 -b moonlight
-                ./autogen.sh --with-driver=xlib && cd src/gallium && make
-
-	There is no need to do a make install this.
 
 	If you want to use ffmpeg with Moonlight, you need at least r20911 of ffmpeg and r30099 of libswscale:
 

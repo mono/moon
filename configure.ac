@@ -172,6 +172,7 @@ m4/Makefile
 src/Makefile
 src/codec-version.h
 runtime/Makefile
+gallium/Makefile
 class/Makefile
 class/tuning/Makefile
 class/tuning/SecurityAttributes/Makefile
@@ -251,16 +252,6 @@ Moonlight configuration
 	MonoDevelop SDK: $enable_sdk $sdk_reason
 EOF
 
-if test x$with_gallium_path = xno; then
-cat <<EOF
-	Using gallium: no
-EOF
-else
-cat <<EOF
-	Using gallium: yes
-EOF
-fi
-
 if test x$with_manual_mono = xyes; then
 cat <<EOF
 	Building mono: no
@@ -278,6 +269,26 @@ EOF
 else
 cat <<EOF
 	Building mono: yes
+EOF
+fi
+
+if test x$with_gallium_path = xno; then
+cat <<EOF
+	Building gallium: no
+		Warning: pixel shader support disabled. Check the README for more information
+EOF
+elif test x$with_manual_gallium = xyes; then
+cat <<EOF
+	Building gallium: no
+                Warning: you'll need to build gallium yourself. Check the README for more information
+EOF
+elif test x$with_manual_gallium = xbuild; then
+cat <<EOF
+	Building gallium: yes, build only
+EOF
+else
+cat <<EOF
+	Building gallium: yes
 EOF
 fi
 

@@ -161,6 +161,9 @@ configure_mono=1
 build_mono=1
 mono_path=../mono
 mcs_path=../mono/mcs
+configure_gallium=1
+build_gallium=1
+gallium_path=../mesa
 for arg; do
   case "$arg" in
     --with-manual-mono=yes | --with-manual-mono )
@@ -173,6 +176,14 @@ for arg; do
       mcs_path=$(echo $arg|sed -e 's,.*=,,') ;;
     --with-mono-path* )
       mono_path=$(echo $arg|sed -e 's,.*=,,') ;;
+    --with-manual-gallium=yes | --with-manual-gallium )
+      build_gallium=0
+      configure_gallium=0 ;;
+    --with-manual-gallium=build )
+      build_gallium=1
+      configure_gallium=0 ;;
+    --with-gallium-path* )
+      gallium_path=$(echo $arg|sed -e 's,.*=,,') ;;
   esac
 done
 
@@ -186,6 +197,14 @@ if [ $configure_mono -eq 1 ] ; then
     # we build --with-sgen=no to not build both boehm and sgen (and we build with boehm instead of sgen because sgen has a problem nobody has investigated much into yet)
     (cd $mono_path/ ; ./autogen.sh "$@" --with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger --with-sgen=no)
     echo Done running $mono_path/autogen.sh ...
+  fi
+fi
+
+if [ $configure_gallium -eq 1 ] ; then
+  if test -d $gallium_path; then
+    echo Running $gallium_path/autogen.sh ...
+    (cd $gallium_path/ ; ./autogen.sh --with-driver=xlib)
+    echo Done running $gallium_path/autogen.sh ...
   fi
 fi
 

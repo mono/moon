@@ -82,5 +82,14 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	AM_CONDITIONAL(BUILD_MONO,test x$with_manual_mono != xyes)
 
 	AM_CONDITIONAL(ONLY_BUILD_MONO,test x$with_manual_mono = xbuild)
+
+	dnl
+	dnl build gallium with moon
+	dnl
+
+	AC_ARG_WITH(manual-gallium, AC_HELP_STRING([--with-manual-gallium=yes|no|build], [If you want to build gallium yourself. Check the README for more information (default=no)]),
+		[], [with_manual_gallium=no])
+
+	AM_CONDITIONAL(BUILD_GALLIUM,test x$with_manual_mono != xyes)
 ])
 

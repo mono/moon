@@ -35,8 +35,13 @@ if BUILD_MONO
 MONO_RUNTIME = runtime
 endif
 
+if BUILD_GALLIUM
+GALLIUM_SUBDIR = gallium
+endif
+
 SUBDIRS = \
 	$(MONO_RUNTIME) \
+	$(GALLIUM_SUBDIR) \
 	generators \
 	$(subdirs) \
 	m4 \
