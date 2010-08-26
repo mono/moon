@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 637 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::AddHandler(System.Int32,System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: Mono.UnmanagedEventHandler Mono.EventHandlerList::RemoveHandler(System.Int32,System.Delegate)
@@ -534,6 +534,8 @@
 +SSC-M: System.Void System.Windows.Media.SampleReadyEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.TimelineMarkerRoutedEventArgs::.ctor()
 +SSC-M: System.Void System.Windows.Media.TimelineMarkerRoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
++SSC-M: System.Boolean System.Windows.Media.Transform::TryTransform(System.Windows.Point,System.Windows.Point&)
++SSC-M: System.Windows.Media.GeneralTransform System.Windows.Media.Transform::get_Inverse()
 +SSC-M: System.Windows.Media.Matrix System.Windows.Media.TransformGroup::get_Value()
 +SSC-M: System.Void System.Windows.Media.VideoBrush::SetSource(System.Windows.Controls.MediaElement)
 +SSC-M: System.Void System.Windows.Media.VideoBrush::SetSource(System.Windows.Media.CaptureSource)

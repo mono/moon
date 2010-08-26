@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 526 methods needs to be decorated.
+# 528 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -177,6 +177,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::text_selection_select_with_error_(System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::transform_try_transform(System.IntPtr,System.Windows.Point,System.Windows.Point&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_get_value_type(Mono.Kind)
@@ -825,6 +828,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_touch_device(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::transform_get_inverse(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::types_find(System.IntPtr,Mono.Kind)
