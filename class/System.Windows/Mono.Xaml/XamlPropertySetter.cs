@@ -158,9 +158,36 @@ namespace Mono.Xaml {
 			if (kind == Kind.INVALID)
 				return null;
 
+			return LookupDependencyProperty (kind, Name);
+		}
+
+		public DependencyProperty LookupDependencyProperty (Kind kind, string name)
+		{
+			int dot = name.IndexOf ('.');
+			if (dot > 0) {
+				// Its an attached property
+				string type = name.Substring (0, dot);
+				name = name.Substring (dot + 1, name.Length - dot - 1);
+
+				Type t = Parser.ResolveType (type);
+
+				if (t == null)
+					throw Parser.ParseException ("Can not find type '{0}'", type);
+
+				Types.Ensure (t);
+
+				kind = Deployment.Current.Types.TypeToNativeKind (t);
+				if (kind == Kind.INVALID) {
+					Console.Error.WriteLine ("Could not create kind for managed type: {0}", t);
+					return null;
+				}
+			}
+
 			try {
-				return DependencyProperty.Lookup (kind, Name);
-			} catch {
+				return DependencyProperty.Lookup (kind, name);
+			} catch (Exception e) {
+				Console.Error.WriteLine ("Exception while looking up dependency property.");
+				Console.Error.WriteLine (e);
 				return null;
 			}
 		}
@@ -200,7 +227,7 @@ namespace Mono.Xaml {
 			if (source == null) 
 				throw Parser.ParseException ("Invalid TemplateBinding, expression can not be used outside of a FrameworkTemplate.");
 
-			DependencyProperty source_prop = DependencyProperty.Lookup (source.GetKind(), tb.SourcePropertyName);
+			DependencyProperty source_prop = LookupDependencyProperty (source.GetKind (), tb.SourcePropertyName);
 			if (source_prop == null)
 				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", tb.SourcePropertyName);
 
