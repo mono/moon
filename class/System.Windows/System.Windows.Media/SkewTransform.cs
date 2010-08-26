@@ -32,16 +32,13 @@ namespace System.Windows.Media {
 	public sealed partial class SkewTransform : Transform {
 		public override GeneralTransform Inverse {
 			get {
-				Console.WriteLine ("System.Windows.Media.SkewTransform.Inverse : NIEX");
-				throw new System.NotImplementedException ();
+				return base.Inverse;
 			}
 		}
 		
 		public override bool TryTransform (Point inPoint, out Point outPoint)
 		{
-			Console.WriteLine ("System.Windows.Media.SkewTransform.TryTransform : NIEX");
-			throw new System.NotImplementedException ();
-		} 
-
+			return base.TryTransform (inPoint, out outPoint);
+		}
 	}
 }

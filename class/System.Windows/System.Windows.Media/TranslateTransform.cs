@@ -32,16 +32,13 @@ namespace System.Windows.Media {
 	public sealed partial class TranslateTransform : Transform {
 		public override GeneralTransform Inverse {
 			get {
-				Console.WriteLine ("System.Windows.Media.TranslateTransform.Inverse : NIEX");
-				throw new System.NotImplementedException ();
+				return base.Inverse;
 			}
 		}
 		
 		public override bool TryTransform (Point inPoint, out Point outPoint)
 		{
-			Console.WriteLine ("System.Windows.Media.TranslateTransform.TryTransform : NIEX");
-			throw new System.NotImplementedException ();
-		} 
-
+			return base.TryTransform (inPoint, out outPoint);
+		}
 	}
 }
