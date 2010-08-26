@@ -769,12 +769,14 @@ System.Int32 System.Text.UnicodeEncoding::GetChars(System.Byte[],System.Int32,Sy
 System.Int32 System.Text.UTF8Encoding::GetBytes(System.String,System.Int32,System.Int32,System.Byte[],System.Int32)
 	r142142		spouliot - unsafe, call InternalGetBytes with pointers to char* and byte* once all parameters are validated
 
-!SSC-E142C80FB15537FC02C4A4DCE58BB266
-System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char[],System.Int32,System.Int32,System.Char&,System.Boolean)
+!SSC-2E259073ACA71A50DEE57D1D32166536
+System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char[],System.Int32,System.Int32,System.Text.EncoderFallback,System.Char&,System.Boolean)
+	20100826	spouliot - f4aff310 - add EncoderFallback parameter/support
 	r142142		spouliot - unsafe, call InternalGetByteCount overload with char* once all parameters are validated
 
-!SSC-124ECF76908F5D8FA57B6BD559BF3721
-System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Char&,System.Boolean)
+!SSC-DC965E5B0C8DAAE263A925E1F2D48856
+System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Text.EncoderFallback,System.Text.EncoderFallbackBuffer&,System.Char&,System.Boolean)
+	20100826	spouliot - f4aff310 - add EncoderFallback parameter/support
 	r142142		spouliot - unsafe, call InternalGetBytes with pointers to char* and byte* once all parameters are validated
 
 !SSC-8B01BA235EA0DD4A775E6E6FCEF4BCA8
@@ -1639,6 +1641,10 @@ System.Type System.Reflection.MonoAssembly::GetType(System.String,System.Boolean
 System.Type System.Reflection.MonoField::get_DeclaringType()
 	r142142		spouliot - call GetParentType (icall) with 'true'
 
+!SSC-9079A2ED590F5DDD8E723FDD533BC56A
+System.Type System.Reflection.MonoField::get_FieldType()
+	20100826	spouliot - 3c9c5fdb - lazy load. now calls (parameterless) ResolveType (icall)
+
 !SSC-570483006502F5741EF861753F4BC86A
 System.Type System.Reflection.MonoField::get_ReflectedType()
 	r142142		spouliot - call GetParentType (icall) with 'false'
@@ -1780,6 +1786,10 @@ System.Void System.Array::Copy(System.Array,System.Int32,System.Array,System.Int
 !SSC-8212D9F80E98D331049928425F43A03D
 System.Void System.Array::InternalArray__set_Item<T>(System.Int32,T)
 	r142142		spouliot - call SetGenericValueImpl (icall without bounds checking) with validated 'index' value
+
+!SSC-4CD77C42A5C8A85FBF90F46DA90EB22D
+System.Void System.Array::Resize<T>(T[]&,System.Int32)
+	20100826	spouliot - 64e23ec - optimization, now call FastCopy (icall) instead of Array.Copy
 
 !SSC-06BAC6E672033B5F3645AEE7C3F752DC
 System.Void System.Array::Reverse(System.Array,System.Int32,System.Int32)
@@ -2054,6 +2064,10 @@ System.Void System.NumberFormatter::.cctor()
 System.Void System.Reflection.AssemblyName::.ctor(System.String)
 	r142142		spouliot - call ParseName (icall) and throw if it return false
 
+!SSC-718CD813D61C13C19C45071CD9B5B27A
+System.Void System.Reflection.CustomAttributeData::ResolveArguments()
+	20100826	spouliot - 2913acfc - lazy revolve - calls ResolveArgumentsInternal (icall) using parameters acquired by the internal ctor
+
 !SSC-B4BB5593B0DE0768CD02F7BF6AD4E580
 System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
 	r142142		spouliot - validate all parameters then call GetBlob [SecurityCritical] using them
@@ -2134,8 +2148,9 @@ System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObj
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
 	r142142		spouliot - call FieldInfo.SetValue [SecuritySafeCritical] or PropertyInfo.SetValue [SecurityTransparent] on fields/properties that can be critical/safe critical (affects WebClient)
 
-!SSC-834028A2D9EBA6DFFEDF14AD8CC2F664
-System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.ISurrogateSelector,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.Formatters.FormatterAssemblyStyle,System.Runtime.Serialization.Formatters.FormatterTypeStyle)
+!SSC-31E7BDED81B4FD3E84F86EB96ADC0012
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
+	20100826	spouliot - e95ea2b4 - signature change to use a BinaryFormatter and assign fields from its properties
 	r143412		spouliot - internal type (needed to serialize CultureInfo and friends between appdomain/threads). Create a ObjectIDGenerator [SecurityCritical] instance
 
 !SSC-0152970D1C01610ABB7284C6DEB3A2E0

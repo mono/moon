@@ -82,9 +82,16 @@ class Program {
 					}
 					int e = line.IndexOf ('\t', s);
 					int revision = -1;
-					if (Int32.TryParse (line.Substring (s, e - s), out revision)) {
-						string comments = line.Substring (e).TrimStart ();
-						data.Comments.Add (revision, comments);
+
+					try {
+						if (Int32.TryParse (line.Substring (s, e - s), out revision)) {
+							string comments = line.Substring (e).TrimStart ();
+							data.Comments.Add (revision, comments);
+						}
+					}
+					catch {
+						Console.WriteLine ("{0}: error line #{1}", filename, line_no);
+						throw;
 					}
 				} else {
 					if (line [0] == '!') {

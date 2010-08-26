@@ -86,6 +86,10 @@
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::ClearManagedPeerCallbacks(Mono.INativeEventObjectWrapper)
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::SetManagedPeerCallbacks(Mono.INativeEventObjectWrapper)
 
++SC-M: System.Void Mono.Types::AddBuiltinType(System.Type,Mono.ManagedType)
++SC-M: System.Void Mono.Types::CreateNativeTypes()
++SC-M: System.Void Mono.Types::.ctor(System.IntPtr)
+
 +SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Application::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Input.StylusPoint::.ctor(System.IntPtr)
