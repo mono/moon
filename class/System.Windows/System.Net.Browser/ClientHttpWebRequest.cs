@@ -96,7 +96,7 @@ namespace System.Net.Browser {
 			if (stream == null)
 				stream = GetHttpWebRequest (RequestUri).EndGetRequestStream (asyncResult);
 
-			return stream;
+			return new InternalWebRequestStreamWrapper (stream as MemoryStream);
 		}
 
 		protected override HttpWebRequest GetHttpWebRequest (Uri uri)
@@ -135,23 +135,26 @@ namespace System.Net.Browser {
 			}
 		}
 
-		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires" };
-
 		protected override void CheckProtocolViolation ()
 		{
-			if (Headers.ContainsKey ("Cache-Control"))
-				throw new SecurityException ();
-
 			bool is_get = (String.Compare (Method, "GET", StringComparison.OrdinalIgnoreCase) == 0);
 
-			// most headers are checked when set, but some are checked much later
-			foreach (string header in bad_get_headers) {
-				// case insensitive check to internal Headers dictionary
-				if (Headers.ContainsKey (header)) {
+			foreach (string header in Headers) {
+				switch (header) {
+				case "Content-Encoding":
+				case "Content-Language":
+				case "Content-MD5":
+				case "Content-Type":
+				case "Expires":
 					if (is_get)
 						throw new ProtocolViolationException ();
-					else
-						throw new SecurityException ();
+					break;
+				}
+
+				// outside switch/case since it applies to non-GET (e.g. POST) too
+				if (IsMultilineValue (Headers [header])) {
+					throw new WebException ("NotFound", null, WebExceptionStatus.UnknownError, 
+						new NotFoundWebResponse ());
 				}
 			}
 		}

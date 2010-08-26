@@ -224,7 +224,7 @@ namespace System.Net.Browser {
 				Headers.SetHeader ("content-length", request_length.ToString ());
 			}
 
-			foreach (string header in Headers.AllKeys)
+			foreach (string header in Headers)
 				NativeMethods.http_request_set_header (native, header, Headers [header], false);
 
 			if (request_length > 1) {

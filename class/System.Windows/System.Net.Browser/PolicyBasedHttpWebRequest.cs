@@ -61,10 +61,13 @@ namespace System.Net.Browser {
 
 		~PolicyBasedWebRequest () /* thread-safe: no p/invokes */
 		{
-			Abort ();
-
-			if (async_result != null)
-				async_result.Dispose ();
+			try {
+				Abort ();
+			}
+			finally {
+				if (async_result != null)
+					async_result.Dispose ();
+			}
 		}
 
 		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
@@ -167,11 +170,6 @@ namespace System.Net.Browser {
 				return async_result;
 			}
 
-			// new in SL4 - unlike others it can be set (earlier) and is not checked later (CheckProtocolViolation)
-			// but still throws a SecurityException here
-			if (Headers.ContainsKey ("Proxy-Authorization"))
-				throw new SecurityException ();
-
 			if (!sendHeaders)
 				wreq.Headers.Clear ();
 			wreq.progress = progress;
@@ -206,19 +204,26 @@ namespace System.Net.Browser {
 			GetResponse (this.Method, uri, true);
 		}
 
-		private Exception NotFound (string scheme, WebResponse wres)
+		internal Exception NotFound (string scheme, WebResponse wres)
 		{
 			if (scheme == "https")
 				return new SecurityException ();
 
-			return new WebException ("NotFound", null, 
-				wres == null ? WebExceptionStatus.UnknownError : WebExceptionStatus.Success, 
-				wres);
+			return new WebException ("NotFound", null, WebExceptionStatus.UnknownError, wres);
 		}
 
 		private void EndCallback (IAsyncResult result)
 		{
 			WebRequest wreq = (result.AsyncState as WebRequest);
+			// new in SL4 - unlike others it can be set (earlier) and is not checked later (CheckProtocolViolation)
+			if (wreq.Headers.ContainsKey ("Proxy-Authorization")) {
+				if (!SecurityManager.HasElevatedPermissions) {
+					async_result.Exception = new SecurityException ("'Proxy-Authorization' cannot be set unless running in elevated trust");
+					async_result.SetComplete ();
+					return;
+				}
+			}
+
 			try {
 				HttpWebResponseCore wres = (HttpWebResponseCore) wreq.EndGetResponse (result);
 				//			Redirection	Error
@@ -257,8 +262,7 @@ namespace System.Net.Browser {
 				}
 			}
 			catch (Exception e) {
-				async_result.Response = null;
-				async_result.Exception = NotFound (wreq.RequestUri.Scheme, null);
+				async_result.Exception = NotFound (wreq.RequestUri.Scheme, async_result.Response ?? new NotFoundWebResponse ());
 				async_result.SetComplete ();
 			}
 		}
@@ -314,6 +318,15 @@ namespace System.Net.Browser {
 			}
 		}
 
+		static char[] NewLine = new char[] { '\n', '\r' };
+		static char[] Prefix = new char[] { ' ', '\t' };
+
+		internal static bool IsMultilineValue (string value)
+		{
+			if ((value == null) || (value.IndexOfAny (NewLine) == -1))
+				return false;
+			return (value.IndexOfAny (Prefix) != -1);
+		}
 
 		abstract protected void CheckMethod (string method);
 		abstract protected void CheckProtocolViolation ();

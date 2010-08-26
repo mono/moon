@@ -42,11 +42,13 @@ namespace System.Net.Browser {
 
 		static MethodInfo create;
 		static MethodInfo abort;
+		static MethodInfo add_range;
 		static MethodInfo begin_get_request_stream;
 		static MethodInfo end_get_request_stream;
 		static MethodInfo begin_get_response;
 		static MethodInfo end_get_response;
 		static MethodInfo set_method;
+		static MethodInfo set_accept;
 		static MethodInfo set_content_type;
 		static MethodInfo get_headers;
 		static MethodInfo set_headers;
@@ -74,6 +76,10 @@ namespace System.Net.Browser {
 			set_headers = web_request.GetProperty ("Headers").GetSetMethod ();
 
 			set_credentials = web_request.GetProperty ("Credentials").GetSetMethod ();
+
+			Type http_web_request = ClientReflectionHelper.SystemAssembly.GetType ("System.Net.HttpWebRequest");
+			add_range = http_web_request.GetMethod ("AddRange", new Type[] { typeof (int), typeof (int) });
+			set_accept = http_web_request.GetProperty ("Accept").GetSetMethod ();
 		}
 
 		internal ClientHttpWebRequestInternal (ClientHttpWebRequest wreq, Uri uri)
@@ -83,6 +89,9 @@ namespace System.Net.Browser {
 			request = create.Invoke (null, new object [] { uri });
 			headers = get_headers.Invoke (request, null);
 			set_method.Invoke (request, new object [] { Method } );
+
+			if (Accept != null)
+				set_accept.Invoke (request, new object [] { Accept } );
 		}
 
 		public override CookieContainer CookieContainer {
@@ -140,11 +149,26 @@ namespace System.Net.Browser {
 				}
 
 				if (Headers.Count > 0) {
-					string [] keys = Headers.AllKeys;
-					foreach (string key in keys) {
-						// we cannot set "Content-Type" using the headers
-						if (String.Compare (key, "content-type", StringComparison.OrdinalIgnoreCase) != 0)
+					foreach (string key in Headers) {
+						// we cannot set some hedaers using the collection
+						switch (key.ToLowerInvariant ()) {
+						case "accept":
+						case "content-type":
+							// ignore, we already have used the properties Accept and ContentType
+							// and reflect the values to the client stack
+							break;
+						case "range":
+							// XXX inconsistent results (DownloadStringAsync versus OpenReadAsync) in SL
+#if false
+							int from, to;
+							if (ParseRange (Headers [key], out from, out to))
+								add_range.Invoke (request, new object [] { from, to } );
+#endif
+							break;
+						default:
 							ClientReflectionHelper.SetHeader (headers, key, Headers [key]);
+							break;
+						}
 					}
 				}
 
@@ -165,7 +189,8 @@ namespace System.Net.Browser {
 				response = end_get_response.Invoke (request, new object[] { asyncResult });
 			}
 			catch (TargetInvocationException tie) {
-				throw tie.InnerException;
+				async_result.Response = new NotFoundWebResponse ();
+				async_result.Exception = tie.InnerException;
 			}
 			finally {
 				async_result.SetComplete ();
@@ -175,7 +200,12 @@ namespace System.Net.Browser {
 		public override Stream EndGetRequestStream (IAsyncResult ar)
 		{
 			try {
-				return (Stream) end_get_request_stream.Invoke (request, new object [1] { ar });
+				using (Stream stream = (Stream) end_get_request_stream.Invoke (request, new object [1] { ar })) {
+					MemoryStream ms = new MemoryStream ();
+					// FIXME
+					// stream.CopyTo (ms);
+					return ms;
+				}
 			}
 			catch (TargetInvocationException tie) {
 				throw tie.InnerException;
@@ -206,6 +236,22 @@ namespace System.Net.Browser {
 				async_result.Dispose ();
 			}
 		}
+#if false
+		static bool ParseRange (string value, out int from, out int to)
+		{
+			from = Int32.MinValue;
+			to = Int32.MinValue;
+
+			int start = value.IndexOf ('=');
+			start = start == -1 ? 0 : start + 1;
+			int mid = value.IndexOf ('-');
+			if (mid == -1)
+				return false;
+			if (!Int32.TryParse (value.Substring (start, mid - start), out from))
+				return false;
+			return Int32.TryParse (value.Substring (mid + 1), out to);
+		}
+#endif
 	}
 }
 

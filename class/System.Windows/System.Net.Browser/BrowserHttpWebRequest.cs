@@ -63,6 +63,15 @@ namespace System.Net.Browser {
 
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
 		{
+			WebClient.CallbackData callback_data = (state as WebClient.CallbackData);
+			if (callback_data != null) {
+				long length = callback_data.data.Length;
+				// if Content-Length has been set previously and does not match the data length...
+				if ((ContentLength != -1) && (ContentLength != length))
+					throw new ProtocolViolationException ();
+				ContentLength = length;
+			}
+
 			HttpWebAsyncResult result = new HttpWebAsyncResult (callback, state);
 			result.SetComplete ();
 			return result;
@@ -112,21 +121,32 @@ namespace System.Net.Browser {
 			}
 		}
 
-		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires", "Content-Type" };
-
 		protected override void CheckProtocolViolation ()
 		{
-			if (String.Compare (Method, "GET", StringComparison.OrdinalIgnoreCase) != 0)
-				return;
-
-			if (Headers.ContainsKey ("Cache-Control"))
-				throw new NotSupportedException ();
-
-			// most headers are checked when set, but some are checked much later
-			foreach (string header in bad_get_headers) {
-				// case insensitive check to internal Headers dictionary
-				if (Headers.ContainsKey (header))
+			if (String.Compare (Method, "POST", StringComparison.OrdinalIgnoreCase) == 0) {
+				// if the property Content-Length was not set (or set to zero) then Headers should not contain it
+				if ((ContentLength > 0) && Headers.ContainsKey ("Content-Length"))
 					throw new ProtocolViolationException ();
+			} else {
+				foreach (string header in Headers) {
+					switch (header) {
+					case "Content-Encoding":
+					case "Content-Language":
+					case "Content-MD5":
+					case "Content-Type":
+					case "Expires":
+						throw new ProtocolViolationException ();
+					case "Accept":
+					case "Authorization":
+					case "Cache-Control":
+					case "Range":
+						throw new NotSupportedException ();
+					default:
+						if (IsMultilineValue (Headers [header]))
+							throw new NotSupportedException ();
+						break;
+					}
+				}
 			}
 		}
 	}
