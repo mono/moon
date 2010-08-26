@@ -294,8 +294,50 @@ namespace System.Windows.Media.Media3D {
 
 		public bool HasInverse {
 			get {
-				Console.WriteLine ("System.Widows.Media.Matrix3D.HasInverse: NIEX");
-				throw new NotImplementedException ();
+				double t_11;
+				double t_12;
+				double t_13;
+				double t_14;
+				double t_21;
+				double t_22;
+				double t_23;
+				double t_24;
+				double t_31;
+				double t_32;
+				double t_33;
+				double t_34;
+				double t_41;
+				double t_42;
+				double t_43;
+				double t_44;
+				double det;
+
+				if (IsIdentity)
+					return true;
+
+				t_11 = m_22 * m_33 * m_44 - m_22 * m_34 * offset_z - m_32 * m_23 * m_44 + m_32 * m_24 * offset_z + offset_y * m_23 * m_34 - offset_y * m_24 * m_33;
+				t_21 = -m_21 * m_33 * m_44 + m_21 * m_34 * offset_z + m_31 * m_23 * m_44 - m_31 * m_24 * offset_z - offset_x * m_23 * m_34 + offset_x * m_24 * m_33;
+				t_31 = m_21 * m_32 * m_44 - m_21 * m_34 * offset_y - m_31 * m_22 * m_44 + m_31 * m_24 * offset_y + offset_x * m_22 * m_34 - offset_x * m_24 * m_32;
+				t_41 = -m_21 * m_32 * offset_z + m_21 * m_33 * offset_y + m_31 * m_22 * offset_z - m_31 * m_23 * offset_y - offset_x * m_22 * m_33 + offset_x * m_23 * m_32;
+				t_12 = -m_12 * m_33 * m_44 + m_12 * m_34 * offset_z + m_32 * m_13 * m_44 - m_32 * m_14 * offset_z - offset_y * m_13 * m_34 + offset_y * m_14 * m_33;
+				t_22 = m_11 * m_33 * m_44 - m_11 * m_34 * offset_z - m_31 * m_13 * m_44 + m_31 * m_14 * offset_z + offset_x * m_13 * m_34 - offset_x * m_14 * m_33;
+				t_32 = -m_11 * m_32 * m_44 + m_11 * m_34 * offset_y + m_31 * m_12 * m_44 - m_31 * m_14 * offset_y - offset_x * m_12 * m_34 + offset_x * m_14 * m_32;
+				t_42 = m_11 * m_32 * offset_z - m_11 * m_33 * offset_y - m_31 * m_12 * offset_z + m_31 * m_13 * offset_y + offset_x * m_12 * m_33 - offset_x * m_13 * m_32;
+				t_13 = m_12 * m_23 * m_44 - m_12 * m_24 * offset_z - m_22 * m_13 * m_44 + m_22 * m_14 * offset_z + offset_y * m_13 * m_24 - offset_y * m_14 * m_23;
+				t_23 = -m_11 * m_23 * m_44 + m_11 * m_24 * offset_z + m_21 * m_13 * m_44 - m_21 * m_14 * offset_z - offset_x * m_13 * m_24 + offset_x * m_14 * m_23;
+				t_33 = m_11 * m_22 * m_44 - m_11 * m_24 * offset_y - m_21 * m_12 * m_44 + m_21 * m_14 * offset_y + offset_x * m_12 * m_24 - offset_x * m_14 * m_22;
+				t_43 = -m_11 * m_22 * offset_z + m_11 * m_23 * offset_y + m_21 * m_12 * offset_z - m_21 * m_13 * offset_y - offset_x * m_12 * m_23 + offset_x * m_13 * m_22;
+				t_14 = -m_12 * m_23 * m_34 + m_12 * m_24 * m_33 + m_22 * m_13 * m_34 - m_22 * m_14 * m_33 - m_32 * m_13 * m_24 + m_32 * m_14 * m_23;
+				t_24 = m_11 * m_23 * m_34 - m_11 * m_24 * m_33 - m_21 * m_13 * m_34 + m_21 * m_14 * m_33 + m_31 * m_13 * m_24 - m_31 * m_14 * m_23;
+				t_34 = -m_11 * m_22 * m_34 + m_11 * m_24 * m_32 + m_21 * m_12 * m_34 - m_21 * m_14 * m_32 - m_31 * m_12 * m_24 + m_31 * m_14 * m_22;
+				t_44 = m_11 * m_22 * m_33 - m_11 * m_23 * m_32 - m_21 * m_12 * m_33 + m_21 * m_13 * m_32 + m_31 * m_12 * m_23 - m_31 * m_13 * m_22;
+
+				det = m_11 * t_11 + m_12 * t_21 + m_13 * t_31 + m_14 * t_41;
+
+				if (det != 0.0)
+					return true;
+
+				return false;
 			}
 		}
 
@@ -462,8 +504,67 @@ namespace System.Windows.Media.Media3D {
 
 		public void Invert ()
 		{
-			Console.WriteLine ("System.Windows.Media.Media3D.Matrix3D.Invert: NIEX");
-			throw new NotImplementedException ();
+			double t_11;
+			double t_12;
+			double t_13;
+			double t_14;
+			double t_21;
+			double t_22;
+			double t_23;
+			double t_24;
+			double t_31;
+			double t_32;
+			double t_33;
+			double t_34;
+			double t_41;
+			double t_42;
+			double t_43;
+			double t_44;
+			double det;
+
+			if (IsIdentity)
+				return;
+
+			t_11 = m_22 * m_33 * m_44 - m_22 * m_34 * offset_z - m_32 * m_23 * m_44 + m_32 * m_24 * offset_z + offset_y * m_23 * m_34 - offset_y * m_24 * m_33;
+			t_21 = -m_21 * m_33 * m_44 + m_21 * m_34 * offset_z + m_31 * m_23 * m_44 - m_31 * m_24 * offset_z - offset_x * m_23 * m_34 + offset_x * m_24 * m_33;
+			t_31 = m_21 * m_32 * m_44 - m_21 * m_34 * offset_y - m_31 * m_22 * m_44 + m_31 * m_24 * offset_y + offset_x * m_22 * m_34 - offset_x * m_24 * m_32;
+			t_41 = -m_21 * m_32 * offset_z + m_21 * m_33 * offset_y + m_31 * m_22 * offset_z - m_31 * m_23 * offset_y - offset_x * m_22 * m_33 + offset_x * m_23 * m_32;
+			t_12 = -m_12 * m_33 * m_44 + m_12 * m_34 * offset_z + m_32 * m_13 * m_44 - m_32 * m_14 * offset_z - offset_y * m_13 * m_34 + offset_y * m_14 * m_33;
+			t_22 = m_11 * m_33 * m_44 - m_11 * m_34 * offset_z - m_31 * m_13 * m_44 + m_31 * m_14 * offset_z + offset_x * m_13 * m_34 - offset_x * m_14 * m_33;
+			t_32 = -m_11 * m_32 * m_44 + m_11 * m_34 * offset_y + m_31 * m_12 * m_44 - m_31 * m_14 * offset_y - offset_x * m_12 * m_34 + offset_x * m_14 * m_32;
+			t_42 = m_11 * m_32 * offset_z - m_11 * m_33 * offset_y - m_31 * m_12 * offset_z + m_31 * m_13 * offset_y + offset_x * m_12 * m_33 - offset_x * m_13 * m_32;
+			t_13 = m_12 * m_23 * m_44 - m_12 * m_24 * offset_z - m_22 * m_13 * m_44 + m_22 * m_14 * offset_z + offset_y * m_13 * m_24 - offset_y * m_14 * m_23;
+			t_23 = -m_11 * m_23 * m_44 + m_11 * m_24 * offset_z + m_21 * m_13 * m_44 - m_21 * m_14 * offset_z - offset_x * m_13 * m_24 + offset_x * m_14 * m_23;
+			t_33 = m_11 * m_22 * m_44 - m_11 * m_24 * offset_y - m_21 * m_12 * m_44 + m_21 * m_14 * offset_y + offset_x * m_12 * m_24 - offset_x * m_14 * m_22;
+			t_43 = -m_11 * m_22 * offset_z + m_11 * m_23 * offset_y + m_21 * m_12 * offset_z - m_21 * m_13 * offset_y - offset_x * m_12 * m_23 + offset_x * m_13 * m_22;
+			t_14 = -m_12 * m_23 * m_34 + m_12 * m_24 * m_33 + m_22 * m_13 * m_34 - m_22 * m_14 * m_33 - m_32 * m_13 * m_24 + m_32 * m_14 * m_23;
+			t_24 = m_11 * m_23 * m_34 - m_11 * m_24 * m_33 - m_21 * m_13 * m_34 + m_21 * m_14 * m_33 + m_31 * m_13 * m_24 - m_31 * m_14 * m_23;
+			t_34 = -m_11 * m_22 * m_34 + m_11 * m_24 * m_32 + m_21 * m_12 * m_34 - m_21 * m_14 * m_32 - m_31 * m_12 * m_24 + m_31 * m_14 * m_22;
+			t_44 = m_11 * m_22 * m_33 - m_11 * m_23 * m_32 - m_21 * m_12 * m_33 + m_21 * m_13 * m_32 + m_31 * m_12 * m_23 - m_31 * m_13 * m_22;
+
+			det = m_11 * t_11 + m_12 * t_21 + m_13 * t_31 + m_14 * t_41;
+
+			if (det == 0.0)
+				throw new InvalidOperationException ("The matrix is not invertible.");
+
+			det = 1.0 / det;
+
+			m_11 = t_11 * det;
+			m_12 = t_12 * det;
+			m_13 = t_13 * det;
+			m_14 = t_14 * det;
+			m_21 = t_21 * det;
+			m_22 = t_22 * det;
+			m_23 = t_23 * det;
+			m_24 = t_24 * det;
+			m_31 = t_31 * det;
+			m_32 = t_32 * det;
+			m_33 = t_33 * det;
+			m_34 = t_34 * det;
+			offset_x = t_41 * det;
+			offset_y = t_42 * det;
+			offset_z = t_43 * det;
+			m_44 = t_44 * det;
 		}
 
 		public static Matrix3D Identity {
