@@ -44,10 +44,10 @@ class GeneralTransform : public DependencyObject {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual void GetTransform (cairo_matrix_t *value);
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Matrix* GetMatrix ();
-
+	Matrix *GetMatrix ();
+	
 	Point Transform (Point point);
 
 	/* @GenerateJSBinding,Version=3.0 */
@@ -57,7 +57,7 @@ class GeneralTransform : public DependencyObject {
 
 /* @Namespace=System.Windows.Media */
 class Transform : public GeneralTransform {
-protected:
+ protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	Transform () : GeneralTransform (Type::TRANSFORM) { }
 
@@ -68,6 +68,13 @@ protected:
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	GeneralTransform *GetInverse ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool TryTransform (Point inPoint, /* @MarshalAs=Point,IsOut */ Point *outPoint);
 };
 
 

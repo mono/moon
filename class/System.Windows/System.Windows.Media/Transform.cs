@@ -45,14 +45,19 @@ namespace System.Windows.Media {
 
 		public override bool TryTransform (Point inPoint, out Point outPoint)
 		{
-			Console.WriteLine ("System.Windows.Media.Transform.TryTransform: NIEX");
-			throw new NotImplementedException ();
+			return NativeMethods.transform_try_transform (native, inPoint, out outPoint);
 		}
 		
 		public override GeneralTransform Inverse {
 			get {
-				Console.WriteLine ("System.Windows.Media.Transform.Inverse : NIEX");
-				throw new System.NotImplementedException ();
+				GeneralTransform inverse;
+				IntPtr rv;
+				
+				rv = NativeMethods.transform_get_inverse (native);
+				inverse = (GeneralTransform) NativeDependencyObjectHelper.Lookup (Kind.MATRIXTRANSFORM, rv);
+				NativeMethods.event_object_unref (rv);
+				
+				return inverse;
 			}
 		}
 	}

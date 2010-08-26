@@ -15,6 +15,7 @@
 #include <math.h>
 
 #include "transform.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -121,7 +122,7 @@ GeneralTransform::GetTransform (cairo_matrix_t *value)
 	*value = _matrix;
 }
 
-Matrix*
+Matrix *
 GeneralTransform::GetMatrix ()
 {
 	MaybeUpdateTransform ();
@@ -147,6 +148,39 @@ GeneralTransform::TransformXY (double x, double y)
 	return Transform (Point (x, y));
 }
 
+
+//
+// Transform
+//
+
+GeneralTransform *
+Transform::GetInverse ()
+{
+	MatrixTransform *transform;
+	cairo_matrix_t inverted;
+	Matrix *matrix;
+	
+	MaybeUpdateTransform ();
+	inverted = _matrix;
+	
+	if (cairo_matrix_invert (&inverted) != CAIRO_STATUS_SUCCESS)
+		return NULL;
+	
+	matrix = new Matrix (&inverted);
+	transform = MoonUnmanagedFactory::CreateMatrixTransform ();
+	((MatrixTransform *) transform)->SetMatrix (matrix);
+	matrix->unref ();
+	
+	return transform;
+}
+
+bool
+Transform::TryTransform (Point inPoint, Point *outPoint)
+{
+	MaybeUpdateTransform ();
+	*outPoint = inPoint.Transform (&_matrix);
+	return true;
+}
 
 
 //
