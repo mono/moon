@@ -117,13 +117,17 @@ namespace System.Windows.Interop {
 			if (managedHandler == null)
 				return;
 
-			int token = Events.AddHandler (Deployment.Current.Surface.Native, eventId, nativeHandler);
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+			Action dtor_action = () => {
+				EventList.RemoveHandler (eventId, managedHandler);
+			};
+
+			int token = Events.AddHandler (Deployment.Current.Surface.Native, eventId, nativeHandler, dtor_action);
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 
 		private void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
-			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
 
 			if (nativeHandler == null)
 				return;

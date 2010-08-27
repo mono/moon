@@ -77,6 +77,7 @@ namespace Mono {
 	internal delegate void UnmanagedEventHandler (IntPtr sender, IntPtr calldata, IntPtr closure);
 
 	internal delegate void PlainEvent (IntPtr target);
+	internal delegate void GDestroyNotify (IntPtr target);
 
 	internal delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
 	internal delegate void UnmanagedPropertyChangeHandler (IntPtr dependency_object, IntPtr propertyChangedArgs, ref MoonError error, IntPtr closure);

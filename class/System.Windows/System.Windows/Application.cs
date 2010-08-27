@@ -175,15 +175,19 @@ namespace System.Windows {
 		{
 			if (managedHandler == null)
 				return;
+
+			Action dtor_action = () => {
+				EventList.RemoveHandler (eventId, managedHandler);
+			};
+
+			int token = Events.AddHandler (this, eventId, nativeHandler, dtor_action);
 			
-			int token = Events.AddHandler (this, eventId, nativeHandler);
-			
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 
 		internal void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
-			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
 			
 			if (nativeHandler == null)
 				return;

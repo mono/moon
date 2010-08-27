@@ -58,7 +58,7 @@ namespace Mono {
 			catch (Exception ex) {
 				try {
 					Application.OnUnhandledException (Application.Current, ex);
-					Console.WriteLine ("Moonlight: Unhandled exception in Events.SafeDispatcher: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in Events.SafeAction: {0}", ex);
 				} catch {
 					// Ignore
 				}
@@ -377,13 +377,14 @@ namespace Mono {
 
 		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, IntPtr.Zero);
+			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, null);
 		}
 
 		public static void RemoveOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
 		{
 			NativeMethods.event_object_remove_on_event_handler (obj.native, eventId, handler, obj.native);
 		}
+
 
 		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)
 		{
@@ -392,7 +393,24 @@ namespace Mono {
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
 		{
-			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, IntPtr.Zero);
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, null);
+		}
+
+		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, Action dtor_action)
+		{
+			return AddHandler (obj.NativeHandle, eventId, handler, dtor_action);
+		}
+
+		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, Action dtor_action)
+		{
+			GDestroyNotify call_dtor = (data) => SafeAction ( () => dtor_action () );
+
+			return AddHandler (raw, eventId, handler, call_dtor);
+		}
+
+		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, GDestroyNotify data_dtor)
+		{
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, data_dtor);
 		}
 
 		public static void RemoveHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)

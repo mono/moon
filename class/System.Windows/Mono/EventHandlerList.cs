@@ -45,10 +45,16 @@ namespace Mono {
 		public int Token;
 		public Delegate ManagedDelegate;
 		public GCHandle NativeHandler;
+		public Action DtorAction;
 	}
 
 	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
 		public void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
+		{
+			AddHandler (eventId, token, managedDelegate, nativeHandler);
+		}
+
+		public void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler, Action dtor_action)
 		{
 			Dictionary<int, EventHandlerData> events;
 
@@ -60,7 +66,7 @@ namespace Mono {
 				Add (eventId, events);
 			}
 
-			events.Add (token, new EventHandlerData () { Token = token, ManagedDelegate = managedDelegate, NativeHandler = GCHandle.Alloc (nativeHandler) });
+			events.Add (token, new EventHandlerData () { Token = token, ManagedDelegate = managedDelegate, NativeHandler = GCHandle.Alloc (nativeHandler), DtorAction = dtor_action });
 		}
 
 		public UnmanagedEventHandler RemoveHandler (int eventId, Delegate managedDelegate)
@@ -83,6 +89,21 @@ namespace Mono {
 
 			return null;
 		}
+
+		public UnmanagedEventHandler LookupHandler (int eventId, Delegate managedDelegate)
+		{
+			if (ContainsKey (eventId)) {
+				Dictionary<int, EventHandlerData> events = this[eventId];
+
+				foreach (EventHandlerData data in events.Values) {
+					if (data.ManagedDelegate == managedDelegate)
+						return data.NativeHandler.Target as UnmanagedEventHandler;
+				}
+			}
+
+			return null;
+		}
+
 	}
 	
 }

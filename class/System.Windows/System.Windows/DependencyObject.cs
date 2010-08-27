@@ -314,14 +314,18 @@ namespace System.Windows {
 			if (managedHandler == null)
 				return;
 
-			int token = Events.AddHandler (this, eventId, nativeHandler);
+			Action dtor_action = () => {
+				EventList.RemoveHandler (eventId, managedHandler);
+			};
 
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+			int token = Events.AddHandler (this, eventId, nativeHandler, dtor_action);
+
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 
 		internal void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
-			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
 
 			if (nativeHandler == null)
 				return;

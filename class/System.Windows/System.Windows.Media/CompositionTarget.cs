@@ -33,14 +33,18 @@ namespace System.Windows.Media
 			if (managedHandler == null)
 				return;
 
+			Action dtor_action = () => {
+				EventList.RemoveHandler (eventId, managedHandler);
+			};
+
 			IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
-			int token = Events.AddHandler (t, eventId, nativeHandler);
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+			int token = Events.AddHandler (t, eventId, nativeHandler, dtor_action);
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 
 		private static void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
-			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
 
 			if (nativeHandler == null)
 				return;

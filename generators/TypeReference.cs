@@ -270,8 +270,7 @@ class TypeReference {
 				managed_type = "System.Windows.Media.MediaStreamSource." + Value.Replace ("Callback", "Delegate");
 				break;
 			case "GDestroyNotify":
-				managed_type = "IntPtr"; // hack, because we never pass this from managed code
-				                         // (it's used for EventObject::AddHandler).
+				managed_type = "GDestroyNotify";
 				break;
 			case "char*":
 				managed_type = "string";
