@@ -132,10 +132,20 @@ namespace Mono.Xaml {
 			if (dest_type == typeof (string))
 				return val.ToString ();
 
-			if (converter == null)
+			if (converter == null || ConverterIsBlackListed (converter))
 				converter = new XamlTypeConverter (parser, element, prop_name, dest_type);
 
 			return converter.ConvertFrom (null, Helper.DefaultCulture, val);
+		}
+
+		//
+		// Generally useless converters
+		//
+		private static bool ConverterIsBlackListed (TypeConverter converter)
+		{
+			if (converter.GetType () == typeof (PropertyPathConverter))
+				return true;
+			return false;
 		}
 
 		private static RoutedEvent ConvertRoutedEventArgs (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object ovalue)
