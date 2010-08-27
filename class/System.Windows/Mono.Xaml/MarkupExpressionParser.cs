@@ -75,6 +75,10 @@ namespace Mono.Xaml {
 			return dob as FrameworkTemplate;
 		}
 
+		protected override PropertyPath ParsePropertyPath (string piece)
+		{
+			return new PropertyPath (piece);
+		}
 	}
 
 	internal class SL4MarkupExpressionParser : MarkupExpressionParser {
@@ -104,6 +108,18 @@ namespace Mono.Xaml {
 			return parser.GetParentTemplate (target_element);
 		}
 
+		protected override PropertyPath ParsePropertyPath (string piece)
+		{
+			var converter = new XamlTypeConverter (parser, target_element, AttributeName, typeof (PropertyPath));
+			var path = converter.ConvertFrom (piece) as PropertyPath;
+
+			if (path == null) {
+				Console.Error.WriteLine ("Error parsing property path: '{0}'.", piece);
+				return null;
+			}
+
+			return path;
+		}
 	}
 
 	internal abstract class MarkupExpressionParser {
@@ -122,6 +138,10 @@ namespace Mono.Xaml {
 		{
 			this.target = target;
 			this.attribute_name = attribute_name;
+		}
+
+		public string AttributeName {
+			get { return attribute_name; }
 		}
 
 		public static bool IsTemplateBinding (string expression)
@@ -246,12 +266,11 @@ namespace Mono.Xaml {
 
 			string remaining = expression;
 			string piece = GetNextPiece (ref remaining, out next);
-			
 
 			if (next == '=')
 				HandleProperty (binding, piece, ref remaining);
 			else
-				binding.Path = new PropertyPath (piece);
+				binding.Path = ParsePropertyPath (piece);
 
 			while ((piece = GetNextPiece (ref remaining, out next)) != null) {
 				HandleProperty (binding, piece, ref remaining);
@@ -459,6 +478,7 @@ namespace Mono.Xaml {
 
 		protected abstract object LookupNamedResource (DependencyObject dob, string name);
 		protected abstract FrameworkTemplate GetParentTemplate ();
+		protected abstract PropertyPath ParsePropertyPath (string piece);
 	}
 }
 
