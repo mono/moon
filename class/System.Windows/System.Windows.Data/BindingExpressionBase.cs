@@ -300,7 +300,10 @@ namespace System.Windows.Data {
 			try {
 				OnNativeMentorDataContextChanged (dependency_object, propertyChangedEventArgs, ref error, closure);
 			} catch (Exception ex) {
-				error = new MoonError (ex);
+				try {
+					error = new MoonError (ex);
+				} catch {
+				}
 			}
 		}
 		void OnNativeMentorDataContextChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)

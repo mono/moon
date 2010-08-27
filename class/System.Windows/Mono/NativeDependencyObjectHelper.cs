@@ -61,47 +61,82 @@ namespace Mono {
 
 		static void AddStrongRef (IntPtr referer, IntPtr referent, string name)
 		{
-			IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
-			if (container == null)
-				return;
-
-			container.AddStrongRef (referent, name);
+			try {
+				IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
+				if (container == null)
+					return;
+	
+				container.AddStrongRef (referent, name);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);
+				} catch {
+				}
+			}
 		}
 
 		static void ClearStrongRef (IntPtr referer, IntPtr referent, string name)
 		{
-			IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
-			if (container == null)
-				return;
-
-			container.ClearStrongRef (referent, name);
+			try {
+				IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
+				if (container == null)
+					return;
+	
+				container.ClearStrongRef (referent, name);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);
+				} catch {
+				}
+			}
 		}
 
 		static void Attached (IntPtr ptr)
 		{
-			INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
-			if (wrapper == null)
-				return;
-
-			wrapper.OnAttached ();
+			try {
+				INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
+				if (wrapper == null)
+					return;
+	
+				wrapper.OnAttached ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.Attached: {0}", ex);
+				} catch {
+				}
+			}
 		}
 
 		static void Detached (IntPtr ptr)
 		{
-			INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
-			if (wrapper == null)
-				return;
-
-			wrapper.OnDetached ();
+			try {
+				INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
+				if (wrapper == null)
+					return;
+	
+				wrapper.OnDetached ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.Detached: {0}", ex);
+				} catch {
+				}
+			}
 		}
 
 		static void MentorChanged (IntPtr ptr, IntPtr mentor_ptr)
 		{
-			INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
-			if (wrapper == null)
-				return;
-
-			wrapper.MentorChanged (mentor_ptr);
+			try {
+				INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
+				if (wrapper == null)
+					return;
+	
+				wrapper.MentorChanged (mentor_ptr);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);
+				} catch {
+				}
+			}
 		}
 
 		public static void SetManagedPeerCallbacks (INativeEventObjectWrapper obj)

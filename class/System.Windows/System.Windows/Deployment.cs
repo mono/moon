@@ -644,14 +644,21 @@ namespace System.Windows {
 		/// </summary>
 		private static void EnsureManagedPeer (IntPtr forDO)
 		{
-			var o = NativeDependencyObjectHelper.Lookup (forDO);
-			if (o == null) {
-				o = NativeDependencyObjectHelper.FromIntPtr (forDO);
+			try {
+				var o = NativeDependencyObjectHelper.Lookup (forDO);
+				if (o == null) {
+					o = NativeDependencyObjectHelper.FromIntPtr (forDO);
 #if DEBUG_REF
-				Console.WriteLine ("Creating managed peer {0}/{1} for {2:X}", o.GetHashCode(), o.GetType(), forDO);
+					Console.WriteLine ("Creating managed peer {0}/{1} for {2:X}", o.GetHashCode(), o.GetType(), forDO);
 #endif
-				// this next line is just to keep mcs from giving us a warning about "o" being unused
-				GC.KeepAlive (o);
+					// this next line is just to keep mcs from giving us a warning about "o" being unused
+					GC.KeepAlive (o);
+				}
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in Deployment.EnsureManagedPeer: {0}", ex);
+				} catch {
+				}
 			}
 		}
 		
