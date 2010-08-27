@@ -152,7 +152,12 @@ namespace Mono {
 					// basename since Mono requires the basename to match the
 					// expected case.
 
-					append = Path.GetFileName (filename);
+					int path_sep = filename.LastIndexOfAny (new char [] {'\\', '/'});
+					if (path_sep >= 0) {
+						append = filename.Substring (path_sep + 1);
+					} else {
+						append = filename;
+					}
 					filename = filename.Substring (0, filename.Length - append.Length);
 				}
 			}
