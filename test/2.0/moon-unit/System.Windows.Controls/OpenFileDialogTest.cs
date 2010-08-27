@@ -54,16 +54,13 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Filter ()
 		{
 			OpenFileDialog ofd = new OpenFileDialog ();
 			ofd.Filter = null;
 			Assert.AreEqual (String.Empty, ofd.Filter, "Null->Empty");
 
-			Assert.Throws<ArgumentException>(() =>
-				ofd.Filter = "a|b"
-			);
+			ofd.Filter = "All Files (*.*)|*.*";
 
 			Assert.Throws<ArgumentException> (delegate {
 				ofd.Filter = "a|b|";
@@ -96,60 +93,14 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (Int32.MaxValue, ofd.FilterIndex, "Unchanged");
 		}
 
-		[Ignore ("blocking UI")]
 		[TestMethod]
-		public void SingleSelection ()
+		public void ShowDialog ()
 		{
+			// note: earlier SL (before 4) did not have this check
 			OpenFileDialog ofd = new OpenFileDialog ();
-			bool? result = ofd.ShowDialog ();
-			if (result.HasValue && result.Value) {
-				CheckFileInfo (ofd.File);
-				// there can be only one FileInfo inside Files
-				int n = 0;
-				foreach (FileInfo fi in ofd.Files) {
-					CheckFileInfo (fi);
-					n++;
-					Assert.AreEqual (ofd.File.Name, fi.Name, "File.Name");
-				}
-				Assert.AreEqual (1, n, "Files");
-			} else {
-				Assert.IsNull (ofd.File, "File");
-				Assert.IsNull (ofd.Files, "Files");
-			}
-		}
-
-		[Ignore ("blocking UI")]
-		[TestMethod]
-		public void MultipleSelection ()
-		{
-			OpenFileDialog ofd = new OpenFileDialog ();
-			ofd.Multiselect = true;
-			bool? result = ofd.ShowDialog ();
-			if (result.HasValue && result.Value) {
-				foreach (FileInfo fi in ofd.Files) {
-					CheckFileInfo (fi);
-				}
-			} else {
-				Assert.IsNull (ofd.File, "File");
-				Assert.IsNull (ofd.Files, "Files");
-			}
-		}
-
-		public void CheckFileInfo (FileInfo fi)
-		{
-			string s = fi.ToString ();
-			Assert.IsFalse (s.IndexOf (Path.AltDirectorySeparatorChar) >= 0, "AltDirectorySeparatorChar");
-			Assert.IsFalse (s.IndexOf (Path.DirectorySeparatorChar) >= 0, "DirectorySeparatorChar");
-			Assert.IsFalse (s.IndexOf (Path.PathSeparator) >= 0, "PathSeparator");
-			Assert.IsFalse (s.IndexOf (Path.VolumeSeparatorChar) >= 0, "VolumeSeparatorChar");
-
-			try {
-				Assert.AreEqual (String.Empty, fi.Directory, "Directory");
-				throw new SecurityException ("MethodAccessException was not thrown by the runtime");
-			}
-			catch (MethodAccessException) {
-				// SecurityCritical
-			}
+			Assert.Throws<SecurityException> (delegate {
+				ofd.ShowDialog ();
+			}, "user initiated check");
 		}
 
 		[TestMethod]

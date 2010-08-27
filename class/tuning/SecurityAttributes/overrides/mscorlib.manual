@@ -422,3 +422,7 @@
 # AES support (AesManaged resides in System.Core)
 +SSC-M: System.Object System.Security.Cryptography.CryptoConfig::CreateFromName(System.String)
 
+# support FileInfo instances that comes from OpenFileDialog (which needs to work without elevated trust)
++SSC-M: System.IO.FileStream System.IO.FileInfo::OpenRead()
++SSC-M: System.IO.StreamReader System.IO.FileInfo::OpenText()
+

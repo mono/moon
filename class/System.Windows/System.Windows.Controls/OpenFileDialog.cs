@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security;
 
 using Mono;
 
@@ -53,6 +54,10 @@ namespace System.Windows.Controls
 		public bool? ShowDialog ()
 		{
 			EnsureMainThread ();
+
+			// the dialog is displayed only if the action leading to this call was initiated directly from the user
+			if (!Helper.IsUserInitiated ())
+				throw new SecurityException ("Action was not initiated by the user");
 
 			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
 			IntPtr result = NativeMethods.moon_windowing_system_show_open_file_dialog (windowing_system,
