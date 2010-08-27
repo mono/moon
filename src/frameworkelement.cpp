@@ -104,8 +104,6 @@ void
 FrameworkElement::Dispose ()
 {
 	SetLogicalParent (NULL, NULL);
-	if (default_template != NULL)
-		default_template->SetParent (NULL, NULL);
 	UIElement::Dispose ();
 }
 
