@@ -377,7 +377,7 @@ namespace Mono {
 
 		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, null);
+			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, null, false);
 		}
 
 		public static void RemoveOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
@@ -393,7 +393,7 @@ namespace Mono {
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
 		{
-			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, null);
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, null, false);
 		}
 
 		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, Action dtor_action)
@@ -410,7 +410,7 @@ namespace Mono {
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, GDestroyNotify data_dtor)
 		{
-			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, data_dtor);
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, data_dtor, false);
 		}
 
 		public static void RemoveHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)

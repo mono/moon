@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 634 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::AddHandler(System.Int32,System.Int32,System.Delegate,Mono.UnmanagedEventHandler,System.Action)
 +SSC-M: Mono.UnmanagedEventHandler Mono.EventHandlerList::RemoveHandler(System.Int32,System.Delegate)
@@ -557,7 +557,6 @@
 +SSC-M: System.Void System.Windows.Messaging.LocalMessageSender::Free()
 +SSC-M: System.Void System.Windows.Messaging.LocalMessageSender::SendAsync(System.String)
 +SSC-M: System.Void System.Windows.Messaging.LocalMessageSender::SendAsync(System.String,System.Object)
-+SSC-M: System.Void System.Windows.Messaging.LocalMessageSender::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.Messaging.LocalMessageSender::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::Free()

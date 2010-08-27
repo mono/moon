@@ -275,8 +275,6 @@ namespace System.Windows {
 
 		internal void Free ()
 		{
-			UnregisterAllEvents ();
-
 			event_list_gchandle.Free ();
 
 			DetachAllExpressions ();
@@ -331,15 +329,6 @@ namespace System.Windows {
 				return;
 
 			Events.RemoveHandler (this, eventId, nativeHandler);
-		}
-
-		void UnregisterAllEvents ()
-		{
-			foreach (int eventId in EventList.Keys) {
-				foreach (EventHandlerData d in EventList[eventId].Values) {
-					Events.RemoveHandler (this, eventId, d.NativeHandler.Target as UnmanagedEventHandler);
-				}
-			}
 		}
 
 		internal object ReadLocalValueImpl (DependencyProperty dp)
