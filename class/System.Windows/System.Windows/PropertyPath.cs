@@ -69,5 +69,14 @@ namespace System.Windows
 		internal string ExpandedPath {
 			get { return property == null ? expanded_path : "(0)"; }
 		}
+		internal string ParsePath {
+			get {
+				if (property != null)
+					return "(0)";
+				if (expanded_path != null)
+					return expanded_path;
+				return path;
+			}
+		}
 	}
 }

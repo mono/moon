@@ -40,8 +40,17 @@ namespace Mono.Xaml {
 
 	internal class XamlLoaderFactory {
 
+		private static bool use_managed;
+
+		static XamlLoaderFactory ()
+		{
+			use_managed = (Environment.GetEnvironmentVariable ("MOON_USE_MANAGED_XAML_PARSER") != null);
+		}
+
 		public static XamlLoader CreateLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin)
 		{
+			if (use_managed)
+				return new SL4XamlLoader ();
 			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
 

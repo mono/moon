@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 528 methods needs to be decorated.
+# 536 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -895,6 +895,12 @@
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.IntPtr Mono.Xaml.ParseTemplateFunc::Invoke(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
 
+# overrides 'System.IntPtr Mono.Xaml.XamlLoader::CreateFromFileInternal(System.String,System.Boolean,Mono.Kind&)'.
++SC-M: System.IntPtr Mono.Xaml.SL4XamlLoader::CreateFromFileInternal(System.String,System.Boolean,Mono.Kind&)
+
+# overrides 'System.IntPtr Mono.Xaml.XamlLoader::CreateFromStringInternal(System.String,System.Boolean,System.Boolean,System.Boolean,Mono.Kind&)'.
++SC-M: System.IntPtr Mono.Xaml.SL4XamlLoader::CreateFromStringInternal(System.String,System.Boolean,System.Boolean,System.Boolean,Mono.Kind&)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.IntPtr Mono.Xaml.XamlParser::ParseTemplate(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
 
@@ -918,6 +924,15 @@
 
 # overrides 'System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)'.
 +SC-M: System.Object Mono.Xaml.SL4MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
+
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromFile(System.String,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.SL4XamlLoader::CreateObjectFromFile(System.String,System.Boolean)
+
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromString(System.String,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.SL4XamlLoader::CreateObjectFromString(System.String,System.Boolean)
+
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromString(System.String,System.Boolean,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.SL4XamlLoader::CreateObjectFromString(System.String,System.Boolean,System.Boolean)
 
 # overrides 'System.Object Mono.Xaml.XamlPropertySetter::ConvertTextValue(System.String)'.
 +SC-M: System.Object Mono.Xaml.XamlReflectionEventSetter::ConvertTextValue(System.String)
@@ -1504,6 +1519,9 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)
 
+# overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)'.
++SC-M: System.Void Mono.Xaml.SL4XamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)
+
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlAttachedPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
 
@@ -1566,6 +1584,12 @@
 
 # p/invoke declaration
 +SC-M: System.Windows.Point Mono.NativeMethods::multi_scale_image_logical_to_element_point(System.IntPtr,System.Windows.Point)
+
+# overrides 'System.Windows.PropertyPath Mono.Xaml.MarkupExpressionParser::ParsePropertyPath(System.String)'.
++SC-M: System.Windows.PropertyPath Mono.Xaml.SL3MarkupExpressionParser::ParsePropertyPath(System.String)
+
+# overrides 'System.Windows.PropertyPath Mono.Xaml.MarkupExpressionParser::ParsePropertyPath(System.String)'.
++SC-M: System.Windows.PropertyPath Mono.Xaml.SL4MarkupExpressionParser::ParsePropertyPath(System.String)
 
 # p/invoke declaration
 +SC-M: System.Windows.Rect Mono.NativeMethods::geometry_get_bounds(System.IntPtr)

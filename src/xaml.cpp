@@ -25,13 +25,10 @@
 #include <expat.h>
 
 
-
-//
-// We need all this, just so we can free gchandles.
-//
 #define INCLUDED_MONO_HEADERS 1
 
 #include <glib.h>
+#include <mono/mini/jit.h>
 #include <mono/metadata/debug-helpers.h>
 G_BEGIN_DECLS
 /* because this header sucks */
@@ -227,6 +224,8 @@ add_namespace_to_ignorable (gpointer key, gpointer value, gpointer user_data)
 
 class XamlContextInternal {
 
+ private:
+	DependencyObject *source;
  public:
 	Value *top_element;
 	FrameworkTemplate *template_parent;
@@ -237,7 +236,7 @@ class XamlContextInternal {
 	bool create_ignorable;
 	XamlContextInternal *parent_context;
 
-	DependencyObject *source;
+	
 
 	XamlContextInternal (XamlLoaderCallbacks callbacks, Value *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources, XamlContextInternal *parent_context)
 	{
@@ -1634,10 +1633,61 @@ SL3XamlLoader::LoadVM ()
 	return false;
 }
 
+SL4XamlLoader::SL4XamlLoader (Surface *surface)
+{
+	this->surface = surface;
+	this->deployment = Deployment::GetCurrent ();
+}
+
+SL4XamlLoader::~SL4XamlLoader ()
+{
+	surface = NULL;
+	deployment = NULL;
+}
+
+Value *
+SL4XamlLoader::CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
+{
+	Value *v = deployment->MonoXamlParserCreateFromFile (xaml, create_namescope, false, error);
+	if (!v) {
+		*element_type = Type::INVALID;
+		return NULL;
+	}
+
+	*element_type = v->GetKind ();
+	return v;
+}
+
+Value *
+SL4XamlLoader::CreateFromStringWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
+{
+	Value *v = deployment->MonoXamlParserCreateFromString (xaml, create_namescope, false, error);
+	if (!v) {
+		*element_type = Type::INVALID;
+		return NULL;
+	}
+
+	*element_type = v->GetKind ();
+	return v;
+}
+
+Value *
+SL4XamlLoader::HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
+{
+	Value *v = deployment->MonoXamlParserHydrateFromString (xaml, obj, create_namescope, false, error);
+	if (!v) {
+		*element_type = Type::INVALID;
+		return NULL;
+	}
+
+	*element_type = v->GetKind ();
+	return v;
+}
+
 XamlLoader* 
 xaml_loader_new (const char *resourceBase, Surface* surface)
 {
-	return XamlLoaderFactory::CreateLoader (resourceBase, surface);
+	return new SL3XamlLoader (resourceBase, surface);
 }
 
 void
@@ -2673,6 +2723,8 @@ SL3XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool
 XamlLoader *
 XamlLoaderFactory::CreateLoader (const char* resource_base, Surface *surface)
 {
+	if (getenv ("MOON_USE_MANAGED_XAML_PARSER"))
+		return new SL4XamlLoader (surface);
 	return new SL3XamlLoader (resource_base, surface);
 }
 

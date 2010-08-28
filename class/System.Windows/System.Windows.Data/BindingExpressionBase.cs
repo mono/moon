@@ -158,7 +158,7 @@ namespace System.Windows.Data {
 			mentorDataContextChangedCallback = OnNativeMentorDataContextChangedSafe;
 
 			bool bindsToView = property == FrameworkElement.DataContextProperty || property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
-			PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path, binding.BindsDirectlyToSource, bindsToView);
+			PropertyPathWalker = new PropertyPathWalker (Binding.Path.ParsePath, binding.BindsDirectlyToSource, bindsToView);
 			if (Binding.Mode != BindingMode.OneTime)
 				PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 		}

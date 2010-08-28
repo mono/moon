@@ -214,6 +214,21 @@ class XamlLoader {
 };
 
 
+class SL4XamlLoader : public XamlLoader {
+
+ public:
+	SL4XamlLoader (Surface *surface);
+	~SL4XamlLoader ();
+
+	virtual Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+	virtual Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
+	virtual Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
+
+ private:
+	Surface *surface;
+	Deployment *deployment;
+};
+
 
 class SL3XamlLoader : public XamlLoader {
 	bool expanding_template;
@@ -224,10 +239,6 @@ class SL3XamlLoader : public XamlLoader {
 	bool import_default_xmlns;
 
 	void Initialize (const char *resourceBase, Surface *surface, XamlContext *context);
-
- protected:
-	
-	
 
  public:
 

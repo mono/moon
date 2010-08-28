@@ -273,4 +273,74 @@ namespace Mono.Xaml
 		public abstract object CreateObjectFromString (string xaml, bool createNamescope, bool validateTemplates);
 		public abstract object CreateObjectFromFile (string path, bool createNamescope);
 	}
+
+	internal class SL4XamlLoader : XamlLoader {
+
+		protected override IntPtr CreateFromFileInternal (string path, bool createNamescope, out Kind kind)
+		{
+			Value v = XamlParser.CreateFromFile (path, createNamescope, false);
+
+			kind = v.k;
+			return ValueToIntPtr (v);
+		}
+
+		protected override void HydrateInternal (object value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = createNamescope,
+				ValidateTemplates = validateTemplates,
+				HydrateObject = value,
+			};
+
+			object v = p.ParseString (xaml);
+		}
+
+		protected override IntPtr CreateFromStringInternal (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind)
+		{
+			Value v = XamlParser.CreateFromFile (xaml, createNamescope, false);
+
+			kind = v.k;
+			return ValueToIntPtr (v);
+		}
+
+		// 
+		// Creates a managed dependency object from the xaml.
+		// 
+		public override object CreateObjectFromString (string xaml, bool createNamescope)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = createNamescope,
+			};
+
+			return p.ParseString (xaml);
+		}
+
+		public override object CreateObjectFromString (string xaml, bool createNamescope, bool validateTemplates)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = createNamescope,
+				ValidateTemplates = validateTemplates,
+			};
+
+			return p.ParseString (xaml);
+		}
+
+		public override object CreateObjectFromFile (string path, bool createNamescope)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = createNamescope,
+			};
+
+			return p.ParseFile (path);
+		}
+
+
+		private IntPtr ValueToIntPtr (Value v)
+		{
+			IntPtr ptr = Marshal.AllocHGlobal (Marshal.SizeOf (v));
+
+			Marshal.StructureToPtr (v, ptr, false);
+			return ptr;
+		}
+	}
 }
