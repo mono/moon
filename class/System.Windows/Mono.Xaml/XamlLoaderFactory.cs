@@ -45,6 +45,9 @@ namespace Mono.Xaml {
 		static XamlLoaderFactory ()
 		{
 			use_managed = (Environment.GetEnvironmentVariable ("MOON_USE_MANAGED_XAML_PARSER") != null);
+
+			if (use_managed)
+				Console.WriteLine ("using managed xaml parser.");
 		}
 
 		public static XamlLoader CreateLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin)
