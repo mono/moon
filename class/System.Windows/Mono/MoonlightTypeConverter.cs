@@ -149,6 +149,8 @@ namespace Mono {
 			}
 			if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
 				return ValueFromConvertible (destinationType, (IConvertible) value);
+			if (value is Thickness && destinationType == typeof (double))
+				return ((Thickness) value).Left;
 
 			if (str_val != null) {
 				Kind k = destinationKind;
@@ -170,10 +172,6 @@ namespace Mono {
 			if (destinationType.IsAssignableFrom (value.GetType ()))
 				return value;
 
-			if (!base.CanConvertFrom (context, value.GetType ())) {
-				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);
-			}
-			
 			return base.ConvertFrom (context, culture, value);
 		}
 			
@@ -233,9 +231,6 @@ namespace Mono {
 			TypeConverter tc = Helper.GetConverterFor (prop, prop.PropertyType);
 			if (tc == null)
 				tc = new MoonlightTypeConverter (prop.Name, prop.PropertyType);
-			
-			if (!tc.CanConvertFrom (val.GetType()))
-				throw new Exception (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
 
 			return tc.ConvertFrom (null, Helper.DefaultCulture, val);
 		}
@@ -268,9 +263,6 @@ namespace Mono {
 			
 			if (tc == null)
 				tc = new MoonlightTypeConverter (dp.Name, dp.PropertyType);
-			
-			if (!tc.CanConvertFrom (val.GetType()))
-				throw new Exception (string.Format ("type converter {0} can't convert from type {1} to type {2}", tc.GetType(), val.GetType(), dp.PropertyType));
 
 			return tc.ConvertFrom (val);
 		}
