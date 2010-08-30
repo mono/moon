@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 536 methods needs to be decorated.
+# 538 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1507,6 +1507,9 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_mark_property_as_set(System.IntPtr,System.IntPtr,System.String)
 
+# overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(System.Object,System.IO.Stream,System.Boolean,System.Boolean,System.Boolean)'.
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::HydrateInternal(System.Object,System.IO.Stream,System.Boolean,System.Boolean,System.Boolean)
+
 # overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)'.
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)
 
@@ -1518,6 +1521,9 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)
+
+# overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(System.Object,System.IO.Stream,System.Boolean,System.Boolean,System.Boolean)'.
++SC-M: System.Void Mono.Xaml.SL4XamlLoader::HydrateInternal(System.Object,System.IO.Stream,System.Boolean,System.Boolean,System.Boolean)
 
 # overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)'.
 +SC-M: System.Void Mono.Xaml.SL4XamlLoader::HydrateInternal(System.Object,System.String,System.Boolean,System.Boolean,System.Boolean)

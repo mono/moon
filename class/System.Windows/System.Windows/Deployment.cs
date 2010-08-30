@@ -273,15 +273,15 @@ namespace System.Windows {
 			if (!File.Exists (app_manifest))
 				throw new MoonException(2103, "Invalid or malformed application: Check manifest");
 
-			string app_manifest_contents;
-
-			using (StreamReader r = new StreamReader (app_manifest))
-				app_manifest_contents = r.ReadToEnd();
-
+			Stream app_manifest_stream = null;
 			try {
-				loader.Hydrate (this, app_manifest_contents);
+				app_manifest_stream = File.OpenRead (app_manifest);
+				loader.Hydrate (this, app_manifest_stream);
 			} catch (Exception e) {
 				throw new MoonException (7016, e.Message);
+			} finally {
+				if (app_manifest_stream != null)
+					app_manifest_stream.Close ();
 			}
 
 			if (RuntimeVersion == null)

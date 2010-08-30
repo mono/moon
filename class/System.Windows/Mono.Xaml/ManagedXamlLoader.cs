@@ -179,7 +179,18 @@ namespace Mono.Xaml
 			NativeMethods.xaml_loader_free (native_loader);
 			native_loader = IntPtr.Zero;
 		}
-		
+
+		protected override void HydrateInternal (object value, Stream xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
+		{
+			string xaml_str;
+
+			using (StreamReader reader = new StreamReader (xaml)) {
+				xaml_str = reader.ReadToEnd ();
+			}
+
+			HydrateInternal (value, xaml_str, createNamescope, validateTemplates, import_default_xmlns);
+		}
+
 		protected override void HydrateInternal (object value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
 		{
 			Value v = Value.FromObject (value);

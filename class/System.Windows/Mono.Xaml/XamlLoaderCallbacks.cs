@@ -251,6 +251,11 @@ namespace Mono.Xaml
 		{
 			HydrateInternal (value, xaml, createNamescope, validateTemplates, import_default_xmlns);
 		}
+
+		public void Hydrate (object value, Stream stream)
+		{
+			HydrateInternal (value, stream, true, false, false);
+		}
 		
 		//
 		// Creates a native object from the given filename
@@ -264,6 +269,7 @@ namespace Mono.Xaml
 
 		protected abstract IntPtr CreateFromFileInternal (string path, bool createNamescope, out Kind kind);
 		protected abstract void HydrateInternal (object value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns);
+		protected abstract void HydrateInternal (object value, Stream xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns);
 		protected abstract IntPtr CreateFromStringInternal (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind);
 
 		// 
@@ -293,6 +299,19 @@ namespace Mono.Xaml
 			};
 
 			object v = p.ParseString (xaml);
+		}
+
+		protected override void HydrateInternal (object value, Stream xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = createNamescope,
+				ValidateTemplates = validateTemplates,
+				HydrateObject = value,
+			};
+
+			using (StreamReader reader = new StreamReader (xaml)) {
+				object v = p.ParseReader (reader);
+			}
 		}
 
 		protected override IntPtr CreateFromStringInternal (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind)

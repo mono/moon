@@ -405,11 +405,10 @@ namespace System.Windows {
 			if (sr == null)
 				return;
 
-			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
 	
 			XamlLoader loader = XamlLoaderFactory.CreateLoader (loading_asm, resourceLocator.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
-			loader.Hydrate (component, xaml);
+			loader.Hydrate (component, sr.Stream);
 		}
 
 		private static Dictionary<string,byte[]> local_xap_resources = new Dictionary<string,byte[]> ();
