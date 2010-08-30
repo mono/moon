@@ -162,7 +162,7 @@ namespace System.Windows.Messaging {
 			if (managedHandler == null)
 				return;
 
-			Action dtor_action = () => {
+			GDestroyNotify dtor_action = (data) => {
 				EventList.RemoveHandler (eventId, managedHandler);
 			};
 

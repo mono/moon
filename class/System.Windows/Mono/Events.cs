@@ -396,16 +396,9 @@ namespace Mono {
 			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, null, false);
 		}
 
-		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, Action dtor_action)
+		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, GDestroyNotify dtor_action)
 		{
 			return AddHandler (obj.NativeHandle, eventId, handler, dtor_action);
-		}
-
-		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, Action dtor_action)
-		{
-			GDestroyNotify call_dtor = (data) => SafeAction ( () => dtor_action () );
-
-			return AddHandler (raw, eventId, handler, call_dtor);
 		}
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, GDestroyNotify data_dtor)
