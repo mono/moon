@@ -443,12 +443,12 @@ Value::Value (GlyphTypeface *typeface)
 	SetIsNull (false);
 }
 
-Value::Value (ManagedTypeInfo type_info)
+Value::Value (ManagedTypeInfo *type_info)
 {
 	Init ();
 	k = Type::MANAGEDTYPEINFO;
 	u.type_info = g_new0 (ManagedTypeInfo, 1);
-	*u.type_info = ManagedTypeInfo (type_info);
+	*u.type_info = ManagedTypeInfo (*type_info);
 	SetIsNull (false);
 }
 

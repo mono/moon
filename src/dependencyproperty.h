@@ -50,6 +50,8 @@ class DependencyProperty {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Type::Kind GetPropertyType() { return property_type; }
 
+	bool CanBeSetToNull ();
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsNullable () { return is_nullable; }
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -101,6 +103,7 @@ private:
 	int id;
 	
 	AutoCreator* autocreator; // invoked by AutoCreatePropertyValueProvider to create values
+	bool is_value_type;
 	bool is_readonly;
 	bool is_nullable;
 	bool is_attached;

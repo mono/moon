@@ -104,7 +104,7 @@ public:
 	Value (VideoFormat format);
 	Value (AudioFormat format);
 	Value (GlyphTypeface *typeface);
-	Value (ManagedTypeInfo type_info);
+	Value (ManagedTypeInfo *type_info);
 	Value (const char *s, bool take = false);
 	Value (Type::Kind, void *npobj);
 
@@ -174,7 +174,6 @@ public:
 	CornerRadius*   AsCornerRadius () const     { checked_get_exact (Type::CORNERRADIUS, NULL, u.corner); }
 	AudioFormat*    AsAudioFormat () const      { checked_get_exact (Type::AUDIOFORMAT, NULL, u.audioformat); }
 	VideoFormat*    AsVideoFormat () const      { checked_get_exact (Type::VIDEOFORMAT, NULL, u.videoformat); }
-	ManagedTypeInfo* AsManagedTypeInfo () const { checked_get_exact (Type::MANAGEDTYPEINFO, NULL, u.type_info); }
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()         { checked_get_exact (Type::DOUBLE, NULL, &u.d); }
 	guint64*	AsNullableUint64 ()         { checked_get_exact (Type::UINT64, NULL, &u.ui64); }

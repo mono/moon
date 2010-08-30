@@ -16,7 +16,8 @@
 namespace Moonlight {
 
 /* @IncludeInKinds */
-struct ManagedTypeInfo {
+class ManagedTypeInfo {
+ public:
 	char *full_name;
 	Type::Kind kind;
 

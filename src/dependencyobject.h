@@ -569,8 +569,6 @@ private:
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
-	static bool CanPropertyBeSetToNull (DependencyProperty* property);
-
 	static void collection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void collection_item_changed (EventObject *sender, EventArgs *args, gpointer closure);
 

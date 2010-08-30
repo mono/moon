@@ -665,7 +665,7 @@ Value *
 AutoCreators::ControlTypeCreator (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
 	ManagedTypeInfo info (Type::CONTROL, "System.Windows.Controls.Control");
-	return new Value (info);
+	return new Value (&info);
 }
 
 InheritedDataContextValueProvider::InheritedDataContextValueProvider (DependencyObject *obj, PropertyPrecedence precedence)

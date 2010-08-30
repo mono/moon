@@ -44,6 +44,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->validator = validator ? validator : Validators::default_validator;
 	this->autocreator = autocreator;
 	this->is_custom = is_custom;
+	this->is_value_type = Type::Find (Deployment::GetCurrent (), property_type)->IsValueType ();
 }
 
 DependencyProperty::~DependencyProperty ()
@@ -75,6 +76,12 @@ DependencyProperty::Dispose ()
 	if (default_value_overrides)
 		g_hash_table_destroy (default_value_overrides);
 	default_value_overrides = NULL;
+}
+
+bool
+DependencyProperty::CanBeSetToNull ()
+{
+	return is_nullable || !is_value_type;
 }
 
 Value *
