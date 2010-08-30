@@ -22,6 +22,17 @@ using System.Reflection;
 
 namespace MoonTest.System.Windows.Data
 {
+	public class MentorElement : FrameworkElement
+	{
+		public static readonly DependencyProperty MentorProperty =
+			DependencyProperty.Register("MentoredCollection", typeof(DependencyObjectCollection<object>), typeof(MentorElement), null);
+
+		public DependencyObjectCollection<object> MentoredCollection {
+			get { return (DependencyObjectCollection<object>)GetValue(MentorProperty); }
+			set { SetValue(MentorProperty, value); }
+		}
+	}
+
 	public class OpacityObject : FrameworkElement
 	{
 		public static DependencyProperty OpacityDPProperty =
@@ -1384,6 +1395,40 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 			BindingOperations.SetBinding(child, Button.WidthProperty, new Binding());
 			Assert.IsTrue (double.IsNaN (child.Width), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MentorTest_FrameworkElement_CollectionInCustomProperty()
+		{
+			var mentor = new MentorElement();
+			var collection = new DependencyObjectCollection<object>();
+			var child = new SolidColorBrush ();
+			BindingOperations.SetBinding(child, SolidColorBrush.ColorProperty, new Binding ());
+
+			// Attach the collection then child
+			mentor.MentoredCollection = collection;
+			collection.Add(child);
+
+			mentor.DataContext = Colors.Red;
+			Assert.AreEqual(Colors.Red, child.Color, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MentorTest_FrameworkElement_CollectionInCustomProperty_AttachOppositeOrder()
+		{
+			var mentor = new MentorElement();
+			var collection = new DependencyObjectCollection<object>();
+			var child = new SolidColorBrush();
+			BindingOperations.SetBinding(child, SolidColorBrush.ColorProperty, new Binding());
+
+			// Attach the child then the collection
+			collection.Add(child);
+			mentor.MentoredCollection = collection;
+
+			mentor.DataContext = Colors.Red;
+			Assert.AreEqual(Colors.Red, child.Color, "#1");
 		}
 
 		[TestMethod()]
