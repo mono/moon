@@ -625,10 +625,9 @@ namespace Mono.Xaml {
 			}
 
 			XamlPropertySetter prop = element.LookupProperty (reader);
-			if (prop == null) {
-				Console.WriteLine (Environment.StackTrace);
+			if (prop == null)
 				throw ParseException ("The property {0} was not found on element {1}.", reader.LocalName, element.Name);
-			}
+
 			object value = ParseAttributeValue (element, prop);
 			prop.SetValue (element, value);
 		}

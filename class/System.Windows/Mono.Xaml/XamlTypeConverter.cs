@@ -202,6 +202,9 @@ namespace Mono.Xaml {
 			string value = (string) ovalue;
 
 			Type t = converter.parser.ResolveType (value);
+
+			if (t == null)
+				Console.Error.WriteLine ("could not convert type from: '{0}'", value);
 			return t;
 		}
 
