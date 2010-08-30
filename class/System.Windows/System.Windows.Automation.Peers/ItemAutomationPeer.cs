@@ -78,7 +78,7 @@ namespace System.Windows.Automation.Peers {
 				ItemsControl itemsControl = ItemsControl;
 				if (itemsControl != null) {
 					object obj = itemsControl.ItemContainerGenerator.ItemFromContainer (Owner);
-					if (obj == DependencyProperty.UnsetValue)
+					if (obj == DependencyProperty.UnsetValue || obj == null)
 						return Owner;
 					return obj;
 				} else
