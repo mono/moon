@@ -558,6 +558,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/PropertyPathWalker.cs			\
 	$(srcdir)/System.Windows.Data/RelativeSource.cs				\
 	$(srcdir)/System.Windows.Data/RelativeSourceMode.cs 			\
+	$(srcdir)/System.Windows.Data/RootCollectionViewGroup.cs		\
 	$(srcdir)/System.Windows.Data/StandardCollectionView.cs			\
 	$(srcdir)/System.Windows.Data/StandardCollectionViewGroup.cs		\
 	$(srcdir)/System.Windows.Data/StandardPropertyPathNode.cs		\

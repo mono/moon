@@ -56,7 +56,7 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		StandardCollectionViewGroup RootGroup {
+		RootCollectionViewGroup RootGroup {
 			get; set;
 		}
 
@@ -77,7 +77,7 @@ namespace System.Windows.Data {
 
 			UpdateCanAddNewAndRemove ();
 			filteredList = new ObservableList<object> ();
-			RootGroup = new StandardCollectionViewGroup (null, null, 0, false, SortDescriptions);
+			RootGroup = new RootCollectionViewGroup (null, null, 0, false, SortDescriptions);
 			CurrentPosition = -1;
 			IsEmpty = ActiveList.Count == 0;
 			MoveCurrentToPosition (0);
@@ -205,8 +205,9 @@ namespace System.Windows.Data {
 
 		void RemoveFromFilteredAndGroup (object item)
 		{
-			if (RemoveFromFiltered (item) && Grouping)
+			if (RemoveFromFiltered (item) || true) {
 				RootGroup.RemoveInSubtree (item);
+			}
 		}
 
 		bool AddToFiltered (object item, bool sorted)
@@ -396,8 +397,10 @@ namespace System.Windows.Data {
 			// FIXME: I need to check the ordering on the events when the source is INCC
 			CurrentAddItem = newObject;
 			IsAddingNew = true;
-			if (Grouping)
+			if (Grouping) {
 				RootGroup.AddItem (newObject, false);
+				HandleRootGroupCollectionChanged (RootGroup, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, newObject, RootGroup.IndexOfSubtree (newObject)));
+			}
 			AddToSourceCollection (newObject);
 			MoveCurrentTo (newObject);
 
@@ -549,7 +552,7 @@ namespace System.Windows.Data {
 				if (CurrentAddItem is IEditableObject)
 					((IEditableObject) CurrentAddItem).EndEdit ();
 
-				RootGroup.RemoveItem (CurrentAddItem);
+				RootGroup.RemoveInSubtree (CurrentAddItem);
 				if (Filter != null && !Filter (CurrentAddItem)) {
 					RemoveFromSourceCollection (SourceCollection.IndexOf (CurrentAddItem));
 				} else {

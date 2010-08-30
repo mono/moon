@@ -9,14 +9,12 @@ using System.Collections.Specialized;
 
 namespace System.Windows.Data {
 
-	class StandardCollectionViewGroup : CollectionViewGroup, INotifyCollectionChanged {
-
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
+	class StandardCollectionViewGroup : CollectionViewGroup {
 
 		bool isBottomLevel;
 
-		int Depth {
-			get; set;
+		public int Depth {
+			get; private set;
 		}
 
 		public override bool IsBottomLevel {
@@ -27,8 +25,8 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		SortDescriptionCollection Sorters {
-			get; set;
+		public SortDescriptionCollection Sorters {
+			get; private set;
 		}
 
 		public StandardCollectionViewGroup (StandardCollectionViewGroup parent, object name, int depth, bool isBottomLevel, SortDescriptionCollection sorters)
@@ -56,70 +54,12 @@ namespace System.Windows.Data {
 			ProtectedItems.Insert (index, item);
 			if (!(item is StandardCollectionViewGroup))
 				IncrementCount ();
-
-			var x = this;
-			while (x.Parent != null)
-				x = x.Parent;
-			index = x.IndexOfSubtree (item);
-			x.CollectionChanged.Raise (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, item, index));
-
-		}
-
-		internal void AddInSubtree (object item, CultureInfo culture, IList<GroupDescription> descriptions)
-		{
-			AddInSubtree (item, culture, descriptions, true);
-		}
-
-		internal void AddInSubtree (object item, CultureInfo culture, IList<GroupDescription> descriptions, bool allowSorting)
-		{
-			if (IsBottomLevel) {
-				AddItem (item, allowSorting);
-			} else {
-				var desc = descriptions [Depth];
-				var groupNames = desc.GroupNameFromItem (item, Depth, culture);
-				if (groupNames is IList) {
-					foreach (var name in (IList) groupNames)
-						AddInSubtree (item, culture, descriptions, allowSorting, name);
-				} else {
-					AddInSubtree (item, culture, descriptions, allowSorting, groupNames);
-				}
-			}
-		}
-
-		internal void AddInSubtree (object item, CultureInfo culture, IList<GroupDescription> descriptions, bool allowSorting, object name)
-		{
-			bool added = false;
-			foreach (StandardCollectionViewGroup group in Items) {
-				var desc = descriptions [Depth];
-				if (desc.NamesMatch (group.Name, name)) {
-					group.AddInSubtree (item, culture, descriptions, allowSorting);
-					added = true;
-				}
-			}
-
-			if (!added) {
-				int depth = Depth + 1;
-				var group = new StandardCollectionViewGroup (this, name, depth, depth == descriptions.Count, Sorters);
-				AddItem (group, allowSorting);
-				group.AddInSubtree (item, culture, descriptions, allowSorting);
-			}
 		}
 
 		internal void ClearItems ()
 		{
 			ProtectedItems.Clear ();
 			ProtectedItemCount = 0;
-		}
-
-		internal void ClearSubtree ()
-		{
-			if (IsBottomLevel) {
-				ClearItems ();
-			} else {
-				foreach (StandardCollectionViewGroup g in Items)
-					g.ClearSubtree ();
-			}
-			CollectionChanged.Raise (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
 		internal void DecrementCount ()
@@ -141,19 +81,6 @@ namespace System.Windows.Data {
 			return ProtectedItems.IndexOf (item);
 		}
 
-		internal int IndexOfSubtree (object item)
-		{
-			// FIXME: Enumerating might not be optimal but it's much easier to get right
-			int i = 0;
-			var enumerator = new GroupEnumerator (this);
-			while (enumerator.MoveNext ()) {
-				if (enumerator.Current == item)
-					return i;
-				i++;
-			}
-			return -1;
-		}
-
 		internal bool RemoveItem (object item)
 		{
 			if (ProtectedItems.Remove (item)) {
@@ -163,39 +90,6 @@ namespace System.Windows.Data {
 			}
 
 			return false;
-		}
-
-		internal bool RemoveInSubtree (object item)
-		{
-			bool removed = false;
-			int index;
-
-			while ((index = IndexOfSubtree (item)) != -1) {
-				if (IsBottomLevel) {
-					if (RemoveItem (item)) {
-						removed = true;
-						var x = this;
-						while (x.Parent != null)
-							x = x.Parent;
-						x.CollectionChanged.Raise (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, item, index));
-					}
-				} else {
-					foreach (StandardCollectionViewGroup group in Items) {
-						if (group.RemoveInSubtree (item)) {
-							removed = true;
-						}
-					}
-	
-					for (int i = 0; i < ProtectedItems.Count; i ++) {
-						var g = ProtectedItems [i] as StandardCollectionViewGroup;
-						if (g != null && g.ProtectedItems.Count == 0) {
-							ProtectedItems.Remove (g);
-							i --;
-						}
-					}
-				}
-			}
-			return removed;
 		}
 	}
 }
