@@ -738,6 +738,10 @@ namespace System.Windows {
 
 		internal static Type GetComponentTypeFromName (string name)
 		{
+			// If it has a namespace its definitely a fullname
+			if (name.Contains ('.'))
+				return GetComponentTypeFromFullName (name);
+
 			foreach (var pair in xmlns_definitions) {
 				if (!imported_namespaces.Contains (pair.Key.XmlNamespace))
 					continue;
@@ -745,6 +749,21 @@ namespace System.Windows {
 				var type = GetType (pair.Value, pair.Key.ClrNamespace, name);
 				if (type != null)
 					return type;
+			}
+
+			// Maybe its a fullname without a namespace
+			if (!name.Contains ('.'))
+				return GetComponentTypeFromFullName (name);
+
+			return null;
+		}
+
+		internal static Type GetComponentTypeFromFullName (string name)
+		{
+			foreach (Assembly asm in Deployment.Current.Assemblies) {
+				Type t = asm.GetType (name);
+				if (t != null)
+					return t;
 			}
 
 			return null;
