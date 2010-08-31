@@ -332,6 +332,11 @@
     <File subtype="Code" buildaction="Nothing" name="textelement.h" />
     <File subtype="Code" buildaction="Compile" name="pal/gtk/config-dialog-gtk.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/config-dialog-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="consent.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="consent.h" />
+    <File subtype="Code" buildaction="Nothing" name="authors.h" />
+    <File subtype="Code" buildaction="Compile" name="capture.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="capture.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
