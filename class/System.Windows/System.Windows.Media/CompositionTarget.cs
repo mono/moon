@@ -11,6 +11,7 @@
  */
 
 using System;
+using System.Runtime.InteropServices;
 using Mono;
 
 namespace System.Windows.Media
@@ -33,14 +34,16 @@ namespace System.Windows.Media
 			if (managedHandler == null)
 				return;
 
+			int token = -1;
 			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, managedHandler);
+				EventList.RemoveHandler (eventId, token);
 			};
 
 			IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
-			int token = Events.AddHandler (t, eventId, nativeHandler, dtor_action);
+			token = Events.AddHandler (t, eventId, nativeHandler, dtor_action);
 			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
+
 
 		private static void UnregisterEvent (int eventId, Delegate managedHandler)
 		{

@@ -162,11 +162,12 @@ namespace System.Windows.Messaging {
 			if (managedHandler == null)
 				return;
 
+			int token = -1;
 			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, managedHandler);
+				EventList.RemoveHandler (eventId, token);
 			};
 
-			int token = Events.AddHandler (this, eventId, nativeHandler, dtor_action);
+			token = Events.AddHandler (this, eventId, nativeHandler, dtor_action);
 			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 

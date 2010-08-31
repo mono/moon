@@ -117,11 +117,13 @@ namespace System.Windows.Interop {
 			if (managedHandler == null)
 				return;
 
+			int token = -1;
+
 			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, managedHandler);
+				EventList.RemoveHandler (eventId, token);
 			};
 
-			int token = Events.AddHandler (Deployment.Current.Surface.Native, eventId, nativeHandler, dtor_action);
+			token = Events.AddHandler (Deployment.Current.Surface.Native, eventId, nativeHandler, dtor_action);
 			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 
