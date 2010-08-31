@@ -508,7 +508,7 @@ MultiScaleImage::FadeFinished ()
 {
 	motion = (motion & ~MOTION_IS_FADING) | MOTION_IS_FINISHED;
 	if (!IS_IN_MOTION (motion)) {
-		printf ("FadeFinished emitting MotionFinished\n");
+		//printf ("FadeFinished emitting MotionFinished\n");
 		MotionFinished ();
 	}
 }
@@ -525,7 +525,7 @@ MultiScaleImage::ZoomFinished ()
 {
 	motion = (motion & ~MOTION_IS_ZOOMING) | MOTION_IS_FINISHED;
 	if (!IS_IN_MOTION (motion)) {
-		printf ("ZoomFinished emitting MotionFinished\n");
+		//printf ("ZoomFinished emitting MotionFinished\n");
 		MotionFinished ();
 	}
 }
@@ -542,7 +542,7 @@ MultiScaleImage::PanFinished ()
 {
 	motion = (motion & ~MOTION_IS_PANNING) | MOTION_IS_FINISHED;
 	if (!IS_IN_MOTION (motion)) {
-		printf ("PanFinished emitting MotionFinished\n");
+		//printf ("PanFinished emitting MotionFinished\n");
 		MotionFinished ();
 	}
 }
@@ -1594,7 +1594,7 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
 		if (motion == 0) {
-			printf ("SetInternalViewportWidth(): queueing MotionFinished\n");
+			//printf ("SetInternalViewportWidth(): queueing MotionFinished\n");
 			AddTickCall ((TickCallHandler) motion_finished);
 			motion = MOTION_IS_FINISHED;
 		}
@@ -1639,7 +1639,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point *value)
 {
 	if (!GetUseSprings ()) {
 		if (motion == 0) {
-			printf ("SetInternalViewportOrigin(): queueing MotionFinished\n");
+			//printf ("SetInternalViewportOrigin(): queueing MotionFinished\n");
 			AddTickCall ((TickCallHandler) motion_finished);
 			motion = MOTION_IS_FINISHED;
 		}
