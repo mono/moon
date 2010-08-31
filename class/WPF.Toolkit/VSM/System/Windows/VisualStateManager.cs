@@ -14,10 +14,11 @@ using System.Windows.Media.Animation;
 
 namespace System.Windows
 {
-	class VisualStateGroupCollection : PresentationFrameworkCollection<VisualStateGroup>
+	class VisualStateGroupCollection : Collection<VisualStateGroup>
 	{
-		public VisualStateGroupCollection () : base (SafeNativeMethods.dependency_object_collection_new (), true) {}
-
+		public VisualStateGroupCollection ()
+		{
+		}
 	}
 
     /// <summary>
