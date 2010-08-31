@@ -224,7 +224,7 @@ Image::Dispose ()
 {
 	BitmapSource *source = (BitmapSource*)GetSource ();
 
-	if (source)
+	if (source && !Deployment::GetCurrent()->IsShuttingDown ())
 		source->RemoveAllHandlers (this);
 
 	MediaBase::Dispose ();
