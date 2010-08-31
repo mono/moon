@@ -221,7 +221,7 @@ namespace System.Net.Browser {
 
 			if (request_length > 1) {
 				// this header cannot be set directly inside the collection (hence the helper)
-				Headers.SetHeader ("content-length", request_length.ToString ());
+				NativeMethods.http_request_set_header (native, "content-length", request_length.ToString (), false);
 			}
 
 			foreach (string header in Headers)

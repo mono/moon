@@ -69,8 +69,8 @@ namespace System.Net.Browser {
 			try {
 				BrowserHttpWebResponse response = (BrowserHttpWebResponse) GCHandle.FromIntPtr (context).Target;
 				response.Headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
-			} catch (Exception ex) {
-				Console.WriteLine ("Error while retrieving http header: {0}", ex);
+			} catch {
+				// dont leak exceptions to native code
 			}
 		}
 
