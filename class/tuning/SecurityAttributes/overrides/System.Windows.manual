@@ -72,8 +72,10 @@
 +SC-T: System.Windows.Controls.ContentControl/ContentControlChangedEventArgs
 
 +SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,Mono.GDestroyNotify)
 +SC-M: System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Int32 Mono.Events::AddHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Int32 Mono.Events::AddHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandler,Mono.GDestroyNotify)
 +SC-M: System.Void Mono.Events::RemoveHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Void Mono.Events::RemoveOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)

@@ -883,9 +883,17 @@ System.IO.DirectoryInfo System.IO.Directory::CreateDirectory(System.String)
 System.IO.FileAttributes System.IO.File::GetAttributes(System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
+!SSC-80849B612E960A10EC6BC3F6D6B6895F
+System.IO.FileStream System.IO.FileInfo::OpenRead()
+	20100831	spouliot - 809e242 - manually added SSC to the method so it can (still) be called by user code and won't throw a SecurityException when executed without elevated trust (since instances of FileInfo are returned from OpenFileDialog but cannot be created by the user, at least without elevated trust)
+
 !SSC-6FB8E38696014B260A4B02FC558F7E05
 System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
 	r142142		spouliot - added root-path safety check. validate 'name' parameter, call GetManifestResourceInfo (SecurityCritical) then File.Open based on Assembly.Location (SecurityCritical) or call GetManifestResourceInternal (icall) and creates an UnmanagedMemoryStream (internal resources)
+
+!SSC-A6CFBE281A375C995CA0A8503DDC2554
+System.IO.StreamReader System.IO.FileInfo::OpenText()
+	20100831	spouliot - 809e242 - manually added SSC to the method so it can (still) be called by user code and won't throw a SecurityException when executed without elevated trust (since instances of FileInfo are returned from OpenFileDialog but cannot be created by the user, at least without elevated trust)
 
 !SSC-ED910197152D4597EAB65207F2BB720E
 System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(System.String,System.Globalization.CultureInfo)
