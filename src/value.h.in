@@ -94,7 +94,7 @@ public:
 	Value (Point pt);
 	Value (Rect rect);
 	Value (Size size);
-	Value (const Uri uri);
+	Value (const Uri *uri);
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
@@ -118,6 +118,7 @@ public:
 	// in which case we have to unref the newly created object.
 	static Value* CreateUnrefPtr (EventObject* dob);
 	static Value  CreateUnref (EventObject* dob);
+	static Value* CreateUnrefPtr (Uri *uri);
 
 	// essentially the same as the copy constructor, except it
 	// does a deep copy of DependencyObjects.

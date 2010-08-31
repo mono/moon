@@ -70,7 +70,7 @@ NPStreamRequest::SendImpl ()
 
 	g_return_if_fail (instance != NULL);
 
-	err = MOON_NPN_GetURLNotify (instance->GetInstance (), GetUri (), NULL, this);
+	err = MOON_NPN_GetURLNotify (instance->GetInstance (), GetUri ()->GetHttpRequestString (), NULL, this);
 
 	if (err == NPERR_NO_ERROR) {
 		/* This is a ref to ensure that we don't get deleted while the browser have a pointer to us */

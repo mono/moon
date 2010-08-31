@@ -75,7 +75,7 @@ class Glyphs : public FrameworkElement {
 	const static int FontRenderingEmSizeProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
-	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri(),IsConstPropertyType,Validator=NonNullValidator */
+	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=new Uri(),IsConstPropertyType,Validator=NonNullValidator */
 	const static int FontUriProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int IndicesProperty;

@@ -65,7 +65,7 @@ namespace Mono {
 	internal delegate IntPtr GetDefaultTemplateCallback (IntPtr fwe_ptr);
 	internal delegate void ConvertSetterValuesCallback (IntPtr style_ptr);
 	internal delegate void ConvertKeyframeValueCallback (Mono.Kind kind, IntPtr property, IntPtr original, out Value converted);
-	internal delegate ManagedStreamCallbacks GetResourceCallback (string resourceBase, string name);
+	internal delegate ManagedStreamCallbacks GetResourceCallback (IntPtr resourceBase, IntPtr name);
 
 	// Used in databinding to interact with managed objects
 	internal delegate Value GetValueCallback ();
@@ -125,8 +125,40 @@ namespace Mono {
 		int char_code,
 		IntPtr domEvent);
 
-	internal delegate bool ImageUriFunc (int level, int posx, int posy, IntPtr uri, IntPtr ignore);
-	
+	internal delegate bool ImageUriFunc (int level, int posx, int posy, ref IntPtr uri, IntPtr ignore);
+
+	internal delegate IntPtr System_Uri_Ctor_1 (string uri_string);
+	internal delegate IntPtr System_Uri_Ctor_2 (string uri_string, UriKind uri_kind);
+	internal delegate IntPtr System_Uri_Ctor_3 (IntPtr base_uri, string relative_uri);
+	internal delegate IntPtr System_Uri_Ctor_4 (IntPtr base_uri, IntPtr relative_uri);
+	internal delegate IntPtr System_Uri_GetStringProperty (IntPtr instance);
+	internal delegate int System_Uri_GetInt32Property (IntPtr instance);
+	internal delegate bool System_Uri_GetBooleanProperty (IntPtr instance);
+	internal delegate IntPtr System_Uri_ToString (IntPtr instance);
+	internal delegate bool System_Uri_Equals (IntPtr a, IntPtr b);
+	internal delegate IntPtr System_Uri_Clone (IntPtr instance);
+	internal delegate IntPtr System_Uri_CloneWithScheme (IntPtr instance, string scheme);
+
+	internal struct UriFunctions {
+		public System_Uri_Ctor_1 ctor_1;
+		public System_Uri_Ctor_2 ctor_2;
+		public System_Uri_Ctor_3 ctor_3;
+		public System_Uri_Ctor_4 ctor_4;
+		public System_Uri_GetStringProperty get_scheme;
+		public System_Uri_GetStringProperty get_host;
+		public System_Uri_GetInt32Property get_port;
+		public System_Uri_GetStringProperty get_fragment;
+		public System_Uri_GetStringProperty get_path;
+		public System_Uri_GetStringProperty get_query;
+		public System_Uri_GetStringProperty get_original_string;
+		public System_Uri_GetBooleanProperty get_is_absolute;
+		public System_Uri_ToString tostring;
+		public System_Uri_Equals equals;
+		public System_Uri_Clone clone;
+		public System_Uri_CloneWithScheme clone_with_scheme;
+		public System_Uri_ToString toescapedstring;
+	};
+
 	internal static partial class NativeMethods {
 		/*
 		 * 

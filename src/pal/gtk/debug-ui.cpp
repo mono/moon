@@ -592,7 +592,9 @@ static void unxap_callback (GtkWidget *widget, gpointer data)
 static size_t
 get_common_prefix_len (GtkTreeModel *model)
 {
-	char *filename, *path, *url, *buf, *p, *q;
+	char *filename, *url, *buf, *p;
+	const char *path;
+	const char *q;
 	size_t max = (size_t) -1;
 	GtkTreeIter iter;
 	Uri *uri;
@@ -602,29 +604,28 @@ get_common_prefix_len (GtkTreeModel *model)
 	
 	gtk_tree_model_get (model, &iter, 0, &url, 1, &filename, -1);
 	
-	uri = new Uri ();
-	if (!uri->Parse (url)) {
+	uri = Uri::Create (url);
+	if (url == NULL) {
 		buf = g_strdup (filename);
 	} else {
 		buf = g_strdup (uri->GetPath ());
-		uri->SetPath (NULL);
 	}
+	delete uri;
 	
 	if ((p = strrchr (buf, '/')))
 		max = (p - buf);
 	else
 		max = 0;
 	
-	delete uri;
 	
 	while (gtk_tree_model_iter_next (model, &iter)) {
 		gtk_tree_model_get (model, &iter, 0, &url, 1, &filename, -1);
 		
-		uri = new Uri ();
-		if (!uri->Parse (url))
+		uri = Uri::Create (url);
+		if (uri == NULL)
 			path = filename;
 		else
-			path = (char*)uri->GetPath();
+			path = uri->GetPath();
 		
 		for (p = buf, q = path; *p && *q; p++, q++) {
 			if (*p != *q)
@@ -647,6 +648,7 @@ save_callback (GtkWidget *widget, gpointer data)
 {
 	GtkTreeModel *model = (GtkTreeModel *) data;
 	char *filename, *dirname, *url, *path;
+	const char *uri_path;
 	GtkTreeIter iter;
 	size_t prelen;
 	Uri *uri;
@@ -663,13 +665,13 @@ save_callback (GtkWidget *widget, gpointer data)
 	do {
 		gtk_tree_model_get (model, &iter, 0, &url, 1, &filename, -1);
 		
-		uri = new Uri ();
-		if (uri->Parse (url))
-			path = (char*)uri->GetPath();
+		uri = Uri::Create (url);
+		if (uri != NULL)
+			uri_path = uri->GetPath();
 		else
-			path = filename;
+			uri_path = filename;
 		
-		path = g_build_filename ("/tmp/moon-dump", path + prelen, NULL);
+		path = g_build_filename ("/tmp/moon-dump", uri_path + prelen, NULL);
 		delete uri;
 		
 		dirname = g_path_get_dirname (path);
@@ -968,10 +970,8 @@ struct debug_media_data {
 			GString *fmt = g_string_new ("");
 			g_string_append_printf (fmt, "MediaElement\n");
 			const Uri *uri = element->GetSource ();
-			char *source = uri != NULL ? uri->ToString () : NULL;
-			g_string_append_printf (fmt, "\tSource: %s\n", source);
-			g_free (source);
-			g_string_append_printf (fmt, "\tCurrent playlist entry's source: %s\n", entry != NULL ? entry->GetFullSourceName () : NULL);
+			g_string_append_printf (fmt, "\tSource: %s\n", uri != NULL ? uri->ToString () : NULL);
+			g_string_append_printf (fmt, "\tCurrent playlist entry's source: %s\n", (entry != NULL && entry->GetFullSourceName () != NULL) ? entry->GetFullSourceName ()->GetOriginalString () : NULL);
 			g_string_append_printf (fmt, "\tState: %s\n", MediaElement::GetStateName (element->GetState ()));
 			g_string_append_printf (fmt, "\tFlags: %s\n", MediaElement::GetFlagNames (element->GetFlags ()));
 			g_string_append_printf (fmt, "\tPosition: %" G_GUINT64_FORMAT " ms NaturalDuration: %" G_GUINT64_FORMAT " AutoPlay: %i Balance: %.2f\n", 

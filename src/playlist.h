@@ -98,7 +98,7 @@ private:
 	PlaylistKind::Kind set_values;
 	
 	// Non ASX properties
-	char *full_source_name;
+	Uri *full_source_name;
 	bool is_live;
 	bool play_when_available;
 	Playlist *parent;
@@ -119,7 +119,7 @@ public:
 	PlaylistEntry (Playlist *parent);
 
 	void Initialize (Media *media);
-	void InitializeWithUri (const char *uri);
+	void InitializeWithUri (const Uri *uri);
 	void InitializeWithDownloader (Downloader *dl, const char *PartName);
 	void InitializeWithDemuxer (IMediaDemuxer *demuxer);
 	void InitializeWithStream (ManagedStreamCallbacks *callbacks);
@@ -182,7 +182,7 @@ public:
 	virtual MediaElement *GetElement ();
 	MediaPlayer *GetMediaPlayer ();
 
-	const char *GetFullSourceName ();
+	const Uri *GetFullSourceName ();
 	virtual bool IsPlaylist () { return false; }
 
 	bool GetIsLive () { return is_live; }

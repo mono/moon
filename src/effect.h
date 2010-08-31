@@ -351,7 +351,7 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class PixelShader : public DependencyObject {
 public:
-	/* @PropertyType=Uri,DefaultValue=Uri(),IsConstPropertyType,GenerateAccessors */
+	/* @PropertyType=Uri,DefaultValue=new Uri(),IsConstPropertyType,GenerateAccessors */
 	const static int UriSourceProperty;
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

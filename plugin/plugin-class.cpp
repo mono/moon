@@ -208,9 +208,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		break;
 	}
 	case Type::URI: {
-		char *uri_string = v->AsUri() ? v->AsUri()->ToString() : NULL;
-		string_to_npvariant (uri_string ? uri_string : "", result);
-		g_free (uri_string);
+		string_to_npvariant (v->AsUri () ? v->AsUri ()->ToString () : "", result);
 		break;
 	}
 	case Type::FONTFAMILY: {
@@ -4085,9 +4083,7 @@ MoonlightMultiScaleImageObject::SetProperty (int id, NPIdentifier name, const NP
 	case MoonId_MultiScaleImage_Source: {
 		MultiScaleTileSource *ts = (MultiScaleTileSource *) msi->GetSource ();
 		if (ts && ts->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			Uri *uri = new Uri ();
-
-			uri->Parse (NPVARIANT_TO_STRING (*value).utf8characters);
+			Uri *uri = Uri::Create (NPVARIANT_TO_STRING (*value).utf8characters);
 			((DeepZoomImageTileSource *)ts)->SetUriSource (uri);
 			delete uri;
 			return true;
@@ -4130,7 +4126,7 @@ MoonlightImageObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 	case MoonId_Source: {
 		ImageSource *source = (ImageSource *) img->GetSource ();
 		if (source && source->Is (Type::BITMAPIMAGE)) {
-			char *uri = ((BitmapImage *)source)->GetUriSource()->ToString();
+			char *uri = g_strdup (((BitmapImage *) source)->GetUriSource ()->ToString ());
 			STRINGN_TO_NPVARIANT (uri, strlen (uri), *result);
 		} else {
 			NULL_TO_NPVARIANT (*result);
@@ -4206,7 +4202,7 @@ MoonlightImageBrushObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 	case MoonId_Source: {
 		ImageSource *source = (ImageSource *) brush->GetImageSource ();
 		if (source && source->Is (Type::BITMAPIMAGE)) {
-			char *uri = ((BitmapImage *)source)->GetUriSource()->ToString();
+			char *uri = g_strdup (((BitmapImage *) source)->GetUriSource ()->ToString ());
 			STRINGN_TO_NPVARIANT (uri, strlen (uri), *result);
 		} else {
 			NULL_TO_NPVARIANT (*result);

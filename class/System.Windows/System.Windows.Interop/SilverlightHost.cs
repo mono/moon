@@ -83,9 +83,7 @@ namespace System.Windows.Interop {
 			get {
 				if (source_uri == null) {
 					if (PluginHost.Handle == IntPtr.Zero) {
-						string source = NativeMethods.surface_get_source_location (Deployment.Current.Surface.Native);
-
-						source_uri = new Uri (source, UriKind.RelativeOrAbsolute);
+						source_uri = UriHelper.FromNativeUri (NativeMethods.surface_get_source_location (Deployment.Current.Surface.Native));
 					}
 					else {
 						// note: this must return the original URI (i.e. before any redirection)

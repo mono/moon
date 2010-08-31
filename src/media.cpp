@@ -627,10 +627,8 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				if (uri->IsInvalidPath ()) {
 					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
-				} else if (!bitmap->ValidateDownloadPolicy ()) {
-					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation"));
 				}
-				
+
 				if (args != NULL) {
 					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 					EmitAsync (ImageFailedEvent, args); // just like ImageBrush does, also see DRT#171 and #173

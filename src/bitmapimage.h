@@ -44,7 +44,7 @@ class BitmapImage : public BitmapSource {
  public:
 	virtual void Dispose ();
 
-	/* @PropertyType=Uri,IsConstPropertyType,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
+	/* @PropertyType=Uri,IsConstPropertyType,AlwaysChange,GenerateAccessors,DefaultValue=new Uri() */
 	const static int UriSourceProperty;
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Internal,GenerateAccessors */
 	const static int ProgressProperty;
@@ -64,8 +64,6 @@ class BitmapImage : public BitmapSource {
 	{ 
 		policy = dlpolicy;
 	}
-	
-	bool ValidateDownloadPolicy ();
 	
 	void CleanupLoader ();
 	void CreateLoader (unsigned char *buffer);

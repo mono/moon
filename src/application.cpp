@@ -105,7 +105,7 @@ static void application_downloader_stopped (EventObject *sender, EventArgs *call
 static void application_downloader_write (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 bool
-Application::GetResource (const char *resourceBase, const Uri *uri,
+Application::GetResource (const Uri *resourceBase, const Uri *uri,
 			  NotifyFunc notify_cb, EventHandler write_cb,
 			  DownloaderAccessPolicy policy, HttpRequest::Options options,
 			  Cancellable *cancellable, gpointer user_data)
@@ -118,15 +118,13 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 		return false;
 	}
 
-	if (get_resource_cb && uri && !uri->IsAbsolute ()) {
-		char *url = uri->ToString ();
+	if (get_resource_cb && !uri->IsAbsolute ()) {
 		ManagedStreamCallbacks stream;
-		if (url != NULL && url [0] != 0) {
-			stream = get_resource_cb (resourceBase, url);
+		if (!Uri::IsNullOrEmpty (uri)) {
+			stream = get_resource_cb (resourceBase, uri);
 		} else {
 			memset (&stream, 0, sizeof (stream));
 		}
-		g_free (url);
 		
 		if (stream.handle) {
 			if (notify_cb)
@@ -199,7 +197,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 
 	request->AddHandler (HttpRequest::WriteEvent, application_downloader_write, ctx);
 	request->AddHandler (HttpRequest::StoppedEvent, application_downloader_stopped, ctx);
-	request->Open ("GET", (Uri *) uri, policy);
+	request->Open ("GET", uri, resourceBase, policy);
 	request->Send ();
 	
 	return true;
@@ -242,9 +240,10 @@ application_downloader_stopped (EventObject *sender, EventArgs *calldata, gpoint
 
 //FIXME: nuke this!
 char *
-Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
+Application::GetResourceAsPath (const Uri *resourceBase, const Uri *uri)
 {
-	char *dirname, *path, *filename, *url;
+	const char *filename;
+	char *dirname, *path;
 	char *canonicalized_filename;
 	ManagedStreamCallbacks stream;
 	unzFile zipfile;
@@ -259,14 +258,8 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	// construct the path name for this resource
 	filename = uri->ToString ();
 	canonicalized_filename = Deployment::GetCurrent ()->CanonicalizeFileName (filename, false);
-	if (uri->GetQuery () != NULL) {
-		char *sc = strchr (canonicalized_filename, ';');
-		if (sc)
-			*sc = '/';
-	}
 	
 	path = g_build_filename (GetResourceRoot(), canonicalized_filename, NULL);
-	g_free (filename);
 	g_free (canonicalized_filename);
 	
 	if (g_stat (path, &st) != -1) {
@@ -284,9 +277,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	
 	g_free (dirname);
 	
-	url = uri->ToString ();
-	stream = get_resource_cb (resourceBase, url);
-	g_free (url);
+	stream = get_resource_cb (resourceBase, uri);
 	
 	if (!stream.handle) {
 		g_free (path);
@@ -439,11 +430,12 @@ bool
 Application::IsInstallable ()
 {
 	Deployment *deployment = Deployment::GetCurrent ();
-	const char *location = deployment->GetXapLocation ();
-	
-	return location && (!g_ascii_strncasecmp (location, "file:", 5) ||
-			    !g_ascii_strncasecmp (location, "http:", 5) ||
-			    !g_ascii_strncasecmp (location, "https:", 6));
+	const Uri *location = deployment->GetXapLocation ();
+
+	if (!location)
+		return false;
+
+	return location->IsScheme ("file") || location->IsScheme ("http") || location->IsScheme ("https");
 }
 
 bool

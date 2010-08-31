@@ -269,7 +269,7 @@ GECKO_SYM(BrowserHttpRequest)::OpenImpl ()
 	}
 
 	nsEmbedCString url;
-	url = this->GetUri ();
+	url = this->GetUri ()->GetHttpRequestString ();
 
 	nsCOMPtr<nsIURI> uri;
 	rv = ioservice->NewURI (url, nsnull, nsnull, getter_AddRefs (uri));

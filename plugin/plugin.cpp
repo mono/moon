@@ -394,11 +394,10 @@ same_site_of_origin (const char *url1, const char *url2)
 	if (url1 == NULL || url2 == NULL)
 		return true;
 	
-	uri1 = new Uri ();
-	if (uri1->Parse (url1)) {
-		Uri *uri2 = new Uri ();
-
-		if (uri2->Parse (url2)) {
+	uri1 = Uri::Create (url1);
+	if (uri1 != NULL) {
+		Uri *uri2 = Uri::Create (url2);
+		if (uri2 != NULL) {
 			// if only one of the two URI is absolute then the second one is relative to the first, 
 			// which makes it part of the same site of origin
 			if ((uri1->IsAbsolute () && !uri2->IsAbsolute ()) || (!uri1->IsAbsolute () && uri2->IsAbsolute ()))
@@ -846,15 +845,15 @@ PluginInstance::UpdateSource ()
 		// we're setting the source location but not changing
 		// the page location, so we need to call
 		// SetSourceLocation here.
-		char *request_uri = NULL;
-		Uri *page_uri = new Uri ();
-		Uri *source_uri = new Uri ();
-
+		Uri *request_uri = NULL;
+		Uri *page_uri;
+		Uri *source_uri;
 		char *page_location = GetPageLocation ();
 
-		if (page_uri->Parse (page_location, true) &&
-		    source_uri->Parse (source, true)) {
+		page_uri = Uri::Create (page_location);
+		source_uri = Uri::Create (source);
 
+		if (page_uri != NULL && source_uri != NULL) {
 			// apparently we only do this with a xap?  ugh...
 			//
 			if (source_uri->GetPath ()
@@ -862,19 +861,14 @@ PluginInstance::UpdateSource ()
 			    && !strncmp (source_uri->GetPath () + strlen (source_uri->GetPath ()) - 4, ".xap", 4)) {
 
 				if (!source_uri->IsAbsolute ()) {
-					Uri *temp = new Uri();
-					Uri::Copy (page_uri, temp);
-					temp->Combine (source_uri);
+					Uri *temp = Uri::Create (page_uri, source_uri);
 					delete source_uri;
 					source_uri = temp;
 				}
 
-				char* source_string = source_uri->ToString();
-
-				surface->SetSourceLocation (source_string);
-				request_uri = g_strdup (source_string);
-
-				g_free (source_string);
+				surface->SetSourceLocation (source_uri);
+				request_uri = source_uri;
+				source_uri = NULL;
 			}
 		}
 
@@ -883,7 +877,7 @@ PluginInstance::UpdateSource ()
 		delete source_uri;
 
 		if (request_uri == NULL)
-			request_uri = source;
+			request_uri = Uri::Create (source);
 
 		HttpRequest *request;
 		request = deployment->CreateHttpRequest (HttpRequest::OptionsNone);
@@ -1036,7 +1030,9 @@ PluginInstance::SetPageURL ()
 	char* location = GetPageLocation ();
 	if (location && surface) {
 		this->source_location = location;
-		surface->SetSourceLocation (this->source_location);
+		Uri *src_uri = Uri::Create (location);
+		surface->SetSourceLocation (src_uri);
+		delete src_uri;
 	}
 }
 
@@ -1159,11 +1155,10 @@ PluginInstance::LoadXAML ()
 // Loads a XAP file
 //
 bool
-PluginInstance::LoadXAP (const char *url, const char *fname)
+PluginInstance::LoadXAP (const Uri *url, const char *fname)
 {
 	g_free (source_location);
-
-	source_location = g_strdup (url);
+	source_location = g_strdup (url->GetOriginalString ());
 
 	MoonlightScriptControlObject *root = GetRootObject ();
 	
@@ -1396,15 +1391,12 @@ PluginInstance::LoadSplash ()
 		} else {
 			bool cross_domain_splash = false;
 
-			Uri *splash_uri = new Uri ();
-			Uri *page_uri = new Uri ();
-			Uri *source_uri = new Uri ();
 			char *page_location = GetPageLocation ();
+			Uri *splash_uri = Uri::Create (splashscreensource);
+			Uri *page_uri = Uri::Create (page_location);
+			Uri *source_uri = Uri::Create (source);
 
-			if (page_uri->Parse (page_location, true) &&
-			    source_uri->Parse (source, true) &&
-			    splash_uri->Parse (splashscreensource, true)) {
-			
+			if (page_uri && source_uri && splash_uri) {
 				if (source_uri->IsAbsolute () && !splash_uri->IsAbsolute ()) {
 					// in the case where the xap is at an
 					// absolute xdomain url and the splash
@@ -1424,16 +1416,12 @@ PluginInstance::LoadSplash ()
 					// (see App4.xap, App9.xap from drt #283 for this bit)
 
 					if (!source_uri->IsAbsolute ()) {
-						Uri *temp = new Uri();
-						Uri::Copy (page_uri, temp);
-						temp->Combine (source_uri);
+						Uri *temp = Uri::Create (page_uri, source_uri);
 						delete source_uri;
 						source_uri = temp;
 					}
 					if (!splash_uri->IsAbsolute ()) {
-						Uri *temp = new Uri();
-						Uri::Copy (page_uri, temp);
-						temp->Combine (splash_uri);
+						Uri *temp = Uri::Create (page_uri, splash_uri);
 						delete splash_uri;
 						splash_uri = temp;
 					}
@@ -1446,12 +1434,12 @@ PluginInstance::LoadSplash ()
 			g_free (page_location);
 			delete page_uri;
 			delete source_uri;
-			delete splash_uri;
 
 			if (cross_domain_splash) {
 				surface->EmitError (new ErrorEventArgs (RuntimeError,
 									MoonError (MoonError::EXCEPTION, 2107, "Splash screens only available on same site as xap")));
 				UpdateSource ();
+				delete splash_uri;
 				return false;
 			}
 			else {
@@ -1461,9 +1449,10 @@ PluginInstance::LoadSplash ()
 					this->ref ();
 					request->AddHandler (HttpRequest::ProgressChangedEvent, SplashProgressChangedHandler, this);
 					request->AddHandler (HttpRequest::StoppedEvent, SplashStoppedHandler, this);
-					request->Open ("GET", splashscreensource, NoPolicy /* TODO: check if this is the correct policy */);
+					request->Open ("GET", splash_uri, NULL, NoPolicy /* TODO: check if this is the correct policy */);
 					request->Send ();
 				}
+				delete splash_uri;
 			}
 		}
 	} else {
@@ -1862,7 +1851,7 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	return true;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char *resourceBase, PluginInstance *plugin, Surface *surface)
+PluginXamlLoader::PluginXamlLoader (const Uri *resourceBase, PluginInstance *plugin, Surface *surface)
 	: SL3XamlLoader (resourceBase, surface)
 {
 	this->plugin = plugin;
@@ -1882,7 +1871,7 @@ PluginXamlLoader::~PluginXamlLoader ()
 }
 
 PluginXamlLoader *
-plugin_xaml_loader_from_str (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
+plugin_xaml_loader_from_str (const Uri *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
 {
 	return PluginXamlLoader::FromStr (resourceBase, str, plugin, surface);
 }
@@ -1926,7 +1915,7 @@ PluginInstance::AppDomainUnloadedEventHandler (Deployment *deployment, EventArgs
 }
 
 gpointer
-PluginInstance::CreateManagedXamlLoader (XamlLoader *native_loader, const char *resourceBase)
+PluginInstance::CreateManagedXamlLoader (XamlLoader *native_loader, const Uri *resourceBase)
 {
 	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase);
 }
@@ -1989,11 +1978,9 @@ PluginInstance::SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 		GetSurface ()->GetTimeManager ()->AddTickCall (network_error_tickcall, new PluginClosure (this));
 	} else {
 		// the xdomain check MUST be done with the final URI so it can consider any redirection (DRT956)
-		CrossDomainApplicationCheck (request->GetFinalUri ());
+		CrossDomainApplicationCheck (request->GetFinalUri ()->GetOriginalString ());
 	
-		Uri *uri = new Uri ();
-	
-		if (uri->Parse (request->GetFinalUri (), false) && is_xap (request->GetFilename ())) {
+		if (request->GetFinalUri () != NULL && is_xap (request->GetFilename ())) {
 			LoadXAP (request->GetFinalUri (), request->GetFilename ());
 		} else {
 			xaml_loader = PluginXamlLoader::FromFilename (request->GetFinalUri (), request->GetFilename (), this, surface);
@@ -2007,7 +1994,6 @@ PluginInstance::SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 			GetSurface ()->RemoveHandler (Surface::SourceDownloadProgressChangedEvent, progress_changed_token);
 			progress_changed_token = -1;
 		}
-		delete uri;
 	}
 
 	request->RemoveAllHandlers (this);
@@ -2034,9 +2020,7 @@ PluginInstance::SplashStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 	} else {
 		xaml_loader = PluginXamlLoader::FromFilename (request->GetFinalUri (), request->GetFilename (), this, surface);
 		loading_splash = true;
-		char *original_uri = request->GetOriginalUri ()->ToString ();
-		surface->SetSourceLocation (original_uri);
-		g_free (original_uri);
+		surface->SetSourceLocation (request->GetOriginalUri ());
 		LoadXAML ();
 		FlushSplash ();
 	

@@ -97,7 +97,7 @@ class XamlContext : public EventObject {
 
 
 /* @CBindingRequisite */
-typedef DependencyObject *parse_template_func (Value *data, const char *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error);
+typedef DependencyObject *parse_template_func (Value *data, const Uri *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error);
 
 
 
@@ -123,7 +123,7 @@ bool        xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, c
 bool        xaml_bool_from_str (const char *s, bool *res);
 
 /* @GeneratePInvoke */
-XamlLoader *xaml_loader_new (const char *resourceBase, Surface *surface);
+XamlLoader *xaml_loader_new (const Uri *resourceBase, Surface *surface);
 /* @GeneratePInvoke */
 void	    xaml_loader_free (XamlLoader *loader);
 /* @GeneratePInvoke */
@@ -182,8 +182,8 @@ G_END_DECLS
 class XamlLoaderFactory {
 
  public:
-	static XamlLoader *CreateLoader (const char* resource_base, Surface *surface);
-	static XamlLoader *CreateLoader (const char* resource_base, Surface *surface, XamlContext *context);
+	static XamlLoader *CreateLoader (const Uri* resource_base, Surface *surface);
+	static XamlLoader *CreateLoader (const Uri* resource_base, Surface *surface, XamlContext *context);
 };
 
 
@@ -234,16 +234,16 @@ class SL3XamlLoader : public XamlLoader {
 	bool expanding_template;
 	DependencyObject *template_owner;
 	Surface *surface;
-	const char *resource_base;
+	Uri *resource_base;
 	XamlContext *context;
 	bool import_default_xmlns;
 
-	void Initialize (const char *resourceBase, Surface *surface, XamlContext *context);
+	void Initialize (const Uri *resourceBase, Surface *surface, XamlContext *context);
 
  public:
 
 	SL3XamlLoader (Surface *surface, XamlContext *context = NULL);
-	SL3XamlLoader (const char *resourceBase, Surface *surface, XamlContext *context = NULL);
+	SL3XamlLoader (const Uri *resourceBase, Surface *surface, XamlContext *context = NULL);
 	
 	virtual ~SL3XamlLoader ();
 	
@@ -258,7 +258,7 @@ class SL3XamlLoader : public XamlLoader {
 	void SetImportDefaultXmlns (bool v) { import_default_xmlns = v; }
 
 	Surface *GetSurface () { return surface; }
-	const char *GetResourceBase () { return resource_base; }
+	const Uri *GetResourceBase () { return resource_base; }
 
 	bool GetExpandingTemplate () { return expanding_template; }
 	void SetExpandingTemplate (bool value) { expanding_template = value; }

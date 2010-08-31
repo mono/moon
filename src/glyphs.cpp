@@ -493,7 +493,7 @@ Glyphs::LoadFont (const Uri *uri, const char *path)
 	double size = GetFontRenderingEmSize ();
 	char *resource, *tmp;
 	
-	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideFragment | UriHideQuery));
+	resource = g_strdup (uri->ToString ());
 	
 	if (part_name) {
 		tmp = g_strdup_printf ("%s#%s", resource, part_name);
@@ -717,12 +717,11 @@ void
 Glyphs::DownloadFont (const Uri *uri, MoonError *error)
 {
 	if ((downloader = GetDeployment ()->CreateDownloader ())) {
-		char *str = uri->ToString (UriHideFragment);
-		downloader->Open ("GET", str, FontPolicy);
-		g_free (str);
-		
-		if (uri->GetFragment ()) {
-			if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == G_MAXINT)
+		downloader->Open ("GET", uri, FontPolicy);
+
+		const Uri *absolute_uri = downloader->GetHttpRequest () != NULL ? downloader->GetHttpRequest ()->GetUri () : NULL;
+		if (absolute_uri && absolute_uri->GetFragment ()) {
+			if ((index = strtol (absolute_uri->GetFragment (), NULL, 10)) < 0 || index == G_MAXINT)
 				index = 0;
 		} else {
 			index = 0;
@@ -876,9 +875,7 @@ Glyphs::ValidateUri (const Uri *uri, MoonError *error)
 	// it can be simplified in future if required.
 	if (uri) {
 		Downloader *downloader = GetDeployment ()->CreateDownloader ();
-		char *str = uri->ToString (UriHideFragment);
-		downloader->Open ("GET", str, FontPolicy);
-		g_free (str);
+		downloader->Open ("GET", uri, FontPolicy);
 
 		if (downloader->GetFailedMessage () != NULL)
 			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1000, downloader->GetFailedMessage ());

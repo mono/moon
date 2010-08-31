@@ -209,7 +209,7 @@ namespace System.Net.Browser {
 			Events.AddHandler (native, EventIds.HttpRequest_WriteEvent, available);
 			Events.AddHandler (native, EventIds.HttpRequest_StoppedEvent, finished);
 
-			NativeMethods.http_request_open (native, Method, RequestUri.AbsoluteUri, DownloaderAccessPolicy.NoPolicy);
+			NativeMethods.http_request_open (native, Method, UriHelper.ToNativeUri (RequestUri), DownloaderAccessPolicy.NoPolicy);
 
 			long request_length = 0;
 			byte[] body = null;

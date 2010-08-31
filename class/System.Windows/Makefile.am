@@ -94,6 +94,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/ToggleRef.cs						\
 	$(srcdir)/Mono/Types.cs							\
 	$(srcdir)/Mono/Types.g.cs						\
+	$(srcdir)/Mono/UriHelper.cs				\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/WeakCollectionChangedListener.cs				\
 	$(srcdir)/Mono.Xaml/ManagedXamlLoader.cs				\

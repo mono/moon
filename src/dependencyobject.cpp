@@ -2512,12 +2512,13 @@ DependencyObject::GetTemplateOwner ()
 }
 
 void
-DependencyObject::SetResourceBase (const char *resourceBase)
+DependencyObject::SetResourceBase (const Uri *resourceBase)
 {
-	resource_base = resourceBase;
+	delete resource_base;
+	resource_base = Uri::Clone (resourceBase);
 }
 
-const char *
+const Uri *
 DependencyObject::GetResourceBase ()
 {
 	return resource_base;
@@ -2661,6 +2662,7 @@ DependencyObject::~DependencyObject ()
 	g_hash_table_destroy (provider_bitmasks);
 	g_hash_table_destroy (local_values);
 	local_values = NULL;
+	delete resource_base;
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	totals ts;

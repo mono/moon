@@ -81,7 +81,7 @@ protected:
 /* @Namespace=System.Windows */
 class ExtensionPart : public ExternalPart {
 public:
-	/* @PropertyType=Uri,AlwaysChange,IsConstPropertyType,GenerateAccessors,GenerateManagedAccessors=false,DefaultValue=Uri() */
+	/* @PropertyType=Uri,AlwaysChange,IsConstPropertyType,GenerateAccessors,GenerateManagedAccessors=false,DefaultValue=new Uri() */
 	const static int SourceProperty;
 
 	void SetSource (const Uri *value);
@@ -165,7 +165,7 @@ protected:
 /* @ContentProperty=Source */
 class Icon : public DependencyObject {
 public:
-	/* @PropertyType=Uri,DefaultValue=Uri(),IsConstPropertyType,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
+	/* @PropertyType=Uri,DefaultValue=new Uri(),IsConstPropertyType,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SourceProperty;
 	/* @PropertyType=Size,DefaultValue=Size(),ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SizeProperty;
@@ -250,7 +250,7 @@ protected:
 	friend class MoonManagedFactory;
 };
 
-/* @Namespace=System.Windows */
+/* @Namespace=System.Windows,CallInitialize */
 class Deployment : public DependencyObject {
 public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
@@ -339,8 +339,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetInitialization (bool init);
 
-	void SetXapLocation (const char *location);
-	const char *GetXapLocation ();
+	void SetXapLocation (const Uri *location);
+	const Uri *GetXapLocation ();
 
 	void SetXapFilename (const char *filename);
 	const char *GetXapFilename ();
@@ -354,7 +354,7 @@ public:
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
 	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
-	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase);
+	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const Uri *resourceBase);
 	void DestroyManagedXamlLoader (gpointer xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
 
@@ -435,6 +435,10 @@ public:
 
 	/* Managed helpers */
 	char *CanonicalizeFileName (const char *filename, bool is_xap_mode);
+	const UriFunctions *GetUriFunctions () { return &uri_functions; }
+	/* @GeneratePInvoke */
+	void SetUriFunctions (const UriFunctions *value);
+	void FreeGCHandle (void *gchandle);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
@@ -495,7 +499,7 @@ private:
 	bool appdomain_unloaded;
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders
-	char *xap_location;
+	Uri *xap_location;
 
 	// xap filename, for use in installing apps
 	char *xap_filename;
@@ -511,6 +515,8 @@ private:
 	gint objects_created;
 	gint objects_destroyed;
 	
+	UriFunctions uri_functions;
+
 	ShutdownState shutdown_state;
 	MonoImage *system_windows_image;
 	MonoAssembly *system_windows_assembly;

@@ -319,7 +319,7 @@ void CurlDownloaderRequest::SendImpl ()
 
 	// we're ready to start the connection, set the headers
 	response = new CurlDownloaderResponse (bridge, this);
-	curl_easy_setopt (curl, CURLOPT_URL, GetUri ());
+	curl_easy_setopt (curl, CURLOPT_URL, GetUri ()->GetHttpRequestString ());
 	curl_easy_setopt (curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, data_received);
 	curl_easy_setopt (curl, CURLOPT_WRITEDATA, response);

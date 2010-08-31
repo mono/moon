@@ -335,7 +335,7 @@ class XamlContextInternal {
 };
 
 DependencyObject *
-parse_template (Value *data, const char *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error)
+parse_template (Value *data, const Uri *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error)
 {
 	XamlContext *xaml_context = (XamlContext *) data->AsEventObject ();
 	SL3XamlLoader *loader = new SL3XamlLoader (resource_base, surface, xaml_context);
@@ -1569,7 +1569,7 @@ SL3XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool p
 	return false;
 }
 
-SL3XamlLoader::SL3XamlLoader (const char *resourceBase, Surface* surface, XamlContext *context)
+SL3XamlLoader::SL3XamlLoader (const Uri *resourceBase, Surface* surface, XamlContext *context)
 {
 	Initialize (resourceBase, surface, context);
 }
@@ -1580,9 +1580,9 @@ SL3XamlLoader::SL3XamlLoader (Surface* surface, XamlContext *context)
 }
 
 void
-SL3XamlLoader::Initialize (const char *resourceBase, Surface* surface, XamlContext *context)
+SL3XamlLoader::Initialize (const Uri *resourceBase, Surface* surface, XamlContext *context)
 {
-	this->resource_base = Deployment::GetCurrent()->InternString (resourceBase);
+	this->resource_base = Uri::Clone (resourceBase);
 	this->surface = surface;
 	if (surface)
 		surface->ref ();
@@ -1613,6 +1613,7 @@ SL3XamlLoader::~SL3XamlLoader ()
 	surface = NULL;
 	if (error_args)
 		error_args->unref();
+	delete resource_base;
 }
 
 XamlLoaderCallbacks
@@ -1685,7 +1686,7 @@ SL4XamlLoader::HydrateFromStringWithError (const char *xaml, Value *obj, bool cr
 }
 
 XamlLoader* 
-xaml_loader_new (const char *resourceBase, Surface* surface)
+xaml_loader_new (const Uri *resourceBase, Surface* surface)
 {
 	return new SL3XamlLoader (resourceBase, surface);
 }
@@ -2721,7 +2722,7 @@ SL3XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool
 
 
 XamlLoader *
-XamlLoaderFactory::CreateLoader (const char* resource_base, Surface *surface)
+XamlLoaderFactory::CreateLoader (const Uri *resource_base, Surface *surface)
 {
 	if (getenv ("MOON_USE_MANAGED_XAML_PARSER"))
 		return new SL4XamlLoader (surface);
@@ -3863,14 +3864,14 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	case Type::URI: {
-		Uri uri;
+		Uri *uri = Uri::Create (s);
 
-		if (!uri.Parse (s)) {
+		if (uri == NULL)
 			break;
-		}
 
 		*v = new Value (uri);
 		*v_set = true;
+		delete uri;
 		break;
 	}
 	case Type::DOUBLE_COLLECTION: {
@@ -4039,28 +4040,30 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	}
 	case Type::IMAGESOURCE:
 	case Type::BITMAPIMAGE: {
-		Uri uri;
+		Uri *uri = Uri::Create (s);
 
-		if (!uri.Parse (s))
+		if (uri == NULL)
 			break;
 
 		BitmapImage *bi = MoonUnmanagedFactory::CreateBitmapImage ();
 
-		bi->SetUriSource (&uri);
+		bi->SetUriSource (uri);
 
 		*v = Value::CreateUnrefPtr (bi); 
 		*v_set = true;
+		delete uri;
 
 		break;
 	}
 	case Type::MULTISCALETILESOURCE:
 	case Type::DEEPZOOMIMAGETILESOURCE: {
 		// As far as I know the only thing you can create here is a URI based DeepZoomImageTileSource
-		Uri uri;
-		if (!uri.Parse (s))
+		Uri *uri = Uri::Create (s);
+		if (uri == NULL)
 			break;
-		*v = Value::CreateUnrefPtr (new DeepZoomImageTileSource (&uri));
+		*v = Value::CreateUnrefPtr (new DeepZoomImageTileSource (uri));
 		*v_set = true;
+		delete uri;
 
 		break;
 	}
@@ -4201,12 +4204,13 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 		return true;
 	} else if (content && (content->GetPropertyType ()) == Type::URI && value) {
-		Uri uri;
+		Uri *uri = Uri::Create (g_strstrip (p->cdata->str));
 
-		if (!uri.Parse (g_strstrip (p->cdata->str)))
+		if (uri == NULL)
 			return false;
 
 		item->SetValue (content, Value (uri));
+		delete uri;
 		return true;
 	} else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK) ||
 		   Type::IsSubclassOf (p->deployment, info->GetKind (), Type::SPAN) ||

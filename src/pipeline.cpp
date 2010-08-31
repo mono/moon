@@ -691,11 +691,11 @@ Media::Initialize (IMediaSource *source)
 }
 
 void
-Media::Initialize (const char *uri)
+Media::Initialize (const Uri *uri)
 {
 	IMediaSource *source = NULL;
 	
-	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", uri, GET_OBJ_ID (this));	
+	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", uri ? uri->GetOriginalString () : NULL, GET_OBJ_ID (this));	
 	
 	g_return_if_fail (uri != NULL);
 	g_return_if_fail (file == NULL);
@@ -705,13 +705,12 @@ Media::Initialize (const char *uri)
 	g_return_if_fail (source == NULL);
 	g_return_if_fail (this->source == NULL);
 	
-	this->uri = g_strdup (uri);
+	this->uri = Uri::Clone (uri);
 	
-	
-	if (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://")  || g_str_has_prefix (uri, "rtsps://")) {
-		source = new MmsSource (this, uri);
+	if (this->uri->IsAbsolute () && (this->uri->IsScheme ("mms") || this->uri->IsScheme ("rtsp") || this->uri->IsScheme ("rtsps"))) {
+		source = new MmsSource (this, this->uri);
 	} else {
-		source = new ProgressiveSource (this, uri);
+		source = new ProgressiveSource (this, this->uri);
 	}
 
 	Initialize (source);
@@ -754,9 +753,9 @@ Media::GetTargetPts ()
 void
 Media::RetryHttp (ErrorEventArgs *args)
 {
-	char *http_uri = NULL;
+	Uri *http_uri = NULL;
 	
-	LOG_PIPELINE ("Media::RetryHttp (), current uri: '%s'\n", uri);
+	LOG_PIPELINE ("Media::RetryHttp (), current uri: '%s'\n", uri->ToString ());
 	
 	g_return_if_fail (uri != NULL);
 	g_return_if_fail (source != NULL);
@@ -768,12 +767,8 @@ Media::RetryHttp (ErrorEventArgs *args)
 	
 	// CHECK: If the current protocolo is rtsps, should we retry http or https?
 	
-	if (g_str_has_prefix (uri, "mms://")) {
-		http_uri = g_strdup_printf ("http://%s", uri + 6);
-	} else if (g_str_has_prefix (uri, "rtsp://")) {
-		http_uri = g_strdup_printf ("http://%s", uri + 7);
-	} else if (g_str_has_prefix (uri, "rtsps://")) {
-		http_uri = g_strdup_printf ("http://%s", uri + 8);
+	if (uri->IsScheme ("mms") || uri->IsScheme ("rtsp") || uri->IsScheme ("rtsps")) {
+		http_uri = Uri::CloneWithScheme (uri, "http");
 	} else {
 		ReportErrorOccurred (args);
 		return;
@@ -781,9 +776,9 @@ Media::RetryHttp (ErrorEventArgs *args)
 	
 	http_retried = true;
 	
-	LOG_PIPELINE ("Media::RetryHttp (), new uri: '%s'\n", http_uri);
+	LOG_PIPELINE ("Media::RetryHttp (), new uri: '%s'\n", http_uri->ToString ());
 	
-	g_free (uri);
+	delete uri;
 	uri = NULL;
 	/* this method is called on the main thread, ensure Dispose is called on the source on the media thread  */
 	DisposeObject (source);
@@ -794,7 +789,7 @@ Media::RetryHttp (ErrorEventArgs *args)
 	
 	Initialize (http_uri);
 	
-	g_free (http_uri);
+	delete http_uri;
 	
 	if (!error_reported)
 		OpenAsync ();
@@ -976,15 +971,13 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 		
 		if (demuxerInfo == NULL) {
 			// No demuxer found, report an error
-			char *source_name = file ? g_strdup (file) : g_strdup (uri);
+			char *source_name = file ? g_strdup (file) : (uri ? g_strdup (uri->ToString ()) : NULL);
 		
 			if (!source_name) {
 				switch (source->GetObjectType ()) {
 				case Type::PROGRESSIVESOURCE: {
 					ProgressiveSource *ps = (ProgressiveSource *) source;
-					char *tmp = ps->GetUri ()->ToString ();
-					source_name = g_strdup_printf ("%s (%s)", tmp, ps->GetFileName ());
-					g_free (tmp);
+					source_name = g_strdup_printf ("%s (%s)", ps->GetUri ()->ToString (), ps->GetFileName ());
 					break;
 				}
 				case Type::FILESOURCE:
@@ -1674,10 +1667,11 @@ Ranges::Contains (guint64 offset, guint64 length, Range *partial)
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media, const char *uri)
+ProgressiveSource::ProgressiveSource (Media *media, const Uri *uri)
 	: IMediaSource (Type::PROGRESSIVESOURCE, media)
 {
 	complete = false;
+	error_occurred = false;
 	write_pos = 0;
 	size = -1;
 	write_fd = NULL;
@@ -1691,15 +1685,7 @@ ProgressiveSource::ProgressiveSource (Media *media, const char *uri)
 	range_request = NULL;
 	brr_enabled = 0;
 
-	this->uri = new Uri ();
-	if (!this->uri->Parse (uri)) {
-		delete this->uri;
-		this->uri = NULL;
-
-		char *msg = g_strdup_printf ("Could not parse the uri '%s'", uri);
-		ReportErrorOccurred (msg);
-		g_free (msg);
-	}
+	this->uri = Uri::Clone (uri);
 }
 
 ProgressiveSource::~ProgressiveSource ()
@@ -1843,9 +1829,7 @@ ProgressiveSource::Initialize ()
 
 	/* Unlink the file right away so that it'll be deleted even if we crash. */
 	if (moonlight_flags & RUNTIME_INIT_KEEP_MEDIA) {
-		char *tmp = uri->ToString ();
-		printf ("Moonlight: The media file %s will not deleted (uri: %s).\n", filename, tmp);
-		g_free (tmp);
+		printf ("Moonlight: The media file %s will not deleted (uri: %s).\n", filename, uri->ToString ());
 	} else {
 		g_unlink (filename);
 	}
@@ -1854,12 +1838,13 @@ ProgressiveSource::Initialize ()
 	if (!application->GetResource (NULL, uri, NotifyCallback, DataWriteCallback, MediaPolicy,
 		 (HttpRequest::Options) (HttpRequest::DisableFileStorage), cancellable, (gpointer) this)) {
 		result = MEDIA_FAIL;
-		char *tmp = uri->ToString ();
-		char *msg = g_strdup_printf ("invalid path found in uri '%s'", tmp);
-		g_free (tmp);
+		char *msg = g_strdup_printf ("invalid path found in uri '%s'", uri->ToString ());
 		ReportErrorOccurred (msg);
 		g_free (msg);
 	}
+
+	if (error_occurred)
+		result = MEDIA_FAIL;
 	
 	return result;
 
@@ -2086,7 +2071,7 @@ ProgressiveSource::SetRangeRequest (HttpRequest *value)
 	range_request->AddHandler (HttpRequest::StartedEvent, RangeStartedCallback, this);
 	range_request->AddHandler (HttpRequest::WriteEvent, RangeWriteCallback, this);
 	range_request->AddHandler (HttpRequest::StoppedEvent, RangeStoppedCallback, this);
-	range_request->Open ("GET", uri, MediaPolicy);
+	range_request->Open ("GET", uri, /* I think a resource base is needed here */ NULL, MediaPolicy);
 	range_request->SetHeaderFormatted ("Range", g_strdup_printf ("bytes=%" G_GINT64_FORMAT "-", current_request), false);
 	range_request->Send ();
 }
@@ -2267,6 +2252,7 @@ ProgressiveSource::DownloadFailed ()
 {
 	LOG_PIPELINE ("ProgressiveSource::DownloadFailed ().\n");
 	
+	error_occurred = true;
 	ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
 }
 
@@ -4347,10 +4333,13 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 	EmitData *emit;
 	PendingEmitList *emit_list = NULL; // The events to emit on the main thread
 	bool add_tick_call = false;
+	bool in_main_thread;
 		
 	if (events == NULL)
 		goto cleanup;
 		
+	in_main_thread = Surface::InMainThread ();
+
 	// Create a list of all the events to emit
 	// don't keep the lock while emitting.
 	event_mutex.Lock ();
@@ -4359,7 +4348,7 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 		while (ed != NULL) {
 			if (ed->event_id == event_id) {
 				emit = new EmitData (event_id, ed->handler, ed->context, args);
-				if (ed->invoke_on_main_thread) {
+				if (ed->invoke_on_main_thread && !in_main_thread) {
 					if (emit_list == NULL)
 						emit_list = new PendingEmitList ();
 					emit_list->list.Append (emit);

@@ -1561,16 +1561,14 @@ public:
  * MmsSource
  */
  
-MmsSource::MmsSource (Media *media, const char *uri)
+MmsSource::MmsSource (Media *media, const Uri *uri)
 	: IMediaSource (Type::MMSSOURCE, media)
 {
-	int offset = 0;
-
 	finished = false;
 	is_sspl = false;
 	failure_reported = false;
 	max_bitrate = 0;
-	this->uri = g_strdup (uri);
+	this->uri = Uri::Clone (uri);
 	request_uri = NULL;
 	client_id = NULL;
 	request = NULL;
@@ -1592,25 +1590,13 @@ MmsSource::MmsSource (Media *media, const char *uri)
 	p_packet_sizes [2] = 0;
 
 	/* Replace mms|rtsp|rtsps with http to not confuse lower layers */
-	if (strncmp (uri, "mms://", 6) == 0) {
-		offset = 6;
-	} else if (strncmp (uri, "rtsp://", 7) == 0) {
-		offset = 7;
-	} else if (strncmp (uri, "rtsps://", 8) == 0) {
-		offset = 8;
-	} else {
-		/* The error is raised in Initialize. We calculate request_uri here to ensure
-		 * that both uri and request_uri are readonly fields (until destruction - which
-		 * means no locking required) */
-	}
-	if (offset > 0)
-		request_uri = g_strdup_printf ("http://%s", uri + offset);
+	request_uri = Uri::CloneWithScheme (uri, "http");
 }
 
 MmsSource::~MmsSource ()
 {
-	g_free (uri);
-	g_free (request_uri);
+	delete uri;
+	delete request_uri;
 	delete temporary_downloaders;
 }
 
@@ -1684,13 +1670,6 @@ MmsSource::Initialize ()
 {
 	VERIFY_MAIN_THREAD;
 
-	if (request_uri == NULL) {
-		char *msg = g_strdup_printf ("Streaming scheme must be either mms, rtsp or rtsps, got uri: %s\n", uri);
-		ReportErrorOccurred (msg);
-		g_free (msg);
-		return MEDIA_FAIL;
-	}
-
 	AddTickCall (SendDescribeRequestCallback);
 
 	return MEDIA_SUCCESS;
@@ -1702,17 +1681,8 @@ MmsSource::CreateDownloaders (const char *method, HttpRequest **req)
 	/* Thread-safe since it doesn't touch any instance fields */
 	HttpRequest *request;
 	char *id;
-	Uri *url = NULL;
 
 	*req = NULL;
-
-	url = new Uri ();
-	if (!url->Parse (uri)) {
-		char *msg = g_strdup_printf ("Could not parse uri '%s'", request_uri);
-		ReportErrorOccurred (msg);
-		g_free (msg);
-		goto cleanup;
-	}
 
 	request = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableCache | HttpRequest::DisableFileStorage));
 	*req = request;
@@ -1725,7 +1695,7 @@ MmsSource::CreateDownloaders (const char *method, HttpRequest **req)
 	request->AddHandler (HttpRequest::StoppedEvent, StoppedCallback, this);
 	request->AddHandler (HttpRequest::WriteEvent, WriteCallback, this);
 
-	request->Open (method, request_uri, StreamingPolicy);
+	request->Open (method, request_uri, NULL, StreamingPolicy);
 	request->SetHeader ("User-Agent", CLIENT_USER_AGENT, false);
 	request->SetHeader ("Pragma", "no-cache", true);
 	request->SetHeader ("Pragma", "xClientGUID=" CLIENT_GUID, true);
@@ -1742,7 +1712,7 @@ MmsSource::CreateDownloaders (const char *method, HttpRequest **req)
 	}
 
 cleanup:
-	delete url;
+	;
 }
 
 void
@@ -1784,7 +1754,7 @@ MmsSource::CreateDownloaders (const char *method)
 void
 MmsSource::SendDescribeRequest ()
 {
-	LOG_MMS ("MmsSource::SendDescribeRequest () uri: %s request_uri: %s state: %i\n", uri, request_uri, waiting_state);
+	LOG_MMS ("MmsSource::SendDescribeRequest () uri: %s request_uri: %s state: %i\n", uri->GetOriginalString (), request_uri->GetOriginalString (), waiting_state);
 	VERIFY_MAIN_THREAD;
 	HttpRequest *request;
 
@@ -1808,7 +1778,7 @@ MmsSource::SendPlayRequest ()
 	HttpRequest *request;
 	guint64 pts;
 
-	LOG_MMS ("MmsSource::SendPlayRequest () uri: %s request_uri: %s waiting_state: %i\n", uri, request_uri, waiting_state);
+	LOG_MMS ("MmsSource::SendPlayRequest () uri: %s request_uri: %s waiting_state: %i\n", uri->GetOriginalString (), request_uri->GetOriginalString (), waiting_state);
 	VERIFY_MAIN_THREAD;
 
 	waiting_state = MmsPlayResponse;
@@ -2181,7 +2151,7 @@ MmsSource::ProcessResponseHeader (const char *header, const char *value)
 	// check response code
 	HttpResponse *response = request->GetResponse ();
 	if (response != NULL && response->GetResponseStatus () != 200) {
-		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri, response->GetResponseStatus ());
+		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri->GetOriginalString (), response->GetResponseStatus ());
 		ReportDownloadFailure ();
 		goto cleanup;
 	}

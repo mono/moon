@@ -97,7 +97,7 @@ namespace System.Windows.Media
 		
 		protected abstract void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources);
 
-		private bool GetImageUriSafe (int tileLevel, int tilePositionX, int tilePositionY, IntPtr uuri, IntPtr ignore)
+		private bool GetImageUriSafe (int tileLevel, int tilePositionX, int tilePositionY, ref IntPtr uuri, IntPtr ignore)
 		{
 			try {
 				List<object> list = new List<object> ();
@@ -107,7 +107,8 @@ namespace System.Windows.Media
 				Uri uri = list[0] as Uri;
 				if (uri == null)
 					return false;
-				return NativeMethods.uri_parse (uuri, uri.OriginalString, false);
+				uuri = UriHelper.ToNativeUri (uri);
+				return true;
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in MultiScaleTileSource.GetImageUri: {0}", ex);

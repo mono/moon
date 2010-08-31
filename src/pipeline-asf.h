@@ -172,8 +172,8 @@ private:
 		MmsStreamSwitchResponse,
 	};
 
-	char *uri; /* write in ctor only: thread-safe */
-	char *request_uri; /* write in ctor only: thread-safe */
+	Uri *uri; /* write in ctor only: thread-safe */
+	Uri *request_uri; /* write in ctor only: thread-safe */
 	char *client_id; /* must use locking to be thread-safe */
 	bool finished;
 	bool is_sspl;
@@ -254,7 +254,7 @@ protected:
 	virtual void ReadAsyncInternal (MediaReadClosure *closure);
 
 public:
-	MmsSource (Media *media, const char *uri);
+	MmsSource (Media *media, const Uri *uri);
 
 	virtual MediaResult Initialize (); // media thread only
 

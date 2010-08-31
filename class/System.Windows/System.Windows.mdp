@@ -788,6 +788,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Collections.Specialized/IListenCollectionChanged.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ObservableList.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/RootCollectionViewGroup.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono/UriHelper.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

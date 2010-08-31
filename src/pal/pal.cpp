@@ -399,15 +399,13 @@ MoonAppDatabase::~MoonAppDatabase ()
 }
 
 MoonAppRecord *
-MoonAppDatabase::CreateAppRecord (const char *origin)
+MoonAppDatabase::CreateAppRecord (const Uri *origin)
 {
 	char *install_dir, *uid;
 	MoonAppRecord *app;
 	const char *domain;
-	Uri *uri;
 	
-	uri = new Uri ();
-	if (!uri->Parse (origin) || !(domain = uri->GetHost ()))
+	if (origin == NULL || !(domain = origin->GetHost ()))
 		domain = "localhost";
 	
 	do {
@@ -421,16 +419,14 @@ MoonAppDatabase::CreateAppRecord (const char *origin)
 		
 		if (errno != EEXIST) {
 			// EEXIST is the only error we can recover from...
-			delete uri;
 			return NULL;
 		}
 	} while (true);
 	
 	app = new MoonAppRecord ();
-	app->origin = g_strdup (origin);
+	app->origin = g_strdup (origin->GetOriginalString ());
 	app->mtime = time (NULL);
 	app->uid = uid;
-	delete uri;
 	
 	if (!AddAppRecord (app)) {
 		RemoveDir (install_dir);
@@ -554,7 +550,7 @@ MoonAppDatabase::RemoveAppRecord (const MoonAppRecord *record)
 }
 
 MoonAppRecord *
-MoonAppDatabase::GetAppRecordByOrigin (const char *origin)
+MoonAppDatabase::GetAppRecordByOrigin (const Uri *origin)
 {
 	MoonAppRecordIterator *iter;
 	MoonAppRecord *app;
@@ -566,7 +562,7 @@ MoonAppDatabase::GetAppRecordByOrigin (const char *origin)
 	iter = new MoonAppRecordIterator (db);
 	
 	while ((app = iter->Next ())) {
-		if (!strcmp (app->origin, origin))
+		if (!strcmp (app->origin, origin->GetOriginalString ()))
 			break;
 		
 		delete app;
@@ -658,7 +654,7 @@ MoonInstallerService::CloseDownloader (bool abort)
 }
 
 MoonAppRecord *
-MoonInstallerService::CreateAppRecord (const char *origin)
+MoonInstallerService::CreateAppRecord (const Uri *origin)
 {
 	if (!InitDatabase ())
 		return NULL;
@@ -669,7 +665,7 @@ MoonInstallerService::CreateAppRecord (const char *origin)
 MoonAppRecord *
 MoonInstallerService::GetAppRecord (Deployment *deployment)
 {
-	const char *xap_uri = deployment->GetXapLocation ();
+	const Uri *xap_uri = deployment->GetXapLocation ();
 	const char *base_dir = GetBaseInstallDir ();
 	const char *start, *inptr;
 	MoonAppRecord *app;
@@ -681,7 +677,7 @@ MoonInstallerService::GetAppRecord (Deployment *deployment)
 	if (IsRunningOutOfBrowser (deployment)) {
 		// we'll need to get the uid used by this app, which can be
 		// extracted from the local path.
-		start = xap_uri + 7 + strlen (base_dir);
+		start = xap_uri->GetPath () + strlen (base_dir);
 		if (*start == '/')
 			start++;
 		
@@ -822,7 +818,9 @@ MoonInstallerService::CheckAndDownloadUpdateAsync (Deployment *deployment, Updat
 	request = deployment->CreateHttpRequest (HttpRequest::OptionsNone);
 	request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, this);
 	request->SetHeader ("If-Modified-Since", mtime, false);
-	request->Open ("GET", app->origin, XamlPolicy);
+	Uri *uri = Uri::Create (app->origin);
+	request->Open ("GET", uri, NULL, XamlPolicy);
+	delete uri;
 	request->Send ();
 	
 	this->completed = completed;
@@ -832,17 +830,16 @@ MoonInstallerService::CheckAndDownloadUpdateAsync (Deployment *deployment, Updat
 bool
 MoonInstallerService::IsRunningOutOfBrowser (Deployment *deployment)
 {
-	const char *xap_uri = deployment->GetXapLocation ();
+	const Uri *xap_uri = deployment->GetXapLocation ();
 	const char *base_dir = GetBaseInstallDir ();
 	const char *xap_path;
 	size_t n;
 	
 	// First, make sure we are dealing with a locally run app
-	if (!xap_uri || strncmp (xap_uri, "file://", 7) != 0)
+	if (!xap_uri || !xap_uri->IsScheme ("file"))
 		return false;
 	
-	// Skip past the file:// for the path component
-	xap_path = xap_uri + 7;
+	xap_path = xap_uri->GetPath ();
 	
 	// Measure the length of the base install dir for OOB apps
 	n = strlen (base_dir);

@@ -49,7 +49,7 @@ namespace Mono.Xaml
 		XamlLoaderCallbacks callbacks;
 		GCHandle handle;
 
-		public ManagedXamlLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin) : base (resourceBase, surface, plugin)
+		public ManagedXamlLoader (Assembly assembly, Uri resourceBase, IntPtr surface, IntPtr plugin) : base (resourceBase, surface, plugin)
 		{
 			this.assembly = assembly;
 
@@ -164,7 +164,10 @@ namespace Mono.Xaml
 				throw new Exception ("The surface where the xaml should be loaded is not set.");
 			
 			//Console.WriteLine ("ManagedXamlLoader::CreateNativeLoader (): surface: {0}", surface);
-			native_loader = NativeMethods.xaml_loader_new (resourceBase, surface);
+			GCHandle? resource_base = UriHelper.ToGCHandle (resourceBase);
+			native_loader = NativeMethods.xaml_loader_new (UriHelper.ToNativeUri (resource_base), surface);
+			if (resource_base.HasValue)
+				resource_base.Value.Free (); /* xaml_loader_new will clone the uri */
 			
 			if (native_loader == IntPtr.Zero)
 				throw new Exception ("Unable to create native loader.");
@@ -1284,8 +1287,8 @@ namespace Mono.Xaml
 					// If its a non-rooted relative uri, give it a base
 					Uri dummy = null;
 					if (Uri.TryCreate (str_value, UriKind.Relative, out dummy) && !str_value.StartsWith ("/")) {
-						if (resourceBase != null && resourceBase.IndexOf ('/') >= 0)
-							str_value = String.Concat (resourceBase.Substring (0, resourceBase.LastIndexOf ('/') + 1), str_value);
+						if (resourceBase != null)
+							str_value = new Uri (resourceBase, str_value).ToString ();
 					}
 							
 				}

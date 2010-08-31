@@ -149,7 +149,7 @@ class PluginInstance
 	
 	bool CreatePluginDeployment ();
 
-	gpointer CreateManagedXamlLoader (XamlLoader* loader, const char *resourceBase);
+	gpointer CreateManagedXamlLoader (XamlLoader* loader, const Uri *resourceBase);
 	static void progress_changed_handler (EventObject *sender, EventArgs *args, gpointer closure);
 	int progress_changed_token;
 
@@ -269,7 +269,7 @@ private:
 	//
 	PluginXamlLoader *xaml_loader;
 	Deployment   *deployment;
-	bool LoadXAP  (const char*url, const char *fname);
+	bool LoadXAP  (const Uri *url, const char *fname);
 	void DestroyApplication ();
 
 	// Private methods
@@ -305,7 +305,7 @@ extern GSList *plugin_instances;
 
 class PluginXamlLoader : public SL3XamlLoader
 {
-	PluginXamlLoader (const char *resourceBase, PluginInstance *plugin, Surface *surface);
+	PluginXamlLoader (const Uri *resourceBase, PluginInstance *plugin, Surface *surface);
 
 	bool InitializeLoader ();
 	PluginInstance *plugin;
@@ -331,7 +331,7 @@ class PluginXamlLoader : public SL3XamlLoader
 		return xaml_file;
 	}
 	
-	static PluginXamlLoader *FromFilename (const char *resourceBase, const char *filename, PluginInstance *plugin, Surface *surface)
+	static PluginXamlLoader *FromFilename (const Uri *resourceBase, const char *filename, PluginInstance *plugin, Surface *surface)
 	{
 		PluginXamlLoader *loader = new PluginXamlLoader (resourceBase, plugin, surface);
 
@@ -339,7 +339,7 @@ class PluginXamlLoader : public SL3XamlLoader
 		return loader;
 	}
 	
-	static PluginXamlLoader *FromStr (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
+	static PluginXamlLoader *FromStr (const Uri *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
 	{
 		PluginXamlLoader *loader = new PluginXamlLoader (resourceBase, plugin, surface);
 
@@ -361,7 +361,7 @@ void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_acces
 
 void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
 
-PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, const char *resourceBase, PluginInstance *plugin, Surface *surface);
+PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, const Uri *resourceBase, PluginInstance *plugin, Surface *surface);
 
 G_END_DECLS
 

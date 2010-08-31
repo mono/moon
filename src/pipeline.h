@@ -568,7 +568,7 @@ private:
 	guint64 target_pts; // Access must be protected with mutes.
 	guint64 buffering_time; // Access must be protected with mutex.
 	bool is_disposed; // Access must be protected with mutex. This is used to ensure that we don't add work to the thread pool after having been disposed.
-	char *uri;
+	Uri *uri;
 	char *file;
 	IMediaSource *source;
 	IMediaDemuxer *demuxer;
@@ -630,8 +630,8 @@ public:
 	// Initialize the Media.
 	// These methods may raise MediaError events.
 	void Initialize (Downloader *downloader, const char *PartName); // MediaElement.SetSource (dl, 'PartName');
-	void Initialize (const char *uri); // MediaElement.Source = 'uri';
-	void Initialize (IMediaDemuxer *demuxer); // MediaElement.SetSource (demuxer); 
+	void Initialize (const Uri *uri); // MediaElement.Source = 'uri';
+	void Initialize (IMediaDemuxer *demuxer); // MediaElement.SetSource (demuxer);
 	void Initialize (IMediaSource *source);
 
 	// Start opening the media.
@@ -667,7 +667,7 @@ public:
 	IMediaSource *GetSource () { return source; }
 	IMediaDemuxer *GetDemuxerReffed (); /* thread-safe */
 	const char *GetFile () { return file; }
-	const char *GetUri () { return uri; }
+	const Uri *GetUri () { return uri; }
 	void SetFileOrUrl (const char *value);
 	
 	// A list of MediaMarker::Node.
@@ -1209,6 +1209,7 @@ public:
 class ProgressiveSource : public IMediaSource {
 private:
 	bool complete; /* If the file has been fully downloaded */ 
+	bool error_occurred;
 	gint64 write_pos;
 	gint64 size;
 	Mutex mutex;
@@ -1268,7 +1269,7 @@ protected:
 	virtual gint64 GetSizeInternal () { return size; }
 
 public:
-	ProgressiveSource (Media *media, const char *uri);
+	ProgressiveSource (Media *media, const Uri *uri);
 	virtual void Dispose ();
 
 	virtual bool Eof ();

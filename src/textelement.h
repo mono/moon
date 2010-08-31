@@ -378,7 +378,7 @@ class Hyperlink : public Span {
 	const static int MouseOverForegroundProperty;
 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsUnderline,ManagedPropertyType=TextDecorationCollection */
 	const static int MouseOverTextDecorationsProperty;
-	/* @PropertyType=Uri,DefaultValue=Uri() */
+	/* @PropertyType=Uri,DefaultValue=new Uri () */
 	const static int NavigateUriProperty;
 	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int TargetNameProperty;

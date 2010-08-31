@@ -41,7 +41,7 @@ HttpRequest::HttpRequest (Type::Kind type, HttpHandler *handler, HttpRequest::Op
 	is_aborted = false;
 	is_completed = false;
 	verb = NULL;
-	uri = NULL;
+	request_uri = NULL;
 	original_uri = NULL;
 	final_uri = NULL;
 	tmpfile = NULL;
@@ -83,10 +83,10 @@ HttpRequest::Dispose ()
 	delete original_uri;
 	original_uri = NULL;
 
-	g_free (uri);
-	uri = NULL;
+	delete request_uri;
+	request_uri = NULL;
 
-	g_free (final_uri);
+	delete final_uri;
 	final_uri = NULL;
 
 	g_free (tmpfile);
@@ -104,85 +104,233 @@ HttpRequest::Dispose ()
 }
 
 void
-HttpRequest::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
+HttpRequest::Open (const char *verb, const Uri *uri, DownloaderAccessPolicy policy)
 {
-	VERIFY_MAIN_THREAD;
-
-	Uri *url = new Uri ();
-	if (url->Parse (uri))
-		Open (verb, url, policy);
-		
-	delete url;
+	Open (verb, uri, NULL, policy);
 }
 
 void
-HttpRequest::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
+HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, DownloaderAccessPolicy policy)
 {
 	Surface *surface;
 	Application *application;
-	const char *source_location;
+	const Uri *source_location;
 	Uri *src_uri = NULL;
-	Uri *final_uri = NULL;
+	Uri *resource_base = NULL;
+	bool is_xap = false;
 
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Open (%s, %p = %s, %i)\n", verb, uri, uri == NULL ? NULL : uri->ToString (), policy);
+	LOG_DOWNLOADER ("HttpRequest::Open (%s, Uri: '%s', ResourceBase: %s, Policy: %i)\n",
+		verb, uri ? uri->GetOriginalString () : NULL,
+		resource_base ? (resource_base->GetOriginalString () ? resource_base->GetOriginalString () : "") : NULL,
+		policy);
 
 	g_free (this->verb);
 	delete original_uri;
-	g_free (this->uri);
+	delete request_uri;
 
 	this->verb = g_strdup (verb);
-	this->original_uri = new Uri (*uri);
-	this->uri = uri->ToString ();
+	this->original_uri = Uri::Clone (uri);
+	this->request_uri = Uri::Clone (uri);
 
 	access_policy = policy;
 
 	surface = GetDeployment ()->GetSurface ();
 	application = GetDeployment ()->GetCurrentApplication ();
 
+	/* Get source location */
 	if (application->IsRunningOutOfBrowser ()) {
 		source_location = surface->GetSourceLocation ();
+		is_xap = true;
 	} else {
 		source_location = GetDeployment ()->GetXapLocation ();
-		if (source_location == NULL)
+		if (source_location == NULL) {
 			source_location = surface->GetSourceLocation ();
+		} else {
+			is_xap = true;
+		}
 	}
 
-	// FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
-	if (!Downloader::ValidateDownloadPolicy (source_location, uri, policy)) {
-		LOG_DOWNLOADER ("HttpRequest::Open (): aborting due to security policy violation\n");
-		Failed ("Security Policy Violation");
+	/* Validate source location */
+	if (source_location == NULL) {
+		Failed ("No source location for uri");
 		Abort ();
-		return;
+		goto cleanup;
+	}
+
+	if (!source_location->IsAbsolute ()) {
+		char *msg = g_strdup_printf ("Source location '%s' for uri '%s' is not an absolute uri.", source_location->GetOriginalString (), uri->GetOriginalString ());
+		Failed (msg);
+		g_free (msg);
+		Abort ();
+		goto cleanup;
+	}
+
+	// Check if the uri is valid
+	if (uri->IsInvalidPath ()) {
+		LOG_DOWNLOADER ("HttpRequest::Open (): aborting due to invalid uri (uri: %s)\n", uri->GetOriginalString ());
+		Failed ("invalid path found in uri");
+		Abort ();
+		goto cleanup;
+	}
+
+	/* Strip off /<assembly name>;component/ from the resource base */
+	/* www.getpivot.com runs into this. */
+	if (res_base != NULL) {
+		const char *rb = res_base->GetOriginalString ();
+		if (rb != NULL && rb [0] == '/') {
+			const char *res_path = strstr (rb, ";component/");
+			if (res_path != NULL)
+				resource_base = Uri::Create (res_path + 11 /* ";component/".Length */);
+		}
+	
+		if (resource_base == NULL)
+			resource_base = Uri::Clone (res_base);
 	}
 
 	/* Make the uri we request to the derived http request an absolute uri */
-	if (!uri->IsAbsolute () && source_location) {
-		src_uri = new Uri ();
-		if (!src_uri->Parse (source_location, true)) {
-			Failed ("Could not parse source location");
-			delete src_uri;
-			return;
+	if (!uri->IsAbsolute ()) {
+		/* DRTs entering here: #0, #171, #173 */
+
+		/* If resource_base != null, absolute path is: Uri.Combine (source_location, Uri.Combine (resource_base, uri)) */
+		if (resource_base != NULL && is_xap) {
+			Uri *src_base_uri;
+			Uri *base_uri;
+			Uri *absolute_dummy;
+			Uri *absolute_base;
+
+			/* Calculate Uri.Combine (resource_base, uri) => base_uri
+			 * Note that the combining ordering is important here, 'uri' can't escape itself
+			 * out of 'resource_base' using '..'. We also have to make 'resource_base' an
+			 * absolute uri so that the managed uri class can do the combining (we use a dummy
+			 * absolute uri to do this) */
+
+			/* Create an absolute base uri of resource_base */
+
+			absolute_dummy = Uri::Create ("http://www.mono-project.com/");
+			if (resource_base->GetOriginalString () != NULL) {
+				absolute_base = Uri::Create (absolute_dummy, resource_base);
+			} else {
+				absolute_base = Uri::Clone (absolute_dummy);
+			}
+			delete absolute_dummy;
+
+			if (absolute_base == NULL) {
+				Failed ("Could not create an absolute base uri of the resource base");
+				goto cleanup;
+			}
+			LOG_DOWNLOADER ("HttpRequest::Open (): absolute base uri with dummy root: '%s'\n", absolute_base->ToString ());
+
+			/* Combine the absolute base uri with the uri of the resource */
+			base_uri = Uri::Create (absolute_base, uri);
+			delete absolute_base;
+
+			if (base_uri == NULL) {
+				Failed ("Could not combine absolute resource base and uri");
+				goto cleanup;
+			}
+			LOG_DOWNLOADER ("HttpRequest::Open (): absolute base with dummy root and uri: '%s'\n", base_uri->ToString ());
+
+			/* Calculate Path.Combine (source_dir, base_uri) */
+			const char *path = base_uri->GetPath ();
+			if (path != NULL && path [0] == '/') {
+				/* Skip over any '/' so that the base uri's path is not resolved against the root of the src uri */
+				path++;
+			}
+			src_base_uri = Uri::Create (source_location, path);
+			delete base_uri;
+
+			if (src_base_uri == NULL) {
+				Failed ("Could not combine source location and relative base+uri");
+				goto cleanup;
+			}
+			LOG_DOWNLOADER ("HttpRequest::Open () final uri: '%s' (path: '%s')\n", src_base_uri->ToString (), path);
+
+			src_uri = src_base_uri;
+		} else if (is_xap) {
+			Uri *src_base_uri;
+			Uri *absolute_dummy;
+			Uri *absolute_base;
+
+			/* The GB_* drts run into this condition (GB18030_double1 for instance) */
+			/* The uri is resolved against the directory where the xap/xaml file is,
+			 * and it's not possible to escape out of it, so we need a dummy root */
+
+			/* Create an absolute base uri of uri */
+			absolute_dummy = Uri::Create ("http://www.mono-project.com/");
+			if (uri->GetOriginalString () != NULL) {
+				absolute_base = Uri::Create (absolute_dummy, uri);
+			} else {
+				absolute_base = Uri::Clone (absolute_dummy);
+			}
+			delete absolute_dummy;
+
+			if (absolute_base == NULL) {
+				Failed ("Could not create an absolute base uri of the uri");
+				goto cleanup;
+			}
+			LOG_DOWNLOADER ("HttpRequest::Open (): absolute uri with dummy root: '%s'\n", absolute_base->ToString ());
+
+			/* Calculate Uri.Combine (source_dir, absolute_base) */
+			const char *path = absolute_base->GetPath ();
+			if (path != NULL && path [0] == '/') {
+				/* Skip over any '/' so that the base uri's path is not resolved against the root of the src uri */
+				path++;
+			}
+			src_base_uri = Uri::Create (source_location, path);
+			delete absolute_base;
+
+			if (src_base_uri == NULL) {
+				Failed ("Could not combine source location and relative uri");
+				goto cleanup;
+			}
+			LOG_DOWNLOADER ("HttpRequest::Open () final uri: '%s'\n", src_base_uri->ToString ());
+
+			src_uri = src_base_uri;
+		} else {
+			/* #45 enters here */
+			src_uri = Uri::Create (source_location, uri);
+			if (src_uri == NULL) {
+				Failed ("Could not combine source location and uri");
+				goto cleanup;
+			}
 		}
 
-		src_uri->Combine (uri);
-		g_free (this->uri);
-		this->uri = src_uri->ToString ();
-		final_uri = src_uri;
-		LOG_DOWNLOADER ("HttpRequest::Open (%s, %p = %s, %i) Url was absolutified to '%s' using source location '%s'\n", verb, uri, uri == NULL ? NULL : uri->ToString (), policy, this->uri, source_location);
-	} else {
-		final_uri = uri;
+		delete request_uri;
+		request_uri = Uri::Clone (src_uri);
+		LOG_DOWNLOADER ("HttpRequest::Open (%s, %s, %i): is_xap: %i\n"
+				"  absolutified to: '%s'\n"
+				"  source location: '%s'\n"
+				"  resource base:   '%s'\n",
+			verb,
+			uri ? uri->GetOriginalString () : NULL,
+			policy,
+			is_xap,
+			request_uri ? request_uri->GetOriginalString () : NULL,
+			source_location->GetOriginalString (),
+			resource_base ?  (resource_base->GetOriginalString () ? resource_base->GetOriginalString () : "") : NULL);
 	}
 
-	if (!strcmp (final_uri->GetScheme (), "file")) {
-		local_file = g_strdup (final_uri->GetPath ());
-		NotifyFinalUri (this->uri);
+	// FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
+	if (!Downloader::ValidateDownloadPolicy (source_location, request_uri, policy)) {
+		LOG_DOWNLOADER ("HttpRequest::Open (): aborting due to security policy violation (request_uri: %s)\n", request_uri->GetOriginalString ());
+		Failed ("Security Policy Violation");
+		Abort ();
+		goto cleanup;
 	}
 
-	delete src_uri;
+	if (request_uri->IsScheme ("file")) {
+		local_file = g_strdup (request_uri->GetPath ());
+		NotifyFinalUri (this->request_uri->ToString ());
+	}
 
 	if (local_file == NULL)
 		OpenImpl ();
+
+cleanup:
+	delete src_uri;
+	delete resource_base;
+
 }
 
 void
@@ -278,16 +426,16 @@ HttpRequest::SendAsync ()
 			templ = g_build_filename (dir, "XXXXXX", NULL);
 			tmpfile_fd = g_mkstemp (templ);
 			if (tmpfile_fd == -1) {
-				char *msg = g_strdup_printf ("Could not create temporary download file %s for url %s\n", templ, GetUri ());
+				char *msg = g_strdup_printf ("Could not create temporary download file %s for url %s\n", templ, GetUri ()->ToString ());
 				Failed (msg);
 				g_free (msg);
 				g_free (templ);
 				return;
 			}
 			tmpfile = templ;
-			LOG_DOWNLOADER ("HttpRequest::Send () uri %s is being saved to %s\n", GetUri (), tmpfile);
+			LOG_DOWNLOADER ("HttpRequest::Send () uri %s is being saved to %s\n", GetUri ()->ToString (), tmpfile);
 		} else {
-			LOG_DOWNLOADER ("HttpRequest::Send () uri %s is not being saved to disk\n", GetUri ());
+			LOG_DOWNLOADER ("HttpRequest::Send () uri %s is not being saved to disk\n", GetUri ()->ToString ());
 		}
 	}
 
@@ -394,7 +542,7 @@ void
 HttpRequest::Failed (const char *msg)
 {
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Failed (%s) HasHandlers: %i\n", msg, HasHandlers (StoppedEvent));
+	LOG_DOWNLOADER ("HttpRequest::Failed (%s) HasHandlers: %i uri: %s\n", msg, HasHandlers (StoppedEvent), GetUri () != NULL ? GetUri ()->ToString () : NULL);
 
 	if (is_completed)
 		return;
@@ -408,9 +556,11 @@ HttpRequest::Failed (const char *msg)
 // Reference:	URL Access Restrictions in Silverlight 2
 //		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 bool
-HttpRequest::CheckRedirectionPolicy (const char *url)
+HttpRequest::CheckRedirectionPolicy (const Uri *dest)
 {
-	if (!url)
+	bool retval = false;
+
+	if (!dest)
 		return false;
 
 	// the original URI
@@ -423,58 +573,57 @@ HttpRequest::CheckRedirectionPolicy (const char *url)
 	if (!source->IsAbsolute () || source->IsScheme ("file"))
 		return true;
 
-	char *strsrc = source->ToString ();
 	// if the original URI and the end URI are identical then there was no redirection involved
-	bool retval = (g_ascii_strcasecmp (strsrc, url) == 0);
-	g_free (strsrc);
-	if (retval)
+	if (Uri::Equals (source, dest))
 		return true;
 
-	// the destination URI
-	Uri *dest = new Uri ();
-	if (dest->Parse (url)) {
-		// there was a redirection, but is it allowed ?
-		switch (access_policy) {
-		case DownloaderPolicy:
-			// Redirection allowed for 'same domain' and 'same scheme'
-			// note: if 'dest' is relative then it's the same scheme and site
-			if (!dest->IsAbsolute () || (Uri::SameDomain (source, dest) && Uri::SameScheme (source, dest)))
-				retval = true;
-			break;
-		case MediaPolicy:
-			// Redirection allowed for: 'same scheme' and 'same or different sites'
-			// note: if 'dest' is relative then it's the same scheme and site
-			if (!dest->IsAbsolute () || Uri::SameScheme (source, dest))
-				retval = true;
-			break;
-		case XamlPolicy:
-		case FontPolicy:
-		case MsiPolicy:
-		case StreamingPolicy:
-			// Redirection NOT allowed
-			break;
-		default:
-			// no policy (e.g. downloading codec EULA and binary) is allowed
+	// there was a redirection, but is it allowed ?
+	switch (access_policy) {
+	case DownloaderPolicy:
+		// Redirection allowed for 'same domain' and 'same scheme'
+		// note: if 'dest' is relative then it's the same scheme and site
+		if (!dest->IsAbsolute () || (Uri::SameDomain (source, dest) && Uri::SameScheme (source, dest)))
 			retval = true;
-			break;
-		}
+		break;
+	case MediaPolicy:
+		// Redirection allowed for: 'same scheme' and 'same or different sites'
+		// note: if 'dest' is relative then it's the same scheme and site
+		if (!dest->IsAbsolute () || Uri::SameScheme (source, dest))
+			retval = true;
+		break;
+	case XamlPolicy:
+	case FontPolicy:
+	case MsiPolicy:
+	case StreamingPolicy:
+		// Redirection NOT allowed
+		break;
+	default:
+		// no policy (e.g. downloading codec EULA and binary) is allowed
+		retval = true;
+		break;
 	}
 
-	delete dest;
-	
 	return retval;
 }
 
 void
 HttpRequest::NotifyFinalUri (const char *value)
 {
-	g_free (final_uri);
-	final_uri = g_strdup (value);
+	Uri *uri = Uri::Create (value);
+	NotifyFinalUri (uri);
+	delete uri;
+}
+
+void
+HttpRequest::NotifyFinalUri (const Uri *value)
+{
+	delete final_uri;
+	final_uri = Uri::Clone (value);
 
 	// check if (a) it's a redirection and (b) if it is allowed for the current downloader policy
 
 	if (!CheckRedirectionPolicy (final_uri)) {
-		LOG_DOWNLOADER ("HttpRequest::NotifyFinalUri ('%s'): Security Policy Validation failed\n", value);
+		LOG_DOWNLOADER ("HttpRequest::NotifyFinalUri ('%s'): Security Policy Validation failed\n", value ? value->ToString () : NULL);
 		Failed ("Security Policy Violation");
 		Abort ();
 	}
@@ -484,7 +633,7 @@ void
 HttpRequest::Succeeded ()
 {
 	VERIFY_MAIN_THREAD;
-	LOG_DOWNLOADER ("HttpRequest::Succeeded (%s) HasHandlers: %i\n", uri, HasHandlers (StoppedEvent));
+	LOG_DOWNLOADER ("HttpRequest::Succeeded (%s) HasHandlers: %i\n", request_uri ? request_uri->ToString () : NULL, HasHandlers (StoppedEvent));
 
 	is_completed = true;
 

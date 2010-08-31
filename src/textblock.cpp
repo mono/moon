@@ -133,16 +133,12 @@ TextBlock::AddFontSource (Downloader *downloader)
 void
 TextBlock::SetFontSource (Downloader *downloader)
 {
-	char *resource_id;
-	
 	CleanupDownloaders (true);
 	source = downloader;
 	
 	if (downloader) {
-		resource_id = downloader->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-		font_resource = new FontResource (resource_id);
+		font_resource = new FontResource (downloader->GetUri ()->ToString ());
 		AddFontSource (downloader);
-		g_free (resource_id);
 		return;
 	}
 	
@@ -161,9 +157,12 @@ TextBlock::AddFontResource (const char *resource)
 	char *path;
 	Uri *uri;
 	
-	uri = new Uri ();
+	uri = Uri::Create (resource);
 	
-	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
+	if (!uri)
+		return;
+
+	if (!application || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
 		if (IsAttached () && (downloader = GetDeployment ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
@@ -765,7 +764,6 @@ void
 TextBlock::DownloaderComplete (Downloader *downloader)
 {
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
-	char *resource;
 	const char *path;
 	const Uri *uri;
 	
@@ -781,9 +779,7 @@ TextBlock::DownloaderComplete (Downloader *downloader)
 	if (!(path = downloader->GetUnzippedPath ()))
 		return;
 	
-	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-	manager->AddResource (resource, path);
-	g_free (resource);
+	manager->AddResource (uri->ToString (), path);
 	
 	if (UpdateFontDescriptions (true)) {
 		dirty = true;

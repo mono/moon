@@ -687,8 +687,6 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				if (uri->IsInvalidPath ()) {
 					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
-				} else if (!bitmap->ValidateDownloadPolicy ()) {
-					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation"));
 				}
 				
 				if (args != NULL) {

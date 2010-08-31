@@ -344,7 +344,7 @@ downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data)
 		
 		gtk_message_dialog_format_secondary_text ((GtkMessageDialog *) dialog,
 							  "Failed to download application from %s",
-							  priv->deployment->GetXapLocation ());
+							  priv->deployment->GetXapLocation ()->GetOriginalString ());
 		
 		g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response), installer);
 
@@ -391,8 +391,8 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 	priv->deployment = deployment;
 	deployment->ref ();
 	
-	if (g_ascii_strncasecmp (deployment->GetXapLocation (), "file:", 5) != 0) {
-		location = g_path_get_dirname (deployment->GetXapLocation ());
+	if (!deployment->GetXapLocation ()->IsScheme ("file")) {
+		location = g_path_get_dirname (deployment->GetXapLocation ()->GetPath ());
 	} else {
 		location = g_strdup ("file://");
 	}
@@ -413,7 +413,7 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 	priv->request = deployment->CreateHttpRequest (HttpRequest::DisableAsyncSend /* FIXME: why can't it be async? */);
 	priv->request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, dialog);
 	priv->request->AddHandler (HttpRequest::ProgressChangedEvent, downloader_progress_changed, dialog);
-	priv->request->Open ("GET", deployment->GetXapLocation (), XamlPolicy);
+	priv->request->Open ("GET", deployment->GetXapLocation (), NULL, XamlPolicy);
 	priv->request->Send ();
 	
 	/* load the icons */
@@ -611,7 +611,7 @@ install_icons (Application *application, OutOfBrowserSettings *settings, const c
 static bool
 install_update_uri (Deployment *deployment, OutOfBrowserSettings *settings, const char *app_dir)
 {
-	const char *uri = deployment->GetXapLocation ();
+	const Uri *uri = deployment->GetXapLocation ();
 	bool error = false;
 	char *path;
 	FILE *fp;
@@ -624,7 +624,7 @@ install_update_uri (Deployment *deployment, OutOfBrowserSettings *settings, cons
 	
 	g_free (path);
 	
-	if (fprintf (fp, "%s\n", uri) < 0)
+	if (fprintf (fp, "%s\n", uri->GetOriginalString ()) < 0)
 		error = true;
 	
 	fclose (fp);

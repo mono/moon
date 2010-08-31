@@ -71,6 +71,19 @@ Value::CreateUnref (EventObject* dob)
 	return result;
 }
 
+Value *
+Value::CreateUnrefPtr (Uri *uri)
+{
+	Value *result = new Value ();
+	/* We could clone 'uri' and delete it, but instead we just stuff it into our fields to save a malloc/free.
+	 * This method is somewhat badly named for 'Uri', but it's the name the generator generates */
+	result->k = Type::URI;
+	result->u.uri = uri;
+	result->SetIsNull (false);
+	LOG_VALUE ("unref [delete] Value [%p] %s\n", result, result->GetName());
+	return result;
+}
+
 Value*
 Value::Clone (Value *v, Types *types)
 {
@@ -327,12 +340,11 @@ Value::Value (Point pt)
 	SetIsNull (false);
 }
 
-Value::Value (const Uri uri)
+Value::Value (const Uri *uri)
 {
 	Init ();
 	k = Type::URI;
-	u.uri = g_new (Uri, 1);
-	Uri::Copy (&uri, u.uri);
+	u.uri = Uri::Clone (uri);
 	SetIsNull (false);
 }
 
@@ -545,8 +557,7 @@ Value::Copy (const Value& v)
 		break;
 	case Type::URI:
 		if (v.u.uri) {
-			u.uri = g_new (Uri, 1);
-			Uri::Copy (v.u.uri, u.uri);
+			u.uri = Uri::Clone (v.u.uri);
 		} else {
 			u.uri = NULL;
 		}
@@ -688,10 +699,7 @@ Value::FreeValue ()
 		g_free (u.size);
 		break;
 	case Type::URI:
-		if (u.uri) {
-			u.uri->Free ();
-			g_free (u.uri);
-		}
+		delete u.uri;
 		break;
 	case Type::REPEATBEHAVIOR:
 		g_free (u.repeat);

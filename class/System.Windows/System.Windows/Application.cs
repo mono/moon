@@ -369,7 +369,7 @@ namespace System.Windows {
 				if (info != null) {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
-						string resource_base = NativeMethods.dependency_object_get_resource_base (NativeHandle);
+						Uri resource_base = UriHelper.FromNativeUri (NativeMethods.dependency_object_get_resource_base (NativeHandle));
 						XamlLoader loader = XamlLoaderFactory.CreateLoader (type.Assembly, resource_base, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
@@ -409,7 +409,7 @@ namespace System.Windows {
 
 			Assembly loading_asm = component.GetType ().Assembly;
 	
-			XamlLoader loader = XamlLoaderFactory.CreateLoader (loading_asm, resourceLocator.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
+			XamlLoader loader = XamlLoaderFactory.CreateLoader (loading_asm, resourceLocator, Deployment.Current.Surface.Native, PluginHost.Handle);
 			loader.Hydrate (component, sr.Stream);
 		}
 
@@ -503,10 +503,10 @@ namespace System.Windows {
 			return GetXapResource (resource);
 		}
 
-		internal static ManagedStreamCallbacks get_resource_cb_safe (string resourceBase, string name)
+		internal static ManagedStreamCallbacks get_resource_cb_safe (IntPtr resourceBase, IntPtr name)
 		{
 			try {
-				return get_resource_cb (resourceBase, name);
+				return get_resource_cb (UriHelper.FromNativeUri (resourceBase), UriHelper.FromNativeUri (name));
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_resource_cb: {0}", ex);
@@ -516,22 +516,20 @@ namespace System.Windows {
 			return new ManagedStreamCallbacks ();
 		}
 
-		internal static ManagedStreamCallbacks get_resource_cb (string resourceBase, string name)
+		internal static ManagedStreamCallbacks get_resource_cb (Uri resourceBase, Uri name)
 		{
 			StreamResourceInfo info = null;
 
-			if (!string.IsNullOrEmpty (resourceBase)) {
-				string combined = string.Format ("{0}{1}",
-								 resourceBase.Substring (0, resourceBase.LastIndexOf ('/') + 1),
-								 name);
-
+			if (resourceBase != null && resourceBase.IsAbsoluteUri) {
 				try {
-					info = GetResourceStream (new Uri (combined, UriKind.Relative));
+					Uri absolute_uri = new Uri (resourceBase, name);
+					if (!absolute_uri.IsAbsoluteUri || absolute_uri.Scheme == Uri.UriSchemeFile)
+						info = GetResourceStream (absolute_uri);
 				} catch {}
 			}
 
 			if (info == null)
-				info = GetResourceStream (new Uri (name, UriKind.Relative));
+				info = GetResourceStream (name);
 
 
 			if (info == null)

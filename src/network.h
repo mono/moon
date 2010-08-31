@@ -116,8 +116,8 @@ public:
 
 	/* Public API */
 	/* @GeneratePInvoke,GenerateCBinding */
-	void Open (const char *verb, const char *uri, DownloaderAccessPolicy policy);
-	void Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy);
+	void Open (const char *verb, const Uri *uri, DownloaderAccessPolicy policy);
+	void Open (const char *verb, const Uri *uri, const Uri *resource_base, DownloaderAccessPolicy policy);
 	/* @GeneratePInvoke,GenerateCBinding */
 	void Send ();
 	/* @GeneratePInvoke,GenerateCBinding */
@@ -137,10 +137,10 @@ public:
 
 	HttpHandler *GetHandler () { return handler; }
 
-	const char *GetUri () { return uri; }
+	const Uri  *GetUri () { return request_uri; }
 	const char *GetVerb () { return verb; }
 	const Uri  *GetOriginalUri () { return original_uri; }
-	const char *GetFinalUri () { return final_uri; }
+	const Uri  *GetFinalUri () { return final_uri; }
 	const char *GetFilename () { return tmpfile; }
 	gint64 GetNotifiedSize () { return notified_size; }
 
@@ -167,6 +167,7 @@ protected:
 	/* Optional method to notify the size of the file */
 	void NotifySize (gint64 size);
 	/* NotifyFinalUri must be called to validate the final uri (redirection policies) */
+	void NotifyFinalUri (const Uri *value);
 	void NotifyFinalUri (const char *value);
 	/* offset might be -1 to write at the current position */
 	void Write (gint64 offset, void *buffer, gint32 length);
@@ -186,9 +187,9 @@ private:
 	/* uri of what we were requested to fetch */
 	Uri *original_uri;
 	/* uri we actually requested */
-	char *uri;
+	Uri *request_uri;
 	/* final_uri is what was retrieved (might be different from above due to redirections) */
-	char *final_uri;
+	Uri *final_uri;
 	char *tmpfile;
 	int tmpfile_fd;
 	gint64 notified_size;
@@ -196,7 +197,7 @@ private:
 	DownloaderAccessPolicy access_policy;
 	char *local_file; /* the local file we're to serve */
 
-	bool CheckRedirectionPolicy (const char *url);
+	bool CheckRedirectionPolicy (const Uri *url);
 	static void SendAsyncCallback (EventObject *obj);
 	void SendAsync ();
 };

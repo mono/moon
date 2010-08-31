@@ -27,7 +27,7 @@ typedef void (*ConvertSetterValuesCallback)(Style *style);
 /* @CBindingRequisite */
 typedef void *(*ConvertKeyframeValueCallback)(int kind, DependencyProperty *property, Value *original, Value *converted);
 /* @CBindingRequisite */
-typedef ManagedStreamCallbacks (*GetResourceCallback)(const char *resourceBase, const char *name);
+typedef ManagedStreamCallbacks (*GetResourceCallback)(const Uri *resourceBase, const Uri *name);
 
 enum NotifyType {NotifyStarted, NotifyProgressChanged, NotifyCompleted, NotifyFailed};
 typedef void (*NotifyFunc) (NotifyType type, gint64 args, gpointer user_data);
@@ -49,8 +49,8 @@ public:
 	
 	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
 	
-	bool GetResource (const char *resourceBase, const Uri *uri, NotifyFunc notify_cb, EventHandler write_cb, DownloaderAccessPolicy policy, HttpRequest::Options options, Cancellable *cancellable, gpointer user_data);
-	char *GetResourceAsPath (const char *resourceBase, const Uri *uri);
+	bool GetResource (const Uri *resourceBase, const Uri *uri, NotifyFunc notify_cb, EventHandler write_cb, DownloaderAccessPolicy policy, HttpRequest::Options options, Cancellable *cancellable, gpointer user_data);
+	char *GetResourceAsPath (const Uri *resourceBase, const Uri *uri);
 	const char *GetResourceRoot ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -455,9 +455,9 @@ public:
 
 	virtual bool PermitsMultipleParents () { return true; }
 
-	void SetResourceBase (const char *resourceBase);
+	void SetResourceBase (const Uri *resourceBase);
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetResourceBase ();
+	const Uri *GetResourceBase ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
@@ -601,7 +601,7 @@ private:
 	bool is_being_parsed;
 	bool registering_names;
 	
-	const char *resource_base;
+	Uri *resource_base;
 };
 
 };

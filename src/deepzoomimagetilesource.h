@@ -69,7 +69,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void Download ();
 	void DownloaderComplete ();
 	void DownloaderFailed ();
-	bool GetTileLayer (int level, int x, int y, Uri *uri);
+	bool GetTileLayer (int level, int x, int y, Uri **uri);
 	bool IsDownloaded () { return downloaded; }
 	bool IsParsed () { return parsed; }
 	char *GetServerFormat () { return server_format; }

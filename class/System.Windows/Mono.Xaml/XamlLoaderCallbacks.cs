@@ -96,14 +96,14 @@ namespace Mono.Xaml
 		// since we have to support multiple surfaces for the non-browser case.
 		protected IntPtr surface;
 		protected IntPtr plugin;
-		protected string resourceBase;
+		protected Uri resourceBase;
 
-		public static XamlLoader CreateManagedXamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
+		public static XamlLoader CreateManagedXamlLoader (Uri resourceBase, IntPtr surface, IntPtr plugin)
 		{
 			return CreateManagedXamlLoader (typeof (DependencyObject).Assembly, resourceBase, surface, plugin);
 		}
 
-		public static XamlLoader CreateManagedXamlLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin)
+		public static XamlLoader CreateManagedXamlLoader (Assembly assembly, Uri resourceBase, IntPtr surface, IntPtr plugin)
 		{
 			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
@@ -112,7 +112,7 @@ namespace Mono.Xaml
 		{
 		}
 		
-		public XamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
+		public XamlLoader (Uri resourceBase, IntPtr surface, IntPtr plugin)
 		{
 			this.resourceBase = resourceBase;
 			this.surface = surface;

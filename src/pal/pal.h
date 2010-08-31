@@ -13,6 +13,7 @@
 #include "rect.h"
 #include "error.h"
 #include "list.h"
+#include "uri.h"
 
 // I hate X11
 #ifdef FocusIn
@@ -283,13 +284,13 @@ public:
 	MoonAppDatabase (const char *base_dir);
 	~MoonAppDatabase ();
 	
-	MoonAppRecord *CreateAppRecord (const char *origin);
+	MoonAppRecord *CreateAppRecord (const Uri *origin);
 	
 	bool AddAppRecord (MoonAppRecord *record);
 	bool SyncAppRecord (const MoonAppRecord *record);
 	bool RemoveAppRecord (const MoonAppRecord *record);
 	
-	MoonAppRecord *GetAppRecordByOrigin (const char *origin);
+	MoonAppRecord *GetAppRecordByOrigin (const Uri *origin);
 	MoonAppRecord *GetAppRecordByUid (const char *uid);
 };
 
@@ -310,7 +311,7 @@ class MoonInstallerService {
 	static void downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data);
 	
 protected:
-	MoonAppRecord *CreateAppRecord (const char *origin);
+	MoonAppRecord *CreateAppRecord (const Uri *origin);
 	
 public:
 	MoonInstallerService ();

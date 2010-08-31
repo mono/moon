@@ -256,22 +256,6 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-bool
-BitmapImage::ValidateDownloadPolicy ()
-{
-	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	const Uri *uri = GetUriSource ();
-	const char *location;
-	
-	if (!uri)
-		return true;
-	
-	if (!(location = GetDeployment ()->GetXapLocation ()))
-		location = surface ? surface->GetSourceLocation () : NULL;
-	
-	return Downloader::ValidateDownloadPolicy (location, uri, policy);
-}
-
 void
 BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_name)
 {

@@ -1293,26 +1293,25 @@ Surface::ShowFullScreenMessage ()
 	
 	// Set the url in the box
 	if (url_block != NULL)  {
-		char *url = NULL;
+		const char *url = NULL;
 		
 		if (source_location) {
-			if (g_str_has_prefix (source_location, "http://")) {
-				const char *path = strchr (source_location + 7, '/');
+			if (source_location->IsScheme ("http")) {
+				const char *path = source_location->GetPath ();
 				
-				if (path != NULL && path > source_location + 7) {
-					url = g_strndup (source_location, path - source_location);  
+				if (path != NULL && strlen (path) > 0) {
+					url = path;
 				} else {
-					url = g_strdup (source_location);
+					url = source_location->GetOriginalString ();
 				}
-			} else if (g_str_has_prefix (source_location, "file://")) {
-				url = g_strdup ("file://");
+			} else if (source_location->IsScheme ("file")) {
+				url = "file://";
 			} else {
-				url = g_strdup (source_location);
+				url = source_location->GetOriginalString ();
 			}
 		}
 		
 		url_block->SetValue (TextBlock::TextProperty, url ? url : (char *) "file://");
-		g_free (url);
 	}
 	
 	DependencyObject* storyboard_object = full_screen_message->FindName ("FadeOut");
@@ -1337,17 +1336,17 @@ Surface::HideFullScreenMessage ()
 	}
 }
 
-const char* 
+const Uri *
 Surface::GetSourceLocation ()
 {
 	return source_location;
 }
 
 void
-Surface::SetSourceLocation (const char* location)
+Surface::SetSourceLocation (const Uri* location)
 {
-	g_free (source_location);
-	source_location = g_strdup (location);
+	delete source_location;
+	source_location = Uri::Clone (location);
 }
 
 void

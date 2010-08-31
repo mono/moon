@@ -95,13 +95,13 @@ class Downloader : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Downloader ();
 	
-	static bool ValidateDownloadPolicy (const char *location, const Uri *uri, DownloaderAccessPolicy policy);
+	static bool ValidateDownloadPolicy (const Uri *location, const Uri *uri, DownloaderAccessPolicy policy);
 	
 	void Abort ();
 	char *GetResponseText (const char *Partname, gint64 *size);
 	char *GetDownloadedFilename (const char *partname);
 	void Open (const char *verb, const char *uri, DownloaderAccessPolicy policy);
-	void Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy);
+	void Open (const char *verb, const Uri *uri, DownloaderAccessPolicy policy);
 	void Send ();
 	
 	HttpRequest *GetHttpRequest () { return request; }

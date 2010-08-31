@@ -2068,7 +2068,6 @@ void
 TextBoxBase::DownloaderComplete (Downloader *downloader)
 {
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
-	char *resource;
 	const char *path;
 	const Uri *uri;
 	
@@ -2080,9 +2079,7 @@ TextBoxBase::DownloaderComplete (Downloader *downloader)
 	if (!(path = downloader->GetUnzippedPath ()))
 		return;
 	
-	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-	manager->AddResource (resource, path);
-	g_free (resource);
+	manager->AddResource (uri->ToString (), path);
 
 	if (HasHandlers (ModelChangedEvent))
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedFont, NULL));
@@ -2119,9 +2116,12 @@ TextBoxBase::AddFontResource (const char *resource)
 	char *path;
 	Uri *uri;
 	
-	uri = new Uri ();
+	uri = Uri::Create (resource);
 	
-	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
+	if (!uri)
+		return;
+
+	if (!application || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
 		if (IsAttached () && (downloader = GetDeployment ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);

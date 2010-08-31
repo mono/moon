@@ -73,10 +73,7 @@ bool
 Consent::PromptUserFor (MoonConsentType consent)
 {
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	const char *source = surface->GetSourceLocation ();
-
-	Uri *uri = new Uri ();
-	uri->Parse (source);
+	const Uri *uri = surface->GetSourceLocation ();
 
 	char *website = ((uri->GetPort () > 0)
 			 ? g_strdup_printf ("%s://%s:%d",

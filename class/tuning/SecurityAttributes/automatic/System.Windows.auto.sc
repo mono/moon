@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 538 methods needs to be decorated.
+# 539 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -192,9 +192,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::uielement_focus(System.IntPtr,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::uri_parse(System.IntPtr,System.String,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str(Mono.Kind,System.String,System.String,System.IntPtr&)
@@ -485,7 +482,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_name_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_resource_base_(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_resource_base(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_template_owner(System.IntPtr)
@@ -770,7 +767,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_normal_window(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::surface_get_source_location_(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::surface_get_source_location(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_time_manager(System.IntPtr)
@@ -845,6 +842,12 @@
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_visual_parent(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::uri_get_gchandle(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::uri_new(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::video_format_changed_event_args_get_new_format(System.IntPtr)
 
 # p/invoke declaration
@@ -875,7 +878,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.String,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_lookup_named_item(System.IntPtr,System.IntPtr,System.String)
@@ -1088,6 +1091,9 @@
 +SC-M: System.Void Mono.NativeMethods::deployment_set_is_loaded_from_xap(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::deployment_set_uri_functions(System.IntPtr,Mono.UriFunctions&)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dispatcher_timer_start(System.IntPtr)
 
 # p/invoke declaration
@@ -1160,7 +1166,7 @@
 +SC-M: System.Void Mono.NativeMethods::http_request_abort(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::http_request_open(System.IntPtr,System.String,System.String,Mono.DownloaderAccessPolicy)
++SC-M: System.Void Mono.NativeMethods::http_request_open(System.IntPtr,System.String,System.IntPtr,Mono.DownloaderAccessPolicy)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::http_request_send(System.IntPtr)
@@ -1467,9 +1473,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_update_layout_with_error_(System.IntPtr,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::value_delete_value(Mono.Value&)

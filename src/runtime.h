@@ -283,8 +283,8 @@ public:
 	int GetUserInitiatedCounter () { return user_initiated_monotonic_counter; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char* GetSourceLocation ();
-	void SetSourceLocation (const char *location);
+	const Uri* GetSourceLocation ();
+	void SetSourceLocation (const Uri *location);
 	bool FullScreenKeyHandled (MoonKeyEvent *key);
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -404,7 +404,7 @@ private:
 	// Fullscreen support
 	bool full_screen;
 	Panel *full_screen_message;
-	char *source_location;
+	Uri *source_location;
 	
 	// Zoom support
 	double zoom_factor;

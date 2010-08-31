@@ -1301,11 +1301,9 @@ MediaElement::SetUriSource (const Uri *uri)
 	
 	flags |= Initializing;
 	
-	if (uri != NULL && uri->GetOriginalString () != NULL && uri->GetOriginalString () [0] != 0) {
+	if (!Uri::IsNullOrEmpty (uri)) {
 		CreatePlaylist ();
-		char *str = uri->ToString ();
-		playlist->GetCurrentEntry ()->InitializeWithUri (str);
-		g_free (str);
+		playlist->GetCurrentEntry ()->InitializeWithUri (uri);
 	} else {
 		UpdateBounds ();
 		InvalidateMeasure ();
@@ -1594,20 +1592,17 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 	if (args->GetId () == MediaElement::SourceProperty) {
 		DownloaderAccessPolicy policy = MediaPolicy;
 		const Uri *uri = GetSource ();
-		const char *location;
+		const Uri *location;
 		
 		if (uri != NULL) {
 			if (!(location = GetDeployment ()->GetXapLocation ()))
 				location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
 			
-			if (uri->GetScheme () && (uri->IsScheme ("mms") || uri->IsScheme ("rtsp") || uri->IsScheme ("rtsps")))
+			if (uri->IsAbsolute () && uri->GetScheme () && (uri->IsScheme ("mms") || uri->IsScheme ("rtsp") || uri->IsScheme ("rtsps")))
 				policy = StreamingPolicy;
 			
 			if (uri->IsInvalidPath ()) {
 				EmitAsync (MediaFailedEvent, new ErrorEventArgs (MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri")));
-				uri = NULL;
-			} else if (!Downloader::ValidateDownloadPolicy (location, uri, policy)) {
-				EmitAsync (MediaFailedEvent, new ErrorEventArgs (MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation")));
 				uri = NULL;
 			}
 		}

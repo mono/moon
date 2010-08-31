@@ -170,20 +170,26 @@ load_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
 {
 	Surface *surface;
 	char *path, *uri;
+	Uri *origin, *url;
 	
 	/* use the App's origin URI as the surface's SourceLocation so that it
 	 * can do proper web download checks */
 	surface = deployment->GetSurface ();
-	surface->SetSourceLocation (app->origin);
+
+	origin = Uri::Create (app->origin);
+	surface->SetSourceLocation (origin);
+	delete origin;
 	
 	/* get the install path/uri for the Xap */
 	path = g_build_filename (base_dir, app->uid, "Application.xap", NULL);
 	uri = g_strdup_printf ("file://%s", path);
+	url = Uri::Create (uri);
 	
 	deployment->SetXapFilename (path);
-	deployment->SetXapLocation (uri);
+	deployment->SetXapLocation (url);
 	g_free (path);
 	g_free (uri);
+	delete url;
 	
 	/* load the xap */
 	return deployment->InitializeManagedDeployment (NULL, NULL, NULL);
@@ -240,11 +246,12 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 		settings = NULL;
 	
 	if (settings != NULL) {
-		Uri uri;
+		Uri *uri;
 		const char *hostname = NULL;
 
-		if (uri.Parse (app->origin))
-			hostname = uri.GetHost();
+		uri = Uri::Create (app->origin);
+		if (uri != NULL)
+			hostname = uri->GetHost ();
 
 		if (!hostname || !*hostname)
 			hostname = "localhost";
@@ -252,6 +259,8 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 		char *window_title = g_strdup_printf ("%s - %s",
 						      settings->GetTitle(),
 						      hostname);
+
+		delete uri;
 
 		gtk_window_set_title ((GtkWindow *) window, window_title);
 

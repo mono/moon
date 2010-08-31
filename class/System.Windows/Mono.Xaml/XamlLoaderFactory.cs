@@ -50,7 +50,7 @@ namespace Mono.Xaml {
 				Console.WriteLine ("using managed xaml parser.");
 		}
 
-		public static XamlLoader CreateLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin)
+		public static XamlLoader CreateLoader (Assembly assembly, Uri resourceBase, IntPtr surface, IntPtr plugin)
 		{
 			if (use_managed)
 				return new SL4XamlLoader ();

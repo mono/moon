@@ -53,6 +53,11 @@ namespace System.Windows {
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 
+		private new void Initialize ()
+		{
+			UriHelper.Initialize (this);
+		}
+
 		~Deployment ()
 		{
 			if (!NativeMethods.deployment_is_safe_to_die (native)) {
@@ -333,11 +338,10 @@ namespace System.Windows {
 			TerminateAndSetCulture (culture, uiCulture);
 
 			if (plugin == IntPtr.Zero) {
-				string location = NativeMethods.surface_get_source_location (Surface.Native);
+				Uri source_uri = UriHelper.FromNativeUri (NativeMethods.surface_get_source_location (Surface.Native));
 
-				if (location != null) {
+				if (source_uri != null) {
 					// full uri including xap
-					Uri source_uri = new Uri (location, UriKind.RelativeOrAbsolute);
 
 					// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
 					// to initialize it's application and site directory storage. WebClient is another user of this

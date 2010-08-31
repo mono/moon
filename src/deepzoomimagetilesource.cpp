@@ -140,7 +140,7 @@ static void start_element (void *data, const char *el, const char **attr);
 static void end_element (void *data, const char *el);
 
 static bool
-get_tile_layer (int level, int x, int y, Uri *uri, void *userdata)
+get_tile_layer (int level, int x, int y, Uri **uri, void *userdata)
 {
 	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y, uri);
 }
@@ -219,7 +219,7 @@ DeepZoomImageTileSource::Abort ()
 }
 
 bool
-DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
+DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri **uri)
 {
 	// check if there tile is listed in DisplayRects
 	if (display_rects && display_rects->len > 0) {
@@ -270,8 +270,8 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 		//printf ("%p requesting image %s\n", this, image);
 	}
 
-	Uri::Copy (baseUri, uri);
-	uri->Combine (image);
+
+	*uri = Uri::Create (baseUri, image);
 	g_free (image);
 	
 	return true;
@@ -628,8 +628,8 @@ start_element (void *data, const char *el, const char **attr)
 				for (int i = 0; attr[i]; i += 2) {
 					if (!g_ascii_strcasecmp ("Source", attr[i])) {
 						if (!(parsed & DZParsedSource)) {
-							info->current_subimage->source = new Uri ();
-							failed = !info->current_subimage->source->Parse (attr[i+1]);
+							info->current_subimage->source = Uri::Create (attr [i+1]);
+							failed = info->current_subimage->source == NULL;
 							parsed |= DZParsedSource;
 						} else
 							failed = true;

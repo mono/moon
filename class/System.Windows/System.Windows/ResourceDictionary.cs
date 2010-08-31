@@ -124,7 +124,7 @@ namespace System.Windows {
 				using (StreamReader sr = new StreamReader (stream.Stream)) {
 					string xaml = sr.ReadToEnd ();
 						
-					ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
+					ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value, Deployment.Current.Surface.Native, PluginHost.Handle);
 					loader.Hydrate (this, xaml, true, false, true);
 				}
 			}

@@ -544,10 +544,11 @@ Deployment::EnsureManagedPeer (EventObject *forObj)
 }
 
 gpointer
-Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase)
+Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const Uri *resourceBase)
 {
 	MonoObject *loader;
 	MonoObject *exc = NULL;
+	void *resource_base = resourceBase ? resourceBase->GetGCHandle () : NULL;
 	
 	if (moon_load_xaml == NULL)
 		return NULL;
@@ -560,7 +561,7 @@ Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* nativ
 	params [0] = &native_loader;
 	params [1] = &plugin_instance;
 	params [2] = &surface;
-	params [3] = resourceBase ? mono_string_new (mono_domain_get (), resourceBase) : NULL;
+	params [3] = &resource_base;
 	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
 
 	if (exc) {
@@ -574,9 +575,15 @@ Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* nativ
 void
 Deployment::DestroyManagedXamlLoader (gpointer xaml_loader)
 {
-	guint32 loader = GPOINTER_TO_UINT (xaml_loader);
-	if (loader)
-		mono_gchandle_free (loader);
+	FreeGCHandle (xaml_loader);
+}
+
+void
+Deployment::FreeGCHandle (void *gchandle)
+{
+	if (gchandle == NULL)
+		return;
+	mono_gchandle_free (GPOINTER_TO_INT (gchandle));
 }
 
 void
@@ -881,8 +888,6 @@ add_keys_to_array (gpointer key, gpointer value, gpointer user_data)
 
 Deployment::~Deployment()
 {
-	g_free (xap_location);
-	
 	delete font_manager;
 	
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
@@ -990,7 +995,7 @@ void
 Deployment::AddSource (const Uri *uri, const char *filename)
 {
 	moon_source *src = new moon_source ();
-	src->uri = uri->ToString ();
+	src->uri = g_strdup (uri->ToString ());
 	src->filename = g_strdup (filename);
 	if (moon_sources == NULL)
 		moon_sources = new List ();
@@ -1799,13 +1804,16 @@ Deployment::SetInitialization (bool init)
 }
 
 void
-Deployment::SetXapLocation (const char *location)
+Deployment::SetXapLocation (const Uri *location)
 {
-	g_free (xap_location);
-	xap_location = g_strdup (location);
+	if (is_shutting_down)
+		return;
+
+	delete xap_location;
+	xap_location = Uri::Clone (location);
 }
 
-const char*
+const Uri*
 Deployment::GetXapLocation ()
 {
 	return xap_location;
@@ -1875,6 +1883,12 @@ Deployment::CanonicalizeFileName (const char *filename, bool is_xap_mode)
 	LOG_DEPLOYMENT ("Deployment::CanonicalizeFileName (%s, %i) => %s\n", filename, is_xap_mode, r);
 
 	return r;
+}
+
+void
+Deployment::SetUriFunctions (const UriFunctions *value)
+{
+	memcpy (&uri_functions, value, sizeof (UriFunctions));
 }
 
 /*

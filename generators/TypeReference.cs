@@ -421,6 +421,10 @@ class TypeReference {
 			case "DownloaderAccessPolicy":
 				managed_type = Value;
 				break;
+			case "UriFunctions*":
+				managed_type = "Mono.UriFunctions";
+				IsRef = true;
+				break;
 			default:
 				if (Value.Contains ("*"))
 					managed_type = "IntPtr";

@@ -33,17 +33,11 @@ LocalMessageReceiver::LocalMessageReceiver (const char *receiverName,
 		this->receiverDomain = NULL;
 
 		Deployment *deployment = Deployment::GetCurrent();
-		if (deployment) {
-			Uri uri;
-			if (uri.Parse (deployment->GetXapLocation(), true)) {
-				this->receiverDomain = g_strdup (uri.GetHost());
-			}
-			else {
-				g_warning ("LocalMessageReceiver.ctor uri parse failed on %s", deployment->GetXapLocation());
-			}
+		if (deployment && deployment->GetXapLocation ()) {
+			this->receiverDomain = g_strdup (deployment->GetXapLocation ()->GetHost ());
 		}
 		else {
-			g_warning ("LocalMessageReceiver.ctor no deployment");
+			g_warning ("LocalMessageReceiver.ctor no deployment or xap location");
 		}
 
 		if (this->receiverDomain == NULL)
@@ -167,11 +161,8 @@ LocalMessageSender::LocalMessageSender (const char *receiverName, const char *re
 	this->senderDomain = NULL;
 
 	Deployment *deployment = Deployment::GetCurrent();
-	if (deployment) {
-		Uri uri;
-		if (uri.Parse (deployment->GetXapLocation())) {
-			this->senderDomain = g_strdup (uri.GetHost());
-		}
+	if (deployment && deployment->GetXapLocation ()) {
+		this->senderDomain = g_strdup (deployment->GetXapLocation ()->GetHost ());
 	}
 
 	if (this->senderDomain == NULL)

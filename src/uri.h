@@ -15,103 +15,124 @@
 
 #include <glib.h>
 
+#include "value.h"
+
 namespace Moonlight {
 
-enum UriToStringFlags {
-	UriHidePasswd   = 1 << 0,
-	UriHideFragment = 1 << 1,
-	UriHideQuery    = 1 << 2,
+enum UriKind {
+	UriKindRelativeOrAbsolute,
+	UriKindAbsolute,
+	UriKindRelative,
+};
+
+typedef void *(* System_Uri_Ctor_1) (const char *uri_string);
+typedef void *(* System_Uri_Ctor_2) (const char *uri_string, UriKind uri_kind);
+typedef void *(* System_Uri_Ctor_3) (const void *base_uri, const char *relative_uri);
+typedef void *(* System_Uri_Ctor_4) (const void *base_uri, const void *relative_uri);
+typedef char *(* System_Uri_GetStringProperty) (const void *instance);
+typedef gint32 (* System_Uri_GetInt32Property) (const void *instance);
+typedef bool (* System_Uri_GetBooleanProperty) (const void *instance);
+typedef char *(* System_Uri_ToString) (const void *instance);
+typedef bool (* System_Uri_Equals) (const void *a, const void *b);
+typedef void *(* System_Uri_Clone) (const void *instance);
+typedef void *(* System_Uri_CloneWithScheme) (const void *instance, const char *scheme);
+
+struct UriFunctions {
+	System_Uri_Ctor_1 ctor_1;
+	System_Uri_Ctor_2 ctor_2;
+	System_Uri_Ctor_3 ctor_3;
+	System_Uri_Ctor_4 ctor_4;
+	System_Uri_GetStringProperty get_scheme;
+	System_Uri_GetStringProperty get_host;
+	System_Uri_GetInt32Property get_port;
+	System_Uri_GetStringProperty get_fragment;
+	System_Uri_GetStringProperty get_path;
+	System_Uri_GetStringProperty get_query;
+	System_Uri_GetStringProperty get_original_string;
+	System_Uri_GetBooleanProperty get_is_absolute;
+	System_Uri_ToString tostring;
+	System_Uri_Equals equals;
+	System_Uri_Clone clone;
+	System_Uri_CloneWithScheme clone_with_scheme;
+	System_Uri_ToString get_http_request_string;
 };
 
 /* @IncludeInKinds */
 /* @SkipValue */
 /* @Namespace=System */
-struct Uri {
+class Uri {
 public:
 	Uri ();
-	Uri (const Uri& uri);
-
+	/* @GenerateCBinding,GeneratePInvoke */
+	Uri (void *gc_handle);
 	~Uri ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool Parse (const char *uri, bool allow_trailing_sep = false);
-	void Combine (const char *relative_path);
-	void Combine (const Uri *relative_uri);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void Free ();
+	void *GetGCHandle () const;
 
-	char *ToString (UriToStringFlags flags) const;
-	char *ToString () const { return ToString ((UriToStringFlags) 0); }
+	/* Managed API. Note that we don't use a ctor because we can't throw exceptions like managed code can. */
+	static Uri *Create (const char *uri_string);
+	static Uri *Create (const char *uri_string, UriKind uri_kind);
+	static Uri *Create (const Uri *base_uri, const char *relative_uri);
+	static Uri *Create (const Uri *base_uri, const Uri *relative_uri);
 
-	static void Copy (const Uri *from, Uri *to);
+	/* Clone a uri. We just make another gc handle to the managed uri */
+	static Uri *Clone (const Uri *uri_to_clone);
+	/* Clone a uri, but change the scheme. */
+	static Uri *CloneWithScheme (const Uri *uri_to_clone, const char *scheme);
+
+	const char *ToString () const;
+	const char *GetHttpRequestString () const;
 
 	bool operator== (const Uri &v) const;
 
-	/* @GenerateCBinding */
 	static bool Equals (const Uri *left, const Uri *right);
 	static bool IsNullOrEmpty (const Uri *uri);
 	static bool SameSiteOfOrigin (const Uri *left, const Uri *right);
 	static bool SameScheme (const Uri *uri1, const Uri *uri2);
 	static bool SameDomain (const Uri *uri1, const Uri *uri2);
 
-	/* @GenerateCBinding */
-	guint GetHashCode ();
-
 	bool IsScheme (const char *scheme) const;
-	bool IsAbsolute () const { return isAbsolute; }
+	bool IsAbsolute () const;
 	
-	bool IsInvalidPath () const { return path && (path[0] == '\\' || (path[0] == '.' && path[1] == '\\')); }
-	bool IsUncPath () const { return path && path[0] == '\\'; }
-	
-	const char *GetScheme () const { return scheme; }
-	const char *GetHost () const { return host; }
-	int GetPort () const { return port; }
-	const char *GetUser () const { return user; }
-	const char *GetAuth () const { return auth; }
-	const char *GetPasswd () const { return passwd; }
-	const char *GetFragment () const { return fragment; }
-	const char *GetPath () const { return path; }
-	const char *GetQuery () const { return query; }
-	const char *GetOriginalString () const { return originalString; }
-	
-	void ClearParams ();
+	bool IsInvalidPath () const;
+	bool IsUncPath () const;
 
-	void SetScheme (const char *value)   { g_free (scheme); scheme = g_strdup (value); }
-	void SetHost (const char *value)     { g_free (host); host = g_strdup (value); }
-	void SetPort (int value)             { port = value; }
-	void SetUser (const char *value)     { g_free (user); user = g_strdup (value); }
-	void SetAuth (const char *value)     { g_free (auth); auth = g_strdup (value); }
-	void SetPasswd (const char *value)   { g_free (passwd); passwd = g_strdup (value); }
-	void SetFragment (const char *value) { g_free (fragment); fragment = g_strdup (value); }
-	void SetPath (const char *value)     { g_free (path); path = g_strdup (value); }
-	void SetQuery (const char *value)    { g_free (query); query = g_strdup (value); }
+	const char *GetScheme () const;
+	const char *GetHost () const;
+	const char *GetFragment () const;
+	const char *GetPath () const;
+	const char *GetQuery () const;
+	const char *GetOriginalString () const;
+	int GetPort () const;
 
 private:
-	struct Param {
-		Param *next;
-		char *value;
-		char *name;
-	};
-	
-	bool isAbsolute;
+	Deployment *deployment;
+	void *gchandle;
+	/* Since Uri is immutable, we can cache properties to only do the native->managed transition once per property */
+	mutable char *scheme;
+	mutable char *host;
+	mutable char *path;
+	mutable char *query;
+	mutable char *fragment;
+	mutable char *original_string;
+	mutable char *tostring;
+	mutable char *http_request_string;
+	mutable bool is_absolute;
+	mutable int port;
 
-	char *scheme;
-	char *user;
-	char *auth;
-	char *passwd;
-	char *host;
-	int port;
-	char *path;
-	Param *params;
-	char *query;
-	char *fragment;
+	mutable bool scheme_fetched:1;
+	mutable bool host_fetched:1;
+	mutable bool path_fetched:1;
+	mutable bool query_fetched:1;
+	mutable bool fragment_fetched:1;
+	mutable bool original_string_fetched:1;
+	mutable bool tostring_fetched:1;
+	mutable bool http_request_string_fetched:1;
+	mutable bool is_absolute_fetched:1;
+	mutable bool port_fetched:1;
 
-	char *originalString;
-
-	static Param *ParamsCopy (Param *param);
-	static bool ParamsEqual (Param *params0, Param *params1);
-	static void AppendParam (GString *string, Param *param);
+	void Init ();
 };
 
 };

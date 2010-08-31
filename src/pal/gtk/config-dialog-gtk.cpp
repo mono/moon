@@ -133,7 +133,7 @@ bug_report_info (AboutConfigDialogPage *page)
 	GtkTextBuffer *buffer = gtk_text_buffer_new (NULL);
 	GString *str = g_string_new ("");
 
-	g_string_append_printf (str, "Source: %s\n", deployment->GetXapLocation());
+	g_string_append_printf (str, "Source: %s\n", deployment->GetXapLocation () ? deployment->GetXapLocation ()->GetOriginalString () : NULL);
 	g_string_append_printf (str, "Width: %dpx\n", window->GetWidth ());
 	g_string_append_printf (str, "Height: %dpx\n", window->GetHeight ());
 	g_string_append_printf (str, "Background: %s\n", color_to_string (surface->GetBackgroundColor ()));

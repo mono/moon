@@ -57,8 +57,14 @@ namespace System.Windows {
 	}
 
 	partial class Deployment {
-		public Deployment () : base (SafeNativeMethods.deployment_new (), true) {}
-		internal Deployment (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public Deployment () : base (SafeNativeMethods.deployment_new (), true)
+		{
+			Initialize ();
+		}
+		internal Deployment (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	[ContentProperty ("Actions")]

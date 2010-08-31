@@ -327,21 +327,10 @@ Downloader::GetResponseText (const char *partname, gint64 *size)
 // Reference:	URL Access Restrictions in Silverlight 2
 //		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 static bool
-validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy policy)
+validate_policy (const Uri *target, const Uri *source, DownloaderAccessPolicy policy)
 {
-	if (!location || !source)
+	if (!target || !source)
 		return true;
-	
-	if (!source->IsAbsolute ()) {
-		//relative uri, not checking policy
-		return true;
-	}
-
-	Uri *target = new Uri ();
-	if (!target->Parse (location)) {
-		delete target;
-		return false;
-	}
 
 	bool retval = true;
 	switch (policy) {
@@ -404,8 +393,6 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		break;
 	}
 	
-	delete target;
-	
 	return retval;
 }
 
@@ -439,55 +426,44 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 {
 	LOG_DOWNLOADER ("Downloader::Open (%s, %s)\n", verb, uri);
 	
-	Uri *url = new Uri ();
-	if (url->Parse (uri))
+	Uri *url = Uri::Create (uri);
+	if (url != NULL)
 		Open (verb, url, policy);
 		
 	delete url;
 }
 
 bool
-Downloader::ValidateDownloadPolicy (const char *source_location, const Uri *uri, DownloaderAccessPolicy policy)
+Downloader::ValidateDownloadPolicy (const Uri *source_location, const Uri *uri, DownloaderAccessPolicy policy)
 {
-	Uri *src_uri = NULL;
 	bool valid;
 	
-	if (!uri->IsAbsolute () && source_location) {
-		src_uri = new Uri ();
-		if (!src_uri->Parse (source_location, true)) {
-			delete src_uri;
-			return false;
-		}
-		
-		src_uri->Combine (uri);
-		uri = src_uri;
+	/* We should always have a source location */
+	g_return_val_if_fail (source_location != NULL, false);
+
+	/* The uri combine rules are complex, so ensure they're already executed when we validate (to not duplicate combining code) */
+	if (!uri->IsAbsolute ()) {
+		fprintf (stderr, "Moonlight: Can't validate relative uri '%s' - '%s'\n", uri->GetOriginalString (), uri->ToString ());
+		return false;
 	}
 	
 	valid = validate_policy (source_location, uri, policy);
-	delete src_uri;
 	
+	LOG_DOWNLOADER ("Downloader::ValidatePolicy ('%s', '%s', %i) => %i\n", source_location->GetOriginalString (), uri->GetOriginalString (), policy, valid);
+
 	return valid;
 }
 
 void
-Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
+Downloader::Open (const char *verb, const Uri *uri, DownloaderAccessPolicy policy)
 {
-	const char *source_location;
-	Uri *src_uri = NULL;
-	Uri *url = uri;
-
 	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, uri);
 	
 	OpenInitialize ();
 	
-	if (!(source_location = GetDeployment ()->GetXapLocation ()))
-		source_location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
-	
-	request->Open (verb, url, policy);
+	request->Open (verb, uri, /* This is probably not right when we use Downloader internally */ NULL, policy);
 	if (failed_msg == NULL)
 		SetUri (uri);
-
-	delete src_uri;
 }
 
 void

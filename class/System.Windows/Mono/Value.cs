@@ -122,44 +122,6 @@ namespace Mono {
 		}
 	}
 
-	internal struct UnmanagedUri {
-		public bool isAbsolute;
-		public IntPtr scheme;
-		public IntPtr user;
-		public IntPtr auth;
-		public IntPtr passwd;
-		public IntPtr host;
-		public int port;
-		public IntPtr path;
-		public IntPtr _params;
-		public IntPtr query;
-		public IntPtr fragment;
-		public IntPtr originalString;
-
-		public unsafe static IntPtr FromUri (Uri managed_uri)
-		{
-			IntPtr uri = Marshal.AllocHGlobal (sizeof (UnmanagedUri));
-	
-			UnmanagedUri *uuri = (UnmanagedUri*)uri;
-			uuri->scheme = IntPtr.Zero;
-			uuri->user = IntPtr.Zero;
-			uuri->auth = IntPtr.Zero;
-			uuri->passwd = IntPtr.Zero;
-			uuri->host = IntPtr.Zero;
-			uuri->path = IntPtr.Zero;
-			uuri->_params = IntPtr.Zero;
-			uuri->query = IntPtr.Zero;
-			uuri->fragment = IntPtr.Zero;
-			uuri->originalString = IntPtr.Zero;
-	
-			NativeMethods.uri_parse (uri, managed_uri.OriginalString, false);
-	
-			uuri->isAbsolute = managed_uri.IsAbsoluteUri;
-
-			return uri;
-		}
-	}
-
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct ManagedTypeInfo {
 		public IntPtr full_name;
@@ -268,13 +230,8 @@ namespace Mono {
 					return str;
 			}
 
-			case Kind.URI: {
-				UnmanagedUri *uri = (UnmanagedUri*)value->u.p;
-				return uri->originalString == IntPtr.Zero
-					? new Uri("", UriKind.Relative)
-					: new Uri (Marshal.PtrToStringAuto (uri->originalString),
-						   uri->isAbsolute ? UriKind.Absolute : UriKind.Relative);
-			}
+			case Kind.URI:
+				return UriHelper.FromNativeUri (value->u.p);
 
 			case Kind.XMLLANGUAGE: {
 				string str = Marshal.PtrToStringAuto (value->u.p);
@@ -682,7 +639,7 @@ namespace Mono {
 					Uri uri = (Uri) v;
 
 					value.k = Kind.URI;
-					value.u.p = UnmanagedUri.FromUri (uri);
+					value.u.p = UriHelper.ToNativeUri (uri);
 				}
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;
