@@ -256,7 +256,12 @@ namespace Mono.Xaml
 		{
 			HydrateInternal (value, stream, true, false, false);
 		}
-		
+
+		public void Hydrate (object value, Stream stream, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
+		{
+			HydrateInternal (value, stream, createNamescope, validateTemplates, import_default_xmlns);
+		}
+
 		//
 		// Creates a native object from the given filename
 		// 

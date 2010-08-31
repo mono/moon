@@ -118,15 +118,12 @@ namespace System.Windows {
 					return;
 
 				var stream = Application.GetResourceStream (value);
+
 				if (stream == null)
 					throw new Exception ("Could not find the resource at the given uri");
 
-				using (StreamReader sr = new StreamReader (stream.Stream)) {
-					string xaml = sr.ReadToEnd ();
-						
-					ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value, Deployment.Current.Surface.Native, PluginHost.Handle);
-					loader.Hydrate (this, xaml, true, false, true);
-				}
+				ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value, Deployment.Current.Surface.Native, PluginHost.Handle);
+				loader.Hydrate (this, stream.Stream, true, false, true);
 			}
 		}
 		
