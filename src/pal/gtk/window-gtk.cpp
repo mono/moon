@@ -23,6 +23,7 @@
 #include "deployment.h"
 #include "timemanager.h"
 #include "enums.h"
+#include "surface-cairo.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -771,11 +772,10 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 	return true;
 }
 
-cairo_t *
-MoonWindowGtk::CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool native, int width, int height)
+cairo_surface_t *
+MoonWindowGtk::CreateCairoSurface (GdkWindow *drawable, GdkVisual *visual, bool native, int width, int height)
 {
 	cairo_surface_t *surface;
-	cairo_t *cr;
 
 	if (native) {
 #if DEBUG
@@ -805,10 +805,7 @@ MoonWindowGtk::CreateCairoContext (GdkWindow *drawable, GdkVisual *visual, bool 
 											      width));
 	}
 
-	cr = cairo_create (surface);
-	cairo_surface_destroy (surface);
-			    
-	return cr;
+	return surface;
 }
 
 void
@@ -833,40 +830,45 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 
 	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
 	GdkRectangle area = event->area;
+	MoonSurface *target;
 
- 	cairo_t *native = CreateCairoContext (drawable, visual, true, width, height);
-	cairo_t *cr = NULL;
-	cairo_t *image = NULL;
+	cairo_surface_t *native = CreateCairoSurface (drawable, visual, true, width, height);
+	cairo_surface_t *image = NULL;
 	
-	cairo_surface_set_device_offset (cairo_get_target (native), off_x, off_y);
+	cairo_surface_set_device_offset (native, off_x, off_y);
 
 	Region *region = new Region (event->region);
 
 	if (use_image) {
-		image = CreateCairoContext (drawable, visual, false, area.width, area.height);
-		cairo_surface_set_device_offset (cairo_get_target (image), -area.x, -area.y);
-		cr = image;
+		image = CreateCairoSurface (drawable, visual, false, area.width, area.height);
+		cairo_surface_set_device_offset (image, -area.x, -area.y);
+		target = new CairoSurface (image);
 	}
 	else {
-		cr = native;
+		target = new CairoSurface (native);
 	}
 
 	/* if we are redirecting to an image surface clear that first */
-	surface->Paint (cr, region, transparent, use_image ? true : clear_transparent);
+	surface->Paint (target, region, transparent, use_image ? true : clear_transparent);
+
+	target->unref ();
 
 	if (image != NULL) {
-		cairo_surface_flush (cairo_get_target (image));
+		cairo_t *cr = cairo_create (native);
+
+		cairo_surface_flush (image);
 		
-		cairo_set_source_surface (native, cairo_get_target (image), 0, 0);
-		cairo_set_operator (native, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
+		cairo_set_source_surface (cr, image, 0, 0);
+		cairo_set_operator (cr, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
 
-		region->Draw (native);
+		region->Draw (cr);
 
-		cairo_fill (native);
-		cairo_destroy (image);
+		cairo_fill (cr);
+		cairo_destroy (cr);
+		cairo_surface_destroy (image);
 	}
 
-	cairo_destroy (native);
+	cairo_surface_destroy (native);
 
 	delete region;
 

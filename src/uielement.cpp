@@ -1125,7 +1125,7 @@ void
 UIElement::InvalidateBitmapCache ()
 {
 	if (bitmap_cache) {
-		cairo_surface_destroy (bitmap_cache);
+		bitmap_cache->unref ();
 		bitmap_cache = NULL;
 	}
 }
@@ -1549,16 +1549,16 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache == NULL) {
-		cairo_surface_t *bitmap;
+		MoonSurface *bitmap;
 
 		bitmap = ((ContextNode *) ctx->Top ())->GetBitmap ();
 		if (bitmap)
-			bitmap_cache = cairo_surface_reference (bitmap);
+			bitmap_cache = bitmap->ref ();
 	}
 
 	if (flags & COMPOSITE_CACHE) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ();
+		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
@@ -1577,7 +1577,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_OPACITY_MASK) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ();
+		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 		cairo_matrix_t  ctm;
 
@@ -1610,7 +1610,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_OPACITY) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ();
+		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
@@ -1636,7 +1636,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_EFFECT) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ();
+		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
@@ -1666,7 +1666,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_TRANSFORM) {
 		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ();
+		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 		cairo_matrix_t  ctm;
 
@@ -1743,7 +1743,7 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 }
 
 void
-UIElement::Paint (cairo_t *cr,  Rect bounds, cairo_matrix_t *xform)
+UIElement::Paint (MoonSurface *target,  Rect bounds, cairo_matrix_t *xform)
 {
 	Region region (bounds.RoundOut ());
 
@@ -1760,10 +1760,8 @@ UIElement::Paint (cairo_t *cr,  Rect bounds, cairo_matrix_t *xform)
 	if (xform)
 		cairo_matrix_multiply (&inverse, &inverse, xform);
 
-	cairo_set_matrix (cr, &inverse);
-
 	Stack *ctx = new Stack ();
-	ctx->Push (new ContextNode (cr));
+	ctx->Push (new ContextNode (target, &inverse));
 
 	DoRender (ctx, &region);
 

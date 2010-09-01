@@ -240,6 +240,8 @@ libmoon_la_SOURCES = 		\
 	size.cpp		\
 	style.cpp		\
 	stylus.cpp		\
+	surface.cpp		\
+	surface-cairo.cpp	\
 	tabnavigationwalker.cpp	\
 	template.cpp		\
 	textblock.cpp		\

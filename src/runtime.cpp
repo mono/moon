@@ -828,18 +828,18 @@ Surface::ProcessUpdates ()
 }
 
 void
-Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
+Surface::Paint (MoonSurface *target, int x, int y, int width, int height)
 {
        Rect r = Rect (x, y, width, height);
        Region region = Region (r);
-       Paint (ctx, &region);
+       Paint (target, &region);
 }
 
 // arbitrary cairo context.
 void
-Surface::Paint (cairo_t *ctx, Region *region)
+Surface::Paint (MoonSurface *target, Region *region)
 {
-	Paint (ctx, region, false, false);
+	Paint (target, region, false, false);
 }
 
 #if 0
@@ -903,7 +903,7 @@ dump_render_list (List *render_list)
 #endif
 
 void
-Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transparent)
+Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clear_transparent)
 {
 	frames++;
 
@@ -917,7 +917,9 @@ Surface::Paint (cairo_t *cr, Region *region, bool transparent, bool clear_transp
 
 	bool did_occlusion_culling = false;
 
-	ctx->Push (new ContextNode (cr));
+	ctx->Push (new ContextNode (target));
+
+	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
 
 	int layer_count = 0;
 	if (layers)
@@ -1641,28 +1643,42 @@ UIElementNode::~UIElementNode ()
 	uielement = NULL;
 }
 
-ContextNode::ContextNode (cairo_t *cr)
+ContextNode::ContextNode (MoonSurface *surface)
 {
-	box     = Rect ();
-	context = cairo_reference (cr);
-	bitmap  = NULL;
+	box      = Rect ();
+	context  = NULL;
+	bitmap   = surface->ref ();
+	readonly = false;
+
+	cairo_matrix_init_identity (&matrix);
 }
 
-ContextNode::ContextNode (Rect extents, cairo_matrix_t *transform)
+ContextNode::ContextNode (MoonSurface *surface, cairo_matrix_t *transform)
 {
-	box     = extents;
-	matrix  = *transform;
-	context = NULL;
-	bitmap  = NULL;
+	box      = Rect ();
+	matrix   = *transform;
+	context  = NULL;
+	bitmap   = surface->ref ();
+	readonly = false;
 }
 
 ContextNode::ContextNode (Rect extents)
 {
-	cairo_matrix_t m;
+	box      = extents;
+	context  = NULL;
+	bitmap   = NULL;
+	readonly = false;
 
-	cairo_matrix_init_identity (&m);
+	cairo_matrix_init_identity (&matrix);
+}
 
-	ContextNode (extents, &m);
+ContextNode::ContextNode (Rect extents, cairo_matrix_t *transform)
+{
+	box      = extents;
+	matrix   = *transform;
+	context  = NULL;
+	bitmap   = NULL;
+	readonly = false;
 }
 
 ContextNode::~ContextNode ()
@@ -1671,51 +1687,77 @@ ContextNode::~ContextNode ()
 		cairo_destroy (context);
 
 	if (bitmap)
-		cairo_surface_destroy (bitmap);
+		bitmap->unref ();
 }
 
 cairo_t *
 ContextNode::GetCr ()
 {
-	if (!context) {
-		Rect r = box.RoundOut ();
+	if (readonly)
+		return NULL;
 
-		if (bitmap)
+	if (!context) {
+		cairo_surface_t *surface;
+		Rect            r = box.RoundOut ();
+
+		if (!GetBitmap ())
 			return NULL;
 
-		bitmap = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-						     r.width,
-						     r.height);
-		cairo_surface_set_device_offset (bitmap, -r.x, -r.y);
-		context = cairo_create (bitmap);
+		surface = bitmap->Cairo ();
+
+		if (!r.IsEmpty ())
+			cairo_surface_set_device_offset (surface, -r.x, -r.y);
+
+		context = cairo_create (surface);
 		cairo_set_matrix (context, &matrix);
+
+		cairo_surface_destroy (surface);
 	}
 
 	return context;
 }
 
-cairo_surface_t *
+MoonSurface *
 ContextNode::GetBitmap ()
 {
+	if (!bitmap) {
+		MoonSurface *base;
+		Rect        r = box.RoundOut ();
+
+		if (!prev) {
+			g_warning ("ContextNode::GetBitmap no base node.");
+			return NULL;
+		}
+
+		base = ((ContextNode *) prev)->GetBitmap ();
+		if (!base) {
+			g_warning ("ContextNode::GetBitmap no base bitmap.");
+			return NULL;
+		}
+
+		bitmap = base->Similar (r.width, r.height);
+	}
+
 	return bitmap;
 }
 
 void
-ContextNode::SetBitmap (cairo_surface_t *surface)
+ContextNode::SetBitmap (MoonSurface *surface)
 {
-	cairo_surface_t *ref;
+	MoonSurface *ref;
 
 	if (context) {
 		g_warning ("ContextNode::SetBitmap context present.");
 		return;
 	}
 
-	ref = cairo_surface_reference (surface);
+	ref = surface->ref ();
 
 	if (bitmap)
-		cairo_surface_destroy (bitmap);
+		bitmap->unref ();
 
-	bitmap = ref;
+	bitmap   = ref;
+	readonly = true;
 }
 
 Rect

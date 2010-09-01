@@ -18,6 +18,7 @@
 #include "region.h"
 #include "panel.h"
 #include "writeablebitmap.h"
+#include "surface-cairo.h"
 
 namespace Moonlight {
 
@@ -75,7 +76,7 @@ WriteableBitmap::GetSurface (cairo_t *cr)
 void
 WriteableBitmap::Render (UIElement *element, Transform *transform)
 {
-	cairo_t *cr;
+	CairoSurface *target;
 
 	if (!element)
 		return;
@@ -89,7 +90,7 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 			return;
 	}
 
-        cr = cairo_create (surface);
+        target = new CairoSurface (surface);
 
 	Rect bounds (0, 0, GetPixelWidth (), GetPixelHeight ());
 
@@ -99,9 +100,9 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 	if (transform)
 		transform->GetTransform (&xform);
 
-	element->Paint (cr, bounds, &xform);
+	element->Paint (target, bounds, &xform);
 
-	cairo_destroy (cr);
+	target->unref ();
 	cairo_surface_flush (surface);
 }
 

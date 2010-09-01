@@ -193,12 +193,12 @@ public:
 	MoonWindow *GetNormalWindow () { return normal_window; }
 	
 	// arbitrary cairo context.
-	void Paint (cairo_t *ctx, Region *region);
+	void Paint (MoonSurface *target, Region *region);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Paint (cairo_t *ctx, int x, int y, int width, int height);
+	void Paint (MoonSurface *target, int x, int y, int width, int height);
 
-	void Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
+	void Paint (MoonSurface *surface, Region *region, bool transparent, bool clear_transparent);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
@@ -503,21 +503,23 @@ public:
 
 class ContextNode : public List::Node {
 public:
-	ContextNode (cairo_t *cr);
+	ContextNode (MoonSurface *surface);
+	ContextNode (MoonSurface *surface, cairo_matrix_t *transform);
 	ContextNode (Rect extents);
 	ContextNode (Rect extents, cairo_matrix_t *transform);
 	virtual ~ContextNode ();
 
 	cairo_t *GetCr ();
-	cairo_surface_t *GetBitmap ();
-	void SetBitmap (cairo_surface_t *surface);
+	MoonSurface *GetBitmap ();
+	void SetBitmap (MoonSurface *surface);
 	Rect GetBitmapExtents (void);
 
 private:
 	Rect            box;
 	cairo_matrix_t  matrix;
 	cairo_t         *context;
-	cairo_surface_t *bitmap;
+	MoonSurface     *bitmap;
+	bool            readonly;
 };
 
 /* for rendering */
