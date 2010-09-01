@@ -159,12 +159,12 @@ EXTRA_DIST = 			\
 test: copy-xap-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
-	$(BROWSER_NAME) $(BROWSER_OPTS) "file:///`pwd`/site/index.html?$(TEST_NAME)"
+	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index.html?$(TEST_NAME)"
 
 debug: copy-xap-to-site
 	MONO_XDEBUG=1 MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
-	$(BROWSER_NAME) $(BROWSER_OPTS) -d gdb "file:///`pwd`/site/index.html?$(TEST_NAME)"
+	$(BROWSER_NAME) $(BROWSER_OPTS) -d gdb "file://`pwd`/site/index.html?$(TEST_NAME)"
 
 AUTOMATION_NAMESPACES="MoonTest.System.Windows.Automation+MoonTest.System.Windows.Automation.Peers"
 
