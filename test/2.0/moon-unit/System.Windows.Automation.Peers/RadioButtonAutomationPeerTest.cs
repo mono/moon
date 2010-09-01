@@ -231,6 +231,26 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public override void TestHasKeyboardFocusAfterPattern ()
+		{
+			ToggleButton fe = CreateConcreteFrameworkElement ()
+				as ToggleButton;
+			fe.Content = "Radiobutton";
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			ISelectionItemProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (ISelectionItemProvider) peer.GetPattern (PatternInterface.SelectionItem);
+				Assert.IsNotNull (provider, "#0");
+			}, 
+			() => provider.Select (),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#1"));
+		}
+
+		[TestMethod]
 		public override void ToggleProvider_Toggle ()
 		{
 			RadioButton radioButton = CreateConcreteFrameworkElement () as RadioButton;

@@ -44,7 +44,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class ProgressBarAutomationPeerTest : RangeBaseAutomationPeerTest {
+	public class ___ProgressBarAutomationPeerTest : RangeBaseAutomationPeerTest {
 
 		public class ProgressBarAutomationPeerPoker : ProgressBarAutomationPeer, FrameworkElementAutomationPeerContract {
 
@@ -288,10 +288,30 @@ namespace MoonTest.System.Windows.Automation.Peers {
 					as FrameworkElementAutomationPeer;
 			var rangeValue = peer.GetPattern (PatternInterface.RangeValue)
 				as IRangeValueProvider;
+			rangeValue.SetValue (0);
+		}
 
-			Assert.Throws<InvalidOperationException> (() => {
-				rangeValue.SetValue (0);
-			});
+		[TestMethod]
+		[Asynchronous]
+		public override void TestHasKeyboardFocusAfterPattern ()
+		{
+			ProgressBar fe = CreateConcreteFrameworkElement () as ProgressBar;
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IRangeValueProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (IRangeValueProvider) peer.GetPattern (PatternInterface.RangeValue);
+				Assert.IsNotNull (provider, "#0");
+			},
+			() => {
+				Assert.Throws<InvalidOperationException> (() => {
+				global::System.Console.WriteLine (">>>>>>>>>>>>>>>>>>>provider is {0}", provider.GetType ());
+					provider.SetValue (.5);
+				});
+			},
+			() => Assert.IsFalse (peer.HasKeyboardFocus (), "#1"));
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

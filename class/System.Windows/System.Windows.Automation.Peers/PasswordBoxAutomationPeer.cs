@@ -61,6 +61,7 @@ namespace System.Windows.Automation.Peers
 			if (!owner.IsEnabled)
 				throw new ElementNotEnabledException ();
 
+			SetFocus ();
 			owner.Password = value;
 		}
 

@@ -313,6 +313,25 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Test_InvokeProvider_Events ((ButtonBase)CreateConcreteFrameworkElement ());
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public virtual void TestHasKeyboardFocusAfterPattern ()
+		{
+			Button fe = CreateConcreteFrameworkElement () as Button;
+			fe.Content = "Button";
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IInvokeProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (IInvokeProvider) peer.GetPattern (PatternInterface.Invoke);
+				Assert.IsNotNull (provider, "#0");
+			}, 
+			() => provider.Invoke (),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#1"));
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new ButtonConcrete ();

@@ -54,6 +54,7 @@ namespace System.Windows.Automation.Peers
 			if (!owner.IsEnabled)
 				throw new ElementNotEnabledException ();
 
+			SetFocus ();
 			bool? isChecked = owner.IsChecked;
 			if (isChecked == true)
 				owner.IsChecked = owner.IsThreeState ? null : ((bool?) false);

@@ -54,6 +54,7 @@ namespace System.Windows.Automation.Peers
 			else if (!owner.IsEnabled)
 				throw new ElementNotEnabledException ();
 
+			SetFocus ();
 			owner.Text = value;
 		}
 	
