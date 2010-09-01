@@ -42,7 +42,7 @@ namespace Moonlight {
 		
 		const string RuntimeVersion2 = "2.0.31005.0";
 		const string RuntimeVersion3 = "3.0.40818.0";
-		const string RuntimeVersion4 = "4.0.50401.0";
+		const string RuntimeVersion4 = "4.0.50826.0";
 
 		private string RuntimeVersion = RuntimeVersion2;
 
