@@ -113,6 +113,9 @@ bool        time_span_from_str (const char *str, TimeSpan *res);
 bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
 /* @GeneratePInvoke */
 /* Managed code must call value_free_value on the result */
+bool        xaml_value_from_str_with_parser (gpointer *p, Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v, bool *v_set);
+/* @GeneratePInvoke */
+/* Managed code must call value_free_value on the result */
 bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
 bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
 

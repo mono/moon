@@ -77,7 +77,29 @@ namespace Mono.Xaml {
 
 		protected override PropertyPath ParsePropertyPath (string piece)
 		{
-			return new PropertyPath (piece);
+			Kind k = Deployment.Current.Types.TypeToKind (typeof (PropertyPath));
+
+			bool v_set;
+			IntPtr unmanaged_value;
+			try {
+				if (!NativeMethods.xaml_value_from_str_with_parser (parser, k, AttributeName, piece, out unmanaged_value, out v_set) || !v_set) {
+					Console.Error.WriteLine ("Unable to parse property path: '{0}'", piece);
+					return null;
+				}
+
+				object obj_value = Value.ToObject (typeof (PropertyPath), unmanaged_value);
+				PropertyPath path = obj_value as PropertyPath;
+
+				if (path != null)
+					return path;
+
+				Console.Error.WriteLine ("Unable to convert property path value: '{0}'", piece);
+			} finally {
+				if (unmanaged_value != IntPtr.Zero)
+					Mono.NativeMethods.value_delete_value2 (unmanaged_value);
+			}
+
+			return null;
 		}
 	}
 
