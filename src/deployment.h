@@ -342,6 +342,8 @@ public:
 	void SetXapLocation (const Uri *location);
 	const Uri *GetXapLocation ();
 
+	const Uri *GetSourceLocation (bool *is_xap);
+
 	void SetXapFilename (const char *filename);
 	const char *GetXapFilename ();
 	

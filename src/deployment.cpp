@@ -1819,6 +1819,30 @@ Deployment::GetXapLocation ()
 	return xap_location;
 }
 
+const Uri *
+Deployment::GetSourceLocation (bool *is_xap)
+{
+	const Uri *result;
+	bool xap = false;
+
+	if (GetCurrentApplication ()->IsRunningOutOfBrowser ()) {
+		result = GetSurface ()->GetSourceLocation ();
+		xap = true;
+	} else {
+		result = GetXapLocation ();
+		if (result == NULL) {
+			result = GetSurface ()->GetSourceLocation ();
+		} else {
+			xap = true;
+		}
+	}
+
+	if (is_xap != NULL)
+		*is_xap = xap;
+
+	return result;
+}
+
 void
 Deployment::SetXapFilename (const char *filename)
 {

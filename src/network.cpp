@@ -112,8 +112,6 @@ HttpRequest::Open (const char *verb, const Uri *uri, DownloaderAccessPolicy poli
 void
 HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, DownloaderAccessPolicy policy)
 {
-	Surface *surface;
-	Application *application;
 	const Uri *source_location;
 	Uri *src_uri = NULL;
 	Uri *resource_base = NULL;
@@ -135,21 +133,8 @@ HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, Downlo
 
 	access_policy = policy;
 
-	surface = GetDeployment ()->GetSurface ();
-	application = GetDeployment ()->GetCurrentApplication ();
-
 	/* Get source location */
-	if (application->IsRunningOutOfBrowser ()) {
-		source_location = surface->GetSourceLocation ();
-		is_xap = true;
-	} else {
-		source_location = GetDeployment ()->GetXapLocation ();
-		if (source_location == NULL) {
-			source_location = surface->GetSourceLocation ();
-		} else {
-			is_xap = true;
-		}
-	}
+	source_location = GetDeployment ()->GetSourceLocation (&is_xap);
 
 	/* Validate source location */
 	if (source_location == NULL) {
