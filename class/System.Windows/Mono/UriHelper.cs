@@ -166,13 +166,21 @@ namespace Mono
 		{
 			try {
 				Uri uri;
+				string fragment;
 
 				if (instance == IntPtr.Zero)
 					return IntPtr.Zero;
 
 				uri = FromGCHandle (instance);
 
-				return Value.StringToIntPtr (uri.Fragment);
+				fragment = uri.Fragment;
+
+				if (!string.IsNullOrEmpty (fragment)) {
+					/* The managed 'Fragment' property returns the initial # character, while the native Uri class didn't */
+					fragment = fragment.Substring  (1);
+				}
+
+				return Value.StringToIntPtr (fragment);
 			} catch (Exception ex) {
 #if DEBUG
 				try {
