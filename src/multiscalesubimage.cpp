@@ -19,6 +19,7 @@
 #include "runtime.h"
 #include "deepzoomimagetilesource.h"
 #include "multiscalesubimage.h"
+#include "deployment.h"
 
 namespace Moonlight {
 
@@ -39,13 +40,22 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	const Uri *source_uri = ((DeepZoomImageTileSource*)source)->GetUriSource ();
 	if (!source_uri || source_uri->IsAbsolute ())
 		return;
-	
-	Uri *new_uri = Uri::Create (parent_uri, source_uri);
+
+	Uri *absolute_parent_uri = NULL;
+	Uri *new_uri;
+
+	if (!parent_uri->IsAbsolute ()) {
+		absolute_parent_uri = Uri::Create (GetDeployment ()->GetSourceLocation (NULL), parent_uri);
+		parent_uri = absolute_parent_uri;
+	}
+
+	new_uri = Uri::Create (parent_uri, source_uri);
 
 	LOG_MSI ("MSSI: UriSource changed from %s to %s\n", source_uri->ToString (), new_uri->ToString ());
 
 	((DeepZoomImageTileSource*) source)->SetUriSource (new_uri);
 	delete new_uri;
+	delete absolute_parent_uri;
 
 	EnsureManagedPeer ();
 }

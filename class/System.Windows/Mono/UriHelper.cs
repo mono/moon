@@ -73,7 +73,7 @@ namespace Mono
 			} catch (Exception ex) {
 #if DEBUG
 				try {
-					Console.WriteLine ("UriHelper.Ctor3 ({0}, {2}): {1}", base_uri, ex.Message, relative_uri);
+					Console.WriteLine ("UriHelper.Ctor3 ({0}, {2}): {1}", FromGCHandle (base_uri), ex.Message, relative_uri);
 				} catch {
 				}
 #endif
@@ -88,7 +88,7 @@ namespace Mono
 			} catch (Exception ex) {
 #if DEBUG
 				try {
-					Console.WriteLine ("UriHelper.Ctor4 ({0}, {2}): {1}", base_uri, ex.Message, relative_uri);
+					Console.WriteLine ("UriHelper.Ctor4 ({0}, {2}): {1}", FromGCHandle (base_uri), ex.Message, FromGCHandle (relative_uri));
 				} catch {
 				}
 #endif
