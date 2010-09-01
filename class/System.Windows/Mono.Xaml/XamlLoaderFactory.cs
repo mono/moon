@@ -53,7 +53,7 @@ namespace Mono.Xaml {
 		public static XamlLoader CreateLoader (Assembly assembly, Uri resourceBase, IntPtr surface, IntPtr plugin)
 		{
 			if (use_managed)
-				return new SL4XamlLoader ();
+				return new SL4XamlLoader (resourceBase);
 			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
 

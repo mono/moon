@@ -455,6 +455,7 @@ public:
 
 	virtual bool PermitsMultipleParents () { return true; }
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetResourceBase (const Uri *resourceBase);
 	/* @GenerateCBinding,GeneratePInvoke */
 	const Uri *GetResourceBase ();

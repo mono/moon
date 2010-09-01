@@ -287,6 +287,11 @@ namespace Mono.Xaml
 
 	internal class SL4XamlLoader : XamlLoader {
 
+		public SL4XamlLoader (Uri resource_base)
+		{
+			resourceBase = resource_base;
+		}
+
 		protected override IntPtr CreateFromFileInternal (string path, bool createNamescope, out Kind kind)
 		{
 			Value v = XamlParser.CreateFromFile (path, createNamescope, false);
@@ -301,6 +306,7 @@ namespace Mono.Xaml
 				CreateNameScope = createNamescope,
 				ValidateTemplates = validateTemplates,
 				HydrateObject = value,
+				ResourceBase = resourceBase,
 			};
 
 			object v = p.ParseString (xaml);
@@ -312,6 +318,7 @@ namespace Mono.Xaml
 				CreateNameScope = createNamescope,
 				ValidateTemplates = validateTemplates,
 				HydrateObject = value,
+				ResourceBase = resourceBase,
 			};
 
 			using (StreamReader reader = new StreamReader (xaml)) {
@@ -334,6 +341,7 @@ namespace Mono.Xaml
 		{
 			XamlParser p = new XamlParser () {
 				CreateNameScope = createNamescope,
+				ResourceBase = resourceBase,
 			};
 
 			return p.ParseString (xaml);
@@ -344,6 +352,7 @@ namespace Mono.Xaml
 			XamlParser p = new XamlParser () {
 				CreateNameScope = createNamescope,
 				ValidateTemplates = validateTemplates,
+				ResourceBase = resourceBase,
 			};
 
 			return p.ParseString (xaml);
@@ -353,6 +362,7 @@ namespace Mono.Xaml
 		{
 			XamlParser p = new XamlParser () {
 				CreateNameScope = createNamescope,
+				ResourceBase = resourceBase,
 			};
 
 			return p.ParseFile (path);

@@ -88,6 +88,17 @@ namespace System.Windows {
 			get; set;
 		}
 
+		internal Uri ResourceBase {
+			get {
+				IntPtr native_uri = NativeMethods.dependency_object_get_resource_base (native);
+				return UriHelper.FromNativeUri (native_uri);
+			}
+			set {
+				IntPtr native_uri = UriHelper.ToNativeUri (value);
+				NativeMethods.dependency_object_set_resource_base (native, native_uri);
+			}
+		}
+
 		static DependencyObject ()
 		{
 			moonlight_thread = Thread.CurrentThread;

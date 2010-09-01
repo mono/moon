@@ -114,6 +114,11 @@ namespace Mono.Xaml {
 			set;
 		}
 
+		public Uri ResourceBase {
+			get;
+			set;
+		}
+
 		public object ParseString (string str)
 		{
 			object res = null;
@@ -395,6 +400,7 @@ namespace Mono.Xaml {
 				};
 			}
 
+			SetResourceBase (element);
 			SetElementTemplateScopes (element);
 			OnElementBegin (element);
 
@@ -882,6 +888,20 @@ namespace Mono.Xaml {
 				Console.WriteLine ("Exception in initializer.");
 				Console.WriteLine (e);
 			}
+		}
+
+		private void SetResourceBase (XamlObjectElement element)
+		{
+			if (ResourceBase == null)
+				return;
+
+			DependencyObject dob = element.DependencyObject;
+
+			if (dob == null)
+				return;
+
+			Console.WriteLine ("setting resource base:  {0}", ResourceBase);
+			dob.ResourceBase = ResourceBase;
 		}
 
 		private void SetElementTemplateScopes (XamlObjectElement element)

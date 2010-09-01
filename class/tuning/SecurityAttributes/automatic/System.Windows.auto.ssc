@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 650 methods
+# 652 methods
 
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
@@ -374,6 +374,8 @@
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: Mono.EventHandlerList System.Windows.DependencyObject::get_EventList()
++SSC-M: System.Uri System.Windows.DependencyObject::get_ResourceBase()
++SSC-M: System.Void System.Windows.DependencyObject::set_ResourceBase(System.Uri)
 +SSC-M: System.Void System.Windows.DependencyObject::Free()
 +SSC-M: System.Void System.Windows.DependencyObject::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.DependencyObject::UnregisterEvent(System.Int32,System.Delegate)
