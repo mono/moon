@@ -896,11 +896,9 @@ namespace Mono.Xaml {
 				return;
 
 			DependencyObject dob = element.DependencyObject;
-
 			if (dob == null)
 				return;
 
-			Console.WriteLine ("setting resource base:  {0}", ResourceBase);
 			dob.ResourceBase = ResourceBase;
 		}
 
