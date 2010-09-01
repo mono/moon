@@ -32,9 +32,9 @@ typedef void (*LoadedCallback)(FrameworkElement *element);
 /* @CallInitialize */
 class FrameworkElement : public UIElement {
 public:
-	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int HeightProperty;
-	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int WidthProperty;
 
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
@@ -49,13 +49,13 @@ public:
 	const static int LanguageProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
 	const static int MarginProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MaxHeightProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MaxWidthProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MinHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MinWidthProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
 	const static int VerticalAlignmentProperty;

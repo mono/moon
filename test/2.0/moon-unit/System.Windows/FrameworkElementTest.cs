@@ -812,6 +812,32 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		public void NegativeValuesTest()
+		{
+			// These can't be negative
+			Assert.Throws<ArgumentException>(() => new ConcreteFrameworkElement().MinWidth = -1, "#1");
+			Assert.Throws<ArgumentException>(() => new ConcreteFrameworkElement().Height = -1, "#2");
+			Assert.Throws<ArgumentException>(() => new ConcreteFrameworkElement().MaxHeight = -1, "#3");
+
+			Assert.Throws<ArgumentException>(() => new ConcreteFrameworkElement().MinHeight = -1, "#4");
+			Assert.Throws<ArgumentException>(() => new ConcreteFrameworkElement().Width = -1, "#5");
+			Assert.Throws<ArgumentException>(() => new ConcreteFrameworkElement().MaxWidth = -1, "#6");
+		}
+
+		[TestMethod]
+		public void ZeroValuesTest()
+		{
+			// These can all be set to zero
+			new ConcreteFrameworkElement().MinWidth = 0;
+			new ConcreteFrameworkElement().Height = 0;
+			new ConcreteFrameworkElement().MaxHeight = 0;
+
+			new ConcreteFrameworkElement().MinHeight = 0;
+			new ConcreteFrameworkElement().Width = 0;
+			new ConcreteFrameworkElement().MaxWidth = 0;
+		}
+
+		[TestMethod]
 		public void OnApplyTemplate ()
 		{
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();

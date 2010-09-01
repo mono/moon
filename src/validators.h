@@ -34,6 +34,7 @@ public:
 	static ValueValidator IntGreaterThanZeroValidator;
 	static ValueValidator IsInputMethodEnabledValidator;
 	static ValueValidator DoubleGreaterThanZeroValidator;
+	static ValueValidator DoubleNotNegativeValidator;
 	static ValueValidator NonNullValidator;
 	static ValueValidator NonNullExceptionValidator;
 	static ValueValidator NotNullOrEmptyValidator;
