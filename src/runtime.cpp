@@ -82,6 +82,7 @@ G_END_DECLS
 
 #include "pipeline.h"
 #include "effect.h"
+#include "context.h"
 
 namespace Moonlight {
 
@@ -912,14 +913,14 @@ Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clea
 	uielements_rendered_with_painters = 0;
 #endif
 
-	Stack *ctx = new Stack ();
+	Context *ctx = new Context ();
 	List *render_list = new List ();
 
 	bool did_occlusion_culling = false;
 
-	ctx->Push (new ContextNode (target));
+	ctx->Push (new Context::Node (target));
 
-	cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+	cairo_t *cr = ctx->Top ()->GetCr ();
 
 	int layer_count = 0;
 	if (layers)
@@ -1600,7 +1601,7 @@ RenderNode::RenderNode (UIElement *el,
 }
 
 void
-RenderNode::Render (Stack *ctx)
+RenderNode::Render (Context *ctx)
 {
 	bool use_occlusion_culling = uielement->UseOcclusionCulling ();
 
@@ -1612,8 +1613,8 @@ RenderNode::Render (Stack *ctx)
 	if (pre_render)
 		pre_render (ctx, uielement, region, use_occlusion_culling);
 
-	if (render_element && ((ContextNode *) ctx->Top ())->GetCr ()) {
-		uielement->Render (((ContextNode *) ctx->Top ())->GetCr (), region);
+	if (render_element && ctx->Top ()->GetCr ()) {
+		uielement->Render (ctx->Top ()->GetCr (), region);
 	}
 	
 	if (post_render)
@@ -1641,129 +1642,6 @@ UIElementNode::~UIElementNode ()
 {
 	uielement->unref();
 	uielement = NULL;
-}
-
-ContextNode::ContextNode (MoonSurface *surface)
-{
-	box      = Rect ();
-	context  = NULL;
-	bitmap   = surface->ref ();
-	readonly = false;
-
-	cairo_matrix_init_identity (&matrix);
-}
-
-ContextNode::ContextNode (MoonSurface *surface, cairo_matrix_t *transform)
-{
-	box      = Rect ();
-	matrix   = *transform;
-	context  = NULL;
-	bitmap   = surface->ref ();
-	readonly = false;
-}
-
-ContextNode::ContextNode (Rect extents)
-{
-	box      = extents;
-	context  = NULL;
-	bitmap   = NULL;
-	readonly = false;
-
-	cairo_matrix_init_identity (&matrix);
-}
-
-ContextNode::ContextNode (Rect extents, cairo_matrix_t *transform)
-{
-	box      = extents;
-	matrix   = *transform;
-	context  = NULL;
-	bitmap   = NULL;
-	readonly = false;
-}
-
-ContextNode::~ContextNode ()
-{
-	if (context)
-		cairo_destroy (context);
-
-	if (bitmap)
-		bitmap->unref ();
-}
-
-cairo_t *
-ContextNode::GetCr ()
-{
-	if (readonly)
-		return NULL;
-
-	if (!context) {
-		cairo_surface_t *surface;
-		Rect            r = box.RoundOut ();
-
-		if (!GetBitmap ())
-			return NULL;
-
-		surface = bitmap->Cairo ();
-
-		if (!r.IsEmpty ())
-			cairo_surface_set_device_offset (surface, -r.x, -r.y);
-
-		context = cairo_create (surface);
-		cairo_set_matrix (context, &matrix);
-
-		cairo_surface_destroy (surface);
-	}
-
-	return context;
-}
-
-MoonSurface *
-ContextNode::GetBitmap ()
-{
-	if (!bitmap) {
-		MoonSurface *base;
-		Rect        r = box.RoundOut ();
-
-		if (!prev) {
-			g_warning ("ContextNode::GetBitmap no base node.");
-			return NULL;
-		}
-
-		base = ((ContextNode *) prev)->GetBitmap ();
-		if (!base) {
-			g_warning ("ContextNode::GetBitmap no base bitmap.");
-			return NULL;
-		}
-
-		bitmap = base->Similar (r.width, r.height);
-	}
-
-	return bitmap;
-}
-
-void
-ContextNode::SetBitmap (MoonSurface *surface)
-{
-	MoonSurface *ref;
-
-	if (context) {
-		g_warning ("ContextNode::SetBitmap context present.");
-		return;
-	}
-
-	ref = surface->ref ();
-
-	if (bitmap)
-		bitmap->unref ();
-
-	bitmap   = ref;
-	readonly = true;
-}
-
-Rect
-ContextNode::GetBitmapExtents (void)
-{
-	return box.RoundOut ();
 }
 
 void

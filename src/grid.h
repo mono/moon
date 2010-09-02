@@ -191,7 +191,7 @@ class Grid : public Panel {
 	
 	virtual ~Grid ();
 
-	virtual void PostRender (Stack *ctx, Region *region, bool skip_children);
+	virtual void PostRender (Context *ctx, Region *region, bool skip_children);
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;

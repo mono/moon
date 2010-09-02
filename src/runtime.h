@@ -501,35 +501,14 @@ public:
 	virtual ~UIElementNode ();
 };
 
-class ContextNode : public List::Node {
-public:
-	ContextNode (MoonSurface *surface);
-	ContextNode (MoonSurface *surface, cairo_matrix_t *transform);
-	ContextNode (Rect extents);
-	ContextNode (Rect extents, cairo_matrix_t *transform);
-	virtual ~ContextNode ();
-
-	cairo_t *GetCr ();
-	MoonSurface *GetBitmap ();
-	void SetBitmap (MoonSurface *surface);
-	Rect GetBitmapExtents (void);
-
-private:
-	Rect            box;
-	cairo_matrix_t  matrix;
-	cairo_t         *context;
-	MoonSurface     *bitmap;
-	bool            readonly;
-};
-
 /* for rendering */
-typedef void (*RenderFunc) (Stack *ctx, UIElement *uielement, Region *region, bool skip_children);
+typedef void (*RenderFunc) (Context *ctx, UIElement *uielement, Region *region, bool skip_children);
 
 class RenderNode : public List::Node {
 public:
 	RenderNode (UIElement *el, Region *region, bool render_element, RenderFunc pre, RenderFunc post);
 	
-	void Render (Stack *ctx);
+	void Render (Context *ctx);
 
 	virtual ~RenderNode ();
 

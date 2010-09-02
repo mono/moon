@@ -835,7 +835,7 @@ InkPresenter::InkPresenter ()
 }
 
 void
-InkPresenter::PostRender (Stack *ctx, Region *region, bool skip_children)
+InkPresenter::PostRender (Context *ctx, Region *region, bool skip_children)
 {
 	// render our chidren if we need to
 	if (!skip_children) {
@@ -847,8 +847,8 @@ InkPresenter::PostRender (Stack *ctx, Region *region, bool skip_children)
 	StrokeCollection *strokes = GetStrokes ();
 	int strokes_count = strokes->GetCount ();
 
-	if (strokes_count > 0 && ((ContextNode *) ctx->Top ())->GetCr ()) {
-		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+	if (strokes_count > 0 && ctx->Top ()->GetCr ()) {
+		cairo_t *cr = ctx->Top ()->GetCr ();
 	
 		cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
 		cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);

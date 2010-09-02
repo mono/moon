@@ -25,6 +25,7 @@
 #include "size.h"
 #include "layoutinformation.h"
 #include "surface.h"
+#include "context.h"
 
 #define QUANTUM_ALPHA 1
 
@@ -199,7 +200,7 @@ public:
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
 	void FrontToBack (Region *surface_region, List *render_list);
-	void DoRender (Stack *ctx, Region *region);
+	void DoRender (Context *ctx, Region *region);
 	bool UseOcclusionCulling ();
 	bool RenderToIntermediate ();
 
@@ -680,11 +681,11 @@ protected:
 	cairo_matrix_t absolute_xform;
 	cairo_matrix_t layout_xform;
 
-	virtual void PreRender (Stack *ctx, Region *region, bool skip_children);
-	virtual void PostRender (Stack *ctx, Region *region, bool skip_children);
+	virtual void PreRender (Context *ctx, Region *region, bool skip_children);
+	virtual void PostRender (Context *ctx, Region *region, bool skip_children);
 
-	static void CallPreRender (Stack *ctx, UIElement *element, Region *region, bool skip_children);
-	static void CallPostRender (Stack *ctx, UIElement *element, Region *region, bool skip_children);
+	static void CallPreRender (Context *ctx, UIElement *element, Region *region, bool skip_children);
+	static void CallPostRender (Context *ctx, UIElement *element, Region *region, bool skip_children);
 
 	// Local perspective transform, including local affine transforms
 	double local_projection[16];

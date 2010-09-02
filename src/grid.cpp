@@ -533,7 +533,7 @@ Grid::ComputeBounds ()
 	}
 }
 void
-Grid::PostRender (Stack *ctx, Region *region, bool skip_children)
+Grid::PostRender (Context *ctx, Region *region, bool skip_children)
 {
 	// render our chidren if we need to
 	if (!skip_children) {
@@ -542,12 +542,12 @@ Grid::PostRender (Stack *ctx, Region *region, bool skip_children)
 			child->DoRender (ctx, region);
 	}
 	
-	if (GetShowGridLines () && ((ContextNode *) ctx->Top ())->GetCr ()) {
+	if (GetShowGridLines () && ctx->Top ()->GetCr ()) {
 		double offset = 0;
 		double dash = 4;
 		ColumnDefinitionCollection *cols = GetColumnDefinitionsNoAutoCreate ();
 		RowDefinitionCollection *rows = GetRowDefinitionsNoAutoCreate ();
-		cairo_t *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_t *cr = ctx->Top ()->GetCr ();
 		int col_count = cols ? cols->GetCount () : 0;
 		int row_count = rows ? rows->GetCount () : 0;
 		
