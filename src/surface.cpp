@@ -19,6 +19,10 @@ MoonSurface::MoonSurface ()
 	refcount = 1;
 }
 
+MoonSurface::~MoonSurface ()
+{
+}
+
 MoonSurface *
 MoonSurface::ref ()
 {
@@ -32,7 +36,7 @@ MoonSurface::unref ()
 {
 	int v;
 
-	v = g_atomic_int_exchange_and_add (&refcount, -1);
+	v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
 	if (v == 0)
 		delete this;
 }

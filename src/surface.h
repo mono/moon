@@ -19,6 +19,7 @@ namespace Moonlight {
 class MoonSurface {
 public:
 	MoonSurface ();
+	virtual ~MoonSurface ();
 
 	MoonSurface *ref ();
 	void        unref ();
