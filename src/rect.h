@@ -51,7 +51,7 @@ struct Rect {
 
         Rect Transform (cairo_matrix_t *matrix);
 	Rect Transform (cairo_t *cr);
-	Rect Transform (double *projection);
+	Rect Transform (const double *projection);
 
 	bool PointInside (double px, double py) const
 	{

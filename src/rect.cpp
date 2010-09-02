@@ -77,7 +77,7 @@ Rect::Transform (cairo_t *cr)
 }
 
 Rect
-Rect::Transform (double *projection)
+Rect::Transform (const double *projection)
 {
 	Rect rect = *this;
 
