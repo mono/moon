@@ -140,12 +140,12 @@ namespace System.Net.Browser {
 			bool is_get = (String.Compare (Method, "GET", StringComparison.OrdinalIgnoreCase) == 0);
 
 			foreach (string header in Headers) {
-				switch (header) {
-				case "Content-Encoding":
-				case "Content-Language":
-				case "Content-MD5":
-				case "Content-Type":
-				case "Expires":
+				switch (header.ToLowerInvariant ()) {
+				case "content-encoding":
+				case "content-language":
+				case "content-md5":
+				case "content-type":
+				case "expires":
 					if (is_get)
 						throw new ProtocolViolationException ();
 					break;

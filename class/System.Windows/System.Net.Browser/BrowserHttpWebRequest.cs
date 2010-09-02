@@ -129,17 +129,17 @@ namespace System.Net.Browser {
 					throw new ProtocolViolationException ();
 			} else {
 				foreach (string header in Headers) {
-					switch (header) {
-					case "Content-Encoding":
-					case "Content-Language":
-					case "Content-MD5":
-					case "Content-Type":
-					case "Expires":
+					switch (header.ToLowerInvariant ()) {
+					case "content-encoding":
+					case "content-language":
+					case "content-md5":
+					case "content-type":
+					case "expires":
 						throw new ProtocolViolationException ();
-					case "Accept":
-					case "Authorization":
-					case "Cache-Control":
-					case "Range":
+					case "accept":
+					case "authorization":
+					case "cache-control":
+					case "range":
 						throw new NotSupportedException ();
 					default:
 						// cross-domain GET cannot set headers for the browser stack, see:
