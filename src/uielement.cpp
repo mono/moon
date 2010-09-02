@@ -1635,24 +1635,21 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
-		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		ContextNode *node = (ContextNode *) ctx->Pop ();
+		MoonSurface *src = node->GetBitmap ();
+		cairo_t     *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		Effect      *effect = GetRenderEffect ();
+		Rect        r = node->GetBitmapExtents ();
 
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Effect *effect = GetRenderEffect ();
-			Rect   r = node->GetBitmapExtents ();
+		cairo_identity_matrix (cr);
+		r.RoundOut ().Draw (cr);
+		cairo_clip (cr);
 
-			cairo_identity_matrix (cr);
-			r.RoundOut ().Draw (cr);
-			cairo_clip (cr);
-
-			if (!effect->Render (cr, src,
-					     NULL,
-					     r.x, r.y,
-					     r.width, r.height))
-				g_warning ("UIElement::PostRender failed to apply pixel effect.");
-		}
+		if (!effect->Render (cr, src,
+				     NULL,
+				     r.x, r.y,
+				     r.width, r.height))
+			g_warning ("UIElement::PostRender failed to apply pixel effect.");
 
 		cairo_restore (cr);
 		delete node;
@@ -1665,33 +1662,30 @@ UIElement::PostRender (Stack *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
-		ContextNode     *node = (ContextNode *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ((ContextNode *) ctx->Top ())->GetCr ();
-		cairo_matrix_t  ctm;
+		ContextNode    *node = (ContextNode *) ctx->Pop ();
+		MoonSurface    *src = node->GetBitmap ();
+		cairo_t        *cr = ((ContextNode *) ctx->Top ())->GetCr ();
+		cairo_matrix_t ctm;
+		Rect           r = GetSubtreeExtents ().GrowBy (effect_padding);
+		double         m[16];
 
 		cairo_get_matrix (cr, &ctm);
 
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect   r = GetSubtreeExtents ().GrowBy (effect_padding);
-			double m[16];
+		Matrix3D::Affine (m,
+				  ctm.xx, ctm.xy,
+				  ctm.yx, ctm.yy,
+				  ctm.x0, ctm.y0);
+		Matrix3D::Multiply (m, local_projection, m);
 
-			Matrix3D::Affine (m,
-					  ctm.xx, ctm.xy,
-					  ctm.yx, ctm.yy,
-					  ctm.x0, ctm.y0);
-			Matrix3D::Multiply (m, local_projection, m);
+		cairo_identity_matrix (cr);
+		r.Transform (m).RoundOut ().Draw (cr);
+		cairo_clip (cr);
 
-			cairo_identity_matrix (cr);
-			r.Transform (m).RoundOut ().Draw (cr);
-			cairo_clip (cr);
-
-			if (!composite->Render (cr, src,
-						m,
-						r.x, r.y,
-						r.width, r.height))
-				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
-		}
+		if (!composite->Render (cr, src,
+					m,
+					r.x, r.y,
+					r.width, r.height))
+			g_warning ("UIElement::PostRender failed to apply perspective transformation.");
 
 		cairo_restore (cr);
 		delete node;

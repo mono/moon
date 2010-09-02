@@ -27,6 +27,7 @@ int
 main (int argc, char **argv)
 {
 	cairo_t *cr;
+	MoonSurface *surface;
 	cairo_surface_t *dst, *src;
 	TransformEffect *effect;
 	Matrix3D *matrix;
@@ -65,6 +66,8 @@ main (int argc, char **argv)
 	src = cairo_surface_create_similar (dst,
 					    CAIRO_CONTENT_COLOR_ALPHA,
 					    width, height);
+	surface = new CairoSurface (src);
+	cairo_surface_destroy (src);
 	cr = cairo_create (dst);
 
 	effect = new TransformEffect ();
@@ -99,7 +102,7 @@ main (int argc, char **argv)
 
 	while (status && count-- > 0) {
 		status = effect->Render (cr,
-					 src,
+					 surface,
 					 (double *) matrix->GetMatrixValues (),
 					 0, 0, width, height);
 
@@ -109,7 +112,7 @@ main (int argc, char **argv)
 	matrix->unref ();
 
 	cairo_destroy (cr);
-	cairo_surface_destroy (src);
+	surface->unref ();
 	cairo_surface_destroy (dst);
 	g_free (data);
 

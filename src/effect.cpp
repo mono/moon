@@ -1445,18 +1445,19 @@ Effect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-Effect::Render (cairo_t         *cr,
-		cairo_surface_t *src,
-		const double    *matrix,
-		double          x,
-		double          y,
-		double          width,
-		double          height)
+Effect::Render (cairo_t      *cr,
+		MoonSurface  *src,
+		const double *matrix,
+		double       x,
+		double       y,
+		double       width,
+		double       height)
 {
 	struct pipe_surface    *surface;
 	struct pipe_resource   *texture;
 	cairo_rectangle_list_t *clip;
 	cairo_surface_t        *dst;
+	cairo_surface_t        *cs;
 	Rect                   bounds = Rect (-32768, -32768, 65536, 65536);
 	double                 dstX, dstY;
 	bool                   status = 0;
@@ -1490,8 +1491,10 @@ Effect::Render (cairo_t         *cr,
 
 	MaybeUpdateShader ();
 
+	cs = src->Cairo ();
+
 	surface = GetShaderSurface (dst);
-	texture = GetShaderTexture (src);
+	texture = GetShaderTexture (cs);
 
 	if (surface && texture)
 		status = Composite (surface, texture, matrix,
@@ -1508,6 +1511,8 @@ Effect::Render (cairo_t         *cr,
 		cairo_pattern_destroy (data);
 		cairo_rectangle_list_destroy (clip);
 	}
+
+	cairo_surface_destroy (cs);
 
 	return status;
 }
@@ -1734,21 +1739,23 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-BlurEffect::Render (cairo_t         *cr,
-		    cairo_surface_t *src,
-		    const double    *matrix,
-		    double          x,
-		    double          y,
-		    double          width,
-		    double          height)
+BlurEffect::Render (cairo_t      *cr,
+		    MoonSurface  *src,
+		    const double *matrix,
+		    double       x,
+		    double       y,
+		    double       width,
+		    double       height)
 {
+	cairo_surface_t *cs = src->Cairo ();
+
 	MaybeUpdateFilter ();
 
 	/* table based filter code when possible */
-	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
-		int           pw = cairo_image_surface_get_width (src);
-		int           ph = cairo_image_surface_get_height (src);
-		int           stride = cairo_image_surface_get_stride (src);
+	if (cairo_surface_get_type (cs) == CAIRO_SURFACE_TYPE_IMAGE) {
+		int           pw = cairo_image_surface_get_width (cs);
+		int           ph = cairo_image_surface_get_height (cs);
+		int           stride = cairo_image_surface_get_stride (cs);
 		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
 
 		if (nfiltervalues) {
@@ -1756,7 +1763,7 @@ BlurEffect::Render (cairo_t         *cr,
 			cairo_surface_t      *image;
 			double               srcX, srcY;
 
-			sw_filter_blur (cairo_image_surface_get_data (src),
+			sw_filter_blur (cairo_image_surface_get_data (cs),
 					data,
 					pw,
 					ph,
@@ -1770,23 +1777,26 @@ BlurEffect::Render (cairo_t         *cr,
 								     ph,
 								     stride);
 
-			cairo_surface_get_device_offset (src, &srcX, &srcY);
+			cairo_surface_get_device_offset (cs, &srcX, &srcY);
 			cairo_surface_set_device_offset (image, srcX, srcY);
 
 			cairo_set_source_surface (cr, image, 0, 0);
 			cairo_surface_destroy (image);
 		}
 		else {
-			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_set_source_surface (cr, cs, 0, 0);
 		}
 
 		/* paint clip */
 		cairo_paint (cr);
 
 		g_free (data);
+		cairo_surface_destroy (cs);
 
 		return 1;
 	}
+
+	cairo_surface_destroy (cs);
 
 	return Effect::Render (cr, src, matrix, x, y, width, height);
 }
@@ -2151,25 +2161,27 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-DropShadowEffect::Render (cairo_t         *cr,
-			  cairo_surface_t *src,
-			  const double    *matrix,
-			  double          x,
-			  double          y,
-			  double          width,
-			  double          height)
+DropShadowEffect::Render (cairo_t      *cr,
+			  MoonSurface  *src,
+			  const double *matrix,
+			  double       x,
+			  double       y,
+			  double       width,
+			  double       height)
 {
+	cairo_surface_t *cs = src->Cairo ();
+
 	MaybeUpdateFilter ();
 
 	/* table based filter code when possible */
-	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+	if (cairo_surface_get_type (cs) == CAIRO_SURFACE_TYPE_IMAGE) {
 		const cairo_format_t format = CAIRO_FORMAT_ARGB32;
 		cairo_surface_t      *image;
 		double               srcX, srcY;
 
-		int           pw = cairo_image_surface_get_width (src);
-		int           ph = cairo_image_surface_get_height (src);
-		int           stride = cairo_image_surface_get_stride (src);
+		int           pw = cairo_image_surface_get_width (cs);
+		int           ph = cairo_image_surface_get_height (cs);
+		int           stride = cairo_image_surface_get_stride (cs);
 		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
 
 		double direction = GetDirection () * (M_PI / 180.0);
@@ -2187,7 +2199,7 @@ DropShadowEffect::Render (cairo_t         *cr,
 		rgba[SW_BLUE]  = (int) ((color->b * opacity) * 255.0);
 		rgba[SW_ALPHA] = (int) (opacity * 255.0);
 
-		sw_filter_drop_shadow (cairo_image_surface_get_data (src),
+		sw_filter_drop_shadow (cairo_image_surface_get_data (cs),
 				       data,
 				       pw,
 				       ph,
@@ -2204,7 +2216,7 @@ DropShadowEffect::Render (cairo_t         *cr,
 							     ph,
 							     stride);
 
-		cairo_surface_get_device_offset (src, &srcX, &srcY);
+		cairo_surface_get_device_offset (cs, &srcX, &srcY);
 		cairo_surface_set_device_offset (image, srcX, srcY);
 
 		cairo_set_source_surface (cr, image, 0, 0);
@@ -2214,9 +2226,12 @@ DropShadowEffect::Render (cairo_t         *cr,
 		cairo_paint (cr);
 
 		g_free (data);
+		cairo_surface_destroy (cs);
 
 		return 1;
 	}
+
+	cairo_surface_destroy (cs);
 
 	return Effect::Render (cr, src, matrix, x, y, width, height);
 }
@@ -4021,29 +4036,34 @@ TransformEffect::Clear ()
 }
 
 bool
-TransformEffect::Render (cairo_t         *cr,
-			 cairo_surface_t *src,
-			 const double    *matrix,
-			 double          x,
-			 double          y,
-			 double          width,
-			 double          height)
+TransformEffect::Render (cairo_t      *cr,
+			 MoonSurface  *src,
+			 const double *matrix,
+			 double       x,
+			 double       y,
+			 double       width,
+			 double       height)
 {
-	if (cairo_surface_get_type (src)         == CAIRO_SURFACE_TYPE_IMAGE &&
-	    cairo_image_surface_get_width (src)  == width &&
-	    cairo_image_surface_get_height (src) == height) {
+	cairo_surface_t *cs = src->Cairo ();
+
+	if (cairo_surface_get_type (cs)         == CAIRO_SURFACE_TYPE_IMAGE &&
+	    cairo_image_surface_get_width (cs)  == width &&
+	    cairo_image_surface_get_height (cs) == height) {
 		int x0, y0;
 
 		if (Matrix3D::IsIntegerTranslation (matrix, &x0, &y0)) {
 			cairo_save (cr);
 			cairo_translate (cr, x0, y0);
-			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_set_source_surface (cr, cs, 0, 0);
 			cairo_paint_with_alpha (cr, opacity);
 			cairo_restore (cr);
+			cairo_surface_destroy (cs);
 
 			return 1;
 		}
 	}
+
+	cairo_surface_destroy (cs);
 
 	return Effect::Render (cr, src, matrix, x, y, width, height);
 }

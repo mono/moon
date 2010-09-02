@@ -18,6 +18,7 @@
 #include "enums.h"
 #include "dependencyobject.h"
 #include "rect.h"
+#include "surface.h"
 
 #define MAX_SAMPLERS  16
 #define MAX_CONSTANTS 32
@@ -96,13 +97,13 @@ public:
 	//
 	// Render
 	//
-	virtual bool Render (cairo_t         *cr,
-			     cairo_surface_t *src,
-			     const double    *matrix,
-			     double          x,
-			     double          y,
-			     double          width,
-			     double          height);
+	virtual bool Render (cairo_t      *cr,
+			     MoonSurface  *src,
+			     const double *matrix,
+			     double       x,
+			     double       y,
+			     double       width,
+			     double       height);
 
 	static void Initialize ();
 	static void Shutdown ();
@@ -209,13 +210,13 @@ public:
 	//
 	// Render
 	//
-	bool Render (cairo_t         *cr,
-		     cairo_surface_t *src,
-		     const double    *matrix,
-		     double          x,
-		     double          y,
-		     double          width,
-		     double          height);
+	bool Render (cairo_t      *cr,
+		     MoonSurface  *src,
+		     const double *matrix,
+		     double       x,
+		     double       y,
+		     double       width,
+		     double       height);
 
 protected:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -300,13 +301,13 @@ public:
 	//
 	// Render
 	//
-	bool Render (cairo_t         *cr,
-		     cairo_surface_t *src,
-		     const double    *matrix,
-		     double          x,
-		     double          y,
-		     double          width,
-		     double          height);
+	bool Render (cairo_t      *cr,
+		     MoonSurface  *src,
+		     const double *matrix,
+		     double       x,
+		     double       y,
+		     double       width,
+		     double       height);
 
 protected:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -498,13 +499,13 @@ public:
 	//
 	// Render
 	//
-	bool Render (cairo_t         *cr,
-		     cairo_surface_t *src,
-		     const double    *matrix,
-		     double          x,
-		     double          y,
-		     double          width,
-		     double          height);
+	bool Render (cairo_t      *cr,
+		     MoonSurface  *src,
+		     const double *matrix,
+		     double       x,
+		     double       y,
+		     double       width,
+		     double       height);
 
 	void SetType (int value);
 	void SetOpacity (double value);
