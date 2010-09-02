@@ -225,11 +225,15 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 	bool result = Collection::AddWithError (v, error) != -1;
 	from_resource_dictionary_api = false;
 	if (result) {
+		DependencyObject *ob = v->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) ? v->AsDependencyObject () : NULL;
+		if (ob && GetMentor ())
+			ob->SetMentor (GetMentor ());
+
 		g_hash_table_insert (hash, g_strdup (key), v);
 
-		if (addStrongRef && v->Is (GetDeployment(), Type::DEPENDENCY_OBJECT)) {
-			addStrongRef (this, v->AsDependencyObject(), key);
-			v->AsDependencyObject()->unref();
+		if (addStrongRef && ob) {
+			addStrongRef (this, ob, key);
+			ob->unref();
 			v->SetNeedUnref (false);
 		}
 
@@ -293,9 +297,12 @@ ResourceDictionary::Remove (const char *key)
 	Collection::Remove (orig_value);
 	from_resource_dictionary_api = false;
 
-	if (clearStrongRef && orig_value->Is (GetDeployment(), Type::DEPENDENCY_OBJECT))
-		clearStrongRef (this, orig_value->AsDependencyObject(), key);
-
+	DependencyObject *ob = orig_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) ? orig_value->AsDependencyObject () : NULL;
+	if (ob) {
+		ob->SetMentor (NULL);
+		if (clearStrongRef)
+			clearStrongRef (this, ob, key);
+	}
 	g_hash_table_remove (hash, key);
 
 	return true;

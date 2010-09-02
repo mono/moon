@@ -82,10 +82,10 @@ public:
 
 	void UpdateStyle (Style *Style, MoonError *error);
 
+	GHashTable *style_hash;
 
 private:
 	GHRFunc dispose_value;
-	GHashTable *style_hash;
 	Style *style;
 };
 

@@ -228,8 +228,10 @@ Control::DoApplyTemplateWithError (MoonError *error)
 	// and it is cleared when ElementRemoved is called.
 	if (template_root != root && template_root != NULL) {
 		template_root->SetParent (NULL, NULL);
+		template_root->SetMentor (NULL);
 		MOON_CLEAR_FIELD (template_root);
 	}
+
 	MOON_SET_FIELD_NAMED (template_root, "TemplateRoot", (UIElement *)root);
 
 	ElementAdded (template_root);
@@ -257,6 +259,7 @@ Control::ElementRemoved (UIElement *item)
 	MoonError e;
 	if (template_root != NULL) {
 		template_root->SetParent (NULL, &e);
+		template_root->SetMentor (NULL);
 		MOON_CLEAR_FIELD_NAMED (template_root, "TemplateRoot");
 	}
 	item->SetParent (NULL, &e);

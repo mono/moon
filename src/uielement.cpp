@@ -776,6 +776,7 @@ UIElement::ElementRemoved (UIElement *item)
 	item->SetVisualParent (NULL);
 	item->SetIsLoaded (false);
 	item->SetIsAttached (false);
+	item->SetMentor (NULL);
 
 	Rect emptySlot (0,0,0,0);
 	LayoutInformation::SetLayoutSlot (item, &emptySlot);
@@ -797,6 +798,10 @@ UIElement::ElementAdded (UIElement *item)
 	InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
 	item->SetIsAttached (IsAttached ());
 	item->SetIsLoaded (IsLoaded ());
+	DependencyObject *o = this;
+	while (o && !o->Is (Type::FRAMEWORKELEMENT))
+		o = o->GetMentor ();
+	item->SetMentor (o);
 
 	UpdateBounds (true);
 	

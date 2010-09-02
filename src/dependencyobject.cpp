@@ -2162,6 +2162,10 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		if (new_value && new_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 			new_as_dep = new_value->AsDependencyObject ();
 
+		if (old_as_dep) {
+			old_as_dep->SetMentor (NULL);
+		}
+
 		if (old_as_dep && setsParent) {
 			old_as_dep->SetIsAttached (false);
 			
@@ -2200,7 +2204,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			// add ourselves as a target
 			new_as_dep->AddTarget (this);
 		}
-		
+
+		if (new_as_dep) {
+			DependencyObject *e = this;
+			while (e && !e->Is (Type::FRAMEWORKELEMENT))
+				e = e->mentor;
+			new_as_dep->SetMentor (e);
+		}
+
 		// we need to make this optional, as doing it for NameScope
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
@@ -2482,8 +2493,37 @@ DependencyObject::SetMentor (DependencyObject *value)
 void
 DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor)
 {
+	// If this object is a framework element, it will already be the mentor for all its child values.
+	// If it is *not* a FrameworkElement then 'new_mentor' will be the mentor for all the child
+	// values of this object so we should propagate it here
+	if (!this->Is (Type::FRAMEWORKELEMENT)) {
+		AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+		StylePropertyValueProvider *style = (StylePropertyValueProvider *) providers[PropertyPrecedence_LocalStyle];
+		StylePropertyValueProvider *default_style = (StylePropertyValueProvider *) providers[PropertyPrecedence_DefaultStyle];
+	
+		g_hash_table_foreach (local_values, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		if (style) {
+			g_hash_table_foreach (style->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+			g_hash_table_foreach (default_style->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		}
+	}
+
 	if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
 		mentorChanged (this, new_mentor);
+}
+
+
+void
+DependencyObject::propagate_mentor (DependencyProperty *key, Value *value, gpointer data)
+{
+	Deployment *d = Deployment::GetCurrent ();
+	DependencyObject *mentor = (DependencyObject *) data;
+	if (value->Is (d, Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *v = value->AsDependencyObject ();
+		if (v)
+			v->SetMentor (mentor);
+	}
 }
 
 void
@@ -3148,12 +3188,6 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 			MOON_CLEAR_FIELD_NAMED (this->parent, "Parent");
 		if (parent)
 			MOON_SET_FIELD_NAMED (this->parent, "Parent", parent);
-
-		DependencyObject *e = GetParent ();
-		Types *types = GetDeployment ()->GetTypes ();
-		while (e && !types->IsSubclassOf (e->GetObjectType (), Type::FRAMEWORKELEMENT))
-			e = e->GetParent ();
-		SetMentor (e);
 	}
 }
 

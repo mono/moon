@@ -436,11 +436,29 @@ DependencyObjectCollection::~DependencyObjectCollection ()
 {
 }
 
+
+void
+DependencyObjectCollection::OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor)
+{
+	Collection::OnMentorChanged (old_mentor, new_mentor);
+
+	DependencyObject *obj;
+	Value *value;
+	
+	for (guint i = 0; i < array->len; i++) {
+		value = (Value *) array->pdata[i];
+		obj = value->AsDependencyObject ();
+		if (obj)
+			obj->SetMentor (new_mentor);
+	}
+}
+
 bool
 DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 	
+	obj->SetMentor (GetMentor ());
 	DependencyObject *parent = obj->GetParent();
 
 	if (parent) {
@@ -478,6 +496,7 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 	if (obj && !GetDeployment()->IsShuttingDown ()) {
 		obj->RemovePropertyChangeListener (this);
 		obj->SetParent (NULL, NULL);
+		obj->SetMentor (NULL);
 		obj->SetIsAttached (false);
 	}
 	

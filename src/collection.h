@@ -132,6 +132,7 @@ protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObjectCollection ();
 	
+	virtual void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor);
 	virtual ~DependencyObjectCollection ();
 
 	friend class MoonUnmanagedFactory;

@@ -1052,6 +1052,8 @@ FrameworkElement::ApplyTemplateWithError (MoonError *error)
 		return false;
 	
 	bool result = DoApplyTemplateWithError (error);
+	if (GetSubtreeObject ())
+		GetSubtreeObject ()->SetMentor (this);
 	if (result)
 		OnApplyTemplate ();
 	return result;
@@ -1092,6 +1094,7 @@ FrameworkElement::ElementRemoved (UIElement *obj)
 	if (GetSubtreeObject () == obj) {
 		MoonError e;
 		obj->SetParent (NULL, &e);
+		obj->SetMentor (NULL);
 		SetSubtreeObject (NULL);
 	}
 }
