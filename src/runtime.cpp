@@ -366,9 +366,7 @@ runtime_flags_set_show_fps (gboolean flag)
 Surface::Surface (MoonWindow *window)
 	: EventObject (Type::SURFACE)
 {
-	//	GetDeployment ()->SetSurface (this);
-
-	// EnsureManagedPeer ();
+	GetDeployment ()->SetSurface (this);
 
 	main_thread = pthread_self ();
 	main_thread_inited = true;
