@@ -142,6 +142,10 @@ namespace System.Net.Browser {
 					case "Range":
 						throw new NotSupportedException ();
 					default:
+						// cross-domain GET cannot set headers for the browser stack, see:
+						// http://msdn.microsoft.com/en-us/library/cc838250(VS.95).aspx
+						if (!IsSiteOfOrigin ())
+							throw new NotSupportedException ("x");
 						if (IsMultilineValue (Headers [header]))
 							throw new NotSupportedException ();
 						break;

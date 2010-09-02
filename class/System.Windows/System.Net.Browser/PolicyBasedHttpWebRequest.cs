@@ -90,6 +90,11 @@ namespace System.Net.Browser {
 			return (policy == CrossDomainPolicyManager.PolicyDownloadPolicy);
 		}
 
+		internal bool IsSiteOfOrigin ()
+		{
+			return (policy is SiteOfOriginPolicy);
+		}
+
 		public override string Method {
 			get { return method; }
 			set {
