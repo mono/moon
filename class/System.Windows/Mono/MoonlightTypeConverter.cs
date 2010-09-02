@@ -149,9 +149,17 @@ namespace Mono {
 			}
 			if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
 				return ValueFromConvertible (destinationType, (IConvertible) value);
-			if (value is Thickness && destinationType == typeof (double))
-				return ((Thickness) value).Left;
-
+			
+			if (value is Thickness) {
+				if (destinationType == typeof (CornerRadius)) {
+					Thickness thickness = (Thickness) value;
+					
+					// Give the same results as if we did Thickness.ToString() and then parsed that as a CornerRadius
+					return new CornerRadius (thickness.Left, thickness.Top, thickness.Right, thickness.Bottom);
+				} else if (destinationType == typeof (double))
+					return ((Thickness) value).Left;
+			}
+			
 			if (str_val != null) {
 				Kind k = destinationKind;
 
@@ -171,7 +179,7 @@ namespace Mono {
 
 			if (destinationType.IsAssignableFrom (value.GetType ()))
 				return value;
-
+			
 			return base.ConvertFrom (context, culture, value);
 		}
 			
