@@ -3627,7 +3627,7 @@ xaml_bool_from_str (const char *s, bool *res)
 }
 
 bool
-xaml_value_from_str_with_parser (gpointer p, Type::Kind type, const char *prop_name, const char *str, Value **v, bool *v_set)
+xaml_value_from_str_with_parser (void *p, Type::Kind type, const char *prop_name, const char *str, Value **v, bool *v_set)
 {
 	return value_from_str_with_parser ((XamlParserInfo *) p, type, prop_name, str, v, v_set);
 }
