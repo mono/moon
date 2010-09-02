@@ -549,8 +549,11 @@ ImageBrush::Dispose ()
 {
 	Value *source = GetValueNoAutoCreate (ImageSourceProperty);
 
-	if (source)
-		((BitmapImage *) source->AsImageSource ())->RemoveAllHandlers (this);
+	if (source) {
+		ImageSource *src = source->AsImageSource ();
+		if (src)
+			src->RemoveAllHandlers (this);
+	}
 
 	TileBrush::Dispose ();
 }
