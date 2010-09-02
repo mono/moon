@@ -920,7 +920,7 @@ Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clea
 
 	ctx->Push (new Context::Node (target));
 
-	cairo_t *cr = ctx->Top ()->GetCr ();
+	cairo_t *cr = ctx->Cairo ();
 
 	int layer_count = 0;
 	if (layers)
@@ -1613,8 +1613,8 @@ RenderNode::Render (Context *ctx)
 	if (pre_render)
 		pre_render (ctx, uielement, region, use_occlusion_culling);
 
-	if (render_element && ctx->Top ()->GetCr ()) {
-		uielement->Render (ctx->Top ()->GetCr (), region);
+	if (render_element && ctx->Cairo ()) {
+		uielement->Render (ctx->Cairo (), region);
 	}
 	
 	if (post_render)

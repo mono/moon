@@ -1288,7 +1288,7 @@ void
 UIElement::DoRender (Context *ctx, Region *parent_region)
 {
 	Region  *region;
-	cairo_t *cr = ctx->Top ()->GetCr ();
+	cairo_t *cr = ctx->Cairo ();
 
 	if (!cr)
 		return;
@@ -1314,7 +1314,7 @@ UIElement::DoRender (Context *ctx, Region *parent_region)
 
 	PreRender (ctx, region, false);
 
-	cr = ctx->Top ()->GetCr ();
+	cr = ctx->Cairo ();
 	if (cr)
 		Render (cr, region);
 
@@ -1462,28 +1462,28 @@ void
 UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 {
 	if (flags & COMPOSITE_TRANSFORM) {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
 		cairo_save (cr);
 		ctx->Push (new Context::Node (r, &scale_xform));
 	}
 	else {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 
 		cairo_save (cr);
 		cairo_transform (cr, &render_xform);
 	}
 
 	if (GetClip ()) {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 
 		cairo_save (cr);
 		RenderClipPath (cr);
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
 		cairo_save (cr);
@@ -1491,7 +1491,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
-		cairo_t        *cr = ctx->Top ()->GetCr ();
+		cairo_t        *cr = ctx->Cairo ();
 		Rect           r = GetSubtreeExtents ().Transform (cr);
 		cairo_matrix_t matrix;
 
@@ -1559,7 +1559,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_CACHE) {
 		Context::Node     *node = (Context::Node *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ctx->Top ()->GetCr ();
+		cairo_t         *cr = ctx->Cairo ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			Rect r = node->GetBitmapExtents ();
@@ -1578,7 +1578,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_OPACITY_MASK) {
 		Context::Node     *node = (Context::Node *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ctx->Top ()->GetCr ();
+		cairo_t         *cr = ctx->Cairo ();
 		cairo_matrix_t  ctm;
 
 		cairo_get_matrix (cr, &ctm);
@@ -1611,7 +1611,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_OPACITY) {
 		Context::Node     *node = (Context::Node *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ctx->Top ()->GetCr ();
+		cairo_t         *cr = ctx->Cairo ();
 
 		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			double local_opacity = GetOpacity ();
@@ -1629,7 +1629,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 
 		cairo_restore (cr);
 	}
@@ -1637,7 +1637,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_EFFECT) {
 		Context::Node *node = (Context::Node *) ctx->Pop ();
 		MoonSurface *src = node->GetBitmap ();
-		cairo_t     *cr = ctx->Top ()->GetCr ();
+		cairo_t     *cr = ctx->Cairo ();
 		Effect      *effect = GetRenderEffect ();
 		Rect        r = node->GetBitmapExtents ();
 
@@ -1656,7 +1656,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (GetClip ()) {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 
 		cairo_restore (cr);
 	}
@@ -1664,7 +1664,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_TRANSFORM) {
 		Context::Node    *node = (Context::Node *) ctx->Pop ();
 		MoonSurface    *src = node->GetBitmap ();
-		cairo_t        *cr = ctx->Top ()->GetCr ();
+		cairo_t        *cr = ctx->Cairo ();
 		cairo_matrix_t ctm;
 		Rect           r = GetSubtreeExtents ().GrowBy (effect_padding);
 		double         m[16];
@@ -1691,13 +1691,13 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		delete node;
 	}
 	else {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 
 		cairo_restore (cr);
 	}
 
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 
 		cairo_save (cr);
 		cairo_new_path (cr);
@@ -1722,7 +1722,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES) {
-		cairo_t *cr = ctx->Top ()->GetCr ();
+		cairo_t *cr = ctx->Cairo ();
 
 		cairo_save (cr);
 		cairo_new_path (cr);

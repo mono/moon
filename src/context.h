@@ -44,6 +44,8 @@ public:
 
 	Node *Pop () { return (Node *) Stack::Pop (); }
 	Node *Top () { return (Node *) Stack::Top (); }
+
+	cairo_t *Cairo () { return Top ()->GetCr (); }
 };
 
 };
