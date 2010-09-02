@@ -687,6 +687,9 @@ namespace Mono.Xaml {
 			case "Class":
 				// The class attribute is handled when we initialize the element
 				return;
+			case "Uid":
+                               // This attribute is just ignored, but allowed.
+                               return;
 			default:
 				throw ParseException ("Unknown x: attribute ({0}).", reader.LocalName);
 			}
