@@ -78,7 +78,7 @@ namespace System.Windows.Data
 			PropertyInfo = type.GetProperty (PropertyName);
 			DependencyProperty prop;
 			Types.Ensure (type);
-			if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
+			if (new_do != null && DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
 				DependencyProperty = prop;
 				dpChanged = DPChanged;
 				Mono.NativeMethods.dependency_object_add_property_change_handler (new_do.native, DependencyProperty.Native, dpChanged, IntPtr.Zero);
