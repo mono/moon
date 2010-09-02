@@ -1288,16 +1288,17 @@ UIElement::ReleaseMouseCapture ()
 void
 UIElement::DoRender (Context *ctx, Region *parent_region)
 {
-	Region  *region;
-	cairo_t *cr = ctx->Cairo ();
+	Region *region;
 
-	if (!cr)
+	if (ctx->IsImmutable ())
 		return;
 
 	if (RenderToIntermediate ()) {
 		region = new Region (GetSubtreeExtents ().Transform (&scale_xform).RoundOut ());
 	}
 	else {
+		cairo_t *cr = ctx->Cairo ();
+
 		region = new Region (GetSubtreeExtents ().Transform (&render_xform).Transform (cr).RoundOut ());
 		region->Intersect (parent_region);
 	}
@@ -1315,9 +1316,11 @@ UIElement::DoRender (Context *ctx, Region *parent_region)
 
 	PreRender (ctx, region, false);
 
-	cr = ctx->Cairo ();
-	if (cr)
+	if (ctx->IsMutable ()) {
+		cairo_t *cr = ctx->Cairo ();
+
 		Render (cr, region);
+	}
 
 	PostRender (ctx, region, false);
 
@@ -1558,7 +1561,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_CACHE) {
-		Context::Node     *node = (Context::Node *) ctx->Pop ();
+		Context::Node   *node = (Context::Node *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ctx->Cairo ();
 
@@ -1577,7 +1580,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_OPACITY_MASK) {
-		Context::Node     *node = (Context::Node *) ctx->Pop ();
+		Context::Node   *node = (Context::Node *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ctx->Cairo ();
 		cairo_matrix_t  ctm;
@@ -1610,7 +1613,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_OPACITY) {
-		Context::Node     *node = (Context::Node *) ctx->Pop ();
+		Context::Node   *node = (Context::Node *) ctx->Pop ();
 		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
 		cairo_t         *cr = ctx->Cairo ();
 
@@ -1637,10 +1640,10 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_EFFECT) {
 		Context::Node *node = (Context::Node *) ctx->Pop ();
-		MoonSurface *src = node->GetBitmap ();
-		cairo_t     *cr = ctx->Cairo ();
-		Effect      *effect = GetRenderEffect ();
-		Rect        r = node->GetBitmapExtents ();
+		MoonSurface   *src = node->GetBitmap ();
+		cairo_t       *cr = ctx->Cairo ();
+		Effect        *effect = GetRenderEffect ();
+		Rect          r = node->GetBitmapExtents ();
 
 		cairo_identity_matrix (cr);
 		r.RoundOut ().Draw (cr);
@@ -1663,7 +1666,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
-		Context::Node    *node = (Context::Node *) ctx->Pop ();
+		Context::Node  *node = (Context::Node *) ctx->Pop ();
 		MoonSurface    *src = node->GetBitmap ();
 		cairo_t        *cr = ctx->Cairo ();
 		cairo_matrix_t ctm;

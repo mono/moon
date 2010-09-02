@@ -33,6 +33,7 @@ public:
 		MoonSurface *GetBitmap ();
 		void SetBitmap (MoonSurface *surface);
 		Rect GetBitmapExtents (void);
+		bool Readonly ();
 
 	private:
 		Rect           box;
@@ -46,6 +47,8 @@ public:
 	Node *Top () { return (Node *) Stack::Top (); }
 
 	cairo_t *Cairo () { return Top ()->GetCr (); }
+	bool IsImmutable () { return Top ()->Readonly (); }
+	bool IsMutable () { return !IsImmutable (); }
 };
 
 };

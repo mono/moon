@@ -847,7 +847,7 @@ InkPresenter::PostRender (Context *ctx, Region *region, bool skip_children)
 	StrokeCollection *strokes = GetStrokes ();
 	int strokes_count = strokes->GetCount ();
 
-	if (strokes_count > 0 && ctx->Cairo ()) {
+	if (strokes_count > 0 && ctx->IsMutable ()) {
 		cairo_t *cr = ctx->Cairo ();
 	
 		cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);

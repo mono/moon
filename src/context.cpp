@@ -136,5 +136,11 @@ Context::Node::GetBitmapExtents (void)
 {
 	return box.RoundOut ();
 }
+
+bool
+Context::Node::Readonly (void)
+{
+	return readonly;
+}
   
 };

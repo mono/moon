@@ -1611,7 +1611,7 @@ RenderNode::Render (Context *ctx)
 	if (pre_render)
 		pre_render (ctx, uielement, region, use_occlusion_culling);
 
-	if (render_element && ctx->Cairo ()) {
+	if (render_element && ctx->IsMutable ()) {
 		uielement->Render (ctx->Cairo (), region);
 	}
 	
