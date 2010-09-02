@@ -99,10 +99,21 @@ namespace System.Windows.Data {
 				if (Binding.Source != null) {
 					source = Binding.Source;
 				} else if (Binding.ElementName != null) {
+					// If we 'Target' in a custom DP it's possible
+					// 'Target' won't be able to find the ElementName.
+					// In this case we just use the Mentor and hope.
 					source = Target.FindName (Binding.ElementName);
+					if (source == null && Target.Mentor != null)
+						source = Target.Mentor.FindName (Binding.ElementName);
+
+					// When doing ElementName bindings we need to know when we've been
+					// added to the live tree in order to invalidate the binding and do
+					// the name lookup again. If we can't find a mentor and Target isn't
+					// a FrameworkElement, we need to wait for the mentor to be attached
+					// and then do the lookup when it's loaded.
 					var feTarget = Target as FrameworkElement ?? Target.Mentor;
 					if (feTarget == null) {
-						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName ('{0}') could not be found and no FrameworkElement could be found", Binding.ElementName);
+						Target.MentorChanged += InvalidateAfterMentorChanged;
 					} else {
 						feTarget.Loaded += HandleFeTargetLoaded;
 					}
@@ -139,6 +150,13 @@ namespace System.Windows.Data {
 					PropertyPathWalker.Update (source);
 				return source;
 			}
+		}
+
+		void InvalidateAfterMentorChanged (object sender, EventArgs e)
+		{
+			Target.MentorChanged -= InvalidateAfterMentorChanged;
+			Invalidate ();
+			Target.SetValue (Property, this);
 		}
 
 		void HandleFeTargetLoaded (object sender, RoutedEventArgs e)
