@@ -166,7 +166,8 @@ namespace System.Windows.Data {
 				return;
 
 			using (View.DeferRefresh ()) {
-				View.Culture = Culture;
+				if (Culture != null)
+					View.Culture = Culture;
 				View.GroupDescriptions.Clear ();
 				for (int i = 0; i < GroupDescriptions.Count; i++)
 					View.GroupDescriptions.Add (GroupDescriptions [i]);
