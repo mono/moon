@@ -795,7 +795,8 @@ UIElement::ElementAdded (UIElement *item)
 	//item->UpdateBounds (true);
 	item->Invalidate ();
 	
-	InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
+	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+	inherited->PropagateInheritedPropertiesOnAddingToTree (item);
 	item->SetIsAttached (IsAttached ());
 	item->SetIsLoaded (IsLoaded ());
 	DependencyObject *o = this;

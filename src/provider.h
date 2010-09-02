@@ -93,33 +93,55 @@ private:
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {
 public:
-	InheritedPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence) : PropertyValueProvider (obj, precedence) { };
-	virtual ~InheritedPropertyValueProvider () { };
+	InheritedPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
+	virtual ~InheritedPropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
+
+	DependencyObject* GetPropertySource (DependencyProperty *property);
+	void SetPropertySource (DependencyProperty *property, DependencyObject *source);
 
 	static bool IsPropertyInherited (int propertyId);
 
 
 	// this method is used when a property changes on object @obj,
 	// and that notification needs to propagate down the tree
-	static void PropagateInheritedProperty (DependencyObject *obj, DependencyProperty *property, Value *old_value, Value *new_value);
+	void PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source);
 
 	// this method is used when you add a subtree into a
 	// pre-existing tree.  it propagates all inheritable
 	// properties throughout the tree
-	static void PropagateInheritedPropertiesOnAddingToTree (UIElement *subtreeRoot);
+	void PropagateInheritedPropertiesOnAddingToTree (DependencyObject *subtree);
 private:
+	enum Inheritable {
+		Foreground = 1 << 0,
+		FontFamily = 1 << 1,
+		FontStretch = 1 << 2,
+		FontStyle = 1 << 3,
+		FontWeight = 1 << 4,
+		FontSize = 1 << 5,
+		Language = 1 << 6,
+		FlowDirection = 1 << 7,
+		UseLayoutRounding = 1 << 8,
+		TextDecorations = 1 << 9,
 
-	// given a dependency property and a descendent, this maps the
-	// property to whatever corresponds to that property on the
-	// descendent.
-	//
-	// i.e. Control::ForegroundProperty + Type::TEXTBLOCK = TextBlock::ForegroundProperty
-	//
-	static DependencyProperty* MapPropertyToDescendant (Types *types,
-							    DependencyProperty *property,
-							    Type::Kind descendantKind);
+		InheritableAll = 0x1ff,
+		InheritableNone = 0
+	};
+
+	static Inheritable InheritablePropertyFromPropertyId (int propertyId);
+	static int InheritablePropertyToPropertyId (Types *types, Inheritable property, Type::Kind objectType);
+
+	bool PROP_ADD (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property);
+
+	static int MapPropertyToAncestor (Types *types,
+					  int propertyId,
+					  Type::Kind ancestorKind);
+
+	void walk_subtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen);
+	void walk_tree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen);
+
+	GHashTable *propertyToSupplyingAncestor;
 };
 
 typedef Value* AutoCreator  (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
@@ -127,7 +149,6 @@ typedef Value* AutoCreator  (Type::Kind kind, DependencyProperty *property, Depe
 class AutoCreators {
 public:
 	static AutoCreator default_autocreator;
-
 	static AutoCreator CreateDefaultFontSize;
 	static AutoCreator CreateBlackBrush;
 	static AutoCreator ControlTypeCreator;

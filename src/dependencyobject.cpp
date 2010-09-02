@@ -1736,6 +1736,21 @@ DependencyObject::SetValueWithError (DependencyProperty *property, Value *value,
 	return SetValueWithErrorImpl (property, value, error);
 }
 
+bool
+DependencyObject::PropagateInheritedValue (DependencyProperty *property, DependencyObject *source, Value *old_value, Value *new_value)
+{
+	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+	if (inherited == NULL)
+		return true;
+
+	inherited->SetPropertySource (property, source);
+
+	MoonError unused;
+	ProviderValueChanged (PropertyPrecedence_Inherited, property, old_value, new_value, false, false, false, &unused);
+
+	return GetPropertyValueProvider (property) == PropertyPrecedence_Inherited;
+}
+
 struct RegisterNamesClosure {
 	NameScope *to_ns;
 	MoonError *error;
@@ -2256,8 +2271,25 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			args->unref ();
 #endif
 
-			if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
-				InheritedPropertyValueProvider::PropagateInheritedProperty (this, property, old_value_copy, new_value_copy);
+			InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+			if (providerPrecedence == PropertyPrecedence_Inherited) {
+				DependencyObject *source = inherited->GetPropertySource (property);
+
+				if (source == NULL)
+					g_warning ("ProviderValueChanged called on inherited property with no property source set");
+				else {
+					// FIXME:  we only want to do this if there's no higher precedent value
+					inherited->PropagateInheritedProperty (property, source);
+				}
+			}
+			else {
+				// FIXME: we only want to propagate
+				// ourselves as the source if we have
+				// a higher precedent value (above
+				// Inherited)
+				if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
+					inherited->PropagateInheritedProperty (property, this);
+			}
 
 			delete old_value_copy;
 			delete new_value_copy;
@@ -2880,6 +2912,26 @@ DependencyObject::HasProperty (Type::Kind whatami, DependencyProperty *property,
 	}
 	
 	return true;
+}
+
+int
+DependencyObject::GetPropertyValueProvider (DependencyProperty *property)
+{
+	int provider_bitmask = GPOINTER_TO_INT (g_hash_table_lookup (provider_bitmasks, property));
+	for (int i = 0; i < PropertyPrecedence_Lowest; i ++) {
+		int p = 1 << i;
+		if ((provider_bitmask & p) == p)
+			return i;
+	}
+
+	return -1;
+}
+
+DependencyObject*
+DependencyObject::GetInheritedValueSource (DependencyProperty *property)
+{
+	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+	return inherited->GetPropertySource (property);
 }
 
 DependencyObject *

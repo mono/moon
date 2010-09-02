@@ -525,6 +525,8 @@ TextBlock::SetTextInternal (const char *text)
 		}
 		
 		run->SetText (text);
+		InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+		inherited->PropagateInheritedPropertiesOnAddingToTree (run);
 	} else {
 		// setting text to null results in String.Empty
 		inlines->Clear ();
@@ -705,7 +707,12 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 		// changes being handled elsewhere...
 		return;
 	}
-	
+
+	if (args->GetChangedAction () == CollectionChangedActionAdd) {
+		InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+		inherited->PropagateInheritedPropertiesOnAddingToTree (args->GetNewItem()->AsInline());
+	}	
+
 	setvalue = false;
 	SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 	setvalue = true;

@@ -394,6 +394,8 @@ public:
 	bool SetValueWithError (DependencyProperty *property, Value *value, MoonError *error);
 	bool SetValueWithError (DependencyProperty *property, Value value, MoonError *error);
 
+	bool PropagateInheritedValue (DependencyProperty *property, DependencyObject *source, Value *old_value, Value *new_value);
+
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
@@ -428,6 +430,9 @@ public:
 	void ClearValue (int id, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
 	bool HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits);
+
+	int GetPropertyValueProvider (DependencyProperty *property);
+	DependencyObject* GetInheritedValueSource (DependencyProperty *property);
 
 	DependencyObject *FindName (const char *name);
 	DependencyObject *FindName (const char *name, bool template_item);

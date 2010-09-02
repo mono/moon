@@ -168,6 +168,147 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 //
 // InheritedPropertyValueProvider
 //
+InheritedPropertyValueProvider::InheritedPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence)
+  : PropertyValueProvider (obj, precedence)
+{
+	propertyToSupplyingAncestor = g_hash_table_new (g_direct_hash, g_direct_equal);
+}
+
+InheritedPropertyValueProvider::~InheritedPropertyValueProvider ()
+{
+	g_hash_table_destroy (propertyToSupplyingAncestor);
+}
+
+
+InheritedPropertyValueProvider::Inheritable
+InheritedPropertyValueProvider::InheritablePropertyFromPropertyId (int propertyId)
+{
+	if (propertyId == Control::ForegroundProperty ||
+	    propertyId == TextBlock::ForegroundProperty ||
+	    propertyId == TextElement::ForegroundProperty)
+		return InheritedPropertyValueProvider::Foreground;
+
+	else if (propertyId == Control::FontFamilyProperty ||
+		 propertyId == TextBlock::FontFamilyProperty ||
+		 propertyId == TextElement::FontFamilyProperty)
+		return InheritedPropertyValueProvider::FontFamily;
+
+	else if (propertyId == Control::FontStretchProperty ||
+		 propertyId == TextBlock::FontStretchProperty ||
+		 propertyId == TextElement::FontStretchProperty)
+		return InheritedPropertyValueProvider::FontStretch;
+
+	else if (propertyId == Control::FontStyleProperty ||
+		 propertyId == TextBlock::FontStyleProperty ||
+		 propertyId == TextElement::FontStyleProperty)
+		return InheritedPropertyValueProvider::FontStyle;
+
+	else if (propertyId == Control::FontWeightProperty ||
+		 propertyId == TextBlock::FontWeightProperty ||
+		 propertyId == TextElement::FontWeightProperty)
+		return InheritedPropertyValueProvider::FontWeight;
+
+	else if (propertyId == Control::FontSizeProperty ||
+		 propertyId == TextBlock::FontSizeProperty ||
+		 propertyId == TextElement::FontSizeProperty)
+		return InheritedPropertyValueProvider::FontSize;
+
+	else if (propertyId == FrameworkElement::LanguageProperty ||
+		 propertyId == TextElement::LanguageProperty)
+		return InheritedPropertyValueProvider::Language;
+
+	else if (propertyId == FrameworkElement::FlowDirectionProperty ||
+		 propertyId == Run::FlowDirectionProperty)
+		return InheritedPropertyValueProvider::FlowDirection;
+
+	else if (propertyId == UIElement::UseLayoutRoundingProperty)
+		return InheritedPropertyValueProvider::UseLayoutRounding;
+
+	else if (propertyId == TextElement::TextDecorationsProperty)
+		return InheritedPropertyValueProvider::TextDecorations;
+
+	else
+		return InheritedPropertyValueProvider::InheritableNone;
+}
+
+int
+InheritedPropertyValueProvider::InheritablePropertyToPropertyId (Types *types, Inheritable property, Type::Kind objectType)
+{
+	switch (property) {
+	case InheritedPropertyValueProvider::Foreground:
+		if (types->IsSubclassOf (objectType, Type::CONTROL))
+			return Control::ForegroundProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::ForegroundProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::ForegroundProperty;
+		break;
+	case InheritedPropertyValueProvider::FontFamily:
+		if (types->IsSubclassOf (objectType, Type::CONTROL))
+			return Control::FontFamilyProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::FontFamilyProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::FontFamilyProperty;
+		break;
+	case InheritedPropertyValueProvider::FontStretch:
+		if (types->IsSubclassOf (objectType, Type::CONTROL))
+			return Control::FontStretchProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::FontStretchProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::FontStretchProperty;
+		break;
+	case InheritedPropertyValueProvider::FontStyle:
+		if (types->IsSubclassOf (objectType, Type::CONTROL))
+			return Control::FontStyleProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::FontStyleProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::FontStyleProperty;
+		break;
+	case InheritedPropertyValueProvider::FontWeight:
+		if (types->IsSubclassOf (objectType, Type::CONTROL))
+			return Control::FontWeightProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::FontWeightProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::FontWeightProperty;
+		break;
+	case InheritedPropertyValueProvider::FontSize:
+		if (types->IsSubclassOf (objectType, Type::CONTROL))
+			return Control::FontSizeProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::FontSizeProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::FontSizeProperty;
+		break;
+	case InheritedPropertyValueProvider::Language:
+		if (types->IsSubclassOf (objectType, Type::FRAMEWORKELEMENT))
+			return FrameworkElement::LanguageProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::LanguageProperty;
+		break;
+	case InheritedPropertyValueProvider::FlowDirection:
+		if (types->IsSubclassOf (objectType, Type::FRAMEWORKELEMENT))
+			return FrameworkElement::FlowDirectionProperty;
+		else if (types->IsSubclassOf (objectType, Type::RUN))
+			return Run::FlowDirectionProperty;
+		break;
+	case InheritedPropertyValueProvider::UseLayoutRounding:
+		if (types->IsSubclassOf (objectType, Type::UIELEMENT))
+			return UIElement::UseLayoutRoundingProperty;
+		break;
+	case InheritedPropertyValueProvider::TextDecorations:
+		if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::TextDecorationsProperty;
+	default:
+		break;
+	}
+
+	return -1;
+}
+
 Value*
 InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
@@ -176,88 +317,26 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if (!IsPropertyInherited (propertyId))
 		return NULL;
 
-	int parentPropertyId = -1;
+	Inheritable inheritable = InheritablePropertyFromPropertyId (propertyId);
+
+	DependencyObject *ancestor = (DependencyObject*)g_hash_table_lookup (propertyToSupplyingAncestor, GINT_TO_POINTER(inheritable));
+	if (ancestor == NULL)
+		return NULL; // don't walk up the tree
 
 	Types *types =  obj->GetDeployment()->GetTypes();
 
-#define INHERIT_CT_C(p) \
-	G_STMT_START {							\
-	if (property->GetId () == Control::p ||				\
-	    property->GetId () == TextBlock::p) {			\
-		if (types->IsSubclassOf (parent->GetObjectType(), Type::CONTROL)) \
-			parentPropertyId = Control::p;			\
-	}								\
-	} G_STMT_END
+	int ancestorPropertyId = InheritablePropertyToPropertyId (types, inheritable, ancestor->GetObjectType());
 
-#define INHERIT_I_T(p) \
-	G_STMT_START {							\
-	if (property->GetId () == TextElement::p) {		       	\
-		parentPropertyId = TextBlock::p;			\
-	}								\
-	} G_STMT_END
-
-#define INHERIT_F_F(p) \
-	G_STMT_START {							\
-	if (property->GetId () == FrameworkElement::p) {		\
-		parentPropertyId = FrameworkElement::p;			\
-	}								\
-	} G_STMT_END
-
-#define INHERIT_U_U(p) \
-	G_STMT_START {							\
-	if (property->GetId () == UIElement::p) {			\
-		parentPropertyId = UIElement::p;			\
-	}								\
-	} G_STMT_END
-	
-	DependencyObject *parent = NULL;
-	
-	if (types->IsSubclassOf (obj->GetObjectType(), Type::FRAMEWORKELEMENT)) {
-		// we loop up the visual tree
-		parent = ((FrameworkElement*)obj)->GetVisualParent();
-		while (parent) {
-			INHERIT_CT_C (ForegroundProperty);
-			INHERIT_CT_C (FontFamilyProperty);
-			INHERIT_CT_C (FontStretchProperty);
-			INHERIT_CT_C (FontStyleProperty);
-			INHERIT_CT_C (FontWeightProperty);
-			INHERIT_CT_C (FontSizeProperty);
-			
-			INHERIT_F_F (LanguageProperty);
-			INHERIT_F_F (FlowDirectionProperty);
-			
-			INHERIT_U_U (UseLayoutRoundingProperty);
-			
-			if (parentPropertyId != -1)
-				return parent->GetValue (types->GetProperty (parentPropertyId));
-			
-			parent = ((FrameworkElement*)parent)->GetVisualParent();
-		}
+	if (ancestorPropertyId == -1) {
+		g_warning ("property %s should be inherited, but mapping from descendent to ancestor property doesn't exist", property->GetName());
+		return NULL;
 	}
-	else if (types->IsSubclassOf (obj->GetObjectType(), Type::INLINE)) {
-		// skip collections
-		DependencyObject *new_parent = obj->GetParent();
-		while (new_parent && !types->IsSubclassOf (new_parent->GetObjectType(), Type::TEXTBLOCK))
-			new_parent = new_parent->GetParent ();
-		parent = new_parent;
 
-		if (!parent)
-			return NULL;
-		
-		INHERIT_I_T (ForegroundProperty);
-		INHERIT_I_T (FontFamilyProperty);
-		INHERIT_I_T (FontStretchProperty);
-		INHERIT_I_T (FontStyleProperty);
-		INHERIT_I_T (FontWeightProperty);
-		INHERIT_I_T (FontSizeProperty);
+	Value *v = ancestor->GetValue (ancestorPropertyId);
+	if (v)
+		return v;
 
-		INHERIT_I_T (LanguageProperty);
-		INHERIT_I_T (TextDecorationsProperty);
-		
-		if (parentPropertyId != -1)
-			return parent->GetValue (types->GetProperty (parentPropertyId));
-	}
-	
+	g_warning ("inherited value for property %s should not be NULL", property->GetName());
 	return NULL;
 }
 
@@ -265,297 +344,174 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 bool
 InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
 {
-#define PROP_CTI(p) G_STMT_START { \
-	if (propertyId == Control::p) return true; \
-	if (propertyId == TextBlock::p) return true; \
-	if (propertyId == TextElement::p) return true;  \
-	} G_STMT_END
-
-#define PROP_F(p) G_STMT_START { \
-	if (propertyId == FrameworkElement::p) return true; \
-	} G_STMT_END
-
-#define PROP_U(p) G_STMT_START { \
-	if (propertyId == UIElement::p) return true; \
-        } G_STMT_END
-
-#define PROP_I(p) G_STMT_START { \
-	if (propertyId == TextElement::p) return true; \
-	} G_STMT_END
-
-	PROP_CTI (ForegroundProperty);
-	PROP_CTI (FontFamilyProperty);
-	PROP_CTI (FontStretchProperty);
-	PROP_CTI (FontStyleProperty);
-	PROP_CTI (FontWeightProperty);
-	PROP_CTI (FontSizeProperty);
-
-	PROP_U (UseLayoutRoundingProperty);
-
-	PROP_F (LanguageProperty);
-	PROP_F (FlowDirectionProperty);
-
-	PROP_I (LanguageProperty);
-	PROP_I (TextDecorationsProperty);
-
-	return false;
+	Inheritable inheritable = InheritablePropertyFromPropertyId (propertyId);
+	return inheritable != InheritedPropertyValueProvider::InheritableNone;
 }
 
-DependencyProperty*
-InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
-							 DependencyProperty *property,
-							 Type::Kind descendantKind)
+bool
+InheritedPropertyValueProvider::PROP_ADD (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property)
 {
-#define PROPAGATE_C_CT(p) G_STMT_START {				\
-		if (property->GetId() == Control::p) {			\
-			if (types->IsSubclassOf (descendantKind, Type::CONTROL)) \
-				return types->GetProperty (Control::p); \
-			else if (types->IsSubclassOf (descendantKind, Type::TEXTBLOCK)) \
-				return types->GetProperty (TextBlock::p); \
-		}							\
-	} G_STMT_END
-
-#define PROPAGATE_T_I(p) G_STMT_START {					\
-		if (property->GetId() == TextBlock::p) {		\
-			/* we don't need the check here since we can do it once above all the PROPAGATE_I below */ \
-			/*if (types->IsSubclassOf (descendantKind, Type::INLINE))*/ \
-				return types->GetProperty (TextElement::p); \
-		}							\
-	} G_STMT_END
-	
-#define PROPAGATE_F_I(p) G_STMT_START {					\
-		if (property->GetId() == FrameworkElement::p) {		\
-			return types->GetProperty (TextElement::p);	\
-		}							\
-	} G_STMT_END
-	
-#define PROPAGATE_F_R(p) G_STMT_START {					\
-		if (property->GetId() == FrameworkElement::p) {		\
-			return types->GetProperty (Run::p);		\
-		}							\
-	} G_STMT_END
-	
-	if (types->IsSubclassOf (property->GetOwnerType(), Type::CONTROL)) {
-		PROPAGATE_C_CT (ForegroundProperty);
-		PROPAGATE_C_CT (FontFamilyProperty);
-		PROPAGATE_C_CT (FontStretchProperty);
-		PROPAGATE_C_CT (FontStyleProperty);
-		PROPAGATE_C_CT (FontWeightProperty);
-		PROPAGATE_C_CT (FontSizeProperty);
+	DependencyObject *source;
+	DependencyProperty *elementProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, element->GetObjectType()));
+	/* we always assign a provider source on @element (the */
+	/* child), and it'll either be the rootParent's source */
+	/* (if it's value is inherited) or rootParent itself */
+	/* (if the value is local). */
+	DependencyProperty *rootProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, rootParent->GetObjectType()));
+	DependencyProperty *sourceProperty;
+	int root_prec = rootParent->GetPropertyValueProvider (rootProperty);
+	if (root_prec == -1)
+		return false;
+	else if (root_prec == PropertyPrecedence_Inherited) {
+		source = rootParent->GetInheritedValueSource (rootProperty);
+		sourceProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
 	}
-
-	if (types->IsSubclassOf (property->GetOwnerType(), Type::TEXTBLOCK)) {
-		if (types->IsSubclassOf (descendantKind, Type::TEXTELEMENT)) {
-			PROPAGATE_T_I (TextDecorationsProperty);
-			PROPAGATE_T_I (ForegroundProperty);
-			PROPAGATE_T_I (FontFamilyProperty);
-			PROPAGATE_T_I (FontStretchProperty);
-			PROPAGATE_T_I (FontStyleProperty);
-			PROPAGATE_T_I (FontWeightProperty);
-			PROPAGATE_T_I (FontSizeProperty);
-		}
+	else if (root_prec < PropertyPrecedence_Inherited) {
+		source = rootParent;
+		sourceProperty = rootProperty;
 	}
+	/* FIXME what happens with lower precedences? */
 
-	if (types->IsSubclassOf (property->GetOwnerType(), Type::FRAMEWORKELEMENT)) {
-		if (types->IsSubclassOf (descendantKind, Type::TEXTELEMENT)) {
-			PROPAGATE_F_I (LanguageProperty);
-		}
-		
-		if (types->IsSubclassOf (descendantKind, Type::RUN)) {
-			PROPAGATE_F_R (FlowDirectionProperty);
-		}
-		
-		if (types->IsSubclassOf (descendantKind, Type::FRAMEWORKELEMENT)) {
-			if (property->GetId() == FrameworkElement::LanguageProperty ||
-			    property->GetId() == FrameworkElement::FlowDirectionProperty)
-				return property;
-		}
-	}
-
-	if (types->IsSubclassOf (property->GetOwnerType(), Type::UIELEMENT)) {
-		if (types->IsSubclassOf (descendantKind, Type::UIELEMENT)) {
-			if (property->GetId() == UIElement::UseLayoutRoundingProperty)
-				return property;
-		}
-	}
-
-	return NULL;
-}
-
-static void
-propagate_to_inlines (Types *types, InlineCollection *inlines, DependencyProperty *property, Value *old_value, Value *new_value)
-{
-	if (!inlines)
-		return;
-
-	int count = inlines->GetCount ();
-	
-	for (int i = 0; i < count; i++) {
-		TextElement *item = inlines->GetValueAt (i)->AsTextElement ();
-		MoonError error;
-		
-		// If we're propagating, for example, FWE::FlowDirection to
-		// our children, only Runs can inherit this property, so
-		// ignore anything that isn't a Run.
-		if (!types->IsSubclassOf (item->GetObjectType (), property->GetOwnerType ()))
-			continue;
-		
-		item->ProviderValueChanged (PropertyPrecedence_Inherited, property,
-					    old_value, new_value, false, false, false, &error);
-	}
-}
-
-static void
-propagate_to_blocks (Types *types, BlockCollection *blocks, DependencyProperty *property, Value *old_value, Value *new_value)
-{
-	if (!blocks)
-		return;
-
-	int count = blocks->GetCount ();
-	
-	for (int i = 0; i < count; i++) {
-		Block *block = blocks->GetValueAt (i)->AsBlock ();
-		MoonError error;
-		
-		block->ProviderValueChanged (PropertyPrecedence_Inherited, property,
-					     old_value, new_value, false, false, false, &error);
-	}
+	return element->PropagateInheritedValue (elementProperty, source, NULL, source->GetValue (sourceProperty));
 }
 
 void
-InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *obj, DependencyProperty *property, Value *old_value, Value *new_value)
+InheritedPropertyValueProvider::walk_subtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen)
 {
-	Types *types = obj->GetDeployment ()->GetTypes ();
+	if (seen == InheritedPropertyValueProvider::InheritableAll)
+		return;
 
-	if (types->IsSubclassOf (obj->GetObjectType(), Type::TEXTBLOCK)) {
-		DependencyProperty *child_property = MapPropertyToDescendant (types, property, Type::TEXTELEMENT);
-		if (!child_property)
-			return;
+	Type::Kind elementType = element->GetObjectType();
 
-		Value *v = obj->GetValueNoAutoCreate (TextBlock::InlinesProperty);
-		InlineCollection *inlines = v ? v->AsInlineCollection () : NULL;
-
-		propagate_to_inlines (types, inlines, child_property, old_value, new_value);
-	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::PARAGRAPH)) {
-
-		Value *v = obj->GetValueNoAutoCreate (Paragraph::InlinesProperty);
-		InlineCollection *inlines = v ? v->AsInlineCollection () : NULL;
-		
-		propagate_to_inlines (types, inlines, property, old_value, new_value);
-	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::SPAN)) {
-
-		Value *v = obj->GetValueNoAutoCreate (Span::InlinesProperty);
-		InlineCollection *inlines = v ? v->AsInlineCollection () : NULL;
-		
-		propagate_to_inlines (types, inlines, property, old_value, new_value);
-	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::SECTION)) {
-
-		Value *v = obj->GetValueNoAutoCreate (Section::BlocksProperty);
-		BlockCollection *blocks = v ? v->AsBlockCollection () : NULL;
-		
-		propagate_to_blocks (types, blocks, property, old_value, new_value);
-	} else if (types->IsSubclassOf (obj->GetObjectType(), Type::UIELEMENT)) {
-		// for inherited properties, we need to walk down the
-		// subtree and call ProviderValueChanged on all
-		// elements that can inherit the property.
-		DeepTreeWalker walker ((UIElement*)obj, Logical, types);
-
-		walker.Step (); // skip obj
-
-		while (UIElement *element = walker.Step ()) {
-			DependencyProperty *child_property = MapPropertyToDescendant (types, property, element->GetObjectType());
-			if (!child_property)
-				continue;
+	if (types->IsSubclassOf (elementType, Type::TEXTELEMENT)
+	    || types->IsSubclassOf (elementType, Type::TEXTBLOCK)) {
+		int childPropId = -1;
+		if (types->IsSubclassOf (elementType, Type::TEXTBLOCK))
+			childPropId = TextBlock::InlinesProperty;
+		else if (types->IsSubclassOf (elementType, Type::PARAGRAPH))
+			childPropId = Paragraph::InlinesProperty;
+		else if (types->IsSubclassOf (elementType, Type::SPAN))
+			childPropId = Span::InlinesProperty;
+		else if (types->IsSubclassOf (elementType, Type::SECTION))
+			childPropId = Section::BlocksProperty;
 			
-			MoonError error;
+		if (childPropId != -1) {
+			Value *v = element->GetValueNoAutoCreate (childPropId);
+			DependencyObjectCollection *col = v ? v->AsDependencyObjectCollection () : NULL;
 
-			element->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
-						       old_value, new_value, true, false, false, &error);
+			if (col) {
+				int count = col->GetCount ();
 
-			if (error.number) {
-				// FIXME: what do we do here?  I'm guessing we continue propagating?
-				printf ("error propagating %s to %s\n", child_property->GetName (), element->GetName ());
+				for (int i = 0; i < count; i++) {
+					DependencyObject *obj = col->GetValueAt (i)->AsDependencyObject ();
+					walk_tree (types, rootParent, obj, seen);
+				}
 			}
-
-			walker.SkipBranch ();
 		}
-	} else if (obj->GetObjectType() == Type::LINEBREAK || obj->GetObjectType() == Type::RUN) {
-		// no children to propagate to
-	} else {
-		g_warning ("Unhandled inherited property %s.%sProperty", obj->GetTypeName (), property->GetName ());
 	}
+
+	if (types->IsSubclassOf (elementType, Type::UIELEMENT)) {
+		VisualTreeWalker walker ((UIElement*)element, Logical, types);
+
+		while (UIElement *child = walker.Step ())
+			walk_tree (types, rootParent, child, seen);
+	}
+
 }
 
-#define FOREGROUND_PROP     (1<<0)
-#define FONTFAMILY_PROP     (1<<1)
-#define FONTSTRETCH_PROP    (1<<2)
-#define FONTSTYLE_PROP      (1<<3)
-#define FONTWEIGHT_PROP     (1<<4)
-#define FONTSIZE_PROP       (1<<5)
-#define LANGUAGE_PROP       (1<<6)
-#define FLOWDIRECTION_PROP  (1<<7)
-#define LAYOUTROUNDING_PROP (1<<8)
 
-#define HAS_SEEN(s,p)  (((s) & (p))!=0)
-#define SEEN(s,p)      ((s)|=(p))
-
-#define PROP_ADD(p,s) G_STMT_START {					\
-	if (!HAS_SEEN (seen, s)) {					\
-		DependencyProperty *property = types->GetProperty (p);		\
-		Value *v = element->GetValue (property, PropertyPrecedence_Inherited, PropertyPrecedence_Inherited); \
-		if (v != NULL) {					\
-			element->ProviderValueChanged (PropertyPrecedence_Inherited, property, \
-						       NULL, v,		\
-						       true, false, false, &error); \
-			SEEN (seen, s);					\
-		}							\
-	}								\
-	} G_STMT_END
-
-static void
-walk_tree (Types *types, UIElement *element, guint32 seen)
+void
+InheritedPropertyValueProvider::walk_tree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen)
 {
+	if (seen == InheritedPropertyValueProvider::InheritableAll)
+		return;
+
+#define HAS_SEEN(p)  ((seen & (InheritedPropertyValueProvider::p))!=0)
+#define SEEN(p)      (seen|=(InheritedPropertyValueProvider::p))
+
 	MoonError error;
+	Type::Kind elementType = element->GetObjectType();
+	bool need_walk = false;
 
-	if (types->IsSubclassOf (element->GetObjectType (), Type::CONTROL)) {
-		PROP_ADD (Control::ForegroundProperty, FOREGROUND_PROP);
-		PROP_ADD (Control::FontFamilyProperty, FONTFAMILY_PROP);
-		PROP_ADD (Control::FontStretchProperty, FONTSTRETCH_PROP);
-		PROP_ADD (Control::FontStyleProperty, FONTSTYLE_PROP);
-		PROP_ADD (Control::FontWeightProperty, FONTWEIGHT_PROP);
-		PROP_ADD (Control::FontSizeProperty, FONTSIZE_PROP);
+	// put these checks both inside and outside the IsSubclassOf
+	// check, since the check is a simple logical and, while the
+	// IsSubclassOf check is slower.
+	if (!HAS_SEEN (Foreground) ||
+	    !HAS_SEEN (FontFamily) ||
+	    !HAS_SEEN (FontStretch) ||
+	    !HAS_SEEN (FontStyle) ||
+	    !HAS_SEEN (FontWeight) ||
+	    !HAS_SEEN (FontSize)) {
+	    
+		if (types->IsSubclassOf (elementType, Type::CONTROL) ||
+		    types->IsSubclassOf (elementType, Type::TEXTBLOCK) ||
+		    types->IsSubclassOf (elementType, Type::TEXTELEMENT)) {
+
+			if (!HAS_SEEN (Foreground) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::Foreground)) SEEN (Foreground);
+			if (!HAS_SEEN (FontFamily) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontFamily)) SEEN (FontFamily);
+			if (!HAS_SEEN (FontStretch) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontStretch)) SEEN (FontStretch);
+			if (!HAS_SEEN (FontStyle) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontStyle)) SEEN (FontStyle);
+			if (!HAS_SEEN (FontWeight) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontWeight)) SEEN (FontWeight);
+			if (!HAS_SEEN (FontSize) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontSize)) SEEN (FontSize);
+
+			need_walk = true;
+		}
 	}
 
-	if (types->IsSubclassOf (element->GetObjectType (), Type::TEXTBLOCK)) {
-		PROP_ADD (TextBlock::ForegroundProperty, FOREGROUND_PROP);
-		PROP_ADD (TextBlock::FontFamilyProperty, FONTFAMILY_PROP);
-		PROP_ADD (TextBlock::FontStretchProperty, FONTSTRETCH_PROP);
-		PROP_ADD (TextBlock::FontStyleProperty, FONTSTYLE_PROP);
-		PROP_ADD (TextBlock::FontWeightProperty, FONTWEIGHT_PROP);
-		PROP_ADD (TextBlock::FontSizeProperty, FONTSIZE_PROP);
+	if (!HAS_SEEN (Language) ||
+	    !HAS_SEEN (FlowDirection)) {
+		if (types->IsSubclassOf (elementType, Type::FRAMEWORKELEMENT)) {
+			if (!HAS_SEEN (Language) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::Language)) SEEN (Language);
+			if (!HAS_SEEN (FlowDirection) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FlowDirection)) SEEN (FlowDirection);
+		}
 	}
 
-	if (types->IsSubclassOf (element->GetObjectType (), Type::FRAMEWORKELEMENT)) {
-		PROP_ADD (FrameworkElement::LanguageProperty, LANGUAGE_PROP);
-		PROP_ADD (FrameworkElement::FlowDirectionProperty, FLOWDIRECTION_PROP);
+	if (!HAS_SEEN (UseLayoutRounding)) {
+		if (types->IsSubclassOf (elementType, Type::UIELEMENT)) {
+			if (!HAS_SEEN (UseLayoutRounding) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::UseLayoutRounding)) SEEN (UseLayoutRounding);
+
+			need_walk = true;
+		}
 	}
 
-	
-	PROP_ADD (UIElement::UseLayoutRoundingProperty, LAYOUTROUNDING_PROP);
+	if (need_walk)
+		walk_subtree (types, rootParent, element, seen);
 
-	VisualTreeWalker walker ((UIElement*)element, Logical, types);
-
-	while (UIElement *child = walker.Step ())
-		walk_tree (types, child, seen);
-
+#undef HAS_SEEN
+#undef SEEN
 }
 
 void
-InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (UIElement *subtreeRoot)
+InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (DependencyObject *subtree)
 {
-	Types *types = subtreeRoot->GetDeployment ()->GetTypes ();
+	Types *types = subtree->GetDeployment ()->GetTypes ();
 
-	walk_tree (types, subtreeRoot, 0);
+	walk_tree (types, obj, subtree, InheritedPropertyValueProvider::InheritableNone);
+}
+
+void
+InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source)
+{
+	Types *types = source->GetDeployment ()->GetTypes ();
+	Inheritable inheritable = InheritablePropertyFromPropertyId(property->GetId());
+	walk_subtree (types, source, source, (InheritedPropertyValueProvider::InheritableAll & ~inheritable));
+}
+
+DependencyObject*
+InheritedPropertyValueProvider::GetPropertySource (DependencyProperty *property)
+{
+	Inheritable inheritable = InheritablePropertyFromPropertyId(property->GetId());
+	return (DependencyObject*)g_hash_table_lookup (propertyToSupplyingAncestor,
+						       GINT_TO_POINTER (inheritable));
+}
+
+void
+InheritedPropertyValueProvider::SetPropertySource (DependencyProperty *property, DependencyObject *source)
+{
+	Inheritable inheritable = InheritablePropertyFromPropertyId(property->GetId());
+	g_hash_table_insert (propertyToSupplyingAncestor,
+			     GINT_TO_POINTER (inheritable),
+			     source);
 }
 
 //
