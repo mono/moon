@@ -22,6 +22,17 @@ using System.Reflection;
 
 namespace MoonTest.System.Windows.Data
 {
+	public class CustomDependencyObject : DependencyObject
+	{
+		public static DependencyProperty WidthProperty =
+			DependencyProperty.Register("Width", typeof(double), typeof(CustomDependencyObject), new PropertyMetadata(0.0));
+
+		public double Width {
+			get { return (double)GetValue(WidthProperty); }
+			set { SetValue(WidthProperty, value); }
+		}
+	}
+
 	public class MentorElement : FrameworkElement
 	{
 		public static readonly DependencyProperty MentorProperty =
@@ -65,6 +76,11 @@ namespace MoonTest.System.Windows.Data
 	{
 		ILinked next;
 		double value;
+
+		public double SetterException {
+			get { return 100; }
+			set { throw new ArgumentException(); }
+		}
 
 		public double Value
 		{
@@ -1010,6 +1026,50 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
+		public void MentorTest_NotifyOnBindingException()
+		{
+			bool errored = false;
+			var source = new INPC();
+			var target = new CustomDependencyObject ();
+			var mentor = new MentorElement { DataContext = source, MentoredCollection = new DependencyObjectCollection<object>() };
+			mentor.MentoredCollection.Add(target);
+			TestPanel.Children.Add(mentor);
+			var binding = new Binding("SetterException") {
+				Mode = BindingMode.TwoWay,
+				ValidatesOnExceptions = true,
+				NotifyOnValidationError = true
+			};
+			BindingOperations.SetBinding(target, CustomDependencyObject.WidthProperty, binding);
+			Assert.AreEqual(100.0, target.Width, "#1");
+
+			mentor.BindingValidationError += (o, e) => errored = true;
+			Enqueue(() => {
+				target.Width = 222;
+				Assert.IsTrue(errored, "#2");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_MentorBased_AttachMentorAfterBinding()
+		{
+			var source = TestPanel;
+			var target = new PlaneProjection();
+			var binding = new Binding("Width") { ElementName = "source" };
+
+			source.Name = "source";
+			source.Width = 100;
+
+			BindingOperations.SetBinding(target, PlaneProjection.RotationZProperty, binding);
+			source.Projection = target;
+			EnqueueCallback(() => Assert.AreEqual(source.Width, target.RotationZ, "#1"));
+			EnqueueTestComplete();
+		}
+
+
+		[TestMethod]
+		[Asynchronous]
 		public void ElementName_BeforeAddToTree ()
 		{
 			var source = new Rectangle {
@@ -1312,7 +1372,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug ("We need to parent the collection so that we can pick up the correct mentor")]
 		public void MentorTest_SetBindingThenMentor_Collection()
 		{
 			var rect = new CustomCanvas { DataContext = Colors.Red, Collection = new DependencyObjectCollection<DependencyObject> () };
@@ -1335,12 +1394,10 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		</DataTemplate>
 	</Button.ContentTemplate>
 </Button>";
-
 			var button = (Button)XamlReader.Load(xaml);
 			TestPanel.Children.Add(button);
 			button.Content = "In the darkness bind them";
 			TestPanel.UpdateLayout();
-
 			var textBlock = button.FindFirstChild <TextBlock>();
 			Assert.AreEqual("In the darkness bind them", textBlock.Text, "#1");
 		}
@@ -1398,7 +1455,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MentorTest_FrameworkElement_CollectionInCustomProperty()
 		{
 			var mentor = new MentorElement();
@@ -1415,7 +1471,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MentorTest_FrameworkElement_CollectionInCustomProperty_AttachOppositeOrder()
 		{
 			var mentor = new MentorElement();
