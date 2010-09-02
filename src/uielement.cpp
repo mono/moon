@@ -1649,7 +1649,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		r.RoundOut ().Draw (cr);
 		cairo_clip (cr);
 
-		if (!effect->Render (cr, src,
+		if (!effect->Render (ctx, src,
 				     NULL,
 				     r.x, r.y,
 				     r.width, r.height))
@@ -1685,7 +1685,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		r.Transform (m).RoundOut ().Draw (cr);
 		cairo_clip (cr);
 
-		if (!composite->Render (cr, src,
+		if (!composite->Render (ctx, src,
 					m,
 					r.x, r.y,
 					r.width, r.height))

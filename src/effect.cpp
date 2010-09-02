@@ -1445,7 +1445,7 @@ Effect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-Effect::Render (cairo_t      *cr,
+Effect::Render (Context      *ctx,
 		MoonSurface  *src,
 		const double *matrix,
 		double       x,
@@ -1458,6 +1458,7 @@ Effect::Render (cairo_t      *cr,
 	cairo_rectangle_list_t *clip;
 	cairo_surface_t        *dst;
 	cairo_surface_t        *cs;
+	cairo_t                *cr = ctx->Cairo ();
 	Rect                   bounds = Rect (-32768, -32768, 65536, 65536);
 	double                 dstX, dstY;
 	bool                   status = 0;
@@ -1739,7 +1740,7 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-BlurEffect::Render (cairo_t      *cr,
+BlurEffect::Render (Context      *ctx,
 		    MoonSurface  *src,
 		    const double *matrix,
 		    double       x,
@@ -1748,6 +1749,7 @@ BlurEffect::Render (cairo_t      *cr,
 		    double       height)
 {
 	cairo_surface_t *cs = src->Cairo ();
+	cairo_t         *cr = ctx->Cairo ();
 
 	MaybeUpdateFilter ();
 
@@ -1798,7 +1800,7 @@ BlurEffect::Render (cairo_t      *cr,
 
 	cairo_surface_destroy (cs);
 
-	return Effect::Render (cr, src, matrix, x, y, width, height);
+	return Effect::Render (ctx, src, matrix, x, y, width, height);
 }
 
 void
@@ -2161,7 +2163,7 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 }
 
 bool
-DropShadowEffect::Render (cairo_t      *cr,
+DropShadowEffect::Render (Context      *ctx,
 			  MoonSurface  *src,
 			  const double *matrix,
 			  double       x,
@@ -2170,6 +2172,7 @@ DropShadowEffect::Render (cairo_t      *cr,
 			  double       height)
 {
 	cairo_surface_t *cs = src->Cairo ();
+	cairo_t         *cr = ctx->Cairo ();
 
 	MaybeUpdateFilter ();
 
@@ -2233,7 +2236,7 @@ DropShadowEffect::Render (cairo_t      *cr,
 
 	cairo_surface_destroy (cs);
 
-	return Effect::Render (cr, src, matrix, x, y, width, height);
+	return Effect::Render (ctx, src, matrix, x, y, width, height);
 }
 
 void
@@ -4036,7 +4039,7 @@ TransformEffect::Clear ()
 }
 
 bool
-TransformEffect::Render (cairo_t      *cr,
+TransformEffect::Render (Context      *ctx,
 			 MoonSurface  *src,
 			 const double *matrix,
 			 double       x,
@@ -4045,6 +4048,7 @@ TransformEffect::Render (cairo_t      *cr,
 			 double       height)
 {
 	cairo_surface_t *cs = src->Cairo ();
+	cairo_t         *cr = ctx->Cairo ();
 
 	if (cairo_surface_get_type (cs)         == CAIRO_SURFACE_TYPE_IMAGE &&
 	    cairo_image_surface_get_width (cs)  == width &&
@@ -4065,7 +4069,7 @@ TransformEffect::Render (cairo_t      *cr,
 
 	cairo_surface_destroy (cs);
 
-	return Effect::Render (cr, src, matrix, x, y, width, height);
+	return Effect::Render (ctx, src, matrix, x, y, width, height);
 }
 
 void

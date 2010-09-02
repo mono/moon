@@ -28,7 +28,8 @@ effect_alarm_handler (int sig)
 int
 main (int argc, char **argv)
 {
-	cairo_t *cr;
+	Context *ctx;
+	MoonSurface *target;
 	MoonSurface *surface;
 	cairo_surface_t *dst, *src;
 	CustomEffect *effect;
@@ -52,12 +53,17 @@ main (int argc, char **argv)
 	dst = cairo_image_surface_create_for_data ((unsigned char *) data,
 						   CAIRO_FORMAT_ARGB32,
 						   width, height, stride);
+	target = new CairoSurface (dst);
+	cairo_surface_destroy (dst);
+	ctx = new Context ();
+	ctx->Push (new Context::Node (target));
+	target->unref ();
+
 	src = cairo_surface_create_similar (dst,
 					    CAIRO_CONTENT_COLOR_ALPHA,
 					    width, height);
 	surface = new CairoSurface (src);
 	cairo_surface_destroy (src);
-	cr = cairo_create (dst);
 
 	effect = new CustomEffect ();
 	shader = MoonUnmanagedFactory::CreatePixelShader ();
@@ -74,7 +80,7 @@ main (int argc, char **argv)
 	}
 
 	while (status && count-- > 0) {
-		status = effect->Render (cr,
+		status = effect->Render (ctx,
 					 surface,
 					 (double *) NULL,
 					 0, 0, width, height);
@@ -85,9 +91,8 @@ main (int argc, char **argv)
 	effect->unref ();
 	shader->unref ();
 
-	cairo_destroy (cr);
 	surface->unref ();
-	cairo_surface_destroy (dst);
+	delete ctx;
 	g_free (data);
 
 	runtime_shutdown ();

@@ -19,6 +19,7 @@
 #include "dependencyobject.h"
 #include "rect.h"
 #include "surface.h"
+#include "context.h"
 
 #define MAX_SAMPLERS  16
 #define MAX_CONSTANTS 32
@@ -97,7 +98,7 @@ public:
 	//
 	// Render
 	//
-	virtual bool Render (cairo_t      *cr,
+	virtual bool Render (Context      *ctx,
 			     MoonSurface  *src,
 			     const double *matrix,
 			     double       x,
@@ -210,7 +211,7 @@ public:
 	//
 	// Render
 	//
-	bool Render (cairo_t      *cr,
+	bool Render (Context      *ctx,
 		     MoonSurface  *src,
 		     const double *matrix,
 		     double       x,
@@ -301,7 +302,7 @@ public:
 	//
 	// Render
 	//
-	bool Render (cairo_t      *cr,
+	bool Render (Context      *ctx,
 		     MoonSurface  *src,
 		     const double *matrix,
 		     double       x,
@@ -499,7 +500,7 @@ public:
 	//
 	// Render
 	//
-	bool Render (cairo_t      *cr,
+	bool Render (Context      *ctx,
 		     MoonSurface  *src,
 		     const double *matrix,
 		     double       x,
