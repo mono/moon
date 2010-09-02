@@ -462,7 +462,9 @@ namespace System.Windows.Data {
 
 		void MaybeEmitError (object message, Exception exception)
 		{
-			var fe = Target as FrameworkElement;
+			// If we've databound to a DependencyObject we need to emit
+			// the error on the Mentor, if it has one.
+			var fe = Target as FrameworkElement ?? Target.Mentor;
 			if (!Binding.NotifyOnValidationError || fe == null) {
 				return;
 			}
