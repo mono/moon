@@ -294,7 +294,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void DisabledComboboxPropagatesIsEnabled4 ()
 		{
 			// Even though the children are disabled, they
@@ -316,6 +315,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("I don't want to copy this because it's mad. If you open/close the popup multiple times the Isenabled propagation is lost")]
 		public void OpenCloseDisabledCombobox ()
 		{
 			// The 'IsEnabled state is restored when the dropdown closes.
@@ -360,6 +360,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("This test is also quite weird. It's showing that IsEnabled propagation should not happen if the dropdown is open")]
 		public void EnablingComboboxDoesNotPropagateIsEnabled ()
 		{
 			ComboBox c = new ComboBox { IsEnabled = false };

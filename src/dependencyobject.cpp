@@ -2083,7 +2083,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 	int higher = 0;
 
 	// first we look for a value higher in precedence for this property
-	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
+	for (p = providerPrecedence - 1; p >= PropertyPrecedence_LocalValue; p --) {
 		higher |= 1<<p;
 	}
 
@@ -2148,6 +2148,10 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 	}
 
  	if (!equal) {
+		InheritedIsEnabledValueProvider *highest = (InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled];
+		if (providerPrecedence != PropertyPrecedence_IsEnabled && highest && highest->LocalValueChanged (property))
+			return;
+
 		DependencyObject *old_as_dep = NULL;
 		DependencyObject *new_as_dep = NULL;
 
@@ -2428,6 +2432,7 @@ DependencyObject::DependencyObject (Type::Kind object_type)
 void
 DependencyObject::Initialize ()
 {
+	providers[PropertyPrecedence_IsEnabled] = NULL;
 	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue, dispose_value);
 	providers[PropertyPrecedence_DynamicValue] = NULL;  // subclasses will set this if they need it.
 

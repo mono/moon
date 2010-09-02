@@ -32,9 +32,9 @@ Control::Control ()
 	SetObjectType (Type::CONTROL);
 
 	default_style_applied = false;
-	enabled_local = true;
-	enabled_parent = true;
 	template_root = NULL;
+
+	providers[PropertyPrecedence_IsEnabled] = new InheritedIsEnabledValueProvider (this, PropertyPrecedence_IsEnabled);
 }
 
 Control::~Control ()
@@ -92,7 +92,7 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			ReleaseMouseCapture ();
 		}
 		args->ref (); // to counter the unref in Emit
-		Emit (IsEnabledChangedEvent, args);
+		EmitAsync (IsEnabledChangedEvent, args);
 	} else if (args->GetId () == Control::HorizontalContentAlignmentProperty
 		   || args->GetId () == Control::VerticalContentAlignmentProperty) {
 		InvalidateArrange ();
@@ -104,15 +104,7 @@ void
 Control::OnIsAttachedChanged (bool attached)
 {
 	FrameworkElement::OnIsAttachedChanged (attached);
-
-	if (attached) {
-		Types *types = GetDeployment ()->GetTypes ();
-		UIElement *visual_parent = GetVisualParent ();
-		while (visual_parent && !types->IsSubclassOf (visual_parent->GetObjectType (), Type::CONTROL))
-			visual_parent = visual_parent->GetVisualParent ();
-		if (visual_parent)
-			((Control *) visual_parent)->UpdateEnabled ();
-	}
+	((InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled])->SetDataSource (GetLogicalParent ());
 }
 
 
@@ -127,47 +119,17 @@ Control::OnIsLoadedChanged (bool loaded)
 void
 Control::SetVisualParent (UIElement *visual_parent)
 {
-	FrameworkElement::SetVisualParent (visual_parent);
-	if (!UIElement::IsSubtreeLoaded (this))
-		return;
-
-	if (IsAttached ()) {
-		Types *types = GetDeployment ()->GetTypes ();
-		while (visual_parent && !types->IsSubclassOf (visual_parent->GetObjectType (), Type::CONTROL))
-			visual_parent = visual_parent->GetVisualParent ();
-		if (visual_parent)
-			((Control *) visual_parent)->UpdateEnabled ();
-	}
+	if (GetVisualParent () != visual_parent) {
+		FrameworkElement::SetVisualParent (visual_parent);
+		((InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled])->SetDataSource (GetLogicalParent ());
+ 	}
 }
 
-bool
-Control::GetParentEnabledState (UIElement *element)
+void
+Control::OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent)
 {
-	do {
-		element = element->GetVisualParent ();
-	} while (element && !element->Is (Type::CONTROL));
-	
-	return element ? ((Control *) element)->GetIsEnabled () : true;
-}
-
-bool
-Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
-{
-	if (property->GetId () == Control::IsEnabledProperty) {
-		this->enabled_local = value->AsBool ();
-		if ((enabled_local && enabled_parent) == GetIsEnabled ())
-			return true;
-
-		Value v (enabled_local && (enabled_parent));
-		
-		// If we don't propagate the changes down the tree here, the EnabledChanged events
-		// from the subtree are raised in the wrong order
-		bool b = FrameworkElement::SetValueWithErrorImpl (property, &v, error);
-		if (b)
-			UpdateEnabled ();
-		return  b;
-	}
-	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
+	FrameworkElement::OnLogicalParentChanged  (old_parent, new_parent);
+	((InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled])->SetDataSource (new_parent);
 }
 
 void
@@ -242,6 +204,14 @@ Control::DoApplyTemplateWithError (MoonError *error)
 	root->unref ();
 	
 	return true;
+}
+
+
+void
+Control::UpdateIsEnabledSource (Control *control)
+{
+	InheritedIsEnabledValueProvider *provider = (InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled];
+	provider->SetDataSource (control);
 }
 
 void
@@ -321,22 +291,6 @@ Control::Focus (bool recurse)
 			return false;
 	}
 	return false;	
-}
-
-void
-Control::UpdateEnabled ()
-{
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
-	DeepTreeWalker walker = DeepTreeWalker (this);
-	while (UIElement *child = walker.Step ()) {
-		if (child == this || !types->IsSubclassOf (child->GetObjectType (), Type::CONTROL))
-			continue;
-
-		Control *control = (Control *)child;
-		control->enabled_parent = (enabled_local && enabled_parent);
-		control->SetValue (Control::IsEnabledProperty, Value (control->enabled_local));
-		walker.SkipBranch ();
-	}
 }
 
 };

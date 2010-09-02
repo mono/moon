@@ -48,8 +48,7 @@ public:
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
-	
+
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 
@@ -57,6 +56,7 @@ public:
 	void ApplyDefaultStyle ();
 	virtual bool DoApplyTemplateWithError (MoonError *error);
 	virtual void SetVisualParent (UIElement *visual_parent);
+	virtual void OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent);
 	virtual void OnIsAttachedChanged (bool attached);
 	virtual void OnIsLoadedChanged (bool loaded);
 	virtual bool Focus (bool recurse = true);
@@ -66,7 +66,8 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetTemplateRoot () { return template_root; }
-
+	/* @GenerateCBinding,GeneratePInvoke */
+	void UpdateIsEnabledSource (Control *control);
 	//
 	// Property Accessors
 	//
@@ -127,9 +128,6 @@ public:
 	static void SetIsTemplateItem (DependencyObject *object, bool value);
 	static bool GetIsTemplateItem (DependencyObject *object);
 
-	static bool GetParentEnabledState (UIElement *element);
-	
-	void UpdateEnabled ();
 	// Events
 	/* @DelegateType=DependencyPropertyChangedEventHandler */
 	const static int IsEnabledChangedEvent;
@@ -173,7 +171,6 @@ public:
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false,GenerateAccessors */
 	const static int DefaultStyleKeyProperty;
 	
-	bool enabled_parent;
 protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
@@ -185,7 +182,6 @@ protected:
 	
 private:
 	bool default_style_applied;
-	bool enabled_local;
 	UIElement *template_root;
 };
 

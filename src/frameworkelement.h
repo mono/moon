@@ -103,6 +103,7 @@ public:
 	void SetLogicalParent (DependencyObject *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetLogicalParent () { return logical_parent; }
+	virtual void OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent);
 
 	//
 	// Property Accessors
@@ -202,7 +203,6 @@ protected:
 	virtual ~FrameworkElement ();
 	
 private:
-	void OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent);
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
 	LoadedCallback loaded_cb;

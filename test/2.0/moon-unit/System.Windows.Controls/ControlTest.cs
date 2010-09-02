@@ -340,7 +340,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Events ()
 		{
 			bool changed = false;

@@ -251,7 +251,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[Asynchronous]
-		[MoonlightBug]
 		public override void DisableControlTest ()
 		{
 			ItemsControl c = (ItemsControl)CurrentControl;

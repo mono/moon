@@ -14,6 +14,7 @@
 #include <glib.h>
 
 #include "type.h"
+#include "value.h"
 
 namespace Moonlight {
 
@@ -30,6 +31,7 @@ struct Value;
 struct MoonError;
 
 enum PropertyPrecedence {
+	PropertyPrecedence_IsEnabled,
 	PropertyPrecedence_LocalValue,
 	PropertyPrecedence_DynamicValue, // use this level for types that need to compute property values lazily
 
@@ -42,7 +44,7 @@ enum PropertyPrecedence {
 
 	PropertyPrecedence_Count,
 
-	PropertyPrecedence_Highest = PropertyPrecedence_LocalValue,
+	PropertyPrecedence_Highest = PropertyPrecedence_IsEnabled,
 	PropertyPrecedence_Lowest = PropertyPrecedence_AutoCreate,
 };
 
@@ -161,6 +163,23 @@ private:
 	void AttachListener ();
 	void DetachListener ();
 	FrameworkElement *source;
+};
+
+class InheritedIsEnabledValueProvider : public PropertyValueProvider {
+public:
+	InheritedIsEnabledValueProvider (DependencyObject *obj, PropertyPrecedence precedence);
+	virtual ~InheritedIsEnabledValueProvider ();
+
+	bool LocalValueChanged (DependencyProperty *property);
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+	void SetDataSource (DependencyObject *source);
+private:
+	static void is_enabled_changed (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
+	static void source_destroyed (EventObject *sender, EventArgs *args, gpointer closure);
+	void AttachListener (DependencyObject *source);
+	void DetachListener (DependencyObject *source);
+	DependencyObject *source;
+	Value current_value;
 };
 
 };

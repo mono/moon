@@ -501,7 +501,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void IsEnabledTest4 ()
 		{
 			int count = 0;
@@ -525,7 +524,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void IsEnabledTest5 ()
 		{
 			int count = 0;
@@ -536,7 +534,42 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void IsEnabled_Propagate ()
+		public void IsEnabled_Propagate_DisableTopFirst ()
+		{
+			// IsEnabled isn't inherited when the subtree isn't in the live tree
+			CanvasControl root = new CanvasControl { IsEnabled = false };
+			CanvasControl child = new CanvasControl ();
+			root.Canvas.Children.Add (child);
+
+			Assert.IsTrue (child.IsEnabled, "#1");
+		}
+
+		[TestMethod]
+		public void IsEnabled_Propagate_DisableTopFirst_AddToLiveTree()
+		{
+			// IsEnabled is propagated through the subtree when it is added to the live tree
+			CanvasControl root = new CanvasControl { IsEnabled = false };
+			CanvasControl child = new CanvasControl ();
+			root.Canvas.Children.Add (child);
+
+			TestPanel.Children.Add (root);
+			Assert.IsFalse (child.IsEnabled, "#1");
+		}
+
+		[TestMethod]
+		public void IsEnabled_Propagate_DisableTopFirst_LiveTree ()
+		{
+			// IsEnabled isn't inherited immediately when the subtree isn't in the live tree
+			CanvasControl root = new CanvasControl { IsEnabled = false };
+			TestPanel.Children.Add (root);
+			CanvasControl child = new CanvasControl ();
+			root.Canvas.Children.Add (child);
+
+			Assert.IsFalse (child.IsEnabled, "#1");
+		}
+
+		[TestMethod]
+		public void IsEnabled_Propagate_DisableTopLast()
 		{
 			// IsEnabled changes propagate immediately on an element not in the live tree
 			CanvasControl root = new CanvasControl ();

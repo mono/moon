@@ -63,7 +63,6 @@ class Popup : public FrameworkElement {
 	EVENTHANDLER (Popup, ShuttingDown, Deployment, EventArgs);
  	void Hide (UIElement *child);
  	void Show (UIElement *child);
- 	void PropagateIsEnabledState (UIElement *child, bool enabled_parent);
  	bool shutting_down;
 	bool visible;
 };

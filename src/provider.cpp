@@ -759,4 +759,104 @@ InheritedDataContextValueProvider::source_destroyed (EventObject *sender, EventA
 	p->SetDataSource (NULL);
 }
 
+InheritedIsEnabledValueProvider::InheritedIsEnabledValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+	: PropertyValueProvider (obj, precedence)
+{
+	source = NULL;
+	current_value = *obj->GetValue (Control::IsEnabledProperty, PropertyPrecedence_LocalValue);
+}
+
+InheritedIsEnabledValueProvider::~InheritedIsEnabledValueProvider ()
+{
+	DetachListener (source);
+	source = NULL;
+}
+
+Value *
+InheritedIsEnabledValueProvider::GetPropertyValue (DependencyProperty *property)
+{
+	if (property->GetId () == Control::IsEnabledProperty)
+		return &current_value;
+	return NULL;
+}
+
+void
+InheritedIsEnabledValueProvider::AttachListener (DependencyObject *source)
+{
+	if (source != NULL) {
+		DependencyProperty *prop = obj->GetDeployment ()->GetTypes ()->GetProperty (Control::IsEnabledProperty);
+		source->AddPropertyChangeHandler (prop, is_enabled_changed, this);
+		source->AddHandler (EventObject::DestroyedEvent, source_destroyed, this);
+	}
+}
+void
+InheritedIsEnabledValueProvider::DetachListener (DependencyObject *source)
+{
+	if (source != NULL) {
+		DependencyProperty *prop = obj->GetDeployment ()->GetTypes ()->GetProperty (Control::IsEnabledProperty);
+		source->RemovePropertyChangeHandler (prop, is_enabled_changed);
+		source->RemoveHandler (EventObject::DestroyedEvent, source_destroyed, this);
+	}
+}
+
+void
+InheritedIsEnabledValueProvider::SetDataSource (DependencyObject *source)
+{
+	if (source) {
+		Types *types = source->GetDeployment ()->GetTypes ();
+		while (source) {
+			if (types->IsSubclassOf (source->GetObjectType (), Type::CONTROL))
+				break;
+			else if (types->IsSubclassOf (source->GetObjectType (), Type::FRAMEWORKELEMENT))
+				source = ((FrameworkElement *) source)->GetLogicalParent ();
+			else
+				source = NULL;
+		}
+	}
+
+	if (this->source != source) {
+		DetachListener (this->source);
+		this->source = source;
+		AttachListener (this->source);
+	}
+
+
+	if (!source || obj->IsAttached ())
+		LocalValueChanged (NULL);
+}
+
+bool
+InheritedIsEnabledValueProvider::LocalValueChanged (DependencyProperty *property)
+{
+	if (property && property->GetId () != Control::IsEnabledProperty)
+		return false;
+
+	Value *local_enabled = obj->GetValue (Control::IsEnabledProperty, PropertyPrecedence_LocalValue);
+	Value *parent_enabled = source && ((Control *) obj)->GetVisualParent () ? source->GetValue (Control::IsEnabledProperty) : NULL;
+	Value new_value (local_enabled->AsBool () && (!parent_enabled || parent_enabled->AsBool ()));
+	if (new_value != current_value) {
+		Value old_value = current_value;
+		current_value = new_value;
+
+		MoonError error;
+		obj->ProviderValueChanged (precedence, obj->GetDeployment ()->GetTypes ()->GetProperty (Control::IsEnabledProperty), new Value (old_value), new Value (new_value), true, false, false, &error);
+		return true;
+	}
+	return false;
+}
+
+void
+InheritedIsEnabledValueProvider::is_enabled_changed (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure)
+{
+	InheritedIsEnabledValueProvider *p = (InheritedIsEnabledValueProvider *) closure;
+	p->LocalValueChanged (NULL);
+}
+
+void
+InheritedIsEnabledValueProvider::source_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	InheritedIsEnabledValueProvider *p = (InheritedIsEnabledValueProvider *) closure;
+	p->SetDataSource (NULL);
+}
+
 };
