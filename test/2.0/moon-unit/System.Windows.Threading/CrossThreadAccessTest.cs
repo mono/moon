@@ -124,6 +124,16 @@ namespace MoonTest.System.Windows.Threading {
 				new DispatcherTimer ();
 			});
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DispatcherTimer_IntervalTest ()
+		{
+			DispatcherTimer dt = new DispatcherTimer ();
+			CrossThreadTest (() => {
+				dt.Interval = TimeSpan.MaxValue;
+			});
+		}
 	}
 }
 

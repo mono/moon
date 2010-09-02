@@ -651,7 +651,6 @@ namespace MoonTest.System.Net {
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in DownloadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler (delegate (object sender, DownloadStringCompletedEventArgs dscea)
@@ -659,9 +658,11 @@ namespace MoonTest.System.Net {
 				try  {
 					Assert.IsTrue (TestPanel.CheckAccess ());
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in DownloadStringCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
@@ -669,7 +670,8 @@ namespace MoonTest.System.Net {
 			EnqueueConditional (() => done);
 			Enqueue (() =>
 			{
-				if (afe != null) throw afe;
+				if (afe != null)
+					throw afe;
 			});
 			EnqueueTestComplete ();
 		}
@@ -698,7 +700,6 @@ namespace MoonTest.System.Net {
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler (delegate (object sender, DownloadStringCompletedEventArgs dscea)
@@ -706,9 +707,11 @@ namespace MoonTest.System.Net {
 				try {
 					Assert.IsFalse (TestPanel.CheckAccess ());
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadStringCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
@@ -750,7 +753,6 @@ namespace MoonTest.System.Net {
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in DownloadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.OpenReadCompleted += new OpenReadCompletedEventHandler (delegate (object sender, OpenReadCompletedEventArgs orcea)
@@ -758,9 +760,11 @@ namespace MoonTest.System.Net {
 				try {
 					Assert.IsTrue (TestPanel.CheckAccess ());
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in OpenReadCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
@@ -798,7 +802,6 @@ namespace MoonTest.System.Net {
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.OpenReadCompleted += new OpenReadCompletedEventHandler (delegate (object sender, OpenReadCompletedEventArgs orcea)
@@ -806,9 +809,11 @@ namespace MoonTest.System.Net {
 				try {
 					Assert.IsFalse (TestPanel.CheckAccess ());
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in OpenReadCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
@@ -850,7 +855,6 @@ namespace MoonTest.System.Net {
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.OpenWriteCompleted += new OpenWriteCompletedEventHandler (delegate (object sender, OpenWriteCompletedEventArgs orcea)
@@ -858,9 +862,11 @@ namespace MoonTest.System.Net {
 				try {
 					Assert.IsTrue (TestPanel.CheckAccess ());
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in OpenWriteCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
@@ -871,7 +877,6 @@ namespace MoonTest.System.Net {
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in WriteStreamClosed");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.OpenWriteAsync (new Uri ("index.html", UriKind.Relative));
@@ -908,7 +913,6 @@ namespace MoonTest.System.Net {
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.OpenWriteCompleted += new OpenWriteCompletedEventHandler (delegate (object sender, OpenWriteCompletedEventArgs orcea)
@@ -916,9 +920,11 @@ namespace MoonTest.System.Net {
 				try {
 					Assert.IsFalse (TestPanel.CheckAccess ());
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in OpenWriteCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
@@ -929,7 +935,6 @@ namespace MoonTest.System.Net {
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in WriteStreamClosed");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			Thread t = new Thread (delegate ()
@@ -966,32 +971,32 @@ namespace MoonTest.System.Net {
 			wc.UploadProgressChanged += new UploadProgressChangedEventHandler (delegate (object sender, UploadProgressChangedEventArgs dpcea)
 			{
 				try {
-					Assert.IsTrue (TestPanel.CheckAccess ());
+					Assert.IsTrue (TestPanel.CheckAccess (), "CheckAccess UploadProgressChanged");
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.UploadStringCompleted += new UploadStringCompletedEventHandler (delegate (object sender, UploadStringCompletedEventArgs upcea)
 			{
 				try {
-					Assert.IsTrue (TestPanel.CheckAccess ());
+					Assert.IsTrue (TestPanel.CheckAccess (), "CheckAccess UploadStringCompleted");
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadStringCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
 			wc.WriteStreamClosed += new WriteStreamClosedEventHandler (delegate (object sender, WriteStreamClosedEventArgs wscea)
 			{
 				try {
-					Assert.IsTrue (TestPanel.CheckAccess ());
+					Assert.IsTrue (TestPanel.CheckAccess (), "CheckAccess WriteStreamClosed");
 					Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in WriteStreamClosed");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.UploadStringAsync (new Uri ("index.html", UriKind.Relative), "dummy data");
@@ -1028,7 +1033,6 @@ namespace MoonTest.System.Net {
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in UploadProgressChanged");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			wc.UploadStringCompleted += new UploadStringCompletedEventHandler (delegate (object sender, UploadStringCompletedEventArgs upcea)
@@ -1036,9 +1040,11 @@ namespace MoonTest.System.Net {
 				try {
 					Assert.IsFalse (TestPanel.CheckAccess ());
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in UploadStringCompleted");
-					done = true;
-				} catch (AssertFailedException e) {
+				}
+				catch (AssertFailedException e) {
 					afe = e;
+				}
+				finally {
 					done = true;
 				}
 			});
@@ -1049,7 +1055,6 @@ namespace MoonTest.System.Net {
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in WriteStreamClosed");
 				} catch (AssertFailedException e) {
 					afe = e;
-					done = true;
 				}
 			});
 			Thread t = new Thread (delegate ()
