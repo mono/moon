@@ -386,6 +386,9 @@ namespace Mono.Xaml {
 				// If the expression was  Source="5" then 'str_value' will be populated.
 				b.Source = value ?? str_value;
 				break;
+			case "BindsDirectlyToSource":
+				b.BindsDirectlyToSource = bool.Parse ((string) value ?? str_value);
+				break;
 			case "StringFormat":
 				b.StringFormat = (string) value ?? str_value;
 				break;
