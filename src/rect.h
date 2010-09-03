@@ -22,6 +22,8 @@
 
 namespace Moonlight {
 
+class Context;
+
 // map to System.Windows.Rect
 /* @IncludeInKinds */
 struct Rect {
@@ -50,7 +52,7 @@ struct Rect {
 	}
 
         Rect Transform (cairo_matrix_t *matrix);
-	Rect Transform (cairo_t *cr);
+	Rect Transform (Context *ctx);
 	Rect Transform (const double *projection);
 
 	bool PointInside (double px, double py) const

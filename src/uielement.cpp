@@ -1298,9 +1298,7 @@ UIElement::DoRender (Context *ctx, Region *parent_region)
 		region = new Region (GetSubtreeExtents ().Transform (&scale_xform).RoundOut ());
 	}
 	else {
-		cairo_t *cr = ctx->Cairo ();
-
-		region = new Region (GetSubtreeExtents ().Transform (&render_xform).Transform (cr).RoundOut ());
+		region = new Region (GetSubtreeExtents ().Transform (&render_xform).Transform (ctx).RoundOut ());
 		region->Intersect (parent_region);
 	}
 
@@ -1472,10 +1470,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		ctx->Push (r, &scale_xform);
 	}
 	else {
-		cairo_t *cr = ctx->Cairo ();
-
-		cairo_save (cr);
-		cairo_transform (cr, &render_xform);
+		ctx->Push ();
+		ctx->Transform (&render_xform);
 	}
 
 	if (GetClip ()) {
@@ -1492,14 +1488,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
-		cairo_t        *cr = ctx->Cairo ();
-		Rect           r = GetSubtreeExtents ().Transform (cr);
-		cairo_matrix_t matrix;
-
-		// affine transformations are unaffected by opacity
-		// masks and local opacity so make sure the current
-		// matrix is transferred to the top context.
-		cairo_get_matrix (cr, &matrix);
+		Rect r = GetSubtreeExtents ().Transform (ctx);
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
@@ -1519,10 +1508,10 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 			r = r.Intersection (region->ClipBox ());
 
 		if (flags & COMPOSITE_OPACITY)
-			ctx->Push (r, &matrix);
+			ctx->Push (r);
 
 		if (flags & COMPOSITE_OPACITY_MASK)
-			ctx->Push (r, &matrix);
+			ctx->Push (r);
 	}
 
 	if (flags & COMPOSITE_CACHE) {
@@ -1696,9 +1685,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		}
 	}
 	else {
-		cairo_t *cr = ctx->Cairo ();
-
-		cairo_restore (cr);
+		ctx->Pop ();
 	}
 
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {

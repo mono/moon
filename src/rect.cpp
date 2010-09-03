@@ -14,6 +14,7 @@
 #include "rect.h"
 #include "utils.h"
 #include "moon-path.h"
+#include "context.h"
 #include "projection.h"
 
 namespace Moonlight {
@@ -68,11 +69,11 @@ Rect::Transform (cairo_matrix_t *transform)
 }
 
 Rect
-Rect::Transform (cairo_t *cr)
+Rect::Transform (Context *ctx)
 {
 	cairo_matrix_t matrix;
 
-	cairo_get_matrix (cr, &matrix);
+	ctx->Top ()->GetMatrix (&matrix);
 	return Transform (&matrix);
 }
 
