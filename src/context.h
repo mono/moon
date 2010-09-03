@@ -23,13 +23,14 @@ class Context : public Stack {
 public:
 	class Node : public List::Node {
 	public:
-		Node (MoonSurface *surface);
-		Node (MoonSurface *surface, cairo_matrix_t *transform);
-		Node (Rect extents);
-		Node (Rect extents, cairo_matrix_t *transform);
+		Node (MoonSurface *surface, cairo_matrix_t *matrix);
+		Node (Rect extents, cairo_matrix_t *matrix);
 		virtual ~Node ();
 
 		cairo_t *Cairo ();
+
+		void Transform (cairo_matrix_t *matrix);
+		void GetMatrix (cairo_matrix_t *matrix);
 		MoonSurface *GetSurface ();
 		MoonSurface *GetData (Rect *extents);
 		void SetData (MoonSurface *surface);
@@ -37,7 +38,7 @@ public:
 
 	private:
 		Rect           box;
-		cairo_matrix_t matrix;
+		cairo_matrix_t transform;
 		cairo_t        *context;
 		MoonSurface    *target;
 		MoonSurface    *data;
@@ -46,9 +47,13 @@ public:
 	Context (MoonSurface *surface);
 	Context (MoonSurface *surface, cairo_matrix_t *transform);
 
+	void Transform (cairo_matrix_t *matrix);
+
+	void Push ();
 	void Push (Rect extents);
 	void Push (Rect extents, cairo_matrix_t *transform);
 	Node *Top ();
+	void Pop ();
 	Rect Pop (MoonSurface **surface);
 
 	cairo_t *Cairo ();

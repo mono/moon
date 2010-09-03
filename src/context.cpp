@@ -14,42 +14,22 @@
 
 namespace Moonlight {
 
-Context::Node::Node (MoonSurface *surface)
+Context::Node::Node (MoonSurface *surface, cairo_matrix_t *matrix)
 {
-	box     = Rect ();
-	context = NULL;
-	target  = surface->ref ();
-	data    = NULL;
-
-	cairo_matrix_init_identity (&matrix);
+	box       = Rect ();
+	transform = *matrix;
+	context   = NULL;
+	target    = surface->ref ();
+	data      = NULL;
 }
 
-Context::Node::Node (MoonSurface *surface, cairo_matrix_t *transform)
+Context::Node::Node (Rect extents, cairo_matrix_t *matrix)
 {
-	box     = Rect ();
-	matrix  = *transform;
-	context = NULL;
-	target  = surface->ref ();
-	data    = NULL;
-}
-
-Context::Node::Node (Rect extents)
-{
-	box     = extents;
-	context = NULL;
-	target  = NULL;
-	data    = NULL;
-
-	cairo_matrix_init_identity (&matrix);
-}
-
-Context::Node::Node (Rect extents, cairo_matrix_t *transform)
-{
-	box     = extents;
-	matrix  = *transform;
-	context = NULL;
-	target  = NULL;
-	data    = NULL;
+	box       = extents;
+	transform = *matrix;
+	context   = NULL;
+	target    = NULL;
+	data      = NULL;
 }
 
 Context::Node::~Node ()
@@ -82,12 +62,27 @@ Context::Node::Cairo ()
 			cairo_surface_set_device_offset (dst, -r.x, -r.y);
 
 		context = cairo_create (dst);
-		cairo_set_matrix (context, &matrix);
+		cairo_set_matrix (context, &transform);
 
 		cairo_surface_destroy (dst);
 	}
 
 	return context;
+}
+
+void
+Context::Node::Transform (cairo_matrix_t *matrix)
+{
+	cairo_matrix_multiply (&transform, matrix, &transform);
+
+	if (context)
+		cairo_set_matrix (context, &transform);
+}
+
+void
+Context::Node::GetMatrix (cairo_matrix_t *matrix)
+{
+	*matrix = transform;
 }
 
 MoonSurface *
@@ -164,7 +159,10 @@ Context::Node::Readonly (void)
 
 Context::Context (MoonSurface *surface)
 {
-	Stack::Push (new Context::Node (surface));
+	cairo_matrix_t matrix;
+
+	cairo_matrix_init_identity (&matrix);
+	Stack::Push (new Context::Node (surface, &matrix));
 }
 
 Context::Context (MoonSurface *surface, cairo_matrix_t *transform)
@@ -173,9 +171,27 @@ Context::Context (MoonSurface *surface, cairo_matrix_t *transform)
 }
 
 void
+Context::Transform (cairo_matrix_t *matrix)
+{
+	Top ()->Transform (matrix);
+}
+
+void
+Context::Push ()
+{
+	cairo_matrix_t matrix;
+
+	Top ()->GetMatrix (&matrix);
+	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix));
+}
+
+void
 Context::Push (Rect extents)
 {
-	Stack::Push (new Context::Node (extents));
+	cairo_matrix_t matrix;
+
+	Top ()->GetMatrix (&matrix);
+	Stack::Push (new Context::Node (extents, &matrix));
 }
 
 void
@@ -188,6 +204,12 @@ Context::Node *
 Context::Top ()
 {
 	return (Node *) Stack::Top ();
+}
+
+void
+Context::Pop ()
+{
+	delete Stack::Pop ();
 }
 
 Rect
