@@ -29,7 +29,7 @@ public:
 		Node (Rect extents, cairo_matrix_t *transform);
 		virtual ~Node ();
 
-		cairo_t *GetCr ();
+		cairo_t *Cairo ();
 		MoonSurface *GetBitmap ();
 		void SetBitmap (MoonSurface *surface);
 		Rect GetBitmapExtents (void);

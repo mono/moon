@@ -62,7 +62,7 @@ Context::Node::~Node ()
 }
 
 cairo_t *
-Context::Node::GetCr ()
+Context::Node::Cairo ()
 {
 	if (readonly)
 		return NULL;
@@ -201,7 +201,7 @@ Context::Pop (MoonSurface **ref)
 cairo_t *
 Context::Cairo ()
 {
-	return Top ()->GetCr ();
+	return Top ()->Cairo ();
 }
 
 bool
