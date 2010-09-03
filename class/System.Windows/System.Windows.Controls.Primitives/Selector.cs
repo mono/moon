@@ -427,13 +427,11 @@ namespace System.Windows.Controls.Primitives {
 		void ISupportInitialize.BeginInit ()
 		{
 			Console.WriteLine ("NIEX: System.Windows.Controls.Primitive.Selector:.ISupportInitialize.BeginInit");
-			throw new System.NotImplementedException();
 		}
 
 		void ISupportInitialize.EndInit ()
 		{
 			Console.WriteLine ("NIEX: System.Windows.Controls.Primitive.Selector:.ISupportInitialize.EndInit");
-			throw new NotImplementedException ();
 		}
 		#endregion
 	}
