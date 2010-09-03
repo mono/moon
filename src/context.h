@@ -41,7 +41,6 @@ public:
 		cairo_t        *context;
 		MoonSurface    *target;
 		MoonSurface    *data;
-		bool           readonly;
 	};
 
 	Context (MoonSurface *surface);
