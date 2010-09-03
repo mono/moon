@@ -93,26 +93,6 @@ private:
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {
 public:
-	InheritedPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
-	virtual ~InheritedPropertyValueProvider ();
-
-	virtual Value *GetPropertyValue (DependencyProperty *property);
-
-	DependencyObject* GetPropertySource (DependencyProperty *property);
-	void SetPropertySource (DependencyProperty *property, DependencyObject *source);
-
-	static bool IsPropertyInherited (int propertyId);
-
-
-	// this method is used when a property changes on object @obj,
-	// and that notification needs to propagate down the tree
-	void PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source);
-
-	// this method is used when you add a subtree into a
-	// pre-existing tree.  it propagates all inheritable
-	// properties throughout the tree
-	void PropagateInheritedPropertiesOnAddingToTree (DependencyObject *subtree);
-private:
 	enum Inheritable {
 		Foreground = 1 << 0,
 		FontFamily = 1 << 1,
@@ -129,17 +109,38 @@ private:
 		InheritableNone = 0
 	};
 
+	InheritedPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
+	virtual ~InheritedPropertyValueProvider ();
+
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+
+	DependencyObject* GetPropertySource (DependencyProperty *property);
+	DependencyObject* GetPropertySource (Inheritable inheritableProperty);
+	void SetPropertySource (Inheritable inheritableProperty, DependencyObject *source);
+
+	static bool IsPropertyInherited (int propertyId);
+
+
+	// this method is used when a property changes on object @obj,
+	// and that notification needs to propagate down the tree
+	void PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source);
+
+	// this method is used when you add a subtree into a
+	// pre-existing tree.  it propagates all inheritable
+	// properties throughout the tree
+	void PropagateInheritedPropertiesOnAddingToTree (DependencyObject *subtree);
+
+	void ClearInheritedPropertiesOnRemovingFromTree (DependencyObject *subtree);
+
 	static Inheritable InheritablePropertyFromPropertyId (int propertyId);
 	static int InheritablePropertyToPropertyId (Types *types, Inheritable property, Type::Kind objectType);
 
-	bool PROP_ADD (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property);
+private:
+	bool PropAdd (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property);
+	bool PropRemove (Types *types, DependencyObject *element, Inheritable property);
 
-	static int MapPropertyToAncestor (Types *types,
-					  int propertyId,
-					  Type::Kind ancestorKind);
-
-	void walk_subtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen);
-	void walk_tree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen);
+	void WalkSubtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding);
+	void WalkTree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding);
 
 	GHashTable *propertyToSupplyingAncestor;
 };

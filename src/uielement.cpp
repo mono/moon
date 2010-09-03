@@ -783,6 +783,9 @@ UIElement::ElementRemoved (UIElement *item)
 	item->ClearValue (LayoutInformation::LayoutClipProperty);
 
 	InvalidateMeasure ();
+
+	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+	inherited->ClearInheritedPropertiesOnRemovingFromTree (item);
 }
 
 void

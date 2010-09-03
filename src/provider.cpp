@@ -349,34 +349,84 @@ InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
 }
 
 bool
-InheritedPropertyValueProvider::PROP_ADD (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property)
+InheritedPropertyValueProvider::PropAdd (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property)
 {
-	DependencyObject *source;
-	DependencyProperty *elementProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, element->GetObjectType()));
-	/* we always assign a provider source on @element (the */
-	/* child), and it'll either be the rootParent's source */
-	/* (if it's value is inherited) or rootParent itself */
-	/* (if the value is local). */
-	DependencyProperty *rootProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, rootParent->GetObjectType()));
-	DependencyProperty *sourceProperty;
-	int root_prec = rootParent->GetPropertyValueProvider (rootProperty);
-	if (root_prec == -1)
-		return false;
-	else if (root_prec == PropertyPrecedence_Inherited) {
-		source = rootParent->GetInheritedValueSource (rootProperty);
-		sourceProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
-	}
-	else if (root_prec < PropertyPrecedence_Inherited) {
-		source = rootParent;
-		sourceProperty = rootProperty;
-	}
-	/* FIXME what happens with lower precedences? */
+	// we always assign a provider source on @element (the child),
+	// and it'll either be the rootParent's source (if it's value
+	// is inherited) or rootParent itself (if the value is local).
 
-	return element->PropagateInheritedValue (elementProperty, source, NULL, source->GetValue (sourceProperty));
+	int rootPropertyId = InheritablePropertyToPropertyId (types, property, rootParent->GetObjectType());
+
+	if (rootPropertyId == -1) {
+		// the property doesn't exist on rootParent at all, so
+		// we must be inheriting.
+		DependencyObject *source = rootParent->GetInheritedValueSource (property);
+		Value *value = NULL;
+
+		if (source) {
+			DependencyProperty *sourceProperty =
+				types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
+			value = source->GetValue (sourceProperty);
+		}
+
+		return element->PropagateInheritedValue (property, source, NULL, value);
+	}
+	else {
+		DependencyProperty *rootProperty = types->GetProperty (rootPropertyId);
+		int root_prec = rootParent->GetPropertyValueProvider (rootProperty);
+		if (root_prec == -1)
+			return true;
+
+		DependencyObject *source;
+		DependencyProperty *sourceProperty = NULL;
+
+		if (root_prec == PropertyPrecedence_Inherited) {
+			source = rootParent->GetInheritedValueSource (property);
+			if (source)
+				sourceProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
+		}
+		else if (root_prec < PropertyPrecedence_Inherited) {
+			source = rootParent;
+			sourceProperty = rootProperty;
+		}
+		/* FIXME what happens with lower precedences? */
+
+		Value *sourceValue = source && sourceProperty ? source->GetValue (sourceProperty) : NULL;
+		return element->PropagateInheritedValue (property, source, NULL, sourceValue);
+	}
+}
+
+bool
+InheritedPropertyValueProvider::PropRemove (Types *types, DependencyObject *element, Inheritable property)
+{
+	int propertyId = InheritablePropertyToPropertyId (types, property, element->GetObjectType());
+
+	element->SetInheritedValueSource (property, NULL);
+
+	if (propertyId == -1) {
+		// the property doesn't exist on this element, so it's
+		// necessarily inherited.  clear the value source and
+		// continue on our way.
+		return true;
+	}
+	else {
+		element->SetInheritedValueSource (property, NULL);
+
+		DependencyProperty *dp = types->GetProperty (propertyId);
+		int prec = element->GetPropertyValueProvider (dp);
+
+		if (prec == -1)
+			return true;
+
+		if (prec < PropertyPrecedence_Inherited)
+			return false;
+
+		return true;
+	}
 }
 
 void
-InheritedPropertyValueProvider::walk_subtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen)
+InheritedPropertyValueProvider::WalkSubtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding)
 {
 	if (seen == InheritedPropertyValueProvider::InheritableAll)
 		return;
@@ -404,7 +454,7 @@ InheritedPropertyValueProvider::walk_subtree (Types *types, DependencyObject *ro
 
 				for (int i = 0; i < count; i++) {
 					DependencyObject *obj = col->GetValueAt (i)->AsDependencyObject ();
-					walk_tree (types, rootParent, obj, seen);
+					WalkTree (types, rootParent, obj, seen, adding);
 				}
 			}
 		}
@@ -414,14 +464,14 @@ InheritedPropertyValueProvider::walk_subtree (Types *types, DependencyObject *ro
 		VisualTreeWalker walker ((UIElement*)element, Logical, types);
 
 		while (UIElement *child = walker.Step ())
-			walk_tree (types, rootParent, child, seen);
+			WalkTree (types, rootParent, child, seen, adding);
 	}
 
 }
 
 
 void
-InheritedPropertyValueProvider::walk_tree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen)
+InheritedPropertyValueProvider::WalkTree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding)
 {
 	if (seen == InheritedPropertyValueProvider::InheritableAll)
 		return;
@@ -429,53 +479,34 @@ InheritedPropertyValueProvider::walk_tree (Types *types, DependencyObject *rootP
 #define HAS_SEEN(p)  ((seen & (InheritedPropertyValueProvider::p))!=0)
 #define SEEN(p)      (seen|=(InheritedPropertyValueProvider::p))
 
-	MoonError error;
-	Type::Kind elementType = element->GetObjectType();
-	bool need_walk = false;
+	if (adding) {
+		if (!HAS_SEEN (Foreground) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::Foreground)) SEEN (Foreground);
+		if (!HAS_SEEN (FontFamily) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontFamily)) SEEN (FontFamily);
+		if (!HAS_SEEN (FontStretch) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontStretch)) SEEN (FontStretch);
+		if (!HAS_SEEN (FontStyle) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontStyle)) SEEN (FontStyle);
+		if (!HAS_SEEN (FontWeight) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontWeight)) SEEN (FontWeight);
+		if (!HAS_SEEN (FontSize) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontSize)) SEEN (FontSize);
 
-	// put these checks both inside and outside the IsSubclassOf
-	// check, since the check is a simple logical and, while the
-	// IsSubclassOf check is slower.
-	if (!HAS_SEEN (Foreground) ||
-	    !HAS_SEEN (FontFamily) ||
-	    !HAS_SEEN (FontStretch) ||
-	    !HAS_SEEN (FontStyle) ||
-	    !HAS_SEEN (FontWeight) ||
-	    !HAS_SEEN (FontSize)) {
-	    
-		if (types->IsSubclassOf (elementType, Type::CONTROL) ||
-		    types->IsSubclassOf (elementType, Type::TEXTBLOCK) ||
-		    types->IsSubclassOf (elementType, Type::TEXTELEMENT)) {
+		if (!HAS_SEEN (Language) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::Language)) SEEN (Language);
+		if (!HAS_SEEN (FlowDirection) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FlowDirection)) SEEN (FlowDirection);
 
-			if (!HAS_SEEN (Foreground) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::Foreground)) SEEN (Foreground);
-			if (!HAS_SEEN (FontFamily) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontFamily)) SEEN (FontFamily);
-			if (!HAS_SEEN (FontStretch) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontStretch)) SEEN (FontStretch);
-			if (!HAS_SEEN (FontStyle) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontStyle)) SEEN (FontStyle);
-			if (!HAS_SEEN (FontWeight) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontWeight)) SEEN (FontWeight);
-			if (!HAS_SEEN (FontSize) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FontSize)) SEEN (FontSize);
+		if (!HAS_SEEN (UseLayoutRounding) && !PropAdd (types, rootParent, element, InheritedPropertyValueProvider::UseLayoutRounding)) SEEN (UseLayoutRounding);
+	}
+	else {
+		if (!HAS_SEEN (Foreground) && !PropRemove (types, element, InheritedPropertyValueProvider::Foreground)) SEEN (Foreground);
+		if (!HAS_SEEN (FontFamily) && !PropRemove (types, element, InheritedPropertyValueProvider::FontFamily)) SEEN (FontFamily);
+		if (!HAS_SEEN (FontStretch) && !PropRemove (types, element, InheritedPropertyValueProvider::FontStretch)) SEEN (FontStretch);
+		if (!HAS_SEEN (FontStyle) && !PropRemove (types, element, InheritedPropertyValueProvider::FontStyle)) SEEN (FontStyle);
+		if (!HAS_SEEN (FontWeight) && !PropRemove (types, element, InheritedPropertyValueProvider::FontWeight)) SEEN (FontWeight);
+		if (!HAS_SEEN (FontSize) && !PropRemove (types, element, InheritedPropertyValueProvider::FontSize)) SEEN (FontSize);
 
-			need_walk = true;
-		}
+		if (!HAS_SEEN (Language) && !PropRemove (types, element, InheritedPropertyValueProvider::Language)) SEEN (Language);
+		if (!HAS_SEEN (FlowDirection) && !PropRemove (types, element, InheritedPropertyValueProvider::FlowDirection)) SEEN (FlowDirection);
+
+		if (!HAS_SEEN (UseLayoutRounding) && !PropRemove (types, element, InheritedPropertyValueProvider::UseLayoutRounding)) SEEN (UseLayoutRounding);
 	}
 
-	if (!HAS_SEEN (Language) ||
-	    !HAS_SEEN (FlowDirection)) {
-		if (types->IsSubclassOf (elementType, Type::FRAMEWORKELEMENT)) {
-			if (!HAS_SEEN (Language) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::Language)) SEEN (Language);
-			if (!HAS_SEEN (FlowDirection) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::FlowDirection)) SEEN (FlowDirection);
-		}
-	}
-
-	if (!HAS_SEEN (UseLayoutRounding)) {
-		if (types->IsSubclassOf (elementType, Type::UIELEMENT)) {
-			if (!HAS_SEEN (UseLayoutRounding) && !PROP_ADD (types, rootParent, element, InheritedPropertyValueProvider::UseLayoutRounding)) SEEN (UseLayoutRounding);
-
-			need_walk = true;
-		}
-	}
-
-	if (need_walk)
-		walk_subtree (types, rootParent, element, seen);
+	WalkSubtree (types, rootParent, element, seen, adding);
 
 #undef HAS_SEEN
 #undef SEEN
@@ -485,8 +516,7 @@ void
 InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (DependencyObject *subtree)
 {
 	Types *types = subtree->GetDeployment ()->GetTypes ();
-
-	walk_tree (types, obj, subtree, InheritedPropertyValueProvider::InheritableNone);
+	WalkTree (types, obj, subtree, InheritedPropertyValueProvider::InheritableNone, true);
 }
 
 void
@@ -494,23 +524,34 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyProperty *
 {
 	Types *types = source->GetDeployment ()->GetTypes ();
 	Inheritable inheritable = InheritablePropertyFromPropertyId(property->GetId());
-	walk_subtree (types, source, source, (InheritedPropertyValueProvider::InheritableAll & ~inheritable));
-}
-
-DependencyObject*
-InheritedPropertyValueProvider::GetPropertySource (DependencyProperty *property)
-{
-	Inheritable inheritable = InheritablePropertyFromPropertyId(property->GetId());
-	return (DependencyObject*)g_hash_table_lookup (propertyToSupplyingAncestor,
-						       GINT_TO_POINTER (inheritable));
+	WalkSubtree (types, source, source, (InheritedPropertyValueProvider::InheritableAll & ~inheritable), true);
 }
 
 void
-InheritedPropertyValueProvider::SetPropertySource (DependencyProperty *property, DependencyObject *source)
+InheritedPropertyValueProvider::ClearInheritedPropertiesOnRemovingFromTree (DependencyObject *subtree)
 {
-	Inheritable inheritable = InheritablePropertyFromPropertyId(property->GetId());
+	Types *types = subtree->GetDeployment ()->GetTypes ();
+	WalkTree (types, obj, subtree, InheritedPropertyValueProvider::InheritableNone, false);
+}
+									    
+DependencyObject*
+InheritedPropertyValueProvider::GetPropertySource (DependencyProperty *property)
+{
+	return GetPropertySource (InheritablePropertyFromPropertyId(property->GetId()));
+}
+
+DependencyObject*
+InheritedPropertyValueProvider::GetPropertySource (Inheritable inheritableProperty)
+{
+	return (DependencyObject*)g_hash_table_lookup (propertyToSupplyingAncestor,
+						       GINT_TO_POINTER (inheritableProperty));
+}
+
+void
+InheritedPropertyValueProvider::SetPropertySource (Inheritable inheritableProperty, DependencyObject *source)
+{
 	g_hash_table_insert (propertyToSupplyingAncestor,
-			     GINT_TO_POINTER (inheritable),
+			     GINT_TO_POINTER (inheritableProperty),
 			     source);
 }
 

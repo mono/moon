@@ -1737,14 +1737,25 @@ DependencyObject::SetValueWithError (DependencyProperty *property, Value *value,
 }
 
 bool
-DependencyObject::PropagateInheritedValue (DependencyProperty *property, DependencyObject *source, Value *old_value, Value *new_value)
+DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
+					   DependencyObject *source, Value *old_value, Value *new_value)
 {
 	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
 	if (inherited == NULL)
 		return true;
 
-	inherited->SetPropertySource (property, source);
+	inherited->SetPropertySource (inheritableProperty, source);
 
+	int propertyId = InheritedPropertyValueProvider::InheritablePropertyToPropertyId (GetDeployment()->GetTypes(),
+											  inheritableProperty,
+											  GetObjectType());
+
+	if (propertyId == -1) {
+		// there can be no local value, so it has to be inherited
+		return true;
+	}
+
+	DependencyProperty *property = GetDeployment()->GetTypes()->GetProperty (propertyId);
 	MoonError unused;
 	ProviderValueChanged (PropertyPrecedence_Inherited, property, old_value, new_value, false, false, false, &unused);
 
@@ -2928,10 +2939,18 @@ DependencyObject::GetPropertyValueProvider (DependencyProperty *property)
 }
 
 DependencyObject*
-DependencyObject::GetInheritedValueSource (DependencyProperty *property)
+DependencyObject::GetInheritedValueSource (InheritedPropertyValueProvider::Inheritable inheritableProperty)
 {
 	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
-	return inherited->GetPropertySource (property);
+	return inherited->GetPropertySource (inheritableProperty);
+}
+
+void
+DependencyObject::SetInheritedValueSource (InheritedPropertyValueProvider::Inheritable inheritableProperty,
+					   DependencyObject *source)
+{
+	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
+	return inherited->SetPropertySource (inheritableProperty, source);
 }
 
 DependencyObject *
