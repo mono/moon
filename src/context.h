@@ -30,15 +30,17 @@ public:
 		virtual ~Node ();
 
 		cairo_t *Cairo ();
-		MoonSurface *GetBitmap (Rect *extents);
-		void SetBitmap (MoonSurface *surface);
+		MoonSurface *GetSurface ();
+		MoonSurface *GetData (Rect *extents);
+		void SetData (MoonSurface *surface);
 		bool Readonly ();
 
 	private:
 		Rect           box;
 		cairo_matrix_t matrix;
 		cairo_t        *context;
-		MoonSurface    *bitmap;
+		MoonSurface    *target;
+		MoonSurface    *data;
 		bool           readonly;
 	};
 

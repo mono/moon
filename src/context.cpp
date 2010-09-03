@@ -16,40 +16,40 @@ namespace Moonlight {
 
 Context::Node::Node (MoonSurface *surface)
 {
-	box      = Rect ();
-	context  = NULL;
-	bitmap   = surface->ref ();
-	readonly = false;
+	box     = Rect ();
+	context = NULL;
+	target  = surface->ref ();
+	data    = NULL;
 
 	cairo_matrix_init_identity (&matrix);
 }
 
 Context::Node::Node (MoonSurface *surface, cairo_matrix_t *transform)
 {
-	box      = Rect ();
-	matrix   = *transform;
-	context  = NULL;
-	bitmap   = surface->ref ();
-	readonly = false;
+	box     = Rect ();
+	matrix  = *transform;
+	context = NULL;
+	target  = surface->ref ();
+	data    = NULL;
 }
 
 Context::Node::Node (Rect extents)
 {
-	box      = extents;
-	context  = NULL;
-	bitmap   = NULL;
-	readonly = false;
+	box     = extents;
+	context = NULL;
+	target  = NULL;
+	data    = NULL;
 
 	cairo_matrix_init_identity (&matrix);
 }
 
 Context::Node::Node (Rect extents, cairo_matrix_t *transform)
 {
-	box      = extents;
-	matrix   = *transform;
-	context  = NULL;
-	bitmap   = NULL;
-	readonly = false;
+	box     = extents;
+	matrix  = *transform;
+	context = NULL;
+	target  = NULL;
+	data    = NULL;
 }
 
 Context::Node::~Node ()
@@ -57,92 +57,109 @@ Context::Node::~Node ()
 	if (context)
 		cairo_destroy (context);
 
-	if (bitmap)
-		bitmap->unref ();
+	if (target)
+		target->unref ();
+
+	if (data)
+		data->unref ();
 }
 
 cairo_t *
 Context::Node::Cairo ()
 {
-	if (readonly)
+	MoonSurface *surface = GetSurface ();
+
+	if (surface != target)
 		return NULL;
 
 	if (!context) {
-		cairo_surface_t *surface;
+		cairo_surface_t *dst;
 		Rect            r = box.RoundOut ();
 
-		if (!GetBitmap (NULL))
-			return NULL;
-
-		surface = bitmap->Cairo ();
+		dst = target->Cairo ();
 
 		if (!r.IsEmpty ())
-			cairo_surface_set_device_offset (surface, -r.x, -r.y);
+			cairo_surface_set_device_offset (dst, -r.x, -r.y);
 
-		context = cairo_create (surface);
+		context = cairo_create (dst);
 		cairo_set_matrix (context, &matrix);
 
-		cairo_surface_destroy (surface);
+		cairo_surface_destroy (dst);
 	}
 
 	return context;
 }
 
 MoonSurface *
-Context::Node::GetBitmap (Rect *extents)
+Context::Node::GetSurface ()
+{
+	return target ? target : GetData (NULL);
+}
+
+MoonSurface *
+Context::Node::GetData (Rect *extents)
 {
 	Rect r = box.RoundOut ();
 
-	if (!bitmap) {
+	if (!data) {
 		MoonSurface *base;
 
+		if (target)
+			return NULL;
+
 		if (!prev) {
-			g_warning ("ContextNode::GetBitmap no base node.");
+			g_warning ("ContextNode::GetData no base node.");
 			return NULL;
 		}
 
-		base = ((Context::Node *) prev)->GetBitmap (NULL);
+		base = ((Context::Node *) prev)->GetSurface ();
 		if (!base) {
-			g_warning ("ContextNode::GetBitmap no base bitmap.");
+			g_warning ("ContextNode::GetData no base surface.");
 			return NULL;
 		}
 
-		bitmap = base->Similar (r.width, r.height);
-		if (!bitmap) {
-			g_warning ("ContextNode::GetBitmap failed.");
+		data = base->Similar (r.width, r.height);
+		if (!data) {
+			g_warning ("ContextNode::GetData failed.");
 			return NULL;
 		}
+
+		target = data->ref ();
 	}
 
 	if (extents)
 		*extents = r;
 
-	return bitmap;
+	return data;
 }
 
 void
-Context::Node::SetBitmap (MoonSurface *surface)
+Context::Node::SetData (MoonSurface *source)
 {
 	MoonSurface *ref;
 
-	if (context) {
-		g_warning ("ContextNode::SetBitmap context present.");
+	if (target) {
+		g_warning ("ContextNode::SetData target surface present.");
 		return;
 	}
 
-	ref = surface->ref ();
+	ref = source->ref ();
 
-	if (bitmap)
-		bitmap->unref ();
+	if (data)
+		data->unref ();
 
-	bitmap   = ref;
-	readonly = true;
+	data = ref;
 }
 
 bool
 Context::Node::Readonly (void)
 {
-	return readonly;
+	MoonSurface *surface = GetSurface ();
+
+	if (surface != target)
+		return true;
+
+	return false;
 }
 
 Context::Context (MoonSurface *surface)
@@ -183,7 +200,7 @@ Context::Pop (MoonSurface **ref)
 	if (node) {
 		MoonSurface *surface;
 
-		surface = node->GetBitmap (&extents);
+		surface = node->GetData (&extents);
 		if (surface)
 			*ref = surface->ref ();
 

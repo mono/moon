@@ -1533,11 +1533,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		ctx->Push (r, &scale_xform);
 	}
 
-	if (GetRenderCacheMode () && bitmap_cache) {
-		Context::Node *node = ctx->Top ();
-
-		node->SetBitmap (bitmap_cache);
-	}
+	if (GetRenderCacheMode () && bitmap_cache)
+		ctx->Top ()->SetData (bitmap_cache);
 }
 
 void
@@ -1550,11 +1547,11 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache == NULL) {
-		MoonSurface *bitmap;
+		MoonSurface *data;
 
-		bitmap = ctx->Top ()->GetBitmap (NULL);
-		if (bitmap)
-			bitmap_cache = bitmap->ref ();
+		data = ctx->Top ()->GetData (NULL);
+		if (data)
+			bitmap_cache = data->ref ();
 	}
 
 	if (flags & COMPOSITE_CACHE) {
