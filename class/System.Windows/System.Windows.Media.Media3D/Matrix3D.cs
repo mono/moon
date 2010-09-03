@@ -295,21 +295,9 @@ namespace System.Windows.Media.Media3D {
 		public bool HasInverse {
 			get {
 				double t_11;
-				double t_12;
-				double t_13;
-				double t_14;
 				double t_21;
-				double t_22;
-				double t_23;
-				double t_24;
 				double t_31;
-				double t_32;
-				double t_33;
-				double t_34;
 				double t_41;
-				double t_42;
-				double t_43;
-				double t_44;
 				double det;
 
 				if (IsIdentity)
@@ -319,18 +307,6 @@ namespace System.Windows.Media.Media3D {
 				t_21 = -m_21 * m_33 * m_44 + m_21 * m_34 * offset_z + m_31 * m_23 * m_44 - m_31 * m_24 * offset_z - offset_x * m_23 * m_34 + offset_x * m_24 * m_33;
 				t_31 = m_21 * m_32 * m_44 - m_21 * m_34 * offset_y - m_31 * m_22 * m_44 + m_31 * m_24 * offset_y + offset_x * m_22 * m_34 - offset_x * m_24 * m_32;
 				t_41 = -m_21 * m_32 * offset_z + m_21 * m_33 * offset_y + m_31 * m_22 * offset_z - m_31 * m_23 * offset_y - offset_x * m_22 * m_33 + offset_x * m_23 * m_32;
-				t_12 = -m_12 * m_33 * m_44 + m_12 * m_34 * offset_z + m_32 * m_13 * m_44 - m_32 * m_14 * offset_z - offset_y * m_13 * m_34 + offset_y * m_14 * m_33;
-				t_22 = m_11 * m_33 * m_44 - m_11 * m_34 * offset_z - m_31 * m_13 * m_44 + m_31 * m_14 * offset_z + offset_x * m_13 * m_34 - offset_x * m_14 * m_33;
-				t_32 = -m_11 * m_32 * m_44 + m_11 * m_34 * offset_y + m_31 * m_12 * m_44 - m_31 * m_14 * offset_y - offset_x * m_12 * m_34 + offset_x * m_14 * m_32;
-				t_42 = m_11 * m_32 * offset_z - m_11 * m_33 * offset_y - m_31 * m_12 * offset_z + m_31 * m_13 * offset_y + offset_x * m_12 * m_33 - offset_x * m_13 * m_32;
-				t_13 = m_12 * m_23 * m_44 - m_12 * m_24 * offset_z - m_22 * m_13 * m_44 + m_22 * m_14 * offset_z + offset_y * m_13 * m_24 - offset_y * m_14 * m_23;
-				t_23 = -m_11 * m_23 * m_44 + m_11 * m_24 * offset_z + m_21 * m_13 * m_44 - m_21 * m_14 * offset_z - offset_x * m_13 * m_24 + offset_x * m_14 * m_23;
-				t_33 = m_11 * m_22 * m_44 - m_11 * m_24 * offset_y - m_21 * m_12 * m_44 + m_21 * m_14 * offset_y + offset_x * m_12 * m_24 - offset_x * m_14 * m_22;
-				t_43 = -m_11 * m_22 * offset_z + m_11 * m_23 * offset_y + m_21 * m_12 * offset_z - m_21 * m_13 * offset_y - offset_x * m_12 * m_23 + offset_x * m_13 * m_22;
-				t_14 = -m_12 * m_23 * m_34 + m_12 * m_24 * m_33 + m_22 * m_13 * m_34 - m_22 * m_14 * m_33 - m_32 * m_13 * m_24 + m_32 * m_14 * m_23;
-				t_24 = m_11 * m_23 * m_34 - m_11 * m_24 * m_33 - m_21 * m_13 * m_34 + m_21 * m_14 * m_33 + m_31 * m_13 * m_24 - m_31 * m_14 * m_23;
-				t_34 = -m_11 * m_22 * m_34 + m_11 * m_24 * m_32 + m_21 * m_12 * m_34 - m_21 * m_14 * m_32 - m_31 * m_12 * m_24 + m_31 * m_14 * m_22;
-				t_44 = m_11 * m_22 * m_33 - m_11 * m_23 * m_32 - m_21 * m_12 * m_33 + m_21 * m_13 * m_32 + m_31 * m_12 * m_23 - m_31 * m_13 * m_22;
 
 				det = m_11 * t_11 + m_12 * t_21 + m_13 * t_31 + m_14 * t_41;
 
