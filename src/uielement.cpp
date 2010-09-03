@@ -1469,10 +1469,8 @@ void
 UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 {
 	if (flags & COMPOSITE_TRANSFORM) {
-		cairo_t *cr = ctx->Cairo ();
-		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
+		Rect r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
-		cairo_save (cr);
 		ctx->Push (r, &scale_xform);
 	}
 	else {
@@ -1490,10 +1488,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
-		cairo_t *cr = ctx->Cairo ();
-		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
+		Rect r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
-		cairo_save (cr);
 		ctx->Push (r, &scale_xform);
 	}
 
@@ -1523,8 +1519,6 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		// 
 		if (!region->IsEmpty ())
 			r = r.Intersection (region->ClipBox ());
-
-		cairo_save (cr);
 
 		if (flags & COMPOSITE_OPACITY)
 			ctx->Push (r, &matrix);
@@ -1571,12 +1565,14 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_surface_t *src = surface->Cairo ();
 			cairo_t         *cr = ctx->Cairo ();
 
+			cairo_save (cr);
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
 			cairo_clip (cr);
 
 			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_paint (cr);
+			cairo_restore (cr);
 
 			cairo_surface_destroy (src);
 			surface->unref ();
@@ -1597,11 +1593,11 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 			cairo_get_matrix (cr, &ctm);
 
+			cairo_save (cr);
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
 			cairo_clip (cr);
 
-			cairo_save (cr);
 			GetSizeForBrush (cr, &(area.width), &(area.height));
 			opacityMask->SetupBrush (cr, area);
 			mask = cairo_get_source (cr);
@@ -1626,22 +1622,18 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_t         *cr = ctx->Cairo ();
 			double          local_opacity = GetOpacity ();
 
+			cairo_save (cr);
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
 			cairo_clip (cr);
 
 			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_paint_with_alpha (cr, local_opacity);
+			cairo_restore (cr);
 
 			cairo_surface_destroy (src);
 			surface->unref ();
 		}
-	}
-
-	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
-		cairo_t *cr = ctx->Cairo ();
-
-		cairo_restore (cr);
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
@@ -1652,6 +1644,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_t *cr = ctx->Cairo ();
 			Effect  *effect = GetRenderEffect ();
 
+			cairo_save (cr);
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
 			cairo_clip (cr);
@@ -1692,6 +1685,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 					  ctm.x0, ctm.y0);
 			Matrix3D::Multiply (m, local_projection, m);
 
+			cairo_save (cr);
 			cairo_identity_matrix (cr);
 			r.Transform (m).RoundOut ().Draw (cr);
 			cairo_clip (cr);
