@@ -103,7 +103,6 @@ FrameworkElement::~FrameworkElement ()
 void
 FrameworkElement::Dispose ()
 {
-	SetLogicalParent (NULL, NULL);
 	UIElement::Dispose ();
 }
 
