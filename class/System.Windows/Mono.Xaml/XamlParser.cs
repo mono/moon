@@ -1125,11 +1125,16 @@ namespace Mono.Xaml {
 			if (t != null)
 				return t;
 
-			var col = from a in Deployment.Current.Assemblies where (t = a.GetType (name)) != null select t;
-			if (col.Count () > 0) {
-				t = col.First ();
-				if (IsValidType (t))
-					return t;
+			if (!name.Contains ('.'))
+				t = FindPartialType (xmlns, name);
+
+			if (t == null) {
+				var col = from a in Deployment.Current.Assemblies where (t = a.GetType (name)) != null select t;
+				if (col.Count () > 0) {
+					t = col.First ();
+					if (IsValidType (t))
+						return t;
+				}
 			}
 
 			return t;
@@ -1142,6 +1147,21 @@ namespace Mono.Xaml {
 
 			if (IsValidType (t))
 				return t;
+
+			return null;
+		}
+
+		private Type FindPartialType (string xmlns, string name)
+		{
+			if (Deployment.Current.Assemblies == null)
+				return null;
+
+			foreach (Assembly assembly in Deployment.Current.Assemblies) {
+				Type t = LoadPartialTypeFromAssembly (xmlns, name, assembly);
+
+				if (IsValidType (t))
+					return t;
+			}
 
 			return null;
 		}
