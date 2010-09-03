@@ -117,13 +117,25 @@ namespace System.Windows {
 				if (source == null)
 					return;
 
-				var stream = Application.GetResourceStream (value);
+				if (!Application.IsAbsoluteResourceStreamLocator (source))
+					source = Application.MergeResourceStreamLocators (ResourceBase, source);
 
-				if (stream == null)
+				var stream = Application.GetResourceStream (source);
+				if (stream == null) {
+					Console.Error.WriteLine ("Unable to find resource stream: '{0}'", source);
+					Console.Error.WriteLine ("Unmerged source value: '{0}'", value);
 					throw new Exception ("Could not find the resource at the given uri");
+				}
 
-				ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value, Deployment.Current.Surface.Native, PluginHost.Handle);
-				loader.Hydrate (this, stream.Stream, true, false, true);
+				try {
+					XamlLoader loader = XamlLoaderFactory.CreateLoader (Deployment.Current.EntryAssembly, source, Deployment.Current.Surface.Native, PluginHost.Handle);
+					loader.Hydrate (this, stream.Stream, true, false, true);
+				} catch (Exception e) {
+					Console.Error.WriteLine ("Error while parsing xaml referred to in ResourceDictionary::Source property.");
+					Console.Error.WriteLine (e);
+
+					throw e;
+				}
 			}
 		}
 		

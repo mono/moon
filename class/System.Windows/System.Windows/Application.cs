@@ -503,6 +503,40 @@ namespace System.Windows {
 			return GetXapResource (resource);
 		}
 
+		internal static bool IsAbsoluteResourceStreamLocator (Uri locator)
+		{
+			if (locator.IsAbsoluteUri)
+				return true;
+
+			string str_value = locator.ToString ();
+
+			if (Path.IsPathRooted (str_value))
+				return true;
+
+			if (str_value.Contains (";component/"))
+				return true;
+
+			return false;
+		}
+
+		internal static Uri MergeResourceStreamLocators (Uri resource_base, Uri relative)
+		{
+			UriKind uri_kind;
+			string base_str;
+			string relative_str = relative.ToString ();
+
+			if (resource_base.IsAbsoluteUri) {
+				base_str = Path.GetDirectoryName (resource_base.AbsolutePath);
+				uri_kind = UriKind.Absolute;
+			} else {
+				base_str = Path.GetDirectoryName (resource_base.ToString ());
+				uri_kind = UriKind.Relative;
+			}
+
+			string full_path = Path.Combine (base_str, relative_str);
+			return new Uri (full_path, uri_kind);
+		}
+
 		internal static ManagedStreamCallbacks get_resource_cb_safe (IntPtr resourceBase, IntPtr name)
 		{
 			try {
