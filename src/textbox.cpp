@@ -2410,10 +2410,11 @@ TextBoxBase::Redo ()
 //
 
 class TextBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
+protected:
 	Value *selection_background;
 	Value *selection_foreground;
 	
- public:
+public:
 	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence)
 	{
 		selection_background = NULL;
@@ -2791,21 +2792,15 @@ TextBox::OnApplyTemplate ()
 // PasswordBoxDynamicPropertyValueProvider
 //
 
-class PasswordBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
-	Value *selection_background;
-	Value *selection_foreground;
-	
+class PasswordBoxDynamicPropertyValueProvider : public TextBoxDynamicPropertyValueProvider {
  public:
-	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence)
+	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+		: TextBoxDynamicPropertyValueProvider (obj, precedence)
 	{
-		selection_background = NULL;
-		selection_foreground = NULL;
 	}
 	
 	virtual ~PasswordBoxDynamicPropertyValueProvider ()
 	{
-		delete selection_background;
-		delete selection_foreground;
 	}
 	
 	virtual Value *GetPropertyValue (DependencyProperty *property)
@@ -2816,16 +2811,8 @@ class PasswordBoxDynamicPropertyValueProvider : public FrameworkElementProvider 
 			return selection_foreground;
 		}
 		
+		// note: we skip over TextBoxDynamicPropertyValueProvider's implementation.
 		return FrameworkElementProvider::GetPropertyValue (property);
-	}
-	
-	void InitializeSelectionBrushes ()
-	{
-		if (!selection_background)
-			selection_background = Value::CreateUnrefPtr (new SolidColorBrush ("#FF444444"));
-		
-		if (!selection_foreground)
-			selection_foreground = Value::CreateUnrefPtr (new SolidColorBrush ("#FFFFFFFF"));
 	}
 };
 
@@ -3488,8 +3475,7 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Size renderSize = GetRenderSize ();
 
-	// FIXME this is wrong - the provider might be a PasswordBoxDynamicPropertyValueProvider
-	((TextBoxDynamicPropertyValueProvider *)providers.dynamicvalue)->InitializeSelectionBrushes ();
+	((TextBoxDynamicPropertyValueProvider *)textbox->providers.dynamicvalue)->InitializeSelectionBrushes ();
 	
 	UpdateCursor (false);
 	
