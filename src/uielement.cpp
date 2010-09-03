@@ -1534,7 +1534,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache) {
-		Context::Node *node = (Context::Node *) ctx->Top ();
+		Context::Node *node = ctx->Top ();
 
 		node->SetBitmap (bitmap_cache);
 	}
