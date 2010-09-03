@@ -43,11 +43,16 @@ public:
 		bool           readonly;
 	};
 
-	Node *Pop () { return (Node *) Stack::Pop (); }
-	Node *Top () { return (Node *) Stack::Top (); }
+	Context (MoonSurface *surface);
+	Context (MoonSurface *surface, cairo_matrix_t *transform);
 
-	cairo_t *Cairo () { return Top ()->GetCr (); }
-	bool IsImmutable () { return Top ()->Readonly (); }
+	void Push (Rect extents);
+	void Push (Rect extents, cairo_matrix_t *transform);
+	Node *Top ();
+	Rect Pop (MoonSurface **surface);
+
+	cairo_t *Cairo ();
+	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
 };
 

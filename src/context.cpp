@@ -142,5 +142,72 @@ Context::Node::Readonly (void)
 {
 	return readonly;
 }
-  
+
+Context::Context (MoonSurface *surface)
+{
+	Stack::Push (new Context::Node (surface));
+}
+
+Context::Context (MoonSurface *surface, cairo_matrix_t *transform)
+{
+	Stack::Push (new Context::Node (surface, transform));
+}
+
+void
+Context::Push (Rect extents)
+{
+	Stack::Push (new Context::Node (extents));
+}
+
+void
+Context::Push (Rect extents, cairo_matrix_t *transform)
+{
+	Stack::Push (new Context::Node (extents, transform));
+}
+
+Context::Node *
+Context::Top ()
+{
+	return (Node *) Stack::Top ();
+}
+
+Rect
+Context::Pop (MoonSurface **ref)
+{
+	Node        *node;
+	MoonSurface *surface;
+	Rect        extents;
+
+	node = (Node *) Stack::Pop ();
+	if (!node)
+		return Rect ();
+
+	extents = node->GetBitmapExtents ();
+	if (extents.IsEmpty ())
+		return Rect ();
+
+	surface = node->GetBitmap ();
+	if (!surface)
+		return Rect ();
+
+	if (ref)
+		*ref = surface->ref ();
+
+	delete node;
+
+	return extents;
+}
+
+cairo_t *
+Context::Cairo ()
+{
+	return Top ()->GetCr ();
+}
+
+bool
+Context::IsImmutable ()
+{
+	return Top ()->Readonly ();
+}
+
 };

@@ -1470,7 +1470,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
 		cairo_save (cr);
-		ctx->Push (new Context::Node (r, &scale_xform));
+		ctx->Push (r, &scale_xform);
 	}
 	else {
 		cairo_t *cr = ctx->Cairo ();
@@ -1491,7 +1491,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		Rect    r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
 		cairo_save (cr);
-		ctx->Push (new Context::Node (r, &scale_xform));
+		ctx->Push (r, &scale_xform);
 	}
 
 	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
@@ -1524,16 +1524,16 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		cairo_save (cr);
 
 		if (flags & COMPOSITE_OPACITY)
-			ctx->Push (new Context::Node (r, &matrix));
+			ctx->Push (r, &matrix);
 
 		if (flags & COMPOSITE_OPACITY_MASK)
-			ctx->Push (new Context::Node (r, &matrix));
+			ctx->Push (r, &matrix);
 	}
 
 	if (flags & COMPOSITE_CACHE) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform);
 
-		ctx->Push (new Context::Node (r, &scale_xform));
+		ctx->Push (r, &scale_xform);
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache) {
@@ -1561,12 +1561,12 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_CACHE) {
-		Context::Node   *node = (Context::Node *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ctx->Cairo ();
+		MoonSurface *surface;
+		Rect        r = ctx->Pop (&surface);
 
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect r = node->GetBitmapExtents ();
+		if (!r.IsEmpty ()) {
+			cairo_surface_t *src = surface->Cairo ();
+			cairo_t         *cr = ctx->Cairo ();
 
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
@@ -1574,24 +1574,25 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_paint (cr);
-		}
 
-		delete node;
+			cairo_surface_destroy (src);
+			surface->unref ();
+		}
 	}
 
 	if (flags & COMPOSITE_OPACITY_MASK) {
-		Context::Node   *node = (Context::Node *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ctx->Cairo ();
-		cairo_matrix_t  ctm;
+		MoonSurface *surface;
+		Rect        r = ctx->Pop (&surface);
 
-		cairo_get_matrix (cr, &ctm);
-
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			Rect            r = node->GetBitmapExtents ();
+		if (!r.IsEmpty ()) {
+			cairo_surface_t *src = surface->Cairo ();
+			cairo_t         *cr = ctx->Cairo ();
+			cairo_matrix_t  ctm;
 			Point           p = GetOriginPoint ();
 			Rect            area = Rect (p.x, p.y, 0.0, 0.0);
 			cairo_pattern_t *mask = NULL;
+
+			cairo_get_matrix (cr, &ctm);
 
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
@@ -1607,19 +1608,20 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_mask (cr, mask);
 			cairo_pattern_destroy (mask);
 			cairo_restore (cr);
-		}
 
-		delete node;
+			cairo_surface_destroy (src);
+			surface->unref ();
+		}
 	}
 
 	if (flags & COMPOSITE_OPACITY) {
-		Context::Node   *node = (Context::Node *) ctx->Pop ();
-		cairo_surface_t *src = node->GetBitmap ()->Cairo ();
-		cairo_t         *cr = ctx->Cairo ();
+		MoonSurface *surface;
+		Rect        r = ctx->Pop (&surface);
 
-		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
-			double local_opacity = GetOpacity ();
-			Rect   r = node->GetBitmapExtents ();
+		if (!r.IsEmpty ()) {
+			cairo_surface_t *src = surface->Cairo ();
+			cairo_t         *cr = ctx->Cairo ();
+			double          local_opacity = GetOpacity ();
 
 			cairo_identity_matrix (cr);
 			r.RoundOut ().Draw (cr);
@@ -1627,9 +1629,10 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_paint_with_alpha (cr, local_opacity);
-		}
 
-		delete node;
+			cairo_surface_destroy (src);
+			surface->unref ();
+		}
 	}
 
 	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
@@ -1639,24 +1642,26 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
-		Context::Node *node = (Context::Node *) ctx->Pop ();
-		MoonSurface   *src = node->GetBitmap ();
-		cairo_t       *cr = ctx->Cairo ();
-		Effect        *effect = GetRenderEffect ();
-		Rect          r = node->GetBitmapExtents ();
+		MoonSurface *src;
+		Rect        r = ctx->Pop (&src);
 
-		cairo_identity_matrix (cr);
-		r.RoundOut ().Draw (cr);
-		cairo_clip (cr);
+		if (!r.IsEmpty ()) {
+			cairo_t *cr = ctx->Cairo ();
+			Effect  *effect = GetRenderEffect ();
 
-		if (!effect->Render (ctx, src,
-				     NULL,
-				     r.x, r.y,
-				     r.width, r.height))
-			g_warning ("UIElement::PostRender failed to apply pixel effect.");
+			cairo_identity_matrix (cr);
+			r.RoundOut ().Draw (cr);
+			cairo_clip (cr);
 
-		cairo_restore (cr);
-		delete node;
+			if (!effect->Render (ctx, src,
+					     NULL,
+					     r.x, r.y,
+					     r.width, r.height))
+				g_warning ("UIElement::PostRender failed to apply pixel effect.");
+
+			cairo_restore (cr);
+			src->unref ();
+		}
 	}
 
 	if (GetClip ()) {
@@ -1666,33 +1671,37 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
-		Context::Node  *node = (Context::Node *) ctx->Pop ();
-		MoonSurface    *src = node->GetBitmap ();
-		cairo_t        *cr = ctx->Cairo ();
-		cairo_matrix_t ctm;
-		Rect           r = GetSubtreeExtents ().GrowBy (effect_padding);
-		double         m[16];
+		MoonSurface *src;
+		Rect        r = ctx->Pop (&src);
 
-		cairo_get_matrix (cr, &ctm);
+		if (!r.IsEmpty ()) {
+			cairo_t        *cr = ctx->Cairo ();
+			cairo_matrix_t ctm;
+			double         m[16];
 
-		Matrix3D::Affine (m,
-				  ctm.xx, ctm.xy,
-				  ctm.yx, ctm.yy,
-				  ctm.x0, ctm.y0);
-		Matrix3D::Multiply (m, local_projection, m);
+			r = GetSubtreeExtents ().GrowBy (effect_padding);
 
-		cairo_identity_matrix (cr);
-		r.Transform (m).RoundOut ().Draw (cr);
-		cairo_clip (cr);
+			cairo_get_matrix (cr, &ctm);
 
-		if (!composite->Render (ctx, src,
-					m,
-					r.x, r.y,
-					r.width, r.height))
-			g_warning ("UIElement::PostRender failed to apply perspective transformation.");
+			Matrix3D::Affine (m,
+					  ctm.xx, ctm.xy,
+					  ctm.yx, ctm.yy,
+					  ctm.x0, ctm.y0);
+			Matrix3D::Multiply (m, local_projection, m);
 
-		cairo_restore (cr);
-		delete node;
+			cairo_identity_matrix (cr);
+			r.Transform (m).RoundOut ().Draw (cr);
+			cairo_clip (cr);
+
+			if (!composite->Render (ctx, src,
+						m,
+						r.x, r.y,
+						r.width, r.height))
+				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
+
+			cairo_restore (cr);
+			src->unref ();
+		}
 	}
 	else {
 		cairo_t *cr = ctx->Cairo ();
@@ -1758,8 +1767,7 @@ UIElement::Paint (MoonSurface *target,  Rect bounds, cairo_matrix_t *xform)
 	if (xform)
 		cairo_matrix_multiply (&inverse, &inverse, xform);
 
-	Context *ctx = new Context ();
-	ctx->Push (new Context::Node (target, &inverse));
+	Context *ctx = new Context (target, &inverse);
 
 	DoRender (ctx, &region);
 

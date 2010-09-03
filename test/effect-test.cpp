@@ -55,8 +55,7 @@ main (int argc, char **argv)
 						   width, height, stride);
 	target = new CairoSurface (dst);
 	cairo_surface_destroy (dst);
-	ctx = new Context ();
-	ctx->Push (new Context::Node (target));
+	ctx = new Context (target);
 	target->unref ();
 
 	src = cairo_surface_create_similar (dst,

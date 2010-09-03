@@ -911,12 +911,10 @@ Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clea
 	uielements_rendered_with_painters = 0;
 #endif
 
-	Context *ctx = new Context ();
+	Context *ctx = new Context (target);
 	List *render_list = new List ();
 
 	bool did_occlusion_culling = false;
-
-	ctx->Push (new Context::Node (target));
 
 	cairo_t *cr = ctx->Cairo ();
 
