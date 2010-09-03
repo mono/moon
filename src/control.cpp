@@ -34,7 +34,7 @@ Control::Control ()
 	default_style_applied = false;
 	template_root = NULL;
 
-	providers[PropertyPrecedence_IsEnabled] = new InheritedIsEnabledValueProvider (this, PropertyPrecedence_IsEnabled);
+	providers.isenabled = new InheritedIsEnabledValueProvider (this, PropertyPrecedence_IsEnabled);
 }
 
 Control::~Control ()
@@ -104,7 +104,7 @@ void
 Control::OnIsAttachedChanged (bool attached)
 {
 	FrameworkElement::OnIsAttachedChanged (attached);
-	((InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled])->SetDataSource (GetLogicalParent ());
+	providers.isenabled->SetDataSource (GetLogicalParent ());
 }
 
 
@@ -121,7 +121,7 @@ Control::SetVisualParent (UIElement *visual_parent)
 {
 	if (GetVisualParent () != visual_parent) {
 		FrameworkElement::SetVisualParent (visual_parent);
-		((InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled])->SetDataSource (GetLogicalParent ());
+		providers.isenabled->SetDataSource (GetLogicalParent ());
  	}
 }
 
@@ -129,7 +129,7 @@ void
 Control::OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent)
 {
 	FrameworkElement::OnLogicalParentChanged  (old_parent, new_parent);
-	((InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled])->SetDataSource (new_parent);
+	providers.isenabled->SetDataSource (new_parent);
 }
 
 void
@@ -160,7 +160,7 @@ Control::ApplyDefaultStyle ()
 			DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
 			Value val (style);
 			if (Validators::StyleValidator (this, style_prop, &val, &e))
-				((StylePropertyValueProvider *)providers [PropertyPrecedence_DefaultStyle])->UpdateStyle (style, &e);
+				providers.defaultstyle->UpdateStyle (style, &e);
 			else
 				printf ("Error in the default style\n");
 		}
@@ -210,8 +210,7 @@ Control::DoApplyTemplateWithError (MoonError *error)
 void
 Control::UpdateIsEnabledSource (Control *control)
 {
-	InheritedIsEnabledValueProvider *provider = (InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled];
-	provider->SetDataSource (control);
+	providers.isenabled->SetDataSource (control);
 }
 
 void

@@ -2454,7 +2454,8 @@ class TextBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
 
 TextBox::TextBox ()
 {
-	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
+	delete providers.dynamicvalue;
+	providers.dynamicvalue = new TextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
 	events_mask = TEXT_CHANGED | SELECTION_CHANGED;
@@ -2835,7 +2836,8 @@ class PasswordBoxDynamicPropertyValueProvider : public FrameworkElementProvider 
 
 PasswordBox::PasswordBox ()
 {
-	providers[PropertyPrecedence_DynamicValue] = new PasswordBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
+	delete providers.dynamicvalue;
+	providers.dynamicvalue = new PasswordBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
 	events_mask = TEXT_CHANGED;
@@ -3484,10 +3486,10 @@ TextBoxView::Paint (cairo_t *cr)
 void
 TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	TextBoxDynamicPropertyValueProvider *dynamic = (TextBoxDynamicPropertyValueProvider *) textbox->providers[PropertyPrecedence_DynamicValue];
 	Size renderSize = GetRenderSize ();
-	
-	dynamic->InitializeSelectionBrushes ();
+
+	// FIXME this is wrong - the provider might be a PasswordBoxDynamicPropertyValueProvider
+	((TextBoxDynamicPropertyValueProvider *)providers.dynamicvalue)->InitializeSelectionBrushes ();
 	
 	UpdateCursor (false);
 	

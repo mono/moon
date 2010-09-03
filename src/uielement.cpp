@@ -784,8 +784,7 @@ UIElement::ElementRemoved (UIElement *item)
 
 	InvalidateMeasure ();
 
-	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
-	inherited->ClearInheritedPropertiesOnRemovingFromTree (item);
+	providers.inherited->ClearInheritedPropertiesOnRemovingFromTree (item);
 }
 
 void
@@ -798,8 +797,7 @@ UIElement::ElementAdded (UIElement *item)
 	//item->UpdateBounds (true);
 	item->Invalidate ();
 	
-	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
-	inherited->PropagateInheritedPropertiesOnAddingToTree (item);
+	providers.inherited->PropagateInheritedPropertiesOnAddingToTree (item);
 	item->SetIsAttached (IsAttached ());
 	item->SetIsLoaded (IsLoaded ());
 	DependencyObject *o = this;

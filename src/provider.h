@@ -30,6 +30,14 @@ class Style;
 struct Value;
 struct MoonError;
 
+class InheritedIsEnabledValueProvider;
+class LocalPropertyValueProvider;
+class PropertyValueProvider;
+class StylePropertyValueProvider;
+class InheritedPropertyValueProvider;
+class InheritedDataContextValueProvider;
+class AutoCreatePropertyValueProvider;
+
 enum PropertyPrecedence {
 	PropertyPrecedence_IsEnabled,
 	PropertyPrecedence_LocalValue,
@@ -46,6 +54,19 @@ enum PropertyPrecedence {
 
 	PropertyPrecedence_Highest = PropertyPrecedence_IsEnabled,
 	PropertyPrecedence_Lowest = PropertyPrecedence_AutoCreate,
+};
+
+
+// this has to be in the same order as the precedence enum above
+struct PropertyValueProviderVTable {
+	InheritedIsEnabledValueProvider *isenabled;
+	LocalPropertyValueProvider *localvalue;
+	PropertyValueProvider *dynamicvalue; // base class pointer since DO subclasses will define their own.
+	StylePropertyValueProvider *localstyle;
+	StylePropertyValueProvider *defaultstyle;
+	InheritedPropertyValueProvider *inherited;
+	InheritedDataContextValueProvider *inheriteddatacontext;
+	AutoCreatePropertyValueProvider *autocreate;
 };
 
 class PropertyValueProvider {

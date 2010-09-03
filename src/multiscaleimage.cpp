@@ -315,7 +315,8 @@ MultiScaleImage::MultiScaleImage ()
 {
 	SetObjectType (Type::MULTISCALEIMAGE);
 	
-	providers [PropertyPrecedence_DynamicValue] = new MultiScaleImagePropertyValueProvider (this, PropertyPrecedence_DynamicValue);
+	delete providers.dynamicvalue;
+	providers.dynamicvalue = new MultiScaleImagePropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	// Note: cairo_user_data_key_t's do not need to be initialized
 	

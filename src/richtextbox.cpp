@@ -253,7 +253,8 @@ GetClipboard (RichTextBox *textbox, MoonClipboardType clipboardType)
 
 RichTextBox::RichTextBox ()
 {
-	providers[PropertyPrecedence_DynamicValue] = new RichTextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
+	delete providers.dynamicvalue;
+	providers.dynamicvalue = new RichTextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 
 	SetObjectType (Type::RICHTEXTBOX);
 	

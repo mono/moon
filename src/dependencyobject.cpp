@@ -1465,10 +1465,8 @@ DependencyObject::RemoveAllListeners ()
 	if (GetDeployment()->IsShuttingDown ())
 		return;
 
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
-	
-	if (autocreate)
-		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_values, this);
+	if (providers.autocreate)
+		g_hash_table_foreach (providers.autocreate->auto_values, unregister_depobj_values, this);
 	
 	g_hash_table_foreach (local_values, unregister_depobj_values, this);
 }
@@ -1651,13 +1649,12 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		return false;
 	}
 	
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	Value *current_value;
 	bool equal = false;
 	
 	if (!(current_value = ReadLocalValue (property)))
 		if (property->IsAutoCreated ())
-			current_value = autocreate->ReadLocalValue (property);
+			current_value = providers.autocreate->ReadLocalValue (property);
 	
 	if (current_value != NULL && value != NULL) {
 		equal = !property->AlwaysChange() && (*current_value == *value);
@@ -1677,7 +1674,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		g_hash_table_remove (local_values, property);
 		
 		if (property->IsAutoCreated ())
-			autocreate->ClearValue (property);
+			providers.autocreate->ClearValue (property);
 		
 		if (value && (!property->IsAutoCreated () || !value->Is (deployment, Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
 			new_value = new Value (*value);
@@ -1740,11 +1737,10 @@ bool
 DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
 					   DependencyObject *source, Value *old_value, Value *new_value)
 {
-	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
-	if (inherited == NULL)
+	if (providers.inherited == NULL)
 		return true;
 
-	inherited->SetPropertySource (inheritableProperty, source);
+	providers.inherited->SetPropertySource (inheritableProperty, source);
 
 	int propertyId = InheritedPropertyValueProvider::InheritablePropertyToPropertyId (GetDeployment()->GetTypes(),
 											  inheritableProperty,
@@ -1787,8 +1783,6 @@ register_depobj_names (gpointer  key,
 void
 DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 {
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
-	
 	if (error->number || registering_names)
 		return;
 
@@ -1840,8 +1834,8 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 		closure.to_ns = to_ns;
 		closure.error = error;
 	
-		if (autocreate)
-			g_hash_table_foreach (autocreate->auto_values, register_depobj_names, &closure);
+		if (providers.autocreate)
+			g_hash_table_foreach (providers.autocreate->auto_values, register_depobj_names, &closure);
 	
 		g_hash_table_foreach (local_values, register_depobj_names, &closure);
 	}
@@ -1870,7 +1864,6 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	if (registering_names)
 		return;
 	registering_names = true;
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 
 	NameScope *this_ns = NameScope::GetNameScope(this);
 	if (IsHydratedFromXaml () || this_ns == NULL || this_ns->GetTemporary ()) {
@@ -1887,8 +1880,8 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 		return;
 	}
 	
-	if (autocreate)
-		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_names, from_ns);
+	if (providers.autocreate)
+		g_hash_table_foreach (providers.autocreate->auto_values, unregister_depobj_names, from_ns);
 	
 	g_hash_table_foreach (local_values, unregister_depobj_names, from_ns);
 	registering_names = false;
@@ -1996,8 +1989,8 @@ Value *
 DependencyObject::GetValueNoAutoCreate (DependencyProperty *property)
 {
 	Value *v = GetValue (property, PropertyPrecedence_LocalValue, PropertyPrecedence_InheritedDataContext);
-	if (v == NULL && property->IsAutoCreated() && providers[PropertyPrecedence_AutoCreate])
-		v = ((AutoCreatePropertyValueProvider*)providers[PropertyPrecedence_AutoCreate])->ReadLocalValue (property);
+	if (v == NULL && property->IsAutoCreated() && providers.autocreate)
+		v = providers.autocreate->ReadLocalValue (property);
 
 	return v;
 }
@@ -2027,18 +2020,20 @@ DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence sta
 	lookups ++; // for the provider bitmask
 #endif
 
+	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
+
 	for (int i = startingAtPrecedence; i <= endingAtPrecedence; i ++) {
 // #if USE_PROVIDER_BITMASK
 		if (!(provider_bitmask & (1 << i)))
 			continue;
 // #endif
-		if (!providers[i])
+		if (!provider_array[i])
 			continue;
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 		lookups ++;
 		provider_property_lookups ++;
 #endif
-		Value *value = providers[i]->GetPropertyValue (property);
+		Value *value = provider_array[i]->GetPropertyValue (property);
 		if (value) {
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 			g_hash_table_insert (hash_lookups_per_property, property, GINT_TO_POINTER (lookups));
@@ -2067,10 +2062,11 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
 	Value *value = NULL;
 
+	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 	for (int i = 0; i < PropertyPrecedence_AutoCreate; i ++) {
-		if (!providers[i])
+		if (!provider_array[i])
 			continue;
-		value = providers[i]->GetPropertyValue (property);
+		value = provider_array[i]->GetPropertyValue (property);
 		if (value) break;
 	}
 	return value && !value->GetIsNull () ? value : NULL;
@@ -2119,6 +2115,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		   (1 << PropertyPrecedence_DynamicValue) |
 		   (1 << PropertyPrecedence_AutoCreate));
 
+	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 
 	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
 // #if USE_PROVIDER_BITMASK
@@ -2126,14 +2123,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			continue;
 // #endif
 
-		if (!providers[p])
+		if (!provider_array[p])
 			continue;
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 		provider_property_lookups ++;
 #endif
 
-		if (providers[p]->GetPropertyValue (property)) {
+		if (provider_array[p]->GetPropertyValue (property)) {
 			// a provider higher in precedence already has
 			// a value for this property, so the one
 			// that's changing isn't visible anyway.
@@ -2174,8 +2171,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 	}
 
  	if (!equal) {
-		InheritedIsEnabledValueProvider *highest = (InheritedIsEnabledValueProvider *) providers[PropertyPrecedence_IsEnabled];
-		if (providerPrecedence != PropertyPrecedence_IsEnabled && highest && highest->LocalValueChanged (property))
+		if (providerPrecedence != PropertyPrecedence_IsEnabled && providers.isenabled && providers.isenabled->LocalValueChanged (property))
 			return;
 
 		DependencyObject *old_as_dep = NULL;
@@ -2282,15 +2278,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			args->unref ();
 #endif
 
-			InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
 			if (providerPrecedence == PropertyPrecedence_Inherited) {
-				DependencyObject *source = inherited->GetPropertySource (property);
+				DependencyObject *source = providers.inherited->GetPropertySource (property);
 
 				if (source == NULL)
 					g_warning ("ProviderValueChanged called on inherited property with no property source set");
 				else {
 					// FIXME:  we only want to do this if there's no higher precedent value
-					inherited->PropagateInheritedProperty (property, source);
+					providers.inherited->PropagateInheritedProperty (property, source);
 				}
 			}
 			else {
@@ -2299,7 +2294,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 				// a higher precedent value (above
 				// Inherited)
 				if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
-					inherited->PropagateInheritedProperty (property, this);
+					providers.inherited->PropagateInheritedProperty (property, this);
 			}
 
 			delete old_value_copy;
@@ -2333,12 +2328,11 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error)
 {
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	Value *old_local_value;
 	
 	if (!(old_local_value = ReadLocalValue (property)))
 		if (property->IsAutoCreated ())
-			old_local_value = autocreate->ReadLocalValue (property);
+			old_local_value = providers.autocreate->ReadLocalValue (property);
 	
 	// detach from the existing value
 	if (old_local_value != NULL && old_local_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
@@ -2366,12 +2360,13 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	g_hash_table_remove (local_values, property);
 	
 	if (property->IsAutoCreated ())
-		autocreate->ClearValue (property);
+		providers.autocreate->ClearValue (property);
 	
 	// this is... yeah, it's disgusting
+	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 	for (int p = PropertyPrecedence_LocalValue + 1; p < PropertyPrecedence_Count; p ++) {
-		if (providers[p])
-			providers[p]->RecomputePropertyValue (property, error);
+		if (provider_array[p])
+			provider_array[p]->RecomputePropertyValue (property, error);
 	}
 
 	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, false, error);
@@ -2475,16 +2470,13 @@ DependencyObject::DependencyObject (Type::Kind object_type)
 void
 DependencyObject::Initialize ()
 {
-	providers[PropertyPrecedence_IsEnabled] = NULL;
-	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue, dispose_value);
-	providers[PropertyPrecedence_DynamicValue] = NULL;  // subclasses will set this if they need it.
+	// clear out our provider vtable
+	memset (&providers, 0, sizeof (providers));
 
-	providers[PropertyPrecedence_LocalStyle] = NULL;  // this is a frameworkelement specific thing
-	providers[PropertyPrecedence_DefaultStyle] = NULL;  // this is a frameworkelement specific thing
-
-	providers[PropertyPrecedence_Inherited] = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
-	providers[PropertyPrecedence_InheritedDataContext] = NULL; // this is a frameworkelement specific thing
-	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate, dispose_value);
+	// and install the ones all DO's have
+	providers.localvalue = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue, dispose_value);
+	providers.inherited = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
+	providers.autocreate = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate, dispose_value);
 	
 	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 	listener_list = NULL;
@@ -2545,16 +2537,12 @@ DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObjec
 	// If it is *not* a FrameworkElement then 'new_mentor' will be the mentor for all the child
 	// values of this object so we should propagate it here
 	if (!this->Is (Type::FRAMEWORKELEMENT)) {
-		AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
-		StylePropertyValueProvider *style = (StylePropertyValueProvider *) providers[PropertyPrecedence_LocalStyle];
-		StylePropertyValueProvider *default_style = (StylePropertyValueProvider *) providers[PropertyPrecedence_DefaultStyle];
-	
 		g_hash_table_foreach (local_values, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
-		g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
-		if (style) {
-			g_hash_table_foreach (style->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
-			g_hash_table_foreach (default_style->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
-		}
+		g_hash_table_foreach (providers.autocreate->auto_values, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		if (providers.localstyle)
+			g_hash_table_foreach (providers.localstyle->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		if (providers.defaultstyle)
+			g_hash_table_foreach (providers.defaultstyle->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
 	}
 
 	if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
@@ -2710,9 +2698,7 @@ DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
 	closure.old_do = fromObj;
 	closure.new_do = this;
 
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) fromObj->providers[PropertyPrecedence_AutoCreate];
-
-	g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
+	g_hash_table_foreach (fromObj->providers.autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
 	g_hash_table_foreach (fromObj->local_values, (GHFunc)DependencyObject::clone_local_value, &closure);
 	if (fromObj->storage_hash) {
 		g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage_list, this);
@@ -2793,9 +2779,10 @@ DependencyObject::Dispose ()
 
 	RemoveAllListeners();
 
+	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
-		delete providers[i];
-		providers [i] = NULL;
+		delete provider_array[i];
+		provider_array [i] = NULL;
 	}
 	
 	if (storage_hash) {
@@ -2833,7 +2820,6 @@ hash_values_to_array (gpointer key, gpointer value, gpointer user_data)
 DependencyProperty **
 DependencyObject::GetProperties (bool only_changed)
 {
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	DependencyProperty **props;
 	GHashTable *table;
 	GPtrArray *array;
@@ -2852,7 +2838,7 @@ DependencyObject::GetProperties (bool only_changed)
 		g_hash_table_destroy (table);
 	} else {
 		g_hash_table_foreach (local_values, hash_keys_to_array, array);
-		g_hash_table_foreach (autocreate->auto_values, hash_keys_to_array, array);
+		g_hash_table_foreach (providers.autocreate->auto_values, hash_keys_to_array, array);
 	}
 	
 	g_ptr_array_add (array, NULL);
@@ -2941,16 +2927,14 @@ DependencyObject::GetPropertyValueProvider (DependencyProperty *property)
 DependencyObject*
 DependencyObject::GetInheritedValueSource (InheritedPropertyValueProvider::Inheritable inheritableProperty)
 {
-	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
-	return inherited->GetPropertySource (inheritableProperty);
+	return providers.inherited->GetPropertySource (inheritableProperty);
 }
 
 void
 DependencyObject::SetInheritedValueSource (InheritedPropertyValueProvider::Inheritable inheritableProperty,
 					   DependencyObject *source)
 {
-	InheritedPropertyValueProvider *inherited = (InheritedPropertyValueProvider *) providers[PropertyPrecedence_Inherited];
-	return inherited->SetPropertySource (inheritableProperty, source);
+	return providers.inherited->SetPropertySource (inheritableProperty, source);
 }
 
 DependencyObject *
@@ -3142,15 +3126,12 @@ DependencyObject::OnIsAttachedChanged (bool value)
 {
 	EventObject::OnIsAttachedChanged (value);
 
-	AutoCreatePropertyValueProvider *autocreate;
 	attach_data data;
-
-	autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 
 	data.deployment = GetDeployment ();
 	data.value = value;
-	if (autocreate)
-		g_hash_table_foreach (autocreate->auto_values, set_is_attached, &data);
+	if (providers.autocreate)
+		g_hash_table_foreach (providers.autocreate->auto_values, set_is_attached, &data);
 	
 	g_hash_table_foreach (local_values, set_is_attached, &data);
 }

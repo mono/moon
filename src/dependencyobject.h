@@ -567,7 +567,7 @@ protected:
 
 	virtual void CloneCore (Types *types, DependencyObject* from);
 
-	PropertyValueProvider *providers[PropertyPrecedence_Count];
+	PropertyValueProviderVTable providers;
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
 
 	friend class MoonUnmanagedFactory;

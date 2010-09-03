@@ -92,7 +92,8 @@ MediaElement::MediaElement ()
 	
 	Reinitialize (false);
 	
-	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
+	delete providers.dynamicvalue;
+	providers.dynamicvalue = new MediaElementPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	// Note: BufferingTime and Position need to be set in the ctor
 	// so that ReadLocalValue() will get these values.

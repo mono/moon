@@ -90,10 +90,10 @@ FrameworkElement::FrameworkElement ()
 	surface_bounds_with_children = Rect ();
 	logical_parent = NULL;
 
-	providers[PropertyPrecedence_LocalStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle, dispose_value);
-	providers[PropertyPrecedence_DefaultStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle, dispose_value);
-	providers[PropertyPrecedence_DynamicValue] = new FrameworkElementProvider (this, PropertyPrecedence_DynamicValue);
-	providers[PropertyPrecedence_InheritedDataContext] = new InheritedDataContextValueProvider (this, PropertyPrecedence_InheritedDataContext);
+	providers.localstyle = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle, dispose_value);
+	providers.defaultstyle = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle, dispose_value);
+	providers.dynamicvalue = new FrameworkElementProvider (this, PropertyPrecedence_DynamicValue);
+	providers.inheriteddatacontext = new InheritedDataContextValueProvider (this, PropertyPrecedence_InheritedDataContext);
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -150,15 +150,15 @@ FrameworkElement::GetTransformOrigin ()
 		      height * user_xform_origin->y);
 }
 
-void FrameworkElement::SetVisualParent (UIElement *visual_parent)
+void
+FrameworkElement::SetVisualParent (UIElement *visual_parent)
 {
 	UIElement::SetVisualParent (visual_parent);
 
-	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
 	if (!logical_parent && (!visual_parent || visual_parent->Is (Type::FRAMEWORKELEMENT))) {
-		provider->SetDataSource ((FrameworkElement *) visual_parent);
+		providers.inheriteddatacontext->SetDataSource ((FrameworkElement *) visual_parent);
 		if (IsLoaded ())
-			provider->EmitChanged ();
+			providers.inheriteddatacontext->EmitChanged ();
 	}
 }
 
@@ -195,19 +195,18 @@ FrameworkElement::SetLogicalParent (DependencyObject *value, MoonError *error)
 void
 FrameworkElement::OnLogicalParentChanged (DependencyObject *old_logical_parent, DependencyObject *new_logical_parent)
 {
-	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
 	if (IsDisposing ()) {
-		provider->SetDataSource (NULL);
+		providers.inheriteddatacontext->SetDataSource (NULL);
 	}
 	else {
 		if (new_logical_parent && new_logical_parent->Is (Type::FRAMEWORKELEMENT))
-			provider->SetDataSource ((FrameworkElement *) new_logical_parent);
+			providers.inheriteddatacontext->SetDataSource ((FrameworkElement *) new_logical_parent);
 		else if (GetVisualParent () && GetVisualParent ()->Is(Type::FRAMEWORKELEMENT))
-			provider->SetDataSource ((FrameworkElement *)GetVisualParent ());
+			providers.inheriteddatacontext->SetDataSource ((FrameworkElement *)GetVisualParent ());
 		else
-			provider->SetDataSource (NULL);
+			providers.inheriteddatacontext->SetDataSource (NULL);
 		if (IsLoaded ())
-			provider->EmitChanged ();
+			providers.inheriteddatacontext->EmitChanged ();
 	}
 }
 
@@ -249,7 +248,7 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		Style *new_style = args->GetNewValue () ? args->GetNewValue ()->AsStyle () : NULL;
 
 		if (!error->number)
-			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->UpdateStyle (new_style, error);
+			providers.localstyle->UpdateStyle (new_style, error);
 
 		if (error->number)
 			return;
@@ -1036,9 +1035,8 @@ void
 FrameworkElement::OnIsLoadedChanged (bool loaded)
 {
 	UIElement::OnIsLoadedChanged (loaded);
-	InheritedDataContextValueProvider *p = (InheritedDataContextValueProvider *) providers[PropertyPrecedence_InheritedDataContext];
-	if (p)
-		p->EmitChanged ();
+	if (providers.inheriteddatacontext)
+		providers.inheriteddatacontext->EmitChanged ();
 
 	if (loaded && loaded_cb)
 		(*loaded_cb) (this);
