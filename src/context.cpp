@@ -71,7 +71,7 @@ Context::Node::Cairo ()
 		cairo_surface_t *surface;
 		Rect            r = box.RoundOut ();
 
-		if (!GetBitmap ())
+		if (!GetBitmap (NULL))
 			return NULL;
 
 		surface = bitmap->Cairo ();
@@ -89,25 +89,33 @@ Context::Node::Cairo ()
 }
 
 MoonSurface *
-Context::Node::GetBitmap ()
+Context::Node::GetBitmap (Rect *extents)
 {
+	Rect r = box.RoundOut ();
+
 	if (!bitmap) {
 		MoonSurface *base;
-		Rect        r = box.RoundOut ();
 
 		if (!prev) {
 			g_warning ("ContextNode::GetBitmap no base node.");
 			return NULL;
 		}
 
-		base = ((Context::Node *) prev)->GetBitmap ();
+		base = ((Context::Node *) prev)->GetBitmap (NULL);
 		if (!base) {
 			g_warning ("ContextNode::GetBitmap no base bitmap.");
 			return NULL;
 		}
 
 		bitmap = base->Similar (r.width, r.height);
+		if (!bitmap) {
+			g_warning ("ContextNode::GetBitmap failed.");
+			return NULL;
+		}
 	}
+
+	if (extents)
+		*extents = r;
 
 	return bitmap;
 }
@@ -129,12 +137,6 @@ Context::Node::SetBitmap (MoonSurface *surface)
 
 	bitmap   = ref;
 	readonly = true;
-}
-
-Rect
-Context::Node::GetBitmapExtents (void)
-{
-	return box.RoundOut ();
 }
 
 bool
@@ -174,26 +176,19 @@ Context::Top ()
 Rect
 Context::Pop (MoonSurface **ref)
 {
-	Node        *node;
-	MoonSurface *surface;
-	Rect        extents;
+	Node *node;
+	Rect extents = Rect ();
 
 	node = (Node *) Stack::Pop ();
-	if (!node)
-		return Rect ();
+	if (node) {
+		MoonSurface *surface;
 
-	extents = node->GetBitmapExtents ();
-	if (extents.IsEmpty ())
-		return Rect ();
+		surface = node->GetBitmap (&extents);
+		if (surface)
+			*ref = surface->ref ();
 
-	surface = node->GetBitmap ();
-	if (!surface)
-		return Rect ();
-
-	if (ref)
-		*ref = surface->ref ();
-
-	delete node;
+		delete node;
+	}
 
 	return extents;
 }

@@ -1552,7 +1552,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (GetRenderCacheMode () && bitmap_cache == NULL) {
 		MoonSurface *bitmap;
 
-		bitmap = ctx->Top ()->GetBitmap ();
+		bitmap = ctx->Top ()->GetBitmap (NULL);
 		if (bitmap)
 			bitmap_cache = bitmap->ref ();
 	}

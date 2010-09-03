@@ -30,9 +30,8 @@ public:
 		virtual ~Node ();
 
 		cairo_t *Cairo ();
-		MoonSurface *GetBitmap ();
+		MoonSurface *GetBitmap (Rect *extents);
 		void SetBitmap (MoonSurface *surface);
-		Rect GetBitmapExtents (void);
 		bool Readonly ();
 
 	private:
