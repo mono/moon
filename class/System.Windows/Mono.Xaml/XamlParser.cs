@@ -1411,21 +1411,18 @@ namespace Mono.Xaml {
 			int i = 0;
 			while (Char.IsWhiteSpace (str [i]))
 				i++;
-					
+
 			StringBuilder builder = new StringBuilder (str.Length);
 			for ( ; i < str.Length; i++) {
-				bool ws = false;
 				if (Char.IsWhiteSpace (str [i])) {
-					do {
+					while (i < str.Length - 1 && Char.IsWhiteSpace (str [i + 1])) {
 						i++;
-					} while (i < str.Length - 1 && Char.IsWhiteSpace (str [i + 1]));
-					ws = true;
-
+					}
 					if (i == str.Length - 1)
 						break;
-				}
-				if (ws)
 					builder.Append (' ');
+					continue;
+				}
 				builder.Append (str [i]);
 			}
 
