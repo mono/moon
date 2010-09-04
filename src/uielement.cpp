@@ -1475,10 +1475,9 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (GetClip ()) {
-		cairo_t *cr = ctx->Cairo ();
+		Rect r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
 
-		cairo_save (cr);
-		RenderClipPath (cr);
+		ctx->Push (r);
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
@@ -1645,9 +1644,26 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (GetClip ()) {
-		cairo_t *cr = ctx->Cairo ();
+		MoonSurface *surface;
+		Rect        r = ctx->Pop (&surface);
 
-		cairo_restore (cr);
+		if (!r.IsEmpty ()) {
+			cairo_surface_t *src = surface->Cairo ();
+			cairo_t         *cr = ctx->Cairo ();
+
+			cairo_save (cr);
+			RenderClipPath (cr);
+			cairo_identity_matrix (cr);
+			r.RoundOut ().Draw (cr);
+			cairo_clip (cr);
+
+			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_paint (cr);
+			cairo_restore (cr);
+
+			cairo_surface_destroy (src);
+			surface->unref ();
+		}
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
