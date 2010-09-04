@@ -109,6 +109,9 @@ namespace Mono {
 				if (destinationType == typeof (int))
 					return int.Parse (str_val, NumberStyles.Any, null);
 
+				if (destinationType == typeof (double) && str_val == "Auto")
+					return Double.NaN;
+				
 				if (destinationType == typeof (TimeSpan))
 					return TimeSpan.Parse (str_val);
 
