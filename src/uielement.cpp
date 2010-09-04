@@ -42,6 +42,7 @@ UIElement::UIElement ()
 {
 	SetObjectType (Type::UIELEMENT);
 
+	providers.inherited = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
 
 	loaded = false;
 	visual_level = 0;

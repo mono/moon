@@ -37,6 +37,9 @@ namespace Moonlight {
 TextElement::TextElement ()
 {
 	SetObjectType (Type::TEXTELEMENT);
+
+	providers.inherited = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
+
 	font = new TextFontDescription ();
 	downloaders = g_ptr_array_new ();
 }
