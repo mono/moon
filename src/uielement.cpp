@@ -1484,9 +1484,9 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
-		Rect r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
+		Rect r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
 
-		ctx->Push (r, &scale_xform);
+		ctx->Push (r);
 	}
 
 	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
