@@ -652,6 +652,9 @@ UIElement::ComputeComposite ()
 	if (GetRenderEffect ())
 		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
+	if (GetClip ())
+		flags |= COMPOSITE_CLIP;
+
 	if (flags & RENDER_PROJECTION)
 		flags |= COMPOSITE_TRANSFORM;
 
@@ -1474,7 +1477,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		ctx->Transform (&render_xform);
 	}
 
-	if (GetClip ()) {
+	if (flags & COMPOSITE_CLIP) {
 		Rect r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
 
 		ctx->Push (r);
@@ -1643,7 +1646,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		}
 	}
 
-	if (GetClip ()) {
+	if (flags & COMPOSITE_CLIP) {
 		MoonSurface *surface;
 		Rect        r = ctx->Pop (&surface);
 
