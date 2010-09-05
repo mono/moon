@@ -27,30 +27,47 @@ namespace Moonlight {
 //
 
 LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
-	: PropertyValueProvider (obj, precedence)
+	: PropertyValueProvider (obj, precedence, ProviderFlags_ProvidesLocalValue)
 {
-	// XXX maybe move the "DependencyObject::current_values" hash table here?
+	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 	this->dispose_value = dispose_value;
 }
 
 LocalPropertyValueProvider::~LocalPropertyValueProvider ()
 {
-	g_hash_table_foreach_remove (obj->GetLocalValues (), dispose_value, obj);
+	g_hash_table_foreach_remove (local_values, dispose_value, obj);
 }
 
 Value *
 LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	return (Value *) g_hash_table_lookup (obj->GetLocalValues (), property);
+	return (Value *) g_hash_table_lookup (local_values, property);
 }
 
+void
+LocalPropertyValueProvider::ForeachValue (GHFunc func, gpointer data)
+{
+	g_hash_table_foreach (local_values, func, data);
+}
+
+void
+LocalPropertyValueProvider::ClearValue (DependencyProperty *property)
+{
+	g_hash_table_remove (local_values, property);
+}
+
+void
+LocalPropertyValueProvider::SetValue (DependencyProperty *property, Value *new_value)
+{
+	g_hash_table_insert (local_values, property, new_value);
+}
 
 //
 // StylePropertyValueProvider
 //
 
 StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
-	: PropertyValueProvider (obj, precedence)
+	: PropertyValueProvider (obj, precedence, ProviderFlags_RecomputesOnClear)
 {
 	style = NULL;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
@@ -75,8 +92,12 @@ StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 }
 
 void
-StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, MoonError *error)
+StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, ProviderFlags reason, MoonError *error)
 {
+	// we only recompute on clear
+	if ((reason & ProviderFlags_RecomputesOnClear) == 0)
+		return;
+
 	Value *old_value = NULL;
 	Value *new_value = NULL;
 	DependencyProperty *property = NULL;
@@ -163,6 +184,12 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 	this->style = style;
 	if (this->style)
 		this->style->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->style);
+}
+
+void
+StylePropertyValueProvider::ForeachValue (GHFunc func, gpointer data)
+{
+	g_hash_table_foreach (style_hash, func, data);
 }
 
 //
@@ -560,7 +587,7 @@ InheritedPropertyValueProvider::SetPropertySource (Inheritable inheritableProper
 //
 
 AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
-	: PropertyValueProvider (obj, precedence)
+	: PropertyValueProvider (obj, precedence, ProviderFlags_ProvidesLocalValue)
 {
 	auto_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 	this->dispose_value = dispose_value;
@@ -610,6 +637,22 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	obj->ProviderValueChanged (precedence, property, NULL, value, false, true, false, &error);
 	
 	return value;
+}
+
+void
+AutoCreatePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, ProviderFlags reason, MoonError *error)
+{
+	// we only recompute on clear
+	if ((reason & ProviderFlags_RecomputesOnClear) == 0)
+		return;
+
+	ClearValue (prop);
+}
+
+void
+AutoCreatePropertyValueProvider::ForeachValue (GHFunc func, gpointer data)
+{
+	g_hash_table_foreach (auto_values, func, data);
 }
 
 Value *
@@ -757,7 +800,7 @@ InheritedDataContextValueProvider::source_destroyed (EventObject *sender, EventA
 }
 
 InheritedIsEnabledValueProvider::InheritedIsEnabledValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
-	: PropertyValueProvider (obj, precedence)
+	: PropertyValueProvider (obj, precedence, ProviderFlags_RecomputesOnLowerPriorityChange)
 {
 	source = NULL;
 	current_value = *obj->GetValue (Control::IsEnabledProperty, PropertyPrecedence_LocalValue);

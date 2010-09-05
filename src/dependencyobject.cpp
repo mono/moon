@@ -1465,8 +1465,8 @@ DependencyObject::RemoveAllListeners ()
 	if (GetDeployment()->IsShuttingDown ())
 		return;
 
-	g_hash_table_foreach (providers.autocreate->auto_values, unregister_depobj_values, this);
-	g_hash_table_foreach (local_values, unregister_depobj_values, this);
+	providers.autocreate->ForeachValue (unregister_depobj_values, this);
+	providers.localvalue->ForeachValue (unregister_depobj_values, this);
 }
 
 static bool listeners_notified;
@@ -1669,8 +1669,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 			current_value = new Value(*current_value);
 		
 		// remove the old value
-		g_hash_table_remove (local_values, property);
-		
+		providers.localvalue->ClearValue (property);
 		if (property->IsAutoCreated ())
 			providers.autocreate->ClearValue (property);
 		
@@ -1704,7 +1703,8 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 					}
 				}
 			}
-			g_hash_table_insert (local_values, property, new_value);
+
+			providers.localvalue->SetValue (property, new_value);
 		}
 		
 		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, true, error);
@@ -1831,10 +1831,9 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 		RegisterNamesClosure closure;
 		closure.to_ns = to_ns;
 		closure.error = error;
-	
-		g_hash_table_foreach (providers.autocreate->auto_values, register_depobj_names, &closure);
-	
-		g_hash_table_foreach (local_values, register_depobj_names, &closure);
+
+		providers.autocreate->ForeachValue (register_depobj_names, &closure);
+		providers.localvalue->ForeachValue (register_depobj_names, &closure);
 	}
 
 	registering_names = false;
@@ -1877,9 +1876,9 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 		return;
 	}
 	
-	g_hash_table_foreach (providers.autocreate->auto_values, unregister_depobj_names, from_ns);
-	
-	g_hash_table_foreach (local_values, unregister_depobj_names, from_ns);
+	providers.autocreate->ForeachValue (unregister_depobj_names, from_ns);
+	providers.localvalue->ForeachValue (unregister_depobj_names, from_ns);
+
 	registering_names = false;
 }
 
@@ -1908,7 +1907,7 @@ DependencyObject::ReadLocalValue (int id)
 Value *
 DependencyObject::ReadLocalValue (DependencyProperty *property)
 {
-	return (Value *) g_hash_table_lookup (local_values, property);
+	return providers.localvalue->GetPropertyValue (property);
 }
 
 Value *
@@ -2355,16 +2354,12 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	if (old_local_value)
 		old_local_value = new Value (*old_local_value);
 
-	g_hash_table_remove (local_values, property);
+	providers.localvalue->ClearValue (property);
 	
-	if (property->IsAutoCreated ())
-		providers.autocreate->ClearValue (property);
-	
-	// this is... yeah, it's disgusting
 	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 	for (int p = PropertyPrecedence_LocalValue + 1; p < PropertyPrecedence_Count; p ++) {
-		if (provider_array[p])
-			provider_array[p]->RecomputePropertyValue (property, error);
+		if (provider_array[p] && (provider_array[p]->GetFlags () & ProviderFlags_RecomputesOnClear) != 0)
+			provider_array[p]->RecomputePropertyValue (property, ProviderFlags_RecomputesOnClear, error);
 	}
 
 	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, false, error);
@@ -2475,7 +2470,6 @@ DependencyObject::Initialize ()
 	providers.localvalue = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue, dispose_value);
 	providers.autocreate = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate, dispose_value);
 	
-	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
 	listener_list = NULL;
 	mentor = NULL;
 	parent = NULL;
@@ -2534,12 +2528,12 @@ DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObjec
 	// If it is *not* a FrameworkElement then 'new_mentor' will be the mentor for all the child
 	// values of this object so we should propagate it here
 	if (!this->Is (Type::FRAMEWORKELEMENT)) {
-		g_hash_table_foreach (local_values, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
-		g_hash_table_foreach (providers.autocreate->auto_values, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		providers.autocreate->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		providers.localvalue->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
 		if (providers.localstyle)
-			g_hash_table_foreach (providers.localstyle->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+			providers.localstyle->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
 		if (providers.defaultstyle)
-			g_hash_table_foreach (providers.defaultstyle->style_hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+			providers.defaultstyle->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
 	}
 
 	if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
@@ -2695,8 +2689,8 @@ DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
 	closure.old_do = fromObj;
 	closure.new_do = this;
 
-	g_hash_table_foreach (fromObj->providers.autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
-	g_hash_table_foreach (fromObj->local_values, (GHFunc)DependencyObject::clone_local_value, &closure);
+	fromObj->providers.autocreate->ForeachValue ((GHFunc)DependencyObject::clone_autocreated_value, &closure);
+	fromObj->providers.localvalue->ForeachValue ((GHFunc)DependencyObject::clone_local_value, &closure);
 	if (fromObj->storage_hash) {
 		g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage_list, this);
 	}
@@ -2731,8 +2725,6 @@ output_hash_lookups_per_property (DependencyProperty *key, int count, totals *ts
 DependencyObject::~DependencyObject ()
 {
 	g_hash_table_destroy (provider_bitmasks);
-	g_hash_table_destroy (local_values);
-	local_values = NULL;
 	delete resource_base;
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
@@ -2828,14 +2820,15 @@ DependencyObject::GetProperties (bool only_changed)
 		table = GetType ()->CopyProperties (true);
 		
 		// find any attached properties that have been set
-		g_hash_table_foreach (local_values, get_attached_props, table);
+
+		providers.localvalue->ForeachValue (get_attached_props, table);
 		
 		// dump them to an array
 		g_hash_table_foreach (table, hash_values_to_array, array);
 		g_hash_table_destroy (table);
 	} else {
-		g_hash_table_foreach (local_values, hash_keys_to_array, array);
-		g_hash_table_foreach (providers.autocreate->auto_values, hash_keys_to_array, array);
+		providers.localvalue->ForeachValue (hash_keys_to_array, array);
+		providers.autocreate->ForeachValue (hash_keys_to_array, array);
 	}
 	
 	g_ptr_array_add (array, NULL);
@@ -3132,8 +3125,8 @@ DependencyObject::OnIsAttachedChanged (bool value)
 	data.deployment = GetDeployment ();
 	data.value = value;
 
-	g_hash_table_foreach (providers.autocreate->auto_values, set_is_attached, &data);
-	g_hash_table_foreach (local_values, set_is_attached, &data);
+	providers.localvalue->ForeachValue (set_is_attached, &data);
+	providers.autocreate->ForeachValue (set_is_attached, &data);
 }
 
 void

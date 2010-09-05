@@ -368,8 +368,6 @@ public:
 
 	DependencyProperty **GetProperties (bool only_changed);
 	
-	GHashTable *GetLocalValues () { return local_values; }
-
 	DependencyObject *GetMentor ();
 	void SetMentor (DependencyObject *value);
 
@@ -599,7 +597,6 @@ private:
 
 	GHashTable *storage_hash; // keys: DependencyProperty, values: animation storage's
 
-	GHashTable        *local_values;
 	GSList            *listener_list;
 	DependencyObject  *mentor;
 	DependencyObject  *parent;

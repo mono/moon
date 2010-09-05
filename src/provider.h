@@ -56,7 +56,6 @@ enum PropertyPrecedence {
 	PropertyPrecedence_Lowest = PropertyPrecedence_AutoCreate,
 };
 
-
 // this has to be in the same order as the precedence enum above
 struct PropertyValueProviderVTable {
 	InheritedIsEnabledValueProvider *isenabled;
@@ -69,18 +68,33 @@ struct PropertyValueProviderVTable {
 	AutoCreatePropertyValueProvider *autocreate;
 };
 
+enum ProviderFlags {
+	ProviderFlags_RecomputesOnLowerPriorityChange  = 1<<0,
+	ProviderFlags_RecomputesOnHigherPriorityChange = 1<<1,
+	ProviderFlags_RecomputesOnClear                = 1<<2,
+	ProviderFlags_ProvidesLocalValue               = 1<<3
+};
+
 class PropertyValueProvider {
 public:
-	PropertyValueProvider (DependencyObject *_obj, PropertyPrecedence _precedence) : obj(_obj), precedence(_precedence) { }
+	PropertyValueProvider (DependencyObject *_obj, PropertyPrecedence _precedence, int _flags = 0)
+		: obj(_obj), precedence(_precedence), flags((ProviderFlags)_flags)
+	{
+	}
 	virtual ~PropertyValueProvider () { }
 
 	virtual Value *GetPropertyValue (DependencyProperty *property) = 0;
 
-	virtual void RecomputePropertyValue (DependencyProperty *property, MoonError *error) { }
+	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error) { }
+
+	ProviderFlags GetFlags () { return flags; }
+
+	virtual void ForeachValue (GHFunc func, gpointer data) { }
 
 protected:
 	DependencyObject *obj;
 	PropertyPrecedence precedence;
+	ProviderFlags flags;
 };
 
 
@@ -90,8 +104,15 @@ public:
 	virtual ~LocalPropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
+
+	virtual void ForeachValue (GHFunc func, gpointer data);
+	void SetValue (DependencyProperty *property, Value *value);
+	void ClearValue (DependencyProperty *property);
+
+
  private:
-	GHRFunc dispose_value;
+	GHashTable *local_values;
+	GHRFunc     dispose_value;
 };
 
 class StylePropertyValueProvider : public PropertyValueProvider {
@@ -101,13 +122,14 @@ public:
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 
-	virtual void RecomputePropertyValue (DependencyProperty *property, MoonError *error);
+	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error);
 
 	void UpdateStyle (Style *Style, MoonError *error);
 
-	GHashTable *style_hash;
+	virtual void ForeachValue (GHFunc func, gpointer data);
 
 private:
+	GHashTable *style_hash;
 	GHRFunc dispose_value;
 	Style *style;
 };
@@ -178,8 +200,6 @@ public:
 
 class AutoCreatePropertyValueProvider : public PropertyValueProvider {
  public:
-	GHashTable *auto_values;
-
 	AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence, GHRFunc dispose_value);
 	virtual ~AutoCreatePropertyValueProvider ();
 
@@ -188,7 +208,12 @@ class AutoCreatePropertyValueProvider : public PropertyValueProvider {
 	Value *ReadLocalValue (DependencyProperty *property);
 	void ClearValue (DependencyProperty *property);
 
+	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error);
+
+	virtual void ForeachValue (GHFunc func, gpointer data);
+
  private:
+	GHashTable *auto_values;
 	GHRFunc dispose_value;
 };
 
