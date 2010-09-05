@@ -396,9 +396,6 @@ EventObject::Dispose ()
 		Emit (DestroyedEvent); // TODO: Rename to DisposedEvent
 	}
 
-	if (flags & Attached)
-		SetIsAttached (false); // we need to do this since this method is virtual. clearing the attached state is not only clearing the flag.
-
 	// Set the disposed flag.
 	flags = (Flags) (flags | Disposed);
 }
