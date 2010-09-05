@@ -171,17 +171,12 @@ Context::Context (MoonSurface *surface, cairo_matrix_t *transform)
 }
 
 void
-Context::Transform (cairo_matrix_t *matrix)
-{
-	Top ()->Transform (matrix);
-}
-
-void
-Context::Push ()
+Context::Push (cairo_matrix_t *transform)
 {
 	cairo_matrix_t matrix;
 
 	Top ()->GetMatrix (&matrix);
+	cairo_matrix_multiply (&matrix, transform, &matrix);
 	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix));
 }
 
@@ -195,9 +190,9 @@ Context::Push (Rect extents)
 }
 
 void
-Context::Push (Rect extents, cairo_matrix_t *transform)
+Context::Push (Rect extents, cairo_matrix_t *matrix)
 {
-	Stack::Push (new Context::Node (extents, transform));
+	Stack::Push (new Context::Node (extents, matrix));
 }
 
 Context::Node *

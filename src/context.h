@@ -47,11 +47,9 @@ public:
 	Context (MoonSurface *surface);
 	Context (MoonSurface *surface, cairo_matrix_t *transform);
 
-	void Transform (cairo_matrix_t *matrix);
-
-	void Push ();
+	void Push (cairo_matrix_t *transform);
 	void Push (Rect extents);
-	void Push (Rect extents, cairo_matrix_t *transform);
+	void Push (Rect extents, cairo_matrix_t *matrix);
 	Node *Top ();
 	void Pop ();
 	Rect Pop (MoonSurface **surface);

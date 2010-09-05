@@ -1474,8 +1474,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		ctx->Push (r, &scale_xform);
 	}
 	else {
-		ctx->Push ();
-		ctx->Transform (&render_xform);
+		ctx->Push (&render_xform);
 	}
 
 	if (flags & COMPOSITE_CLIP) {
