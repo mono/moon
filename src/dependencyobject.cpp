@@ -3063,34 +3063,6 @@ DependencyObject::DetachAnimationStorage (DependencyProperty *prop, AnimationSto
 	}
 }
 
-//
-//  A helper debugging routine for C#
-//
-const char *
-dependency_object_get_name (DependencyObject *obj)
-{
-	return obj->GetName ();
-}
-
-Type::Kind
-dependency_object_get_object_type (DependencyObject *obj)
-{
-	return obj->GetObjectType ();
-}
-
-const char *
-dependency_object_get_type_name (DependencyObject *obj)
-{
-	return obj->GetTypeName ();
-}
-
-// Used by routines which need to create DO from code
-void
-dependency_object_set_name (DependencyObject *obj, const char *name)
-{
-	obj->SetValue (DependencyObject::NameProperty, Value (name));
-}
-
 struct attach_data {
 	Deployment *deployment;
 	bool value;
@@ -3236,33 +3208,6 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 		if (parent)
 			MOON_SET_FIELD_NAMED (this->parent, "Parent", parent);
 	}
-}
-
-Value *
-dependency_object_get_value (DependencyObject *object, DependencyProperty *prop)
-{
-	if (object == NULL)
-		return NULL;
-
-	return object->GetValue (prop);
-}
-
-Value *
-dependency_object_get_value_no_default (DependencyObject *object, DependencyProperty *prop)
-{
-	if (object == NULL)
-		return NULL;
-	
-	return object->GetValueNoDefault (prop);
-}
-
-void
-dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val)
-{
-	if (object == NULL)
-		return;
-
-	object->SetValue (prop, val);
 }
 
 void
