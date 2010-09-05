@@ -137,6 +137,7 @@ libmoon_include_headers = 	\
 	utils.h			\
 	validators.h		\
 	value.h			\
+	weakrefmanager.h	\
 	webbrowser.h		\
 	writeablebitmap.h	\
 	xaml.h			\
@@ -263,6 +264,7 @@ libmoon_la_SOURCES = 		\
 	utils.cpp		\
 	validators.cpp		\
 	value.cpp		\
+	weakrefmanager.cpp	\
 	webbrowser.cpp		\
 	writeablebitmap.cpp	\
 	xaml.cpp		\

@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include "provider.h"
+#include "weakrefmanager.h"
 #include "dependencyproperty.h"
 #include "value.h"
 #include "enums.h"
@@ -130,23 +131,6 @@ public:
 private:
 	gpointer sender;
 	ToggleNotifyHandler callback;
-};
-
-class WeakRefManager {
-public:
-	WeakRefManager (EventObject *forObj);
-	~WeakRefManager ();
-
-	void Add (EventObject **obj, const char *name);
-	void Clear (EventObject **obj, const char *name);
-
-private:
-	EventObject *forObj;
-
-	List *weakrefs;
-
-	static void clear_weak_ref (EventObject *sender, EventArgs *callData, gpointer closure);
-	void ClearWeakRef (EventObject **obj, const char *name, bool nullRef, bool removeHandler);
 };
 
 /* @Namespace=None,ManagedEvents=Manual */
