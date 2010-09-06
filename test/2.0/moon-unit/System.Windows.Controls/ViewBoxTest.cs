@@ -10,11 +10,12 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ViewboxTest : SilverlightTest {
+	public partial class ViewboxTest : SilverlightTest {
 
 		LayoutPoker Child {
 			get; set;
