@@ -370,12 +370,6 @@ namespace System.Windows.Controls {
 		internal UserControl (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
-	[ContentProperty ("Child")]
-	partial class Viewbox {
-		public Viewbox () : base (SafeNativeMethods.viewbox_new (), true) {}
-		internal Viewbox (IntPtr raw, bool dropref) : base (raw, dropref) {}
-	}
-
 	partial class WebBrowser {
 		public WebBrowser () : base (SafeNativeMethods.web_browser_new (), true) {}
 		internal WebBrowser (IntPtr raw, bool dropref) : base (raw, dropref) {}

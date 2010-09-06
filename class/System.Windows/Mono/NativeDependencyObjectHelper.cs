@@ -550,7 +550,6 @@ namespace Mono {
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
 			case Kind.VIDEOFORMAT_COLLECTION: return new VideoBrush (raw, false);
-			case Kind.VIEWBOX: return new Viewbox (raw, false);
 			case Kind.WEBBROWSER: return new WebBrowser (raw, false);
 			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);
 			case Kind.WRITEABLEBITMAP: return new WriteableBitmap (raw, false);

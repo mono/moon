@@ -16,34 +16,35 @@ using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls
 {
+	class LayoutPoker : Panel
+	{
+		public Size MeasureResult = new Size(0, 0);
+		public Size MeasureArg = new Size(0, 0);
+		public Size ArrangeResult = new Size(0, 0);
+		public Size ArrangeArg = new Size(0, 0);
+		public Func<Size> ArrangeFunc;
+		public Func<Size> MeasureFunc;
+
+		protected override Size MeasureOverride(Size availableSize)
+		{
+			MeasureArg = availableSize;
+			MeasureResult = MeasureFunc != null ? MeasureFunc () : base.MeasureOverride(availableSize);
+			Tester.WriteLine(string.Format("Panel available size is {0}", availableSize));
+			return MeasureResult;
+		}
+
+		protected override Size ArrangeOverride(Size finalSize)
+		{
+			ArrangeArg = finalSize;
+			ArrangeResult = ArrangeFunc != null ? ArrangeFunc () : base.ArrangeOverride(finalSize);
+			Tester.WriteLine(string.Format("Panel final size is {0}", finalSize));
+			return ArrangeResult;
+		}
+	}
+
 	[TestClass]
 	public partial class GridTest : SilverlightTest
 	{
-		class LayoutPoker : Panel
-		{
-			public Size MeasureResult = new Size (0,0);
-			public Size MeasureArg = new Size (0,0);
-			public Size ArrangeResult = new Size (0,0);
-			public Size ArrangeArg = new Size (0,0);
-
-			protected override Size MeasureOverride (Size availableSize)
-			{
-				MeasureArg = availableSize;
-				MeasureResult = base.MeasureOverride (availableSize);
-				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
-				return MeasureResult;
-			}
-
-			protected override Size ArrangeOverride (Size finalSize)
-			{
-				ArrangeArg = finalSize;
-				ArrangeResult = base.ArrangeOverride (finalSize);
-				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
-				return ArrangeResult;
-			}
-
-		}
-
 		[TestMethod]
 		public void ConstraintsNotUsedInMeasureOverride ()
 		{

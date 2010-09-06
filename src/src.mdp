@@ -300,8 +300,6 @@
     <File subtype="Code" buildaction="Compile" name="pipeline-mp4.cpp" />
     <File subtype="Code" buildaction="Compile" name="printing.cpp" />
     <File subtype="Code" buildaction="Nothing" name="printing.h" />
-    <File subtype="Code" buildaction="Compile" name="viewbox.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="viewbox.h" />
     <File subtype="Code" buildaction="Nothing" name="notificationwindow.h" />
     <File subtype="Code" buildaction="Compile" name="notificationwindow.cpp" />
     <File subtype="Code" buildaction="Compile" name="webbrowser.cpp" />

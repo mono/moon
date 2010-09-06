@@ -85,7 +85,8 @@ namespace System.Windows {
 			return this is ContentPresenter
 				|| this is ItemsPresenter
 				|| this is ItemsControl
-				|| this is ContentControl;
+				|| this is ContentControl
+				|| this is Viewbox;
 		}
 		
 		private bool OverridesLayoutMethod (string name)
