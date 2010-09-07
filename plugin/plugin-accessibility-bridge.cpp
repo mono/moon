@@ -15,6 +15,7 @@
 #define __PLUGIN_ACCESSIBILITY_BRIDGE_H__
 
 #include <config.h>
+#include <gdk/gdk.h>
 
 #define INCLUDED_MONO_HEADERS 1
 

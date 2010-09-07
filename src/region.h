@@ -33,7 +33,6 @@ public:
 	bool IsEmpty ();
 
 	void Union (Rect rect);
-	void Union (GdkRegion *region);
 	void Union (Region *region);
 
 	void Intersect (Region *region);

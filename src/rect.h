@@ -14,7 +14,6 @@
 #include <glib.h>
 #include <cairo.h>
 #include <math.h>
-#include <gdk/gdk.h> // for GdkRectangle
 
 #include "point.h"
 #include "thickness.h"
@@ -181,21 +180,6 @@ struct Rect {
 	{
 		return ExtendTo (p.x, p.y);	
 	}
-
-	/*
-	GdkRectangle 
-	ToGdkRectangle () const
-	{
-		GdkRectangle gdk;
-		Rect rect = RoundOut ();
-		gdk.x = (gint)rect.x;
-		gdk.y = (gint)rect.y;
-		gdk.width = (gint)rect.width;
-		gdk.height = (gint)rect.height;
-
-		return gdk;
-	}
-	*/
 
 	cairo_rectangle_int_t
 	ToCairoRectangleInt () const

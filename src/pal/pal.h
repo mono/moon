@@ -5,6 +5,7 @@
 
 #include <glib.h>
 #include <time.h>
+#include <stdio.h>
 
 #include "enums.h"
 #include "cairo.h"
