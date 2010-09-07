@@ -21,6 +21,14 @@ namespace Moonlight {
 
 class Context : public Stack {
 public:
+	struct Clip {
+	public:
+		Clip () : r (0) {}
+		Clip (Rect clip) : r (clip) {}
+
+		Rect r;
+	};
+
 	class Surface : public MoonSurface {
 	public:
 		Surface (MoonSurface *moon);
@@ -42,13 +50,17 @@ public:
 
 	class Node : public List::Node {
 	public:
-		Node (Surface *surface, cairo_matrix_t *matrix);
-		Node (Rect extents, cairo_matrix_t *matrix);
+		Node (Surface        *surface,
+		      cairo_matrix_t *matrix,
+		      const Rect     *clip);
+		Node (Rect           extents,
+		      cairo_matrix_t *matrix);
 		virtual ~Node ();
 
 		cairo_t *Cairo ();
 
 		void GetMatrix (cairo_matrix_t *matrix);
+		void GetClip (Rect *clip);
 		Surface *GetSurface ();
 		MoonSurface *GetData (Rect *extents);
 		void SetData (MoonSurface *surface);
@@ -65,6 +77,7 @@ public:
 	Context (MoonSurface *surface);
 	Context (MoonSurface *surface, cairo_matrix_t *transform);
 
+	void Push (Clip clip);
 	void Push (cairo_matrix_t *transform);
 	void Push (Rect extents);
 	void Push (Rect extents, cairo_matrix_t *matrix);

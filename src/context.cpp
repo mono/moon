@@ -14,6 +14,11 @@
 
 namespace Moonlight {
 
+#define MIN_X -32768
+#define MIN_Y MIN_X
+#define MAX_W 65536
+#define MAX_H MAX_W
+
 Context::Surface::Surface (MoonSurface *moon)
 {
 	native  = moon->ref ();
@@ -70,16 +75,19 @@ Context::Surface::Cairo ()
 	return cairo_surface_reference (surface);
 }
 
-Context::Node::Node (Surface *surface, cairo_matrix_t *matrix)
+Context::Node::Node (Surface        *surface,
+		     cairo_matrix_t *matrix,
+		     const Rect     *clip)
 {
-	box       = Rect ();
+	box       = clip ? *clip : Rect (MIN_X, MIN_Y, MAX_W, MAX_H);
 	transform = *matrix;
 	context   = NULL;
 	target    = (Surface *) surface->ref ();
 	data      = NULL;
 }
 
-Context::Node::Node (Rect extents, cairo_matrix_t *matrix)
+Context::Node::Node (Rect           extents,
+		     cairo_matrix_t *matrix)
 {
 	box       = extents;
 	transform = *matrix;
@@ -112,6 +120,8 @@ Context::Node::Cairo ()
 		cairo_surface_t *dst = surface->Cairo ();
 
 		context = cairo_create (dst);
+		box.RoundOut ().Draw (context);
+		cairo_clip (context);
 		cairo_set_matrix (context, &transform);
 
 		cairo_surface_destroy (dst);
@@ -124,6 +134,12 @@ void
 Context::Node::GetMatrix (cairo_matrix_t *matrix)
 {
 	*matrix = transform;
+}
+
+void
+Context::Node::GetClip (Rect *clip)
+{
+	*clip = box;
 }
 
 Context::Surface *
@@ -204,7 +220,7 @@ Context::Context (MoonSurface *surface)
 	cairo_matrix_t matrix;
 
 	cairo_matrix_init_identity (&matrix);
-	Stack::Push (new Context::Node (cs, &matrix));
+	Stack::Push (new Context::Node (cs, &matrix, NULL));
 	cs->unref ();
 }
 
@@ -212,7 +228,7 @@ Context::Context (MoonSurface *surface, cairo_matrix_t *transform)
 {
 	Surface *cs = new Surface (surface);
 
-	Stack::Push (new Context::Node (cs, transform));
+	Stack::Push (new Context::Node (cs, transform, NULL));
 	cs->unref ();
 }
 
@@ -220,10 +236,28 @@ void
 Context::Push (cairo_matrix_t *transform)
 {
 	cairo_matrix_t matrix;
+	Rect           box;
 
 	Top ()->GetMatrix (&matrix);
+	Top ()->GetClip (&box);
+
 	cairo_matrix_multiply (&matrix, transform, &matrix);
-	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix));
+
+	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix, &box));
+}
+
+void
+Context::Push (Clip clip)
+{
+	cairo_matrix_t matrix;
+	Rect           box;
+
+	Top ()->GetMatrix (&matrix);
+	Top ()->GetClip (&box);
+
+	box = box.Intersection (clip.r);
+
+	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix, &box));
 }
 
 void
