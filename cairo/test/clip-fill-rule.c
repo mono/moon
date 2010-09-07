@@ -27,15 +27,6 @@
 
 #define STAR_SIZE 20
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "clip-fill-rule",
-    "Tests interaction of clipping with cairo_set_fill_rule",
-    STAR_SIZE * 2 + 2, STAR_SIZE + 2,
-    draw
-};
-
 static void
 star_path (cairo_t *cr)
 {
@@ -75,8 +66,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (clip_fill_rule,
+	    "Tests interaction of clipping with cairo_set_fill_rule",
+	    "clip", /* keywords */
+	    NULL, /* requirements */
+	    STAR_SIZE * 2 + 2, STAR_SIZE + 2,
+	    NULL, draw)

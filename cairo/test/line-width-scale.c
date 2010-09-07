@@ -52,15 +52,6 @@
 #define WIDTH (XSCALE * SPLINE * 6.0)
 #define HEIGHT (YSCALE * SPLINE * 2.0)
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "line-width-scale",
-    "Tests interaction of cairo_set_line_width with cairo_scale",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static void
 spline_path (cairo_t *cr)
 {
@@ -181,8 +172,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (line_width_scale,
+	    "Tests interaction of cairo_set_line_width with cairo_scale",
+	    "stroke", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

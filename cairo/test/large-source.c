@@ -32,15 +32,6 @@
  *	https://bugzilla.mozilla.org/show_bug.cgi?id=424333
  */
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "large-source",
-    "Exercises mozilla bug 424333 - handling of massive images",
-    20, 20,
-    draw
-};
-
 #ifdef WORDS_BIGENDIAN
 #define RED_MASK 0xA0
 #define GREEN_MASK 0xA
@@ -58,7 +49,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source_rgb (cr, 0, 0, 1); /* blue */
     cairo_paint (cr);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 64000, 20);
+    surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 32000, 20);
     data = cairo_image_surface_get_data (surface);
     if (data != NULL) {
 	int stride = cairo_image_surface_get_stride (surface);
@@ -71,13 +62,14 @@ draw (cairo_t *cr, int width, int height)
 		data[x] = RED_MASK;
 	    data += stride;
 	}
+        cairo_surface_mark_dirty (surface);
     }
 
     cairo_set_source_rgb (cr, 1, 0, 0); /* red */
     cairo_mask_surface (cr, surface, 0, 0);
     cairo_surface_destroy (surface);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 20, 64000);
+    surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 20, 32000);
     data = cairo_image_surface_get_data (surface);
     if (data != NULL) {
 	int stride = cairo_image_surface_get_stride (surface);
@@ -90,6 +82,7 @@ draw (cairo_t *cr, int width, int height)
 		data[x] = GREEN_MASK;
 	    data += stride;
 	}
+        cairo_surface_mark_dirty (surface);
     }
 
     cairo_set_source_rgb (cr, 0, 1, 0); /* green */
@@ -99,8 +92,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (large_source,
+	    "Exercises mozilla bug 424333 - handling of massive images",
+	    "stress, source", /* keywords */
+	    NULL, /* requirements */
+	    20, 20,
+	    NULL, draw)

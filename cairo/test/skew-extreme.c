@@ -55,15 +55,6 @@
 #define WIDTH		(PAD + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
 #define HEIGHT		(PAD + LINE_WIDTH + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "skew-extreme",
-    "Test cases of extreme skew.",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -119,8 +110,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (skew_extreme,
+	    "Test cases of extreme skew.",
+	    "transform, stroke", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

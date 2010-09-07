@@ -28,15 +28,6 @@
 #define SIZE 60 /* needs to be big to check large area effects (dithering) */
 #define PAD 2
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "fill-alpha",
-    "Tests using set_rgba();fill()",
-    2*SIZE + 4*PAD, 2*SIZE + 4*PAD,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -83,8 +74,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (fill_alpha,
+	    "Tests using set_rgba();fill()",
+	    "fill, alpha", /* keywords */
+	    NULL, /* requirements */
+	    2*SIZE + 4*PAD, 2*SIZE + 4*PAD,
+	    NULL, draw)

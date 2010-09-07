@@ -25,21 +25,12 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "dash-state",
-    "Tries to explore the state space of the dashing code",
-    25*60, 4*60,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     double dashes[2] = {20, 20};
     int a=0, b=0, c=0;
-    
+
     cairo_set_source_rgb (cr, 0, 0, 0);
     cairo_paint (cr);
 
@@ -65,8 +56,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (dash_state,
+	    "Tries to explore the state space of the dashing code",
+	    "dash, stroke", /* keywords */
+	    NULL, /* requirements */
+	    25*60, 4*60,
+	    NULL, draw)

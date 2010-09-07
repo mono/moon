@@ -29,12 +29,12 @@
 #include <cairo-xlib-xrender.h>
 #endif
 
-#define NAME "xlib"
 #include "surface-source.c"
 
 static cairo_user_data_key_t closure_key;
 
 struct closure {
+    cairo_device_t *device;
     Display *dpy;
     Pixmap pix;
 };
@@ -43,6 +43,9 @@ static void
 cleanup (void *data)
 {
     struct closure *arg = data;
+
+    cairo_device_finish (arg->device);
+    cairo_device_destroy (arg->device);
 
     XFreePixmap (arg->dpy, arg->pix);
     XCloseDisplay (arg->dpy);
@@ -75,10 +78,23 @@ create_source_surface (int size)
 							     DefaultScreenOfDisplay (data->dpy),
 							     xrender_format,
 							     size, size);
-    cairo_surface_set_user_data (surface, &closure_key, data, cleanup);
+    data->device = cairo_device_reference (cairo_surface_get_device (surface));
+    if (cairo_surface_set_user_data (surface, &closure_key, data, cleanup)) {
+	cairo_surface_finish (surface);
+	cairo_surface_destroy (surface);
+	cleanup (data);
+	return NULL;
+    }
 
     return surface;
 #else
     return NULL;
 #endif
 }
+
+CAIRO_TEST (xlib_surface_source,
+	    "Test using a Xlib surface as the source",
+	    "source", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    preamble, draw)

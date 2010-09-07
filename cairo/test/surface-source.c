@@ -25,7 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
 static cairo_surface_t *create_source_surface (int size);
 
 /* We use a relatively large source to exercise bug:
@@ -35,22 +34,26 @@ static cairo_surface_t *create_source_surface (int size);
  */
 #define SOURCE_SIZE 2000
 #define INTER_SIZE 512
-
-static const cairo_test_t test = {
-    NAME "-surface-source",
-    "Test using various surfaces as the source",
-    90, 90,
-    draw
-};
+#define SIZE 96
 
 static void
 draw_pattern (cairo_surface_t **surface_inout, int surface_size)
 {
     cairo_t *cr;
+    int mid = surface_size/2;
 
     cr = cairo_create (*surface_inout);
     cairo_surface_destroy (*surface_inout);
 
+    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    cairo_set_source_rgba (cr, 0, 0, 0, 0);
+    cairo_paint (cr);
+
+    cairo_rectangle (cr, 0, 0, surface_size, surface_size);
+    cairo_rectangle (cr, mid - SIZE/4, mid + SIZE/4, SIZE/2, -SIZE/2);
+    cairo_clip (cr);
+
+    /* outside squares -> opaque */
     cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_rectangle (cr,
 		     0, 0,
@@ -72,6 +75,33 @@ draw_pattern (cairo_surface_t **surface_inout, int surface_size)
 		     surface_size / 2, surface_size / 2);
     cairo_fill (cr);
 
+    cairo_reset_clip (cr);
+    cairo_rectangle (cr, mid - SIZE/4, mid - SIZE/4, SIZE/2, SIZE/2);
+    cairo_clip (cr);
+
+    /* inside squares -> translucent */
+    cairo_set_source_rgba (cr, 0, 0, 1, .5);
+    cairo_rectangle (cr,
+		     0, 0,
+		     surface_size / 2, surface_size / 2);
+    cairo_fill (cr);
+    cairo_set_source_rgba (cr, 0, 1, 0, .5);
+    cairo_rectangle (cr,
+		     surface_size / 2, 0,
+		     surface_size / 2, surface_size / 2);
+    cairo_fill (cr);
+    cairo_set_source_rgba (cr, 1, 0, 0, .5);
+    cairo_rectangle (cr,
+		     0, surface_size / 2,
+		     surface_size / 2, surface_size / 2);
+    cairo_fill (cr);
+    cairo_set_source_rgba (cr, 1, 1, 1, .5);
+    cairo_rectangle (cr,
+		     surface_size / 2, surface_size / 2,
+		     surface_size / 2, surface_size / 2);
+    cairo_fill (cr);
+
+
     *surface_inout = cairo_surface_reference (cairo_get_target (cr));
     cairo_destroy (cr);
 }
@@ -81,6 +111,7 @@ draw (cairo_t *cr, int width, int height)
 {
     cairo_surface_t *surface;
     cairo_surface_t *similar;
+    cairo_status_t status;
     cairo_t *cr2;
 
     cairo_set_source_rgb (cr, 0, 0, 0);
@@ -108,25 +139,32 @@ draw (cairo_t *cr, int width, int height)
 			      (width - INTER_SIZE)/2,
 			      (height - INTER_SIZE)/2);
     cairo_destroy (cr2);
-    cairo_rectangle (cr, 15, 15, 60, 60);
+    cairo_rectangle (cr, 16, 16, 64, 64);
+    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
     cairo_fill (cr);
 
     /* destroy the surface last, as this triggers XCloseDisplay */
+    cairo_surface_finish (surface);
+    status = cairo_surface_status (surface);
     cairo_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return cairo_test_status_from_status (cairo_test_get_context (cr),
+					  status);
 }
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
     cairo_surface_t *surface;
+    cairo_status_t status;
 
     surface = create_source_surface (SOURCE_SIZE);
     if (surface == NULL) /* can't create the source so skip the test */
 	return CAIRO_TEST_UNTESTED;
 
+    cairo_surface_finish (surface);
+    status = cairo_surface_status (surface);
     cairo_surface_destroy (surface);
 
-    return cairo_test (&test);
+    return cairo_test_status_from_status (ctx, status);
 }

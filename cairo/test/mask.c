@@ -32,7 +32,8 @@
 #define HEIGHT 16
 #define PAD 2
 
-static const char	png_filename[]	= "romedalen.png";
+static const char *png_filename = "romedalen.png";
+static cairo_surface_t *image;
 
 static void
 set_solid_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
@@ -64,7 +65,13 @@ set_image_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
 {
     cairo_pattern_t *pattern;
 
-    pattern = cairo_test_create_pattern_from_png (ctx, png_filename);
+    if (image == NULL || cairo_surface_status (image)) {
+	cairo_surface_destroy (image);
+	image = cairo_test_create_surface_from_png (ctx, png_filename);
+    }
+
+    pattern = cairo_pattern_create_for_surface (image);
+    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
     cairo_set_source (cr, pattern);
     cairo_pattern_destroy (pattern);
 }
@@ -177,15 +184,6 @@ static void (* const clip_funcs[])(cairo_t *cr, int x, int y) = {
 #define IMAGE_WIDTH (ARRAY_SIZE (pattern_funcs) * (WIDTH + PAD) + PAD)
 #define IMAGE_HEIGHT (ARRAY_SIZE (mask_funcs) * ARRAY_SIZE (clip_funcs) * (HEIGHT + PAD) + PAD)
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "mask",
-    "Tests of cairo_mask",
-    IMAGE_WIDTH, IMAGE_HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -234,11 +232,16 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_destroy (cr2);
 
+    cairo_surface_destroy (image);
+    image = NULL;
+
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (mask,
+	    "Tests of cairo_mask",
+	    "mask", /* keywords */
+	    NULL, /* requirements */
+	    IMAGE_WIDTH, IMAGE_HEIGHT,
+	    NULL, draw)
+

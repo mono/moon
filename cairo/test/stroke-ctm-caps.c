@@ -26,8 +26,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define SIZE 100
 #define PAD 2
 #define WIDTH (PAD + SIZE + PAD)
@@ -40,13 +38,6 @@ static cairo_test_draw_function_t draw;
  * a circle with the rgba (0.4, 0.4, 0.4, 0.8) and the background rgba
  * (0.8, 0.8, 0.8, 0.4).
  */
-
-static const cairo_test_t test = {
-    "stroke-ctm-caps",
-    "Test that the stroker correctly passes the device-space vector to the stroker for endcaps",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -79,8 +70,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (stroke_ctm_caps,
+	    "Test that the stroker correctly passes the device-space vector to the stroker for endcaps",
+	    "stroke, transform", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

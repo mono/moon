@@ -25,7 +25,6 @@
 
 #include "cairo-test.h"
 
-#define NAME "image"
 #include "surface-source.c"
 
 static cairo_surface_t *
@@ -33,3 +32,10 @@ create_source_surface (int size)
 {
     return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, size, size);
 }
+
+CAIRO_TEST (image_surface_source,
+	    "Test using a image surface as the source",
+	    "source", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    preamble, draw)

@@ -1,121 +1,52 @@
 top_srcdir = ..
 include $(top_srcdir)/build/Makefile.win32.common
+include $(top_srcdir)/test/Makefile.sources
 
 CFLAGS += -I../src -I../boilerplate -I./pdiff
 
 LDFLAGS += ./pdiff/pdiff.lib ../src/$(CFG)/cairo-static.lib $(PIXMAN_LIBS) ../boilerplate/$(CFG)/boiler.lib $(EXE_LDFLAGS)
 
-TESTS = 			\
-a8-mask				\
-caps-joins			\
-caps-joins-alpha		\
-caps-sub-paths			\
-clip-all			\
-clip-fill-rule			\
-clip-fill-rule-pixel-aligned	\
-clip-nesting			\
-clip-operator			\
-clip-twice			\
-composite-integer-translate-source \
-composite-integer-translate-over \
-composite-integer-translate-over-repeat \
-create-for-stream		\
-create-from-png			\
-create-from-png-stream		\
-dash-caps-joins			\
-dash-no-dash			\
-dash-offset-negative		\
-dash-scale			\
-dash-zero-length		\
-degenerate-path			\
-device-offset			\
-device-offset-positive		\
-extend-pad			\
-extend-reflect			\
-fill-and-stroke			\
-fill-and-stroke-alpha		\
-fill-and-stroke-alpha-add	\
-fill-rule			\
-filter-nearest-offset		\
-font-face-get-type		\
-font-matrix-translation		\
-glyph-cache-pressure		\
-get-and-set			\
-get-clip			\
-get-group-target		\
-get-path-extents		\
-gradient-alpha			\
-leaky-dash			\
-leaky-polygon			\
-line-width			\
-line-width-scale		\
-linear-gradient			\
-mask				\
-mask-ctm			\
-mask-surface-ctm		\
-move-to-show-surface		\
-new-sub-path			\
-nil-surface			\
-operator-clear			\
-operator-source			\
-paint				\
-paint-source-alpha		\
-paint-with-alpha		\
-pattern-get-type		\
-pattern-getters			\
-pixman-rotate			\
-rectangle-rounding-error	\
-scale-source-surface-paint	\
-select-font-face		\
-select-font-no-show-text	\
-self-copy			\
-self-intersecting		\
-set-source			\
-show-text-current-point		\
-source-clip			\
-source-surface-scale-paint	\
-surface-finish-twice		\
-surface-pattern			\
-text-antialias-gray		\
-text-antialias-none		\
-text-antialias-subpixel		\
-text-cache-crash		\
-text-pattern			\
-text-rotate			\
-transforms			\
-translate-show-surface		\
-trap-clip			\
-unantialiased-shapes		\
-unbounded-operator		\
-user-data			\
-rel-path                        \
-push-group			\
-zero-alpha			\
-$(NULL)
 
 TESTCORE_SOURCES = \
 	cairo-test.c \
 	buffer-diff.c \
 	$(NULL)
 
-TEST_EXE = $(patsubst %, $(CFG)/%.exe, $(TESTS))
-# TEST_EXE = $(addsuffix .exe,$(TESTS))
+all: cairo-test-suite.exe
 
-all: $(TEST_EXE)
+make-cairo-test-constructors.exe: $(CFG)/make-cairo-test-constructors.obj
+	$(CC) $(OPT) $(MS_MDFLAGS) $(CFG)/make-cairo-test-constructors.obj -Fe"$@" -link $(LDFLAGS) user32.lib /NODEFAULTLIB:library
 
-$(CFG)/%.exe: %.c ./pdiff/pdiff.lib
-	@mkdir -p $(CFG)
-	@$(CC) $(CFLAGS) -Fe"$@" $<  $(TESTCORE_SOURCES) -link $(LDFLAGS)
+cairo-test-constructors.c: $(test_sources) make-cairo-test-constructors.exe
+	./make-cairo-test-constructors.exe $(test_sources) > $@
+
+SOURCES = $(cairo_test_suite_sources) $(test_sources) cairo-test-constructors.c
+
+OBJECTS = $(patsubst %.c, $(CFG)/%-static.obj, $(SOURCES))
+
+cairo-test-suite.exe: $(OBJECTS) ./pdiff/pdiff.lib ../boilerplate/$(CFG)/boiler.lib
+	$(CC) $(OPT) $(MS_MDFLAGS) $(OBJECTS) -Fe"$@" -link $(LDFLAGS) $(CAIRO_LIBS) /NODEFAULTLIB:library
 
 ./pdiff/pdiff.lib:
 	(cd pdiff ; $(MAKE) -f Makefile.win32)
 
-test: $(TEST_EXE)
-	@for exe in $(TEST_EXE) ; do \
-		echo $$exe ; \
-		( ./$$exe || exit 0 ) ; \
-	done
+../boilerplate/$(CFG)/boiler.lib:
+	(cd ../boilerplate ; $(MAKE) -f Makefile.win32)
+
+.PHONY: check test html
+
+check: cairo-test-suite.exe
+	./cairo-test-suite.exe
+
+# define gen-html so that both 'test' and 'html' targets
+# can generate html while having different dependencies
+define gen-html
+@echo Creating index.html...
+@perl make-html.pl > index.html
+endef
+
+test: check
+	$(gen-html)
 
 html:
-	@echo Creating index.html...
-	@perl make-html.pl > index.html
+	$(gen-html)

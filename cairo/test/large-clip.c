@@ -27,15 +27,6 @@
 
 #define SIZE 100
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "large-clip",
-    "Incorrect clipping when the clip rectangle doesn't fit in 16 bits signed",
-    SIZE, SIZE,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -44,15 +35,16 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_rectangle (cr, 0, 0, 65536 + 25, 65536 + 25);
     cairo_clip (cr);
-    
+
     cairo_set_source_rgb (cr, 1, 0, 0);
     cairo_paint (cr);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (large_clip,
+	    "Incorrect clipping when the clip rectangle doesn't fit in 16 bits signed",
+	    "clip, stress", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

@@ -28,15 +28,6 @@
 #define WIDTH 45
 #define HEIGHT 30
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "transforms",
-    "Test various transformations.",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static void
 draw_L_shape (cairo_t *cr)
 {
@@ -113,8 +104,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (transforms,
+	    "Test various transformations.",
+	    "transforms, api", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

@@ -37,14 +37,7 @@
 #define drand48() (rand () / (double) RAND_MAX)
 #endif
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "solid-pattern-cache-stress",
-    "Stress the solid pattern cache and ensure it behaves",
-    1, 1,
-    draw
-};
+static cairo_scaled_font_t *scaled_font;
 
 static cairo_t *
 _cairo_create_similar (cairo_t *cr, int width, int height)
@@ -73,6 +66,19 @@ _cairo_create_image (cairo_t *cr, cairo_format_t format, int width, int height)
 }
 
 static void
+_propagate_status (cairo_t *dst, cairo_t *src)
+{
+    cairo_path_t path;
+
+    path.status = cairo_status (src);
+    if (path.status) {
+	path.num_data = 0;
+	path.data = NULL;
+	cairo_append_path (dst, &path);
+    }
+}
+
+static void
 _draw (cairo_t *cr,
        double red,
        double green,
@@ -89,12 +95,12 @@ _draw (cairo_t *cr,
 
     cairo_mask (cr, cairo_get_source (cr));
 
+    cairo_set_scaled_font (cr, scaled_font);
     cairo_text_extents (cr, "cairo", &extents);
     cairo_move_to (cr,
 	           -extents.x_bearing - .5 * extents.width,
 		   -extents.y_bearing - .5 * extents.height);
     cairo_show_text (cr, "cairo");
-
 }
 
 static void
@@ -103,11 +109,17 @@ use_similar (cairo_t *cr,
 	    double green,
 	    double blue)
 {
-    cr = _cairo_create_similar (cr, 1, 1);
+    cairo_t *cr2;
 
-    _draw (cr, red, green, blue);
+    if (cairo_status (cr))
+	return;
 
-    cairo_destroy (cr);
+    cr2 = _cairo_create_similar (cr, 1, 1);
+
+    _draw (cr2, red, green, blue);
+
+    _propagate_status (cr, cr2);
+    cairo_destroy (cr2);
 }
 
 static void
@@ -117,11 +129,17 @@ use_image (cairo_t *cr,
 	   double green,
 	   double blue)
 {
-    cr = _cairo_create_image (cr, format, 1, 1);
+    cairo_t *cr2;
 
-    _draw (cr, red, green, blue);
+    if (cairo_status (cr))
+	return;
 
-    cairo_destroy (cr);
+    cr2 = _cairo_create_image (cr, format, 1, 1);
+
+    _draw (cr2, red, green, blue);
+
+    _propagate_status (cr, cr2);
+    cairo_destroy (cr2);
 }
 
 static void
@@ -144,23 +162,39 @@ use_solid (cairo_t *cr,
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    int loop;
-    int i;
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
+    cairo_status_t status;
+    const double colors[8][3] = {
+	{ 1.0, 0.0, 0.0 }, /* red */
+	{ 0.0, 1.0, 0.0 }, /* green */
+	{ 1.0, 1.0, 0.0 }, /* yellow */
+	{ 0.0, 0.0, 1.0 }, /* blue */
+	{ 1.0, 0.0, 1.0 }, /* magenta */
+	{ 0.0, 1.0, 1.0 }, /* cyan */
+	{ 1.0, 1.0, 1.0 }, /* white */
+	{ 0.0, 0.0, 0.0 }, /* black */
+    };
+    int i, j, loop;
+
+    /* cache a resolved scaled-font */
+    scaled_font = cairo_get_scaled_font (cr);
 
     for (loop = 0; loop < LOOPS; loop++) {
 	for (i = 0; i < LOOPS; i++) {
-	    use_solid (cr, 0.0, 0.0, 0.0); /* black */
-	    use_solid (cr, 1.0, 0.0, 0.0); /* red */
-	    use_solid (cr, 0.0, 1.0, 0.0); /* green */
-	    use_solid (cr, 1.0, 1.0, 0.0); /* yellow */
-	    use_solid (cr, 0.0, 0.0, 1.0); /* blue */
-	    use_solid (cr, 1.0, 0.0, 1.0); /* magenta */
-	    use_solid (cr, 0.0, 1.0, 1.0); /* cyan */
-	    use_solid (cr, 1.0, 1.0, 1.0); /* white */
+	    for (j = 0; j < 8; j++) {
+		use_solid (cr, colors[j][0], colors[j][1], colors[j][2]);
+		status = cairo_status (cr);
+		if (status)
+		    return cairo_test_status_from_status (ctx, status);
+	    }
 	}
 
-	for (i = 0; i < NRAND; i++)
+	for (i = 0; i < NRAND; i++) {
 	    use_solid (cr, drand48 (), drand48 (), drand48 ());
+	    status = cairo_status (cr);
+	    if (status)
+		return cairo_test_status_from_status (ctx, status);
+	}
     }
 
     /* stress test only, so clear the surface before comparing */
@@ -170,8 +204,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (solid_pattern_cache_stress,
+	    "Stress the solid pattern cache and ensure it behaves",
+	    "stress", /* keywords */
+	    NULL, /* requirements */
+	    1, 1,
+	    NULL, draw)

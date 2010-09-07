@@ -25,7 +25,6 @@
 
 #include "cairo-test.h"
 
-#include <cairo.h>
 #include <assert.h>
 
 static void
@@ -40,49 +39,72 @@ destroy_data2 (void *p)
     *(int *) p = 2;
 }
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
-    cairo_surface_t *surface;
     static const cairo_user_data_key_t key1, key2;
+    cairo_surface_t *surface;
+    cairo_status_t status;
     int data1, data2;
-
-    cairo_test_init (&ctx, "user-data");
 
     data1 = 0;
     data2 = 0;
+
     surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1);
-    assert (cairo_surface_set_user_data (surface, &key1, &data1, destroy_data1)
-	    == CAIRO_STATUS_SUCCESS);
-    assert (cairo_surface_set_user_data (surface, &key2, &data2, destroy_data2)
-	    == CAIRO_STATUS_SUCCESS);
+    status = cairo_surface_set_user_data (surface, &key1, &data1, destroy_data1);
+    if (status)
+	goto error;
+
+    status = cairo_surface_set_user_data (surface, &key2, &data2, destroy_data2);
+    if (status)
+	goto error;
+
     assert (cairo_surface_get_user_data (surface, &key1) == &data1);
-    assert (cairo_surface_set_user_data (surface, &key1, NULL, NULL)
-	    == CAIRO_STATUS_SUCCESS);
+    status = cairo_surface_set_user_data (surface, &key1, NULL, NULL);
+    if (status)
+	goto error;
+
     assert (cairo_surface_get_user_data (surface, &key1) == NULL);
     assert (data1 == 1);
     assert (data2 == 0);
 
-    assert (cairo_surface_set_user_data (surface, &key2, NULL, NULL)
-	    == CAIRO_STATUS_SUCCESS);
+    status = cairo_surface_set_user_data (surface, &key2, NULL, NULL);
+    if (status)
+	goto error;
+
     assert (data2 == 2);
 
     data1 = 0;
-    assert (cairo_surface_set_user_data (surface, &key1, &data1, NULL)
-	    == CAIRO_STATUS_SUCCESS);
-    assert (cairo_surface_set_user_data (surface, &key1, NULL, NULL)
-	    == CAIRO_STATUS_SUCCESS);
+    status = cairo_surface_set_user_data (surface, &key1, &data1, NULL);
+    if (status)
+	goto error;
+
+    status = cairo_surface_set_user_data (surface, &key1, NULL, NULL);
+    if (status)
+	goto error;
+
     assert (data1 == 0);
     assert (cairo_surface_get_user_data (surface, &key1) == NULL);
 
-    assert (cairo_surface_set_user_data (surface, &key1, &data1, destroy_data1)
-	    == CAIRO_STATUS_SUCCESS);
+    status = cairo_surface_set_user_data (surface, &key1, &data1, destroy_data1);
+    if (status)
+	goto error;
+
     cairo_surface_destroy (surface);
+
     assert (data1 == 1);
     assert (data2 == 2);
 
-    cairo_test_fini (&ctx);
-
     return CAIRO_TEST_SUCCESS;
+
+error:
+    cairo_surface_destroy (surface);
+    return cairo_test_status_from_status (ctx, status);
 }
+
+CAIRO_TEST (user_data,
+	    "Test setting and getting random bits of user data.",
+	    "api", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    preamble, NULL)

@@ -28,16 +28,6 @@
 #define WIDTH 20
 #define HEIGHT 20
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "device-offset-scale",
-    "Test that the device-offset transform is transformed by the ctm."
-    "\nCurrently fails with the SVG backend.",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -75,8 +65,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (device_offset_scale,
+	    "Test that the device-offset transform is transformed by the ctm.",
+	    "device-offset", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

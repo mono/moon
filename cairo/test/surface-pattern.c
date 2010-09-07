@@ -29,16 +29,8 @@
 #include <stdio.h>
 
 #define SIZE 140
-
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "surface-pattern",
-    "Test transformed repeated surface patterns"
-    "\nExhibiting a strange (very minor) failure in ps backend with device-offset",
-    SIZE, SIZE,
-    draw
-};
+/* Note GhostScript does not support /Interpolate on rotated images, so the PS
+ * output looks terrible, but is a known issue. */
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -89,8 +81,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (surface_pattern,
+	    "Test transformed repeated surface patterns"
+	    "\nExhibiting a strange (very minor) failure in ps backend with device-offset",
+	    "transform", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

@@ -26,20 +26,11 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define POINTS	10
 #define STEP	(1.0 / POINTS)
 #define PAD	1
 #define WIDTH	(PAD + POINTS * 2 + PAD)
 #define HEIGHT	(WIDTH)
-
-static const cairo_test_t test = {
-    "a1-image-sample",
-    "Test sample position when drawing images with FILTER_NEAREST",
-    WIDTH, HEIGHT,
-    draw
-};
 
 /* A single, black pixel */
 static const uint32_t black_pixel = 0xff000000;
@@ -58,11 +49,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_paint (cr);
 
-    /* Draw in black */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-
     cairo_translate (cr, PAD, PAD);
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 
     for (i = 0; i < POINTS; i++)
 	for (j = 0; j < POINTS; j++) {
@@ -78,8 +65,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (a1_image_sample,
+	    "Test sample position when drawing images with FILTER_NEAREST",
+	    "image, alpha", /* keywords */
+	    "target=raster", /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

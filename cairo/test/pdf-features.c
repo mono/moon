@@ -42,7 +42,7 @@
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
-struct {
+static struct {
     const char *page_size;
     const char *page_size_alias;
     const char *orientation;
@@ -83,23 +83,17 @@ struct {
      MM_TO_POINTS(37), MM_TO_POINTS(26)}
 };
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
+    const char *filename = "pdf-features.out.pdf";
     cairo_surface_t *surface;
     cairo_t *cr;
     cairo_status_t status;
-    const char *filename;
     size_t i;
 
-    cairo_test_init (&ctx, "pdf-features");
-    if (! cairo_test_is_target_enabled (&ctx, "pdf")) {
-	cairo_test_fini (&ctx);
+    if (! cairo_test_is_target_enabled (ctx, "pdf"))
 	return CAIRO_TEST_UNTESTED;
-    }
-
-    filename = "pdf-features.pdf";
 
     /* The initial size passed here is the default size that will be
      * inheritable by each page. That is, any page for which this
@@ -111,13 +105,12 @@ main (void)
 
     cr = cairo_create (surface);
 
-    cairo_select_font_face (cr, "Bitstream Vera Sans",
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr, TEXT_SIZE);
 
-    for (i=0; i < ARRAY_SIZE(pages); i++)
-    {
+    for (i = 0; i < ARRAY_SIZE (pages); i++) {
 	cairo_pdf_surface_set_size (surface,
 				   pages[i].width_in_points,
 				   pages[i].height_in_points);
@@ -135,14 +128,18 @@ main (void)
     cairo_surface_destroy (surface);
 
     if (status) {
-	cairo_test_log (&ctx, "Failed to create pdf surface for file %s: %s\n",
+	cairo_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
 			filename, cairo_status_to_string (status));
 	return CAIRO_TEST_FAILURE;
     }
 
     printf ("pdf-features: Please check %s to ensure it looks/prints correctly.\n", filename);
-
-    cairo_test_fini (&ctx);
-
     return CAIRO_TEST_SUCCESS;
 }
+
+CAIRO_TEST (pdf_features,
+	    "Check PDF specific API",
+	    "pdf", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    preamble, NULL)

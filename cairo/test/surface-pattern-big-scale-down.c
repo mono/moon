@@ -25,17 +25,8 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define SRC_WIDTH 2048
 #define SRC_HEIGHT 32
-
-static const cairo_test_t test = {
-    "surface-pattern-big-scale-down",
-    "Test scaled-down transformed not-repeated surface patterns with large images and offsets",
-    512, 16,
-    draw
-};
 
 static cairo_surface_t *
 create_source_surface (int w, int h)
@@ -126,8 +117,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (surface_pattern_big_scale_down,
+	    "Test scaled-down transformed not-repeated surface patterns with large images and offsets",
+	    "transform", /* keywords */
+	    NULL, /* requirements */
+	    512, 16,
+	    NULL, draw)

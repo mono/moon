@@ -32,15 +32,6 @@
 #define WIDTH (UNIT_SIZE + PAD) + PAD
 #define HEIGHT (UNIT_SIZE + PAD) + PAD
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "push-group",
-    "Verify that cairo_push_group works.",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -114,8 +105,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (push_group,
+	    "Verify that cairo_push_group works.",
+	    "group", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "reflected-stroke",
-    "Exercises the stroker with a reflected ctm",
-    200, 200,
-    draw
-};
-
 static void
 draw_symbol (cairo_t *cr)
 {
@@ -92,9 +83,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
-
+CAIRO_TEST (reflected_stroke,
+	    "Exercises the stroker with a reflected ctm",
+	    "stroke, transform", /* keywords */
+	    NULL, /* requirements */
+	    200, 200,
+	    NULL, draw)

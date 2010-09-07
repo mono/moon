@@ -31,14 +31,6 @@
 #include "cairo-test.h"
 
 static const char png_filename[] = "romedalen.png";
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "clipped-surface",
-    "Tests application of a clip to a source surface",
-    40, 40,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -63,8 +55,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (clipped_surface,
+	    "Tests application of a clip to a source surface",
+	    "clip", /* keywords */
+	    NULL, /* requirements */
+	    40, 40,
+	    NULL, draw)

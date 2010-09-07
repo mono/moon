@@ -38,15 +38,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// BeOS's C++ compiler does not support varargs in macros
-// So, define CAIRO_BOILERPLATE_LOG here
-#define CAIRO_BOILERPLATE_LOG cairo_beos_boilerplate_log
-
-extern "C" {
 #include "cairo-boilerplate.h"
-}
-#include "cairo-boilerplate-beos-private.h"
-
 #include <cairo-beos.h>
 
 // Part of this code was originally part of
@@ -56,15 +48,6 @@ extern "C" {
 #include <Window.h>
 #include <View.h>
 #include <Bitmap.h>
-
-static int cairo_beos_boilerplate_log(const char* format, ...) {
-    va_list args;
-    int rv;
-    va_start(args, format);
-    rv = vfprintf(stderr, format, args);
-    va_end(args);
-    return rv;
-}
 
 class CairoTestWindow : public BWindow
 {
@@ -107,22 +90,22 @@ public:
 
     void ReadyToRun()
     {
-        release_sem(init);
+	release_sem(init);
     }
 
     static int32 Main(void *args)
     {
-        nsBeOSApp *app = new nsBeOSApp( (sem_id)args );
-        if(app == NULL)
-            return B_ERROR;
-        return app->Run();
+	nsBeOSApp *app = new nsBeOSApp( (sem_id)args );
+	if(app == NULL)
+	    return B_ERROR;
+	return app->Run();
     }
 
 private:
 
     const char *GetAppSig()
     {
-        return "application/x-vnd.cairo-test-app";
+	return "application/x-vnd.cairo-test-app";
     }
 
     sem_id init;
@@ -142,18 +125,18 @@ AppRunner::AppRunner()
 
     sem_id initsem = create_sem(0, "Cairo BApplication init");
     if (initsem < B_OK) {
-	CAIRO_BOILERPLATE_LOG("Error creating BeOS initialization semaphore\n");
-        return;
+	fprintf (stderr, "Error creating BeOS initialization semaphore\n");
+	return;
     }
 
     thread_id tid = spawn_thread(nsBeOSApp::Main, "Cairo/BeOS test", B_NORMAL_PRIORITY, (void *)initsem);
     if (tid < B_OK || B_OK != resume_thread(tid)) {
-	CAIRO_BOILERPLATE_LOG("Error spawning thread\n");
+	fprintf (stderr, "Error spawning thread\n");
 	return;
     }
 
     if (B_OK != acquire_sem(initsem)) {
-	CAIRO_BOILERPLATE_LOG("Error acquiring semaphore\n");
+	fprintf (stderr, "Error acquiring semaphore\n");
 	return;
     }
 
@@ -174,21 +157,20 @@ AppRunner::~AppRunner()
 // Make sure that the BApplication is initialized
 static AppRunner sAppRunner;
 
-struct beos_boilerplate_closure
-{
+struct beos_boilerplate_closure {
     BView* view;
     BBitmap* bitmap;
     BWindow* window;
 };
 
 // Test a real window
-cairo_surface_t *
-_cairo_boilerplate_beos_create_surface (const char			 *name,
-					cairo_content_t			  content,
-					int				  width,
-					int				  height,
-					cairo_boilerplate_mode_t	  mode,
-					void				**closure)
+static cairo_surface_t *
+_cairo_boilerplate_beos_create_surface (const char		  *name,
+					cairo_content_t 	   content,
+					double			   width,
+					double			   height,
+					cairo_boilerplate_mode_t   mode,
+					void			 **closure)
 {
     float right = width ? width - 1 : 0;
     float bottom = height ? height - 1 : 0;
@@ -205,8 +187,8 @@ _cairo_boilerplate_beos_create_surface (const char			 *name,
     return cairo_beos_surface_create(wnd->View());
 }
 
-void
-_cairo_boilerplate_beos_cleanup (void* closure)
+static void
+_cairo_boilerplate_beos_cleanup (void *closure)
 {
     beos_boilerplate_closure* bclosure = reinterpret_cast<beos_boilerplate_closure*>(closure);
 
@@ -217,13 +199,13 @@ _cairo_boilerplate_beos_cleanup (void* closure)
 }
 
 // Test a bitmap
-cairo_surface_t *
-_cairo_boilerplate_beos_create_surface_for_bitmap (const char			 *name,
-						   cairo_content_t		  content,
-						   int				  width,
-						   int				  height,
-						   cairo_boilerplate_mode_t	  mode,
-						   void				**closure)
+static cairo_surface_t *
+_cairo_boilerplate_beos_create_surface_for_bitmap (const char		     *name,
+						   cairo_content_t	      content,
+						   double		      width,
+						   double		      height,
+						   cairo_boilerplate_mode_t   mode,
+						   void 		    **closure)
 {
     BRect rect(0.0, 0.0, width - 1, height - 1);
     color_space beosformat = (content == CAIRO_CONTENT_COLOR_ALPHA) ? B_RGBA32
@@ -241,8 +223,8 @@ _cairo_boilerplate_beos_create_surface_for_bitmap (const char			 *name,
     return cairo_beos_surface_create_for_bitmap(view, bmp);
 }
 
-void
-_cairo_boilerplate_beos_cleanup_bitmap (void* closure)
+static void
+_cairo_boilerplate_beos_cleanup_bitmap (void *closure)
 {
     beos_boilerplate_closure* bclosure = reinterpret_cast<beos_boilerplate_closure*>(closure);
 
@@ -255,4 +237,37 @@ _cairo_boilerplate_beos_cleanup_bitmap (void* closure)
     delete bclosure;
 }
 
+static const cairo_boilerplate_target_t targets[] = {
+    /* BeOS sometimes produces a slightly different image. Perhaps this
+     * is related to the fact that it doesn't use premultiplied alpha...
+     * Just ignore the small difference. */
+    {
+	"beos", "beos", NULL, NULL,
+	CAIRO_SURFACE_TYPE_BEOS, CAIRO_CONTENT_COLOR, 1,
+	_cairo_boilerplate_beos_create_surface,
+	NULL, NULL,
+	_cairo_boilerplate_get_image_surface,
+	cairo_surface_write_to_png,
+	_cairo_boilerplate_beos_cleanup
+    },
+    {
+	"beos-bitmap", "beos", NULL, NULL,
+	CAIRO_SURFACE_TYPE_BEOS, CAIRO_CONTENT_COLOR, 1,
+	_cairo_boilerplate_beos_create_surface_for_bitmap,
+	NULL, NULL,
+	_cairo_boilerplate_get_image_surface,
+	cairo_surface_write_to_png,
+	_cairo_boilerplate_beos_cleanup_bitmap
+    },
+    {
+	"beos-bitmap", "beos", NULL, NULL,
+	CAIRO_SURFACE_TYPE_BEOS, CAIRO_CONTENT_COLOR_ALPHA, 1,
+	_cairo_boilerplate_beos_create_surface_for_bitmap,
+	NULL, NULL,
+	_cairo_boilerplate_get_image_surface,
+	cairo_surface_write_to_png,
+	_cairo_boilerplate_beos_cleanup_bitmap
+    },
+};
+CAIRO_BOILERPLATE (beos, targets)
 

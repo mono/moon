@@ -35,15 +35,6 @@
 #define WIDTH 60
 #define HEIGHT 60
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "leaky-dashed-rectangle",
-    "Exercises bug in which a dashed stroke leaks in from outside the surface",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -87,8 +78,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (leaky_dashed_rectangle,
+	    "Exercises bug in which a dashed stroke leaks in from outside the surface",
+	    "dash, stroke", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

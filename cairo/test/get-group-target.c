@@ -28,15 +28,6 @@
 #define SIZE 8
 #define PAD 2
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "get-group-target",
-    "Test of both cairo_get_group_target and cairo_surface_get_device_offset",
-    SIZE, SIZE,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -86,8 +77,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (get_group_target,
+	    "Test of both cairo_get_group_target and cairo_surface_get_device_offset",
+	    "api", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

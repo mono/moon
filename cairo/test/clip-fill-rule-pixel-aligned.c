@@ -28,16 +28,6 @@
 #define PAD 1
 #define SIZE 5
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "clip-fill-rule-pixel-aligned",
-    "Tests interaction of clipping and cairo_set_fill_rule with a pixel-aligned path",
-    PAD + (SIZE*4) + PAD + (SIZE*4) + PAD,
-    PAD + (SIZE*4) + PAD,
-    draw
-};
-
 static void
 pixel_aligned_path (cairo_t *cr)
 {
@@ -91,8 +81,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (clip_fill_rule_pixel_aligned,
+	    "Tests interaction of clipping and cairo_set_fill_rule with a pixel-aligned path",
+	    "clip", /* keywords */
+	    NULL, /* requirements */
+	    PAD + (SIZE*4) + PAD + (SIZE*4) + PAD,
+	    PAD + (SIZE*4) + PAD,
+	    NULL, draw)

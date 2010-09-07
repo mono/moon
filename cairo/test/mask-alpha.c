@@ -26,8 +26,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define SIZE 40
 #define PAD 2
 #define WIDTH (PAD + SIZE + PAD)
@@ -40,13 +38,6 @@ static cairo_test_draw_function_t draw;
  * a circle with the rgba (0.4, 0.4, 0.4, 0.8) and the background rgba
  * (0.8, 0.8, 0.8, 0.4).
  */
-
-static const cairo_test_t test = {
-    "mask-alpha",
-    "A simple test painting a group through a circle mask",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -83,8 +74,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (mask_alpha,
+	    "A simple test painting a group through a circle mask",
+	    "mask, alpha", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

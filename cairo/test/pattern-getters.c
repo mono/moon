@@ -27,16 +27,12 @@
 #include <stdlib.h>
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "pattern-getters",
-    "Tests calls to pattern getter functions",
-    1, 1,
-    draw
-};
-
-#define CHECK_SUCCESS do { if (status) return CAIRO_TEST_FAILURE; } while (0)
+#define CHECK_SUCCESS do { \
+    if (status) { \
+	cairo_pattern_destroy (pat); \
+	return cairo_test_status_from_status (ctx, status); \
+    } \
+} while (0)
 
 static int
 double_buf_equal (const cairo_test_context_t *ctx, double *a, double *b, int nc)
@@ -73,6 +69,7 @@ draw (cairo_t *cr, int width, int height)
 	    !CAIRO_TEST_DOUBLE_EQUALS(a,0.5)) {
 	    cairo_test_log (ctx, "Error: cairo_pattern_get_rgba returned unexepcted results: %g, %g, %g, %g\n",
 			    r, g, b, a);
+	    cairo_pattern_destroy (pat);
 	    return CAIRO_TEST_FAILURE;
 	}
 
@@ -90,6 +87,7 @@ draw (cairo_t *cr, int width, int height)
 
 	if (surf != cairo_get_target (cr)) {
 	    cairo_test_log (ctx, "Error: cairo_pattern_get_resurface returned wrong surface\n");
+	    cairo_pattern_destroy (pat);
 	    return CAIRO_TEST_FAILURE;
 	}
 
@@ -123,13 +121,18 @@ draw (cairo_t *cr, int width, int height)
 	    !CAIRO_TEST_DOUBLE_EQUALS(y0,2.0) ||
 	    !CAIRO_TEST_DOUBLE_EQUALS(x1,3.0) ||
 	    !CAIRO_TEST_DOUBLE_EQUALS(y1,4.0))
+	{
+	    cairo_pattern_destroy (pat);
 	    return CAIRO_TEST_FAILURE;
+	}
 
 	status = cairo_pattern_get_color_stop_count (pat, &i);
 	CHECK_SUCCESS;
 
-	if (i != 3)
+	if (i != 3) {
+	    cairo_pattern_destroy (pat);
 	    return CAIRO_TEST_FAILURE;
+	}
 
 	for (i = 0; i < 3; i++) {
 	    status = cairo_pattern_get_color_stop_rgba (pat, i,
@@ -142,11 +145,17 @@ draw (cairo_t *cr, int width, int height)
 	}
 
 	status = cairo_pattern_get_color_stop_rgba (pat, 5, NULL, NULL, NULL, NULL, NULL);
-	if (status != CAIRO_STATUS_INVALID_INDEX)
+	if (status != CAIRO_STATUS_INVALID_INDEX) {
+	    cairo_pattern_destroy (pat);
 	    return CAIRO_TEST_FAILURE;
+	}
 
-	if (!double_buf_equal (ctx, new_buf, expected_values, sizeof(expected_values)/sizeof(double)) != 0)
+	if (!double_buf_equal (ctx, new_buf, expected_values,
+			       sizeof(expected_values)/sizeof(double)) != 0)
+	{
+	    cairo_pattern_destroy (pat);
 	    return CAIRO_TEST_FAILURE;
+	}
 
 	cairo_pattern_destroy (pat);
     }
@@ -166,7 +175,10 @@ draw (cairo_t *cr, int width, int height)
 	    !CAIRO_TEST_DOUBLE_EQUALS(d,4.0) ||
 	    !CAIRO_TEST_DOUBLE_EQUALS(e,5.0) ||
 	    !CAIRO_TEST_DOUBLE_EQUALS(f,6.0))
+	{
+	    cairo_pattern_destroy (pat);
 	    return CAIRO_TEST_FAILURE;
+	}
 
 	cairo_pattern_destroy (pat);
     }
@@ -177,8 +189,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (pattern_getters,
+	    "Tests calls to pattern getter functions",
+	    "pattern, api", /* keywords */
+	    NULL, /* requirements */
+	    1, 1,
+	    NULL, draw)

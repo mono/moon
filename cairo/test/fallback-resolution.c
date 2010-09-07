@@ -37,6 +37,9 @@
 #include <unistd.h>
 #include <errno.h>
 #endif
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 #include "cairo-test.h"
 #include "buffer-diff.h"
@@ -165,8 +168,8 @@ check_result (cairo_test_context_t *ctx,
 	}
     }
 
-    xasprintf (&png_name,  "%s-out.png", base_name);
-    xasprintf (&diff_name, "%s-diff.png", base_name);
+    xasprintf (&png_name,  "%s.out.png", base_name);
+    xasprintf (&diff_name, "%s.diff.png", base_name);
 
     test_image = target->get_image_surface (surface, 0, SIZE, SIZE);
     if (cairo_surface_status (test_image)) {
@@ -190,11 +193,14 @@ check_result (cairo_test_context_t *ctx,
     }
 
     format = cairo_boilerplate_content_name (target->content);
-    ref_name = cairo_test_reference_image_filename (ctx,
-	                                            base_name,
-						    test_name,
-						    target->name,
-						    format);
+    ref_name = cairo_test_reference_filename (ctx,
+					      base_name,
+					      test_name,
+					      target->name,
+					      target->basename,
+					      format,
+					      CAIRO_TEST_REF_SUFFIX,
+					      CAIRO_TEST_PNG_EXTENSION);
     if (ref_name == NULL) {
 	cairo_test_log (ctx, "Error: Cannot find reference image for %s\n",
 		        base_name);
@@ -215,6 +221,7 @@ check_result (cairo_test_context_t *ctx,
 	cairo_surface_destroy (test_image);
 	free (png_name);
 	free (diff_name);
+	free (ref_name);
 	return FALSE;
     }
 
@@ -230,8 +237,7 @@ check_result (cairo_test_context_t *ctx,
 	cairo_test_log (ctx, "Error: Failed to compare images: %s\n",
 			cairo_status_to_string (status));
 	ret = FALSE;
-    } else if (result.pixels_changed &&
-	       result.max_diff > target->error_tolerance)
+    } else if (image_diff_is_failure (&result, target->error_tolerance))
     {
 	ret = FALSE;
 
@@ -246,6 +252,7 @@ check_result (cairo_test_context_t *ctx,
     cairo_surface_destroy (diff_image);
     free (png_name);
     free (diff_name);
+    free (ref_name);
 
     return ret;
 }
@@ -295,34 +302,72 @@ generate_reference (double ppi_x, double ppi_y, const char *filename)
 }
 #endif
 
-int
-main (void)
+static cairo_bool_t
+_cairo_test_mkdir (const char *path)
 {
-    cairo_test_context_t ctx;
+#if ! HAVE_MKDIR
+    return FALSE;
+#elif HAVE_MKDIR == 1
+    if (mkdir (path) == 0)
+	return TRUE;
+#elif HAVE_MKDIR == 2
+    if (mkdir (path, 0770) == 0)
+	return TRUE;
+#else
+#error Bad value for HAVE_MKDIR
+#endif
+
+    return errno == EEXIST;
+}
+
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
+{
     cairo_t *cr;
     cairo_test_status_t ret = CAIRO_TEST_UNTESTED;
-    double ppi[] = { 600., 300., 150., 75., 72, 37.5 };
+    struct {
+	double x, y;
+    } ppi[] = {
+	{ 600, 600 },
+	{ 600, 72 },
+
+	{ 300, 300 },
+	{ 300, 72 },
+
+	{ 150, 150 },
+	{ 150, 72 },
+
+	{ 75, 75 },
+	{ 75, 72 },
+
+	{ 72, 600 },
+	{ 72, 300 },
+	{ 72, 150 },
+	{ 72, 75 },
+	{ 72, 72 },
+	{ 72, 37.5 },
+
+	{ 37.5, 72 },
+	{ 37.5, 37.5 },
+    };
     unsigned int i;
-    int ppi_x, ppi_y, num_ppi;
+    int n, num_ppi;
+    const char *path = _cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
 
     num_ppi = sizeof (ppi) / sizeof (ppi[0]);
 
-    cairo_test_init (&ctx, "fallback-resolution");
-
 #if GENERATE_REFERENCE
-    for (ppi_x = 0; ppi_x < num_ppi; ppi_x++) {
-	for (ppi_y = 0; ppi_y < num_ppi; ppi_y++) {
-	    char *ref_name;
-	    xasprintf (&ref_name, "fallback-resolution-ppi%gx%g-ref.png",
-		       ppi[ppi_x], ppi[ppi_y]);
-	    generate_reference (ppi[ppi_x], ppi[ppi_y], ref_name);
-	    free (ref_name);
-	}
+    for (n = 0; n < num_ppi; n++) {
+	char *ref_name;
+	xasprintf (&ref_name, "fallback-resolution.ppi%gx%g.ref.png",
+		   ppi[n].x, ppi[n].y);
+	generate_reference (ppi[n].x, ppi[n].y, ref_name);
+	free (ref_name);
     }
 #endif
 
-    for (i = 0; i < ctx.num_targets; i++) {
-	const cairo_boilerplate_target_t *target = ctx.targets_to_test[i];
+    for (i = 0; i < ctx->num_targets; i++) {
+	const cairo_boilerplate_target_t *target = ctx->targets_to_test[i];
 	cairo_surface_t *surface = NULL;
 	char *base_name;
 	void *closure;
@@ -332,9 +377,12 @@ main (void)
 	if (! target->is_vector)
 	    continue;
 
+	if (! cairo_test_is_target_enabled (ctx, target->name))
+	    continue;
+
 	format = cairo_boilerplate_content_name (target->content);
-	xasprintf (&base_name, "fallback-resolution-%s-%s",
-		   target->name,
+	xasprintf (&base_name, "%s/fallback-resolution.%s.%s",
+		   path, target->name,
 		   format);
 
 	surface = (target->create_surface) (base_name,
@@ -361,110 +409,115 @@ main (void)
 	/* we need to recreate the surface for each resolution as we include
 	 * SVG in testing which does not support the paginated interface.
 	 */
-	for (ppi_x = 0; ppi_x < num_ppi; ppi_x++) {
-	    for (ppi_y = 0; ppi_y < num_ppi; ppi_y++) {
-		char *test_name;
-		cairo_bool_t pass;
+	for (n = 0; n < num_ppi; n++) {
+	    char *test_name;
+	    cairo_bool_t pass;
 
-		xasprintf (&test_name, "fallback-resolution-ppi%gx%g",
-			   ppi[ppi_x], ppi[ppi_y]);
-		xasprintf (&base_name, "%s-%s-%s",
-			   test_name,
-			   target->name,
-			   format);
+	    xasprintf (&test_name, "fallback-resolution.ppi%gx%g",
+		       ppi[n].x, ppi[n].y);
+	    xasprintf (&base_name, "%s/%s.%s.%s",
+		       path, test_name,
+		       target->name,
+		       format);
 
-		surface = (target->create_surface) (base_name,
-						    target->content,
-						    SIZE + 25, SIZE + 25,
-						    SIZE + 25, SIZE + 25,
-						    CAIRO_BOILERPLATE_MODE_TEST,
-						    0,
-						    &closure);
-		if (surface == NULL || cairo_surface_status (surface)) {
-		    cairo_test_log (&ctx, "Failed to generate surface: %s-%s\n",
-				    target->name,
-				    format);
-		    free (base_name);
-		    ret = CAIRO_TEST_FAILURE;
-		    continue;
-		}
+	    surface = (target->create_surface) (base_name,
+						target->content,
+						SIZE + 25, SIZE + 25,
+						SIZE + 25, SIZE + 25,
+						CAIRO_BOILERPLATE_MODE_TEST,
+						0,
+						&closure);
+	    if (surface == NULL || cairo_surface_status (surface)) {
+		cairo_test_log (ctx, "Failed to generate surface: %s.%s\n",
+				target->name,
+				format);
+		free (base_name);
+		free (test_name);
+		ret = CAIRO_TEST_FAILURE;
+		continue;
+	    }
 
-		cairo_test_log (&ctx,
-				"Testing fallback-resolution %gx%g with %s target\n",
-				ppi[ppi_x], ppi[ppi_y], target->name);
-		printf ("%s:\t", base_name);
-		fflush (stdout);
+	    cairo_test_log (ctx,
+			    "Testing fallback-resolution %gx%g with %s target\n",
+			    ppi[n].x, ppi[n].y, target->name);
+	    printf ("%s:\t", base_name);
+	    fflush (stdout);
 
-		if (target->force_fallbacks != NULL)
-		    target->force_fallbacks (surface, ~0U);
-		cr = cairo_create (surface);
+	    if (target->force_fallbacks != NULL)
+		target->force_fallbacks (surface, ~0U);
+	    cr = cairo_create (surface);
 #if SET_TOLERANCE
-		cairo_set_tolerance (cr, 3.0);
+	    cairo_set_tolerance (cr, 3.0);
 #endif
 
-		cairo_surface_set_device_offset (surface, 25, 25);
-		cairo_surface_set_fallback_resolution (surface,
-						       ppi[ppi_x], ppi[ppi_y]);
+	    cairo_surface_set_device_offset (surface, 25, 25);
+	    cairo_surface_set_fallback_resolution (surface,
+						   ppi[n].x, ppi[n].y);
 
-		cairo_save (cr); {
-		    cairo_set_source_rgb (cr, 1, 1, 1);
-		    cairo_paint (cr);
-		} cairo_restore (cr);
+	    cairo_save (cr); {
+		cairo_set_source_rgb (cr, 1, 1, 1);
+		cairo_paint (cr);
+	    } cairo_restore (cr);
 
-		/* First draw the top half in a conventional way. */
-		cairo_save (cr); {
-		    cairo_rectangle (cr, 0, 0, SIZE, SIZE / 2.0);
-		    cairo_clip (cr);
+	    /* First draw the top half in a conventional way. */
+	    cairo_save (cr); {
+		cairo_rectangle (cr, 0, 0, SIZE, SIZE / 2.0);
+		cairo_clip (cr);
 
+		draw (cr, SIZE, SIZE);
+	    } cairo_restore (cr);
+
+	    /* Then draw the bottom half in a separate group,
+	     * (exposing a bug in 1.6.4 with the group not being
+	     * rendered with the correct fallback resolution). */
+	    cairo_save (cr); {
+		cairo_rectangle (cr, 0, SIZE / 2.0, SIZE, SIZE / 2.0);
+		cairo_clip (cr);
+
+		cairo_push_group (cr); {
 		    draw (cr, SIZE, SIZE);
-		} cairo_restore (cr);
+		} cairo_pop_group_to_source (cr);
 
-		/* Then draw the bottom half in a separate group,
-		 * (exposing a bug in 1.6.4 with the group not being
-		 * rendered with the correct fallback resolution). */
-		cairo_save (cr); {
-		    cairo_rectangle (cr, 0, SIZE / 2.0, SIZE, SIZE / 2.0);
-		    cairo_clip (cr);
+		cairo_paint (cr);
+	    } cairo_restore (cr);
 
-		    cairo_push_group (cr); {
-			draw (cr, SIZE, SIZE);
-		    } cairo_pop_group_to_source (cr);
+	    status = cairo_status (cr);
+	    cairo_destroy (cr);
 
-		    cairo_paint (cr);
-		} cairo_restore (cr);
-
-		status = cairo_status (cr);
-		cairo_destroy (cr);
-
-		pass = FALSE;
-		if (status) {
-		    cairo_test_log (&ctx, "Error: Failed to create target surface: %s\n",
-				    cairo_status_to_string (status));
+	    pass = FALSE;
+	    if (status) {
+		cairo_test_log (ctx, "Error: Failed to create target surface: %s\n",
+				cairo_status_to_string (status));
+		ret = CAIRO_TEST_FAILURE;
+	    } else {
+		/* extract the image and compare it to our reference */
+		if (! check_result (ctx, target, test_name, base_name, surface))
 		    ret = CAIRO_TEST_FAILURE;
-		} else {
-		    /* extract the image and compare it to our reference */
-		    if (! check_result (&ctx, target, test_name, base_name, surface))
-			ret = CAIRO_TEST_FAILURE;
-		    else
-			pass = TRUE;
-		}
-		cairo_surface_destroy (surface);
-		if (target->cleanup)
-		    target->cleanup (closure);
-
-		free (base_name);
-
-		if (pass) {
-		    printf ("PASS\n");
-		} else {
-		    printf ("FAIL\n");
-		}
-		fflush (stdout);
+		else
+		    pass = TRUE;
 	    }
+	    cairo_surface_destroy (surface);
+	    if (target->cleanup)
+		target->cleanup (closure);
+
+	    free (base_name);
+	    free (test_name);
+
+	    if (pass) {
+		printf ("PASS\n");
+	    } else {
+		printf ("FAIL\n");
+	    }
+	    fflush (stdout);
 	}
     }
 
-    cairo_test_fini (&ctx);
-
     return ret;
 }
+
+CAIRO_TEST (fallback_resolution,
+	    "Check handling of fallback resolutions",
+	    "fallback", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    preamble, NULL)

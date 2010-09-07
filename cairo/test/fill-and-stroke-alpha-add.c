@@ -29,15 +29,6 @@
 #define PAD 2
 #define SIZE 10
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "fill-and-stroke-alpha-add",
-    "Use a group to fill/stroke a path (each with different alpha) using DEST_OUT and ADD to combine",
-    2 * SIZE + 4 * PAD, SIZE + 2 * PAD,
-    draw
-};
-
 typedef void (*path_func_t) (cairo_t *cr);
 
 static void
@@ -108,8 +99,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (fill_and_stroke_alpha_add,
+	    "Use a group to fill/stroke a path (each with different alpha) using DEST_OUT and ADD to combine",
+	    "fill-and-stroke, fill, stroke", /* keywords */
+	    NULL, /* requirements */
+	    2 * SIZE + 4 * PAD, SIZE + 2 * PAD,
+	    NULL, draw)

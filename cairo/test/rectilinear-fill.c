@@ -28,15 +28,6 @@
 
 #define SIZE 24
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "rectilinear-fill",
-    "Test rectilinear fill operations (covering only whole pixels)",
-    SIZE, 2 * SIZE,
-    draw
-};
-
 static void
 draw_rectangles (cairo_t *cr)
 {
@@ -85,8 +76,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (rectilinear_fill,
+	    "Test rectilinear fill operations (covering only whole pixels)",
+	    "fill, rectilinear", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, 2 * SIZE,
+	    NULL, draw)

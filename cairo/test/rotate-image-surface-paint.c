@@ -26,74 +26,74 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define SIZE 20
 #define PAD 2
 
-static const cairo_test_t test = {
-    "rotate-image-surface-paint",
-    "Test call sequence: image_surface_create; rotate; set_source_surface; paint"
-    "\nThis test is known to fail on the ps backend currently",
-    SIZE, SIZE,
-    draw
-};
+static cairo_pattern_t *
+create_image_source (int size)
+{
+    cairo_surface_t *surface;
+    cairo_pattern_t *pattern;
+    cairo_t *cr;
+
+    /* Create an image surface with my favorite four colors in each
+     * quadrant. */
+    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, size, size);
+    cr = cairo_create (surface);
+    cairo_surface_destroy (surface);
+
+    cairo_set_source_rgb (cr, 1, 1, 1);
+    cairo_rectangle (cr, 0, 0, size / 2, size / 2);
+    cairo_fill (cr);
+
+    cairo_set_source_rgb (cr, 1, 0, 0);
+    cairo_rectangle (cr, size / 2, 0, size - size / 2, size / 2);
+    cairo_fill (cr);
+
+    cairo_set_source_rgb (cr, 0, 1, 0);
+    cairo_rectangle (cr, 0, size / 2, size / 2, size - size / 2);
+    cairo_fill (cr);
+
+    cairo_set_source_rgb (cr, 0, 0, 1);
+    cairo_rectangle (cr, size / 2, size / 2, size - size / 2, size - size / 2);
+    cairo_fill (cr);
+
+    pattern = cairo_pattern_create_for_surface (cairo_get_target (cr));
+    cairo_destroy (cr);
+
+    return pattern;
+}
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    cairo_pattern_t *source;
     int surface_size = sqrt ((SIZE - 2*PAD)*(SIZE - 2*PAD)/2);
-    cairo_t *cr_surface;
 
-    /* Create an image surface with my favorite four colors in each
-     * quadrant. */
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
-					  surface_size, surface_size);
-    cr_surface = cairo_create (surface);
-    cairo_surface_destroy (surface);
-
-    cairo_set_source_rgb (cr_surface, 1, 1, 1);
-    cairo_rectangle (cr_surface,
-		     0, 0,
-		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 1, 0, 0);
-    cairo_rectangle (cr_surface,
-		     surface_size / 2, 0,
-		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 0, 1, 0);
-    cairo_rectangle (cr_surface,
-		     0, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 0, 0, 1);
-    cairo_rectangle (cr_surface,
-		     surface_size / 2, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-
-    /* First paint opaque background (black) so we don't need separate
-     * ARGB32 and RGB24 reference images. */
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
+    /* Use a gray (neutral) background, so we can spot if the backend pads
+     * with any other colour.
+     */
+    cairo_set_source_rgb (cr, .5, .5, .5);
     cairo_paint (cr);
 
     cairo_translate(cr, SIZE/2, SIZE/2);
     cairo_rotate (cr, M_PI / 4.0);
     cairo_translate (cr, -surface_size/2, -surface_size/2);
 
-    cairo_set_source_surface (cr, cairo_get_target (cr_surface), 0, 0);
-    cairo_destroy (cr_surface);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_paint (cr);
+    source = create_image_source (surface_size);
+    cairo_pattern_set_filter (source, CAIRO_FILTER_NEAREST);
+    cairo_set_source(cr, source);
+    cairo_pattern_destroy (source);
 
+    cairo_paint (cr);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (rotate_image_surface_paint,
+	    "Test call sequence: image_surface_create; rotate; set_source_surface; paint"
+	    "\nThis test is known to fail on the ps backend currently",
+	    "image, transform, paint", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

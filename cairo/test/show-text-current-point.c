@@ -27,15 +27,6 @@
 
 #define TEXT_SIZE 12
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "show-text-current-point",
-    "Test that cairo_show_text adjusts the current point properly",
-    263, TEXT_SIZE + 4,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -45,7 +36,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_paint (cr);
     cairo_restore (cr);
 
-    cairo_select_font_face (cr, "Bitstream Vera Sans",
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr, TEXT_SIZE);
@@ -54,14 +45,15 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_move_to (cr, 0, TEXT_SIZE);
     cairo_show_text (cr, "Hello from the ");
-    cairo_show_text (cr, test.name);
+    cairo_show_text (cr, "show-text-current-point");
     cairo_show_text (cr, " test.");
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (show_text_current_point,
+	    "Test that cairo_show_text adjusts the current point properly",
+	    "text, api", /* keywords */
+	    NULL, /* requirements */
+	    263, TEXT_SIZE + 4,
+	    NULL, draw)

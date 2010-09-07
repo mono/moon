@@ -26,15 +26,7 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
 static const char png_filename[] = "romedalen.png";
-
-static const cairo_test_t test = {
-    "mask-transformed-image",
-    "Test that cairo_mask() is affected properly by the CTM and not the image",
-    80, 80,
-    draw
-};
 
 static cairo_surface_t *
 create_mask (cairo_t *dst, int width, int height)
@@ -96,8 +88,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (mask_transformed_image,
+	    "Test that cairo_mask() is affected properly by the CTM and not the image",
+	    "mask", /* keywords */
+	    NULL, /* requirements */
+	    80, 80,
+	    NULL, draw)

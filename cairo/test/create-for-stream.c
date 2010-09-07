@@ -23,11 +23,11 @@
  * Author: Kristian Høgsberg <krh@redhat.com>
  */
 
+#include "cairo-test.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-
-#include <cairo.h>
 
 #if CAIRO_HAS_PS_SURFACE
 #include <cairo-ps.h>
@@ -46,7 +46,7 @@
 /* The main test suite doesn't test the *_create_for_stream
  * constructors for the PDF, PS and SVG surface, so we do that here.
  * We draw to an in-memory buffer using the stream constructor and
- * compare the output to the contents of a file writting using the
+ * compare the output to the contents of a file written using the
  * file constructor.
  */
 
@@ -56,6 +56,8 @@
 #define HEIGHT_IN_INCHES 3
 #define WIDTH_IN_POINTS  (WIDTH_IN_INCHES  * 72.0)
 #define HEIGHT_IN_POINTS (HEIGHT_IN_INCHES * 72.0)
+
+#define BASENAME "create-for-stream.out"
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -232,28 +234,24 @@ test_surface (const cairo_test_context_t *ctx,
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
     cairo_test_status_t status = CAIRO_TEST_UNTESTED;
     cairo_test_status_t test_status;
-    const char test_name[] = "create-for-stream";
-
-    cairo_test_init (&ctx, test_name);
 
 #if CAIRO_HAS_PS_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "ps2") ||
-	cairo_test_is_target_enabled (&ctx, "ps3"))
+    if (cairo_test_is_target_enabled (ctx, "ps2") ||
+	cairo_test_is_target_enabled (ctx, "ps3"))
     {
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 
-	test_status = test_surface (&ctx, "ps", "create-for-stream.ps",
+	test_status = test_surface (ctx, "ps", BASENAME ".ps",
 				    cairo_ps_surface_create,
 				    cairo_ps_surface_create_for_stream);
-	cairo_test_log (&ctx, "TEST: %s TARGET: %s RESULT: %s\n",
-			test_name, "ps",
+	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+			ctx->test->name, "ps",
 			test_status ? "FAIL" : "PASS");
 	if (status == CAIRO_TEST_SUCCESS)
 	    status = test_status;
@@ -261,15 +259,15 @@ main (void)
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "pdf")) {
+    if (cairo_test_is_target_enabled (ctx, "pdf")) {
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 
-	test_status = test_surface (&ctx, "pdf", "create-for-stream.pdf",
+	test_status = test_surface (ctx, "pdf", BASENAME ".pdf",
 				    cairo_pdf_surface_create,
 				    cairo_pdf_surface_create_for_stream);
-	cairo_test_log (&ctx, "TEST: %s TARGET: %s RESULT: %s\n",
-			test_name, "pdf",
+	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+			ctx->test->name, "pdf",
 			test_status ? "FAIL" : "PASS");
 	if (status == CAIRO_TEST_SUCCESS)
 	    status = test_status;
@@ -277,24 +275,29 @@ main (void)
 #endif
 
 #if CAIRO_HAS_SVG_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "svg11") ||
-	cairo_test_is_target_enabled (&ctx, "svg12"))
+    if (cairo_test_is_target_enabled (ctx, "svg11") ||
+	cairo_test_is_target_enabled (ctx, "svg12"))
     {
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 
-	test_status = test_surface (&ctx, "svg", "create-for-stream.svg",
+	test_status = test_surface (ctx, "svg", BASENAME ".svg",
 				    cairo_svg_surface_create,
 				    cairo_svg_surface_create_for_stream);
-	cairo_test_log (&ctx, "TEST: %s TARGET: %s RESULT: %s\n",
-			test_name, "svg",
+	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+			ctx->test->name, "svg",
 			test_status ? "FAIL" : "PASS");
 	if (status == CAIRO_TEST_SUCCESS)
 	    status = test_status;
     }
 #endif
 
-    cairo_test_fini (&ctx);
-
     return status;
 }
+
+CAIRO_TEST (create_for_stream,
+	    "Checks creating vector surfaces with user defined I/O\n",
+	    "stream", /* keywords */
+	    "target=vector", /* requirements */
+	    0, 0,
+	    preamble, NULL)

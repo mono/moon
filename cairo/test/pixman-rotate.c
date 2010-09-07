@@ -39,15 +39,6 @@
 #define IMAGE_WIDTH	(3 * WIDTH)
 #define IMAGE_HEIGHT	IMAGE_WIDTH
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "pixman-rotate",
-    "Exposes pixman off-by-one error when rotating",
-    IMAGE_WIDTH, IMAGE_HEIGHT,
-    draw
-};
-
 /* Draw the word cairo at NUM_TEXT different angles */
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -93,8 +84,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (pixman_rotate,
+	    "Exposes pixman off-by-one error when rotating",
+	    "image, transform", /* keywords */
+	    NULL, /* requirements */
+	    IMAGE_WIDTH, IMAGE_HEIGHT,
+	    NULL, draw)

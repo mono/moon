@@ -66,4 +66,8 @@ image_diff (const cairo_test_context_t *ctx,
 	    cairo_surface_t *surface_diff,
 	    buffer_diff_result_t *result);
 
+cairo_bool_t
+image_diff_is_failure (const buffer_diff_result_t *result,
+                       unsigned int                tolerance);
+
 #endif

@@ -26,20 +26,11 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define POINTS	10
 #define STEP	(1.0 / POINTS)
 #define PAD	1
 #define WIDTH	(PAD + POINTS * 2 + PAD)
 #define HEIGHT	(WIDTH)
-
-static const cairo_test_t test = {
-    "a1-traps-sample",
-    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -65,8 +56,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (a1_traps_sample,
+	    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
+	    "alpha, traps", /* keywords */
+	    "target=raster", /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

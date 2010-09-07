@@ -25,19 +25,10 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define PAD 10
 #define SIZE 100
 #define IMAGE_SIZE (SIZE-PAD*2)
 #define LINE_WIDTH 10
-
-static const cairo_test_t test = {
-    "stroke-image",
-    "Test stroking with an image source, with a non-identity CTM",
-    SIZE, SIZE,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -74,8 +65,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (stroke_image,
+	    "Test stroking with an image source, with a non-identity CTM",
+	    "stroke, image, transform", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

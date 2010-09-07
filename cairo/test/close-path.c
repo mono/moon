@@ -28,13 +28,6 @@
 
 static cairo_test_draw_function_t draw;
 
-static const cairo_test_t test = {
-    "close-path",
-    "Test some corner cases related to cairo_close_path",
-    32, 16,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -77,8 +70,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (close_path,
+	    "Test some corner cases related to cairo_close_path",
+	    "path", /* keywords */
+	    NULL, /* requirements */
+	    32, 16,
+	    NULL, draw)

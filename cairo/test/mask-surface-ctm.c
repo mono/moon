@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "mask-surface-ctm",
-    "Test that cairo_mask_surface is affected properly by the CTM",
-    10, 10,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -66,13 +57,15 @@ draw (cairo_t *cr, int width, int height)
     cairo_translate (cr, 2, 2);
     cairo_mask_surface (cr, mask, 4, 4);
 
+    cairo_surface_finish (mask); /* data goes out of scope */
     cairo_surface_destroy (mask);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (mask_surface_ctm,
+	    "Test that cairo_mask_surface is affected properly by the CTM",
+	    "mask", /* keywords */
+	    NULL, /* requirements */
+	    10, 10,
+	    NULL, draw)

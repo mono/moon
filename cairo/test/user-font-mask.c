@@ -36,21 +36,13 @@
 #define BORDER 10
 #define TEXT_SIZE 64
 #define WIDTH  (TEXT_SIZE * 15 + 2*BORDER)
-#define HEIGHT ((TEXT_SIZE + 2*BORDER)*2)
-#define TEXT   "cairo"
-
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "user-font-mask",
-    "Tests a user-font using cairo_mask with bitmap images",
 #ifndef ROTATED
-    WIDTH, HEIGHT,
+ #define HEIGHT ((TEXT_SIZE + 2*BORDER)*2)
 #else
-    WIDTH, WIDTH,
+ #define HEIGHT WIDTH
 #endif
-    draw
-};
+#define END_GLYPH 0
+#define TEXT   "cairo"
 
 /* Reverse the bits in a byte with 7 operations (no 64-bit):
  * Devised by Sean Anderson, July 13, 2001.
@@ -125,23 +117,29 @@ test_scaled_font_render_glyph (cairo_scaled_font_t  *scaled_font,
     metrics->x_advance = (glyphs[glyph].width + 1) / 8.0;
 
     image = cairo_image_surface_create (CAIRO_FORMAT_A1, glyphs[glyph].width, 8);
+    if (cairo_surface_status (image))
+	return cairo_surface_status (image);
+
     data = cairo_image_surface_get_data (image);
     for (i = 0; i < 8; i++) {
 	byte = glyphs[glyph].data[i];
 	*data = CAIRO_BITSWAP8_IF_LITTLE_ENDIAN (byte);
 	data += cairo_image_surface_get_stride (image);
     }
+    cairo_surface_mark_dirty (image);
 
     pattern = cairo_pattern_create_for_surface (image);
+    cairo_surface_destroy (image);
+
     cairo_matrix_init_identity (&matrix);
     cairo_matrix_scale (&matrix, 1.0/8.0, 1.0/8.0);
     cairo_matrix_translate (&matrix, 0, -8);
     cairo_matrix_invert (&matrix);
     cairo_pattern_set_matrix (pattern, &matrix);
+
     cairo_set_source (cr, pattern);
     cairo_mask (cr, pattern);
     cairo_pattern_destroy (pattern);
-    cairo_surface_destroy (image);
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -247,8 +245,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (user_font_mask,
+	    "Tests a user-font using cairo_mask with bitmap images",
+	    "user-font, mask", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

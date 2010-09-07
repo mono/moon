@@ -33,15 +33,6 @@
 
 #define PAD 5
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "degenerate-dash",
-    "Tests the behaviour of dashed segments that end on a off-on transition",
-    210 + 2*PAD, 210 + 2*PAD,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -90,8 +81,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (degenerate_dash,
+	    "Tests the behaviour of dashed segments that end on a off-on transition",
+	    "dash, degenerate", /* keywords */
+	    NULL, /* requirementts */
+	    210 + 2*PAD, 210 + 2*PAD,
+	    NULL, draw)

@@ -25,16 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "alpha-similar",
-    "Tests creation of similar alpha surfaces"
-    "\nApplication of a pure-alpha similar source is inconsistent across backends.",
-    10, 10,
-    draw
-};
-
 static cairo_surface_t *
 create_source (cairo_surface_t *target, int width, int height)
 {
@@ -70,8 +60,11 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (alpha_similar,
+	    "Tests creation of similar alpha surfaces"
+	    "\nApplication of a pure-alpha similar source is inconsistent across backends.",
+	    "alpha, similar", /* keywords */
+	    NULL, /* requirements */
+	    10, 10,
+	    NULL, draw)
+

@@ -7,10 +7,10 @@ EXTRA_DIST += \
 	build/Makefile.win32.features \
 	build/Makefile.win32.features-h \
 	$(NULL)
-MAINTAINERCLEANFILES += \
-	$(srcdir)/build/Makefile.win32.features \
-	$(srcdir)/build/Makefile.win32.features-h \
-	$(NULL)
+#MAINTAINERCLEANFILES += \
+#	$(srcdir)/build/Makefile.win32.features \
+#	$(srcdir)/build/Makefile.win32.features-h \
+#	$(NULL)
 
 ACLOCAL_AMFLAGS = -I build
 
@@ -53,9 +53,8 @@ EXTRA_DIST += \
 	cairo-version.h \
 	$(NULL)
 
-DISTCLEANFILES += config.cache	\
-		  doltlibtool	\
-		  doltcompile
+DISTCLEANFILES += config.cache
+
 MAINTAINERCLEANFILES += \
 	$(srcdir)/aclocal.m4 \
 	$(srcdir)/autoscan.log \
@@ -74,6 +73,7 @@ MAINTAINERCLEANFILES += \
 DISTCHECK_CONFIGURE_FLAGS = \
 	--enable-gtk-doc \
 	--enable-test-surfaces \
+	--enable-full-testing \
 	$(NULL)
 
 include $(srcdir)/build/Makefile.am.changelog

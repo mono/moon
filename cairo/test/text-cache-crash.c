@@ -62,16 +62,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "text-cache-crash",
-    "Test case for bug causing an assertion failure in _cairo_cache_lookup",
-    0, 0,
-    draw
-};
-#include <cairo.h>
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -89,33 +79,15 @@ draw (cairo_t *cr, int width, int height)
     /* Then there was a bug that choked when selecting a font too big
      * for the cache. */
 
-/* XXX: Sometimes this leads to an assertion:
-
-_cairo_cache_lookup: Assertion `cache->max_memory >= (cache->used_memory + new_entry->memory)' failed.
-Aborted
-
-   But other times my machine hangs completely only to return to life
-   several minutes later with some programs missing. This seems like
-   the out-of-memory killer to me.
-
-   It seems like I usually get the assertion when I run
-   ./text_cache_crash directly and I usually get the machine hang when
-   I run "make check" but I don't know if there's a perfect
-   correlation there.
-
-   So there's a bad bug here somewhere that really needs to be fixed.
-   But in the meantime, I need "make check" not to destory work, so
-   I'm commenting this test out for now.
-
     cairo_set_font_size (cr, 500);
     cairo_show_text (cr, "hello");
-*/
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (text_cache_crash,
+	    "Test case for bug causing an assertion failure in _cairo_cache_lookup",
+	    "text, stress", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    NULL, draw)

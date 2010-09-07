@@ -26,8 +26,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define SIZE   20
 #define PAD    5
 #define WIDTH  (PAD + 3 * (PAD + SIZE) + PAD)
@@ -49,13 +47,6 @@ static cairo_test_draw_function_t draw;
  * round caps to force the stroking code to attempt to walk around the
  * pen doing slope comparisons.
  */
-
-static const cairo_test_t test = {
-    "degenerate-pen",
-    "Test round joins with a pen that's transformed to a line",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -106,8 +97,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (degenerate_pen,
+	    "Test round joins with a pen that's transformed to a line",
+	    "degenerate", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

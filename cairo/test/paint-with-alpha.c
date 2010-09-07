@@ -26,15 +26,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "paint-with-alpha",
-    "Simple test of cairo_paint_with_alpha",
-    32, 32,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -58,13 +49,15 @@ draw (cairo_t *cr, int width, int height)
     cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
     cairo_paint_with_alpha (cr, 0.5);
 
+    cairo_surface_finish (surface); /* data will go out of scope */
     cairo_surface_destroy (surface);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (paint_with_alpha,
+	    "Simple test of cairo_paint_with_alpha",
+	    "paint, alpha", /* keywords */
+	    NULL, /* requirements */
+	    32, 32,
+	    NULL, draw)

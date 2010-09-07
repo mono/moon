@@ -31,15 +31,6 @@
 #define PAD 4
 #define COUNT 4
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "device-offset-fractional",
-    "Test using image surfaces with fractional device-offsets as sources.",
-    COUNT*(SIZE+PAD+.5)+PAD, COUNT*(SIZE+PAD+.5)+PAD,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -73,8 +64,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (device_offset_fractional,
+	    "Test using image surfaces with fractional device-offsets as sources.",
+	    "device-offset", /* keywords */
+	    NULL, /* requirements */
+	    COUNT*(SIZE+PAD+.5)+PAD, COUNT*(SIZE+PAD+.5)+PAD,
+	    NULL, draw)

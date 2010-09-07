@@ -31,14 +31,18 @@
 #define BORDER 10
 #define LINE_WIDTH 20
 
-static cairo_test_draw_function_t draw;
+static void
+_propagate_status (cairo_t *dst, cairo_t *src)
+{
+    cairo_path_t path;
 
-static const cairo_test_t test = {
-    "clip-nesting",
-    "Test clipping with multiple contexts for the same surface",
-    SIZE, SIZE,
-    draw
-};
+    path.status = cairo_status (src);
+    if (path.status) {
+	path.num_data = 0;
+	path.data = NULL;
+	cairo_append_path (dst, &path);
+    }
+}
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -79,7 +83,10 @@ draw (cairo_t *cr, int width, int height)
 		     LINE_WIDTH,                 SIZE - 2 * BORDER);
     cairo_fill (cr3);
 
+    _propagate_status (cr, cr3);
     cairo_destroy (cr3);
+
+    _propagate_status (cr, cr2);
     cairo_destroy (cr2);
 
     /* And doesn't affect anything after this cairo_t is destroyed */
@@ -94,8 +101,9 @@ draw (cairo_t *cr, int width, int height)
 
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (clip_nesting,
+	    "Test clipping with multiple contexts for the same surface",
+	    "clip", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

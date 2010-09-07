@@ -26,17 +26,8 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define WIDTH  2
 #define HEIGHT 2
-
-static const cairo_test_t test = {
-    "rgb24-ignore-alpha",
-    "Test that when using an RGB24 image as a source, there is no alpha channel",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -55,13 +46,15 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source_surface (cr, surface, 0, 0);
     cairo_paint (cr);
 
+    cairo_surface_finish (surface); /* colors will go out of scope */
     cairo_surface_destroy (surface);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (rgb24_ignore_alpha,
+	    "Test that when using an RGB24 image as a source, there is no alpha channel",
+	    "image, alpha", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

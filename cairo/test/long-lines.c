@@ -30,17 +30,6 @@
 #define SIZE		10
 #define LINE_NBR	6
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "long-lines",
-    "Test long lines"
-    "\nLong lines are not drawn due to the limitations of the internal 16.16 fixed-point coordinates",
-    SIZE * (LINE_NBR + 1),
-    SIZE * (LINE_NBR + 1),
-    draw
-};
-
 struct {
     double length;
     double red, green, blue;
@@ -85,8 +74,11 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (long_lines,
+	    "Test long lines"
+	    "\nLong lines are not drawn due to the limitations of the internal 16.16 fixed-point coordinates",
+	    "stroke, stress", /* keywords */
+	    NULL, /* requirements */
+	    SIZE * (LINE_NBR + 1), SIZE * (LINE_NBR + 1),
+	    NULL, draw)
+

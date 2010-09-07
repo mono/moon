@@ -46,6 +46,23 @@ _xunlink (const char *pathname)
     }
 }
 
+void
+cairo_test_logv (const cairo_test_context_t *ctx,
+		 const char *fmt, va_list va)
+{
+    vfprintf (stderr, fmt, va);
+}
+
+void
+cairo_test_log (const cairo_test_context_t *ctx, const char *fmt, ...)
+{
+    va_list va;
+
+    va_start (va, fmt);
+    vfprintf (stderr, fmt, va);
+    va_end (va);
+}
+
 /* Flatten an ARGB surface by blending it over white. The resulting
  * surface, (still in ARGB32 format, but with only alpha==1.0
  * everywhere) is returned in the same surface pointer.

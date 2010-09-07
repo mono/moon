@@ -41,27 +41,19 @@
 #include <math.h>
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "select-font-no-show-text",
-    "Test calling cairo_select_font_face but never drawing text.",
-    0, 0,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_select_font_face (cr, "Bitstream Vera Sans",
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_BOLD);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (select_font_no_show_text,
+	    "Test calling cairo_select_font_face but never drawing text.",
+	    "font", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    NULL, draw)

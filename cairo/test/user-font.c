@@ -35,21 +35,12 @@
 #define BORDER 10
 #define TEXT_SIZE 64
 #define WIDTH  (TEXT_SIZE * 15 + 2*BORDER)
-#define HEIGHT ((TEXT_SIZE + 2*BORDER)*2)
-#define TEXT   "geez... cairo user-font"
-
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "user-font",
-    "Tests user font feature",
 #ifndef ROTATED
-    WIDTH, HEIGHT,
+ #define HEIGHT ((TEXT_SIZE + 2*BORDER)*2)
 #else
-    WIDTH, WIDTH,
+ #define HEIGHT WIDTH
 #endif
-    draw
-};
+#define TEXT   "geez... cairo user-font"
 
 #define END_GLYPH 0
 #define STROKE 126
@@ -268,8 +259,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (user_font,
+	    "Tests user font feature",
+	    "font, user-font", /* keywords */
+	    "cairo >= 1.7.4", /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

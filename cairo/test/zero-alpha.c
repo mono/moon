@@ -42,15 +42,6 @@
  * 2006-06-13 Paul Giblock reports that this only happens with the
  * xlib backend, and then only on some systems.
  */
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "zero-alpha",
-    "Testing that drawing with zero alpha has no effect",
-    SIZE, SIZE,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -90,13 +81,15 @@ draw (cairo_t *cr, int width, int height)
     for (i=0; i < REPS; i++)
 	cairo_paint (cr);
 
+    cairo_surface_finish (surface); /* zero will go out of scope */
     cairo_surface_destroy (surface);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (zero_alpha,
+	    "Testing that drawing with zero alpha has no effect",
+	    "alpha", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

@@ -29,15 +29,6 @@
 
 #define SIZE 40
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "self-copy",
-    "Test copying from a surface to itself with a clip",
-    SIZE, SIZE,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -85,8 +76,9 @@ draw (cairo_t *cr, int width, int height)
 
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (self_copy,
+	    "Test copying from a surface to itself with a clip",
+	    "paint", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

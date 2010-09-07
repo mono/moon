@@ -25,51 +25,55 @@
 
 #include "cairo-test.h"
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
+    cairo_test_status_t status = CAIRO_TEST_SUCCESS;
     cairo_surface_t *surface;
     cairo_t *cr;
     cairo_font_face_t *font_face;
     cairo_scaled_font_t *scaled_font;
 
-    cairo_test_init (&ctx, "font-face-get-type");
-
-    cairo_test_log (&ctx, "Creating cairo context and obtaining a font face\n");
+    cairo_test_log (ctx, "Creating cairo context and obtaining a font face\n");
 
     surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1);
     cr = cairo_create (surface);
 
-    cairo_select_font_face (cr, "Bitstream Vera Sans",
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
 
-    cairo_test_log (&ctx, "Testing return value of cairo_font_face_get_type\n");
+    cairo_test_log (ctx, "Testing return value of cairo_font_face_get_type\n");
 
     font_face = cairo_get_font_face (cr);
 
     if (cairo_font_face_get_type (font_face) != CAIRO_FONT_TYPE_TOY) {
-	cairo_test_log (&ctx, "Unexpected value %d from cairo_font_face_get_type (expected %d)\n",
+	cairo_test_log (ctx, "Unexpected value %d from cairo_font_face_get_type (expected %d)\n",
 			cairo_font_face_get_type (font_face), CAIRO_FONT_TYPE_TOY);
-	cairo_test_fini (&ctx);
-	return CAIRO_TEST_FAILURE;
+	status = CAIRO_TEST_FAILURE;
+	goto done;
     }
 
-    cairo_test_log (&ctx, "Testing return value of cairo_get_scaled_font\n");
+    cairo_test_log (ctx, "Testing return value of cairo_get_scaled_font\n");
 
     scaled_font = cairo_get_scaled_font (cr);
 
     if (cairo_scaled_font_get_font_face (scaled_font) != font_face) {
-	cairo_test_log (&ctx, "Font face returned from the scaled font is different from that returned by the context\n");
-	cairo_test_fini (&ctx);
-	return CAIRO_TEST_FAILURE;
+	cairo_test_log (ctx, "Font face returned from the scaled font is different from that returned by the context\n");
+	status = CAIRO_TEST_FAILURE;
+	goto done;
     }
 
+done:
     cairo_destroy (cr);
     cairo_surface_destroy (surface);
 
-    cairo_test_fini (&ctx);
-
-    return CAIRO_TEST_SUCCESS;
+    return status;
 }
+
+CAIRO_TEST (font_face_get_type,
+	    "Check the returned type from cairo_select_font_face.",
+	    "font", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    preamble, NULL)

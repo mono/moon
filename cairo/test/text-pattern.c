@@ -28,46 +28,38 @@
 #define IMAGE_WIDTH 64
 #define IMAGE_HEIGHT 64
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "text-pattern",
-    "Patterned Text\n",
-    IMAGE_WIDTH, IMAGE_HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-  cairo_pattern_t *pat;
+    cairo_pattern_t *pat;
 
-  cairo_select_font_face (cr, "Bitstream Vera Sans",
-			  CAIRO_FONT_SLANT_NORMAL,
-			  CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
+			    CAIRO_FONT_SLANT_NORMAL,
+			    CAIRO_FONT_WEIGHT_NORMAL);
 
-  cairo_scale (cr, width, height);
+    cairo_scale (cr, width, height);
 
-  pat = cairo_pattern_create_linear (0.0, 0.0, 1, 1);
-  cairo_pattern_add_color_stop_rgba (pat, 1, 1, 0, 0, 1);
-  cairo_pattern_add_color_stop_rgba (pat, 0, 0, 0, 1, 1);
-  cairo_set_source (cr, pat);
+    pat = cairo_pattern_create_linear (0.0, 0.0, 1, 1);
+    cairo_pattern_add_color_stop_rgba (pat, 1, 1, 0, 0, 1);
+    cairo_pattern_add_color_stop_rgba (pat, 0, 0, 0, 1, 1);
+    cairo_set_source (cr, pat);
 
-  /* test rectangle - make sure the gradient is set correctly */
-  cairo_rectangle (cr, 0, 0, 0.1, 1);
-  cairo_fill (cr);
+    /* test rectangle - make sure the gradient is set correctly */
+    cairo_rectangle (cr, 0, 0, 0.1, 1);
+    cairo_fill (cr);
 
-  cairo_set_font_size (cr, 0.4);
-  cairo_move_to (cr, 0.1, 0.6);
-  cairo_show_text (cr, "cairo");
+    cairo_set_font_size (cr, 0.4);
+    cairo_move_to (cr, 0.1, 0.6);
+    cairo_show_text (cr, "cairo");
 
-  cairo_pattern_destroy (pat);
+    cairo_pattern_destroy (pat);
 
-  return CAIRO_TEST_SUCCESS;
+    return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (text_pattern,
+	    "Patterned Text",
+	    "text, pattern", /* keywords */
+	    NULL, /* requirements */
+	    IMAGE_WIDTH, IMAGE_HEIGHT,
+	    NULL, draw)

@@ -29,15 +29,6 @@
 #define HEIGHT 22
 #define TEXT_SIZE 12
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "text-antialias-subpixel",
-    "Tests text rendering with subpixel antialiasing",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -48,7 +39,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
     cairo_paint (cr);
 
-    cairo_select_font_face (cr, "Bitstream Vera Sans",
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr, TEXT_SIZE);
@@ -75,8 +66,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (text_antialias_subpixel,
+	    "Tests text rendering with subpixel antialiasing",
+	    "text", /* keywords */
+	    "target=raster", /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

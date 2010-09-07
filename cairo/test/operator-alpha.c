@@ -29,15 +29,6 @@
 #define SIZE 10
 #define PAD 3
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "operator-alpha",
-    "Tests using set_operator() with an non-opaque source",
-    (SIZE+PAD) * N_OPERATORS + PAD, SIZE + 2*PAD,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -66,9 +57,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
-
+CAIRO_TEST (operator_alpha,
+	    "Tests using set_operator() with an non-opaque source",
+	    "operator, alpha", /* keywords */
+	    NULL, /* requirements */
+	    (SIZE+PAD) * N_OPERATORS + PAD, SIZE + 2*PAD,
+	    NULL, draw)

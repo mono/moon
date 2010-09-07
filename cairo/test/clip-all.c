@@ -28,15 +28,6 @@
 #define SIZE 10
 #define CLIP_SIZE 2
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "clip-all",
-    "Test clipping with everything clipped out",
-    SIZE, SIZE,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -64,7 +55,7 @@ draw (cairo_t *cr, int width, int height)
 
     /* https://bugs.freedesktop.org/show_bug.cgi?id=13084 */
     cairo_select_font_face (cr,
-	                    "Bitstream Vera Sans",
+	                    CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
 
@@ -75,8 +66,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (clip_all,
+	    "Test clipping with everything clipped out",
+	    "clip", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)
+

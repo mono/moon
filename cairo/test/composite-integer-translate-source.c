@@ -31,16 +31,7 @@
 #define SIZE 100
 #define OFFSET 10
 
-const char	png_filename[]	= "romedalen.png";
-
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "composite-integer-translate-source",
-    "Test simple compositing: integer-translation 32->32 SOURCE",
-    SIZE, SIZE,
-    draw
-};
+static const char *png_filename = "romedalen.png";
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -65,8 +56,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (composite_integer_translate_source,
+	    "Test simple compositing: integer-translation 32->32 SOURCE",
+	    "composite", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

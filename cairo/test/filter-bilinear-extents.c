@@ -27,8 +27,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 /* This test exercises code that computes the extents of a surface
  * pattern with CAIRO_FILTER_BILINEAR, (where the filtering
  * effectively increases the extents of the pattern).
@@ -40,16 +38,9 @@ static cairo_test_draw_function_t draw;
  */
 
 #define SCALE	10
-#define PAD 	3
+#define PAD	3
 #define WIDTH	(PAD + 3 * SCALE + PAD)
 #define HEIGHT	WIDTH
-
-static const cairo_test_t test = {
-    "filter-bilinear-extents",
-    "Test that pattern extents are properly computed for CAIRO_FILTER_BILINEAR",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -103,8 +94,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (filter_bilinear_extents,
+	    "Test that pattern extents are properly computed for CAIRO_FILTER_BILINEAR",
+	    "extents", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

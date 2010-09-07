@@ -25,8 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 /* This test was originally written to exercise a bug in pixman in
  * which it would scribble all over memory when given a particular
  * (and bogus) trapezoid. However, a recent change to
@@ -60,17 +58,14 @@ static cairo_test_draw_function_t draw;
  * will prevent the hiding of internal library symbols.
  */
 
-static const cairo_test_t test = {
-    "big-trap",
-    "Test oversize trapezoid with a clip region"
-    "\nTest needs to be adjusted to trigger the original bug",
-    100, 100,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    cairo_set_source_rgb (cr, 1,1,1);
+    cairo_paint (cr);
+
+    cairo_set_source_rgb (cr, 0,0,0);
+
     /* Note that without the clip, this doesn't crash... */
     cairo_new_path (cr);
     cairo_rectangle (cr, 0, 0, width, height);
@@ -87,8 +82,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (big_trap,
+	    "Test oversize trapezoid with a clip region"
+	    "\nTest needs to be adjusted to trigger the original bug",
+	    "trap", /* keywords */
+	    NULL, /* requirements */
+	    100, 100,
+	    NULL, draw)

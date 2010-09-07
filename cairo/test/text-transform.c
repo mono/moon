@@ -25,21 +25,12 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define SIZE 100
 #define PAD 5
 
 #define FONT_SIZE 32.0
 
-static const char png_filename[] = "romedalen.png";
-
-static const cairo_test_t test = {
-    "text-transform",
-    "Test various applications of the font matrix",
-    SIZE, SIZE,
-    draw
-};
+static const char *png_filename = "romedalen.png";
 
 static void
 draw_text (cairo_t *cr)
@@ -86,7 +77,7 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_set_source_rgb (cr, 0., 0., 0.);
 
-    cairo_select_font_face (cr, "Bitstream Vera Sans",
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
 
@@ -105,8 +96,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (text_transform,
+	    "Test various applications of the font matrix",
+	    "text, transform", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

@@ -26,7 +26,6 @@
 #include "cairo-test.h"
 #include <cairo-pdf.h>
 
-#define NAME "pdf"
 #include "surface-source.c"
 
 static cairo_surface_t *
@@ -34,8 +33,15 @@ create_source_surface (int size)
 {
     cairo_surface_t *surface;
 
-    surface = cairo_pdf_surface_create ("pdf-surface-source.pdf", size, size);
+    surface = cairo_pdf_surface_create ("pdf-surface-source.out.pdf", size, size);
     cairo_surface_set_fallback_resolution (surface, 72., 72.);
 
     return surface;
 }
+
+CAIRO_TEST (pdf_surface_source,
+	    "Test using a PDF surface as the source",
+	    "source", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    preamble, draw)

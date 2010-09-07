@@ -27,15 +27,6 @@
 #include <stddef.h>
 #include <math.h>
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "get-path-extents",
-    "Test cairo_fill_extents and cairo_stroke_extents",
-    0, 0,
-    draw
-};
-
 enum ExtentsType { FILL, STROKE, PATH };
 
 enum Relation { EQUALS, APPROX_EQUALS, CONTAINS };
@@ -66,6 +57,10 @@ check_extents (const cairo_test_context_t *ctx,
         break;
     }
 
+    /* ignore results after an error occurs */
+    if (cairo_status (cr))
+	return 1;
+
     /* let empty rects match */
     if ((ext_x1 == ext_x2 || ext_y1 == ext_y2) && (width == 0 || height == 0))
         return 1;
@@ -79,10 +74,10 @@ check_extents (const cairo_test_context_t *ctx,
         break;
     case APPROX_EQUALS:
         relation_string = "approx. equal";
-        if (floor (ext_x1 + 0.5) == floor (x + 0.5) &&
-	    floor (ext_y1 + 0.5) == floor (y + 0.5) &&
-	    floor (ext_x2 + 0.5) == floor (x + width + 0.5) &&
-	    floor (ext_y2 + 0.5) == floor (y + height + 0.5))
+        if (fabs (ext_x1 - x) < 1. &&
+	    fabs (ext_y1 - y) < 1. &&
+	    fabs (ext_x2 - (x + width))  < 1. &&
+	    fabs (ext_y2 - (y + height)) < 1.)
 	{
             return 1;
 	}
@@ -115,6 +110,7 @@ draw (cairo_t *cr, int width, int height)
     const char      *phase;
     const char	     string[] = "The quick brown fox jumps over the lazy dog.";
     cairo_text_extents_t extents, scaled_font_extents;
+    cairo_status_t   status;
     int              errors = 0;
 
     surface = cairo_surface_create_similar (cairo_get_group_target (cr),
@@ -296,7 +292,7 @@ draw (cairo_t *cr, int width, int height)
 
     phase = "Text";
     cairo_save (cr2);
-    cairo_select_font_face (cr2, "Bitstream Vera Sans",
+    cairo_select_font_face (cr2, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr2, 12);
@@ -374,13 +370,18 @@ draw (cairo_t *cr, int width, int height)
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
+    status = cairo_status (cr2);
     cairo_destroy (cr2);
+
+    if (status)
+	return cairo_test_status_from_status (ctx, status);
 
     return errors == 0 ? CAIRO_TEST_SUCCESS : CAIRO_TEST_FAILURE;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (get_path_extents,
+	    "Test cairo_fill_extents and cairo_stroke_extents",
+	    "extents, path", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    NULL, draw)

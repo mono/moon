@@ -33,15 +33,6 @@
  * on invisible lines.
  */
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "dash-zero-length",
-    "Tests cairo_set_dash with zero length",
-    IMAGE_WIDTH, IMAGE_HEIGHT,
-    draw
-};
-
 static void
 draw_dash (cairo_t *cr, double *dash, int num_dashes)
 {
@@ -111,8 +102,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (dash_zero_length,
+	    "Tests cairo_set_dash with zero length",
+	    "dash, stroke", /* keywords */
+	    NULL, /* requirements */
+	    IMAGE_WIDTH, IMAGE_HEIGHT,
+	    NULL, draw)

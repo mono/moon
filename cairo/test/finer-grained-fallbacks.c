@@ -26,19 +26,10 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define CIRCLE_SIZE 10
 #define PAD 2
 #define WIDTH (CIRCLE_SIZE*6.5 + PAD)
 #define HEIGHT (CIRCLE_SIZE*7.0 + PAD)
-
-static const cairo_test_t test = {
-    "finer-grained-fallbacks",
-    "Test that multiple PS/PDF fallback images in various locations are correct",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static void
 draw_circle (cairo_t *cr, double x, double y)
@@ -181,8 +172,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (finer_grained_fallbacks,
+	    "Test that multiple PS/PDF fallback images in various locations are correct",
+	    "fallbacks", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

@@ -78,7 +78,7 @@
  *
  * 2007-02-21
  *
- *   Seems like all the "bugs" have been fixed and all remainint is
+ *   Seems like all the "bugs" have been fixed and all remaining is
  *   missing support for subpixel glyph positioning.  Removing from
  *   XFAIL now.
  */
@@ -90,30 +90,54 @@
 #define NUM_TEXT 20
 #define TEXT_SIZE 12
 
-static cairo_test_draw_function_t draw;
+/* Draw the word cairo at NUM_TEXT different angles.
+ * We separate the circle into quadrants to reduce
+ * numerical errors i.e. so each quarter is pixel-aligned.
+ */
+static void
+draw_quadrant (cairo_t *cr,
+	       const char *text,
+	       const cairo_text_extents_t *extents,
+	       const cairo_matrix_t *transform,
+	       int x_off, int y_off)
+{
+    int i;
 
-static const cairo_test_t test = {
-    "text-rotate",
-    "Tests show_text under various rotations",
-    WIDTH, HEIGHT,
-    draw
-};
+    for (i = 0; i < NUM_TEXT/4; i++) {
+	cairo_save (cr);
+	cairo_rotate (cr, 2*M_PI*i/NUM_TEXT);
+	cairo_transform (cr, transform);
+	cairo_set_line_width (cr, 1.0);
+	cairo_rectangle (cr, x_off - 0.5, y_off - 0.5, extents->width + 1, extents->height + 1);
+	cairo_set_source_rgb (cr, 1, 0, 0);
+	cairo_stroke (cr);
+	cairo_move_to (cr, x_off - extents->x_bearing, y_off - extents->y_bearing);
+	cairo_set_source_rgb (cr, 0, 0, 0);
+#if CAIRO_TEST_GENERATE_REFERENCE_IMAGE
+	cairo_text_path (cr, text);
+	cairo_fill (cr);
+#else
+	cairo_show_text (cr, text);
+#endif
+	cairo_restore (cr);
+    }
+}
 
-/* Draw the word cairo at NUM_TEXT different angles */
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    int i, x_off, y_off;
     cairo_text_extents_t extents;
     cairo_font_options_t *font_options;
     const char text[] = "cairo";
+    int x_off, y_off;
+    cairo_matrix_t m;
 
     /* paint white so we don't need separate ref images for
      * RGB24 and ARGB32 */
     cairo_set_source_rgb (cr, 1., 1., 1.);
     cairo_paint (cr);
 
-    cairo_select_font_face (cr, "Bitstream Vera Sans",
+    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr, TEXT_SIZE);
@@ -139,29 +163,27 @@ draw (cairo_t *cr, int width, int height)
 	x_off = floor (0.5 + (extents.height+1) / (2 * tan (M_PI/NUM_TEXT)));
     }
 
-    for (i=0; i < NUM_TEXT; i++) {
-	cairo_save (cr);
-	cairo_rotate (cr, 2*M_PI*i/NUM_TEXT);
-	cairo_set_line_width (cr, 1.0);
-	cairo_rectangle (cr, x_off - 0.5, y_off - 0.5, extents.width + 1, extents.height + 1);
-	cairo_set_source_rgb (cr, 1, 0, 0);
-	cairo_stroke (cr);
-	cairo_move_to (cr, x_off - extents.x_bearing, y_off - extents.y_bearing);
-	cairo_set_source_rgb (cr, 0, 0, 0);
-#if CAIRO_TEST_GENERATE_REFERENCE_IMAGE
-	cairo_text_path (cr, text);
-	cairo_fill (cr);
-#else
-	cairo_show_text (cr, text);
-#endif
-	cairo_restore (cr);
-    }
+    cairo_save (cr);
+    cairo_matrix_init_identity (&m);
+    draw_quadrant (cr, text, &extents, &m, x_off, y_off);
+    cairo_matrix_init (&m, 0, 1, -1, 0, 0, 0);
+    draw_quadrant (cr, text, &extents, &m, x_off, y_off);
+    cairo_restore (cr);
+
+    cairo_save (cr);
+    cairo_scale (cr, -1, -1);
+    cairo_matrix_init_identity (&m);
+    draw_quadrant (cr, text, &extents, &m, x_off, y_off);
+    cairo_matrix_init (&m, 0, 1, -1, 0, 0, 0);
+    draw_quadrant (cr, text, &extents, &m, x_off, y_off);
+    cairo_restore (cr);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (text_rotate,
+	    "Tests show_text under various rotations",
+	    "text, transform", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

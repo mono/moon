@@ -25,19 +25,9 @@
 
 #include "cairo-test.h"
 
-#define LINE_WIDTH 	10.
-#define SIZE 		(5 * LINE_WIDTH)
+#define LINE_WIDTH	10.
+#define SIZE		(5 * LINE_WIDTH)
 #define PAD		(2 * LINE_WIDTH)
-
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "caps-joins",
-    "Test caps and joins",
-    3 * (PAD + SIZE) + PAD,
-    PAD + SIZE + PAD,
-    draw
-};
 
 static void
 make_path (cairo_t *cr)
@@ -47,21 +37,15 @@ make_path (cairo_t *cr)
     cairo_rel_line_to (cr, SIZE, 0.);
     cairo_close_path (cr);
 
-    cairo_move_to (cr, 2 * LINE_WIDTH, 0.);
-    cairo_rel_line_to (cr, 3 * LINE_WIDTH, 0.);
-    cairo_rel_line_to (cr, 0., 3 * LINE_WIDTH);
+    cairo_move_to (cr, 5 * LINE_WIDTH, 3 * LINE_WIDTH);
+    cairo_rel_line_to (cr, 0., -3 * LINE_WIDTH);
+    cairo_rel_line_to (cr, -3 * LINE_WIDTH, 0.);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static void
+draw_caps_joins (cairo_t *cr)
 {
-    /* We draw in the default black, so paint white first. */
     cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
-
-    cairo_set_line_width (cr, LINE_WIDTH);
 
     cairo_translate (cr, PAD, PAD);
 
@@ -84,11 +68,36 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
     cairo_stroke (cr);
 
+    cairo_restore (cr);
+}
+
+static cairo_test_status_t
+draw (cairo_t *cr, int width, int height)
+{
+    /* We draw in the default black, so paint white first. */
+    cairo_save (cr);
+    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    cairo_paint (cr);
+    cairo_restore (cr);
+
+    cairo_set_line_width (cr, LINE_WIDTH);
+
+    draw_caps_joins (cr);
+
+    /* and reflect to generate the opposite vertex ordering */
+    cairo_translate (cr, 0, height);
+    cairo_scale (cr, 1, -1);
+
+    draw_caps_joins (cr);
+
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (caps_joins,
+	    "Test caps and joins",
+	    "stroke", /* keywords */
+	    NULL, /* requirements */
+	    3 * (PAD + SIZE) + PAD,
+	    2 * (PAD + SIZE) + PAD,
+	    NULL, draw)
+

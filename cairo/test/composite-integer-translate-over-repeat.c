@@ -32,15 +32,6 @@
 #define SIZE2 20
 #define OFFSET 10
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "composite-integer-translate-over-repeat",
-    "Test simple compositing: integer-translation 32->32 OVER, with repeat",
-    SIZE, SIZE,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -85,8 +76,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (composite_integer_translate_over_repeat,
+	    "Test simple compositing: integer-translation 32->32 OVER, with repeat",
+	    "composite", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    NULL, draw)

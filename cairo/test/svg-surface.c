@@ -86,30 +86,26 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
     cairo_t *cr;
-    const char *filename = "svg-surface.svg";
+    const char *filename = "svg-surface.out.svg";
     cairo_surface_t *surface;
 
-    cairo_test_init (&ctx, "svg-surface");
-    if (! (cairo_test_is_target_enabled (&ctx, "svg11") ||
-	   cairo_test_is_target_enabled (&ctx, "svg12")))
+    if (! cairo_test_is_target_enabled (ctx, "svg11") &&
+	! cairo_test_is_target_enabled (ctx, "svg12"))
     {
-	cairo_test_fini (&ctx);
 	return CAIRO_TEST_UNTESTED;
     }
 
     surface = cairo_svg_surface_create (filename,
 					WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
     if (cairo_surface_status (surface)) {
-	cairo_test_log (&ctx,
+	cairo_test_log (ctx,
 			"Failed to create svg surface for file %s: %s\n",
 			filename,
 			cairo_status_to_string (cairo_surface_status (surface)));
-	cairo_test_fini (&ctx);
 	return CAIRO_TEST_FAILURE;
     }
 
@@ -123,8 +119,12 @@ main (void)
     cairo_surface_destroy (surface);
 
     printf ("svg-surface: Please check svg-surface.svg to make sure it looks happy.\n");
-
-    cairo_test_fini (&ctx);
-
     return CAIRO_TEST_SUCCESS;
 }
+
+CAIRO_TEST (svg_surface,
+	    "Check creation of a SVG surface",
+	    "svg", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    preamble, NULL)

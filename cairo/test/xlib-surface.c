@@ -250,9 +250,9 @@ do_test (const cairo_test_context_t *ctx,
 		    use_pixmap ?
 		    "           " :
 		    (offscreen ? ", offscreen" : ",  onscreen"),
-		    result.pixels_changed ? "FAIL" : "PASS");
+		    image_diff_is_failure (&result, 0) ? "FAIL" : "PASS");
 
-    if (result.pixels_changed)
+    if (image_diff_is_failure (&result, 0))
 	return CAIRO_TEST_FAILURE;
     else
 	return CAIRO_TEST_SUCCESS;
@@ -276,21 +276,19 @@ check_visual (Display *dpy)
 
 #undef xcalloc
 static void *
-xcalloc (cairo_test_context_t *ctx, size_t a, size_t b)
+xcalloc (const cairo_test_context_t *ctx, size_t a, size_t b)
 {
     void *ptr = calloc (a, b);
     if (ptr == NULL) {
 	cairo_test_log (ctx, "xlib-surface: unable to allocate memory, skipping\n");
-	cairo_test_fini (ctx);
-	exit (CAIRO_TEST_SUCCESS);
+	abort ();
     }
     return ptr;
 }
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
     Display *dpy;
     unsigned char *reference_data;
     unsigned char *test_data;
@@ -302,26 +300,25 @@ main (void)
     cairo_test_status_t status, result = CAIRO_TEST_UNTESTED;
     int stride;
 
-    cairo_test_init (&ctx, "xlib-surface");
-    if (! cairo_test_is_target_enabled (&ctx, "xlib"))
+    if (! cairo_test_is_target_enabled (ctx, "xlib"))
 	goto CLEANUP_TEST;
 
     dpy = XOpenDisplay (NULL);
     if (!dpy) {
-	cairo_test_log (&ctx, "xlib-surface: Cannot open display, skipping\n");
+	cairo_test_log (ctx, "xlib-surface: Cannot open display, skipping\n");
 	goto CLEANUP_TEST;
     }
 
     if (!check_visual (dpy)) {
-	cairo_test_log (&ctx, "xlib-surface: default visual is not RGB24 or BGR24, skipping\n");
+	cairo_test_log (ctx, "xlib-surface: default visual is not RGB24 or BGR24, skipping\n");
 	goto CLEANUP_DISPLAY;
     }
 
     stride = cairo_format_stride_for_width (CAIRO_FORMAT_RGB24, SIZE);
 
-    reference_data = xcalloc (&ctx, SIZE, stride);
-    test_data = xcalloc (&ctx, SIZE, stride);
-    diff_data = xcalloc (&ctx, SIZE, stride);
+    reference_data = xcalloc (ctx, SIZE, stride);
+    test_data = xcalloc (ctx, SIZE, stride);
+    diff_data = xcalloc (ctx, SIZE, stride);
 
     reference_surface = cairo_image_surface_create_for_data (reference_data,
 							     CAIRO_FORMAT_RGB24,
@@ -336,7 +333,7 @@ main (void)
     for (set_size = 0; set_size <= 1; set_size++)
 	for (use_pixmap = 0; use_pixmap <= 1; use_pixmap++)
 	    for (offscreen = 0; offscreen <= 1; offscreen++) {
-		status = do_test (&ctx, dpy,
+		status = do_test (ctx, dpy,
 				  reference_data, test_data, diff_data,
 				  1, use_pixmap, set_size, offscreen);
 		if (status)
@@ -346,7 +343,7 @@ main (void)
     for (set_size = 0; set_size <= 1; set_size++)
 	for (use_pixmap = 0; use_pixmap <= 1; use_pixmap++)
 	    for (offscreen = 0; offscreen <= 1; offscreen++) {
-		status = do_test (&ctx, dpy,
+		status = do_test (ctx, dpy,
 				  reference_data, test_data, diff_data,
 				  0, use_pixmap, set_size, offscreen);
 		if (status)
@@ -361,7 +358,12 @@ main (void)
     XCloseDisplay (dpy);
 
   CLEANUP_TEST:
-    cairo_test_fini (&ctx);
-
     return result;
 }
+
+CAIRO_TEST (xlib_surface,
+	    "Check creating surfaces for various XWindows",
+	    "xlib", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    preamble, NULL)

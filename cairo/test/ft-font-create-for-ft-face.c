@@ -26,14 +26,83 @@
 #include "cairo-test.h"
 #include <cairo-ft.h>
 
-static cairo_test_draw_function_t draw;
+static void
+_stress_font_cache (FT_Face ft_face, cairo_t *cr, int lvl);
 
-static const cairo_test_t test = {
-    "ft-font-create-for-ft-face",
-    "Simple test to verify that cairo_ft_font_create_for_ft_face doesn't crash.",
-    0, 0,
-    draw
-};
+static cairo_font_face_t *
+_load_font (FT_Face ft_face, int flags, cairo_t *cr, int lvl)
+{
+    cairo_font_face_t *font_face;
+    cairo_font_extents_t font_extents;
+
+    _stress_font_cache (ft_face, cr, lvl+1);
+
+    font_face = cairo_ft_font_face_create_for_ft_face (ft_face, flags);
+
+    cairo_set_font_face (cr, font_face);
+    cairo_font_extents (cr, &font_extents);
+
+    _stress_font_cache (ft_face, cr, lvl+1);
+
+    return font_face;
+}
+
+static void
+_stress_font_cache (FT_Face ft_face, cairo_t *cr, int lvl)
+{
+#define A _load_font (ft_face, 0, cr, lvl)
+#define B _load_font (ft_face, FT_LOAD_NO_BITMAP, cr, lvl)
+#define C _load_font (ft_face, FT_LOAD_NO_RECURSE, cr, lvl)
+#define D _load_font (ft_face, FT_LOAD_FORCE_AUTOHINT, cr, lvl)
+
+    cairo_font_face_t *font_face[4];
+
+    while (lvl++ < 5) {
+	font_face[0] = A; font_face[1] = A;
+	font_face[2] = A; font_face[3] = A;
+	cairo_font_face_destroy (font_face[0]);
+	cairo_font_face_destroy (font_face[1]);
+	cairo_font_face_destroy (font_face[2]);
+	cairo_font_face_destroy (font_face[3]);
+
+	font_face[0] = A; font_face[1] = B;
+	font_face[2] = C; font_face[3] = D;
+	cairo_font_face_destroy (font_face[0]);
+	cairo_font_face_destroy (font_face[1]);
+	cairo_font_face_destroy (font_face[2]);
+	cairo_font_face_destroy (font_face[3]);
+
+	font_face[0] = A; font_face[1] = B;
+	font_face[2] = C; font_face[3] = D;
+	cairo_font_face_destroy (font_face[3]);
+	cairo_font_face_destroy (font_face[2]);
+	cairo_font_face_destroy (font_face[1]);
+	cairo_font_face_destroy (font_face[0]);
+
+	font_face[0] = A;
+	font_face[1] = A;
+	cairo_font_face_destroy (font_face[0]);
+	font_face[2] = A;
+	cairo_font_face_destroy (font_face[1]);
+	font_face[3] = A;
+	cairo_font_face_destroy (font_face[2]);
+	cairo_font_face_destroy (font_face[3]);
+
+	font_face[0] = A;
+	font_face[1] = B;
+	cairo_font_face_destroy (font_face[0]);
+	font_face[2] = C;
+	cairo_font_face_destroy (font_face[1]);
+	font_face[3] = D;
+	cairo_font_face_destroy (font_face[2]);
+	cairo_font_face_destroy (font_face[3]);
+    }
+
+#undef A
+#undef B
+#undef C
+#undef D
+}
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -57,23 +126,31 @@ draw (cairo_t *cr, int width, int height)
     pattern = FcPatternCreate ();
     if (! pattern) {
 	cairo_test_log (ctx, "FcPatternCreate failed.\n");
-	return CAIRO_TEST_FAILURE;
+	return cairo_test_status_from_status (ctx, CAIRO_STATUS_NO_MEMORY);
     }
 
     FcConfigSubstitute (NULL, pattern, FcMatchPattern);
     FcDefaultSubstitute (pattern);
     resolved = FcFontMatch (NULL, pattern, &result);
     if (! resolved) {
+	FcPatternDestroy (pattern);
 	cairo_test_log (ctx, "FcFontMatch failed.\n");
-	return CAIRO_TEST_FAILURE;
+	return cairo_test_status_from_status (ctx, CAIRO_STATUS_NO_MEMORY);
     }
 
     font_face = cairo_ft_font_face_create_for_pattern (resolved);
+    if (cairo_font_face_status (font_face)) {
+	FcPatternDestroy (resolved);
+	FcPatternDestroy (pattern);
+	return cairo_test_status_from_status (ctx, cairo_font_face_status (font_face));
+    }
 
     if (cairo_font_face_get_type (font_face) != CAIRO_FONT_TYPE_FT) {
 	cairo_test_log (ctx, "Unexpected value from cairo_font_face_get_type: %d (expected %d)\n",
 			cairo_font_face_get_type (font_face), CAIRO_FONT_TYPE_FT);
 	cairo_font_face_destroy (font_face);
+	FcPatternDestroy (resolved);
+	FcPatternDestroy (pattern);
 	return CAIRO_TEST_FAILURE;
     }
 
@@ -90,12 +167,15 @@ draw (cairo_t *cr, int width, int height)
 					    &ctm,
 					    font_options);
 
-    ft_face = cairo_ft_scaled_font_lock_face (scaled_font);
-
     cairo_font_options_destroy (font_options);
     cairo_font_face_destroy (font_face);
     FcPatternDestroy (pattern);
     FcPatternDestroy (resolved);
+
+    if (cairo_scaled_font_status (scaled_font)) {
+	return cairo_test_status_from_status (ctx,
+					      cairo_scaled_font_status (scaled_font));
+    }
 
     if (cairo_scaled_font_get_type (scaled_font) != CAIRO_FONT_TYPE_FT) {
 	cairo_test_log (ctx, "Unexpected value from cairo_scaled_font_get_type: %d (expected %d)\n",
@@ -104,7 +184,8 @@ draw (cairo_t *cr, int width, int height)
 	return CAIRO_TEST_FAILURE;
     }
 
-    if (!ft_face) {
+    ft_face = cairo_ft_scaled_font_lock_face (scaled_font);
+    if (ft_face == NULL) {
 	cairo_test_log (ctx, "Failed to get an ft_face with cairo_ft_scaled_font_lock_face\n");
 	cairo_scaled_font_destroy (scaled_font);
 	return CAIRO_TEST_FAILURE;
@@ -116,13 +197,18 @@ draw (cairo_t *cr, int width, int height)
      *
      * Now, on to the simple thing we actually want to test.
      */
-    font_face = cairo_ft_font_face_create_for_ft_face (ft_face, 0);
+
+    cairo_save (cr);
+
+    /* First we want to test caching behaviour */
+    _stress_font_cache (ft_face, cr, 0);
 
     /* Set the font_face and force cairo to actually use it for
      * something. */
-    cairo_save (cr);
+    font_face = cairo_ft_font_face_create_for_ft_face (ft_face, 0);
     cairo_set_font_face (cr, font_face);
     cairo_font_extents (cr, &font_extents);
+
     cairo_restore (cr);
 
     /* Finally, even more cleanup */
@@ -133,8 +219,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (ft_font_create_for_ft_face,
+	    "Simple test to verify that cairo_ft_font_create_for_ft_face doesn't crash.",
+	    "ft, font", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    NULL, draw)
+

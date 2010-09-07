@@ -1,15 +1,6 @@
 #include "cairo-test.h"
 
-const char	png_filename[]	= "romedalen.png";
-
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "extend-repeat",
-    "Test CAIRO_EXTEND_REPEAT for surface patterns",
-    256 + 32*2, 192 + 32*2,
-    draw
-};
+static const char *png_filename = "romedalen.png";
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -28,8 +19,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (extend_repeat,
+	    "Test CAIRO_EXTEND_REPEAT for surface patterns",
+	    "extend", /* keywords */
+	    NULL, /* requirements */
+	    256 + 32*2, 192 + 32*2,
+	    NULL, draw)

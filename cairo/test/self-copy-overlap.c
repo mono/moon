@@ -27,17 +27,7 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 /* This test is only interesting if the target has alpha */
-static const cairo_test_t test = {
-    "self-copy-overlap",
-    "Tests painting to itself using itself as the source"
-    "\nBackends treat this case inconsistently---vector backends are creating snapshots.",
-    200, 200,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -50,8 +40,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (self_copy_overlap,
+	    "Tests painting to itself using itself as the source"
+	    "\nBackends treat this case inconsistently---vector backends are creating snapshots.",
+	    "self-copy", /* keywords */
+	    NULL, /* requirements */
+	    200, 200,
+	    NULL, draw)

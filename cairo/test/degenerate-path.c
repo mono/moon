@@ -30,16 +30,6 @@
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "degenerate-path",
-    "Tests the behaviour of degenerate paths with different cap types"
-    "\nPS backend currently fails for unknown reason (cairo? GS?).",
-    3*(PAD+LINE_WIDTH+PAD), 8*(LINE_WIDTH+PAD) + PAD,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -120,8 +110,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (degenerate_path,
+	    "Tests the behaviour of degenerate paths with different cap types",
+	    "degenerate", /* keywords */
+	    NULL, /* requirements */
+	    3*(PAD+LINE_WIDTH+PAD), 8*(LINE_WIDTH+PAD) + PAD,
+	    NULL, draw)

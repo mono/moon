@@ -36,31 +36,31 @@ int main (int argc, char *argv[])
 {
     PopplerDocument *document;
     PopplerPage *page;
-    GdkPixbuf *pixbuf;
     double width, height;
-    GError *error;
     const char *filename = argv[1];
     const char *output_filename = argv[2];
     const char *page_label = argv[3];
     gchar *absolute, *uri;
+    cairo_surface_t *surface;
+    cairo_t *cr;
+    cairo_status_t status;
+    GError *error = NULL;
 
     if (argc != 4)
 	FAIL ("usage: pdf2png input_file.pdf output_file.png page");
 
     g_type_init ();
 
-    error = NULL;
-
     if (g_path_is_absolute(filename)) {
 	absolute = g_strdup (filename);
     } else {
 	gchar *dir = g_get_current_dir ();
 	absolute = g_build_filename (dir, filename, (gchar *) 0);
-	free (dir);
+	g_free (dir);
     }
 
     uri = g_filename_to_uri (absolute, NULL, &error);
-    free (absolute);
+    g_free (absolute);
     if (uri == NULL)
 	FAIL (error->message);
 
@@ -74,16 +74,26 @@ int main (int argc, char *argv[])
 
     poppler_page_get_size (page, &width, &height);
 
-    pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8,
-			     width * PIXELS_PER_POINT,
-			     height * PIXELS_PER_POINT);
-    gdk_pixbuf_fill (pixbuf, 0xffffffff);
-    poppler_page_render_to_pixbuf (page, 0, 0, width , height,
-				   PIXELS_PER_POINT, 0, pixbuf);
+    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+    cr = cairo_create (surface);
+    cairo_surface_destroy (surface);
 
-    gdk_pixbuf_save (pixbuf, output_filename, "png", &error, NULL);
-    if (error != NULL)
-	FAIL (error->message);
+    cairo_set_source_rgb (cr, 1,1,1);
+    cairo_paint (cr);
+    cairo_push_group_with_content (cr, CAIRO_CONTENT_COLOR_ALPHA);
+
+    poppler_page_render (page, cr);
+    g_object_unref (page);
+
+    cairo_pop_group_to_source (cr);
+    cairo_paint (cr);
+
+    status = cairo_surface_write_to_png (cairo_get_target (cr),
+					 output_filename);
+    cairo_destroy (cr);
+
+    if (status)
+	FAIL (cairo_status_to_string (status));
 
     return 0;
 }

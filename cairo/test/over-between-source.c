@@ -26,8 +26,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define SIZE 40
 #define PAD 2
 #define WIDTH (PAD + SIZE + PAD)
@@ -38,13 +36,6 @@ static cairo_test_draw_function_t draw;
  * will be a fallback while SOURCE will be native. For the pdf
  * surface, it's the reverse where OVER is native while SOURCE is a
  * fallback. */
-
-static const cairo_test_t test = {
-    "over-between-source",
-    "A simple test drawing a circle with OVER between two triangles drawn with SOURCE",
-    WIDTH, HEIGHT,
-    draw
-};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -84,8 +75,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (over_between_source,
+	    "A simple test drawing a circle with OVER between two triangles drawn with SOURCE",
+	    "operator", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

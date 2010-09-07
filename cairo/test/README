@@ -18,7 +18,16 @@ visually see any failed renderings alongside the corresponding
 reference image, (and a diff image as well).
 
 The test suite needs to be run before any code is committed and before
-any release. See below for hints and rules governing the use of the suite:
+any release. See below for hints and rules governing the use of the suite.
+
+The test suite is built as a single binary, which allows you to choose
+individual or categories of tests to run. For example, if you want to
+run all text related tests you can use:
+    ./cairo-test-suite text
+Or if you want to check the current status of known failures:
+    ./cairo-test-suite XFAIL
+This binary should be backwards-compatible with all library versions,
+allowing you to compare current versus past behaviour for any test.
 
 Tailoring tests running
 -----------------------
@@ -29,10 +38,10 @@ to circumvent the "pass" requirements listed below.
 To limit the backends that the tests are run against, use the
 TARGETS make variable, that can also be passed to make.
 It should contain a (space-, comma-, etc-separated) list of backends to test.
-To limit the tests run, use the TESTS make variable, which should be a
-space-separated list of tests to run.  For example:
+To limit the tests run, use the CAIRO_TESTS environment variable, which
+should be a space-separated list of tests to run.  For example:
 
-  make test TARGETS=image,ps3 TESTS="zero-alpha"
+  CAIRO_TEST="zero-alpha" make test TARGETS=image,ps
 
 Another very handy mechanism when trying to fix bugs is:
 
@@ -53,19 +62,19 @@ Running tests under modified enviroments or tools
 To run tests under a tool like gdb, one can use the run target and
 the TOOL variable.  For example:
 
-  make run TOOL=gdb TARGETS=pdf TESTS=user-font
+  CAIRO_TESTS=user-font make run TOOL=gdb TARGETS=pdf
 
 If you want to run under valgrind, there is a specific target for that
 that also sets a bunch of useful valgrind options.  Try:
 
-  make check-valgrind TESTS=user-font
+  CAIRO_TESTS=user-font make check-valgrind
 
 You can run tests under a modified environment you can use the ENV
 make variable.  However, that environment will also affect the libtool
 wrapper of the tests.  To only affect the actual test binaries, pass
 such environment as TOOL:
 
-  make run TOOL="LD_PRELOAD=/path/to/something.so" TEST=user-font
+  CAIRO_TESTS=user-font make run TOOL="LD_PRELOAD=/path/to/something.so"
 
 Getting the elusive zero failures
 ---------------------------------
@@ -85,12 +94,15 @@ the software configuration used to generate the reference images.
 
 Here are some of the relevant details:
 
-  * Your system must have a copy of the Bitstream Vera font. These are
-      "Bitstream Vera Sans" (Vera.ttf);
-      "Bitstream Vera Sans Mono" (VeraMono.ttf);
-      "Bitstream Vera Serif" (VeraSe.ttf);
+  * Your system must have a copy of the DejaVu font, the sha1sum of
+    the version used are listed in [...].  These are
+      "DejaVu Sans" (DejaVuSans.ttf) [682718dd37c3f6a4767386d3b2b27fba9b219818];
+      "DejaVu Sans Mono" (DejaVuSansMono.ttf) [1cc58255d6f9df2b08e760ca38937a2957153484];
+      "DejaVu Serif" (DejaVuSerif.ttf) [020e72e92cb2f66107dc18c70ac4214df4f13014];
+      [the DejaVu fonts can be installed from the ttf-dejavu Debian package]
     and also
-      "Nimbus Sans L" (n019003l.pfb).
+      "Nimbus Sans L" (n019003l.pfb)
+      [which can be found in the gsfonts Debian package].
 
   * Currently, you must be using a build of cairo using freetype
     (cairo-ft) as the default font backend. Otherwise all tests
@@ -105,7 +117,7 @@ Here are some of the relevant details:
     the fixes you will need to avoid false negatives from the test
     suite.
 
-  * To test the ps backend, you will need ghostscript version 8.62.
+  * To test the ps backend, you will need ghostscript version 8.71.
 
   * Testing the xlib backend is problematic since many X server
     drivers have bugs that are exercised by the test suite. (Or, if
@@ -116,7 +128,7 @@ Here are some of the relevant details:
     X server that uses only software for all rendering. One such X
     server is Xvfb which can be started like this:
 
-	Xfvb -screen 0 1280x1024x24 -ac -nolisten tcp :2
+	Xvfb -screen 0 1280x1024x24 -ac -nolisten tcp :2
 
     after which the test suite can be run against it like so:
 
@@ -211,7 +223,7 @@ variable in Makefile.am.
 Before releasing
 ----------------
 All tests should return a result of PASS for all supported (those enabled by
-default) backends,  meaning all known bugs are fixed, resulting in the happy
+default) backends, meaning all known bugs are fixed, resulting in the happy
 message:
 
 	All XX tests passed
@@ -260,10 +272,9 @@ fill-alpha-pattern
 gradient-alpha
 gradient-constant-alpha
 linear-gradient
-trap-clip
-linear-gradient
 linear-gradient-reflect
 radial-gradient
+trap-clip
 
 Poppler renders patterned text as black
 https://bugs.freedesktop.org/show_bug.cgi?id=14577
@@ -283,6 +294,17 @@ Incorrect clipping of group object (regression?)
 https://bugs.freedesktop.org/show_bug.cgi?id=14580
 --------------------------------------------------
 push-group
+
+spurious horizontal stripes in color gradients
+https://bugs.freedesktop.org/show_bug.cgi?id=10942
+--------------------------------------------------
+smask 
+smask-fill 
+smask-image-mask 
+smask-mask 
+smask-paint 
+smask-stroke 
+smask-text
 
 Ghostscript does not correctly render small miters
 http://bugs.ghostscript.com/show_bug.cgi?id=690098

@@ -25,21 +25,17 @@
 
 #include "cairo-test.h"
 
-#include <cairo.h>
 #include <assert.h>
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
     cairo_font_options_t *default_options;
     cairo_font_options_t *nil_options;
     cairo_surface_t *surface;
     cairo_matrix_t identity;
     cairo_t *cr;
     cairo_scaled_font_t *scaled_font;
-
-    cairo_test_init (&ctx, "font-options");
 
     /* first check NULL handling of cairo_font_options_t */
     default_options = cairo_font_options_create ();
@@ -103,7 +99,12 @@ main (void)
 
     cairo_destroy (cr);
 
-    cairo_test_fini (&ctx);
-
     return CAIRO_TEST_SUCCESS;
 }
+
+CAIRO_TEST (font_options,
+	    "Check setters and getters on cairo_font_options_t.",
+	    "font, api", /* keywords */
+	    NULL, /* requirements */
+	    0, 0,
+	    preamble, NULL)

@@ -26,7 +26,6 @@
 #include "cairo-test.h"
 #include <cairo-ps.h>
 
-#define NAME "ps"
 #include "surface-source.c"
 
 static cairo_surface_t *
@@ -34,8 +33,15 @@ create_source_surface (int size)
 {
     cairo_surface_t *surface;
 
-    surface = cairo_ps_surface_create ("ps-surface-source.ps", size, size);
+    surface = cairo_ps_surface_create ("ps-surface-source.out.ps", size, size);
     cairo_surface_set_fallback_resolution (surface, 72., 72.);
 
     return surface;
 }
+
+CAIRO_TEST (ps_surface_source,
+	    "Test using a PS surface as the source",
+	    "source", /* keywords */
+	    NULL, /* requirements */
+	    SIZE, SIZE,
+	    preamble, draw)

@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "paint",
-    "Test calls to cairo_paint",
-    8, 8,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -49,8 +40,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (paint,
+	    "Test calls to cairo_paint",
+	    "paint", /* keywords */
+	    NULL, /* requirements */
+	    8, 8,
+	    NULL, draw)

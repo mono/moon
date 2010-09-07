@@ -33,15 +33,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "infinite-join",
-    "Test case for infinite loop when stroking with round joins",
-    8, 8,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -70,11 +61,12 @@ draw (cairo_t *cr, int width, int height)
     cairo_line_to (cr, 18928, 13843);
     cairo_stroke (cr);
 
-    return 0;
+    return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (infinite_join,
+	    "Test case for infinite loop when stroking with round joins",
+	    "stroke", /* keywords */
+	    NULL,
+	    8, 8,
+	    NULL, draw)

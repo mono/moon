@@ -35,76 +35,108 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#define NUM_THREADS_DEFAULT 50
-#define NUM_ITERATIONS 50
+#define N_THREADS 8
+#define NUM_ITERATIONS 40
+
+#define WIDTH 400
+#define HEIGHT 42
+
+typedef struct {
+  cairo_surface_t *target;
+  int id;
+} thread_data_t;
 
 static void *
-start (void *closure)
+draw_thread (void *arg)
 {
+    const char *text = "Hello world. ";
+    thread_data_t *thread_data = arg;
     cairo_surface_t *surface;
+    cairo_font_extents_t extents;
     cairo_t *cr;
     int i;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1);
-    cr = cairo_create (surface);
+    cr = cairo_create (thread_data->target);
+    cairo_surface_destroy (thread_data->target);
 
-    cairo_save (cr);
-    {
-	cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-	cairo_paint (cr);
-    }
-    cairo_restore (cr);
+    cairo_set_source_rgb (cr, 1, 1, 1);
+    cairo_paint (cr);
+    cairo_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_move_to (cr, 1, 1);
+    cairo_select_font_face (cr, "serif",
+			    CAIRO_FONT_SLANT_NORMAL,
+			    CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size (cr, NUM_ITERATIONS);
+    cairo_font_extents (cr, &extents);
 
-    for (i=0; i < NUM_ITERATIONS; i++) {
+    cairo_move_to (cr, 1, HEIGHT - extents.descent - 1);
+
+    for (i = 0; i < NUM_ITERATIONS; i++) {
+	char buf[2];
+
         cairo_select_font_face (cr, "serif",
 				CAIRO_FONT_SLANT_NORMAL,
 				CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_set_font_size (cr, 8 + i);
-	cairo_show_text (cr, "Hello world.\n");
+	cairo_set_font_size (cr, i);
+
+	buf[0] = text[i%strlen(text)];
+	buf[1] = '\0';
+	cairo_show_text (cr, buf);
     }
 
+    surface = cairo_surface_reference (cairo_get_target (cr));
     cairo_destroy (cr);
-    cairo_surface_destroy (surface);
 
-    return NULL;
+    return surface;
 }
 
-int
-main (int argc, char *argv[])
+static cairo_test_status_t
+draw (cairo_t *cr, int width, int height)
 {
-    cairo_test_context_t ctx;
-    int err;
-    int i, num_threads;
-    pthread_t *pthread;
+    pthread_t threads[N_THREADS];
+    thread_data_t thread_data[N_THREADS];
+    cairo_test_status_t test_status = CAIRO_TEST_SUCCESS;
+    int i;
 
-    if (argc > 1) {
-	num_threads = atoi (argv[1]);
-    } else {
-	num_threads = NUM_THREADS_DEFAULT;
+    for (i = 0; i < N_THREADS; i++) {
+        thread_data[i].target = cairo_surface_create_similar (cairo_get_target (cr),
+							      cairo_surface_get_content (cairo_get_target (cr)),
+							      WIDTH, HEIGHT);
+        thread_data[i].id = i;
+        if (pthread_create (&threads[i], NULL, draw_thread, &thread_data[i]) != 0) {
+	    threads[i] = pthread_self (); /* to indicate error */
+            cairo_surface_destroy (thread_data[i].target);
+            test_status = CAIRO_TEST_FAILURE;
+	    break;
+        }
     }
 
-    cairo_test_init (&ctx, "pthread-show-text");
-    cairo_test_log (&ctx, "Running with %d threads.\n", num_threads);
+    cairo_set_source_rgb (cr, 0.5, 0.5, 0.5);
+    cairo_paint (cr);
 
-    pthread = xmalloc (num_threads * sizeof (pthread_t));
+    for (i = 0; i < N_THREADS; i++) {
+	void *surface;
 
-    for (i = 0; i < num_threads; i++) {
-	err = pthread_create (&pthread[i], NULL, start, NULL);
-	if (err) {
-	    cairo_test_log (&ctx, "pthread_create failed: %s\n", strerror(err));
-	    cairo_test_fini (&ctx);
-	    return CAIRO_TEST_FAILURE;
+        if (pthread_equal (threads[i], pthread_self ()))
+            break;
+
+        if (pthread_join (threads[i], &surface) == 0) {
+	    cairo_set_source_surface (cr, surface, 0, 0);
+	    cairo_surface_destroy (surface);
+	    cairo_paint (cr);
+
+	    cairo_translate (cr, 0, HEIGHT);
+	} else {
+            test_status = CAIRO_TEST_FAILURE;
 	}
     }
 
-    for (i = 0; i < num_threads; i++)
-	pthread_join (pthread[i], NULL);
-
-    free (pthread);
-
-    cairo_test_fini (&ctx);
-
-    return CAIRO_TEST_SUCCESS;
+    return test_status;
 }
+
+CAIRO_TEST (pthread_show_text,
+	    "Concurrent stress test of the cairo_show_text().",
+	    "thread, text", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT * N_THREADS,
+	    NULL, draw)

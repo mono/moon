@@ -31,15 +31,6 @@
 #define HEIGHT		(PAD + 4 * (LINE_WIDTH + PAD))
 #define WIDTH		16
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "dash-no-dash",
-    "Tests that we can actually turn dashing on and off again",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static void
 line (cairo_t *cr)
 {
@@ -88,8 +79,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (dash_no_dash,
+	    "Tests that we can actually turn dashing on and off again",
+	    "dash, stroke", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

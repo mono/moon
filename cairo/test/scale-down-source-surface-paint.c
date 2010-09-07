@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "scale-down-source-surface-paint",
-    "Test call sequence: cairo_scale; cairo_set_source_surface; cairo_paint, with a scale < 1.0",
-    6, 6,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -60,13 +51,15 @@ draw (cairo_t *cr, int width, int height)
     cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
     cairo_paint (cr);
 
+    cairo_surface_finish (surface); /* data will go out of scope */
     cairo_surface_destroy (surface);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (scale_down_source_surface_paint,
+	    "Test call sequence: cairo_scale; cairo_set_source_surface; cairo_paint, with a scale < 1.0",
+	    "paint, transform", /* keywords */
+	    NULL, /* requirements */
+	    6, 6,
+	    NULL, draw)

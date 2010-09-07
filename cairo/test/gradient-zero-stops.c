@@ -32,20 +32,11 @@
  *      https://bugzilla.mozilla.org/show_bug.cgi?id=407104
  */
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "gradient-zero-stops",
-    "Verifies that gradients with no stops dont cause problems.",
-    2, 2,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     cairo_pattern_t *pat;
-    
+
     pat = cairo_pattern_create_linear (0., 0., 1., 1.);
     cairo_set_source (cr, pat);
     cairo_paint (cr);
@@ -59,8 +50,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (gradient_zero_stops,
+	    "Verifies that gradients with no stops don't cause problems.",
+	    "gradient", /* keywords */
+	    NULL, /* requirements */
+	    2, 2,
+	    NULL, draw)

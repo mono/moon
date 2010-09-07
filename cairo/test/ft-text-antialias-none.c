@@ -33,15 +33,6 @@
 #define HEIGHT 30
 #define TEXT_SIZE 12
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "ft-text-antialias-none",
-    "Tests text rendering with no antialiasing",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_status_t
 create_scaled_font (cairo_t * cr,
 		    cairo_scaled_font_t **out)
@@ -63,7 +54,7 @@ create_scaled_font (cairo_t * cr,
     if (pattern == NULL)
 	return CAIRO_STATUS_NO_MEMORY;
 
-    FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *)"Bitstream vera sans");
+    FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) CAIRO_TEST_FONT_FAMILY " Sans");
     FcPatternAddDouble (pattern, FC_SIZE, TEXT_SIZE);
     FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
@@ -147,8 +138,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (ft_text_antialias_none,
+	    "Tests text rendering with no antialiasing",
+	    "ft, text", /* keywords */
+	    "target=raster", /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

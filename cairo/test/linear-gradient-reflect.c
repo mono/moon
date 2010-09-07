@@ -30,15 +30,6 @@
 #define WIDTH  50
 #define HEIGHT 50
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "linear-gradient-reflect",
-    "Tests the drawing of linear gradient with reflect",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -67,8 +58,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (linear_gradient_reflect,
+	    "Tests the drawing of linear gradient with reflect",
+	    "gradient", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)
+

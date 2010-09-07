@@ -66,15 +66,6 @@
 #define LITTLE_STAR_SIZE 20
 #define BIG_STAR_SIZE    80
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "fill-rule",
-    "Tests cairo_set_fill_rule with some star shapes",
-    BIG_STAR_SIZE * 2 + 3, BIG_STAR_SIZE + LITTLE_STAR_SIZE + 3,
-    draw
-};
-
 /* The SVG start trimmed down, but still showing the bug (originally) */
 static void
 little_star_path (cairo_t *cr)
@@ -128,8 +119,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (fill_rule,
+	    "Tests cairo_set_fill_rule with some star shapes",
+	    "fill, path", /* keywords */
+	    NULL, /* requirements */
+	    BIG_STAR_SIZE * 2 + 3, BIG_STAR_SIZE + LITTLE_STAR_SIZE + 3,
+	    NULL, draw)

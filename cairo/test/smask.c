@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "smask",
-    "Test the support of \"soft\" masks",
-    60, 60,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -80,7 +71,6 @@ draw (cairo_t *cr, int width, int height)
     mask2 = cairo_image_surface_create_for_data ((unsigned char *) data,
 						CAIRO_FORMAT_ARGB32, 2, 2, 8);
     pattern = cairo_pattern_create_for_surface (mask2);
-    cairo_surface_destroy (mask2);
     cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
     cairo_mask (cr2, pattern);
     cairo_pattern_destroy (pattern);
@@ -92,7 +82,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_stroke (cr2);
 
     cairo_select_font_face (cr2,
-			    "Bitstream Vera Sans",
+			    CAIRO_TEST_FONT_FAMILY " Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr2, 0.3 * height);
@@ -119,11 +109,15 @@ draw (cairo_t *cr, int width, int height)
     cairo_mask_surface (cr, cairo_get_target (cr2), 0, 0);
     cairo_destroy (cr2);
 
+    cairo_surface_finish (mask2); /* data will go out of scope */
+    cairo_surface_destroy (mask2);
+
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (smask,
+	    "Test the support of \"soft\" masks",
+	    "smask", /* keywords */
+	    NULL, /* requirements */
+	    60, 60,
+	    NULL, draw)

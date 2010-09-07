@@ -45,15 +45,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "move-to-show-surface",
-    "Tests calls to cairo_show_surface after cairo_move_to",
-    2, 2,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -71,14 +62,17 @@ draw (cairo_t *cr, int width, int height)
 	cairo_set_source_surface (cr, surface,
 				  i % 2, i / 2);
 	cairo_paint (cr);
+
+	cairo_surface_finish (surface); /* colors will go out of scope */
 	cairo_surface_destroy (surface);
     }
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (move_to_show_surface,
+	    "Tests calls to cairo_show_surface after cairo_move_to",
+	    "transform", /* keywords */
+	    NULL, /* requirements */
+	    2, 2,
+	    NULL, draw)

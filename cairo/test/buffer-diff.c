@@ -70,13 +70,12 @@ buffer_diff_core (const unsigned char *_buf_a, int stride_a,
     stride_a /= sizeof (uint32_t);
     stride_b /= sizeof (uint32_t);
     stride_diff /= sizeof (uint32_t);
-    for (y = 0; y < height; y++)
-    {
+    for (y = 0; y < height; y++) {
 	const uint32_t *row_a = buf_a + y * stride_a;
 	const uint32_t *row_b = buf_b + y * stride_b;
 	uint32_t *row = buf_diff + y * stride_diff;
-	for (x = 0; x < width; x++)
-	{
+
+	for (x = 0; x < width; x++) {
 	    /* check if the pixels are the same */
 	    if ((row_a[x] & mask) != (row_b[x] & mask)) {
 		int channel;
@@ -99,6 +98,11 @@ buffer_diff_core (const unsigned char *_buf_a, int stride_a,
 		}
 
 		result.pixels_changed++;
+		if ((diff_pixel & 0x00ffffff) == 0) {
+		    /* alpha only difference, convert to luminance */
+		    uint8_t alpha = diff_pixel >> 24;
+		    diff_pixel = alpha * 0x010101;
+		}
 		row[x] = diff_pixel;
 	    } else {
 		row[x] = 0;
@@ -247,4 +251,12 @@ image_diff (const cairo_test_context_t *ctx,
     compare_surfaces (ctx, surface_a, surface_b, surface_diff, result);
 
     return CAIRO_STATUS_SUCCESS;
+}
+
+cairo_bool_t
+image_diff_is_failure (const buffer_diff_result_t *result,
+                       unsigned int                tolerance)
+{
+  return result->pixels_changed &&
+         result->max_diff > tolerance;
 }

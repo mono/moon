@@ -127,30 +127,27 @@ draw_some_pages (cairo_surface_t *surface)
     cairo_destroy (cr);
 }
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
     cairo_surface_t *surface;
     cairo_status_t status;
     const char *filename;
     cairo_test_status_t result = CAIRO_TEST_UNTESTED;
 
-    cairo_test_init (&ctx, "multi-page");
-
 #if CAIRO_HAS_PS_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "ps2") ||
-        cairo_test_is_target_enabled (&ctx, "ps3"))
+    if (cairo_test_is_target_enabled (ctx, "ps2") ||
+        cairo_test_is_target_enabled (ctx, "ps3"))
     {
 	if (result == CAIRO_TEST_UNTESTED)
 	    result = CAIRO_TEST_SUCCESS;
 
-	filename = "multi-page.ps";
+	filename = "multi-page.out.ps";
 	surface = cairo_ps_surface_create (filename,
 					   WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
 	status = cairo_surface_status (surface);
 	if (status) {
-	    cairo_test_log (&ctx, "Failed to create ps surface for file %s: %s\n",
+	    cairo_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
 			    filename, cairo_status_to_string (status));
 	    result = CAIRO_TEST_FAILURE;
 	}
@@ -164,16 +161,16 @@ main (void)
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "pdf")) {
+    if (cairo_test_is_target_enabled (ctx, "pdf")) {
 	if (result == CAIRO_TEST_UNTESTED)
 	    result = CAIRO_TEST_SUCCESS;
 
-	filename = "multi-page.pdf";
+	filename = "multi-page.out.pdf";
 	surface = cairo_pdf_surface_create (filename,
 					    WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
 	status = cairo_surface_status (surface);
 	if (status) {
-	    cairo_test_log (&ctx, "Failed to create pdf surface for file %s: %s\n",
+	    cairo_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
 			    filename, cairo_status_to_string (status));
 	    result = CAIRO_TEST_FAILURE;
 	}
@@ -186,7 +183,12 @@ main (void)
     }
 #endif
 
-    cairo_test_fini (&ctx);
-
     return result;
 }
+
+CAIRO_TEST (multi_page,
+	    "Check the paginated surfaces handle multiple pages.",
+	    "paginated", /* keywords */
+	    "target=vector", /* requirements */
+	    0, 0,
+	    preamble, NULL)

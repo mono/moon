@@ -33,15 +33,6 @@
 #define HEIGHT 200
 #define TEXT_SIZE 30
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "ft-text-vertical-layout-type3",
-    "Tests text rendering for vertical layout with TrueType fonts",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static cairo_status_t
 create_scaled_font (cairo_t * cr,
 		    cairo_scaled_font_t **out)
@@ -63,7 +54,7 @@ create_scaled_font (cairo_t * cr,
     if (pattern == NULL)
 	return CAIRO_STATUS_NO_MEMORY;
 
-    FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *)"Bitstream Vera Sans");
+    FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *)CAIRO_TEST_FONT_FAMILY " Sans");
     FcPatternAddDouble (pattern, FC_PIXEL_SIZE, TEXT_SIZE);
     FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
@@ -134,6 +125,7 @@ draw (cairo_t *cr, int width, int height)
     }
 
     cairo_set_scaled_font (cr, scaled_font);
+    cairo_scaled_font_destroy (scaled_font);
 
     cairo_set_line_width (cr, 1.0);
     cairo_set_source_rgb (cr, 0, 0, 0); /* black */
@@ -163,13 +155,12 @@ draw (cairo_t *cr, int width, int height)
 		     extents.height + line_width);
     cairo_stroke (cr);
 
-    cairo_scaled_font_destroy (scaled_font);
-
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (ft_text_vertical_layout_type3,
+	    "Tests text rendering for vertical layout with TrueType fonts",
+	    "ft, fc, text", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)

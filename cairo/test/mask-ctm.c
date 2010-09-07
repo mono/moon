@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "mask-ctm",
-    "Test that cairo_mask is affected properly by the CTM",
-    10, 10,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -48,7 +39,6 @@ draw (cairo_t *cr, int width, int height)
     mask_surface = cairo_image_surface_create_for_data ((unsigned char *) data,
 							CAIRO_FORMAT_ARGB32, 2, 2, 8);
     mask = cairo_pattern_create_for_surface (mask_surface);
-    cairo_surface_destroy (mask_surface);
 
     cairo_set_source_rgb (cr, 1.0, 0, 0);
 
@@ -75,11 +65,16 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_pattern_destroy (mask);
 
+    cairo_surface_finish (mask_surface); /* data goes out of scope */
+    cairo_surface_destroy (mask_surface);
+
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (mask_ctm,
+	    "Test that cairo_mask is affected properly by the CTM",
+	    "mask", /* keywords */
+	    NULL, /* requirements */
+	    10, 10,
+	    NULL, draw)
+

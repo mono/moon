@@ -30,15 +30,6 @@
 #define IMAGE_WIDTH 2 * LINE_LENGTH + 6
 #define IMAGE_HEIGHT ((LINES+4)*LINES)/2 + 2
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "line-width",
-    "Tests cairo_set_line_width",
-    IMAGE_WIDTH, IMAGE_HEIGHT,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -65,8 +56,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (line_width,
+	    "Tests cairo_set_line_width",
+	    "stroke", /* keywords */
+	    NULL, /* requirements */
+	    IMAGE_WIDTH, IMAGE_HEIGHT,
+	    NULL, draw)

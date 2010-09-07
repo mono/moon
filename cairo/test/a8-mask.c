@@ -26,15 +26,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "a8-mask",
-    "test masks of CAIRO_FORMAT_A8",
-    8, 8,
-    draw
-};
-
 #define MASK_WIDTH 8
 #define MASK_HEIGHT 8
 
@@ -149,18 +140,15 @@ draw (cairo_t *cr, int dst_width, int dst_height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
 {
-    cairo_test_context_t ctx;
+    cairo_test_status_t status = CAIRO_TEST_SUCCESS;
     int test_width;
-
-    cairo_test_init (&ctx, "a8-mask");
 
     for (test_width = 0; test_width < 40; test_width++) {
 	int stride = cairo_format_stride_for_width (CAIRO_FORMAT_A8,
 						test_width);
-	cairo_test_status_t status;
 	cairo_status_t expected;
 
 	/* First create a surface using the width as the stride,
@@ -169,14 +157,14 @@ main (void)
 	expected = (stride == test_width) ?
 	    CAIRO_STATUS_SUCCESS : CAIRO_STATUS_INVALID_STRIDE;
 
-	status = test_surface_with_width_and_stride (&ctx,
+	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
 						     test_width,
 						     expected);
 	if (status)
 	    return status;
 
-	status = test_surface_with_width_and_stride (&ctx,
+	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
 						     -test_width,
 						     expected);
@@ -187,14 +175,14 @@ main (void)
 	/* Then create a surface using the correct stride,
 	 * (should always succeed).
 	 */
-	status = test_surface_with_width_and_stride (&ctx,
+	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
 						     stride,
 						     CAIRO_STATUS_SUCCESS);
 	if (status)
 	    return status;
 
-	status = test_surface_with_width_and_stride (&ctx,
+	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
 						     -stride,
 						     CAIRO_STATUS_SUCCESS);
@@ -202,7 +190,12 @@ main (void)
 	    return status;
     }
 
-    cairo_test_fini (&ctx);
-
-    return cairo_test (&test);
+    return status;
 }
+
+CAIRO_TEST (a8_mask,
+	    "test masks of CAIRO_FORMAT_A8",
+	    "alpha, mask", /* keywords */
+	    NULL, /* requirements */
+	    8, 8,
+	    preamble, draw)

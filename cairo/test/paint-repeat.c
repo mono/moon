@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "paint-repeat",
-    "Test calls to cairo_paint with a repeating source surface pattern",
-    8, 8,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -56,13 +47,15 @@ draw (cairo_t *cr, int width, int height)
     cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_REPEAT);
     cairo_paint (cr);
 
+    cairo_surface_finish (surface); /* data will go out of scope */
     cairo_surface_destroy (surface);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (paint_repeat,
+	    "Test calls to cairo_paint with a repeating source surface pattern",
+	    "paint", /* keywords */
+	    NULL, /* requirements */
+	    8, 8,
+	    NULL, draw)

@@ -36,16 +36,6 @@
 #define FONT "6x13.pcf"
 #define TEXT_SIZE 13
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "bitmap-font",
-    "Test drawing with a font consisting only of bitmaps"
-    "\nThe PDF and PS backends embed a slightly distorted font for the rotated case.",
-    246 + 1, 2 * TEXT_SIZE,
-    draw
-};
-
 static cairo_bool_t
 font_extents_equal (const cairo_font_extents_t *A,
 	            const cairo_font_extents_t *B)
@@ -107,39 +97,43 @@ draw (cairo_t *cr, int width, int height)
     free (filename);
     if (! pattern) {
 	cairo_test_log (ctx, "FcFreeTypeQuery failed.\n");
-	return CAIRO_TEST_FAILURE;
+	return cairo_test_status_from_status (ctx, CAIRO_STATUS_NO_MEMORY);
     }
 
     font_face = cairo_ft_font_face_create_for_pattern (pattern);
+    FcPatternDestroy (pattern);
 
     status = cairo_font_face_status (font_face);
     if (status) {
 	cairo_test_log (ctx, "Error creating font face for %s: %s\n",
 			filename,
 			cairo_status_to_string (status));
-	FcPatternDestroy (pattern);
-	return CAIRO_TEST_FAILURE;
+	return cairo_test_status_from_status (ctx, status);
     }
 
     if (cairo_font_face_get_type (font_face) != CAIRO_FONT_TYPE_FT) {
 	cairo_test_log (ctx, "Unexpected value from cairo_font_face_get_type: %d (expected %d)\n",
 			cairo_font_face_get_type (font_face), CAIRO_FONT_TYPE_FT);
 	cairo_font_face_destroy (font_face);
-	FcPatternDestroy (pattern);
 	return CAIRO_TEST_FAILURE;
     }
 
     cairo_set_font_face (cr, font_face);
-
-#define CHECK_FONT_EXTENTS(comment) if (check_font_extents (ctx, cr, (comment)) != CAIRO_TEST_SUCCESS) return CAIRO_TEST_FAILURE
-
-    cairo_font_extents (cr, &font_extents);
-    CHECK_FONT_EXTENTS ("default");
-
-    FcPatternDestroy (pattern);
     cairo_font_face_destroy (font_face);
 
     font_options = cairo_font_options_create ();
+
+#define CHECK_FONT_EXTENTS(comment) do {\
+    cairo_test_status_t test_status; \
+    test_status = check_font_extents (ctx, cr, (comment)); \
+    if (test_status != CAIRO_TEST_SUCCESS) { \
+	cairo_font_options_destroy (font_options); \
+	return test_status; \
+    } \
+} while (0)
+
+    cairo_font_extents (cr, &font_extents);
+    CHECK_FONT_EXTENTS ("default");
 
     cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_ON);
     cairo_set_font_options (cr, font_options);
@@ -148,7 +142,6 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_move_to (cr, 1, font_extents.ascent - 1);
     cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); /* blue */
-
 
     cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_NONE);
     cairo_set_font_options (cr, font_options);
@@ -215,8 +208,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (bitmap_font,
+	    "Test drawing with a font consisting only of bitmaps"
+	    "\nThe PDF and PS backends embed a slightly distorted font for the rotated case.",
+	    "text", /* keywords */
+	    "ft", /* requirements */
+	    246 + 1, 2 * TEXT_SIZE,
+	    NULL, draw)

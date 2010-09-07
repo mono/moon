@@ -25,15 +25,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "unantialiased-shapes",
-    "Test shape drawing without antialiasing",
-    320, 240,
-    draw
-};
-
 /* The star shape from the SVG test suite, from the fill rule test */
 static void
 big_star_path (cairo_t *cr)
@@ -99,8 +90,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (unantialiased_shapes,
+	    "Test shape drawing without antialiasing",
+	    "fill, stroke", /* keywords */
+	    "target=raster", /* requirements */
+	    320, 240,
+	    NULL, draw)

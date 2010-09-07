@@ -81,7 +81,7 @@ foreach (<@files>) {
     $tests->{$1}->{$2}->{$3}->{$4}->{$5}->{'ref'} = $ref_path;
     $tests->{$1}->{$2}->{$3}->{$4}->{$5}->{'result'} = $6;
 
-    $teststats->{$2} = {"PASS" => 0, "FAIL" => 0, "XFAIL" => 0, "UNTESTED" => 0, "CRASHED" =>0}
+    $teststats->{$2} = {"PASS" => 0, "FAIL" => 0, "NEW" => 0, "XFAIL" => 0, "UNTESTED" => 0, "CRASHED" =>0}
       unless $teststats->{$2};
     ($teststats->{$2}->{$6})++;
 
@@ -160,6 +160,7 @@ printl '<title>Cairo Test Results</title>';
 printl '<style type="text/css">';
 printl 'a img { border: solid 1px #FFF; }';
 printl '.PASS { background-color: #0B0; min-width: 1em; }';
+printl '.NEW { background-color: #B70; }';
 printl '.FAIL { background-color: #B00; }';
 printl '.XFAIL { background-color: #BB0; }';
 printl '.UNTESTED { background-color: #555; }';
@@ -189,7 +190,11 @@ print '<tr><td></td>';
 foreach my $target (@targets) {
   print '<td>';
   print '<span class="PASSstr">', $teststats->{$target}->{"PASS"}, '</span>/';
-  print '<span class="FAILstr">', $teststats->{$target}->{"FAIL"} + $teststats->{$target}->{"CRASHED"}, '</span>/';
+  print '<span class="FAILstr">',
+	$teststats->{$target}->{"FAIL"} +
+	$teststats->{$target}->{"NEW"} +
+	$teststats->{$target}->{"CRASHED"},
+	'</span>/';
   print '<span class="XFAILstr">', $teststats->{$target}->{"XFAIL"}, '</span>/';
   print '<span class="UNTESTEDstr">', $teststats->{$target}->{"UNTESTED"}, '</span>';
   print '</td>';
@@ -244,6 +249,10 @@ foreach my $test (sort(keys %$tests)) {
                   $testline .= img_for($testfiles{'diff'},1);
                   $testline .= " ";
                   $testline .= img_for($testfiles{'ref'},1);
+                }
+              } elsif ($testres->{'result'} eq "NEW") {
+                if ($config_show_fail || $config_show_all) {
+                  $testline .= img_for($testfiles{'new'},1);
                 }
               } elsif ($testres->{'result'} eq "CRASHED") {
                  $testline .= "!!!CRASHED!!!";

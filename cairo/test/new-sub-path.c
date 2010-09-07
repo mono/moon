@@ -27,16 +27,6 @@
 
 #define SIZE 10
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "new-sub-path",
-    "Test the cairo_new_sub_path call",
-    8 * SIZE,
-    3 * SIZE,
-    draw
-};
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -75,8 +65,10 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (new_sub_path,
+	    "Test the cairo_new_sub_path call",
+	    "path", /* keywords */
+	    NULL, /* requirements */
+	    8 * SIZE,
+	    3 * SIZE,
+	    NULL, draw)

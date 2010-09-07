@@ -36,15 +36,6 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "fill-degenerate-sort-order",
-    "Tests the tessellator's event comparator with degenerate input",
-    190, 120,
-    draw
-};
-
 /* Derived from zrusin's "another" polygon in the performance suite. */
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
@@ -78,8 +69,9 @@ draw (cairo_t *cr, int width, int height)
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (fill_degenerate_sort_order,
+	    "Tests the tessellator's event comparator with degenerate input",
+	    "degenerate, fill", /* keywords */
+	    NULL, /* requirements */
+	    190, 120,
+	    NULL, draw)

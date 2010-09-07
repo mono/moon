@@ -79,17 +79,11 @@
 #define TEXT_SIZE 12
 #define NUM_GLYPHS 65535
 
-static cairo_test_draw_function_t draw;
-
-static const cairo_test_t test = {
-    "show-glyphs-many",
-    "Test that cairo_show_glyphs works when handed 'many' glyphs",
-    9, 11,
-    draw
-};
-
 static cairo_test_status_t
-get_glyph (cairo_t *cr, const char *utf8, cairo_glyph_t *glyph)
+get_glyph (const cairo_test_context_t *ctx,
+	   cairo_scaled_font_t *scaled_font,
+	   const char *utf8,
+	   cairo_glyph_t *glyph)
 {
     cairo_glyph_t *text_to_glyphs;
     cairo_status_t status;
@@ -97,15 +91,14 @@ get_glyph (cairo_t *cr, const char *utf8, cairo_glyph_t *glyph)
 
     text_to_glyphs = glyph;
     i = 1;
-    status = cairo_scaled_font_text_to_glyphs (cairo_get_scaled_font (cr),
+    status = cairo_scaled_font_text_to_glyphs (scaled_font,
 					       0, 0,
 					       utf8, -1,
 					       &text_to_glyphs, &i,
 					       NULL, NULL,
 					       0);
     if (status != CAIRO_STATUS_SUCCESS)
-	return cairo_test_status_from_status (cairo_test_get_context (cr),
-					      status);
+	return cairo_test_status_from_status (ctx, status);
 
     if (text_to_glyphs != glyph) {
 	*glyph = text_to_glyphs[0];
@@ -118,7 +111,9 @@ get_glyph (cairo_t *cr, const char *utf8, cairo_glyph_t *glyph)
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_glyph_t glyphs[NUM_GLYPHS];
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
+    cairo_glyph_t *glyphs = xmalloc (NUM_GLYPHS * sizeof (cairo_glyph_t));
+    cairo_scaled_font_t *scaled_font;
     const char *characters[] = { /* try to exercise different widths of index */
 	"m", /* Latin letter m, index=0x50 */
 	"μ", /* Greek letter mu, index=0x349 */
@@ -135,11 +130,12 @@ draw (cairo_t *cr, int width, int height)
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr, TEXT_SIZE);
+    scaled_font = cairo_get_scaled_font (cr);
 
     for (utf8 = characters; *utf8 != NULL; utf8++) {
-	status = get_glyph (cr, *utf8, &glyphs[0]);
+	status = get_glyph (ctx, scaled_font, *utf8, &glyphs[0]);
 	if (status)
-	    return status;
+	    goto BAIL;
 
 	if (glyphs[0].index) {
 	    glyphs[0].x = 1.0;
@@ -152,25 +148,29 @@ draw (cairo_t *cr, int width, int height)
     }
 
     /* we can pack ~21k 1-byte glyphs into a single XRenderCompositeGlyphs8 */
-    status = get_glyph (cr, "m", &glyphs[0]);
+    status = get_glyph (ctx, scaled_font, "m", &glyphs[0]);
     if (status)
-	return status;
+	goto BAIL;
     for (i=1; i < 21500; i++)
 	glyphs[i] = glyphs[0];
     /* so check expanding the current 1-byte request for 2-byte glyphs */
-    status = get_glyph (cr, "μ", &glyphs[i]);
+    status = get_glyph (ctx, scaled_font, "μ", &glyphs[i]);
     if (status)
-	return status;
+	goto BAIL;
     for (j=i+1; j < NUM_GLYPHS; j++)
 	glyphs[j] = glyphs[i];
 
     cairo_show_glyphs (cr, glyphs, NUM_GLYPHS);
 
-    return CAIRO_TEST_SUCCESS;
+  BAIL:
+    free(glyphs);
+
+    return status;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (show_glyphs_many,
+	    "Test that cairo_show_glyphs works when handed 'many' glyphs",
+	    "text, stress", /* keywords */
+	    NULL, /* requirements */
+	    9, 11,
+	    NULL, draw)

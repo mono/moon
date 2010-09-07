@@ -26,38 +26,33 @@
 
 #include "cairo-test.h"
 
-static cairo_test_draw_function_t draw;
-
 #define NUM_GRADIENTS 4
 #define NUM_EXTEND 4
 #define SIZE 60
-#define WIDTH (SIZE * NUM_GRADIENTS)
+#define WIDTH (SIZE * NUM_GRADIENTS * NUM_GRADIENTS)
 #define HEIGHT (SIZE * NUM_EXTEND)
 
-static const cairo_test_t test = {
-    "radial-gradient",
-    "Simple test of radial gradients",
-    WIDTH, HEIGHT,
-    draw
-};
-
 static void
-draw_gradient (cairo_t 		*cr,
+draw_gradient (cairo_t		*cr,
 	       int		x,
 	       int		y,
 	       int		size,
-	       double		offset,
-	       double		inner_radius,
+	       double		r1_offset,
+	       double		r1_radius,
+	       double		r2_offset,
+	       double		r2_radius,
 	       cairo_extend_t	extend)
 {
     cairo_pattern_t *pattern;
 
     cairo_save (cr);
 
-    pattern = cairo_pattern_create_radial (x + size/2.0 + offset,
-					   y + size/2.0 + offset, inner_radius,
-					   x + size/2.0,
-					   y + size/2.0, size/3.0);
+    pattern = cairo_pattern_create_radial (x + size/2.0 + r1_offset,
+					   y + size/2.0 + r1_offset,
+					   r1_radius,
+					   x + size/2.0 + r2_offset,
+					   y + size/2.0 + r2_offset,
+					   r2_radius);
     cairo_pattern_add_color_stop_rgba (pattern, 0.0,
 				       1.0, 0.0, 0.0, 1.0);
     cairo_pattern_add_color_stop_rgba (pattern, sqrt (1.0 / 2.0),
@@ -80,8 +75,7 @@ draw_gradient (cairo_t 		*cr,
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    int i, j;
-    double inner_radius, offset;
+    int i, j, k;
     cairo_extend_t extend[NUM_EXTEND] = {
 	CAIRO_EXTEND_NONE,
 	CAIRO_EXTEND_REPEAT,
@@ -93,18 +87,26 @@ draw (cairo_t *cr, int width, int height)
 
     for (j = 0; j < NUM_EXTEND; j++) {
 	for (i = 0; i < NUM_GRADIENTS; i++) {
-	    offset = i % 2 ? SIZE / 12.0 : 0.0;
-	    inner_radius = i >= NUM_EXTEND / 2 ? SIZE / 6.0 : 0.0;
-	    draw_gradient (cr, i * SIZE, j * SIZE, SIZE,
-			   offset, inner_radius, extend[j]);
+	    double r1_offset = i % 2 ? SIZE / 12.0 : 0.0;
+	    double r1_radius = i >= NUM_GRADIENTS / 2 ? SIZE / 6.0 : 0.0;
+	    for (k = 0; k < NUM_GRADIENTS; k++) {
+		double r2_offset = k % 2 ? SIZE / 12.0 : 0.0;
+		double r2_radius = k >= NUM_GRADIENTS / 2 ? SIZE / 3.0 : SIZE / 12.;
+		draw_gradient (cr,
+			       i * SIZE * NUM_GRADIENTS + k * SIZE, j * SIZE, SIZE,
+			       r1_offset, r1_radius,
+			       r2_offset, r2_radius,
+			       extend[j]);
+	    }
 	}
     }
 
     return CAIRO_TEST_SUCCESS;
 }
 
-int
-main (void)
-{
-    return cairo_test (&test);
-}
+CAIRO_TEST (radial_gradient,
+	    "Simple test of radial gradients",
+	    "gradient", /* keywords */
+	    NULL, /* requirements */
+	    WIDTH, HEIGHT,
+	    NULL, draw)
