@@ -14,8 +14,6 @@
 //
 // - only invalidate regions
 // - only render changed regions
-//
-// - load images in TileOpened(?) instead of Render
 // - render all images to a single surface to cache, and do scaling
 //   on that rather than scaling each individual image and piecing
 //   them together.
@@ -1471,7 +1469,7 @@ MultiScaleImage::OnCollectionChanged (Collection *col, CollectionChangedEventArg
 		ConnectSubImageEvents (subimage);
 		break;
 	case CollectionChangedActionRemove:
-		// Disconnect events from the replaced item
+		// Disconnect events from the removed item
 		subimage = args->GetOldItem ()->AsMultiScaleSubImage ();
 		DisconnectSubImageEvents (subimage);
 		break;
