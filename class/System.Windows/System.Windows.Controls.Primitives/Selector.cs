@@ -186,13 +186,15 @@ namespace System.Windows.Controls.Primitives {
 			if (view != null)
 				view.CurrentChanged -= OnCurrentItemChanged;
 
-			Selection.Select (null);
-
 			view = newSource as ICollectionView;
 			if (view != null) {
 				view.CurrentChanged += OnCurrentItemChanged;
 				if (SynchronizeWithCurrentItem)
 					Selection.SelectOnly (view.CurrentItem);
+				else
+					Selection.Select (null);
+			} else {
+				Selection.Select (null);
 			}
 		}
 		
