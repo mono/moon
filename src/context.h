@@ -21,16 +21,35 @@ namespace Moonlight {
 
 class Context : public Stack {
 public:
+	class Surface : public MoonSurface {
+	public:
+		Surface (MoonSurface *moon);
+		Surface (MoonSurface *moon,
+			 double      xOffset,
+			 double      yOffset);
+		virtual ~Surface ();
+
+		cairo_surface_t *Cairo ();
+
+		Surface *Similar (Rect r);
+		MoonSurface *Native ();
+
+	private:
+		MoonSurface     *native;
+		Point           offset;
+		cairo_surface_t *surface;
+	};
+
 	class Node : public List::Node {
 	public:
-		Node (MoonSurface *surface, cairo_matrix_t *matrix);
+		Node (Surface *surface, cairo_matrix_t *matrix);
 		Node (Rect extents, cairo_matrix_t *matrix);
 		virtual ~Node ();
 
 		cairo_t *Cairo ();
 
 		void GetMatrix (cairo_matrix_t *matrix);
-		MoonSurface *GetSurface ();
+		Surface *GetSurface ();
 		MoonSurface *GetData (Rect *extents);
 		void SetData (MoonSurface *surface);
 		bool Readonly ();
@@ -39,7 +58,7 @@ public:
 		Rect           box;
 		cairo_matrix_t transform;
 		cairo_t        *context;
-		MoonSurface    *target;
+		Surface        *target;
 		MoonSurface    *data;
 	};
 

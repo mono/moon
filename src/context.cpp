@@ -14,12 +14,68 @@
 
 namespace Moonlight {
 
-Context::Node::Node (MoonSurface *surface, cairo_matrix_t *matrix)
+Context::Surface::Surface (MoonSurface *moon)
+{
+	native  = moon->ref ();
+	offset  = Point (NAN, NAN);
+	surface = NULL;
+}
+
+Context::Surface::Surface (MoonSurface *moon,
+			   double      xOffset,
+			   double      yOffset)
+{
+	native  = moon->ref ();
+	offset  = Point (xOffset, yOffset);
+	surface = NULL;
+}
+
+Context::Surface::~Surface ()
+{
+	if (surface)
+		cairo_surface_destroy (surface);
+
+	native->unref ();
+}
+
+Context::Surface *
+Context::Surface::Similar (Rect r)
+{
+	MoonSurface      *moon = native->Similar (r.width, r.height);
+	Context::Surface *cs = new Surface (moon, -r.x, -r.y);
+
+	moon->unref ();
+
+	return cs;
+}
+
+MoonSurface *
+Context::Surface::Native ()
+{
+	return native->ref ();
+}
+
+cairo_surface_t *
+Context::Surface::Cairo ()
+{
+	if (!surface) {
+		surface = native->Cairo ();
+
+		if (!isnan (offset.x) && !isnan (offset.y))
+			cairo_surface_set_device_offset (surface,
+							 offset.x,
+							 offset.y);
+	}
+
+	return cairo_surface_reference (surface);
+}
+
+Context::Node::Node (Surface *surface, cairo_matrix_t *matrix)
 {
 	box       = Rect ();
 	transform = *matrix;
 	context   = NULL;
-	target    = surface->ref ();
+	target    = (Surface *) surface->ref ();
 	data      = NULL;
 }
 
@@ -47,19 +103,13 @@ Context::Node::~Node ()
 cairo_t *
 Context::Node::Cairo ()
 {
-	MoonSurface *surface = GetSurface ();
+	Surface *surface = GetSurface ();
 
-	if (surface != target)
+	if (!surface)
 		return NULL;
 
 	if (!context) {
-		cairo_surface_t *dst;
-		Rect            r = box.RoundOut ();
-
-		dst = target->Cairo ();
-
-		if (!r.IsEmpty ())
-			cairo_surface_set_device_offset (dst, -r.x, -r.y);
+		cairo_surface_t *dst = surface->Cairo ();
 
 		context = cairo_create (dst);
 		cairo_set_matrix (context, &transform);
@@ -76,10 +126,15 @@ Context::Node::GetMatrix (cairo_matrix_t *matrix)
 	*matrix = transform;
 }
 
-MoonSurface *
+Context::Surface *
 Context::Node::GetSurface ()
 {
-	return target ? target : GetData (NULL);
+	if (!target) {
+		if (!GetData (NULL))
+			return NULL;
+	}
+
+	return target;
 }
 
 MoonSurface *
@@ -88,7 +143,7 @@ Context::Node::GetData (Rect *extents)
 	Rect r = box.RoundOut ();
 
 	if (!data) {
-		MoonSurface *base;
+		Surface *base;
 
 		if (target)
 			return NULL;
@@ -104,13 +159,13 @@ Context::Node::GetData (Rect *extents)
 			return NULL;
 		}
 
-		data = base->Similar (r.width, r.height);
-		if (!data) {
+		target = base->Similar (r);
+		if (!target) {
 			g_warning ("ContextNode::GetData failed.");
 			return NULL;
 		}
 
-		target = data->ref ();
+		data = target->Native ();
 	}
 
 	if (extents)
@@ -140,25 +195,25 @@ Context::Node::SetData (MoonSurface *source)
 bool
 Context::Node::Readonly (void)
 {
-	MoonSurface *surface = GetSurface ();
-
-	if (surface != target)
-		return true;
-
-	return false;
+	return GetSurface () ? false : true;
 }
 
 Context::Context (MoonSurface *surface)
 {
+	Surface        *cs = new Surface (surface);
 	cairo_matrix_t matrix;
 
 	cairo_matrix_init_identity (&matrix);
-	Stack::Push (new Context::Node (surface, &matrix));
+	Stack::Push (new Context::Node (cs, &matrix));
+	cs->unref ();
 }
 
 Context::Context (MoonSurface *surface, cairo_matrix_t *transform)
 {
-	Stack::Push (new Context::Node (surface, transform));
+	Surface *cs = new Surface (surface);
+
+	Stack::Push (new Context::Node (cs, transform));
+	cs->unref ();
 }
 
 void
