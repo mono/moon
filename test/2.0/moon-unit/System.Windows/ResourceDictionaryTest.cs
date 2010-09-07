@@ -295,6 +295,101 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (Colors.Brown, scb.Color, "2");
 		}
 
+		[TestMethod]
+		public void Add_TypeAsKey_Throws ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			Assert.Throws<ArgumentException> (() => rd.Add (typeof (TextBlock), "foobar"));
+		}
+
+		[TestMethod]
+		public void Add_TypeAsKeyToStyle_Throws ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			Assert.Throws<ArgumentException> (() => rd.Add (typeof (TextBlock), new Style ()));
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void Contains_TypeAsKey_DoesNotThrow ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			rd.Contains (typeof (TextBlock));
+		}
+
+		[TestMethod]
+		public void Contains_IntAsKey_Throws ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			Assert.Throws<ArgumentException> (() => rd.Contains (35));
+		}
+
+		[TestMethod]
+		public void Contains_ObejctAsKey_Throws ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			Assert.Throws<ArgumentException> (() => rd.Contains (new object ()));
+		}
+
+		[TestMethod]
+		public void Contains_TypeNameAsKeyItemRegisteredInXaml_ReturnsTrue ()
+		{
+			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+											    <Style TargetType=""Button""> </Style>
+											</ResourceDictionary>");
+
+			bool contains = rd.Contains ("System.Windows.Controls.Button");
+			Assert.IsTrue (contains);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void Contains_TypeAsKeyItemRegisteredInXaml_ReturnsFalse ()
+		{
+			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+											    <Style TargetType=""Button""> </Style>
+											</ResourceDictionary>");
+
+			bool contains = rd.Contains (typeof (Button));
+			Assert.IsFalse (contains);
+		}
+
+		[TestMethod]
+                [MoonlightBug]
+		public void Contains_TypeAsKeyStyleWithTargetTypeSet_ReturnsTrue ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			Style s = new Style () {
+				TargetType = typeof (Button),
+			};
+
+			rd.Add (typeof (Button), s);
+
+			bool contains = rd.Contains (typeof (Button));
+			Assert.IsTrue (contains);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void Contains_TypeNameAsKeyStyleWithTargetTypeSet_ReturnsFalse ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			Style s = new Style () {
+				TargetType = typeof (Button),
+			};
+
+			rd.Add (typeof (Button), s);
+
+			bool contains = rd.Contains ("System.Windows.Controls.Button");
+			Assert.IsFalse (contains);
+		}
 
 		[TestMethod]
 		public void TestIntegerIndex ()
