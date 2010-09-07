@@ -323,7 +323,7 @@ typedef enum _cairo_status {
     CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED,
     CAIRO_STATUS_DEVICE_TYPE_MISMATCH,
     CAIRO_STATUS_DEVICE_ERROR,
-
+    CAIRO_STATUS_INVALID_COLOR_TOLERANCE,
     CAIRO_STATUS_LAST_STATUS
 } cairo_status_t;
 
@@ -2404,6 +2404,13 @@ cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern,
 				   double offset,
 				   double red, double green, double blue,
 				   double alpha);
+
+cairo_public void
+cairo_pattern_set_color_tolerance (cairo_pattern_t *pattern,
+				   double tolerance);
+
+cairo_public double
+cairo_pattern_get_color_tolerance (cairo_pattern_t *pattern);
 
 cairo_public void
 cairo_pattern_set_matrix (cairo_pattern_t      *pattern,

@@ -448,6 +448,7 @@ _cairo_pattern_init_gradient (cairo_gradient_pattern_t *pattern,
     pattern->n_stops    = 0;
     pattern->stops_size = 0;
     pattern->stops      = NULL;
+    pattern->color_tolerance  = 1.0;
 }
 
 void
@@ -1102,6 +1103,42 @@ cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern,
 				   offset, red, green, blue, alpha);
 }
 
+void
+cairo_pattern_set_color_tolerance (cairo_pattern_t *pattern,
+				   double color_tolerance)
+{
+    cairo_gradient_pattern_t *gradient;
+
+    if (pattern->status)
+	return;
+
+    if (pattern->type != CAIRO_PATTERN_TYPE_LINEAR &&
+	pattern->type != CAIRO_PATTERN_TYPE_RADIAL)
+    {
+	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_COLOR_TOLERANCE)
+;
+	return;
+    }
+
+    gradient = (cairo_gradient_pattern_t*)pattern;
+    gradient->color_tolerance = color_tolerance;
+}
+
+double
+cairo_pattern_get_color_tolerance (cairo_pattern_t *pattern)
+{
+    cairo_gradient_pattern_t *gradient = (cairo_gradient_pattern_t*)pattern;
+
+    if (pattern->type != CAIRO_PATTERN_TYPE_LINEAR &&
+	pattern->type != CAIRO_PATTERN_TYPE_RADIAL)
+    {
+	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+	return 0.0;
+    }
+
+    return gradient->color_tolerance;
+}
+
 /**
  * cairo_pattern_set_matrix:
  * @pattern: a #cairo_pattern_t
@@ -1521,6 +1558,7 @@ _cairo_pattern_acquire_surface_for_gradient (const cairo_gradient_pattern_t *pat
 	break;
     }
 
+    pixman_image_set_color_tolerance (pixman_image, pattern->color_tolerance);
     pixman_image_composite32 (PIXMAN_OP_SRC,
                               pixman_image,
                               NULL,

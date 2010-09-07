@@ -414,6 +414,7 @@ typedef struct _cairo_gradient_pattern {
     unsigned int	    stops_size;
     cairo_gradient_stop_t  *stops;
     cairo_gradient_stop_t   stops_embedded[2];
+    double                  color_tolerance;
 } cairo_gradient_pattern_t;
 
 typedef struct _cairo_linear_pattern {
