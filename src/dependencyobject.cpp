@@ -2352,6 +2352,8 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		old_local_value = new Value (*old_local_value);
 
 	providers.localvalue->ClearValue (property);
+	if (property->IsAutoCreated ())
+		providers.autocreate->ClearValue (property);
 	
 	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 	for (int p = PropertyPrecedence_LocalValue + 1; p < PropertyPrecedence_Count; p ++) {
