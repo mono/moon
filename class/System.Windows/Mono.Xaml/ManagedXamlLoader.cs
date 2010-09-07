@@ -1283,16 +1283,6 @@ namespace Mono.Xaml
 					}
 				}
 
-				if (pi.PropertyType == typeof (System.Uri)) {
-					// If its a non-rooted relative uri, give it a base
-					Uri dummy = null;
-					if (Uri.TryCreate (str_value, UriKind.Relative, out dummy) && !str_value.StartsWith ("/")) {
-						if (resourceBase != null)
-							str_value = new Uri (resourceBase, str_value).ToString ();
-					}
-							
-				}
-
 				if (pi.PropertyType == typeof (DependencyProperty)) {
 					DependencyProperty dp = DependencyPropertyFromString (data, target, target_parent_ptr, str_value);
 					if (dp != null) {
