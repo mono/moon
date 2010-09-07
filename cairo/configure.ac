@@ -618,7 +618,7 @@ AC_SUBST(pixman_CFLAGS)
 AC_SUBST(pixman_LIBS)
 
 CAIRO_ENABLE_SURFACE_BACKEND(image, image, always, [
-  pixman_REQUIRES="pixman-1 >= 0.18.4"
+  pixman_REQUIRES="pixman-1-uninstalled >= 0.18.4"
   PKG_CHECK_MODULES(pixman, $pixman_REQUIRES, , [AC_MSG_RESULT(no)
   use_image="no (requires $pixman_REQUIRES http://cairographics.org/releases/)"])
   image_REQUIRES=$pixman_REQUIRES

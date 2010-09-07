@@ -20,6 +20,6 @@ AC_DEFUN([MOONLIGHT_CHECK_CAIRO],
 		CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
 		CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
 	else
-		PKG_CHECK_MODULES(CAIRO,cairo >= 1.8)
+		PKG_CHECK_MODULES(CAIRO,cairo >= 1.10)
 	fi
 ])
