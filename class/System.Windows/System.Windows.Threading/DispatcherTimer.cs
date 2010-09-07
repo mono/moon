@@ -1,7 +1,7 @@
 //
 // DispatcherTimer.cs
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008, 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -36,7 +36,7 @@ namespace System.Windows.Threading {
 		public DispatcherTimer ()
 		{
 			internalTimer = new Mono.DispatcherTimer ();
-			internalTimer.managedTimer = this;
+			InternalTimer.managedTimer = this;
 		}
 
 		~DispatcherTimer ()
@@ -48,16 +48,15 @@ namespace System.Windows.Threading {
 		{
 			if (!started) {
 				started = true;
-				Mono.NativeMethods.dispatcher_timer_start (internalTimer.native);
+				Mono.NativeMethods.dispatcher_timer_start (InternalTimer.native);
 			}
-
 		}
 
 		public void Stop ()
 		{
 			if (started) {
 				started = false;
-				Mono.NativeMethods.dispatcher_timer_stop (internalTimer.native);
+				Mono.NativeMethods.dispatcher_timer_stop (InternalTimer.native);
 			}
 		}
 
@@ -76,13 +75,20 @@ namespace System.Windows.Threading {
 
 		public event EventHandler Tick {
 			add {
-				internalTimer.Tick += value;
+				InternalTimer.Tick += value;
 			}
 			remove {
-				internalTimer.Tick -= value;
+				InternalTimer.Tick -= value;
 			}
 		}
 
+		Mono.DispatcherTimer InternalTimer {
+			get {
+				if (!internalTimer.CheckAccess ())
+					throw new UnauthorizedAccessException ("Invalid access of Moonlight from an external thread.");
+				return internalTimer;
+			}
+		}
 	}
 
 }
