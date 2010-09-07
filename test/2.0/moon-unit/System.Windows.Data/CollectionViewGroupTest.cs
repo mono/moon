@@ -249,8 +249,23 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("When we have an item in the groups twice we only emit one Remove event, we need two")]
 		public void OneItem_TwoGroups_Remove_Events ()
+		{
+			var args = new List<NotifyCollectionChangedEventArgs>();
+			var source = new CollectionViewSource { Source = new List<object> { new object () } };
+			source.GroupDescriptions.Add(new ConcretePropertyGroupDescription() {
+				GroupNameFromItemFunc = (item, level, culture) => new[] { "First", "Second" }
+			});
+
+			source.View.CollectionChanged += (o, e) => args.Add(e);
+			((IEditableCollectionView)source.View).RemoveAt(0);
+			Assert.AreEqual(2, args.Count, "#1");
+			Assert.AreEqual (0, source.View.Cast<object> ().Count (), "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("This is not important, we remove the two elements in the opposite order to Silverlight")]
+		public void OneItem_TwoGroups_Remove_Events_CheckOrder ()
 		{
 			var args = new List<NotifyCollectionChangedEventArgs>();
 			var source = new CollectionViewSource { Source = new List<object> { new object () } };
