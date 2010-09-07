@@ -32,8 +32,10 @@ using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace System.Windows.Media
 {
@@ -193,7 +195,9 @@ namespace System.Windows.Media
 		{
 			if (!closed) {
 				closed = true;
-				CloseMedia ();
+				media_element.Dispatcher.BeginInvoke (delegate () {
+					CloseMedia ();
+				});
 				
 				if (handle.IsAllocated)
 					handle.Free ();
@@ -205,28 +209,39 @@ namespace System.Windows.Media
 		
 		internal void GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind diagnosticKind)
 		{
-			GetDiagnosticAsync (diagnosticKind);
+			media_element.Dispatcher.BeginInvoke (delegate () {
+				GetDiagnosticAsync (diagnosticKind);
+			});
 		}
 
 		internal void GetSampleAsyncInternal (MediaStreamType mediaStreamType)
 		{
-			GetSampleAsync (mediaStreamType);
+			media_element.Dispatcher.BeginInvoke (delegate () {
+				GetSampleAsync (mediaStreamType);
+			});
 		}
 
 		internal void OpenMediaAsyncInternal (IntPtr demuxer)
 		{
 			this.demuxer = demuxer;
-			OpenMediaAsync ();
+			closed = false;
+			media_element.Dispatcher.BeginInvoke (delegate () {
+				OpenMediaAsync ();
+			});
 		}
 
 		internal void SeekAsyncInternal (long seekToTime)
 		{
-			SeekAsync (seekToTime);
+			media_element.Dispatcher.BeginInvoke (delegate () {
+				SeekAsync (seekToTime);
+			});
 		}
 
 		internal void SwitchMediaStreamAsyncInternal (MediaStreamDescription mediaStreamDescription)
 		{
-			SwitchMediaStreamAsync (mediaStreamDescription);
+			media_element.Dispatcher.BeginInvoke (delegate () {
+				SwitchMediaStreamAsync (mediaStreamDescription);
+			});
 		}
 
 		// Methods to be called by the derived class

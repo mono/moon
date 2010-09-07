@@ -1,16 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
@@ -40,10 +34,14 @@ namespace MoonTest.System.Windows.Media
 
 			public List<MediaStreamDescription> AvailableMediaStreams = new List<MediaStreamDescription> ();
 			public Dictionary<MediaSourceAttributesKeys, string> MediaSourceAttributes = new Dictionary<MediaSourceAttributesKeys, string> ();
+			
+			private int ThreadId = Thread.CurrentThread.ManagedThreadId;
 
 			protected override void CloseMedia ()
 			{
 				Log.Add (new LogEntry ("CloseMedia"));
+
+				CloseMediaOnSameThread = (ThreadId == Thread.CurrentThread.ManagedThreadId);
 			}
 
 			protected override void GetDiagnosticAsync (MediaStreamSourceDiagnosticKind diagnosticKind)
@@ -61,6 +59,8 @@ namespace MoonTest.System.Windows.Media
 				Log.Add (new LogEntry ("OpenMediaAsync"));
 
 				ReportOpenMediaCompleted (MediaSourceAttributes, AvailableMediaStreams);
+
+				OpenMediaOnSameThread = (ThreadId == Thread.CurrentThread.ManagedThreadId);
 			}
 
 			protected override void SeekAsync (long seekToTime)
@@ -328,6 +328,89 @@ namespace MoonTest.System.Windows.Media
 		{
 			MediaStreamSourcePoker mss = new MediaStreamSourcePoker ();
 			mss.CallReportSwitchMediaStreamCompleted (null);
+		}
+
+		static public bool OpenMediaOnSameThread;
+		static public bool CloseMediaOnSameThread;
+
+		[TestMethod]
+		[Asynchronous]
+		public void ThreadPool ()
+		{
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			bool opened = false;
+			OpenMediaOnSameThread = false;
+			CloseMediaOnSameThread = false;
+
+			Enqueue (() => {
+				Assert.AreEqual (tid, Thread.CurrentThread.ManagedThreadId, "Different thread ids");
+
+				MediaStreamSourceBase mss = new MediaStreamSourceBase ();
+				mss.InitializeSource (true, 5000000);
+				mss.AddVideoStream ();
+
+				MediaElement mel = new MediaElement ();
+				mel.MediaOpened += new RoutedEventHandler (delegate (object sender, RoutedEventArgs e) {
+					opened = true;
+					Assert.AreEqual (tid, Thread.CurrentThread.ManagedThreadId, "MediaOpened");
+				});
+				mel.SetSource (mss);
+#if false
+				Assert.Throws<InvalidOperationException> (delegate {
+					mel.SetSource (mss); // 2nd SetSource to get a Close event
+				}, "Close");
+#endif
+				TestPanel.Children.Add (mel);
+			});
+			EnqueueConditional (() => opened);
+			Enqueue (delegate () {
+				Assert.IsTrue (OpenMediaOnSameThread, "OpenMediaOnSameThread");
+//				Assert.IsTrue (CloseMediaOnSameThread, "CloseMediaOnSameThread");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UserThread ()
+		{
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			bool opened = false;
+			// set them to true to make sure we're not checking the default (false) value later
+			OpenMediaOnSameThread = true;
+			CloseMediaOnSameThread = true;
+
+			Dispatcher dispatcher = TestPanel.Dispatcher;
+
+			Thread t = new Thread (delegate () {
+				Assert.AreNotEqual (tid, Thread.CurrentThread.ManagedThreadId, "Same thread ids");
+
+				MediaStreamSourceBase mss = new MediaStreamSourceBase ();
+				mss.InitializeSource (false, 5000000);
+				mss.AddVideoStream ();
+
+				dispatcher.BeginInvoke (delegate {
+					MediaElement mel = new MediaElement ();
+					mel.MediaOpened += new RoutedEventHandler (delegate (object sender, RoutedEventArgs e) {
+						opened = true;
+						Assert.AreEqual (tid, Thread.CurrentThread.ManagedThreadId, "MediaOpened");
+					});
+					mel.SetSource (mss);
+#if false
+					Assert.Throws<InvalidOperationException> (delegate {
+						mel.SetSource (mss); // 2nd SetSource to get a Close event
+					}, "Close");
+#endif
+					TestPanel.Children.Add (mel);
+				});
+			});
+			t.Start ();
+			EnqueueConditional (() => opened);
+			Enqueue (delegate () {
+				Assert.IsFalse (OpenMediaOnSameThread, "OpenMediaOnSameThread");
+//				Assert.IsFalse (CloseMediaOnSameThread, "CloseMediaOnSameThread");
+			});
+			EnqueueTestComplete ();
 		}
 	}
 }
