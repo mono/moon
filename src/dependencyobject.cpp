@@ -2323,6 +2323,18 @@ void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error)
 {
 	Value *old_local_value;
+
+	if (GetAnimationStorageFor (property) != NULL) {
+		// DRT #508 has a test for clearing an animating
+		// property which seems to indicate that ClearValue
+		// doesn't work on them.  we have other tests that
+		// show that there isn't another precedent for them
+		// (and that promoted values become local values), so
+		// the only explanation, as gross as it is, is that
+		// ClearValue short-circuits out if we're animating
+		// the property.
+		return;
+	}
 	
 	if (!(old_local_value = ReadLocalValue (property)))
 		if (property->IsAutoCreated ())
