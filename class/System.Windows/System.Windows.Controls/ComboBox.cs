@@ -38,7 +38,7 @@ namespace System.Windows.Controls
 	[TemplateVisualState (Name="MouseOver", GroupName="CommonStates")]
 	[TemplateVisualState (Name="Disabled", GroupName="CommonStates")]
 	[TemplateVisualState (Name="Unfocused", GroupName="FocusStates")]
-	[TemplateVisualState (Name="Focused", GroupName="FocuStates")]
+	[TemplateVisualState (Name="Focused", GroupName="FocusStates")]
 	[TemplateVisualState (Name="InvalidFocused", GroupName="ValidationStates")]
 	[TemplateVisualState (Name="InvalidUnfocused", GroupName="ValidationStates")]
 	[TemplateVisualState (Name="Valid", GroupName="ValidationStates")]
