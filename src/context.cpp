@@ -71,15 +71,6 @@ Context::Node::Cairo ()
 }
 
 void
-Context::Node::Transform (cairo_matrix_t *matrix)
-{
-	cairo_matrix_multiply (&transform, matrix, &transform);
-
-	if (context)
-		cairo_set_matrix (context, &transform);
-}
-
-void
 Context::Node::GetMatrix (cairo_matrix_t *matrix)
 {
 	*matrix = transform;

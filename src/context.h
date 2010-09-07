@@ -29,7 +29,6 @@ public:
 
 		cairo_t *Cairo ();
 
-		void Transform (cairo_matrix_t *matrix);
 		void GetMatrix (cairo_matrix_t *matrix);
 		MoonSurface *GetSurface ();
 		MoonSurface *GetData (Rect *extents);
