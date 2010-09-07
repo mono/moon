@@ -12,18 +12,19 @@
 #define __MOON_REGION_H__
 
 #include <cairo.h>
-#include <gdk/gdk.h> // for GdkRegion
+#include <stdio.h>
 #include "rect.h"
 
 namespace Moonlight {
 
 class Region {
-	GdkRegion *gdkregion;
+	cairo_region_t *cairo_region;
+	cairo_status_t status;
 
 public:
 	Region ();
 	Region (Rect rect);
-	Region (GdkRegion *region);
+	Region (cairo_region_t *cairo_region);
 	Region (Region *region);
 	Region (double x, double y, double width, double height);
 	
@@ -33,7 +34,6 @@ public:
 
 	void Union (Rect rect);
 	void Union (GdkRegion *region);
-	void Union (GdkRectangle *rect);
 	void Union (Region *region);
 
 	void Intersect (Region *region);
@@ -42,12 +42,14 @@ public:
 	void Subtract (Region *region);
 	void Subtract (Rect rect);
 
-	void GetRectangles (GdkRectangle **rects, int *count);
+	
+	int GetRectangleCount ();
+	Rect GetRectangle (int index);
 
 	void Offset (int dx, int dy);
 
-	Rect ClipBox ();
-	GdkOverlapType RectIn (Rect rect);
+	Rect GetExtents ();
+	cairo_region_overlap_t RectIn (Rect rect);
 
 	void Draw (cairo_t *cr);
 };

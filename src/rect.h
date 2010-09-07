@@ -182,6 +182,7 @@ struct Rect {
 		return ExtendTo (p.x, p.y);	
 	}
 
+	/*
 	GdkRectangle 
 	ToGdkRectangle () const
 	{
@@ -193,6 +194,20 @@ struct Rect {
 		gdk.height = (gint)rect.height;
 
 		return gdk;
+	}
+	*/
+
+	cairo_rectangle_int_t
+	ToCairoRectangleInt () const
+	{
+		cairo_rectangle_int_t cairo;
+		Rect rect = RoundOut ();
+		cairo.x = (int)rect.x;
+		cairo.y = (int)rect.y;
+		cairo.width = (int)rect.width;
+		cairo.height = (int)rect.height;
+
+		return cairo;
 	}
 
 	bool operator == (const Rect &rect)

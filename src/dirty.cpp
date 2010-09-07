@@ -401,25 +401,12 @@ Surface::ProcessUpDirtyElements ()
 				el->GetVisualParent ()->Invalidate (dirty);
 			}
 			else {
-				GdkRectangle *rects;
-				int count;
-				dirty->GetRectangles (&rects, &count);
-				Surface *surface = el->GetDeployment ()->GetSurface ();
 				if (el->IsAttached ()) {
-					while (count--) {
-						Rect r = Rect ((double)rects [count].x,
-							       (double)rects [count].y,
-							       (double)rects [count].width,
-							       (double)rects [count].height);
-						//printf (" + + invalidating parent (%f,%f,%f,%f)\n",
-						//	r.x,
-						//	r.y,
-						//	r.w,
-						//	r.h);
+					int count = dirty->GetRectangleCount ();
+					Surface *surface = el->GetDeployment ()->GetSurface ();
 
-						surface->Invalidate (r);
-					}
-					g_free (rects);
+					while (count--)
+						surface->Invalidate (dirty->GetRectangle (count));
 				}
 			}
 

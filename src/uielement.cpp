@@ -1340,7 +1340,7 @@ UIElement::RenderToIntermediate ()
 void
 UIElement::FrontToBack (Region *surface_region, List *render_list)
 {
-	if (surface_region->RectIn (GetSubtreeBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
+	if (surface_region->RectIn (GetSubtreeBounds().RoundOut()) == CAIRO_REGION_OVERLAP_OUT)
 		return;
 
 	double local_opacity = GetOpacity ();
@@ -1471,7 +1471,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
 		if (!region->IsEmpty ())
-			r = r.Intersection (region->ClipBox ());
+			r = r.Intersection (region->GetExtents ());
 
 		bounds = bounds.Intersection (r);
 
@@ -1541,7 +1541,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		// screen.
 		// 
 		if (!region->IsEmpty ())
-			r = r.Intersection (region->ClipBox ());
+			r = r.Intersection (region->GetExtents ());
 
 		if (flags & COMPOSITE_OPACITY)
 			ctx->Push (Context::Group (r));

@@ -10,81 +10,74 @@
 
 #include <config.h>
 #include <stdlib.h>
+#include <cairo.h>
 
 #include "region.h"
+
 
 namespace Moonlight {
 
 
 Region::Region ()
 { 
-	gdkregion = gdk_region_new (); 
+	cairo_region = cairo_region_create ();
 }
 
 Region::Region (double x, double y, double width, double height)
 {
-	gdkregion = gdk_region_new ();
+	cairo_region = cairo_region_create ();
 	Union (Rect (x, y, width, height));
 }
 
 Region::Region (Rect rect)
 {
-	gdkregion = gdk_region_new ();
+	cairo_region = cairo_region_create ();
 	Union (rect);
-}
-
-Region::Region (GdkRegion *region)
-{
-	gdkregion = gdk_region_copy (region);
 }
 
 Region::Region (Region *region)
 {
-	gdkregion = gdk_region_copy (region->gdkregion);
+	cairo_region = cairo_region_create ();
+	Union (region);
 }
 
 Region::~Region ()
 {
-	gdk_region_destroy (gdkregion);
-	gdkregion = NULL;
+
+	cairo_region_destroy (cairo_region);
+	cairo_region = NULL;
 }
 
 bool
 Region::IsEmpty ()
 {
-	return gdk_region_empty (gdkregion);
+	return cairo_region_is_empty (cairo_region);
 }
 
 void 
 Region::Union (Rect rect)
 {
-	GdkRectangle gdkrect = rect.ToGdkRectangle ();
-	gdk_region_union_with_rect (gdkregion, &gdkrect);
-}
-
-void
-Region::Union (GdkRectangle *rect)
-{
-	gdk_region_union_with_rect (gdkregion, rect);
+	cairo_rectangle_int_t cairo_rect = rect.ToCairoRectangleInt ();
+	cairo_region_union_rectangle (cairo_region, &cairo_rect);
 }
 
 void 
 Region::Union (Region *region)
 {
-	gdk_region_union (gdkregion, region->gdkregion);
+	cairo_region_union (cairo_region, region->cairo_region);
 }
 
-GdkOverlapType
+cairo_region_overlap_t
 Region::RectIn (Rect rect)
 {
-	GdkRectangle gdkrect = rect.ToGdkRectangle ();
-	return gdk_region_rect_in (gdkregion, &gdkrect);
+	cairo_rectangle_int_t cairo_rect = rect.ToCairoRectangleInt ();
+	return cairo_region_contains_rectangle (cairo_region, &cairo_rect);
 }
 
 void
 Region::Intersect (Region *region)
 {
-	gdk_region_intersect (gdkregion, region->gdkregion);
+	status = cairo_region_intersect (cairo_region, region->cairo_region);
 }
 
 void
@@ -98,7 +91,7 @@ Region::Intersect (Rect rect)
 void
 Region::Subtract (Region *region)
 {
-	gdk_region_subtract (gdkregion, region->gdkregion);
+	status = cairo_region_subtract (cairo_region, region->cairo_region);
 }
 
 void
@@ -111,39 +104,41 @@ Region::Subtract (Rect rect)
 void
 Region::Offset (int dx, int dy)
 {
-	gdk_region_offset (gdkregion, dx, dy);
+	cairo_region_translate (cairo_region, -dx, dy);
 }
 
-void
-Region::GetRectangles (GdkRectangle **rects, int *count)
+int
+Region::GetRectangleCount ()
 {
-	gdk_region_get_rectangles (gdkregion, rects, count);
-	//if (*count > 10) {
-	//	*count = 1;
-	//	gdk_region_get_clipbox (gdkregion, *rects);
-	//}
+	return cairo_region_num_rectangles (cairo_region);
+}
+
+Rect
+Region::GetRectangle (int index)
+{
+	cairo_rectangle_int_t cairo_rect;
+
+	cairo_region_get_rectangle (cairo_region, index, &cairo_rect);
+	Rect rect (cairo_rect.x, cairo_rect.y, cairo_rect.width, cairo_rect.height);
+
+	return rect;
 }
 
 Rect 
-Region::ClipBox ()
+Region::GetExtents ()
 {
-	GdkRectangle clip;
-	gdk_region_get_clipbox (gdkregion, &clip);
-	return Rect (clip.x, clip.y, clip.width, clip.height);
+	cairo_rectangle_int_t extents;
+	cairo_region_get_extents (cairo_region, &extents);
+	return Rect (extents.x, extents.y, extents.width, extents.height);
 }
 
 void 
 Region::Draw (cairo_t *cr)
 {
-	GdkRectangle *rects;
-	int count;
-
-	gdk_region_get_rectangles (gdkregion, &rects, &count);
+	int count = GetRectangleCount ();
 
 	for (int i = 0; i < count; i++)
-		cairo_rectangle (cr, rects [i].x, rects [i].y, rects [i].width, rects [i].height);
-
-	g_free (rects);
+		GetRectangle (i).Draw (cr);
 }
 
 

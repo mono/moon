@@ -854,7 +854,7 @@ dump_render_list (List *render_list)
 	node = (RenderNode*)render_list->First();
 	while (node) {
 		if (node->pre_render) {
-			Rect r = node->region->ClipBox();
+			Rect r = node->region->GetExtents();
 			Rect bounds = node->uielement->GetBounds();
 
 			for (int i = 0; i < indent; i ++) putc (' ', stdout);

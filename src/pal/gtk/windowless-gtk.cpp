@@ -180,10 +180,11 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 				expose.type = GDK_EXPOSE;
 				expose.window = NULL;
 				expose.send_event = FALSE;
-				expose.area = Rect (xev->xgraphicsexpose.x,
-						    xev->xgraphicsexpose.y,
-						    xev->xgraphicsexpose.width,
-						    xev->xgraphicsexpose.height).ToGdkRectangle ();
+			       
+				expose.area.x = xev->xgraphicsexpose.x;
+				expose.area.y = xev->xgraphicsexpose.y;
+				expose.area.width = xev->xgraphicsexpose.width;
+				expose.area.height = xev->xgraphicsexpose.height;
 				/* XXX ugh */
 				expose.area.x -= x;
 				expose.area.y -= y;

@@ -880,7 +880,14 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 					 width, height);
 	cairo_surface_set_device_offset (native, off_x, off_y);
 
-	Region *region = new Region (event->region);
+	Region *region = new Region ();
+	int count = 0;
+	GdkRectangle *rects;
+	gdk_region_get_rectangles (event->region, &rects, &count);
+	while (count--) {
+		GdkRectangle c = rects[count];
+		region->Union (Rect (c.x, c.y, c.width, c.height));
+	}
 
 	ctx->Push (Context::Clip (r));
 

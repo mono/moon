@@ -10,7 +10,7 @@
 
 #include <config.h>
 #include "im-gtk.h"
-
+#include <cairo.h>
 #include <gtk/gtkimmulticontext.h>
 
 using namespace Moonlight;
@@ -115,9 +115,13 @@ void
 MoonIMContextGtk::SetCursorLocation (Rect r)
 {
 	GdkRectangle area;
-	Rect rect;
+	cairo_rectangle_int_t cairo_rect;
 
-	area = r.ToGdkRectangle ();
+	cairo_rect = r.ToCairoRectangleInt ();
+	area.x = cairo_rect.x;
+	area.y = cairo_rect.y;
+	area.width = cairo_rect.width;
+	area.height = cairo_rect.height;
 
 	gtk_im_context_set_cursor_location (im, &area);
 }
