@@ -317,7 +317,7 @@ namespace MoonTest.System.Net.Browser {
 				return;
 			}
 
-			WebRequest request = WebRequest.Create (WebClientTest.GetSitePage ("POST.aspx"));
+			WebRequest request = WebRequest.Create (WebClientTest.PostAspx);
 			IAsyncResult async_result = null;
 
 			/* We can't set Headers ["Content-Type"] directly, neither with POST nor GET requests */
@@ -341,7 +341,7 @@ namespace MoonTest.System.Net.Browser {
 				return;
 			}
 
-			WebRequest wr = GetWebRequest (new Uri (WebClientTest.GetSitePage ("POST.aspx")));
+			WebRequest wr = GetWebRequest (WebClientTest.PostAspx);
 			IAsyncResult async_result = null;
 
 			/* We can't set Headers ["Content-Type"] directly, neither with POST nor GET requests */
@@ -372,7 +372,7 @@ namespace MoonTest.System.Net.Browser {
 			
 			/* Check that the GetRequestStream callback is executed on a thread-pool thread */
 
-			HttpWebRequest request = (HttpWebRequest) GetWebRequest (new Uri (WebClientTest.GetSitePage ("timecode-long.wmv")));
+			HttpWebRequest request = (HttpWebRequest) GetWebRequest (WebClientTest.TimecodeLongWmv);
 			request.Method = "POST";
 			Enqueue (() =>
 			{
@@ -406,7 +406,7 @@ namespace MoonTest.System.Net.Browser {
 
 			/* Check that the GetResponse callback is executed on a thread-pool thread */
 
-			HttpWebRequest request = (HttpWebRequest) GetWebRequest (new Uri (WebClientTest.GetSitePage ("timecode-long.wmv")));
+			HttpWebRequest request = (HttpWebRequest) GetWebRequest (WebClientTest.TimecodeLongWmv);
 			
 			Enqueue (() =>
 			{
