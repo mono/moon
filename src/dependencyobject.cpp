@@ -1461,9 +1461,12 @@ DependencyObject::RemoveAllListeners ()
 {
 	if (GetDeployment()->IsShuttingDown ())
 		return;
-
-	providers.autocreate->ForeachValue (unregister_depobj_values, this);
-	providers.localvalue->ForeachValue (unregister_depobj_values, this);
+	
+	if (providers.autocreate)
+		providers.autocreate->ForeachValue (unregister_depobj_values, this);
+	
+	if (providers.localvalue)
+		providers.localvalue->ForeachValue (unregister_depobj_values, this);
 }
 
 static bool listeners_notified;
