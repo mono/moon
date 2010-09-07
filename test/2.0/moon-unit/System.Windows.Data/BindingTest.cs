@@ -2843,7 +2843,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 							
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindWithContent2 ()
 		{
 			TextProp c = (TextProp) XamlReader.Load (@"
@@ -2937,7 +2936,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlStaticResource4 ()
 		{
 			var c = (Canvas) XamlReader.Load (@"

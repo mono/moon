@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 652 methods
+# 651 methods
 
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
@@ -361,7 +361,6 @@
 +SSC-M: System.Void System.Windows.Controls.TextBox::OnLostFocus(System.Windows.RoutedEventArgs)
 +SSC-M: System.Void System.Windows.Controls.TextBox::Select(System.Int32,System.Int32)
 +SSC-M: System.Void System.Windows.Controls.TextBox::SelectAll()
-+SSC-M: System.Void System.Windows.Controls.Viewbox::ChildChanged(System.Object,System.Windows.DependencyPropertyChangedEventArgs)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnAttached(System.Windows.DependencyObject)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnDetached(System.Windows.DependencyObject)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::AttachDataContextHandlers(System.Windows.FrameworkElement)

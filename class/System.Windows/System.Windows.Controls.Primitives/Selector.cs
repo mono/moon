@@ -37,7 +37,7 @@ using Mono;
 using System.Collections.ObjectModel;
 
 namespace System.Windows.Controls.Primitives {
-	public abstract class Selector : ItemsControl, ISupportInitialize {
+	public abstract partial class Selector : ItemsControl, ISupportInitialize {
 		internal const string TemplateScrollViewerName = "ScrollViewer";
 
 		internal static readonly DependencyProperty IsSelectionActiveProperty =
@@ -87,8 +87,10 @@ namespace System.Windows.Controls.Primitives {
 		static void OnSelectedValuePathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			var selector = (Selector) o;
-			var value = (string) e.NewValue;
+			if (selector.Initializing)
+				return;
 
+			var value = (string) e.NewValue;
 			selector.SelectedValueWalker = string.IsNullOrEmpty (value) ? null : new PropertyPathWalker (value);
 			selector.SelectItemFromValue (selector.SelectedValue, true);
 		}
@@ -134,7 +136,10 @@ namespace System.Windows.Controls.Primitives {
 			set { SetValue (IsSynchronizedWithCurrentItemProperty, value); }
 		}
 
-		[Mono.Xaml.SetPropertyDelayed]
+		bool Initializing {
+			get; set;
+		}
+
 		public int SelectedIndex {
 			get { return (int)GetValue(SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }
@@ -157,6 +162,10 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal Selection Selection {
 			get; private set;
+		}
+
+		State InitState {
+			get; set;
 		}
 
 		internal ScrollViewer TemplateScrollViewer {
@@ -216,7 +225,7 @@ namespace System.Windows.Controls.Primitives {
 		
 		void SelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (Selection.Updating)
+			if (Selection.Updating || Initializing)
 				return;
 
 			var newVal = (int) e.NewValue;
@@ -229,7 +238,7 @@ namespace System.Windows.Controls.Primitives {
 		
 		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (Selection.Updating)
+			if (Selection.Updating || Initializing)
 				return;
 
 			// If the new item is null we clear our selection. If it is non-null
@@ -246,8 +255,10 @@ namespace System.Windows.Controls.Primitives {
 
 		void SelectedValueChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (!Selection.Updating)
-				SelectItemFromValue (e.NewValue, false);
+			if (Selection.Updating || Initializing)
+				return;
+
+			SelectItemFromValue (e.NewValue, false);
 		}
 
 		internal object GetValueFromItem (object item)
@@ -427,16 +438,34 @@ namespace System.Windows.Controls.Primitives {
 		{
 			
 		}
-		#region ISupportInitialize implementation
+
 		void ISupportInitialize.BeginInit ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Controls.Primitive.Selector:.ISupportInitialize.BeginInit");
+			Initializing = true;
+			InitState = new State {
+				Index = SelectedIndex,
+				Item = SelectedItem,
+				Value = SelectedValue,
+				ValuePath = SelectedValuePath,
+			};
 		}
 
 		void ISupportInitialize.EndInit ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Controls.Primitive.Selector:.ISupportInitialize.EndInit");
+			Initializing = false;
+
+			if (SelectedValue != InitState.Value) {
+				SelectItemFromValue (SelectedValue, false);
+			} else if (SelectedIndex != InitState.Index) {
+				Selection.Select (SelectedIndex < Items.Count ? Items [SelectedIndex] : null);
+			} else if (SelectedItem != InitState.Item) {
+				Selection.Select (SelectedItem);
+			} else  if (SelectedValuePath != InitState.ValuePath) {
+				SelectedValueWalker = string.IsNullOrEmpty (SelectedValuePath) ? null : new PropertyPathWalker (SelectedValuePath);
+				SelectItemFromValue (SelectedValueWalker.Value, true);
+			}
+
+			InitState = null;
 		}
-		#endregion
 	}
 }

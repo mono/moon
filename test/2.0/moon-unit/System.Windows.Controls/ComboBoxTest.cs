@@ -1312,7 +1312,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Setting the SelectedIndex before setting ItemsSource doesn't work in SL3")]
 		public void XamlSelectedIndex3 ()
 		{
 			var panel = (StackPanel)XamlReader.Load(@"
@@ -1335,7 +1334,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Setting the SelectedIndex before setting ItemsSource doesn't work in SL3")]
 		public void XamlSelectedIndex4 ()
 		{
 			var panel = (StackPanel) XamlReader.Load (@"
