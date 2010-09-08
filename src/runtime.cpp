@@ -812,8 +812,9 @@ Surface::DetachLayer (UIElement *layer)
 	layers->Remove (Value (layer));
 	layer->SetIsLoaded (false);
 	layer->SetIsAttached (false);
-	if (active_window)
-		Invalidate (layer->GetBounds ());
+	if (active_window) {
+		Invalidate (layer->GetSubtreeBounds ());
+	}
 }
 
 void
