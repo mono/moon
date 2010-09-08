@@ -55,7 +55,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 		[If you want to generate graphs visualizing the managed heap (default=no)]),
 		[], [with_heap_visualization=no])
 
-	if test x$with_heap_visualization; then
+	if test x$with_heap_visualization = xyes; then
 		AC_DEFINE([HEAPVIZ], [1], [Include heap visualization])
 	fi
 	AM_CONDITIONAL(HEAPVIZ,test x$with_heap_visualization = xyes)
