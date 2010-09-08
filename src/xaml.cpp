@@ -25,24 +25,7 @@
 #include <expat.h>
 
 
-#define INCLUDED_MONO_HEADERS 1
-
 #include <glib.h>
-#include <mono/mini/jit.h>
-#include <mono/metadata/debug-helpers.h>
-G_BEGIN_DECLS
-/* because this header sucks */
-#include <mono/metadata/mono-debug.h>
-G_END_DECLS
-#include <mono/metadata/mono-config.h>
-#include <mono/metadata/mono-gc.h>
-#include <mono/metadata/threads.h>
-#include <mono/metadata/profiler.h>
-
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/appdomain.h>
-
-
 
 #include "xaml.h"
 #include "error.h"
@@ -232,7 +215,6 @@ class XamlContextInternal {
 	GHashTable *imported_namespaces;
 	XamlLoaderCallbacks callbacks;
 	GSList *resources;
-	uint32_t gchandle;
 	bool create_ignorable;
 	XamlContextInternal *parent_context;
 
@@ -249,8 +231,6 @@ class XamlContextInternal {
 		this->parent_context = parent_context;
 		this->create_ignorable = true;
 
-		if (this->callbacks.create_gchandle) 
-			this->callbacks.create_gchandle ();
 		imported_namespaces = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 		g_hash_table_foreach (namespaces, add_namespace_data, imported_namespaces);
 	}
@@ -272,7 +252,7 @@ class XamlContextInternal {
 			g_hash_table_destroy (imported_namespaces);
 		if (resources)
 			g_slist_free (resources);
-		mono_gchandle_free (gchandle);
+		Deployment::GetCurrent ()->FreeGCHandle (callbacks.gchandle);
 		delete top_element;
 	}
 
@@ -1594,10 +1574,12 @@ SL3XamlLoader::Initialize (const Uri *resourceBase, Surface* surface, XamlContex
 	this->template_owner = NULL;
 	this->import_default_xmlns = false;
 
-	if (context)
+	if (context) {
 		this->vm_loaded = true;
-	else
+		this->context->ref ();
+	} else {
 		this->context = new XamlContext (new XamlContextInternal ());
+	}
 
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
@@ -1615,6 +1597,7 @@ SL3XamlLoader::~SL3XamlLoader ()
 	if (error_args)
 		error_args->unref();
 	delete resource_base;
+	context->unref ();
 }
 
 XamlLoaderCallbacks

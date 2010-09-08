@@ -47,13 +47,10 @@ namespace Mono.Xaml
 
 		Assembly assembly;
 		XamlLoaderCallbacks callbacks;
-		GCHandle handle;
 
 		public ManagedXamlLoader (Assembly assembly, Uri resourceBase, IntPtr surface, IntPtr plugin) : base (resourceBase, surface, plugin)
 		{
 			this.assembly = assembly;
-
-			handle = GCHandle.Alloc (this);
 		}
 
 
@@ -70,9 +67,8 @@ namespace Mono.Xaml
 			// unmanaged code. 
 			//
 			unsafe {
-				callbacks.gchandle = GCHandle.ToIntPtr (handle);
+				callbacks.gchandle = GCHandle.ToIntPtr (GCHandle.Alloc (this));
 				callbacks.lookup_object = new LookupObjectCallback (cb_lookup_object);
-				callbacks.create_gchandle = new CreateGCHandleCallback (cb_create_gchandle);
 				callbacks.set_property = new SetPropertyCallback (cb_set_property);
 				callbacks.import_xaml_xmlns = new ImportXamlNamespaceCallback (cb_import_xaml_xmlns);
 				callbacks.add_child = new AddChildCallback (cb_add_child);
@@ -1637,12 +1633,6 @@ namespace Mono.Xaml
 			}
 		}
 
-		private IntPtr cb_create_gchandle ()
-		{
-			var handle = GCHandle.Alloc (this);
-			return GCHandle.ToIntPtr (handle);
-		}
-		
 		//
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// generating an exception and unwinding the stack.

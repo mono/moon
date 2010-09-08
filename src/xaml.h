@@ -48,16 +48,13 @@ struct XamlCallbackData {
 
 
 typedef bool (*xaml_lookup_object_callback) (XamlCallbackData *data, Value *parent, const char *xmlns, const char *name, bool create, bool is_property, Value *value, MoonError *error);
-typedef uint32_t (*xaml_create_gchandle_callback) ();
 typedef bool (*xaml_set_property_callback) (XamlCallbackData *data, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data, MoonError *error);
 typedef bool (*xaml_import_xaml_xmlns_callback) (XamlCallbackData *data, const char* xmlns, MoonError *error);
 typedef bool (*xaml_add_child_callback) (XamlCallbackData *data, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data, MoonError *error);
 
 struct XamlLoaderCallbacks {
-
-	uint32_t gchandle;
+	void *gchandle;
 	xaml_lookup_object_callback lookup_object;
-	xaml_create_gchandle_callback create_gchandle;
 	xaml_set_property_callback set_property;
 	xaml_import_xaml_xmlns_callback import_xaml_xmlns;
 	xaml_add_child_callback add_child;

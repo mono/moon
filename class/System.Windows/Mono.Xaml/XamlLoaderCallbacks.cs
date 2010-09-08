@@ -37,7 +37,6 @@ using Mono;
 namespace Mono.Xaml
 {
 	unsafe internal delegate bool LookupObjectCallback (XamlCallbackData *data, Value* parent, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, [MarshalAs (UnmanagedType.U1)] bool is_property, out Value value, ref MoonError error);
-	unsafe internal delegate IntPtr CreateGCHandleCallback ();
 
 	unsafe internal delegate bool SetPropertyCallback (XamlCallbackData *data, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value, IntPtr value_data, ref MoonError error);
 	unsafe internal delegate bool ImportXamlNamespaceCallback (XamlCallbackData *data, string xmlns, ref MoonError error);
@@ -49,7 +48,6 @@ namespace Mono.Xaml
 	internal struct XamlLoaderCallbacks {
 		public IntPtr gchandle;
 		public LookupObjectCallback lookup_object;
-		public CreateGCHandleCallback create_gchandle;
 		public SetPropertyCallback set_property;
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
 		public AddChildCallback add_child;
