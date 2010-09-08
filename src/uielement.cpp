@@ -763,16 +763,6 @@ UIElement::SetSubtreeObject (DependencyObject *value)
 }
 
 void
-UIElement::VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data)
-{
-	UIElement *e;
-	DeepTreeWalker walker (this);
-	while ((e = walker.Step ()))
-		if (!visitor (e, visitor_data))
-			walker.SkipBranch ();
-}
-
-void
 UIElement::ElementRemoved (UIElement *item)
 {
 	// Invalidate ourself in the size of the item's subtree

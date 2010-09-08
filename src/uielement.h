@@ -700,8 +700,6 @@ protected:
 	Effect *composite;
 
 private:
-	void VisitVisualTree (VisualTreeVisitor visitor, gpointer visitor_data);
-
 	bool loaded;
 	int visual_level;
 	UIElement *visual_parent;
