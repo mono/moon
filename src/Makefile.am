@@ -117,6 +117,8 @@ libmoon_include_headers = 	\
 	size.h			\
 	style.h			\
 	stylus.h		\
+	surface.h		\
+	surface-cairo.h		\
 	tabnavigationwalker.h	\
 	template.h		\
 	textblock.h		\
