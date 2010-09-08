@@ -128,7 +128,7 @@ Media::Dispose ()
 
 	g_free (file);
 	file = NULL;
-	g_free (uri);
+	delete uri;
 	uri = NULL;
 
 	src = this->source;
