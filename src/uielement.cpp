@@ -1402,7 +1402,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 	Region *self_region = new Region (region);
 
-	VisualTreeWalker walker (this, ZReverse);
+	VisualTreeWalker walker (this, ZReverse, false);
 	while (UIElement *child = walker.Step ())
 		child->FrontToBack (region, render_list);
 
@@ -1560,7 +1560,7 @@ void
 UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 {
 	if (!skip_children) {
-		VisualTreeWalker walker (this, ZForward);
+		VisualTreeWalker walker (this, ZForward, false);
 		while (UIElement *child = walker.Step ())
 			child->DoRender (ctx, region);
 	}

@@ -839,7 +839,7 @@ InkPresenter::PostRender (Context *ctx, Region *region, bool skip_children)
 {
 	// render our chidren if we need to
 	if (!skip_children) {
-		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+		VisualTreeWalker walker = VisualTreeWalker (this, ZForward, false);
 		while (UIElement *child = walker.Step ())
 			child->DoRender (ctx, region);
 	}

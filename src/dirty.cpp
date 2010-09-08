@@ -226,7 +226,7 @@ Surface::RemoveDirtyElement (UIElement *element)
 void
 Surface::PropagateDirtyFlagToChildren (UIElement *el, DirtyType flags)
 {
-	VisualTreeWalker walker = VisualTreeWalker (el);
+	VisualTreeWalker walker = VisualTreeWalker (el, Logical, false);
 	while (UIElement *child = walker.Step ())
 		AddDirtyElement (child, flags);
 }

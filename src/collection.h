@@ -205,7 +205,7 @@ enum VisualTreeWalkerDirection {
 
 class VisualTreeWalker {
 public:
-	VisualTreeWalker (UIElement *item, VisualTreeWalkerDirection direction = Logical, Types *types = NULL);
+	VisualTreeWalker (UIElement *item, VisualTreeWalkerDirection direction = Logical, bool ref_content = true, Types *types = NULL);
 
 	~VisualTreeWalker ();
 
@@ -218,6 +218,7 @@ protected:
 	Types *types;
 	int index;
 	VisualTreeWalkerDirection direction;
+	bool ref_content;
 };
 
 class DeepTreeWalker {

@@ -895,12 +895,13 @@ CollectionIterator::Destroy (CollectionIterator *iterator)
 // VisualTreeWalker
 //
 
-VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection dir, Types *cached)
+VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection dir, bool ref_content, Types *cached)
 {
 	index = 0;
 	collection = NULL;
 	content = obj->GetSubtreeObject ();
 	direction = dir;
+	this->ref_content = ref_content;
 	types = (cached == NULL) ? obj->GetDeployment ()->GetTypes () : cached;
 
 	if (content != NULL) {
@@ -911,7 +912,8 @@ VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection di
 				direction = Logical;
 		}
 
-		content->ref ();
+		if (ref_content)
+			content->ref ();
 	}
 }
 
@@ -987,7 +989,7 @@ VisualTreeWalker::GetCount ()
 
 VisualTreeWalker::~VisualTreeWalker()
 {
-	if (content)
+	if (content && ref_content)
 		content->unref ();
 }
 

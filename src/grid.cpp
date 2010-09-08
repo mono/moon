@@ -537,7 +537,7 @@ Grid::PostRender (Context *ctx, Region *region, bool skip_children)
 {
 	// render our chidren if we need to
 	if (!skip_children) {
-		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+		VisualTreeWalker walker = VisualTreeWalker (this, ZForward, false);
 		while (UIElement *child = walker.Step ())
 			child->DoRender (ctx, region);
 	}
@@ -761,7 +761,7 @@ GridWalker::GridWalker (Grid *grid, Segment **row_matrix, int row_count, Segment
 	has_star_auto = false;
 	has_auto_star = false;
 
-	VisualTreeWalker walker (grid);
+	VisualTreeWalker walker (grid, Logical, false);
 	while (UIElement *child = walker.Step ()) {
 		bool star_col = false;
 		bool star_row = false;

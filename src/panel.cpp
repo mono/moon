@@ -68,7 +68,7 @@ Panel::ComputeBounds ()
 	// Clear the previous values
 	extents = extents_with_children = bounds = bounds_with_children = Rect ();
 
-	VisualTreeWalker walker = VisualTreeWalker (this);
+	VisualTreeWalker walker = VisualTreeWalker (this, Logical, false);
 	while (UIElement *item = walker.Step ()) {
 		
 		// if the item isn't drawn, skip it

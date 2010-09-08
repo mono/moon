@@ -488,7 +488,7 @@ InheritedPropertyValueProvider::WalkSubtree (Types *types, DependencyObject *roo
 	}
 
 	if (types->IsSubclassOf (elementType, Type::UIELEMENT)) {
-		VisualTreeWalker walker ((UIElement*)element, Logical, types);
+		VisualTreeWalker walker ((UIElement*)element, Logical, true, types);
 
 		while (UIElement *child = walker.Step ())
 			WalkTree (types, rootParent, child, seen, adding);

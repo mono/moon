@@ -295,7 +295,7 @@ FrameworkElement::ComputeBounds ()
 	extents = Rect (0, 0, size.width, size.height);
 	extents_with_children = extents;
 
-	VisualTreeWalker walker = VisualTreeWalker (this);
+	VisualTreeWalker walker = VisualTreeWalker (this, Logical, false);
 	while (UIElement *item = walker.Step ()) {
 		if (!item->GetRenderVisible ())
 			continue;
@@ -434,7 +434,7 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
 	bool hit = false;
 
-	VisualTreeWalker walker = VisualTreeWalker (this, ZReverse);
+	VisualTreeWalker walker = VisualTreeWalker (this, ZReverse, false);
 	while (UIElement *child = walker.Step ()) {
 		child->HitTest (cr, p, uielement_list);
 
@@ -469,7 +469,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 	/* create our node and stick it on front */
 	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
 
-	VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+	VisualTreeWalker walker = VisualTreeWalker (this, ZForward, false);
 	while (UIElement *child = walker.Step ())
 		child->FindElementsInHostCoordinates (cr, host, uielement_list);
 
@@ -516,7 +516,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 	/* create our node and stick it on front */
 	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
 
-	VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+	VisualTreeWalker walker = VisualTreeWalker (this, ZForward, false);
 	while (UIElement *child = walker.Step ())
 		child->FindElementsInHostCoordinates (cr, r, uielement_list);
 

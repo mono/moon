@@ -911,6 +911,9 @@ Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clea
 	uielements_rendered_with_painters = 0;
 #endif
 
+	// mono_gc_disable ();
+	// GetDeployment()->DisableToggleRefs ();
+
 	Context *ctx = new Context (target);
 	List *render_list = new List ();
 
@@ -1005,6 +1008,9 @@ Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clea
 
 	delete render_list;
 	delete ctx;
+
+	// GetDeployment()->EnableToggleRefs ();
+	// mono_gc_enable ();
 
 #if OCCLUSION_CULLING_STATS
 	printf ("%d UIElements rendered using occlusion culling for Surface::Paint (%p)\n", uielements_rendered_with_occlusion_culling, this);
@@ -1589,7 +1595,7 @@ RenderNode::RenderNode (UIElement *el,
 
 {
 	uielement = el;
-	uielement->ref();
+	// uielement->ref();
 	this->region = region ? region : new Region ();
 	this->render_element = render_element;
 	this->pre_render = pre;
@@ -1620,7 +1626,7 @@ RenderNode::Render (Context *ctx)
 RenderNode::~RenderNode ()
 {
 	if (uielement) {
-		uielement->unref ();
+		// uielement->unref ();
 		uielement = NULL;
 	}
 
