@@ -67,6 +67,19 @@
 }
 
 {
+   mono - Invalid read of size 4
+   Memcheck:Addr4
+   fun:mono_thread_hazardous_free_or_queue
+   fun:*
+}
+{
+   mono - Invalid read of size 8
+   Memcheck:Addr8
+   fun:mono_thread_hazardous_free_or_queue
+   fun:*
+}
+
+{
    mono - Invalid write of size 4
    Memcheck:Addr4
    fun:small_id_alloc
