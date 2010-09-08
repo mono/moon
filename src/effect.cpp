@@ -1453,42 +1453,16 @@ Effect::Render (Context      *ctx,
 		double       width,
 		double       height)
 {
-	struct pipe_surface    *surface;
-	struct pipe_resource   *texture;
-	cairo_rectangle_list_t *clip;
-	cairo_surface_t        *dst;
-	cairo_surface_t        *cs;
-	cairo_t                *cr = ctx->Cairo ();
-	Rect                   bounds = Rect (-32768, -32768, 65536, 65536);
-	double                 dstX, dstY;
-	bool                   status = 0;
-
-	clip = cairo_copy_clip_rectangle_list (cr);
-
-	if (clip->status == CAIRO_STATUS_SUCCESS) {
-		if (clip->num_rectangles == 0) {
-			return 1; // all clipped
-		}
-		else if (clip->num_rectangles == 1) {
-			bounds = Rect (clip->rectangles[0].x,
-				       clip->rectangles[0].y,
-				       clip->rectangles[0].width,
-				       clip->rectangles[0].height);
-
-			cairo_rectangle_list_destroy (clip);
-			clip = NULL;
-		}
-	}
-
-	if (clip)
-		cairo_push_group (cr);
+	struct pipe_surface  *surface;
+	struct pipe_resource *texture;
+	cairo_surface_t      *dst;
+	cairo_surface_t      *cs;
+	cairo_t              *cr = ctx->Cairo ();
+	double               dstX, dstY;
+	bool                 status = 0;
 
 	dst = cairo_get_group_target (cr);
 	cairo_surface_get_device_offset (dst, &dstX, &dstY);
-
-	bounds.x += dstX;
-	bounds.y += dstY;
-	bounds = bounds.Intersection (Rect (0, 0, 65535, 65535));
 
 	MaybeUpdateShader ();
 
@@ -1500,18 +1474,8 @@ Effect::Render (Context      *ctx,
 	if (surface && texture)
 		status = Composite (surface, texture, matrix,
 				    dstX, dstY,
-				    &bounds,
+				    NULL,
 				    x, y, width, height);
-
-	if (clip) {
-		cairo_pattern_t *data = cairo_pop_group (cr);
-		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
-			cairo_set_source (cr, data);
-			cairo_paint (cr);
-		}
-		cairo_pattern_destroy (data);
-		cairo_rectangle_list_destroy (clip);
-	}
 
 	cairo_surface_destroy (cs);
 
