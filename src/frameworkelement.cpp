@@ -327,7 +327,6 @@ FrameworkElement::ComputeSurfaceBounds ()
 Rect
 FrameworkElement::GetLocalBounds ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
 	if (GetSubtreeObject () != NULL) 
 		return bounds_with_children;
 
@@ -337,7 +336,6 @@ FrameworkElement::GetLocalBounds ()
 Rect
 FrameworkElement::GetGlobalBounds ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
 	if (GetSubtreeObject () != NULL)
 		return global_bounds_with_children;
 
@@ -347,7 +345,6 @@ FrameworkElement::GetGlobalBounds ()
 Rect
 FrameworkElement::GetSubtreeBounds ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
 	if (GetSubtreeObject () != NULL)
 		return surface_bounds_with_children;
 
@@ -357,7 +354,6 @@ FrameworkElement::GetSubtreeBounds ()
 Rect
 FrameworkElement::GetSubtreeExtents ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
 	if (GetSubtreeObject () != NULL)
 		return extents_with_children;
 
