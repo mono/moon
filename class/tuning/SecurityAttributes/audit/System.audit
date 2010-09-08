@@ -2,10 +2,6 @@
 System.Int32 Mono.Security.Protocol.Tls.SslStreamBase::EndRead(System.IAsyncResult)
 	r58433		spouliot - call WaitHandle.WaitOne(int,bool) [SecurityCritical] with 'false'
 
-!SSC-9B69810567AFA75AF550B5BF97544BB7
-System.Net.Authorization Mono.Http.NtlmClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
-	r140690		spouliot - typecast WebRequest parameter into HttpWebRequest which is [SecurityCritical] in System.dll
-
 !SSC-5DB5DB63AF873D2D711D5979F78C50C4
 System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 	r140690		spouliot - typecast WebRequest parameter into HttpWebRequest which is [SecurityCritical] in System.dll

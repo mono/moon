@@ -408,8 +408,9 @@ System.Decimal System.Decimal::Subtract(System.Decimal,System.Decimal)
 System.Decimal System.Decimal::Truncate(System.Decimal)
 	r142142		spouliot - call decimalFloorAndTrunc (icall named mono_decimalFloorAndTrunc in decimal.c) with '0'
 
-!SSC-28E0D171D73D7807868A3C5B63F96BB0
-System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean)
+!SSC-17F8AE37FA643F7F8E193F6C66B6F6AA
+System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean,System.Boolean)
+	20100908	spouliot - 85c097 - add a new (non-public) 'allowClosed' parameter to control the validation on overloads not using a 'firstArgument' parameter
 	r142142		spouliot - call CreateDelegate_internal (icall) with validated parameters
 
 !SSC-243968E8782BA1166833CE5A45624FA4
