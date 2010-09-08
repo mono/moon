@@ -642,7 +642,7 @@ UIElement::ComputeComposite ()
 	flags &= ~COMPOSITE_MASK;
 
 	if (GetRenderCacheMode ())
-		flags |= COMPOSITE_TRANSFORM;
+		flags |= (COMPOSITE_CACHE | COMPOSITE_TRANSFORM);
 
 	if (opacityMask)
 		flags |= COMPOSITE_OPACITY_MASK;
@@ -653,9 +653,6 @@ UIElement::ComputeComposite ()
 	if (GetRenderEffect ())
 		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
-	if (GetClip ())
-		flags |= COMPOSITE_CLIP;
-
 	if (flags & RENDER_PROJECTION)
 		flags |= COMPOSITE_TRANSFORM;
 
@@ -664,23 +661,6 @@ UIElement::ComputeComposite ()
 	if (flags & COMPOSITE_TRANSFORM) {
 		if ((flags & COMPOSITE_EFFECT) == 0)
 			flags &= ~COMPOSITE_OPACITY;
-	}
-
-	// bitmap caching can force an extra composite stage 
-	if (GetRenderCacheMode ()) {
-
-		// need to clip and no other stages exist before the clip
-		if ((flags & COMPOSITE_MASK) == COMPOSITE_TRANSFORM) {
-			if (GetClip ())
-				flags |= COMPOSITE_CACHE;
-		}
-		
-		// effect padding
-		if ((flags & (COMPOSITE_OPACITY |
-			      COMPOSITE_OPACITY_MASK)) == 0) {
-			if (effect_padding != Thickness ())
-				flags |= COMPOSITE_CACHE;
-		}		
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
@@ -1550,12 +1530,21 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_CACHE) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform);
 
-		ctx->Push (Context::Group (r));
-		ctx->Push (Context::AbsoluteTransform (scale_xform));
-	}
+		if (!bitmap_cache) {
+			ctx->Push (Context::Group (r));
+			ctx->Push (Context::AbsoluteTransform (scale_xform));
 
-	if (GetRenderCacheMode () && bitmap_cache)
-		ctx->Top ()->SetData (bitmap_cache);
+			VisualTreeWalker walker (this, ZForward, false);
+			Render (ctx->Cairo (), region);
+			while (UIElement *child = walker.Step ())
+				child->DoRender (ctx, region);
+
+			ctx->Pop ();
+			ctx->Pop (&bitmap_cache);
+		}
+ 
+		ctx->Push (Context::Group (r), bitmap_cache);
+	}
 }
 
 void
@@ -1567,20 +1556,9 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			child->DoRender (ctx, region);
 	}
 
-	if (GetRenderCacheMode () && bitmap_cache == NULL) {
-		MoonSurface *data;
-
-		data = ctx->Top ()->GetData (NULL);
-		if (data)
-			bitmap_cache = data->ref ();
-	}
-
 	if (flags & COMPOSITE_CACHE) {
 		MoonSurface *surface;
-		Rect        r;
-
-		ctx->Pop ();
-		r = ctx->Pop (&surface);
+		Rect        r = ctx->Pop (&surface);
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
