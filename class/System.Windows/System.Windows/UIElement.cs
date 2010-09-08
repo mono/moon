@@ -179,7 +179,8 @@ namespace System.Windows {
 
 		static void EnsureDesignMode ()
 		{
-			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+			if (Int32.Parse (Deployment.Current.RuntimeVersion.Split('.')[0]) < 4 &&
+			    !DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
 				throw new NotImplementedException ();
 		}
 

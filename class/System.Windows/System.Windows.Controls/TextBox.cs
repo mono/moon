@@ -312,11 +312,12 @@ namespace System.Windows.Controls {
 			}
 		}
 
-		// InputScope and Watermark properties are not supported, outside of design-mode, in SL4
+		// InputScope and Watermark properties are not supported outside of design mode in runtime versions < 4
 
 		static void EnsureDesignMode ()
 		{
-			if (!DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
+			if (Int32.Parse (Deployment.Current.RuntimeVersion.Split('.')[0]) < 4 &&
+			    !DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
 				throw new NotImplementedException ();
 		}
 
