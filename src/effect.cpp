@@ -1723,6 +1723,12 @@ BlurEffect::Render (Context      *ctx,
 		int           ph = cairo_image_surface_get_height (cs);
 		int           stride = cairo_image_surface_get_stride (cs);
 		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
+		Rect          r = Rect (x, y, width, height);
+
+		cairo_save (cr);
+		cairo_identity_matrix (cr);
+		r.RoundOut ().Draw (cr);
+		cairo_clip (cr);
 
 		if (nfiltervalues) {
 			const cairo_format_t format = CAIRO_FORMAT_ARGB32;
@@ -1755,6 +1761,7 @@ BlurEffect::Render (Context      *ctx,
 
 		/* paint clip */
 		cairo_paint (cr);
+		cairo_restore (cr);
 
 		g_free (data);
 		cairo_surface_destroy (cs);
@@ -2150,6 +2157,7 @@ DropShadowEffect::Render (Context      *ctx,
 		int           ph = cairo_image_surface_get_height (cs);
 		int           stride = cairo_image_surface_get_stride (cs);
 		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
+		Rect          r = Rect (x, y, width, height);
 
 		double direction = GetDirection () * (M_PI / 180.0);
 		double depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
@@ -2186,11 +2194,17 @@ DropShadowEffect::Render (Context      *ctx,
 		cairo_surface_get_device_offset (cs, &srcX, &srcY);
 		cairo_surface_set_device_offset (image, srcX, srcY);
 
+		cairo_save (cr);
+		cairo_identity_matrix (cr);
+		r.RoundOut ().Draw (cr);
+		cairo_clip (cr);
+
 		cairo_set_source_surface (cr, image, 0, 0);
 		cairo_surface_destroy (image);
 
 		/* paint clip */
 		cairo_paint (cr);
+		cairo_restore (cr);
 
 		g_free (data);
 		cairo_surface_destroy (cs);
@@ -4020,7 +4034,12 @@ TransformEffect::Render (Context      *ctx,
 		int x0, y0;
 
 		if (Matrix3D::IsIntegerTranslation (matrix, &x0, &y0)) {
+			Rect r = Rect (x, y, width, height);
+
 			cairo_save (cr);
+			cairo_identity_matrix (cr);
+			r.Transform (matrix).RoundOut ().Draw (cr);
+			cairo_clip (cr);
 			cairo_translate (cr, x0, y0);
 			cairo_set_source_surface (cr, cs, 0, 0);
 			cairo_paint_with_alpha (cr, opacity);

@@ -1667,13 +1667,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		Rect        r = ctx->Pop (&src);
 
 		if (!r.IsEmpty ()) {
-			cairo_t *cr = ctx->Cairo ();
-			Effect  *effect = GetRenderEffect ();
-
-			cairo_save (cr);
-			cairo_identity_matrix (cr);
-			r.RoundOut ().Draw (cr);
-			cairo_clip (cr);
+			Effect *effect = GetRenderEffect ();
 
 			if (!effect->Render (ctx, src,
 					     NULL,
@@ -1681,7 +1675,6 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 					     r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply pixel effect.");
 
-			cairo_restore (cr);
 			src->unref ();
 		}
 	}
@@ -1715,13 +1708,12 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		Rect        r = ctx->Pop (&src);
 
 		if (!r.IsEmpty ()) {
-			cairo_t        *cr = ctx->Cairo ();
 			cairo_matrix_t ctm;
 			double         m[16];
 
 			r = GetSubtreeExtents ().GrowBy (effect_padding);
 
-			cairo_get_matrix (cr, &ctm);
+			ctx->Top ()->GetMatrix (&ctm);
 
 			Matrix3D::Affine (m,
 					  ctm.xx, ctm.xy,
@@ -1729,18 +1721,12 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 					  ctm.x0, ctm.y0);
 			Matrix3D::Multiply (m, local_projection, m);
 
-			cairo_save (cr);
-			cairo_identity_matrix (cr);
-			r.Transform (m).RoundOut ().Draw (cr);
-			cairo_clip (cr);
-
 			if (!composite->Render (ctx, src,
 						m,
 						r.x, r.y,
 						r.width, r.height))
 				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
 
-			cairo_restore (cr);
 			src->unref ();
 		}
 	}
