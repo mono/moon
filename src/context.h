@@ -36,6 +36,21 @@ public:
 		Rect r;
 	};
 
+	struct Transform {
+	public:
+		Transform (cairo_matrix_t matrix) : m (matrix) {}
+
+		cairo_matrix_t m;
+	};
+
+	struct AbsoluteTransform {
+	public:
+		AbsoluteTransform () { cairo_matrix_init_identity (&m); }
+		AbsoluteTransform (cairo_matrix_t matrix) : m (matrix) {}
+
+		cairo_matrix_t m;
+	};
+
 	class Surface : public MoonSurface {
 	public:
 		Surface (MoonSurface *moon);
