@@ -1471,7 +1471,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_TRANSFORM) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
-		ctx->Push (r, &scale_xform);
+		ctx->Push (Context::Group (r), &scale_xform);
 	}
 	else {
 		ctx->Push (&render_xform);
@@ -1507,11 +1507,11 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 				ctx->Push (Context::Clip (r));
 			}
 			else {
-				ctx->Push (r);
+				ctx->Push (Context::Group (r));
 			}
 		}
 		else {
-			ctx->Push (r);
+			ctx->Push (Context::Group (r));
 		}
 		cairo_rectangle_list_destroy (list);
 		cairo_restore (cr);
@@ -1520,7 +1520,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_EFFECT) {
 		Rect r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
 
-		ctx->Push (r);
+		ctx->Push (Context::Group (r));
 	}
 
 	if (flags & (COMPOSITE_OPACITY | COMPOSITE_OPACITY_MASK)) {
@@ -1544,16 +1544,16 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 			r = r.Intersection (region->ClipBox ());
 
 		if (flags & COMPOSITE_OPACITY)
-			ctx->Push (r);
+			ctx->Push (Context::Group (r));
 
 		if (flags & COMPOSITE_OPACITY_MASK)
-			ctx->Push (r);
+			ctx->Push (Context::Group (r));
 	}
 
 	if (flags & COMPOSITE_CACHE) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform);
 
-		ctx->Push (r, &scale_xform);
+		ctx->Push (Context::Group (r), &scale_xform);
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache)

@@ -29,6 +29,13 @@ public:
 		Rect r;
 	};
 
+	struct Group {
+	public:
+		Group (Rect group) : r (group) {}
+
+		Rect r;
+	};
+
 	class Surface : public MoonSurface {
 	public:
 		Surface (MoonSurface *moon);
@@ -79,8 +86,8 @@ public:
 
 	void Push (Clip clip);
 	void Push (cairo_matrix_t *transform);
-	void Push (Rect extents);
-	void Push (Rect extents, cairo_matrix_t *matrix);
+	void Push (Group extents);
+	void Push (Group extents, cairo_matrix_t *matrix);
 	Node *Top ();
 	void Pop ();
 	Rect Pop (MoonSurface **surface);

@@ -261,18 +261,18 @@ Context::Push (Clip clip)
 }
 
 void
-Context::Push (Rect extents)
+Context::Push (Group extents)
 {
 	cairo_matrix_t matrix;
 
 	Top ()->GetMatrix (&matrix);
-	Stack::Push (new Context::Node (extents, &matrix));
+	Stack::Push (new Context::Node (extents.r, &matrix));
 }
 
 void
-Context::Push (Rect extents, cairo_matrix_t *matrix)
+Context::Push (Group extents, cairo_matrix_t *matrix)
 {
-	Stack::Push (new Context::Node (extents, matrix));
+	Stack::Push (new Context::Node (extents.r, matrix));
 }
 
 Context::Node *
