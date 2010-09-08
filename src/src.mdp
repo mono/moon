@@ -335,6 +335,15 @@
     <File subtype="Code" buildaction="Nothing" name="authors.h" />
     <File subtype="Code" buildaction="Compile" name="capture.cpp" />
     <File subtype="Code" buildaction="Nothing" name="capture.h" />
+    <File subtype="Code" buildaction="Compile" name="context.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="context.h" />
+    <File subtype="Code" buildaction="Nothing" name="designmode.h" />
+    <File subtype="Code" buildaction="Nothing" name="factory.h" />
+    <File subtype="Code" buildaction="Nothing" name="framerate-display.h" />
+    <File subtype="Code" buildaction="Compile" name="surface.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="surface.h" />
+    <File subtype="Code" buildaction="Compile" name="surface-cairo.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="surface-cairo.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
