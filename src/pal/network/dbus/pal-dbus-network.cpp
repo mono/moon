@@ -19,20 +19,6 @@ MoonNetworkServiceDbus::MoonNetworkServiceDbus ()
 		g_warning ("failed to get system dbus");
 		return;
 	}
-
-	nm_proxy = dbus_g_proxy_new_for_name (dbus_connection,
-					      "org.freedesktop.NetworkManager",
-					      "/org/freedesktop/NetworkManager",
-					      "org.freedesktop.NetworkManager");
-
-	if (!nm_proxy) {
-		g_warning ("failed to get proxy for network manager");
-		return;
-	}
-
-	prop_proxy = dbus_g_proxy_new_from_proxy (nm_proxy,
-						  "org.freedesktop.DBus.Properties",
-						  "/org/freedesktop/NetworkManager");
 }
 
 MoonNetworkServiceDbus::~MoonNetworkServiceDbus ()
@@ -45,9 +31,30 @@ MoonNetworkServiceDbus::~MoonNetworkServiceDbus ()
 		dbus_g_connection_unref (dbus_connection);
 }
 
-void
+bool
 MoonNetworkServiceDbus::SetNetworkStateChangedCallback (MoonCallback callback, gpointer data)
 {
+	if (nm_proxy == NULL) {
+		nm_proxy = dbus_g_proxy_new_for_name (dbus_connection,
+						      "org.freedesktop.NetworkManager",
+						      "/org/freedesktop/NetworkManager",
+						      "org.freedesktop.NetworkManager");
+
+		if (!nm_proxy) {
+			g_warning ("failed to get proxy for network manager");
+			return false;
+		}
+
+		prop_proxy = dbus_g_proxy_new_from_proxy (nm_proxy,
+							  "org.freedesktop.DBus.Properties",
+							  "/org/freedesktop/NetworkManager");
+
+		if (!prop_proxy) {
+			g_warning ("failed to get proxy for network manager properties");
+			return false;
+		}
+	}
+
 	if (this->callback) {
 		// detach from dbus
 		if (dbus_connection && nm_proxy) {
@@ -76,6 +83,8 @@ MoonNetworkServiceDbus::SetNetworkStateChangedCallback (MoonCallback callback, g
 						     NULL);
 		}
 	}
+
+	return true;
 }
 
 void

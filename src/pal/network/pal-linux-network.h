@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * pal-dbus-network.h: dbus networkmanager network notifications
+ * pal-linux-network.h: network notifications for for linux
  *
  * Copyright 2010 Novell, Inc. (http://www.novell.com)
  *
@@ -8,34 +8,36 @@
  * 
  */
 
-#ifndef MOON_PAL_DBUS_NETWORK_H
-#define MOON_PAL_DBUS_NETWORK_H
+#ifndef MOON_PAL_LINUX_NETWORK_H
+#define MOON_PAL_LINUX_NETWORK_H
 
 #include "pal.h"
-#include "dbus/dbus-glib.h"
+
+#include "network/dbus/pal-dbus-network.h"
 
 namespace Moonlight {
 
 /* @Version=2 */
-class MoonNetworkServiceDbus : public MoonNetworkService {
+class MoonNetworkServiceLinux : public MoonNetworkService {
 public:
-	MoonNetworkServiceDbus ();
-	virtual ~MoonNetworkServiceDbus ();
+	MoonNetworkServiceLinux ();
+	virtual ~MoonNetworkServiceLinux ();
 
 	virtual bool SetNetworkStateChangedCallback (MoonCallback callback, gpointer data);
 
 	virtual bool GetIsNetworkAvailable ();
 
 private:
+	bool using_dbus;
+
 	MoonCallback callback;
 	gpointer callback_data;
 
-	DBusGConnection *dbus_connection;
-	DBusGProxy *nm_proxy;
-	DBusGProxy *prop_proxy;
-
 	static void state_changed_handler (gpointer sender, guint state, gpointer data);
+
+	
+	MoonNetworkServiceDbus *dbus_network_service;
 };
 
 };
-#endif /* MOON_PAL_DBUS_NETWORK_H */
+#endif /* MOON_PAL_LINUX_NETWORK_H */

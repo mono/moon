@@ -93,6 +93,7 @@ libmoon_include_headers = 	\
 	pal/gtk/debug-ui.h	\
 	pal/messaging/glib/pal-glib-msg.h	\
 	pal/network/dbus/pal-dbus-network.h	\
+	pal/network/pal-linux-network.h	\
 	panel.h			\
 	pipeline.h		\
 	pipeline-asf.h		\
@@ -223,6 +224,7 @@ libmoon_la_SOURCES = 		\
 	pal/gtk/debug-ui.cpp	\
 	pal/messaging/glib/pal-glib-msg.cpp	\
 	pal/network/dbus/pal-dbus-network.cpp	\
+	pal/network/pal-linux-network.cpp	\
 	panel.cpp		\
 	pipeline-asf.cpp	\
 	pipeline.cpp		\

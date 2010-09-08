@@ -76,7 +76,9 @@ G_END_DECLS
 #if PAL_LINUX_CAPTURE
 #include "pal/capture/pal-linux-capture.h"
 #endif
-#if PAL_DBUS_NETWORKAVAILABILITY
+#if PAL_LINUX_NETWORKAVAILABILITY
+#include "pal/network/pal-linux-network.h"
+#elif PAL_DBUS_NETWORKAVAILABILITY
 #include "pal/network/dbus/pal-dbus-network.h"
 #endif
 
@@ -1595,7 +1597,7 @@ RenderNode::RenderNode (UIElement *el,
 
 {
 	uielement = el;
-	// uielement->ref();
+	uielement->ref();
 	this->region = region ? region : new Region ();
 	this->render_element = render_element;
 	this->pre_render = pre;
@@ -1626,7 +1628,7 @@ RenderNode::Render (Context *ctx)
 RenderNode::~RenderNode ()
 {
 	if (uielement) {
-		// uielement->unref ();
+		uielement->unref ();
 		uielement = NULL;
 	}
 
@@ -2718,7 +2720,9 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 #error "no PAL capture service defined"
 #endif
 
-#if PAL_DBUS_NETWORKAVAILABILITY
+#if PAL_LINUX_NETWORKAVAILABILITY
+	network_service = new MoonNetworkServiceLinux ();
+#elif PAL_DBUS_NETWORKAVAILABILITY
 	network_service = new MoonNetworkServiceDbus ();
 #else
 #error "no PAL network availability service defined"

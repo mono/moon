@@ -539,8 +539,9 @@ public:
 	// 1. network address changed
 	// 2. network up/down
 	// 3. etc...
+	// return value is true for success in setting up the service, false for an error
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual void SetNetworkStateChangedCallback (MoonCallback callback, gpointer data) = 0;
+	virtual bool SetNetworkStateChangedCallback (MoonCallback callback, gpointer data) = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool GetIsNetworkAvailable () = 0;
