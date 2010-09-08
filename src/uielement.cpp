@@ -1461,10 +1461,11 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_TRANSFORM) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
-		ctx->Push (Context::Group (r), &scale_xform);
+		ctx->Push (Context::Group (r),
+			   Context::AbsoluteTransform (scale_xform));
 	}
 	else {
-		ctx->Push (&render_xform);
+		ctx->Push (Context::Transform (render_xform));
 	}
 
 	// TODO: avoid using a cairo context to determine if rectangular
@@ -1549,7 +1550,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_CACHE) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform);
 
-		ctx->Push (Context::Group (r), &scale_xform);
+		ctx->Push (Context::Group (r),
+			   Context::AbsoluteTransform (scale_xform));
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache)
@@ -1782,7 +1784,7 @@ UIElement::Paint (MoonSurface *target,  Rect bounds, cairo_matrix_t *xform)
 	if (xform)
 		cairo_matrix_multiply (&inverse, &inverse, xform);
 
-	Context *ctx = new Context (target, &inverse);
+	Context *ctx = new Context (target, Context::Transform (inverse));
 
 	DoRender (ctx, &region);
 

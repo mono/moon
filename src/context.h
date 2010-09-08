@@ -97,12 +97,12 @@ public:
 	};
 
 	Context (MoonSurface *surface);
-	Context (MoonSurface *surface, cairo_matrix_t *transform);
+	Context (MoonSurface *surface, Transform transform);
 
 	void Push (Clip clip);
-	void Push (cairo_matrix_t *transform);
+	void Push (Transform transform);
 	void Push (Group extents);
-	void Push (Group extents, cairo_matrix_t *matrix);
+	void Push (Group extents, AbsoluteTransform transform);
 	Node *Top ();
 	void Pop ();
 	Rect Pop (MoonSurface **surface);

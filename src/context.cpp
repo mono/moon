@@ -216,24 +216,24 @@ Context::Node::Readonly (void)
 
 Context::Context (MoonSurface *surface)
 {
-	Surface        *cs = new Surface (surface);
-	cairo_matrix_t matrix;
+	AbsoluteTransform transform = AbsoluteTransform ();
+	Surface           *cs = new Surface (surface);
 
-	cairo_matrix_init_identity (&matrix);
-	Stack::Push (new Context::Node (cs, &matrix, NULL));
+	Stack::Push (new Context::Node (cs, &transform.m, NULL));
 	cs->unref ();
 }
 
-Context::Context (MoonSurface *surface, cairo_matrix_t *transform)
+Context::Context (MoonSurface *surface,
+		  Transform   transform)
 {
 	Surface *cs = new Surface (surface);
 
-	Stack::Push (new Context::Node (cs, transform, NULL));
+	Stack::Push (new Context::Node (cs, &transform.m, NULL));
 	cs->unref ();
 }
 
 void
-Context::Push (cairo_matrix_t *transform)
+Context::Push (Transform transform)
 {
 	cairo_matrix_t matrix;
 	Rect           box;
@@ -241,7 +241,7 @@ Context::Push (cairo_matrix_t *transform)
 	Top ()->GetMatrix (&matrix);
 	Top ()->GetClip (&box);
 
-	cairo_matrix_multiply (&matrix, transform, &matrix);
+	cairo_matrix_multiply (&matrix, &transform.m, &matrix);
 
 	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix, &box));
 }
@@ -270,9 +270,9 @@ Context::Push (Group extents)
 }
 
 void
-Context::Push (Group extents, cairo_matrix_t *matrix)
+Context::Push (Group extents, AbsoluteTransform transform)
 {
-	Stack::Push (new Context::Node (extents.r, matrix));
+	Stack::Push (new Context::Node (extents.r, &transform.m));
 }
 
 Context::Node *
