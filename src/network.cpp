@@ -175,110 +175,17 @@ HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, Downlo
 
 	/* Make the uri we request to the derived http request an absolute uri */
 	if (!uri->IsAbsolute ()) {
-		/* DRTs entering here: #0, #171, #173 */
-
-		/* If resource_base != null, absolute path is: Uri.Combine (source_location, Uri.Combine (resource_base, uri)) */
-		if (resource_base != NULL && is_xap) {
-			Uri *src_base_uri;
-			Uri *base_uri;
-			Uri *absolute_dummy;
-			Uri *absolute_base;
-
-			/* Calculate Uri.Combine (resource_base, uri) => base_uri
-			 * Note that the combining ordering is important here, 'uri' can't escape itself
-			 * out of 'resource_base' using '..'. We also have to make 'resource_base' an
-			 * absolute uri so that the managed uri class can do the combining (we use a dummy
-			 * absolute uri to do this) */
-
-			/* Create an absolute base uri of resource_base */
-
-			absolute_dummy = Uri::Create ("http://www.mono-project.com/");
-			if (resource_base->GetOriginalString () != NULL) {
-				absolute_base = Uri::Create (absolute_dummy, resource_base);
-			} else {
-				absolute_base = Uri::Clone (absolute_dummy);
-			}
-			delete absolute_dummy;
-
-			if (absolute_base == NULL) {
-				Failed ("Could not create an absolute base uri of the resource base");
-				goto cleanup;
-			}
-			LOG_DOWNLOADER ("HttpRequest::Open (): absolute base uri with dummy root: '%s'\n", absolute_base->ToString ());
-
-			/* Combine the absolute base uri with the uri of the resource */
-			base_uri = Uri::Create (absolute_base, uri);
-			delete absolute_base;
-
-			if (base_uri == NULL) {
-				Failed ("Could not combine absolute resource base and uri");
-				goto cleanup;
-			}
-			LOG_DOWNLOADER ("HttpRequest::Open (): absolute base with dummy root and uri: '%s'\n", base_uri->ToString ());
-
-			/* Calculate Path.Combine (source_dir, base_uri) */
-			const char *path = base_uri->GetPath ();
-			if (path != NULL && path [0] == '/') {
-				/* Skip over any '/' so that the base uri's path is not resolved against the root of the src uri */
-				path++;
-			}
-			src_base_uri = Uri::Create (source_location, path);
-			delete base_uri;
-
-			if (src_base_uri == NULL) {
-				Failed ("Could not combine source location and relative base+uri");
-				goto cleanup;
-			}
-			LOG_DOWNLOADER ("HttpRequest::Open () final uri: '%s' (path: '%s')\n", src_base_uri->ToString (), path);
-
-			src_uri = src_base_uri;
-		} else if (is_xap) {
-			Uri *src_base_uri;
-			Uri *absolute_dummy;
-			Uri *absolute_base;
-
-			/* The GB_* drts run into this condition (GB18030_double1 for instance) */
-			/* The uri is resolved against the directory where the xap/xaml file is,
-			 * and it's not possible to escape out of it, so we need a dummy root */
-
-			/* Create an absolute base uri of uri */
-			absolute_dummy = Uri::Create ("http://www.mono-project.com/");
-			if (uri->GetOriginalString () != NULL) {
-				absolute_base = Uri::Create (absolute_dummy, uri);
-			} else {
-				absolute_base = Uri::Clone (absolute_dummy);
-			}
-			delete absolute_dummy;
-
-			if (absolute_base == NULL) {
-				Failed ("Could not create an absolute base uri of the uri");
-				goto cleanup;
-			}
-			LOG_DOWNLOADER ("HttpRequest::Open (): absolute uri with dummy root: '%s'\n", absolute_base->ToString ());
-
-			/* Calculate Uri.Combine (source_dir, absolute_base) */
-			const char *path = absolute_base->GetPath ();
-			if (path != NULL && path [0] == '/') {
-				/* Skip over any '/' so that the base uri's path is not resolved against the root of the src uri */
-				path++;
-			}
-			src_base_uri = Uri::Create (source_location, path);
-			delete absolute_base;
-
-			if (src_base_uri == NULL) {
-				Failed ("Could not combine source location and relative uri");
-				goto cleanup;
-			}
-			LOG_DOWNLOADER ("HttpRequest::Open () final uri: '%s'\n", src_base_uri->ToString ());
-
-			src_uri = src_base_uri;
+		if (is_xap) {
+			/* DRTs entering here: #0, #45, #171, #173, GB18030_double1 */
+			src_uri = Uri::CombineWithSourceLocation (GetDeployment (), resource_base, uri);
 		} else {
-			/* #45 enters here */
+			/* DRTs entering here: #45 */
 			src_uri = Uri::Create (source_location, uri);
-			if (src_uri == NULL) {
-				Failed ("Could not combine source location and uri");
-				goto cleanup;
-			}
+		}
+
+		if (src_uri == NULL) {
+			Failed ("Could not create absolute uri");
+			goto cleanup;
 		}
 
 		delete request_uri;

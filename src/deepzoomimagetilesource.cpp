@@ -249,7 +249,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri **uri)
 	}
 	
 	const Uri *baseUri = GetUriSource ();
-	Uri *absoluteBaseUri = NULL;
+	Uri *image_uri;
 	const char *filename, *ext;
 	char *image;
 	
@@ -271,16 +271,18 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri **uri)
 		//printf ("%p requesting image %s\n", this, image);
 	}
 
-
-	if (!baseUri->IsAbsolute ()) {
-		absoluteBaseUri = Uri::Create (GetDeployment ()->GetSourceLocation (NULL), baseUri);
-		baseUri = absoluteBaseUri;
-	}
-	*uri = Uri::Create (baseUri, image);
-
+	image_uri = Uri::Create (image);
 	g_free (image);
-	delete absoluteBaseUri;
-	
+
+	// DRTs: #511
+	if (!baseUri->IsAbsolute ()) {
+		*uri = Uri::CombineWithSourceLocation (GetDeployment (), baseUri, image_uri);
+	} else {
+		*uri = Uri::Create (baseUri, image);
+	}
+
+	delete image_uri;
+
 	return true;
 }
 

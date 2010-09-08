@@ -41,21 +41,18 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	if (!source_uri || source_uri->IsAbsolute ())
 		return;
 
-	Uri *absolute_parent_uri = NULL;
 	Uri *new_uri;
 
 	if (!parent_uri->IsAbsolute ()) {
-		absolute_parent_uri = Uri::Create (GetDeployment ()->GetSourceLocation (NULL), parent_uri);
-		parent_uri = absolute_parent_uri;
+		new_uri = Uri::CombineWithSourceLocation (GetDeployment (), parent_uri, source_uri);
+	} else {
+		new_uri = Uri::Create (parent_uri, source_uri);
 	}
-
-	new_uri = Uri::Create (parent_uri, source_uri);
 
 	LOG_MSI ("MSSI: UriSource changed from %s to %s\n", source_uri->ToString (), new_uri->ToString ());
 
 	((DeepZoomImageTileSource*) source)->SetUriSource (new_uri);
 	delete new_uri;
-	delete absolute_parent_uri;
 
 	EnsureManagedPeer ();
 }

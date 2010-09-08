@@ -18,6 +18,7 @@
 
 #include "deployment.h"
 #include "uri.h"
+#include "debug.h"
 
 namespace Moonlight {
 
@@ -143,6 +144,59 @@ Uri::CloneWithScheme (const Uri *uri_to_clone, const char *scheme)
 		gchandle = uri_to_clone->deployment->GetUriFunctions ()->clone_with_scheme (uri_to_clone->GetGCHandle (), scheme);
 
 	return new Uri (gchandle);
+}
+
+Uri *
+Uri::CombineWithSourceLocation (Deployment *deployment, const Uri *base_uri, const Uri *relative_uri)
+{
+	Uri *absolute_dummy;
+	Uri *absolute_base;
+	Uri *absolute_uri;
+	Uri *result;
+
+	/*
+	 * We must combine base_uri and relative_uri, having in mind that base_uri can't get out of the
+	 * source location using ".."
+	 * So we create a dummy absolute uri (with an empty path), and combine it with the base_uri => absolute_base.
+	 * This will remove any ".."'s we don't want.
+	 * Then we combine absolute_base with the relative_uri => absolute_uri.
+	 * Finally we take the source location and combine it with the path of absolute_uri => result.
+	 */
+
+	LOG_DOWNLOADER ("Uri::CombineWithSourceLocation (%s, %s, %s)\n", deployment->GetSourceLocation (NULL)->ToString (), base_uri ? base_uri->ToString () : NULL, relative_uri->ToString ());
+	absolute_dummy = Uri::Create ("http://www.mono-project.com/");
+	if (base_uri != NULL && base_uri->GetOriginalString () != NULL) {
+		absolute_base = Uri::Create (absolute_dummy, base_uri);
+	} else {
+		absolute_base = Uri::Clone (absolute_dummy);
+	}
+	delete absolute_dummy;
+
+	if (absolute_base == NULL)
+		return NULL;
+
+	LOG_DOWNLOADER ("Uri::CombineWithSourceLocation (): absolute base uri with dummy root: '%s'\n", absolute_base->ToString ());
+
+	/* Combine the absolute base uri with the uri of the resource */
+	absolute_uri = Uri::Create (absolute_base, relative_uri);
+	delete absolute_base;
+
+	if (absolute_uri == NULL)
+		return NULL;
+
+	LOG_DOWNLOADER ("Uri::CombineWithSourceLocation (): absolute base with dummy root and uri: '%s'\n", absolute_uri->ToString ());
+
+	const char *path = absolute_uri->GetPath ();
+	if (path != NULL && path [0] == '/') {
+		/* Skip over any '/' so that the absolute uri's path is not resolved against the root of the source location */
+		path++;
+	}
+	result = Uri::Create (deployment->GetSourceLocation (NULL), path);
+	delete absolute_uri;
+
+	LOG_DOWNLOADER ("Uri::CombineWithSourceLocation () final uri: '%s' (path: '%s')\n", absolute_uri->ToString (), path);
+
+	return result;
 }
 
 const char *
