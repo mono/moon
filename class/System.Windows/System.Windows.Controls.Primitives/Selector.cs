@@ -87,11 +87,13 @@ namespace System.Windows.Controls.Primitives {
 		static void OnSelectedValuePathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			var selector = (Selector) o;
-			if (selector.Initializing)
-				return;
 
 			var value = (string) e.NewValue;
 			selector.SelectedValueWalker = string.IsNullOrEmpty (value) ? null : new PropertyPathWalker (value);
+
+			if (selector.Initializing)
+				return;
+			
 			selector.SelectItemFromValue (selector.SelectedValue, true);
 		}
 
@@ -460,14 +462,13 @@ namespace System.Windows.Controls.Primitives {
 			Initializing = false;
 
 			if (SelectedValue != InitState.Value) {
-				SelectItemFromValue (SelectedValue, false);
+				SelectItemFromValue (SelectedValueWalker == null ? SelectedValue : SelectedValueWalker.Value, false);
 			} else if (SelectedIndex != InitState.Index) {
 				Selection.Select (SelectedIndex < Items.Count ? Items [SelectedIndex] : null);
 			} else if (SelectedItem != InitState.Item) {
 				Selection.Select (SelectedItem);
-			} else  if (SelectedValuePath != InitState.ValuePath) {
-				SelectedValueWalker = string.IsNullOrEmpty (SelectedValuePath) ? null : new PropertyPathWalker (SelectedValuePath);
-				SelectItemFromValue (SelectedValueWalker.Value, true);
+			} else if (SelectedValuePath != InitState.ValuePath) {
+				SelectItemFromValue (SelectedValueWalker == null ? SelectedValue : SelectedValueWalker.Value, false);
 			}
 
 			InitState = null;
