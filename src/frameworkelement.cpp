@@ -416,12 +416,20 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 	if (!GetRenderVisible ())
 		return;
 
-	if (!GetHitTestVisible ())
+	if (!GetIsHitTestVisible ())
 		return;
-	
+
+	/* 
+	 * FIXME OPTIMIZEME we can't currently do a bounds check here
+	 * because some elements allow hits outside the
+	 * rendered area (mainly textblock) and unless that changes
+	 * we can't skip whole branches of the subtree this way
+	 */
 	// first a quick bounds check
+	/*
 	if (!GetSubtreeBounds().PointInside (p.x, p.y))
 		return;
+	*/
 
 	/* the clip property is global so we can short out here */
 	if (!InsideClip (cr, p.x, p.y))
@@ -451,9 +459,9 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 	if (GetVisibility () != VisibilityVisible)
 		return;
 
-	if (!GetHitTestVisible ())
+	if (!GetIsHitTestVisible ())
 		return;
-		
+
 	if (GetSubtreeBounds ().height <= 0)
 		return;
 
@@ -489,12 +497,12 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 	if (GetVisibility () != VisibilityVisible)
 		return;
 
-	if (!GetHitTestVisible ())
+	if (!GetIsHitTestVisible ())
 		return;
 		
 	if (GetSubtreeBounds ().height <= 0)
 		return;
-		
+
 	if (!GetSubtreeBounds ().IntersectsWith (r))
 		return;
 	
