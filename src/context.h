@@ -103,6 +103,7 @@ public:
 	void Push (AbsoluteTransform transform);
 	void Push (Clip clip);
 	void Push (Group extents);
+	void Push (Group extents, MoonSurface *surface);
 	Node *Top ();
 	void Pop ();
 	Rect Pop (MoonSurface **surface);

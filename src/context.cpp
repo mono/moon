@@ -280,6 +280,14 @@ Context::Push (Group extents)
 	Stack::Push (new Context::Node (extents.r, &matrix));
 }
 
+void
+Context::Push (Group extents, MoonSurface *surface)
+{
+	Push (extents);
+
+	Top ()->SetData (surface);
+}
+
 Context::Node *
 Context::Top ()
 {
