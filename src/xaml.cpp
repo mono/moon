@@ -357,6 +357,7 @@ parse_template (Value *data, const Uri *resource_base, Surface *surface, Depende
 }
 	 
 XamlContext::XamlContext (XamlContextInternal *internal)
+	: EventObject (Type::XAMLCONTEXT)
 {
 	this->internal = internal;
 }
