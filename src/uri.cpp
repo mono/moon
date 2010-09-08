@@ -41,6 +41,9 @@ Uri::~Uri ()
 	g_free (fragment); fragment = NULL;
 	g_free (original_string); original_string = NULL;
 	g_free (tostring); tostring = NULL;
+	g_free (http_request_string); http_request_string = NULL;
+	if (gchandle)
+		deployment->FreeGCHandle (gchandle);
 	gchandle = NULL;
 	deployment = NULL;
 	is_absolute = false;
