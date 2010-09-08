@@ -337,7 +337,7 @@ class XamlContextInternal {
 DependencyObject *
 parse_template (Value *data, const Uri *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error)
 {
-	XamlContext *xaml_context = (XamlContext *) data->AsEventObject ();
+	XamlContext *xaml_context = data->AsXamlContext ();
 	SL3XamlLoader *loader = new SL3XamlLoader (resource_base, surface, xaml_context);
 	Type::Kind dummy;
 
