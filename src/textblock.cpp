@@ -724,6 +724,9 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 void
 TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
+	if (!setvalue)
+		return;
+
 	if (!PropertyHasValueNoAutoCreate (TextBlock::InlinesProperty, col)) {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 		return;
