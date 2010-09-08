@@ -11,7 +11,7 @@ AC_DEFUN([MOONLIGHT_CHECK_PAL],
 	pal_messaging="glib+unix (hardcoded)"
 
 	AC_DEFINE([PAL_LINUX],1,[Hack in support for the linux network container.])
-	pal_networking=linux (hardcoded)"
+	pal_networking="linux (hardcoded)"
 
 	AC_DEFINE([PAL_DBUS_NETWORKAVAILABILITY],1,[Hack in support for the dbus-glib so we can start using it.])
 	pal_networking="$pal_networking dbus-glib (hardcoded)"
