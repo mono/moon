@@ -1492,13 +1492,11 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		list = cairo_copy_clip_rectangle_list (cr);
-		if (list->status == CAIRO_STATUS_SUCCESS) {
+		if (list->status == CAIRO_STATUS_SUCCESS &&
+		    list->num_rectangles < 2) {
 			cairo_rectangle_t *rects = list->rectangles;
 
-			if (list->num_rectangles == 0) {
-				ctx->Push (Context::Clip ());
-			}
-			else if (list->num_rectangles == 1) {
+			if (list->num_rectangles) {
 				r = r.Intersection (Rect (rects[0].x,
 							  rects[0].y,
 							  rects[0].width,
@@ -1507,10 +1505,13 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 				ctx->Push (Context::Clip (r));
 			}
 			else {
-				ctx->Push (Context::Group (r));
+				ctx->Push (Context::Clip ());
 			}
 		}
 		else {
+			Rect bounds = GetClip ()->GetBounds ();
+
+			r = r.Intersection (bounds.Transform (ctx));
 			ctx->Push (Context::Group (r));
 		}
 		cairo_rectangle_list_destroy (list);
