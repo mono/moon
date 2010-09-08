@@ -56,6 +56,7 @@
 +SC-T: Mono.MoonlightValueConverter
 +SC-T: Mono.ToggleRef
 +SC-T: Mono.EventObjectToggleRef
++SC-T: Mono.UriHelper
 +SC-T: System.IO.SimpleUnmanagedMemoryStream
 # don't SC-T Mono.DispatcherTimer, Mono.Events, Mono.ManagedType, Mono.NativeDependencyObjectHelper,
 # Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
@@ -116,8 +117,8 @@
 +SC-M: System.Void System.Windows.Application::apply_default_style_cb_safe(System.IntPtr,System.IntPtr)
 +SC-M: System.Void System.Windows.Application::convert_keyframe_value_cb(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
 +SC-M: System.Void System.Windows.Application::convert_keyframe_value_cb_safe(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
-+SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.String,System.String)
-+SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb_safe(System.String,System.String)
++SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.Uri,System.Uri)
++SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb_safe(System.IntPtr,System.IntPtr)
 +SC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetXapResource(System.String)
 +SC-M: System.Boolean System.Windows.Application::Install(System.Boolean)
 
@@ -178,7 +179,7 @@
 +SC-M: System.Void System.Windows.Media.MediaStreamSource::SetMediaElement(System.Windows.Controls.MediaElement)
 +SC-M: System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamDescription)
 
-+SC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
++SC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr&,System.IntPtr)
 
 +SC-M: System.Object System.Windows.Data.BindingExpressionBase::ConvertToType(System.Windows.DependencyProperty,System.Object)
 +SC-M: System.Void System.Windows.Data.BindingExpressionBase::PropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)

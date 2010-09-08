@@ -1,7 +1,6 @@
 # [SecuritySafeCritical] needed inside System to call all [SecurityCritical] methods
-# 9 methods
+# 8 methods
 
-+SSC-M: System.Net.Authorization Mono.Http.NtlmClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 +SSC-M: System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 +SSC-M: System.Void Mono.Security.Protocol.Ntlm.Type1Message::.ctor()
 +SSC-M: System.Void Mono.Security.Protocol.Ntlm.Type3Message::.ctor()

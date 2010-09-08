@@ -88,7 +88,7 @@
 +SSC-M: System.Boolean System.Decimal::PerformParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Decimal&,System.Boolean)
 +SSC-M: System.Double System.Decimal::op_Explicit(System.Decimal)
 +SSC-M: System.Reflection.MethodInfo System.Delegate::get_Method()
-+SSC-M: System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean)
++SSC-M: System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean,System.Boolean)
 +SSC-M: System.Delegate System.Delegate::CreateDelegate(System.Type,System.Type,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Object System.Delegate::DynamicInvoke(System.Object[])
