@@ -382,6 +382,11 @@ namespace System.Windows.Controls.Primitives {
 
 		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
+			if (Initializing) {
+				base.OnItemsChanged (e);
+				return;
+			}
+
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
 				ListBoxItem item = e.NewItems [0] as ListBoxItem;
