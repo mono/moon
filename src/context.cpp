@@ -247,6 +247,17 @@ Context::Push (Transform transform)
 }
 
 void
+Context::Push (AbsoluteTransform transform)
+{
+	cairo_matrix_t matrix = transform.m;
+	Rect           box;
+
+	Top ()->GetClip (&box);
+
+	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix, &box));
+}
+
+void
 Context::Push (Clip clip)
 {
 	cairo_matrix_t matrix;
@@ -267,12 +278,6 @@ Context::Push (Group extents)
 
 	Top ()->GetMatrix (&matrix);
 	Stack::Push (new Context::Node (extents.r, &matrix));
-}
-
-void
-Context::Push (Group extents, AbsoluteTransform transform)
-{
-	Stack::Push (new Context::Node (extents.r, &transform.m));
 }
 
 Context::Node *

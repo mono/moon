@@ -1461,8 +1461,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_TRANSFORM) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
 
-		ctx->Push (Context::Group (r),
-			   Context::AbsoluteTransform (scale_xform));
+		ctx->Push (Context::Group (r));
+		ctx->Push (Context::AbsoluteTransform (scale_xform));
 	}
 	else {
 		ctx->Push (Context::Transform (render_xform));
@@ -1550,8 +1550,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_CACHE) {
 		Rect r = GetSubtreeExtents ().Transform (&scale_xform);
 
-		ctx->Push (Context::Group (r),
-			   Context::AbsoluteTransform (scale_xform));
+		ctx->Push (Context::Group (r));
+		ctx->Push (Context::AbsoluteTransform (scale_xform));
 	}
 
 	if (GetRenderCacheMode () && bitmap_cache)
@@ -1577,7 +1577,10 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_CACHE) {
 		MoonSurface *surface;
-		Rect        r = ctx->Pop (&surface);
+		Rect        r;
+
+		ctx->Pop ();
+		r = ctx->Pop (&surface);
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
@@ -1697,7 +1700,10 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_TRANSFORM) {
 		MoonSurface *src;
-		Rect        r = ctx->Pop (&src);
+		Rect        r;
+
+		ctx->Pop ();
+		r = ctx->Pop (&src);
 
 		if (!r.IsEmpty ()) {
 			cairo_matrix_t ctm;

@@ -99,10 +99,10 @@ public:
 	Context (MoonSurface *surface);
 	Context (MoonSurface *surface, Transform transform);
 
-	void Push (Clip clip);
 	void Push (Transform transform);
+	void Push (AbsoluteTransform transform);
+	void Push (Clip clip);
 	void Push (Group extents);
-	void Push (Group extents, AbsoluteTransform transform);
 	Node *Top ();
 	void Pop ();
 	Rect Pop (MoonSurface **surface);
