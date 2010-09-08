@@ -1486,6 +1486,11 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		cairo_t                *cr = ctx->Cairo ();
 		cairo_rectangle_list_t *list;
 
+		// we need this check because ::PreRender can (and
+		// will) be called for elements with empty regions.
+		if (!region->IsEmpty ())
+			r = r.Intersection (region->ClipBox ());
+
 		cairo_save (cr);
 		RenderClipPath (cr);
 
