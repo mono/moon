@@ -90,7 +90,7 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 	if (o_indexer == NULL) {
 		o_indexer = g_new (object_indexer, 1);
 		o_indexer->object = object;
-		object->ref ();
+		object->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &o_indexer->object);
 		o_indexer->properties_list = NULL;
 		g_hash_table_insert (objects, object, o_indexer);
 	}
@@ -146,7 +146,7 @@ destroy_object_func (DependencyObject *object, object_indexer *o_indexer, gpoint
 
 	g_list_foreach (o_indexer->properties_list, (GFunc) destroy_property_func, NULL);
 	g_list_free (o_indexer->properties_list);
-	object->unref ();
+	object->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &o_indexer->object);
 	g_free (o_indexer);
 }
 
@@ -164,6 +164,10 @@ static void
 apply_object_func (DependencyObject *object, object_indexer *o_indexer, gpointer unused)
 {
 	g_return_if_fail (o_indexer != NULL);
+	if (o_indexer->object == NULL) {
+		// the object has been collected
+		return;
+	}
 	g_list_foreach (o_indexer->properties_list, (GFunc) apply_property_func, object);
 }
 
