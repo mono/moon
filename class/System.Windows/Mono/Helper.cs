@@ -147,7 +147,7 @@ namespace Mono {
 
 			if (is_xap_mode) {
 				extension = Path.GetExtension (filename).ToLower ();
-				if (extension == ".dll" || extension == ".mdb") {
+				if (extension == ".dll" || extension == ".exe" || extension == ".mdb") {
 					// Note: We don't want to change the casing of the dll's
 					// basename since Mono requires the basename to match the
 					// expected case.

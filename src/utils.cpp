@@ -511,9 +511,16 @@ write_all (int fd, const char *buf, size_t len)
 }
 
 static bool
-is_dll_or_mdb (const char *filename, int n)
+is_dll_exe_or_mdb (const char *filename, int n)
 {
-	return n > 4 && (!g_ascii_strcasecmp (filename + (n - 4), ".dll") || !g_ascii_strcasecmp (filename + (n - 4), ".mdb"));
+	if (n <= 4)
+		return false;
+
+	char *ext = (char*) filename + (n - 4);
+	if (*ext++ != '.')
+		return false;
+
+	return (!g_ascii_strcasecmp (ext, "dll") || !g_ascii_strcasecmp (ext, "exe") || !g_ascii_strcasecmp (ext, "mdb"));
 }
 
 bool
@@ -603,7 +610,7 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		
 		unzCloseCurrentFile (zip);
 		
-		if (mode == CanonModeXap && is_dll_or_mdb (filename, info.size_filename)) {
+		if (mode == CanonModeXap && is_dll_exe_or_mdb (filename, info.size_filename)) {
 			g_free (canonicalized_filename);
 			canonicalized_filename = Deployment::GetCurrent ()->CanonicalizeFileName (filename, false);
 			altpath = g_build_filename (dir, canonicalized_filename, NULL);
