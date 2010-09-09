@@ -23,7 +23,7 @@
 #include "deployment.h"
 #include "timemanager.h"
 #include "enums.h"
-#include "surface-cairo.h"
+#include "context-cairo.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -837,13 +837,13 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 #endif
 	if (!ctx) {
 		int width, height;
-		MoonSurface *surface;
+		CairoSurface *surface;
 		gdk_drawable_get_size (drawable, &width, &height);
 
 		native = CreateCairoSurface (drawable, visual, true, width, height);
 
 		surface = new CairoSurface (native);
-		ctx = new Context (surface);
+		ctx = new CairoContext (surface);
 		surface->unref ();
 	}
 

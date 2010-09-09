@@ -87,8 +87,6 @@ public:
 		cairo_t        *context;
 	};
 
-	Context (MoonSurface *surface);
-
 	void Push (Transform transform);
 	void Push (AbsoluteTransform transform);
 	void Push (Clip clip);

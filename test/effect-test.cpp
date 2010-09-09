@@ -29,7 +29,7 @@ int
 main (int argc, char **argv)
 {
 	Context *ctx;
-	MoonSurface *target;
+	CairoSurface *target;
 	MoonSurface *surface;
 	cairo_surface_t *dst, *src;
 	CustomEffect *effect;
@@ -55,7 +55,7 @@ main (int argc, char **argv)
 						   width, height, stride);
 	target = new CairoSurface (dst);
 	cairo_surface_destroy (dst);
-	ctx = new Context (target);
+	ctx = new CairoContext (target);
 	target->unref ();
 
 	src = cairo_surface_create_similar (dst,

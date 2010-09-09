@@ -27,6 +27,7 @@ libmoon_include_headers = 	\
 	color.h			\
 	contentcontrol.h	\
 	context.h		\
+	context-cairo.h		\
 	control.h		\
 	cornerradius.h		\
 	consent.h		\
@@ -166,6 +167,7 @@ libmoon_la_SOURCES = 		\
 	color.cpp		\
 	contentcontrol.cpp	\
 	context.cpp		\
+	context-cairo.cpp	\
 	control.cpp		\
 	cornerradius.cpp	\
 	consent.cpp		\

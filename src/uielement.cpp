@@ -1755,7 +1755,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 }
 
 void
-UIElement::Paint (MoonSurface *target,  Rect bounds, cairo_matrix_t *xform)
+UIElement::Paint (CairoSurface *target,  Rect bounds, cairo_matrix_t *xform)
 {
 	Region region (bounds.RoundOut ());
 
@@ -1772,7 +1772,7 @@ UIElement::Paint (MoonSurface *target,  Rect bounds, cairo_matrix_t *xform)
 	if (xform)
 		cairo_matrix_multiply (&inverse, &inverse, xform);
 
-	Context *ctx = new Context (target);
+	Context *ctx = new CairoContext (target);
 
 	ctx->Push (Context::Transform (inverse));
 	DoRender (ctx, &region);

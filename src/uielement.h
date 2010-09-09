@@ -24,8 +24,7 @@
 #include "list.h"
 #include "size.h"
 #include "layoutinformation.h"
-#include "surface.h"
-#include "context.h"
+#include "context-cairo.h"
 
 #define QUANTUM_ALPHA 1
 
@@ -196,7 +195,7 @@ public:
 	//   Do an optimized render pass on the this element and it's
 	//   subtree.
 	//
-	void Paint (MoonSurface *target, Rect bounds, cairo_matrix_t *matrix);
+	void Paint (CairoSurface *target, Rect bounds, cairo_matrix_t *matrix);
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info

@@ -111,15 +111,6 @@ Context::Node::GetSurface ()
 	return target;
 }
 
-Context::Context (MoonSurface *surface)
-{
-	AbsoluteTransform transform = AbsoluteTransform ();
-	Surface           *cs = new Surface (surface, Rect ());
-
-	Stack::Push (new Context::Node (cs, &transform.m, NULL));
-	cs->unref ();
-}
-
 void
 Context::Push (Transform transform)
 {
