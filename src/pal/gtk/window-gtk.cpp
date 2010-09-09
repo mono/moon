@@ -200,8 +200,6 @@ MoonWindowGtk::Resize (int width, int height)
 {
 	gtk_widget_set_size_request (widget, width, height);
 	gtk_widget_queue_resize (widget);
-	if (native)
-		cairo_xlib_surface_set_size (native, width, height);
 }
 
 /* XPM */
@@ -835,12 +833,14 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	if (cache_size_multiplier == -1)
 		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
 #endif
-	if (!ctx) {
-		int width, height;
-		CairoSurface *surface;
-		gdk_drawable_get_size (drawable, &width, &height);
+	int width, height;
+	gdk_drawable_get_size (drawable, &width, &height);
 
+	if (!native)
 		native = CreateCairoSurface (drawable, visual, true, width, height);
+
+	if (!ctx) {
+		CairoSurface *surface;
 
 		surface = new CairoSurface (native);
 		ctx = new CairoContext (surface);
@@ -849,13 +849,18 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 
 	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
 	GdkRectangle area = event->area;
-	
+	Rect r = Rect (area.x, area.y, area.width, area.height);
+
+	cairo_xlib_surface_set_drawable (native,
+					 gdk_x11_drawable_get_xid (drawable),
+					 width, height);
 	cairo_surface_set_device_offset (native, off_x, off_y);
 
 	Region *region = new Region (event->region);
 
+	ctx->Push (Context::Clip (r));
+
 	if (use_image) {
-		Rect r = Rect (area.x, area.y, area.width, area.height);
 		cairo_surface_t *image = CreateCairoSurface (drawable, visual, false, r.width, r.height);
 		MoonSurface *surface = new CairoSurface (image);
 
@@ -867,22 +872,28 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	surface->Paint (ctx, region, transparent, use_image ? true : clear_transparent);
 
 	if (use_image) {
-		MoonSurface     *surface;
-		Rect            r = ctx->Pop (&surface);
-		cairo_surface_t *image = surface->Cairo ();
-		cairo_t         *cr = ctx->Cairo ();
+		MoonSurface *surface;
+		Rect        r = ctx->Pop (&surface);
 
-		cairo_surface_flush (image);
+		if (!r.IsEmpty ()) {
+			cairo_surface_t *image = surface->Cairo ();
+			cairo_t         *cr = ctx->Cairo ();
+
+			cairo_surface_flush (image);
+
+			cairo_set_source_surface (cr, image, 0, 0);
+			cairo_set_operator (cr, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
+
+			region->Draw (cr);
+			cairo_fill (cr);
+
 		
-		cairo_set_source_surface (cr, image, 0, 0);
-		cairo_set_operator (cr, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
-
-		region->Draw (cr);
-
-		cairo_fill (cr);
-		cairo_surface_destroy (image);
-		surface->unref ();
+			cairo_surface_destroy (image);
+			surface->unref ();
+		}
 	}
+
+	ctx->Pop ();
 
 	delete region;
 
