@@ -2650,8 +2650,9 @@ DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value
 	    new_value && !new_value->GetIsNull() && new_value->Is (deployment, Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *new_obj = new_value->AsDependencyObject(closure->types);
 		DependencyObject *old_obj = old_value->AsDependencyObject(closure->types);
-		
-		new_obj->CloneCore (closure->types, old_obj);
+
+		if (new_obj && old_obj)
+			new_obj->CloneCore (closure->types, old_obj);
 	}
 }
 
