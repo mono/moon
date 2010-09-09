@@ -82,6 +82,11 @@ namespace Mono.Xaml
 			set;
 		}
 
+		public DependencyObject TemplateOwner {
+			get;
+			set;
+		}
+
 		public bool IsExpandingTemplate {
 			get;
 			set;

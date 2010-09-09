@@ -393,7 +393,7 @@ namespace Mono {
 				break;
 			}
 
-			if (NativeMethods.type_is_dependency_object (value->k)){
+			if (NativeMethods.type_is_event_object (value->k)){
 				if (value->u.p == IntPtr.Zero)
 					return null;
 					

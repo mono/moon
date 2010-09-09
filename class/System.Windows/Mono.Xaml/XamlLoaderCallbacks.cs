@@ -227,8 +227,6 @@ namespace Mono.Xaml
 			return CreateFromStringInternal (xaml, createNamescope, validateTemplates, import_default_xmlns, out kind);
 		}
 
-		
-		
 		//
 		// Hydrates the object dob from the given xaml
 		//
@@ -282,6 +280,7 @@ namespace Mono.Xaml
 		// 
 		public abstract object CreateObjectFromString (string xaml, bool createNamescope);
 		public abstract object CreateObjectFromString (string xaml, bool createNamescope, bool validateTemplates);
+		public abstract object CreateObjectFromReader (StreamReader reader, bool createNamescope);
 		public abstract object CreateObjectFromFile (string path, bool createNamescope);
 	}
 
@@ -368,6 +367,15 @@ namespace Mono.Xaml
 			return p.ParseFile (path);
 		}
 
+		public override object CreateObjectFromReader (StreamReader reader, bool createNamescope)
+		{
+			XamlParser p = new XamlParser () {
+				CreateNameScope = createNamescope,
+				ResourceBase = resourceBase,
+			};
+
+			return p.ParseReader (reader);
+		}
 
 		private IntPtr ValueToIntPtr (Value v)
 		{

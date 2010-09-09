@@ -476,6 +476,7 @@ namespace Mono.Xaml {
 			}
 
 			context.IsExpandingTemplate = true;
+			context.TemplateOwner = source as DependencyObject;
 			context.TemplateBindingSource = fwe;
 
 			INativeEventObjectWrapper dob = null;
@@ -924,7 +925,7 @@ namespace Mono.Xaml {
 
 			while (instance != null) {
 
-				XamlObjectElement oe = element as XamlObjectElement;
+				XamlObjectElement oe = instance as XamlObjectElement;
 				if (oe == null) {
 					instance = instance.Parent;
 					continue;
@@ -949,9 +950,9 @@ namespace Mono.Xaml {
 				break;
 			}
 		
-			if (instance == null) {			
+			if (instance == null) {
 				el_dob.SetValue (Control.IsTemplateItemProperty, Context.IsExpandingTemplate);
-				el_dob.TemplateOwner = Context.TemplateBindingSource;
+				el_dob.TemplateOwner = Context.TemplateOwner;
 			}
 
 			is_template = el_dob.ReadLocalValue (Control.IsTemplateItemProperty);

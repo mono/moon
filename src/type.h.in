@@ -173,6 +173,9 @@ void types_init (void);
 /* @GeneratePInvoke */
 bool type_is_dependency_object (Type::Kind type);
 
+/* @GeneratePInvoke */
+bool type_is_event_object (Type::Kind type);
+	
 G_END_DECLS
 
 };

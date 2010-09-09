@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 542 methods needs to be decorated.
+# 545 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -186,6 +186,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_is_dependency_object(Mono.Kind)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::type_is_event_object(Mono.Kind)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::uielement_capture_mouse(System.IntPtr)
@@ -916,6 +919,9 @@
 # overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromFile(System.String,System.Boolean)'.
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::CreateObjectFromFile(System.String,System.Boolean)
 
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromReader(System.IO.StreamReader,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.ManagedXamlLoader::CreateObjectFromReader(System.IO.StreamReader,System.Boolean)
+
 # overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromString(System.String,System.Boolean)'.
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::CreateObjectFromString(System.String,System.Boolean)
 
@@ -933,6 +939,9 @@
 
 # overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromFile(System.String,System.Boolean)'.
 +SC-M: System.Object Mono.Xaml.SL4XamlLoader::CreateObjectFromFile(System.String,System.Boolean)
+
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromReader(System.IO.StreamReader,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.SL4XamlLoader::CreateObjectFromReader(System.IO.StreamReader,System.Boolean)
 
 # overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromString(System.String,System.Boolean)'.
 +SC-M: System.Object Mono.Xaml.SL4XamlLoader::CreateObjectFromString(System.String,System.Boolean)

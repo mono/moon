@@ -368,12 +368,11 @@ namespace System.Windows {
 				
 				if (info != null) {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
-						string generic_xaml = sr.ReadToEnd();
 						Uri resource_base = UriHelper.FromNativeUri (NativeMethods.dependency_object_get_resource_base (NativeHandle));
 						XamlLoader loader = XamlLoaderFactory.CreateLoader (type.Assembly, resource_base, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
-							rd = loader.CreateObjectFromString (generic_xaml, false) as ResourceDictionary;
+							rd = loader.CreateObjectFromReader (sr, false) as ResourceDictionary;
 						}
 						catch (Exception e) {
 							Console.WriteLine ("failed generic.xaml parsing:");

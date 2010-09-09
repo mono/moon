@@ -122,6 +122,12 @@ namespace Mono.Xaml
 			return result;
 		}
 
+		public override object CreateObjectFromReader (StreamReader reader, bool createNamescope)
+		{
+			string xaml = reader.ReadToEnd ();
+			return CreateObjectFromString (xaml, createNamescope);
+		}
+
 		// 
 		// Creates a managed dependency object from the xaml in the file
 		// 

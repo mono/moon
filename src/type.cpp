@@ -355,6 +355,12 @@ type_is_dependency_object (Type::Kind type)
 	return Type::IsSubclassOf (Deployment::GetCurrent (), type, Type::DEPENDENCY_OBJECT);
 }
 
+bool
+type_is_event_object (Type::Kind type)
+{
+	return Type::IsSubclassOf (Deployment::GetCurrent (), type, Type::EVENTOBJECT);
+}
+
 DependencyObject *
 type_create_instance (Type *type)
 {
