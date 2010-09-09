@@ -1544,6 +1544,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		}
  
 		ctx->Push (Context::Group (r), bitmap_cache);
+		ctx->Push (Context::Clip ());
 	}
 }
 
@@ -1558,7 +1559,10 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 	if (flags & COMPOSITE_CACHE) {
 		MoonSurface *surface;
-		Rect        r = ctx->Pop (&surface);
+		Rect        r;
+
+		ctx->Pop ();
+		r = ctx->Pop (&surface);
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();

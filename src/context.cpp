@@ -181,11 +181,10 @@ Context::Push (Group extents, MoonSurface *surface)
 {
 	cairo_matrix_t matrix;
 	Surface        *cs = new Surface (surface, extents.r);
-	Rect           clip = Rect ();
 
 	Top ()->GetMatrix (&matrix);
 
-	Stack::Push (new Context::Node (cs, &matrix, &clip));
+	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
 	cs->unref ();
 }
 
