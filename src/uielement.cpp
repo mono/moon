@@ -1768,9 +1768,11 @@ UIElement::Paint (MoonSurface *target,  Rect bounds, cairo_matrix_t *xform)
 	if (xform)
 		cairo_matrix_multiply (&inverse, &inverse, xform);
 
-	Context *ctx = new Context (target, Context::Transform (inverse));
+	Context *ctx = new Context (target);
 
+	ctx->Push (Context::Transform (inverse));
 	DoRender (ctx, &region);
+	ctx->Pop ();
 
 	delete ctx;
 

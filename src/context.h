@@ -88,7 +88,6 @@ public:
 	};
 
 	Context (MoonSurface *surface);
-	Context (MoonSurface *surface, Transform transform);
 
 	void Push (Transform transform);
 	void Push (AbsoluteTransform transform);

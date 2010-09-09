@@ -120,15 +120,6 @@ Context::Context (MoonSurface *surface)
 	cs->unref ();
 }
 
-Context::Context (MoonSurface *surface,
-		  Transform   transform)
-{
-	Surface *cs = new Surface (surface, Rect ());
-
-	Stack::Push (new Context::Node (cs, &transform.m, NULL));
-	cs->unref ();
-}
-
 void
 Context::Push (Transform transform)
 {
