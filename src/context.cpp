@@ -153,18 +153,8 @@ Context::Push (Clip clip)
 void
 Context::Push (Group extents)
 {
-	cairo_matrix_t matrix;
-	Rect           r = extents.r.RoundOut ();
-	MoonSurface    *native;
-	Rect           ignore = Top ()->GetSurface ()->GetData (&native);
-	MoonSurface    *surface = native->Similar (r.width, r.height);
-	Surface        *cs = new Surface (surface, extents.r);
-
-	Top ()->GetMatrix (&matrix);
-
-	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
-	cs->unref ();
-	native->unref ();
+	g_warning ("Context::Push has been called. The derived class should have overridden it.");
+	Push (Clip ());
 }
 
 void

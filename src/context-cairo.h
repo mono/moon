@@ -19,6 +19,8 @@ namespace Moonlight {
 class CairoContext : public Context {
 public:
 	CairoContext (CairoSurface *surface);
+
+	void Push (Group extents);
 };
 
 };
