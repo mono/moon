@@ -185,12 +185,11 @@ Rect
 Context::Pop (MoonSurface **ref)
 {
 	Node *node = (Node *) Stack::Pop ();
-	Rect r;
+	Rect r = Rect ();
 
-	// unbalanced push/pop ?
-	g_assert (Top ()->GetSurface () != node->GetSurface ());
+	if (Top ()->GetSurface () != node->GetSurface ())
+		r = node->GetSurface ()->GetData (ref);
 
-	r = node->GetSurface ()->GetData (ref);
 	delete node;
 
 	return r;
