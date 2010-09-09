@@ -653,6 +653,9 @@ UIElement::ComputeComposite ()
 	if (GetRenderEffect ())
 		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
+	if (GetClip ())
+		flags |= COMPOSITE_CLIP;
+
 	if (flags & RENDER_PROJECTION)
 		flags |= COMPOSITE_TRANSFORM;
 
