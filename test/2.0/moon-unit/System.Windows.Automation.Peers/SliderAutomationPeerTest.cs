@@ -213,6 +213,23 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		public override void TestHasKeyboardFocusAfterPattern ()
+		{
+			Slider fe = CreateConcreteFrameworkElement () as Slider;
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IRangeValueProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (IRangeValueProvider) peer.GetPattern (PatternInterface.RangeValue);
+				Assert.IsNotNull (provider, "#0");
+			},
+			() => provider.SetValue (.5),
+			() => Assert.IsFalse (peer.HasKeyboardFocus (), "#1"));
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		[Ignore ("This fails on the bots but passes locally. Be careful removing this")]
 		public override void GetChildren ()
 		{

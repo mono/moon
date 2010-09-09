@@ -106,6 +106,7 @@ namespace System.Windows.Automation.Peers {
 			if (!rangeBase.IsEnabled)
 				throw new ElementNotEnabledException ();
 
+			SetFocus ();
 			rangeBase.Value = value;
 		}
 	}

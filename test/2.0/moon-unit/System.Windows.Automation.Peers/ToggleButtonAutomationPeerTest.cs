@@ -301,6 +301,25 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public virtual void TestHasKeyboardFocusAfterPattern ()
+		{
+			ToggleButton fe = CreateConcreteFrameworkElement ()
+				as ToggleButton;
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IToggleProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (IToggleProvider) peer.GetPattern (PatternInterface.Toggle);
+				Assert.IsNotNull (provider, "#0");
+			}, 
+			() => provider.Toggle (),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#1"));
+		}
+
 		#region IToggleProvider tests
 
 		[TestMethod]

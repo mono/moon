@@ -70,6 +70,7 @@ namespace System.Windows.Automation.Peers
 			if (!radioButton.IsEnabled)
 				throw new ElementNotEnabledException ();
 
+			SetFocus ();
 			radioButton.IsChecked = true;
 		}
 

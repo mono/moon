@@ -100,8 +100,10 @@ namespace System.Windows.Automation.Peers {
 			if (!((ISelectionItemProvider) this).IsSelected)
 				return;
 
-			if (selector != null)
+			if (selector != null) {
+				SetFocusItemsControl ();
 				selector.SelectedIndex = -1;
+			}
 		}
 
 		void ISelectionItemProvider.Select ()
@@ -114,9 +116,11 @@ namespace System.Windows.Automation.Peers {
 				if (item != null) {
 					DependencyObject container
 						= selector.ItemContainerGenerator.ContainerFromItem (item);
-					if (container != null)
+					if (container != null) {
+						SetFocusItem ();
 						selector.SelectedIndex
 							= selector.ItemContainerGenerator.IndexFromContainer (container);
+					}
 				}
 			}
 		}

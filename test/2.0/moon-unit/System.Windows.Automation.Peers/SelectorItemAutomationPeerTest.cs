@@ -340,6 +340,71 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void TestHasKeyboardFocusAfterPattern ()
+		{
+			ListBox listbox = new ListBox ();
+			listbox.Items.Add ("Item 0");
+			listbox.Items.Add ("Item 1");
+
+			AutomationPeer peer1 = null;
+			AutomationPeer peer2 = null;
+			ISelectionItemProvider selectionItemProvider1 = null;
+			ISelectionItemProvider selectionItemProvider2 = null;
+			AutomationPeer listboxPeer = null;
+
+			CreateAsyncTest (listbox,
+			() => {
+				listboxPeer = FrameworkElementAutomationPeer.CreatePeerForElement (listbox);
+
+				peer1 = listboxPeer.GetChildren()[0];
+				peer2 = listboxPeer.GetChildren()[1];
+
+				selectionItemProvider1
+					= peer1.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+				Assert.IsNotNull (selectionItemProvider1, "SelectionItem Provider #0");
+
+				selectionItemProvider2
+					= peer2.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+				Assert.IsNotNull (selectionItemProvider2, "SelectionItem Provider #1");
+
+				// By default both are not selected
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #0");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #1");
+			},
+			() => selectionItemProvider1.Select (),
+			() => {
+				Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #2");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #3");
+			},
+			() => {
+				Assert.IsTrue (peer1.HasKeyboardFocus (), "#1");
+				Assert.IsFalse (peer2.HasKeyboardFocus (), "#2");
+				Assert.IsFalse (listboxPeer.HasKeyboardFocus (), "#3");
+			},
+			() => { selectionItemProvider2.Select (); },
+			() => {
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #4");
+				Assert.IsTrue (selectionItemProvider2.IsSelected, "IsSelected #5");
+			},
+			() => {
+				Assert.IsFalse (peer1.HasKeyboardFocus (), "#4");
+				Assert.IsTrue (peer2.HasKeyboardFocus (), "#5");
+				Assert.IsFalse (listboxPeer.HasKeyboardFocus (), "#6");
+			},
+			() => { selectionItemProvider2.RemoveFromSelection (); },
+			() => {
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #6");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #7");
+			},
+			() => {
+				Assert.IsTrue (peer1.HasKeyboardFocus (), "#7");
+				Assert.IsFalse (peer2.HasKeyboardFocus (), "#8");
+				Assert.IsFalse (listboxPeer.HasKeyboardFocus (), "#9");
+			});
+		}
+
 		#region Pattern Tests
 
 		[TestMethod]

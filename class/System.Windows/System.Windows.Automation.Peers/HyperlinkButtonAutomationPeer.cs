@@ -64,6 +64,7 @@ namespace System.Windows.Automation.Peers {
 			if (!IsEnabled ())
 				throw new ElementNotEnabledException ();
 
+			SetFocus ();
 			((ButtonBase) Owner).OnClickInternal ();
 		}
 

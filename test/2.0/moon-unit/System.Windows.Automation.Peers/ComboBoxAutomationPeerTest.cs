@@ -295,6 +295,38 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			TestIsKeyboardFocusable ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void TestHasKeyboardFocusAfterPattern ()
+		{
+			StackPanel panel = new StackPanel ();
+			ComboBox fe = CreateConcreteFrameworkElement () as ComboBox;
+			fe.Items.Add ("Item 0");
+			fe.Items.Add ("Item 1");
+
+			Button button = new Button () { Content = "Button" };
+
+			panel.Children.Add (fe);
+			panel.Children.Add (button);
+
+			AutomationPeer buttonPeer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IExpandCollapseProvider provider = null;
+
+			CreateAsyncTest (panel,
+			() => {
+				provider = (IExpandCollapseProvider) peer.GetPattern (PatternInterface.ExpandCollapse);
+				Assert.IsNotNull (provider, "#1");
+			},
+			() => provider.Expand (),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#2"),
+			() => button.Focus (),
+			() => Assert.IsTrue (buttonPeer.HasKeyboardFocus (), "#3"),
+			() => provider.Collapse (),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#4")
+			);
+		}
+
 		#region IExpandCollapseProvider Tests
 
 		[TestMethod]

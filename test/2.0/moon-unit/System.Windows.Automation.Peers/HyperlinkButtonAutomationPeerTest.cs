@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -521,6 +522,24 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNotNull (tuple, "StructureChanged #15");
 				EventsManager.Instance.Reset ();
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TestHasKeyboardFocusAfterPattern ()
+		{
+			HyperlinkButton fe = CreateConcreteFrameworkElement () as HyperlinkButton;
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IInvokeProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (IInvokeProvider) peer.GetPattern (PatternInterface.Invoke);
+				Assert.IsNotNull (provider, "#0");
+			}, 
+			() => provider.Invoke (),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#1"));
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

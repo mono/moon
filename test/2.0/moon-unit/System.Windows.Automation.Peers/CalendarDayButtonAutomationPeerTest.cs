@@ -646,6 +646,23 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			});
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public override void TestHasKeyboardFocusAfterPattern ()
+		{
+			AutomationPeer peer = null;
+			IInvokeProvider provider = null;
+
+			CreateAsyncTest (calendar,
+			() => {
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
+				peer = buttonChildren [0];
+				provider = (IInvokeProvider) peer.GetPattern (PatternInterface.Invoke);
+				Assert.IsNotNull (provider, "#0");
+			},
+			() => provider.Invoke (),
+			() => Assert.IsFalse (peer.HasKeyboardFocus (), "#1"));
+		}
 
 		#region ISelectionItemProvider Tests
 

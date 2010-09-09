@@ -273,6 +273,24 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			TestLocationAndSize ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void TestHasKeyboardFocusAfterPattern ()
+		{
+			PasswordBox fe = CreateConcreteFrameworkElement () as PasswordBox;
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IValueProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (IValueProvider) peer.GetPattern (PatternInterface.Value);
+				Assert.IsNotNull (provider, "#0");
+			}, 
+			() => provider.SetValue ("Hello world"),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#1"));
+		}
+
 		#region IValueProvider tests
 
 		[TestMethod]

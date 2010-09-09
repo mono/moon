@@ -234,5 +234,19 @@ namespace System.Windows.Automation.Peers {
 			}
 		}
 
+		internal void SetFocusItem ()
+		{
+			Control control = Item as Control;
+			if (control != null)
+				control.Focus ();
+		}
+
+		internal void SetFocusItemsControl ()
+		{
+			ItemsControl itemsControl = ItemsControl;
+			if (itemsControl != null)
+				itemsControl.Focus ();
+		}
+
 	}
 }

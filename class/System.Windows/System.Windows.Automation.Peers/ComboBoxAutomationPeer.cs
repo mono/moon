@@ -79,11 +79,13 @@ namespace System.Windows.Automation.Peers {
 
 		void IExpandCollapseProvider.Collapse ()
 		{
+			SetFocus ();
 			this.OwningComboBox.IsDropDownOpen = false;
 		}
 
 		void IExpandCollapseProvider.Expand ()
 		{
+			SetFocus ();
 			this.OwningComboBox.IsDropDownOpen = true;
 		}
 

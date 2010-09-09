@@ -34,6 +34,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
+using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -212,6 +213,24 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			Assert.IsNotNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue");
 			Assert.IsTrue (Object.ReferenceEquals (peer, peer.GetPattern (PatternInterface.RangeValue)), "RangeValue");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void TestHasKeyboardFocusAfterPattern ()
+		{
+			RangeBase fe = CreateConcreteFrameworkElement () as RangeBase;
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			IRangeValueProvider provider = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				provider = (IRangeValueProvider) peer.GetPattern (PatternInterface.RangeValue);
+				Assert.IsNotNull (provider, "#0");
+			}, 
+			() => provider.SetValue (.5),
+			() => Assert.IsTrue (peer.HasKeyboardFocus (), "#1"));
 		}
 
 		#region IRangeValueProvider tests
