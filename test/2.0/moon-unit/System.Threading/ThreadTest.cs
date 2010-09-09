@@ -121,6 +121,27 @@ namespace MoonTest.System.Threading
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("Background is not set to true")]
+		public void IsBackground_ThreadPool ()
+		{
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			bool complete = false;
+
+			Enqueue (() => {
+				try {
+					Assert.AreEqual (tid, Thread.CurrentThread.ManagedThreadId, "ManagedThreadId");
+					Assert.IsTrue (Thread.CurrentThread.IsBackground, "Background");
+				}
+				finally {
+					complete = true;
+				}
+			});
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
 		public void Culture ()
 		{
 			Thread t = new Thread (new ThreadStart (Defaults));
