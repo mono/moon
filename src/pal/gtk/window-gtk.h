@@ -78,6 +78,9 @@ private:
 
 	GtkWidget *container;
 
+	Context *ctx;
+	cairo_surface_t *native;
+
 	gboolean ExposeEvent (GtkWidget *w, GdkEventExpose *event);
 	static gboolean expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
 	static gboolean motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);

@@ -57,6 +57,9 @@ MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent,
 		InitializeFullScreen(parent);
 	else
 		InitializeNormal();
+
+	ctx = NULL;
+	native = NULL;
 }
 
 MoonWindowGtk::~MoonWindowGtk ()
@@ -74,6 +77,12 @@ MoonWindowGtk::~MoonWindowGtk ()
 
 	if (backing_image_data)
 		g_free (backing_image_data);
+
+	if (native)
+		cairo_surface_destroy (native);
+
+	if (ctx)
+		delete ctx;
 }
 
 void
@@ -191,6 +200,8 @@ MoonWindowGtk::Resize (int width, int height)
 {
 	gtk_widget_set_size_request (widget, width, height);
 	gtk_widget_queue_resize (widget);
+	if (native)
+		cairo_xlib_surface_set_size (native, width, height);
 }
 
 /* XPM */
@@ -824,41 +835,42 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	if (cache_size_multiplier == -1)
 		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
 #endif
-	int width, height;
-	gdk_drawable_get_size (drawable, &width, &height);
-	//printf ("Got a request to repaint at %d %d %d %d offset (%d, %d) drawable (%d, %d)\n", event->area.x, event->area.y, event->area.width, event->area.height, off_x, off_y, width, height);
+	if (!ctx) {
+		int width, height;
+		MoonSurface *surface;
+		gdk_drawable_get_size (drawable, &width, &height);
+
+		native = CreateCairoSurface (drawable, visual, true, width, height);
+
+		surface = new CairoSurface (native);
+		ctx = new Context (surface);
+		surface->unref ();
+	}
 
 	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
 	GdkRectangle area = event->area;
-	MoonSurface *target;
-
-	cairo_surface_t *native = CreateCairoSurface (drawable, visual, true, width, height);
-	cairo_surface_t *image = NULL;
 	
 	cairo_surface_set_device_offset (native, off_x, off_y);
 
 	Region *region = new Region (event->region);
 
 	if (use_image) {
-		image = CreateCairoSurface (drawable, visual, false, area.width, area.height);
-		cairo_surface_set_device_offset (image, -area.x, -area.y);
-		target = new CairoSurface (image);
-	}
-	else {
-		target = new CairoSurface (native);
-	}
+		Rect r = Rect (area.x, area.y, area.width, area.height);
+		cairo_surface_t *image = CreateCairoSurface (drawable, visual, false, r.width, r.height);
+		MoonSurface *surface = new CairoSurface (image);
 
-	Context *ctx = new Context (target);
+		ctx->Push (Context::Group (r), surface);
+		surface->unref ();
+	}
 
 	/* if we are redirecting to an image surface clear that first */
 	surface->Paint (ctx, region, transparent, use_image ? true : clear_transparent);
 
-	delete ctx;
-
-	target->unref ();
-
-	if (image != NULL) {
-		cairo_t *cr = cairo_create (native);
+	if (use_image) {
+		MoonSurface     *surface;
+		Rect            r = ctx->Pop (&surface);
+		cairo_surface_t *image = surface->Cairo ();
+		cairo_t         *cr = ctx->Cairo ();
 
 		cairo_surface_flush (image);
 		
@@ -868,11 +880,9 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		region->Draw (cr);
 
 		cairo_fill (cr);
-		cairo_destroy (cr);
 		cairo_surface_destroy (image);
+		surface->unref ();
 	}
-
-	cairo_surface_destroy (native);
 
 	delete region;
 
