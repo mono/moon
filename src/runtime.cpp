@@ -830,18 +830,18 @@ Surface::ProcessUpdates ()
 }
 
 void
-Surface::Paint (MoonSurface *target, int x, int y, int width, int height)
+Surface::Paint (Context *ctx, int x, int y, int width, int height)
 {
        Rect r = Rect (x, y, width, height);
        Region region = Region (r);
-       Paint (target, &region);
+       Paint (ctx, &region);
 }
 
-// arbitrary cairo context.
+// arbitrary context.
 void
-Surface::Paint (MoonSurface *target, Region *region)
+Surface::Paint (Context *ctx, Region *region)
 {
-	Paint (target, region, false, false);
+	Paint (ctx, region, false, false);
 }
 
 #if 0
@@ -905,7 +905,7 @@ dump_render_list (List *render_list)
 #endif
 
 void
-Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clear_transparent)
+Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_transparent)
 {
 	frames++;
 
@@ -917,7 +917,6 @@ Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clea
 	// mono_gc_disable ();
 	// GetDeployment()->DisableToggleRefs ();
 
-	Context *ctx = new Context (target);
 	List *render_list = new List ();
 
 	bool did_occlusion_culling = false;
@@ -1010,7 +1009,6 @@ Surface::Paint (MoonSurface *target, Region *region, bool transparent, bool clea
 
 
 	delete render_list;
-	delete ctx;
 
 	// GetDeployment()->EnableToggleRefs ();
 	// mono_gc_enable ();

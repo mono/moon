@@ -192,13 +192,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	MoonWindow *GetNormalWindow () { return normal_window; }
 	
-	// arbitrary cairo context.
-	void Paint (MoonSurface *target, Region *region);
+	// arbitrary context.
+	void Paint (Context *ctx, Region *region);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Paint (MoonSurface *target, int x, int y, int width, int height);
+	void Paint (Context *ctx, int x, int y, int width, int height);
 
-	void Paint (MoonSurface *surface, Region *region, bool transparent, bool clear_transparent);
+	void Paint (Context *ctx, Region *region, bool transparent, bool clear_transparent);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);

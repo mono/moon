@@ -848,8 +848,12 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		target = new CairoSurface (native);
 	}
 
+	Context *ctx = new Context (target);
+
 	/* if we are redirecting to an image surface clear that first */
-	surface->Paint (target, region, transparent, use_image ? true : clear_transparent);
+	surface->Paint (ctx, region, transparent, use_image ? true : clear_transparent);
+
+	delete ctx;
 
 	target->unref ();
 
