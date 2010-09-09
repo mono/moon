@@ -56,19 +56,22 @@ namespace Mono
 
 		static void RefToggled (IntPtr obj, bool isLastRef)
 		{
-			try {
-				EventObjectToggleRef tref;
-				NativeDependencyObjectHelper.objects.TryGetValue (obj, out tref);
-				if (tref != null)
-					tref.Toggle (isLastRef);
-			} catch (Exception e) {
-				//ExceptionManager.RaiseUnhandledException (e, false);
-				try {
-					Console.WriteLine (e);
-				} catch {
-					// Ignore
-				}
-			}
+			// This shouldn't be used anymore, but leaving the code
+			// here just in case we need it in future.
+			throw new NotImplementedException ();
+//			try {
+//				EventObjectToggleRef tref;
+//				NativeDependencyObjectHelper.objects.TryGetValue (obj, out tref);
+//				if (tref != null)
+//					tref.Toggle (isLastRef);
+//			} catch (Exception e) {
+//				//ExceptionManager.RaiseUnhandledException (e, false);
+//				try {
+//					Console.WriteLine (e);
+//				} catch {
+//					// Ignore
+//				}
+//			}
 		}
 
 		static ToggleNotifyHandler toggle_notify_callback = new ToggleNotifyHandler (RefToggled);
