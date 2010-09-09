@@ -53,20 +53,17 @@ public:
 
 	class Surface : public MoonSurface {
 	public:
-		Surface (MoonSurface *moon);
 		Surface (MoonSurface *moon,
-			 double      xOffset,
-			 double      yOffset);
+			 Rect        extents);
 		virtual ~Surface ();
 
 		cairo_surface_t *Cairo ();
 
-		Surface *Similar (Rect r);
-		MoonSurface *Native ();
+		Rect GetData (MoonSurface **surface);
 
 	private:
 		MoonSurface     *native;
-		Point           offset;
+		Rect            box;
 		cairo_surface_t *surface;
 	};
 
@@ -75,8 +72,6 @@ public:
 		Node (Surface        *surface,
 		      cairo_matrix_t *matrix,
 		      const Rect     *clip);
-		Node (Rect           extents,
-		      cairo_matrix_t *matrix);
 		virtual ~Node ();
 
 		cairo_t *Cairo ();
@@ -84,16 +79,12 @@ public:
 		void GetMatrix (cairo_matrix_t *matrix);
 		void GetClip (Rect *clip);
 		Surface *GetSurface ();
-		MoonSurface *GetData (Rect *extents);
-		void SetData (MoonSurface *surface);
-		bool Readonly ();
 
 	private:
+		Surface        *target;
 		Rect           box;
 		cairo_matrix_t transform;
 		cairo_t        *context;
-		Surface        *target;
-		MoonSurface    *data;
 	};
 
 	Context (MoonSurface *surface);
@@ -109,6 +100,7 @@ public:
 	Rect Pop (MoonSurface **surface);
 
 	cairo_t *Cairo ();
+
 	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
 };

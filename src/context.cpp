@@ -19,19 +19,11 @@ namespace Moonlight {
 #define MAX_W 65536
 #define MAX_H MAX_W
 
-Context::Surface::Surface (MoonSurface *moon)
-{
-	native  = moon->ref ();
-	offset  = Point (NAN, NAN);
-	surface = NULL;
-}
-
 Context::Surface::Surface (MoonSurface *moon,
-			   double      xOffset,
-			   double      yOffset)
+			   Rect        extents)
 {
 	native  = moon->ref ();
-	offset  = Point (xOffset, yOffset);
+	box     = extents;
 	surface = NULL;
 }
 
@@ -43,21 +35,11 @@ Context::Surface::~Surface ()
 	native->unref ();
 }
 
-Context::Surface *
-Context::Surface::Similar (Rect r)
+Rect
+Context::Surface::GetData (MoonSurface **ref)
 {
-	MoonSurface      *moon = native->Similar (r.width, r.height);
-	Context::Surface *cs = new Surface (moon, -r.x, -r.y);
-
-	moon->unref ();
-
-	return cs;
-}
-
-MoonSurface *
-Context::Surface::Native ()
-{
-	return native->ref ();
+	*ref = native->ref ();
+	return box;
 }
 
 cairo_surface_t *
@@ -66,10 +48,8 @@ Context::Surface::Cairo ()
 	if (!surface) {
 		surface = native->Cairo ();
 
-		if (!isnan (offset.x) && !isnan (offset.y))
-			cairo_surface_set_device_offset (surface,
-							 offset.x,
-							 offset.y);
+		if (!box.IsEmpty ())
+			cairo_surface_set_device_offset (surface, -box.x, -box.y);
 	}
 
 	return cairo_surface_reference (surface);
@@ -79,21 +59,10 @@ Context::Node::Node (Surface        *surface,
 		     cairo_matrix_t *matrix,
 		     const Rect     *clip)
 {
+	target    = (Surface *) surface->ref ();
 	box       = clip ? *clip : Rect (MIN_X, MIN_Y, MAX_W, MAX_H);
 	transform = *matrix;
 	context   = NULL;
-	target    = (Surface *) surface->ref ();
-	data      = NULL;
-}
-
-Context::Node::Node (Rect           extents,
-		     cairo_matrix_t *matrix)
-{
-	box       = extents;
-	transform = *matrix;
-	context   = NULL;
-	target    = NULL;
-	data      = NULL;
 }
 
 Context::Node::~Node ()
@@ -103,18 +72,12 @@ Context::Node::~Node ()
 
 	if (target)
 		target->unref ();
-
-	if (data)
-		data->unref ();
 }
 
 cairo_t *
 Context::Node::Cairo ()
 {
 	Surface *surface = GetSurface ();
-
-	if (!surface)
-		return NULL;
 
 	if (!context) {
 		cairo_surface_t *dst = surface->Cairo ();
@@ -145,79 +108,13 @@ Context::Node::GetClip (Rect *clip)
 Context::Surface *
 Context::Node::GetSurface ()
 {
-	if (!target) {
-		if (!GetData (NULL))
-			return NULL;
-	}
-
 	return target;
-}
-
-MoonSurface *
-Context::Node::GetData (Rect *extents)
-{
-	Rect r = box.RoundOut ();
-
-	if (!data) {
-		Surface *base;
-
-		if (target)
-			return NULL;
-
-		if (!prev) {
-			g_warning ("ContextNode::GetData no base node.");
-			return NULL;
-		}
-
-		base = ((Context::Node *) prev)->GetSurface ();
-		if (!base) {
-			g_warning ("ContextNode::GetData no base surface.");
-			return NULL;
-		}
-
-		target = base->Similar (r);
-		if (!target) {
-			g_warning ("ContextNode::GetData failed.");
-			return NULL;
-		}
-
-		data = target->Native ();
-	}
-
-	if (extents)
-		*extents = r;
-
-	return data;
-}
-
-void
-Context::Node::SetData (MoonSurface *source)
-{
-	MoonSurface *ref;
-
-	if (target) {
-		g_warning ("ContextNode::SetData target surface present.");
-		return;
-	}
-
-	ref = source->ref ();
-
-	if (data)
-		data->unref ();
-
-	data = ref;
-}
-
-bool
-Context::Node::Readonly (void)
-{
-	return GetSurface () ? false : true;
 }
 
 Context::Context (MoonSurface *surface)
 {
 	AbsoluteTransform transform = AbsoluteTransform ();
-	Surface           *cs = new Surface (surface);
+	Surface           *cs = new Surface (surface, Rect ());
 
 	Stack::Push (new Context::Node (cs, &transform.m, NULL));
 	cs->unref ();
@@ -226,7 +123,7 @@ Context::Context (MoonSurface *surface)
 Context::Context (MoonSurface *surface,
 		  Transform   transform)
 {
-	Surface *cs = new Surface (surface);
+	Surface *cs = new Surface (surface, Rect ());
 
 	Stack::Push (new Context::Node (cs, &transform.m, NULL));
 	cs->unref ();
@@ -275,17 +172,30 @@ void
 Context::Push (Group extents)
 {
 	cairo_matrix_t matrix;
+	Rect           r = extents.r.RoundOut ();
+	MoonSurface    *native;
+	Rect           ignore = Top ()->GetSurface ()->GetData (&native);
+	MoonSurface    *surface = native->Similar (r.width, r.height);
+	Surface        *cs = new Surface (surface, extents.r);
 
 	Top ()->GetMatrix (&matrix);
-	Stack::Push (new Context::Node (extents.r, &matrix));
+
+	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
+	cs->unref ();
+	native->unref ();
 }
 
 void
 Context::Push (Group extents, MoonSurface *surface)
 {
-	Push (extents);
+	cairo_matrix_t matrix;
+	Surface        *cs = new Surface (surface, extents.r);
+	Rect           clip = Rect ();
 
-	Top ()->SetData (surface);
+	Top ()->GetMatrix (&matrix);
+
+	Stack::Push (new Context::Node (cs, &matrix, &clip));
+	cs->unref ();
 }
 
 Context::Node *
@@ -303,21 +213,16 @@ Context::Pop ()
 Rect
 Context::Pop (MoonSurface **ref)
 {
-	Node *node;
-	Rect extents = Rect ();
+	Node *node = (Node *) Stack::Pop ();
+	Rect r;
 
-	node = (Node *) Stack::Pop ();
-	if (node) {
-		MoonSurface *surface;
+	// unbalanced push/pop ?
+	g_assert (Top ()->GetSurface () != node->GetSurface ());
 
-		surface = node->GetData (&extents);
-		if (surface)
-			*ref = surface->ref ();
+	r = node->GetSurface ()->GetData (ref);
+	delete node;
 
-		delete node;
-	}
-
-	return extents;
+	return r;
 }
 
 cairo_t *
@@ -329,7 +234,11 @@ Context::Cairo ()
 bool
 Context::IsImmutable ()
 {
-	return Top ()->Readonly ();
+	Rect box;
+
+	Top ()->GetClip (&box);
+
+	return box.IsEmpty ();
 }
 
 };
