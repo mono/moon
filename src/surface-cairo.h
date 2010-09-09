@@ -20,7 +20,6 @@ public:
 	CairoSurface (cairo_surface_t *data);
 	virtual ~CairoSurface ();
 
-	MoonSurface *Similar (int width, int height);
 	cairo_surface_t *Cairo ();
 
 private:

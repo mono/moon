@@ -24,7 +24,6 @@ public:
 	MoonSurface *ref ();
 	void        unref ();
 
-	virtual MoonSurface *Similar (int width, int height);
 	virtual cairo_surface_t *Cairo ();
 
 private:

@@ -41,14 +41,6 @@ MoonSurface::unref ()
 		delete this;
 }
 
-MoonSurface *
-MoonSurface::Similar (int width, int height)
-{
-	g_warning ("MoonSurface::Similar has been called. The derived class should have overridden it.");
-
-	return NULL;
-}
-
 cairo_surface_t *
 MoonSurface::Cairo ()
 {
