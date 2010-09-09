@@ -69,7 +69,12 @@ namespace System.Windows.Controls {
 			if (e == null)
 				return null;
 
-			return GetItemsOwner (e.Parent);
+			var itctl = e.Parent as ItemsControl;
+			if (itctl == null)
+				return GetItemsOwner (e.Parent);
+			if (itctl.IsItemItsOwnContainer (e))
+				return itctl;
+			return null;
 		}
 
 		DataTemplate displayMemberTemplate;
