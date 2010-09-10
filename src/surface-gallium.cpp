@@ -18,6 +18,7 @@
 #undef CLAMP
 #endif
 #include "util/u_inlines.h"
+#include "util/u_sampler.h"
 
 namespace Moonlight {
 
@@ -62,32 +63,46 @@ GalliumSurface::GalliumSurface (pipe_context *context,
 				int          width,
 				int          height)
 {
-	struct pipe_screen   *screen = context->screen;
-	struct pipe_resource templat;
+	struct pipe_screen       *screen = context->screen;
+	struct pipe_resource     pt, *texture;
+	struct pipe_sampler_view view_templ;
 
 	pipe   = context;
 	mapped = NULL;
 
-	memset (&templat, 0, sizeof (templat));
-	templat.target = PIPE_TEXTURE_2D;
-	templat.format = PIPE_FORMAT_B8G8R8A8_UNORM;
-	templat.width0 = width;
-	templat.height0 = height;
-	templat.depth0 = 1;
-	templat.last_level = 0;
-	templat.bind = PIPE_BIND_SAMPLER_VIEW | PIPE_BIND_RENDER_TARGET |
+	memset (&pt, 0, sizeof (pt));
+	pt.target = PIPE_TEXTURE_2D;
+	pt.format = PIPE_FORMAT_B8G8R8A8_UNORM;
+	pt.width0 = width;
+	pt.height0 = height;
+	pt.depth0 = 1;
+	pt.last_level = 0;
+	pt.bind = PIPE_BIND_SAMPLER_VIEW | PIPE_BIND_RENDER_TARGET |
 		PIPE_BIND_TRANSFER_WRITE | PIPE_BIND_TRANSFER_READ;
 
-	texture = screen->resource_create (screen, &templat);
-}
+	g_assert (screen->is_format_supported (screen,
+					       pt.format,
+					       pt.target,
+					       0,
+					       pt.bind,
+					       0));
 
+	texture = screen->resource_create (screen, &pt);
+
+	g_assert (texture);
+
+	u_sampler_view_default_template (&view_templ, texture, texture->format);
+	sampler_view = pipe->create_sampler_view (pipe, texture, &view_templ);
+
+	pipe_resource_reference (&texture, NULL);
+}
 
 GalliumSurface::~GalliumSurface ()
 {
 	if (mapped)
 		cairo_surface_destroy (mapped);
 
-	pipe_resource_reference (&texture, NULL);
+	pipe_sampler_view_reference (&sampler_view, NULL);
 }
 
 void
@@ -102,7 +117,8 @@ GalliumSurface::CairoDestroy (void *data)
 cairo_surface_t *
 GalliumSurface::Cairo ()
 {
-	static cairo_user_data_key_t unused;
+	static cairo_user_data_key_t key;
+	struct pipe_resource         *texture = sampler_view->texture;
 	Transfer                     *transfer;
 	unsigned char                *data;
 
@@ -125,7 +141,7 @@ GalliumSurface::Cairo ()
 						      texture->width0 * 4);
 
 	cairo_surface_set_user_data (mapped,
-				     &unused,
+				     &key,
 				     (void *) transfer,
 				     CairoDestroy);
 
@@ -141,9 +157,19 @@ GalliumSurface::Sync ()
 	}
 }
 
+struct pipe_sampler_view *
+GalliumSurface::SamplerView ()
+{
+	Sync ();
+
+	return sampler_view;
+}
+
 struct pipe_resource *
 GalliumSurface::Texture ()
 {
+	struct pipe_resource *texture = sampler_view->texture;
+
 	Sync ();
 
 	return texture;

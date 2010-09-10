@@ -43,6 +43,7 @@ public:
 
 	cairo_surface_t *Cairo ();
 
+	pipe_sampler_view *SamplerView ();
 	pipe_resource *Texture ();
 
 private:
@@ -50,9 +51,9 @@ private:
 
 	void Sync ();
 
-	pipe_context    *pipe;
-	pipe_resource   *texture;
-	cairo_surface_t *mapped;
+	pipe_context      *pipe;
+	pipe_sampler_view *sampler_view;
+	cairo_surface_t   *mapped;
 };
 
 };
