@@ -184,7 +184,7 @@ namespace Mono.Xaml {
 			}
 
 			try {
-				return DependencyProperty.Lookup (kind, name);
+				return XamlParser.LookupDependencyProperty (kind, name);
 			} catch (Exception e) {
 				Console.Error.WriteLine ("Exception while looking up dependency property.");
 				Console.Error.WriteLine (e);

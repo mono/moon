@@ -224,8 +224,8 @@ namespace Mono.Xaml {
 			Types.Ensure (target_type);
 
 			ManagedType mt = Deployment.Current.Types.Find (target_type);
-			DependencyProperty dp = DependencyProperty.Lookup ((Kind) mt.native_handle, value);
 
+			DependencyProperty dp = XamlParser.LookupDependencyProperty ((Kind) mt.native_handle, value);
 			return dp;
 		}
 
