@@ -131,7 +131,7 @@ namespace System.Windows {
 					XamlLoader loader = XamlLoaderFactory.CreateLoader (Deployment.Current.EntryAssembly, source, Deployment.Current.Surface.Native, PluginHost.Handle);
 					loader.Hydrate (this, stream.Stream, true, false, true);
 				} catch (Exception e) {
-					Console.Error.WriteLine ("Error while parsing xaml referred to in ResourceDictionary::Source property.");
+					Console.Error.WriteLine ("Error while parsing xaml referred to in ResourceDictionary::Source property '{0}'.", source);
 					Console.Error.WriteLine (e);
 
 					throw e;
