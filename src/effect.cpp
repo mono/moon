@@ -1725,8 +1725,6 @@ BlurEffect::Render (Context      *ctx,
 		Rect          r = Rect (x, y, width, height);
 		cairo_t       *cr = ctx->Cairo ();
 
-		cairo_surface_set_device_offset (cs, 0, 0);
-
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		r.RoundOut ().Draw (cr);
@@ -4027,8 +4025,6 @@ TransformEffect::Render (Context      *ctx,
 		if (Matrix3D::IsIntegerTranslation (matrix, &x0, &y0)) {
 			cairo_t *cr = ctx->Cairo ();
 			Rect    r = Rect (x, y, width, height);
-
-			cairo_surface_set_device_offset (cs, 0, 0);
 
 			cairo_save (cr);
 			cairo_identity_matrix (cr);

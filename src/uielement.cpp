@@ -1578,8 +1578,6 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_surface_t *src = surface->Cairo ();
 			cairo_t         *cr = ctx->Cairo ();
 
-			cairo_surface_set_device_offset (src, 0, 0);
-
 			cairo_set_source_surface (cr, src, 0, 0);
 			cairo_paint (cr);
 			cairo_surface_destroy (src);
@@ -1603,8 +1601,6 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			Point           p = GetOriginPoint ();
 			Rect            area = Rect (p.x, p.y, 0.0, 0.0);
 			cairo_pattern_t *mask = NULL;
-
-			cairo_surface_set_device_offset (src, 0, 0);
 
 			cairo_get_matrix (cr, &ctm);
 			cairo_identity_matrix (cr);
@@ -1634,8 +1630,6 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_surface_t *src = surface->Cairo ();
 			cairo_t         *cr = ctx->Cairo ();
 			double          local_opacity = GetOpacity ();
-
-			cairo_surface_set_device_offset (src, 0, 0);
 
 			cairo_identity_matrix (cr);
 			cairo_set_source_surface (cr, src, r.x, r.y);
@@ -1672,8 +1666,6 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
 			cairo_t         *cr = ctx->Cairo ();
-
-			cairo_surface_set_device_offset (src, 0, 0);
 
 			cairo_identity_matrix (cr);
 			cairo_set_source_surface (cr, src, r.x, r.y);

@@ -880,7 +880,6 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 			cairo_t         *cr = ctx->Cairo ();
 
 			cairo_surface_flush (image);
-			cairo_surface_set_device_offset (image, 0, 0);
 
 			cairo_set_source_surface (cr, image, r.x, r.y);
 			cairo_set_operator (cr, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
