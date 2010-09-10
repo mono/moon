@@ -2914,9 +2914,10 @@ PasswordBox::SyncDisplayText ()
 void
 PasswordBox::SyncText ()
 {
-	SyncDisplayText ();
-
 	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+	
+	SyncDisplayText ();
+	
 	setvalue = false;
 	SetValue (PasswordBox::PasswordProperty, Value (text, true));
 	setvalue = true;
@@ -2998,11 +2999,17 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				g_free (text);
 				
 				emit |= TEXT_CHANGED;
-				SyncDisplayText ();
 				ClearSelection (0);
 				ResetIMContext ();
 				
-				SyncAndEmit ();
+				// Manually sync the DisplayText because we
+				// don't want SyncAndEmit() to sync the
+				// Password property again.
+				SyncDisplayText ();
+				
+				SyncAndEmit (false);
+			} else {
+				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
 		}
 		
@@ -3044,6 +3051,8 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					
 					SyncAndEmit ();
 				}
+			} else {
+				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
 		}
 	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {
