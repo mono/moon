@@ -28,6 +28,7 @@ pipe_screen    *Effect::screen;
 
 cairo_user_data_key_t Effect::textureKey;
 cairo_user_data_key_t Effect::surfaceKey;
+cairo_user_data_key_t Effect::samplerViewKey;
 
 int Effect::filtertable0[256];
 
@@ -67,31 +68,6 @@ extern "C" {
 #if MAX_SAMPLERS > PIPE_MAX_SAMPLERS
 #error MAX_SAMPLERS is too large
 #endif
-
-static void
-st_set_fragment_sampler_texture (GalliumContext *st_ctx,
-				 unsigned index,
-				 struct pipe_resource *texture)
-{
-      struct pipe_sampler_view templat;
-
-      if (!texture)
-	      texture = st_ctx->default_texture;
-
-      pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[index], NULL);
-
-      u_sampler_view_default_template (&templat,
-				       texture,
-				       texture->format);
-
-      st_ctx->fragment_sampler_views[index] = st_ctx->pipe->create_sampler_view (st_ctx->pipe,
-										 texture,
-										 &templat);
-
-      st_ctx->pipe->set_fragment_sampler_views (st_ctx->pipe,
-						PIPE_MAX_SAMPLERS,
-						st_ctx->fragment_sampler_views);
-}
 
 struct moon_sw_winsys
 {
@@ -232,6 +208,14 @@ st_surface_destroy_callback (void *data)
 	struct pipe_surface *surface = (struct pipe_surface *) data;
 
 	pipe_surface_reference (&surface, NULL);
+}
+
+static void
+st_sampler_view_destroy_callback (void *data)
+{
+	struct pipe_sampler_view *sampler_view = (struct pipe_sampler_view *) data;
+
+	pipe_sampler_view_reference (&sampler_view, NULL);
 }
 
 static INLINE void
@@ -947,6 +931,42 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 
 }
 
+struct pipe_sampler_view *
+Effect::GetShaderSamplerView (cairo_surface_t *surface)
+{
+	
+#ifdef USE_GALLIUM
+	GalliumContext       *ctx = st_context;
+	struct pipe_sampler_view  *view;
+	struct pipe_resource *tex;
+	struct pipe_sampler_view view_templ;
+
+	view = (struct pipe_sampler_view *) cairo_surface_get_user_data (surface, &samplerViewKey);
+	if (view)
+		return view;
+
+	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE)
+		return NULL;
+
+	tex = GetShaderTexture (surface);
+	if (!tex)
+		return NULL;
+
+	u_sampler_view_default_template (&view_templ, tex, tex->format);
+	view = ctx->pipe->create_sampler_view (ctx->pipe, tex, &view_templ);
+
+	cairo_surface_set_user_data (surface,
+				     &samplerViewKey,
+				     (void *) view,
+				     st_sampler_view_destroy_callback);
+
+	return view;
+#else
+	return NULL;
+#endif
+
+}
+
 struct pipe_resource *
 Effect::CreateVertexBuffer (struct pipe_resource *texture,
 			    const double         *matrix,
@@ -1113,7 +1133,7 @@ Effect::DrawVertexBuffer (struct pipe_surface  *dst,
 
 bool
 Effect::Composite (pipe_surface_t  *dst,
-		   pipe_resource_t *src,
+		   pipe_sampler_view *src,
 		   const double    *matrix,
 		   double          dstX,
 		   double          dstY,
@@ -1137,7 +1157,7 @@ Effect::Render (Context      *ctx,
 		double       height)
 {
 	struct pipe_surface  *surface;
-	struct pipe_resource *texture;
+	pipe_sampler_view    *sampler_view;
 	cairo_surface_t      *dst;
 	cairo_surface_t      *cs;
 	cairo_t              *cr = ctx->Cairo ();
@@ -1152,10 +1172,10 @@ Effect::Render (Context      *ctx,
 	cs = src->Cairo ();
 
 	surface = GetShaderSurface (dst);
-	texture = GetShaderTexture (cs);
+	sampler_view = GetShaderSamplerView (cs);
 
-	if (surface && texture)
-		status = Composite (surface, texture, matrix,
+	if (surface && sampler_view)
+		status = Composite (surface, sampler_view, matrix,
 				    dstX, dstY,
 				    NULL,
 				    x, y, width, height);
@@ -1252,7 +1272,7 @@ BlurEffect::Padding ()
 
 bool
 BlurEffect::Composite (pipe_surface_t  *dst,
-		       pipe_resource_t *src,
+		       pipe_sampler_view *src,
 		       const double    *matrix,
 		       double          dstX,
 		       double          dstY,
@@ -1267,11 +1287,11 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 	GalliumContext       *ctx = st_context;
 	struct pipe_screen   *screen = ctx->pipe->screen;
 	GalliumSurface       *intermediate;
-	struct pipe_resource *intermediate_texture;
 	struct pipe_surface  *intermediate_surface;
 	struct pipe_resource *vertices, *intermediate_vertices;
-	double               s = src->width0;
-	double               t = src->height0;
+	pipe_sampler_view    *sampler_views[PIPE_MAX_SAMPLERS];
+	double               s = src->texture->width0;
+	double               t = src->texture->height0;
 
 	MaybeUpdateFilter ();
 	MaybeUpdateShader ();
@@ -1280,20 +1300,14 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 
 	intermediate = new GalliumSurface (ctx->pipe,
-					   src->width0,
-					   src->height0);
+					   src->texture->width0,
+					   src->texture->height0);
 	if (!intermediate)
 		return 0;
 
-	intermediate_texture = intermediate->Texture ();
-	if (!intermediate_texture) {
-		intermediate->unref ();
-		return 0;
-	}
-
 	intermediate_surface =
 		screen->get_tex_surface (screen,
-					 intermediate_texture,
+					 intermediate->Texture (),
 					 0,
 					 0,
 					 0,
@@ -1303,7 +1317,7 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
-	vertices = CreateVertexBuffer (intermediate_texture, matrix,
+	vertices = CreateVertexBuffer (intermediate->Texture (), matrix,
 				       x, y,
 				       width, height,
 				       s, t);
@@ -1313,7 +1327,7 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
-	intermediate_vertices = CreateVertexBuffer (src, NULL,
+	intermediate_vertices = CreateVertexBuffer (src->texture, NULL,
 						    0.0, 0.0,
 						    s, t,
 						    s, t);
@@ -1332,6 +1346,8 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
+	cso_save_fragment_sampler_views (ctx->cso);
+
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
 	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
@@ -1344,7 +1360,8 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 	cso_single_sampler(ctx->cso, 0, &sampler);
 	cso_single_sampler_done(ctx->cso);
 
-	st_set_fragment_sampler_texture (ctx, 0, src);
+	sampler_views[0] = src;
+	cso_set_fragment_sampler_views (ctx->cso, 1, sampler_views);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1363,8 +1380,9 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 	DrawVertexBuffer (intermediate_surface, intermediate_vertices,
 			  0.0, 0.0);
 
-	st_set_fragment_sampler_texture (ctx, 0, intermediate_texture);
-
+	sampler_views[0] = intermediate->SamplerView ();
+	cso_set_fragment_sampler_views (ctx->cso, 1, sampler_views);
+	
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
 					0, vert_pass_constant_buffer);
@@ -1384,7 +1402,7 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
 
-	st_set_fragment_sampler_texture (ctx, 0, NULL);
+	cso_restore_fragment_sampler_views (ctx->cso);
 
 	pipe_resource_reference (&intermediate_vertices, NULL);
 	pipe_resource_reference (&vertices, NULL);
@@ -1682,7 +1700,7 @@ DropShadowEffect::Padding ()
 
 bool
 DropShadowEffect::Composite (pipe_surface_t  *dst,
-			     pipe_resource_t *src,
+			     pipe_sampler_view *src,
 			     const double    *matrix,
 			     double          dstX,
 			     double          dstY,
@@ -1697,11 +1715,11 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 	GalliumContext       *ctx = st_context;
 	struct pipe_screen   *screen = ctx->pipe->screen;
 	GalliumSurface       *intermediate;
-	struct pipe_resource *intermediate_texture;
 	struct pipe_surface  *intermediate_surface;
 	struct pipe_resource *vertices, *intermediate_vertices;
-	double               s = src->width0;
-	double               t = src->height0;
+	pipe_sampler_view    *sampler_views[PIPE_MAX_SAMPLERS];
+	double               s = src->texture->width0;
+	double               t = src->texture->height0;
 
 	MaybeUpdateFilter ();
 	MaybeUpdateShader ();
@@ -1710,20 +1728,14 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 
 	intermediate = new GalliumSurface (ctx->pipe,
-					   src->width0,
-					   src->height0);
+					   src->texture->width0,
+					   src->texture->height0);
 	if (!intermediate)
 		return 0;
 
-	intermediate_texture = intermediate->Texture ();
-	if (!intermediate_texture) {
-		intermediate->unref ();
-		return 0;
-	}
-
 	intermediate_surface =
 		screen->get_tex_surface (screen,
-					 intermediate_texture,
+					 intermediate->Texture (),
 					 0,
 					 0,
 					 0,
@@ -1733,7 +1745,7 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
-	vertices = CreateVertexBuffer (intermediate_texture, matrix,
+	vertices = CreateVertexBuffer (intermediate->Texture (), matrix,
 				       x, y,
 				       width, height,
 				       s, t);
@@ -1743,7 +1755,7 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
-	intermediate_vertices = CreateVertexBuffer (src, NULL,
+	intermediate_vertices = CreateVertexBuffer (src->texture, NULL,
 						    0.0, 0.0,
 						    s, t,
 						    s, t);
@@ -1762,6 +1774,8 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
+	cso_save_fragment_sampler_views (ctx->cso);
+
 	struct pipe_sampler_state sampler;
 	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
 	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
@@ -1775,7 +1789,8 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 	cso_single_sampler (ctx->cso, 1, &sampler);
 	cso_single_sampler_done (ctx->cso);
 
-	st_set_fragment_sampler_texture (ctx, 0, src);
+	sampler_views[0] = src;
+	cso_set_fragment_sampler_views (ctx->cso, 1, sampler_views);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1802,7 +1817,9 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 		return 0;
 	}
 
-	st_set_fragment_sampler_texture (ctx, 1, intermediate_texture);
+	sampler_views[0] = src;
+	sampler_views[1] = intermediate->SamplerView ();
+	cso_set_fragment_sampler_views (ctx->cso, 2, sampler_views);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1823,8 +1840,7 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
 
-	st_set_fragment_sampler_texture (ctx, 1, NULL);
-	st_set_fragment_sampler_texture (ctx, 0, NULL);
+	cso_restore_fragment_sampler_views (ctx->cso);
 
 	pipe_resource_reference (&intermediate_vertices, NULL);
 	pipe_resource_reference (&vertices, NULL);
@@ -2664,7 +2680,7 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 
 bool
 ShaderEffect::Composite (pipe_surface_t  *dst,
-			 pipe_resource_t *src,
+			 pipe_sampler_view *src,
 			 const double    *matrix,
 			 double          dstX,
 			 double          dstY,
@@ -2678,12 +2694,13 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 #ifdef USE_GALLIUM
 	GalliumContext       *ctx = st_context;
 	GalliumSurface       *input[PIPE_MAX_SAMPLERS];
+	pipe_sampler_view    *sampler_views[PIPE_MAX_SAMPLERS];
 	struct pipe_resource *vertices;
 	struct pipe_resource *constants;
 	unsigned int         i;
 	Value                *ddxDdyReg;
-	double               s = src->width0;
-	double               t = src->height0;
+	double               s = src->texture->width0;
+	double               t = src->texture->height0;
 
 	if (!fs)
 		return 0;
@@ -2700,7 +2717,8 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 	if (!constants)
 		return 0;
 
-	vertices = CreateVertexBuffer (src, matrix, x, y, width, height);
+	vertices = CreateVertexBuffer (src->texture, matrix, x, y,
+				       width, height);
 	if (!vertices)
 		return 0;
 
@@ -2708,6 +2726,8 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 		pipe_resource_reference (&vertices, NULL);
 		return 0;
 	}
+
+	cso_save_fragment_sampler_views (ctx->cso);
 
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
@@ -2726,12 +2746,12 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 	cso_single_sampler_done (ctx->cso);
 
 	for (i = 0; i <= sampler_last; i++) {
-		struct pipe_resource *sampler_texture = NULL;
+		struct pipe_sampler_view *sampler_view = NULL;
 
 		if (sampler_input[i]) {
 			input[i] = new GalliumSurface (ctx->pipe,
-						       src->width0,
-						       src->height0);
+						       src->texture->width0,
+						       src->texture->height0);
 			if (input[i]) {
 				cairo_surface_t *surface = input[i]->Cairo ();
 				cairo_t *cr = cairo_create (surface);
@@ -2742,21 +2762,25 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 				cairo_destroy (cr);
 				cairo_surface_destroy (surface);
 
-				sampler_texture = input[i]->Texture ();
+				sampler_view = input[i]->SamplerView ();
 			}
 		}
 		else {
 			input[i] = NULL;
-			sampler_texture = src;
+			sampler_view = src;
 		}
 
-		if (!sampler_texture) {
+		if (!sampler_view) {
 			g_warning ("Composite: failed to generate input texture for sampler register %d", i);
-			sampler_texture = src;
+			sampler_view = src;
 		}
 
-		st_set_fragment_sampler_texture (ctx, i, sampler_texture);
+		sampler_views[i] = sampler_view;
 	}
+
+	cso_set_fragment_sampler_views (ctx->cso,
+					sampler_last + 1,
+					sampler_views);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -2779,13 +2803,12 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 					0, NULL);
 
 	for (i = 0; i <= sampler_last; i++)
-		st_set_fragment_sampler_texture (ctx, i, NULL);
-
-	for (i = 0; i <= sampler_last; i++)
 		if (input[i])
 			input[i]->unref ();
 
 	pipe_resource_reference (&vertices, NULL);
+
+	cso_restore_fragment_sampler_views (ctx->cso);
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
@@ -3806,7 +3829,7 @@ TransformEffect::SetOpacity (double value)
 
 bool
 TransformEffect::Composite (pipe_surface_t  *dst,
-			    pipe_resource_t *src,
+			    pipe_sampler_view *src,
 			    const double    *matrix,
 			    double          dstX,
 			    double          dstY,
@@ -3821,10 +3844,19 @@ TransformEffect::Composite (pipe_surface_t  *dst,
 #ifdef USE_GALLIUM
 	GalliumContext       *ctx = st_context;
 	struct pipe_resource *vertices;
+	pipe_sampler_view    *sampler_views[PIPE_MAX_SAMPLERS];
 
-	vertices = CreateVertexBuffer (src, matrix, x, y, width, height);
+	vertices = CreateVertexBuffer (src->texture, matrix, x, y,
+				       width, height);
 	if (!vertices)
 		return 0;
+
+	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
+		pipe_resource_reference (&vertices, NULL);
+		return 0;
+	}
+
+	cso_save_fragment_sampler_views (ctx->cso);
 
 	struct pipe_sampler_state sampler;
 	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
@@ -3838,7 +3870,8 @@ TransformEffect::Composite (pipe_surface_t  *dst,
 	cso_single_sampler (ctx->cso, 0, &sampler);
 	cso_single_sampler_done (ctx->cso);
 
-	st_set_fragment_sampler_texture (ctx, 0, src);
+	sampler_views[0] = src;
+	cso_set_fragment_sampler_views (ctx->cso, 1, sampler_views);
 
 	struct pipe_blend_state blend;
 	memset (&blend, 0, sizeof (blend));
@@ -3849,11 +3882,6 @@ TransformEffect::Composite (pipe_surface_t  *dst,
 	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	cso_set_blend (ctx->cso, &blend);
-
-	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
-		pipe_resource_reference (&vertices, NULL);
-		return 0;
-	}
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -3867,7 +3895,8 @@ TransformEffect::Composite (pipe_surface_t  *dst,
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
-	st_set_fragment_sampler_texture (ctx, 0, NULL);
+	cso_restore_fragment_sampler_views (ctx->cso);
+
 	pipe_resource_reference (&vertices, NULL);
 
 	return 1;

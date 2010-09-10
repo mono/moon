@@ -30,6 +30,7 @@
 #endif
 
 struct pipe_screen;
+struct pipe_sampler_view;
 
 typedef struct st_context st_context_t;
 typedef struct pipe_resource pipe_resource_t;
@@ -124,6 +125,7 @@ protected:
 
 	pipe_resource_t *GetShaderTexture (cairo_surface_t *surface);
 	pipe_surface_t  *GetShaderSurface (cairo_surface_t *surface);
+	pipe_sampler_view *GetShaderSamplerView (cairo_surface_t *surface);
 	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
 					     const double    *matrix,
 					     double          x,
@@ -158,7 +160,7 @@ protected:
 	}
 
 	virtual bool Composite (pipe_surface_t  *dst,
-				pipe_resource_t *src,
+				pipe_sampler_view *src,
 				const double    *matrix,
 				double          dstX,
 				double          dstY,
@@ -186,6 +188,7 @@ protected:
 
 	static cairo_user_data_key_t textureKey;
 	static cairo_user_data_key_t surfaceKey;
+	static cairo_user_data_key_t samplerViewKey;
 
 	static int filtertable0[256];
 
@@ -237,7 +240,7 @@ protected:
 	void MaybeUpdateFilter ();
 
 	bool Composite (pipe_surface_t  *dst,
-			pipe_resource_t *src,
+			pipe_sampler_view *src,
 			const double    *matrix,
 			double          dstX,
 			double          dstY,
@@ -328,7 +331,7 @@ protected:
 	void MaybeUpdateFilter ();
 
 	bool Composite (pipe_surface_t  *dst,
-			pipe_resource_t *src,
+			pipe_sampler_view *src,
 			const double    *matrix,
 			double          dstX,
 			double          dstY,
@@ -471,7 +474,7 @@ protected:
 						  pipe_transfer_t **ptr_transfer);
 
 	bool Composite (pipe_surface_t  *dst,
-			pipe_resource_t *src,
+			pipe_sampler_view *src,
 			const double    *matrix,
 			double          dstX,
 			double          dstY,
@@ -522,7 +525,7 @@ protected:
 	void Clear ();
 
 	bool Composite (pipe_surface_t  *dst,
-			pipe_resource_t *src,
+			pipe_sampler_view *src,
 			const double    *matrix,
 			double          dstX,
 			double          dstY,
