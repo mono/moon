@@ -65,6 +65,7 @@ public:
 		MoonSurface     *native;
 		Rect            box;
 		cairo_surface_t *surface;
+		Point           device_offset;
 	};
 
 	class Node : public List::Node {

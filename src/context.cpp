@@ -22,15 +22,24 @@ namespace Moonlight {
 Context::Surface::Surface (MoonSurface *moon,
 			   Rect        extents)
 {
-	native  = moon->ref ();
-	box     = extents;
-	surface = NULL;
+	native        = moon->ref ();
+	box           = extents;
+	surface       = NULL;
+	device_offset = Point ();
 }
 
 Context::Surface::~Surface ()
 {
-	if (surface)
+	if (surface) {
+
+		/* restore device offset */
+		if (!box.IsEmpty ())
+			cairo_surface_set_device_offset (surface,
+							 device_offset.x,
+							 device_offset.y);
+
 		cairo_surface_destroy (surface);
+	}
 
 	native->unref ();
 }
@@ -48,8 +57,15 @@ Context::Surface::Cairo ()
 	if (!surface) {
 		surface = native->Cairo ();
 
-		if (!box.IsEmpty ())
-			cairo_surface_set_device_offset (surface, -box.x, -box.y);
+		/* replace device offset */
+		if (!box.IsEmpty ()) {
+			cairo_surface_get_device_offset (surface,
+							 &device_offset.x,
+							 &device_offset.y);
+			cairo_surface_set_device_offset (surface,
+							 -box.x,
+							 -box.y);
+		}
 	}
 
 	return cairo_surface_reference (surface);
