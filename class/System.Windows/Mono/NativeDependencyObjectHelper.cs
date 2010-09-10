@@ -184,9 +184,11 @@ namespace Mono {
 			}
 			
 			if (value == null) {
-				if (dp.PropertyType.IsValueType && !dp.IsNullable)
+				if (dp.PropertyType.IsValueType && !dp.IsNullable) {
+					Console.WriteLine ("Whoopsie");
+					Console.ReadLine ();
 					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", dp.Name));
-
+				}
 				using (var val = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true }) {
 					var v = val;
 					NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);

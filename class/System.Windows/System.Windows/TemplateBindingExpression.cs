@@ -88,6 +88,8 @@ namespace System.Windows {
 			object value = null;
 			if (source != null)
 				value = source.GetValue (SourceProperty);
+			else
+				Console.WriteLine ("Damnit Cap'n, she just cannae doo it, templateowner is null!");
 			return MoonlightTypeConverter.ConvertObject (TargetProperty, value, Target.GetType (), false);
 		}
 

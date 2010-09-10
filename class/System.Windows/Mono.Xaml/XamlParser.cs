@@ -387,6 +387,8 @@ namespace Mono.Xaml {
 				throw ParseException ("Could not create object for element {0}.", reader.LocalName);
 
 			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, t, o);
+//			if (o is DependencyObject)
+//				((DependencyObject) o).TemplateOwner = this.Context.TemplateBindingSource;
 
 			if (IsTemplateElement (element)) {
 				ParseTemplateElement (element);
