@@ -33,6 +33,9 @@ int Effect::filtertable0[256];
 #ifdef USE_GALLIUM
 #undef CLAMP
 
+#define __MOON_GALLIUM__
+#include "context-gallium.h"
+
 extern "C" {
 
 #include "pipe/p_format.h"
@@ -1582,31 +1585,41 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 	
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
-	cairo_surface_t      *intermediate;
+	struct pipe_screen   *screen = ctx->pipe->screen;
+	GalliumSurface       *intermediate;
 	struct pipe_resource *intermediate_texture;
 	struct pipe_surface  *intermediate_surface;
 	struct pipe_resource *vertices, *intermediate_vertices;
 	double               s = src->width0;
 	double               t = src->height0;
 
+	MaybeUpdateFilter ();
+	MaybeUpdateShader ();
+
 	if (!fs)
 		return 0;
 
-	intermediate = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-						   src->width0,
-						   src->height0);
+	intermediate = new GalliumSurface (ctx->pipe,
+					   src->width0,
+					   src->height0);
 	if (!intermediate)
 		return 0;
 
-	intermediate_texture = GetShaderTexture (intermediate);
+	intermediate_texture = intermediate->Texture ();
 	if (!intermediate_texture) {
-		cairo_surface_destroy (intermediate);
+		intermediate->unref ();
 		return 0;
 	}
 
-	intermediate_surface = GetShaderSurface (intermediate);
+	intermediate_surface =
+		screen->get_tex_surface (screen,
+					 intermediate_texture,
+					 0,
+					 0,
+					 0,
+					 PIPE_BIND_RENDER_TARGET);
 	if (!intermediate_surface) {
-		cairo_surface_destroy (intermediate);
+		intermediate->unref ();
 		return 0;
 	}
 
@@ -1615,7 +1628,8 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 				       width, height,
 				       s, t);
 	if (!vertices) {
-		cairo_surface_destroy (intermediate);
+		pipe_surface_reference (&intermediate_surface, NULL);
+		intermediate->unref ();
 		return 0;
 	}
 
@@ -1625,14 +1639,16 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 						    s, t);
 	if (!intermediate_vertices) {
 		pipe_resource_reference (&vertices, NULL);
-		cairo_surface_destroy (intermediate);
+		pipe_surface_reference (&intermediate_surface, NULL);
+		intermediate->unref ();
 		return 0;
 	}
 
 	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
 		pipe_resource_reference (&intermediate_vertices, NULL);
 		pipe_resource_reference (&vertices, NULL);
-		cairo_surface_destroy (intermediate);
+		pipe_surface_reference (&intermediate_surface, NULL);
+		intermediate->unref ();
 		return 0;
 	}
 
@@ -1692,7 +1708,8 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 
 	pipe_resource_reference (&intermediate_vertices, NULL);
 	pipe_resource_reference (&vertices, NULL);
-	cairo_surface_destroy (intermediate);
+	pipe_surface_reference (&intermediate_surface, NULL);
+	intermediate->unref ();
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
@@ -1998,31 +2015,41 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
-	cairo_surface_t      *intermediate;
+	struct pipe_screen   *screen = ctx->pipe->screen;
+	GalliumSurface       *intermediate;
 	struct pipe_resource *intermediate_texture;
 	struct pipe_surface  *intermediate_surface;
 	struct pipe_resource *vertices, *intermediate_vertices;
 	double               s = src->width0;
 	double               t = src->height0;
 
+	MaybeUpdateFilter ();
+	MaybeUpdateShader ();
+
 	if (!vert_fs || !horz_fs)
 		return 0;
 
-	intermediate = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-						   src->width0,
-						   src->height0);
+	intermediate = new GalliumSurface (ctx->pipe,
+					   src->width0,
+					   src->height0);
 	if (!intermediate)
 		return 0;
 
-	intermediate_texture = GetShaderTexture (intermediate);
+	intermediate_texture = intermediate->Texture ();
 	if (!intermediate_texture) {
-		cairo_surface_destroy (intermediate);
+		intermediate->unref ();
 		return 0;
 	}
 
-	intermediate_surface = GetShaderSurface (intermediate);
+	intermediate_surface =
+		screen->get_tex_surface (screen,
+					 intermediate_texture,
+					 0,
+					 0,
+					 0,
+					 PIPE_BIND_RENDER_TARGET);;
 	if (!intermediate_surface) {
-		cairo_surface_destroy (intermediate);
+		intermediate->unref ();
 		return 0;
 	}
 
@@ -2031,7 +2058,8 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 				       width, height,
 				       s, t);
 	if (!vertices) {
-		cairo_surface_destroy (intermediate);
+		pipe_surface_reference (&intermediate_surface, NULL);
+		intermediate->unref ();
 		return 0;
 	}
 
@@ -2041,19 +2069,21 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 						    s, t);
 	if (!intermediate_vertices) {
 		pipe_resource_reference (&vertices, NULL);
-		cairo_surface_destroy (intermediate);
+		pipe_surface_reference (&intermediate_surface, NULL);
+		intermediate->unref ();
 		return 0;
 	}
 
 	if (cso_set_fragment_shader_handle (ctx->cso, horz_fs) != PIPE_OK) {
 		pipe_resource_reference (&intermediate_vertices, NULL);
 		pipe_resource_reference (&vertices, NULL);
-		cairo_surface_destroy (intermediate);
+		pipe_surface_reference (&intermediate_surface, NULL);
+		intermediate->unref ();
 		return 0;
 	}
 
 	struct pipe_sampler_state sampler;
-	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
+	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
 	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
@@ -2087,7 +2117,8 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
 		pipe_resource_reference (&intermediate_vertices, NULL);
 		pipe_resource_reference (&vertices, NULL);
-		cairo_surface_destroy (intermediate);
+		pipe_surface_reference (&intermediate_surface, NULL);
+		intermediate->unref ();
 		return 0;
 	}
 
@@ -2117,7 +2148,8 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 
 	pipe_resource_reference (&intermediate_vertices, NULL);
 	pipe_resource_reference (&vertices, NULL);
-	cairo_surface_destroy (intermediate);
+	pipe_surface_reference (&intermediate_surface, NULL);
+	intermediate->unref ();
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
@@ -2965,7 +2997,7 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 
 #ifdef USE_GALLIUM
 	struct st_context    *ctx = st_context;
-	cairo_surface_t      *input[PIPE_MAX_SAMPLERS];
+	GalliumSurface       *input[PIPE_MAX_SAMPLERS];
 	struct pipe_resource *vertices;
 	struct pipe_resource *constants;
 	unsigned int         i;
@@ -3017,18 +3049,20 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 		struct pipe_resource *sampler_texture = NULL;
 
 		if (sampler_input[i]) {
-			input[i] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-							       src->width0,
-							       src->height0);
+			input[i] = new GalliumSurface (ctx->pipe,
+						       src->width0,
+						       src->height0);
 			if (input[i]) {
-				cairo_t *cr = cairo_create (input[i]);
+				cairo_surface_t *surface = input[i]->Cairo ();
+				cairo_t *cr = cairo_create (surface);
 				Rect area = Rect (0.0, 0.0, s, t);
 
 				sampler_input[i]->SetupBrush (cr, area);
 				cairo_paint (cr);
 				cairo_destroy (cr);
+				cairo_surface_destroy (surface);
 
-				sampler_texture = GetShaderTexture (input[i]);
+				sampler_texture = input[i]->Texture ();
 			}
 		}
 		else {
@@ -3069,7 +3103,7 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 
 	for (i = 0; i <= sampler_last; i++)
 		if (input[i])
-			cairo_surface_destroy (input[i]);
+			input[i]->unref ();
 
 	pipe_resource_reference (&vertices, NULL);
 
