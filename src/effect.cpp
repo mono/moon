@@ -23,7 +23,8 @@
 
 using namespace Moonlight;
 
-struct st_context *Effect::st_context;
+GalliumContext *Effect::st_context;
+pipe_screen    *Effect::screen;
 
 cairo_user_data_key_t Effect::textureKey;
 cairo_user_data_key_t Effect::surfaceKey;
@@ -67,324 +68,8 @@ extern "C" {
 #error MAX_SAMPLERS is too large
 #endif
 
-struct st_winsys
-{
-	struct pipe_screen   *(*screen_create)  (const char *driver);
-	struct pipe_resource *(*resource_create) (struct pipe_screen *screen,
-						  const struct pipe_resource *templat,
-						  void *data,
-						  unsigned stride);
-};
-
-struct st_context {
-	struct pipe_reference reference;
-
-	struct st_device *st_dev;
-
-	struct pipe_context *pipe;
-
-	struct cso_context *cso;
-
-	void *vs;
-	void *fs;
-
-	struct pipe_resource *default_texture;
-	struct pipe_sampler_view *fragment_sampler_views[PIPE_MAX_SAMPLERS];
-	struct pipe_sampler_view *vertex_sampler_views[PIPE_MAX_VERTEX_SAMPLERS];
-
-	unsigned num_vertex_buffers;
-	struct pipe_vertex_buffer vertex_buffers[PIPE_MAX_ATTRIBS];
-
-	unsigned num_vertex_elements;
-	struct pipe_vertex_element vertex_elements[PIPE_MAX_ATTRIBS];
-
-	struct pipe_framebuffer_state framebuffer;
-
-	struct pipe_vertex_element velems[2];
-};
-
-struct st_device {
-	struct pipe_reference reference;
-
-	const struct st_winsys *st_ws;
-
-	struct pipe_screen *screen;
-};
-
 static void
-st_device_really_destroy (struct st_device *st_dev)
-{
-	if (st_dev->screen)
-		st_dev->screen->destroy (st_dev->screen);
-
-	FREE (st_dev);
-}
-
-static void
-st_device_reference (struct st_device **ptr, struct st_device *st_dev)
-{
-	struct st_device *old_dev = *ptr;
-
-	if (pipe_reference (&(*ptr)->reference, &st_dev->reference))
-		st_device_really_destroy (old_dev);
-	*ptr = st_dev;
-}
-
-static struct st_device *
-st_device_create_from_st_winsys (const struct st_winsys *st_ws)
-{
-	struct st_device *st_dev;
-
-	st_dev = CALLOC_STRUCT (st_device);
-	if (!st_dev)
-		return NULL;
-
-	pipe_reference_init (&st_dev->reference, 1);
-	st_dev->st_ws = st_ws;
-
-	st_dev->screen = st_ws->screen_create (NULL);
-	if (!st_dev->screen) {
-		st_device_reference (&st_dev, NULL);
-		return NULL;
-	}
-
-	return st_dev;
-}
-
-static void
-st_context_really_destroy (struct st_context *st_ctx)
-{
-	unsigned i;
-
-	if (st_ctx) {
-		struct st_device *st_dev = st_ctx->st_dev;
-
-		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
-			pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[i], NULL);
-		for (i = 0; i < PIPE_MAX_VERTEX_SAMPLERS; i++)
-			pipe_sampler_view_reference (&st_ctx->vertex_sampler_views[i], NULL);
-
-		pipe_resource_reference (&st_ctx->default_texture, NULL);
-
-		if (st_ctx->cso) {
-			cso_delete_vertex_shader (st_ctx->cso, st_ctx->vs);
-			cso_delete_fragment_shader (st_ctx->cso, st_ctx->fs);
-
-			cso_destroy_context (st_ctx->cso);
-		}
-
-		if (st_ctx->pipe)
-			st_ctx->pipe->destroy (st_ctx->pipe);
-
-		FREE (st_ctx);
-
-		st_device_reference (&st_dev, NULL);
-	}
-}
-
-static struct st_context *
-st_context_create (struct st_device *st_dev)
-{
-	struct st_context *st_ctx;
-
-	st_ctx = CALLOC_STRUCT (st_context);
-	if (!st_ctx)
-		return NULL;
-
-	pipe_reference_init (&st_ctx->reference, 1);
-
-	st_device_reference (&st_ctx->st_dev, st_dev);
-
-	st_ctx->pipe = st_dev->screen->context_create (st_dev->screen, NULL);
-	if (!st_ctx->pipe) {
-		st_context_really_destroy (st_ctx);
-		return NULL;
-	}
-
-	st_ctx->cso = cso_create_context (st_ctx->pipe);
-	if (!st_ctx->cso) {
-		st_context_really_destroy (st_ctx);
-		return NULL;
-	}
-
-	/* disable blending/masking */
-	{
-		struct pipe_blend_state blend;
-		memset(&blend, 0, sizeof(blend));
-		blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-		blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-		blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
-		blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
-		blend.rt[0].colormask = PIPE_MASK_RGBA;
-		cso_set_blend(st_ctx->cso, &blend);
-	}
-
-	/* no-op depth/stencil/alpha */
-	{
-		struct pipe_depth_stencil_alpha_state depthstencil;
-		memset(&depthstencil, 0, sizeof(depthstencil));
-		cso_set_depth_stencil_alpha(st_ctx->cso, &depthstencil);
-	}
-
-	/* rasterizer */
-	{
-		struct pipe_rasterizer_state rasterizer;
-		memset(&rasterizer, 0, sizeof(rasterizer));
-		rasterizer.cull_face = PIPE_FACE_NONE;
-		rasterizer.gl_rasterization_rules = 1;
-		cso_set_rasterizer(st_ctx->cso, &rasterizer);
-	}
-
-	/* clip */
-	{
-		struct pipe_clip_state clip;
-		memset(&clip, 0, sizeof(clip));
-		st_ctx->pipe->set_clip_state(st_ctx->pipe, &clip);
-	}
-
-	/* identity viewport */
-	{
-		struct pipe_viewport_state viewport;
-		viewport.scale[0] = 1.0;
-		viewport.scale[1] = 1.0;
-		viewport.scale[2] = 1.0;
-		viewport.scale[3] = 1.0;
-		viewport.translate[0] = 0.0;
-		viewport.translate[1] = 0.0;
-		viewport.translate[2] = 0.0;
-		viewport.translate[3] = 0.0;
-		cso_set_viewport(st_ctx->cso, &viewport);
-	}
-
-	/* samplers */
-	{
-		struct pipe_sampler_state sampler;
-		unsigned i;
-		memset(&sampler, 0, sizeof(sampler));
-		sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-		sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-		sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-		sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-		sampler.min_img_filter = PIPE_TEX_FILTER_NEAREST;
-		sampler.mag_img_filter = PIPE_TEX_FILTER_NEAREST;
-		sampler.normalized_coords = 1;
-		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
-			cso_single_sampler(st_ctx->cso, i, &sampler);
-		cso_single_sampler_done(st_ctx->cso);
-	}
-
-	/* default textures */
-	{
-		struct pipe_screen *screen = st_dev->screen;
-		struct pipe_resource templat;
-		struct pipe_sampler_view view_templat;
-		struct pipe_sampler_view *view;
-		unsigned i;
-
-		memset (&templat, 0, sizeof (templat));
-		templat.target = PIPE_TEXTURE_2D;
-		templat.format = PIPE_FORMAT_A8R8G8B8_UNORM;
-		templat.width0 = 1;
-		templat.height0 = 1;
-		templat.depth0 = 1;
-		templat.last_level = 0;
-		templat.bind = PIPE_BIND_SAMPLER_VIEW;
-
-		st_ctx->default_texture = screen->resource_create (screen, &templat);
-		if(st_ctx->default_texture) {
-			struct pipe_box box;
-			uint32_t zero = 0;
-	 
-			u_box_origin_2d (1, 1, &box);
-
-			st_ctx->pipe->transfer_inline_write (st_ctx->pipe,
-							     st_ctx->default_texture,
-							     u_subresource (0, 0),
-							     PIPE_TRANSFER_WRITE,
-							     &box,
-							     &zero,
-							     sizeof (zero),
-							     0);
-		}
-
-		u_sampler_view_default_template (&view_templat,
-						 st_ctx->default_texture,
-						 st_ctx->default_texture->format);
-		view = st_ctx->pipe->create_sampler_view (st_ctx->pipe,
-							  st_ctx->default_texture,
-							  &view_templat);
-
-		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
-			pipe_sampler_view_reference (&st_ctx->fragment_sampler_views[i], view);
-		for (i = 0; i < PIPE_MAX_VERTEX_SAMPLERS; i++)
-			pipe_sampler_view_reference (&st_ctx->vertex_sampler_views[i], view);
-
-		st_ctx->pipe->set_fragment_sampler_views (st_ctx->pipe,
-							  PIPE_MAX_SAMPLERS,
-							  st_ctx->fragment_sampler_views);
-		st_ctx->pipe->set_vertex_sampler_views (st_ctx->pipe,
-							PIPE_MAX_VERTEX_SAMPLERS,
-							st_ctx->vertex_sampler_views);
-	}
-
-	/* vertex shader */
-	{
-		const uint semantic_names[] = { TGSI_SEMANTIC_POSITION,
-						TGSI_SEMANTIC_GENERIC };
-		const uint semantic_indexes[] = { 0, 0 };
-
-		st_ctx->vs = util_make_vertex_passthrough_shader (st_ctx->pipe,
-								  2,
-								  semantic_names,
-								  semantic_indexes);
-		cso_set_vertex_shader_handle (st_ctx->cso, st_ctx->vs);
-	}
-
-	/* fragment shader */
-	{
-		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D, TGSI_INTERPOLATE_LINEAR);
-		cso_set_fragment_shader_handle (st_ctx->cso, st_ctx->fs);
-	}
-
-	/* vertex elements */
-	{
-		unsigned i;
-
-		for (i = 0; i < 2; i++) {
-			st_ctx->velems[i].src_offset = i * 4 * sizeof (float);
-			st_ctx->velems[i].instance_divisor = 0;
-			st_ctx->velems[i].vertex_buffer_index = 0;
-			st_ctx->velems[i].src_format = PIPE_FORMAT_R32G32B32A32_FLOAT;
-		}
-	}
-
-	return st_ctx;
-}
-
-static void
-st_context_reference (struct st_context **ptr, struct st_context *st_ctx)
-{
-	struct st_context *old_ctx = *ptr;
-
-	if (pipe_reference (&(*ptr)->reference, &st_ctx->reference))
-		st_context_really_destroy (old_ctx);
-	*ptr = st_ctx;
-}
-
-static struct pipe_resource *
-st_create_resource (struct st_device *st_dev,
-		    const struct pipe_resource *templat,
-		    void *data,
-		    unsigned stride)
-{
-	return st_dev->st_ws->resource_create (st_dev->screen,
-					       templat,
-					       data,
-					       stride);
-}
-
-static void
-st_set_fragment_sampler_texture (struct st_context *st_ctx,
+st_set_fragment_sampler_texture (GalliumContext *st_ctx,
 				 unsigned index,
 				 struct pipe_resource *texture)
 {
@@ -532,11 +217,6 @@ moon_sw_resource_create (struct pipe_screen *screen,
 
 	return screen->resource_create (screen, templat);
 }
-
-const struct st_winsys sw_winsys = {
-	moon_sw_screen_create,
-	moon_sw_resource_create
-};
 
 static void
 st_resource_destroy_callback (void *data)
@@ -1065,11 +745,10 @@ Effect::Initialize ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_device *dev;
-	dev = st_device_create_from_st_winsys (&sw_winsys);
-	g_assert (dev != NULL);
-	st_context = st_context_create (dev);
-	st_device_reference (&dev, NULL);
+	screen = moon_sw_screen_create (NULL);
+	g_assert (screen);
+	st_context = new GalliumContext (screen);
+	g_assert (st_context);
 #endif
 
 	for (int i = 0; i < 256; i++)
@@ -1167,7 +846,8 @@ Effect::Shutdown ()
 {
 
 #ifdef USE_GALLIUM
-	st_context_reference (&st_context, NULL);
+	delete st_context;
+	screen->destroy (screen);
 #endif
 
 }
@@ -1184,7 +864,7 @@ Effect::GetShaderTexture (cairo_surface_t *surface)
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	struct pipe_resource *tex, templat;
 
 	tex = (struct pipe_resource *) cairo_surface_get_user_data (surface, &textureKey);
@@ -1213,10 +893,10 @@ Effect::GetShaderTexture (cairo_surface_t *surface)
 			return NULL;
 	}
 
-	tex = st_create_resource (ctx->st_dev,
-				  &templat,
-				  cairo_image_surface_get_data (surface),
-				  cairo_image_surface_get_stride (surface));
+	tex = moon_sw_resource_create (ctx->pipe->screen,
+				       &templat,
+				       cairo_image_surface_get_data (surface),
+				       cairo_image_surface_get_stride (surface));
 
 	cairo_surface_set_user_data (surface,
 				     &textureKey,
@@ -1235,7 +915,7 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 {
 	
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	struct pipe_surface  *sur;
 	struct pipe_resource *tex;
 
@@ -1250,9 +930,10 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 	if (!tex)
 		return NULL;
 
-	sur = ctx->st_dev->screen->get_tex_surface (ctx->st_dev->screen, tex, 0, 0, 0,
-						    PIPE_BIND_TRANSFER_WRITE |
-						    PIPE_BIND_TRANSFER_READ);
+	sur = ctx->pipe->screen->get_tex_surface (ctx->pipe->screen, tex,
+						  0, 0, 0,
+						  PIPE_BIND_TRANSFER_WRITE |
+						  PIPE_BIND_TRANSFER_READ);
 
 	cairo_surface_set_user_data (surface,
 				     &surfaceKey,
@@ -1278,7 +959,7 @@ Effect::CreateVertexBuffer (struct pipe_resource *texture,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	struct pipe_resource *vertices;
 	float                *verts;
 	struct pipe_transfer *transfer = NULL;
@@ -1369,7 +1050,7 @@ Effect::DrawVertexBuffer (struct pipe_surface  *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context             *ctx = st_context;
+	GalliumContext                *ctx = st_context;
 	struct pipe_fence_handle      *fence = NULL;
 	struct pipe_framebuffer_state fb;
 	struct pipe_rasterizer_state  rasterizer;
@@ -1403,12 +1084,13 @@ Effect::DrawVertexBuffer (struct pipe_surface  *dst,
 	}
 	cso_set_rasterizer (ctx->cso, &rasterizer);
 
+	cso_save_framebuffer (ctx->cso);
+
 	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
 	fb.width = dst->width;
 	fb.height = dst->height;
 	fb.nr_cbufs = 1;
 	fb.cbufs[0] = dst;
-	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
 	cso_set_framebuffer (ctx->cso, &fb);
 
 	cso_set_vertex_elements (ctx->cso, 2, ctx->velems);
@@ -1424,9 +1106,7 @@ Effect::DrawVertexBuffer (struct pipe_surface  *dst,
 		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
 	}
 
-	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
-	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
-	cso_set_framebuffer (ctx->cso, &fb);
+	cso_restore_framebuffer (ctx->cso);
 #endif
 
 }
@@ -1524,7 +1204,7 @@ BlurEffect::Clear ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
+	GalliumContext *ctx = st_context;
 
 	pipe_resource_reference (&horz_pass_constant_buffer, NULL);
 	pipe_resource_reference (&vert_pass_constant_buffer, NULL);
@@ -1584,7 +1264,7 @@ BlurEffect::Composite (pipe_surface_t  *dst,
 {
 	
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	struct pipe_screen   *screen = ctx->pipe->screen;
 	GalliumSurface       *intermediate;
 	struct pipe_resource *intermediate_texture;
@@ -1791,7 +1471,7 @@ BlurEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	int                  width = nfiltervalues;
 	float                *horz, *vert;
 	struct pipe_transfer *horz_transfer = NULL, *vert_transfer = NULL;
@@ -1933,7 +1613,7 @@ DropShadowEffect::Clear ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
+	GalliumContext *ctx = st_context;
 
 	pipe_resource_reference (&horz_pass_constant_buffer, NULL);
 	pipe_resource_reference (&vert_pass_constant_buffer, NULL);
@@ -2014,7 +1694,7 @@ DropShadowEffect::Composite (pipe_surface_t  *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	struct pipe_screen   *screen = ctx->pipe->screen;
 	GalliumSurface       *intermediate;
 	struct pipe_resource *intermediate_texture;
@@ -2244,7 +1924,7 @@ DropShadowEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	Color                *color = GetColor ();
 	double               direction = GetDirection () * (M_PI / 180.0);
 	double               opacity = CLAMP (GetOpacity (), 0.0, 1.0);
@@ -2850,7 +2530,7 @@ ShaderEffect::Clear ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
+	GalliumContext *ctx = st_context;
 
 	pipe_resource_reference (&constant_buffer, NULL);
 
@@ -2896,7 +2576,7 @@ ShaderEffect::GetShaderConstantBuffer (float           **ptr,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
+	GalliumContext *ctx = st_context;
 
 	if (!constant_buffer) {
 		constant_buffer =
@@ -2934,7 +2614,7 @@ ShaderEffect::UpdateShaderConstant (int reg, double x, double y, double z, doubl
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	struct pipe_resource *constants;
 	float                *v;
 	struct pipe_transfer *transfer = NULL;
@@ -2996,7 +2676,7 @@ ShaderEffect::Composite (pipe_surface_t  *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	GalliumSurface       *input[PIPE_MAX_SAMPLERS];
 	struct pipe_resource *vertices;
 	struct pipe_resource *constants;
@@ -3316,7 +2996,7 @@ ShaderEffect::UpdateShader ()
 
 #ifdef USE_GALLIUM
 	PixelShader         *ps = GetPixelShader ();
-	struct st_context   *ctx = st_context;
+	GalliumContext      *ctx = st_context;
 	struct ureg_program *ureg;
 	d3d_version_t       version;
 	d3d_op_t            op;
@@ -4028,7 +3708,7 @@ TransformEffect::Clear ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
+	GalliumContext *ctx = st_context;
 
 	pipe_resource_reference (&constant_buffer, NULL);
 
@@ -4101,7 +3781,7 @@ TransformEffect::SetOpacity (double value)
 
 #ifdef USE_GALLIUM
 	if (constant_buffer) {
-		struct st_context    *ctx = st_context;
+		GalliumContext       *ctx = st_context;
 		float                *v;
 		struct pipe_transfer *transfer = NULL;
 
@@ -4139,7 +3819,7 @@ TransformEffect::Composite (pipe_surface_t  *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	struct pipe_resource *vertices;
 
 	vertices = CreateVertexBuffer (src, matrix, x, y, width, height);
@@ -4215,7 +3895,7 @@ TransformEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context    *ctx = st_context;
+	GalliumContext       *ctx = st_context;
 	float                *v;
 	struct pipe_transfer *transfer = NULL;
 	struct ureg_program  *ureg;

@@ -29,6 +29,8 @@
 #error MAX_REGS is not great enough
 #endif
 
+struct pipe_screen;
+
 typedef struct st_context st_context_t;
 typedef struct pipe_resource pipe_resource_t;
 typedef struct pipe_surface pipe_surface_t;
@@ -86,6 +88,8 @@ typedef struct _d3d_dcl_instruction {
 } d3d_dcl_instruction_t;
 
 namespace Moonlight {
+
+class GalliumContext;
 
 /* @Namespace=System.Windows.Media.Effects */
 class Effect : public DependencyObject {
@@ -177,7 +181,8 @@ protected:
 
 	bool need_update;
 
-	static st_context_t *st_context;
+	static GalliumContext *st_context;
+	static pipe_screen *screen;
 
 	static cairo_user_data_key_t textureKey;
 	static cairo_user_data_key_t surfaceKey;
