@@ -1456,45 +1456,51 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	// performance loss when using a hardware accelerated surface
 	// backend.
 	if (flags & COMPOSITE_CLIP) {
-		Rect                   r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
-		cairo_t                *cr = ctx->Cairo ();
-		cairo_rectangle_list_t *list;
+		Rect r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
+		Rect bounds = GetClip ()->GetBounds ().Transform (ctx);
+		Rect box = Rect ();
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
 		if (!region->IsEmpty ())
 			r = r.Intersection (region->ClipBox ());
 
-		cairo_save (cr);
-		RenderClipPath (cr);
+		bounds = bounds.Intersection (r);
+		ctx->Push (Context::Clip (bounds));
 
-		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		list = cairo_copy_clip_rectangle_list (cr);
-		if (list->status == CAIRO_STATUS_SUCCESS &&
-		    list->num_rectangles < 2) {
-			cairo_rectangle_t *rects = list->rectangles;
+		if (!bounds.IsEmpty ()) {
+			cairo_rectangle_list_t *list;
+			cairo_rectangle_t      *rect = NULL;
+			cairo_t                *cr = ctx->Cairo ();
 
-			if (list->num_rectangles) {
-				r = r.Intersection (Rect (rects[0].x,
-							  rects[0].y,
-							  rects[0].width,
-							  rects[0].height));
+			RenderClipPath (cr);
 
-				ctx->Push (Context::Clip (r));
+			cairo_save (cr);
+			cairo_identity_matrix (cr);
+			list = cairo_copy_clip_rectangle_list (cr);
+			cairo_restore (cr);
+
+			if (list->status == CAIRO_STATUS_SUCCESS) {
+				if (list->num_rectangles < 2)
+					bounds = Rect ();
+
+				if (list->num_rectangles == 1)
+					rect = list->rectangles;
 			}
-			else {
-				ctx->Push (Context::Clip ());
-			}
-		}
-		else {
-			Rect bounds = GetClip ()->GetBounds ();
 
-			r = r.Intersection (bounds.Transform (ctx));
-			ctx->Push (Context::Group (r));
+			if (rect)
+				box = r.Intersection (Rect (rect->x,
+							    rect->y,
+							    rect->width,
+							    rect->height));
+
+			cairo_rectangle_list_destroy (list);
 		}
-		cairo_rectangle_list_destroy (list);
-		cairo_restore (cr);
+
+		if (!bounds.IsEmpty ())
+			ctx->Push (Context::Group (bounds));
+		else
+			ctx->Push (Context::Clip (box));
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
@@ -1662,25 +1668,22 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_CLIP) {
 		MoonSurface *surface;
 		Rect        r = ctx->Pop (&surface);
-		cairo_t     *cr = ctx->Cairo ();
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
+			cairo_t         *cr = ctx->Cairo ();
 
-			cairo_save (cr);
+			cairo_surface_set_device_offset (src, 0, 0);
+
 			cairo_identity_matrix (cr);
-			r.RoundOut ().Draw (cr);
-			cairo_clip (cr);
-
-			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_set_source_surface (cr, src, r.x, r.y);
 			cairo_paint (cr);
-			cairo_restore (cr);
-
 			cairo_surface_destroy (src);
+
 			surface->unref ();
 		}
 
-		cairo_restore (cr);
+		ctx->Pop ();
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
