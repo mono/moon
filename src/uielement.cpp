@@ -1623,23 +1623,24 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		MoonSurface *surface;
 		Rect        r = ctx->Pop (&surface);
 
+		ctx->Push (Context::Clip (r));
+
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
 			cairo_t         *cr = ctx->Cairo ();
 			double          local_opacity = GetOpacity ();
 
-			cairo_save (cr);
+			cairo_surface_set_device_offset (src, 0, 0);
+
 			cairo_identity_matrix (cr);
-			r.RoundOut ().Draw (cr);
-			cairo_clip (cr);
-
-			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_set_source_surface (cr, src, r.x, r.y);
 			cairo_paint_with_alpha (cr, local_opacity);
-			cairo_restore (cr);
-
 			cairo_surface_destroy (src);
+
 			surface->unref ();
 		}
+
+		ctx->Pop ();
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
