@@ -1431,7 +1431,7 @@ PlaylistRoot::SeekAsync (guint64 pts)
 void
 PlaylistRoot::PlayCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("Playlist::PlayCallback ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::PlayCallback ()\n");
 
 	PlaylistRoot *root = (PlaylistRoot *) obj;
 	if (root->IsDisposed ())
@@ -1442,14 +1442,14 @@ PlaylistRoot::PlayCallback (EventObject *obj)
 void
 PlaylistRoot::PlayAsync ()
 {
-	LOG_PLAYLIST ("Playlist::PlayAsync ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::PlayAsync ()\n");
 	AddTickCall (PlayCallback);
 }
 
 void
 PlaylistRoot::PauseCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("Playlist::PauseCallback ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::PauseCallback ()\n");
 
 	PlaylistRoot *root = (PlaylistRoot *) obj;
 	if (root->IsDisposed ())
@@ -1460,14 +1460,14 @@ PlaylistRoot::PauseCallback (EventObject *obj)
 void
 PlaylistRoot::PauseAsync ()
 {
-	LOG_PLAYLIST ("Playlist::PauseAsync ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::PauseAsync ()\n");
 	AddTickCall (PauseCallback);
 }
 
 void
 PlaylistRoot::OpenCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("Playlist::OpenCallback ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::OpenCallback ()\n");
 
 	PlaylistRoot *root = (PlaylistRoot *) obj;
 	if (root->IsDisposed ())
@@ -1478,14 +1478,14 @@ PlaylistRoot::OpenCallback (EventObject *obj)
 void
 PlaylistRoot::OpenAsync ()
 {
-	LOG_PLAYLIST ("Playlist::OpenAsync ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::OpenAsync ()\n");
 	AddTickCall (OpenCallback);
 }
 
 void
 PlaylistRoot::StopCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("Playlist::StopCallback ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::StopCallback ()\n");
 
 	PlaylistRoot *root = (PlaylistRoot *) obj;
 	if (root->IsDisposed ())
@@ -1496,7 +1496,7 @@ PlaylistRoot::StopCallback (EventObject *obj)
 void
 PlaylistRoot::StopAsync ()
 {
-	LOG_PLAYLIST ("Playlist::StopAsync ()\n");
+	LOG_PLAYLIST ("PlaylistRoot::StopAsync ()\n");
 	AddTickCall (StopCallback);
 }
 
