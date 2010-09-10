@@ -934,6 +934,158 @@ struct debug_media_data {
 		}
 	}
 	
+	static char *fetch_info (MediaElement *element)
+	{
+		element->SetCurrentDeployment ();
+
+		MediaPlayer *mplayer = element->GetMediaPlayer ();
+		PlaylistRoot *playlist = element->GetPlaylist ();
+		PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentPlaylistEntry ();
+		Media *media = entry == NULL ? NULL : entry->GetMedia ();
+		IMediaDemuxer *demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
+		ASFDemuxer *asf_demuxer = NULL;
+		IMediaSource *src = media == NULL ? NULL : media->GetSource ();
+		AudioSource *audio = mplayer == NULL ? NULL : mplayer->GetAudio ();
+
+		GString *fmt = g_string_new ("");
+		g_string_append_printf (fmt, "MediaElement\n");
+		const Uri *uri = element->GetSource ();
+		g_string_append_printf (fmt, "\tSource: %s\n", uri != NULL ? uri->ToString () : NULL);
+		g_string_append_printf (fmt, "\tCurrent playlist entry's source: %s\n", (entry != NULL && entry->GetFullSourceName () != NULL) ? entry->GetFullSourceName ()->GetOriginalString () : NULL);
+		g_string_append_printf (fmt, "\tState: %s\n", MediaElement::GetStateName (element->GetState ()));
+		g_string_append_printf (fmt, "\tFlags: %s\n", MediaElement::GetFlagNames (element->GetFlags ()));
+		g_string_append_printf (fmt, "\tPosition: %" G_GUINT64_FORMAT " ms NaturalDuration: %" G_GUINT64_FORMAT " AutoPlay: %i Balance: %.2f\n", 
+			MilliSeconds_FromPts (element->GetPosition ()), MilliSeconds_FromPts (element->GetNaturalDuration ()->GetTimeSpan ()), element->GetAutoPlay (), element->GetBalance ());
+		g_string_append_printf (fmt, "\tDownloadProgress: %.2f BufferingProgress: %.2f BufferingTime: %" G_GUINT64_FORMAT " ms DownloadProgressOffset: %.2f\n",
+			element->GetDownloadProgress (), element->GetBufferingProgress (), MilliSeconds_FromPts (element->GetBufferingTime ()), element->GetDownloadProgressOffset ());
+		if (mplayer != NULL) {
+			g_string_append_printf (fmt, "\tMediaplayer: State: %s\n", MediaPlayer::GetStateName (mplayer->GetState ()));
+			g_string_append_printf (fmt, "\t\tTarget pts: %" G_GUINT64_FORMAT " Current pts: %" G_GUINT64_FORMAT " ms Last rendered pts: %" G_GUINT64_FORMAT "\n", MilliSeconds_FromPts (mplayer->GetTargetPts ()), MilliSeconds_FromPts (mplayer->GetCurrentPts ()), MilliSeconds_FromPts (mplayer->GetLastRenderedPts ()));
+			g_string_append_printf (fmt, "\t\tRendered fps: %.2f Dropped fps: %.2f\n", mplayer->GetRenderedFramesPerSecond (), mplayer->GetDroppedFramesPerSecond ());
+			g_string_append_printf (fmt, "\t\tA/V pts diff:%s %" G_GINT64_FORMAT " ms\n", audio == NULL ? " N/A" : "", audio == NULL ? 0 : (gint64) MilliSeconds_FromPts (audio->GetCurrentPts ()) - (gint64) MilliSeconds_FromPts (mplayer->GetLastRenderedPts ()));
+		}
+		if (audio != NULL) {
+			g_string_append_printf (fmt, "\tAudioPlayer: %s\n", audio->GetTypeName ());
+			g_string_append_printf (fmt, "\t\tState: %s\n", AudioSource::GetStateName (audio->GetState ()));
+			g_string_append_printf (fmt, "\t\tFlags: %s\n", AudioSource::GetFlagNames (audio->GetFlags ()));
+			g_string_append_printf (fmt, "\t\tCurrent pts: %" G_GUINT64_FORMAT " ms Delay: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (audio->GetCurrentPts ()), MilliSeconds_FromPts (audio->GetDelay ()));
+			g_string_append_printf (fmt, "\t\tBytes per frame: %u to %u\n", audio->GetInputBytesPerFrame (), audio->GetOutputBytesPerFrame ());
+			g_string_append_printf (fmt, "\t\tBytes per sample: %u to %u\n", audio->GetInputBytesPerSample (), audio->GetOutputBytesPerSample ());
+			g_string_append_printf (fmt, "\t\tVolume: %.2f Balance: %.2f Muted: %i\n", audio->GetVolume (), audio->GetBalance (), audio->GetMuted ());
+			audio->unref ();
+		}
+		if (src != NULL) {
+			g_string_append_printf (fmt, "\tSource: %s Size: %" G_GINT64_FORMAT " CanSeek: %i CanSeekToPts: %i Eof: %i", src->GetTypeName (), src->Is (Type::MMSPLAYLISTENTRY) ? -1 : src->GetSize (), src->CanSeek (), src->CanSeekToPts (), src->Eof ());
+			if (src->Is (Type::PROGRESSIVESOURCE)) {
+				g_string_append_printf (fmt, " Pending read requests: %u", ((ProgressiveSource *) src)->GetPendingReadRequestCount ());
+			}
+			g_string_append_printf (fmt, "\n");
+		}
+		if (demuxer != NULL) {
+			if (demuxer->Is (Type::ASFDEMUXER))
+				asf_demuxer = (ASFDemuxer *) demuxer;
+			
+			g_string_append_printf (fmt, "\t%s %i DRM: %i first pts: %" G_GUINT64_FORMAT " ms IsOpened: %i IsOpening: %i PendingStream: %s \n", demuxer->GetTypeName (), GET_OBJ_ID (demuxer), demuxer->IsDrm (), MilliSeconds_FromPts (demuxer->GetSeekedToPts ()), demuxer->IsOpened (), demuxer->IsOpening (), demuxer->GetPendingStream () ? demuxer->GetPendingStream ()->GetTypeName () : NULL);
+			for (int i = 0; i < demuxer->GetStreamCount (); i++) {
+				IMediaStream *stream = demuxer->GetStream (i);
+				g_string_append_printf (fmt, "\t\t%s Id: %i Selected: %i Codec: %s Duration: %" G_GUINT64_FORMAT " ms Input ended: %i Output ended: %i\n",
+					stream->GetTypeName (), stream->GetId (), stream->GetSelected (), stream->GetCodec (), MilliSeconds_FromPts (stream->GetDuration ()), stream->GetInputEnded (), stream->GetOutputEnded ());
+				if (stream->Is (Type::VIDEOSTREAM)) {
+					VideoStream *vs = (VideoStream *) stream;
+					g_string_append_printf (fmt, 
+						"\t\t\tWidth: %u Height: %u Bits per sample: %u Bitrate: %u Time per frame: %" G_GUINT64_FORMAT " ms (%.3f fps) Initial time: %" G_GUINT64_FORMAT " ms\n",
+						vs->GetWidth (), vs->GetHeight (), vs->GetBitsPerSample (), vs->GetBitRate (), MilliSeconds_FromPts (vs->GetPtsPerFrame ()), 10000000.0 / vs->GetPtsPerFrame (), MilliSeconds_FromPts (vs->GetInitialPts ()));
+					g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms Frames in buffer: %i = %.2f fps.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()), stream->GetQueueLength (), stream->GetQueueLength () != 0 ? 1000.0 / (double) (MilliSeconds_FromPts (stream->GetBufferedSize ()) / (double) stream->GetQueueLength ()) : 0.0);
+				} else if (stream->Is (Type::AUDIOSTREAM)) {
+					AudioStream *as = (AudioStream *) stream;
+					g_string_append_printf (fmt,
+						"\t\t\tBits per sample %u to %u Block align %u to %u Sample rate %u to %u Channels %u to %u Bit rate %u to %u\n",
+						as->GetInputBitsPerSample (), as->GetOutputBitsPerSample (), as->GetInputBlockAlign (), as->GetOutputBlockAlign (), as->GetInputSampleRate (), as->GetOutputSampleRate (), as->GetInputChannels (), as->GetOutputChannels (), as->GetInputBitRate (), as->GetOutputBitRate ()
+						);
+				}
+				g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()));
+				g_string_append_printf (fmt, "\t\t\tFirst pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetFirstPts ()));
+				g_string_append_printf (fmt, "\t\t\tLast enqueued pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastEnqueuedPts ()));
+				g_string_append_printf (fmt, "\t\t\tLast popped pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
+				IMediaDecoder *decoder = stream->GetDecoder ();
+				if (decoder != NULL) {
+					g_string_append_printf (fmt, "\t\t\tDecoder: %s\n", decoder->GetTypeName ());
+				} else {
+					g_string_append_printf (fmt, "\t\t\t(No decoder)\n");
+				}
+				if (asf_demuxer != NULL) {
+					g_string_append_printf (fmt, "\t\t\tASF Frame reader: %i payloads in queue.\n", asf_demuxer->GetPayloadCount (stream));
+				}
+			}
+			demuxer->unref ();
+		} else {
+			g_string_append_printf (fmt, "\t(No demuxer)\n");
+		}
+		if (playlist != NULL) {
+			g_string_append_printf (fmt, "\tPlaylistRoot: %i IsDynamic: %i\n", GET_OBJ_ID (playlist), playlist->GetIsDynamic ());
+			Playlist *cur_pl = playlist;
+			PlaylistNode *cur_node;
+			List *entries;
+			int indent = 1;
+
+			GQueue *queue = g_queue_new ();
+			entries = cur_pl->GetEntries ();
+			cur_node = entries == NULL ? NULL : (PlaylistNode *) entries->First ();
+			while (cur_node != NULL) {
+				if (cur_node->GetEntry ()->Is (Type::PLAYLIST)) {
+					entries = ((Playlist *) cur_node->GetEntry ())->GetEntries ();
+
+					g_string_append_printf (fmt, "\t%*sPlaylist: %i Entries: %i\n", indent * 4, "", GET_OBJ_ID (cur_node->GetEntry ()), entries != NULL ? entries->Length () : 0);
+					
+					if (entries != NULL) {
+						PlaylistNode *tmp = (PlaylistNode *) entries->First ();
+						if (tmp != NULL) {
+							g_queue_push_tail (queue, cur_node);
+							cur_node = tmp;
+							indent++;
+							continue;
+						}
+					}
+				} else {
+					PlaylistEntry *entry = cur_node->GetEntry ();
+					media = entry->GetMedia ();
+					demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
+					g_string_append_printf (fmt, "\t%*sEntry: %i Media: %i %s: %i\n",
+						indent * 4, "", GET_OBJ_ID (entry), GET_OBJ_ID (media), demuxer ? demuxer->GetTypeName () : NULL, GET_OBJ_ID (demuxer));
+					if (demuxer != NULL && demuxer->Is (Type::ASFDEMUXER)) {
+						asf_demuxer = (ASFDemuxer *) demuxer;
+						for (int i = 0; i < 127; i++) {
+							IMediaStream *stream = asf_demuxer->GetStream (i);
+							if (stream == NULL)
+								continue;
+							g_string_append_printf (fmt, "\t%*s\t%s: %i entries in frame reader\n", indent * 4, "", stream->GetTypeName (), asf_demuxer->GetPayloadCount (stream));
+						}
+					}
+					if (demuxer)
+						demuxer->unref ();
+				}
+				
+				cur_node = (PlaylistNode *) cur_node->next;
+				while (cur_node == NULL) {
+					cur_node = (PlaylistNode *) g_queue_pop_tail (queue);
+					if (cur_node != NULL) {
+						cur_node = (PlaylistNode *) cur_node->next;
+						indent--;
+					} else {
+						break;
+					}
+				}
+			}
+			g_queue_free (queue);
+		} else {
+			g_string_append_printf (fmt, "\t(No playlist)\n");
+		}
+
+		char *result = fmt->str;
+		g_string_free (fmt, false);
+		return result;
+	}
+
 	void update ()
 	{
 		for (int i = 0; i < count; i++) {
@@ -941,15 +1093,10 @@ struct debug_media_data {
 			MediaElement *element = elements [i];
 			if (element == NULL)
 				continue;
-			element->SetCurrentDeployment ();
-			MediaPlayer *mplayer = element->GetMediaPlayer ();
 			PlaylistRoot *playlist = element->GetPlaylist ();
 			PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentPlaylistEntry ();
 			Media *media = entry == NULL ? NULL : entry->GetMedia ();
 			IMediaDemuxer *demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
-			ASFDemuxer *asf_demuxer = NULL;
-			IMediaSource *src = media == NULL ? NULL : media->GetSource ();
-			AudioSource *audio = mplayer == NULL ? NULL : mplayer->GetAudio ();
 	
 			if (command != 0) {
 				if (command & 1) {
@@ -967,144 +1114,12 @@ struct debug_media_data {
 				command = 0;
 			}
 	
-			GString *fmt = g_string_new ("");
-			g_string_append_printf (fmt, "MediaElement\n");
-			const Uri *uri = element->GetSource ();
-			g_string_append_printf (fmt, "\tSource: %s\n", uri != NULL ? uri->ToString () : NULL);
-			g_string_append_printf (fmt, "\tCurrent playlist entry's source: %s\n", (entry != NULL && entry->GetFullSourceName () != NULL) ? entry->GetFullSourceName ()->GetOriginalString () : NULL);
-			g_string_append_printf (fmt, "\tState: %s\n", MediaElement::GetStateName (element->GetState ()));
-			g_string_append_printf (fmt, "\tFlags: %s\n", MediaElement::GetFlagNames (element->GetFlags ()));
-			g_string_append_printf (fmt, "\tPosition: %" G_GUINT64_FORMAT " ms NaturalDuration: %" G_GUINT64_FORMAT " AutoPlay: %i Balance: %.2f\n", 
-				MilliSeconds_FromPts (element->GetPosition ()), MilliSeconds_FromPts (element->GetNaturalDuration ()->GetTimeSpan ()), element->GetAutoPlay (), element->GetBalance ());
-			g_string_append_printf (fmt, "\tDownloadProgress: %.2f BufferingProgress: %.2f BufferingTime: %" G_GUINT64_FORMAT " ms DownloadProgressOffset: %.2f\n",
-				element->GetDownloadProgress (), element->GetBufferingProgress (), MilliSeconds_FromPts (element->GetBufferingTime ()), element->GetDownloadProgressOffset ());
-			if (mplayer != NULL) {
-				g_string_append_printf (fmt, "\tMediaplayer: State: %s\n", MediaPlayer::GetStateName (mplayer->GetState ()));
-				g_string_append_printf (fmt, "\t\tTarget pts: %" G_GUINT64_FORMAT " Current pts: %" G_GUINT64_FORMAT " ms Last rendered pts: %" G_GUINT64_FORMAT "\n", MilliSeconds_FromPts (mplayer->GetTargetPts ()), MilliSeconds_FromPts (mplayer->GetCurrentPts ()), MilliSeconds_FromPts (mplayer->GetLastRenderedPts ()));
-				g_string_append_printf (fmt, "\t\tRendered fps: %.2f Dropped fps: %.2f\n", mplayer->GetRenderedFramesPerSecond (), mplayer->GetDroppedFramesPerSecond ());
-				g_string_append_printf (fmt, "\t\tA/V pts diff:%s %" G_GINT64_FORMAT " ms\n", audio == NULL ? " N/A" : "", audio == NULL ? 0 : (gint64) MilliSeconds_FromPts (audio->GetCurrentPts ()) - (gint64) MilliSeconds_FromPts (mplayer->GetLastRenderedPts ()));
-			}
-			if (audio != NULL) {
-				g_string_append_printf (fmt, "\tAudioPlayer: %s\n", audio->GetTypeName ());
-				g_string_append_printf (fmt, "\t\tState: %s\n", AudioSource::GetStateName (audio->GetState ()));
-				g_string_append_printf (fmt, "\t\tFlags: %s\n", AudioSource::GetFlagNames (audio->GetFlags ()));
-				g_string_append_printf (fmt, "\t\tCurrent pts: %" G_GUINT64_FORMAT " ms Delay: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (audio->GetCurrentPts ()), MilliSeconds_FromPts (audio->GetDelay ()));
-				g_string_append_printf (fmt, "\t\tBytes per frame: %u to %u\n", audio->GetInputBytesPerFrame (), audio->GetOutputBytesPerFrame ());
-				g_string_append_printf (fmt, "\t\tBytes per sample: %u to %u\n", audio->GetInputBytesPerSample (), audio->GetOutputBytesPerSample ());
-				g_string_append_printf (fmt, "\t\tVolume: %.2f Balance: %.2f Muted: %i\n", audio->GetVolume (), audio->GetBalance (), audio->GetMuted ());
-				audio->unref ();
-			}
-			if (src != NULL) {
-				g_string_append_printf (fmt, "\tSource: %s Size: %" G_GINT64_FORMAT " CanSeek: %i CanSeekToPts: %i Eof: %i", src->GetTypeName (), src->Is (Type::MMSPLAYLISTENTRY) ? -1 : src->GetSize (), src->CanSeek (), src->CanSeekToPts (), src->Eof ());
-				if (src->Is (Type::PROGRESSIVESOURCE)) {
-					g_string_append_printf (fmt, " Pending read requests: %u", ((ProgressiveSource *) src)->GetPendingReadRequestCount ());
-				}
-				g_string_append_printf (fmt, "\n");
-			}
-			if (demuxer != NULL) {
-				if (demuxer->Is (Type::ASFDEMUXER))
-					asf_demuxer = (ASFDemuxer *) demuxer;
-				
-				g_string_append_printf (fmt, "\t%s %i DRM: %i first pts: %" G_GUINT64_FORMAT " ms IsOpened: %i IsOpening: %i PendingStream: %s \n", demuxer->GetTypeName (), GET_OBJ_ID (demuxer), demuxer->IsDrm (), MilliSeconds_FromPts (demuxer->GetSeekedToPts ()), demuxer->IsOpened (), demuxer->IsOpening (), demuxer->GetPendingStream () ? demuxer->GetPendingStream ()->GetTypeName () : NULL);
-				for (int i = 0; i < demuxer->GetStreamCount (); i++) {
-					IMediaStream *stream = demuxer->GetStream (i);
-					g_string_append_printf (fmt, "\t\t%s Selected: %i Codec: %s Duration: %" G_GUINT64_FORMAT " ms Input ended: %i Output ended: %i\n", 
-						stream->GetTypeName (), stream->GetSelected (), stream->GetCodec (), MilliSeconds_FromPts (stream->GetDuration ()), stream->GetInputEnded (), stream->GetOutputEnded ());
-					if (stream->Is (Type::VIDEOSTREAM)) {
-						VideoStream *vs = (VideoStream *) stream;
-						g_string_append_printf (fmt, 
-							"\t\t\tWidth: %u Height: %u Bits per sample: %u Bitrate: %u Time per frame: %" G_GUINT64_FORMAT " ms (%.3f fps) Initial time: %" G_GUINT64_FORMAT " ms\n",
-							vs->GetWidth (), vs->GetHeight (), vs->GetBitsPerSample (), vs->GetBitRate (), MilliSeconds_FromPts (vs->GetPtsPerFrame ()), 10000000.0 / vs->GetPtsPerFrame (), MilliSeconds_FromPts (vs->GetInitialPts ()));
-						g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms Frames in buffer: %i = %.2f fps.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()), stream->GetQueueLength (), stream->GetQueueLength () != 0 ? 1000.0 / (double) (MilliSeconds_FromPts (stream->GetBufferedSize ()) / (double) stream->GetQueueLength ()) : 0.0);
-					} else if (stream->Is (Type::AUDIOSTREAM)) {
-						AudioStream *as = (AudioStream *) stream;
-						g_string_append_printf (fmt,
-							"\t\t\tBits per sample %u to %u Block align %u to %u Sample rate %u to %u Channels %u to %u Bit rate %u to %u\n",
-							as->GetInputBitsPerSample (), as->GetOutputBitsPerSample (), as->GetInputBlockAlign (), as->GetOutputBlockAlign (), as->GetInputSampleRate (), as->GetOutputSampleRate (), as->GetInputChannels (), as->GetOutputChannels (), as->GetInputBitRate (), as->GetOutputBitRate ()
-							);
-					}
-					g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()));
-					g_string_append_printf (fmt, "\t\t\tFirst pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetFirstPts ()));
-					g_string_append_printf (fmt, "\t\t\tLast enqueued pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastEnqueuedPts ()));
-					g_string_append_printf (fmt, "\t\t\tLast popped pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
-					IMediaDecoder *decoder = stream->GetDecoder ();
-					if (decoder != NULL) {
-						g_string_append_printf (fmt, "\t\t\tDecoder: %s\n", decoder->GetTypeName ());
-					} else {
-						g_string_append_printf (fmt, "\t\t\t(No decoder)\n");
-					}
-					if (asf_demuxer != NULL) {
-						g_string_append_printf (fmt, "\t\t\tASF Frame reader: %i payloads in queue.\n", asf_demuxer->GetPayloadCount (stream));
-					}
-				}
-				demuxer->unref ();
-			} else {
-				g_string_append_printf (fmt, "\t(No demuxer)\n");
-			}
-			if (playlist != NULL) {
-				g_string_append_printf (fmt, "\tPlaylistRoot: %i IsDynamic: %i\n", GET_OBJ_ID (playlist), playlist->GetIsDynamic ());
-				Playlist *cur_pl = playlist;
-				PlaylistNode *cur_node;
-				List *entries;
-				int indent = 1;
+			char *fmt = fetch_info (element);
 
-				GQueue *queue = g_queue_new ();
-				entries = cur_pl->GetEntries ();
-				cur_node = entries == NULL ? NULL : (PlaylistNode *) entries->First ();
-				while (cur_node != NULL) {
-					if (cur_node->GetEntry ()->Is (Type::PLAYLIST)) {
-						entries = ((Playlist *) cur_node->GetEntry ())->GetEntries ();
-
-						g_string_append_printf (fmt, "\t%*sPlaylist: %i Entries: %i\n", indent * 4, "", GET_OBJ_ID (cur_node->GetEntry ()), entries != NULL ? entries->Length () : 0);
-						
-						if (entries != NULL) {
-							PlaylistNode *tmp = (PlaylistNode *) entries->First ();
-							if (tmp != NULL) {
-								g_queue_push_tail (queue, cur_node);
-								cur_node = tmp;
-								indent++;
-								continue;
-							}
-						}
-					} else {
-						PlaylistEntry *entry = cur_node->GetEntry ();
-						media = entry->GetMedia ();
-						demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
-						g_string_append_printf (fmt, "\t%*sEntry: %i Media: %i %s: %i\n",
-							indent * 4, "", GET_OBJ_ID (entry), GET_OBJ_ID (media), demuxer ? demuxer->GetTypeName () : NULL, GET_OBJ_ID (demuxer));
-						if (demuxer != NULL && demuxer->Is (Type::ASFDEMUXER)) {
-							asf_demuxer = (ASFDemuxer *) demuxer;
-							for (int i = 0; i < 127; i++) {
-								IMediaStream *stream = asf_demuxer->GetStream (i);
-								if (stream == NULL)
-									continue;
-								g_string_append_printf (fmt, "\t%*s\t%s: %i entries in frame reader\n", indent * 4, "", stream->GetTypeName (), asf_demuxer->GetPayloadCount (stream));
-							}
-						}
-						if (demuxer)
-							demuxer->unref ();
-					}
-					
-					cur_node = (PlaylistNode *) cur_node->next;
-					while (cur_node == NULL) {
-						cur_node = (PlaylistNode *) g_queue_pop_tail (queue);
-						if (cur_node != NULL) {
-							cur_node = (PlaylistNode *) cur_node->next;
-							indent--;
-						} else {
-							break;
-						}
-					}
-				}
-				g_queue_free (queue);
-			} else {
-				g_string_append_printf (fmt, "\t(No playlist)\n");
-			}
-
-			gtk_label_set_text (GTK_LABEL (labels [i]), fmt->str);
+			gtk_label_set_text (GTK_LABEL (labels [i]), fmt);
 			if (copy)
-				gtk_clipboard_set_text( gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), fmt->str, strlen (fmt->str) );
-			g_string_free (fmt, true);
+				gtk_clipboard_set_text( gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), fmt, strlen (fmt) );
+			g_free (fmt);
 		}
 	}
 	
@@ -1114,6 +1129,36 @@ struct debug_media_data {
 		return true;
 	}
 };
+
+void
+dump_media_elements ()
+{
+	GHashTableIter iter;
+	gpointer key;
+	gpointer value;
+	Deployment *deployment = Deployment::GetCurrent ();
+	MediaElement *elements [1024];
+	int counter = 0;
+
+	/* Find all media elements */
+	pthread_mutex_lock (&deployment->objects_alive_mutex);
+	g_hash_table_iter_init (&iter, deployment->objects_alive);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		if (((EventObject *) key)->GetObjectType () != Type::MEDIAELEMENT)
+			continue;
+		elements [counter++] = (MediaElement *) key;
+		elements [counter - 1]->ref ();
+	}
+	pthread_mutex_unlock (&deployment->objects_alive_mutex);
+
+	for (int i = 0; i < counter; i++) {
+		MediaElement *mel = elements [i];
+		char *fmt = debug_media_data::fetch_info (mel);
+		printf (fmt);
+		g_free (fmt);
+		mel->unref ();
+	}
+}
 
 static void
 debug_media_dialog_response (GtkWidget *dialog, int response, debug_media_data *data)
