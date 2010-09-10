@@ -48,6 +48,23 @@ BitmapSource::GetBitmapData ()
 }
 
 void
+BitmapSource::OnIsAttachedChanged (bool value)
+{
+	ImageSource::OnIsAttachedChanged (value);
+
+	if (!value) {
+		if (image_surface) {
+			cairo_surface_destroy (image_surface);
+			image_surface = NULL;
+		}
+		if (native_surface) {
+			cairo_surface_destroy (native_surface);
+			native_surface = NULL;
+		}
+	}
+}
+
+void
 BitmapSource::SetBitmapData (gpointer data, bool own_data)
 {
 	if (data == NULL) {
