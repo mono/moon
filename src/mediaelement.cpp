@@ -458,7 +458,7 @@ MediaElement::OnIsAttachedChanged (bool value)
 		detached_state = state;
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
-		Stop (); /* this is async */
+		playlist->StopAsync (); /* this is async */
 		flags &= ~MediaOpenedEmitted;
 		SetBufferingProgress (0.0);
 		SetCanPause (false);
@@ -1398,10 +1398,13 @@ MediaElement::SetPlayRequested ()
 void
 MediaElement::PlayOrStop ()
 {
-	LOG_MEDIAELEMENT ("MediaElement::PlayOrPause (): GetCanPause (): %s, PlayRequested: %s, GetAutoPlay: %s, AutoPlayed: %s\n",
+	LOG_MEDIAELEMENT ("MediaElement::PlayOrPause (): GetCanPause (): %s, PlayRequested: %s, GetAutoPlay: %s, AutoPlayed: %s IsAttached: %s\n",
 			  GetCanPause () ? "true" : "false", (flags & PlayRequested) ? "true" : "false",
-			  GetAutoPlay () ? "true" : "false", (flags & AutoPlayed) ? "true" : "false");
+			  GetAutoPlay () ? "true" : "false", (flags & AutoPlayed) ? "true" : "false", IsAttached () ? "true" : "false");
 	VERIFY_MAIN_THREAD;
+
+	if (!IsAttached ())
+		return;
 	
 	if (!GetCanPause ()) {
 		// If we can't pause, we play
@@ -1458,6 +1461,9 @@ MediaElement::Play ()
 	LOG_MEDIAELEMENT ("MediaElement::Play (): current state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
+	if (!IsAttached ())
+		return;
+
 	if (playlist == NULL) {
 		LOG_MEDIAELEMENT ("MediaElement::Play (): no source set yet.\n");
 		return;
