@@ -304,6 +304,14 @@ if HAVE_CURL
 libmoon_la_SOURCES += network-curl.cpp network-curl.h
 endif
 
+if HAVE_GALLIUM
+libmoon_la_SOURCES += 		\
+	surface-gallium.cpp	\
+	surface-gallium.h	\
+	context-gallium.cpp	\
+	context-gallium.h
+endif
+
 EXTRA_DIST = \
 	type.h.in \
 	value.h.in \
