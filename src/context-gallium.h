@@ -28,7 +28,7 @@ public:
 
 	void Push (Group extents);
 
-private:
+// private:
 	void Clear (GalliumSurface *dst);
 
 	pipe_context *pipe;
