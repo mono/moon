@@ -270,7 +270,7 @@ namespace Mono {
 #endregion
 
 		/* accessed from several threads, all usage must use a lock */
-		internal static Dictionary<IntPtr, WeakReference> objects = new Dictionary<IntPtr, WeakReference> ();
+		internal static Dictionary<IntPtr, EventObjectToggleRef> objects = new Dictionary<IntPtr, EventObjectToggleRef> ();
 
 
 		/* thread-safe */
@@ -290,25 +290,23 @@ namespace Mono {
 					return false;
 #endif
 				}
-
-				NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
-				//tref = new EventObjectToggleRef (wrapper);
+				
+				tref = new EventObjectToggleRef (wrapper);
 
 #if DEBUG_REF
 				Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
 #endif
 
-				objects[native] = new WeakReference (wrapper);
-				//objects[native] = tref;
+				objects[native] = tref;
 			}
-			//tref.Initialize ();
+			tref.Initialize ();
 			return true;
 		}
 		
 		/* thread-safe */
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
-			WeakReference tref;
+			EventObjectToggleRef tref;
 			IntPtr native = wrapper.NativeHandle;
 			
 			if (native == IntPtr.Zero)
@@ -322,9 +320,8 @@ namespace Mono {
 					objects.Remove (native);
 				}
 			}
-			NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, IntPtr.Zero);
-			//if (tref != null)
-			//	tref.Free ();
+			if (tref != null)
+				tref.Free ();
 			GC.SuppressFinalize (wrapper);
 		}
 
@@ -340,10 +337,10 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			WeakReference reference;
+			EventObjectToggleRef reference;
 			lock (objects) {
 				if (objects.TryGetValue (ptr, out reference))
-					return (INativeEventObjectWrapper) reference.Target;
+					return reference.Target;
 			}
 			// don't change this to a cast (as opposed to
 			// using 'as') since we can lose important
@@ -376,10 +373,10 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			WeakReference tref;
+			EventObjectToggleRef tref;
 			lock (objects) {
 				if (objects.TryGetValue (ptr, out tref))
-					return (INativeEventObjectWrapper) tref.Target;
+					return tref.Target;
 			}
 			return null;
 		}
