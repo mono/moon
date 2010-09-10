@@ -1466,6 +1466,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 			r = r.Intersection (region->ClipBox ());
 
 		bounds = bounds.Intersection (r);
+
+		// clip to bounds (see ::PostRender for matching pop)
 		ctx->Push (Context::Clip (bounds));
 
 		if (!bounds.IsEmpty ()) {
@@ -1473,6 +1475,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 			cairo_rectangle_t      *rect = NULL;
 			cairo_t                *cr = ctx->Cairo ();
 
+			// COMPOSITE_CLIP in ::PostRender is affected
+			// by the clip path rendered here
 			RenderClipPath (cr);
 
 			cairo_save (cr);
@@ -1481,6 +1485,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 			cairo_restore (cr);
 
 			if (list->status == CAIRO_STATUS_SUCCESS) {
+
+				// use fast rectangular clipping
 				if (list->num_rectangles < 2)
 					bounds = Rect ();
 
@@ -1553,6 +1559,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		}
  
 		ctx->Push (Context::Group (r), bitmap_cache);
+
+		// push empty clip to prevent sub-tree rendering
 		ctx->Push (Context::Clip ());
 	}
 }
@@ -1570,7 +1578,9 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		MoonSurface *surface;
 		Rect        r;
 
+		// pop empty clip
 		ctx->Pop ();
+
 		r = ctx->Pop (&surface);
 		ctx->Push (Context::Clip (r));
 
@@ -1675,6 +1685,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			surface->unref ();
 		}
 
+		// clip to bounds (see ::PreRender for matching push)
 		ctx->Pop ();
 	}
 
