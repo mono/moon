@@ -13,25 +13,17 @@
 
 #include <config.h>
 
+#include <glib.h>
 #include <glib/gstdio.h>
-#include <gtk/gtk.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dlfcn.h>
 #include <signal.h>
 
 #include "runtime.h"
 #include "deployment.h"
 #include "downloader.h"
 #include "uri.h"
-
-#include "gtk/window-gtk.h"
-#include "gtk/pal-gtk.h"
+#include "pal.h"
+#include "window.h"
 
 #include "debug.h"
 
@@ -39,31 +31,32 @@
 
 using namespace Moonlight;
 
-extern guint32 moonlight_flags;
+static MoonWindowingSystem *winsys;
+static MoonInstallerService *installer;
 
 typedef struct {
-	GdkPixbufLoader *loader;
-	GtkWindow *window;
+	MoonPixbufLoader *loader;
+	MoonWindow *window;
+	MoonError *moon_error;
 } IconLoader;
 
 static void
 icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 {
 	IconLoader *icon = (IconLoader *) user_data;
-	GtkWindow *window = icon->window;
-	GdkPixbuf *pixbuf;
-	GList *icon_list;
-	
-	icon_list = gtk_window_get_icon_list (window);
+	MoonWindow *window = icon->window;
+	MoonPixbuf *pixbuf;
 	
 	switch (type) {
 	case NotifyCompleted:
 		if (icon->loader) {
-			if (gdk_pixbuf_loader_close (icon->loader, NULL)) {
+			MoonError *error = NULL;
+			icon->loader->Close (&error);
+			if (error == NULL) {
 				/* get the pixbuf and add it to our icon_list */
-				pixbuf = gdk_pixbuf_loader_get_pixbuf (icon->loader);
-				icon_list = g_list_prepend (icon_list, pixbuf);
-				gtk_window_set_icon_list (window, icon_list);
+				pixbuf = icon->loader->GetPixbuf ();
+				window->SetIconFromPixbuf (pixbuf);
+
 				g_free (icon);
 				break;
 			}
@@ -71,9 +64,7 @@ icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 			/* fall through as if we got a NotifyFailed */
 		}
 	case NotifyFailed:
-		if (icon->loader)
-			g_object_unref (icon->loader);
-		
+		delete icon->loader;
 		g_free (icon);
 		break;
 	default:
@@ -82,20 +73,42 @@ icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 }
 
 static void
-icon_loader_write_cb (EventObject *obj, EventArgs *ea, gpointer user_data)
+CreateLoader (IconLoader *icon, const guchar *buffer)
 {
-	HttpRequestWriteEventArgs *args = (HttpRequestWriteEventArgs *) ea;
-	IconLoader *icon = (IconLoader *) user_data;
-	
-	if (icon->loader && !gdk_pixbuf_loader_write (icon->loader, (const guchar *) args->GetData (), args->GetCount (), NULL)) {
-		/* loading failed, destroy the loader */
-		g_object_unref (icon->loader);
-		icon->loader = NULL;
+	if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
+		// 89 50 4E 47 == png magic
+		if (buffer[0] == 0x89)
+			icon->loader = winsys->CreatePixbufLoader ("png");
+		// ff d8 ff e0 == jfif magic
+		else if (buffer[0] == 0xff)
+			icon->loader = winsys->CreatePixbufLoader ("jpeg");
+
+		else
+			icon->moon_error = new MoonError (MoonError::EXCEPTION, 4001, "unsupported image type");
+	} else {
+		icon->loader = winsys->CreatePixbufLoader (NULL);
 	}
 }
 
 static void
-load_window_icons (GtkWindow *window, Deployment *deployment, IconCollection *icons)
+icon_loader_write_cb (EventObject *obj, EventArgs *ea, gpointer user_data)
+{
+	HttpRequestWriteEventArgs *args = (HttpRequestWriteEventArgs *) ea;
+	IconLoader *icon = (IconLoader *) user_data;
+
+	const guchar *buffer = (const guchar*)args->GetData ();
+	gint32 offset = args->GetOffset ();
+	gint32 n = args->GetCount ();
+
+	if (icon->loader == NULL && offset == 0)
+		CreateLoader (icon, buffer);
+
+	if (icon->loader && icon->moon_error == NULL)
+		icon->loader->Write (buffer, n, &icon->moon_error);
+}
+
+static void
+load_window_icons (MoonWindow *window, Deployment *deployment, IconCollection *icons)
 {
 	Application *application = deployment->GetCurrentApplication ();
 	IconLoader *loader;
@@ -108,8 +121,7 @@ load_window_icons (GtkWindow *window, Deployment *deployment, IconCollection *ic
 			Icon *icon = value->AsIcon ();
 			const Uri *uri = icon->GetSource ();
 			
-			loader = g_new (IconLoader, 1);
-			loader->loader = gdk_pixbuf_loader_new ();
+			loader = g_new0 (IconLoader, 1);
 			loader->window = window;
 
 			application->GetResource (NULL, uri, icon_loader_notify_cb, icon_loader_write_cb, MediaPolicy, HttpRequest::DisableFileStorage, NULL, loader);
@@ -190,18 +202,11 @@ load_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
 static MoonWindow*
 create_window (Deployment *deployment, const char *app_id)
 {
-	MoonWindowingSystem *winsys;
-	MoonInstallerService *installer;
 	MoonAppRecord *app;
-	GtkWidget *window;
 	OutOfBrowserSettings *oob;
 	WindowSettings *settings;
 	MoonWindow *moon_window;
 	Surface *surface;
-
-	/* get the pal services we need */
-	winsys = runtime_get_windowing_system ();
-	installer = runtime_get_installer_service ();
 
 	/* fetch the app record */
 	if (!(app = installer->GetAppRecord (app_id))) {
@@ -220,12 +225,8 @@ create_window (Deployment *deployment, const char *app_id)
 	
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	
-	window = ((MoonWindowGtk *) moon_window)->GetWidget ();
-	
-	g_signal_connect_after (window, "delete-event", G_CALLBACK (gtk_main_quit), NULL);
-	
 	if ((oob = deployment->GetOutOfBrowserSettings ())) {
-		load_window_icons ((GtkWindow *) window, deployment, oob->GetIcons ());
+		load_window_icons (moon_window, deployment, oob->GetIcons ());
 		settings = oob->GetWindowSettings ();
 	} else
 		settings = NULL;
@@ -258,24 +259,15 @@ create_window (Deployment *deployment, const char *app_id)
 			moon_window->SetLeft (settings->GetLeft ());
 			moon_window->SetTop (settings->GetTop ());
 		}
-		
-		switch (settings->GetWindowStyle ()) {
-		case WindowStyleBorderlessRoundCornersWindow:
-		case WindowStyleNone:
-			gtk_window_set_decorated ((GtkWindow *) window, false);
-			break;
-		default:
-			/* by default, gtk enables window decorations */
-			break;
-		}
+
+		moon_window->SetStyle (settings->GetWindowStyle ());
+
 	} else if (oob != NULL) {
 		moon_window->SetTitle (oob->GetShortName ());
 	} else {
 		moon_window->SetTitle ("Moonlight");
 	}
 	
-	moon_window->Show ();
-
 	delete app;
 
 	return moon_window;
@@ -286,7 +278,7 @@ create_window (Deployment *deployment, const char *app_id)
 static int
 display_help (void)
 {
-	fputs ("Usage: lunar-launcher [GTK OPTIONS...] [appid]\n\n", stdout);
+	fputs ("Usage: lunar-launcher [TOOLKIT OPTIONS...] [appid]\n\n", stdout);
 	exit (EXIT_SUCCESS);
 	
 	return 0;
@@ -315,6 +307,7 @@ int main (int argc, char **argv)
 {
 	fputs ("lunar-launcher " VERSION "\n", stdout);
 
+
 #if DEBUG
 	/* stdout defaults to block buffering if it's not writing to a terminal, which happens with our test harness:
 	 * we redirect stdout to capture it. Force line buffering in all cases. */
@@ -336,11 +329,7 @@ int main (int argc, char **argv)
 	Deployment *deployment;
 	MoonWindow *window;
 	char *plugin_dir;
-	
-	gtk_init (&argc, &argv);
-	g_thread_init (NULL);
-	gdk_threads_init ();
-	
+
 	if (argc != 2)
 		display_help ();
 
@@ -351,7 +340,11 @@ int main (int argc, char **argv)
 
 	runtime_init_browser (plugin_dir);
 	g_free (plugin_dir);
-	
+
+	/* get the pal services we need */
+	winsys = runtime_get_windowing_system ();
+	installer = runtime_get_installer_service ();
+
 	LOG_OOB ("[%i lunar-launcher]: Starting\n", getpid ());
 
 	deployment = new Deployment ();
@@ -365,12 +358,8 @@ int main (int argc, char **argv)
 	if (!(window = create_window (deployment, argv[1])))
 		return EXIT_FAILURE;
 
-	window->Show ();
-	
-	gdk_threads_enter ();
-	gtk_main ();
-	gdk_threads_leave ();
-	
+	winsys->RunMainLoop (window);
+
 	deployment->Shutdown ();
 	
 	/* Our shutdown is async, so keep processing events/timeouts until there is

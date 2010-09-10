@@ -610,6 +610,10 @@ private:
 
 MoonWindowingSystemGtk::MoonWindowingSystemGtk ()
 {
+	gtk_init (NULL, NULL);
+	g_thread_init (NULL);
+	gdk_threads_init ();
+
 	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) && RunningOnNvidia ()) {
 		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
 		moonlight_flags |= RUNTIME_INIT_USE_BACKEND_IMAGE;
@@ -1154,6 +1158,21 @@ MoonWindowingSystemGtk::RunningOnNvidia ()
 	XCloseDisplay (display);
 
 	return result;
+}
+
+void
+MoonWindowingSystemGtk::RunMainLoop (MoonWindow *window, bool quit_on_window_close)
+{
+	if (window) {
+		window->Show ();
+
+		if (quit_on_window_close)
+			g_signal_connect (((MoonWindowGtk*)window)->GetWidget (), "delete-event", G_CALLBACK (gtk_main_quit), NULL);
+	}
+
+	gdk_threads_enter ();
+	gtk_main ();
+	gdk_threads_leave ();
 }
 
 

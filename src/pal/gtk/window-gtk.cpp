@@ -19,6 +19,7 @@
 #include "window-gtk.h"
 #include "clipboard-gtk.h"
 #include "config-dialog-gtk.h"
+#include "pixbuf-gtk.h"
 #include "install-dialog.h"
 #include "deployment.h"
 #include "timemanager.h"
@@ -1089,4 +1090,30 @@ void
 MoonWindowGtk::SetTitle (const char *title)
 {
 	gtk_window_set_title (GTK_WINDOW (widget), title);
+}
+
+void
+MoonWindowGtk::SetIconFromPixbuf (MoonPixbuf *pixbuf)
+{
+	MoonPixbufGtk* pixbuf_gtk = (MoonPixbufGtk*)pixbuf;
+
+	GList *icon_list;
+	
+	icon_list = gtk_window_get_icon_list (GTK_WINDOW (widget));
+	icon_list = g_list_prepend (icon_list, (GdkPixbuf*)pixbuf_gtk->GetPlatformPixbuf());
+	gtk_window_set_icon_list (GTK_WINDOW (widget), icon_list);
+}
+
+void
+MoonWindowGtk::SetStyle (WindowStyle style)
+{
+	switch (style) {
+	case WindowStyleBorderlessRoundCornersWindow:
+	case WindowStyleNone:
+		gtk_window_set_decorated (GTK_WINDOW (widget), false);
+		break;
+	default:
+		/* by default, gtk enables window decorations */
+		break;
+	}
 }

@@ -18,6 +18,8 @@ public:
 	virtual gint GetNumChannels ();
 	virtual guchar *GetPixels ();
 
+	virtual gpointer GetPlatformPixbuf ();
+
 private:
 	GdkPixbuf *gdk_pixbuf;
 };

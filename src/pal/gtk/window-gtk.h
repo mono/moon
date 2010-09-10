@@ -59,7 +59,9 @@ public:
 
 	virtual void SetTitle (const char *title);
 
+	virtual void SetIconFromPixbuf (MoonPixbuf *pixbuf);
 
+	virtual void SetStyle (WindowStyle style);
 
 	virtual void GrabFocus ();
 	virtual bool HasFocus ();

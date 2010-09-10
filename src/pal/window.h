@@ -74,8 +74,9 @@ public:
 
 	virtual void SetTitle (const char *title) = 0;
 
+	virtual void SetIconFromPixbuf (MoonPixbuf *pixbuf) = 0;
 
-
+	virtual void SetStyle (WindowStyle style) = 0;
 
 	virtual void SetSurface (Surface* s) { surface = s; }
 	Surface *GetSurface () { return surface; }

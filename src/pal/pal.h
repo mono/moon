@@ -188,6 +188,7 @@ public:
 	virtual gint GetRowStride () = 0;
 	virtual gint GetNumChannels () = 0;
 	virtual guchar *GetPixels () = 0;
+	virtual gpointer GetPlatformPixbuf () = 0;
 	virtual ~MoonPixbuf () {}
 };
 
@@ -265,6 +266,8 @@ public:
 	virtual MoonPixbufLoader* CreatePixbufLoader (const char *imageType) = 0;
 
 	void SetWindowlessCtor (MoonWindowlessCtor ctor);
+
+	virtual void RunMainLoop (MoonWindow *main_window = NULL, bool quit_on_window_close = true) = 0;
 
 private:
 	MoonWindowlessCtor windowless_ctor;

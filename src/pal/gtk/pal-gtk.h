@@ -41,6 +41,7 @@ public:
 
 	virtual MoonPixbufLoader* CreatePixbufLoader (const char *imageType);
 
+	virtual void RunMainLoop (MoonWindow *main_window = NULL, bool quit_on_window_close = true);
 
 	void UnregisterWindow (MoonWindow *window);
 

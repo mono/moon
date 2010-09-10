@@ -94,3 +94,8 @@ MoonPixbufGtk::GetPixels ()
 	return gdk_pixbuf_get_pixels (gdk_pixbuf);
 }
 
+gpointer
+MoonPixbufGtk::GetPlatformPixbuf ()
+{
+	return gdk_pixbuf;
+}
