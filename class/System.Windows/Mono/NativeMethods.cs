@@ -53,6 +53,12 @@ namespace Mono {
 		NoPolicy
 	}
 
+	internal enum MoonWindowType {
+		FullScreen,
+		Desktop,
+		Plugin
+	};
+
 	internal delegate void MentorChangedCallback (IntPtr doptr, IntPtr mentor_ptr);
 	internal delegate void EnsureManagedPeerCallback (IntPtr doptr);
 	internal delegate void AttachCallback (IntPtr doptr);

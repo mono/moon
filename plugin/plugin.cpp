@@ -767,7 +767,7 @@ PluginInstance::CreateWindow ()
 			moon_window->SetTransparent (true);
 		}
 		else {
-			moon_window = runtime_get_windowing_system()->CreateWindow (false, window->width, window->height);
+			moon_window = runtime_get_windowing_system()->CreateWindow (MoonWindowType_Plugin, window->width, window->height);
 		}
 		created = true;
 	} else {

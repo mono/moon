@@ -27,13 +27,13 @@ class MoonWindowingSystem;
 
 /* @Namespace=System.Windows */
 class MoonWindow {
- public:
+public:
 	// FIXME: do something with parentWindow here.
-	MoonWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface *s = NULL)
-	: width(width), height(height), surface(s), fullscreen (fullscreen), transparent(false), windowingSystem(NULL) { }
+	MoonWindow (MoonWindowType windowType, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface *s = NULL)
+	: width(width), height(height), surface(s), windowType (windowType), transparent(false), windowingSystem(NULL) { }
 
 	MoonWindow (int width = -1, int height = -1, PluginInstance *plugin = NULL)
-	: width(width), height(height), surface(NULL), fullscreen (false), transparent(false), windowingSystem(NULL) { }
+	: width(width), height(height), surface(NULL), windowType (MoonWindowType_Plugin), transparent(false), windowingSystem(NULL) { }
 
 	virtual ~MoonWindow () { }
 
@@ -60,6 +60,23 @@ class MoonWindow {
 	int GetWidth () { return width; }
 	int GetHeight () { return height; }
 
+
+
+	virtual void SetLeft (double left) = 0;
+	virtual double GetLeft () = 0;
+
+	virtual void SetTop (double top) = 0;
+	virtual double GetTop () = 0;
+
+	virtual void SetWidth (double width) = 0;
+
+	virtual void SetHeight (double height) = 0;
+
+	virtual void SetTitle (const char *title) = 0;
+
+
+
+
 	virtual void SetSurface (Surface* s) { surface = s; }
 	Surface *GetSurface () { return surface; }
 
@@ -71,7 +88,7 @@ class MoonWindow {
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetTransparent () { return transparent; }
 
-	bool IsFullScreen () { return fullscreen; }
+	bool IsFullScreen () { return windowType == MoonWindowType_FullScreen; }
 
 	void SetCurrentDeployment ();
 
@@ -81,11 +98,11 @@ class MoonWindow {
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual gpointer GetPlatformWindow () = 0;
 
- protected:
+protected:
 	int width;
 	int height;
 	Surface *surface;
-	bool fullscreen;
+	MoonWindowType windowType;
 	bool transparent;
 
 	MoonWindowingSystem* windowingSystem;

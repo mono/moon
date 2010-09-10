@@ -30,7 +30,7 @@ namespace Moonlight {
 /* @Namespace=System.Windows */
 class MoonWindowGtk : public MoonWindow {
 public:
-	MoonWindowGtk (bool fullscreen, int w = -1, int h = -1, MoonWindow* parent = NULL, Surface *surface = NULL);
+	MoonWindowGtk (MoonWindowType windowType, int w = -1, int h = -1, MoonWindow* parent = NULL, Surface *surface = NULL);
 
 	virtual ~MoonWindowGtk ();
 
@@ -46,6 +46,20 @@ public:
 	virtual void Hide ();
 	virtual void EnableEvents (bool first);
 	virtual void DisableEvents ();
+
+	virtual void SetLeft (double left);
+	virtual double GetLeft ();
+
+	virtual void SetTop (double top);
+	virtual double GetTop ();
+
+	virtual void SetWidth (double width);
+
+	virtual void SetHeight (double height);
+
+	virtual void SetTitle (const char *title);
+
+
 
 	virtual void GrabFocus ();
 	virtual bool HasFocus ();
@@ -81,6 +95,9 @@ private:
 	Context *ctx;
 	cairo_surface_t *native;
 
+	int left;
+	int top;
+
 	gboolean ExposeEvent (GtkWidget *w, GdkEventExpose *event);
 	static gboolean expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
 	static gboolean motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);
@@ -99,7 +116,8 @@ private:
 	static void widget_destroyed (GtkWidget *widget, gpointer user_data);
 
 	void InitializeFullScreen (MoonWindow *parent);
-	void InitializeNormal ();
+	void InitializeDesktop (MoonWindow *parent);
+	void InitializePlugin ();
 	void InitializeCommon ();
 
 	void RightClickMenu ();

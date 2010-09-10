@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 637 methods
+# 642 methods
 
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
@@ -281,6 +281,7 @@
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Windows.Resources.StreamResourceInfo,System.Uri)
 +SSC-M: System.Windows.Application System.Windows.Application::get_Current()
 +SSC-M: System.Boolean System.Windows.Application::get_IsCurrentSet()
++SSC-M: System.Windows.Window System.Windows.Application::get_MainWindow()
 +SSC-M: System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.Byte[])
 +SSC-M: System.Boolean System.Windows.Automation.Peers.AutomationSingleton::get_AccessibilityEnabled()
@@ -638,3 +639,7 @@
 +SSC-M: System.Windows.Media.GeneralTransform System.Windows.UIElement::TransformToVisual(System.Windows.UIElement)
 +SSC-M: System.Windows.Size System.Windows.UIElement::get_DesiredSize()
 +SSC-M: System.Windows.Size System.Windows.UIElement::get_RenderSize()
++SSC-M: System.Boolean System.Windows.Window::Activate()
++SSC-M: System.Void System.Windows.Window::Close()
++SSC-M: System.Void System.Windows.Window::DragMove()
++SSC-M: System.Void System.Windows.Window::DragResize(System.Windows.WindowResizeEdge)

@@ -43,20 +43,27 @@
 
 using namespace Moonlight;
 
-MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
-	: MoonWindow (fullscreen, w, h, parent, surface)
+MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
+	: MoonWindow (windowType, w, h, parent, surface)
 {
-	this->fullscreen = fullscreen;
+	this->windowType = windowType;
 
 	backing_image_data = NULL;
 	backing_store = NULL;
 	backing_store_gc = NULL;
 	backing_store_width = backing_store_height = 0;
-	
-	if (IsFullScreen())
-		InitializeFullScreen(parent);
-	else
-		InitializeNormal();
+
+	switch (windowType) {
+	case MoonWindowType_FullScreen:
+		InitializeFullScreen (parent);
+		break;
+	case MoonWindowType_Desktop:
+		InitializeDesktop (parent);
+		break;
+	case MoonWindowType_Plugin:
+		InitializePlugin();
+		break;
+	}
 
 	ctx = NULL;
 	native = NULL;
@@ -152,7 +159,17 @@ MoonWindowGtk::InitializeFullScreen (MoonWindow *parent)
 }
 
 void
-MoonWindowGtk::InitializeNormal ()
+MoonWindowGtk::InitializeDesktop (MoonWindow *parent)
+{
+	widget = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+
+	gtk_widget_set_app_paintable (widget, true);
+
+	InitializeCommon ();
+}
+
+void
+MoonWindowGtk::InitializePlugin ()
 {
 	if (width == -1 || height == -1) {
 		g_warning ("you must specify width and height when creating a non-fullscreen gtk window");
@@ -198,8 +215,14 @@ MoonWindowGtk::InitializeCommon ()
 void
 MoonWindowGtk::Resize (int width, int height)
 {
-	gtk_widget_set_size_request (widget, width, height);
-	gtk_widget_queue_resize (widget);
+	switch (windowType) {
+	case MoonWindowType_Desktop:
+		gtk_window_resize ((GtkWindow*)widget, width, height);
+		break;
+	default:
+		gtk_widget_set_size_request (widget, width, height);
+		gtk_widget_queue_resize (widget);
+	}
 }
 
 /* XPM */
@@ -1000,4 +1023,70 @@ MoonWindowGtk::container_button_press_callback (GtkWidget *widget, GdkEventButto
 	}
 
 	return FALSE;
+}
+
+void
+MoonWindowGtk::SetLeft (double left)
+{
+	if (this->left == left)
+		return;
+
+	this->left = left;
+
+	if (left > G_MININT32 && top > G_MININT32) {
+		gtk_window_move (GTK_WINDOW (widget), top, left);
+	}
+	else {
+		// should we do something here?  hide the window?
+	}
+}
+
+double
+MoonWindowGtk::GetLeft ()
+{
+	return left;
+}
+
+void
+MoonWindowGtk::SetTop (double top)
+{
+	if (this->top == top)
+		return;
+
+	this->top = top;
+
+	if (left > G_MININT32 && top > G_MININT32) {
+		gtk_window_move (GTK_WINDOW (widget), top, left);
+	}
+	else {
+		// should we do something here?  hide the window?
+	}
+}
+
+double
+MoonWindowGtk::GetTop ()
+{
+	return top;
+}
+
+void
+MoonWindowGtk::SetWidth (double width)
+{
+	this->width = width;
+	if (width > 0 && height > 0)
+		gtk_window_resize (GTK_WINDOW (widget), width, height);
+}
+
+void
+MoonWindowGtk::SetHeight (double height)
+{
+	this->height = height;
+	if (width > 0 && height > 0)
+		gtk_window_resize (GTK_WINDOW (widget), width, height);
+}
+
+void
+MoonWindowGtk::SetTitle (const char *title)
+{
+	gtk_window_set_title (GTK_WINDOW (widget), title);
 }

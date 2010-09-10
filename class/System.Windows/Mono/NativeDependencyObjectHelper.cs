@@ -551,6 +551,7 @@ namespace Mono {
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
 			case Kind.VIDEOFORMAT_COLLECTION: return new VideoBrush (raw, false);
 			case Kind.WEBBROWSER: return new WebBrowser (raw, false);
+			case Kind.WINDOW: return new Window (raw, false);
 			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);
 			case Kind.WRITEABLEBITMAP: return new WriteableBitmap (raw, false);
 

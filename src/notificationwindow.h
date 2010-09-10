@@ -14,11 +14,15 @@
 #define __MOON_NOTIFICATION_WINDOW_H__
  
 #include "dependencyobject.h"
+#include "pal/window.h"
 
 namespace Moonlight {
 
 /* @Namespace=System.Windows */ 
 class Window : public DependencyObject {
+private:
+	MoonWindow *moon_window;
+
 protected:
 	virtual ~Window () {}
 
@@ -26,13 +30,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Window ();
 	
-	/* @PropertyType=double,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal */
 	const static int HeightProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal */
 	const static int WidthProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=50.0,ManagedFieldAccess=Internal */
 	const static int LeftProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=50.0,ManagedFieldAccess=Internal */
 	const static int TopProperty;
 	/* @PropertyType=bool,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	const static int IsActiveProperty;
@@ -43,6 +47,23 @@ public:
 
 	/* @DelegateType=EventHandler<ClosingEventArgs> */
 	const static int ClosingEvent;
+
+	/* @GeneratePInvoke */
+	bool ActivateWithError (MoonError *error);
+
+	/* @GeneratePInvoke */
+	void CloseWithError (MoonError *error);
+
+	/* @GeneratePInvoke */
+	void DragMoveWithError (MoonError *error);
+
+	/* @GeneratePInvoke */
+	void DragResizeWithError (MoonError *error);
+
+	/* @GeneratePInvoke */
+	void SetMoonWindow (MoonWindow *window);
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 };
 
 /* @Namespace=System.Windows */

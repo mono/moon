@@ -120,12 +120,6 @@ load_window_icons (GtkWindow *window, Deployment *deployment, IconCollection *ic
 }
 
 static void
-resize_surface (GtkWidget *widget, GtkAllocation *allocated, Surface *surface)
-{
-	surface->Resize (allocated->width, allocated->height);
-}
-
-static void
 error_handler (EventObject *sender, EventArgs *args, gpointer user_data)
 {
 	ErrorEventArgs *err = (ErrorEventArgs *) args;
@@ -195,17 +189,16 @@ load_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
 	return deployment->InitializeManagedDeployment (NULL, NULL, NULL);
 }
 
-static GtkWidget *
+static MoonWindow*
 create_window (Deployment *deployment, const char *geometry, const char *app_id)
 {
 	MoonWindowingSystem *winsys;
 	MoonInstallerService *installer;
 	MoonAppRecord *app;
-	GtkWidget *widget, *window;
+	GtkWidget *window;
 	OutOfBrowserSettings *oob;
 	WindowSettings *settings;
 	MoonWindow *moon_window;
-	int width, height;
 	Surface *surface;
 
 	/* get the pal services we need */
@@ -219,7 +212,7 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	}
 
 	/* create the moonlight widget */
-	moon_window = winsys->CreateWindow (false, 0, 0);
+	moon_window = winsys->CreateWindow (MoonWindowType_Desktop, 0, 0);
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
@@ -229,15 +222,9 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 	
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	
-	widget = ((MoonWindowGtk *) moon_window)->GetWidget ();
-	g_signal_connect (widget, "size-allocate", G_CALLBACK (resize_surface), surface);
-	gtk_widget_show (widget);
+	window = ((MoonWindowGtk *) moon_window)->GetWidget ();
 	
-	/* create the window */
-	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_app_paintable (window, true);
 	g_signal_connect_after (window, "delete-event", G_CALLBACK (gtk_main_quit), NULL);
-	gtk_container_add ((GtkContainer *) window, widget);
 	
 	if ((oob = deployment->GetOutOfBrowserSettings ())) {
 		load_window_icons ((GtkWindow *) window, deployment, oob->GetIcons ());
@@ -262,15 +249,18 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 
 		delete uri;
 
-		gtk_window_set_title ((GtkWindow *) window, window_title);
+		moon_window->SetTitle (window_title);
 
 		g_free (window_title);
 
 		if (geometry == NULL) {
-			gtk_window_resize ((GtkWindow *) window, settings->GetWidth (), settings->GetHeight ());
+			moon_window->Resize (settings->GetWidth (), settings->GetHeight());
 			
-			if (settings->GetWindowStartupLocation () == WindowStartupLocationManual)
-				gtk_window_move ((GtkWindow *) window, settings->GetLeft (), settings->GetTop ());
+			if (settings->GetWindowStartupLocation () == WindowStartupLocationManual) {
+				// FIXME: this should really use a MoonWindow::Move
+				moon_window->SetLeft (settings->GetLeft ());
+				moon_window->SetTop (settings->GetTop ());
+			}
 		}
 		
 		switch (settings->GetWindowStyle ()) {
@@ -283,9 +273,9 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 			break;
 		}
 	} else if (oob != NULL) {
-		gtk_window_set_title ((GtkWindow *) window, oob->GetShortName ());
+		moon_window->SetTitle (oob->GetShortName ());
 	} else {
-		gtk_window_set_title ((GtkWindow *) window, "Moonlight");
+		moon_window->SetTitle ("Moonlight");
 	}
 	
 	if (geometry != NULL) {
@@ -293,13 +283,11 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 		gtk_window_parse_geometry ((GtkWindow *) window, geometry);
 	}
 	
-	/* resize the moonlight widget */
-	gtk_window_get_size ((GtkWindow *) window, &width, &height);
-	moon_window->Resize (width, height);
+	moon_window->Show ();
 
 	delete app;
 
-	return window;
+	return moon_window;
 }
 
 
@@ -376,7 +364,7 @@ int main (int argc, char **argv)
 	Deployment *deployment;
 	GetOptsContext *ctx;
 	const char **args;
-	GtkWidget *window;
+	MoonWindow *window;
 	char *plugin_dir;
 	int n;
 	
@@ -390,6 +378,8 @@ int main (int argc, char **argv)
 	
 	if (n != 1)
 		display_help (ctx, NULL, NULL, NULL);
+
+
 	
 	/* expects to be run from the xpi plugin dir */
 	plugin_dir = g_path_get_dirname (argv[0]);
@@ -411,14 +401,15 @@ int main (int argc, char **argv)
 	
 	if (!(window = create_window (deployment, geometry, args[0])))
 		return EXIT_FAILURE;
+
+	getopts_context_free (ctx, true);
 	
-	gtk_widget_show (window);
+	window->Show ();
 	
 	gdk_threads_enter ();
 	gtk_main ();
 	gdk_threads_leave ();
 	
-	getopts_context_free (ctx, true);
 	deployment->Shutdown ();
 	
 	/* Our shutdown is async, so keep processing events/timeouts until there is

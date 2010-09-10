@@ -26,31 +26,28 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 using System;
+using Mono;
 
 namespace System.Windows {
 	public sealed partial class Window : DependencyObject {
 		public bool Activate ()
 		{
-			Console.WriteLine ("System.Windows.Window.Activate (): NIEX");
-			throw new NotImplementedException ();
+			return NativeMethods.window_activate (native);
 		}
 
 		public void Close ()
 		{
-			Console.WriteLine ("System.Windows.Window.Close (): NIEX");
-			throw new NotImplementedException ();
+			NativeMethods.window_close (native);
 		}
 
 		public void DragMove ()
 		{
-			Console.WriteLine ("System.Windows.Window.DragMove (): NIEX");
-			throw new NotImplementedException ();
+			NativeMethods.window_drag_move (native);
 		}
 
 		public void DragResize (WindowResizeEdge resizeEdge)
 		{
-			Console.WriteLine ("System.Windows.Window.DragResize (): NIEX");
-			throw new NotImplementedException ();
+			NativeMethods.window_drag_resize (native/* resizeEdge*/);
 		}
 	}
 }

@@ -10,9 +10,9 @@
  * See the LICENSE file included with the distribution for details.
  */
  
- #include <config.h>
+#include <config.h>
  
- #include "notificationwindow.h"
+#include "notificationwindow.h"
 
 namespace Moonlight {
 
@@ -24,6 +24,66 @@ NotificationWindow::NotificationWindow ()
 Window::Window ()
 {
 	SetObjectType (Type::WINDOW);
+	moon_window = NULL;
+}
+
+void
+Window::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty()->GetOwnerType() != Type::WINDOW)
+		DependencyObject::OnPropertyChanged (args, error);
+
+	int prop_id = args->GetProperty()->GetId();
+
+	if (prop_id == Window::HeightProperty) {
+		printf ("Window::HeightProperty changed!\n");
+	}
+	else if (prop_id == Window::WidthProperty) {
+		printf ("Window::WidthProperty changed!\n");
+	}
+	else if (prop_id == Window::LeftProperty) {
+		printf ("Window::LeftProperty changed!\n");
+	}
+	else if (prop_id == Window::TopProperty) {
+		printf ("Window::TopProperty changed!\n");
+	}
+	else if (prop_id == Window::TopMostProperty) {
+		printf ("Window::TopMost changed!\n");
+	}
+	else if (prop_id == Window::WindowStateProperty) {
+		printf ("Window::WindowState changed!\n");
+	}
+}
+
+void
+Window::SetMoonWindow (MoonWindow *moon_window)
+{
+	this->moon_window = moon_window;
+}
+
+bool
+Window::ActivateWithError (MoonError *error)
+{
+	printf ("NIEX Window::ActivateWithError\n");
+	return true;
+}
+
+void
+Window::CloseWithError (MoonError *error)
+{
+	printf ("NIEX Window::CloseWithError\n");
+}
+
+void
+Window::DragMoveWithError (MoonError *error)
+{
+	printf ("NIEX Window::DragMoveWithError\n");
+}
+
+void
+Window::DragResizeWithError (MoonError *error)
+{
+	printf ("NIEX Window::DragResizeWithError\n");
 }
 
 };

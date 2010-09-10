@@ -30,7 +30,7 @@
 #endif
 
 MoonWindowlessGtk::MoonWindowlessGtk (int w, int h, PluginInstance *plugin)
-  : MoonWindowGtk (false, w, h)
+  : MoonWindowGtk (MoonWindowType_Plugin, w, h)
 {
 	this->plugin = plugin;
 

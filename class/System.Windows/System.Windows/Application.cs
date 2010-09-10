@@ -644,8 +644,17 @@ namespace System.Windows {
 #endif
 		public Window MainWindow {
 			get {
-				Console.WriteLine ("System.Windows.Application.get_MainWindow: NIEX");
-				throw new NotImplementedException ();
+				if (!IsRunningOutOfBrowser)
+					throw new Exception ("this exception might need work... but we aren't running OOB");
+
+				Window window = new Window ();
+				IntPtr moon_window = NativeMethods.surface_get_normal_window (Deployment.Current.Surface.Native);
+
+				NativeMethods.window_set_moon_window (window.native, moon_window);
+
+				Console.WriteLine ("returning window {0}", window.GetHashCode());
+
+				return window;
 			}
 		}
 		

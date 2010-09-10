@@ -56,6 +56,12 @@ enum MoonModifier {
 	MoonModifier_Meta     = 1 << 28,
 };
 
+enum MoonWindowType {
+	MoonWindowType_FullScreen,
+	MoonWindowType_Desktop,
+	MoonWindowType_Plugin
+};
+
 // useful abstractions for porting moonlight to other platforms.
 
 
@@ -227,7 +233,7 @@ public:
 	virtual cairo_surface_t *CreateSurface () = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual MoonWindow *CreateWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface* surface = NULL) = 0;
+	virtual MoonWindow *CreateWindow (MoonWindowType windowType, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface* surface = NULL) = 0;
 	virtual MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
 
 	/* @GenerateCBinding,GeneratePInvoke */

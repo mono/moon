@@ -1362,7 +1362,7 @@ Surface::UpdateFullScreen (bool value)
 		return;
 
 	if (value) {
-		fullscreen_window = windowing_system->CreateWindow (true, -1, -1, normal_window, this);
+		fullscreen_window = windowing_system->CreateWindow (MoonWindowType_FullScreen, -1, -1, normal_window, this);
 		active_window = fullscreen_window;
 		
 		ShowFullScreenMessage ();

@@ -633,9 +633,9 @@ MoonWindowingSystemGtk::CreateSurface ()
 }
 
 MoonWindow *
-MoonWindowingSystemGtk::CreateWindow (bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface)
+MoonWindowingSystemGtk::CreateWindow (MoonWindowType windowType, int width, int height, MoonWindow *parentWindow, Surface *surface)
 {
-	MoonWindowGtk *gtkwindow = new MoonWindowGtk (fullscreen, width, height, parentWindow, surface);
+	MoonWindowGtk *gtkwindow = new MoonWindowGtk (windowType, width, height, parentWindow, surface);
 	RegisterWindow (gtkwindow);
 	return gtkwindow;
 }
