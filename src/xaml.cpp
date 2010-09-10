@@ -726,7 +726,6 @@ class XamlParserInfo {
 				instance = instance->parent;
 				continue;
 			}
-			printf ("AAARGH222 %s\n", element->GetType ()->GetName ());
 			Control::SetIsTemplateItem (element, Control::GetIsTemplateItem (instance->GetAsDependencyObject ()));
 			if (DependencyObject *e = instance->GetAsDependencyObject ()->GetTemplateOwner ())
 				element->SetTemplateOwner (e);
@@ -734,7 +733,6 @@ class XamlParserInfo {
 		}
 		
 		if (instance == NULL) {
-			printf ("AAARGH %s\n", element->GetType ()->GetName ());
 			Control::SetIsTemplateItem (element, loader->GetExpandingTemplate ());
 			element->SetTemplateOwner (loader->GetTemplateOwner ());
 		}

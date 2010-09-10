@@ -419,7 +419,6 @@ namespace System.Windows
 
         static void EnsureTarget (FrameworkElement root, Timeline source, Timeline dest)
         {
-			Console.WriteLine ("Setting it here...");
             dest.SetValue (Control.IsTemplateItemProperty, source.GetValue (Control.IsTemplateItemProperty));
             if (source.ManualTarget != null) {
                 Storyboard.SetTarget (dest, source.ManualTarget);

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 461 methods
+# 460 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -106,7 +106,6 @@
 +SSC-M: System.OperatingSystem System.Environment::get_OSVersion()
 +SSC-M: System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SSC-M: System.Boolean System.Environment::get_IsRunningOnWindows()
-+SSC-M: System.Void System.Exception::Dump()
 +SSC-M: System.String System.Exception::get_StackTrace()
 +SSC-M: System.Void System.GC::.cctor()
 +SSC-M: System.Void System.GC::Collect()

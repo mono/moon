@@ -269,10 +269,14 @@ ResourceDictionary::Clear ()
 bool
 ResourceDictionary::ContainsKey (const char *key)
 {
-	bool exists = false;
-	if (key)
-		Get (key, &exists);
-	return exists;
+	if (!key)
+		return false;
+
+	gpointer orig_value;
+	gpointer orig_key;
+
+	return g_hash_table_lookup_extended (hash, key,
+					     &orig_key, &orig_value);
 }
 
 bool
