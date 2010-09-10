@@ -2915,6 +2915,11 @@ void
 PasswordBox::SyncText ()
 {
 	SyncDisplayText ();
+
+	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+	setvalue = false;
+	SetValue (PasswordBox::PasswordProperty, Value (text, true));
+	setvalue = true;
 }
 
 const char *

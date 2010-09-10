@@ -33,7 +33,6 @@
 #include "gtk/window-gtk.h"
 #include "gtk/pal-gtk.h"
 
-#include "getopts.h"
 #include "debug.h"
 
 #include <mono/metadata/mono-config.h>
@@ -41,7 +40,6 @@
 using namespace Moonlight;
 
 extern guint32 moonlight_flags;
-static const char *geometry = NULL;
 
 typedef struct {
 	GdkPixbufLoader *loader;
@@ -190,7 +188,7 @@ load_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
 }
 
 static MoonWindow*
-create_window (Deployment *deployment, const char *geometry, const char *app_id)
+create_window (Deployment *deployment, const char *app_id)
 {
 	MoonWindowingSystem *winsys;
 	MoonInstallerService *installer;
@@ -253,14 +251,12 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 
 		g_free (window_title);
 
-		if (geometry == NULL) {
-			moon_window->Resize (settings->GetWidth (), settings->GetHeight());
+		moon_window->Resize (settings->GetWidth (), settings->GetHeight());
 			
-			if (settings->GetWindowStartupLocation () == WindowStartupLocationManual) {
-				// FIXME: this should really use a MoonWindow::Move
-				moon_window->SetLeft (settings->GetLeft ());
-				moon_window->SetTop (settings->GetTop ());
-			}
+		if (settings->GetWindowStartupLocation () == WindowStartupLocationManual) {
+			// FIXME: this should really use a MoonWindow::Move
+			moon_window->SetLeft (settings->GetLeft ());
+			moon_window->SetTop (settings->GetTop ());
 		}
 		
 		switch (settings->GetWindowStyle ()) {
@@ -278,11 +274,6 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 		moon_window->SetTitle ("Moonlight");
 	}
 	
-	if (geometry != NULL) {
-		/* override WindowSettings' dimensions */
-		gtk_window_parse_geometry ((GtkWindow *) window, geometry);
-	}
-	
 	moon_window->Show ();
 
 	delete app;
@@ -293,34 +284,13 @@ create_window (Deployment *deployment, const char *geometry, const char *app_id)
 
 
 static int
-display_help (GetOptsContext *ctx, GetOptsOption *opt, const char *arg, void *valuep)
+display_help (void)
 {
-	fputs ("Usage: lunar-launcher [OPTIONS...] [appid]\n\n", stdout);
-	getopts_print_help (ctx);
+	fputs ("Usage: lunar-launcher [GTK OPTIONS...] [appid]\n\n", stdout);
 	exit (EXIT_SUCCESS);
 	
 	return 0;
 }
-
-static int
-display_version (GetOptsContext *ctx, GetOptsOption *opt, const char *arg, void *valuep)
-{
-	fputs ("lunar-launcher " VERSION "\n", stdout);
-	exit (EXIT_SUCCESS);
-	
-	return 0;
-}
-
-#define HELP_DESC      "Display help and quit"
-#define VERSION_DESC   "Display version and quit"
-#define GEOMETRY_DESC  "Override window geometry"
-
-static GetOptsOption options[] = {
-	{ "help",      'h',  GETOPTS_ARG_CUSTOM,          HELP_DESC,      NULL,     'h', display_help,    NULL       },
-	{ "version",   'v',  GETOPTS_ARG_CUSTOM,          VERSION_DESC,   NULL,     'v', display_version, NULL       },
-	{ "geometry",   0,   GETOPTS_REQUIRED_STRING_ARG, GEOMETRY_DESC,  NULL,     'g', NULL,            &geometry  },
-	GETOPTS_TABLE_END
-};
 
 #if DEBUG
 static void
@@ -343,6 +313,8 @@ lunar_handle_native_sigsegv (int signal, siginfo_t *info, void *ptr)
 
 int main (int argc, char **argv)
 {
+	fputs ("lunar-launcher " VERSION "\n", stdout);
+
 #if DEBUG
 	/* stdout defaults to block buffering if it's not writing to a terminal, which happens with our test harness:
 	 * we redirect stdout to capture it. Force line buffering in all cases. */
@@ -362,25 +334,16 @@ int main (int argc, char **argv)
 #endif
 
 	Deployment *deployment;
-	GetOptsContext *ctx;
-	const char **args;
 	MoonWindow *window;
 	char *plugin_dir;
-	int n;
 	
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
 	gdk_threads_init ();
 	
-	ctx = getopts_context_new (argc, argv, options, GETOPTS_FLAG_DEFAULT);
-	getopts_parse_args (ctx);
-	args = getopts_get_args (ctx, &n);
-	
-	if (n != 1)
-		display_help (ctx, NULL, NULL, NULL);
+	if (argc != 2)
+		display_help ();
 
-
-	
 	/* expects to be run from the xpi plugin dir */
 	plugin_dir = g_path_get_dirname (argv[0]);
 
@@ -399,11 +362,9 @@ int main (int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	if (!(window = create_window (deployment, geometry, args[0])))
+	if (!(window = create_window (deployment, argv[1])))
 		return EXIT_FAILURE;
 
-	getopts_context_free (ctx, true);
-	
 	window->Show ();
 	
 	gdk_threads_enter ();

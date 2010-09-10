@@ -11,8 +11,6 @@ INCLUDES = $(LUNAR_LAUNCHER_CFLAGS) \
 	-Wall
 
 lunar_launcher_SOURCES = 	\
-	lunar-launcher.cpp	\
-	getopts.cpp		\
-	getopts.h
+	lunar-launcher.cpp
 
 lunar_launcher_LDADD = $(top_builddir)/plugin/libmoonplugin.la $(LUNAR_LAUNCHER_LIBS)
