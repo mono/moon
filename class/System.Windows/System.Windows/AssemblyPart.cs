@@ -41,13 +41,19 @@ namespace System.Windows {
 
 		static Type MemoryStreamType = typeof (MemoryStream);
 
-		byte[] StreamToBuffer (Stream assemblyStream)
+		internal byte[] StreamToBuffer (Stream assemblyStream)
 		{
-			// it's normally bad to depend on Stream.Length since some stream (e.g. NetworkStream) 
-			// don't implement them. However it is safe in this case (i.e. SL2 depends on Length too)
-			var buffer = new byte [assemblyStream.Length];
+			byte [] buffer;
 
 			using (assemblyStream) {
+				// avoid extra step for MemoryStream (but not any stream that inherits from it)
+				if (assemblyStream.GetType () == MemoryStreamType)
+					return (assemblyStream as MemoryStream).ToArray ();
+
+				// it's normally bad to depend on Stream.Length since some stream (e.g. NetworkStream)
+				// don't implement them. However it is safe in this case (i.e. SL2 depends on Length too)
+				buffer = new byte [assemblyStream.Length];
+
 				int length = buffer.Length;
 				int offset = 0;
 				while (length > 0) {
@@ -70,13 +76,11 @@ namespace System.Windows {
 			if (assemblyStream.Length == 0)
 				return null;
 
-			byte[] buffer = null;
-			// avoid extra step for MemoryStream (but not any stream that inherits from it)
-			if (assemblyStream.GetType () == MemoryStreamType)
-				buffer = (assemblyStream as MemoryStream).ToArray ();
-			else
-				buffer = StreamToBuffer (assemblyStream);
+			return Load (StreamToBuffer (assemblyStream));
+		}
 
+		internal Assembly Load (byte [] buffer)
+		{
 			try {
 				Assembly result = Assembly.Load (buffer);
 				if (!Deployment.Current.Assemblies.Contains (result))

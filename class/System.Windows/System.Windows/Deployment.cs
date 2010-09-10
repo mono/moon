@@ -444,6 +444,17 @@ namespace System.Windows {
 			return pending_assemblies == 0 ? CreateApplication () : true;
 		}
 
+		private static bool IsZip (byte [] buf)
+		{
+			if (buf == null || buf.Length < 4)
+				return false;
+
+			if (buf [0] != 0x50 || buf [1] != 0x4B || buf [2] != 0x03 || buf [3] != 0x04)
+				return false;
+
+			return true;
+		}
+
 		void DownloadAssembly (Uri uri, int errorCode)
 		{
 			Uri xap = new Uri (NativeMethods.plugin_instance_get_source_location (PluginHost.Handle));
@@ -462,6 +473,7 @@ namespace System.Windows {
 		// and the exception won't be reported, directly, to the caller
 		void AssemblyGetResponse (IAsyncResult result)
 		{
+			Assembly asm;
 			object[] tuple = (object []) result.AsyncState;
 			WebRequest wreq = (WebRequest) tuple [0];
 			int error_code = (int) tuple [1];
@@ -480,38 +492,36 @@ namespace System.Windows {
 					return;
 				}
 
-				Stream responseStream = wresp.GetResponseStream ();
+				using (Stream responseStream = wresp.GetResponseStream ()) {
+					AssemblyPart a = new AssemblyPart ();
+					byte [] buffer = a.StreamToBuffer (responseStream);
 
-				AssemblyPart a = new AssemblyPart ();
-				Assembly asm = a.Load (responseStream);
+					if (IsZip (buffer)) {
+						// unzip it.
+						using (MemoryStream dest = new MemoryStream ()) {
+							using (MemoryStream source = new MemoryStream (buffer)) {
+								ManagedStreamCallbacks source_cb;
+								ManagedStreamCallbacks dest_cb;
+								StreamWrapper source_wrapper;
+								StreamWrapper dest_wrapper;
 
-				if (asm == null) {
-					// it's not a valid assembly, try to unzip it.
-					using (MemoryStream ms = new MemoryStream ()) {
-						ManagedStreamCallbacks source_cb;
-						ManagedStreamCallbacks dest_cb;
-						StreamWrapper source_wrapper;
-						StreamWrapper dest_wrapper;
+								source_wrapper = new StreamWrapper (source);
+								dest_wrapper = new StreamWrapper (dest);
 
-						responseStream.Seek (0, SeekOrigin.Begin);
+								source_cb = source_wrapper.GetCallbacks ();
+								dest_cb = dest_wrapper.GetCallbacks ();
 
-						source_wrapper = new StreamWrapper (responseStream);
-						dest_wrapper = new StreamWrapper (ms);
-
-						source_cb = source_wrapper.GetCallbacks ();
-						dest_cb = dest_wrapper.GetCallbacks ();
-
-						// the zip files I've come across have a single file in them, the
-						// dll.  so we assume that any/every zip file will contain a single
-						// file, and just get the first one from the zip file directory.
-						if (NativeMethods.managed_unzip_stream_to_stream_first_file (ref source_cb, ref dest_cb)) {
-							ms.Seek (0, SeekOrigin.Begin);
-							asm = a.Load (ms);
+								// the zip files I've come across have a single file in them, the
+								// dll.  so we assume that any/every zip file will contain a single
+								// file, and just get the first one from the zip file directory.
+								if (NativeMethods.managed_unzip_stream_to_stream_first_file (ref source_cb, ref dest_cb))
+									buffer = dest.ToArray ();
+							}
 						}
 					}
-				}
 
-				wresp.Close ();
+					asm = a.Load (buffer);
+				}
 
 				if (asm != null)
 					Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
