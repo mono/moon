@@ -1589,6 +1589,8 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		MoonSurface *surface;
 		Rect        r = ctx->Pop (&surface);
 
+		ctx->Push (Context::Clip (r));
+
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
 			cairo_t         *cr = ctx->Cairo ();
@@ -1597,26 +1599,24 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			Rect            area = Rect (p.x, p.y, 0.0, 0.0);
 			cairo_pattern_t *mask = NULL;
 
+			cairo_surface_set_device_offset (src, 0, 0);
+
 			cairo_get_matrix (cr, &ctm);
-
-			cairo_save (cr);
 			cairo_identity_matrix (cr);
-			r.RoundOut ().Draw (cr);
-			cairo_clip (cr);
-
 			GetSizeForBrush (cr, &(area.width), &(area.height));
 			opacityMask->SetupBrush (cr, area);
 			mask = cairo_get_source (cr);
 			cairo_pattern_reference (mask);
-			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_set_source_surface (cr, src, r.x, r.y);
 			cairo_set_matrix (cr, &ctm);
 			cairo_mask (cr, mask);
 			cairo_pattern_destroy (mask);
-			cairo_restore (cr);
-
 			cairo_surface_destroy (src);
+
 			surface->unref ();
 		}
+
+		ctx->Pop ();
 	}
 
 	if (flags & COMPOSITE_OPACITY) {
