@@ -458,7 +458,8 @@ MediaElement::OnIsAttachedChanged (bool value)
 		detached_state = state;
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
-		playlist->StopAsync (); /* this is async */
+		if (playlist)
+			playlist->StopAsync ();
 		flags &= ~MediaOpenedEmitted;
 		SetBufferingProgress (0.0);
 		SetCanPause (false);
