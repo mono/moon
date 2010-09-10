@@ -117,6 +117,7 @@ namespace Mono.Xaml
 					res = rd [name];
 					if (res != null)
 						return res;
+					continue;
 				}
 				FrameworkElement fwe = (FrameworkElement) dob;
 				res = fwe.Resources [name];
