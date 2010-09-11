@@ -1588,7 +1588,8 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_surface_t *src = surface->Cairo ();
 			cairo_t         *cr = ctx->Cairo ();
 
-			cairo_set_source_surface (cr, src, 0, 0);
+			cairo_identity_matrix (cr);
+			cairo_set_source_surface (cr, src, r.x, r.y);
 			cairo_paint (cr);
 			cairo_surface_destroy (src);
 
