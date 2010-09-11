@@ -507,11 +507,14 @@ void
 UIElement::ComputeTransform ()
 {
 	Projection *projection = GetRenderProjection ();
+	CacheMode *cacheMode = GetRenderCacheMode ();
 	cairo_matrix_t old = absolute_xform;
+	cairo_matrix_t old_scale = scale_xform;
 	double m[16], old_projection[16];
 	Matrix3D::Init (old_projection, local_projection);
 	cairo_matrix_init_identity (&absolute_xform);
 	cairo_matrix_init_identity (&render_xform);
+	cairo_matrix_init_identity (&scale_xform);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (local_projection);
 	flags &= ~UIElement::RENDER_PROJECTION;
@@ -580,6 +583,16 @@ UIElement::ComputeTransform ()
 	else {
 		cairo_matrix_multiply (&absolute_xform, &render_xform,
 				       &absolute_xform);
+	}
+
+	if (cacheMode) {
+
+		// ignore bitmap cache scale when effect property is set
+		if (!GetRenderEffect ())
+			cacheMode->GetTransform (&scale_xform);
+			
+		if (memcmp (&old_scale, &scale_xform, sizeof (cairo_matrix_t)))
+			InvalidateBitmapCache ();
 	}
 
 	if (projection) {
@@ -1112,12 +1125,7 @@ UIElement::InvalidateBitmapCache ()
 void
 UIElement::InvalidateCacheMode ()
 {
-	CacheMode *cacheMode = GetRenderCacheMode ();
-
-	if (cacheMode)
-		cacheMode->GetTransform (&scale_xform);
-	else
-		cairo_matrix_init_identity (&scale_xform);
+	UpdateTransform ();
 
 	InvalidateBitmapCache ();
 	InvalidateSubtreePaint ();
