@@ -42,6 +42,7 @@ CairoContext::Push (Group extents)
 	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
 	cs->unref ();
 	surface->unref ();
+	cairo_surface_destroy (data);
 }
 
 };
