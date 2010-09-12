@@ -47,7 +47,9 @@ Context::Surface::~Surface ()
 Rect
 Context::Surface::GetData (MoonSurface **ref)
 {
-	*ref = native->ref ();
+	if (ref)
+		*ref = native->ref ();
+
 	return box;
 }
 
