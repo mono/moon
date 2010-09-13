@@ -343,6 +343,7 @@ namespace System.Windows.Media
 			string str_duration;
 			string str_can_seek;
 			bool can_seek;
+			bool error_reported = false;
 			ulong duration;
 			
 			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
@@ -401,6 +402,8 @@ namespace System.Windows.Media
 					if (stream_description.MediaAttributes == null)
 						throw new ArgumentNullException ("availableMediaStreams.MediaAttributes");
 				
+					stream = IntPtr.Zero;
+
 					switch (stream_description.Type) {
 					case MediaStreamType.Video:
 						if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.VideoFourCC, out str_fourcc)) {
@@ -443,26 +446,27 @@ namespace System.Windows.Media
 					case MediaStreamType.Audio:
 						WAVEFORMATEX wave;
 					
-						if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
-							// str_codec_private_data is WAVEFORMATEX in base16 encoding
-							if (str_codec_private_data == null || str_codec_private_data.Length < 36)
-								throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.CodecPrivateData", str_codec_private_data);
-						
-							wave = new WAVEFORMATEX (str_codec_private_data);
-							extra_data_size = wave.Size;
-							byte [] buf = new byte [extra_data_size]; 
-						
-							for (int i = 0; i < buf.Length; i++)
-								buf[i] = byte.Parse (str_codec_private_data.Substring (36 + i * 2, 2), NumberStyles.HexNumber);
-
-							extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
-
-							Marshal.Copy (buf, 0, extra_data, buf.Length);
-						} else {
-							// CodecPrivateData is required for audio
-							throw new ArgumentException ("availableMediaStreams.MediaAttributes.CodecPrivateData");
+						if (!stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
+							NativeMethods.imedia_object_report_error_occurred (media, "AG_E_ATTRIBUTENOTFOUND");
+							error_reported = true;
+							break;
 						}
-					
+
+						// str_codec_private_data is WAVEFORMATEX in base16 encoding
+						if (str_codec_private_data == null || str_codec_private_data.Length < 36)
+							throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.CodecPrivateData", str_codec_private_data);
+
+						wave = new WAVEFORMATEX (str_codec_private_data);
+						extra_data_size = wave.Size;
+						byte [] buf = new byte [extra_data_size];
+
+						for (int i = 0; i < buf.Length; i++)
+							buf[i] = byte.Parse (str_codec_private_data.Substring (36 + i * 2, 2), NumberStyles.HexNumber);
+
+						extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
+
+						Marshal.Copy (buf, 0, extra_data, buf.Length);
+
 						stream = NativeMethods.audio_stream_new (media, wave.FormatTag, wave.BitsPerSample, wave.BlockAlign, (int) wave.SamplesPerSec, wave.Channels, (int) wave.AvgBytesPerSec * 8, extra_data, extra_data_size);
 						break;
 					
@@ -472,11 +476,17 @@ namespace System.Windows.Media
 						throw new ArgumentOutOfRangeException ("mediaStreamType");
 					}
 				
+					if (stream == IntPtr.Zero)
+						break;
+
 					stream_description.StreamId = NativeMethods.external_demuxer_add_stream (demuxer, stream);
 					stream_description.NativeStream = stream;
 				}
 			}
 			
+			if (error_reported)
+				return;
+
 			NativeMethods.imedia_demuxer_report_open_demuxer_completed (demuxer);
 		}
 		

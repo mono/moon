@@ -423,7 +423,7 @@ public:
 	void SetMedia (Media *value);
 
 	void ReportErrorOccurred (ErrorEventArgs *args);
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	void ReportErrorOccurred (const char *message);
 	
 	// All the event methods are thread-safe
