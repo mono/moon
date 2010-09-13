@@ -114,6 +114,8 @@ GalliumContext::GalliumContext (pipe_screen *screen)
 		struct pipe_resource     templat;
 		struct pipe_sampler_view view_templat;
 		struct pipe_sampler_view *view;
+		struct pipe_sampler_view *fragment_sampler_views[PIPE_MAX_SAMPLERS];
+		struct pipe_sampler_view *vertex_sampler_views[PIPE_MAX_VERTEX_SAMPLERS];
 		unsigned                 i;
 
 		memset (&templat, 0, sizeof (templat));
@@ -150,18 +152,18 @@ GalliumContext::GalliumContext (pipe_screen *screen)
 						  &view_templat);
 
 		for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
-			pipe_sampler_view_reference (&fragment_sampler_views[i],
-						     view);
+			fragment_sampler_views[i] = view;
 		for (i = 0; i < PIPE_MAX_VERTEX_SAMPLERS; i++)
-			pipe_sampler_view_reference (&vertex_sampler_views[i],
-						     view);
+			vertex_sampler_views[i] = view;
 
-		pipe->set_fragment_sampler_views (pipe,
-						  PIPE_MAX_SAMPLERS,
-						  fragment_sampler_views);
-		pipe->set_vertex_sampler_views (pipe,
-						PIPE_MAX_VERTEX_SAMPLERS,
-						vertex_sampler_views);
+		cso_set_fragment_sampler_views (cso,
+						PIPE_MAX_SAMPLERS,
+						fragment_sampler_views);
+		cso_set_vertex_sampler_views (cso,
+					      PIPE_MAX_VERTEX_SAMPLERS,
+					      vertex_sampler_views);
+
+		pipe_sampler_view_reference (&view, NULL);
 	}
 
 	/* vertex shader */
@@ -200,13 +202,6 @@ GalliumContext::GalliumContext (pipe_screen *screen)
 
 GalliumContext::~GalliumContext ()
 {
-	unsigned i;
-
-	for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
-		pipe_sampler_view_reference (&fragment_sampler_views[i], NULL);
-	for (i = 0; i < PIPE_MAX_VERTEX_SAMPLERS; i++)
-		pipe_sampler_view_reference (&vertex_sampler_views[i], NULL);
-
 	pipe_resource_reference (&default_texture, NULL);
 
 	cso_delete_vertex_shader (cso, vs);

@@ -39,8 +39,6 @@ public:
 	void *fs;
 
 	pipe_resource *default_texture;
-	pipe_sampler_view *fragment_sampler_views[PIPE_MAX_SAMPLERS];
-	pipe_sampler_view *vertex_sampler_views[PIPE_MAX_VERTEX_SAMPLERS];
 
 	pipe_vertex_element velems[2];
 };
