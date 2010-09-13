@@ -5088,6 +5088,12 @@ PassThroughDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 	ReportDecodeFrameCompleted (frame);
 }
 
+void
+PassThroughDecoder::InputEnded ()
+{
+	GetStream ()->SetOutputEnded (true);
+}
+
 /*
  * NullDecoderInfo
  */

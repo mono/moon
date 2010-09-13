@@ -1742,6 +1742,7 @@ protected:
 	virtual void DecodeFrameAsyncInternal (MediaFrame *frame);
 	virtual void OpenDecoderAsyncInternal ();
 
+	virtual void InputEnded ();
 public:
 	PassThroughDecoder (Media *media, IMediaStream *stream);
 	virtual void Dispose ();
