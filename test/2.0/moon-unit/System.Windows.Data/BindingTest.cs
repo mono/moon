@@ -289,6 +289,14 @@ namespace MoonTest.System.Windows.Data
 		public class TargetClass : Control {
 			bool propertyChanged;
 
+			public bool GetterCalled {
+				get; set;
+			}
+
+			public bool SetterCalled {
+				get; set;
+			}
+
 			public static readonly DependencyProperty TestProperty =
 				DependencyProperty.Register ("Test", typeof (string), typeof (TargetClass),
 							     new PropertyMetadata (null, new PropertyChangedCallback (TestPropertyChanged)));
@@ -305,8 +313,8 @@ namespace MoonTest.System.Windows.Data
 			}
 
 			public string Test {
-				get { return (string)GetValue (TestProperty); }
-				set { SetValue (TestProperty, value); }
+				get { GetterCalled = true; return (string)GetValue (TestProperty); }
+				set { SetterCalled = true; SetValue (TestProperty, value); }
 			}
 
 			public void ClearPropertyChanged ()
@@ -1206,6 +1214,33 @@ namespace MoonTest.System.Windows.Data
 			});
 			target.Color = Colors.Blue;
 			Assert.AreEqual (Colors.Blue.ToString (), source.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		public void DPSetValuePreferred_TwoWay()
+		{
+			var str = "test_string";
+			var source = new TargetClass ();
+			source.SetValue(TargetClass.TestProperty, str);
+			var target = new TargetClass();
+			target.SetBinding(TargetClass.TestProperty, new Binding("Test") { Source = source, Mode = BindingMode.TwoWay });
+
+			Assert.IsFalse(source.SetterCalled, "#1");
+			Assert.IsFalse(source.GetterCalled, "#2");
+			Assert.IsFalse(target.SetterCalled, "#3");
+			Assert.IsFalse(target.GetterCalled, "#4");
+
+			source.SetValue(TargetClass.TestProperty, "otherstring");
+			Assert.IsFalse(source.SetterCalled, "#5");
+			Assert.IsFalse(source.GetterCalled, "#6");
+			Assert.IsFalse(target.SetterCalled, "#7");
+			Assert.IsFalse(target.GetterCalled, "#8");
+
+			target.SetValue (TargetClass.TestProperty, "somestring");
+			Assert.IsFalse(source.SetterCalled, "#9");
+			Assert.IsFalse(source.GetterCalled, "#10");
+			Assert.IsFalse(target.SetterCalled, "#11");
+			Assert.IsFalse(target.GetterCalled, "#12");
 		}
 
 		[TestMethod]

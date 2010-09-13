@@ -83,8 +83,6 @@ namespace System.Windows.Data
 				dpChanged = DPChanged;
 				Mono.NativeMethods.dependency_object_add_property_change_handler (new_do.native, DependencyProperty.Native, dpChanged, IntPtr.Zero);
 			}
-			if (prop != null)
-				PropertyInfo = null;
 		}
 
 		void DPChanged (IntPtr dependency_object, IntPtr property_changed_event_args, ref MoonError error, IntPtr closure)
@@ -121,12 +119,12 @@ namespace System.Windows.Data
 
 		public override void UpdateValue ()
 		{
-			if (PropertyInfo != null) {
-				ValueType = PropertyInfo.PropertyType;
-				Value = PropertyInfo.GetValue (Source, null);
-			} else if (DependencyProperty != null) {
+			if (DependencyProperty != null) {
 				ValueType = DependencyProperty.PropertyType;
 				Value = ((DependencyObject) Source).GetValue (DependencyProperty);
+			} else if (PropertyInfo != null) {
+				ValueType = PropertyInfo.PropertyType;
+				Value = PropertyInfo.GetValue (Source, null);
 			} else {
 				ValueType = null;
 				Value = null;
