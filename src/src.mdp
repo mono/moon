@@ -344,6 +344,10 @@
     <File subtype="Code" buildaction="Nothing" name="surface.h" />
     <File subtype="Code" buildaction="Compile" name="surface-cairo.cpp" />
     <File subtype="Code" buildaction="Nothing" name="surface-cairo.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/network/dbus/pal-dbus-network.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/network/dbus/pal-dbus-network.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/network/pal-linux-network.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/network/pal-linux-network.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
