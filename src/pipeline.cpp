@@ -3374,6 +3374,9 @@ IMediaDemuxer::EnqueueReportOpenDemuxerCompleted ()
 
 	LOG_PIPELINE ("IMediaDemuxer::EnqueueReportOpenDemuxerCompleted ()\n");
 
+	if (media == NULL)
+		return;
+
 	closure = new MediaClosure (media, ReportOpenDemuxerCompletedCallback, this, "IMediaDemuxer::ReportOpenDemuxerCompletedCallback");
 	media->EnqueueWork (closure);
 	closure->unref ();
