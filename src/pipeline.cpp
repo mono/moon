@@ -550,8 +550,11 @@ Media::ReportErrorOccurred (ErrorEventArgs *args)
 	
 	if (!error_reported) {
 		error_reported = true;
+		args->ref ();
 		EmitSafe (MediaErrorEvent, args);
 	}
+
+	args->unref ();
 }
 
 void
