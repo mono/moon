@@ -123,9 +123,6 @@ protected:
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
-	pipe_resource_t *GetShaderTexture (cairo_surface_t *surface);
-	pipe_surface_t  *GetShaderSurface (cairo_surface_t *surface);
-	pipe_sampler_view *GetShaderSamplerView (cairo_surface_t *surface);
 	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
 					     const double    *matrix,
 					     double          x,
@@ -184,15 +181,8 @@ protected:
 	bool need_update;
 
 	static GalliumContext *st_context;
-	static pipe_screen *screen;
-
-	static cairo_user_data_key_t textureKey;
-	static cairo_user_data_key_t surfaceKey;
-	static cairo_user_data_key_t samplerViewKey;
 
 	static int filtertable0[256];
-
-	static Effect *projection;
 };
 
 #define MAX_BLUR_RADIUS 20

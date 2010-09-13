@@ -59,14 +59,22 @@ GalliumSurface::Transfer::Unmap ()
 	return pipe->transfer_unmap (pipe, transfer);
 }
 
+GalliumSurface::GalliumSurface (pipe_screen *scrn)
+{
+	screen       = scrn;
+	pipe         = NULL;
+	mapped       = NULL;
+	sampler_view = NULL;
+}
+
 GalliumSurface::GalliumSurface (pipe_context *context,
 				int          width,
 				int          height)
 {
-	struct pipe_screen       *screen = context->screen;
 	struct pipe_resource     pt, *texture;
 	struct pipe_sampler_view view_templ;
 
+	screen = context->screen;
 	pipe   = context;
 	mapped = NULL;
 
@@ -155,6 +163,12 @@ GalliumSurface::Sync ()
 		cairo_surface_destroy (mapped);
 		mapped = NULL;
 	}
+}
+
+struct pipe_screen *
+GalliumSurface::Screen ()
+{
+	return screen;
 }
 
 struct pipe_sampler_view *

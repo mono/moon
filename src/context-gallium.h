@@ -23,7 +23,7 @@ namespace Moonlight {
 
 class GalliumContext : public Context {
 public:
-	GalliumContext (pipe_screen *screen);
+	GalliumContext (GalliumSurface *surface);
 	virtual ~GalliumContext ();
 
 	void Push (Group extents);

@@ -25,6 +25,11 @@
 #include "window.h"
 #include "runtime.h"
 
+#ifdef USE_GALLIUM
+struct sw_winsys;
+struct pipe_screen;
+#endif
+
 namespace Moonlight {
 
 /* @Namespace=System.Windows */
@@ -96,6 +101,11 @@ private:
 
 	Context *ctx;
 	cairo_surface_t *native;
+
+#ifdef USE_GALLIUM
+	sw_winsys   *winsys;
+	pipe_screen *screen;
+#endif
 
 	int left;
 	int top;

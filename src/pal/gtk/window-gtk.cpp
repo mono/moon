@@ -25,7 +25,22 @@
 #include "timemanager.h"
 #include "enums.h"
 #include "context-cairo.h"
-
+#ifdef USE_GALLIUM
+#define __MOON_GALLIUM__
+#include "context-gallium.h"
+extern "C" {
+#include "pipe/p_screen.h"
+#include "util/u_simple_screen.h"
+#include "util/u_debug.h"
+#define template templat
+#include "state_tracker/sw_winsys.h"
+#include "sw/null/null_sw_winsys.h"
+#include "softpipe/sp_public.h"
+#ifdef USE_LLVM
+#include "llvmpipe/lp_public.h"
+#endif
+};
+#endif
 #define Visual _XxVisual
 #define Region _XxRegion
 #define Window _XxWindow
@@ -41,6 +56,32 @@
 // pixmap per redraw just at the size of the expose area.
 //
 #define FULLSCREEN_BACKING_STORE_SOPTIMIZATION 0
+
+struct pipe_screen *
+swrast_create_screen (struct sw_winsys *winsys)
+{
+	const char *default_driver;
+	const char *driver;
+	struct pipe_screen *screen = NULL;
+
+#ifdef USE_LLVM
+	default_driver = "llvmpipe";
+#else
+	default_driver = "softpipe";
+#endif
+
+	driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
+
+#ifdef USE_LLVM
+	if (screen == NULL && strcmp (driver, "llvmpipe") == 0)
+		screen = llvmpipe_create_screen (winsys);
+#endif
+
+	if (screen == NULL)
+		screen = softpipe_create_screen (winsys);
+
+	return screen;
+}
 
 using namespace Moonlight;
 
@@ -68,6 +109,12 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 
 	ctx = NULL;
 	native = NULL;
+
+#ifdef USE_GALLIUM
+	winsys = NULL;
+	screen = NULL;
+#endif
+
 }
 
 MoonWindowGtk::~MoonWindowGtk ()
@@ -91,6 +138,15 @@ MoonWindowGtk::~MoonWindowGtk ()
 
 	if (ctx)
 		delete ctx;
+
+#ifdef USE_GALLIUM
+	if (screen)
+		(*screen->destroy) (screen);
+
+	if (winsys)
+		(*winsys->destroy) (winsys);
+#endif
+
 }
 
 void
@@ -863,16 +919,30 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	if (!native)
 		native = CreateCairoSurface (drawable, visual, true, width, height);
 
-	if (!ctx) {
-		CairoSurface *surface;
+#ifdef USE_GALLIUM
+	if (!winsys)
+		winsys = null_sw_create ();
+	if (!screen)
+		screen = swrast_create_screen (NULL);
+#endif
 
-		surface = new CairoSurface (native);
+	if (!ctx) {
+
+#ifdef USE_GALLIUM
+		GalliumSurface *surface = new GalliumSurface (screen);
+		ctx = new GalliumContext (surface);
+#else
+		CairoSurface *surface = new CairoSurface (native);
 		ctx = new CairoContext (surface);
+#endif
+
 		surface->unref ();
+
 	}
 
 	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
 	GdkRectangle area = event->area;
+	MoonSurface *src;
 	Rect r = Rect (area.x, area.y, area.width, area.height);
 
 	cairo_xlib_surface_set_drawable (native,
@@ -889,8 +959,9 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		region->Union (Rect (c.x, c.y, c.width, c.height));
 	}
 
-	ctx->Push (Context::Clip (r));
-
+#ifdef USE_GALLIUM
+	ctx->Push (Context::Group (r));
+#else
 	if (use_image) {
 		cairo_surface_t *image = CreateCairoSurface (drawable, visual, false, r.width, r.height);
 		MoonSurface *surface = new CairoSurface (image);
@@ -898,33 +969,31 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		ctx->Push (Context::Group (r), surface);
 		surface->unref ();
 	}
+	else {
+		ctx->Push (Context::Clip (r));
+	}
+#endif
 
 	/* if we are redirecting to an image surface clear that first */
 	surface->Paint (ctx, region, transparent, use_image ? true : clear_transparent);
 
-	if (use_image) {
-		MoonSurface *surface;
-		Rect        r = ctx->Pop (&surface);
+	r = ctx->Pop (&src);
+	if (!r.IsEmpty ()) {
+		cairo_surface_t *image = src->Cairo ();
+		cairo_t         *cr = cairo_create (native);
 
-		if (!r.IsEmpty ()) {
-			cairo_surface_t *image = surface->Cairo ();
-			cairo_t         *cr = ctx->Cairo ();
+		cairo_surface_flush (image);
 
-			cairo_surface_flush (image);
+		cairo_set_source_surface (cr, image, r.x, r.y);
+		cairo_set_operator (cr, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
 
-			cairo_set_source_surface (cr, image, r.x, r.y);
-			cairo_set_operator (cr, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
+		region->Draw (cr);
+		cairo_fill (cr);
 
-			region->Draw (cr);
-			cairo_fill (cr);
-
-		
-			cairo_surface_destroy (image);
-			surface->unref ();
-		}
+		cairo_destroy (cr);
+		cairo_surface_destroy (image);
+		src->unref ();
 	}
-
-	ctx->Pop ();
 
 	delete region;
 

@@ -36,6 +36,7 @@ public:
 		pipe_transfer *transfer;
 	};
 
+	GalliumSurface (pipe_screen *scrn);
 	GalliumSurface (pipe_context *context,
 			int          width,
 			int          height);
@@ -43,6 +44,7 @@ public:
 
 	cairo_surface_t *Cairo ();
 
+	pipe_screen *Screen ();
 	pipe_sampler_view *SamplerView ();
 	pipe_resource *Texture ();
 
@@ -51,6 +53,7 @@ private:
 
 	void Sync ();
 
+	pipe_screen       *screen;
 	pipe_context      *pipe;
 	pipe_sampler_view *sampler_view;
 	cairo_surface_t   *mapped;

@@ -24,199 +24,26 @@
 using namespace Moonlight;
 
 GalliumContext *Effect::st_context;
-pipe_screen    *Effect::screen;
-
-cairo_user_data_key_t Effect::textureKey;
-cairo_user_data_key_t Effect::surfaceKey;
-cairo_user_data_key_t Effect::samplerViewKey;
 
 int Effect::filtertable0[256];
 
 #ifdef USE_GALLIUM
-#undef CLAMP
-
 #define __MOON_GALLIUM__
 #include "context-gallium.h"
 
-extern "C" {
-
-#include "pipe/p_format.h"
-#include "pipe/p_context.h"
-#include "pipe/p_shader_tokens.h"
-#include "pipe/p_state.h"
-#include "util/u_inlines.h"
-#include "util/u_simple_screen.h"
-#include "util/u_draw_quad.h"
-#include "util/u_format.h"
-#include "util/u_memory.h"
-#include "util/u_math.h"
-#include "util/u_sampler.h"
-#include "util/u_simple_shaders.h"
-#include "util/u_debug.h"
-#include "softpipe/sp_public.h"
-#ifdef USE_LLVM
-#include "llvmpipe/lp_public.h"
+#ifdef CLAMP
+#undef CLAMP
 #endif
-#define template templat
-#include "state_tracker/sw_winsys.h"
-#include "cso_cache/cso_context.h"
+#include "util/u_inlines.h"
+#include "util/u_draw_quad.h"
+#include "pipe/p_context.h"
+#include "pipe/p_state.h"
 #include "tgsi/tgsi_ureg.h"
 #include "tgsi/tgsi_dump.h"
-
-}
 
 #if MAX_SAMPLERS > PIPE_MAX_SAMPLERS
 #error MAX_SAMPLERS is too large
 #endif
-
-struct moon_sw_winsys
-{
-	struct sw_winsys base;
-
-	void     *user_data;
-	unsigned user_stride;
-};
-
-static boolean
-moon_ws_is_displaytarget_format_supported (struct sw_winsys *ws,
-					   unsigned tex_usage,
-					   enum pipe_format format)
-{
-	return FALSE;
-}
-
-static void *
-moon_ws_displaytarget_map (struct sw_winsys *ws,
-			   struct sw_displaytarget *dt,
-			   unsigned flags)
-{
-	return (void *) dt;
-}
-
-static void
-moon_ws_displaytarget_unmap (struct sw_winsys *ws,
-			     struct sw_displaytarget *dt)
-{
-}
-
-static void
-moon_ws_displaytarget_destroy (struct sw_winsys *winsys,
-			       struct sw_displaytarget *dt)
-{
-}
-
-static struct sw_displaytarget *
-moon_ws_displaytarget_create (struct sw_winsys *winsys,
-			      unsigned tex_usage,
-			      enum pipe_format format,
-			      unsigned width,
-			      unsigned height,
-			      unsigned alignment,
-			      unsigned *stride)
-{
-	struct moon_sw_winsys *ws = (struct moon_sw_winsys *) winsys;
-
-	*stride = ws->user_stride;
-	return (struct sw_displaytarget *) ws->user_data;
-}
-
-static void
-moon_ws_displaytarget_display (struct sw_winsys *winsys,
-			       struct sw_displaytarget *dt,
-			       void *context_private)
-{
-}
-
-static void
-moon_ws_destroy (struct sw_winsys *winsys)
-{
-	FREE (winsys);
-}
-
-static struct pipe_screen *
-moon_sw_screen_create (const char *driver)
-{
-	static struct moon_sw_winsys *winsys;
-	struct pipe_screen *screen = NULL;
-
-	winsys = CALLOC_STRUCT (moon_sw_winsys);
-	if (!winsys)
-		return NULL;
-
-	winsys->base.destroy = moon_ws_destroy;
-	winsys->base.is_displaytarget_format_supported =
-		moon_ws_is_displaytarget_format_supported;
-	winsys->base.displaytarget_create = moon_ws_displaytarget_create;
-	winsys->base.displaytarget_map = moon_ws_displaytarget_map;
-	winsys->base.displaytarget_unmap = moon_ws_displaytarget_unmap;
-	winsys->base.displaytarget_display = moon_ws_displaytarget_display;
-	winsys->base.displaytarget_destroy = moon_ws_displaytarget_destroy;
-
-	if (!driver) {
-		const char *default_driver;
-
-#ifdef USE_LLVM
-		default_driver = "llvmpipe";
-#else
-		default_driver = "softpipe";
-#endif
-
-		driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
-	}
-
-#ifdef USE_LLVM
-	if (strcmp (driver, "llvmpipe") == 0) {
-		screen = llvmpipe_create_screen (&winsys->base);
-	}
-#endif
-
-	if (strcmp (driver, "softpipe") == 0) {
-		screen = softpipe_create_screen (&winsys->base);
-	}
-
-	if (screen)
-		screen->winsys = (struct pipe_winsys *) winsys;
-
-	return screen;
-}
-
-static struct pipe_resource *
-moon_sw_resource_create (struct pipe_screen *screen,
-			 const struct pipe_resource *templat,
-			 void *data,
-			 unsigned stride)
-{
-	struct moon_sw_winsys *ws = (struct moon_sw_winsys *) screen->winsys;
-
-	ws->user_data = data;
-	ws->user_stride = stride;
-
-	return screen->resource_create (screen, templat);
-}
-
-static void
-st_resource_destroy_callback (void *data)
-{
-	struct pipe_resource *resource = (struct pipe_resource *) data;
-
-	pipe_resource_reference (&resource, NULL);
-}
-
-static void
-st_surface_destroy_callback (void *data)
-{
-	struct pipe_surface *surface = (struct pipe_surface *) data;
-
-	pipe_surface_reference (&surface, NULL);
-}
-
-static void
-st_sampler_view_destroy_callback (void *data)
-{
-	struct pipe_sampler_view *sampler_view = (struct pipe_sampler_view *) data;
-
-	pipe_sampler_view_reference (&sampler_view, NULL);
-}
 
 static INLINE void
 ureg_convolution (struct ureg_program *ureg,
@@ -727,14 +554,6 @@ sw_filter_drop_shadow (unsigned char *src,
 void
 Effect::Initialize ()
 {
-
-#ifdef USE_GALLIUM
-	screen = moon_sw_screen_create (NULL);
-	g_assert (screen);
-	st_context = new GalliumContext (screen);
-	g_assert (st_context);
-#endif
-
 	for (int i = 0; i < 256; i++)
 		filtertable0[i] = i << 16;
 }
@@ -828,12 +647,6 @@ Effect::UpdateFilterValues (double radius,
 void
 Effect::Shutdown ()
 {
-
-#ifdef USE_GALLIUM
-	delete st_context;
-	screen->destroy (screen);
-#endif
-
 }
 
 Effect::Effect ()
@@ -841,130 +654,6 @@ Effect::Effect ()
 	SetObjectType (Type::EFFECT);
 
 	need_update = true;
-}
-
-struct pipe_resource *
-Effect::GetShaderTexture (cairo_surface_t *surface)
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	struct pipe_resource *tex, templat;
-
-	tex = (struct pipe_resource *) cairo_surface_get_user_data (surface, &textureKey);
-	if (tex)
-		return tex;
-
-	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE)
-		return NULL;
-
-	memset (&templat, 0, sizeof (templat));
-	templat.format = PIPE_FORMAT_B8G8R8A8_UNORM;
-	templat.width0 = cairo_image_surface_get_width (surface);
-	templat.height0 = cairo_image_surface_get_height (surface);
-	templat.depth0 = 1;
-	templat.last_level = 0;
-	templat.bind = PIPE_BIND_SAMPLER_VIEW | PIPE_BIND_DISPLAY_TARGET;
-	templat.target = PIPE_TEXTURE_2D;
-
-	switch (cairo_image_surface_get_format (surface)) {
-		case CAIRO_FORMAT_ARGB32:
-			templat.format = PIPE_FORMAT_B8G8R8A8_UNORM;
-			break;
-		case CAIRO_FORMAT_RGB24:
-		case CAIRO_FORMAT_A8:
-		case CAIRO_FORMAT_A1:
-			return NULL;
-	}
-
-	tex = moon_sw_resource_create (ctx->pipe->screen,
-				       &templat,
-				       cairo_image_surface_get_data (surface),
-				       cairo_image_surface_get_stride (surface));
-
-	cairo_surface_set_user_data (surface,
-				     &textureKey,
-				     (void *) tex,
-				     st_resource_destroy_callback);
-
-	return tex;
-#else
-	return NULL;
-#endif
-
-}
-
-struct pipe_surface *
-Effect::GetShaderSurface (cairo_surface_t *surface)
-{
-	
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	struct pipe_surface  *sur;
-	struct pipe_resource *tex;
-
-	sur = (struct pipe_surface *) cairo_surface_get_user_data (surface, &surfaceKey);
-	if (sur)
-		return sur;
-
-	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE)
-		return NULL;
-
-	tex = GetShaderTexture (surface);
-	if (!tex)
-		return NULL;
-
-	sur = ctx->pipe->screen->get_tex_surface (ctx->pipe->screen, tex,
-						  0, 0, 0,
-						  PIPE_BIND_TRANSFER_WRITE |
-						  PIPE_BIND_TRANSFER_READ);
-
-	cairo_surface_set_user_data (surface,
-				     &surfaceKey,
-				     (void *) sur,
-				     st_surface_destroy_callback);
-
-	return sur;
-#else
-	return NULL;
-#endif
-
-}
-
-struct pipe_sampler_view *
-Effect::GetShaderSamplerView (cairo_surface_t *surface)
-{
-	
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	struct pipe_sampler_view  *view;
-	struct pipe_resource *tex;
-	struct pipe_sampler_view view_templ;
-
-	view = (struct pipe_sampler_view *) cairo_surface_get_user_data (surface, &samplerViewKey);
-	if (view)
-		return view;
-
-	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE)
-		return NULL;
-
-	tex = GetShaderTexture (surface);
-	if (!tex)
-		return NULL;
-
-	u_sampler_view_default_template (&view_templ, tex, tex->format);
-	view = ctx->pipe->create_sampler_view (ctx->pipe, tex, &view_templ);
-
-	cairo_surface_set_user_data (surface,
-				     &samplerViewKey,
-				     (void *) view,
-				     st_sampler_view_destroy_callback);
-
-	return view;
-#else
-	return NULL;
-#endif
-
 }
 
 struct pipe_resource *
@@ -1156,33 +845,46 @@ Effect::Render (Context      *ctx,
 		double       width,
 		double       height)
 {
-	struct pipe_surface  *surface;
-	pipe_sampler_view    *sampler_view;
-	cairo_surface_t      *dst;
-	cairo_surface_t      *cs;
-	cairo_t              *cr = ctx->Cairo ();
-	double               dstX, dstY;
-	bool                 status = 0;
 
-	dst = cairo_get_group_target (cr);
-	cairo_surface_get_device_offset (dst, &dstX, &dstY);
+#ifdef USE_GALLIUM
+	Context::Surface         *cs = ctx->Top ()->GetSurface ();
+	MoonSurface              *ms;
+	Rect                     r = cs->GetData (&ms);
+	GalliumSurface           *dst = (GalliumSurface *) ms;
+	struct pipe_screen       *screen = dst->Screen ();
+	GalliumSurface           *source = (GalliumSurface *) src;
+	struct pipe_surface      *surface;
+	struct pipe_sampler_view *sampler_view;
+	bool                     status = 0;
+
+	// temporary hack used until gallium code has been
+	// moved to GalliumContext class
+	st_context = (GalliumContext *) ctx;
 
 	MaybeUpdateShader ();
 
-	cs = src->Cairo ();
+	surface = screen->get_tex_surface (screen,
+					   dst->Texture (),
+					   0,
+					   0,
+					   0,
+					   PIPE_BIND_RENDER_TARGET);
 
-	surface = GetShaderSurface (dst);
-	sampler_view = GetShaderSamplerView (cs);
+	sampler_view = source->SamplerView ();
 
 	if (surface && sampler_view)
 		status = Composite (surface, sampler_view, matrix,
-				    dstX, dstY,
+				    -r.x, -r.y,
 				    NULL,
 				    x, y, width, height);
 
-	cairo_surface_destroy (cs);
+	pipe_surface_reference (&surface, NULL);
 
 	return status;
+#else
+	return 0;
+#endif
+
 }
 
 void

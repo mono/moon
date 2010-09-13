@@ -26,10 +26,17 @@
 
 namespace Moonlight {
 
-GalliumContext::GalliumContext (pipe_screen *screen)
+GalliumContext::GalliumContext (GalliumSurface *surface)
 {
+	AbsoluteTransform  transform = AbsoluteTransform ();
+	Surface            *cs = new Surface (surface, Rect ());
+	struct pipe_screen *screen = surface->Screen ();
+
 	pipe = screen->context_create (screen, NULL);
 	cso  = cso_create_context (pipe);
+
+	Stack::Push (new Context::Node (cs, &transform.m, NULL));
+	cs->unref ();
 
 	/* disable blending/masking */
 	{
