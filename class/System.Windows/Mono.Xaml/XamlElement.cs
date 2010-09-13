@@ -236,15 +236,20 @@ namespace Mono.Xaml {
 
 		private void AddChildObject (XamlObjectElement obj)
 		{
+			object value = obj.Object;
+			MutableObject mutable = value as MutableObject;
+			if (mutable != null)
+				value = mutable.Object;
+
 			IList list = Object as IList;
 			if (list != null) {
-				list.Add (obj.Object);
+				list.Add (value);
 				return;
 			}
 
 			IDictionary dict = Object as IDictionary;
 			if (dict != null) {
-				dict.Add (obj.GetDictionaryKey (), obj.Object);
+				dict.Add (obj.GetDictionaryKey (), value);
 				return;
 			}
 
@@ -252,7 +257,7 @@ namespace Mono.Xaml {
 			if (content_property == null)
 				throw Parser.ParseException ("Unable to add element {0} to element {1}.", obj.Name, Name);
 
-			content_property.SetValue (obj.Object);
+			content_property.SetValue (value);
 		}
 
 		public XamlReflectionPropertySetter FindContentProperty ()
