@@ -83,6 +83,8 @@ namespace System.Windows.Data
 				dpChanged = DPChanged;
 				Mono.NativeMethods.dependency_object_add_property_change_handler (new_do.native, DependencyProperty.Native, dpChanged, IntPtr.Zero);
 			}
+			if (prop != null)
+				PropertyInfo = null;
 		}
 
 		void DPChanged (IntPtr dependency_object, IntPtr property_changed_event_args, ref MoonError error, IntPtr closure)
@@ -130,5 +132,12 @@ namespace System.Windows.Data
 				Value = null;
 			}
 		}
+	}
+
+	public class BooleanToVisibilityConverter
+	{
+		private static readonly bool?[] inverseMappings = new Nullable<bool>[] { true, false, null };
+		private readonly Visibility[] mappings = new Visibility[3] { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed };
+
 	}
 }

@@ -802,6 +802,17 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		}
 
 		[TestMethod]
+		public void MergedDictionary_Contains ()
+		{
+			// 'Contains' looks up the merged dictionaries too
+			var d1 = new ResourceDictionary ();
+			var d2 = new ResourceDictionary ();
+			d2.Add ("string", "string2");
+			d1.MergedDictionaries.Add (d2);
+			Assert.IsTrue(d1.Contains ("string"), "#1");
+		}
+
+		[TestMethod]
 		public void SupportsMultipleParentsTest ()
 		{
 			Assembly assembly = typeof (DependencyObject).Assembly;

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 549 methods needs to be decorated.
+# 550 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -641,7 +641,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_get_native_widget(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_create_window(System.IntPtr,System.Boolean,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_create_window(System.IntPtr,Mono.MoonWindowType,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_get_system_color(System.IntPtr,System.Int32)
@@ -1518,6 +1518,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::window_drag_resize_with_error_(System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::window_set_moon_window(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::writeable_bitmap_lock(System.IntPtr)

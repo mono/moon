@@ -112,6 +112,7 @@ namespace System.Windows {
 
 		internal DependencyObject (IntPtr raw, bool dropref)
 		{
+			new BooleanToVisibilityConverter ();
 			native = raw;
 			expressions = new Dictionary<DependencyProperty, Expression> ();
 			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
