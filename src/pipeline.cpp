@@ -4127,6 +4127,8 @@ MediaFrame::Initialize ()
 	srcSlideH = 0;
 	width = 0;
 	height = 0;
+	demuxer_width = 0;
+	demuxer_height = 0;
 }
 
 MediaFrame::~MediaFrame ()
@@ -4685,6 +4687,7 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	IMediaDemuxer *demuxer;
 	IMediaStream *stream;
 	Media *media = NULL;
+	bool demuxer_size_failure = false;
 
 	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %" G_GUINT64_FORMAT " ms\n", frame, frame ? frame->stream->GetTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
 	VERIFY_MEDIA_THREAD; /* no current decoder will call this method on a non-media thread, if that ever changes, we'll need to marshal calls to a media thread like the rest of the Report* methods */
@@ -4700,10 +4703,32 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	
 	frame->stream->EnqueueFrame (frame);
 
-	demuxer = stream->GetDemuxerReffed ();
-	if (demuxer != NULL) {
-		demuxer->FillBuffers ();
-		demuxer->unref ();
+	/* Check if the size set by the demuxer is valid. DRT #7008. */
+	if (frame->stream->IsVideo ()) {
+		if (frame->GetDemuxerWidth () != 0) {
+			if (frame->GetWidth () != 0) {
+				demuxer_size_failure |= frame->GetWidth () != frame->GetDemuxerWidth ();
+			} else {
+				demuxer_size_failure |= ((VideoStream *) frame->stream)->GetWidth () != (guint32) frame->GetDemuxerWidth ();
+			}
+		}
+		if (frame->GetDemuxerHeight () != 0) {
+			if (frame->GetHeight () != 0) {
+				demuxer_size_failure |= frame->GetHeight () != frame->GetDemuxerHeight ();
+			} else {
+				demuxer_size_failure |= ((VideoStream *) frame->stream)->GetHeight () != (guint32) frame->GetDemuxerHeight ();
+			}
+		}
+	}
+
+	if (demuxer_size_failure) {
+		ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 2210, "AG_E_INVALID_ARGUMENT")));
+	} else {
+		demuxer = stream->GetDemuxerReffed ();
+		if (demuxer != NULL) {
+			demuxer->FillBuffers ();
+			demuxer->unref ();
+		}
 	}
 	
 	if (input_ended && IsDecoderQueueEmpty ())

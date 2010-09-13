@@ -801,6 +801,12 @@ public:
 	gint32 width;
 	gint32 height;
 
+	// If the demuxer knows the size of the frame, here goes those values.
+	// We don't use these values, except to validate them against width/height (if set) or the stream's width/height.
+	// DRT #7008.
+	gint32 demuxer_width;
+	gint32 demuxer_height;
+
 	/* Allocates the buffer. Reports an error and returns false if buffer couldn't be allocated. */
 	bool AllocateBuffer (guint32 size);
 
@@ -830,6 +836,14 @@ public:
 	gint32 GetHeight () { return height; }
 	/* @GenerateCBinding */
 	void SetHeight (gint32 value) { height = value; }
+
+	/* @GeneratePInvoke */
+	void SetDemuxerWidth (gint32 value) { demuxer_width = value; }
+	gint32 GetDemuxerWidth () { return demuxer_width; }
+	/* @GeneratePInvoke */
+	void SetDemuxerHeight (gint32 value) { demuxer_height = value; }
+	gint32 GetDemuxerHeight () { return demuxer_height; }
+
 	/* @GenerateCBinding */
 	void SetDataStride (guint8 *a, guint8 *b, guint8 *c, guint8 *d);
 	/* @GenerateCBinding */

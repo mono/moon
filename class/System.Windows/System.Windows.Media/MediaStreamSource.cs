@@ -273,9 +273,14 @@ namespace System.Windows.Media
 			IntPtr buffer;
 			uint buflen;
 			byte [] buf;
+			int height;
+			int width;
+
+			if (closed)
+				return;
 			
 			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
-			if (closed || media_element == null || demuxer == IntPtr.Zero)
+			if (media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
 			
 			// A null value / stream means the end has been reached.
@@ -307,6 +312,18 @@ namespace System.Windows.Media
 			// flag being set at all, just lie the best way for our pipeline.
 			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, true);
 			
+			if (mediaStreamSample.Attributes.ContainsKey (MediaSampleAttributeKeys.FrameHeight)) {
+				if (int.TryParse (mediaStreamSample.Attributes [MediaSampleAttributeKeys.FrameHeight], out height)) {
+					NativeMethods.media_frame_set_demuxer_height (frame, height);
+				}
+			}
+
+			if (mediaStreamSample.Attributes.ContainsKey (MediaSampleAttributeKeys.FrameWidth)) {
+				if (int.TryParse (mediaStreamSample.Attributes [MediaSampleAttributeKeys.FrameWidth], out width)) {
+					NativeMethods.media_frame_set_demuxer_width (frame, width);
+				}
+			}
+
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, frame);
 			
 			NativeMethods.event_object_unref (frame);
