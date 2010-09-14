@@ -32,7 +32,6 @@
 struct pipe_screen;
 struct pipe_sampler_view;
 
-typedef struct st_context st_context_t;
 typedef struct pipe_resource pipe_resource_t;
 typedef struct pipe_surface pipe_surface_t;
 typedef struct pipe_transfer pipe_transfer_t;
