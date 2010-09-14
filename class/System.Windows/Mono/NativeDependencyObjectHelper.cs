@@ -268,14 +268,12 @@ namespace Mono {
 #endregion
 
 		/* accessed from several threads, all usage must use a lock */
-		internal static Dictionary<IntPtr, EventObjectToggleRef> objects = new Dictionary<IntPtr, EventObjectToggleRef> ();
+		internal static Dictionary<IntPtr, WeakReference> objects = new Dictionary<IntPtr, WeakReference> ();
 
 
 		/* thread-safe */
 		public static bool AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
-			EventObjectToggleRef tref;
-			
 			if (native == IntPtr.Zero)
 				return false;
 
@@ -288,23 +286,22 @@ namespace Mono {
 					return false;
 #endif
 				}
-				
-				tref = new EventObjectToggleRef (wrapper);
+
+				NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
 
 #if DEBUG_REF
 				Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
 #endif
 
-				objects[native] = tref;
+				objects[native] = new WeakReference (wrapper);
 			}
-			tref.Initialize ();
 			return true;
 		}
 		
 		/* thread-safe */
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
-			EventObjectToggleRef tref;
+			WeakReference tref;
 			IntPtr native = wrapper.NativeHandle;
 			
 			if (native == IntPtr.Zero)
@@ -318,8 +315,7 @@ namespace Mono {
 					objects.Remove (native);
 				}
 			}
-			if (tref != null)
-				tref.Free ();
+			NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, IntPtr.Zero);
 			GC.SuppressFinalize (wrapper);
 		}
 
@@ -335,10 +331,10 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			EventObjectToggleRef reference;
+			WeakReference reference;
 			lock (objects) {
 				if (objects.TryGetValue (ptr, out reference))
-					return reference.Target;
+					return (INativeEventObjectWrapper) reference.Target;
 			}
 			// don't change this to a cast (as opposed to
 			// using 'as') since we can lose important
@@ -371,10 +367,10 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			EventObjectToggleRef tref;
+			WeakReference tref;
 			lock (objects) {
 				if (objects.TryGetValue (ptr, out tref))
-					return tref.Target;
+					return (INativeEventObjectWrapper) tref.Target;
 			}
 			return null;
 		}

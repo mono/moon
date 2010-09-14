@@ -8,6 +8,10 @@
  * 
  */
 
+#define INCLUDED_MONO_HEADERS 1
+
+#include "mono/metadata/object.h"
+
 #include <config.h>
 
 #include <stdio.h>
@@ -203,13 +207,13 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	flags = g_atomic_int_exchange_and_add (&current_id, 1);
 	refcount = 1;
 	events = NULL;
-	toggleNotifyListener = NULL;
 	addStrongRef = NULL;
 	clearStrongRef = NULL;
 	mentorChanged = NULL;
 	attached = NULL;
 	detached = NULL;
 	hadManagedPeer = false;
+	managed_handle = NULL;
 
 	weakRefs = NULL;
 
@@ -255,6 +259,8 @@ EventObject::~EventObject()
 	 * already, we might be in the Disposed handler */
 	refcount = -666;
 #endif
+	if (managed_handle)
+		mono_gchandle_free (GPOINTER_TO_INT (managed_handle));
 
 	delete weakRefs;
 	weakRefs = NULL;
@@ -462,9 +468,15 @@ EventObject::ref ()
 		// gone.
 		g_warning ("Ref was called on an object with a refcount of 0.\n");
 
-	} else if (v == 1 && toggleNotifyListener) {
+	} else if (v == 1 && managed_handle) {
 		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS) {
-			toggleNotifyListener->Invoke (false);
+			int old_handle = GPOINTER_TO_INT (managed_handle);
+			MonoObject *man_ob = mono_gchandle_get_target (old_handle);
+#if SANITY
+			g_assert (man_ob != NULL);
+#endif
+			managed_handle = GINT_TO_POINTER (mono_gchandle_new (man_ob, false));
+			mono_gchandle_free (old_handle);
 		}
 	}
 
@@ -477,7 +489,7 @@ EventObject::unref ()
 	// we need to retrieve all instance fields into locals before decreasing the refcount
 	// TODO: do we need some sort of gcc foo (volatile variables, memory barries)
 	// to ensure that gcc does not optimize the fetches below away
-	ToggleNotifyListener *toggle_listener = this->toggleNotifyListener;
+	void *managed_handle = this->managed_handle;
 	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
 #if OBJECT_TRACKING
 	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
@@ -524,14 +536,15 @@ EventObject::unref ()
 		if (v == 0)
 			delete this;
 			
-	} else if (v == 1 && toggle_listener) {
-		// we know that toggle_listener hasn't been freed, since if it exists, it will have a ref to us which would prevent our destruction
-		// note that the instance field might point to garbage after decreasing the refcount above, so we access the local variable we 
-		// retrieved before decreasing the refcount.
-		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS) {
-			if (!depl->IsShuttingDown())
-				toggle_listener->Invoke (true);
-		}
+	} else if (v == 1 && managed_handle) {
+		int old_handle = GPOINTER_TO_INT (managed_handle);
+		MonoObject *man_ob = mono_gchandle_get_target (old_handle);
+#if SANITY
+		g_assert (man_ob != NULL);
+#endif
+		this->managed_handle = GINT_TO_POINTER (mono_gchandle_new_weakref (man_ob, false));
+		mono_gchandle_free (old_handle);
+
 	}
 
 #if SANITY
@@ -543,25 +556,15 @@ EventObject::unref ()
 #endif
 }
 
-void
-EventObject::AddToggleRefNotifier (ToggleNotifyHandler tr)
-{
-	if (toggleNotifyListener)
-		return;
-
-	this->ref ();
-	toggleNotifyListener = new ToggleNotifyListener (this, tr);
-}
 
 void
-EventObject::RemoveToggleRefNotifier ()
+EventObject::SetManagedHandle (void *managed_handle)
 {
-	if (!toggleNotifyListener)
-		return;
-
-	delete toggleNotifyListener;
-	toggleNotifyListener = NULL;
-	this->unref ();
+	this->managed_handle = managed_handle;
+	if (managed_handle)
+		ref ();
+	else
+		unref ();
 }
 
 #if OBJECT_TRACKING

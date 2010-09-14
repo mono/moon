@@ -268,10 +268,9 @@ public:
 	// and we want the deployment on this object.
 	Deployment *GetUnsafeDeployment () { return deployment; }
 
+
 	/* @GenerateCBinding,GeneratePInvoke */
-	void AddToggleRefNotifier (ToggleNotifyHandler tr);
-	/* @GenerateCBinding,GeneratePInvoke */
-	void RemoveToggleRefNotifier ();
+	void SetManagedHandle (void *managed_handle);
 
 	StrongRefCallback addStrongRef;
 	StrongRefCallback clearStrongRef;
@@ -338,7 +337,7 @@ private:
 	gint32 flags; // Don't define as Flags, we need to keep this reliably at 32 bits.
 
 	Type::Kind object_type;
-	ToggleNotifyListener *toggleNotifyListener;
+	void *managed_handle;
 };
 
 /* @Namespace=System.Windows */
