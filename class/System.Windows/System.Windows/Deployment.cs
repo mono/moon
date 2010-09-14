@@ -417,6 +417,14 @@ namespace System.Windows {
 					string filename = Path.GetFullPath (Path.Combine (XapDir, canon));
 					// note: the content of the AssemblyManifest.xaml file is untrusted
 					if (filename.StartsWith (XapDir)) {
+						// If the exact name does not exist, try to find a lowercased version. #7007.OOB hits this,
+						// it has a case-mismatched dll in the xap.
+						if (!File.Exists (filename)) {
+							string lowercased = Path.Combine (Path.GetDirectoryName (filename), Helper.CanonicalizeResourceName (Path.GetFileName (filename)));
+							if (File.Exists (lowercased))
+								filename = lowercased;
+						}
+
 						try {
 							Assembly asm = Assembly.LoadFrom (filename);
 							AssemblyRegister (asm);
