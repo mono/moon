@@ -9,7 +9,7 @@ namespace Moonlight {
 
 class MoonWindowingSystemGtk : public MoonWindowingSystem {
 public:
-	MoonWindowingSystemGtk ();
+	MoonWindowingSystemGtk (bool out_of_browser);
 	virtual ~MoonWindowingSystemGtk ();
 
 	// creates a platform/windowing system specific surface

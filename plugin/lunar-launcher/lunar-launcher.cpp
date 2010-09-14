@@ -338,7 +338,7 @@ int main (int argc, char **argv)
 
 	add_mono_config (plugin_dir);
 
-	runtime_init_browser (plugin_dir);
+	runtime_init_browser (plugin_dir, true);
 	g_free (plugin_dir);
 
 	/* get the pal services we need */

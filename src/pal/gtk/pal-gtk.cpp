@@ -608,9 +608,9 @@ private:
 
 /// our windowing system
 
-MoonWindowingSystemGtk::MoonWindowingSystemGtk ()
+MoonWindowingSystemGtk::MoonWindowingSystemGtk (bool out_of_browser)
 {
-	if (!g_thread_get_initialized()) {
+	if (out_of_browser) {
 		g_thread_init (NULL);
 		gdk_threads_init ();
 	}

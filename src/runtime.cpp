@@ -2534,15 +2534,15 @@ Surface::IsVersionSupported (const char *version_list)
 }
 
 void
-runtime_init_browser (const char *plugin_dir)
+runtime_init_browser (const char *plugin_dir, bool out_of_browser)
 {
-	runtime_init (plugin_dir, RUNTIME_INIT_BROWSER);
+	runtime_init (plugin_dir, RUNTIME_INIT_BROWSER, out_of_browser);
 }
 
 void
 runtime_init_desktop ()
 {
-	runtime_init (NULL, RUNTIME_INIT_DESKTOP);
+	runtime_init (NULL, RUNTIME_INIT_DESKTOP, false);
 }
 
 static guint32
@@ -2671,7 +2671,7 @@ get_runtime_options (RuntimeInitFlag def)
 }
 
 void
-runtime_init (const char *platform_dir, RuntimeInitFlag flags)
+runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser)
 {
 	if (inited)
 		return;
@@ -2701,7 +2701,7 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags)
 
 	// FIXME add some ifdefs + runtime checks here
 #if PAL_GTK_WINDOWING
-	windowing_system = new MoonWindowingSystemGtk ();
+	windowing_system = new MoonWindowingSystemGtk (out_of_browser);
 	installer_service = new MoonInstallerServiceGtk ();
 #else
 #error "no PAL windowing system defined"

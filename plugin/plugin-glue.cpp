@@ -238,7 +238,7 @@ MOON_NPP_Initialize (void)
 
 	if (!runtime_initialized) {
 		runtime_initialized = true;
-		runtime_init_browser (get_plugin_dir ());
+		runtime_init_browser (get_plugin_dir (), false);
 	}
 
 	plugin_init_classes ();

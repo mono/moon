@@ -520,9 +520,9 @@ public:
 
 G_BEGIN_DECLS
 
-void     runtime_init (const char *platform_dir, RuntimeInitFlag flags);
+void     runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser);
 
-void     runtime_init_browser (const char *plugin_dir);
+void     runtime_init_browser (const char *plugin_dir, bool out_of_browser);
 /* @GeneratePInvoke */
 void     runtime_init_desktop ();
 
