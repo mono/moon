@@ -268,7 +268,7 @@ namespace Mono {
 #endregion
 
 		/* accessed from several threads, all usage must use a lock */
-		internal static Dictionary<IntPtr, WeakReference> objects = new Dictionary<IntPtr, WeakReference> ();
+		internal static Dictionary<IntPtr, GCHandle> objects = new Dictionary<IntPtr, GCHandle> ();
 
 
 		/* thread-safe */
@@ -293,26 +293,28 @@ namespace Mono {
 				Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
 #endif
 
-				objects[native] = new WeakReference (wrapper);
+				objects[native] = GCHandle.Alloc (wrapper, GCHandleType.Weak);
 			}
+			
 			return true;
 		}
 		
 		/* thread-safe */
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
-			WeakReference tref;
 			IntPtr native = wrapper.NativeHandle;
+			GCHandle handle;
 			
 			if (native == IntPtr.Zero)
 				return;
 
 			lock (objects) {
-				if (objects.TryGetValue (native, out tref)) {
+				if (objects.TryGetValue (native, out handle)) {
 #if DEBUG_REF
 					Console.WriteLine ("freeing native mapping for {0:x} - {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
 #endif
 					objects.Remove (native);
+					handle.Free ();
 				}
 			}
 			NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, IntPtr.Zero);
@@ -331,11 +333,12 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			WeakReference reference;
+			GCHandle handle;
 			lock (objects) {
-				if (objects.TryGetValue (ptr, out reference))
-					return (INativeEventObjectWrapper) reference.Target;
+				if (objects.TryGetValue (ptr, out handle))
+					return (INativeEventObjectWrapper) handle.Target;
 			}
+			
 			// don't change this to a cast (as opposed to
 			// using 'as') since we can lose important
 			// info if you do.
@@ -367,10 +370,10 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			WeakReference tref;
+			GCHandle handle;
 			lock (objects) {
-				if (objects.TryGetValue (ptr, out tref))
-					return (INativeEventObjectWrapper) tref.Target;
+				if (objects.TryGetValue (ptr, out handle))
+					return (INativeEventObjectWrapper) handle.Target;
 			}
 			return null;
 		}

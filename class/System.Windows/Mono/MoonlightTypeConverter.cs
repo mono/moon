@@ -83,7 +83,10 @@ namespace Mono {
 		{
 			if (destinationType == typeof (object))
 				return value;
-
+			
+			if (destinationType.IsInstanceOfType (value))
+				return value;
+			
 			string str_val = value as String;
 			if (str_val != null) {
 				if (destinationType.IsEnum)
@@ -150,6 +153,7 @@ namespace Mono {
 			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
 				return new SolidColorBrush ((Color)value);
 			}
+			
 			if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
 				return ValueFromConvertible (destinationType, (IConvertible) value);
 			
@@ -182,6 +186,8 @@ namespace Mono {
 
 			if (destinationType.IsAssignableFrom (value.GetType ()))
 				return value;
+			
+			Console.WriteLine ("\n\n*** Unhandled type conversion from {0} to {1}\n", value.GetType ().ToString (), destinationType.ToString ());
 			
 			return base.ConvertFrom (context, culture, value);
 		}
