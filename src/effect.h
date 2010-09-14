@@ -485,55 +485,5 @@ protected:
 	void *fs;
 };
 
-/* @Namespace=None,ManagedDependencyProperties=None */
-class TransformEffect : public Effect {
-public:
-	enum TransformType {
-		AFFINE,
-		PERSPECTIVE
-	};
-
-	TransformEffect ();
-
-	//
-	// Render
-	//
-	bool Render (Context      *ctx,
-		     MoonSurface  *src,
-		     const double *matrix,
-		     double       x,
-		     double       y,
-		     double       width,
-		     double       height);
-
-	void SetType (int value);
-	void SetOpacity (double value);
-
-protected:
-	virtual ~TransformEffect ();
-
-	void Clear ();
-
-	bool Composite (pipe_surface_t  *dst,
-			pipe_sampler_view *src,
-			const double    *matrix,
-			double          dstX,
-			double          dstY,
-			const Rect      *clip,
-			double          x,
-			double          y,
-			double          width,
-			double          height);
-
-	void UpdateShader ();
-
-	void *fs;
-
-private:
-	int             type;
-	double          opacity;
-	pipe_resource_t *constant_buffer;
-};
-
 };
 #endif /* __MOONLIGHT_EFFECT_H__ */

@@ -101,6 +101,12 @@ public:
 
 	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
+
+	virtual void Project (MoonSurface  *src,
+			      const double *matrix,
+			      double       alpha,
+			      double       x,
+			      double       y);
 };
 
 };

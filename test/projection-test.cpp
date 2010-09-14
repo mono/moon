@@ -30,7 +30,6 @@ main (int argc, char **argv)
 	CairoSurface *target;
 	MoonSurface *surface;
 	cairo_surface_t *dst, *src;
-	TransformEffect *effect;
 	Matrix3D *matrix;
 	DoubleCollection *values;
 	int stride = width * 4;
@@ -75,8 +74,6 @@ main (int argc, char **argv)
 	surface = new CairoSurface (src);
 	cairo_surface_destroy (src);
 
-	effect = new TransformEffect ();
-
 	matrix = new Matrix3D ();
 	matrix->SetM11 (values->GetValueAt (0)->AsDouble ());
 	matrix->SetM12 (values->GetValueAt (1)->AsDouble ());
@@ -105,11 +102,11 @@ main (int argc, char **argv)
 		}
 	}
 
-	while (status && count-- > 0) {
-		status = effect->Render (ctx,
-					 surface,
-					 (double *) matrix->GetMatrixValues (),
-					 0, 0, width, height);
+	while (count-- > 0) {
+		ctx->Project (surface,
+			      (double *) matrix->GetMatrixValues (),
+			      1.0,
+			      0, 0);
 
 		frames++;
 	}

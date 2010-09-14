@@ -60,12 +60,12 @@ UIElement::UIElement ()
 	cairo_matrix_init_identity (&layout_xform);
 	cairo_matrix_init_identity (&local_xform);
 	cairo_matrix_init_identity (&render_xform);
-	cairo_matrix_init_identity (&scale_xform);
+	cairo_matrix_init_identity (&cache_xform);
 	Matrix3D::Identity (local_projection);
 	Matrix3D::Identity (absolute_projection);
+	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
 	bitmap_cache = NULL;
-	composite = NULL;
 
 	dirty_flags = DirtyMeasure;
 	PropagateFlagUp (DIRTY_MEASURE_HINT);
@@ -84,8 +84,6 @@ UIElement::UIElement ()
 
 UIElement::~UIElement()
 {
-	if (composite)
-		composite->unref ();
 	InvalidateBitmapCache ();
 	delete dirty_region;
 }
@@ -509,12 +507,12 @@ UIElement::ComputeTransform ()
 	Projection *projection = GetRenderProjection ();
 	CacheMode *cacheMode = GetRenderCacheMode ();
 	cairo_matrix_t old = absolute_xform;
-	cairo_matrix_t old_scale = scale_xform;
+	cairo_matrix_t old_cache = cache_xform;
 	double m[16], old_projection[16];
 	Matrix3D::Init (old_projection, local_projection);
 	cairo_matrix_init_identity (&absolute_xform);
 	cairo_matrix_init_identity (&render_xform);
-	cairo_matrix_init_identity (&scale_xform);
+	cairo_matrix_init_identity (&cache_xform);
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (local_projection);
 	flags &= ~UIElement::RENDER_PROJECTION;
@@ -585,16 +583,6 @@ UIElement::ComputeTransform ()
 				       &absolute_xform);
 	}
 
-	if (cacheMode) {
-
-		// ignore bitmap cache scale when effect property is set
-		if (!GetRenderEffect ())
-			cacheMode->GetTransform (&scale_xform);
-			
-		if (memcmp (&old_scale, &scale_xform, sizeof (cairo_matrix_t)))
-			InvalidateBitmapCache ();
-	}
-
 	if (projection) {
 		projection->GetTransform (m);
 		Matrix3D::Multiply (local_projection, m, local_projection);
@@ -610,6 +598,29 @@ UIElement::ComputeTransform ()
 
 		if (IsAttached ())
 			GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyNewBounds);
+	}
+
+	if (cacheMode) {
+		cairo_matrix_t inverse;
+
+		// ignore bitmap cache scale when effect property is set
+		if (!GetRenderEffect ())
+			cacheMode->GetTransform (&cache_xform);
+			
+		if (memcmp (&old_cache, &cache_xform, sizeof (cairo_matrix_t)))
+			InvalidateBitmapCache ();
+		
+		inverse = cache_xform;
+		cairo_matrix_invert (&inverse);
+
+		Matrix3D::Affine (m,
+				  inverse.xx, inverse.xy,
+				  inverse.yx, inverse.yy,
+				  inverse.x0, inverse.y0);
+		Matrix3D::Multiply (render_projection, m, local_projection);
+	}
+	else {
+		Matrix3D::Init (render_projection, local_projection);
 	}
 
 	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
@@ -650,8 +661,6 @@ UIElement::ShiftPosition (Point p)
 void
 UIElement::ComputeComposite ()
 {
-	TransformEffect *effect = NULL;
-
 	flags &= ~COMPOSITE_MASK;
 
 	if (GetRenderCacheMode ())
@@ -678,31 +687,6 @@ UIElement::ComputeComposite ()
 		if ((flags & COMPOSITE_EFFECT) == 0)
 			flags &= ~COMPOSITE_OPACITY;
 	}
-
-	if (flags & COMPOSITE_TRANSFORM) {
-		if (composite && composite->Is (Type::TRANSFORMEFFECT)) {
-			composite->ref ();
-			effect = (TransformEffect *) composite;
-		}
-		else {
-			effect = new TransformEffect ();
-		}
-
-		if (flags & COMPOSITE_OPACITY)
-			effect->SetOpacity (1.0);
-		else
-			effect->SetOpacity (GetOpacity ());
-
-		if (flags & RENDER_PROJECTION)
-			effect->SetType (TransformEffect::PERSPECTIVE);
-		else
-			effect->SetType (TransformEffect::AFFINE);
-	}
-
-	if (composite)
-		composite->unref ();
-
-	composite = effect;
 }
 
 void
@@ -1280,7 +1264,7 @@ UIElement::DoRender (Context *ctx, Region *parent_region)
 		return;
 
 	if (RenderToIntermediate ()) {
-		region = new Region (GetSubtreeExtents ().Transform (&scale_xform).RoundOut ());
+		region = new Region (GetSubtreeExtents ().Transform (&cache_xform).RoundOut ());
 	}
 	else {
 		region = new Region (GetSubtreeExtents ().Transform (&render_xform).Transform (ctx).RoundOut ());
@@ -1353,7 +1337,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		Region *self_region;
 
 		if (RenderToIntermediate ()) {
-			self_region = new Region (GetSubtreeExtents ().Transform (&scale_xform).RoundOut ());
+			self_region = new Region (GetSubtreeExtents ().Transform (&cache_xform).RoundOut ());
 		}
 		else {
 			self_region = new Region (surface_region);
@@ -1450,10 +1434,10 @@ void
 UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 {
 	if (flags & COMPOSITE_TRANSFORM) {
-		Rect r = GetSubtreeExtents ().Transform (&scale_xform).GrowBy (effect_padding);
+		Rect r = GetSubtreeExtents ().Transform (&cache_xform).GrowBy (effect_padding);
 
 		ctx->Push (Context::Group (r));
-		ctx->Push (Context::AbsoluteTransform (scale_xform));
+		ctx->Push (Context::AbsoluteTransform (cache_xform));
 	}
 	else {
 		ctx->Push (Context::Transform (render_xform));
@@ -1551,11 +1535,11 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_CACHE) {
-		Rect r = GetSubtreeExtents ().Transform (&scale_xform);
+		Rect r = GetSubtreeExtents ().Transform (&cache_xform);
 
 		if (!bitmap_cache) {
 			ctx->Push (Context::Group (r));
-			ctx->Push (Context::AbsoluteTransform (scale_xform));
+			ctx->Push (Context::AbsoluteTransform (cache_xform));
 
 			VisualTreeWalker walker (this, ZForward, false);
 			Render (ctx->Cairo (), region);
@@ -1706,24 +1690,10 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		r = ctx->Pop (&src);
 
 		if (!r.IsEmpty ()) {
-			cairo_matrix_t ctm;
-			double         m[16];
-
-			r = GetSubtreeExtents ().GrowBy (effect_padding);
-
-			ctx->Top ()->GetMatrix (&ctm);
-
-			Matrix3D::Affine (m,
-					  ctm.xx, ctm.xy,
-					  ctm.yx, ctm.yy,
-					  ctm.x0, ctm.y0);
-			Matrix3D::Multiply (m, local_projection, m);
-
-			if (!composite->Render (ctx, src,
-						m,
-						r.x, r.y,
-						r.width, r.height))
-				g_warning ("UIElement::PostRender failed to apply perspective transformation.");
+			ctx->Project (src,
+				      render_projection,
+				      GetOpacity (),
+				      r.x, r.y);
 
 			src->unref ();
 		}

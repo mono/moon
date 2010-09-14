@@ -28,9 +28,27 @@ public:
 
 	void Push (Group extents);
 
-// private:
-	void Clear (GalliumSurface *dst);
+	void Project (MoonSurface  *src,
+		      const double *matrix,
+		      double       alpha,
+		      double       x,
+		      double       y);
 
+// private:
+	void SetFramebuffer ();
+	void SetScissor ();
+	void SetRasterizer ();
+	void SetViewport ();
+	void SetConstantBuffer (const void *data, int bytes);
+
+	pipe_resource *SetupVertexData (pipe_resource      *texture,
+					pipe_sampler_state *sampler,
+					const double       *matrix,
+					double             x,
+					double             y);
+
+	void TransformMatrix (double *out, const double *matrix);
+	
 	pipe_context *pipe;
 
 	cso_context *cso;
@@ -41,6 +59,17 @@ public:
 	pipe_resource *default_texture;
 
 	pipe_vertex_element velems[2];
+
+	float vertices[4][2][4];
+
+	pipe_resource *constant_buffer;
+	int is_softpipe;
+
+	pipe_blend_state blend_over;
+
+	pipe_sampler_state project_sampler;
+	void *project_fs;
+	void *project_alpha_fs;
 };
 
 };

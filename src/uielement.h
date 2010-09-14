@@ -696,7 +696,6 @@ protected:
 	Thickness effect_padding;
 
 	MoonSurface *bitmap_cache;
-	Effect *composite;
 
 private:
 	bool loaded;
@@ -711,7 +710,10 @@ private:
 	// The local render transform including tranform origin
 	cairo_matrix_t local_xform;
 	cairo_matrix_t render_xform;
-	cairo_matrix_t scale_xform;
+	cairo_matrix_t cache_xform;
+
+	// Local perspective transform, including inverse cache transform
+	double render_projection[16];
 };
 
 };

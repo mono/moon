@@ -229,4 +229,14 @@ Context::IsImmutable ()
 	return box.IsEmpty ();
 }
 
+void
+Context::Project (MoonSurface  *src,
+		  const double *matrix,
+		  double       alpha,
+		  double       x,
+		  double       y)
+{
+	g_warning ("Context::Project has been called. The derived class should have overridden it.");
+}
+
 };
