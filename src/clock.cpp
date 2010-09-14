@@ -678,7 +678,8 @@ ClockGroup::AddChild (Clock *clock)
 	clock->SetRootParentTime (GetCurrentTime ());
 	clock->SetParentClock (this);
 
-	child_clocks = g_list_append (child_clocks, clock);
+	child_clocks = g_list_prepend (child_clocks, clock);
+
 	clock->ref ();
 	clock->SetTimeManager (GetTimeManager());
 }

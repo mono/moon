@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
@@ -172,6 +173,77 @@ namespace MoonTest.System.Windows.Threading {
 			EnqueueConditional (() => called);
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TickOrder ()
+		{
+			List<string> order = new List<string> ();
+			int ticks = 0;
+
+			DispatcherTimer fast = new DispatcherTimer ();
+			fast.Interval = TimeSpan.FromSeconds (0.1);
+			fast.Tick += new EventHandler ((object sender, EventArgs ea) => 
+			{
+				fast.Stop ();
+				ticks ++;
+				order.Add ("fast"); 
+			});
+			
+			DispatcherTimer medium = new DispatcherTimer ();
+			medium.Interval = TimeSpan.FromSeconds (0.3);
+			medium.Tick += new EventHandler ((object sender, EventArgs ea) => 
+			{
+				medium.Stop ();
+				ticks ++;
+				order.Add ("medium"); 
+			});
+
+			DispatcherTimer slow = new DispatcherTimer ();
+			slow.Interval = TimeSpan.FromSeconds (0.7);
+			slow.Tick += new EventHandler ((object sender, EventArgs ea) => 
+			{
+				slow.Stop ();
+				ticks ++;
+				order.Add ("slow"); 
+			});
+			
+			DispatcherTimer post = new DispatcherTimer ();
+			post.Interval = TimeSpan.FromSeconds (1);
+			post.Tick += new EventHandler ((object sender, EventArgs ea) => 
+			{
+				post.Stop ();
+				ticks ++;
+				order.Add ("post"); 
+			});
+
+			slow.Start ();
+			fast.Start ();
+			medium.Start ();
+
+			TestPage.Dispatcher.BeginInvoke (() => 
+			{
+				// Start after yielding control
+				post.Start ();
+
+				// Sleep a bit
+				Console.WriteLine ("Sleeping for 2 seconds...");
+				Thread.Sleep (TimeSpan.FromSeconds (2));
+				Console.WriteLine  ("Done sleeping, test will continue");
+			});
+
+			EnqueueConditional (() => ticks >= 4);
+			Enqueue (() =>
+			{
+				Assert.AreEqual (4, order.Count, "four ticks");
+				Assert.AreEqual ("post", order [0], "post timer should tick first");
+				Assert.AreEqual ("medium", order [1], "medium timer should tick second");
+				Assert.AreEqual ("fast", order [2], "fast timer should tick third");
+				Assert.AreEqual ("slow", order [3], "slow timer should tick fourth");
+			});
+			EnqueueTestComplete ();
+		}
+
 	}
 }
 
