@@ -394,9 +394,11 @@ InheritedPropertyValueProvider::PropAdd (Types *types, DependencyObject *rootPar
 			DependencyProperty *sourceProperty =
 				types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
 			value = source->GetValue (sourceProperty);
-		}
 
-		return element->PropagateInheritedValue (property, source, NULL, value);
+			return element->PropagateInheritedValue (property, source, NULL, value);
+		}
+		else
+			return false;
 	}
 	else {
 		DependencyProperty *rootProperty = types->GetProperty (rootPropertyId);
@@ -547,11 +549,11 @@ InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (Depe
 }
 
 void
-InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source)
+InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source, DependencyObject *subtree)
 {
 	Types *types = source->GetDeployment ()->GetTypes ();
 	Inheritable inheritable = InheritablePropertyFromPropertyId(property->GetId());
-	WalkSubtree (types, source, source, (InheritedPropertyValueProvider::InheritableAll & ~inheritable), true);
+	WalkSubtree (types, source, subtree, (InheritedPropertyValueProvider::InheritableAll & ~inheritable), true);
 }
 
 void

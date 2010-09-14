@@ -164,9 +164,9 @@ public:
 	static bool IsPropertyInherited (int propertyId);
 
 
-	// this method is used when a property changes on object @obj,
+	// this method is used when a property changes on an object
 	// and that notification needs to propagate down the tree
-	void PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source);
+	void PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source, DependencyObject *subtree);
 
 	// this method is used when you add a subtree into a
 	// pre-existing tree.  it propagates all inheritable

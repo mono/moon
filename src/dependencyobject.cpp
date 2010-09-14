@@ -1754,7 +1754,7 @@ DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inher
 
 	DependencyProperty *property = GetDeployment()->GetTypes()->GetProperty (propertyId);
 	MoonError unused;
-	ProviderValueChanged (PropertyPrecedence_Inherited, property, old_value, new_value, false, false, false, &unused);
+	ProviderValueChanged (PropertyPrecedence_Inherited, property, old_value, new_value, true, false, false, &unused);
 
 	return GetPropertyValueProvider (property) == PropertyPrecedence_Inherited;
 }
@@ -2282,18 +2282,13 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 					if (source == NULL)
 						g_warning ("ProviderValueChanged called on inherited property with no property source set");
-					else {
-						// FIXME:  we only want to do this if there's no higher precedent value
-						providers.inherited->PropagateInheritedProperty (property, source);
-					}
+					else
+						providers.inherited->PropagateInheritedProperty (property, source, this);
 				}
 				else {
-					// FIXME: we only want to propagate
-					// ourselves as the source if we have
-					// a higher precedent value (above
-					// Inherited)
-					if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
-						providers.inherited->PropagateInheritedProperty (property, this);
+					if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ())
+					    && GetPropertyValueProvider (property) < PropertyPrecedence_Inherited)
+						providers.inherited->PropagateInheritedProperty (property, this, this);
 				}
 			}
 
