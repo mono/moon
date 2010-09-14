@@ -57,7 +57,8 @@ extern "C" {
 //
 #define FULLSCREEN_BACKING_STORE_SOPTIMIZATION 0
 
-struct pipe_screen *
+#ifdef USE_GALLIUM
+static struct pipe_screen *
 swrast_create_screen (struct sw_winsys *winsys)
 {
 	const char *default_driver;
@@ -82,6 +83,7 @@ swrast_create_screen (struct sw_winsys *winsys)
 
 	return screen;
 }
+#endif
 
 using namespace Moonlight;
 
