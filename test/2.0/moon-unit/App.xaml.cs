@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Controls;
@@ -32,6 +34,9 @@ namespace Mono.Moonlight.UnitTesting
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
+			Thread.CurrentThread.CurrentCulture = new CultureInfo ("en-US");
+			Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture;
+
 			this.RootVisual = Testing.CreateTestPage (this);
 			// not read-only and will be available from SilverlightHost.InitParams
 			e.InitParams.Add ("Moon-y-Test", "?");
