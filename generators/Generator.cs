@@ -1830,7 +1830,7 @@ class Generator {
 
 						if (tokenizer.CurrentToken.value != "," && tokenizer.CurrentToken.value != ")") {
 							parameter.Name = tokenizer.GetIdentifier ();
-							if (tokenizer.Accept (Token2Type.Punctuation, "[")) {
+							while (tokenizer.Accept (Token2Type.Punctuation, "[")) {
 								if (tokenizer.CurrentToken.type == Token2Type.Identifier)
 									tokenizer.Advance (true);
 								tokenizer.AcceptOrThrow (Token2Type.Punctuation, "]");
@@ -1916,7 +1916,7 @@ class Generator {
 						field.Parent = parent;
 						parent.Children.Add (field);
 
-						if (tokenizer.Accept (Token2Type.Punctuation, "[")) {
+						while (tokenizer.Accept (Token2Type.Punctuation, "[")) {
 							while (!tokenizer.Accept (Token2Type.Punctuation, "]")) {
 								tokenizer.Advance (true);
 							}
