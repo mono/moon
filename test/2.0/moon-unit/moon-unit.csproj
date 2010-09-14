@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
@@ -59,8 +59,12 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MoonAtkBridge">
+      <HintPath>..\FakeA11yBridge\MoonAtkBridge.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
     <Reference Include="system" />
@@ -90,33 +94,39 @@
     <Compile Include="BindingXaml.xaml.cs">
       <DependentUpon>BindingXaml.xaml</DependentUpon>
     </Compile>
-    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs">
+    <Compile Include="../../../../mono/mcs/class/System.Net/System.Net.Policy/BaseDomainPolicy.cs">
       <Link>BaseDomainPolicy.cs</Link>
     </Compile>
-    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs">
+    <Compile Include="../../../../mono/mcs/class/System.Net/System.Net.Policy/ClientAccessPolicy.cs">
       <Link>ClientAccessPolicy.cs</Link>
     </Compile>
-    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicyParser.cs">
+    <Compile Include="../../../../mono/mcs/class/System.Net/System.Net.Policy/ClientAccessPolicyParser.cs">
       <Link>ClientAccessPolicyParser.cs</Link>
     </Compile>
-    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/CrossDomainPolicyManager.cs">
+    <Compile Include="../../../../mono/mcs/class/System.Net/System.Net.Policy/CrossDomainPolicyManager.cs">
       <Link>CrossDomainPolicyManager.cs</Link>
     </Compile>
-    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs">
+    <Compile Include="../../../../mono/mcs/class/System.Net/System.Net.Policy/FlashCrossDomainPolicy.cs">
       <Link>FlashCrossDomainPolicy.cs</Link>
     </Compile>
-    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs">
+    <Compile Include="../../../../mono/mcs/class/System.Net/System.Net.Policy/FlashCrossDomainPolicyParser.cs">
       <Link>FlashCrossDomainPolicyParser.cs</Link>
     </Compile>
-    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/ICrossDomainPolicy.cs">
+    <Compile Include="../../../../mono/mcs/class/System.Net/System.Net.Policy/ICrossDomainPolicy.cs">
       <Link>ICrossDomainPolicy.cs</Link>
     </Compile>
     <Compile Include="misc\DefaultValues.cs" />
     <Compile Include="misc\Events\EventTest.cs" />
+    <Compile Include="misc\Parsing\EnumsTest.cs" />
+    <Compile Include="misc\Parsing\MiscParsing.cs" />
+    <Compile Include="misc\Parsing\PrimitiveTest.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\Tester.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\UIElementExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="security\DelegateTest.cs" />
+    <Compile Include="security\ElevatedTrustTest.cs" />
+    <Compile Include="security\GenericsTest.cs" />
+    <Compile Include="security\InternalsVisibleToTest.cs" />
     <Compile Include="security\MiscTest.cs" />
     <Compile Include="security\ReflectionEmitTest.cs" />
     <Compile Include="security\ReflectionTest.cs" />
@@ -130,12 +140,18 @@
     <Compile Include="System.Collections.Generic\EqualityComparerTest.cs" />
     <Compile Include="System.Collections.ObjectModel\ObservableCollectionTest.cs" />
     <Compile Include="System.Collections.Specialized\NotifyCollectionChangedEventArgsTest.cs" />
+    <Compile Include="System.ComponentModel\AsyncOperationTest.cs" />
+    <Compile Include="System.ComponentModel\BackgroundWorkerTest.cs" />
     <Compile Include="System.ComponentModel\DesignerPropertiesTest.cs" />
+    <Compile Include="System.ComponentModel\GroupDescriptionTest.cs" />
     <Compile Include="System.Diagnostics\DebuggerTest.cs" />
     <Compile Include="System.Diagnostics\StackFrameTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Net.Browser\BaseHttpWebRequestTest.cs" />
+    <Compile Include="System.Net.Browser\BrowserHttpWebRequestTest.cs" />
+    <Compile Include="System.Net.Browser\ClientHttpWebRequestTest.cs" />
     <Compile Include="System.Net.Browser\WebRequestCreatorTest.cs" />
     <Compile Include="System.Net.Sockets\SocketAyncEventArgsTest.cs" />
     <Compile Include="System.Net.Sockets\SocketTest.cs" />
@@ -149,9 +165,11 @@
     <Compile Include="System.Net\WebClientTest.cs" />
     <Compile Include="System.Net\WebHeaderCollectionTest.cs" />
     <Compile Include="System.Net\WebRequestTest.cs" />
+    <Compile Include="System.Net\WebResponseTest.cs" />
     <Compile Include="System.Reflection.Emit\ConstructorBuilderTest.cs" />
     <Compile Include="System.Reflection\AssemblyTest.cs" />
     <Compile Include="System.Reflection\ConstructorInfoTest.cs" />
+    <Compile Include="System.Runtime.Serialization.Json\DataContractJsonSerializerTest.cs" />
     <Compile Include="System.Security.Cryptography\AesManagedTest.cs" />
     <Compile Include="System.Security.Cryptography\HMAC256Test.cs" />
     <Compile Include="System.Threading\InterlockedTest.cs" />
@@ -225,8 +243,10 @@
     <Compile Include="System.Windows.Automation\WindowInteractionStateTest.cs" />
     <Compile Include="System.Windows.Automation\WindowPatternIdentifiersTest.cs" />
     <Compile Include="System.Windows.Automation\WindowVisualStateTest.cs" />
+    <Compile Include="System.Windows.Browser\BrowserInformationTest.cs" />
     <Compile Include="System.Windows.Browser\HtmlObjectTest.cs" />
     <Compile Include="System.Windows.Browser\HtmlPageTest.cs" />
+    <Compile Include="System.Windows.Browser\HtmlPopupWindowOptionsTest.cs" />
     <Compile Include="System.Windows.Browser\HtmlWindowTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptableTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptableArraysTest.cs" />
@@ -252,6 +272,7 @@
     <Compile Include="System.Windows.Controls\GridTestOrdering.cs" />
     <Compile Include="System.Windows.Controls\ImageTest.cs" />
     <Compile Include="System.Windows.Controls\InkPresenterTest.cs" />
+    <Compile Include="System.Windows.Controls\RichTextBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ScrollInfo.cs" />
     <Compile Include="System.Windows.Controls\ScrollViewer_IScrollInfoTest.cs" />
     <Compile Include="System.Windows.Controls\ItemCollectionTest.cs" />
@@ -283,6 +304,7 @@
     <Compile Include="System.Windows.Controls\UIElementCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\UserControlTest.cs" />
     <Compile Include="System.Windows.Controls\ValidationTest.cs" />
+    <Compile Include="System.Windows.Controls\ViewBoxTest.cs" />
     <Compile Include="System.Windows.Controls\VirtualizingPanelTest.cs" />
     <Compile Include="System.Windows.Data\BindingConverter.xaml.cs">
       <DependentUpon>BindingConverter.xaml</DependentUpon>
@@ -303,10 +325,16 @@
     <Compile Include="System.Windows.Documents\InlineTest.cs" />
     <Compile Include="System.Windows.Documents\LineBreakTest.cs" />
     <Compile Include="System.Windows.Documents\RunTest.cs" />
+    <Compile Include="System.Windows.Documents\TextPointerTest.cs" />
     <Compile Include="System.Windows.Ink\StrokeCollectionTest.cs" />
     <Compile Include="System.Windows.Ink\StrokeTest.cs" />
     <Compile Include="System.Windows.Input\CursorsTest.cs" />
     <Compile Include="System.Windows.Input\InputMethodTest.cs" />
+    <Compile Include="System.Windows.Input\InputScopeNameTest.cs" />
+    <Compile Include="System.Windows.Input\InputScopeTest.cs" />
+    <Compile Include="System.Windows.Input\ManipulationCompletedEventArgsTest.cs" />
+    <Compile Include="System.Windows.Input\ManipulationDeltaEventArgsTest.cs" />
+    <Compile Include="System.Windows.Input\ManipulationStartedEventArgsTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
     <Compile Include="System.Windows.Input\StylusPointCollectionTest.cs" />
     <Compile Include="System.Windows.Interop\ContentTest.cs" />
@@ -317,7 +345,9 @@
     <Compile Include="System.Windows.Media.Animation\RepeatBehaviorTest.cs" />
     <Compile Include="System.Windows.Media.Animation\StoryboardTest.cs" />
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
+    <Compile Include="System.Windows.Media.Imaging\WriteableBitmapTest.cs" />
     <Compile Include="System.Windows.Media\BrushTest.cs" />
+    <Compile Include="System.Windows.Media\CaptureDeviceConfigurationTest.cs" />
     <Compile Include="System.Windows.Media\ColorTest.cs" />
     <Compile Include="System.Windows.Media\CompositionTargetTest.cs" />
     <Compile Include="System.Windows.Media\DoubleCollectionTest.cs" />
@@ -338,6 +368,9 @@
     <Compile Include="System.Windows.Media\TransformGroupTest.cs" />
     <Compile Include="System.Windows.Media\VideoBrushTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
+    <Compile Include="System.Windows.Messaging\LocalMessageReceiverTest.cs" />
+    <Compile Include="System.Windows.Messaging\LocalMessageSenderTest.cs" />
+    <Compile Include="System.Windows.Printing\PrintDocumentTest.cs" />
     <Compile Include="System.Windows.Resources\StreamResourceInfoTest.cs" />
     <Compile Include="System.Windows.Shapes\EllipseTest.cs" />
     <Compile Include="System.Windows.Shapes\LineTest.cs" />
@@ -349,11 +382,14 @@
     </Compile>
     <Compile Include="System.Windows.Shapes\ShapeTest.cs" />
     <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
+    <Compile Include="System.Windows.Threading\DispatcherSynchronizationContextTest.cs" />
     <Compile Include="System.Windows.Threading\DispatcherTest.cs" />
+    <Compile Include="System.Windows.Threading\DispatcherTimerTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
     <Compile Include="System.Windows\ArrangingTest.cs" />
     <Compile Include="System.Windows\AssemblyPartCollectionTest.cs" />
     <Compile Include="System.Windows\AssemblyPartTest.cs" />
+    <Compile Include="System.Windows\ClipboardTest.cs" />
     <Compile Include="System.Windows\CornerRadiusTest.cs" />
     <Compile Include="System.Windows\DataTemplateTests.cs" />
     <Compile Include="System.Windows\DependencyObjectTest.cs" />
@@ -363,18 +399,21 @@
     <Compile Include="System.Windows\DurationTest.cs" />
     <Compile Include="System.Windows\FontStretchesTest.cs" />
     <Compile Include="System.Windows\FontStylesTest.cs" />
-    <Compile Include="System.Windows\FontWeigthsTest.cs" />
+    <Compile Include="System.Windows\FontWeightsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\GridLengthTest.cs" />
+    <Compile Include="System.Windows\IconTest.cs" />
     <Compile Include="System.Windows\LoadedTest.cs" />
     <Compile Include="System.Windows\LogicalTreeTest.cs" />
     <Compile Include="System.Windows\MessageBoxTest.cs" />
+    <Compile Include="System.Windows\OutOfBrowserSettingsTest.cs" />
     <Compile Include="System.Windows\PointTest.cs" />
     <Compile Include="System.Windows\PropertyPathTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
     <Compile Include="System.Windows\RectTest.cs" />
     <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
     <Compile Include="System.Windows\RoutedEventArgsTest.cs" />
+    <Compile Include="System.Windows\SecuritySettingsTest.cs" />
     <Compile Include="System.Windows\SetterBaseCollectionTest.cs" />
     <Compile Include="System.Windows\SetterTest.cs" />
     <Compile Include="System.Windows\SizeTest.cs" />
@@ -392,6 +431,7 @@
     <Compile Include="System.Windows\VSMControl.xaml.cs">
       <DependentUpon>VSMControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="System.Windows\WindowSettingsTest.cs" />
     <Compile Include="System.Xml\XmlNamespaceManagerTest.cs" />
     <Compile Include="System.Xml\XmlReaderSettingsTest.cs" />
     <Compile Include="System.Xml\XmlReaderTest.cs" />
@@ -681,6 +721,30 @@
     <Resource Include="System.Windows.Controls\ControlTemplateTest.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Parsing\MiscParsingAnimation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Parsing\MiscParsingCanvas.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Parsing\MiscParsingEvent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Parsing\MiscParsingManagedAttachedProp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Parsing\MiscParsingPrivateControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Parsing\MiscParsingTestPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
