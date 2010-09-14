@@ -146,7 +146,7 @@ Mono.Moonlight.UnitTesting.dll: ../Mono.Moonlight.UnitTesting/Mono.Moonlight.Uni
 	$(MAKE) -C ../FakeA11yBridge
 
 moon-unit.sources: $(SOURCES)
-	ls $(SOURCES) | grep -v aspx > $@
+	ls $(SOURCES) | grep -v aspx | grep -v obj/Debug > $@
 
 EXTRA_DIST = 			\
 	$(srcdir)/*xaml.cs	\
