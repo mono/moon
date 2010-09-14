@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 642 methods
+# 641 methods
 
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)

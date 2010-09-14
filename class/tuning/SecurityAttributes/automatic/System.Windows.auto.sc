@@ -1000,12 +1000,6 @@
 # p/invoke declaration
 +SC-M: System.UInt64 Mono.NativeMethods::http_request_write_event_args_get_offset(System.IntPtr)
 
-# overrides 'System.Void Mono.ToggleRef::AddToggleRefNotifyCallback()'.
-+SC-M: System.Void Mono.EventObjectToggleRef::AddToggleRefNotifyCallback()
-
-# overrides 'System.Void Mono.ToggleRef::RemoveToggleRefNotifyCallback()'.
-+SC-M: System.Void Mono.EventObjectToggleRef::RemoveToggleRefNotifyCallback()
-
 # Promoting interface member to [SecurityCritical] because of 'System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
 
@@ -1127,9 +1121,6 @@
 +SC-M: System.Void Mono.NativeMethods::event_object_add_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,Mono.GDestroyNotify,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_add_toggle_ref_notifier(System.IntPtr,Mono.ToggleRef/ToggleNotifyHandler)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_do_emit_current_context(System.IntPtr,System.Int32,System.IntPtr)
 
 # p/invoke declaration
@@ -1139,7 +1130,7 @@
 +SC-M: System.Void Mono.NativeMethods::event_object_remove_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_remove_toggle_ref_notifier(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::event_object_set_managed_handle(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_set_managed_peer_callbacks(System.IntPtr,Mono.StrongRefCallback,Mono.StrongRefCallback,Mono.MentorChangedCallback,Mono.AttachCallback,Mono.AttachCallback)
@@ -1223,6 +1214,9 @@
 +SC-M: System.Void Mono.NativeMethods::imedia_demuxer_set_is_drm(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::imedia_object_report_error_occurred(System.IntPtr,System.String)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::local_message_receiver_dispose_with_error_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
@@ -1251,6 +1245,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_element_stop(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::media_frame_set_demuxer_height(System.IntPtr,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::media_frame_set_demuxer_width(System.IntPtr,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::message_received_event_args_set_response(System.IntPtr,System.String)
