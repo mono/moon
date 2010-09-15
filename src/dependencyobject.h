@@ -156,6 +156,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void unref ();
 	
+	/* @GeneratePInvoke */
 	int GetRefCount () { return refcount; }
 	int GetId () { return flags & IdMask; }
 	

@@ -94,30 +94,20 @@ namespace Mono {
 
 						targetInfo.obj = handle.Target;
 
-#if true
-						writer.WriteLine ("  unmanaged0x{0:x} -> managed0x{1:x} [color=green];",
-								  (int)nativeref,
-								  (int)targetInfo.intptr);
-						writer.WriteLine ("  unmanaged0x{0:x} [label=\"unmanaged0x{0:x}\",fillcolor=green,style=filled];",
-								  (int)nativeref);
-
-						if (handle.Target is IRefContainer && !visited.ContainsKey (targetInfo.intptr))
-							OutputManagedRefs ((IRefContainer)handle.Target, targetInfo.intptr, writer, 1);
-#else
-						if (!(tref.reference is WeakReference) || false/*output_weak*/) {
+						bool weakref = NativeMethods.event_object_get_ref_count (nativeref) == 1;
+						if (!weakref || false/*output_weak*/) {
 							writer.WriteLine ("  unmanaged0x{0:x} -> managed0x{1:x} [label=\"{2}\",color={3}];",
 									  (int)nativeref,
 									  (int)targetInfo.intptr,
-									  tref.reference is WeakReference ? "weak" : "strong",
-									  tref.reference is WeakReference ? "green" : "red");
+									  weakref ? "weak" : "strong",
+									  weakref ? "green" : "red");
 							writer.WriteLine ("  unmanaged0x{0:x} [label=\"unmanaged0x{0:x}\",fillcolor={1},style=filled];",
 									  (int)nativeref,
-									  tref.reference is WeakReference ? "green" : "red");
+									  weakref ? "green" : "red");
 
-							if (tref.Target is IRefContainer && !visited.ContainsKey (targetInfo.intptr))
-								OutputManagedRefs ((IRefContainer)tref.Target, targetInfo.intptr, writer, 1);
+							if (handle.Target is IRefContainer && !visited.ContainsKey (targetInfo.intptr))
+								OutputManagedRefs ((IRefContainer)handle.Target, targetInfo.intptr, writer, 1);
 						}
-#endif
 					}					
 				}
 
