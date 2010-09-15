@@ -3470,7 +3470,7 @@ MoonlightEventObjectObject::~MoonlightEventObjectObject ()
 {
 	if (eo) {
 		PluginInstance *plugin;
-		if ((plugin = GetPlugin ()))
+		if ((plugin = GetPlugin ()) && !plugin->IsShuttingDown ())
 			plugin->RemoveWrappedObject (eo);
 		
 		moonlight_type = Type::INVALID;
@@ -3494,7 +3494,7 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 	MoonlightEventObjectObject *depobj;
 	NPClass *np_class;
 	
-	if (obj == NULL)
+	if (obj == NULL || plugin->IsShuttingDown ())
 		return NULL;
 	
 	depobj = (MoonlightEventObjectObject *) plugin->LookupWrappedObject (obj);

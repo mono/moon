@@ -1534,21 +1534,24 @@ PluginInstance::EventHandle (void *event)
 void
 PluginInstance::AddWrappedObject (EventObject *obj, NPObject *wrapper)
 {
-	g_hash_table_insert (wrapped_objects, obj, wrapper);
+	if (wrapped_objects)
+		g_hash_table_insert (wrapped_objects, obj, wrapper);
 }
 
 void
 PluginInstance::RemoveWrappedObject (EventObject *obj)
 {
-	if (wrapped_objects == NULL)
-		return;
-	g_hash_table_remove (wrapped_objects, obj);
+	if (wrapped_objects)
+		g_hash_table_remove (wrapped_objects, obj);
 }
 
 NPObject*
 PluginInstance::LookupWrappedObject (EventObject *obj)
 {
-	return (NPObject*)g_hash_table_lookup (wrapped_objects, obj);
+	if (wrapped_objects)
+		return (NPObject *) g_hash_table_lookup (wrapped_objects, obj);
+	
+	return NULL;
 }
 
 void
