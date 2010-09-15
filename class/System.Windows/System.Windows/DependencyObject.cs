@@ -136,12 +136,20 @@ namespace System.Windows {
 
 		internal virtual void AddStrongRef (IntPtr referent, string name)
 		{
+			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+
 			if (name == "TemplateOwner") {
-				TemplateOwner = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+#if DEBUG_REF
+				Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
+#endif
+				TemplateOwner = o as DependencyObject;
 				return;
 			}
 			else if (name == "Parent") {
-				Parent = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+#if DEBUG_REF
+				Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
+#endif
+				Parent = o as DependencyObject;
 				return;
 			}
 
@@ -150,7 +158,6 @@ namespace System.Windows {
 			if (namedRefs.ContainsKey (name))
 				return;
 
-			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
 			if (o != null) {
 
 				if (name == "") {
@@ -179,10 +186,17 @@ namespace System.Windows {
 		internal virtual void ClearStrongRef (IntPtr referent, string name)
 		{
 			if (name == "TemplateOwner") {
+#if DEBUG_REF
+				Console.WriteLine ("Clearing ref named `{3}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
+#endif
 				TemplateOwner = null;
 				return;
 			}
 			else if (name == "Parent") {
+#if DEBUG_REF
+				var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+				Console.WriteLine ("Clearing ref named `{3}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
+#endif
 				Parent = null;
 				return;
 			}
@@ -190,16 +204,14 @@ namespace System.Windows {
 			if (name == "") {
 
 #if DEBUG_REF
-				var o = NativeDependencyObjectHelper.FromIntPtr (referent);
-				Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3} (referent = {4:x})", GetHashCode(), this, o.GetHashCode(), o, (int) referent);
+				Console.WriteLine ("Clearing ref from {0}/{1} to referent = {2:x}", GetHashCode(), this, (int) referent);
 #endif
 
 				strongRefs.Remove (referent);
 			}
 			else {
 #if DEBUG_REF
-				var o = NativeDependencyObjectHelper.FromIntPtr (referent);
-				Console.WriteLine ("Clearing ref named `{4}' from {0}/{1} to {2}/{3} (referent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
+				Console.WriteLine ("Clearing ref named `{4}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
 #endif
 				namedRefs.Remove (name);
 			}
