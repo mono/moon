@@ -87,13 +87,23 @@ namespace Mono {
 				lock (NativeDependencyObjectHelper.objects) {
 					foreach (IntPtr nativeref in NativeDependencyObjectHelper.objects.Keys) {
 						Foo targetInfo;
-						EventObjectToggleRef tref = NativeDependencyObjectHelper.objects[nativeref];
+						GCHandle handle = NativeDependencyObjectHelper.objects[nativeref];
 
-						if (tref.Target == null)
+						if (handle.Target == null)
 							continue;
 
-						targetInfo.obj = tref.Target;
+						targetInfo.obj = handle.Target;
 
+#if true
+						writer.WriteLine ("  unmanaged0x{0:x} -> managed0x{1:x} [color=green];",
+								  (int)nativeref,
+								  (int)targetInfo.intptr);
+						writer.WriteLine ("  unmanaged0x{0:x} [label=\"unmanaged0x{0:x}\",fillcolor=green,style=filled];",
+								  (int)nativeref);
+
+						if (handle.Target is IRefContainer && !visited.ContainsKey (targetInfo.intptr))
+							OutputManagedRefs ((IRefContainer)handle.Target, targetInfo.intptr, writer, 1);
+#else
 						if (!(tref.reference is WeakReference) || false/*output_weak*/) {
 							writer.WriteLine ("  unmanaged0x{0:x} -> managed0x{1:x} [label=\"{2}\",color={3}];",
 									  (int)nativeref,
@@ -107,7 +117,8 @@ namespace Mono {
 							if (tref.Target is IRefContainer && !visited.ContainsKey (targetInfo.intptr))
 								OutputManagedRefs ((IRefContainer)tref.Target, targetInfo.intptr, writer, 1);
 						}
-					}
+#endif
+					}					
 				}
 
 				writer.WriteLine ("}");
