@@ -187,7 +187,12 @@ namespace Mono {
 			if (destinationType.IsAssignableFrom (value.GetType ()))
 				return value;
 			
-			Console.WriteLine ("\n\n*** Unhandled type conversion from {0} to {1}\n", value.GetType ().ToString (), destinationType.ToString ());
+			// The base implementation doesn't do anything but
+			// throw, so throw here instead so we have more
+			// context.
+			throw new NotImplementedException (String.Format ("Unimplemented type conversion from {0} to {1}",
+									  value.GetType ().ToString (),
+									  destinationType.ToString ()));
 			
 			return base.ConvertFrom (context, culture, value);
 		}
