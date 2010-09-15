@@ -202,15 +202,11 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	}
 
 	/* vertex elements */
-	{
-		unsigned i;
-
-		for (i = 0; i < 2; i++) {
-			velems[i].src_offset = i * 4 * sizeof (float);
-			velems[i].instance_divisor = 0;
-			velems[i].vertex_buffer_index = 0;
-			velems[i].src_format = PIPE_FORMAT_R32G32B32A32_FLOAT;
-		}
+	for (i = 0; i < 2; i++) {
+		velems[i].src_offset = i * 4 * sizeof (float);
+		velems[i].instance_divisor = 0;
+		velems[i].vertex_buffer_index = 0;
+		velems[i].src_format = PIPE_FORMAT_R32G32B32A32_FLOAT;
 	}
 
 	for (i = 0; i < 4; i++) {
