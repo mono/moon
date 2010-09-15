@@ -48,6 +48,7 @@ public:
 					double             y);
 
 	void TransformMatrix (double *out, const double *matrix);
+	void *GetProjectShader (double alpha);
 	
 	pipe_context *pipe;
 
@@ -68,8 +69,7 @@ public:
 	pipe_blend_state blend_over;
 
 	pipe_sampler_state project_sampler;
-	void *project_fs;
-	void *project_alpha_fs;
+	void *project_fs[2];
 };
 
 };

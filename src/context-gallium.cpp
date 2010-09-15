@@ -34,9 +34,6 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	Surface             *cs = new Surface (surface, Rect ());
 	struct pipe_screen  *screen = surface->Screen ();
 	unsigned            i;
-	struct ureg_program *ureg;
-	struct ureg_src     tex, sampler, alpha;
-	struct ureg_dst     out, tmp;
 
 	pipe = screen->context_create (screen, NULL);
 	cso  = cso_create_context (pipe);
@@ -240,34 +237,18 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	project_sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
 	project_sampler.normalized_coords = 1;
 
-	/* perspective transform fragment shader */
-	project_fs = util_make_fragment_tex_shader (pipe,
-						    TGSI_TEXTURE_2D,
-						    TGSI_INTERPOLATE_PERSPECTIVE);
-
-	/* perspective transform opacity fragment shader */
-	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
-	sampler = ureg_DECL_sampler (ureg, 0);
-	tex = ureg_DECL_fs_input (ureg,
-				  TGSI_SEMANTIC_GENERIC, 0,
-				  TGSI_INTERPOLATE_PERSPECTIVE);
-	out = ureg_DECL_output (ureg,
-				TGSI_SEMANTIC_COLOR,
-				0);
-	tmp   = ureg_DECL_temporary (ureg);
-	alpha = ureg_DECL_constant (ureg, 0);
-
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
-	ureg_MUL (ureg, out, ureg_src (tmp), alpha);
-	ureg_END (ureg);
-
-	project_alpha_fs = ureg_create_shader_and_destroy (ureg, pipe);
+	/* perspective transform fragment shaders */
+	for (i = 0; i < 2; i++)
+		project_fs[i] = NULL;
 }
 
 GalliumContext::~GalliumContext ()
 {
-	cso_delete_fragment_shader (cso, project_alpha_fs);
-	cso_delete_fragment_shader (cso, project_fs);
+	unsigned i;
+
+	for (i = 0; i < 2; i++)
+		if (project_fs[i])
+			cso_delete_fragment_shader (cso, project_fs[i]);
 
 	pipe_resource_reference (&default_texture, NULL);
 
@@ -479,6 +460,47 @@ GalliumContext::Push (Group extents)
 	surface->unref ();
 }
 
+void *
+GalliumContext::GetProjectShader (double opacity)
+{
+	unsigned            index = opacity < 1.0 ? 1 : 0;
+	struct ureg_program *ureg;
+	struct ureg_src     tex, sampler, alpha;
+	struct ureg_dst     out, tmp;
+
+	if (project_fs[index])
+		return project_fs[index];
+
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+
+	sampler = ureg_DECL_sampler (ureg, 0);
+
+	tex = ureg_DECL_fs_input (ureg,
+				  TGSI_SEMANTIC_GENERIC, 0,
+				  TGSI_INTERPOLATE_PERSPECTIVE);
+
+	out = ureg_DECL_output (ureg,
+				TGSI_SEMANTIC_COLOR,
+				0);
+
+	if (opacity < 1.0) {
+		tmp   = ureg_DECL_temporary (ureg);
+		alpha = ureg_DECL_constant (ureg, 0);
+
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+		ureg_MUL (ureg, out, ureg_src (tmp), alpha);
+	}
+	else {
+		ureg_TEX (ureg, out, TGSI_TEXTURE_2D, tex, sampler);
+	}
+
+	ureg_END (ureg);
+
+	project_fs[index] = ureg_create_shader_and_destroy (ureg, pipe);
+
+	return project_fs[index];
+}
+
 void
 GalliumContext::Project (MoonSurface  *src,
 			 const double *matrix,
@@ -491,7 +513,6 @@ GalliumContext::Project (MoonSurface  *src,
 	struct pipe_resource     *vbuf;
 	float                    cbuf[4] = { alpha, alpha, alpha, alpha };
 	double                   m[16];
-	void                     *fs = project_fs;
 
 	TransformMatrix (m, matrix);
 
@@ -521,9 +542,6 @@ GalliumContext::Project (MoonSurface  *src,
 		}
 	}
 
-	if (alpha < 1.0)
-		fs = project_alpha_fs;
-
 	cso_save_blend (cso);
 	cso_save_samplers (cso);
 	cso_save_fragment_sampler_views (cso);
@@ -535,7 +553,7 @@ GalliumContext::Project (MoonSurface  *src,
 	cso_single_sampler (cso, 0, &project_sampler);
 	cso_single_sampler_done (cso);
 	cso_set_fragment_sampler_views (cso, 1, &view);
-	cso_set_fragment_shader_handle (cso, fs);
+	cso_set_fragment_shader_handle (cso, GetProjectShader (alpha));
 
 	SetViewport ();
 	SetFramebuffer ();
