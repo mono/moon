@@ -544,6 +544,7 @@ GalliumContext::Project (MoonSurface  *src,
 	cso_save_fragment_shader (cso);
 	cso_save_framebuffer (cso);
 	cso_save_viewport (cso);
+	cso_save_rasterizer (cso);
 
 	cso_set_blend (cso, &blend_over);
 	cso_single_sampler (cso, 0, &project_sampler);
@@ -575,6 +576,7 @@ GalliumContext::Project (MoonSurface  *src,
 	cso_restore_fragment_shader (cso);
 	cso_restore_framebuffer (cso);
 	cso_restore_viewport (cso);
+	cso_restore_rasterizer (cso);
 }
 
 };
