@@ -42,6 +42,7 @@ using System.Runtime.InteropServices;
 
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Markup;
 using System.Windows.Controls;
 
@@ -547,6 +548,12 @@ namespace Mono.Xaml {
 					if (IsStructType (obj.Type)) {
 						MutableObject mutable = (MutableObject) obj.Object;
 						mutable.Object = KnownStructValueFromString (obj, value);
+						return;
+					}
+
+					if (IsSpecialCasedType (obj.Type)) {
+						MutableObject mutable = (MutableObject) obj.Object;
+						mutable.Object = SpecialCasedTypeValueFromString (obj, value);
 						return;
 					}
 
@@ -1212,6 +1219,9 @@ namespace Mono.Xaml {
 			if (o == null && IsStructType (type))
 				o = DefaultValueForStructType (type);
 
+			if (o == null && IsSpecialCasedType (type))
+				o = DefaultValueForSpecialCasedType (type);
+
 			// TODO: Why did I need this? 
 			INativeEventObjectWrapper evo = o as INativeEventObjectWrapper;
 			if (evo != null)
@@ -1323,6 +1333,29 @@ namespace Mono.Xaml {
 			return XamlTypeConverter.ConvertObject (this, element, element.Type, null, null, value);
 		}
 
+		private static bool IsSpecialCasedType (Type t)
+		{
+			//
+			// Sadly i think this list will grow.
+			//
+
+			if (t == typeof (FontFamily))
+				return true;
+			if (t == typeof (System.Windows.Input.Cursor))
+				return true;
+			
+			return false;
+		}
+
+		private static object DefaultValueForSpecialCasedType (Type t)
+		{
+			return new MutableObject (null);
+		}
+
+		private object SpecialCasedTypeValueFromString (XamlObjectElement element, string value)
+		{
+			return XamlTypeConverter.ConvertObject (this, element, element.Type, null, element.Name, value);
+		}
 		private bool IsCollectionType (Type type)
 		{
 			return typeof (IList).IsAssignableFrom (type) || typeof (IDictionary).IsAssignableFrom (type);
