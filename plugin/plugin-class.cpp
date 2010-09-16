@@ -3206,8 +3206,10 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		}
 		
 		if (value->Is (dob->GetDeployment (), Type::ENUM)) {
+			Type *type = dob->GetDeployment ()->GetTypes ()->Find (prop->GetPropertyType ());
+			const char *name = type ? type->GetName () : prop->GetName ();
 			// FIXME: Casting to gint32 here instead of gint64.
-			const char *s = enums_int_to_str (prop->GetName(), (gint32)value->AsEnum ());
+			const char *s = enums_int_to_str (name, (gint32)value->AsEnum ());
 			if (s)
 				string_to_npvariant (s, result);
 		} else
