@@ -81,7 +81,7 @@ public:
 	/* Clone a uri, but change the scheme. */
 	static Uri *CloneWithScheme (const Uri *uri_to_clone, const char *scheme);
 
-	static Uri *CombineWithSourceLocation (Deployment *deployment, const Uri *base_uri, const Uri *relative_uri);
+	static Uri *CombineWithSourceLocation (Deployment *deployment, const Uri *base_uri, const Uri *relative_uri, bool allow_escape = false);
 
 	const char *ToString () const;
 	const char *GetHttpRequestString () const;

@@ -44,7 +44,7 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	Uri *new_uri;
 
 	if (!parent_uri->IsAbsolute ()) {
-		new_uri = Uri::CombineWithSourceLocation (GetDeployment (), parent_uri, source_uri);
+		new_uri = Uri::CombineWithSourceLocation (GetDeployment (), parent_uri, source_uri, true);
 	} else {
 		new_uri = Uri::Create (parent_uri, source_uri);
 	}

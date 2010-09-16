@@ -276,7 +276,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri **uri)
 
 	// DRTs: #511
 	if (!baseUri->IsAbsolute ()) {
-		*uri = Uri::CombineWithSourceLocation (GetDeployment (), baseUri, image_uri);
+		*uri = Uri::CombineWithSourceLocation (GetDeployment (), baseUri, image_uri, true);
 	} else {
 		*uri = Uri::Create (baseUri, image);
 	}
