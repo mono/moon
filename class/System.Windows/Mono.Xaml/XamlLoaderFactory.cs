@@ -79,7 +79,6 @@ namespace Mono.Xaml {
 				return null;
 
 			int major = Int32.Parse (version_parts [0]);
-			Console.WriteLine ("MAJOR VERSION:  '{0}'", major);
 
 			if (major >= 4) {
 				Console.WriteLine ("Using managed xaml parser for Silverlight 4 application.");
