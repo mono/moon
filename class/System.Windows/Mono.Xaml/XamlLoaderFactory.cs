@@ -40,19 +40,24 @@ namespace Mono.Xaml {
 
 	internal class XamlLoaderFactory {
 
-		private static bool use_managed;
+		private static bool? use_managed;
 
 		static XamlLoaderFactory ()
 		{
-			use_managed = (Environment.GetEnvironmentVariable ("MOON_USE_MANAGED_XAML_PARSER") != null);
+			bool force_managed = (Environment.GetEnvironmentVariable ("MOON_USE_MANAGED_XAML_PARSER") != null);
 
-			if (use_managed)
-				Console.WriteLine ("using managed xaml parser.");
+			if (force_managed) {
+				Console.WriteLine ("Using managed xaml parser because MONO_USE_MANAGED_XAML_PARSER was set.");
+				use_managed = true;
+			}
 		}
 
 		public static XamlLoader CreateLoader (Assembly assembly, Uri resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			if (use_managed)
+			if (use_managed == null)
+				use_managed = ShouldUseManagedParser ();
+
+			if (use_managed != null && use_managed == true)
 				return new SL4XamlLoader (resourceBase);
 			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
@@ -60,6 +65,28 @@ namespace Mono.Xaml {
 		public static XamlLoader CreateLoader ()
 		{
 			return CreateLoader (Deployment.Current.EntryAssembly, null, Deployment.Current.Surface.Native, PluginHost.Handle);
+		}
+
+		public static bool? ShouldUseManagedParser ()
+		{
+			Deployment c = Deployment.Current;
+
+			if (c == null || c.RuntimeVersion == null)
+				return null;
+
+			string [] version_parts = c.RuntimeVersion.Split ('.');
+			if (version_parts.Length < 1)
+				return null;
+
+			int major = Int32.Parse (version_parts [0]);
+			Console.WriteLine ("MAJOR VERSION:  '{0}'", major);
+
+			if (major >= 4) {
+				Console.WriteLine ("Using managed xaml parser for Silverlight 4 application.");
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
