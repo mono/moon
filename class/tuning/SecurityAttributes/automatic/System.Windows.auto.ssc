@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 642 methods
+# 644 methods
 
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
@@ -576,6 +576,7 @@
 +SSC-M: System.String System.Windows.Messaging.SendCompletedEventArgs::get_ReceiverDomain()
 +SSC-M: System.String System.Windows.Messaging.SendCompletedEventArgs::get_ReceiverName()
 +SSC-M: System.String System.Windows.Messaging.SendCompletedEventArgs::get_Response()
++SSC-M: System.Windows.Point System.Windows.Point::FromString(System.String)
 +SSC-M: System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1::System.Collections.IEnumerable.GetEnumerator()
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1::Initialize()
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::get_Count()
@@ -588,6 +589,7 @@
 +SSC-M: T System.Windows.PresentationFrameworkCollection`1::GetItemImpl(System.Int32)
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1::SetItemImpl(System.Int32,T,System.Boolean)
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::IndexOfImpl(T,System.Boolean)
++SSC-M: System.Windows.Rect System.Windows.Rect::FromString(System.String)
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::System.Collections.Generic.IDictionary<object,object>.TryGetValue(System.Object,System.Object&)
 +SSC-M: System.Int32 System.Windows.ResourceDictionary::get_Count()
 +SSC-M: System.Object System.Windows.ResourceDictionary::get_Item(System.Object)

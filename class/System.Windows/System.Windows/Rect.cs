@@ -26,6 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
+using System;
+using System.Runtime.InteropServices;
+
 namespace System.Windows {
 
 	public struct Rect : IFormattable {
@@ -221,7 +226,22 @@ namespace System.Windows {
 		{
 			return x.GetHashCode () ^ y.GetHashCode () ^ w.GetHashCode () ^ h.GetHashCode ();
 		}
-		
+
+		internal static Rect FromString (string str)
+		{
+			if (String.IsNullOrEmpty (str))
+				throw new ArgumentNullException ("str");
+
+			IntPtr ptr = NativeMethods.rect_from_str (str);
+
+			if (ptr == IntPtr.Zero)
+				return new Rect ();
+
+			Rect r = (Rect) Marshal.PtrToStructure (ptr, typeof (Rect));
+
+			return r;
+		}
+
 		string System.IFormattable.ToString (string format, IFormatProvider provider)
 		{
 			if (String.IsNullOrEmpty (format))

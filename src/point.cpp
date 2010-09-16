@@ -44,4 +44,17 @@ Point::Transform (cairo_matrix_t *matrix)
 	return Point (nx, ny);
 }
 
+Point *
+point_from_str (const char *str)
+{
+	Point *p = new Point ();
+
+	if (!Point::FromStr (str, p)) {
+		delete p;
+		return NULL;
+	}
+
+	return p;
+}
+
 };

@@ -135,6 +135,14 @@ namespace Mono {
 						return new BitmapCache ();
 				}
 
+				if (destinationType == typeof (Rect)) {
+					return Rect.FromString (str_val);
+				}
+
+				if (destinationType == typeof (Point)) {
+					return Point.FromString (str_val);
+				}
+				
 				if (destinationType == typeof (TextDecorationCollection)) {
 					if (str_val == "Underline") {
 						return TextDecorations.Underline;

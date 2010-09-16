@@ -136,5 +136,18 @@ void Rect::Draw (cairo_t *cr, CornerRadius *round) const
 	}
 }
 
+Rect *
+rect_from_str (const char *str)
+{
+	Rect *r = new Rect ();
+
+	if (!Rect::FromStr (str, r)) {
+		delete r;
+		return NULL;
+	}
+
+	return r;
+}
+
 
 };

@@ -240,5 +240,12 @@ struct Rect {
 	static bool FromStr (const char *s, Rect *r);
 };
 
+G_BEGIN_DECLS
+
+/*@GeneratePInvoke */
+Rect *rect_from_str (const char *str);
+
+G_END_DECLS
+
 };
 #endif /* __MOON_RECT_H__ */

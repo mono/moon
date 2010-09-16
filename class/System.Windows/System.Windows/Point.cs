@@ -26,6 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
+using System;
+using System.Runtime.InteropServices;
+
+
 namespace System.Windows {
 	public struct Point : IFormattable  {
 		double x, y;
@@ -82,6 +88,21 @@ namespace System.Windows {
 		public double Y {
 			get { return y; }
 			set { y = value; } 
+		}
+
+		internal static Point FromString (string str)
+		{
+			if (String.IsNullOrEmpty (str))
+				throw new ArgumentNullException ("str");
+
+			IntPtr ptr = NativeMethods.point_from_str (str);
+
+			if (ptr == IntPtr.Zero)
+				return new Point ();
+
+			Point p = (Point) Marshal.PtrToStructure (ptr, typeof (Point));
+
+			return p;
 		}
 
 		string System.IFormattable.ToString (string format, IFormatProvider provider)

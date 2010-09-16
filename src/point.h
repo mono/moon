@@ -18,6 +18,7 @@
 namespace Moonlight {
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows */
 struct Point {
 public:
 	double x, y;
@@ -67,5 +68,11 @@ public:
 	static bool FromStr (const char *s, Point *p);
 };
 
+G_BEGIN_DECLS
+
+/* @GeneratePInvoke */
+Point *point_from_str (const char *str);
+
+G_END_DECLS
 };
 #endif /* __MOON_POINT_H__ */
