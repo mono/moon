@@ -465,7 +465,7 @@ start_element (void *data, const char *el, const char **attr)
 		return;
 	
 	if (info->skip >= 0) {
-		(info->depth)++;
+		info->depth++;
 		return;
 	}
 	
@@ -527,16 +527,24 @@ start_element (void *data, const char *el, const char **attr)
 						failed = true;
 				} else if (!g_ascii_strcasecmp ("TileSize", attr[i])) {
 					if (!(parsed & DZParsedTileSize)) {
+						// technically this value must be a power of 2
 						failed = !Int32TryParse (attr[i+1], &info->tile_size, &err) || info->tile_size <= 0;
 						parsed |= DZParsedTileSize;
 					} else
 						failed = true;
 				} else if (!g_ascii_strcasecmp ("MaxLevel", attr[i])) {
 					if (!(parsed & DZParsedMaxLevel)) {
+						// must be less than or equal to log2(TileSize)
 						failed = !Int32TryParse (attr[i+1], &info->max_level, &err) || info->max_level < 0;
 						parsed |= DZParsedMaxLevel;
 					} else
 						failed = true;
+				} else if (!g_ascii_strcasecmp ("NextItemId", attr[i])) {
+					// This attr would tell us the number
+					// of items we're likely to encounter,
+					// but beyond that it is useless.
+				} else if (!g_ascii_strcasecmp ("Quality", attr[i])) {
+					// This attr is not useful to us.
 				} else {
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 				}
@@ -642,6 +650,9 @@ start_element (void *data, const char *el, const char **attr)
 							parsed |= DZParsedSource;
 						} else
 							failed = true;
+					} else if (!g_ascii_strcasecmp ("IsPath", attr[i])) {
+						// This attribute must always have a value of "1" or
+						// "true" for our uses, so it is safe to ignore it.
 					} else if (!g_ascii_strcasecmp ("Id", attr[i])) {
 						if (!(parsed & DZParsedId)) {
 							failed = !Int32TryParse (attr[i+1], &info->current_subimage->id, &err) ||
@@ -822,7 +833,7 @@ start_element (void *data, const char *el, const char **attr)
 		break;
 	}
 	
-	(info->depth)++;
+	info->depth++;
 }
 
 void
@@ -833,7 +844,7 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 	if (info->error)
 		return;
 	
-	(info->depth)--;
+	info->depth--;
 
 	if (info->skip < 0) {
 		switch (info->depth) {
