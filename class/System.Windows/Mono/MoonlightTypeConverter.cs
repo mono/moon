@@ -142,6 +142,10 @@ namespace Mono {
 				if (destinationType == typeof (Point)) {
 					return Point.FromString (str_val);
 				}
+
+				if (destinationType == typeof (FontFamily)) {
+					return new FontFamily (str_val);
+				}
 				
 				if (destinationType == typeof (TextDecorationCollection)) {
 					if (str_val == "Underline") {
