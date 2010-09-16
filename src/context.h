@@ -107,6 +107,11 @@ public:
 			      double       alpha,
 			      double       x,
 			      double       y);
+
+	virtual void Blur (MoonSurface *src,
+			   double      radius,
+			   double      x,
+			   double      y);
 };
 
 };

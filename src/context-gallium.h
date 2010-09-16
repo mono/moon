@@ -14,6 +14,8 @@
 #include "context.h"
 #include "surface-gallium.h"
 
+#define MAX_CONVOLVE_SIZE 32
+
 #ifdef __MOON_GALLIUM__
 
 #include "pipe/p_context.h"
@@ -34,6 +36,11 @@ public:
 		      double       x,
 		      double       y);
 
+	void Blur (MoonSurface *src,
+		   double      radius,
+		   double      x,
+		   double      y);
+
 // private:
 	void SetFramebuffer ();
 	void SetScissor ();
@@ -49,6 +56,7 @@ public:
 
 	void TransformMatrix (double *out, const double *matrix);
 	void *GetProjectShader (double alpha);
+	void *GetConvolveShader (unsigned size);
 	
 	pipe_context *pipe;
 
@@ -67,9 +75,13 @@ public:
 	int is_softpipe;
 
 	pipe_blend_state blend_over;
+	pipe_blend_state blend_src;
 
 	pipe_sampler_state project_sampler;
 	void *project_fs[2];
+
+	void *convolve_fs[MAX_CONVOLVE_SIZE + 1];
+	pipe_sampler_state convolve_sampler;
 };
 
 };

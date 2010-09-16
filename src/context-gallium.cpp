@@ -13,6 +13,7 @@
 #define __MOON_GALLIUM__
 
 #include "projection.h"
+#include "effect.h"
 #include "context-gallium.h"
 
 #ifdef CLAMP
@@ -25,6 +26,7 @@
 #include "util/u_draw_quad.h"
 #include "pipe/p_screen.h"
 #include "tgsi/tgsi_ureg.h"
+#include "tgsi/tgsi_dump.h"
 
 namespace Moonlight {
 
@@ -214,6 +216,15 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 		vertices[i][1][3] = 1.0f; /* q */
 	}
 
+	/* blend src */
+	memset (&blend_src, 0, sizeof (struct pipe_blend_state));
+	blend_src.rt[0].colormask |= PIPE_MASK_RGBA;
+	blend_src.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend_src.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend_src.rt[0].blend_enable = 0;
+	blend_src.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	blend_src.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
+
 	/* blend over */
 	memset (&blend_over, 0, sizeof (struct pipe_blend_state));
 	blend_over.rt[0].colormask |= PIPE_MASK_RGBA;
@@ -236,11 +247,29 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	/* perspective transform fragment shaders */
 	for (i = 0; i < 2; i++)
 		project_fs[i] = NULL;
+
+	/* convolve fragment shaders */
+	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
+		convolve_fs[i] = NULL;
+
+	/* convolution sampler */
+	memset (&convolve_sampler, 0, sizeof (struct pipe_sampler_state));
+	convolve_sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	convolve_sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	convolve_sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	convolve_sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
+	convolve_sampler.min_img_filter = PIPE_TEX_FILTER_LINEAR;
+	convolve_sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
+	convolve_sampler.normalized_coords = 1;
 }
 
 GalliumContext::~GalliumContext ()
 {
 	unsigned i;
+
+	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
+		if (convolve_fs[i])
+			cso_delete_fragment_shader (cso, convolve_fs[i]);
 
 	for (i = 0; i < 2; i++)
 		if (project_fs[i])
@@ -577,6 +606,216 @@ GalliumContext::Project (MoonSurface  *src,
 	cso_restore_framebuffer (cso);
 	cso_restore_viewport (cso);
 	cso_restore_rasterizer (cso);
+}
+
+void *
+GalliumContext::GetConvolveShader (unsigned size)
+{
+	struct ureg_program *ureg;
+	struct ureg_src     tex, sampler;
+	struct ureg_dst     out, val, off, tmp;
+	unsigned            i;
+
+	g_assert (size <= MAX_CONVOLVE_SIZE);
+
+	if (convolve_fs[size])
+		return convolve_fs[size];
+
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+
+	sampler = ureg_DECL_sampler (ureg, 0);
+
+	tex = ureg_DECL_fs_input (ureg,
+				  TGSI_SEMANTIC_GENERIC, 0,
+				  TGSI_INTERPOLATE_LINEAR);
+
+	out = ureg_DECL_output (ureg,
+				TGSI_SEMANTIC_COLOR,
+				0);
+
+	val = ureg_DECL_temporary (ureg);
+	off = ureg_DECL_temporary (ureg);
+	tmp = ureg_DECL_temporary (ureg);
+
+	ureg_ADD (ureg, off, tex, ureg_DECL_constant (ureg, 2));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+	ureg_MUL (ureg, val, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, 3));
+
+	ureg_SUB (ureg, off, tex, ureg_DECL_constant (ureg, 2));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+	ureg_MAD (ureg, val, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, 3),
+		  ureg_src (val));
+
+	for (i = 2; i <= size; i++) {
+		ureg_ADD (ureg, off, tex, ureg_DECL_constant (ureg, i * 2));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, i * 2 + 1),
+			  ureg_src (val));
+		ureg_SUB (ureg, off, tex, ureg_DECL_constant (ureg, i * 2));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, i * 2 + 1),
+			  ureg_src (val));
+	}
+
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+	ureg_MAD (ureg, out, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, 1),
+		  ureg_src (val));
+
+	ureg_END (ureg);
+
+	convolve_fs[size] = ureg_create_shader_and_destroy (ureg, pipe);
+
+	return convolve_fs[size];
+}
+
+void
+GalliumContext::Blur (MoonSurface *src,
+		      double      radius,
+		      double      x,
+		      double      y)
+{
+	GalliumSurface           *surface = (GalliumSurface *) src;
+	struct pipe_sampler_view *view = surface->SamplerView ();
+	struct pipe_resource     *tex = surface->Texture ();
+	GalliumSurface           *intermediate;
+	struct pipe_resource     *vbuf;
+	const double             precision = 1.0 / 256.0;
+	double                   values[MAX_CONVOLVE_SIZE + 1];
+	float                    cbuf[MAX_CONVOLVE_SIZE + 1][2][4];
+	Rect                     r = Rect (0, 0, tex->width0, tex->height0);
+	int                      size, i;
+	double                   m[16];
+
+	Matrix3D::Identity (m);
+
+	size = Effect::ComputeGaussianSamples (radius, precision, values);
+	if (size == 0) {
+		Project (src, m, 1.0, x, y);
+		return;
+	}
+
+	TransformMatrix (m, m);
+
+	// software optimization that can hopefully be removed one day
+	if (is_softpipe) {
+		int x0, y0;
+
+		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+			Effect::Blur (this,
+				      src,
+				      radius,
+				      x + x0,
+				      y + y0,
+				      r.width,
+				      r.height);
+			return;
+		}
+	}
+
+	intermediate = new GalliumSurface (pipe, r.width, r.height);
+
+	for (i = 0; i <= size; i++) {
+		cbuf[i][1][0] = values[i];
+		cbuf[i][1][1] = values[i];
+		cbuf[i][1][2] = values[i];
+		cbuf[i][1][3] = values[i];
+	}
+
+	cso_save_blend (cso);
+	cso_save_samplers (cso);
+	cso_save_fragment_sampler_views (cso);
+	cso_save_fragment_shader (cso);
+	cso_save_framebuffer (cso);
+	cso_save_viewport (cso);
+	cso_save_rasterizer (cso);
+
+	cso_set_fragment_shader_handle (cso, GetConvolveShader (size));
+
+	Context::Push (Group (r), intermediate);
+
+	cso_set_blend (cso, &blend_src);
+	cso_single_sampler (cso, 0, &convolve_sampler);
+	cso_single_sampler_done (cso);
+	cso_set_fragment_sampler_views (cso, 1, &view);
+
+	SetViewport ();
+	SetFramebuffer ();
+	SetScissor ();
+	SetRasterizer ();
+
+	for (i = 0; i <= size; i++) {
+		cbuf[i][0][0] = i / r.width;
+		cbuf[i][0][1] = 0.0f;
+		cbuf[i][0][2] = 0.0f;
+		cbuf[i][0][3] = 1.0f;
+	}
+
+	SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
+
+	vbuf = SetupVertexData (tex, &convolve_sampler, NULL, 0, 0);
+	if (vbuf) {
+		cso_set_vertex_elements (cso, 2, velems);
+		util_draw_vertex_buffer (pipe, vbuf, 0,
+					 PIPE_PRIM_TRIANGLE_FAN,
+					 4,
+					 2);
+
+		pipe_resource_reference (&vbuf, NULL);
+	}
+
+	r = Pop (&src);
+	if (!r.IsEmpty ()) {
+		GalliumSurface           *surface = (GalliumSurface *) src;
+		struct pipe_sampler_view *view = surface->SamplerView ();
+		struct pipe_resource     *tex = surface->Texture ();
+
+		cso_set_blend (cso, &blend_over);
+		cso_single_sampler (cso, 0, &convolve_sampler);
+		cso_single_sampler_done (cso);
+		cso_set_fragment_sampler_views (cso, 1, &view);
+
+		SetViewport ();
+		SetFramebuffer ();
+		SetScissor ();
+		SetRasterizer ();
+
+		for (i = 0; i <= size; i++) {
+			cbuf[i][0][0] = 0.0f;
+			cbuf[i][0][1] = i / r.height;
+			cbuf[i][0][2] = 0.0f;
+			cbuf[i][0][3] = 1.0f;
+		}
+
+		SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
+
+		vbuf = SetupVertexData (tex, &convolve_sampler, m, x, y);
+		if (vbuf) {
+			cso_set_vertex_elements (cso, 2, velems);
+			util_draw_vertex_buffer (pipe, vbuf, 0,
+						 PIPE_PRIM_TRIANGLE_FAN,
+						 4,
+						 2);
+
+			pipe_resource_reference (&vbuf, NULL);
+		}
+
+		src->unref ();
+	}
+
+	cso_restore_blend (cso);
+	cso_restore_samplers (cso);
+	cso_restore_fragment_sampler_views (cso);
+	cso_restore_fragment_shader (cso);
+	cso_restore_framebuffer (cso);
+	cso_restore_viewport (cso);
+	cso_restore_rasterizer (cso);
+
+	intermediate->unref ();
 }
 
 };

@@ -559,9 +559,9 @@ Effect::Initialize ()
 }
 
 int
-Effect::CalculateGaussianSamples (double radius,
-				  double precision,
-				  double *row)
+Effect::ComputeGaussianSamples (double radius,
+				double precision,
+				double *row)
 {
 	double sigma = radius / 3.0;
 	double coeff = 2.0 * sigma * sigma;
@@ -601,7 +601,7 @@ Effect::UpdateFilterValues (double radius,
 {
 	int n;
 
-	n = CalculateGaussianSamples (radius, 1.0 / 256.0, values);
+	n = ComputeGaussianSamples (radius, 1.0 / 256.0, values);
 	if (n != *size) {
 		*size = n;
 		g_free (*table);
@@ -642,6 +642,80 @@ Effect::UpdateFilterValues (double radius,
 			left[j] = right[j] = (int)
 				(values[i] * (double) (j << 16));
 	}
+}
+
+void
+Effect::Blur (Context     *ctx,
+	      MoonSurface *src,
+	      double      radius,
+	      double      x,
+	      double      y,
+	      double      width,
+	      double      height)
+{
+	const cairo_format_t format = CAIRO_FORMAT_ARGB32;
+	cairo_surface_t      *surface = src->Cairo ();
+	cairo_t              *cr = ctx->Cairo ();
+	Rect                 r = Rect (x, y, width, height);
+	unsigned char        *data;
+	int                  stride, n = 0;
+	double               values[MAX_BLUR_RADIUS + 1];
+	int                  **table = NULL;
+
+	UpdateFilterValues (radius, values, &table, &n);
+
+	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE) {
+		cairo_surface_t *image;
+		cairo_t         *cr;
+
+		image = cairo_image_surface_create (format, width, height);
+
+		cr = cairo_create (image);
+		cairo_set_source_surface (cr, surface, 0, 0);
+		cairo_paint (cr);
+		cairo_destroy (cr);
+		cairo_surface_destroy (surface);
+		surface = image;
+	}
+
+	stride = cairo_image_surface_get_stride (surface);
+	data   = (unsigned char *) g_malloc (stride * height);
+
+	cairo_save (cr);
+	cairo_identity_matrix (cr);
+	r.RoundOut ().Draw (cr);
+	cairo_clip (cr);
+
+	if (n) {
+		cairo_surface_t *image;
+
+		sw_filter_blur (cairo_image_surface_get_data (surface),
+				data,
+				width,
+				height,
+				stride,
+				n,
+				table);
+
+		image = cairo_image_surface_create_for_data (data,
+							     format,
+							     width,
+							     height,
+							     stride);
+
+		cairo_set_source_surface (cr, image, x, y);
+		cairo_surface_destroy (image);
+	}
+	else {
+		cairo_set_source_surface (cr, surface, x, y);
+	}
+
+	cairo_paint (cr);
+	cairo_restore (cr);
+
+	g_free (data);
+	cairo_surface_destroy (surface);
+	g_free (table);
 }
 
 void
@@ -906,10 +980,6 @@ BlurEffect::BlurEffect ()
 {
 	SetObjectType (Type::BLUREFFECT);
 
-	fs = NULL;
-	horz_pass_constant_buffer = NULL;
-	vert_pass_constant_buffer = NULL;
-	filter_size = 0;
 	nfiltervalues = 0;
 	filtertable = NULL;
 	need_filter_update = true;
@@ -918,25 +988,6 @@ BlurEffect::BlurEffect ()
 BlurEffect::~BlurEffect ()
 {
 	g_free (filtertable);
-	Clear ();
-}
-
-void
-BlurEffect::Clear ()
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext *ctx = st_context;
-
-	pipe_resource_reference (&horz_pass_constant_buffer, NULL);
-	pipe_resource_reference (&vert_pass_constant_buffer, NULL);
-
-	if (fs) {
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
-	}
-#endif
-
 }
 
 void
@@ -959,7 +1010,7 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 
-	need_update = need_filter_update = true;
+	need_filter_update = true;
 
 	NotifyListenersOfPropertyChange (args, error);
 }
@@ -973,154 +1024,6 @@ BlurEffect::Padding ()
 }
 
 bool
-BlurEffect::Composite (pipe_surface_t  *dst,
-		       pipe_sampler_view *src,
-		       const double    *matrix,
-		       double          dstX,
-		       double          dstY,
-		       const Rect      *clip,
-		       double          x,
-		       double          y,
-		       double          width,
-		       double          height)
-{
-	
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	struct pipe_screen   *screen = ctx->pipe->screen;
-	GalliumSurface       *intermediate;
-	struct pipe_surface  *intermediate_surface;
-	struct pipe_resource *vertices, *intermediate_vertices;
-	pipe_sampler_view    *sampler_views[PIPE_MAX_SAMPLERS];
-	double               s = src->texture->width0;
-	double               t = src->texture->height0;
-
-	MaybeUpdateFilter ();
-	MaybeUpdateShader ();
-
-	if (!fs)
-		return 0;
-
-	intermediate = new GalliumSurface (ctx->pipe,
-					   src->texture->width0,
-					   src->texture->height0);
-	if (!intermediate)
-		return 0;
-
-	intermediate_surface =
-		screen->get_tex_surface (screen,
-					 intermediate->Texture (),
-					 0,
-					 0,
-					 0,
-					 PIPE_BIND_RENDER_TARGET);
-	if (!intermediate_surface) {
-		intermediate->unref ();
-		return 0;
-	}
-
-	vertices = CreateVertexBuffer (intermediate->Texture (), matrix,
-				       x, y,
-				       width, height,
-				       s, t);
-	if (!vertices) {
-		pipe_surface_reference (&intermediate_surface, NULL);
-		intermediate->unref ();
-		return 0;
-	}
-
-	intermediate_vertices = CreateVertexBuffer (src->texture, NULL,
-						    0.0, 0.0,
-						    s, t,
-						    s, t);
-	if (!intermediate_vertices) {
-		pipe_resource_reference (&vertices, NULL);
-		pipe_surface_reference (&intermediate_surface, NULL);
-		intermediate->unref ();
-		return 0;
-	}
-
-	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
-		pipe_resource_reference (&intermediate_vertices, NULL);
-		pipe_resource_reference (&vertices, NULL);
-		pipe_surface_reference (&intermediate_surface, NULL);
-		intermediate->unref ();
-		return 0;
-	}
-
-	cso_save_fragment_sampler_views (ctx->cso);
-
-	struct pipe_sampler_state sampler;
-	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	sampler.min_img_filter = PIPE_TEX_FILTER_NEAREST;
-	sampler.mag_img_filter = PIPE_TEX_FILTER_NEAREST;
-	sampler.normalized_coords = 0;
-	cso_single_sampler(ctx->cso, 0, &sampler);
-	cso_single_sampler_done(ctx->cso);
-
-	sampler_views[0] = src;
-	cso_set_fragment_sampler_views (ctx->cso, 1, sampler_views);
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, horz_pass_constant_buffer);
-
-	struct pipe_blend_state blend;
-	memset (&blend, 0, sizeof (blend));
-	blend.rt[0].colormask |= PIPE_MASK_RGBA;
-	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].blend_enable = 0;
-	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
-	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
-	cso_set_blend (ctx->cso, &blend);
-
-	DrawVertexBuffer (intermediate_surface, intermediate_vertices,
-			  0.0, 0.0);
-
-	sampler_views[0] = intermediate->SamplerView ();
-	cso_set_fragment_sampler_views (ctx->cso, 1, sampler_views);
-	
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, vert_pass_constant_buffer);
-
-	memset (&blend, 0, sizeof (blend));
-	blend.rt[0].colormask |= PIPE_MASK_RGBA;
-	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].blend_enable = 1;
-	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	cso_set_blend (ctx->cso, &blend);
-
-	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, NULL);
-
-	cso_restore_fragment_sampler_views (ctx->cso);
-
-	pipe_resource_reference (&intermediate_vertices, NULL);
-	pipe_resource_reference (&vertices, NULL);
-	pipe_surface_reference (&intermediate_surface, NULL);
-	intermediate->unref ();
-
-	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
-
-	return 1;
-#else
-	return 0;
-#endif
-
-}
-
-bool
 BlurEffect::Render (Context      *ctx,
 		    MoonSurface  *src,
 		    const double *matrix,
@@ -1129,183 +1032,8 @@ BlurEffect::Render (Context      *ctx,
 		    double       width,
 		    double       height)
 {
-	cairo_surface_t *cs = src->Cairo ();
-
-	MaybeUpdateFilter ();
-
-	/* table based filter code when possible */
-	if (cairo_surface_get_type (cs) == CAIRO_SURFACE_TYPE_IMAGE) {
-		int           pw = cairo_image_surface_get_width (cs);
-		int           ph = cairo_image_surface_get_height (cs);
-		int           stride = cairo_image_surface_get_stride (cs);
-		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
-		Rect          r = Rect (x, y, width, height);
-		cairo_t       *cr = ctx->Cairo ();
-
-		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		r.RoundOut ().Draw (cr);
-		cairo_clip (cr);
-
-		if (nfiltervalues) {
-			const cairo_format_t format = CAIRO_FORMAT_ARGB32;
-			cairo_surface_t      *image;
-
-			sw_filter_blur (cairo_image_surface_get_data (cs),
-					data,
-					pw,
-					ph,
-					stride,
-					nfiltervalues,
-					filtertable);
-
-			image = cairo_image_surface_create_for_data (data,
-								     format,
-								     pw,
-								     ph,
-								     stride);
-
-			cairo_set_source_surface (cr, image, r.x, r.y);
-			cairo_surface_destroy (image);
-		}
-		else {
-			cairo_set_source_surface (cr, cs, r.x, r.y);
-		}
-
-		cairo_paint (cr);
-		cairo_restore (cr);
-
-		g_free (data);
-		cairo_surface_destroy (cs);
-
-		return 1;
-	}
-
-	cairo_surface_destroy (cs);
-
-	return Effect::Render (ctx, src, matrix, x, y, width, height);
-}
-
-void
-BlurEffect::UpdateShader ()
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	int                  width = nfiltervalues;
-	float                *horz, *vert;
-	struct pipe_transfer *horz_transfer = NULL, *vert_transfer = NULL;
-	int                  i;
-
-	if (width != filter_size && width > 0) {
-		struct ureg_program *ureg;
-		struct ureg_src     sampler, tex;
-		struct ureg_dst     out;
-
-		Clear ();
-
-		filter_size = width;
-
-		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
-		if (!ureg)
-			return;
-
-		sampler = ureg_DECL_sampler (ureg, 0);
-
-		tex = ureg_DECL_fs_input (ureg,
-					  TGSI_SEMANTIC_GENERIC, 0,
-					  TGSI_INTERPOLATE_LINEAR);
-
-		out = ureg_DECL_output (ureg,
-					TGSI_SEMANTIC_COLOR,
-					0);
-
-		ureg_convolution (ureg, out, sampler, tex, width, 0);
-
-		ureg_END (ureg);
-
-#if LOGGING
-		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
-			printf ("BlurEffect::UpdateShader: TGSI shader:\n");
-			tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
-		}
-#endif
-
-		fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
-		if (!fs)
-			return;
-
-		horz_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen,
-					    PIPE_BIND_CONSTANT_BUFFER,
-					    sizeof (float) * 4 * (width * 2 + 1));
-		if (!horz_pass_constant_buffer) {
-			Clear ();
-			return;
-		}
-
-		vert_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen,
-					    PIPE_BIND_CONSTANT_BUFFER,
-					    sizeof (float) * 4 * (width * 2 + 1));
-		if (!vert_pass_constant_buffer) {
-			Clear ();
-			return;
-		}
-	}
-	else {
-		filter_size = width;
-		if (filter_size == 0)
-			return;
-	}
-
-	horz = (float *) pipe_buffer_map (ctx->pipe,
-					  horz_pass_constant_buffer,
-					  PIPE_TRANSFER_WRITE,
-					  &horz_transfer);
-	if (!horz) {
-		Clear ();
-		return;
-	}
-
-	vert = (float *) pipe_buffer_map (ctx->pipe,
-					  vert_pass_constant_buffer,
-					  PIPE_TRANSFER_WRITE,
-					  &vert_transfer);
-	if (!vert) {
-		pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
-		Clear ();
-		return;
-	}
-
-	for (i = 1; i <= width; i++) {
-		*horz++ = i;
-		*horz++ = 0.f;
-		*horz++ = 0.f;
-		*horz++ = 1.f;
-
-		*vert++ = 0.f;
-		*vert++ = i;
-		*vert++ = 0.f;
-		*vert++ = 1.f;
-	}
-
-	for (i = 0; i <= width; i++) {
-		*horz++ = filtervalues[i];
-		*horz++ = filtervalues[i];
-		*horz++ = filtervalues[i];
-		*horz++ = filtervalues[i];
-
-		*vert++ = filtervalues[i];
-		*vert++ = filtervalues[i];
-		*vert++ = filtervalues[i];
-		*vert++ = filtervalues[i];
-	}
-
-	pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
-	pipe_buffer_unmap (ctx->pipe, vert_pass_constant_buffer, vert_transfer);
-#endif
-
+	ctx->Blur (src, MIN (GetRadius (), MAX_BLUR_RADIUS), x, y);
+	return 1;
 }
 
 DropShadowEffect::DropShadowEffect ()

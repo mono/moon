@@ -113,6 +113,18 @@ public:
 	static void Initialize ();
 	static void Shutdown ();
 
+	static int ComputeGaussianSamples (double radius,
+					   double precision,
+					   double *row);
+
+	static void Blur (Context     *ctx,
+			  MoonSurface *src,
+			  double      radius,
+			  double      x,
+			  double      y,
+			  double      width,
+			  double      height);
+
 protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();
@@ -169,9 +181,6 @@ protected:
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
 
-	static int CalculateGaussianSamples (double radius,
-					     double precision,
-					     double *row);
 	static void UpdateFilterValues (double radius,
 					double *values,
 					int    ***table,
@@ -225,28 +234,7 @@ protected:
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
-	void Clear ();
 	void MaybeUpdateFilter ();
-
-	bool Composite (pipe_surface_t  *dst,
-			pipe_sampler_view *src,
-			const double    *matrix,
-			double          dstX,
-			double          dstY,
-			const Rect      *clip,
-			double          x,
-			double          y,
-			double          width,
-			double          height);
-
-	void UpdateShader ();
-
-	void *fs;
-
-	pipe_resource_t *horz_pass_constant_buffer;
-	pipe_resource_t *vert_pass_constant_buffer;
-
-	int filter_size;
 
 	int    nfiltervalues;
 	double filtervalues[MAX_BLUR_RADIUS + 1];

@@ -239,4 +239,13 @@ Context::Project (MoonSurface  *src,
 	g_warning ("Context::Project has been called. The derived class should have overridden it.");
 }
 
+void
+Context::Blur (MoonSurface  *src,
+	       double       radius,
+	       double       x,
+	       double       y)
+{
+	g_warning ("Context::Blur has been called. The derived class should have overridden it.");
+}
+
 };
