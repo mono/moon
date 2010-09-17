@@ -695,6 +695,12 @@ namespace Mono.Xaml {
 			case "Class":
 				// The class attribute is handled when we initialize the element
 				return;
+			case "ClassModifier":
+			case "FieldModifier":
+				// There are no docs on whether these change anything
+				// internally on silverlight.
+				// But I think they are only a tooling issue.
+				return;
 			case "Uid":
                                // This attribute is just ignored, but allowed.
                                return;
@@ -1102,6 +1108,8 @@ namespace Mono.Xaml {
 			bool res = (t != null && t.IsPublic);
 
 			if (!res && t != null && !t.IsPublic) {
+				if (typeof (DependencyObject).Assembly != t.Assembly)
+					return true;
 				if (typeof (DependencyObject).Assembly == t.Assembly && IsValidInternalType (t))
 					res = true;
 			}
@@ -1144,8 +1152,8 @@ namespace Mono.Xaml {
 				var col = from a in Deployment.Current.Assemblies where (t = a.GetType (name)) != null select t;
 				if (col.Count () > 0) {
 					t = col.First ();
-					if (IsValidType (t))
-						return t;
+					if (IsValidType (t)) 
+						return t;					
 				}
 			}
 
