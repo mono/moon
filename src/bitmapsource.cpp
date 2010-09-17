@@ -61,6 +61,12 @@ BitmapSource::OnIsAttachedChanged (bool value)
 			cairo_surface_destroy (native_surface);
 			native_surface = NULL;
 		}
+	} else {
+		if (native_surface == NULL && image_surface == NULL) {
+			// #246 requires this - it detaches and then reattaches
+			// glyphs, and without this they don't show up again.
+			Invalidate ();
+		}
 	}
 }
 
