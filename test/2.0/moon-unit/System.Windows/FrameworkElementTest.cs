@@ -1164,6 +1164,34 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("Moonlight fails to break the inheritance chain here")]
+		public void PropertyInheritance_FlowDirection ()
+		{
+			var stack = new StackPanel ();
+			var image = new Image ();
+			var border = new Border ();
+			stack.Children.Add (image);
+			stack.Children.Add (border);
+			TestPanel.Children.Add (stack);
+
+			// Some elements break the inheritance of default values
+			// for Flow direction
+			Enqueue (() => {
+					Assert.AreEqual (stack.FlowDirection, FlowDirection.LeftToRight, "#1");
+					Assert.AreEqual (image.FlowDirection, FlowDirection.LeftToRight, "#2.1");
+					Assert.AreEqual (border.FlowDirection, FlowDirection.LeftToRight, "#2.2");
+					stack.FlowDirection = FlowDirection.RightToLeft;
+					TestPanel.UpdateLayout ();
+					Assert.AreEqual (stack.FlowDirection, FlowDirection.RightToLeft, "#3");
+					Assert.AreEqual (image.FlowDirection, FlowDirection.LeftToRight, "#4.1");
+					Assert.AreEqual (border.FlowDirection, FlowDirection.RightToLeft, "#4.2");
+					Assert.AreEqual (DependencyProperty.UnsetValue, border.ReadLocalValue (FrameworkElement.FlowDirectionProperty), "#5");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
 		[MoonlightBug ("SL catches the exception and wraps it in another exception and throws the wrapper exception to propagate the error")]
 		public void UpdateLayout_ArrangeException ()
 		{
