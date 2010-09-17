@@ -312,7 +312,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Contains_TypeAsKey_DoesNotThrow ()
 		{
 			ResourceDictionary rd = new ResourceDictionary ();
@@ -348,7 +347,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Contains_TypeAsKeyItemRegisteredInXaml_ReturnsFalse ()
 		{
 			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -360,7 +358,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-                [MoonlightBug]
 		public void Contains_TypeAsKeyStyleWithTargetTypeSet_ReturnsTrue ()
 		{
 			ResourceDictionary rd = new ResourceDictionary ();
@@ -376,7 +373,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Contains_TypeNameAsKeyStyleWithTargetTypeSet_ReturnsFalse ()
 		{
 			ResourceDictionary rd = new ResourceDictionary ();

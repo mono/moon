@@ -83,15 +83,20 @@ namespace System.Windows {
 		
 		public object this[object key] { 
 			get {
+				if (!(key is string || key is Type))
+					throw new ArgumentException ("Key must be a string or Type");
+
 				// check our cache
 				if (managedDict.ContainsKey (key))
 					return managedDict[key];
 
 				// now iterate over the merged dictionaries
 				PresentationFrameworkCollection<ResourceDictionary> col = MergedDictionaries;
-				foreach (ResourceDictionary rd in col) {
+				for (int i = col.Count - 1; i >= 0; i --) {
+					ResourceDictionary rd = col[i];
+
 					if (rd.Contains (key))
-						return rd[key];
+						return true;
 				}
 
 				return null;
@@ -225,6 +230,10 @@ namespace System.Windows {
 			if (IsReadOnly || IsFixedSize)
 				throw new NotSupportedException ();
 
+			Style s = value as Style;
+			if (s == null || s.TargetType != key)
+				throw new ArgumentException ("Type as key can only be used with Styles whose target type is the same as the key");
+
 			// we only add it to the managed dictionary,
 			// since unmanaged doesn't know about type
 			// keys at all.
@@ -242,10 +251,18 @@ namespace System.Windows {
 		
 		public bool Contains (object key)
 		{
+			if (key == null)
+				throw new ArgumentNullException ("key");
+
+			if (!(key is string || key is Type))
+				throw new ArgumentException ("Key must be a string or Type");
+
 			if (managedDict.ContainsKey (key))
 				return true;
 			PresentationFrameworkCollection<ResourceDictionary> col = MergedDictionaries;
-			foreach (ResourceDictionary rd in col) {
+			for (int i = col.Count - 1; i >= 0; i --) {
+				ResourceDictionary rd = col[i];
+
 				if (rd.Contains (key))
 					return true;
 			}
