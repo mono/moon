@@ -214,12 +214,18 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 		return false;
 	}
 
-	if (ContainsKey (key)) {
+	Value *v = NULL;
+	gpointer orig_key;
+
+	gboolean exists = g_hash_table_lookup_extended (hash, key,
+							&orig_key, (gpointer*)&v);
+
+	if (exists) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
 		return false;
 	}
 
-	Value *v = new Value (*value);
+	v = new Value (*value);
 	
 	from_resource_dictionary_api = true;
 	bool result = Collection::AddWithError (v, error) != -1;
