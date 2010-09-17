@@ -758,8 +758,7 @@ rect_start (DZParserInfo *info, const char **attr)
 	DZImage *image = &info->content.image;
 	bool failed = false;
 	guint32 parsed = 0;
-	int val = 0;
-	int err;
+	int val, err;
 	
 	if (!(info->type == ContentImage && current_element_is (info, "DisplayRect") && image->current_rect)) {
 		info->error = true;
@@ -798,7 +797,7 @@ rect_start (DZParserInfo *info, const char **attr)
 		}
 	}
 	
-	if (failed || !(parsed & DZParsedRect) != DZParsedRect) {
+	if (failed || (parsed & DZParsedRect) != DZParsedRect) {
 		fprintf (stderr, "DeepZoom Rect parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 	}
