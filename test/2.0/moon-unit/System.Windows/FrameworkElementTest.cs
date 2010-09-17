@@ -1186,7 +1186,8 @@ namespace MoonTest.System.Windows {
 					Assert.AreEqual (stack.FlowDirection, FlowDirection.RightToLeft, "#3");
 					Assert.AreEqual (image.FlowDirection, FlowDirection.LeftToRight, "#4.1");
 					Assert.AreEqual (border.FlowDirection, FlowDirection.RightToLeft, "#4.2");
-					Assert.AreEqual (DependencyProperty.UnsetValue, border.ReadLocalValue (FrameworkElement.FlowDirectionProperty), "#5");
+					Assert.AreEqual (DependencyProperty.UnsetValue, image.ReadLocalValue (FrameworkElement.FlowDirectionProperty), "#5.1");
+					Assert.AreEqual (DependencyProperty.UnsetValue, border.ReadLocalValue (FrameworkElement.FlowDirectionProperty), "#5.2");
 			});
 			EnqueueTestComplete ();
 		}
