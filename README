@@ -178,6 +178,22 @@ Runtime Options
 	older expat based playlist parser set the env variable
 	MOONLIGHT_USE_EXPAT_ASXPARSER=1.
 
+	There are two XAML parsers available in Moonlight. An
+	unmanaged one that is used for Silverlight 1, 2 and 3
+	applications and a managed one that is used for silverlight 4
+	(and above) applications.  The parser is determined at runtime
+	after the app manifest is read.  The unmanaged parser is
+	always used to parse the app manifest.  After that the correct
+	parser is determined based on Deployment::RuntimeVersion.
+
+	You can force moonlight to use the managed parser on all sites
+	by setting the MOON_USE_MANAGED_XAML_PARSER environment
+	variable.
+
+	You can force moonlight to use the unmanaged parser on all
+	sites by setting the MOON_DONT_USE_MANAGED_XAML_PARSER
+	environment variable.
+
 
 Licensing
 =========
