@@ -392,7 +392,7 @@ ShockerScriptableControlObject::HasProperty (NPIdentifier id)
 	
 	free (name);
 		
-	LOG_PLUGIN ("ShockerScriptableControlObject::HasProperty (%s): %i\n", name, res);
+	LOG_PLUGIN ("[%i shocker] ShockerScriptableControlObject::HasProperty (%s): %i\n", getpid (), name, res);
 
 	return res;
 }

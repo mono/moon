@@ -103,7 +103,7 @@ InputProvider::GetInstance ()
 void
 InputProvider::MoveMouseDirect (int x, int y)
 {
-	LOG_INPUT ("InputProvider::MoveMouseDirect (%i, %i)\n", x, y);
+	LOG_INPUT ("[%i shocker] InputProvider::MoveMouseDirect (%i, %i)\n", getpid (), x, y);
 
 	g_assert (xtest_available);
 	g_assert (display);
@@ -115,7 +115,7 @@ InputProvider::MoveMouseDirect (int x, int y)
 void
 InputProvider::MoveMouse (int x, int y)
 {
-	LOG_INPUT ("InputProvider::MoveMouse (%i, %i)\n", x, y);
+	LOG_INPUT ("[%i shocker] InputProvider::MoveMouse (%i, %i)\n", getpid (), x, y);
 	
 	g_assert (xtest_available);
 	g_assert (display);
@@ -142,7 +142,7 @@ InputProvider::MoveMouse (int x, int y)
 void
 InputProvider::MoveMouseLogarithmic (int x, int y)
 {
-	LOG_INPUT ("InputProvider::MoveMouseLogarithmic (%i, %i)\n", x, y);
+	LOG_INPUT ("[%i shocker] InputProvider::MoveMouseLogarithmic (%i, %i)\n", getpid (), x, y);
 	
 	g_assert (xtest_available);
 	g_assert (display);
@@ -180,7 +180,7 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 bool
 InputProvider::MouseIsAtPosition (int x, int y)
 {
-	LOG_INPUT ("InputProvider::MouseIsAtPosition (%i, %i)\n", x, y);
+	LOG_INPUT ("[%i shocker] InputProvider::MouseIsAtPosition (%i, %i)\n", getpid (), x, y);
 	int cur_x, cur_y;
 
 	x = MAX (x, 0);
@@ -197,7 +197,7 @@ InputProvider::MouseIsAtPosition (int x, int y)
 void
 InputProvider::MouseDoubleClick (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseDoubleClick (%u)\n", delay);
+	LOG_INPUT ("[%i shocker] InputProvider::MouseDoubleClick (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
@@ -221,7 +221,7 @@ InputProvider::MouseDoubleClick (unsigned int delay)
 void
 InputProvider::MouseLeftClick (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseLeftClick (%u)\n", delay);
+	LOG_INPUT ("[%i shocker] InputProvider::MouseLeftClick (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
@@ -237,7 +237,7 @@ InputProvider::MouseLeftClick (unsigned int delay)
 void
 InputProvider::MouseRightClick (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseRightClick (%u)\n", delay);
+	LOG_INPUT ("[%i shocker] InputProvider::MouseRightClick (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
@@ -253,7 +253,7 @@ InputProvider::MouseRightClick (unsigned int delay)
 void
 InputProvider::MouseLeftButtonDown (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseLeftButtonDown (%u)\n", delay);
+	LOG_INPUT ("[%i shocker] InputProvider::MouseLeftButtonDown (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
@@ -265,7 +265,7 @@ InputProvider::MouseLeftButtonDown (unsigned int delay)
 void
 InputProvider::MouseLeftButtonUp (unsigned int delay)
 {
-	LOG_INPUT ("InputProvider::MouseLeftButtonUp (%u)\n", delay);
+	LOG_INPUT ("[%i shocker] InputProvider::MouseLeftButtonUp (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
 
@@ -277,7 +277,7 @@ InputProvider::MouseLeftButtonUp (unsigned int delay)
 void
 InputProvider::SendKeyInput (guint32 keysym, bool key_down, bool extended, bool unicode)
 {
-	LOG_INPUT ("InputProvider::SendKeyInput (%i, %i, %i, %i)\n", keysym, key_down, extended, unicode);
+	LOG_INPUT ("[%i shocker] InputProvider::SendKeyInput (%i, %i, %i, %i)\n", getpid (), keysym, key_down, extended, unicode);
 
 	// MS' mac plugin ignores the extended and unicode arguments, so we'll do the same
 
@@ -306,7 +306,7 @@ InputProvider::SendKeyInput (guint32 keysym, bool key_down, bool extended, bool 
 void
 InputProvider::GetCursorPos (int &x, int &y)
 {
-	LOG_INPUT ("InputProvider::GetCursorPos ()\n");
+	LOG_INPUT ("[%i shocker] InputProvider::GetCursorPos ()\n", getpid ());
 
 	g_assert (display);
 	g_assert (root_window > 0);
@@ -323,7 +323,7 @@ InputProvider::MouseWheel (gint16 clicks)
 {
 	int button;
 	
-	LOG_INPUT ("InputProvider::MouseWheel (%u)\n", clicks);
+	LOG_INPUT ("[%i shocker] InputProvider::MouseWheel (%u)\n", getpid (), clicks);
 
 	g_assert (display);
 
@@ -343,7 +343,7 @@ InputProvider::MouseWheel (gint16 clicks)
 void
 InputProvider::SetKeyboardInputSpeed (unsigned int keyboard_input_speed)
 {
-	LOG_INPUT ("InputProvider::SetKeyboardInputSpeed (%u)\n", keyboard_input_speed);
+	LOG_INPUT ("[%i shocker] InputProvider::SetKeyboardInputSpeed (%u)\n", getpid (), keyboard_input_speed);
 	keyboard_speed = MIN (10, MAX (1, keyboard_input_speed));
 }
 
