@@ -59,10 +59,11 @@ extern "C" {
 
 #ifdef USE_GALLIUM
 static struct pipe_screen *
-swrast_create_screen (struct sw_winsys *winsys)
+swrast_create_screen (void)
 {
-	const char *default_driver;
-	const char *driver;
+	const char         *default_driver;
+	const char         *driver;
+	struct sw_winsys   *ws;
 	struct pipe_screen *screen = NULL;
 
 #ifdef USE_LLVM
@@ -73,13 +74,21 @@ swrast_create_screen (struct sw_winsys *winsys)
 
 	driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
 
+	ws = null_sw_create ();
+	if (!ws)
+		return NULL;
+
 #ifdef USE_LLVM
 	if (screen == NULL && strcmp (driver, "llvmpipe") == 0)
-		screen = llvmpipe_create_screen (winsys);
+		screen = llvmpipe_create_screen (ws);
 #endif
 
 	if (screen == NULL)
-		screen = softpipe_create_screen (winsys);
+		screen = softpipe_create_screen (ws);
+
+	if (!screen) {
+		ws->destroy (ws);
+	}
 
 	return screen;
 }
@@ -113,7 +122,6 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 	native = NULL;
 
 #ifdef USE_GALLIUM
-	winsys = NULL;
 	screen = NULL;
 #endif
 
@@ -144,9 +152,6 @@ MoonWindowGtk::~MoonWindowGtk ()
 #ifdef USE_GALLIUM
 	if (screen)
 		(*screen->destroy) (screen);
-
-	if (winsys)
-		(*winsys->destroy) (winsys);
 #endif
 
 }
@@ -922,10 +927,8 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		native = CreateCairoSurface (drawable, visual, true, width, height);
 
 #ifdef USE_GALLIUM
-	if (!winsys)
-		winsys = null_sw_create ();
 	if (!screen)
-		screen = swrast_create_screen (NULL);
+		screen = swrast_create_screen ();
 #endif
 
 	if (!ctx) {

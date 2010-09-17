@@ -26,7 +26,6 @@
 #include "runtime.h"
 
 #ifdef USE_GALLIUM
-struct sw_winsys;
 struct pipe_screen;
 #endif
 
@@ -103,7 +102,6 @@ private:
 	cairo_surface_t *native;
 
 #ifdef USE_GALLIUM
-	sw_winsys   *winsys;
 	pipe_screen *screen;
 #endif
 
