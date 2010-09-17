@@ -41,6 +41,7 @@ class ResourceDictionaryIterator : public CollectionIterator {
 };
 
 /* @Namespace=System.Windows */
+/* @CallInitialize */
 class ResourceDictionary : public Collection {
 	friend class ResourceDictionaryIterator;
 	

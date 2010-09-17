@@ -139,8 +139,14 @@ namespace System.Windows {
 	}
 
 	partial class ResourceDictionary {
-		public ResourceDictionary () : base (SafeNativeMethods.resource_dictionary_new (), true) {}
-		internal ResourceDictionary (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public ResourceDictionary () : base (SafeNativeMethods.resource_dictionary_new (), true)
+		{
+			Initialize ();
+		}
+		internal ResourceDictionary (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class ResourceDictionaryCollection {

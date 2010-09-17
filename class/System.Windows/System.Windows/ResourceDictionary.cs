@@ -43,8 +43,15 @@ using Mono.Xaml;
 namespace System.Windows {
 
 	public partial class ResourceDictionary	: DependencyObject, IDictionary, IDictionary<object, object> {
-		object sync_root = new object ();
 		Uri source;
+
+		Dictionary<object, object> managedDict;
+
+		private new void Initialize ()
+		{
+			managedDict = new Dictionary<object,object>();
+			// FIXME we need to populate the managed dictionary from values that might exist in unmanaged
+		}
 
 		//
 		// Properties
@@ -64,42 +71,43 @@ namespace System.Windows {
 		
 		public ICollection Keys {
 			get {
-				object[] keys = new object[Count];
-				int i = 0;
-				
-				foreach (DictionaryEntry entry in this)
-					keys[i++] = entry.Key;
-				
-				return Array.AsReadOnly<object> (keys);
+				return managedDict.Keys;
 			}
 		}
-		
+
 		public ICollection Values {
 			get {
-				object[] values = new object[Count];
-				int i = 0;
-				
-				foreach (DictionaryEntry entry in this)
-					values[i++] = entry.Value;
-				
-				return Array.AsReadOnly<object> (values);
+				return managedDict.Values;
 			}
 		}
 		
 		public object this[object key] { 
 			get {
-				bool exists;
-				IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);
-				if (val == IntPtr.Zero)
-					return null;
-				return Value.ToObject (null, val);
+				// check our cache
+				if (managedDict.ContainsKey (key))
+					return managedDict[key];
+
+				// now iterate over the merged dictionaries
+				PresentationFrameworkCollection<ResourceDictionary> col = MergedDictionaries;
+				foreach (ResourceDictionary rd in col) {
+					if (rd.Contains (key))
+						return rd[key];
+				}
+
+				return null;
 			}
 			set {
+				// this setter only permits string
+				// keys.  since unmanaged needs to
+				// access them we send it along to
+				// unmanaged as well as update our
+				// cache.
 				var str_key = ToStringKey (key);
 				
 				using (var val = Value.FromObject (value, true)) {
 					var v = val;
-					NativeMethods.resource_dictionary_set (native, str_key, ref v);
+					if (NativeMethods.resource_dictionary_set (native, str_key, ref v))
+						managedDict.Add (str_key, value);
 				}
 			}
 		}
@@ -164,11 +172,17 @@ namespace System.Windows {
 			if (key == null)
 				return false;
 			
-			string str = key as string;
-			if (str == null)
+			if (key is string) {
+				bool rv = NativeMethods.resource_dictionary_remove (native, (string)key);
+				managedDict.Remove (key);
+				return rv;
+			}
+			else if (key is Type) {
+				managedDict.Remove (key);
+				return true;
+			}
+			else
 				throw new ArgumentException ("Key must be a string");
-			
-			return NativeMethods.resource_dictionary_remove (native, str);
 		}
 		
 		
@@ -188,13 +202,33 @@ namespace System.Windows {
 			
 			using (var val = Value.FromObject (value, true)) {
 				var v = val;
-				NativeMethods.resource_dictionary_add (native, key, ref v);
+				if (NativeMethods.resource_dictionary_add (native, key, ref v))
+					managedDict[key] = value;
 			}
 		}
 		
 		public void Add (object key, object value)
 		{
-			Add (ToStringKey (key), value);
+			if (key == null)
+				throw new ArgumentNullException ("key");
+			if (value == null)
+				throw new NotSupportedException ("value");
+
+			if (key is string) {
+				Add (ToStringKey (key), value);
+				return;
+			}
+			else if (!(key is Type)) {
+				throw new ArgumentException ("Key must be a string or Type");
+			}
+
+			if (IsReadOnly || IsFixedSize)
+				throw new NotSupportedException ();
+
+			// we only add it to the managed dictionary,
+			// since unmanaged doesn't know about type
+			// keys at all.
+			managedDict[key] = value;
 		}
 		
 		public void Clear ()
@@ -202,12 +236,20 @@ namespace System.Windows {
 			if (IsReadOnly || IsFixedSize)
 				throw new NotSupportedException ();
 			
+			managedDict.Clear ();
 			NativeMethods.resource_dictionary_clear (native);
 		}
 		
 		public bool Contains (object key)
 		{
-			return NativeMethods.resource_dictionary_contains_key (native, ToStringKey (key));
+			if (managedDict.ContainsKey (key))
+				return true;
+			PresentationFrameworkCollection<ResourceDictionary> col = MergedDictionaries;
+			foreach (ResourceDictionary rd in col) {
+				if (rd.Contains (key))
+					return true;
+			}
+			return false;
 		}
 		
 		public void CopyTo (Array array, int index)
@@ -227,7 +269,7 @@ namespace System.Windows {
 		
 		public IDictionaryEnumerator GetEnumerator ()
 		{
-			return new ResourceDictionaryIterator (NativeMethods.collection_get_iterator (native));
+			return managedDict.GetEnumerator ();
 		}
 		
 		public void Remove (string key)
@@ -250,7 +292,7 @@ namespace System.Windows {
 		}
 		
 		object ICollection.SyncRoot {
-			get { return sync_root; }
+			get { return managedDict; }
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator ()
@@ -282,19 +324,6 @@ namespace System.Windows {
 		{
 			// Note: Silverlight doesn't seem to implement this method. Lame.
 			throw new NotImplementedException ();
-			/*
-			if (array == null)
-				throw new ArgumentNullException ("array");
-			
-			if (index < 0)
-				throw new ArgumentOutOfRangeException ("index");
-			
-			if (array.Rank > 0 || Count > array.Length - index)
-				throw new ArgumentException ("array");
-			
-			foreach (KeyValuePair<object, object> pair in this)
-				array[index++] = pair;
-			*/
 		}
 		
 		int ICollection<KeyValuePair<object, object>>.Count {
@@ -343,6 +372,7 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.TryGetValue (object key, out object value)
 		{
+			// FIXME does this Type-as-key-ifying?
 			bool exists;
 
 			IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);
@@ -381,142 +411,6 @@ namespace System.Windows {
 		{
 			// Note: Silverlight doesn't seem to implement this method. Lame.
 			throw new NotImplementedException ();
-			
-			//return new GenericResourceDictionaryIterator (NativeMethods.collection_get_iterator (native));
-		}
-		
-		
-		//
-		// Enumerator implementations
-		//
-		
-		internal sealed class ResourceDictionaryIterator : IDictionaryEnumerator, IDisposable {
-			IntPtr native_iter;
-			
-			public ResourceDictionaryIterator (IntPtr native_iter)
-			{
-				this.native_iter = native_iter;
-			}
-			
-			~ResourceDictionaryIterator ()
-			{
-				Dispose ();
-			}
-			
-			public bool MoveNext ()
-			{
-				return NativeMethods.collection_iterator_next (native_iter);
-			}
-			
-			public void Reset ()
-			{
-				if (!NativeMethods.collection_iterator_reset (native_iter))
-					throw new InvalidOperationException ("The underlying collection has mutated");
-			}
-			
-			public object Current {
-				get { return (object) Entry; }
-			}
-			
-			public DictionaryEntry Entry {
-				get { return new DictionaryEntry (Key, Value); }
-			}
-			
-			public object Key {
-				get {
-					return NativeMethods.resource_dictionary_iterator_get_current_key (native_iter);
-				}
-			}
-			
-			public object Value {
-				get {
-					IntPtr val = NativeMethods.collection_iterator_get_current (native_iter);
-					if (val == IntPtr.Zero)
-						return null;
-					
-					return Mono.Value.ToObject (null, val);
-				}
-			}
-			
-			public void Dispose ()
-			{
-				if (native_iter != IntPtr.Zero) {
-					// This is safe, as it only does a "delete" in the C++ side
-					NativeMethods.collection_iterator_destroy (native_iter);
-					native_iter = IntPtr.Zero;
-				}
-				
-				GC.SuppressFinalize (this);
-			}
-		}
-		
-		internal sealed class GenericResourceDictionaryIterator : IEnumerator<KeyValuePair<object, object>>, IDisposable {
-			IntPtr native_iter;
-			
-			public GenericResourceDictionaryIterator (IntPtr native_iter)
-			{
-				this.native_iter = native_iter;
-			}
-			
-			~GenericResourceDictionaryIterator ()
-			{
-				Dispose ();
-			}
-			
-			object Key {
-				get {
-					return NativeMethods.resource_dictionary_iterator_get_current_key (native_iter);
-				}
-			}
-			
-			object Value {
-				get {
-					IntPtr val = NativeMethods.collection_iterator_get_current (native_iter);
-					if (val == IntPtr.Zero)
-						return null;
-					
-					return Mono.Value.ToObject (null, val);
-				}
-			}
-			
-			public bool MoveNext ()
-			{
-				return NativeMethods.collection_iterator_next (native_iter);
-			}
-			
-			public void Reset ()
-			{
-				if (!NativeMethods.collection_iterator_reset (native_iter))
-					throw new InvalidOperationException ("The underlying collection has mutated");
-			}
-			
-			KeyValuePair<object, object> GetCurrent ()
-			{
-				return new KeyValuePair<object, object> (Key, Value);
-			}
-			
-			public KeyValuePair<object, object> Current {
-				get {
-					return GetCurrent ();
-				}
-			}
-			
-			object IEnumerator.Current {
-				get {
-					return GetCurrent ();
-				}
-			}
-			
-			public void Dispose ()
-			{
-				if (native_iter != IntPtr.Zero) {
-					// This is safe, as it only does a "delete" in the C++ side
-					NativeMethods.collection_iterator_destroy (native_iter);
-					native_iter = IntPtr.Zero;
-				}
-				
-				GC.SuppressFinalize (this);
-			}
 		}
 	}
 }
