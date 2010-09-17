@@ -72,12 +72,15 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	bool GetTileLayer (int level, int x, int y, Uri **uri);
 	bool IsDownloaded () { return downloaded; }
 	bool IsParsed () { return parsed; }
+	
+	void SetServerFormat (const char *server_format);
+	void SetFormat (const char *format);
+	
 	char *GetServerFormat () { return server_format; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	void XmlWrite (char *buffer, gint32 offset, gint32 n);
-	void EndElement (void *info, const char *el);
 	
 	//
 	// Property Accessors
