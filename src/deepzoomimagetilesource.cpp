@@ -404,7 +404,7 @@ DeepZoomImageTileSource::DownloaderComplete ()
 		return;
 	}
 	
-	if (info->error) {
+	if (info->error || info->type == ContentUnknown) {
 		Abort ();
 		DownloaderFailed ();
 		return;
