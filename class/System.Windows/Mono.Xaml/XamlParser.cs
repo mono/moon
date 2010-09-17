@@ -999,8 +999,12 @@ namespace Mono.Xaml {
 		{
 			if (IsTopElement) {
 				string user_class = ResolveUserClass ();
-				if (user_class != null)
-					return LoadType (null, null, user_class);
+				if (user_class != null) {
+					Type t = LoadType (null, null, user_class);
+					if (t == null)
+						throw ParseException ("Unable to load type '{0}'.", user_class);
+					return t;
+				}
 			}
 			return ResolveType (reader.NamespaceURI, reader.LocalName);
 		}
