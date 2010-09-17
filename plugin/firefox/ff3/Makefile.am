@@ -6,8 +6,8 @@ INCLUDES = \
 	-I$(top_srcdir)/plugin \
 	-I$(top_srcdir)/plugin/moz-sdk \
 	-I/usr/include/X11 \
-	$(FF3_CFLAGS) \
 	$(MOON_CFLAGS) \
+	$(FF3_CFLAGS) \
 	-DWITH_LIBXUL_UNSTABLE \
 	-Wall
 

@@ -6,8 +6,8 @@ INCLUDES = \
 	-I$(top_srcdir)/plugin \
 	-I$(top_srcdir)/plugin/moz-sdk \
 	-I/usr/include/X11 \
-	$(FF2_CFLAGS) \
 	$(MOON_CFLAGS) \
+	$(FF2_CFLAGS) \
 	-Wall
 
 
