@@ -130,6 +130,11 @@ namespace System.Windows {
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, get_default_template_cb, loaded_hook_cb);
 		}
 
+		internal void ApplyDefaultStyle ()
+		{
+			NativeMethods.framework_element_apply_default_style (native);
+		}
+
 		internal bool ApplyTemplate ()
 		{
 			return NativeMethods.framework_element_apply_template (native);

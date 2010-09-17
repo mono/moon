@@ -96,7 +96,7 @@ namespace System.Windows {
 					ResourceDictionary rd = col[i];
 
 					if (rd.Contains (key))
-						return true;
+						return rd[key];
 				}
 
 				return null;

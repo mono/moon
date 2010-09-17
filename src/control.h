@@ -52,13 +52,10 @@ public:
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	void ApplyDefaultStyle ();
 	virtual bool DoApplyTemplateWithError (MoonError *error);
 	virtual void SetVisualParent (UIElement *visual_parent);
 	virtual void OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent);
 	virtual void OnIsAttachedChanged (bool attached);
-	virtual void OnIsLoadedChanged (bool loaded);
 	virtual bool Focus (bool recurse = true);
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -181,7 +178,6 @@ protected:
 	friend class MoonManagedFactory;
 	
 private:
-	bool default_style_applied;
 	UIElement *template_root;
 };
 

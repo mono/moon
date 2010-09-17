@@ -394,10 +394,10 @@ namespace Mono.Xaml {
 				return;
 			}
 
-			if (typeof (System.Windows.Controls.Control).IsAssignableFrom (t)) {
+			if (typeof (System.Windows.FrameworkElement).IsAssignableFrom (t)) {
 				element.EndElement += delegate (object sender, EventArgs e) {
-					Control c = element.Object as Control;
-					c.ApplyDefaultStyle ();
+					FrameworkElement fwe = element.Object as FrameworkElement;
+					fwe.ApplyDefaultStyle ();
 				};
 			}
 

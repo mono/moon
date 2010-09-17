@@ -209,7 +209,7 @@ namespace System.Windows.Controls {
 		private static Type ControlType = typeof (Control);
 		private static Type UserControlType = typeof (UserControl);
 		
-		protected object DefaultStyleKey {
+		protected internal object DefaultStyleKey {
 			get { return (object) GetValue (DefaultStyleKeyProperty); }
 			set {
 				Type t = value as Type;
@@ -233,11 +233,6 @@ namespace System.Windows.Controls {
 		public new bool ApplyTemplate()
 		{
 			return base.ApplyTemplate ();
-		}
-
-		internal void ApplyDefaultStyle ()
-		{
-			NativeMethods.control_apply_default_style (native);
 		}
 
 		public bool Focus()

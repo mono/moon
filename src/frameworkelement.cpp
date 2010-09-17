@@ -80,6 +80,7 @@ FrameworkElement::FrameworkElement ()
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
+	default_style_applied = false;
 	default_template = NULL;
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
@@ -1035,6 +1036,9 @@ FrameworkElement::OnIsAttachedChanged (bool attached)
 void
 FrameworkElement::OnIsLoadedChanged (bool loaded)
 {
+	if (loaded)
+		ApplyDefaultStyle ();
+
 	UIElement::OnIsLoadedChanged (loaded);
 	if (providers.inheriteddatacontext)
 		providers.inheriteddatacontext->EmitChanged ();
@@ -1104,5 +1108,31 @@ FrameworkElement::GetDefaultTemplate ()
 		return get_default_template_cb (this);
 	return NULL;
 }
+
+void
+FrameworkElement::ApplyDefaultStyle ()
+{
+	if (!default_style_applied) {
+		Style *style = NULL;
+		//		default_style_applied = true;
+
+		Application *app = Application::GetCurrent ();
+		if (app)
+			style = app->GetDefaultStyle (this);
+		else
+			g_warning ("Attempting to use a null Application applying implicit style.");
+
+		if (style) {
+			MoonError e;
+			DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
+			Value val (style);
+			if (Validators::StyleValidator (this, style_prop, &val, &e))
+				providers.defaultstyle->UpdateStyle (style, &e);
+			else
+				printf ("Error in the default style\n");
+		}
+	}
+}
+
 
 };

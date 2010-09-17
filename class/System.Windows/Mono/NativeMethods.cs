@@ -67,7 +67,7 @@ namespace Mono {
 	internal delegate Size ArrangeOverrideCallback (Size finalSize, ref MoonError error);
 	internal delegate void LoadedCallback (IntPtr fwe_ptr);
 
-	internal delegate IntPtr GetDefaultStyleCallback (IntPtr type_info_ptr);
+	internal delegate IntPtr GetDefaultStyleCallback (IntPtr fwe_ptr);
 	internal delegate IntPtr GetDefaultTemplateCallback (IntPtr fwe_ptr);
 	internal delegate void ConvertSetterValuesCallback (IntPtr style_ptr);
 	internal delegate void ConvertKeyframeValueCallback (Mono.Kind kind, IntPtr property, IntPtr original, out Value converted);

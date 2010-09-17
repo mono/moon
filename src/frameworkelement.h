@@ -105,6 +105,9 @@ public:
 	DependencyObject *GetLogicalParent () { return logical_parent; }
 	virtual void OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void ApplyDefaultStyle ();
+
 	//
 	// Property Accessors
 	//
@@ -209,6 +212,7 @@ private:
 
 	DependencyObject  *logical_parent;
 	UIElement *default_template;
+	bool default_style_applied;
 };
 
 class FrameworkElementProvider : public PropertyValueProvider {

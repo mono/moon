@@ -68,10 +68,10 @@ Application::RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb,
 }
 
 Style *
-Application::GetDefaultStyle (ManagedTypeInfo *key)
+Application::GetDefaultStyle (FrameworkElement *el)
 {
 	if (get_default_style_cb)
-		return get_default_style_cb (key);
+		return get_default_style_cb (el);
 	return NULL;
 }
 

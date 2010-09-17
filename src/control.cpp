@@ -31,7 +31,6 @@ Control::Control ()
 {
 	SetObjectType (Type::CONTROL);
 
-	default_style_applied = false;
 	template_root = NULL;
 
 	providers.isenabled = new InheritedIsEnabledValueProvider (this, PropertyPrecedence_IsEnabled);
@@ -109,14 +108,6 @@ Control::OnIsAttachedChanged (bool attached)
 
 
 void
-Control::OnIsLoadedChanged (bool loaded)
-{
-	if (loaded)
-		ApplyDefaultStyle ();
-	FrameworkElement::OnIsLoadedChanged (loaded);
-}
-
-void
 Control::SetVisualParent (UIElement *visual_parent)
 {
 	if (GetVisualParent () != visual_parent) {
@@ -137,34 +128,6 @@ Control::Dispose ()
 {
 	template_root = NULL;
 	FrameworkElement::Dispose ();
-}
-
-void
-Control::ApplyDefaultStyle ()
-{
-	if (!default_style_applied) {
-		Style *style = NULL;
-		default_style_applied = true;
-		ManagedTypeInfo *key = GetDefaultStyleKey ();
-
-		if (key) {
-			Application *app = Application::GetCurrent ();
-			if (app)
-				style = app->GetDefaultStyle (key);
-			else
-				g_warning ("Attempting to use a null Application applying default style.");
-		}
-
-		if (style) {
-			MoonError e;
-			DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
-			Value val (style);
-			if (Validators::StyleValidator (this, style_prop, &val, &e))
-				providers.defaultstyle->UpdateStyle (style, &e);
-			else
-				printf ("Error in the default style\n");
-		}
-	}
 }
 
 bool

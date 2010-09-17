@@ -37,6 +37,7 @@ using System.Security;
 using System.Windows.Controls;
 using System.Windows.Resources;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -293,10 +294,10 @@ namespace System.Windows {
 			converted = Value.FromObject (o);
 		}
 		
-		IntPtr get_default_style_cb_safe (IntPtr type_info_ptr)
+		IntPtr get_default_style_cb_safe (IntPtr fwe_ptr)
 		{
 			try {
-				return get_default_style_cb (type_info_ptr);
+				return get_default_style_cb (fwe_ptr);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_style_cb_safe: {0}", ex);
@@ -306,19 +307,48 @@ namespace System.Windows {
 			return IntPtr.Zero;
 		}
 
-		IntPtr get_default_style_cb (IntPtr type_info_ptr)
+		IntPtr get_default_style_cb (IntPtr fwe_ptr)
 		{
-			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
-			Type type = null;
+			FrameworkElement fwe = NativeDependencyObjectHelper.FromIntPtr(fwe_ptr) as FrameworkElement;
+			Type fwe_type = fwe.GetType();
+			string fwe_type_string = fwe_type.ToString();
+			Style s = null;
 
-			type = Deployment.Current.Types.KindToType (type_info.Kind);
-
-			if (type == null) {
-				Console.Error.WriteLine ("failed to lookup native kind {0}", type_info.Kind);
-				return IntPtr.Zero;
+			// first try up the visual tree
+			FrameworkElement el = fwe;
+			while (el != null) {
+				if (el.Resources.Contains (fwe_type)) {
+					s = (Style)el.Resources[fwe_type];
+					if (s != null)
+						return s.native;
+				}
+				else if (el.Resources.Contains (fwe_type_string)) {
+					s = (Style)el.Resources[fwe_type_string];
+					if (s != null)
+						return s.native;
+				}
+				el = VisualTreeHelper.GetParent (el) as FrameworkElement;
 			}
 
-			Style s = GetGenericXamlStyleFor (type);
+			// next try the application's resources
+			if (Resources.Contains (fwe_type)) {
+				s = (Style)Resources[fwe_type];
+				if (s != null)
+					return s.native;
+			}
+			if (Resources.Contains (fwe_type_string)) {
+				s = (Style)Resources[fwe_type_string];
+				if (s != null)
+					return s.native;
+			}
+
+			// finally fall back to the generic.xaml style
+			Control control = fwe as Control;
+			if (control != null) {
+				Type style_key = control.DefaultStyleKey as Type;
+				if (style_key != null)
+					s = GetGenericXamlStyleFor (style_key);
+			}
 			return s == null ? IntPtr.Zero : s.native;
 		}
 
