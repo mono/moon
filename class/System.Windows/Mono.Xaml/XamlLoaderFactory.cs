@@ -45,10 +45,15 @@ namespace Mono.Xaml {
 		static XamlLoaderFactory ()
 		{
 			bool force_managed = (Environment.GetEnvironmentVariable ("MOON_USE_MANAGED_XAML_PARSER") != null);
-
 			if (force_managed) {
 				Console.WriteLine ("Using managed xaml parser because MONO_USE_MANAGED_XAML_PARSER was set.");
 				use_managed = true;
+			}
+
+			bool dont_force_managed = (Environment.GetEnvironmentVariable ("MOON_DONT_USE_MANAGED_XAML_PARSER") != null);
+			if (dont_force_managed) {
+				Console.WriteLine ("Using unmanaged xaml parser because MONO_DONT_USE_MANAGED_XAML_PARSER was set.");
+				use_managed = false;
 			}
 		}
 
