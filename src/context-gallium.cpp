@@ -326,8 +326,11 @@ GalliumContext::SetScissor ()
 
 	Top ()->GetClip (&clip);
 
-	scissor.minx = clip.x - r.x;
-	scissor.miny = clip.y - r.y;
+	clip.x -= r.x;
+	clip.y -= r.y;
+
+	scissor.minx = clip.x;
+	scissor.miny = clip.y;
 	scissor.maxx = clip.x + clip.width;
 	scissor.maxy = clip.y + clip.height;
 
