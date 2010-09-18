@@ -280,6 +280,7 @@ namespace Mono.Xaml {
 				return LookupAttachedProperty (reader);
 
 			XamlPropertySetter prop = LookupReflectionProperty (reader);
+
 			return prop;
 		}
 
@@ -309,6 +310,10 @@ namespace Mono.Xaml {
 			if (evnt != null)
 				return evnt;
 
+			XamlPropertySetter attached = XamlImplicitAttachedPropertyForName (Object, reader.LocalName);
+			if (attached != null)
+				return attached;
+
 			return null;
 		}
 
@@ -330,10 +335,21 @@ namespace Mono.Xaml {
 			return new XamlReflectionEventSetter (this, target, e);
 		}
 
+		private XamlPropertySetter XamlImplicitAttachedPropertyForName (object target, string name)
+		{
+			return LookupAttachedProperty (Type, name);
+		}
+
 		private XamlPropertySetter LookupAttachedProperty (XmlReader reader)
 		{
 			Type t = Parser.ResolveType ();
 			string name = AttachedPropertyName (reader.LocalName);
+
+			return LookupAttachedProperty (t, name);
+		}
+
+		private XamlPropertySetter LookupAttachedProperty (Type t, string name)
+		{
 			MethodInfo getter = ResolveAttachedPropertyGetter (name, t);
 
 			if (getter == null) {
