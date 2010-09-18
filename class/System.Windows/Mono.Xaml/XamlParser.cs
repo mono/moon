@@ -85,6 +85,8 @@ namespace Mono.Xaml {
 
 		public XamlElement TopElement {
 			get {
+				if (Context.TopElement != null)
+					return Context.TopElement;
 				return top_element;
 			}
 		}
@@ -175,7 +177,7 @@ namespace Mono.Xaml {
 				}
 			}
 
-			XamlObjectElement obj = TopElement as XamlObjectElement;
+			XamlObjectElement obj = top_element as XamlObjectElement;
 			if (obj == null) {
 				// We actually return the type of the property here
 				// or the object that it wraps
@@ -1417,7 +1419,7 @@ namespace Mono.Xaml {
 
 		private XamlContext CreateXamlContext (FrameworkTemplate template)
 		{
-			return new XamlContext (Context, CreateResourcesList (), template);
+			return new XamlContext (Context, top_element, CreateResourcesList (), template);
 		}
 
 		private List<DependencyObject> CreateResourcesList ()
