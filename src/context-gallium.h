@@ -41,6 +41,14 @@ public:
 		   double      x,
 		   double      y);
 
+	void DropShadow (MoonSurface *src,
+			 double      dx,
+			 double      dy,
+			 double      radius,
+			 Color       *color,
+			 double      x,
+			 double      y);
+
 // private:
 	void SetFramebuffer ();
 	void SetScissor ();
@@ -57,6 +65,7 @@ public:
 	void TransformMatrix (double *out, const double *matrix);
 	void *GetProjectShader (double alpha);
 	void *GetConvolveShader (unsigned size);
+	void *GetDropShadowShader (unsigned size);
 	
 	pipe_context *pipe;
 
@@ -82,6 +91,8 @@ public:
 
 	void *convolve_fs[MAX_CONVOLVE_SIZE + 1];
 	pipe_sampler_state convolve_sampler;
+
+	void *dropshadow_fs[MAX_CONVOLVE_SIZE + 1];
 };
 
 };

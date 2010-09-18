@@ -261,6 +261,10 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	convolve_sampler.min_img_filter = PIPE_TEX_FILTER_LINEAR;
 	convolve_sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
 	convolve_sampler.normalized_coords = 1;
+
+	/* drop shadow fragment shaders */
+	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
+		dropshadow_fs[i] = NULL;
 }
 
 GalliumContext::~GalliumContext ()
@@ -637,15 +641,18 @@ GalliumContext::GetConvolveShader (unsigned size)
 	off = ureg_DECL_temporary (ureg);
 	tmp = ureg_DECL_temporary (ureg);
 
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+
+	tex = ureg_src (tmp);
+	tmp = ureg_DECL_temporary (ureg);
+
 	ureg_ADD (ureg, off, tex, ureg_DECL_constant (ureg, 2));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
-	ureg_MUL (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, 3));
+	ureg_MUL (ureg, val, ureg_src (tmp), ureg_DECL_constant (ureg, 3));
 
 	ureg_SUB (ureg, off, tex, ureg_DECL_constant (ureg, 2));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
-	ureg_MAD (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, 3),
+	ureg_MAD (ureg, val, ureg_src (tmp), ureg_DECL_constant (ureg, 3),
 		  ureg_src (val));
 
 	for (i = 2; i <= size; i++) {
@@ -662,8 +669,7 @@ GalliumContext::GetConvolveShader (unsigned size)
 	}
 
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
-	ureg_MAD (ureg, out, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, 1),
+	ureg_MAD (ureg, out, ureg_src (tmp), ureg_DECL_constant (ureg, 1),
 		  ureg_src (val));
 
 	ureg_END (ureg);
@@ -789,6 +795,245 @@ GalliumContext::Blur (MoonSurface *src,
 			cbuf[i][0][1] = i / r.height;
 			cbuf[i][0][2] = 0.0f;
 			cbuf[i][0][3] = 1.0f;
+		}
+
+		SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
+
+		vbuf = SetupVertexData (tex, &convolve_sampler, m, x, y);
+		if (vbuf) {
+			cso_set_vertex_elements (cso, 2, velems);
+			util_draw_vertex_buffer (pipe, vbuf, 0,
+						 PIPE_PRIM_TRIANGLE_FAN,
+						 4,
+						 2);
+
+			pipe_resource_reference (&vbuf, NULL);
+		}
+
+		src->unref ();
+	}
+
+	cso_restore_blend (cso);
+	cso_restore_samplers (cso);
+	cso_restore_fragment_sampler_views (cso);
+	cso_restore_fragment_shader (cso);
+	cso_restore_framebuffer (cso);
+	cso_restore_viewport (cso);
+	cso_restore_rasterizer (cso);
+
+	intermediate->unref ();
+}
+
+void *
+GalliumContext::GetDropShadowShader (unsigned size)
+{
+	struct ureg_program *ureg;
+	struct ureg_src     tex, one, col, img_sampler, sampler;
+	struct ureg_dst     out, val, off, img, tmp;
+	unsigned            i;
+
+	g_assert (size <= MAX_CONVOLVE_SIZE);
+
+	if (dropshadow_fs[size])
+		return dropshadow_fs[size];
+
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+
+	img_sampler = ureg_DECL_sampler (ureg, 0);
+	sampler = ureg_DECL_sampler (ureg, 1);
+
+	tex = ureg_DECL_fs_input (ureg,
+				  TGSI_SEMANTIC_GENERIC, 0,
+				  TGSI_INTERPOLATE_LINEAR);
+
+	out = ureg_DECL_output (ureg,
+				TGSI_SEMANTIC_COLOR,
+				0);
+
+	val = ureg_DECL_temporary (ureg);
+	off = ureg_DECL_temporary (ureg);
+	img = ureg_DECL_temporary (ureg);
+	tmp = ureg_DECL_temporary (ureg);
+	col = ureg_DECL_constant (ureg, 0);
+	one = ureg_imm4f (ureg, 1.f, 1.f, 1.f, 1.f);
+
+	ureg_TEX (ureg, img, TGSI_TEXTURE_2D, tex, img_sampler);
+
+	ureg_ADD (ureg, off, tex, ureg_DECL_constant (ureg, 2));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+	ureg_MUL (ureg, val, ureg_src (tmp), ureg_DECL_constant (ureg, 3));
+
+	ureg_SUB (ureg, off, tex, ureg_DECL_constant (ureg, 2));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+	ureg_MAD (ureg, val, ureg_src (tmp), ureg_DECL_constant (ureg, 3),
+		  ureg_src (val));
+
+	for (i = 2; i <= size; i++) {
+		ureg_ADD (ureg, off, tex, ureg_DECL_constant (ureg, i * 2));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, i * 2 + 1),
+			  ureg_src (val));
+		ureg_SUB (ureg, off, tex, ureg_DECL_constant (ureg, i * 2));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (off), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, i * 2 + 1),
+			  ureg_src (val));
+	}
+
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+	ureg_MAD (ureg, val, ureg_src (tmp), ureg_DECL_constant (ureg, 1),
+		  ureg_src (val));
+
+	ureg_MUL (ureg, val, ureg_swizzle (ureg_src (val),
+					   TGSI_SWIZZLE_W,
+					   TGSI_SWIZZLE_W,
+					   TGSI_SWIZZLE_W,
+					   TGSI_SWIZZLE_W), col);
+	ureg_SUB (ureg, tmp, one, ureg_swizzle (ureg_src (img),
+						TGSI_SWIZZLE_W,
+						TGSI_SWIZZLE_W,
+						TGSI_SWIZZLE_W,
+						TGSI_SWIZZLE_W));
+	ureg_MAD (ureg, out, ureg_src (tmp), ureg_src (val), ureg_src (img));
+	ureg_END (ureg);
+
+	dropshadow_fs[size] = ureg_create_shader_and_destroy (ureg, pipe);
+
+	return dropshadow_fs[size];
+}
+
+void
+GalliumContext::DropShadow (MoonSurface *src,
+			    double      dx,
+			    double      dy,
+			    double      radius,
+			    Color       *color,
+			    double      x,
+			    double      y)
+{
+	GalliumSurface           *surface = (GalliumSurface *) src;
+	struct pipe_sampler_view *img_view = surface->SamplerView ();
+	struct pipe_resource     *tex = surface->Texture ();
+	GalliumSurface           *intermediate;
+	struct pipe_resource     *vbuf;
+	const double             precision = 1.0 / 256.0;
+	double                   values[MAX_CONVOLVE_SIZE + 1];
+	float                    cbuf[MAX_CONVOLVE_SIZE + 1][2][4];
+	Rect                     r = Rect (0, 0, tex->width0, tex->height0);
+	int                      size, i;
+	double                   m[16];
+
+	Matrix3D::Identity (m);
+
+	size = Effect::ComputeGaussianSamples (radius, precision, values);
+
+	TransformMatrix (m, m);
+
+	// software optimization that can hopefully be removed one day
+	if (is_softpipe) {
+		int x0, y0;
+
+		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+			Effect::DropShadow (this,
+					    src,
+					    dx,
+					    dy,
+					    radius,
+					    color,
+					    x + x0,
+					    y + y0,
+					    r.width,
+					    r.height);
+			return;
+		}
+	}
+
+	intermediate = new GalliumSurface (pipe, r.width, r.height);
+
+	for (i = 0; i <= size; i++) {
+		cbuf[i][1][0] = values[i];
+		cbuf[i][1][1] = values[i];
+		cbuf[i][1][2] = values[i];
+		cbuf[i][1][3] = values[i];
+	}
+
+	cso_save_blend (cso);
+	cso_save_samplers (cso);
+	cso_save_fragment_sampler_views (cso);
+	cso_save_fragment_shader (cso);
+	cso_save_framebuffer (cso);
+	cso_save_viewport (cso);
+	cso_save_rasterizer (cso);
+
+	Context::Push (Group (r), intermediate);
+
+	cso_set_blend (cso, &blend_src);
+	cso_single_sampler (cso, 0, &convolve_sampler);
+	cso_single_sampler_done (cso);
+	cso_set_fragment_sampler_views (cso, 1, &img_view);
+	cso_set_fragment_shader_handle (cso, GetConvolveShader (size));
+
+	SetViewport ();
+	SetFramebuffer ();
+	SetScissor ();
+	SetRasterizer ();
+
+	cbuf[0][0][0] = dx / r.width;
+	cbuf[0][0][1] = dy / r.height;
+	cbuf[0][0][2] = 0.0f;
+	cbuf[0][0][3] = 0.0f;
+
+	for (i = 1; i <= size; i++) {
+		cbuf[i][0][0] = i / r.width;
+		cbuf[i][0][1] = 0.0f;
+		cbuf[i][0][2] = 0.0f;
+		cbuf[i][0][3] = 0.0f;
+	}
+
+	SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
+
+	vbuf = SetupVertexData (tex, &convolve_sampler, NULL, 0, 0);
+	if (vbuf) {
+		cso_set_vertex_elements (cso, 2, velems);
+		util_draw_vertex_buffer (pipe, vbuf, 0,
+					 PIPE_PRIM_TRIANGLE_FAN,
+					 4,
+					 2);
+
+		pipe_resource_reference (&vbuf, NULL);
+	}
+
+	r = Pop (&src);
+	if (!r.IsEmpty ()) {
+		GalliumSurface           *surface = (GalliumSurface *) src;
+		struct pipe_sampler_view *view = surface->SamplerView ();
+		struct pipe_resource     *tex = surface->Texture ();
+		struct pipe_sampler_view *views[] = { img_view, view };
+
+		cso_set_blend (cso, &blend_over);
+		cso_single_sampler (cso, 0, &convolve_sampler);
+		cso_single_sampler (cso, 1, &convolve_sampler);
+		cso_single_sampler_done (cso);
+		cso_set_fragment_sampler_views (cso, 2, views);
+		cso_set_fragment_shader_handle (cso,
+						GetDropShadowShader (size));
+
+		SetViewport ();
+		SetFramebuffer ();
+		SetScissor ();
+		SetRasterizer ();
+
+		cbuf[0][0][0] = color->r;
+		cbuf[0][0][1] = color->g;
+		cbuf[0][0][2] = color->b;
+		cbuf[0][0][3] = color->a;
+
+		for (i = 1; i <= size; i++) {
+			cbuf[i][0][0] = 0.0f;
+			cbuf[i][0][1] = i / r.height;
+			cbuf[i][0][2] = 0.0f;
+			cbuf[i][0][3] = 0.0f;
 		}
 
 		SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));

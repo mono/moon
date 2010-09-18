@@ -719,6 +719,87 @@ Effect::Blur (Context     *ctx,
 }
 
 void
+Effect::DropShadow (Context     *ctx,
+		    MoonSurface *src,
+		    double      dx,
+		    double      dy,
+		    double      radius,
+		    Color       *color,
+		    double      x,
+		    double      y,
+		    double      width,
+		    double      height)
+{
+	const cairo_format_t format = CAIRO_FORMAT_ARGB32;
+	cairo_surface_t      *surface = src->Cairo ();
+	cairo_surface_t      *image;
+	cairo_t              *cr = ctx->Cairo ();
+	Rect                 r = Rect (x, y, width, height);
+	unsigned char        *data;
+	int                  stride, n = 0;
+	double               values[MAX_BLUR_RADIUS + 1];
+	int                  **table = NULL;
+	int                  *table0 = filtertable0;
+	int                  rgba[4];
+
+	UpdateFilterValues (radius, values, &table, &n);
+
+	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE) {
+		cairo_surface_t *image;
+		cairo_t         *cr;
+
+		image = cairo_image_surface_create (format, width, height);
+
+		cr = cairo_create (image);
+		cairo_set_source_surface (cr, surface, 0, 0);
+		cairo_paint (cr);
+		cairo_destroy (cr);
+		cairo_surface_destroy (surface);
+		surface = image;
+	}
+
+	stride = cairo_image_surface_get_stride (surface);
+	data   = (unsigned char *) g_malloc (stride * height);
+	
+	rgba[SW_RED]   = (int) (color->r * 255.0);
+	rgba[SW_GREEN] = (int) (color->g * 255.0);
+	rgba[SW_BLUE]  = (int) (color->b * 255.0);
+	rgba[SW_ALPHA] = (int) (color->a * 255.0);
+
+	sw_filter_drop_shadow (cairo_image_surface_get_data (surface),
+			       data,
+			       width,
+			       height,
+			       stride,
+			       (int) (dx + 0.5),
+			       (int) (dy + 0.5),
+			       n,
+			       table ? table : &table0,
+			       rgba);
+
+	image = cairo_image_surface_create_for_data (data,
+						     format,
+						     width,
+						     height,
+						     stride);
+
+	cairo_save (cr);
+	cairo_identity_matrix (cr);
+	r.RoundOut ().Draw (cr);
+	cairo_clip (cr);
+
+	cairo_set_source_surface (cr, image, x, y);
+	cairo_surface_destroy (image);
+
+	cairo_paint (cr);
+	cairo_restore (cr);
+
+	g_free (data);
+	cairo_surface_destroy (surface);
+	g_free (table);
+}
+
+void
 Effect::Shutdown ()
 {
 }
@@ -1032,7 +1113,10 @@ BlurEffect::Render (Context      *ctx,
 		    double       width,
 		    double       height)
 {
-	ctx->Blur (src, MIN (GetRadius (), MAX_BLUR_RADIUS), x, y);
+	double radius = MIN (GetRadius (), MAX_BLUR_RADIUS);
+
+	ctx->Blur (src, radius, x, y);
+
 	return 1;
 }
 
@@ -1040,11 +1124,6 @@ DropShadowEffect::DropShadowEffect ()
 {
 	SetObjectType (Type::DROPSHADOWEFFECT);
 
-	horz_fs = NULL;
-	vert_fs = NULL;
-	horz_pass_constant_buffer = NULL;
-	vert_pass_constant_buffer = NULL;
-	filter_size = -1;
 	nfiltervalues = 0;
 	filtertable = NULL;
 	need_filter_update = true;
@@ -1053,30 +1132,6 @@ DropShadowEffect::DropShadowEffect ()
 DropShadowEffect::~DropShadowEffect ()
 {
 	g_free (filtertable);
-	Clear ();
-}
-
-void
-DropShadowEffect::Clear ()
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext *ctx = st_context;
-
-	pipe_resource_reference (&horz_pass_constant_buffer, NULL);
-	pipe_resource_reference (&vert_pass_constant_buffer, NULL);
-
-	if (horz_fs) {
-		ctx->pipe->delete_fs_state (ctx->pipe, horz_fs);
-		horz_fs = NULL;
-	}
-
-	if (vert_fs) {
-		ctx->pipe->delete_fs_state (ctx->pipe, vert_fs);
-		vert_fs = NULL;
-	}
-#endif
-
 }
 
 void
@@ -1129,164 +1184,6 @@ DropShadowEffect::Padding ()
 }
 
 bool
-DropShadowEffect::Composite (pipe_surface_t  *dst,
-			     pipe_sampler_view *src,
-			     const double    *matrix,
-			     double          dstX,
-			     double          dstY,
-			     const Rect      *clip,
-			     double          x,
-			     double          y,
-			     double          width,
-			     double          height)
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	struct pipe_screen   *screen = ctx->pipe->screen;
-	GalliumSurface       *intermediate;
-	struct pipe_surface  *intermediate_surface;
-	struct pipe_resource *vertices, *intermediate_vertices;
-	pipe_sampler_view    *sampler_views[PIPE_MAX_SAMPLERS];
-	double               s = src->texture->width0;
-	double               t = src->texture->height0;
-
-	MaybeUpdateFilter ();
-	MaybeUpdateShader ();
-
-	if (!vert_fs || !horz_fs)
-		return 0;
-
-	intermediate = new GalliumSurface (ctx->pipe,
-					   src->texture->width0,
-					   src->texture->height0);
-	if (!intermediate)
-		return 0;
-
-	intermediate_surface =
-		screen->get_tex_surface (screen,
-					 intermediate->Texture (),
-					 0,
-					 0,
-					 0,
-					 PIPE_BIND_RENDER_TARGET);;
-	if (!intermediate_surface) {
-		intermediate->unref ();
-		return 0;
-	}
-
-	vertices = CreateVertexBuffer (intermediate->Texture (), matrix,
-				       x, y,
-				       width, height,
-				       s, t);
-	if (!vertices) {
-		pipe_surface_reference (&intermediate_surface, NULL);
-		intermediate->unref ();
-		return 0;
-	}
-
-	intermediate_vertices = CreateVertexBuffer (src->texture, NULL,
-						    0.0, 0.0,
-						    s, t,
-						    s, t);
-	if (!intermediate_vertices) {
-		pipe_resource_reference (&vertices, NULL);
-		pipe_surface_reference (&intermediate_surface, NULL);
-		intermediate->unref ();
-		return 0;
-	}
-
-	if (cso_set_fragment_shader_handle (ctx->cso, horz_fs) != PIPE_OK) {
-		pipe_resource_reference (&intermediate_vertices, NULL);
-		pipe_resource_reference (&vertices, NULL);
-		pipe_surface_reference (&intermediate_surface, NULL);
-		intermediate->unref ();
-		return 0;
-	}
-
-	cso_save_fragment_sampler_views (ctx->cso);
-
-	struct pipe_sampler_state sampler;
-	memset (&sampler, 0, sizeof (struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	sampler.min_img_filter = PIPE_TEX_FILTER_NEAREST;
-	sampler.mag_img_filter = PIPE_TEX_FILTER_NEAREST;
-	sampler.normalized_coords = 0;
-	cso_single_sampler (ctx->cso, 0, &sampler);
-	cso_single_sampler (ctx->cso, 1, &sampler);
-	cso_single_sampler_done (ctx->cso);
-
-	sampler_views[0] = src;
-	cso_set_fragment_sampler_views (ctx->cso, 1, sampler_views);
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, horz_pass_constant_buffer);
-
-	struct pipe_blend_state blend;
-	memset (&blend, 0, sizeof (blend));
-	blend.rt[0].colormask |= PIPE_MASK_RGBA;
-	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].blend_enable = 0;
-	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
-	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
-	cso_set_blend (ctx->cso, &blend);
-
-	DrawVertexBuffer (intermediate_surface, intermediate_vertices,
-			  0.0, 0.0);
-
-	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
-		pipe_resource_reference (&intermediate_vertices, NULL);
-		pipe_resource_reference (&vertices, NULL);
-		pipe_surface_reference (&intermediate_surface, NULL);
-		intermediate->unref ();
-		return 0;
-	}
-
-	sampler_views[0] = src;
-	sampler_views[1] = intermediate->SamplerView ();
-	cso_set_fragment_sampler_views (ctx->cso, 2, sampler_views);
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, vert_pass_constant_buffer);
-
-	memset (&blend, 0, sizeof (blend));
-	blend.rt[0].colormask |= PIPE_MASK_RGBA;
-	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].blend_enable = 1;
-	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	cso_set_blend (ctx->cso, &blend);
-
-	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, NULL);
-
-	cso_restore_fragment_sampler_views (ctx->cso);
-
-	pipe_resource_reference (&intermediate_vertices, NULL);
-	pipe_resource_reference (&vertices, NULL);
-	pipe_surface_reference (&intermediate_surface, NULL);
-	intermediate->unref ();
-
-	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
-
-	return 1;
-#else
-	return 0;
-#endif
-
-}
-
-bool
 DropShadowEffect::Render (Context      *ctx,
 			  MoonSurface  *src,
 			  const double *matrix,
@@ -1295,273 +1192,20 @@ DropShadowEffect::Render (Context      *ctx,
 			  double       width,
 			  double       height)
 {
-	cairo_surface_t *cs = src->Cairo ();
+	double radius = MIN (GetBlurRadius (), MAX_BLUR_RADIUS);
+	double direction = GetDirection () * (M_PI / 180.0);
+ 	double depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
+	double dx = -cos (direction) * depth;
+	double dy = sin (direction) * depth;
+	double opacity = CLAMP (GetOpacity (), 0.0, 1.0);
+	Color  *color = GetColor ();
+	Color  rgba = Color (color->r * opacity,
+			     color->g * opacity,
+			     color->b * opacity,
+			     opacity);
 
-	MaybeUpdateFilter ();
-
-	/* table based filter code when possible */
-	if (cairo_surface_get_type (cs) == CAIRO_SURFACE_TYPE_IMAGE) {
-		const cairo_format_t format = CAIRO_FORMAT_ARGB32;
-		cairo_surface_t      *image;
-
-		int           pw = cairo_image_surface_get_width (cs);
-		int           ph = cairo_image_surface_get_height (cs);
-		int           stride = cairo_image_surface_get_stride (cs);
-		unsigned char *data = (unsigned char *) g_malloc (stride * ph);
-		Rect          r = Rect (x, y, width, height);
-		cairo_t       *cr = ctx->Cairo ();
-
-		double direction = GetDirection () * (M_PI / 180.0);
-		double depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
-		double dx = -cos (direction) * depth;
-		double dy = sin (direction) * depth;
-		Color  *color = GetColor ();
-		double opacity = CLAMP (GetOpacity (), 0.0, 1.0);
-		int    rgba[4];
-		int    *table0 = filtertable0;
-		int    **table = filtertable ? filtertable : &table0;
-
-		rgba[SW_RED]   = (int) ((color->r * opacity) * 255.0);
-		rgba[SW_GREEN] = (int) ((color->g * opacity) * 255.0);
-		rgba[SW_BLUE]  = (int) ((color->b * opacity) * 255.0);
-		rgba[SW_ALPHA] = (int) (opacity * 255.0);
-
-		sw_filter_drop_shadow (cairo_image_surface_get_data (cs),
-				       data,
-				       pw,
-				       ph,
-				       stride,
-				       (int) (dx + 0.5),
-				       (int) (dy + 0.5),
-				       nfiltervalues,
-				       table,
-				       rgba);
-
-		image = cairo_image_surface_create_for_data (data,
-							     format,
-							     pw,
-							     ph,
-							     stride);
-
-		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		r.RoundOut ().Draw (cr);
-		cairo_clip (cr);
-
-		cairo_set_source_surface (cr, image, r.x, r.y);
-		cairo_surface_destroy (image);
-
-		cairo_paint (cr);
-		cairo_restore (cr);
-
-		g_free (data);
-		cairo_surface_destroy (cs);
-
-		return 1;
-	}
-
-	cairo_surface_destroy (cs);
-
-	return Effect::Render (ctx, src, matrix, x, y, width, height);
-}
-
-void
-DropShadowEffect::UpdateShader ()
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	Color                *color = GetColor ();
-	double               direction = GetDirection () * (M_PI / 180.0);
-	double               opacity = CLAMP (GetOpacity (), 0.0, 1.0);
-	double               depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
-	double               dx = -cos (direction) * depth;
-	double               dy = sin (direction) * depth;
-	int                  width = nfiltervalues;
-	float                *horz, *vert;
-	struct pipe_transfer *horz_transfer = NULL, *vert_transfer = NULL;
-	int                  i;
-
-	if (width != filter_size) {
-		struct ureg_program *ureg;
-		struct ureg_src     sampler, intermediate_sampler, tex, col, one, off;
-		struct ureg_dst     out, shd, img, tmp;
-
-		Clear ();
-
-		filter_size = width;
-
-		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
-		if (!ureg)
-			return;
-
-		sampler = ureg_DECL_sampler (ureg, 0);
-
-		tex = ureg_DECL_fs_input (ureg,
-					  TGSI_SEMANTIC_GENERIC, 0,
-					  TGSI_INTERPOLATE_LINEAR);
-
-		out = ureg_DECL_output (ureg,
-					TGSI_SEMANTIC_COLOR,
-					0);
-
-		tmp = ureg_DECL_temporary (ureg);
-		off = ureg_DECL_constant (ureg, 0);
-
-		ureg_ADD (ureg, tmp, tex, off);
-
-		if (width)
-			ureg_convolution (ureg, out, sampler, ureg_src (tmp), width, 1);
-		else
-			ureg_TEX (ureg, out, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-
-		ureg_END (ureg);
-
-#if LOGGING
-		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
-			printf ("DropShadowEffect::UpdateShader: horizontal pass TGSI shader:\n");
-			tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
-		}
-#endif
-
-		horz_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
-		if (!horz_fs)
-			return;
-
-		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
-		if (!ureg) {
-			Clear ();
-			return;
-		}
-
-		sampler = ureg_DECL_sampler (ureg, 0);
-		intermediate_sampler = ureg_DECL_sampler (ureg, 1);
-
-		tex = ureg_DECL_fs_input (ureg,
-					  TGSI_SEMANTIC_GENERIC, 0,
-					  TGSI_INTERPOLATE_LINEAR);
-
-		out = ureg_DECL_output (ureg,
-					TGSI_SEMANTIC_COLOR,
-					0);
-
-		shd = ureg_DECL_temporary (ureg);
-		img = ureg_DECL_temporary (ureg);
-		col = ureg_DECL_constant (ureg, 0);
-		one = ureg_imm4f (ureg, 1.f, 1.f, 1.f, 1.f);
-
-		ureg_TEX (ureg, img, TGSI_TEXTURE_2D, tex, sampler);
-
-		if (width)
-			ureg_convolution (ureg, shd, intermediate_sampler, tex, width, 1);
-		else
-			ureg_TEX (ureg, shd, TGSI_TEXTURE_2D, tex, intermediate_sampler);
-
-		ureg_MUL (ureg, shd, ureg_swizzle (ureg_src (shd),
-						   TGSI_SWIZZLE_W,
-						   TGSI_SWIZZLE_W,
-						   TGSI_SWIZZLE_W,
-						   TGSI_SWIZZLE_W), col);
-		tmp = ureg_DECL_temporary (ureg);
-		ureg_SUB (ureg, tmp, one, ureg_swizzle (ureg_src (img),
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W));
-		ureg_MAD (ureg, out, ureg_src (tmp), ureg_src (shd), ureg_src (img));
-		ureg_END (ureg);
-
-#if LOGGING
-		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
-			printf ("DropShadowEffect::UpdateShader: vertical pass TGSI shader:\n");
-			tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
-		}
-#endif
-
-		vert_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
-		if (!vert_fs) {
-			Clear ();
-			return;
-		}
-
-		horz_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen,
-					    PIPE_BIND_CONSTANT_BUFFER,
-					    sizeof (float) * 4 * (width * 2 + 2));
-		if (!horz_pass_constant_buffer) {
-			Clear ();
-			return;
-		}
-
-		vert_pass_constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen,
-					    PIPE_BIND_CONSTANT_BUFFER,
-					    sizeof (float) * 4 * (width * 2 + 2));
-		if (!vert_pass_constant_buffer) {
-			Clear ();
-			return;
-		}
-	}
-
-	horz = (float *) pipe_buffer_map (ctx->pipe,
-					  horz_pass_constant_buffer,
-					  PIPE_TRANSFER_WRITE,
-					  &horz_transfer);
-	if (!horz) {
-		Clear ();
-		return;
-	}
-
-	vert = (float *) pipe_buffer_map (ctx->pipe,
-					  vert_pass_constant_buffer,
-					  PIPE_TRANSFER_WRITE,
-					  &vert_transfer);
-	if (!vert) {
-		pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
-		Clear ();
-		return;
-	}
-
-	*horz++ = dx;
-	*horz++ = dy;
-	*horz++ = 0.f;
-	*horz++ = 0.f;
-
-	*vert++ = color->r * opacity;
-	*vert++ = color->g * opacity;
-	*vert++ = color->b * opacity;
-	*vert++ = opacity;
-
-	if (width) {
-		for (i = 1; i <= width; i++) {
-			*horz++ = i;
-			*horz++ = 0.f;
-			*horz++ = 0.f;
-			*horz++ = 1.f;
-
-			*vert++ = 0.f;
-			*vert++ = i;
-			*vert++ = 0.f;
-			*vert++ = 1.f;
-		}
-
-		for (i = 0; i <= width; i++) {
-			*horz++ = filtervalues[i];
-			*horz++ = filtervalues[i];
-			*horz++ = filtervalues[i];
-			*horz++ = filtervalues[i];
-
-			*vert++ = filtervalues[i];
-			*vert++ = filtervalues[i];
-			*vert++ = filtervalues[i];
-			*vert++ = filtervalues[i];
-		}
-	}
-
-	pipe_buffer_unmap (ctx->pipe, horz_pass_constant_buffer, horz_transfer);
-	pipe_buffer_unmap (ctx->pipe, vert_pass_constant_buffer, vert_transfer);
-#endif
-
+	ctx->DropShadow (src, dx, dy, radius, &rgba, x, y);
+	return 1;
 }
 
 PixelShader::PixelShader ()

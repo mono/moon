@@ -125,6 +125,17 @@ public:
 			  double      width,
 			  double      height);
 
+	static void DropShadow (Context     *ctx,
+				MoonSurface *src,
+				double      dx,
+				double      dy,
+				double      radius,
+				Color       *color,
+				double      x,
+				double      ,
+				double      width,
+				double      height);
+
 protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();
@@ -304,29 +315,7 @@ protected:
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
-	void Clear ();
 	void MaybeUpdateFilter ();
-
-	bool Composite (pipe_surface_t  *dst,
-			pipe_sampler_view *src,
-			const double    *matrix,
-			double          dstX,
-			double          dstY,
-			const Rect      *clip,
-			double          x,
-			double          y,
-			double          width,
-			double          height);
-
-	void UpdateShader ();
-
-	void *horz_fs;
-	void *vert_fs;
-
-	pipe_resource_t *horz_pass_constant_buffer;
-	pipe_resource_t *vert_pass_constant_buffer;
-
-	int filter_size;
 
 	int    nfiltervalues;
 	double filtervalues[MAX_BLUR_RADIUS + 1];

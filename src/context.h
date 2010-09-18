@@ -15,6 +15,7 @@
 
 #include "list.h"
 #include "rect.h"
+#include "color.h"
 #include "surface.h"
 
 namespace Moonlight {
@@ -112,6 +113,14 @@ public:
 			   double      radius,
 			   double      x,
 			   double      y);
+
+	virtual void DropShadow (MoonSurface *src,
+				 double      dx,
+				 double      dy,
+				 double      radius,
+				 Color       *color,
+				 double      x,
+				 double      y);
 };
 
 };

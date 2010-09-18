@@ -248,4 +248,16 @@ Context::Blur (MoonSurface  *src,
 	g_warning ("Context::Blur has been called. The derived class should have overridden it.");
 }
 
+void
+Context::DropShadow (MoonSurface *src,
+		     double      dx,
+		     double      dy,
+		     double      radius,
+		     Color       *color,
+		     double      x,
+		     double      y)
+{
+	g_warning ("Context::DropShadow has been called. The derived class should have overridden it.");
+}
+
 };
