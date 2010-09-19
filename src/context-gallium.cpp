@@ -474,6 +474,19 @@ GalliumContext::SetupVertexData (struct pipe_resource      *texture,
 }
 
 void
+GalliumContext::InitMatrix (double *out)
+{
+	cairo_matrix_t ctm;
+
+	Top ()->GetMatrix (&ctm);
+
+	Matrix3D::Affine (out,
+			  ctm.xx, ctm.xy,
+			  ctm.yx, ctm.yy,
+			  ctm.x0, ctm.y0);
+}
+
+void
 GalliumContext::TransformMatrix (double *out, const double *matrix)
 {
 	cairo_matrix_t ctm;
@@ -722,15 +735,14 @@ GalliumContext::Blur (MoonSurface *src,
 	int                      size, i;
 	double                   m[16];
 
-	Matrix3D::Identity (m);
-
 	size = Effect::ComputeGaussianSamples (radius, precision, values);
 	if (size == 0) {
+		Matrix3D::Identity (m);
 		Project (src, m, 1.0, x, y);
 		return;
 	}
 
-	TransformMatrix (m, m);
+	InitMatrix (m);
 
 	// software optimization that can hopefully be removed one day
 	if (is_softpipe) {
@@ -949,11 +961,9 @@ GalliumContext::DropShadow (MoonSurface *src,
 	int                      size, i;
 	double                   m[16];
 
-	Matrix3D::Identity (m);
-
 	size = Effect::ComputeGaussianSamples (radius, precision, values);
 
-	TransformMatrix (m, m);
+	InitMatrix (m);
 
 	// software optimization that can hopefully be removed one day
 	if (is_softpipe) {
@@ -1631,12 +1641,11 @@ GalliumContext::ShaderEffect (MoonSurface *src,
 	double                   m[16];
 	int                      i;
 
-	Matrix3D::Identity (m);
-	TransformMatrix (m, m);
-
 	g_assert (n_sampler <= PIPE_MAX_SAMPLERS);
 	g_assert (n_constant <= MAX_CONSTANTS);
 	g_assert (!ddxUvDdyUvPtr || *ddxUvDdyUvPtr < MAX_CONSTANTS);
+
+	InitMatrix (m);
 
 	for (i = 0; i < n_sampler; i++) {
 		struct pipe_sampler_view *sampler_view = NULL;

@@ -74,6 +74,7 @@ public:
 					double             x,
 					double             y);
 
+	void InitMatrix (double *out);
 	void TransformMatrix (double *out, const double *matrix);
 	void *GetProjectShader (double alpha);
 	void *GetConvolveShader (unsigned size);
