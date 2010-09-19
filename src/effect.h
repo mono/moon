@@ -233,9 +233,6 @@ public:
 			     double       width,
 			     double       height);
 
-	static void Initialize ();
-	static void Shutdown ();
-
 	static int ComputeGaussianSamples (double radius,
 					   double precision,
 					   double *row);

@@ -480,11 +480,6 @@ sw_filter_drop_shadow (unsigned char *src,
 	g_free (tmp_data);
 }
 
-void
-Effect::Initialize ()
-{
-}
-
 int
 Effect::ComputeGaussianSamples (double radius,
 				double precision,
@@ -733,11 +728,6 @@ Effect::DropShadow (Context     *ctx,
 	g_free (data);
 	cairo_surface_destroy (surface);
 	g_free (table);
-}
-
-void
-Effect::Shutdown ()
-{
 }
 
 Effect::Effect ()

@@ -83,7 +83,6 @@ G_END_DECLS
 #endif
 
 #include "pipeline.h"
-#include "effect.h"
 #include "context.h"
 
 namespace Moonlight {
@@ -2731,7 +2730,6 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brows
 
 	xaml_init ();
 	Media::Initialize ();
-	Effect::Initialize ();
 }
 
 MoonWindowingSystem *
@@ -2771,7 +2769,6 @@ runtime_shutdown (void)
 		return;
 
 	Media::Shutdown ();
-	Effect::Shutdown ();
 	
 	inited = false;
 
