@@ -22,8 +22,6 @@
 
 namespace Moonlight {
 
-int Effect::filtertable0[256];
-
 #define sw_filter_sample(src, filter)		\
 	(*filter)[(int) (src)]
 
@@ -485,8 +483,6 @@ sw_filter_drop_shadow (unsigned char *src,
 void
 Effect::Initialize ()
 {
-	for (int i = 0; i < 256; i++)
-		filtertable0[i] = i << 16;
 }
 
 int
@@ -552,7 +548,17 @@ Effect::UpdateFilterValues (double radius,
 					(bytes + ptr_size + i * value_size);
 		}
 		else {
-			*table = NULL;
+			int  ptr_size = sizeof (int *);
+			int  data_size = sizeof (int) * 256;
+			char *bytes;
+			
+			bytes = (char *) g_malloc (ptr_size + data_size);
+			*table = (int **) bytes;
+
+			(*table)[0] = (int *) (bytes + ptr_size);
+
+			for (int i = 0; i < 256; i++)
+				(*table)[0][i] = i << 16;
 		}
 	}
 
@@ -589,7 +595,7 @@ Effect::Blur (Context     *ctx,
 	cairo_t              *cr = ctx->Cairo ();
 	Rect                 r = Rect (x, y, width, height);
 	unsigned char        *data;
-	int                  stride, n = 0;
+	int                  stride, n = -1;
 	double               values[MAX_BLUR_RADIUS + 1];
 	int                  **table = NULL;
 
@@ -667,10 +673,9 @@ Effect::DropShadow (Context     *ctx,
 	cairo_t              *cr = ctx->Cairo ();
 	Rect                 r = Rect (x, y, width, height);
 	unsigned char        *data;
-	int                  stride, n = 0;
+	int                  stride, n = -1;
 	double               values[MAX_BLUR_RADIUS + 1];
 	int                  **table = NULL;
-	int                  *table0 = filtertable0;
 	int                  rgba[4];
 
 	UpdateFilterValues (radius, values, &table, &n);
@@ -705,7 +710,7 @@ Effect::DropShadow (Context     *ctx,
 			       (int) (dx + 0.5),
 			       (int) (dy + 0.5),
 			       n,
-			       table ? table : &table0,
+			       table,
 			       rgba);
 
 	image = cairo_image_surface_create_for_data (data,

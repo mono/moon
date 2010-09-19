@@ -272,8 +272,6 @@ protected:
 					double *values,
 					int    ***table,
 					int    *size);
-
-	static int filtertable0[256];
 };
 
 #define MAX_BLUR_RADIUS 20
