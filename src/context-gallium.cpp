@@ -35,6 +35,9 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	AbsoluteTransform   transform = AbsoluteTransform ();
 	Surface             *cs = new Surface (surface, Rect ());
 	struct pipe_screen  *screen = surface->Screen ();
+	const uint          semantic_names[] = { TGSI_SEMANTIC_POSITION,
+						 TGSI_SEMANTIC_GENERIC };
+	const uint          semantic_indexes[] = { 0, 0 };
 	unsigned            i;
 
 	pipe = screen->context_create (screen, NULL);
@@ -182,26 +185,18 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 		pipe_sampler_view_reference (&view, NULL);
 	}
 
-	/* vertex shader */
-	{
-		const uint semantic_names[] = { TGSI_SEMANTIC_POSITION,
-						TGSI_SEMANTIC_GENERIC };
-		const uint semantic_indexes[] = { 0, 0 };
-
-		vs = util_make_vertex_passthrough_shader (pipe,
+	/* default vertex shader */
+	default_vs = util_make_vertex_passthrough_shader (pipe,
 							  2,
 							  semantic_names,
 							  semantic_indexes);
-		cso_set_vertex_shader_handle (cso, vs);
-	}
+	cso_set_vertex_shader_handle (cso, default_vs);
 
-	/* fragment shader */
-	{
-		fs = util_make_fragment_tex_shader (pipe,
+	/* default fragment shader */
+	default_fs = util_make_fragment_tex_shader (pipe,
 						    TGSI_TEXTURE_2D,
 						    TGSI_INTERPOLATE_LINEAR);
-		cso_set_fragment_shader_handle (cso, fs);
-	}
+	cso_set_fragment_shader_handle (cso, default_fs);
 
 	/* vertex elements */
 	for (i = 0; i < 2; i++) {
@@ -265,11 +260,38 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	/* drop shadow fragment shaders */
 	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
 		dropshadow_fs[i] = NULL;
+
+	/* effect sampler */
+	memset (&effect_sampler, 0, sizeof (struct pipe_sampler_state));
+	effect_sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	effect_sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	effect_sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	effect_sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
+	effect_sampler.min_img_filter = PIPE_TEX_FILTER_LINEAR;
+	effect_sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
+	effect_sampler.normalized_coords = 1;
+
+	/* effect fragment shaders */
+	effect_fs = cso_hash_create ();
 }
 
 GalliumContext::~GalliumContext ()
 {
 	unsigned i;
+
+	while (cso_hash_size (effect_fs)) {
+		struct cso_hash_iter iter;
+
+		iter = cso_hash_first_node (effect_fs);
+		if (!cso_hash_iter_is_null (iter)) {
+			void *fs = cso_hash_iter_data (iter);
+
+			cso_delete_fragment_shader (cso, fs);
+		}
+
+		cso_hash_erase (effect_fs, iter);
+	}
+	cso_hash_delete (effect_fs);
 
 	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
 		if (convolve_fs[i])
@@ -281,9 +303,9 @@ GalliumContext::~GalliumContext ()
 
 	pipe_resource_reference (&default_texture, NULL);
 
-	cso_delete_vertex_shader (cso, vs);
-	cso_delete_fragment_shader (cso, fs);
-
+	cso_delete_fragment_shader (cso, default_fs);
+	cso_delete_vertex_shader (cso, default_vs);
+	
 	cso_destroy_context (cso);
 	pipe->destroy (pipe);
 }
@@ -1064,6 +1086,671 @@ GalliumContext::DropShadow (MoonSurface *src,
 	cso_restore_rasterizer (cso);
 
 	intermediate->unref ();
+}
+
+static bool
+ureg_check_aliasing (const struct ureg_dst *dst,
+		     const struct ureg_src *src)
+{
+	unsigned writemask = dst->WriteMask;
+	unsigned channelsWritten = 0x0;
+   
+	if (writemask == TGSI_WRITEMASK_X ||
+	    writemask == TGSI_WRITEMASK_Y ||
+	    writemask == TGSI_WRITEMASK_Z ||
+	    writemask == TGSI_WRITEMASK_W ||
+	    writemask == TGSI_WRITEMASK_NONE)
+		return FALSE;
+
+	if ((src->File != dst->File) || (src->Index != dst->Index))
+		return false;
+
+	if (writemask & TGSI_WRITEMASK_X) {
+		if (channelsWritten & (1 << src->SwizzleX))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_X;
+	}
+
+	if (writemask & TGSI_WRITEMASK_Y) {
+		if (channelsWritten & (1 << src->SwizzleY))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_Y;
+	}
+
+	if (writemask & TGSI_WRITEMASK_Z) {
+		if (channelsWritten & (1 << src->SwizzleZ))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_Z;
+	}
+
+	if (writemask & TGSI_WRITEMASK_W) {
+		if (channelsWritten & (1 << src->SwizzleW))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_W;
+	}
+
+	return false;
+}
+
+#define ERROR_IF(EXP)							\
+	do { if (EXP) {							\
+			ShaderEffect::ShaderError (ps,			\
+				     "Shader error (" #EXP ") at "	\
+				     "instruction %.2d", n);		\
+			ureg_destroy (ureg); return default_fs; }	\
+	} while (0)
+
+void *
+GalliumContext::GetEffectShader (PixelShader *ps)
+{
+	struct cso_hash_iter iter;
+	void                *fs = NULL;
+	struct ureg_program *ureg;
+	d3d_version_t       version;
+	d3d_op_t            op;
+	int                 index;
+	struct ureg_src     src_reg[D3DSPR_LAST][MAX_CONSTANTS];
+	struct ureg_dst     dst_reg[D3DSPR_LAST][MAX_CONSTANTS];
+	int                 n = 0;
+
+	iter = cso_hash_find (effect_fs, (unsigned) (long) ps);
+	if (!cso_hash_iter_is_null (iter))
+		return cso_hash_iter_data (iter);
+
+	if ((index = ps->GetVersion (0, &version)) < 0)
+		return default_fs;
+
+	if (version.type  != 0xffff ||
+	    version.major != 2      ||
+	    version.minor != 0) {
+		ShaderEffect::ShaderError (ps, "Unsupported pixel shader");
+		return default_fs;
+	}
+
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+	if (!ureg)
+		return default_fs;
+
+	for (int i = 0; i < D3DSPR_LAST; i++) {
+		for (int j = 0; j < MAX_CONSTANTS; j++) {
+			src_reg[i][j] = ureg_src_undef ();
+			dst_reg[i][j] = ureg_dst_undef ();
+		}
+	}
+
+	dst_reg[D3DSPR_COLOROUT][0] = ureg_DECL_output (ureg,
+							TGSI_SEMANTIC_COLOR,
+							0);
+
+	/* validation and register allocation */
+	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
+		d3d_destination_parameter_t reg;
+		d3d_source_parameter_t      src;
+
+		if (op.type == D3DSIO_COMMENT) {
+			i += op.comment_length;
+			continue;
+		}
+
+		if (op.type == D3DSIO_END)
+			break;
+
+		switch (op.type) {
+				// case D3DSIO_DEFB:
+				// case D3DSIO_DEFI:
+			case D3DSIO_DEF: {
+				d3d_def_instruction_t def;
+
+				i = ps->GetInstruction (i, &def);
+
+				ERROR_IF (def.reg.writemask != 0xf);
+				ERROR_IF (def.reg.dstmod != 0);
+				ERROR_IF (def.reg.regnum >= MAX_CONSTANTS);
+
+				src_reg[def.reg.regtype][def.reg.regnum] =
+					ureg_DECL_immediate (ureg, def.v, 4);
+			} break;
+			case D3DSIO_DCL: {
+				d3d_dcl_instruction_t dcl;
+
+				i = ps->GetInstruction (i, &dcl);
+
+				ERROR_IF (dcl.reg.dstmod != 0);
+				ERROR_IF (dcl.reg.regnum >= MAX_CONSTANTS);
+				ERROR_IF (dcl.reg.regnum >= MAX_SAMPLERS);
+				ERROR_IF (dcl.reg.regtype != D3DSPR_SAMPLER &&
+					  dcl.reg.regtype != D3DSPR_TEXTURE);
+
+				switch (dcl.reg.regtype) {
+					case D3DSPR_SAMPLER:
+						src_reg[D3DSPR_SAMPLER][dcl.reg.regnum] =
+							ureg_DECL_sampler (ureg, dcl.reg.regnum);
+						break;
+					case D3DSPR_TEXTURE:
+						src_reg[D3DSPR_TEXTURE][dcl.reg.regnum] =
+							ureg_DECL_fs_input (ureg,
+									    TGSI_SEMANTIC_GENERIC,
+									    dcl.reg.regnum,
+									    TGSI_INTERPOLATE_LINEAR);
+					default:
+						break;
+				}
+			} break;
+			default: {
+				unsigned ndstparam = op.meta.ndstparam;
+				unsigned nsrcparam = op.meta.nsrcparam;
+				int      j = i;
+
+				n++;
+
+				while (ndstparam--) {
+					j = ps->GetDestinationParameter (j, &reg);
+
+					ERROR_IF (reg.regnum >= MAX_CONSTANTS);
+					ERROR_IF (reg.dstmod != D3DSPD_NONE &&
+						  reg.dstmod != D3DSPD_SATURATE);
+					ERROR_IF (reg.regtype != D3DSPR_TEMP &&
+						  reg.regtype != D3DSPR_COLOROUT);
+
+					if (reg.regtype == D3DSPR_TEMP) {
+						if (ureg_dst_is_undef (dst_reg[D3DSPR_TEMP][reg.regnum])) {
+							struct ureg_dst tmp = ureg_DECL_temporary (ureg);
+
+							dst_reg[D3DSPR_TEMP][reg.regnum] = tmp;
+							src_reg[D3DSPR_TEMP][reg.regnum] = ureg_src (tmp);
+						}
+					}
+
+					ERROR_IF (ureg_dst_is_undef (dst_reg[reg.regtype][reg.regnum]));
+					ERROR_IF (op.type == D3DSIO_SINCOS && (reg.writemask & ~0x3) != 0);
+				}
+
+				while (nsrcparam--) {
+					j = ps->GetSourceParameter (j, &src);
+
+					ERROR_IF (src.regnum >= MAX_CONSTANTS);
+					ERROR_IF (src.srcmod != D3DSPS_NONE &&
+						  src.srcmod != D3DSPS_NEGATE &&
+						  src.srcmod != D3DSPS_ABS);
+					ERROR_IF (src.regtype != D3DSPR_TEMP &&
+						  src.regtype != D3DSPR_CONST &&
+						  src.regtype != D3DSPR_SAMPLER &&
+						  src.regtype != D3DSPR_TEXTURE);
+
+					if (src.regtype == D3DSPR_CONST) {
+						if (ureg_src_is_undef (src_reg[D3DSPR_CONST][src.regnum]))
+							src_reg[D3DSPR_CONST][src.regnum] =
+								ureg_DECL_constant (ureg, src.regnum);
+					}
+
+					ERROR_IF (ureg_src_is_undef (src_reg[src.regtype][src.regnum]));
+				}
+
+				if (!op.meta.name) {
+					ShaderEffect::ShaderError (ps, "Unknown shader instruction %.2d", n);
+					ureg_destroy (ureg);
+					return default_fs;
+				}
+
+				i += op.length;
+			} break;
+		}
+	}
+
+	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
+		d3d_destination_parameter_t reg[8];
+		d3d_source_parameter_t      source[8];
+		struct ureg_dst             dst[8];
+		struct ureg_dst             src_tmp[8];
+		struct ureg_src             src[8];
+		int                         j = i;
+
+		if (op.type == D3DSIO_COMMENT) {
+			i += op.comment_length;
+			continue;
+		}
+
+		for (unsigned k = 0; k < op.meta.ndstparam; k++) {
+			j = ps->GetDestinationParameter (j, &reg[k]);
+			dst[k] = dst_reg[reg[k].regtype][reg[k].regnum];
+
+			switch (reg[k].dstmod) {
+				case D3DSPD_SATURATE:
+					dst[k] = ureg_saturate (dst[k]);
+					break;
+			}
+
+			dst[k] = ureg_writemask (dst[k], reg[k].writemask);
+		}
+
+		for (unsigned k = 0; k < op.meta.nsrcparam; k++) {
+			j = ps->GetSourceParameter (j, &source[k]);
+			src[k] = src_reg[source[k].regtype][source[k].regnum];
+			src_tmp[k] = ureg_dst_undef ();
+
+			switch (source[k].srcmod) {
+				case D3DSPS_NEGATE:
+					src[k] = ureg_negate (src[k]);
+					break;
+				case D3DSPS_ABS:
+					src[k] = ureg_abs (src[k]);
+					break;
+			}
+
+			src[k] = ureg_swizzle (src[k],
+					       source[k].swizzle.x,
+					       source[k].swizzle.y,
+					       source[k].swizzle.z,
+					       source[k].swizzle.w);
+
+			if (op.type != D3DSIO_SINCOS) {
+				if (op.meta.ndstparam && ureg_check_aliasing (&dst[0], &src[k])) {
+					src_tmp[k] = ureg_DECL_temporary (ureg);
+					ureg_MOV (ureg, src_tmp[k], src[k]);
+					src[k] = ureg_src (src_tmp[k]);
+				}
+			}
+		}
+
+		i += op.length;
+
+		switch (op.type) {
+			case D3DSIO_NOP:
+				ureg_NOP (ureg);
+				break;
+				// case D3DSIO_BREAK: break;
+				// case D3DSIO_BREAKC: break;
+				// case D3DSIO_BREAKP: break;
+				// case D3DSIO_CALL: break;
+				// case D3DSIO_CALLNZ: break;
+				// case D3DSIO_LOOP: break;
+				// case D3DSIO_RET: break;
+				// case D3DSIO_ENDLOOP: break;
+				// case D3DSIO_LABEL: break;
+				// case D3DSIO_REP: break;
+				// case D3DSIO_ENDREP: break;
+				// case D3DSIO_IF: break;
+				// case D3DSIO_IFC: break;
+				// case D3DSIO_ELSE: break;
+				// case D3DSIO_ENDIF: break;
+			case D3DSIO_MOV:
+				ureg_MOV (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_ADD:
+				ureg_ADD (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_SUB:
+				ureg_SUB (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_MAD:
+				ureg_MAD (ureg, dst[0], src[0], src[1], src[2]);
+				break;
+			case D3DSIO_MUL:
+				ureg_MUL (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_RCP:
+				ureg_RCP (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_RSQ:
+				ureg_RSQ (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_DP3:
+				ureg_DP3 (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_DP4:
+				ureg_DP4 (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_MIN:
+				ureg_MIN (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_MAX:
+				ureg_MAX (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_SLT:
+				ureg_SLT (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_SGE:
+				ureg_SGE (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_EXP:
+				ureg_EXP (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_LOG:
+				ureg_LOG (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_LIT:
+				ureg_LIT (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_DST:
+				ureg_DST (ureg, dst[0], src[0], src[1]);
+				break;
+			case D3DSIO_LRP:
+				ureg_LRP (ureg, dst[0], src[0], src[1], src[2]);
+				break;
+			case D3DSIO_FRC:
+				ureg_FRC (ureg, dst[0], src[0]);
+				break;
+				// case D3DSIO_M4x4: break;
+				// case D3DSIO_M4x3: break;
+				// case D3DSIO_M3x4: break;
+				// case D3DSIO_M3x3: break;
+				// case D3DSIO_M3x2: break;
+			case D3DSIO_POW:
+				ureg_POW (ureg, dst[0], src[0], src[1]);
+				break;
+				// case D3DSIO_CRS: break;
+				// case D3DSIO_SGN: break;
+			case D3DSIO_ABS:
+				ureg_ABS (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_NRM:
+				ureg_NRM (ureg, dst[0], src[0]);
+				break;
+			case D3DSIO_SINCOS:
+				struct ureg_dst v1, v2, v3, v;
+
+				v1 = ureg_DECL_temporary (ureg);
+				v2 = ureg_DECL_temporary (ureg);
+				v3 = ureg_DECL_temporary (ureg);
+				v  = ureg_DECL_temporary (ureg);
+
+				ureg_MOV (ureg, v1, src[0]);
+				ureg_MOV (ureg, v2, src[1]);
+				ureg_MOV (ureg, v3, src[2]);
+
+				 // x * x
+				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_Z),
+					  ureg_swizzle (ureg_src (v1),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W),
+					  ureg_swizzle (ureg_src (v1),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W));
+
+				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_src (v2),
+					  ureg_swizzle (ureg_src (v2),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_W));
+
+				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_src (v3));
+
+				// partial sin( x/2 ) and final cos( x/2 )
+				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_swizzle (ureg_src (v3),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_W));
+
+				// sin( x/2 )
+				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_X),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v1),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W));
+
+				 // compute sin( x/2 ) * sin( x/2 ) and sin( x/2 ) * cos( x/2 )
+				ureg_MUL (ureg, ureg_writemask (v1, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_X,
+							TGSI_SWIZZLE_X,
+							TGSI_SWIZZLE_X,
+							TGSI_SWIZZLE_X));
+
+				// 2 * sin( x/2 ) * sin( x/2 ) and 2 * sin( x/2 ) * cos( x/2 )
+				ureg_ADD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v1),
+					  ureg_src (v1));
+
+				// cos( x ) and sin( x )
+				ureg_SUB (ureg, ureg_writemask (v, TGSI_WRITEMASK_X),
+					  ureg_swizzle (ureg_src (v3),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_src (v));
+
+				ureg_MOV (ureg, dst[0], ureg_src (v));
+
+				ureg_release_temporary (ureg, v1);
+				ureg_release_temporary (ureg, v2);
+				ureg_release_temporary (ureg, v3);
+				ureg_release_temporary (ureg, v);
+				break;
+				// case D3DSIO_MOVA: break;
+				// case D3DSIO_TEXCOORD: break;
+				// case D3DSIO_TEXKILL: break;
+			case D3DSIO_TEX:
+				ureg_TEX (ureg, dst[0], TGSI_TEXTURE_2D, src[0], src[1]);
+				break;
+				// case D3DSIO_TEXBEM: break;
+				// case D3DSIO_TEXBEML: break;
+				// case D3DSIO_TEXREG2AR: break;
+				// case D3DSIO_TEXREG2GB: break;
+				// case D3DSIO_TEXM3x2PAD: break;
+				// case D3DSIO_TEXM3x2TEX: break;
+				// case D3DSIO_TEXM3x3PAD: break;
+				// case D3DSIO_TEXM3x3TEX: break;
+				// case D3DSIO_RESERVED0: break;
+				// case D3DSIO_TEXM3x3SPEC: break;
+				// case D3DSIO_TEXM3x3VSPEC: break;
+				// case D3DSIO_EXPP: break;
+				// case D3DSIO_LOGP: break;
+			case D3DSIO_CND:
+				ureg_CND (ureg, dst[0], src[0], src[1], src[2]);
+				break;
+				// case D3DSIO_TEXREG2RGB: break;
+				// case D3DSIO_TEXDP3TEX: break;
+				// case D3DSIO_TEXM3x2DEPTH: break;
+				// case D3DSIO_TEXDP3: break;
+				// case D3DSIO_TEXM3x3: break;
+				// case D3DSIO_TEXDEPTH: break;
+			case D3DSIO_CMP:
+				/* direct3d does src0 >= 0, while TGSI does src0 < 0 */
+				ureg_CMP (ureg, dst[0], src[0], src[2], src[1]);
+				break;
+				// case D3DSIO_BEM: break;
+			case D3DSIO_DP2ADD:
+				ureg_DP2A (ureg, dst[0], src[0], src[1], src[2]);
+				break;
+				// case D3DSIO_DSX: break;
+				// case D3DSIO_DSY: break;
+				// case D3DSIO_TEXLDD: break;
+				// case D3DSIO_SETP: break;
+				// case D3DSIO_TEXLDL: break;
+			case D3DSIO_END:
+				ureg_END (ureg);
+				fs = ureg_create_shader_and_destroy (ureg, pipe);
+				cso_hash_insert (effect_fs,
+						 (unsigned) (long) ps,
+						 fs);
+				return fs;
+			default:
+				break;
+		}
+
+		for (unsigned k = 0; k < op.meta.nsrcparam; k++)
+			if (!ureg_dst_is_undef (src_tmp[k]))
+				ureg_release_temporary (ureg, src_tmp[k]);
+	}
+
+	return default_fs;
+}
+
+void
+GalliumContext::ShaderEffect (MoonSurface *src,
+			      PixelShader *shader,
+			      Brush       **sampler,
+			      int         *sampler_mode,
+			      int         n_sampler,
+			      Color       *constant,
+			      int         n_constant,
+			      int         *ddxUvDdyUvPtr,
+			      double      x,
+			      double      y)
+{
+	GalliumSurface           *surface = (GalliumSurface *) src;
+	GalliumSurface           *input[PIPE_MAX_SAMPLERS];
+	struct pipe_sampler_view *sampler_views[PIPE_MAX_SAMPLERS];
+	struct pipe_resource     *tex = surface->Texture ();
+	struct pipe_resource     *vbuf;
+	float                    cbuf[MAX_CONSTANTS][4];
+	double                   m[16];
+	int                      i;
+
+	Matrix3D::Identity (m);
+	TransformMatrix (m, m);
+
+	g_assert (n_sampler <= PIPE_MAX_SAMPLERS);
+	g_assert (n_constant <= MAX_CONSTANTS);
+	g_assert (!ddxUvDdyUvPtr || *ddxUvDdyUvPtr < MAX_CONSTANTS);
+
+	for (i = 0; i < n_sampler; i++) {
+		struct pipe_sampler_view *sampler_view = NULL;
+
+		if (sampler[i]) {
+			input[i] = new GalliumSurface (pipe,
+						       tex->width0,
+						       tex->height0);
+			if (input[i]) {
+				cairo_surface_t *surface = input[i]->Cairo ();
+				cairo_t         *cr = cairo_create (surface);
+				Rect            area = Rect (0.0,
+							     0.0,
+							     tex->width0,
+							     tex->height0);
+
+				sampler[i]->SetupBrush (cr, area);
+
+				cairo_paint (cr);
+				cairo_destroy (cr);
+				cairo_surface_destroy (surface);
+
+				sampler_view = input[i]->SamplerView ();
+			}
+		}
+		else {
+			input[i] = NULL;
+			sampler_view = surface->SamplerView ();
+		}
+
+		if (!sampler_view) {
+			g_warning ("GalliumContext::ShaderEffect: failed to "
+				   "generate input texture for sampler "
+				   "register %d", i);
+			sampler_view = surface->SamplerView ();
+		}
+
+		sampler_views[i] = sampler_view;
+	}
+
+	cso_save_blend (cso);
+	cso_save_samplers (cso);
+	cso_save_fragment_sampler_views (cso);
+	cso_save_fragment_shader (cso);
+	cso_save_framebuffer (cso);
+	cso_save_viewport (cso);
+	cso_save_rasterizer (cso);
+
+	cso_set_blend (cso, &blend_over);
+	for (i = 0; i < n_sampler; i++) {
+		struct pipe_sampler_state sampler = effect_sampler;
+		unsigned                  mode;
+
+		switch (sampler_mode[i]) {
+			case 2:
+				mode = PIPE_TEX_FILTER_LINEAR;
+				break;
+			default:
+				mode = PIPE_TEX_FILTER_NEAREST;
+				break;
+		}
+
+		sampler.min_img_filter = mode;
+		sampler.mag_img_filter = mode;
+
+		cso_single_sampler (cso, i, &sampler);
+	}
+	cso_single_sampler_done (cso);
+	cso_set_fragment_sampler_views (cso, n_sampler, sampler_views);
+	cso_set_fragment_shader_handle (cso, GetEffectShader (shader));
+
+	SetViewport ();
+	SetFramebuffer ();
+	SetScissor ();
+	SetRasterizer ();
+
+	for (i = 0; i < n_constant; i++) {
+		cbuf[i][0] = constant[i].r;
+		cbuf[i][1] = constant[i].g;
+		cbuf[i][2] = constant[i].b;
+		cbuf[i][3] = constant[i].a;
+	}
+
+	if (ddxUvDdyUvPtr) {
+		cbuf[*ddxUvDdyUvPtr][0] = 1.0f / tex->width0;
+		cbuf[*ddxUvDdyUvPtr][1] = 0.0f;
+		cbuf[*ddxUvDdyUvPtr][2] = 0.0f;
+		cbuf[*ddxUvDdyUvPtr][3] = 1.0f / tex->height0;
+	}
+
+	SetConstantBuffer (cbuf, sizeof (cbuf[0]) * n_constant);
+
+	vbuf = SetupVertexData (tex, &effect_sampler, m, x, y);
+	if (vbuf) {
+		cso_set_vertex_elements (cso, 2, velems);
+		util_draw_vertex_buffer (pipe, vbuf, 0,
+					 PIPE_PRIM_TRIANGLE_FAN,
+					 4,
+					 2);
+
+		pipe_resource_reference (&vbuf, NULL);
+	}
+
+	cso_restore_blend (cso);
+	cso_restore_samplers (cso);
+	cso_restore_fragment_sampler_views (cso);
+	cso_restore_fragment_shader (cso);
+	cso_restore_framebuffer (cso);
+	cso_restore_viewport (cso);
+	cso_restore_rasterizer (cso);
+
+	for (i = 0; i < n_sampler; i++)
+		if (input[i])
+			input[i]->unref ();
 }
 
 };

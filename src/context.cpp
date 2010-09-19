@@ -260,4 +260,19 @@ Context::DropShadow (MoonSurface *src,
 	g_warning ("Context::DropShadow has been called. The derived class should have overridden it.");
 }
 
+void
+Context::ShaderEffect (MoonSurface *src,
+		       PixelShader *shader,
+		       Brush       **sampler,
+		       int         *sampler_mode,
+		       int         n_sampler,
+		       Color       *constant,
+		       int         n_constant,
+		       int         *ddxUvDdyUvPtr,
+		       double      x,
+		       double      y)
+{
+	g_warning ("Context::ShaderEffect has been called. The derived class should have overridden it.");
+}
+
 };

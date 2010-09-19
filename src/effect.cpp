@@ -13,85 +13,16 @@
 
 #include <cairo.h>
 #include <glib.h>
+#include <string.h>
 
 #include "effect.h"
-#include "application.h"
 #include "eventargs.h"
+#include "application.h"
 #include "uri.h"
-#include "projection.h"
-#include "debug.h"
 
-using namespace Moonlight;
-
-GalliumContext *Effect::st_context;
+namespace Moonlight {
 
 int Effect::filtertable0[256];
-
-#ifdef USE_GALLIUM
-#define __MOON_GALLIUM__
-#include "context-gallium.h"
-
-#ifdef CLAMP
-#undef CLAMP
-#endif
-#include "util/u_inlines.h"
-#include "util/u_draw_quad.h"
-#include "pipe/p_context.h"
-#include "pipe/p_state.h"
-#include "tgsi/tgsi_ureg.h"
-#include "tgsi/tgsi_dump.h"
-
-#if MAX_SAMPLERS > PIPE_MAX_SAMPLERS
-#error MAX_SAMPLERS is too large
-#endif
-
-static INLINE void
-ureg_convolution (struct ureg_program *ureg,
-		  struct ureg_dst     out,
-		  struct ureg_src     sampler,
-		  struct ureg_src     tex,
-		  int                 size,
-		  int                 base)
-{
-	struct ureg_dst val, tmp;
-	int             i;
-
-	val = ureg_DECL_temporary (ureg);
-	tmp = ureg_DECL_temporary (ureg);
-
-	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, base));
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-	ureg_MUL (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, base + size + 1));
-
-	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, base));
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-	ureg_MAD (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, base + size + 1),
-		  ureg_src (val));
-
-	for (i = 1; i < size; i++) {
-		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, base + i));
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, base + size + i + 1),
-			  ureg_src (val));
-		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, base + i));
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, base + size + i + 1),
-			  ureg_src (val));
-	}
-
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
-	ureg_MAD (ureg, out, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, base + size),
-		  ureg_src (val));
-
-	ureg_release_temporary (ureg, tmp);
-	ureg_release_temporary (ureg, val);
-}
-#endif
 
 #define sw_filter_sample(src, filter)		\
 	(*filter)[(int) (src)]
@@ -548,7 +479,7 @@ sw_filter_drop_shadow (unsigned char *src,
 		}
 	}
 
-	free (tmp_data);
+	g_free (tmp_data);
 }
 
 void
@@ -807,188 +738,6 @@ Effect::Shutdown ()
 Effect::Effect ()
 {
 	SetObjectType (Type::EFFECT);
-
-	need_update = true;
-}
-
-struct pipe_resource *
-Effect::CreateVertexBuffer (struct pipe_resource *texture,
-			    const double         *matrix,
-			    double               x,
-			    double               y,
-			    double               width,
-			    double               height,
-			    double               s,
-			    double               t)
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	struct pipe_resource *vertices;
-	float                *verts;
-	struct pipe_transfer *transfer = NULL;
-	double               p1[4] = { x, y, 0.0, 1.0 };
-	double               p2[4] = { x + width, y, 0.0, 1.0 };
-	double               p3[4] = { x + width, y + height, 0.0, 1.0 };
-	double               p4[4] = { x, y + height, 0.0, 1.0 };
-
-	vertices = pipe_buffer_create (ctx->pipe->screen,
-				       PIPE_BIND_VERTEX_BUFFER,
-				       sizeof (float) * 8 * 4);
-	if (!vertices)
-		return NULL;
-
-	verts = (float *) pipe_buffer_map (ctx->pipe,
-					   vertices,
-					   PIPE_TRANSFER_WRITE,
-					   &transfer);
-	if (!verts)
-	{
-		pipe_resource_reference (&vertices, NULL);
-		return NULL;
-	}
-
-	if (matrix) {
-		Matrix3D::TransformPoint (p1, matrix, p1);
-		Matrix3D::TransformPoint (p2, matrix, p2);
-		Matrix3D::TransformPoint (p3, matrix, p3);
-		Matrix3D::TransformPoint (p4, matrix, p4);
-	}
-
-	*verts++ = p1[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p1[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p1[2];
-	*verts++ = p1[3];
-
-	*verts++ = 0.0;
-	*verts++ = 0.0;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	*verts++ = p2[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p2[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p2[2];
-	*verts++ = p2[3];
-
-	*verts++ = s;
-	*verts++ = 0.0;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	*verts++ = p3[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p3[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p3[2];
-	*verts++ = p3[3];
-
-	*verts++ = s;
-	*verts++ = t;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	*verts++ = p4[0] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p4[1] * VIEWPORT_SCALE_RECIPROCAL;
-	*verts++ = p4[2];
-	*verts++ = p4[3];
-
-	*verts++ = 0.0;
-	*verts++ = t;
-	*verts++ = 0.f;
-	*verts++ = 0.f;
-
-	pipe_buffer_unmap (ctx->pipe, vertices, transfer);
-
-	return vertices;
-
-#else
-	return NULL;
-#endif
-
-}
-
-void
-Effect::DrawVertexBuffer (struct pipe_surface  *dst,
-			  struct pipe_resource *vertices,
-			  double               dstX,
-			  double               dstY,
-			  const Rect           *clip)
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext                *ctx = st_context;
-	struct pipe_fence_handle      *fence = NULL;
-	struct pipe_framebuffer_state fb;
-	struct pipe_rasterizer_state  rasterizer;
-	struct pipe_viewport_state    viewport;
-
-	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0;
-	viewport.scale[3] = 1.0;
-	viewport.translate[0] = dstX;
-	viewport.translate[1] = dstY;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
-
-	memset (&rasterizer, 0, sizeof (rasterizer));
-	rasterizer.cull_face = PIPE_FACE_NONE;
-	rasterizer.gl_rasterization_rules = 1;
-	if (clip) {
-		struct pipe_scissor_state scissor;
-
-		scissor.minx = clip->x;
-		scissor.miny = clip->y;
-		scissor.maxx = clip->x + clip->width;
-		scissor.maxy = clip->y + clip->height;
-
-		(*ctx->pipe->set_scissor_state) (ctx->pipe, &scissor);
-
-		rasterizer.scissor = 1;
-	}
-	cso_set_rasterizer (ctx->cso, &rasterizer);
-
-	cso_save_framebuffer (ctx->cso);
-
-	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
-	fb.width = dst->width;
-	fb.height = dst->height;
-	fb.nr_cbufs = 1;
-	fb.cbufs[0] = dst;
-	cso_set_framebuffer (ctx->cso, &fb);
-
-	cso_set_vertex_elements (ctx->cso, 2, ctx->velems);
-	util_draw_vertex_buffer (ctx->pipe, vertices, 0,
-				 PIPE_PRIM_TRIANGLE_FAN,
-				 4,
-				 2);
-	
-	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
-	if (fence) {
-		/* TODO: allow asynchronous operation */
-		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
-		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
-	}
-
-	cso_restore_framebuffer (ctx->cso);
-#endif
-
-}
-
-bool
-Effect::Composite (pipe_surface_t  *dst,
-		   pipe_sampler_view *src,
-		   const double    *matrix,
-		   double          dstX,
-		   double          dstY,
-		   const Rect      *clip,
-		   double          x,
-		   double          y,
-		   double          width,
-		   double          height)
-{
-	g_warning ("Effect::Composite has been called. The derived class should have overridden it.");
-	return 0;
 }
 
 bool
@@ -1000,108 +749,23 @@ Effect::Render (Context      *ctx,
 		double       width,
 		double       height)
 {
+	g_warning ("Effect::Render has been called. The derived class should have overridden it.");
 
-#ifdef USE_GALLIUM
-	Context::Surface         *cs = ctx->Top ()->GetSurface ();
-	MoonSurface              *ms;
-	Rect                     r = cs->GetData (&ms);
-	GalliumSurface           *dst = (GalliumSurface *) ms;
-	struct pipe_screen       *screen = dst->Screen ();
-	GalliumSurface           *source = (GalliumSurface *) src;
-	struct pipe_surface      *surface;
-	struct pipe_sampler_view *sampler_view;
-	bool                     status = 0;
-
-	// temporary hack used until gallium code has been
-	// moved to GalliumContext class
-	st_context = (GalliumContext *) ctx;
-
-	MaybeUpdateShader ();
-
-	surface = screen->get_tex_surface (screen,
-					   dst->Texture (),
-					   0,
-					   0,
-					   0,
-					   PIPE_BIND_RENDER_TARGET);
-
-	sampler_view = source->SamplerView ();
-
-	if (surface && sampler_view)
-		status = Composite (surface, sampler_view, matrix,
-				    -r.x, -r.y,
-				    NULL,
-				    x, y, width, height);
-
-	pipe_surface_reference (&surface, NULL);
-
-	return status;
-#else
 	return 0;
-#endif
-
-}
-
-void
-Effect::UpdateShader ()
-{
-	g_warning ("Effect::UpdateShader has been called. The derived class should have overridden it.");
-}
-
-void
-Effect::MaybeUpdateShader ()
-{
-	if (need_update) {
-		UpdateShader ();
-		need_update = false;
-	}
 }
 
 BlurEffect::BlurEffect ()
 {
 	SetObjectType (Type::BLUREFFECT);
-
-	nfiltervalues = 0;
-	filtertable = NULL;
-	need_filter_update = true;
-}
-
-BlurEffect::~BlurEffect ()
-{
-	g_free (filtertable);
-}
-
-void
-BlurEffect::MaybeUpdateFilter ()
-{
-	if (need_filter_update) {
-		UpdateFilterValues (MIN (GetRadius (), MAX_BLUR_RADIUS),
-				    filtervalues,
-				    &filtertable,
-				    &nfiltervalues);
-		need_filter_update = false;
-	}
-}
-
-void
-BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
-{
-	if (args->GetProperty ()->GetOwnerType () != Type::BLUREFFECT) {
-		Effect::OnPropertyChanged (args, error);
-		return;
-	}
-
-	need_filter_update = true;
-
-	NotifyListenersOfPropertyChange (args, error);
 }
 
 Thickness
 BlurEffect::Padding ()
 {
-	MaybeUpdateFilter ();
+	double radius = MIN (GetRadius (), MAX_BLUR_RADIUS);
+	int    width = (int) ceil (radius);
 
-	return Thickness (nfiltervalues);
+	return Thickness (width);
 }
 
 bool
@@ -1123,41 +787,6 @@ BlurEffect::Render (Context      *ctx,
 DropShadowEffect::DropShadowEffect ()
 {
 	SetObjectType (Type::DROPSHADOWEFFECT);
-
-	nfiltervalues = 0;
-	filtertable = NULL;
-	need_filter_update = true;
-}
-
-DropShadowEffect::~DropShadowEffect ()
-{
-	g_free (filtertable);
-}
-
-void
-DropShadowEffect::MaybeUpdateFilter ()
-{
-	if (need_filter_update) {
-		UpdateFilterValues (MIN (GetBlurRadius (), MAX_BLUR_RADIUS),
-				    filtervalues,
-				    &filtertable,
-				    &nfiltervalues);
-
-		need_filter_update = false;
-	}
-}
-
-void
-DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
-{
-	if (args->GetProperty ()->GetOwnerType () != Type::DROPSHADOWEFFECT) {
-		Effect::OnPropertyChanged (args, error);
-		return;
-	}
-
-	need_update = need_filter_update = true;
-
-	NotifyListenersOfPropertyChange (args, error);
 }
 
 Thickness
@@ -1165,17 +794,17 @@ DropShadowEffect::Padding ()
 {
 	double direction = GetDirection () * (M_PI / 180.0);
 	double depth = CLAMP (GetShadowDepth (), 0.0, MAX_SHADOW_DEPTH);
+	double radius = MIN (GetBlurRadius (), MAX_BLUR_RADIUS);
+	int    width = (int) ceil (radius);
 	double left;
 	double top;
 	double right;
 	double bottom;
 
-	MaybeUpdateFilter ();
-
-	left   = -cos (direction) * depth + nfiltervalues;
-	top    =  sin (direction) * depth + nfiltervalues;
-	right  =  cos (direction) * depth + nfiltervalues;
-	bottom = -sin (direction) * depth + nfiltervalues;
+	left   = -cos (direction) * depth + width;
+	top    =  sin (direction) * depth + width;
+	right  =  cos (direction) * depth + width;
+	bottom = -sin (direction) * depth + width;
 
 	return Thickness (left   < 1.0 ? 1.0 : ceil (left),
 			  top    < 1.0 ? 1.0 : ceil (top),
@@ -1205,6 +834,7 @@ DropShadowEffect::Render (Context      *ctx,
 			     opacity);
 
 	ctx->DropShadow (src, dx, dy, radius, &rgba, x, y);
+
 	return 1;
 }
 
@@ -1244,7 +874,8 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 			g_free (path);
 		}
 		else {
-			g_warning ("invalid uri: %s", uri ? uri->ToString () : "null");
+			g_warning ("invalid uri: %s", uri ? uri->ToString () :
+				   "null");
 		}
 	}
 
@@ -1601,49 +1232,13 @@ ShaderEffect::ShaderEffect ()
 
 	SetObjectType (Type::SHADEREFFECT);
 
-	fs = NULL;
-
-	constant_buffer = NULL;
-
 	for (i = 0; i < MAX_SAMPLERS; i++) {
 		sampler_input[i] = NULL;
-
-#ifdef USE_GALLIUM
-		sampler_filter[i] = PIPE_TEX_FILTER_NEAREST;
-#endif
-
-	}
-}
-
-void
-ShaderEffect::Clear ()
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext *ctx = st_context;
-
-	pipe_resource_reference (&constant_buffer, NULL);
-
-	if (fs) {
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
-	}
-#endif
-
-}
-
-void
-ShaderEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
-{
-	if (args->GetProperty ()->GetOwnerType () != Type::SHADEREFFECT) {
-		Effect::OnPropertyChanged (args, error);
-		return;
+		sampler_mode[i] = 0;
 	}
 
-	if (args->GetId () == ShaderEffect::PixelShaderProperty)
-		need_update = true;
-
-	NotifyListenersOfPropertyChange (args, error);
+	for (i = 0; i < MAX_CONSTANTS; i++)
+		constant[i] = Color ();
 }
 
 Thickness
@@ -1660,919 +1255,72 @@ ShaderEffect::Padding ()
 			  bottom ? ceil (bottom->AsDouble ()) : 0.0);
 }
 
-pipe_resource_t *
-ShaderEffect::GetShaderConstantBuffer (float           **ptr,
-				       pipe_transfer_t **ptr_transfer)
-{
-
-#ifdef USE_GALLIUM
-	GalliumContext *ctx = st_context;
-
-	if (!ctx)
-		return NULL;
-
-	if (!constant_buffer) {
-		constant_buffer =
-			pipe_buffer_create (ctx->pipe->screen,
-					    PIPE_BIND_CONSTANT_BUFFER,
-					    4 * sizeof (float) * MAX_CONSTANTS);
-		if (!constant_buffer)
-			return NULL;
-	}
-
-	if (ptr) {
-		float *v;
-
-		v = (float *) pipe_buffer_map (ctx->pipe,
-					       constant_buffer,
-					       PIPE_TRANSFER_WRITE,
-					       ptr_transfer);
-		if (!v) {
-			if (constant_buffer)
-				pipe_resource_reference (&constant_buffer, NULL);
-		}
-
-		*ptr = v;
-	}
-
-	return constant_buffer;
-#else
-	return NULL;
-#endif
-
-}
-
 void
 ShaderEffect::UpdateShaderConstant (int reg, double x, double y, double z, double w)
 {
-
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	struct pipe_resource *constants;
-	float                *v;
-	struct pipe_transfer *transfer = NULL;
-
 	if (reg >= MAX_CONSTANTS) {
-		g_warning ("UpdateShaderConstant: invalid register number %d", reg);
+		g_warning ("UpdateShaderConstant: invalid register number %d",
+			   reg);
 		return;
 	}
 
-	constants = GetShaderConstantBuffer (&v, &transfer);
-	if (!constants)
-		return;
-
-	v[reg * 4 + 0] = x;
-	v[reg * 4 + 1] = y;
-	v[reg * 4 + 2] = z;
-	v[reg * 4 + 3] = w;
-
-	pipe_buffer_unmap (ctx->pipe, constants, transfer);
-#endif
-
+	constant[reg].r = x;
+	constant[reg].g = y;
+	constant[reg].b = z;
+	constant[reg].a = w;
 }
 
 void
 ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 {
-
-#ifdef USE_GALLIUM
 	if (reg >= MAX_SAMPLERS) {
-		g_warning ("UpdateShaderSampler: invalid register number %d", reg);
+		g_warning ("UpdateShaderSampler: invalid register number %d",
+			   reg);
 		return;
 	}
 
 	sampler_input[reg] = input;
-
-	switch (mode) {
-		case 2:
-			sampler_filter[reg] = PIPE_TEX_FILTER_LINEAR;
-			break;
-		default:
-			sampler_filter[reg] = PIPE_TEX_FILTER_NEAREST;
-			break;
-	}
-#endif
-
+	sampler_mode[reg]  = mode;
 }
 
 bool
-ShaderEffect::Composite (pipe_surface_t  *dst,
-			 pipe_sampler_view *src,
-			 const double    *matrix,
-			 double          dstX,
-			 double          dstY,
-			 const Rect      *clip,
-			 double          x,
-			 double          y,
-			 double          width,
-			 double          height)
+ShaderEffect::Render (Context      *ctx,
+		      MoonSurface  *src,
+		      const double *matrix,
+		      double       x,
+		      double       y,
+		      double       width,
+		      double       height)
 {
-
-#ifdef USE_GALLIUM
-	GalliumContext       *ctx = st_context;
-	GalliumSurface       *input[PIPE_MAX_SAMPLERS];
-	pipe_sampler_view    *sampler_views[PIPE_MAX_SAMPLERS];
-	struct pipe_resource *vertices;
-	struct pipe_resource *constants;
-	unsigned int         i;
-	Value                *ddxDdyReg;
-	double               s = src->texture->width0;
-	double               t = src->texture->height0;
-
-	if (!fs)
-		return 0;
+	Value *ddxDdyReg;
 
 	ddxDdyReg = GetValue (ShaderEffect::DdxUvDdyUvRegisterIndexProperty);
-	if (ddxDdyReg)
-		UpdateShaderConstant (ddxDdyReg->AsInt32 (),
-				      1.0 / s,
-				      0.0,
-				      0.0,
-				      1.0 / t);
+	if (ddxDdyReg) {
+		int ddxDdy = ddxDdyReg->AsInt32 ();
 
-	constants = GetShaderConstantBuffer (NULL, NULL);
-	if (!constants)
-		return 0;
-
-	vertices = CreateVertexBuffer (src->texture, matrix, x, y,
-				       width, height);
-	if (!vertices)
-		return 0;
-
-	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
-		pipe_resource_reference (&vertices, NULL);
-		return 0;
+		ctx->ShaderEffect (src,
+				   GetPixelShader (),
+				   sampler_input,
+				   sampler_mode,
+				   MAX_SAMPLERS,
+				   constant,
+				   MAX_CONSTANTS,
+				   &ddxDdy,
+				   x, y);
 	}
-
-	cso_save_fragment_sampler_views (ctx->cso);
-
-	struct pipe_sampler_state sampler;
-	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
-	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	sampler.normalized_coords = 1;
-
-	for (i = 0; i <= sampler_last; i++) {
-		sampler.min_img_filter = sampler_filter[i];
-		sampler.mag_img_filter = sampler_filter[i];
-
-		cso_single_sampler (ctx->cso, i, &sampler);
+	else {
+		ctx->ShaderEffect (src,
+				   GetPixelShader (),
+				   sampler_input,
+				   sampler_mode,
+				   MAX_SAMPLERS,
+				   constant,
+				   MAX_CONSTANTS,
+				   NULL,
+				   x, y);
 	}
-	cso_single_sampler_done (ctx->cso);
-
-	for (i = 0; i <= sampler_last; i++) {
-		struct pipe_sampler_view *sampler_view = NULL;
-
-		if (sampler_input[i]) {
-			input[i] = new GalliumSurface (ctx->pipe,
-						       src->texture->width0,
-						       src->texture->height0);
-			if (input[i]) {
-				cairo_surface_t *surface = input[i]->Cairo ();
-				cairo_t *cr = cairo_create (surface);
-				Rect area = Rect (0.0, 0.0, s, t);
-
-				sampler_input[i]->SetupBrush (cr, area);
-				cairo_paint (cr);
-				cairo_destroy (cr);
-				cairo_surface_destroy (surface);
-
-				sampler_view = input[i]->SamplerView ();
-			}
-		}
-		else {
-			input[i] = NULL;
-			sampler_view = src;
-		}
-
-		if (!sampler_view) {
-			g_warning ("Composite: failed to generate input texture for sampler register %d", i);
-			sampler_view = src;
-		}
-
-		sampler_views[i] = sampler_view;
-	}
-
-	cso_set_fragment_sampler_views (ctx->cso,
-					sampler_last + 1,
-					sampler_views);
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, constants);
-
-	struct pipe_blend_state blend;
-	memset (&blend, 0, sizeof (blend));
-	blend.rt[0].colormask |= PIPE_MASK_RGBA;
-	blend.rt[0].rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rt[0].blend_enable = 1;
-	blend.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	blend.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	cso_set_blend (ctx->cso, &blend);
-
-	DrawVertexBuffer (dst, vertices, dstX, dstY, clip);
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, NULL);
-
-	for (i = 0; i <= sampler_last; i++)
-		if (input[i])
-			input[i]->unref ();
-
-	pipe_resource_reference (&vertices, NULL);
-
-	cso_restore_fragment_sampler_views (ctx->cso);
-
-	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
 	return 1;
-#else
-	return 0;
-#endif
-
-}
-
-typedef enum _shader_instruction_opcode_type {
-	D3DSIO_NOP = 0,
-	D3DSIO_MOV = 1,
-	D3DSIO_ADD = 2,
-	D3DSIO_SUB = 3,
-	D3DSIO_MAD = 4,
-	D3DSIO_MUL = 5,
-	D3DSIO_RCP = 6,
-	D3DSIO_RSQ = 7,
-	D3DSIO_DP3 = 8,
-	D3DSIO_DP4 = 9,
-	D3DSIO_MIN = 10,
-	D3DSIO_MAX = 11,
-	D3DSIO_SLT = 12,
-	D3DSIO_SGE = 13,
-	D3DSIO_EXP = 14,
-	D3DSIO_LOG = 15,
-	D3DSIO_LIT = 16,
-	D3DSIO_DST = 17,
-	D3DSIO_LRP = 18,
-	D3DSIO_FRC = 19,
-	D3DSIO_M4x4 = 20,
-	D3DSIO_M4x3 = 21,
-	D3DSIO_M3x4 = 22,
-	D3DSIO_M3x3 = 23,
-	D3DSIO_M3x2 = 24,
-	D3DSIO_CALL = 25,
-	D3DSIO_CALLNZ = 26,
-	D3DSIO_LOOP = 27,
-	D3DSIO_RET = 28,
-	D3DSIO_ENDLOOP = 29,
-	D3DSIO_LABEL = 30,
-	D3DSIO_DCL = 31,
-	D3DSIO_POW = 32,
-	D3DSIO_CRS = 33,
-	D3DSIO_SGN = 34,
-	D3DSIO_ABS = 35,
-	D3DSIO_NRM = 36,
-	D3DSIO_SINCOS = 37,
-	D3DSIO_REP = 38,
-	D3DSIO_ENDREP = 39,
-	D3DSIO_IF = 40,
-	D3DSIO_IFC = 41,
-	D3DSIO_ELSE = 42,
-	D3DSIO_ENDIF = 43,
-	D3DSIO_BREAK = 44,
-	D3DSIO_BREAKC = 45,
-	D3DSIO_MOVA = 46,
-	D3DSIO_DEFB = 47,
-	D3DSIO_DEFI = 48,
-	D3DSIO_TEXCOORD = 64,
-	D3DSIO_TEXKILL = 65,
-	D3DSIO_TEX = 66,
-	D3DSIO_TEXBEM = 67,
-	D3DSIO_TEXBEML = 68,
-	D3DSIO_TEXREG2AR = 69,
-	D3DSIO_TEXREG2GB = 70,
-	D3DSIO_TEXM3x2PAD = 71,
-	D3DSIO_TEXM3x2TEX = 72,
-	D3DSIO_TEXM3x3PAD = 73,
-	D3DSIO_TEXM3x3TEX = 74,
-	D3DSIO_RESERVED0 = 75,
-	D3DSIO_TEXM3x3SPEC = 76,
-	D3DSIO_TEXM3x3VSPEC = 77,
-	D3DSIO_EXPP = 78,
-	D3DSIO_LOGP = 79,
-	D3DSIO_CND = 80,
-	D3DSIO_DEF = 81,
-	D3DSIO_TEXREG2RGB = 82,
-	D3DSIO_TEXDP3TEX = 83,
-	D3DSIO_TEXM3x2DEPTH = 84,
-	D3DSIO_TEXDP3 = 85,
-	D3DSIO_TEXM3x3 = 86,
-	D3DSIO_TEXDEPTH = 87,
-	D3DSIO_CMP = 88,
-	D3DSIO_BEM = 89,
-	D3DSIO_DP2ADD = 90,
-	D3DSIO_DSX = 91,
-	D3DSIO_DSY = 92,
-	D3DSIO_TEXLDD = 93,
-	D3DSIO_SETP = 94,
-	D3DSIO_TEXLDL = 95,
-	D3DSIO_BREAKP = 96,
-	D3DSIO_PHASE = 0xfffd,
-	D3DSIO_COMMENT = 0xfffe,
-	D3DSIO_END = 0xffff
-} shader_instruction_opcode_type_t;
-
-typedef enum _shader_param_register_type {
-	D3DSPR_TEMP = 0,
-	D3DSPR_INPUT = 1,
-	D3DSPR_CONST = 2,
-	D3DSPR_TEXTURE = 3,
-	D3DSPR_RASTOUT = 4,
-	D3DSPR_ATTROUT = 5,
-	D3DSPR_OUTPUT = 6,
-	D3DSPR_CONSTINT = 7,
-	D3DSPR_COLOROUT = 8,
-	D3DSPR_DEPTHOUT = 9,
-	D3DSPR_SAMPLER = 10,
-	D3DSPR_CONST2 = 11,
-	D3DSPR_CONST3 = 12,
-	D3DSPR_CONST4 = 13,
-	D3DSPR_CONSTBOOL = 14,
-	D3DSPR_LOOP = 15,
-	D3DSPR_TEMPFLOAT16 = 16,
-	D3DSPR_MISCTYPE = 17,
-	D3DSPR_LABEL = 18,
-	D3DSPR_PREDICATE = 19,
-	D3DSPR_LAST = 20
-} shader_param_register_type_t;
-
-typedef enum _shader_param_dstmod_type {
-	D3DSPD_NONE = 0,
-	D3DSPD_SATURATE = 1,
-	D3DSPD_PARTIAL_PRECISION = 2,
-	D3DSPD_CENTRIOD = 4,
-} shader_param_dstmod_type_t;
-
-typedef enum _shader_param_srcmod_type {
-	D3DSPS_NONE = 0,
-	D3DSPS_NEGATE = 1,
-	D3DSPS_BIAS = 2,
-	D3DSPS_NEGATE_BIAS = 3,
-	D3DSPS_SIGN = 4,
-	D3DSPS_NEGATE_SIGN = 5,
-	D3DSPS_COMP = 6,
-	D3DSPS_X2 = 7,
-	D3DSPS_NEGATE_X2 = 8,
-	D3DSPS_DZ = 9,
-	D3DSPS_DW = 10,
-	D3DSPS_ABS = 11,
-	D3DSPS_NEGATE_ABS = 12,
-	D3DSPS_NOT = 13,
-	D3DSPS_LAST = 14
-} shader_param_srcmod_type_t;
-
-#ifdef USE_GALLIUM
-static INLINE bool
-ureg_check_aliasing (const struct ureg_dst *dst,
-		     const struct ureg_src *src)
-{
-	unsigned writemask = dst->WriteMask;
-	unsigned channelsWritten = 0x0;
-   
-	if (writemask == TGSI_WRITEMASK_X ||
-	    writemask == TGSI_WRITEMASK_Y ||
-	    writemask == TGSI_WRITEMASK_Z ||
-	    writemask == TGSI_WRITEMASK_W ||
-	    writemask == TGSI_WRITEMASK_NONE)
-		return FALSE;
-
-	if ((src->File != dst->File) || (src->Index != dst->Index))
-		return false;
-
-	if (writemask & TGSI_WRITEMASK_X) {
-		if (channelsWritten & (1 << src->SwizzleX))
-			return true;
-
-		channelsWritten |= TGSI_WRITEMASK_X;
-	}
-
-	if (writemask & TGSI_WRITEMASK_Y) {
-		if (channelsWritten & (1 << src->SwizzleY))
-			return true;
-
-		channelsWritten |= TGSI_WRITEMASK_Y;
-	}
-
-	if (writemask & TGSI_WRITEMASK_Z) {
-		if (channelsWritten & (1 << src->SwizzleZ))
-			return true;
-
-		channelsWritten |= TGSI_WRITEMASK_Z;
-	}
-
-	if (writemask & TGSI_WRITEMASK_W) {
-		if (channelsWritten & (1 << src->SwizzleW))
-			return true;
-
-		channelsWritten |= TGSI_WRITEMASK_W;
-	}
-
-	return false;
-}
-#endif
-
-#define ERROR_IF(EXP)							\
-	do { if (EXP) {							\
-			ShaderError ("Shader error (" #EXP ") at "	\
-				     "instruction %.2d", n);		\
-			ureg_destroy (ureg); return; }			\
-	} while (0)
-
-void
-ShaderEffect::UpdateShader ()
-{
-
-#ifdef USE_GALLIUM
-	PixelShader         *ps = GetPixelShader ();
-	GalliumContext      *ctx = st_context;
-	struct ureg_program *ureg;
-	d3d_version_t       version;
-	d3d_op_t            op;
-	int                 index;
-	struct ureg_src     src_reg[D3DSPR_LAST][MAX_REGS];
-	struct ureg_dst     dst_reg[D3DSPR_LAST][MAX_REGS];
-	int                 n = 0;
-
-	if (fs) {
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
-	}
-
-	sampler_last = 0;
-
-	if (!ps)
-		return;
-
-	if ((index = ps->GetVersion (0, &version)) < 0)
-		return;
-
-	if (version.type  != 0xffff ||
-	    version.major != 2      ||
-	    version.minor != 0) {
-		ShaderError ("Unsupported pixel shader");
-		return;
-	}
-
-	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
-	if (!ureg)
-		return;
-
-	for (int i = 0; i < D3DSPR_LAST; i++) {
-		for (int j = 0; j < MAX_REGS; j++) {
-			src_reg[i][j] = ureg_src_undef ();
-			dst_reg[i][j] = ureg_dst_undef ();
-		}
-	}
-
-	dst_reg[D3DSPR_COLOROUT][0] = ureg_DECL_output (ureg,
-							TGSI_SEMANTIC_COLOR,
-							0);
-
-	/* validation and register allocation */
-	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
-		d3d_destination_parameter_t reg;
-		d3d_source_parameter_t      src;
-
-		if (op.type == D3DSIO_COMMENT) {
-			i += op.comment_length;
-			continue;
-		}
-
-		if (op.type == D3DSIO_END)
-			break;
-
-		switch (op.type) {
-				// case D3DSIO_DEFB:
-				// case D3DSIO_DEFI:
-			case D3DSIO_DEF: {
-				d3d_def_instruction_t def;
-
-				i = ps->GetInstruction (i, &def);
-
-				ERROR_IF (def.reg.writemask != 0xf);
-				ERROR_IF (def.reg.dstmod != 0);
-				ERROR_IF (def.reg.regnum >= MAX_REGS);
-
-				src_reg[def.reg.regtype][def.reg.regnum] =
-					ureg_DECL_immediate (ureg, def.v, 4);
-			} break;
-			case D3DSIO_DCL: {
-				d3d_dcl_instruction_t dcl;
-
-				i = ps->GetInstruction (i, &dcl);
-
-				ERROR_IF (dcl.reg.dstmod != 0);
-				ERROR_IF (dcl.reg.regnum >= MAX_REGS);
-				ERROR_IF (dcl.reg.regnum >= MAX_SAMPLERS);
-				ERROR_IF (dcl.reg.regtype != D3DSPR_SAMPLER &&
-					  dcl.reg.regtype != D3DSPR_TEXTURE);
-
-				switch (dcl.reg.regtype) {
-					case D3DSPR_SAMPLER:
-						src_reg[D3DSPR_SAMPLER][dcl.reg.regnum] =
-							ureg_DECL_sampler (ureg, dcl.reg.regnum);
-						sampler_last = MAX (sampler_last, dcl.reg.regnum);
-						break;
-					case D3DSPR_TEXTURE:
-						src_reg[D3DSPR_TEXTURE][dcl.reg.regnum] =
-							ureg_DECL_fs_input (ureg,
-									    TGSI_SEMANTIC_GENERIC,
-									    dcl.reg.regnum,
-									    TGSI_INTERPOLATE_LINEAR);
-						sampler_last = MAX (sampler_last, dcl.reg.regnum);
-					default:
-						break;
-				}
-			} break;
-			default: {
-				unsigned ndstparam = op.meta.ndstparam;
-				unsigned nsrcparam = op.meta.nsrcparam;
-				int      j = i;
-
-				n++;
-
-				while (ndstparam--) {
-					j = ps->GetDestinationParameter (j, &reg);
-
-					ERROR_IF (reg.regnum >= MAX_REGS);
-					ERROR_IF (reg.dstmod != D3DSPD_NONE &&
-						  reg.dstmod != D3DSPD_SATURATE);
-					ERROR_IF (reg.regtype != D3DSPR_TEMP &&
-						  reg.regtype != D3DSPR_COLOROUT);
-
-					if (reg.regtype == D3DSPR_TEMP) {
-						if (ureg_dst_is_undef (dst_reg[D3DSPR_TEMP][reg.regnum])) {
-							struct ureg_dst tmp = ureg_DECL_temporary (ureg);
-
-							dst_reg[D3DSPR_TEMP][reg.regnum] = tmp;
-							src_reg[D3DSPR_TEMP][reg.regnum] = ureg_src (tmp);
-						}
-					}
-
-					ERROR_IF (ureg_dst_is_undef (dst_reg[reg.regtype][reg.regnum]));
-					ERROR_IF (op.type == D3DSIO_SINCOS && (reg.writemask & ~0x3) != 0);
-				}
-
-				while (nsrcparam--) {
-					j = ps->GetSourceParameter (j, &src);
-
-					ERROR_IF (src.regnum >= MAX_REGS);
-					ERROR_IF (src.srcmod != D3DSPS_NONE &&
-						  src.srcmod != D3DSPS_NEGATE &&
-						  src.srcmod != D3DSPS_ABS);
-					ERROR_IF (src.regtype != D3DSPR_TEMP &&
-						  src.regtype != D3DSPR_CONST &&
-						  src.regtype != D3DSPR_SAMPLER &&
-						  src.regtype != D3DSPR_TEXTURE);
-
-					if (src.regtype == D3DSPR_CONST) {
-						if (ureg_src_is_undef (src_reg[D3DSPR_CONST][src.regnum]))
-							src_reg[D3DSPR_CONST][src.regnum] =
-								ureg_DECL_constant (ureg, src.regnum);
-					}
-
-					ERROR_IF (ureg_src_is_undef (src_reg[src.regtype][src.regnum]));
-				}
-
-				if (!op.meta.name) {
-					ShaderError ("Unknown shader instruction %.2d", n);
-					ureg_destroy (ureg);
-					return;
-				}
-
-				i += op.length;
-			} break;
-		}
-	}
-
-	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
-		d3d_destination_parameter_t reg[8];
-		d3d_source_parameter_t      source[8];
-		struct ureg_dst             dst[8];
-		struct ureg_dst             src_tmp[8];
-		struct ureg_src             src[8];
-		int                         j = i;
-
-		if (op.type == D3DSIO_COMMENT) {
-			i += op.comment_length;
-			continue;
-		}
-
-		for (unsigned k = 0; k < op.meta.ndstparam; k++) {
-			j = ps->GetDestinationParameter (j, &reg[k]);
-			dst[k] = dst_reg[reg[k].regtype][reg[k].regnum];
-
-			switch (reg[k].dstmod) {
-				case D3DSPD_SATURATE:
-					dst[k] = ureg_saturate (dst[k]);
-					break;
-			}
-
-			dst[k] = ureg_writemask (dst[k], reg[k].writemask);
-		}
-
-		for (unsigned k = 0; k < op.meta.nsrcparam; k++) {
-			j = ps->GetSourceParameter (j, &source[k]);
-			src[k] = src_reg[source[k].regtype][source[k].regnum];
-			src_tmp[k] = ureg_dst_undef ();
-
-			switch (source[k].srcmod) {
-				case D3DSPS_NEGATE:
-					src[k] = ureg_negate (src[k]);
-					break;
-				case D3DSPS_ABS:
-					src[k] = ureg_abs (src[k]);
-					break;
-			}
-
-			src[k] = ureg_swizzle (src[k],
-					       source[k].swizzle.x,
-					       source[k].swizzle.y,
-					       source[k].swizzle.z,
-					       source[k].swizzle.w);
-
-			if (op.type != D3DSIO_SINCOS) {
-				if (op.meta.ndstparam && ureg_check_aliasing (&dst[0], &src[k])) {
-					src_tmp[k] = ureg_DECL_temporary (ureg);
-					ureg_MOV (ureg, src_tmp[k], src[k]);
-					src[k] = ureg_src (src_tmp[k]);
-				}
-			}
-		}
-
-		i += op.length;
-
-		switch (op.type) {
-			case D3DSIO_NOP:
-				ureg_NOP (ureg);
-				break;
-				// case D3DSIO_BREAK: break;
-				// case D3DSIO_BREAKC: break;
-				// case D3DSIO_BREAKP: break;
-				// case D3DSIO_CALL: break;
-				// case D3DSIO_CALLNZ: break;
-				// case D3DSIO_LOOP: break;
-				// case D3DSIO_RET: break;
-				// case D3DSIO_ENDLOOP: break;
-				// case D3DSIO_LABEL: break;
-				// case D3DSIO_REP: break;
-				// case D3DSIO_ENDREP: break;
-				// case D3DSIO_IF: break;
-				// case D3DSIO_IFC: break;
-				// case D3DSIO_ELSE: break;
-				// case D3DSIO_ENDIF: break;
-			case D3DSIO_MOV:
-				ureg_MOV (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_ADD:
-				ureg_ADD (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_SUB:
-				ureg_SUB (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_MAD:
-				ureg_MAD (ureg, dst[0], src[0], src[1], src[2]);
-				break;
-			case D3DSIO_MUL:
-				ureg_MUL (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_RCP:
-				ureg_RCP (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_RSQ:
-				ureg_RSQ (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_DP3:
-				ureg_DP3 (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_DP4:
-				ureg_DP4 (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_MIN:
-				ureg_MIN (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_MAX:
-				ureg_MAX (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_SLT:
-				ureg_SLT (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_SGE:
-				ureg_SGE (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_EXP:
-				ureg_EXP (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_LOG:
-				ureg_LOG (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_LIT:
-				ureg_LIT (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_DST:
-				ureg_DST (ureg, dst[0], src[0], src[1]);
-				break;
-			case D3DSIO_LRP:
-				ureg_LRP (ureg, dst[0], src[0], src[1], src[2]);
-				break;
-			case D3DSIO_FRC:
-				ureg_FRC (ureg, dst[0], src[0]);
-				break;
-				// case D3DSIO_M4x4: break;
-				// case D3DSIO_M4x3: break;
-				// case D3DSIO_M3x4: break;
-				// case D3DSIO_M3x3: break;
-				// case D3DSIO_M3x2: break;
-			case D3DSIO_POW:
-				ureg_POW (ureg, dst[0], src[0], src[1]);
-				break;
-				// case D3DSIO_CRS: break;
-				// case D3DSIO_SGN: break;
-			case D3DSIO_ABS:
-				ureg_ABS (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_NRM:
-				ureg_NRM (ureg, dst[0], src[0]);
-				break;
-			case D3DSIO_SINCOS:
-				struct ureg_dst v1, v2, v3, v;
-
-				v1 = ureg_DECL_temporary (ureg);
-				v2 = ureg_DECL_temporary (ureg);
-				v3 = ureg_DECL_temporary (ureg);
-				v  = ureg_DECL_temporary (ureg);
-
-				ureg_MOV (ureg, v1, src[0]);
-				ureg_MOV (ureg, v2, src[1]);
-				ureg_MOV (ureg, v3, src[2]);
-
-				 // x * x
-				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_Z),
-					  ureg_swizzle (ureg_src (v1),
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W),
-					  ureg_swizzle (ureg_src (v1),
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W));
-
-				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
-					  ureg_swizzle (ureg_src (v),
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z),
-					  ureg_src (v2),
-					  ureg_swizzle (ureg_src (v2),
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_W));
-
-				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
-					  ureg_src (v),
-					  ureg_swizzle (ureg_src (v),
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z),
-					  ureg_src (v3));
-
-				// partial sin( x/2 ) and final cos( x/2 )
-				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
-					  ureg_src (v),
-					  ureg_swizzle (ureg_src (v),
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z),
-					  ureg_swizzle (ureg_src (v3),
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_W));
-
-				// sin( x/2 )
-				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_X),
-					  ureg_src (v),
-					  ureg_swizzle (ureg_src (v1),
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W,
-							TGSI_SWIZZLE_W));
-
-				 // compute sin( x/2 ) * sin( x/2 ) and sin( x/2 ) * cos( x/2 )
-				ureg_MUL (ureg, ureg_writemask (v1, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
-					  ureg_src (v),
-					  ureg_swizzle (ureg_src (v),
-							TGSI_SWIZZLE_X,
-							TGSI_SWIZZLE_X,
-							TGSI_SWIZZLE_X,
-							TGSI_SWIZZLE_X));
-
-				// 2 * sin( x/2 ) * sin( x/2 ) and 2 * sin( x/2 ) * cos( x/2 )
-				ureg_ADD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
-					  ureg_src (v1),
-					  ureg_src (v1));
-
-				// cos( x ) and sin( x )
-				ureg_SUB (ureg, ureg_writemask (v, TGSI_WRITEMASK_X),
-					  ureg_swizzle (ureg_src (v3),
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z,
-							TGSI_SWIZZLE_Z),
-					  ureg_src (v));
-
-				ureg_MOV (ureg, dst[0], ureg_src (v));
-
-				ureg_release_temporary (ureg, v1);
-				ureg_release_temporary (ureg, v2);
-				ureg_release_temporary (ureg, v3);
-				ureg_release_temporary (ureg, v);
-				break;
-				// case D3DSIO_MOVA: break;
-				// case D3DSIO_TEXCOORD: break;
-				// case D3DSIO_TEXKILL: break;
-			case D3DSIO_TEX:
-				ureg_TEX (ureg, dst[0], TGSI_TEXTURE_2D, src[0], src[1]);
-				break;
-				// case D3DSIO_TEXBEM: break;
-				// case D3DSIO_TEXBEML: break;
-				// case D3DSIO_TEXREG2AR: break;
-				// case D3DSIO_TEXREG2GB: break;
-				// case D3DSIO_TEXM3x2PAD: break;
-				// case D3DSIO_TEXM3x2TEX: break;
-				// case D3DSIO_TEXM3x3PAD: break;
-				// case D3DSIO_TEXM3x3TEX: break;
-				// case D3DSIO_RESERVED0: break;
-				// case D3DSIO_TEXM3x3SPEC: break;
-				// case D3DSIO_TEXM3x3VSPEC: break;
-				// case D3DSIO_EXPP: break;
-				// case D3DSIO_LOGP: break;
-			case D3DSIO_CND:
-				ureg_CND (ureg, dst[0], src[0], src[1], src[2]);
-				break;
-				// case D3DSIO_TEXREG2RGB: break;
-				// case D3DSIO_TEXDP3TEX: break;
-				// case D3DSIO_TEXM3x2DEPTH: break;
-				// case D3DSIO_TEXDP3: break;
-				// case D3DSIO_TEXM3x3: break;
-				// case D3DSIO_TEXDEPTH: break;
-			case D3DSIO_CMP:
-				/* direct3d does src0 >= 0, while TGSI does src0 < 0 */
-				ureg_CMP (ureg, dst[0], src[0], src[2], src[1]);
-				break;
-				// case D3DSIO_BEM: break;
-			case D3DSIO_DP2ADD:
-				ureg_DP2A (ureg, dst[0], src[0], src[1], src[2]);
-				break;
-				// case D3DSIO_DSX: break;
-				// case D3DSIO_DSY: break;
-				// case D3DSIO_TEXLDD: break;
-				// case D3DSIO_SETP: break;
-				// case D3DSIO_TEXLDL: break;
-			case D3DSIO_END:
-				ureg_END (ureg);
-
-#if LOGGING
-				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
-					printf ("ShaderEffect::UpdateShader: Direct3D shader:\n");
-					ShaderError (NULL);
-					printf ("ShaderEffect::UpdateShader: TGSI shader:\n");
-					tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
-				}
-#endif
-
-				fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
-				return;
-			default:
-				break;
-		}
-
-		for (unsigned k = 0; k < op.meta.nsrcparam; k++)
-			if (!ureg_dst_is_undef (src_tmp[k]))
-				ureg_release_temporary (ureg, src_tmp[k]);
-	}
-
-	ShaderError ("Incomplete pixel shader");
-#endif
-
 }
 
 static inline void
@@ -2683,9 +1431,8 @@ d3d_print_dst_param (d3d_destination_parameter_t *dst)
 }
 
 void
-ShaderEffect::ShaderError (const char *format, ...)
+ShaderEffect::ShaderError (PixelShader *ps, const char *format, ...)
 {
-	PixelShader   *ps = GetPixelShader ();
 	d3d_version_t version;
 	d3d_op_t      op;
 	int           i;
@@ -2788,3 +1535,5 @@ ShaderEffect::ShaderError (const char *format, ...)
 		i += op.length;
 	}
 }
+
+};

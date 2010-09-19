@@ -20,6 +20,7 @@
 
 #include "pipe/p_context.h"
 #include "cso_cache/cso_context.h"
+#include "cso_cache/cso_hash.h"
 
 namespace Moonlight {
 
@@ -49,6 +50,17 @@ public:
 			 double      x,
 			 double      y);
 
+	void ShaderEffect (MoonSurface *src,
+			   PixelShader *shader,
+			   Brush       **sampler,
+			   int         *sampler_mode,
+			   int         n_sampler,
+			   Color       *constant,
+			   int         n_constant,
+			   int         *ddxUvDdyUvPtr,
+			   double      x,
+			   double      y);
+
 // private:
 	void SetFramebuffer ();
 	void SetScissor ();
@@ -66,13 +78,14 @@ public:
 	void *GetProjectShader (double alpha);
 	void *GetConvolveShader (unsigned size);
 	void *GetDropShadowShader (unsigned size);
-	
+	void *GetEffectShader (PixelShader *ps);
+
 	pipe_context *pipe;
 
 	cso_context *cso;
 
-	void *vs;
-	void *fs;
+	void *default_vs;
+	void *default_fs;
 
 	pipe_resource *default_texture;
 
@@ -93,6 +106,10 @@ public:
 	pipe_sampler_state convolve_sampler;
 
 	void *dropshadow_fs[MAX_CONVOLVE_SIZE + 1];
+
+	pipe_sampler_state effect_sampler;
+	cso_hash *effect_fs;
+
 };
 
 };

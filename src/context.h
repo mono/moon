@@ -16,9 +16,12 @@
 #include "list.h"
 #include "rect.h"
 #include "color.h"
+#include "brush.h"
 #include "surface.h"
 
 namespace Moonlight {
+
+class PixelShader;
 
 class Context : public Stack {
 public:
@@ -121,6 +124,17 @@ public:
 				 Color       *color,
 				 double      x,
 				 double      y);
+
+	virtual void ShaderEffect (MoonSurface *src,
+				   PixelShader *shader,
+				   Brush       **sampler,
+				   int         *sampler_mode,
+				   int         n_sampler,
+				   Color       *constant,
+				   int         n_constant,
+				   int         *ddxUvDdyUvPtr,
+				   double      x,
+				   double      y);
 };
 
 };

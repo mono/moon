@@ -14,27 +14,13 @@
 #define __MOONLIGHT_EFFECT_H__
 
 #include <glib.h>
-#include <cairo.h>
 #include "enums.h"
 #include "dependencyobject.h"
 #include "rect.h"
-#include "surface.h"
 #include "context.h"
 
 #define MAX_SAMPLERS  16
 #define MAX_CONSTANTS 32
-#define MAX_REGS      MAX_CONSTANTS
-
-#if MAX_REGS < MAX_SAMPLERS || MAX_REGS < MAX_CONSTANTS
-#error MAX_REGS is not great enough
-#endif
-
-struct pipe_screen;
-struct pipe_sampler_view;
-
-typedef struct pipe_resource pipe_resource_t;
-typedef struct pipe_surface pipe_surface_t;
-typedef struct pipe_transfer pipe_transfer_t;
 
 typedef struct _d3d_swizzle {
 	unsigned int x;
@@ -87,6 +73,143 @@ typedef struct _d3d_dcl_instruction {
 	d3d_destination_parameter_t reg;
 } d3d_dcl_instruction_t;
 
+typedef enum _shader_instruction_opcode_type {
+	D3DSIO_NOP = 0,
+	D3DSIO_MOV = 1,
+	D3DSIO_ADD = 2,
+	D3DSIO_SUB = 3,
+	D3DSIO_MAD = 4,
+	D3DSIO_MUL = 5,
+	D3DSIO_RCP = 6,
+	D3DSIO_RSQ = 7,
+	D3DSIO_DP3 = 8,
+	D3DSIO_DP4 = 9,
+	D3DSIO_MIN = 10,
+	D3DSIO_MAX = 11,
+	D3DSIO_SLT = 12,
+	D3DSIO_SGE = 13,
+	D3DSIO_EXP = 14,
+	D3DSIO_LOG = 15,
+	D3DSIO_LIT = 16,
+	D3DSIO_DST = 17,
+	D3DSIO_LRP = 18,
+	D3DSIO_FRC = 19,
+	D3DSIO_M4x4 = 20,
+	D3DSIO_M4x3 = 21,
+	D3DSIO_M3x4 = 22,
+	D3DSIO_M3x3 = 23,
+	D3DSIO_M3x2 = 24,
+	D3DSIO_CALL = 25,
+	D3DSIO_CALLNZ = 26,
+	D3DSIO_LOOP = 27,
+	D3DSIO_RET = 28,
+	D3DSIO_ENDLOOP = 29,
+	D3DSIO_LABEL = 30,
+	D3DSIO_DCL = 31,
+	D3DSIO_POW = 32,
+	D3DSIO_CRS = 33,
+	D3DSIO_SGN = 34,
+	D3DSIO_ABS = 35,
+	D3DSIO_NRM = 36,
+	D3DSIO_SINCOS = 37,
+	D3DSIO_REP = 38,
+	D3DSIO_ENDREP = 39,
+	D3DSIO_IF = 40,
+	D3DSIO_IFC = 41,
+	D3DSIO_ELSE = 42,
+	D3DSIO_ENDIF = 43,
+	D3DSIO_BREAK = 44,
+	D3DSIO_BREAKC = 45,
+	D3DSIO_MOVA = 46,
+	D3DSIO_DEFB = 47,
+	D3DSIO_DEFI = 48,
+	D3DSIO_TEXCOORD = 64,
+	D3DSIO_TEXKILL = 65,
+	D3DSIO_TEX = 66,
+	D3DSIO_TEXBEM = 67,
+	D3DSIO_TEXBEML = 68,
+	D3DSIO_TEXREG2AR = 69,
+	D3DSIO_TEXREG2GB = 70,
+	D3DSIO_TEXM3x2PAD = 71,
+	D3DSIO_TEXM3x2TEX = 72,
+	D3DSIO_TEXM3x3PAD = 73,
+	D3DSIO_TEXM3x3TEX = 74,
+	D3DSIO_RESERVED0 = 75,
+	D3DSIO_TEXM3x3SPEC = 76,
+	D3DSIO_TEXM3x3VSPEC = 77,
+	D3DSIO_EXPP = 78,
+	D3DSIO_LOGP = 79,
+	D3DSIO_CND = 80,
+	D3DSIO_DEF = 81,
+	D3DSIO_TEXREG2RGB = 82,
+	D3DSIO_TEXDP3TEX = 83,
+	D3DSIO_TEXM3x2DEPTH = 84,
+	D3DSIO_TEXDP3 = 85,
+	D3DSIO_TEXM3x3 = 86,
+	D3DSIO_TEXDEPTH = 87,
+	D3DSIO_CMP = 88,
+	D3DSIO_BEM = 89,
+	D3DSIO_DP2ADD = 90,
+	D3DSIO_DSX = 91,
+	D3DSIO_DSY = 92,
+	D3DSIO_TEXLDD = 93,
+	D3DSIO_SETP = 94,
+	D3DSIO_TEXLDL = 95,
+	D3DSIO_BREAKP = 96,
+	D3DSIO_PHASE = 0xfffd,
+	D3DSIO_COMMENT = 0xfffe,
+	D3DSIO_END = 0xffff
+} shader_instruction_opcode_type_t;
+
+typedef enum _shader_param_register_type {
+	D3DSPR_TEMP = 0,
+	D3DSPR_INPUT = 1,
+	D3DSPR_CONST = 2,
+	D3DSPR_TEXTURE = 3,
+	D3DSPR_RASTOUT = 4,
+	D3DSPR_ATTROUT = 5,
+	D3DSPR_OUTPUT = 6,
+	D3DSPR_CONSTINT = 7,
+	D3DSPR_COLOROUT = 8,
+	D3DSPR_DEPTHOUT = 9,
+	D3DSPR_SAMPLER = 10,
+	D3DSPR_CONST2 = 11,
+	D3DSPR_CONST3 = 12,
+	D3DSPR_CONST4 = 13,
+	D3DSPR_CONSTBOOL = 14,
+	D3DSPR_LOOP = 15,
+	D3DSPR_TEMPFLOAT16 = 16,
+	D3DSPR_MISCTYPE = 17,
+	D3DSPR_LABEL = 18,
+	D3DSPR_PREDICATE = 19,
+	D3DSPR_LAST = 20
+} shader_param_register_type_t;
+
+typedef enum _shader_param_dstmod_type {
+	D3DSPD_NONE = 0,
+	D3DSPD_SATURATE = 1,
+	D3DSPD_PARTIAL_PRECISION = 2,
+	D3DSPD_CENTRIOD = 4,
+} shader_param_dstmod_type_t;
+
+typedef enum _shader_param_srcmod_type {
+	D3DSPS_NONE = 0,
+	D3DSPS_NEGATE = 1,
+	D3DSPS_BIAS = 2,
+	D3DSPS_NEGATE_BIAS = 3,
+	D3DSPS_SIGN = 4,
+	D3DSPS_NEGATE_SIGN = 5,
+	D3DSPS_COMP = 6,
+	D3DSPS_X2 = 7,
+	D3DSPS_NEGATE_X2 = 8,
+	D3DSPS_DZ = 9,
+	D3DSPS_DW = 10,
+	D3DSPS_ABS = 11,
+	D3DSPS_NEGATE_ABS = 12,
+	D3DSPS_NOT = 13,
+	D3DSPS_LAST = 14
+} shader_param_srcmod_type_t;
+
 namespace Moonlight {
 
 class GalliumContext;
@@ -132,7 +255,7 @@ public:
 				double      radius,
 				Color       *color,
 				double      x,
-				double      ,
+				double      y,
 				double      width,
 				double      height);
 
@@ -145,61 +268,10 @@ protected:
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
-	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
-					     const double    *matrix,
-					     double          x,
-					     double          y,
-					     double          width,
-					     double          height,
-					     double          s,
-					     double          t);
-	pipe_resource_t *CreateVertexBuffer (pipe_resource_t *texture,
-					     const double    *matrix,
-					     double          x,
-					     double          y,
-					     double          width,
-					     double          height)
-	{
-		return CreateVertexBuffer (texture, matrix,
-					   x, y, width, height,
-					   1.0, 1.0);
-	}
-
-	void DrawVertexBuffer (pipe_surface_t  *dst,
-			       pipe_resource_t *vertices,
-			       double          dstX,
-			       double          dstY,
-			       const Rect      *clip);
-	void DrawVertexBuffer (pipe_surface_t  *dst,
-			       pipe_resource_t *vertices,
-			       double          dstX,
-			       double          dstY)
-	{
-		DrawVertexBuffer (dst, vertices, dstX, dstY, NULL);
-	}
-
-	virtual bool Composite (pipe_surface_t  *dst,
-				pipe_sampler_view *src,
-				const double    *matrix,
-				double          dstX,
-				double          dstY,
-				const Rect      *clip,
-				double          x,
-				double          y,
-				double          width,
-				double          height);
-
-	virtual void UpdateShader ();
-	void MaybeUpdateShader ();
-
 	static void UpdateFilterValues (double radius,
 					double *values,
 					int    ***table,
 					int    *size);
-
-	bool need_update;
-
-	static GalliumContext *st_context;
 
 	static int filtertable0[256];
 };
@@ -209,8 +281,6 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class BlurEffect : public Effect {
 public:
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-
 	/* @PropertyType=double,DefaultValue=5.0,GenerateAccessors */
 	const static int RadiusProperty;
 
@@ -240,18 +310,8 @@ protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	BlurEffect ();
 
-	virtual ~BlurEffect ();
-
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
-
-	void MaybeUpdateFilter ();
-
-	int    nfiltervalues;
-	double filtervalues[MAX_BLUR_RADIUS + 1];
-
-	int **filtertable;
-	bool need_filter_update;
 };
 
 #define MAX_SHADOW_DEPTH 300
@@ -259,8 +319,6 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class DropShadowEffect : public Effect {
 public:
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-
 	/* @PropertyType=double,DefaultValue=5.0,GenerateAccessors */
 	const static int BlurRadiusProperty;
 	/* @PropertyType=Color,DefaultValue=Color(0xFF000000),GenerateAccessors */
@@ -310,18 +368,8 @@ protected:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DropShadowEffect ();
 
-	virtual ~DropShadowEffect ();
-
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
-
-	void MaybeUpdateFilter ();
-
-	int    nfiltervalues;
-	double filtervalues[MAX_BLUR_RADIUS + 1];
-
-	int **filtertable;
-	bool need_filter_update;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
@@ -378,8 +426,6 @@ private:
 /* @Namespace=System.Windows.Media.Effects */
 class ShaderEffect : public Effect {
 public:
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-
 	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,ManagedAccess=Protected,GenerateAccessors */
 	const static int PixelShaderProperty;
 	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
@@ -423,42 +469,26 @@ public:
 	//
 	Thickness Padding ();
 
-	void ShaderError (const char *format, ...);
+	bool Render (Context      *ctx,
+		     MoonSurface  *src,
+		     const double *matrix,
+		     double       x,
+		     double       y,
+		     double       width,
+		     double       height);
+
+	static void ShaderError (PixelShader *ps, const char *format, ...);
 
 protected:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ShaderEffect ();
 
-	virtual ~ShaderEffect () { Clear (); }
-
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
-	void Clear ();
-
-	pipe_resource_t *GetShaderConstantBuffer (float           **ptr,
-						  pipe_transfer_t **ptr_transfer);
-
-	bool Composite (pipe_surface_t  *dst,
-			pipe_sampler_view *src,
-			const double    *matrix,
-			double          dstX,
-			double          dstY,
-			const Rect      *clip,
-			double          x,
-			double          y,
-			double          width,
-			double          height);
-
-	void UpdateShader ();
-
-
-	pipe_resource_t *constant_buffer;
+	Color constant[MAX_CONSTANTS];
 	Brush *sampler_input[MAX_SAMPLERS];
-	unsigned int sampler_filter[MAX_SAMPLERS];
-	unsigned int sampler_last;
-
-	void *fs;
+	int sampler_mode[MAX_SAMPLERS];
 };
 
 };
