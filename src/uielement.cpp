@@ -623,7 +623,8 @@ UIElement::ComputeTransform ()
 		Matrix3D::Init (render_projection, local_projection);
 	}
 
-	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
+	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION
+	    && !(dirty_flags & DirtyBounds))
 		TransformBounds (&old, &absolute_xform);
 	else {
 		UpdateBounds ();
