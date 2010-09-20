@@ -45,6 +45,7 @@
 +SC-T: Mono.Xaml.XamlObjectProperty
 +SC-T: Mono.Xaml.XamlPropertyElement
 +SC-T: Mono.Xaml.XamlPropertySetter
++SC-T: Mono.Xaml.XamlNamePropertySetter
 +SC-T: Mono.Xaml.XamlReflectionPropertySetter
 +SC-T: Mono.Xaml.XamlReflectionEventSetter
 +SC-T: Mono.Xaml.XamlAttachedPropertySetter

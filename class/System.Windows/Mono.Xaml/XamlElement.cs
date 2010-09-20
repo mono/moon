@@ -276,12 +276,20 @@ namespace Mono.Xaml {
 
 		public override XamlPropertySetter LookupProperty (XmlReader reader)
 		{
+			if (IsNameProperty (reader))
+				return new XamlNamePropertySetter (this, (DependencyObject) Object);
+
 			if (IsAttachedProperty (reader))
 				return LookupAttachedProperty (reader);
-
+	
 			XamlPropertySetter prop = LookupReflectionProperty (reader);
 
 			return prop;
+		}
+
+		private bool IsNameProperty (XmlReader reader)
+		{
+			return (reader.LocalName == "Name" && Type.IsSubclassOf (typeof (DependencyObject)));
 		}
 
 		private bool IsAttachedProperty (XmlReader reader)

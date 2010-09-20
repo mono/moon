@@ -470,6 +470,39 @@ namespace Mono.Xaml {
 		}
 	}
 
+	internal class XamlNamePropertySetter : XamlPropertySetter {
+
+		private DependencyObject target;
+
+		public XamlNamePropertySetter (XamlObjectElement element, DependencyObject target) : base (element, "Name", null)
+		{
+			this.target = target;
+		}
+
+		public override Type Type {
+			get { return typeof (string); }
+		}
+
+		public override Type DeclaringType {
+			get { return target.GetType (); }
+		}
+
+		public override void SetValue (XamlObjectElement obj, object value)
+		{
+			if (value == null)
+				throw Parser.ParseException ("Setting Name value to null.");
+
+			string name = value as string;
+			if (name == null)
+				throw Parser.ParseException ("Unable to set Name property to type {1}.", value.GetType ());
+
+			obj.X_Name = name;
+
+			if (!target.SetNameOnScope (name, Parser.NameScope))
+				throw Parser.ParseException ("Unable to set Name '{0}' on element '{1}'.", name, Element.Name);
+		}
+	}
+
 	internal class XamlAttachedPropertySetter : XamlPropertySetter {
 
 		private MethodInfo getter;
