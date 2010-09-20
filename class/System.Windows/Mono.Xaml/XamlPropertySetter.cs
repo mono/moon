@@ -227,7 +227,22 @@ namespace Mono.Xaml {
 			if (source == null) 
 				throw Parser.ParseException ("Invalid TemplateBinding, expression can not be used outside of a FrameworkTemplate.");
 
-			DependencyProperty source_prop = LookupDependencyProperty (source.GetKind (), tb.SourcePropertyName);
+			// we don't actually use the type of the source to do property lookups.  TargetType is used for that.
+			//
+			// For ControlTemplates:
+			//     1.  if there is a TargetType, we look up the property on TargetType.
+			//     2.  if there isn't a TargetType, we look up the property on typeof (Control).
+			// For FrameworkTemplates:
+			//     there is no TargetType, so we only look up properties on typeof (FrameworkElement)
+			//
+			Type property_lookup_type;
+			ControlTemplate template = Parser.Context.Template as ControlTemplate;
+			if (template == null)
+				property_lookup_type = typeof (FrameworkElement);
+			else
+				property_lookup_type = template.TargetType ?? typeof (Control);
+
+			DependencyProperty source_prop = LookupDependencyProperty (Deployment.Current.Types.TypeToKind (property_lookup_type), tb.SourcePropertyName);
 			if (source_prop == null)
 				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", tb.SourcePropertyName);
 
