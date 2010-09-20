@@ -88,14 +88,14 @@ public:
 	void *default_vs;
 	void *default_fs;
 
-	pipe_resource *default_texture;
-
 	pipe_vertex_element velems[2];
 
 	float vertices[4][2][4];
 
 	pipe_resource *constant_buffer;
 	int is_softpipe;
+
+	pipe_sampler_state default_sampler;
 
 	pipe_blend_state blend_over;
 	pipe_blend_state blend_src;
@@ -110,7 +110,6 @@ public:
 
 	pipe_sampler_state effect_sampler;
 	cso_hash *effect_fs;
-
 };
 
 };
