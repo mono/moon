@@ -974,11 +974,14 @@ Shape::InvalidatePathCache (bool free)
 			moon_path_clear (path);
 		}
 	}
-	
-	// we always pass true here because in some cases
-	// while the bounds may not have change the rendering
-	// still may have
-	UpdateBounds (true);
+
+	if (!free) {
+		// we always pass true here because in some cases
+		// while the bounds may not have change the rendering
+		// still may have
+		UpdateBounds (true);
+	}
+
 	//InvalidateMeasure ();
 	//InvalidateArrange ();
 	InvalidateSurfaceCache ();
@@ -989,8 +992,11 @@ Shape::InvalidateSurfaceCache (void)
 {
 	if (cached_surface) {
 		cairo_surface_destroy (cached_surface);
-		if (IsAttached ())
-			GetDeployment ()->GetSurface ()->RemoveFromCacheSizeCounter (cached_size);
+		if (IsAttached ()) {
+			Surface *surface = GetDeployment ()->GetSurface ();
+			if (surface)
+				surface->RemoveFromCacheSizeCounter (cached_size);
+		}
 		cached_surface = NULL;
 		cached_size = 0;
 	}
