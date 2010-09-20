@@ -258,9 +258,11 @@ EventObject::~EventObject()
 	 * having a refcount of 0 doesn't necessarily mean we've been deleted
 	 * already, we might be in the Disposed handler */
 	refcount = -666;
+
+	if (managed_handle) {
+		g_warning ("EventObject::~EventObject () was called with a non-null managed_handle\n");
+	}
 #endif
-	if (managed_handle)
-		mono_gchandle_free (GPOINTER_TO_INT (managed_handle));
 
 	delete weakRefs;
 	weakRefs = NULL;
@@ -560,6 +562,13 @@ EventObject::unref ()
 void
 EventObject::SetManagedHandle (void *managed_handle)
 {
+	// This method should be called exactly twice. Once to set the
+	// managed handle when the managed peer is created and once to
+	// clear the handle when the managed peer has died. Ensure that
+	// we free the weak gchandle when the managed peer dies.
+	if (this->managed_handle)
+		mono_gchandle_free (GPOINTER_TO_INT (this->managed_handle));
+
 	this->managed_handle = managed_handle;
 	if (managed_handle)
 		ref ();

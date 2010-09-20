@@ -149,7 +149,7 @@ public:
 	static void PrintStackTrace ();
 	void Track (const char *done, const char *typname);
 #endif
-	
+	void *GetManagedHandle () { return managed_handle; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	void ref ();
 	
