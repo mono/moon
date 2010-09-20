@@ -942,6 +942,9 @@ void
 Deployment::ReportLeaks ()
 {
 	printf ("Deployment leak report:\n");
+	float used = (float)(mono_gc_get_used_size () / 1024.0 / 1024.0);
+	float total = (float)(mono_gc_get_heap_size () / 1024.0 / 1024.0);
+	printf ("Managed heap used: %.2f MB. Managed heap total: %.2f MB\n", used, total);
 	if (objects_created == objects_destroyed) {
 		printf ("\tno leaked objects.\n");
 	} else {
@@ -961,11 +964,17 @@ Deployment::ReportLeaks ()
 		g_ptr_array_sort_with_data (top_n_by_type, ByTypeComparer, by_type);
 		pthread_mutex_unlock (&objects_alive_mutex);
 
+
+		bool strong_handled = false;
 		guint32 counter = 10;
 		const char *counter_str = getenv ("MOONLIGHT_OBJECT_TRACKING_COUNTER");
 		if (counter_str != NULL) {
 			if (strcmp (counter_str, "all") == 0) {
 				counter = G_MAXUINT32;
+			} else if (strcmp (counter_str, "strong") == 0) {
+				// Only care about objects which are immortal (have a strong gchandle)
+				strong_handled = true;
+				counter = last_n->len;
 			} else {
 				counter = atoi (counter_str);
 			}
@@ -975,6 +984,12 @@ Deployment::ReportLeaks ()
 			printf ("\tOldest %d objects alive:\n", counter);
 			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
 				EventObject* obj = (EventObject *) last_n->pdata [i];
+				uint gchandle = GPOINTER_TO_INT (obj->GetManagedHandle ());
+				bool is_weak_handle = ((gchandle & 7) - 1) == 0;
+				if (obj->GetRefCount () == 1 && !is_weak_handle && obj->GetManagedHandle () != 0)
+					printf ("**** Refcount of 1 with a strong handle ****\n");
+				if (strong_handled && obj->GetRefCount () < 2)
+					continue;
 				printf ("\t\t%p\t%i = %s, refcount: %i\n", obj, obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
 			}
 		}
