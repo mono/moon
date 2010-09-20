@@ -318,12 +318,22 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void AttachedProp_FE_SetOnly_OnAttachedProperties ()
+		[MaxRuntimeVersion(3)]
+		public void AttachedProp_FE_SetOnly_OnAttachedProperties_sl3 ()
 		{
 			// Attached properties need a getter and setter
 			Assert.Throws<XamlParseException> (() =>
 				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.FE_SetProperty)
 			, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void AttachedProp_FE_SetOnly_OnAttachedProperties_sl4 ()
+		{
+			var f = AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.FE_SetProperty);
+			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_SetProperty), "#1");
+			Assert.IsNotNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should be findable");
 		}
 
 		[TestMethod]
@@ -336,11 +346,25 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void AttachedProp_FE_GetAndSet_OnAttachedProperties ()
+		[MaxRuntimeVersion(3)]
+		public void AttachedProp_FE_GetAndSet_OnAttachedProperties_sl3 ()
 		{
 			Assert.Throws<XamlParseException> (() =>
 				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.FE_GetSetProperty)
 			, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void AttachedProp_FE_GetAndSet_OnAttachedProperties_sl4 ()
+		{
+			var f = AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.FE_GetSetProperty);
+			
+			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_GetSetProperty), "#1");
+			
+			// The rectangle should not be parented already, so this should succeed
+			new Canvas ().Children.Add ((Rectangle) f.GetValue (AttachedProperties.FE_GetSetProperty));
+			Assert.IsNotNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should be findable");
 		}
 
 		[TestMethod]
@@ -355,13 +379,28 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void AttachedProp_IList_GetOnly_OnAttachedProperties ()
+		[MaxRuntimeVersion(3)]
+		public void AttachedProp_IList_GetOnly_OnAttachedProperties_sl3 ()
 		{
 			AttachedProperties.InstantiateLists = true;
 			// Attached properties need a getter and setter
 			Assert.Throws<XamlParseException> (() =>
 				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.IList_GetProperty)
 			, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("The rectangle in the IList should not have its name registered")]
+		[MinRuntimeVersion(4)]
+		public void AttachedProp_IList_GetOnly_OnAttachedProperties_sl4 ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			// Attached properties need a getter and setter
+			var f = AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.IList_GetProperty);
+			var list = (List<FrameworkElement>) f.GetValue (AttachedProperties.IList_GetProperty);
+			Assert.AreEqual (1, list.Count, "#1");
+			Assert.IsInstanceOfType<Rectangle> (list [0], "#1");
+			Assert.IsNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should not be findable");
 		}
 
 		[TestMethod]
@@ -398,12 +437,29 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void AttachedProp_IList_GetAndSet_OnAttachedProperties ()
+		[MaxRuntimeVersion(3)]
+		public void AttachedProp_IList_GetAndSet_OnAttachedProperties_sl3 ()
 		{
 			AttachedProperties.InstantiateLists = true;
 			Assert.Throws<XamlParseException>(() =>
 				AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.IList_GetSetProperty)
 			, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		[MoonlightBug ("The rectangle in the IList should not have its name registered")]
+		public void AttachedProp_IList_GetAndSet_OnAttachedProperties_sl4 ()
+		{
+			AttachedProperties.InstantiateLists = true;
+			var f = AttachedPropertiesCore<AttachedProperties> (() => AttachedProperties.IList_GetSetProperty);
+			var list = (List<FrameworkElement>) f.GetValue (AttachedProperties.IList_GetSetProperty);
+			Assert.AreEqual (1, list.Count, "#1");
+			Assert.IsInstanceOfType<Rectangle> (list [0], "#2");
+
+			// The rectangle should not be parented already, so this won't throw an exception
+			new Canvas ().Children.Add (list[0]);
+			Assert.IsNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should not be findable");
 		}
 
 		[TestMethod]
@@ -422,7 +478,8 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void AttachedPropWithManagedNamespace_NoTemplateOwner()
+		[MaxRuntimeVersion(3)]
+		public void AttachedPropWithManagedNamespace_NoTemplateOwner_sl3()
 		{
 			string xaml =
 @"<DataTemplate 
@@ -435,6 +492,19 @@ namespace MoonTest.Misc.Parsing
 			var child = (CustomControl)template.LoadContent();
 			child.DataContext = new Person();
 			Assert.AreEqual(100.0, child.GetValue(Canvas.LeftProperty), "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void AttachedPropWithManagedNamespace_NoTemplateOwner_sl4()
+		{
+			string xaml =
+@"<DataTemplate 
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' 
+	xmlns:local='clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit'>
+	<local:CustomControl local:Canvas.Left='{Binding Left}'/>
+</DataTemplate>";
+			Assert.Throws <XamlParseException> (() => XamlReader.Load (xaml));
 		}
 
 		[TestMethod]
@@ -498,7 +568,8 @@ namespace MoonTest.Misc.Parsing
 
 			Enqueue (() => s.Stop ());
 			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkey:HalfDimensionsControl.HalfHeight)")));
-			Enqueue (() => Assert.Throws<InvalidOperationException> (() => s.Begin ()));
+			Enqueue (() => s.Begin ());
+			Enqueue (() => Assert.AreEqual (25, control.HalfHeight, "#5"));
 
 			EnqueueTestComplete ();
 		}
@@ -634,7 +705,8 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void EventHandlerInBaseAndImplClasses ()
+		[MaxRuntimeVersion(3)]
+		public void EventHandlerInBaseAndImplClasses_sl3 ()
 		{
 
 			MiscParsingEventImpl1 impl1 = new MiscParsingEventImpl1 ();
@@ -646,15 +718,31 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void EventHandlerInBaseAndImplClasses_sl4 ()
+		{
+
+			Assert.Throws<XamlParseException>(() => new MiscParsingEventImpl1 ());
+		}
+
+		[TestMethod]
 		public void EventHandlerInBaseClass ()
 		{
 			Assert.Throws <XamlParseException> (() => new MiscParsingEventImpl2 ());
 		}
 
 		[TestMethod]
-		public void MissingXmlnsOnAttachedProp ()
+		[MaxRuntimeVersion(2)]
+		public void MissingXmlnsOnAttachedProp_sl2 ()
 		{
 			MiscParsingManagedAttachedProp m = new MiscParsingManagedAttachedProp ();
+		}
+		
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void MissingXmlnsOnAttachedProp_sl3 ()
+		{
+			Assert.Throws<XamlParseException>(() => new MiscParsingManagedAttachedProp ());
 		}
 		
 		[TestMethod]
@@ -678,7 +766,8 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void SetHandlerBeforeProps ()
+		[MaxRuntimeVersion(3)]
+		public void SetHandlerBeforeProps_sl3 ()
 		{
 			var c = (ThingWithEvent) XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
@@ -693,6 +782,23 @@ namespace MoonTest.Misc.Parsing
 								      
 							    </c:ThingWithEvent>");
 			Assert.AreEqual ("bar", c.TheOtherPropDuringEvent, "2");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void SetHandlerBeforeProps_sl4 ()
+		{
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+								    xmlns:c=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"" ThePropChanged=""PropChangedHandler"" TheProp=""foo"" TheOtherProp=""bar"">
+								      
+							    </c:ThingWithEvent>"));
+
+			Assert.Throws<XamlParseException>(() =>XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+								    xmlns:c=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"" ThePropChanged=""PropChangedHandler"" TheOtherProp=""bar"" TheProp=""foo"">
+								      
+							    </c:ThingWithEvent>"));
 		}
 
 		[TestMethod]
@@ -723,8 +829,9 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
+		[MaxRuntimeVersion(3)]
 		[MoonlightBug]
-		public void StructsToDoubleTest ()
+		public void StructsToDoubleTest_sl3 ()
 		{
 			StackPanel c = (StackPanel) XamlReader.Load (@"
     <StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -745,7 +852,23 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void EscapedExtensions ()
+		[MinRuntimeVersion(4)]
+		public void StructsToDoubleTest_sl4 ()
+		{
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+    <StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+        <StackPanel.Resources>
+            <Thickness x:Name=""my_thickness"">10,2,3,4</Thickness>
+	    <FontStretch x:Name=""your_stretch"">Condensed</FontStretch>
+       </StackPanel.Resources>
+       <Rectangle x:Name=""my_rect"" Width=""{StaticResource your_stretch}"" Height=""{StaticResource my_thickness}"" />
+    </StackPanel>"));
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void EscapedExtensions_sl3 ()
 		{
 			// Parse a binding which has escaped curly braces with escaped commas inside it
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
@@ -763,7 +886,24 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		public void EscapedExtensions2 ()
+		[MinRuntimeVersion(4)]
+		public void EscapedExtensions_sl4 ()
+		{
+			// Parse a binding which has escaped curly braces with escaped commas inside it
+			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+Width=""100"" Height=""100"">
+	<Canvas.Resources>
+	</Canvas.Resources>
+	<TextBlock x:Name=""text"" Text=""{Binding somedate, Converter={StaticResource DateTimeConverter}, ConverterParameter=\{0:MMMM d\, yyyy\}, Mode=OneWay}"" />
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void EscapedExtensions2_sl3 ()
 		{
 			// Parse a binding which uses escaped curly braces and has whitespace in it
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
@@ -781,7 +921,24 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		public void EscapedExtensions_CommaTerminated ()
+		[MinRuntimeVersion(4)]
+		public void EscapedExtensions2_sl4 ()
+		{
+			// Parse a binding which uses escaped curly braces and has whitespace in it
+			Assert.Throws<XamlParseException> (() => XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+Width=""100"" Height=""100"">
+	<Canvas.Resources>
+	</Canvas.Resources>
+	<TextBlock x:Name=""text"" Text=""{Binding somedate, Converter={StaticResource DateTimeConverter}, ConverterParameter=\{0:t\} ET, Mode=OneWay}"" />
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void EscapedExtensions_CommaTerminated_sl3 ()
 		{
 			// Parse a binding with spaces and escaped curly braces
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
@@ -794,7 +951,20 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		public void EscapedCharacters ()
+		[MinRuntimeVersion(4)]
+		public void EscapedExtensions_CommaTerminated_sl4 ()
+		{
+			// Parse a binding with spaces and escaped curly braces
+			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter=Click \{0\}, Mode=OneWay}"" />
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void EscapedCharacters_sl3 ()
 		{
 			// Parse a binding with escaped backslashes, escaped curly braces and escaped commas
 			// with whitespace at the end
@@ -808,7 +978,19 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		public void QuotedString_EscapedQuotes ()
+		[MinRuntimeVersion(4)]
+		public void EscapedCharacters_sl4 ()
+		{
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter=\\a\{\, test , Mode=OneWay}"" />
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void QuotedString_EscapedQuotes_sl3 ()
 		{
 			// Parse a binding with an escaped quote mark and whitespace at the end
 			Canvas canvas = (Canvas) XamlReader.Load (@"	
@@ -821,7 +1003,20 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		public void QuotedString_EscapedBackslashesAndWhitespace ()
+		[MinRuntimeVersion(4)]
+		public void QuotedString_EscapedQuotes_sl4 ()
+		{
+			// Parse a binding with an escaped quote mark and whitespace at the end
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter='\'' , Mode=OneWay}"" />
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void QuotedString_EscapedBackslashesAndWhitespace_sl3 ()
 		{
 			// Parse a binding with an escaped quote mark with whitespace inside it
 			Canvas canvas = (Canvas) XamlReader.Load (@"	
@@ -834,16 +1029,15 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		public void QuotedString_EscapedQuotesAndWhitespace ()
+		[MinRuntimeVersion(4)]
+		public void QuotedString_EscapedQuotesAndWhitespace_sl4 ()
 		{
 			// Parse a binding with an escaped quote mark with whitespace inside it
-			Canvas canvas = (Canvas) XamlReader.Load (@"	
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"	
 <Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
 	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter='\' ' , Mode=OneWay}"" />
 </Canvas>
-");
-			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
-			Assert.AreEqual (@"' ", beb.ParentBinding.ConverterParameter, "#1");
+"));
 		}
 
 		[TestMethod]
