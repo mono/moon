@@ -319,28 +319,34 @@ namespace Mono.Xaml {
 			if (element == null || element.Parent == null)
 				return null;
 
-			XamlPropertyElement prop = element.Parent as XamlPropertyElement;
-			if (prop == null) {
+			XamlElement walk = element.Parent;
+
+			XamlPropertyElement prop = null;
+			while (walk != null) {
+				prop = walk as XamlPropertyElement;
+				if (prop == null) {
+					obj = walk as XamlObjectElement;
+					IDictionary rd = obj.Object as IDictionary;
+					if (rd != null)
+						return rd;
+					walk = walk.Parent;
+					continue;
+				}
+
 				//
-				// We could be in a <ResourceDictionary> tag, so we get added via ContentProperty
+				// We are in a different property
 				//
-				obj = element.Parent as XamlObjectElement;
-				IDictionary rd = obj.Object as IDictionary;
-				if (rd != null)
-					return rd;
-				return null;
+				if (!(typeof (IDictionary).IsAssignableFrom (prop.Type))) {
+					walk = walk.Parent;
+					continue;
+				}
+
+				break;
 			}
 
-			//
-			// We aren't even in a <Something.Resources> element
-			//
-			if (!(typeof (IDictionary).IsAssignableFrom (prop.Type)))
+			if (prop == null)
 				return null;
 
-			//
-			// We need to be in a resource dictionary element, and we need that element to have a
-			// valid parent container.
-			//
 			obj = prop.Parent as XamlObjectElement;
 			if (obj == null)
 				return null;
