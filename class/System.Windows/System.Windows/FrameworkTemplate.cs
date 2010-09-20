@@ -52,8 +52,8 @@ namespace System.Windows {
 		internal void SetXamlBuffer (ParseTemplateFunc func, XamlContext context, string xaml)
 		{
 			Value v = Value.FromObject (context);
-
-			NativeMethods.framework_template_set_xaml_buffer (native, func, ref v, xaml);
+			using (Value vv = v)
+				NativeMethods.framework_template_set_xaml_buffer (native, func, ref v, xaml);
 		}
 	}
 }
