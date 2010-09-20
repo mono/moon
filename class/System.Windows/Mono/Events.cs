@@ -388,7 +388,7 @@ namespace Mono {
 
 		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)
 		{
-			return AddHandler (obj.NativeHandle, eventId, handler);
+			return AddHandler (obj.SafeHandle.DangerousGetHandle (), eventId, handler);
 		}
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
@@ -398,7 +398,7 @@ namespace Mono {
 
 		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, GDestroyNotify dtor_action)
 		{
-			return AddHandler (obj.NativeHandle, eventId, handler, dtor_action);
+			return AddHandler (obj.SafeHandle.DangerousGetHandle (), eventId, handler, dtor_action);
 		}
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, GDestroyNotify data_dtor)
@@ -408,7 +408,7 @@ namespace Mono {
 
 		public static void RemoveHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)
 		{
-			RemoveHandler (obj.NativeHandle, eventId, handler);
+			RemoveHandler (obj.SafeHandle.DangerousGetHandle (), eventId, handler);
 		}
 
 		public static void RemoveHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)

@@ -33,8 +33,15 @@ using System.Collections.Generic;
 
 namespace System.Windows.Documents {
 	public class TextPointer : INativeDependencyObjectWrapper {
-		bool free_mapping;
-		IntPtr native;
+		EventObjectSafeHandle safeHandle;
+
+		IntPtr NativeHandle {
+			get { return safeHandle.DangerousGetHandle (); }
+		}
+
+		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
+			get { return safeHandle; }
+		}
 
 		private static readonly DependencyProperty IsAtInsertionPositionProperty =
 			DependencyProperty.Lookup (Kind.TEXTPOINTER, "IsAtInsertionPosition", typeof (bool));
@@ -44,40 +51,9 @@ namespace System.Windows.Documents {
 
 		internal TextPointer (IntPtr raw, bool dropref)
 		{
-			NativeHandle = raw;
+			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
-		}
-		
-		internal void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-		
-		~TextPointer ()
-		{
-			Free ();
-		}
-		
-		internal IntPtr NativeHandle {
-			get { return native; }
-			set {
-				if (native != IntPtr.Zero) {
-					throw new InvalidOperationException ("TextPointer.native is already set");
-				}
-				
-				native = value;
-				
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-			}
-		}
-		
-		IntPtr INativeEventObjectWrapper.NativeHandle {
-			get { return NativeHandle; }
-			set { NativeHandle = value; }
 		}
 		
 		Kind INativeEventObjectWrapper.GetKind ()
@@ -106,7 +82,7 @@ namespace System.Windows.Documents {
 		}
 
 		public DependencyObject Parent {
-			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_parent (native)) as DependencyObject; }
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_parent (NativeHandle)) as DependencyObject; }
 		}
 
 		public int CompareTo (TextPointer position)
@@ -114,22 +90,23 @@ namespace System.Windows.Documents {
 			if (position == null)
 				throw new ArgumentNullException ("position");
 
-			return NativeMethods.text_pointer_compare_to (native, position.NativeHandle);
+			var positionHandle = ((INativeEventObjectWrapper) position).SafeHandle;
+			return NativeMethods.text_pointer_compare_to (NativeHandle, positionHandle.DangerousGetHandle ());
 		}
 
 		public Rect GetCharacterRect (LogicalDirection direction)
 		{
-			return NativeMethods.text_pointer_get_character_rect (native, direction);
+			return NativeMethods.text_pointer_get_character_rect (NativeHandle, direction);
 		}
 
 		public TextPointer GetNextInsertionPosition (LogicalDirection direction)
 		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_next_insertion_position (native, direction)) as TextPointer;
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_next_insertion_position (NativeHandle, direction)) as TextPointer;
 		}
 
 		public TextPointer GetPositionAtOffset (int offset, LogicalDirection direction)
 		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_position_at_offset (native, offset, direction)) as TextPointer;
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_position_at_offset (NativeHandle, offset, direction)) as TextPointer;
 		}
 	}
 }

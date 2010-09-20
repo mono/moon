@@ -63,6 +63,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/DoubleKeyedDictionary.cs					\
 	$(srcdir)/Mono/EasingFunctionWrapper.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
+	$(srcdir)/Mono/EventObjectSafeHandle.cs				\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/GeneratedPInvokes.cs					\
 	$(srcdir)/Mono/HeapUtil.cs						\

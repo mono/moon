@@ -37,31 +37,25 @@ namespace Mono
 
 	internal partial class NameScope : INativeEventObjectWrapper, IRefContainer {
 
-		private IntPtr _native;
-		private bool free_mapping;
+		EventObjectSafeHandle safeHandle;
+
+		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
+			get { return safeHandle; }
+		}
+
+		internal IntPtr NativeHandle {
+			get { return safeHandle.DangerousGetHandle (); }
+		}
 
 		internal NameScope (IntPtr raw, bool dropRef)
 		{
-			NativeHandle = raw;
+			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);;
 			if (dropRef)
 				NativeMethods.event_object_unref (raw);
 		}
 
 		internal NameScope () : this (SafeNativeMethods.name_scope_new (), true)
 		{
-		}
-
-		public IntPtr NativeHandle {
-			get { return _native; }
-			set {
-				if (_native != IntPtr.Zero) {
-					throw new InvalidOperationException ("NameScope.native is already set");
-				}
-
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-			}
 		}
 
 		public bool Temporary {
@@ -77,19 +71,6 @@ namespace Mono
 		public static NameScope GetNameScope (DependencyObject dob)
 		{
 			return (NameScope) dob.GetValue (NameScope.NameScopeProperty);
-		}
-
-		~NameScope ()
-		{
-			Free ();
-		}
-
-		internal void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
 		}
 
 		public Kind GetKind () { return Kind.NAMESCOPE; }

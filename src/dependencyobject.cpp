@@ -395,6 +395,9 @@ EventObject::SetCurrentDeployment (bool domain, bool register_thread)
 void
 EventObject::Dispose ()
 {
+	// FIXME: Do we really need to clear these callbacks if we're destroying ourselves?
+	SetManagedPeerCallbacks (NULL, NULL, NULL, NULL, NULL);
+
 #if DEBUG_WEAKREF
 	printf ("EventObject::Dispose (this = %p/%s)\n", this, GetTypeName());
 #endif

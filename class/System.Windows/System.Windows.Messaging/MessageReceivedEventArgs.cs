@@ -34,24 +34,21 @@ namespace System.Windows.Messaging {
 
 	public sealed class MessageReceivedEventArgs : EventArgs, INativeEventObjectWrapper
 	{
+		EventObjectSafeHandle safeHandle;
+
+		IntPtr NativeHandle {
+			get { return safeHandle.DangerousGetHandle (); }
+		}
+
+		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
+			get { return safeHandle; }
+		}
+
 		internal MessageReceivedEventArgs (IntPtr raw, bool dropref)
 		{
-			NativeHandle = raw;
+			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);;
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
-		}
-
-		~MessageReceivedEventArgs ()
-		{
-			Free ();
-		}
-
-		void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
 		}
 
 		public string Message {
@@ -75,28 +72,8 @@ namespace System.Windows.Messaging {
 			get { return NativeMethods.message_received_event_args_get_sender_domain (NativeHandle); }
 		}
 
-		bool free_mapping;
-
 #region "INativeEventObjectWrapper interface"
-		IntPtr _native;
 
-		internal IntPtr NativeHandle {
-			get { return _native; }
-			set {
-				if (_native != IntPtr.Zero) {
-					throw new InvalidOperationException ("native handle is already set");
-				}
-
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-			}
-		}
-
-		IntPtr INativeEventObjectWrapper.NativeHandle {
-			get { return NativeHandle; }
-			set { NativeHandle = value; }
-		}
 
 		Kind INativeEventObjectWrapper.GetKind ()
 		{

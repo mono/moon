@@ -61,11 +61,8 @@ namespace System.Windows {
 		~Deployment ()
 		{
 			if (!NativeMethods.deployment_is_safe_to_die (native)) {
-				should_free_in_finalizer = false;
 				GC.ReRegisterForFinalize (this);
 			}
-			else
-				should_free_in_finalizer = true;
 		}
 
 		Application current_app;
@@ -180,11 +177,8 @@ namespace System.Windows {
 		
 		public static void SetCurrentApplication (Application application)
 		{
-			if ((application == null && Application.IsCurrentSet) ||
-				(application != null && Application.IsCurrentSet && Application.Current != application))
-				Application.Current.Free ();
-
-			NativeMethods.deployment_set_current_application (Current.native, application == null ? IntPtr.Zero : application.NativeHandle);
+			var applicationHandle = application == null ? IntPtr.Zero : ((INativeEventObjectWrapper) application).SafeHandle.DangerousGetHandle ();
+			NativeMethods.deployment_set_current_application (Current.native, applicationHandle);
 		}
 
 		internal GlyphTypefaceCollection SystemTypefaces {

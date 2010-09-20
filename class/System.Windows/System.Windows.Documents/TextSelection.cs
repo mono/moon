@@ -34,49 +34,25 @@ using System.Collections.Generic;
 
 namespace System.Windows.Documents {
 	public sealed class TextSelection : INativeDependencyObjectWrapper {
-		bool free_mapping;
-		IntPtr native;
-		
+		EventObjectSafeHandle safeHandle;
+
+		IntPtr NativeHandle {
+			get { return safeHandle.DangerousGetHandle (); }
+		}
+
+		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
+			get { return safeHandle; }
+		}
+
 		internal TextSelection (IntPtr raw, bool dropref)
 		{
-			NativeHandle = raw;
+			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);;
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
 		}
 		
 		internal TextSelection () : this (SafeNativeMethods.text_selection_new (), true)
 		{
-		}
-		
-		internal void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-		
-		~TextSelection ()
-		{
-			Free ();
-		}
-
-		internal IntPtr NativeHandle {
-			get { return native; }
-			set {
-				if (native != IntPtr.Zero) {
-					throw new InvalidOperationException ("TextSelection.native is already set");
-				}
-
-				native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-			}
-		}
-
-		IntPtr INativeEventObjectWrapper.NativeHandle {
-			get { return NativeHandle; }
-			set { NativeHandle = value; }
 		}
 
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
@@ -113,7 +89,7 @@ namespace System.Windows.Documents {
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			NativeMethods.text_selection_insert (native, element.native);
+			NativeMethods.text_selection_insert (NativeHandle, element.native);
 		}
 
 		public void Select (TextPointer anchorPosition, TextPointer movingPosition)
@@ -123,7 +99,9 @@ namespace System.Windows.Documents {
 			if (movingPosition == null)
 				throw new ArgumentNullException ("movingPosition");
 
-			NativeMethods.text_selection_select (native, anchorPosition.NativeHandle, movingPosition.NativeHandle);
+			var anchorHandle = ((INativeEventObjectWrapper) anchorPosition).SafeHandle;
+			var movingHandle = ((INativeEventObjectWrapper) movingPosition).SafeHandle;
+			NativeMethods.text_selection_select (NativeHandle, anchorHandle.DangerousGetHandle (), movingHandle.DangerousGetHandle ());
 		}
 
 		public string Text {

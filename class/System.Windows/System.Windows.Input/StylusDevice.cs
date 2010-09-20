@@ -34,7 +34,11 @@ namespace System.Windows.Input
 	{
 		private MouseEventArgs mouse_event_args;
 		private StylusInfo stylus;
-		
+
+		public IntPtr MouseArgsHandle {
+			get { return ((INativeEventObjectWrapper) mouse_event_args).SafeHandle.DangerousGetHandle (); }
+		}
+
 		internal StylusDevice (MouseEventArgs args)
 		{
 			mouse_event_args = args;
@@ -51,14 +55,14 @@ namespace System.Windows.Input
 		private StylusInfo Stylus {
 			get {
 				if (stylus == null)
-					stylus = StylusInfo.FromIntPtr (mouse_event_args.NativeHandle);
+					stylus = StylusInfo.FromIntPtr (MouseArgsHandle);
 				return stylus;
 			}
 		}
 		
 		public StylusPointCollection GetStylusPoints (UIElement relativeTo)
 		{
-			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (mouse_event_args.NativeHandle, relativeTo == null ? IntPtr.Zero : relativeTo.native);
+			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (MouseArgsHandle, relativeTo == null ? IntPtr.Zero : relativeTo.native);
 			if (col == IntPtr.Zero)
 				return null;
 
