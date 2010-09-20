@@ -95,12 +95,13 @@ namespace Mono {
 						targetInfo.obj = handle.Target;
 
 						bool weakref = NativeMethods.event_object_get_ref_count (nativeref) == 1;
-						if (!weakref || false/*output_weak*/) {
+						string namea = handle.Target is DependencyObject ? (string)((DependencyObject) handle.Target).GetValue (FrameworkElement.NameProperty) : "";
+						if (!weakref) {
 							writer.WriteLine ("  unmanaged0x{0:x} -> managed0x{1:x} [label=\"{2}\",color={3}];",
 									  (int)nativeref,
 									  (int)targetInfo.intptr,
-									  weakref ? "weak" : "strong",
-									  weakref ? "green" : "red");
+									  (weakref ? "weak" : "strong") + " " + nativeref.ToString () + " " + namea,
+									  weakref ? "green" : "red", nativeref);
 							writer.WriteLine ("  unmanaged0x{0:x} [label=\"unmanaged0x{0:x}\",fillcolor={1},style=filled];",
 									  (int)nativeref,
 									  weakref ? "green" : "red");
