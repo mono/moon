@@ -369,6 +369,7 @@ namespace Mono.Xaml {
 			}
 
 			ParseXmlnsMappings ();
+			IgnoreIgnorableXmlns ();
 
 			if (IsPropertyElement ()) {
 				ParsePropertyElement ();
@@ -386,6 +387,9 @@ namespace Mono.Xaml {
 		
 		private void ParseObjectElement ()
 		{
+			if (IsIgnorable())
+				return;
+
 			Type t = ResolveType ();
 			if (t == null)
 				throw ParseException ("Unable to find the type {0}.", reader.LocalName);
@@ -656,10 +660,9 @@ namespace Mono.Xaml {
 
 		private void ParseMcAttribute (XamlElement element)
 		{
-			if (reader.LocalName == "Ignorable") {
-				Context.IgnorableXmlns.Add (reader.Value);
+			if (reader.LocalName == "Ignorable")
+				// we've already ignored namespaces in IgnoreIgnorableXmlns
 				return;
-			}
 
 			throw ParseException ("Undeclared prefix");
 		}
@@ -1097,6 +1100,20 @@ namespace Mono.Xaml {
 				return null;
 
 			return reader ["Class", xns];
+		}
+
+		private void IgnoreIgnorableXmlns ()
+		{
+			string mcns = reader ["xmlns:mc"];
+
+			if (mcns == null)
+				return;
+
+			string ignore = reader["Ignorable", mcns];
+			if (ignore != null) {
+				foreach (string s in ignore.Split (' '))
+					Context.IgnorableXmlns.Add (s);
+			}
 		}
 
 		private Assembly DefaultAssembly ()
