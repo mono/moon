@@ -1053,6 +1053,7 @@ GalliumContext::GetEffectShader (PixelShader *ps)
 	struct ureg_dst     dst_reg[D3DSPR_LAST][MAX_CONSTANTS];
 	int                 n = 0;
 
+	// TODO: release effect shaders when destroyed
 	iter = cso_hash_find (effect_fs, (unsigned) (long) ps);
 	if (!cso_hash_iter_is_null (iter))
 		return cso_hash_iter_data (iter);
