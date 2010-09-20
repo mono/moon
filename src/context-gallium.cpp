@@ -141,8 +141,8 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	convolve_sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	convolve_sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	convolve_sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	convolve_sampler.min_img_filter = PIPE_TEX_FILTER_LINEAR;
-	convolve_sampler.mag_img_filter = PIPE_TEX_FILTER_LINEAR;
+	convolve_sampler.min_img_filter = PIPE_TEX_FILTER_NEAREST;
+	convolve_sampler.mag_img_filter = PIPE_TEX_FILTER_NEAREST;
 	convolve_sampler.normalized_coords = 1;
 
 	/* drop shadow fragment shaders */
