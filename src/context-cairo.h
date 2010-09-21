@@ -21,6 +21,8 @@ public:
 	CairoContext (CairoSurface *surface);
 
 	void Push (Group extents);
+
+	void Clear (Color *color);
 };
 
 };

@@ -44,6 +44,8 @@ public:
 	void Push (Group extents);
 	void Push (Group extents, MoonSurface *surface);
 
+	void Clear (Color *color);
+
 	void Project (MoonSurface  *src,
 		      const double *matrix,
 		      double       alpha,

@@ -238,6 +238,12 @@ Context::IsImmutable ()
 }
 
 void
+Context::Clear (Color *color)
+{
+	g_warning ("Context::Clear has been called. The derived class should have overridden it.");
+}
+
+void
 Context::Project (MoonSurface  *src,
 		  const double *matrix,
 		  double       alpha,

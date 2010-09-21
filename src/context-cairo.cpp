@@ -45,4 +45,17 @@ CairoContext::Push (Group extents)
 	cairo_surface_destroy (data);
 }
 
+void
+CairoContext::Clear (Color *color)
+{
+	cairo_t *cr = Cairo ();
+
+	cairo_save (cr);
+	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
+	cairo_paint (cr);
+	cairo_restore (cr);
+
+}
+
+
 };

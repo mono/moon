@@ -108,6 +108,8 @@ public:
 	virtual void Push (Group extents);
 	virtual void Push (Group extents, MoonSurface *surface);
 
+	virtual void Clear (Color *color);
+
 	virtual void Project (MoonSurface  *src,
 			      const double *matrix,
 			      double       alpha,

@@ -428,20 +428,13 @@ GalliumContext::Push (Group extents)
 	Rect           r = extents.r.RoundOut ();
         GalliumSurface *surface = new GalliumSurface (pipe, r.width, r.height);
         Surface        *cs = new Surface (surface, extents.r, pipe);
-	const float    clear_color[4] = { .0f, .0f, .0f, .0f };
+	Color          color = Color ();
 
 	Top ()->GetMatrix (&matrix);
 
 	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
 
-	cso_save_framebuffer (cso);
-
-	SetFramebuffer ();
-
-	pipe->clear (pipe, PIPE_CLEAR_COLOR, clear_color, 0, 0);
-	pipe->flush (pipe, PIPE_FLUSH_RENDER_CACHE, NULL);
-
-	cso_restore_framebuffer (cso);
+	Clear (&color);
 
 	cs->unref ();
 	surface->unref ();
@@ -457,6 +450,21 @@ GalliumContext::Push (Group extents, MoonSurface *surface)
 
 	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
 	cs->unref ();
+}
+
+void
+GalliumContext::Clear (Color *color)
+{
+	float clear_color[4] = { color->r, color->g, color->b, color->a };
+
+	cso_save_framebuffer (cso);
+
+	SetFramebuffer ();
+
+	pipe->clear (pipe, PIPE_CLEAR_COLOR, clear_color, 0, 0);
+	pipe->flush (pipe, PIPE_FLUSH_RENDER_CACHE, NULL);
+
+	cso_restore_framebuffer (cso);
 }
 
 void *
