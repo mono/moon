@@ -93,6 +93,8 @@ public:
 		cairo_t        *context;
 	};
 
+	virtual ~Context () {}
+
 	void Push (Transform transform);
 	void Push (AbsoluteTransform transform);
 	void Push (Clip clip);
