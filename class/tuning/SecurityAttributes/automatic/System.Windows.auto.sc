@@ -1,9 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-<<<<<<< HEAD
-# 556 methods needs to be decorated.
-=======
-# 541 methods needs to be decorated.
->>>>>>> Replace the use of finalizers with a SafeHandle subclass.
+# 547 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -378,6 +374,9 @@
 +SC-M: System.Int32 Mono.NativeMethods::event_object_add_xaml_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,Mono.GDestroyNotify,System.Boolean)
 
 # p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::event_object_get_ref_count(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
 
 # p/invoke declaration
@@ -702,6 +701,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_surface(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::point_from_str(System.String)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_new_value(System.IntPtr)
 
 # p/invoke declaration
@@ -709,6 +711,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_property(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::rect_from_str(System.String)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_get(System.IntPtr,System.String,System.Boolean&)
@@ -992,10 +997,10 @@
 # overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_Type()'.
 +SC-M: System.Type Mono.Xaml.XamlAttachedPropertySetter::get_Type()
 
-# overrides 'System.Type Mono.Xaml.XamlReflectionPropertySetter::get_DeclaringType()'.
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_DeclaringType()'.
 +SC-M: System.Type Mono.Xaml.XamlNamePropertySetter::get_DeclaringType()
 
-# overrides 'System.Type Mono.Xaml.XamlReflectionPropertySetter::get_Type()'.
+# overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_Type()'.
 +SC-M: System.Type Mono.Xaml.XamlNamePropertySetter::get_Type()
 
 # overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_DeclaringType()'.
@@ -1069,9 +1074,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::content_control_set_content_sets_parent(System.IntPtr,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::control_apply_default_style(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::control_update_is_enabled_source(System.IntPtr,System.IntPtr)
@@ -1156,6 +1158,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::external_demuxer_set_can_seek(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::framework_element_apply_default_style(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_register_managed_overrides(System.IntPtr,Mono.MeasureOverrideCallback,Mono.ArrangeOverrideCallback,Mono.GetDefaultTemplateCallback,Mono.LoadedCallback)
@@ -1577,7 +1582,7 @@
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlAttachedPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
 
-# overrides 'System.Void Mono.Xaml.XamlReflectionPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
+# overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlNamePropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
 
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.

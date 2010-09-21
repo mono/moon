@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 453 methods needs to be decorated.
+# 454 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -87,6 +87,9 @@
 
 # internal call
 +SC-M: System.Boolean System.IO.MonoIO::DeleteFile(System.String,System.IO.MonoIOError&)
+
+# internal call
++SC-M: System.Boolean System.IO.MonoIO::Flush(System.IntPtr,System.IO.MonoIOError&)
 
 # internal call
 +SC-M: System.Boolean System.IO.MonoIO::GetFileStat(System.String,System.IO.MonoIOStat&,System.IO.MonoIOError&)
