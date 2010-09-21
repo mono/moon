@@ -4882,7 +4882,7 @@ ASFStreamProperties::~ASFStreamProperties ()
 {
 	delete video_data;
 	video_data = NULL;
-	g_free (audio_data);
+	delete audio_data;
 	audio_data = NULL;
 }
 
