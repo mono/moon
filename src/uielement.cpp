@@ -1653,11 +1653,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		if (!r.IsEmpty ()) {
 			Effect *effect = GetRenderEffect ();
 
-			if (!effect->Render (ctx, src,
-					     NULL,
-					     r.x, r.y,
-					     r.width, r.height))
-				g_warning ("UIElement::PostRender failed to apply pixel effect.");
+			effect->Render (ctx, src, r.x, r.y);
 
 			src->unref ();
 		}

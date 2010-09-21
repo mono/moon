@@ -154,10 +154,7 @@ main (int argc, char **argv)
 	}
 
 	while (count-- > 0) {
-		effect->Render (ctx,
-				surface,
-				(double *) NULL,
-				0, 0, width, height);
+		effect->Render (ctx, surface, 0, 0);
 
 		frames++;
 	}

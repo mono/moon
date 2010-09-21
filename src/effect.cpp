@@ -735,18 +735,13 @@ Effect::Effect ()
 	SetObjectType (Type::EFFECT);
 }
 
-bool
-Effect::Render (Context      *ctx,
-		MoonSurface  *src,
-		const double *matrix,
-		double       x,
-		double       y,
-		double       width,
-		double       height)
+void
+Effect::Render (Context     *ctx,
+		MoonSurface *src,
+		double      x,
+		double      y)
 {
 	g_warning ("Effect::Render has been called. The derived class should have overridden it.");
-
-	return 0;
 }
 
 BlurEffect::BlurEffect ()
@@ -763,20 +758,15 @@ BlurEffect::Padding ()
 	return Thickness (width);
 }
 
-bool
-BlurEffect::Render (Context      *ctx,
-		    MoonSurface  *src,
-		    const double *matrix,
-		    double       x,
-		    double       y,
-		    double       width,
-		    double       height)
+void
+BlurEffect::Render (Context     *ctx,
+		    MoonSurface *src,
+		    double      x,
+		    double      y)
 {
 	double radius = MIN (GetRadius (), MAX_BLUR_RADIUS);
 
 	ctx->Blur (src, radius, x, y);
-
-	return 1;
 }
 
 DropShadowEffect::DropShadowEffect ()
@@ -807,14 +797,11 @@ DropShadowEffect::Padding ()
 			  bottom < 1.0 ? 1.0 : ceil (bottom));
 }
 
-bool
-DropShadowEffect::Render (Context      *ctx,
-			  MoonSurface  *src,
-			  const double *matrix,
-			  double       x,
-			  double       y,
-			  double       width,
-			  double       height)
+void
+DropShadowEffect::Render (Context     *ctx,
+			  MoonSurface *src,
+			  double      x,
+			  double      y)
 {
 	double radius = MIN (GetBlurRadius (), MAX_BLUR_RADIUS);
 	double direction = GetDirection () * (M_PI / 180.0);
@@ -829,8 +816,6 @@ DropShadowEffect::Render (Context      *ctx,
 			     opacity);
 
 	ctx->DropShadow (src, dx, dy, radius, &rgba, x, y);
-
-	return 1;
 }
 
 PixelShader::PixelShader ()
@@ -1278,14 +1263,11 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 	sampler_mode[reg]  = mode;
 }
 
-bool
-ShaderEffect::Render (Context      *ctx,
-		      MoonSurface  *src,
-		      const double *matrix,
-		      double       x,
-		      double       y,
-		      double       width,
-		      double       height)
+void
+ShaderEffect::Render (Context     *ctx,
+		      MoonSurface *src,
+		      double      x,
+		      double      y)
 {
 	Value *ddxDdyReg;
 
@@ -1314,8 +1296,6 @@ ShaderEffect::Render (Context      *ctx,
 				   NULL,
 				   x, y);
 	}
-
-	return 1;
 }
 
 static inline void

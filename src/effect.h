@@ -225,13 +225,10 @@ public:
 	//
 	// Render
 	//
-	virtual bool Render (Context      *ctx,
-			     MoonSurface  *src,
-			     const double *matrix,
-			     double       x,
-			     double       y,
-			     double       width,
-			     double       height);
+	virtual void Render (Context     *ctx,
+			     MoonSurface *src,
+			     double      x,
+			     double      y);
 
 	static int ComputeGaussianSamples (double radius,
 					   double precision,
@@ -293,13 +290,10 @@ public:
 	//
 	// Render
 	//
-	bool Render (Context      *ctx,
-		     MoonSurface  *src,
-		     const double *matrix,
-		     double       x,
-		     double       y,
-		     double       width,
-		     double       height);
+	void Render (Context     *ctx,
+		     MoonSurface *src,
+		     double      x,
+		     double      y);
 
 protected:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -351,13 +345,10 @@ public:
 	//
 	// Render
 	//
-	bool Render (Context      *ctx,
-		     MoonSurface  *src,
-		     const double *matrix,
-		     double       x,
-		     double       y,
-		     double       width,
-		     double       height);
+	void Render (Context     *ctx,
+		     MoonSurface *src,
+		     double      x,
+		     double      y);
 
 protected:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -464,13 +455,10 @@ public:
 	//
 	Thickness Padding ();
 
-	bool Render (Context      *ctx,
-		     MoonSurface  *src,
-		     const double *matrix,
-		     double       x,
-		     double       y,
-		     double       width,
-		     double       height);
+	void Render (Context     *ctx,
+		     MoonSurface *src,
+		     double      x,
+		     double      y);
 
 	static void ShaderError (PixelShader *ps, const char *format, ...);
 
