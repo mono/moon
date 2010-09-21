@@ -435,12 +435,7 @@ EventObject::Resurrect ()
 	int v = g_atomic_int_exchange_and_add (&refcount, 1);
 
 #if SANITY
-	if (v <= 0) {
-		g_warning ("EventObject::Resurrected (): refcount is %i, the object has already been freed.\n", v);
-#if OBJECT_TRACKING
-		PrintStackTrace ();
-#endif
-	}
+	g_assert (v >= 0); //  #if SANITY
 #endif
 
 	OBJECT_TRACK ("Resurrect [Ref]", GetTypeName ());
