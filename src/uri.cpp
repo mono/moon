@@ -155,7 +155,7 @@ Uri::CombineWithSourceLocation (Deployment *deployment, const Uri *base_uri, con
 	Uri *result;
 
 
-	LOG_DOWNLOADER ("Uri::CombineWithSourceLocation (%s, %s, %s, %i)\n", deployment->GetSourceLocation (NULL)->ToString (), base_uri ? base_uri->ToString () : NULL, relative_uri->ToString (), allow_escape);
+	LOG_DOWNLOADER ("Uri::CombineWithSourceLocation (%s, %s, %s, %s)\n", deployment->GetSourceLocation (NULL)->ToString (), base_uri ? base_uri->ToString () : NULL, relative_uri->ToString (), allow_escape ? "true" : "false");
 
 	if (allow_escape) {
 		absolute_base = Uri::Create (deployment->GetSourceLocation (NULL), base_uri);
