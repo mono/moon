@@ -169,7 +169,7 @@ FrameworkElement::SetLogicalParent (DependencyObject *value, MoonError *error)
 	if (logical_parent == value)
 		return;
 
-	if (Deployment::GetCurrent()->IsShuttingDown ()) {
+	if (GetDeployment ()->IsShuttingDown ()) {
 		// for sanity's sake, we should verify that value is
 		// NULL, but we don't care, we're going away anyway.
 		logical_parent = NULL;

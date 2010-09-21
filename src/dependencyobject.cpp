@@ -2518,7 +2518,7 @@ DependencyObject::SetMentor (DependencyObject *value)
 		// easy, nothing to change
 		return;
 
-	if (Deployment::GetCurrent()->IsShuttingDown ()) {
+	if (GetDeployment ()->IsShuttingDown ()) {
 		// for sanity's sake, we should verify that value is
 		// NULL, but we don't care, we're going away anyway.
 		mentor = NULL;
@@ -2560,8 +2560,10 @@ DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObjec
 			providers.defaultstyle->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
 	}
 
-	if (mentorChanged && !Deployment::GetCurrent()->IsShuttingDown())
+	if (mentorChanged && !GetDeployment ()->IsShuttingDown ()) {
+		/* We have to check if we're shutting down, since mentorChanged is a managed callback */
 		mentorChanged (this, new_mentor);
+	}
 }
 
 
