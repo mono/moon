@@ -700,8 +700,8 @@ protected:
 private:
 	bool loaded;
 	int visual_level;
-	UIElement *visual_parent;
-	DependencyObject *subtree_object;
+	WeakRef<UIElement> visual_parent;
+	WeakRef<DependencyObject> subtree_object;
 	double total_opacity;
 	Brush *opacityMask;
 	Size desired_size;

@@ -31,11 +31,11 @@ namespace Moonlight {
 /* timeline */
 
 Timeline::Timeline ()
+	: manual_target (this, "ManualTarget")
 {
 	SetObjectType (Type::TIMELINE);
 
 	had_parent = false;
-	manual_target = NULL;
 	timeline_status = TIMELINE_STATUS_OK;
 	clock = NULL;
 }
@@ -147,10 +147,7 @@ Timeline::GetBeginTime ()
 void
 Timeline::SetManualTarget (DependencyObject *o)
 {
-	if (manual_target)
-		MOON_CLEAR_FIELD_NAMED (manual_target, "ManualTarget");
-	if (o)
-		MOON_SET_FIELD_NAMED (manual_target, "ManualTarget", o);
+	manual_target = o;
 }
 
 void

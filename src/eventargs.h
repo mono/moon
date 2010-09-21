@@ -292,7 +292,7 @@ protected:
 	friend class MoonManagedFactory;
 
 private:
-	DependencyObject *source;
+	WeakRef<DependencyObject> source;
 	bool handled;
 };
 
@@ -587,7 +587,7 @@ public:
 
 /* @Namespace=None */
 class TimelineMarkerRoutedEventArgs : public RoutedEventArgs {
-	TimelineMarker *marker;
+	WeakRef<TimelineMarker> marker;
 	
  protected:
 	virtual ~TimelineMarkerRoutedEventArgs ();

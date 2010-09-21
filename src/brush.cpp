@@ -957,9 +957,8 @@ TileBrush::Stroke (cairo_t *cr, bool preserve)
 //
 
 VideoBrush::VideoBrush ()
+	: TileBrush (Type::VIDEOBRUSH), source (this, "Source")
 {
-	SetObjectType (Type::VIDEOBRUSH);
-	source = NULL;
 	video_format = NULL;
 }
 
@@ -969,12 +968,12 @@ VideoBrush::~VideoBrush ()
 		if (source->Is (Type::MEDIAELEMENT)) {
 			source->RemovePropertyChangeListener (this);
 			source->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
-			MOON_CLEAR_FIELD_NAMED (source, "Source");
+			source = NULL;
 		}
 		else /* Is (Type::CAPTURESOURCE) */ {
 			source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
 			source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
-			MOON_CLEAR_FIELD_NAMED (source, "Source");
+			source = NULL;
 		}
 	}
 
@@ -1010,7 +1009,7 @@ VideoBrush::SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area)
 		return;
 	}
 
-	CaptureSource *capture = (CaptureSource*)source;
+	CaptureSource *capture = (CaptureSource *) (DependencyObject *) source;
 
 	Transform *transform = GetTransform ();
 	Transform *relative_transform = GetRelativeTransform ();
@@ -1060,7 +1059,7 @@ VideoBrush::SetupBrushFromMediaElement (cairo_t *cr, const Rect &area)
 		return;
 	}
 
-	MediaElement *media = (MediaElement*)source;
+	MediaElement *media = (MediaElement *) (DependencyObject *) source;
 
 	MediaPlayer *mplayer = media ? media->GetMediaPlayer () : NULL;
 	Transform *transform = GetTransform ();
@@ -1085,7 +1084,7 @@ VideoBrush::SetupBrushFromMediaElement (cairo_t *cr, const Rect &area)
 			media = (MediaElement *) obj;
 			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			mplayer = media->GetMediaPlayer ();
-			MOON_SET_FIELD_NAMED (source, "Source", obj);
+			source = obj;
 		} else if (obj == NULL) {
 			printf ("could not find element `%s'\n", name);
 		} else {
@@ -1146,11 +1145,11 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
 			}
 			
-			MOON_CLEAR_FIELD_NAMED (source, "Source");
+			source = NULL;
 		}
 		
 		if (name && *name && (obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
-			MOON_SET_FIELD_NAMED (source, "Source", obj);
+			source = obj;
 			source->AddPropertyChangeListener (this);
 			source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		} else {
@@ -1191,14 +1190,14 @@ VideoBrush::SetSource (DependencyObject *source)
 			this->source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
 		}
 
-		MOON_CLEAR_FIELD_NAMED (this->source, "Source");
+		this->source = NULL;
 	}
 
 	if (source) {
 		if (source->Is (Type::MEDIAELEMENT)) {
 			SetSourceName ("");
 
-			MOON_SET_FIELD_NAMED (this->source, "Source", source);
+			this->source = source;
 
 			this->source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		}
@@ -1206,7 +1205,7 @@ VideoBrush::SetSource (DependencyObject *source)
 
 			SetSourceName ("");
 
-			MOON_SET_FIELD_NAMED (this->source, "Source", source);
+			this->source = source;
 
 			this->source->AddHandler (CaptureSource::SampleReadyEvent, update_brush, this);
 			this->source->AddHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
@@ -1229,11 +1228,11 @@ VideoBrush::IsAnimating ()
 {
 	if (source) {
 		if (source->Is (Type::MEDIAELEMENT)) {
-			if (((MediaElement*)source)->IsPlaying ())
+			if (((MediaElement *) (DependencyObject *) source)->IsPlaying ())
 				return true;
 		}
 		else /* Is (Type::CAPTURESOURCE) */ {
-			if (((CaptureSource*)source)->GetState() == CaptureSource::Started)
+			if (((CaptureSource *) (DependencyObject *) source)->GetState() == CaptureSource::Started)
 				return true;
 		}
 	}

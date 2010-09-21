@@ -477,7 +477,7 @@ private:
 	Surface *surface;
 	Mutex surface_mutex;
 	FontManager *font_manager;
-	Application *current_app;
+	WeakRef<Application> current_app;
 	MonoDomain *domain;
 	List http_requests;
 	List paths;

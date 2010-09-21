@@ -74,7 +74,7 @@ CallRaiseAccumulatedCompleted (Clock *clock)
 }
 
 Clock::Clock (Timeline *tl)
-  : natural_duration (Duration::Automatic)
+  : natural_duration (Duration::Automatic), timeline (this, "Timeline")
 {
 	SetObjectType (Type::CLOCK);
 
@@ -92,7 +92,6 @@ Clock::Clock (Timeline *tl)
 	accumulated_pause_time = 0;
 	has_started = false;
 	timeline = tl;
-	timeline->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &timeline);
 	queued_events = 0;
 	root_parent_time = 0;
 
@@ -112,11 +111,8 @@ void
 Clock::Dispose ()
 {
 	if (!IsDisposed ()) {
-		if (GetTimeline () && !Deployment::GetCurrent()->IsShuttingDown ()) {
-			timeline->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &timeline);
-
+		if (GetTimeline ())
 			GetTimeline()->TeardownClock ();
-		}
 
 		EventObject::Dispose ();
 	}

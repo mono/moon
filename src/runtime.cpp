@@ -365,7 +365,7 @@ runtime_flags_set_show_fps (gboolean flag)
 /* FIXME More flag setters here */
 
 Surface::Surface (MoonWindow *window)
-	: EventObject (Type::SURFACE)
+	: EventObject (Type::SURFACE), layers (this, "Layers"), toplevel (this, "Toplevel")
 {
 	GetDeployment ()->SetSurface (this);
 
@@ -389,8 +389,6 @@ Surface::Surface (MoonWindow *window)
 		g_warning ("Surfaces cannot be initialized with fullscreen windows.");
 	window->SetSurface (this);
 	
-	layers = NULL;
-	toplevel = NULL;
 	input_list = new List ();
 	captured = NULL;
 	
@@ -479,10 +477,7 @@ Surface::~Surface ()
 	
 	delete up_dirty;
 	delete down_dirty;
-	
-	// FIXME remove destroyed handler
-	// layers->unref ();
-	
+
 	surface_list = g_list_remove (surface_list, this);
 }
 
@@ -635,7 +630,7 @@ Surface::Attach (UIElement *element)
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->Stop ();
 		int maxframerate = time_manager->GetMaximumRefreshRate ();
-		MOON_CLEAR_FIELD_NAMED (toplevel, "Toplevel");
+		toplevel = NULL;
 		time_manager_mutex.Lock ();
 		/* We might end up here as a result of something that happens in a tick call. When control returns
 		 * to the time manager's tick call code, we might crash since the time manager will get destroyed here.
@@ -681,7 +676,7 @@ Surface::Attach (UIElement *element)
 	if (zombie)
 		return;
 
-	MOON_SET_FIELD_NAMED (toplevel, "Toplevel", element);
+	toplevel = element;
 
 	this->ref ();
 	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
@@ -763,8 +758,10 @@ Surface::ToplevelLoaded (UIElement *element)
 void
 Surface::AttachLayer (UIElement *layer)
 {
-	if (layers == NULL)
-		MOON_SET_FIELD_UNREF(layers, MoonUnmanagedFactory::CreateHitTestCollection ());
+	if (layers == NULL) {
+		layers = MoonUnmanagedFactory::CreateHitTestCollection ();
+		layers->unref ();
+	}
 
 	if (layer == toplevel)
 		layers->Insert (0, Value(layer));
@@ -782,8 +779,10 @@ Surface::AttachLayer (UIElement *layer)
 void
 Surface::DetachLayer (UIElement *layer)
 {
-	if (layers == NULL)
-		MOON_SET_FIELD_UNREF(layers, MoonUnmanagedFactory::CreateHitTestCollection ());
+	if (layers == NULL) {
+		layers = MoonUnmanagedFactory::CreateHitTestCollection ();
+		layers->unref ();
+	}
 
 	// if the layer contained the last UIElement receiving mouse input, clear the input list.
 	if (!input_list->IsEmpty() && ((UIElementNode*)input_list->Last())->uielement == layer) {

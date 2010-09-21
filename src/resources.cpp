@@ -521,14 +521,12 @@ void
 ResourceDictionary::RemovedFromCollection (Value *value)
 {
 	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		if (!GetDeployment()->IsShuttingDown ()) {
-			DependencyObject *obj = value->AsDependencyObject ();
+		DependencyObject *obj = value->AsDependencyObject ();
 
-			if (obj) {
-				obj->RemovePropertyChangeListener (this);
-				obj->SetParent (NULL, NULL);
-				obj->SetIsAttached (false);
-			}
+		if (obj) {
+			obj->RemovePropertyChangeListener (this);
+			obj->SetParent (NULL, NULL);
+			obj->SetIsAttached (false);
 		}
 	}
 

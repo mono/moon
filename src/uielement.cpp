@@ -39,14 +39,12 @@ namespace Moonlight {
 //#define DEBUG_INVALIDATE 0
 
 UIElement::UIElement ()
+	: DependencyObject (Type::UIELEMENT), visual_parent (this, "VisualParent"), subtree_object (this, "SubtreeObject")
 {
-	SetObjectType (Type::UIELEMENT);
-
 	providers.inherited = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
 
 	loaded = false;
 	visual_level = 0;
-	visual_parent = NULL;
 	subtree_object = NULL;
 	opacityMask = NULL;
 	
@@ -723,24 +721,14 @@ UIElement::CacheInvalidateHint ()
 void
 UIElement::SetVisualParent (UIElement *visual_parent)
 {
-	if (this->visual_parent)
-		MOON_CLEAR_FIELD_NAMED (this->visual_parent, "VisualParent");
-
-	if (visual_parent)
-		MOON_SET_FIELD_NAMED (this->visual_parent, "VisualParent", visual_parent);
-
+	this->visual_parent = visual_parent;
 	SetIsAttached (visual_parent && visual_parent->IsAttached());
 }
 
 void
 UIElement::SetSubtreeObject (DependencyObject *value)
 {
-	if (subtree_object == value)
-		return;
-
-	MOON_CLEAR_FIELD_NAMED (subtree_object, "SubtreeObject");
-	if (value != NULL)
-		MOON_SET_FIELD_NAMED (subtree_object, "SubtreeObject", value);
+	subtree_object = value;
 }
 
 void

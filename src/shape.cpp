@@ -93,11 +93,10 @@ convert_fill_rule (FillRule fill_rule)
 //
 
 Shape::Shape ()
+	: stroke (this, "cachedStroke"), fill (this, "cachedFill")
 {
 	SetObjectType (Type::SHAPE);
 
-	stroke = NULL;
-	fill = NULL;
 	path = NULL;
 	cached_surface = NULL;
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
@@ -866,10 +865,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
                } else
 			InvalidateSurfaceCache ();
 
-		if (this->fill)
-			MOON_CLEAR_FIELD_NAMED (this->stroke, "cachedStroke");
-		if (new_stroke)
-			MOON_SET_FIELD_NAMED (this->stroke, "cachedStroke", new_stroke);
+		this->stroke = new_stroke;
 		
 		stroke = new_stroke;
 	} else if (args->GetId () == Shape::FillProperty) {
@@ -880,10 +876,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		} else
 			InvalidateSurfaceCache ();
 
-		if (this->fill)
-			MOON_CLEAR_FIELD_NAMED (this->fill, "cachedFill");
-		if (new_fill)
-			MOON_SET_FIELD_NAMED (this->fill, "cachedFill", new_fill);
+		this->fill = new_fill;
 
 	} else if (args->GetId () == Shape::StrokeThicknessProperty) {
 		// do we invalidate the path here for Type::RECT and Type::ELLIPSE 

@@ -178,7 +178,7 @@ protected:
 	friend class MoonManagedFactory;
 	
 private:
-	UIElement *template_root;
+	WeakRef<UIElement> template_root;
 };
 
 };

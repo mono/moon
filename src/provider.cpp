@@ -78,7 +78,7 @@ StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, P
 
 StylePropertyValueProvider::~StylePropertyValueProvider ()
 {
-	if (this->style && !Deployment::GetCurrent()->IsShuttingDown())
+	if (this->style)
 		this->style->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->style);
 
 	g_hash_table_foreach_remove (style_hash, dispose_value, obj);
@@ -744,9 +744,6 @@ InheritedDataContextValueProvider::DetachListener ()
 {
 	if (source != NULL) {
 		Deployment *depl = obj->GetDeployment ();
-		if (depl->IsShuttingDown ())
-			return;
-
 		DependencyProperty *prop = depl->GetTypes ()->GetProperty (FrameworkElement::DataContextProperty);
 		source->RemovePropertyChangeHandler (prop, source_data_context_changed);
 		source->RemoveHandler (EventObject::DestroyedEvent, source_destroyed, this);

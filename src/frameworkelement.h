@@ -210,8 +210,8 @@ private:
 	ArrangeOverrideCallback arrange_cb;
 	LoadedCallback loaded_cb;
 
-	DependencyObject  *logical_parent;
-	UIElement *default_template;
+	WeakRef<DependencyObject> logical_parent;
+	WeakRef<UIElement> default_template;
 	bool default_style_applied;
 };
 

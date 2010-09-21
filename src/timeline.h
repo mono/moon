@@ -102,7 +102,7 @@ protected:
 private:
  	bool had_parent;
 	TimelineStatus timeline_status;
-	DependencyObject *manual_target;
+	WeakRef<DependencyObject> manual_target;
 };
 
 

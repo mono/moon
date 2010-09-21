@@ -376,9 +376,9 @@ private:
 	MoonWindow *fullscreen_window;
 	
 	// We can have multiple top level elements, these are stored as layers
-	HitTestCollection *layers;
+	WeakRef<HitTestCollection> layers;
 	
-	UIElement *toplevel;
+	WeakRef<UIElement> toplevel;
 
 	// The element holding the keyboard focus, and the one that
 	// held it previously (so we can emit lostfocus events async)

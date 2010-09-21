@@ -60,8 +60,7 @@ void
 NameScope::Dispose ()
 {
 	if (names) {
-		if (!GetDeployment()->IsShuttingDown())
-			g_hash_table_foreach_remove (names, remove_handler, this);
+		g_hash_table_foreach_remove (names, remove_handler, this);
 	}
 		
 	EventObject::Dispose ();

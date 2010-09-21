@@ -245,39 +245,38 @@ DownloadProgressEventArgs::GetProgress ()
 }
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
-	: EventArgs (Type::ROUTEDEVENTARGS)
+	: EventArgs (Type::ROUTEDEVENTARGS), source (this, "Source")
 {
 	EnsureManagedPeer ();
-
-	MOON_SET_FIELD_NAMED (this->source, "Source", source);
-
+	this->source = source;
 	handled = false;
 }
 
 RoutedEventArgs::RoutedEventArgs ()
-	: EventArgs (Type::ROUTEDEVENTARGS)
+	: EventArgs (Type::ROUTEDEVENTARGS), source (this, "Source")
 {
 	source = NULL;
 	handled = false;
 }
 
 RoutedEventArgs::RoutedEventArgs (Type::Kind kind)
-	: EventArgs (kind)
+	: EventArgs (kind), source (this, "Source")
 {
 	source = NULL;
 	handled = false;
 }
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source, Type::Kind kind)
+	: EventArgs (Type::ROUTEDEVENTARGS), source (this, "Source")
 {
 	EnsureManagedPeer ();
-	MOON_SET_FIELD_NAMED (this->source, "Source", source);
+	this->source = source;
 	handled = false;
 }
 
 RoutedEventArgs::~RoutedEventArgs ()
 {
-	MOON_CLEAR_FIELD_NAMED (source, "Source");
+	source = NULL;
 }
 
 void
@@ -301,8 +300,7 @@ RoutedEventArgs::GetSource ()
 void
 RoutedEventArgs::SetSource (DependencyObject *el)
 {
-	MOON_CLEAR_FIELD_NAMED (source, "Source");
-	MOON_SET_FIELD_NAMED (source, "Source", el);
+	source = el;
 }
 
 LogReadyRoutedEventArgs::LogReadyRoutedEventArgs ()
@@ -630,14 +628,14 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 //
 
 TimelineMarkerRoutedEventArgs::TimelineMarkerRoutedEventArgs (TimelineMarker *marker)
-	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS)
+	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS), marker (this, "Marker")
 {
-	MOON_SET_FIELD_NAMED (this->marker, "Marker", marker);
+	this->marker = marker;
 }
 
 TimelineMarkerRoutedEventArgs::~TimelineMarkerRoutedEventArgs ()
 {
-	MOON_CLEAR_FIELD_NAMED (marker, "Marker");
+	marker = NULL;
 }
 
 

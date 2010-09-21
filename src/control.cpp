@@ -28,10 +28,9 @@
 namespace Moonlight {
 
 Control::Control ()
+	: template_root (this, "TemplateRoot")
 {
 	SetObjectType (Type::CONTROL);
-
-	template_root = NULL;
 
 	providers.isenabled = new InheritedIsEnabledValueProvider (this, PropertyPrecedence_IsEnabled);
 }
@@ -154,10 +153,10 @@ Control::DoApplyTemplateWithError (MoonError *error)
 	if (template_root != root && template_root != NULL) {
 		template_root->SetParent (NULL, NULL);
 		template_root->SetMentor (NULL);
-		MOON_CLEAR_FIELD (template_root);
+		template_root = NULL;
 	}
 
-	MOON_SET_FIELD_NAMED (template_root, "TemplateRoot", (UIElement *)root);
+	template_root = (UIElement *) root;
 
 	ElementAdded (template_root);
 
@@ -192,7 +191,7 @@ Control::ElementRemoved (UIElement *item)
 	if (template_root != NULL) {
 		template_root->SetParent (NULL, &e);
 		template_root->SetMentor (NULL);
-		MOON_CLEAR_FIELD_NAMED (template_root, "TemplateRoot");
+		template_root = NULL;
 	}
 	item->SetParent (NULL, &e);
 	FrameworkElement::ElementRemoved (item);

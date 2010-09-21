@@ -77,11 +77,11 @@ FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
 };
 
 FrameworkElement::FrameworkElement ()
+	: logical_parent (this, "LogicalParent"), default_template (this, "DefaultTemplate")
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
 	default_style_applied = false;
-	default_template = NULL;
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
@@ -89,7 +89,6 @@ FrameworkElement::FrameworkElement ()
 	bounds_with_children = Rect ();
 	global_bounds_with_children = Rect ();
 	surface_bounds_with_children = Rect ();
-	logical_parent = NULL;
 
 	providers.localstyle = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle, dispose_value);
 	providers.defaultstyle = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle, dispose_value);
@@ -183,12 +182,7 @@ FrameworkElement::SetLogicalParent (DependencyObject *value, MoonError *error)
 
 	DependencyObject *old_parent = logical_parent;
 
-
-	if (old_parent)
-		MOON_CLEAR_FIELD_NAMED (logical_parent, "LogicalParent");
-
-	if (value)
-		MOON_SET_FIELD_NAMED (logical_parent, "LogicalParent", value);
+	logical_parent = value;
 
 	OnLogicalParentChanged (old_parent, value);
 }
@@ -1073,10 +1067,10 @@ FrameworkElement::DoApplyTemplateWithError (MoonError *error)
 
 		if (default_template) {
 			default_template->SetParent (NULL, NULL);
-			MOON_CLEAR_FIELD_NAMED (this->default_template, "DefaultTemplate");
+			default_template = NULL;
 		}
 
-		MOON_SET_FIELD_NAMED (this->default_template, "DefaultTemplate", e);
+		this->default_template = e;
 
 		SetSubtreeObject (e);
 		ElementAdded (e);

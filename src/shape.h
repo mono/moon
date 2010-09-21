@@ -45,7 +45,8 @@ class Shape : public FrameworkElement {
  protected:
 	virtual ~Shape ();
 
-	Brush *stroke, *fill;
+	WeakRef<Brush> stroke;
+	WeakRef<Brush> fill;
 	cairo_surface_t *cached_surface;
 	gint64 cached_size;
 	bool needs_clip;

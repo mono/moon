@@ -10,28 +10,53 @@
 #ifndef __MOON_WEAKREFMANAGER_H__
 #define __MOON_WEAKREFMANAGER_H__
 
-#include "list.h"
-
 namespace Moonlight {
 
 class EventObject;
-class EventArgs;
 
-class WeakRefManager {
+class WeakRefBase {
+protected:
+	EventObject *obj;
+	EventObject *field;
+	const char *name;
+	WeakRefBase (EventObject *obj, const char *name)
+	{
+		this->obj = obj;
+		this->name = name;
+		this->field = NULL;
+	}
+	~WeakRefBase ()
+	{
+		Set (NULL);
+	}
+	static void clear_weak_ref (EventObject *sender, EventArgs *callData, gpointer closure);
+	void ClearWeakRef ();
+	void Set (const EventObject *ptr);
+	void Clear ();
+
 public:
-	WeakRefManager (EventObject *forObj);
-	~WeakRefManager ();
+	EventObject *GetFieldValue () { return field; }
+};
 
-	void Add (EventObject **obj, const char *name);
-	void Clear (EventObject **obj, const char *name);
+template<typename EO>
+class WeakRef : public WeakRefBase {
+public:
+	WeakRef (EventObject *obj, const char *name)
+		: WeakRefBase (obj, name)
+	{
+	}
+
+	operator EO* () const { return (EO *) field; }
+	void operator=(const EO *ptr) { Set (ptr); }
+
+	EO* operator->() const { return (EO *) field; }
 
 private:
-	EventObject *forObj;
-
-	List *weakrefs;
-
-	static void clear_weak_ref (EventObject *sender, EventArgs *callData, gpointer closure);
-	void ClearWeakRef (EventObject **obj, const char *name, bool nullRef, bool removeHandler);
+	// Disallow the following operations
+	WeakRef operator=(const WeakRef wr); // assignment operator
+	EO& operator*(); // dereference operator
+	WeakRef (const WeakRef& wr); // copy ctor
+	WeakRef (); // default ctors
 };
 
 };

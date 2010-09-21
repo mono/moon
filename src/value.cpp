@@ -735,8 +735,7 @@ Value::FreeValue ()
 		Deployment *depl = Deployment::GetCurrent();
 		if (Is (depl, Type::EVENTOBJECT)) {
 			if (u.dependency_object) {
-				if (!depl->IsShuttingDown ())
-					u.dependency_object->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
+				u.dependency_object->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
 				if (GetNeedUnref ()) {
 					LOG_VALUE ("unref Value [%p] %s\n", this, GetName());
 					u.dependency_object->unref ();

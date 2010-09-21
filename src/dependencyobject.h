@@ -26,45 +26,6 @@
 #include "enums.h"
 #include "list.h"
 
-#define MOON_SET_FIELD(f,v) MOON_SET_FIELD_NAMED(f,"",v)
-#define MOON_SET_FIELD_NO_WEAKREF(f,v) MOON_SET_FIELD_NAMED_NO_WEAKREF(f,"",v)
-#define MOON_SET_FIELD_UNREF(f,v) MOON_SET_FIELD_NAMED_UNREF(f,"",v)
-#define MOON_CLEAR_FIELD(f) MOON_CLEAR_FIELD_NAMED(f,"")
-
-
-#define MOON_SET_FIELD_NAMED(f,n,v) G_STMT_START {			\
-		f = v;							\
-		if (f && addStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) { \
-			addStrongRef (this, f, n);			\
-			if (!weakRefs) weakRefs = new WeakRefManager (this); \
-			weakRefs->Add ((EventObject**)&f, n);		\
-		}							\
-	} G_STMT_END
-
-#define MOON_SET_FIELD_NAMED_NO_WEAKREF(f,n,v) G_STMT_START {		\
-		f = v;							\
-		if (f && addStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) \
-			addStrongRef (this, f, n);			\
-	} G_STMT_END
-
-#define MOON_SET_FIELD_NAMED_UNREF(f,n,v) G_STMT_START {		\
-		f = v;							\
-		if (f && addStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) { \
-			addStrongRef (this, f, n);			\
-			if (!weakRefs) weakRefs = new WeakRefManager (this); \
-			weakRefs->Add ((EventObject**)&f, n);		\
-			f->unref ();					\
-		}							\
-	} G_STMT_END
-
-#define MOON_CLEAR_FIELD_NAMED(f,n) G_STMT_START {			\
-		if (weakRefs) weakRefs->Clear ((EventObject**)&f, n);	\
-		if (f && clearStrongRef && GetDeployment() && !GetDeployment()->IsShuttingDown ()) { \
-			clearStrongRef (this, f, n);			\
-		}							\
-		f = NULL;						\
-	} G_STMT_END
-
 namespace Moonlight {
 
 #define EVENTHANDLER(type, event, objtype, argtype)	\
@@ -281,14 +242,7 @@ public:
 
 	bool hadManagedPeer;
 
-	static void ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closure)
-	{
-#if DEBUG_WEAKREF
-		printf ("Clearing weakref to %p/%s\n", sender, sender->GetTypeName());
-#endif
-		EventObject **eo_ptr = (EventObject**)closure;
-		*eo_ptr = NULL;
-	}
+	static void ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closure);
 
 protected:
 	virtual ~EventObject ();
@@ -322,8 +276,6 @@ protected:
 	 * something really bad has happened) */
 	void Resurrect ();
 
-	WeakRefManager *weakRefs;
-
 private:
 	void AddTickCallInternal (TickCallHandler handler, EventObject *data = NULL);
 	void Initialize (Deployment *deployment, Type::Kind type);
@@ -339,6 +291,8 @@ private:
 
 	Type::Kind object_type;
 	void *managed_handle;
+
+	friend class WeakRefBase;
 };
 
 /* @Namespace=System.Windows */
@@ -582,9 +536,9 @@ private:
 	GHashTable *storage_hash; // keys: DependencyProperty, values: animation storage's
 
 	GSList            *listener_list;
-	DependencyObject  *mentor;
-	DependencyObject  *parent;
-	DependencyObject  *template_owner;
+	WeakRef<DependencyObject> mentor;
+	WeakRef<DependencyObject> parent;
+	WeakRef<DependencyObject> template_owner;
 
 	bool is_frozen;
 	bool is_hydrated;

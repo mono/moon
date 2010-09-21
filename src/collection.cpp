@@ -493,7 +493,7 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 
-	if (obj && !GetDeployment()->IsShuttingDown ()) {
+	if (obj) {
 		obj->RemovePropertyChangeListener (this);
 		obj->SetParent (NULL, NULL);
 		obj->SetMentor (NULL);

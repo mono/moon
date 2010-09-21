@@ -398,14 +398,14 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 }
 
 Deployment::Deployment (MonoDomain *domain)
-	: DependencyObject (this, Type::DEPLOYMENT)
+	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, "CurrentApplication")
 {
 	this->domain = domain;
 	InnerConstructor ();
 }
 
 Deployment::Deployment()
-	: DependencyObject (this, Type::DEPLOYMENT)
+	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, "CurrentApplication")
 {
 	MonoDomain *current = mono_domain_get ();
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
@@ -462,7 +462,6 @@ Deployment::InnerConstructor ()
 	is_loaded_from_xap = false;
 	xap_location = NULL;
 	xap_filename = NULL;
-	current_app = NULL;
 	pending_unrefs = NULL;
 	pending_loaded = false;
 	objects_created = 0;
@@ -1111,8 +1110,7 @@ Deployment::Dispose ()
 	Deployment::SetCurrent (this);
 
 	surface_mutex.Lock ();
-	if (surface)
-		MOON_CLEAR_FIELD_NAMED (surface, "Surface");
+	surface = NULL;
 	surface_mutex.Unlock ();
 
 #if EVENT_ARG_REUSE
@@ -1198,7 +1196,7 @@ Deployment::Shutdown ()
 	
 	if (current_app != NULL) {
 		current_app->Dispose ();
-		MOON_CLEAR_FIELD_NAMED (current_app, "CurrentApplication");
+		current_app = NULL;
 	}
 
 	StringNode *node;
@@ -1567,11 +1565,7 @@ Deployment::GetCurrentApplication ()
 void
 Deployment::SetCurrentApplication (Application* value)
 {
-	if (current_app == value)
-		return;
-
-	MOON_CLEAR_FIELD_NAMED (current_app, "CurrentApplication");
-	MOON_SET_FIELD_NAMED (current_app, "CurrentApplication", value);
+	current_app = value;
 }
 
 void

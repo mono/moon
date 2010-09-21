@@ -298,7 +298,7 @@ private:
 
 	bool has_started;
 	bool was_stopped;
-	Timeline *timeline;
+	WeakRef<Timeline> timeline;
 	int queued_events;
 
 	// for clocks with repeatbehavior that's not Forever and

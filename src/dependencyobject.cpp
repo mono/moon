@@ -215,8 +215,6 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	hadManagedPeer = false;
 	managed_handle = NULL;
 
-	weakRefs = NULL;
-
 #if OBJECT_TRACKING
 	switch (object_type) {
 	case Type::INVALID:
@@ -264,14 +262,11 @@ EventObject::~EventObject()
 	}
 #endif
 
-	delete weakRefs;
-	weakRefs = NULL;
-
 	delete events;
 	
 	// We can't unref the deployment in Dispose, it breaks
 	// object tracking.
-	if (deployment && this != deployment && !hadManagedPeer) {
+	if (deployment && this != deployment) {
 		deployment->unref ();
 		deployment = NULL;
 	}
@@ -299,6 +294,16 @@ EventObject::SetIsAttached (bool value)
 }
 
 void
+EventObject::ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closure)
+{
+#if DEBUG_WEAKREF
+	printf ("EventOject::ClearWeakRef () %p = %s = %i\n", sender, sender->GetTypeName (), GET_OBJ_ID (sender));
+#endif
+	EventObject **eo_ptr = (EventObject**)closure;
+	*eo_ptr = NULL;
+}
+
+void
 EventObject::SetManagedPeerCallbacks (StrongRefCallback add_strong_ref,
 				      StrongRefCallback clear_strong_ref,
 				      MentorChangedCallback mentor_changed,
@@ -318,13 +323,7 @@ void
 EventObject::EnsureManagedPeer ()
 {
 	deployment->EnsureManagedPeer (this);
-	if (this != deployment) {
-		Deployment *d = deployment;
-		MOON_SET_FIELD_NAMED_NO_WEAKREF (deployment, "Deployment", d);
-		d->unref ();
-	}
 }
-
 
 void
 EventObject::AddTickCall (TickCallHandler handler, EventObject *data)
@@ -396,9 +395,9 @@ void
 EventObject::Dispose ()
 {
 #if DEBUG_WEAKREF
-	printf ("EventObject::Dispose (this = %p/%s)\n", this, GetTypeName());
+	printf ("EventObject::Dispose (this = %p/%s/%i) ", this, GetTypeName (), GET_OBJ_ID (this));
 #endif
-	if (!IsDisposed () && Surface::InMainThread () && deployment && !deployment->IsShuttingDown()) {
+	if (!IsDisposed () && Surface::InMainThread () && deployment) {
 		// Dispose can be called multiple times, but Emit only once. When DestroyedEvent was in the dtor, 
 		// it could only ever be emitted once, don't change that behaviour.
 		Emit (DestroyedEvent); // TODO: Rename to DisposedEvent
@@ -552,7 +551,6 @@ EventObject::unref ()
 	}
 #endif
 }
-
 
 void
 EventObject::SetManagedHandle (void *managed_handle)
@@ -1466,9 +1464,6 @@ unregister_depobj_values (gpointer  key,
 void
 DependencyObject::RemoveAllListeners ()
 {
-	if (GetDeployment()->IsShuttingDown ())
-		return;
-	
 	if (providers.autocreate)
 		providers.autocreate->ForeachValue (unregister_depobj_values, this);
 	
@@ -2395,8 +2390,6 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 
 	Deployment *deployment = _this->GetDeployment();
 
-	if (deployment->IsShuttingDown ())
-		return TRUE;
 	Types *types = deployment->GetTypes();
 	// detach from the existing value
 	if (v->Is (deployment, Type::DEPENDENCY_OBJECT)){
@@ -2459,19 +2452,22 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 }
 
 DependencyObject::DependencyObject ()
-	: EventObject (Type::DEPENDENCY_OBJECT)
+	: EventObject (Type::DEPENDENCY_OBJECT),
+	mentor (this, "Mentor"), parent (this, "Parent"), template_owner (this, "TemplateOwner")
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Deployment *deployment, Type::Kind object_type)
-	: EventObject (deployment, object_type)
+	: EventObject (deployment, object_type),
+	mentor (this, "Mentor"), parent (this, "Parent"), template_owner (this, "TemplateOwner")
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Type::Kind object_type)
-	: EventObject (object_type)
+	: EventObject (object_type),
+	mentor (this, "Mentor"), parent (this, "Parent"), template_owner (this, "TemplateOwner")
 {
 	Initialize ();
 }
@@ -2487,8 +2483,6 @@ DependencyObject::Initialize ()
 	providers.autocreate = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate, dispose_value);
 	
 	listener_list = NULL;
-	mentor = NULL;
-	parent = NULL;
 	is_hydrated = false;
 	is_frozen = false;
 	is_being_parsed = false;
@@ -2500,7 +2494,6 @@ DependencyObject::Initialize ()
 #endif
 	provider_bitmasks = g_hash_table_new (g_direct_hash, g_direct_equal);
 	storage_hash = NULL; // Create it on first usage request
-	template_owner = NULL;
 }
 
 void
@@ -2527,12 +2520,8 @@ DependencyObject::SetMentor (DependencyObject *value)
 #endif
 
 	DependencyObject *old_mentor = this->mentor;
-	
-	if (old_mentor)
-		MOON_CLEAR_FIELD_NAMED (this->mentor, "Mentor");
 
-	if (value)
-		MOON_SET_FIELD_NAMED (this->mentor, "Mentor", value);
+	mentor = value;
 
 	OnMentorChanged (old_mentor, value);
 }
@@ -2576,12 +2565,7 @@ DependencyObject::SetTemplateOwner (DependencyObject *value)
 {
 	// FIXME -- you should only set template owner once.
 	//g_return_if_fail (template_owner == NULL);
-
-	if (this->template_owner)
-		MOON_CLEAR_FIELD_NAMED (this->template_owner, "TemplateOwner");
-		
-	if (value)
-		MOON_SET_FIELD_NAMED (this->template_owner, "TemplateOwner", value);
+	this->template_owner = value;
 }
 
 DependencyObject *
@@ -3225,10 +3209,7 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 	}
 
 	if (!error || error->number == 0) {
-		if (this->parent)
-			MOON_CLEAR_FIELD_NAMED (this->parent, "Parent");
-		if (parent)
-			MOON_SET_FIELD_NAMED (this->parent, "Parent", parent);
+		this->parent = parent;
 	}
 }
 
