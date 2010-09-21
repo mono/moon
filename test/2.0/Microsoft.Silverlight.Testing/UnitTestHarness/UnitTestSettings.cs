@@ -77,6 +77,14 @@ namespace Microsoft.Silverlight.Testing
         }
 
         /// <summary>
+        /// Gets or sets the RuntimeVersion of the xap we're using
+        /// </summary>
+	public int RuntimeVersion
+	{
+		get; set;
+	}
+
+        /// <summary>
         /// Gets a list of test classes to run. Enables filtering.
         /// </summary>
         /// <remarks>This property should be considered obsolete.</remarks>

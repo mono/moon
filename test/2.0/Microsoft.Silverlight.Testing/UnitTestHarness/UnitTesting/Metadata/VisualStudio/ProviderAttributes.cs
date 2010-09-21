@@ -32,6 +32,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio
             AssemblyInitialize = typeof(VS.AssemblyInitializeAttribute);
             AssemblyCleanup = typeof(VS.AssemblyCleanupAttribute);
             TestMethod = typeof(VS.TestMethodAttribute);
+	    RuntimeVersion = typeof (VS.RuntimeVersionAttribute);
+	    NotRuntimeVersion = typeof (VS.NotRuntimeVersionAttribute);
         }
 
         /// <summary>
@@ -150,6 +152,24 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio
             get;
             private set;
         }
+
+        /// <summary>
+        /// Gets VSTT [RuntimeVersion] attribute.
+        /// </summary>
+	public static Type RuntimeVersion
+	{
+            get;
+            private set;
+	}
+
+        /// <summary>
+        /// Gets VSTT [NotRuntimeVersion] attribute.
+        /// </summary>
+	public static Type NotRuntimeVersion
+	{
+            get;
+            private set;
+	}
     }
 }
 
