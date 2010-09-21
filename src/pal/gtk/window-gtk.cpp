@@ -943,7 +943,7 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		pt.height0 = height;
 		pt.depth0 = 1;
 		pt.last_level = 0;
-		pt.bind = PIPE_BIND_DISPLAY_TARGET | PIPE_BIND_TRANSFER_WRITE |
+		pt.bind = PIPE_BIND_RENDER_TARGET | PIPE_BIND_TRANSFER_WRITE |
 			PIPE_BIND_TRANSFER_READ;
 
 		texture = (*screen->resource_create) (screen, &pt);
