@@ -76,7 +76,7 @@ public:
 			   double      x,
 			   double      y);
 
-// private:
+private:
 	void SetFramebuffer ();
 	void SetScissor ();
 	void SetRasterizer ();
