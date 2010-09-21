@@ -199,7 +199,8 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void Parse_BothxKeyAndxName ()
+		[MaxRuntimeVersion(3)]
+		public void Parse_BothxKeyAndxName_sl3 ()
 		{
 			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""keycolor"" x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 				}, "1");
@@ -219,12 +220,46 @@ namespace MoonTest.System.Windows
 			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><LineGeometry x:Name=""sb"" x:Key=""keysb"" /></Canvas.Resources></Canvas>");
 		}
 
+
 		[TestMethod]
-		public void Parse_StyleTargetTypeOnly ()
+		[MinRuntimeVersion(4)]
+		public void Parse_BothxKeyAndxName_sl4 ()
+		{
+			// no longer throws an exception in sl4
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""keycolor"" x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
+
+			// no longer throws an exception in sl4
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Key=""keysb"" x:Name=""sb""/></Canvas.Resources></Canvas>");
+
+			// no longer throws an exception in sl4
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><LineGeometry x:Key=""keygeom"" x:Name=""keygeom""/></Canvas.Resources></Canvas>");
+
+			// no longer throws an exception in sl4
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard  x:Key=""sb"" x:Name=""sb"" /></Canvas.Resources></Canvas>");
+
+			// no exception if the key/name are specified together but not on a direct child of a RD.
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Key=""keysb""><DoubleAnimation x:Key=""keyanim"" x:Name=""anim""/></Storyboard></Canvas.Resources></Canvas>");
+			
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><LineGeometry x:Name=""sb"" x:Key=""keysb"" /></Canvas.Resources></Canvas>");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void Parse_StyleTargetTypeOnly_sl3 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button""> </Style> </ResourceDictionary>");
 
 			Assert.IsNotNull (rd["System.Windows.Controls.Button"], "1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void Parse_StyleTargetTypeOnly_sl4 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button""> </Style> </ResourceDictionary>");
+
+			// it's null in SL4
+			Assert.IsNull (rd["System.Windows.Controls.Button"], "1");
 		}
 
 		[TestMethod]
@@ -336,7 +371,8 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void Contains_TypeNameAsKeyItemRegisteredInXaml_ReturnsTrue ()
+		[MaxRuntimeVersion(3)]
+		public void Contains_TypeNameAsKeyItemRegisteredInXaml_ReturnsTrue_sl3 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 											    <Style TargetType=""Button""> </Style>
@@ -347,7 +383,20 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void Contains_TypeAsKeyItemRegisteredInXaml_ReturnsFalse ()
+		[MinRuntimeVersion(4)]
+		public void Contains_TypeNameAsKeyItemRegisteredInXaml_ReturnsFalse_sl4 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+											    <Style TargetType=""Button""> </Style>
+											</ResourceDictionary>");
+
+			bool contains = rd.Contains ("System.Windows.Controls.Button");
+			Assert.IsFalse (contains);
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void Contains_TypeAsKeyItemRegisteredInXaml_ReturnsFalse_sl3 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 											    <Style TargetType=""Button""> </Style>
@@ -355,6 +404,18 @@ namespace MoonTest.System.Windows
 
 			bool contains = rd.Contains (typeof (Button));
 			Assert.IsFalse (contains);
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void Contains_TypeAsKeyItemRegisteredInXaml_ReturnsTrue_sl4 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+											    <Style TargetType=""Button""> </Style>
+											</ResourceDictionary>");
+
+			bool contains = rd.Contains (typeof (Button));
+			Assert.IsTrue (contains);
 		}
 
 		[TestMethod]
@@ -650,7 +711,8 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void TypeConversionOfStaticResources ()
+		[MaxRuntimeVersion(3)]
+		public void TypeConversionOfStaticResources_sl3 ()
 		{
 			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
 <Canvas.Resources><sys:Int32 x:Key=""an_int"">300</sys:Int32><sys:String x:Key=""a_str"">Arial</sys:String></Canvas.Resources>
@@ -663,7 +725,26 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void SpacesInKeys ()
+		[MinRuntimeVersion(4)]
+		public void TypeConversionOfStaticResources_sl4 ()
+		{
+			Assert.Throws<XamlParseException> ( delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
+<Canvas.Resources><sys:Int32 x:Key=""an_int"">300</sys:Int32></Canvas.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource an_int}""/></Canvas>"); });
+
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
+<Canvas.Resources><sys:Double x:Key=""a_double"">300.0</sys:Double><sys:String x:Key=""a_str"">Arial</sys:String></Canvas.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource a_double}""/><TextBlock x:Name=""block"" FontFamily=""{StaticResource a_str}""/></Canvas>");
+			Rectangle r = (Rectangle)c.FindName ("rect");
+			TextBlock tb = (TextBlock) c.FindName ("block");
+
+			Assert.AreEqual (r.Width, 300, "1");
+			Assert.AreEqual (tb.FontFamily, new FontFamily ("Arial"), "2");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void SpacesInKeys_sl3 ()
 		{
 			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
 <Canvas.Resources><sys:Int32 x:Key=""an int"">300</sys:Int32></Canvas.Resources>
@@ -671,6 +752,15 @@ namespace MoonTest.System.Windows
 			Rectangle r = (Rectangle)c.FindName ("rect");
 
 			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void SpacesInKeys_sl4 ()
+		{
+			Assert.Throws<XamlParseException> ( delegate {XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
+<Canvas.Resources><sys:Int32 x:Key=""an int"">300</sys:Int32></Canvas.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource an int}""/></Canvas>"); });
 		}
 
 		[TestMethod]
@@ -729,8 +819,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		[TestMethod]
 		public void SourcePropertyInXap ()
 		{
-			// FIXME: in Silverlight, this causes a XamlParseException:
-			// Attribute /System.Windows/ResourceDictionarySourcePropertyTest.xaml value is out of range. [Line: 4 Position: 30]
 			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Grid.Resources>
@@ -745,16 +833,34 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		}
 
 		[TestMethod]
-		public void MergedDictionariesTest1 ()
+		public void MergedDictionariesTest ()
 		{
-			// FIXME: in Silverlight, this causes a XamlParseException:
-			// Attribute /System.Windows/ResourceDictionarySourcePropertyTest.xaml value is out of range. [Line: 6 Position: 35]
 			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Grid.Resources>
   <ResourceDictionary>
     <ResourceDictionary.MergedDictionaries>
        <ResourceDictionary Source=""/System.Windows/ResourceDictionarySourcePropertyTest.xaml"" />
+    </ResourceDictionary.MergedDictionaries>
+  </ResourceDictionary>
+</Grid.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource the_width}"" />
+</Grid>");
+
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		public void MergedDictionariesTest_SourceLackingDefaultXmlns ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary>
+    <ResourceDictionary.MergedDictionaries>
+       <ResourceDictionary Source=""/System.Windows/ResourceDictionarySourcePropertyTest_LackingDefaultXmlns.xaml"" />
     </ResourceDictionary.MergedDictionaries>
   </ResourceDictionary>
 </Grid.Resources>
