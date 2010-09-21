@@ -240,6 +240,7 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		char *lib = strtok_r (NULL, delimiters, &saveptr);
 		
 		if (lib == NULL) {
+			g_free (current_library);
 			current_library = NULL;
 			continue;
 		}
@@ -259,7 +260,8 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		end = end_range ? (gpointer) strtoull (end_range, &tail, 16) : NULL;
 		
 		if (current_library == NULL || strcmp (lib, current_library) != 0) {
-			current_library = lib;
+			g_free (current_library);
+			current_library = g_strdup (lib);
 		}
 		current_base_address = start;
 		
