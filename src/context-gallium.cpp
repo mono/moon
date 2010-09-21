@@ -225,8 +225,10 @@ GalliumContext::~GalliumContext ()
 
 	cso_delete_fragment_shader (cso, default_fs);
 	cso_delete_vertex_shader (cso, default_vs);
-	
+
+	cso_release_all (cso);
 	cso_destroy_context (cso);
+
 	pipe->destroy (pipe);
 }
 
