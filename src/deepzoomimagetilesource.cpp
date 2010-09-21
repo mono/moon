@@ -314,10 +314,12 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri **uri)
 		//printf ("%p requesting image %s\n", this, image);
 	}
 	
-	// DRTs: #511
+	// DRTs: #511: checks for rooted baseUri (/foo/bar.xml), #265: checks for relative baseUri (../../bar.xml).
+	// the first one is resolved with the application root as the root, while the second is allowed to escape out of the application root
+	// we check baseUri [0] == '/' to distinguish these two cases
 	if (!baseUri->IsAbsolute ()) {
 		image_uri = Uri::Create (image);
-		*uri = Uri::CombineWithSourceLocation (GetDeployment (), baseUri, image_uri, true);
+		*uri = Uri::CombineWithSourceLocation (GetDeployment (), baseUri, image_uri, (baseUri == NULL || baseUri->GetPath () == NULL || baseUri->GetPath () [0] != '/'));
 		delete image_uri;
 	} else {
 		*uri = Uri::Create (baseUri, image);

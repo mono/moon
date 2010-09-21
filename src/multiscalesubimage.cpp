@@ -44,7 +44,8 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	Uri *new_uri;
 
 	if (!parent_uri->IsAbsolute ()) {
-		new_uri = Uri::CombineWithSourceLocation (GetDeployment (), parent_uri, source_uri, true);
+		// See comment above the call to CombineWithSourceLocation in dzits.cpp
+		new_uri = Uri::CombineWithSourceLocation (GetDeployment (), parent_uri, source_uri, (parent_uri == NULL || parent_uri->GetPath () == NULL || parent_uri->GetPath () [0] != '/'));
 	} else {
 		new_uri = Uri::Create (parent_uri, source_uri);
 	}
