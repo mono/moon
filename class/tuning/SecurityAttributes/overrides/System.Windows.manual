@@ -54,6 +54,7 @@
 +SC-T: Mono.Xaml.SL3MarkupExpressionParser
 +SC-T: Mono.Xaml.SL4MarkupExpressionParser
 +SC-T: Mono.ManagedStreamCallbacks
++SC-T: Mono.EventObjectSafeHandle
 +SC-T: Mono.MoonlightValueConverter
 +SC-T: Mono.ToggleRef
 +SC-T: Mono.EventObjectToggleRef
