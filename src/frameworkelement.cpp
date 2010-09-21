@@ -963,10 +963,11 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 				updated = true;
 				Size *last = LayoutInformation::GetLastRenderSize (fe);
 				if (last) {
+					Size last_v = *last;
 					fe->ClearValue (LayoutInformation::LastRenderSizeProperty, false);
 
 					if (fe->HasHandlers (FrameworkElement::SizeChangedEvent)) {
-						SizeChangedEventArgs *args = new SizeChangedEventArgs (*last, fe->GetRenderSize ());
+						SizeChangedEventArgs *args = new SizeChangedEventArgs (last_v, fe->GetRenderSize ());
 						fe->Emit (FrameworkElement::SizeChangedEvent, args);
 					}
 				}
