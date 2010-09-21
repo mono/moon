@@ -59,22 +59,24 @@ GalliumSurface::Transfer::Unmap ()
 	return pipe->transfer_unmap (pipe, transfer);
 }
 
-GalliumSurface::GalliumSurface (pipe_screen *scrn)
+GalliumSurface::GalliumSurface (pipe_resource *texture)
 {
-	screen       = scrn;
 	pipe         = NULL;
 	mapped       = NULL;
+	resource     = NULL;
 	sampler_view = NULL;
+
+	pipe_resource_reference (&resource, texture);
 }
 
 GalliumSurface::GalliumSurface (pipe_context *context,
 				int          width,
 				int          height)
 {
-	struct pipe_resource     pt, *texture;
+	struct pipe_resource     pt;
 	struct pipe_sampler_view view_templ;
+	struct pipe_screen       *screen = context->screen;
 
-	screen = context->screen;
 	pipe   = context;
 	mapped = NULL;
 
@@ -95,14 +97,13 @@ GalliumSurface::GalliumSurface (pipe_context *context,
 					       pt.bind,
 					       0));
 
-	texture = screen->resource_create (screen, &pt);
+	resource = screen->resource_create (screen, &pt);
 
-	g_assert (texture);
+	g_assert (resource);
 
-	u_sampler_view_default_template (&view_templ, texture, texture->format);
-	sampler_view = pipe->create_sampler_view (pipe, texture, &view_templ);
-
-	pipe_resource_reference (&texture, NULL);
+	u_sampler_view_default_template (&view_templ, resource,
+					 resource->format);
+	sampler_view = pipe->create_sampler_view (pipe, resource, &view_templ);
 }
 
 GalliumSurface::~GalliumSurface ()
@@ -111,6 +112,7 @@ GalliumSurface::~GalliumSurface ()
 		cairo_surface_destroy (mapped);
 
 	pipe_sampler_view_reference (&sampler_view, NULL);
+	pipe_resource_reference (&resource, NULL);
 }
 
 void
@@ -123,30 +125,23 @@ GalliumSurface::CairoDestroy (void *data)
 }
 
 cairo_surface_t *
-GalliumSurface::Cairo ()
+GalliumSurface::Cairo (pipe_context *context)
 {
 	static cairo_user_data_key_t key;
-	struct pipe_resource         *texture = sampler_view->texture;
 	Transfer                     *transfer;
 	unsigned char                *data;
-
-	if (!pipe) {
-		g_warning ("GalliumSurface::Cairo called with invalid "
-			   "surface instance.");
-		return NULL;
-	}
 
 	if (mapped)
 		return cairo_surface_reference (mapped);
 
-	transfer = new Transfer (pipe, texture);
+	transfer = new Transfer (context, resource);
 	data     = (unsigned char *) transfer->Map ();
 
 	mapped = cairo_image_surface_create_for_data (data,
 						      CAIRO_FORMAT_ARGB32,
-						      texture->width0,
-						      texture->height0,
-						      texture->width0 * 4);
+						      resource->width0,
+						      resource->height0,
+						      resource->width0 * 4);
 
 	cairo_surface_set_user_data (mapped,
 				     &key,
@@ -156,6 +151,19 @@ GalliumSurface::Cairo ()
 	return cairo_surface_reference (mapped);
 }
 
+cairo_surface_t *
+GalliumSurface::Cairo ()
+{
+	if (!pipe) {
+		g_warning ("GalliumSurface::Cairo called with invalid "
+			   "surface instance.");
+
+		return cairo_image_surface_create (CAIRO_FORMAT_INVALID, 0, 0);
+	}
+
+	return Cairo (pipe);
+}
+
 void
 GalliumSurface::Sync ()
 {
@@ -163,12 +171,6 @@ GalliumSurface::Sync ()
 		cairo_surface_destroy (mapped);
 		mapped = NULL;
 	}
-}
-
-struct pipe_screen *
-GalliumSurface::Screen ()
-{
-	return screen;
 }
 
 struct pipe_sampler_view *
@@ -182,11 +184,9 @@ GalliumSurface::SamplerView ()
 struct pipe_resource *
 GalliumSurface::Texture ()
 {
-	struct pipe_resource *texture = sampler_view->texture;
-
 	Sync ();
 
-	return texture;
+	return resource;
 }
 
 };

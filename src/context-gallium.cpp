@@ -30,19 +30,53 @@
 
 namespace Moonlight {
 
+GalliumContext::Surface::Surface (MoonSurface  *moon,
+				  Rect         extents,
+				  pipe_context *context)
+{
+	native        = moon->ref ();
+	box           = extents;
+	surface       = NULL;
+	device_offset = Point ();
+	pipe          = context;
+}
+
+cairo_surface_t *
+GalliumContext::Surface::Cairo ()
+{
+	if (!surface) {
+		surface = ((GalliumSurface *) native)->Cairo (pipe);
+
+		/* replace device offset */
+		if (!box.IsEmpty ()) {
+			cairo_surface_get_device_offset (surface,
+							 &device_offset.x,
+							 &device_offset.y);
+			cairo_surface_set_device_offset (surface,
+							 -box.x,
+							 -box.y);
+		}
+	}
+
+	return cairo_surface_reference (surface);
+}
+	
 GalliumContext::GalliumContext (GalliumSurface *surface)
 {
-	AbsoluteTransform  transform = AbsoluteTransform ();
-	Surface            *cs = new Surface (surface, Rect ());
-	struct pipe_screen *screen = surface->Screen ();
-	const uint         semantic_names[] = { TGSI_SEMANTIC_POSITION,
-						TGSI_SEMANTIC_GENERIC };
-	const uint         semantic_indexes[] = { 0, 0 };
-	unsigned           i;
+	AbsoluteTransform    transform = AbsoluteTransform ();
+	struct pipe_resource *tex = surface->Texture ();
+	struct pipe_screen   *screen = tex->screen;
+	Rect                 r = Rect (0, 0, tex->width0, tex->height0);
+	const uint           semantic_names[] = { TGSI_SEMANTIC_POSITION,
+						  TGSI_SEMANTIC_GENERIC };
+	const uint           semantic_indexes[] = { 0, 0 };
+	Surface              *cs;
+	unsigned             i;
 
 	pipe = screen->context_create (screen, NULL);
 	cso  = cso_create_context (pipe);
 
+	cs = new Surface (surface, r, pipe);
 	Stack::Push (new Context::Node (cs, &transform.m, NULL));
 	cs->unref ();
 
@@ -200,7 +234,7 @@ void
 GalliumContext::SetFramebuffer ()
 {
 	struct pipe_framebuffer_state framebuffer;
-	Surface                       *cs = Top ()->GetSurface ();
+	Context::Surface              *cs = Top ()->GetSurface ();
 	MoonSurface                   *ms;
 	Rect                          r = cs->GetData (&ms);
 	GalliumSurface                *dst = (GalliumSurface *) ms;
@@ -228,7 +262,7 @@ void
 GalliumContext::SetScissor ()
 {
 	struct pipe_scissor_state scissor;
-	Surface                   *cs = Top ()->GetSurface ();
+	Context::Surface          *cs = Top ()->GetSurface ();
 	Rect                      r = cs->GetData (NULL);
 	Rect                      clip;
 
@@ -262,7 +296,7 @@ void
 GalliumContext::SetViewport ()
 {
 	struct pipe_viewport_state viewport;
-	Surface                    *cs = Top ()->GetSurface ();
+	Context::Surface           *cs = Top ()->GetSurface ();
 	Rect                       r = cs->GetData (NULL);
 
 	memset (&viewport, 0, sizeof (viewport));
@@ -393,7 +427,7 @@ GalliumContext::Push (Group extents)
 	cairo_matrix_t matrix;
 	Rect           r = extents.r.RoundOut ();
         GalliumSurface *surface = new GalliumSurface (pipe, r.width, r.height);
-        Surface        *cs = new Surface (surface, extents.r);
+        Surface        *cs = new Surface (surface, extents.r, pipe);
 	const float    clear_color[4] = { .0f, .0f, .0f, .0f };
 
 	Top ()->GetMatrix (&matrix);
@@ -411,6 +445,18 @@ GalliumContext::Push (Group extents)
 
 	cs->unref ();
 	surface->unref ();
+}
+
+void
+GalliumContext::Push (Group extents, MoonSurface *surface)
+{
+	cairo_matrix_t matrix;
+	Surface        *cs = new Surface (surface, extents.r, pipe);
+
+	Top ()->GetMatrix (&matrix);
+
+	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
+	cs->unref ();
 }
 
 void *

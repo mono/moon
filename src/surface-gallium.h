@@ -36,25 +36,25 @@ public:
 		pipe_transfer *transfer;
 	};
 
-	GalliumSurface (pipe_screen *scrn);
+	GalliumSurface (pipe_resource *texture);
 	GalliumSurface (pipe_context *context,
 			int          width,
 			int          height);
 	virtual ~GalliumSurface ();
 
+	cairo_surface_t *Cairo (pipe_context *context);
 	cairo_surface_t *Cairo ();
 
-	pipe_screen *Screen ();
-	pipe_sampler_view *SamplerView ();
 	pipe_resource *Texture ();
+	pipe_sampler_view *SamplerView ();
 
 private:
 	static void CairoDestroy (void *data);
 
 	void Sync ();
 
-	pipe_screen       *screen;
 	pipe_context      *pipe;
+	pipe_resource     *resource;
 	pipe_sampler_view *sampler_view;
 	cairo_surface_t   *mapped;
 };

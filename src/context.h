@@ -57,15 +57,16 @@ public:
 
 	class Surface : public MoonSurface {
 	public:
+		Surface ();
 		Surface (MoonSurface *moon,
 			 Rect        extents);
 		virtual ~Surface ();
 
-		cairo_surface_t *Cairo ();
+		virtual cairo_surface_t *Cairo ();
 
 		Rect GetData (MoonSurface **surface);
 
-	private:
+	protected:
 		MoonSurface     *native;
 		Rect            box;
 		cairo_surface_t *surface;
@@ -95,8 +96,6 @@ public:
 	void Push (Transform transform);
 	void Push (AbsoluteTransform transform);
 	void Push (Clip clip);
-	virtual void Push (Group extents);
-	void Push (Group extents, MoonSurface *surface);
 	Node *Top ();
 	void Pop ();
 	Rect Pop (MoonSurface **surface);
@@ -105,6 +104,9 @@ public:
 
 	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
+
+	virtual void Push (Group extents);
+	virtual void Push (Group extents, MoonSurface *surface);
 
 	virtual void Project (MoonSurface  *src,
 			      const double *matrix,

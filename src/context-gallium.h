@@ -26,10 +26,23 @@ namespace Moonlight {
 
 class GalliumContext : public Context {
 public:
+	class Surface : public Context::Surface {
+	public:
+		Surface (MoonSurface  *moon,
+			 Rect         extents,
+			 pipe_context *context);
+
+		cairo_surface_t *Cairo ();
+
+	private:
+		pipe_context *pipe;
+	};
+
 	GalliumContext (GalliumSurface *surface);
 	virtual ~GalliumContext ();
 
 	void Push (Group extents);
+	void Push (Group extents, MoonSurface *surface);
 
 	void Project (MoonSurface  *src,
 		      const double *matrix,

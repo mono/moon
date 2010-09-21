@@ -30,6 +30,10 @@
 #include "context-gallium.h"
 extern "C" {
 #include "pipe/p_screen.h"
+#ifdef CLAMP
+#undef CLAMP
+#endif
+#include "util/u_inlines.h"
 #include "util/u_simple_screen.h"
 #include "util/u_debug.h"
 #define template templat
@@ -59,11 +63,10 @@ extern "C" {
 
 #ifdef USE_GALLIUM
 static struct pipe_screen *
-swrast_create_screen (void)
+swrast_screen_create (struct sw_winsys *ws)
 {
 	const char         *default_driver;
 	const char         *driver;
-	struct sw_winsys   *ws;
 	struct pipe_screen *screen = NULL;
 
 #ifdef USE_LLVM
@@ -74,10 +77,6 @@ swrast_create_screen (void)
 
 	driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
 
-	ws = null_sw_create ();
-	if (!ws)
-		return NULL;
-
 #ifdef USE_LLVM
 	if (screen == NULL && strcmp (driver, "llvmpipe") == 0)
 		screen = llvmpipe_create_screen (ws);
@@ -85,10 +84,6 @@ swrast_create_screen (void)
 
 	if (screen == NULL)
 		screen = softpipe_create_screen (ws);
-
-	if (!screen) {
-		ws->destroy (ws);
-	}
 
 	return screen;
 }
@@ -927,21 +922,41 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		native = CreateCairoSurface (drawable, visual, true, width, height);
 
 #ifdef USE_GALLIUM
-	if (!screen)
-		screen = swrast_create_screen ();
+	if (!screen) {
+		struct sw_winsys *sw;
+
+		sw = null_sw_create ();
+		screen = swrast_screen_create (sw);
+	}
 #endif
 
 	if (!ctx) {
 
 #ifdef USE_GALLIUM
-		GalliumSurface *surface = new GalliumSurface (screen);
-		ctx = new GalliumContext (surface);
-#else
-		CairoSurface *surface = new CairoSurface (native);
-		ctx = new CairoContext (surface);
-#endif
+		struct pipe_resource pt, *texture;
+		GalliumSurface       *target;
 
-		surface->unref ();
+		memset (&pt, 0, sizeof (pt));
+		pt.target = PIPE_TEXTURE_2D;
+		pt.format = PIPE_FORMAT_B8G8R8A8_UNORM;
+		pt.width0 = width;
+		pt.height0 = height;
+		pt.depth0 = 1;
+		pt.last_level = 0;
+		pt.bind = PIPE_BIND_DISPLAY_TARGET | PIPE_BIND_TRANSFER_WRITE |
+			PIPE_BIND_TRANSFER_READ;
+
+		texture = (*screen->resource_create) (screen, &pt);
+
+		target = new GalliumSurface (texture);
+		pipe_resource_reference (&texture, NULL);
+		ctx = new GalliumContext (target);
+		target->unref ();
+#else
+		CairoSurface *target = new CairoSurface (native);
+		ctx = new CairoContext (surface);
+		target->unref ();
+#endif
 
 	}
 

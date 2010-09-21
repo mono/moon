@@ -19,6 +19,14 @@ namespace Moonlight {
 #define MAX_W 65536
 #define MAX_H MAX_W
 
+Context::Surface::Surface ()
+{
+	native        = NULL;
+	box           = Rect ();
+	surface       = NULL;
+	device_offset = Point ();
+}
+
 Context::Surface::Surface (MoonSurface *moon,
 			   Rect        extents)
 {
