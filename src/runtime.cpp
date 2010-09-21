@@ -1193,7 +1193,6 @@ Surface::ShowIncompleteSilverlightSupportMessage ()
 
 	incomplete_support_message = (Panel *) message;
 	AttachLayer (incomplete_support_message);
-	incomplete_support_message->unref (); // We need to unref the result of XamlLoader.
 
 	DependencyObject* message_object = incomplete_support_message->FindName ("message");
 	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
@@ -1253,7 +1252,6 @@ Surface::ShowDrmMessage ()
 
 	drm_message = (Panel *) message;
 	AttachLayer (drm_message);
-	drm_message->unref (); // We need to unref the result of XamlLoader.
 
 	/* Hide the message when clicked */
 	drm_message->AddHandler (UIElement::MouseLeftButtonDownEvent, HideDrmMessageCallback, this);
@@ -1295,8 +1293,7 @@ Surface::ShowFullScreenMessage ()
 	
 	full_screen_message = (Panel *) message;
 	AttachLayer (full_screen_message);
-	full_screen_message->unref (); // We need to unref the result of XamlLoader.
-
+	
 	DependencyObject* url_object = full_screen_message->FindName ("url");
 	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
 	
@@ -1434,7 +1431,6 @@ Surface::ShowFrameRateCounter ()
 
 	framerate_counter_display = (Panel *) display;
 	AttachLayer (framerate_counter_display);
-	framerate_counter_display->unref (); // We need to unref the result of XamlLoader.
 
 	DependencyObject* fps_textblock_object = framerate_counter_display->FindName ("framerate");
 	framerate_textblock = (fps_textblock_object != NULL && fps_textblock_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) fps_textblock_object : NULL;
