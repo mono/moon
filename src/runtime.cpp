@@ -956,6 +956,7 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 			did_occlusion_culling = true;
 			cairo_restore (cr);
 		}
+		delete copy;
 	}
 
 	if (!did_occlusion_culling) {
