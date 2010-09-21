@@ -954,7 +954,7 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		target->unref ();
 #else
 		CairoSurface *target = new CairoSurface (native);
-		ctx = new CairoContext (surface);
+		ctx = new CairoContext (target);
 		target->unref ();
 #endif
 
