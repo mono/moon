@@ -218,6 +218,7 @@ BitmapImage::UriSourceChanged ()
 	}
 	
 	if (app && uri) {
+		SetProgress (0.0);
 		if (get_res_aborter)
 			delete get_res_aborter;
 		get_res_aborter = new Cancellable ();
