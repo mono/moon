@@ -418,7 +418,8 @@ namespace MoonTest.System.Windows
 			b.Resources.Remove ("color");
 			b.Resources.Remove ("color");
 
-			b.Resources.Remove (null);
+
+			Assert.Throws<ArgumentNullException>( delegate { b.Resources.Remove (null); } );
 		}
 
 		[TestMethod]
@@ -473,9 +474,10 @@ namespace MoonTest.System.Windows
 			Assert.IsTrue (d.Contains (new KeyValuePair<object, object> ("str", new object ())), "#7");
 			d.Clear ();
 			Assert.AreEqual (0, ((ResourceDictionary) d).Count, "#8");
-			Assert.Throws<NotImplementedException> (delegate {
-				d.GetEnumerator ();
-			}, "#9");
+
+			// this doesn't throw in SL4 for any runtime version
+			d.GetEnumerator ();
+
 			Assert.Throws<NotImplementedException> (delegate {
 				var v = d.Keys;
 			}, "#10");
