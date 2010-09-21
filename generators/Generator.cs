@@ -1528,13 +1528,14 @@ class Generator {
 	}
 
 	// Returns false if there are no more tokens (reached end of code)
-	static bool ParseClassOrStruct (Annotations annotations, MemberInfo parent, Tokenizer tokenizer)
+	static bool ParseClassOrStruct (Annotations annotations, MemberInfo parent, Tokenizer tokenizer, bool is_template)
 	{
 		TypeInfo type = new TypeInfo ();
 
 		type.Annotations = annotations;
 		type.Header = tokenizer.CurrentFile;
 		type.Parent = parent;
+		type.IsTemplate = is_template;
 
 		type.IsPublic = tokenizer.Accept (Token2Type.Identifier, "public");
 
@@ -1609,6 +1610,7 @@ class Generator {
 		bool is_static;
 		bool is_const;
 		bool is_extern;
+		bool is_template = false;
 		string name;
 
 		//Console.WriteLine ("ParseMembers ({0})", type.Name);
@@ -1654,6 +1656,7 @@ class Generator {
 					continue;
 				case "enum":
 					ParseEnum (properties, parent, tokenizer);
+					is_template = false;
 					continue;
 				case "friend":
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";")) {
@@ -1663,8 +1666,9 @@ class Generator {
 				case "struct":
 				case "class":
 				case "union":
-					if (!ParseClassOrStruct (properties, parent, tokenizer))
+					if (!ParseClassOrStruct (properties, parent, tokenizer, is_template))
 						return false;
+					is_template = false;
 					continue;
 				case "typedef":
 					StringBuilder requisite = new StringBuilder ();
@@ -1701,6 +1705,7 @@ class Generator {
 					tokenizer.AcceptOrThrow (Token2Type.Identifier, "typename");
 					tokenizer.GetIdentifier ();
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ">");
+					is_template = true;
 					continue;
 				case "using":
 					tokenizer.Advance (true);
@@ -1766,20 +1771,36 @@ class Generator {
 				name = "~" + tokenizer.GetIdentifier ();
 				returntype = new TypeReference ("void");
 			} else {
-				returntype = ParseTypeReference (tokenizer);
-
-				if (tokenizer.CurrentToken.value == "<") {
-					tokenizer.Advance (true);
-					while (!tokenizer.Accept (Token2Type.Punctuation, ">"))
+				if (tokenizer.Accept (Token2Type.Identifier, "operator")) {
+					name = "operator";
+					while (true) {
+						if (tokenizer.CurrentToken.value == ";") {
+							// End of operator
+							break;
+						} else if (tokenizer.CurrentToken.value == "{") {
+							// In-line implementation
+							tokenizer.SyncWithEndBrace ();
+							break;
+						}
 						tokenizer.Advance (true);
-				}
-
-				if (returntype.Value == parent.Name && tokenizer.CurrentToken.value == "(") {
-					is_ctor = true;
-					name = returntype.Value;
-					returntype.Value += "*";
+					}
+					returntype = new TypeReference ("operator");					
 				} else {
-					name = tokenizer.GetIdentifier ();
+					returntype = ParseTypeReference (tokenizer);
+
+					if (tokenizer.CurrentToken.value == "<") {
+						tokenizer.Advance (true);
+						while (!tokenizer.Accept (Token2Type.Punctuation, ">"))
+							tokenizer.Advance (true);
+					}
+
+					if (returntype.Value == parent.Name && tokenizer.CurrentToken.value == "(") {
+						is_ctor = true;
+						name = returntype.Value;
+						returntype.Value += "*";
+					} else {
+						name = tokenizer.GetIdentifier ();
+					}
 				}
 			}
 			returntype.IsConst = is_const;
@@ -2190,10 +2211,10 @@ class Generator {
 				continue;
 
 			if (type.IsClass) {
-				if (!classes.Contains (type.Name))
+				if (!type.IsTemplate && !classes.Contains (type.Name))
 					classes.Add (type.Name);
 			} else if (type.IsStruct) {
-				if (!structs.Contains (type.Name))
+				if (!type.IsTemplate && !structs.Contains (type.Name))
 					structs.Add (type.Name);
 			}
 		}
@@ -2204,10 +2225,10 @@ class Generator {
 			if (method.ParentType != null) {
 				TypeInfo type = method.ParentType;
 				if (type.IsClass) {
-					if (!classes.Contains (type.Name))
+					if (!type.IsTemplate && !classes.Contains (type.Name))
 						classes.Add (type.Name);
 				} else if (type.IsStruct) {
-					if (!structs.Contains (type.Name))
+					if (!type.IsTemplate && !structs.Contains (type.Name))
 						structs.Add (type.Name);
 				}
 			}

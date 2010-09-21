@@ -30,6 +30,7 @@ class TypeInfo : MemberInfo {
 	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
 	public bool IsValueType;
 	public bool IsInterface;
+	public bool IsTemplate;
 	public bool SkipValue;
 
 	public bool IsAbstract {
