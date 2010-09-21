@@ -67,7 +67,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// </summary>
         /// <param name="classes">List of test classes.</param>
         /// <param name="instances">Test class instance dictionary.</param>
-        protected override void FilterCustomTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
+        protected internal override void FilterCustomTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
         {
             if (string.IsNullOrEmpty(TagExpression))
             {
@@ -108,7 +108,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// Apply tag filtering.
         /// </summary>
         /// <param name="methods">List of test methods.</param>
-        protected override void FilterCustomTestMethods(IList<ITestMethod> methods)
+        protected internal override void FilterCustomTestMethods(IList<ITestMethod> methods)
         {
             if (methods == null || methods.Count == 0 || string.IsNullOrEmpty(TagExpression))
             {
@@ -143,7 +143,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// </summary>
         /// <param name="classes">List of test classes.</param>
         /// <param name="instances">Test class instance dictionary.</param>
-        protected override void FilterExclusiveTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
+        protected internal override void FilterExclusiveTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
         {
         }
 
@@ -151,7 +151,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// Exclusive attributes are not supported when also using tagging.
         /// </summary>
         /// <param name="methods">List of test methods.</param>
-        protected override void FilterExclusiveTestMethods(IList<ITestMethod> methods)
+        protected internal override void FilterExclusiveTestMethods(IList<ITestMethod> methods)
         {
         }
     }

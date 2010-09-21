@@ -238,7 +238,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// <returns>Returns a new TestRunFilter instance.</returns>
         protected virtual TestRunFilter CreateTestRunFilter(UnitTestSettings settings)
         {
-            return String.IsNullOrEmpty(settings.TagExpression) ? new TestRunFilter(settings, this) : new TagTestRunFilter(settings, this, settings.TagExpression);
+		TestRunFilter subfilter = String.IsNullOrEmpty(settings.TagExpression) ? new TestRunFilter(settings, this) : new TagTestRunFilter(settings, this, settings.TagExpression);
+		return new RuntimeVersionTestRunFilter (settings, this, subfilter);
         }
 
         /// <summary>

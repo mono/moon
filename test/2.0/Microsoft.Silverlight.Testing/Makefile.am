@@ -36,6 +36,7 @@ SOURCES = \
     $(srcdir)/UnitTestHarness/UnitTesting/Harness/HarnessExtensions.cs\
     $(srcdir)/UnitTestHarness/UnitTesting/Harness/IProvideDynamicTestMethods.cs\
     $(srcdir)/UnitTestHarness/UnitTesting/Harness/RetryTestRunFilter.cs\
+    $(srcdir)/UnitTestHarness/UnitTesting/Harness/RuntimeVersionTestRunFilter.cs\
     $(srcdir)/UnitTestHarness/UnitTesting/Harness/TagManager.cs\
     $(srcdir)/UnitTestHarness/UnitTesting/Harness/TagManager.ExpressionEvaluator.cs\
     $(srcdir)/UnitTestHarness/UnitTesting/Harness/TagManager.Tags.cs\

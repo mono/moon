@@ -93,7 +93,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// </summary>
         /// <param name="classes">List of test classes.</param>
         /// <param name="instances">Test class instance dictionary.</param>
-        protected virtual void FilterCustomTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
+        protected internal virtual void FilterCustomTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
         {
         }
 
@@ -102,7 +102,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// </summary>
         /// <param name="classes">List of test classes.</param>
         /// <param name="instances">Test class instance dictionary.</param>
-        protected virtual void FilterLegacyTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
+        protected internal virtual void FilterLegacyTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
         {
             if (_settings != null && _settings.TestClassesToRun != null)
             {
@@ -119,7 +119,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// </summary>
         /// <param name="classes">List of test classes.</param>
         /// <param name="instances">Test class instance dictionary.</param>
-        protected virtual void FilterExclusiveTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
+        protected internal virtual void FilterExclusiveTestClasses(IList<ITestClass> classes, TestClassInstanceDictionary instances)
         {
             TestClassHelper.FilterExclusiveClasses(classes, UnitTestHarness.LogWriter);
         }
@@ -165,7 +165,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// Perform any custom filtering that the TestRunFilter needs.
         /// </summary>
         /// <param name="methods">List of test methods.</param>
-        protected virtual void FilterCustomTestMethods(IList<ITestMethod> methods)
+        protected internal virtual void FilterCustomTestMethods(IList<ITestMethod> methods)
         {
         }
 
@@ -173,7 +173,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// If any exclusive classes are found, filter them.
         /// </summary>
         /// <param name="methods">List of test methods.</param>
-        protected virtual void FilterExclusiveTestMethods(IList<ITestMethod> methods)
+        protected internal virtual void FilterExclusiveTestMethods(IList<ITestMethod> methods)
         {
             TestMethodHelper.FilterExclusiveMethods(methods, UnitTestHarness.LogWriter);
         }

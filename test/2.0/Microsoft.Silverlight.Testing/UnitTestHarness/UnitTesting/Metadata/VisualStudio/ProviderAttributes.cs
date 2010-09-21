@@ -34,6 +34,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio
             TestMethod = typeof(VS.TestMethodAttribute);
 	    RuntimeVersion = typeof (VS.RuntimeVersionAttribute);
 	    NotRuntimeVersion = typeof (VS.NotRuntimeVersionAttribute);
+	    MinRuntimeVersion = typeof (VS.MinRuntimeVersionAttribute);
+	    MaxRuntimeVersion = typeof (VS.MaxRuntimeVersionAttribute);
         }
 
         /// <summary>
@@ -166,6 +168,24 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio
         /// Gets VSTT [NotRuntimeVersion] attribute.
         /// </summary>
 	public static Type NotRuntimeVersion
+	{
+            get;
+            private set;
+	}
+	
+        /// <summary>
+        /// Gets VSTT [MinRuntimeVersion] attribute.
+        /// </summary>
+	public static Type MinRuntimeVersion
+	{
+            get;
+            private set;
+	}
+
+        /// <summary>
+        /// Gets VSTT [MaxRuntimeVersion] attribute.
+        /// </summary>
+	public static Type MaxRuntimeVersion
 	{
             get;
             private set;
