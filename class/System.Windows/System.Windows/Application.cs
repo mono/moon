@@ -591,8 +591,19 @@ namespace System.Windows {
 				} catch {}
 			}
 
-			if (info == null)
-				info = GetResourceStream (name);
+			if (info == null) {
+				Uri resource_uri = name;
+				if (!resource_uri.IsAbsoluteUri) {
+					// 'name' might be escaped. The following is to unescape it.
+					// DRT #GB18030* (GB18030_double1 for instance) run into this.
+					Uri absolute = new Uri ("http://www.mono-project.com/", UriKind.Absolute);
+					Uri absolute_uri = new Uri (absolute, resource_uri);
+					Uri unescaped = new Uri (absolute_uri.GetComponents (UriComponents.Path, UriFormat.SafeUnescaped), UriKind.Relative);
+					resource_uri = unescaped;
+					
+				}
+				info = GetResourceStream (resource_uri);
+			}
 
 
 			if (info == null)
