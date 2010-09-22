@@ -22,11 +22,31 @@
 
 namespace Moonlight {
 
+pipe_context *
+pipe_ref (pipe_context *pipe)
+{
+	int refcount = (int) pipe->priv;
+
+	pipe->priv = (void *) (refcount + 1);
+	return pipe;
+}
+
+void
+pipe_unref (pipe_context *pipe)
+{
+	int refcount = (int) pipe->priv;
+
+	if (refcount == 1)
+		pipe->destroy (pipe);
+	else
+		pipe->priv = (void *) (refcount - 1);
+}
+
 GalliumSurface::Transfer::Transfer (pipe_context  *context,
 				    pipe_resource *texture)
 {
 	resource = NULL;
-	pipe     = context;
+	pipe     = pipe_ref (context);
 
 	transfer = pipe_get_transfer (pipe,
 				      texture,
@@ -45,6 +65,7 @@ GalliumSurface::Transfer::~Transfer ()
 {
 	pipe->transfer_destroy (pipe, transfer);
 	pipe_resource_reference (&resource, NULL);
+	pipe_unref (pipe);
 }
 
 void *
@@ -77,7 +98,7 @@ GalliumSurface::GalliumSurface (pipe_context *context,
 	struct pipe_sampler_view view_templ;
 	struct pipe_screen       *screen = context->screen;
 
-	pipe   = context;
+	pipe   = pipe_ref (context);
 	mapped = NULL;
 
 	memset (&pt, 0, sizeof (pt));

@@ -19,6 +19,12 @@
 
 namespace Moonlight {
 
+pipe_context *
+pipe_ref (pipe_context *pipe);
+
+void
+pipe_unref (pipe_context *pipe);
+
 class GalliumSurface : public MoonSurface {
 public:
 	class Transfer {

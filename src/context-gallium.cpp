@@ -73,7 +73,7 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	Surface              *cs;
 	unsigned             i;
 
-	pipe = screen->context_create (screen, NULL);
+	pipe = screen->context_create (screen, (void *) 1);
 	cso  = cso_create_context (pipe);
 
 	cs = new Surface (surface, r, pipe);
@@ -229,7 +229,7 @@ GalliumContext::~GalliumContext ()
 	cso_release_all (cso);
 	cso_destroy_context (cso);
 
-	pipe->destroy (pipe);
+	pipe_unref (pipe);
 }
 
 void
