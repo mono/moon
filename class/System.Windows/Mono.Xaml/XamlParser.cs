@@ -1320,8 +1320,17 @@ namespace Mono.Xaml {
 				if (value.Length == 0)
 					return 0;
 
-				if (!Int32.TryParse (value, CORLIB_INTEGER_STYLES, CultureInfo.InvariantCulture, out res))
-					throw ParseException ("Invalid integer value {0}.", value);
+				var sub = value.Trim();
+				for (int i = 0; i < sub.Length; i++) {
+					if (!Char.IsDigit (sub, i) && i > 0) {
+						sub = sub.Substring (0, i--);
+					}
+				}
+
+				if (!Int32.TryParse (sub, CORLIB_INTEGER_STYLES, CultureInfo.InvariantCulture, out res)) {
+						throw ParseException ("Invalid int value {0}.", sub);
+				}
+
 				return (int) res;
 			} else if (dest == typeof (double)) {
 				double res;

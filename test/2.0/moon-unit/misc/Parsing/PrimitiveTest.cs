@@ -291,7 +291,7 @@ namespace MoonTest.Misc
 
 			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
- 						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Int32 x:Key=""int"">1x10</sys:Int32></Canvas.Resources></Canvas>");
+ 						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Int32 x:Key=""int""> +1x10</sys:Int32></Canvas.Resources></Canvas>");
 
 			
 			Assert.AreEqual (1, c.Resources.Count, "1");
@@ -300,6 +300,25 @@ namespace MoonTest.Misc
 			// NOTE: This isn't handled properly and sets the value to the first int found
 			i = (int) c.Resources ["int"];
 			Assert.AreEqual (i, 1, "3");
+		}
+
+		[TestMethod]
+		public void ParseIntNegativeBrokenHex ()
+		{
+			Canvas c;
+			int i;
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+ 						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Int32 x:Key=""int"">-1x10</sys:Int32></Canvas.Resources></Canvas>");
+
+			
+			Assert.AreEqual (1, c.Resources.Count, "1");
+			Assert.IsNotNull (c.Resources ["int"], "2");
+
+			// NOTE: This isn't handled properly and sets the value to the first int found
+			i = (int) c.Resources ["int"];
+			Assert.AreEqual (i, -1, "3");
 		}
 
 		[TestMethod]
@@ -318,6 +337,35 @@ namespace MoonTest.Misc
 
 			d = (double) c.Resources ["double"];
 			Assert.AreEqual (d, 39.0, "3");
+		}
+
+		[TestMethod]
+		public void ParseDouble_Auto ()
+		{
+			Canvas c;
+			double d;
+
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+ 						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Double x:Key=""double"">Auto</sys:Double></Canvas.Resources></Canvas>"));
+		}
+
+		[TestMethod]
+		public void ParseDouble_Infinity ()
+		{
+			Canvas c;
+			double d;
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+ 						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Double x:Key=""double"">Infinity</sys:Double></Canvas.Resources></Canvas>");
+
+			
+			Assert.AreEqual (1, c.Resources.Count, "1");
+			Assert.IsNotNull (c.Resources ["double"], "2");
+
+			d = (double) c.Resources ["double"];
+			Assert.IsTrue (Double.IsInfinity (d), "3");
 		}
 
 		[TestMethod]
@@ -357,7 +405,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Moonlight doesn't permit empty doubles (perhaps because of the plugin?)")]
+		[MoonlightBug ("Moonlight doesn't permit empty doubles (perhaps because of the plugin?)", RuntimeVersion=3)]
 		public void ParseEmptyDouble ()
 		{
 			Canvas c;
@@ -392,7 +440,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Moonlight permits doubles in hex format (thanks to strtod)")]
+		[MoonlightBug ("Moonlight permits doubles in hex format (thanks to strtod)", RuntimeVersion=3)]
 		public void ParseDoubleHex ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
