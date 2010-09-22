@@ -85,6 +85,8 @@ public:
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
+	const static int ChangedEvent;
+
 protected:
 	virtual ~ResourceDictionary ();
 
@@ -92,6 +94,12 @@ protected:
 
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
+
+#if EVENT_ARG_REUSE
+	ResourceDictionaryChangedEventArgs *changedEventArgs;
+#endif
+
+	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, const char *key);
 
 private:
 	GHashTable *hash;

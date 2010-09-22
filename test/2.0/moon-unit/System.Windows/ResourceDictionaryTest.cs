@@ -192,10 +192,13 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug] // 4.0 profile
 		public void Parse_xKeyOutsideResourceDictionary ()
 		{
-			// no exception
+			// no exceptions
 			XamlReader.Load (@"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Key=""keysb"" x:Name=""sb"" />");
+
+			XamlReader.Load (@"<Canvas x:Key=""foo"" xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />");
 		}
 
 		[TestMethod]
@@ -223,6 +226,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug] // 4.0 profile
 		public void Parse_BothxKeyAndxName_sl4 ()
 		{
 			// no longer throws an exception in sl4
@@ -254,6 +258,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug] // 4.0 profile
 		public void Parse_StyleTargetTypeOnly_sl4 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button""> </Style> </ResourceDictionary>");
@@ -384,6 +389,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug] // 4.0 profile
 		public void Contains_TypeNameAsKeyItemRegisteredInXaml_ReturnsFalse_sl4 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -408,6 +414,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug] // 4.0 profile
 		public void Contains_TypeAsKeyItemRegisteredInXaml_ReturnsTrue_sl4 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -566,6 +573,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug] // 4.0 profile
 		public void TestNameAndKey ()
 		{
 			Assert.Throws<XamlParseException>(delegate {
@@ -601,13 +609,6 @@ namespace MoonTest.System.Windows
 			Assert.IsInstanceOfType<Storyboard> (box.Resources ["Show"], "#2");
 		}
 		
-		[TestMethod]
-		public void TestxKeyOutsideDictionary ()
-		{
-			Canvas b = (Canvas)
-				XamlReader.Load (@"<Canvas x:Key=""foo"" xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />");
-		}
-
 		[TestMethod]
 		public void TestStaticResourceSameElement ()
 		{
@@ -675,6 +676,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug] // 4.0 profile
 		public void TestStaticResourceMissingElementSyntax ()
 		{
 			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource ResourceKey=""nope"" /></Rectangle.Fill></Rectangle></Canvas>"); }, "1");
@@ -726,6 +728,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug] // 4.0 profile
 		public void TypeConversionOfStaticResources_sl4 ()
 		{
 			Assert.Throws<XamlParseException> ( delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
@@ -756,6 +759,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug] // 4.0 profile
 		public void SpacesInKeys_sl4 ()
 		{
 			Assert.Throws<XamlParseException> ( delegate {XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
@@ -853,6 +857,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		}
 
 		[TestMethod]
+		[MoonlightBug] // 4.0 profile
 		public void MergedDictionariesTest_SourceLackingDefaultXmlns ()
 		{
 			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""

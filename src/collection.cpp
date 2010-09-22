@@ -208,6 +208,8 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 
 		EmitChanged (CollectionChangedActionAdd, added_copy, NULL, index);
 
+		delete added_copy;
+
 		if (addStrongRef) {
 			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *added_obj = added->AsDependencyObject();
@@ -217,8 +219,6 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 				}
 			}
 		}
-
-		delete added_copy;
 
 		return true;
 	}

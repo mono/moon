@@ -144,6 +144,78 @@ CollectionChangedEventArgs::GetIndex ()
 	return index;
 }
 
+ResourceDictionaryChangedEventArgs::ResourceDictionaryChangedEventArgs ()
+	: EventArgs (Type::RESOURCE_DICTIONARYCHANGEDEVENTARGS)
+{
+	action = CollectionChangedActionAdd;
+	old_item = NULL;
+	new_item = NULL;
+	key = NULL;
+}
+
+ResourceDictionaryChangedEventArgs::ResourceDictionaryChangedEventArgs (CollectionChangedAction action, Value *new_item, Value *old_item, const char *key)
+	: EventArgs (Type::RESOURCE_DICTIONARYCHANGEDEVENTARGS)
+{
+	this->action = action;
+	this->new_item = new_item;
+	this->old_item = old_item;
+	this->key = key;
+
+	EnsureManagedPeer ();
+}
+
+ResourceDictionaryChangedEventArgs::~ResourceDictionaryChangedEventArgs ()
+{
+}
+
+void
+ResourceDictionaryChangedEventArgs::SetChangedAction (CollectionChangedAction action)
+{
+	this->action = action;
+}
+	
+CollectionChangedAction
+ResourceDictionaryChangedEventArgs::GetChangedAction ()
+{
+	return action;
+}
+	
+void
+ResourceDictionaryChangedEventArgs::SetNewItem (Value *item)
+{
+	new_item = item;
+}
+	
+Value *
+ResourceDictionaryChangedEventArgs::GetNewItem ()
+{
+	return new_item;
+}
+	
+void
+ResourceDictionaryChangedEventArgs::SetOldItem (Value *item)
+{
+	old_item = item;
+}
+	
+Value *
+ResourceDictionaryChangedEventArgs::GetOldItem ()
+{
+	return old_item;
+}
+	
+void
+ResourceDictionaryChangedEventArgs::SetKey (const char *key)
+{
+	this->key = key;
+}
+	
+const char *
+ResourceDictionaryChangedEventArgs::GetKey ()
+{
+	return key;
+}
+
 DownloadProgressEventArgs::DownloadProgressEventArgs (double progress)
 	: EventArgs (Type::DOWNLOADPROGRESSEVENTARGS)
 {

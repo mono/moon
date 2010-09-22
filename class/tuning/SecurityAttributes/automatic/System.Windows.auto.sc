@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 547 methods needs to be decorated.
+# 555 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -716,6 +716,15 @@
 +SC-M: System.IntPtr Mono.NativeMethods::rect_from_str(System.String)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_changed_event_args_get_key_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_changed_event_args_get_new_item(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_changed_event_args_get_old_item(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_get(System.IntPtr,System.String,System.Boolean&)
 
 # p/invoke declaration
@@ -1310,6 +1319,18 @@
 +SC-M: System.Void Mono.NativeMethods::plugin_instance_set_max_frame_rate(System.IntPtr,System.Int32)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::resource_dictionary_changed_event_args_set_changed_action(System.IntPtr,System.Windows.CollectionChangedAction)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::resource_dictionary_changed_event_args_set_key(System.IntPtr,System.String)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::resource_dictionary_changed_event_args_set_new_item(System.IntPtr,Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::resource_dictionary_changed_event_args_set_old_item(System.IntPtr,Mono.Value&)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::rich_text_box_on_got_focus(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1593,6 +1614,9 @@
 
 # p/invoke declaration
 +SC-M: System.Windows.CollectionChangedAction Mono.NativeMethods::collection_changed_event_args_get_changed_action(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Windows.CollectionChangedAction Mono.NativeMethods::resource_dictionary_changed_event_args_get_changed_action(System.IntPtr)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::DependencyPropertyFromString(Mono.Xaml.XamlCallbackData*,System.Object,Mono.Value*,System.String)

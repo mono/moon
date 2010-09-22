@@ -17,6 +17,7 @@
 #include "namescope.h"
 #include "error.h"
 #include "deployment.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -180,11 +181,20 @@ ResourceDictionary::ResourceDictionary ()
 				      (GDestroyNotify)g_free,
 				      (GDestroyNotify)free_value);
 	from_resource_dictionary_api = false;
+
+#if EVENT_ARG_REUSE
+	changedEventArgs = NULL;
+#endif
 }
 
 ResourceDictionary::~ResourceDictionary ()
 {
 	g_hash_table_destroy (hash);
+
+#if EVENT_ARG_REUSE
+	if (changedEventArgs)
+		changedEventArgs->unref ();
+#endif
 }
 
 CollectionIterator *
@@ -237,6 +247,12 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 
 		g_hash_table_insert (hash, g_strdup (key), v);
 
+		Value *v_copy = new Value (*v);
+
+		EmitChanged (CollectionChangedActionAdd, v_copy, NULL, key);
+
+		delete v_copy;
+
 		if (addStrongRef && ob) {
 			addStrongRef (this, ob, key);
 			ob->unref();
@@ -256,6 +272,8 @@ _true ()
 bool
 ResourceDictionary::Clear ()
 {
+	EmitChanged (CollectionChangedActionClearing, NULL, NULL, NULL);
+	
 #if GLIB_CHECK_VERSION(2,12,0)
 	if (glib_check_version (2,12,0))
 		g_hash_table_remove_all (hash);
@@ -268,6 +286,8 @@ ResourceDictionary::Clear ()
 	from_resource_dictionary_api = true;
 	bool rv = Collection::Clear ();
 	from_resource_dictionary_api = false;
+
+	EmitChanged (CollectionChangedActionCleared, NULL, NULL, NULL);
 
 	return rv;
 }
@@ -305,7 +325,14 @@ ResourceDictionary::Remove (const char *key)
 		if (clearStrongRef)
 			clearStrongRef (this, ob, key);
 	}
+
+	Value *orig_copy = new Value (*orig_value);
+
 	g_hash_table_remove (hash, key);
+
+	EmitChanged (CollectionChangedActionRemove, NULL, orig_copy, key);
+
+	delete orig_copy;
 
 	return true;
 }
@@ -322,6 +349,7 @@ ResourceDictionary::Set (const char *key, Value *value)
 		return false;
 	}
 
+	Value *orig_copy = new Value (*orig_value);
 	Value *v = new Value (*value);
 
 	from_resource_dictionary_api = true;
@@ -334,6 +362,9 @@ ResourceDictionary::Set (const char *key, Value *value)
 	from_resource_dictionary_api = false;
 
 	g_hash_table_replace (hash, g_strdup (key), v);
+
+	EmitChanged (CollectionChangedActionReplace, v, orig_copy, key);
+	delete orig_copy;
 
 	return true; // XXX
 }
@@ -452,6 +483,12 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		g_hash_table_insert (hash, g_strdup (key), obj_value);
 
+		Value *obj_value_copy = new Value (*obj_value);
+
+		EmitChanged (CollectionChangedActionAdd, obj_value_copy, NULL, key);
+
+		delete obj_value_copy;
+
 		if (addStrongRef)
 			addStrongRef (this, obj, key);
 	}
@@ -498,8 +535,11 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 	Collection::RemovedFromCollection (value);
 
 	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		if (!from_resource_dictionary_api && value->AsDependencyObject())
+		if (!from_resource_dictionary_api && value->AsDependencyObject()) {
 			g_hash_table_foreach_remove (hash, remove_from_hash_by_value, value->AsDependencyObject ());
+
+			// FIXME we need to EmitChanged something here so the managed RD can remain in sync
+		}
 	}
 }
 
@@ -557,6 +597,34 @@ ResourceDictionary::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error
 	}
 	
 	Collection::RegisterAllNamesRootedAt (to_ns, error);
+}
+
+void
+ResourceDictionary::EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, const char *key)
+{
+#if EVENT_ARG_REUSE
+	if (!HasHandlers (ResourceDictionary::ChangedEvent))
+		return;
+
+	if (!changedEventArgs)
+		changedEventArgs = MoonUnmanagedFactory::CreateResourceDictionaryChangedEventArgs ();
+
+	changedEventArgs->SetChangedAction (action);
+	changedEventArgs->SetNewItem (new_value);
+	changedEventArgs->SetOldItem (old_value);
+	changedEventArgs->SetKey (key);
+
+	changedEventArgs->ref ();
+
+	Emit (ResourceDictionary::ChangedEvent, changedEventArgs);
+
+	changedEventArgs->SetNewItem (NULL);
+	changedEventArgs->SetOldItem (NULL);
+	changedEventArgs->SetKey (NULL);
+#else
+	if (HasHandlers (ResourceDictionary::ChangedEvent))
+		Emit (ResourceDictionary::ChangedEvent, new ResourceDictionaryChangedEventArgs (action, new_value, old_value, key));
+#endif
 }
 
 };

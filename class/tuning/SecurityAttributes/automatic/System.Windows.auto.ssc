@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 632 methods
+# 637 methods
 
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
@@ -184,6 +184,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::rectangle_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::rectangle_geometry_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::resource_dictionary_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::resource_dictionary_changed_event_args_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::resource_dictionary_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::rich_text_box_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::rich_text_box_view_new()
@@ -441,6 +442,9 @@
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalCollectionChangedEventArgs::get_ChangedAction()
 +SSC-M: System.Object System.Windows.InternalCollectionChangedEventArgs::GetNewItem(System.Type)
 +SSC-M: System.Int32 System.Windows.InternalCollectionChangedEventArgs::get_Index()
++SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalResourceDictionaryChangedEventArgs::get_ChangedAction()
++SSC-M: System.Object System.Windows.InternalResourceDictionaryChangedEventArgs::GetNewItem()
++SSC-M: System.String System.Windows.InternalResourceDictionaryChangedEventArgs::get_Key()
 +SSC-M: System.Double System.Windows.Interop.Content::get_ActualHeight()
 +SSC-M: System.Double System.Windows.Interop.Content::get_ActualWidth()
 +SSC-M: System.Boolean System.Windows.Interop.Content::get_IsFullScreen()
@@ -593,6 +597,7 @@
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::IndexOfImpl(T,System.Boolean)
 +SSC-M: System.Windows.Rect System.Windows.Rect::FromString(System.String)
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::System.Collections.Generic.IDictionary<object,object>.TryGetValue(System.Object,System.Object&)
++SSC-M: System.Void System.Windows.ResourceDictionary::Initialize()
 +SSC-M: System.Int32 System.Windows.ResourceDictionary::get_Count()
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)

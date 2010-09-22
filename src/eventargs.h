@@ -194,6 +194,52 @@ private:
 	Value *newValue;
 };
 
+
+
+/* @Namespace=None */
+class ResourceDictionaryChangedEventArgs : public EventArgs {
+public:
+	/* @GenerateCBinding,GeneratePInvoke,SkipTypeConstructor */
+	ResourceDictionaryChangedEventArgs ();
+
+	/* @SkipFactories */
+	ResourceDictionaryChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, const char *key);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetChangedAction (CollectionChangedAction action);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	CollectionChangedAction GetChangedAction ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetNewItem (Value *item);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetNewItem ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetOldItem (Value *item);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetOldItem ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetKey (const char *key);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char* GetKey ();
+
+protected:
+	virtual ~ResourceDictionaryChangedEventArgs ();
+
+
+private:
+	CollectionChangedAction action;
+	Value *old_item;
+	Value *new_item;
+	const char *key;
+};
+
 /* @Namespace=None */
 class DownloadProgressEventArgs : public EventArgs {
  private:

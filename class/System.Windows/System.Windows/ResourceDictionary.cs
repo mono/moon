@@ -42,15 +42,92 @@ using Mono.Xaml;
 
 namespace System.Windows {
 
+	internal class InternalResourceDictionaryChangedEventArgs : RoutedEventArgs {
+
+		internal InternalResourceDictionaryChangedEventArgs (IntPtr raw, bool drop_ref) : base (raw, drop_ref)
+		{
+		}
+
+		internal InternalResourceDictionaryChangedEventArgs (IntPtr raw) : this (raw, false)
+		{
+		}
+
+		public CollectionChangedAction ChangedAction {
+			get {
+				return NativeMethods.resource_dictionary_changed_event_args_get_changed_action (NativeHandle);
+			}
+		}
+
+		public object GetNewItem ()
+		{
+			return Value.ToObject (null, NativeMethods.resource_dictionary_changed_event_args_get_new_item (NativeHandle));
+		}
+
+		public string Key {
+			get {
+				return NativeMethods.resource_dictionary_changed_event_args_get_key (NativeHandle);
+			}
+		}
+	}
+
 	public partial class ResourceDictionary	: DependencyObject, IDictionary, IDictionary<object, object> {
 		Uri source;
 
 		Dictionary<object, object> managedDict;
 
+		static UnmanagedEventHandler resource_dictionary_changed = Events.SafeDispatcher (
+			 (IntPtr target, IntPtr calldata, IntPtr closure) => {
+				 var args = NativeDependencyObjectHelper.Lookup (calldata) as InternalResourceDictionaryChangedEventArgs;
+				 if (args == null)
+					 args = new InternalResourceDictionaryChangedEventArgs (calldata);
+				 ((ResourceDictionary) NativeDependencyObjectHelper.FromIntPtr (closure)).InternalResourceDictionaryChanged (args);
+			 });
+
+		void InternalResourceDictionaryChanged (InternalResourceDictionaryChangedEventArgs args)
+		{
+			switch (args.ChangedAction) {
+			case CollectionChangedAction.Add:
+#if DEBUG_REF
+				Console.WriteLine ("rd {0}/{1} adding ref to {2}/{3}", GetHashCode(), this, args.GetNewItem().GetHashCode(), args.GetNewItem());
+#endif
+				managedDict.Add (args.Key, args.GetNewItem ());
+				break;
+			case CollectionChangedAction.Remove:
+#if DEBUG_REF
+				Console.WriteLine ("rd {0}/{1} removing ref to {2}/{3}", GetHashCode(), this, managedDict[args.Key].GetHashCode(), managedList[args.Key]);
+#endif
+				managedDict.Remove (args.Key);
+				break;
+			case CollectionChangedAction.Replace:
+#if DEBUG_REF
+				Console.WriteLine ("rd {0}/{1} replacing ref from {2}/{3} to {4}/{5}", GetHashCode(), this, managedDict[args.Key].GetHashCode(), managedDict[args.Key], args.GetNewItem(), args.GetNewItem().GetHashCode());
+#endif
+				managedDict[args.Key] = args.GetNewItem ();
+				break;
+			case CollectionChangedAction.Clearing:
+				// nothing to do
+				break;
+			case CollectionChangedAction.Cleared:
+#if DEBUG_REF
+				foreach (var k in managedDict.Keys)
+					Console.WriteLine (" rd {0}/{1} removing ref to {2} {3}/{4}", GetHashCode(), this, k, managedDict[k].GetHashCode(), managedDict[k]);
+#endif
+				managedDict.Clear();
+				break;
+			}
+		}
+
 		private new void Initialize ()
 		{
 			managedDict = new Dictionary<object,object>();
-			// FIXME we need to populate the managed dictionary from values that might exist in unmanaged
+
+			int c = Count;
+			for (int i = 0; i < c; i ++) {
+				// FIXME
+			}
+
+			// set up a handler to track changes to the unmanaged dictionary
+			Events.AddHandler (this, EventIds.ResourceDictionary_ChangedEvent, resource_dictionary_changed);
 		}
 
 		//
@@ -175,7 +252,7 @@ namespace System.Windows {
 				throw new NotSupportedException ();
 			
 			if (key == null)
-				return false;
+				throw new ArgumentNullException ("key");
 			
 			if (key is string) {
 				bool rv = NativeMethods.resource_dictionary_remove (native, (string)key);
@@ -426,8 +503,9 @@ namespace System.Windows {
 		
 		IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator ()
 		{
-			// Note: Silverlight doesn't seem to implement this method. Lame.
-			throw new NotImplementedException ();
+			// FIXME: this needs to be implemented for SL4 engine (all runtime versions)
+			Console.WriteLine ("NIEX: ResourceDictionary.GetEnumerator");
+			return null;
 		}
 	}
 }
