@@ -273,10 +273,10 @@ GalliumContext::SetScissor ()
 	clip.x -= r.x;
 	clip.y -= r.y;
 
-	scissor.minx = clip.x;
-	scissor.miny = clip.y;
-	scissor.maxx = clip.x + clip.width;
-	scissor.maxy = clip.y + clip.height;
+	scissor.minx = MAX (clip.x, 0);
+	scissor.miny = MAX (clip.y, 0);
+	scissor.maxx = MIN (clip.x + clip.width, 32768);
+	scissor.maxy = MIN (clip.y + clip.height, 32768);
 
 	(*pipe->set_scissor_state) (pipe, &scissor);
 }
