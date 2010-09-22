@@ -29,8 +29,6 @@ pipe_ref (pipe_context *pipe)
 {
 	int refcount = (int) pipe->priv;
 
-	printf ("pipe_ref: %d\n", refcount);
-
 	pipe->priv = (void *) (refcount + 1);
 	return pipe;
 }
@@ -40,10 +38,7 @@ pipe_unref (pipe_context *pipe)
 {
 	int refcount = (int) pipe->priv;
 
-	printf ("pipe_unref: %d\n", refcount);
-
 	if (refcount == 1) {
-		printf ("destroy pipe\n");
 		pipe->destroy (pipe);
 	} else
 		pipe->priv = (void *) (refcount - 1);
