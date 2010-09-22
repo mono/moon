@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 555 methods needs to be decorated.
+# 564 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -15,12 +15,6 @@
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: Mono.Value Mono.Xaml.XamlParser::HydrateFromString(System.String,Mono.Value*,System.Boolean,System.Boolean)
-
-# overrides 'System.Boolean System.Runtime.InteropServices.SafeHandle::get_IsInvalid()'.
-+SC-M: System.Boolean Mono.EventObjectSafeHandle::get_IsInvalid()
-
-# overrides 'System.Boolean System.Runtime.InteropServices.SafeHandle::ReleaseHandle()'.
-+SC-M: System.Boolean Mono.EventObjectSafeHandle::ReleaseHandle()
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::accessibility_bridge_is_accessibility_enabled(System.IntPtr)
@@ -1030,6 +1024,12 @@
 # p/invoke declaration
 +SC-M: System.UInt64 Mono.NativeMethods::http_request_write_event_args_get_offset(System.IntPtr)
 
+# Promoting interface member to [SecurityCritical] because of 'System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)
+
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_check_and_download_update_async(System.IntPtr)
 
@@ -1611,6 +1611,33 @@
 
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlReflectionPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Documents.TextPointer::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Documents.TextSelection::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.LocalMessageSender::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Windows.CollectionChangedAction Mono.NativeMethods::collection_changed_event_args_get_changed_action(System.IntPtr)

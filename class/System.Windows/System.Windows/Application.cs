@@ -62,15 +62,8 @@ namespace System.Windows {
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
 		ApplicationLifetimeObjectsCollection lifetime_objects;
-		EventObjectSafeHandle safeHandle;
 
-		IntPtr NativeHandle {
-			get { return safeHandle.DangerousGetHandle (); }
-		}
-
-		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
-			get { return safeHandle; }
-		}
+		bool free_mapping;
 
 		static Application ()
 		{
@@ -79,7 +72,7 @@ namespace System.Windows {
 
 		internal Application (IntPtr raw, bool dropref)
 		{
-			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);;
+			NativeHandle = raw;
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
 
@@ -156,6 +149,21 @@ namespace System.Windows {
 			ReinitializeStaticData ();
 		}
 
+		~Application ()
+		{
+			Free ();
+		}
+
+		internal void Free ()
+		{
+			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
+
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
+		}
+		
 		internal Mono.EventHandlerList EventList {
 			get {
 				if (event_list == null)
@@ -879,6 +887,26 @@ namespace System.Windows {
 
 		private static readonly DependencyProperty ResourcesProperty =
 			DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
+
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("Application.native is already set");
+				}
+
+				_native = value;
+
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
 
 		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
 

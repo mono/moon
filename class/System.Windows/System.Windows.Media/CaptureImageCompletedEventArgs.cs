@@ -36,22 +36,13 @@ namespace System.Windows.Media {
 
 	public class CaptureImageCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper
 	{
-		EventObjectSafeHandle safeHandle;
-
-		IntPtr NativeHandle {
-			get { return safeHandle.DangerousGetHandle (); }
-		}
-
-		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
-			get { return safeHandle; }
-		}
 
                 internal CaptureImageCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
                         : base (exc,
                                 false,
 				null)
                 {
-                        safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);;
+                        NativeHandle = raw;
                         if (dropref)
                                 NativeMethods.event_object_unref (raw);
                 }
@@ -62,6 +53,19 @@ namespace System.Windows.Media {
 			Console.WriteLine ("NIEX: System.Windows.Media.CaptureImageCompletedEventArgs:.ctor");
 			throw new NotImplementedException ();
 		}
+
+                ~CaptureImageCompletedEventArgs ()
+                {
+                        Free ();
+                }
+
+                void Free ()
+                {
+                        if (free_mapping) {
+                                free_mapping = false;
+                                NativeDependencyObjectHelper.FreeNativeMapping (this);
+                        }
+                }
 
 		WriteableBitmap result;
                 public WriteableBitmap Result {
@@ -74,7 +78,28 @@ namespace System.Windows.Media {
 			}
                 }
 
+                bool free_mapping;
+
 #region "INativeEventObjectWrapper interface"
+                IntPtr _native;
+
+                internal IntPtr NativeHandle {
+                        get { return _native; }
+                        set {
+                                if (_native != IntPtr.Zero) {
+                                        throw new InvalidOperationException ("native handle is already set");
+                                }
+
+                                _native = value;
+
+                                free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+                        }
+                }
+
+                IntPtr INativeEventObjectWrapper.NativeHandle {
+                        get { return NativeHandle; }
+                        set { NativeHandle = value; }
+                }
 
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
 		{

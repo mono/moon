@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 461 methods
+# 462 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -171,6 +171,7 @@
 +SSC-M: System.IAsyncResult System.IO.FileStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
 +SSC-M: System.Int64 System.IO.FileStream::Seek(System.Int64,System.IO.SeekOrigin)
 +SSC-M: System.Void System.IO.FileStream::SetLength(System.Int64)
++SSC-M: System.Void System.IO.FileStream::Flush(System.Boolean)
 +SSC-M: System.Void System.IO.FileStream::Dispose(System.Boolean)
 +SSC-M: System.Void System.IO.FileStream::FlushBuffer(System.IO.Stream)
 +SSC-M: System.Void System.IO.FileSystemInfo::set_CreationTime(System.DateTime)

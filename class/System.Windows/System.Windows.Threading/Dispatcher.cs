@@ -29,29 +29,15 @@ using System.Reflection;
 using System.Threading;
 using System.Collections.Generic;
 using Mono;
-using System.Runtime.InteropServices;
 
 namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
 	public sealed class Dispatcher {
-		class CallbackState : DependencyObject {
-			WeakReference reference;
-			public Dispatcher Dispatcher {
-				get { return (Dispatcher) reference.Target; }
-			}
-
-			public CallbackState (Dispatcher dispatcher)
-			{
-				reference = new WeakReference (dispatcher);
-			}
-		}
-
-		CallbackState state;
+		TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
 		bool pending;
 
-		static TickCallHandler callback;
 		static Dispatcher main;
 		internal static Dispatcher Main {
 			get { return main; }
@@ -60,14 +46,35 @@ namespace System.Windows.Threading {
 		static Dispatcher ()
 		{
 			main = new Dispatcher ();
-			callback = dispatcher_callback;
 		}
 
 		internal Dispatcher ()
 		{
-			pending = false;
 			queuedOperations = new Queue<DispatcherOperation>();
-			state = new CallbackState (this);
+			pending = false;
+		}
+
+		~Dispatcher () {
+			Dispose ();
+		}
+
+		void Dispose () {
+			Surface surface = Deployment.Current.Surface;
+
+			lock (queuedOperations) {
+				if (callback != null)
+					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
+				pending = false;
+#if DEBUG_DISPATCHER
+				if (queuedOperations.Count > 0) {
+					Console.WriteLine ("Dispatcher was destroyed with " + queuedOperations.Count + " call to be processed");
+					foreach (DispatcherOperation op in queuedOperations) {
+						Console.WriteLine (op.GetDebugString ());
+					}
+				}
+#endif
+				queuedOperations.Clear ();
+			}
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
@@ -88,8 +95,10 @@ namespace System.Windows.Threading {
 				op = new DispatcherOperation (d, args);
 				queuedOperations.Enqueue (op);
 				if (!pending) {
+					if (callback == null)
+						callback = new TickCallHandler (dispatcher_callback);
 					NativeMethods.time_manager_add_dispatcher_call (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native),
-					                                                   callback, state.native);
+					                                                   callback, IntPtr.Zero);
 					pending = true;
 				}
 			}
@@ -155,13 +164,10 @@ namespace System.Windows.Threading {
 			}
 		}
 
-		static void dispatcher_callback (IntPtr data)
+		void dispatcher_callback (IntPtr data)
 		{
 			try {
-				var state = (CallbackState) NativeDependencyObjectHelper.Lookup (data);
-				var target = state.Dispatcher;
-				if (target != null)
-					target.Dispatch ();
+				Dispatch ();
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.NativePropertyChangedCallback: {0}", ex);

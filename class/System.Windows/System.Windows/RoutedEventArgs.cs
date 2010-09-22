@@ -30,22 +30,32 @@ namespace System.Windows {
 
 	public class RoutedEventArgs : EventArgs, INativeEventObjectWrapper, IRefContainer {
 
-		EventObjectSafeHandle safeHandle;
+		IntPtr _native;
 		DependencyObject source;
 		bool source_set;
+		bool free_mapping;
 
 		internal IntPtr NativeHandle {
-			get { return safeHandle.DangerousGetHandle (); }
-		}
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("RoutedEventArgs.native is already set");
+				}
 
-		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
-			get { return safeHandle; }
-		}
+				_native = value;
 
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+		
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
 		
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			return NativeMethods.event_object_get_object_type (NativeHandle);
+			return NativeMethods.event_object_get_object_type (_native);
 		}
 
 		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
@@ -97,11 +107,26 @@ namespace System.Windows {
 		
 		internal RoutedEventArgs (IntPtr raw, bool dropref)
 		{
-			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);
+			NativeHandle = raw;
 			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
+		}
+		
+		internal void Free ()
+		{
+			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
+
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
+		}
+
+		~RoutedEventArgs ()
+		{
+			Free ();
 		}
 
 		public RoutedEventArgs () : this (SafeNativeMethods.routed_event_args_new (), true)
@@ -113,12 +138,12 @@ namespace System.Windows {
 				if (source_set)
 					return source;
 
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.routed_event_args_get_source (NativeHandle));
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.routed_event_args_get_source (_native));
 			}
 
 			internal set {
 				if (value == null) {
-					NativeMethods.routed_event_args_set_source (NativeHandle, IntPtr.Zero);
+					NativeMethods.routed_event_args_set_source (_native, IntPtr.Zero);
 					source = null;
 					source_set = false;
 					return;
@@ -131,7 +156,7 @@ namespace System.Windows {
 				source_set = true;
 				source = v;
 
-				NativeMethods.routed_event_args_set_source (NativeHandle, v.native);
+				NativeMethods.routed_event_args_set_source (_native, v.native);
 			}
 		}
 

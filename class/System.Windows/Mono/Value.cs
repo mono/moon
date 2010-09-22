@@ -441,14 +441,14 @@ namespace Mono {
 				if (v is INativeEventObjectWrapper) {
 					INativeEventObjectWrapper dov = (INativeEventObjectWrapper) v;
 
-					if (dov.SafeHandle.IsClosed)
+					if (dov.NativeHandle == IntPtr.Zero)
 						throw new Exception (String.Format (
 							"Object {0} has not set its native property", dov.GetType()));
 
-					NativeMethods.event_object_ref (dov.SafeHandle.DangerousGetHandle ());
+					NativeMethods.event_object_ref (dov.NativeHandle);
 
 					value.k = dov.GetKind ();
-					value.u.p = dov.SafeHandle.DangerousGetHandle ();
+					value.u.p = dov.NativeHandle;
 
 				} else if (v is DependencyProperty) {
 					value.k = Kind.DEPENDENCYPROPERTY;

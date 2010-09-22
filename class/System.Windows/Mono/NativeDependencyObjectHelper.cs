@@ -47,7 +47,6 @@ using System.Windows.Threading;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
 namespace Mono {
 
 	internal static class NativeDependencyObjectHelper {
@@ -143,7 +142,7 @@ namespace Mono {
 		public static void SetManagedPeerCallbacks (INativeEventObjectWrapper obj)
 		{
 			IRefContainer container = obj as IRefContainer;
-			NativeMethods.event_object_set_managed_peer_callbacks (obj.SafeHandle.DangerousGetHandle (),
+			NativeMethods.event_object_set_managed_peer_callbacks (obj.NativeHandle,
 									       container == null ? null : NativeDependencyObjectHelper.add_strong_ref,
 									       container == null ? null : NativeDependencyObjectHelper.clear_strong_ref,
 									       NativeDependencyObjectHelper.mentor_changed,
@@ -151,6 +150,13 @@ namespace Mono {
 									       NativeDependencyObjectHelper.detached);
 		}
 
+		public static void ClearManagedPeerCallbacks (INativeEventObjectWrapper obj)
+		{
+			NativeMethods.event_object_set_managed_peer_callbacks (obj.NativeHandle,
+									       null, null,
+									       null,
+									       null, null);
+		}
 #region "helpers for the INativeDependencyObjectWrapper interface"
 		public static object GetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
@@ -159,7 +165,7 @@ namespace Mono {
 			
 			CheckNativeAndThread (wrapper);
 
-			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.SafeHandle.DangerousGetHandle (), Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
+			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
 			return Value.ToObject (dp.PropertyType, val);
 		}
 
@@ -183,7 +189,7 @@ namespace Mono {
 
 				using (var val = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true }) {
 					var v = val;
-					NativeMethods.dependency_object_set_value (wrapper.SafeHandle.DangerousGetHandle (), dp.Native, ref v);
+					NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
 				}
 				return;
 			}
@@ -229,7 +235,7 @@ namespace Mono {
 				                     
 			using (var val = Value.FromObject (value, dp.PropertyType == typeof(object) && dp.BoxValueTypes)) {
 				var v = val;
-				NativeMethods.dependency_object_set_value (wrapper.SafeHandle.DangerousGetHandle (), dp.Native, ref v);
+				NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
 			}
 		}
 
@@ -238,7 +244,7 @@ namespace Mono {
 			if (dp == null)
 				throw new ArgumentNullException ("dp");
 
-			IntPtr val = NativeMethods.dependency_object_read_local_value (wrapper.SafeHandle.DangerousGetHandle (), dp.Native);
+			IntPtr val = NativeMethods.dependency_object_read_local_value (wrapper.NativeHandle, dp.Native);
 			if (val == IntPtr.Zero) {
 				return DependencyProperty.UnsetValue;
 			} else {
@@ -257,18 +263,19 @@ namespace Mono {
 		{
 			if (dp == null)
 				throw new ArgumentNullException ("dp");
-			NativeMethods.dependency_object_clear_value (wrapper.SafeHandle.DangerousGetHandle (), dp.Native, true);
+			NativeMethods.dependency_object_clear_value (wrapper.NativeHandle, dp.Native, true);
 		}
 #endregion
 
 		/* accessed from several threads, all usage must use a lock */
 		internal static Dictionary<IntPtr, GCHandle> objects = new Dictionary<IntPtr, GCHandle> ();
 
+
 		/* thread-safe */
-		public static EventObjectSafeHandle AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
+		public static bool AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
 			if (native == IntPtr.Zero)
-				return new EventObjectSafeHandle (native);
+				return false;
 
 			lock (objects) {
 				if (objects.ContainsKey (native)) {
@@ -276,11 +283,11 @@ namespace Mono {
 #if DEBUG
 					throw new ExecutionEngineException (string.Format ("multiple mappings registered for the same unmanaged peer."));
 #else
-					return new EventObjectSafeHandle (IntPtr.Zero);
+					return false;
 #endif
 				}
 
-				NativeMethods.event_object_set_managed_handle (native, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
+				NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
 
 #if DEBUG_REF
 				Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
@@ -289,22 +296,29 @@ namespace Mono {
 				objects[native] = GCHandle.Alloc (wrapper, GCHandleType.Weak);
 			}
 			
-			return new EventObjectSafeHandle (native);;
+			return true;
 		}
-
-		public static void RemoveNativeMapping (IntPtr native)
+		
+		/* thread-safe */
+		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
-			GCHandle weakHandle;
+			IntPtr native = wrapper.NativeHandle;
+			GCHandle handle;
+			
+			if (native == IntPtr.Zero)
+				return;
+
 			lock (objects) {
-				if (objects.TryGetValue (native, out weakHandle)) {
+				if (objects.TryGetValue (native, out handle)) {
 #if DEBUG_REF
-					Console.WriteLine ("freeing native mapping for {0:x}", native);
+					Console.WriteLine ("freeing native mapping for {0:x} - {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
 #endif
 					objects.Remove (native);
-					weakHandle.Free ();
+					handle.Free ();
 				}
 			}
-			NativeMethods.event_object_set_managed_handle (native, IntPtr.Zero);
+			NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, IntPtr.Zero);
+			GC.SuppressFinalize (wrapper);
 		}
 
 		//
@@ -576,7 +590,7 @@ namespace Mono {
 
 		private static void CheckNativeAndThread (INativeDependencyObjectWrapper wrapper)
 		{
-			if (wrapper.SafeHandle.IsInvalid) {
+			if (wrapper.NativeHandle == IntPtr.Zero) {
 				throw new Exception (
 					string.Format ("Uninitialized object: this object ({0}) has not set its native handle set", wrapper.GetType ().FullName));
 			}

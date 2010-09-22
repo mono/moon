@@ -32,7 +32,7 @@ using System.Collections;
 namespace Mono {
 
 	internal interface INativeEventObjectWrapper {
-		EventObjectSafeHandle SafeHandle { get; }
+		IntPtr NativeHandle { get; set; }
 		Kind GetKind ();
 
 		void OnAttached ();

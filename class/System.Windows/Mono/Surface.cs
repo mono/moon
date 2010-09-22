@@ -40,31 +40,43 @@ namespace Mono
 	 */
 	internal sealed partial class Surface : INativeEventObjectWrapper, IRefContainer
 	{
-		private EventObjectSafeHandle safeHandle;
+		private IntPtr native;
+		bool free_mapping;
 		
 		public IntPtr Native {
-			get { return safeHandle.DangerousGetHandle (); }
-		}
+			get { return native; }
+			set {
+				if (native != IntPtr.Zero) {
+					throw new InvalidOperationException ("Surface.native is already set");
+				}
 
-		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
-			get { return safeHandle; }
-		}
+				native = value;
 
-		public Surface (IntPtr raw, bool dropref)
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+
+		}
+		
+		public Surface (IntPtr native, bool dropref)
 		{
-			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);;
+			this.Native = native;
 
 			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
 
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
 			if (dropref)
-				NativeMethods.event_object_unref (Native);
+				NativeMethods.event_object_unref (native);
 		}
 		
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			return NativeMethods.event_object_get_object_type (Native);
+			return NativeMethods.event_object_get_object_type (native);
+		}
+		
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return Native; }
+			set { Native = value; }
 		}
 
 		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
@@ -113,6 +125,21 @@ namespace Mono
 
 		void INativeEventObjectWrapper.OnDetached ()
 		{
+		}
+		
+		internal void Free ()
+		{
+			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
+
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
+		}
+		
+		~Surface ()
+		{
+			Free ();
 		}
 	}
 }

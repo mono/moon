@@ -42,27 +42,42 @@ using System.Windows.Media;
 namespace System.Windows {
 	public abstract partial class DependencyObject : INativeDependencyObjectWrapper, IRefContainer {
 		internal static Thread moonlight_thread;
-		EventObjectSafeHandle safeHandle;
+		IntPtr _native;
 		EventHandlerList event_list;
+		GCHandle event_list_gchandle; /* to make sure the gchandle is valid even when the DO is about to be finalized */
+		bool free_mapping;
 
 		internal EventHandlerList EventList {
 			get {
 				if (event_list == null) {
 					event_list = new EventHandlerList ();
+					event_list_gchandle = GCHandle.Alloc (event_list);
 				}
 				return event_list;
 			}
 		}
 
-		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
-			get { return safeHandle; }
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return native; }
+			set { native = value; }
 		}
 
 		bool invalidatingLocalBindings;
 		internal Dictionary<DependencyProperty, Expression> expressions;
 
 		internal IntPtr native {
-			get { return safeHandle.DangerousGetHandle (); }
+			get {
+				return _native;
+			}
+
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("DependencyObject.native is already set");
+				}
+
+				_native = value;
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
 		}
 
 		internal DependencyObject TemplateOwner {
@@ -97,7 +112,8 @@ namespace System.Windows {
 
 		internal DependencyObject (IntPtr raw, bool dropref)
 		{
-			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);
+			new BooleanToVisibilityConverter ();
+			native = raw;
 			expressions = new Dictionary<DependencyProperty, Expression> ();
 			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
 			namedRefs = new Dictionary<string,INativeEventObjectWrapper> ();
@@ -195,7 +211,7 @@ namespace System.Windows {
 			}
 			else {
 #if DEBUG_REF
-				Console.WriteLine ("Clearing ref named `{3}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
+				Console.WriteLine ("Clearing ref named `{4}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
 #endif
 				namedRefs.Remove (name);
 			}
@@ -259,12 +275,45 @@ namespace System.Windows {
 
 		void INativeEventObjectWrapper.OnDetached ()
 		{
-
+#if false
+			foreach (Expression e in expressions.Values)
+				e.OnDetached (this);
+#endif
 		}
 
 		void INativeEventObjectWrapper.OnAttached ()
 		{
+			foreach (Expression e in expressions.Values) {
+				if (!e.Attached)
+					e.OnAttached (this);
+			}
+		}
 
+		void DetachAllExpressions ()
+		{
+			foreach (Expression e in expressions.Values) {
+				if (e.Attached)
+					e.OnDetached (this);
+			}
+		}
+
+		internal void Free ()
+		{
+			event_list_gchandle.Free ();
+
+			DetachAllExpressions ();
+
+			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
+
+			if (free_mapping)
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+		}
+
+		protected bool should_free_in_finalizer = true;
+		~DependencyObject ()
+		{
+			if (should_free_in_finalizer)
+				Free ();
 		}
 
 		public object GetValue (DependencyProperty dp)

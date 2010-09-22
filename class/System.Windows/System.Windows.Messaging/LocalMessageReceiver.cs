@@ -39,16 +39,6 @@ namespace System.Windows.Messaging {
 		static List<string> any_domain = new List<string> { "*" };
 		public static readonly IEnumerable<string> AnyDomain = new ReadOnlyCollection<string> (any_domain);
 
-		EventObjectSafeHandle safeHandle;
-
-		IntPtr NativeHandle {
-			get { return safeHandle.DangerousGetHandle (); }
-		}
-
-		EventObjectSafeHandle INativeEventObjectWrapper.SafeHandle {
-			get { return safeHandle; }
-		}
-
 		public LocalMessageReceiver (string receiverName)
 			: this (receiverName, ReceiverNameScope.Domain, null, false)
 		{
@@ -99,9 +89,22 @@ namespace System.Windows.Messaging {
 
 		internal LocalMessageReceiver (IntPtr raw, bool dropref)
 		{
-			safeHandle = NativeDependencyObjectHelper.AddNativeMapping (raw, this);;
+			NativeHandle = raw;
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
+		}
+
+		~LocalMessageReceiver ()
+		{
+			Free ();
+		}
+
+		void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		public void Listen()
@@ -148,8 +151,29 @@ namespace System.Windows.Messaging {
 		IEnumerable<string> allowedSenderDomains;
 		bool disableSenderTrustCheck;
 
+		bool free_mapping;
 		bool listening;
 		bool disposed;
+
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("native handle is already set");
+				}
+
+				_native = value;
+
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
 
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
 		{
