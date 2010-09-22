@@ -583,7 +583,7 @@ namespace System.Windows {
 		{
 			StreamResourceInfo info = null;
 
-			if (resourceBase != null && !resourceBase.IsAbsoluteUri && resourceBase.OriginalString [0] == '/' && resourceBase.OriginalString.Contains (";component/")) {
+			if (resourceBase != null && !resourceBase.IsAbsoluteUri && resourceBase.OriginalString.Contains (";component/") && resourceBase.OriginalString [0] == '/') {
 				// DRT: #788
 				// resource base is like: /assembly;component/path/to/file.xaml
 				// we make an absolute uri of resourceBase by faking a file:// uri,
