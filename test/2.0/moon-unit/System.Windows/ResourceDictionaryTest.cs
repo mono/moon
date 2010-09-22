@@ -192,7 +192,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug] // 4.0 profile
+		[MoonlightBug (RuntimeVersion = 4)]
 		public void Parse_xKeyOutsideResourceDictionary ()
 		{
 			// no exceptions
@@ -573,7 +573,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug] // 4.0 profile
+		[MoonlightBug (RuntimeVersion = 4)]
 		public void TestNameAndKey ()
 		{
 			Assert.Throws<XamlParseException>(delegate {
@@ -676,7 +676,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug] // 4.0 profile
+		[MoonlightBug (RuntimeVersion = 4)]
 		public void TestStaticResourceMissingElementSyntax ()
 		{
 			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource ResourceKey=""nope"" /></Rectangle.Fill></Rectangle></Canvas>"); }, "1");
@@ -857,7 +857,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		}
 
 		[TestMethod]
-		[MoonlightBug] // 4.0 profile
+		[MoonlightBug (RuntimeVersion = 4)]
 		public void MergedDictionariesTest_SourceLackingDefaultXmlns ()
 		{
 			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""

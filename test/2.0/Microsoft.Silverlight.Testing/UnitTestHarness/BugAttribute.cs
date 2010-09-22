@@ -38,7 +38,13 @@ namespace Microsoft.Silverlight.Testing
         /// a known issue.
         /// </summary>
         public PlatformID [] Platforms { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets a value indicating on which runtime version this is 
+        /// a known issue.
+        /// </summary>
+	public int RuntimeVersion { get; set; }
+
         /// <summary>
         /// Construct a new BugAttribute with no bug description.
         /// </summary>

@@ -9,6 +9,7 @@ using Microsoft.Silverlight.Testing.Harness;
 using Microsoft.Silverlight.Testing.UnitTesting.Metadata;
 
 #if SILVERLIGHT
+using System.Windows;
 using System.Windows.Browser;
 using Microsoft.Silverlight.Testing.UnitTesting.UI;
 #endif
@@ -130,6 +131,13 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
                     {
                         _bugAttributePresent = true;
                     }
+
+#if SILVERLIGHT
+		    if (_bugAttributePresent && bug.RuntimeVersion != 0) {
+			    if (bug.RuntimeVersion != Int32.Parse (Deployment.Current.RuntimeVersion.Split ('.')[0]))
+				    _bugAttributePresent = false;
+		    }
+#endif
 
                     if (_bugAttributePresent) {
                         Enqueue (() => LogWriter.KnownIssue (bug.Description));
