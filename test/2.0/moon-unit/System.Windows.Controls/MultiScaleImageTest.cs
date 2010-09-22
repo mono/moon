@@ -21,6 +21,14 @@ namespace MoonTest.System.Windows.Controls
 	public partial class MultiScaleImageTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
 		[TestMethod]
+		[MoonlightBug]
+		public void ViewportWidthInMarkup ()
+		{
+			MultiScaleImage msi = (MultiScaleImage)XamlReader.Load (@"<MultiScaleImage xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" ViewportWidth=""0.5"" />");
+			Assert.AreEqual (0.5, msi.ViewportWidth, "1");
+		}
+
+		[TestMethod]
 		public void UseSpringsNoAnimations ()
 		{
 			MultiScaleImage msi = new MultiScaleImage ();
