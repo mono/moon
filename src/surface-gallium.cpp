@@ -27,21 +27,21 @@ namespace Moonlight {
 pipe_context *
 pipe_ref (pipe_context *pipe)
 {
-	int refcount = (int) pipe->priv;
+	int refcount = GPOINTER_TO_INT (pipe->priv);
 
-	pipe->priv = (void *) (refcount + 1);
+	pipe->priv = GINT_TO_POINTER (refcount + 1);
 	return pipe;
 }
 
 void
 pipe_unref (pipe_context *pipe)
 {
-	int refcount = (int) pipe->priv;
+	int refcount = GPOINTER_TO_INT (pipe->priv);
 
 	if (refcount == 1) {
 		pipe->destroy (pipe);
 	} else
-		pipe->priv = (void *) (refcount - 1);
+		pipe->priv = GINT_TO_POINTER (refcount - 1);
 }
 
 GalliumSurface::Transfer::Transfer (pipe_context  *context,
