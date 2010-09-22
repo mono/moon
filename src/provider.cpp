@@ -98,7 +98,7 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Pr
 	if ((reason & ProviderFlags_RecomputesOnClear) == 0)
 		return;
 
-	Value *old_value = NULL;
+	Value old_value;
 	Value *new_value = NULL;
 	DependencyProperty *property = NULL;
 
@@ -112,11 +112,11 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Pr
 		if (new_value != NULL)
 			new_value = new Value (*new_value);
 
-		old_value = (Value *) g_hash_table_lookup (style_hash, property);
+		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
 
 		g_hash_table_insert (style_hash, property, new_value);
 
-		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, true, error);
+		obj->ProviderValueChanged (precedence, property, &old_value, new_value, true, true, true, error);
 		if (error->number)
 			return;
 	}
