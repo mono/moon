@@ -145,8 +145,10 @@ MoonWindowGtk::~MoonWindowGtk ()
 		delete ctx;
 
 #ifdef USE_GALLIUM
+#if 0 // TODO: released all resources before destroying screen
 	if (screen)
 		(*screen->destroy) (screen);
+#endif
 #endif
 
 }
