@@ -205,7 +205,7 @@ Uri::CombineWithSourceLocation (Deployment *deployment, const Uri *base_uri, con
 		result = Uri::Create (deployment->GetSourceLocation (NULL), path);
 		delete absolute_uri;
 
-		LOG_DOWNLOADER ("Uri::CombineWithSourceLocation () final uri: '%s' (path: '%s')\n", absolute_uri->ToString (), path);
+		LOG_DOWNLOADER ("Uri::CombineWithSourceLocation () final uri: '%s' (path: '%s')\n", result->ToString (), path);
 	}
 
 	return result;
