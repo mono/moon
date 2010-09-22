@@ -503,9 +503,7 @@ namespace System.Windows {
 		
 		IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator ()
 		{
-			// FIXME: this needs to be implemented for SL4 engine (all runtime versions)
-			Console.WriteLine ("NIEX: ResourceDictionary.GetEnumerator");
-			return null;
+			return managedDict.GetEnumerator();
 		}
 	}
 }
