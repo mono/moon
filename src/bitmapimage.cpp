@@ -222,7 +222,7 @@ BitmapImage::UriSourceChanged ()
 		if (get_res_aborter)
 			delete get_res_aborter;
 		get_res_aborter = new Cancellable ();
-		app->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy,
+		app->GetResource (GetResourceBaseRecursive (), uri, resource_notify, pixbuf_write, policy,
 				  HttpRequest::DisableFileStorage, get_res_aborter, this);
 	}
 }

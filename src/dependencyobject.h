@@ -402,6 +402,7 @@ public:
 	void SetResourceBase (const Uri *resourceBase);
 	/* @GenerateCBinding,GeneratePInvoke */
 	const Uri *GetResourceBase ();
+	const Uri *GetResourceBaseRecursive ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	

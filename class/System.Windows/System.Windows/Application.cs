@@ -583,7 +583,21 @@ namespace System.Windows {
 		{
 			StreamResourceInfo info = null;
 
-			if (resourceBase != null && resourceBase.IsAbsoluteUri) {
+			if (resourceBase != null && !resourceBase.IsAbsoluteUri && resourceBase.OriginalString [0] == '/' && resourceBase.OriginalString.Contains (";component/")) {
+				// DRT: #788
+				// resource base is like: /assembly;component/path/to/file.xaml
+				// we make an absolute uri of resourceBase by faking a file:// uri,
+				// combine with the name, and then strip off the file:// when 
+				// passing it to GetResourceStream. The file:// hack is to avoid
+				// parsing strings manually.
+				try {
+					Uri absolute_rb = new Uri ("file://" + resourceBase.OriginalString, UriKind.Absolute);
+					Uri absolute_uri = new Uri (absolute_rb, name);
+					info = GetResourceStream (new Uri (absolute_uri.AbsolutePath, UriKind.Relative));
+				} catch {}
+			}
+
+			if (resourceBase != null && info == null) {
 				try {
 					Uri absolute_uri = new Uri (resourceBase, name);
 					if (!absolute_uri.IsAbsoluteUri || absolute_uri.Scheme == Uri.UriSchemeFile)

@@ -2593,6 +2593,16 @@ DependencyObject::GetResourceBase ()
 	return resource_base;
 }
 
+const Uri *
+DependencyObject::GetResourceBaseRecursive ()
+{
+	if (resource_base)
+		return resource_base;
+	if (parent != NULL)
+		return parent->GetResourceBaseRecursive ();
+	return NULL;
+}
+
 void
 DependencyObject::Freeze()
 {
