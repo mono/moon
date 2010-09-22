@@ -50,12 +50,27 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
-		[MoonlightBug ("we don't throw an exception")]
-		public void ParseStringKeyAndName ()
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("we don't throw an exception in sl3")]
+		public void ParseStringKeyAndName_sl3 ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
  						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:String x:Name=""hola"" x:Key=""hola"">hola</sys:String></Canvas.Resources></Canvas>"); }, "1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void ParseStringKeyAndName_sl4 ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+ 						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:String x:Name=""hola"" x:Key=""hola"">hola</sys:String></Canvas.Resources></Canvas>");
+			
+			var s = c.Resources ["hola"] as string;
+			Assert.AreEqual (1, c.Resources.Count, "1");
+			Assert.IsNotNull (s, "2");
+			Assert.AreEqual (s, "hola", "3");
 		}
 
 		[TestMethod]
