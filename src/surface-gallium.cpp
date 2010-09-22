@@ -20,12 +20,16 @@
 #include "util/u_inlines.h"
 #include "util/u_sampler.h"
 
+#include <stdio.h>
+
 namespace Moonlight {
 
 pipe_context *
 pipe_ref (pipe_context *pipe)
 {
 	int refcount = (int) pipe->priv;
+
+	printf ("pipe_ref: %d\n", refcount);
 
 	pipe->priv = (void *) (refcount + 1);
 	return pipe;
@@ -36,9 +40,12 @@ pipe_unref (pipe_context *pipe)
 {
 	int refcount = (int) pipe->priv;
 
-	if (refcount == 1)
+	printf ("pipe_unref: %d\n", refcount);
+
+	if (refcount == 1) {
+		printf ("destroy pipe\n");
 		pipe->destroy (pipe);
-	else
+	} else
 		pipe->priv = (void *) (refcount - 1);
 }
 
@@ -130,6 +137,9 @@ GalliumSurface::~GalliumSurface ()
 
 	pipe_sampler_view_reference (&sampler_view, NULL);
 	pipe_resource_reference (&resource, NULL);
+
+	if (pipe)
+		pipe_unref (pipe);
 }
 
 void

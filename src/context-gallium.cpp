@@ -430,13 +430,28 @@ GalliumContext::Push (Group extents)
 	Rect           r = extents.r.RoundOut ();
         GalliumSurface *surface = new GalliumSurface (pipe, r.width, r.height);
         Surface        *cs = new Surface (surface, extents.r, pipe);
-	Color          color = Color ();
 
 	Top ()->GetMatrix (&matrix);
 
 	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
 
-	Clear (&color);
+	// memset is faster than using clear with softpipe
+	if (is_softpipe) {
+		void                     *data;
+		GalliumSurface::Transfer *transfer =
+			new GalliumSurface::Transfer (pipe,
+						      surface->Texture ());
+
+		data = transfer->Map ();
+		memset (data, 0, r.height * r.width * 4);
+		transfer->Unmap ();
+		delete transfer;
+	}
+	else {
+		Color color = Color ();
+
+		Clear (&color);
+	}
 
 	cs->unref ();
 	surface->unref ();
