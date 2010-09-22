@@ -181,6 +181,7 @@ ResourceDictionary::ResourceDictionary ()
 				      (GDestroyNotify)g_free,
 				      (GDestroyNotify)free_value);
 	from_resource_dictionary_api = false;
+	source = NULL;
 
 #if EVENT_ARG_REUSE
 	changedEventArgs = NULL;
@@ -190,6 +191,8 @@ ResourceDictionary::ResourceDictionary ()
 ResourceDictionary::~ResourceDictionary ()
 {
 	g_hash_table_destroy (hash);
+
+	g_free (source);
 
 #if EVENT_ARG_REUSE
 	if (changedEventArgs)
@@ -623,6 +626,38 @@ ResourceDictionary::EmitChanged (CollectionChangedAction action, Value *new_valu
 	if (HasHandlers (ResourceDictionary::ChangedEvent))
 		Emit (ResourceDictionary::ChangedEvent, new ResourceDictionaryChangedEventArgs (action, new_value, old_value, key));
 #endif
+}
+
+void
+ResourceDictionary::SetInternalSourceWithError (const char* source, MoonError *error)
+{
+	this->source = g_strdup (source);
+	if (source == NULL)
+		return;
+
+	/* we need to walk up the tree checking for resource
+	   dictionaries with the same source, generate an error if it
+	   matches */
+	DependencyObject *p = GetParent();
+	while (p) {
+		if (p->Is (Type::RESOURCE_DICTIONARY)) {
+			ResourceDictionary* rd = (ResourceDictionary*)p;
+			const char *rd_source = rd->GetInternalSource();
+			if (rd_source && !strcmp (rd_source, source)) {
+				MoonError::FillIn (error,
+						   MoonError::INVALID_OPERATION, /* FIXME: verify exception type */
+						   "cycle found in resource dictionaries");
+				return;
+			}
+		}
+		p = p->GetParent();
+	}
+}
+
+const char*
+ResourceDictionary::GetInternalSource ()
+{
+	return source;
 }
 
 };

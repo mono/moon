@@ -49,13 +49,16 @@ namespace System.Windows {
 		int pending_assemblies;
 		string xap_dir;
 		Types types;
-		
+		Stack<Uri> parse_uri_stack;
+
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 
 		private new void Initialize ()
 		{
 			UriHelper.Initialize (this);
+
+			parse_uri_stack = new Stack<Uri>();
 		}
 
 		~Deployment ()
@@ -203,6 +206,12 @@ namespace System.Windows {
 				if (types == null)
 					types = new Types (NativeMethods.deployment_get_types (native));
 				return types;
+			}
+		}
+
+		internal Stack<Uri> ParseUriStack {
+			get {
+				return parse_uri_stack;
 			}
 		}
 

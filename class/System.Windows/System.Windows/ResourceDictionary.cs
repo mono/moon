@@ -210,6 +210,11 @@ namespace System.Windows {
 				if (!Application.IsAbsoluteResourceStreamLocator (source))
 					source = Application.MergeResourceStreamLocators (ResourceBase, source);
 
+				if (Deployment.Current.ParseUriStack.Contains (source))
+					throw new InvalidOperationException ();
+
+				NativeMethods.resource_dictionary_set_internal_source (native, source.ToString());
+
 				var stream = Application.GetResourceStream (source);
 				if (stream == null) {
 					Console.Error.WriteLine ("Unable to find resource stream: '{0}'", source);
@@ -218,13 +223,19 @@ namespace System.Windows {
 				}
 
 				try {
+					Deployment.Current.ParseUriStack.Push (source);
+
 					XamlLoader loader = XamlLoaderFactory.CreateLoader (Deployment.Current.EntryAssembly, source, Deployment.Current.Surface.Native, PluginHost.Handle);
 					loader.Hydrate (this, stream.Stream, true, false, true);
+
 				} catch (Exception e) {
 					Console.Error.WriteLine ("Error while parsing xaml referred to in ResourceDictionary::Source property '{0}'.", source);
 					Console.Error.WriteLine (e);
 
 					throw e;
+				}
+				finally {
+					Deployment.Current.ParseUriStack.Pop ();
 				}
 			}
 		}
@@ -363,7 +374,7 @@ namespace System.Windows {
 		
 		public IDictionaryEnumerator GetEnumerator ()
 		{
-			return managedDict.GetEnumerator ();
+			return ((IDictionary)managedDict).GetEnumerator ();
 		}
 		
 		public void Remove (string key)

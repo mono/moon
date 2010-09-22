@@ -1807,15 +1807,13 @@ start_element (void *data, const char *el, const char **attr)
 	
 	if (elem) {
 		if (p->hydrate_expecting){
-			/*
-			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
+			Type::Kind expecting_type =  p->hydrate_expecting->GetKind ();
 
 			if (!types->IsSubclassOf (expecting_type, elem->GetKind ())) {
 				parser_error (p, el, NULL, -1, "Invalid top-level element found %s, expecting %s", el,
 					      types->Find (expecting_type)->GetName ());
 				return;
 			}
-			*/
 
 			inst = elem->CreateWrappedElementInstance (p, p->hydrate_expecting);
 			p->hydrate_expecting = NULL;

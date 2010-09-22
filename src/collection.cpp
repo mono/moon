@@ -827,25 +827,56 @@ ResourceDictionaryCollection::~ResourceDictionaryCollection ()
 {
 }
 
-#if notyet
+static bool
+WalkSubtreeLookingForCycle (ResourceDictionary* subtree_root,
+			    ResourceDictionary* first_ancestor,
+			    MoonError *error)
+{
+	const char *source = subtree_root->GetInternalSource();
+
+	DependencyObject *p = first_ancestor;
+	while (p) {
+		if (p->Is (Type::RESOURCE_DICTIONARY)) {
+			bool cycle_found = false;
+			ResourceDictionary* rd = (ResourceDictionary*)p;
+			const char *rd_source = rd->GetInternalSource();
+
+			if (rd == subtree_root)
+				cycle_found = true;
+			else if (source && rd_source && !strcmp (rd_source, source))
+				cycle_found = true;
+
+			if (cycle_found) {
+				MoonError::FillIn (error,
+						   MoonError::INVALID_OPERATION, /* FIXME: verify exception type */
+						   "cycle found in resource dictionaries");
+				return false;
+			}
+		}
+		p = p->GetParent();
+	}
+
+	ResourceDictionaryCollection *children = subtree_root->GetMergedDictionaries();
+	for (int i = 0; i < children->GetCount(); i ++) {
+		if (!WalkSubtreeLookingForCycle (children->GetValueAt(i)->AsResourceDictionary(), first_ancestor, error))
+			return false;
+	}
+
+	return true;
+}
+
 bool
 ResourceDictionaryCollection::AddedToCollection (Value *value, MoonError *error)
 {
-	DependencyObject *parent = obj->GetParent();
+	DependencyObject *parent = GetParent();
 	if (!parent)
 		return TRUE;
 
 	ResourceDictionary *parent_rd = (ResourceDictionary*)parent;
 	ResourceDictionary *rd = value->AsResourceDictionary();
 
-	check_for_source_cycle (rd, parent_rd, error);
-
-	ResourceDictionaryCollection *rd_children = rd->GetMergedDictionaries();
-	for (int i = 0; i < rd_children->GetCount(); i ++) {
-		check_for_source_cycle (rd_children->GetValueAt(i)->AsResourceDictionary(), parent_rd, error);
-	}
+	return WalkSubtreeLookingForCycle (rd, parent_rd, error);
 }
-#endif
 
 //
 // CollectionIterator

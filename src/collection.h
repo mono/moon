@@ -362,9 +362,7 @@ class ResourceDictionaryCollection : public DependencyObjectCollection {
 	
 	virtual ~ResourceDictionaryCollection ();
 
-#if notyet
 	virtual bool AddedToCollection (Value *value, MoonError *error);
-#endif
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;

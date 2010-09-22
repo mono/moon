@@ -49,6 +49,7 @@ public:
 	/* @PropertyType=ResourceDictionaryCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors,ManagedPropertyType=PresentationFrameworkCollection<ResourceDictionary> */
 	const static int MergedDictionariesProperty;
 
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ResourceDictionary ();
 
@@ -81,6 +82,10 @@ public:
 	ResourceDictionaryCollection *GetMergedDictionaries ();
 	void SetMergedDictionaries (ResourceDictionaryCollection* value);
 
+	/* @GeneratePInvoke */
+	void SetInternalSourceWithError (const char* source, MoonError *error);
+	const char* GetInternalSource ();
+
 	virtual void OnIsAttachedChanged (bool value);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
@@ -104,6 +109,7 @@ protected:
 private:
 	GHashTable *hash;
 	bool from_resource_dictionary_api;
+	char *source;
 };
 
 };
