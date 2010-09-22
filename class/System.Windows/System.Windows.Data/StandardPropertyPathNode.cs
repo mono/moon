@@ -75,7 +75,6 @@ namespace System.Windows.Data
 			if (type == null)
 				return;
 
-			PropertyInfo = type.GetProperty (PropertyName);
 			DependencyProperty prop;
 			Types.Ensure (type);
 			if (new_do != null && DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
@@ -84,8 +83,13 @@ namespace System.Windows.Data
 				Mono.NativeMethods.dependency_object_add_property_change_handler (new_do.native, DependencyProperty.Native, dpChanged, IntPtr.Zero);
 			}
 
-			if (prop != null)
-				PropertyInfo = null;
+			// If there's an attached DP called 'Foo' and also a regular CLR property
+			// called 'Foo', we cannot use the property info from the CLR property.
+			// Otherwise if the CLR property declares a type converter, we could
+			// inadvertantly use it when we should not.
+			if (DependencyProperty == null || !DependencyProperty.IsAttached) {
+				PropertyInfo = type.GetProperty (PropertyName);
+			}
 		}
 
 		void DPChanged (IntPtr dependency_object, IntPtr property_changed_event_args, ref MoonError error, IntPtr closure)

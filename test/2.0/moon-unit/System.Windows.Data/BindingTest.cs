@@ -22,6 +22,45 @@ using System.Reflection;
 
 namespace MoonTest.System.Windows.Data
 {
+	public class FakeConverter : TypeConverter {
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		{
+			return true;
+		}
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		{
+			return true;
+		}
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			return new MyControl ();
+		}
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			return new MyControl ();
+		}
+	}
+
+	public class AttachedDPPropertyClash : DependencyObject {
+		public static DependencyProperty AttachedProperty =
+			DependencyProperty.RegisterAttached("Attached", typeof(MyControl), typeof(AttachedDPPropertyClash), null);
+
+		[TypeConverter (typeof (FakeConverter))]
+		public MyControl Attached {
+			get; set;
+		}
+
+		public static MyControl GetAttached(DependencyObject o)
+		{
+			return (MyControl) o.GetValue(AttachedProperty);
+		}
+
+		public static void SetAttached(DependencyObject o, MyControl value)
+		{
+			o.SetValue(AttachedProperty, value);
+		}
+	}
+
 	public class CustomDependencyObject : DependencyObject
 	{
 		public static DependencyProperty WidthProperty =
@@ -388,6 +427,24 @@ namespace MoonTest.System.Windows.Data
 					Source = data,
 				});
 			});
+		}
+
+		[TestMethod]
+		public void AttachedProperty_ClashWithCLRProperty()
+		{
+			// Check to ensure we do *not* use the type converter
+			// declared on the CLR property as this is an attached DP.
+			var dp = AttachedDPPropertyClash.AttachedProperty;
+			var value = new MyControl();
+			var source = new AttachedDPPropertyClash();
+			var target = new Rectangle ();
+			source.SetValue(dp, value);
+
+			BindingOperations.SetBinding(target, Rectangle.DataContextProperty, new Binding("Attached") { Mode = BindingMode.TwoWay, Source = source });
+			Assert.AreSame (source.GetValue (dp), target.DataContext, "#1");
+
+			target.DataContext = 123;
+			Assert.AreSame(value, source.GetValue(dp), "#2");
 		}
 
 		[TestMethod]
