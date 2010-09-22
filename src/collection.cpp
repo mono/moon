@@ -827,6 +827,26 @@ ResourceDictionaryCollection::~ResourceDictionaryCollection ()
 {
 }
 
+#if notyet
+bool
+ResourceDictionaryCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	DependencyObject *parent = obj->GetParent();
+	if (!parent)
+		return TRUE;
+
+	ResourceDictionary *parent_rd = (ResourceDictionary*)parent;
+	ResourceDictionary *rd = value->AsResourceDictionary();
+
+	check_for_source_cycle (rd, parent_rd, error);
+
+	ResourceDictionaryCollection *rd_children = rd->GetMergedDictionaries();
+	for (int i = 0; i < rd_children->GetCount(); i ++) {
+		check_for_source_cycle (rd_children->GetValueAt(i)->AsResourceDictionary(), parent_rd, error);
+	}
+}
+#endif
+
 //
 // CollectionIterator
 //

@@ -32,7 +32,7 @@ using System.Windows.Input;
 
 namespace System.Windows {
 
-	internal enum FontStyleKind {
+	internal enum FontStyleKind : uint {
 		Normal = 0,
 		Oblique = 1,
 		Italic = 2

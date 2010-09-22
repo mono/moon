@@ -200,18 +200,25 @@ namespace Mono {
 					
 			case Kind.UINT64:
 				return value->u.ui64;
-					
+
 			case Kind.INT64:
 				return value->u.i64;
 					
 			case Kind.TIMESPAN:
 				return new TimeSpan (value->u.i64);
+
 			case Kind.CURSORTYPE:
 				return Cursors.FromEnum ((CursorType) value->u.i32);
+
 			case Kind.TEXTDECORATIONS:
 				return (value->u.i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
+
 			case Kind.INT32:
 				return value->u.i32;
+
+			case Kind.UINT32:
+				return value->u.ui32;
+					
 			case Kind.CHAR:
 				return (char) value->u.ui32;
 

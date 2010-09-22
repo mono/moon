@@ -76,6 +76,14 @@ namespace Mono {
 			if (destinationType.IsAssignableFrom (sourceType))
 				return true;
 
+			// in 2.0 we need to allow converting from integers to FontStyle/FontStretch/FontWeight
+			if (Deployment.Current.RuntimeVersion[0] == '2' &&
+			    sourceType == typeof (UInt32) &&
+			    (destinationType == typeof (FontStyle) ||
+			     destinationType == typeof (FontStretch) ||
+			     destinationType == typeof (FontWeight)))
+				return true;
+			    
 			return base.CanConvertFrom (context, sourceType);
 		}
 
@@ -201,6 +209,18 @@ namespace Mono {
 
 			if (destinationType.IsAssignableFrom (value.GetType ()))
 				return value;
+
+			if (Deployment.Current.RuntimeVersion[0] == '2' && value is UInt32) {
+				if (destinationType == typeof (FontStyle)) {
+					return new FontStyle ((FontStyleKind)value);
+				}
+				else if (destinationType == typeof (FontStretch)) {
+					return new FontStretch ((FontStretchKind)value);
+				}
+				else if (destinationType == typeof (FontWeight)) {
+					return new FontWeight ((FontWeightKind)value);
+				}
+			}
 			
 			// The base implementation doesn't do anything but
 			// throw, so throw here instead so we have more

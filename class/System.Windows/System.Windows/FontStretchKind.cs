@@ -32,7 +32,7 @@ using System.Windows.Input;
 
 namespace System.Windows {
 
-	internal enum FontStretchKind {
+	internal enum FontStretchKind : uint {
 		UltraCondensed = 1,
 		ExtraCondensed,
 		Condensed,

@@ -4065,7 +4065,10 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::FONTWEIGHT: {
 		int fw = enums_str_to_int ("FontWeight", s);
 		if (fw != -1) {
-			*v = new Value (FontWeight ((FontWeights)fw));
+			if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2')
+				*v = new Value ((guint32)fw);
+			else
+				*v = new Value (FontWeight ((FontWeights)fw));
 			*v_set = true;
 		}
 		break;
@@ -4073,7 +4076,10 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::FONTSTYLE: {
 		int fs = enums_str_to_int ("FontStyle", s);
 		if (fs != -1) {
-			*v = new Value (FontStyle ((FontStyles)fs));
+			if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2')
+				*v = new Value ((guint32)fs);
+			else
+				*v = new Value (FontStyle ((FontStyles)fs));
 			*v_set = true;
 		}
 		break;
@@ -4081,7 +4087,10 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::FONTSTRETCH: {
 		int fs = enums_str_to_int ("FontStretch", s);
 		if (fs != -1) {
-			*v = new Value (FontStretch ((FontStretches)fs));
+			if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2')
+				*v = new Value ((guint32)fs);
+			else
+				*v = new Value (FontStretch ((FontStretches)fs));
 			*v_set = true;
 		}
 		break;
@@ -4559,7 +4568,6 @@ XamlElementInstanceEnum::CreateEnumFromString (const char* str)
 	int i = enums_str_to_int (info->name, str);
 	if (i == -1)
 		return false;
-		
 	value = new Value (i, info->GetKind ());
 	return true;
 }

@@ -30,7 +30,7 @@ using System.Windows.Input;
 
 namespace System.Windows {
 
-	internal enum FontWeightKind
+	internal enum FontWeightKind : uint
 	{
 		Thin       = 100,
 		ExtraLight = 200,
