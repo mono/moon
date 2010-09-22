@@ -94,12 +94,12 @@ GalliumSurface::GalliumSurface (pipe_context *context,
 				int          width,
 				int          height)
 {
-	struct pipe_resource     pt;
-	struct pipe_sampler_view view_templ;
-	struct pipe_screen       *screen = context->screen;
+	struct pipe_resource pt;
+	struct pipe_screen   *screen = context->screen;
 
-	pipe   = pipe_ref (context);
-	mapped = NULL;
+	pipe         = pipe_ref (context);
+	mapped       = NULL;
+	sampler_view = NULL;
 
 	memset (&pt, 0, sizeof (pt));
 	pt.target = PIPE_TEXTURE_2D;
@@ -121,10 +121,6 @@ GalliumSurface::GalliumSurface (pipe_context *context,
 	resource = screen->resource_create (screen, &pt);
 
 	g_assert (resource);
-
-	u_sampler_view_default_template (&view_templ, resource,
-					 resource->format);
-	sampler_view = pipe->create_sampler_view (pipe, resource, &view_templ);
 }
 
 GalliumSurface::~GalliumSurface ()
@@ -197,7 +193,17 @@ GalliumSurface::Sync ()
 struct pipe_sampler_view *
 GalliumSurface::SamplerView ()
 {
+	struct pipe_sampler_view templ;
+
 	Sync ();
+
+	if (sampler_view)
+		return sampler_view;
+
+	g_assert (pipe);
+
+	u_sampler_view_default_template (&templ, resource, resource->format);
+	sampler_view = pipe->create_sampler_view (pipe, resource, &templ);
 
 	return sampler_view;
 }
