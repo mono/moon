@@ -794,23 +794,15 @@ namespace Mono.Xaml {
 
 		private bool IsMarkupExpression (string str)
 		{
-			int open_stache = str.IndexOf ('{');
-			if (open_stache < 0)
-				return false;
-			for (int i = 0; i < open_stache; i++) {
-				if (!Char.IsWhiteSpace (str [i]))
-					return false;
+			for (int i = 0; i < str.Length; i++) {
+				if (str [i] == '{')
+					return true;
+				else if (char.IsWhiteSpace (str [i]))
+					continue;
+				else
+					break;
 			}
-			
-			int close_stache = str.LastIndexOf ('}');
-			if (close_stache < 0)
-				return false;
-			for (int i = str.Length - 1; i > close_stache; i--) {
-				if (!Char.IsWhiteSpace (str [i]))
-					return false;
-			}
-
-			return true;
+			return false;
 		}
 
 		private bool IsValidXmlSpaceValue (string val)
