@@ -79,6 +79,10 @@ public:
 
 	virtual gpointer GetPlatformWindow ();
 
+#ifdef USE_GALLIUM
+	void SetGalliumScreen (pipe_screen *gscreen) { screen = gscreen; }
+#endif
+
 protected:
 	unsigned char *backing_image_data;
 	int backing_store_width;

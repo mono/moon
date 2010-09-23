@@ -10,6 +10,22 @@
 #include "im-gtk.h"
 #include "debug.h"
 
+#ifdef USE_GALLIUM
+#define __MOON_GALLIUM__
+#include "context-gallium.h"
+extern "C" {
+#include "pipe/p_screen.h"
+#include "util/u_debug.h"
+#define template templat
+#include "state_tracker/sw_winsys.h"
+#include "sw/null/null_sw_winsys.h"
+#include "softpipe/sp_public.h"
+#ifdef USE_LLVM
+#include "llvmpipe/lp_public.h"
+#endif
+};
+#endif
+
 #include <glib.h>
 #include <glib/gstdio.h>
 
@@ -24,6 +40,34 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <sys/stat.h>
+
+#ifdef USE_GALLIUM
+static struct pipe_screen *
+swrast_screen_create (struct sw_winsys *ws)
+{
+	const char         *default_driver;
+	const char         *driver;
+	struct pipe_screen *screen = NULL;
+
+#ifdef USE_LLVM
+	default_driver = "llvmpipe";
+#else
+	default_driver = "softpipe";
+#endif
+
+	driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
+
+#ifdef USE_LLVM
+	if (screen == NULL && strcmp (driver, "llvmpipe") == 0)
+		screen = llvmpipe_create_screen (ws);
+#endif
+
+	if (screen == NULL)
+		screen = softpipe_create_screen (ws);
+
+	return screen;
+}
+#endif
 
 using namespace Moonlight;
 
@@ -622,10 +666,20 @@ MoonWindowingSystemGtk::MoonWindowingSystemGtk (bool out_of_browser)
 	}
 	
 	LoadSystemColors ();
+
+#ifdef USE_GALLIUM
+	gscreen = swrast_screen_create (null_sw_create ());
+#endif
+
 }
 
 MoonWindowingSystemGtk::~MoonWindowingSystemGtk ()
 {
+
+#ifdef USE_GALLIUM
+	gscreen->destroy (gscreen);
+#endif
+
 	for (int i = 0; i < (int) NumSystemColors; i++)
 		delete system_colors[i];
 }
@@ -643,6 +697,9 @@ MoonWindowingSystemGtk::CreateWindow (MoonWindowType windowType, int width, int 
 {
 	MoonWindowGtk *gtkwindow = new MoonWindowGtk (windowType, width, height, parentWindow, surface);
 	RegisterWindow (gtkwindow);
+#ifdef USE_GALLIUM
+	gtkwindow->SetGalliumScreen (gscreen);
+#endif
 	return gtkwindow;
 }
 
@@ -652,6 +709,9 @@ MoonWindowingSystemGtk::CreateWindowless (int width, int height, PluginInstance 
 	MoonWindowGtk *gtkwindow = (MoonWindowGtk*)MoonWindowingSystem::CreateWindowless (width, height, forPlugin);
 	if (gtkwindow)
 		RegisterWindow (gtkwindow);
+#ifdef USE_GALLIUM
+	gtkwindow->SetGalliumScreen (gscreen);
+#endif
 	return gtkwindow;
 }
 

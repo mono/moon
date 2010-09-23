@@ -28,22 +28,10 @@
 #ifdef USE_GALLIUM
 #define __MOON_GALLIUM__
 #include "context-gallium.h"
-extern "C" {
-#include "pipe/p_screen.h"
 #ifdef CLAMP
 #undef CLAMP
 #endif
 #include "util/u_inlines.h"
-#include "util/u_simple_screen.h"
-#include "util/u_debug.h"
-#define template templat
-#include "state_tracker/sw_winsys.h"
-#include "sw/null/null_sw_winsys.h"
-#include "softpipe/sp_public.h"
-#ifdef USE_LLVM
-#include "llvmpipe/lp_public.h"
-#endif
-};
 #endif
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -60,34 +48,6 @@ extern "C" {
 // pixmap per redraw just at the size of the expose area.
 //
 #define FULLSCREEN_BACKING_STORE_SOPTIMIZATION 0
-
-#ifdef USE_GALLIUM
-static struct pipe_screen *
-swrast_screen_create (struct sw_winsys *ws)
-{
-	const char         *default_driver;
-	const char         *driver;
-	struct pipe_screen *screen = NULL;
-
-#ifdef USE_LLVM
-	default_driver = "llvmpipe";
-#else
-	default_driver = "softpipe";
-#endif
-
-	driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
-
-#ifdef USE_LLVM
-	if (screen == NULL && strcmp (driver, "llvmpipe") == 0)
-		screen = llvmpipe_create_screen (ws);
-#endif
-
-	if (screen == NULL)
-		screen = softpipe_create_screen (ws);
-
-	return screen;
-}
-#endif
 
 using namespace Moonlight;
 
@@ -143,14 +103,6 @@ MoonWindowGtk::~MoonWindowGtk ()
 
 	if (ctx)
 		delete ctx;
-
-#ifdef USE_GALLIUM
-#if 0 // TODO: released all resources before destroying screen
-	if (screen)
-		(*screen->destroy) (screen);
-#endif
-#endif
-
 }
 
 void
@@ -923,15 +875,6 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	if (!native)
 		native = CreateCairoSurface (drawable, visual, true, width, height);
 
-#ifdef USE_GALLIUM
-	if (!screen) {
-		struct sw_winsys *sw;
-
-		sw = null_sw_create ();
-		screen = swrast_screen_create (sw);
-	}
-#endif
-
 	if (!ctx) {
 
 #ifdef USE_GALLIUM
@@ -947,6 +890,8 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		pt.last_level = 0;
 		pt.bind = PIPE_BIND_RENDER_TARGET | PIPE_BIND_TRANSFER_WRITE |
 			PIPE_BIND_TRANSFER_READ;
+
+		g_assert (screen);
 
 		texture = (*screen->resource_create) (screen, &pt);
 

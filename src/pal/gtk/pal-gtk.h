@@ -5,6 +5,10 @@
 
 #include "pal.h"
 
+#ifdef USE_GALLIUM
+struct pipe_screen;
+#endif
+
 namespace Moonlight {
 
 class MoonWindowingSystemGtk : public MoonWindowingSystem {
@@ -47,6 +51,10 @@ public:
 
 private:
 	Color *system_colors[NumSystemColors];
+
+#ifdef USE_GALLIUM
+	pipe_screen *gscreen;
+#endif
 	
 	void LoadSystemColors ();
 	
