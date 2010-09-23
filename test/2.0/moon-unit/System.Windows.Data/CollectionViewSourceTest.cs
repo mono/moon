@@ -221,6 +221,17 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void ISupportInitializeTest_DontCreateView ()
+		{
+			var source = new CollectionViewSource();
+			((ISupportInitialize)source).BeginInit();
+			source.Source = new string[5];
+			Assert.IsNull(source.View, "#1");
+			((ISupportInitialize)source).EndInit();
+			Assert.IsNotNull(source.View, "#1");
+		}
+
+		[TestMethod]
 		public void SourceFilterIsPropagated()
 		{
 			FilterEventHandler h = (o, e) => { };

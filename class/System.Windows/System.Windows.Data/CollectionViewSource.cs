@@ -94,6 +94,10 @@ namespace System.Windows.Data {
 			get; private set;
 		}
 
+		bool Initializing {
+			get; set;
+		}
+
 		public SortDescriptionCollection SortDescriptions {
 			get; private set;
 		}
@@ -132,6 +136,34 @@ namespace System.Windows.Data {
 			return new Deferrer (this);
 		}
 
+		void CreateView ()
+		{
+			CreateView (Source);
+		}
+
+		void CreateView (object source)
+		{
+			if (source == null) {
+				View = null;
+			} else {
+				ICollectionViewFactory factory = source as ICollectionViewFactory;
+				if (factory != null) {
+					View = factory.CreateView ();
+				} else {
+					ICollectionView view = null;
+					if (CachedViews.TryGetValue (source, out view)) {
+						View = view;
+					} else {
+						view = CollectionView.Create ((IEnumerable) source);
+						CachedViews.Add (source, view);
+						View = view;
+					}
+				}
+			}
+
+			Refresh ();
+		}
+
 		protected virtual void OnCollectionViewTypeChanged (Type oldCollectionViewType, Type newCollectionViewType)
 		{
 			
@@ -139,25 +171,8 @@ namespace System.Windows.Data {
 
 		protected virtual void OnSourceChanged (object oldSource, object newSource)
 		{
-			if (newSource == null) {
-				View = null;
-			} else {
-				ICollectionViewFactory factory = newSource as ICollectionViewFactory;
-				if (factory != null) {
-					View = factory.CreateView ();
-				} else {
-					ICollectionView view = null;
-					if (CachedViews.TryGetValue (newSource, out view)) {
-						View = view;
-					} else {
-						view = CollectionView.Create ((IEnumerable) newSource);
-						CachedViews.Add (newSource, view);
-						View = view;
-					}
-				}
-			}
-
-			Refresh ();
+			if (!Initializing)
+				CreateView (newSource);
 		}
 
 		void Refresh ()
@@ -185,18 +200,15 @@ namespace System.Windows.Data {
 			Refresh ();
 		}
 
-		#region ISupportInitialize implementation
 		void ISupportInitialize.BeginInit ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Data.CollectionViewSource:.ISupportInitialize.BeginInit");
-			throw new System.NotImplementedException();
+			Initializing = true;
 		}
 
 		void ISupportInitialize.EndInit ()
 		{
-			Console.WriteLine ("NIEX: System.Windows.Data.CollectionViewSource:.ISupportInitialize.EndInit");
-			throw new NotImplementedException ();
+			Initializing = false;
+			CreateView ();
 		}
-		#endregion
 	}
 }
