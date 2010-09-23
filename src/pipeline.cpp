@@ -4636,6 +4636,7 @@ IMediaDemuxer::AddStream (IMediaStream *stream)
 
 IMediaDecoder::IMediaDecoder (Type::Kind kind, Media *media, IMediaStream *stream) : IMediaObject (kind, media)
 {
+	pixel_format = MoonPixelFormatNone;
 	this->stream = NULL;
 	
 	g_return_if_fail (stream != NULL);
