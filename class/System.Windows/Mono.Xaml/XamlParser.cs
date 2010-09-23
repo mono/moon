@@ -55,7 +55,7 @@ namespace Mono.Xaml {
 		internal static readonly BindingFlags EVENT_BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
 
 		internal static readonly NumberStyles CORLIB_INTEGER_STYLES = NumberStyles.AllowLeadingWhite |  NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint;
-		internal static readonly NumberStyles CORLIB_DOUBLE_STYLES = NumberStyles.AllowLeadingWhite |  NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint;
+		internal static readonly NumberStyles CORLIB_DOUBLE_STYLES = NumberStyles.AllowLeadingWhite |  NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;
 		
 		private XamlElement top_element;
 		private XamlElement current_element;
