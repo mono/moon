@@ -34,15 +34,9 @@ namespace System.Net.Browser {
 
 	abstract class HttpWebResponseCore : HttpWebResponse {
 
-		private WebHeaderCollection headers;
 		private string method;
 		private HttpStatusCode status_code;
 		private string status_desc;
-
-		public override WebHeaderCollection Headers {
-			get { return headers; }
-			internal set { headers = value; }
-		}
 
 		// this returns the "original" Method (if there was redirection involved)
 		public override string Method {

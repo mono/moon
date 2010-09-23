@@ -46,7 +46,7 @@ namespace System.Net.Browser {
 			this.request = request;
 			this.response = new MemoryStream ();
 			progressive = request.AllowReadStreamBuffering;
-			Headers = new WebHeaderCollection ();
+			InternalHeaders = new WebHeaderCollection ();
 			SetMethod (request.Method);
 
 			if (native == IntPtr.Zero)
@@ -68,7 +68,7 @@ namespace System.Net.Browser {
 		{
 			try {
 				BrowserHttpWebResponse response = (BrowserHttpWebResponse) GCHandle.FromIntPtr (context).Target;
-				response.Headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
+				response.InternalHeaders [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
 			} catch {
 				// dont leak exceptions to native code
 			}
@@ -96,7 +96,7 @@ namespace System.Net.Browser {
 		public override long ContentLength {
 			get {
 				long result;
-				if (!Int64.TryParse (Headers ["Content-Length"], out result))
+				if (!Int64.TryParse (InternalHeaders ["Content-Length"], out result))
 					result = 0;
 				// if compressed then do not report Content-Length but the real response's length
 				// if result == 0 then it likely means no Content-Length was specified, so use the reponse's length
@@ -105,13 +105,13 @@ namespace System.Net.Browser {
 		}
 
 		public override string ContentType {
-			get { return Headers [HttpRequestHeader.ContentType]; }
+			get { return InternalHeaders [HttpRequestHeader.ContentType]; }
 		}
 
 		internal bool IsCompressed {
 			get {
 				// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
-				switch (Headers ["Content-Encoding"]) {
+				switch (InternalHeaders ["Content-Encoding"]) {
 				case "gzip":
 				case "compress":
 				case "zlib":
