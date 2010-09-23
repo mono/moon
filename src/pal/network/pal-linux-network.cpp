@@ -16,6 +16,8 @@
 #include <netdb.h>
 #include <errno.h>
 
+#include "pal.h"
+#include "runtime.h"
 #include "pal-linux-network.h"
 #include "dbus/pal-dbus-network.h"
 
@@ -62,14 +64,14 @@ network_available (void)
 	return avail;
 }
 
-static gboolean
+static bool
 poll_network_state (gpointer user_data)
 {
 	MoonNetworkServiceLinux *nserv = (MoonNetworkServiceLinux *) user_data;
 	
 	nserv->PollNetworkState ();
 	
-	return TRUE;
+	return true;
 }
 
 MoonNetworkServiceLinux::MoonNetworkServiceLinux ()
@@ -89,10 +91,12 @@ MoonNetworkServiceLinux::MoonNetworkServiceLinux ()
 
 MoonNetworkServiceLinux::~MoonNetworkServiceLinux ()
 {
+	MoonWindowingSystem *winsys;
+	
 	delete dbus_network_service;
 	
-	if (idle != 0) {
-		g_source_remove (idle);
+	if (idle != 0 && (winsys = runtime_get_windowing_system ())) {
+		winsys->RemoveIdle (idle);
 		idle = 0;
 	}
 }
@@ -100,12 +104,17 @@ MoonNetworkServiceLinux::~MoonNetworkServiceLinux ()
 bool
 MoonNetworkServiceLinux::SetNetworkStateChangedCallback (MoonCallback callback, gpointer data)
 {
+	MoonWindowingSystem *winsys;
+	
 	if (dbus_network_service && dbus_network_service->SetNetworkStateChangedCallback (callback, data)) {
 		using_dbus = true;
 		return true;
 	}
 	
-	idle = g_idle_add_full (G_PRIORITY_LOW, poll_network_state, this, NULL);
+	if (!(winsys = runtime_get_windowing_system ()))
+		return false;
+	
+	idle = winsys->AddIdle (poll_network_state, this);
 	is_avail = network_available ();
 	this->callback = callback;
 	this->user_data = data;
