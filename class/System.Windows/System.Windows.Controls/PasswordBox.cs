@@ -53,10 +53,12 @@ namespace System.Windows.Controls
 			get; set;
 		}
 		
+		[MonoTODO()]
 		public double BaselineOffset {
 			get {
-				Console.WriteLine ("System.Windows.Controls.PasswordBox.get_BaselineOffset: NIEX");
-				throw new NotImplementedException ();
+				Console.WriteLine ("System.Windows.Controls.PasswordBox.get_BaselineOffset: TODO");
+				//throw new NotImplementedException ();
+				return Double.NaN;
 			}
 		}
 		

@@ -1,3 +1,4 @@
+
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -48,10 +49,12 @@ namespace System.Windows.Controls {
 			((TextBlock) sender).RaiseUIATextChanged (args);
 		}
 		
+		[MonoTODO]
 		public double BaselineOffset {
 			get {
-				Console.WriteLine ("System.Windows.Controls.PasswordBox.get_BaselineOffset: NIEX");
-				throw new NotImplementedException ();
+				Console.WriteLine ("System.Windows.Controls.TextBlock.get_BaselineOffset: TODO");
+				//throw new NotImplementedException ();
+				return Double.NaN;
 			}
 		}
 		
