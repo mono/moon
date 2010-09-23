@@ -203,6 +203,34 @@ namespace MoonTest.System.Net {
 		public override string Method { get; set; }
 	}
 
+	class Ftp : ConcreteWebRequest, IWebRequestCreate {
+		WebRequest IWebRequestCreate.Create (Uri uri)
+		{
+			return new Ftp ();
+		}
+	}
+
+	class FtpColon : ConcreteWebRequest, IWebRequestCreate {
+		WebRequest IWebRequestCreate.Create (Uri uri)
+		{
+			return new FtpColon ();
+		}
+	}
+
+	class FtpColonSlash : ConcreteWebRequest, IWebRequestCreate {
+		WebRequest IWebRequestCreate.Create (Uri uri)
+		{
+			return new FtpColonSlash ();
+		}
+	}
+
+	class FtpColonSlashSlash : ConcreteWebRequest, IWebRequestCreate {
+		WebRequest IWebRequestCreate.Create (Uri uri)
+		{
+			return new FtpColonSlashSlash ();
+		}
+	}
+
 	[TestClass]
 	public class WebRequestTest : SilverlightTest {
 
@@ -217,12 +245,32 @@ namespace MoonTest.System.Net {
 				WebRequest.RegisterPrefix ("ftp", null);
 			}, "ftp,null");
 
+			Assert.Throws<NotSupportedException> (delegate {
+				WebRequest.Create ("ftp://ftp.novell.com");
+			}, "ftp-unregistred");
+
 			Assert.IsTrue (WebRequest.RegisterPrefix (String.Empty, creator), "Empty");
-			Assert.IsTrue (WebRequest.RegisterPrefix ("ftp", creator), "ftp-1");
+			Assert.AreEqual (creator.GetType (), WebRequest.Create ("ftp://ftp.novell.com").GetType (), "empty registred");
+
+			Assert.IsTrue (WebRequest.RegisterPrefix ("ftp", new Ftp ()), "ftp-1");
+			Assert.AreEqual (typeof (Ftp), WebRequest.Create ("ftp://ftp.novell.com").GetType (), "ftp registred");
+
 			// not twice
 			Assert.IsFalse (WebRequest.RegisterPrefix ("ftp", creator), "ftp-2");
 			// not case sensitive
 			Assert.IsFalse (WebRequest.RegisterPrefix ("FTP", creator), "ftp-3");
+
+			// "ftp:" is not considered identical
+			Assert.IsTrue (WebRequest.RegisterPrefix ("ftp:", new FtpColon ()), "ftp:");
+			Assert.AreEqual (typeof (FtpColon), WebRequest.Create ("ftp://ftp.novell.com").GetType (), "ftp: registred");
+
+			// "ftp:/" is also not considered identical
+			Assert.IsTrue (WebRequest.RegisterPrefix ("ftp:/", new FtpColonSlash ()), "ftp:/");
+			Assert.AreEqual (typeof (FtpColonSlash), WebRequest.Create ("ftp://ftp.novell.com").GetType (), "ftp:/ registred");
+
+			// "ftp://" is also not considered identical
+			Assert.IsTrue (WebRequest.RegisterPrefix ("ftp://", new FtpColonSlashSlash ()), "ftp://");
+			Assert.AreEqual (typeof (FtpColonSlashSlash), WebRequest.Create ("ftp://ftp.novell.com").GetType (), "ftp:// registred");
 		}
 
 		[TestMethod]

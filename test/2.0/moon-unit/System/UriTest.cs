@@ -301,6 +301,22 @@ namespace MoonTest.System {
 				new Uri ("https://!@#$%^&*()/index.html");
 			}, "many invalid characters in host name");
 		}
+
+		[TestMethod]
+		public void Query_MergedFromAbsolute ()
+		{
+			Uri absolute = new Uri ("http://host/dir/subdir/weird;name?moonlight");
+			Assert.AreEqual ("?moonlight", absolute.Query, "absolute.Query");
+
+			Uri merged_fragment = new Uri (absolute, "#mono");
+			Assert.AreEqual ("#mono", merged_fragment.Fragment, "merged_fragment.Fragment");
+			Assert.AreEqual ("?moonlight", merged_fragment.Query, "merged_fragment.Query");
+			Assert.AreEqual ("http://host/dir/subdir/weird;name?moonlight#mono", merged_fragment.ToString (), "merged_fragment.ToString");
+
+			Uri merged_query = new Uri (absolute, "?moon");
+			Assert.AreEqual ("?moon", merged_query.Query, "merged_query.Query");
+			Assert.AreEqual ("http://host/dir/subdir/weird;name?moon", merged_query.ToString (), "merged_query.ToString");
+		}
 	}
 }
 

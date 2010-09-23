@@ -698,6 +698,10 @@ namespace MoonTest.System.Net {
 			});
 			wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler (delegate (object sender, DownloadStringCompletedEventArgs dscea) {
 				try {
+					// ResponseHeaders not available from browser stack
+					Assert.Throws<NotImplementedException> (delegate {
+						Assert.IsNotNull (wc.ResponseHeaders);
+					}, "ResponseHeaders");
 					Assert.IsFalse (TestPanel.CheckAccess ());
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadStringCompleted");
 				}

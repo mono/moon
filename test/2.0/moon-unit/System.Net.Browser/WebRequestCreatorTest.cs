@@ -77,12 +77,20 @@ namespace MoonTest.System.Net.Browser {
 
 			// we use 'https' instead of 'http' to avoid messing with other tests
 
+			// registering 'https:' is not valid
+			Assert.IsFalse (WebRequest.RegisterPrefix ("https:", WebRequestCreator.ClientHttp), "RegisterPrefix-https:");
+
 			// registering 'https' is not good enough
 			Assert.IsTrue (WebRequest.RegisterPrefix ("https", WebRequestCreator.ClientHttp), "RegisterPrefix-https");
 			wr = WebRequest.Create ("https://www.mono-project.com");
 			Assert.AreSame (WebRequestCreator.BrowserHttp, wr.CreatorInstance, "WebRequest.Create(string)-https");
 
-			// you need to register 'https://'
+			// you need to register 'https:/'
+			Assert.IsTrue (WebRequest.RegisterPrefix ("https:/", WebRequestCreator.ClientHttp), "RegisterPrefix-https:/");
+			wr = WebRequest.Create ("https://www.mono-project.com");
+			Assert.AreSame (WebRequestCreator.ClientHttp, wr.CreatorInstance, "WebRequest.Create(string)-https");
+
+			// or register 'https://'
 			Assert.IsTrue (WebRequest.RegisterPrefix ("https://", WebRequestCreator.ClientHttp), "RegisterPrefix-https://");
 			wr = WebRequest.Create ("https://www.mono-project.com");
 			Assert.AreSame (WebRequestCreator.ClientHttp, wr.CreatorInstance, "WebRequest.Create(string)-https://");
