@@ -211,13 +211,20 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void ChangeSourceRecreatesView()
+		public void ChangeSourceRecreatesView ()
 		{
 			// If we change the source, we create a new View
 			var source = new CollectionViewSource { Source = this.Source };
 			var view = source.View;
-			source.Source = new List<double>() { 1.5, 2.5, 3.5, 4.5 };
-			Assert.AreNotSame(view, source.View, "#1");
+			source.Source = new List<double> () { 1.5, 2.5, 3.5, 4.5 };
+			Assert.AreNotSame (view, source.View, "#1");
+		}
+
+		[TestMethod]
+		public void IsIComparerTest()
+		{
+			Assert.IsNotInstanceOfType<IComparer<object>>(new CollectionViewSource() { Source = new string[0] }.View, "#1");
+			Assert.IsInstanceOfType<IComparer<object>>(new CollectionViewSource() { Source = new List<string>() }.View, "#2");
 		}
 
 		[TestMethod]

@@ -12,7 +12,7 @@ using Mono;
 
 namespace System.Windows.Data {
 
-	sealed class ListCollectionView : EditableCollectionView, IDeferRefresh {
+	sealed class ListCollectionView : EditableCollectionView, IDeferRefresh, IComparer<object> {
 
 		public IList ActiveList {
 			get {
@@ -232,6 +232,11 @@ namespace System.Windows.Data {
 		bool RemoveFromFiltered (object item)
 		{
 			return filteredList.Remove (item);
+		}
+
+		int IComparer<object>.Compare (object x, object y)
+		{
+			return IndexOf (x) - IndexOf (y);
 		}
 
 		public override bool Contains (object item)

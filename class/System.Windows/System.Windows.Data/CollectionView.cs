@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace System.Windows {
 
-	abstract class CollectionView : ICollectionView, INotifyPropertyChanged, IComparer<object> {
+	abstract class CollectionView : ICollectionView, INotifyPropertyChanged {
 
 		public static ICollectionView Create (IEnumerable collection)
 		{
@@ -113,11 +113,6 @@ namespace System.Windows {
 			GroupDescriptions = new ObservableCollection<GroupDescription> ();
 			SortDescriptions = new SortDescriptionCollection ();
 			SourceCollection = collection;
-		}
-
-		int IComparer<object>.Compare (object x, object y)
-		{
-			return new PropertyComparer (SortDescriptions).Compare (x, y);
 		}
 
 		protected virtual void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
