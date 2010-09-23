@@ -859,6 +859,10 @@ Value::operator== (const Value &v) const
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
+		if (u.color == v.u.color)
+			return true;
+		if (u.color == NULL || v.u.color == NULL)
+			return false;
 		return *u.color == *v.u.color;
 	case Type::POINT:
 		return *u.point == *v.u.point;
