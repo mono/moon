@@ -1092,8 +1092,10 @@ PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 	Deployment::SetCurrent (deployment);
 
 	NPStreamRequest *req = (NPStreamRequest *) stream->notifyData;
-	if (req != NULL)
+	if (req != NULL) {
 		req->DestroyStream ();
+		stream->notifyData = NULL;
+	}
 
 	return NPERR_NO_ERROR;
 }
