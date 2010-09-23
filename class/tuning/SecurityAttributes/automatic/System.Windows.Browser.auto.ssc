@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 22 methods
+# 23 methods
 
 +SSC-M: System.Windows.Browser.ScriptObject System.Windows.Browser.HostServices::get_JsonSerializer()
 +SSC-M: System.Void System.Windows.Browser.HtmlPage::.cctor()
@@ -12,6 +12,7 @@
 +SSC-M: System.Void System.Windows.Browser.ManagedObject::SetProperty(System.String,System.Object[])
 +SSC-M: System.Object System.Windows.Browser.ManagedObject::Invoke(System.String,System.Object[])
 +SSC-M: System.Void System.Windows.Browser.ScriptObject::SetDefaultHandle()
++SSC-M: System.Void System.Windows.Browser.ScriptObject::set_Handle(System.IntPtr)
 +SSC-M: T System.Windows.Browser.ScriptObject::GetPropertyInternal<T>(System.IntPtr,System.String)
 +SSC-M: System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
 +SSC-M: T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.String,System.Object[])

@@ -106,6 +106,11 @@ namespace System.Windows.Browser {
 
 				_handle = value;
 
+				// FIXME: we need some thought about when to retain and when not to retain
+				// this is not correct - we retain too much. We only need to retain when we're
+				// called from the browser and keep objects passed to us, not when we call
+				// the browser to get something. The retain below fixes a crash in #994 and #986.
+				NativeMethods.html_object_retain (PluginHost.Handle, _handle);
 				if (handleIsScriptableNPObject)
 					free_mapping = AddNativeMapping (value, this);
 				lock (cachedObjects) {
