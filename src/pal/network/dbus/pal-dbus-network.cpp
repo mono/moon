@@ -31,9 +31,28 @@ MoonNetworkServiceDbus::~MoonNetworkServiceDbus ()
 		dbus_g_connection_unref (dbus_connection);
 }
 
+static bool
+network_manager_get_state (DBusGProxy *prop_proxy, GValue *state)
+{
+	GError *error = NULL;
+	
+	return dbus_g_proxy_call (prop_proxy, "Get", &error,
+				  G_TYPE_STRING, "org.freedesktop.NetworkManager",
+				  G_TYPE_STRING, "State",
+				  G_TYPE_INVALID,
+				  G_TYPE_VALUE, state,
+				  G_TYPE_INVALID);
+}
+
 bool
 MoonNetworkServiceDbus::SetNetworkStateChangedCallback (MoonCallback callback, gpointer data)
 {
+	GValue state = { 0, };
+	GError *error = NULL;
+	
+	if (!dbus_connection)
+		return false;
+	
 	if (nm_proxy == NULL) {
 		nm_proxy = dbus_g_proxy_new_for_name (dbus_connection,
 						      "org.freedesktop.NetworkManager",
@@ -53,69 +72,41 @@ MoonNetworkServiceDbus::SetNetworkStateChangedCallback (MoonCallback callback, g
 			g_warning ("failed to get proxy for network manager properties");
 			return false;
 		}
+		
+		// make sure we can get the state from network manager
+		if (!network_manager_get_state (prop_proxy, &state))
+			return false;
+		
+		// attach to dbus
+		dbus_g_proxy_add_signal (nm_proxy, "StateChanged", G_TYPE_UINT, G_TYPE_INVALID);
+		
+		dbus_g_proxy_connect_signal (nm_proxy, "StateChanged",
+					     G_CALLBACK (state_changed_handler),
+					     this, NULL);
 	}
-
-	if (this->callback) {
-		// detach from dbus
-		if (dbus_connection && nm_proxy) {
-			dbus_g_proxy_disconnect_signal (nm_proxy,
-							"StateChanged",
-							G_CALLBACK (state_changed_handler),
-							this);
-		}
-	}
-
+	
 	this->callback = callback;
 	this->callback_data = data;
-
-	if (this->callback) {
-		// attach to dbus
-		if (dbus_connection && nm_proxy) {
-			dbus_g_proxy_add_signal (nm_proxy,
-						 "StateChanged",
-						 G_TYPE_UINT,
-						 G_TYPE_INVALID);
-
-			dbus_g_proxy_connect_signal (nm_proxy,
-						     "StateChanged",
-						     G_CALLBACK (state_changed_handler),
-						     this,
-						     NULL);
-		}
-	}
-
-	return true;
+	
+	return prop_proxy != NULL;
 }
 
 void
 MoonNetworkServiceDbus::state_changed_handler (gpointer sender, guint state, gpointer data)
 {
 	MoonNetworkServiceDbus* dbus = (MoonNetworkServiceDbus*)data;
-
-	dbus->callback (dbus, dbus->callback_data);
+	
+	if (dbus->callback)
+		dbus->callback (dbus, dbus->callback_data);
 }
 
 bool
 MoonNetworkServiceDbus::GetIsNetworkAvailable ()
 {
-	GValue state = {0, };
-	bool rv = false;
-	GError *error = NULL;
-
-
-	if (!dbus_g_proxy_call (prop_proxy, "Get", &error,
-				G_TYPE_STRING, "org.freedesktop.NetworkManager",
-				G_TYPE_STRING, "State",
-				G_TYPE_INVALID,
-				G_TYPE_VALUE, &state,
-				G_TYPE_INVALID)) {
-		printf (error->message);
-		rv = false;
-	}
-	else {
-		if (G_VALUE_TYPE (&state) == G_TYPE_UINT)
-			rv = g_value_get_uint (&state) == 3 /* NM_STATE_CONNECTED */;
-	}
-
-	return rv;
+	GValue state = { 0, };
+	
+	if (!network_manager_get_state (prop_proxy, &state))
+		return false;
+	
+	return g_value_get_uint (&state) == 3; /* NM_STATE_CONNECTED */
 }

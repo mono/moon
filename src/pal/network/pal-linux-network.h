@@ -26,17 +26,16 @@ public:
 	virtual bool SetNetworkStateChangedCallback (MoonCallback callback, gpointer data);
 
 	virtual bool GetIsNetworkAvailable ();
-
-private:
-	bool using_dbus;
-
-	MoonCallback callback;
-	gpointer callback_data;
-
-	static void state_changed_handler (gpointer sender, guint state, gpointer data);
-
 	
+	void PollNetworkState ();
+	
+private:
 	MoonNetworkServiceDbus *dbus_network_service;
+	MoonCallback callback;
+	gpointer user_data;
+	bool using_dbus;
+	bool is_avail;
+	guint idle;
 };
 
 };
