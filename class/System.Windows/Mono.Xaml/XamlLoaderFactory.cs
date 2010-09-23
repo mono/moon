@@ -76,7 +76,8 @@ namespace Mono.Xaml {
 		{
 			Deployment c = Deployment.Current;
 
-			if (c == null || c.RuntimeVersion == null)
+			/* '1.0' is the default value, treat it as no version, since the real version might not be set yet. */
+			if (c == null || c.RuntimeVersion == null || c.RuntimeVersion == "1.0")
 				return null;
 
 			string [] version_parts = c.RuntimeVersion.Split ('.');
