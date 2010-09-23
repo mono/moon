@@ -279,10 +279,11 @@ namespace Mono.Xaml {
 			if (IsNameProperty (reader))
 				return new XamlNamePropertySetter (this, (DependencyObject) Object);
 
-			if (IsAttachedProperty (reader))
-				return LookupAttachedProperty (reader);
+			XamlPropertySetter prop = LookupAttachedProperty (reader);
+			if (prop != null)
+				return prop;
 	
-			XamlPropertySetter prop = LookupReflectionProperty (reader);
+			prop = LookupReflectionProperty (reader);
 
 			return prop;
 		}
@@ -353,6 +354,9 @@ namespace Mono.Xaml {
 			Type t = Parser.ResolveType ();
 			string name = AttachedPropertyName (reader.LocalName);
 
+			if (name == null)
+				return null;
+
 			return LookupAttachedProperty (t, name);
 		}
 
@@ -372,6 +376,8 @@ namespace Mono.Xaml {
 		private string AttachedPropertyName (string name)
 		{
 			int dot = name.IndexOf ('.');
+			if (dot < 1)
+				return null;
 			return name.Substring (++dot, name.Length - dot);
 		}
 
