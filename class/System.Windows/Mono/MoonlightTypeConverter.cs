@@ -115,8 +115,11 @@ namespace Mono {
 				if (destinationType == typeof (double) && str_val == "Auto")
 					return Double.NaN;
 				
-				if (destinationType == typeof (TimeSpan))
-					return TimeSpan.Parse (str_val);
+				if (destinationType == typeof (TimeSpan)) {
+					TimeSpan span;
+					if (TimeSpan.TryParse (str_val, out span))
+						return span;
+				}
 
 				if (destinationType == typeof (FontWeight))
 					return new FontWeight ((FontWeightKind) Enum.Parse (typeof (FontWeightKind), str_val, true));
