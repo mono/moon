@@ -34,10 +34,10 @@ namespace MoonTest.System.Windows.Controls
 			MultiScaleImage msi = new MultiScaleImage ();
 
 			msi.UseSprings = false;
-			msi.ViewportWidth = 1.0;
-			Assert.AreEqual (1.0, msi.ViewportWidth, "OriginalWidth");
-			msi.ViewportWidth = .1;
-			Assert.AreEqual (.1, msi.ViewportWidth, "FinalWidth");
+			msi.ViewportWidth = 2.0;
+			Assert.AreEqual (2.0, msi.ViewportWidth, "OriginalWidth");
+			msi.ViewportWidth = .2;
+			Assert.AreEqual (.2, msi.ViewportWidth, "FinalWidth");
 		}
 
 		[TestMethod]
@@ -46,11 +46,11 @@ namespace MoonTest.System.Windows.Controls
 			MultiScaleImage msi = new MultiScaleImage ();
 
 			msi.UseSprings = true;
-			msi.ViewportWidth = 1.0;
+			msi.ViewportWidth = 3.0;
 			Assert.AreEqual (1.0, msi.ViewportWidth, "OriginalWidth");
-			msi.ViewportWidth = .1;
+			msi.ViewportWidth = .3;
 			msi.UseSprings = false;
-			Assert.AreEqual (.1, msi.ViewportWidth, "FinalWidth");
+			Assert.AreEqual (.3, msi.ViewportWidth, "FinalWidth");
 		}
 	}
 }
