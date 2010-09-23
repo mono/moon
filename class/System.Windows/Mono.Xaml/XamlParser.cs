@@ -128,15 +128,21 @@ namespace Mono.Xaml {
 
 			try {
 				res = ParseReader (new StringReader (str));
+			} catch (XamlParseException pe) {
+				Console.WriteLine ("Exception while parsing string:");
+				Console.WriteLine (pe);
+				Console.WriteLine ("string:");
+				Console.WriteLine (str);
+
+				throw pe;
 			} catch (Exception e) {
 				Console.WriteLine ("Exception while parsing string:");
 				Console.WriteLine (e);
 				Console.WriteLine ("string:");
 				Console.WriteLine (str);
 
-				throw e;
+				throw ParseException ("Caught exception: {0}", e.Message);
 			}
-
 			return res;
 		}
 
@@ -557,7 +563,7 @@ namespace Mono.Xaml {
 						return;
 					}
 
-					if (IsStructType (obj.Type)) {
+					if (IsLegalStructType (obj.Type)) {
 						MutableObject mutable = (MutableObject) obj.Object;
 						mutable.Object = KnownStructValueFromString (obj, value);
 						return;
@@ -571,7 +577,7 @@ namespace Mono.Xaml {
 
 					throw ParseException ("Element {0} does not support text properties.", CurrentElement.Name);
 				}
-
+				
 				object converted = content.ConvertTextValue (value);
 				content.SetValue (converted);
 			}
@@ -734,9 +740,12 @@ namespace Mono.Xaml {
 			if (IsMarkupExpression (reader.Value))
 				value = ParseAttributeMarkup (element, property);
 			else {
-				value = property.ConvertTextValue (reader.Value);
+				try {
+					value = property.ConvertTextValue (reader.Value);
+				} catch (Exception ex) {
+					throw ParseException ("Could not convert attribute value '{0}' on element {1}.", reader.Value, element.Name, ex);
+				}
 			}
-
 			return value;
 		}
 
@@ -1253,7 +1262,7 @@ namespace Mono.Xaml {
 			if (o == null && IsLegalCorlibType (type))
 				o = DefaultValueForCorlibType (type);
 
-			if (o == null && IsStructType (type))
+			if (o == null && IsLegalStructType (type))
 				o = DefaultValueForStructType (type);
 
 			if (o == null && IsSpecialCasedType (type))
@@ -1362,8 +1371,23 @@ namespace Mono.Xaml {
 			throw ParseException ("Invalid corlib type used.");
 		}
 
-		private static bool IsStructType (Type t)
+		private static bool IsLegalStructType (Type t)
 		{
+			if (t == typeof (char))
+				return false;
+			if (t == typeof (byte))
+				return false;
+			if (t == typeof (DateTime))
+				return false;	
+			if (t == typeof (short))
+				return false;
+			if (t == typeof (long))
+				return false;
+			if (t == typeof (Single))
+				return false;
+			if (t == typeof (Decimal))
+				return false;
+
 			return t.IsValueType;
 		}
 
