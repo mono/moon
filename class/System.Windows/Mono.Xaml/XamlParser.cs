@@ -272,9 +272,9 @@ namespace Mono.Xaml {
 
 		internal void RegisterKeyItem (XamlObjectElement element, XamlElement target, string key)
 		{
-			IDictionary rd = CurrentDictionary (element);
-			if (rd == null)
-				throw ParseException ("Attempt to use x:Key outside of an IDictionary.");
+//			IDictionary rd = CurrentDictionary (element);
+//			if (rd == null)
+//				throw ParseException ("Attempt to use x:Key outside of an IDictionary.");
 
 			element.X_Key = key;
 		}
