@@ -131,7 +131,7 @@ class GlyphTypeface {
 class GlyphTypefaceCollection : public Collection {
  protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
-	virtual void RemovedFromCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
 
 	virtual ~GlyphTypefaceCollection () { }
 	

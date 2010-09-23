@@ -109,12 +109,14 @@ SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 }
 
 void
-SetterBaseCollection::RemovedFromCollection (Value *value)
+SetterBaseCollection::RemovedFromCollection (Value *value, bool is_value_safe)
 {
-	SetterBase *setter = value->AsSetterBase ();
-	if (setter)
-		setter->SetAttached (false);
-	DependencyObjectCollection::RemovedFromCollection (value);
+	if (is_value_safe) {
+		SetterBase *setter = value->AsSetterBase ();
+		if (setter)
+			setter->SetAttached (false);
+	}
+	DependencyObjectCollection::RemovedFromCollection (value, is_value_safe);
 }
 
 bool

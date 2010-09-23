@@ -1096,9 +1096,9 @@ KeyFrameCollection::AddedToCollection (Value *value, MoonError *error)
 }
 
 void
-KeyFrameCollection::RemovedFromCollection (Value *value)
+KeyFrameCollection::RemovedFromCollection (Value *value, bool is_value_safe)
 {
-	DependencyObjectCollection::RemovedFromCollection (value);
+	DependencyObjectCollection::RemovedFromCollection (value, is_value_safe);
 	
 	resolved = false;
 }

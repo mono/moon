@@ -95,7 +95,7 @@ Collection::Dispose ()
 	
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
-		RemovedFromCollection (value);
+		RemovedFromCollection (value, false);
 		delete value;
 	}
 	g_ptr_array_set_size (array, 0);
@@ -144,7 +144,7 @@ Collection::Clear ()
 	SetCount (0);
 
 	for (guint i = 0; i < len; i++) {
-		RemovedFromCollection (vals[i]);
+		RemovedFromCollection (vals[i], true);
 		delete vals[i];
 	}
 	delete[] vals;
@@ -267,7 +267,7 @@ Collection::RemoveAt (int index)
 	SetCount ((int) array->len);
 	generation++;
 	
-	RemovedFromCollection (value);
+	RemovedFromCollection (value, true);
 	
 	EmitChanged (CollectionChangedActionRemove, NULL, value, index);
 	
@@ -339,7 +339,7 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 	if (AddedToCollection (added, error)) {
 		array->pdata[index] = added;
 	
-		RemovedFromCollection (removed);
+		RemovedFromCollection (removed, true);
 	
 		EmitChanged (CollectionChangedActionReplace, added, removed, index);
 
@@ -489,18 +489,20 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 }
 
 void
-DependencyObjectCollection::RemovedFromCollection (Value *value)
+DependencyObjectCollection::RemovedFromCollection (Value *value, bool is_value_safe)
 {
-	DependencyObject *obj = value->AsDependencyObject ();
+	if (is_value_safe) {
+		DependencyObject *obj = value->AsDependencyObject ();
 
-	if (obj) {
-		obj->RemovePropertyChangeListener (this);
-		obj->SetParent (NULL, NULL);
-		obj->SetMentor (NULL);
-		obj->SetIsAttached (false);
+		if (obj) {
+			obj->RemovePropertyChangeListener (this);
+			obj->SetParent (NULL, NULL);
+			obj->SetMentor (NULL);
+			obj->SetIsAttached (false);
+		}
 	}
 	
-	Collection::RemovedFromCollection (value);
+	Collection::RemovedFromCollection (value, is_value_safe);
 }
 
 void

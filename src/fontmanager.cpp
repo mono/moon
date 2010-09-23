@@ -798,10 +798,10 @@ GlyphTypefaceCollection::AddedToCollection (Value *value, MoonError *error)
 }
 
 void
-GlyphTypefaceCollection::RemovedFromCollection (Value *value)
+GlyphTypefaceCollection::RemovedFromCollection (Value *value, bool is_value_safe)
 {
-	Collection::RemovedFromCollection (value);
-	if (!Value::IsNull (value) && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
+	Collection::RemovedFromCollection (value, is_value_safe);
+	if (is_value_safe && !Value::IsNull (value) && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 		value->AsDependencyObject ()->SetIsAttached (false);
 }
 

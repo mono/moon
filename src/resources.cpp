@@ -521,9 +521,9 @@ remove_from_hash_by_value (gpointer  key,
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
 void
-ResourceDictionary::RemovedFromCollection (Value *value)
+ResourceDictionary::RemovedFromCollection (Value *value, bool is_value_safe)
 {
-	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+	if (is_value_safe & value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
 
 		if (obj) {
@@ -533,9 +533,9 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 		}
 	}
 
-	Collection::RemovedFromCollection (value);
+	Collection::RemovedFromCollection (value, is_value_safe);
 
-	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+	if (is_value_safe && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		if (!from_resource_dictionary_api && value->AsDependencyObject()) {
 			g_hash_table_foreach_remove (hash, remove_from_hash_by_value, value->AsDependencyObject ());
 

@@ -75,7 +75,7 @@ public:
 	const static int IsSealedProperty;
 
 	virtual bool AddedToCollection (Value *value, MoonError *error);
-	virtual void RemovedFromCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
 	
 	virtual Type::Kind GetElementType () { return Type::SETTERBASE; }
 	

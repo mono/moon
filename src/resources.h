@@ -98,7 +98,7 @@ protected:
 	virtual bool CanAdd (Value *value);
 
 	virtual bool AddedToCollection (Value *value, MoonError *error);
-	virtual void RemovedFromCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
 
 #if EVENT_ARG_REUSE
 	ResourceDictionaryChangedEventArgs *changedEventArgs;

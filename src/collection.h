@@ -100,7 +100,8 @@ protected:
 
 	virtual bool CanAdd (Value *value);
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
-	virtual void RemovedFromCollection (Value *value) {}
+	// if 'is_value_safe' is false, 'value' might have been deleted, don't access it.
+	virtual void RemovedFromCollection (Value *value, bool is_value_safe) {}
 	
 	void SetCount (int count);
 
@@ -127,7 +128,7 @@ public:
 	
 protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
-	virtual void RemovedFromCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObjectCollection ();
@@ -343,7 +344,7 @@ protected:
 class HitTestCollection : public UIElementCollection {
  protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
-	virtual void RemovedFromCollection (Value *value) {}
+	virtual void RemovedFromCollection (Value *value, bool is_value_safe) {}
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	HitTestCollection ();
