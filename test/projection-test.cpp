@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <gtk/gtk.h>
 #ifdef USE_GALLIUM
 #define __MOON_GALLIUM__
