@@ -34,6 +34,9 @@ using System.Collections.Generic;
 namespace System.Windows {
 
 	internal delegate void ValueValidator (DependencyObject target, DependencyProperty property, object value);
+	internal class CoreDependencyProperty : DependencyProperty {
+		internal CoreDependencyProperty (IntPtr handle, string name, Type property_type, Type declaring_type) : base (handle, name, property_type, declaring_type) {}
+	}
 	
 	public class DependencyProperty {
 
@@ -304,7 +307,7 @@ namespace System.Windows {
 				return true;
 
 			if (create) {
-				property = new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind));
+				property = new CoreDependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind));
 			}
 
 			return property != null;
