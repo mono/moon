@@ -265,7 +265,7 @@ public:
 	const static int OutOfBrowserSettingsProperty;
  	/* @PropertyType=AssemblyPartCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int PartsProperty;
- 	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
+	/* @PropertyType=string,DefaultValue=\"1.0\",ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int RuntimeVersionProperty;
 	
 	bool InitializeManagedDeployment (gpointer plugin_instance, const char *culture, const char *uiculture);
