@@ -136,7 +136,7 @@ error_handler (EventObject *sender, EventArgs *args, gpointer user_data)
 	
 	fprintf (stderr, "LunarLauncher Error: %s\n", err->GetErrorMessage ());
 	
-	exit (EXIT_FAILURE);
+	exit (EXIT_SUCCESS);
 }
 
 static bool
