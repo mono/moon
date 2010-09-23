@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 564 methods needs to be decorated.
+# 565 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1329,6 +1329,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::resource_dictionary_changed_event_args_set_old_item(System.IntPtr,Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::resource_dictionary_set_internal_source_with_error_(System.IntPtr,System.String,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::rich_text_box_on_got_focus(System.IntPtr,System.IntPtr)
