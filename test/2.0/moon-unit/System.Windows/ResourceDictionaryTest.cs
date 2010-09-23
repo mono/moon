@@ -192,7 +192,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug (RuntimeVersion = 4)]
 		public void Parse_xKeyOutsideResourceDictionary ()
 		{
 			// no exceptions
