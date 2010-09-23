@@ -527,7 +527,7 @@ namespace Mono.Xaml {
 			if (!typeof (Binding).IsAssignableFrom (Type)) {
 				Binding binding = value as Binding;
 				if (binding != null) {
-					SetBinding (binding, obj.Object);
+					SetBinding (binding, Element.Object);
 					return;
 				}
 			}
