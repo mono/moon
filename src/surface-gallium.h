@@ -19,17 +19,26 @@
 
 namespace Moonlight {
 
-pipe_context *
-pipe_ref (pipe_context *pipe);
+class GalliumPipe {
+public:
+	GalliumPipe (pipe_context *context);
+	~GalliumPipe ();
 
-void
-pipe_unref (pipe_context *pipe);
+	GalliumPipe *ref ();
+	void        unref ();
+
+	pipe_context *Pipe ();
+
+private:
+	pipe_context *pipe;
+	gint32       refcount;
+};
 
 class GalliumSurface : public MoonSurface {
 public:
 	class Transfer {
 	public:
-		Transfer (pipe_context  *context,
+		Transfer (GalliumPipe   *context,
 			  pipe_resource *texture);
 		virtual ~Transfer ();
 
@@ -37,18 +46,18 @@ public:
 		void Unmap ();
 
 	private:
-		pipe_context  *pipe;
+		GalliumPipe   *gpipe;
 		pipe_resource *resource;
 		pipe_transfer *transfer;
 	};
 
 	GalliumSurface (pipe_resource *texture);
-	GalliumSurface (pipe_context *context,
-			int          width,
-			int          height);
+	GalliumSurface (GalliumPipe *pipe,
+			int         width,
+			int         height);
 	virtual ~GalliumSurface ();
 
-	cairo_surface_t *Cairo (pipe_context *context);
+	cairo_surface_t *Cairo (GalliumPipe *pipe);
 	cairo_surface_t *Cairo ();
 
 	pipe_resource *Texture ();
@@ -59,7 +68,7 @@ private:
 
 	void Sync ();
 
-	pipe_context      *pipe;
+	GalliumPipe       *gpipe;
 	pipe_resource     *resource;
 	pipe_sampler_view *sampler_view;
 	cairo_surface_t   *mapped;

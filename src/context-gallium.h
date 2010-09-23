@@ -30,12 +30,12 @@ public:
 	public:
 		Surface (MoonSurface  *moon,
 			 Rect         extents,
-			 pipe_context *context);
+			 GalliumPipe  *pipe);
 
 		cairo_surface_t *Cairo ();
 
 	private:
-		pipe_context *pipe;
+		GalliumPipe *gpipe;
 	};
 
 	GalliumContext (GalliumSurface *surface);
@@ -97,6 +97,7 @@ private:
 	void *GetEffectShader (PixelShader *ps);
 
 	pipe_context *pipe;
+	GalliumPipe  *gpipe;
 
 	cso_context *cso;
 

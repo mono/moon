@@ -24,33 +24,47 @@
 
 namespace Moonlight {
 
-pipe_context *
-pipe_ref (pipe_context *pipe)
+GalliumPipe::GalliumPipe (pipe_context *context)
 {
-	int refcount = GPOINTER_TO_INT (pipe->priv);
+	pipe     = context;
+	refcount = 1;
+}
+	
+GalliumPipe::~GalliumPipe ()
+{
+	pipe->destroy (pipe);
+}
 
-	pipe->priv = GINT_TO_POINTER (refcount + 1);
-	return pipe;
+GalliumPipe *
+GalliumPipe::ref ()
+{
+	g_atomic_int_inc (&refcount);
+
+	return this;
 }
 
 void
-pipe_unref (pipe_context *pipe)
+GalliumPipe::unref ()
 {
-	int refcount = GPOINTER_TO_INT (pipe->priv);
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
 
-	if (refcount == 1) {
-		pipe->destroy (pipe);
-	} else
-		pipe->priv = GINT_TO_POINTER (refcount - 1);
+	if (v == 0)
+		delete this;
 }
 
-GalliumSurface::Transfer::Transfer (pipe_context  *context,
+pipe_context *
+GalliumPipe::Pipe ()
+{
+	return pipe;
+}
+	
+GalliumSurface::Transfer::Transfer (GalliumPipe   *pipe,
 				    pipe_resource *texture)
 {
 	resource = NULL;
-	pipe     = pipe_ref (context);
+	gpipe    = pipe->ref ();
 
-	transfer = pipe_get_transfer (pipe,
+	transfer = pipe_get_transfer (gpipe->Pipe (),
 				      texture,
 				      0,
 				      0,
@@ -65,26 +79,33 @@ GalliumSurface::Transfer::Transfer (pipe_context  *context,
 
 GalliumSurface::Transfer::~Transfer ()
 {
+	struct pipe_context *pipe = gpipe->Pipe ();
+
 	pipe->transfer_destroy (pipe, transfer);
 	pipe_resource_reference (&resource, NULL);
-	pipe_unref (pipe);
+
+	gpipe->unref ();
 }
 
 void *
 GalliumSurface::Transfer::Map ()
 {
+	struct pipe_context *pipe = gpipe->Pipe ();
+
 	return pipe->transfer_map (pipe, transfer);
 }
 
 void
 GalliumSurface::Transfer::Unmap ()
 {
+	struct pipe_context *pipe = gpipe->Pipe ();
+
 	return pipe->transfer_unmap (pipe, transfer);
 }
 
 GalliumSurface::GalliumSurface (pipe_resource *texture)
 {
-	pipe         = NULL;
+	gpipe        = NULL;
 	mapped       = NULL;
 	resource     = NULL;
 	sampler_view = NULL;
@@ -92,14 +113,14 @@ GalliumSurface::GalliumSurface (pipe_resource *texture)
 	pipe_resource_reference (&resource, texture);
 }
 
-GalliumSurface::GalliumSurface (pipe_context *context,
-				int          width,
-				int          height)
+GalliumSurface::GalliumSurface (GalliumPipe *pipe,
+				int         width,
+				int         height)
 {
 	struct pipe_resource pt;
-	struct pipe_screen   *screen = context->screen;
+	struct pipe_screen   *screen = pipe->Pipe ()->screen;
 
-	pipe         = pipe_ref (context);
+	gpipe        = pipe->ref ();
 	mapped       = NULL;
 	sampler_view = NULL;
 
@@ -133,8 +154,8 @@ GalliumSurface::~GalliumSurface ()
 	pipe_sampler_view_reference (&sampler_view, NULL);
 	pipe_resource_reference (&resource, NULL);
 
-	if (pipe)
-		pipe_unref (pipe);
+	if (gpipe)
+		gpipe->unref ();
 }
 
 void
@@ -147,7 +168,7 @@ GalliumSurface::CairoDestroy (void *data)
 }
 
 cairo_surface_t *
-GalliumSurface::Cairo (pipe_context *context)
+GalliumSurface::Cairo (GalliumPipe *pipe)
 {
 	static cairo_user_data_key_t key;
 	Transfer                     *transfer;
@@ -156,7 +177,7 @@ GalliumSurface::Cairo (pipe_context *context)
 	if (mapped)
 		return cairo_surface_reference (mapped);
 
-	transfer = new Transfer (context, resource);
+	transfer = new Transfer (pipe, resource);
 	data     = (unsigned char *) transfer->Map ();
 
 	mapped = cairo_image_surface_create_for_data (data,
@@ -176,14 +197,14 @@ GalliumSurface::Cairo (pipe_context *context)
 cairo_surface_t *
 GalliumSurface::Cairo ()
 {
-	if (!pipe) {
+	if (!gpipe) {
 		g_warning ("GalliumSurface::Cairo called with invalid "
 			   "surface instance.");
 
 		return cairo_image_surface_create (CAIRO_FORMAT_INVALID, 0, 0);
 	}
 
-	return Cairo (pipe);
+	return Cairo (gpipe);
 }
 
 void
@@ -199,13 +220,12 @@ struct pipe_sampler_view *
 GalliumSurface::SamplerView ()
 {
 	struct pipe_sampler_view templ;
+	struct pipe_context      *pipe = gpipe->Pipe ();
 
 	Sync ();
 
 	if (sampler_view)
 		return sampler_view;
-
-	g_assert (pipe);
 
 	u_sampler_view_default_template (&templ, resource, resource->format);
 	sampler_view = pipe->create_sampler_view (pipe, resource, &templ);

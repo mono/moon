@@ -32,20 +32,20 @@ namespace Moonlight {
 
 GalliumContext::Surface::Surface (MoonSurface  *moon,
 				  Rect         extents,
-				  pipe_context *context)
+				  GalliumPipe  *pipe)
 {
 	native        = moon->ref ();
 	box           = extents;
 	surface       = NULL;
 	device_offset = Point ();
-	pipe          = context;
+	gpipe         = pipe->ref ();
 }
 
 cairo_surface_t *
 GalliumContext::Surface::Cairo ()
 {
 	if (!surface) {
-		surface = ((GalliumSurface *) native)->Cairo (pipe);
+		surface = ((GalliumSurface *) native)->Cairo (gpipe);
 
 		/* replace device offset */
 		if (!box.IsEmpty ()) {
@@ -73,10 +73,11 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	Surface              *cs;
 	unsigned             i;
 
-	pipe = screen->context_create (screen, (void *) 1);
-	cso  = cso_create_context (pipe);
+	pipe  = screen->context_create (screen, NULL);
+	gpipe = new GalliumPipe (pipe);
+	cso   = cso_create_context (pipe);
 
-	cs = new Surface (surface, r, pipe);
+	cs = new Surface (surface, r, gpipe);
 	Stack::Push (new Context::Node (cs, &transform.m, NULL));
 	cs->unref ();
 
@@ -229,7 +230,7 @@ GalliumContext::~GalliumContext ()
 	cso_release_all (cso);
 	cso_destroy_context (cso);
 
-	pipe_unref (pipe);
+	gpipe->unref ();
 }
 
 void
@@ -428,8 +429,10 @@ GalliumContext::Push (Group extents)
 {
 	cairo_matrix_t matrix;
 	Rect           r = extents.r.RoundOut ();
-        GalliumSurface *surface = new GalliumSurface (pipe, r.width, r.height);
-        Surface        *cs = new Surface (surface, extents.r, pipe);
+        GalliumSurface *surface = new GalliumSurface (gpipe,
+						      r.width,
+						      r.height);
+        Surface        *cs = new Surface (surface, extents.r, gpipe);
 
 	Top ()->GetMatrix (&matrix);
 
@@ -439,7 +442,7 @@ GalliumContext::Push (Group extents)
 	if (is_softpipe) {
 		void                     *data;
 		GalliumSurface::Transfer *transfer =
-			new GalliumSurface::Transfer (pipe,
+			new GalliumSurface::Transfer (gpipe,
 						      surface->Texture ());
 
 		data = transfer->Map ();
@@ -461,7 +464,7 @@ void
 GalliumContext::Push (Group extents, MoonSurface *surface)
 {
 	cairo_matrix_t matrix;
-	Surface        *cs = new Surface (surface, extents.r, pipe);
+	Surface        *cs = new Surface (surface, extents.r, gpipe);
 
 	Top ()->GetMatrix (&matrix);
 
@@ -717,7 +720,7 @@ GalliumContext::Blur (MoonSurface *src,
 		}
 	}
 
-	intermediate = new GalliumSurface (pipe, r.width, r.height);
+	intermediate = new GalliumSurface (gpipe, r.width, r.height);
 
 	for (i = 0; i <= size; i++) {
 		cbuf[i][1][0] = values[i];
@@ -941,7 +944,7 @@ GalliumContext::DropShadow (MoonSurface *src,
 		}
 	}
 
-	intermediate = new GalliumSurface (pipe, r.width, r.height);
+	intermediate = new GalliumSurface (gpipe, r.width, r.height);
 
 	for (i = 0; i <= size; i++) {
 		cbuf[i][1][0] = values[i];
@@ -1609,7 +1612,7 @@ GalliumContext::ShaderEffect (MoonSurface *src,
 		struct pipe_sampler_view *sampler_view = NULL;
 
 		if (sampler[i]) {
-			input[i] = new GalliumSurface (pipe,
+			input[i] = new GalliumSurface (gpipe,
 						       tex->width0,
 						       tex->height0);
 			if (input[i]) {
