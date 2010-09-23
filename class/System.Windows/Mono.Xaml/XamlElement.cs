@@ -354,7 +354,7 @@ namespace Mono.Xaml {
 			Type t = Parser.ResolveType ();
 			string name = AttachedPropertyName (reader.LocalName);
 
-			if (name == null)
+			if (t == null || name == null)
 				return null;
 
 			return LookupAttachedProperty (t, name);
@@ -364,12 +364,14 @@ namespace Mono.Xaml {
 		{
 			MethodInfo getter = ResolveAttachedPropertyGetter (name, t);
 
-			if (getter == null) {
+			if (getter == null)
 				return null;
-			}
 
 			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter.ReturnType);
 
+			if (setter == null)
+				return null;
+			
 			return new XamlAttachedPropertySetter (this, name, getter, setter);
 		}
 
