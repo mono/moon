@@ -513,6 +513,9 @@ namespace Mono.Xaml {
 				return IntPtr.Zero;
 			}
 
+			// XamlParser needs to ref its return value otherwise we can end up returning a an object to native
+			// code with a refcount of '1' and it could then get GC'ed before we use it.
+			Mono.NativeMethods.event_object_ref (dob.NativeHandle);
 			return dob.NativeHandle;
 		}
 
@@ -1267,11 +1270,6 @@ namespace Mono.Xaml {
 
 			if (o == null && IsSpecialCasedType (type))
 				o = DefaultValueForSpecialCasedType (type);
-
-			// TODO: Why did I need this? 
-			INativeEventObjectWrapper evo = o as INativeEventObjectWrapper;
-			if (evo != null)
-				NativeMethods.event_object_ref (evo.NativeHandle);
 
 			return o;
 		}
