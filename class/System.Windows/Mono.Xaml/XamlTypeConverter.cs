@@ -56,6 +56,7 @@ namespace Mono.Xaml {
 			string_converters [typeof (Color)] = ConvertColor;
 			string_converters [typeof (PropertyPath)] = ConvertPropertyPath;
 			string_converters [typeof (Double)] = ConvertDouble;
+			string_converters [typeof (XmlLanguage)] = ConvertXmlLanguage;
 		}
 
 		public XamlTypeConverter (XamlParser parser, XamlObjectElement element, string propertyName, Type destinationType) : base (propertyName, destinationType)
@@ -254,6 +255,11 @@ namespace Mono.Xaml {
 		{
 			object res = Color.FromString ((string) value);
 			return res;
+		}
+		
+		private static object ConvertXmlLanguage (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			return XmlLanguage.GetLanguage ((string) value);
 		}
 
 		private static object ConvertPropertyPath (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
