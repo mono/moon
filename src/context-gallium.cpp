@@ -32,13 +32,15 @@ namespace Moonlight {
 
 GalliumContext::Surface::Surface (MoonSurface  *moon,
 				  Rect         extents,
-				  GalliumPipe  *pipe)
+				  GalliumPipe  *pipe) :
+	Context::Surface::Surface (moon, extents)
 {
-	native        = moon->ref ();
-	box           = extents;
-	surface       = NULL;
-	device_offset = Point ();
-	gpipe         = pipe->ref ();
+	gpipe = pipe->ref ();
+}
+
+GalliumContext::Surface::~Surface ()
+{
+	gpipe->unref ();
 }
 
 cairo_surface_t *
