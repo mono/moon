@@ -59,8 +59,7 @@ namespace Mono.Xaml {
 
 		public static XamlLoader CreateLoader (Assembly assembly, Uri resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			if (use_managed == null)
-				use_managed = ShouldUseManagedParser ();
+			use_managed = ShouldUseManagedParser ();
 
 			if (use_managed != null && use_managed == true)
 				return new SL4XamlLoader (resourceBase);
