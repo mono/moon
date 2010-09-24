@@ -303,6 +303,8 @@ variant_to_value (const NPVariant *v, Value **result)
 	}
 	case NPVariantType_Void:
 	case NPVariantType_Null:
+		*result = new Value (Type::NPOBJ, NULL);
+		break;
 	case NPVariantType_Object:
 		*result = new Value (Type::NPOBJ, NPVARIANT_TO_OBJECT (*v));
 		break;
