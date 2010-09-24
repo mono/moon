@@ -430,7 +430,27 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void AttachedProperty_ClashWithCLRProperty()
+		[MaxRuntimeVersion(2)]
+		public void AttachedProperty_ClashWithCLRProperty_sl2()
+		{
+			// Check to ensure we do *not* use the type converter
+			// declared on the CLR property as this is an attached DP.
+			var dp = AttachedDPPropertyClash.AttachedProperty;
+			var value = new MyControl();
+			var source = new AttachedDPPropertyClash();
+			var target = new Rectangle ();
+			source.SetValue(dp, value);
+
+			BindingOperations.SetBinding(target, Rectangle.DataContextProperty, new Binding("Attached") { Mode = BindingMode.TwoWay, Source = source });
+			Assert.AreNotSame (source.GetValue (dp), target.DataContext, "#1");
+
+			target.DataContext = 123;
+			Assert.AreSame(value, source.GetValue(dp), "#2");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void AttachedProperty_ClashWithCLRProperty_sl3()
 		{
 			// Check to ensure we do *not* use the type converter
 			// declared on the CLR property as this is an attached DP.
@@ -538,7 +558,28 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void BindDpToDp ()
+		[MaxRuntimeVersion(2)]
+		public void BindDpToDp_sl2 ()
+		{
+			var data = new TextProp { MyText = "Hello" };
+			TextBlock block = new TextBlock ();
+			block.SetBinding (TextBlock.TextProperty,
+				new Binding {
+					Path = new PropertyPath ("MyText"),
+					Mode = BindingMode.TwoWay,
+					Source = data,
+				}
+			);
+
+			Assert.AreEqual ("Hello", block.Text, "#1");
+
+			data.MyText = "Yarr";
+			Assert.AreEqual ("Hello", block.Text, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void BindDpToDp_sl3 ()
 		{
 			var data = new TextProp { MyText = "Hello" };
 			TextBlock block = new TextBlock ();
@@ -601,7 +642,21 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void BindToDP_WrongDPName_WithName ()
+		[MaxRuntimeVersion(2)]
+		public void BindToDP_WrongDPName_WithName_sl2 ()
+		{
+			var data = new UnbackedDPs ();
+			var rect = new Rectangle ();
+			rect.SetBinding (Rectangle.WidthProperty, new Binding {
+				Path = new PropertyPath ("SomeDP"),
+				Source = data,
+			});
+			Assert.IsTrue (Double.IsNaN (rect.Width), "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void BindToDP_WrongDPName_WithName_sl3 ()
 		{
 			var data = new UnbackedDPs ();
 			var rect = new Rectangle ();
@@ -1128,7 +1183,7 @@ namespace MoonTest.System.Windows.Data
 
 			BindingOperations.SetBinding(target, PlaneProjection.RotationZProperty, binding);
 			source.Projection = target;
-			EnqueueCallback(() => Assert.AreEqual(source.Width, target.RotationZ, "#1"));
+			EnqueueCallback(() => Assert.AreNotEqual(source.Width, target.RotationZ, "#1"));
 			EnqueueTestComplete();
 		}
 
@@ -1248,7 +1303,50 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void DOBinding_OneWay ()
+		[MaxRuntimeVersion(2)]
+		public void DOBinding_OneWay_SourceToTarget_sl2 ()
+		{
+			var source = new SolidColorBrush (Colors.Red);
+			var target = new SolidColorBrush ();
+			BindingOperations.SetBinding (target, SolidColorBrush.ColorProperty, new Binding ("Color") {
+				Source = source,
+				Mode = BindingMode.OneWay,
+			});
+			source.Color = Colors.Blue;
+			Assert.AreEqual (Colors.Red.ToString (), target.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void DOBinding_OneWay_SourceToTarget_sl3 ()
+		{
+			var source = new SolidColorBrush (Colors.Red);
+			var target = new SolidColorBrush ();
+			BindingOperations.SetBinding (target, SolidColorBrush.ColorProperty, new Binding ("Color") {
+				Source = source,
+				Mode = BindingMode.OneWay,
+			});
+			source.Color = Colors.Blue;
+			Assert.AreEqual (Colors.Blue.ToString (), target.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void DOBinding_TwoWay_SourceToTarget_sl2 ()
+		{
+			var source = new SolidColorBrush (Colors.Red);
+			var target = new SolidColorBrush ();
+			BindingOperations.SetBinding (target, SolidColorBrush.ColorProperty, new Binding ("Color") {
+				Source = source,
+				Mode = BindingMode.TwoWay,
+			});
+			source.Color = Colors.Blue;
+			Assert.AreEqual (Colors.Red.ToString (), target.Color.ToString (), "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void DOBinding_TwoWay_SourceToTarget_sl3 ()
 		{
 			var source = new SolidColorBrush (Colors.Red);
 			var target = new SolidColorBrush ();
@@ -1261,7 +1359,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void DOBinding_TwoWay ()
+		public void DOBinding_TwoWay_TargetToSource ()
 		{
 			var source = new SolidColorBrush (Colors.Red);
 			var target = new SolidColorBrush ();
@@ -1274,7 +1372,36 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void DPSetValuePreferred_TwoWay()
+		[MaxRuntimeVersion(2)]
+		public void DPSetValuePreferred_TwoWay_sl2()
+		{
+			var str = "test_string";
+			var source = new TargetClass ();
+			source.SetValue(TargetClass.TestProperty, str);
+			var target = new TargetClass();
+			target.SetBinding(TargetClass.TestProperty, new Binding("Test") { Source = source, Mode = BindingMode.TwoWay });
+
+			Assert.IsFalse(source.SetterCalled, "#1");
+			Assert.IsTrue (source.GetterCalled, "#2"); /* sl2 */
+			Assert.IsFalse(target.SetterCalled, "#3");
+			Assert.IsFalse(target.GetterCalled, "#4");
+
+			source.SetValue(TargetClass.TestProperty, "otherstring");
+			Assert.IsFalse(source.SetterCalled, "#5");
+			Assert.IsTrue(source.GetterCalled, "#6"); /* sl2 */
+			Assert.IsFalse(target.SetterCalled, "#7");
+			Assert.IsFalse(target.GetterCalled, "#8");
+
+			target.SetValue (TargetClass.TestProperty, "somestring");
+			Assert.IsTrue(source.SetterCalled, "#9"); /* sl2 */
+			Assert.IsTrue(source.GetterCalled, "#10");
+			Assert.IsFalse(target.SetterCalled, "#11");
+			Assert.IsFalse(target.GetterCalled, "#12");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void DPSetValuePreferred_TwoWay_sl3()
 		{
 			var str = "test_string";
 			var source = new TargetClass ();
@@ -2681,8 +2808,8 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[SilverlightBug ("Throws an unexpected XamlParseException")]
-		public void XamlBindAfterResourcesb ()
+		[MaxRuntimeVersion(3)]
+		public void XamlBindAfterResourcesb_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
@@ -2697,6 +2824,23 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 ");
 			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
 			Assert.AreEqual (Colors.Black.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void XamlBindAfterResourcesb_sl4 ()
+		{
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource FAKEBRUSH}}"" />
+</Canvas>
+"));
 		}
 
 		[TestMethod]
@@ -2722,8 +2866,8 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[SilverlightBug("They think 'Path' is part of a static resource for some bizarre reason")]
-		public void XamlBindAfterResources2b ()
+		[MaxRuntimeVersion(3)]
+		public void XamlBindAfterResources2b_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
@@ -2738,6 +2882,23 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 ");
 			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
 			Assert.AreEqual (Colors.Black.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void XamlBindAfterResources2b_sl4 ()
+		{
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource brush} Path=FAKEPATH}"" />
+</Canvas>
+"));
 		}
 
 		[TestMethod]
@@ -2763,8 +2924,8 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[SilverlightBug("They think 'Converter' is part of a static resource for some bizarre reason")]
-		public void XamlBindAfterResources3b ()
+		[MaxRuntimeVersion(3)]
+		public void XamlBindAfterResources3b_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
@@ -2779,6 +2940,23 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 ");
 			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
 			Assert.AreEqual (Colors.Blue.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void XamlBindAfterResources3b_sl4 ()
+		{
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource brush} Converter={StaticResource DONTEXIST}}"" />
+</Canvas>
+"));
 		}
 
 		[TestMethod]
@@ -2803,8 +2981,8 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[SilverlightBug ("Throws an unexpected XamlParseException")]
-		public void XamlBindBeforeResourcesb ()
+		[MaxRuntimeVersion(3)]
+		public void XamlBindBeforeResourcesb_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
@@ -2818,6 +2996,22 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 ");
 			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
 			Assert.AreEqual (Colors.Black.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void XamlBindBeforeResourcesb_sl4 ()
+		{
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource brush}}"" />
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+</Canvas>
+"));
 		}
 
 		[TestMethod]
@@ -2863,8 +3057,9 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion(4)]
 		[MoonlightBug]
-		public void XamlBindingPropertyPathPriority ()
+		public void XamlBindingPropertyPathPriority_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"
 <Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -2943,10 +3138,10 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 			xmlns:clr=""clr-namespace:System;assembly=mscorlib""
 			xmlns:c=""clr-namespace:MoonTest.System.Windows.Data;assembly=moon-unit"">
 	<c:TextProp.MyText>
-		<clr:String>'        This contains {Binding} and {StaticResource} and {TemplateBinding} '</clr:String>
+		<clr:String>'This contains {Binding} and {StaticResource} and {TemplateBinding}'</clr:String>
 	</c:TextProp.MyText>
 </c:TextProp>");
-			Assert.AreEqual ("' This contains {Binding} and {StaticResource} and {TemplateBinding} '", c.MyText, "#1");
+			Assert.AreEqual ("'This contains {Binding} and {StaticResource} and {TemplateBinding}'", c.MyText, "#1");
 		}
 			
 		[TestMethod]
@@ -2970,8 +3165,8 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void XamlStaticResource ()
+		[MinRuntimeVersion(4)]
+		public void XamlStaticResource_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
