@@ -1462,17 +1462,29 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		public void ManagedPriority ()
+		public void ManagedPriority_StringProperty_UsesCLRProp ()
 		{
 			new ManagedDPPriority ();
 			ManagedDPPriority c = (ManagedDPPriority) XamlReader.Load (@"
 <x:ManagedDPPriority	xmlns=""http://schemas.microsoft.com/client/2007""
 						xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
-						BindingProp=""{Binding}"" />");
+						StringProp=""foobar"" />");
+
+			Assert.AreEqual ("foobar", c.StringProp);
+		}
+
+		[TestMethod]
+		public void ManagedPriority_BindingProperty_UsesDependencyProperty ()
+                {
+                        new ManagedDPPriority ();
+                        ManagedDPPriority c = (ManagedDPPriority) XamlReader.Load (@"
+ <x:ManagedDPPriority   xmlns=""http://schemas.microsoft.com/client/2007""
+                                                xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
+	                                               BindingProp=""{Binding}"" />");
 			Assert.IsNull (c.BindingProp, "#1");
 			Assert.IsNull (c.GetValue (ManagedDPPriority.BindingPropProperty), "#2");
 			Assert.IsInstanceOfType<Expression> (c.ReadLocalValue (ManagedDPPriority.BindingPropProperty), "#3");
-		}
+                }
 
 		[TestMethod]
 		public void ManagedPriority2 ()
@@ -1690,18 +1702,33 @@ namespace MoonTest.System.Windows
 	public class ManagedDPPriority : Control
 	{
 		public static readonly DependencyProperty BindingPropProperty;
+		public static readonly DependencyProperty StringPropProperty;
+
+		private string string_prop = null;
+
 		static ManagedDPPriority ()
 		{
 			PropertyMetadata m = new PropertyMetadata ((o, e) => ((ManagedDPPriority) o).PropertyChanged = true);
 			BindingPropProperty = DependencyProperty.Register ("BindingProp", typeof (Binding), typeof (ManagedDPPriority), m);
+
+			StringPropProperty = DependencyProperty.Register ("StringProp", typeof (string), typeof (ManagedDPPriority), m);
 		}
 
 		public Binding BindingProp {
 			get; set;
 		}
-		
+
 		public Binding NormalProp {
 			get; set;
+		}
+
+		public string StringProp {
+			get {
+				return string_prop;
+			}
+			set {
+				string_prop = value;
+			}
 		}
 
 		public bool PropertyChanged {
