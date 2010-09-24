@@ -41,6 +41,12 @@ namespace MoonTest.System.Windows.Data
 	{
 		public class CustomBinding : BindingBase { }
 
+		public class TypeWithBindingProperty :DependencyObject {
+
+			public static DependencyProperty TheBinding = DependencyProperty.Register ("TheBinding", typeof (Binding), typeof (TypeWithBindingProperty), null);
+		}
+
+		
 		[TestMethod]
 		public void CustomBindingThrowsInvalidCast ()
 		{
@@ -84,6 +90,18 @@ namespace MoonTest.System.Windows.Data
 			Assert.Throws<ArgumentNullException> (() =>
 				BindingOperations.SetBinding (target, property, null)
 			, "#3");
+		}
+
+		[TestMethod]
+		public void SetBinding_PropertyIsOfTypeBinding_DoesNotSetValue ()
+		{
+			var target = new TypeWithBindingProperty ();
+			var property = TypeWithBindingProperty.TheBinding;
+			var binding = new Binding ();
+
+			BindingOperations.SetBinding (target, property, binding);
+
+			Assert.IsNull (target.GetValue (property));
 		}
 	}
 }
