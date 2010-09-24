@@ -369,10 +369,15 @@ namespace Mono.Xaml {
 
 			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter.ReturnType);
 
-			if (setter == null)
+			if (setter == null && !IsCollectionType (getter.ReturnType))
 				return null;
 			
 			return new XamlAttachedPropertySetter (this, name, getter, setter);
+		}
+
+		private bool IsCollectionType (Type t)
+		{
+			return (typeof (IDictionary).IsAssignableFrom (t) || typeof (IList).IsAssignableFrom (t));
 		}
 
 		private string AttachedPropertyName (string name)
