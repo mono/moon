@@ -4,17 +4,26 @@ xapname=moon-unit
 BROWSER_NAME=firefox
 BROWSER_OPTS=-P MoonTest --no-remote
 
-all-local: copy-xap-to-site
+all-local: copy-xaps-to-site
 
-noinst_DATA= $(xapname).xap
+xaps= $(xapname)2.xap \
+      $(xapname)3.xap \
+      $(xapname)4.xap
 
-CLEANFILES=	$(xapname).xap 		\
-		$(xapname).dll		\
-		$(xapname).dll.mdb	\
-		$(xapname).sources	\
+clientbin_xaps= $(xaps:%=site/ClientBin/%)
+dlls= $(xaps:%.xap=%.dll)
+mdbs= $(xaps:%.xap=%.dll.mdb)
+g_resources= $(xaps:%.xap=%.g.resources)
+
+noinst_DATA= $(xaps)
+
+CLEANFILES=	$(xaps) 		\
+		$(dlls)			\
+		$(mdbs)			\
+		moon-unit.sources	\
 		*.xaml.g.cs		\
 		AppManifest.xaml 	\
-		$(xapname).g.resources	\
+		$(g_resources)		\
 		Microsoft.Silverlight.Testing.dll \
 		Microsoft.Silverlight.Testing.dll.mdb \
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
@@ -28,7 +37,8 @@ CLEANFILES=	$(xapname).xap 		\
 		System.Xml.Linq.dll.mdb	\
 		Mono.Moonlight.UnitTesting.dll	\
 		Mono.Moonlight.UnitTesting.dll.mdb	\
-		site/ClientBin/moon-unit.xap
+		moon-unit.xap				\
+		$(clientbin_xaps)
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
@@ -111,8 +121,17 @@ REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	-r:$(top_builddir)/test/2.0/moon-unit/Mono.Moonlight.UnitTesting.dll
 
-moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll System.Windows.Controls.Data.dll MoonAtkBridge.dll
+moon-unit2.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll System.Windows.Controls.Data.dll MoonAtkBridge.dll
+	MOONLIGHT_MONO=$(MOONLIGHT_MONO) $(SYSTEM_MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --runtime-version=2 -d:TEST -d:NET_2_1 --generate-html=false --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
+	mv moon-unit.xap moon-unit2.xap
+
+moon-unit3.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll System.Windows.Controls.Data.dll MoonAtkBridge.dll
+	MOONLIGHT_MONO=$(MOONLIGHT_MONO) $(SYSTEM_MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --runtime-version=3 -d:TEST -d:NET_2_1 --generate-html=false --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
+	mv moon-unit.xap moon-unit3.xap
+
+moon-unit4.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll System.Windows.Controls.Data.dll MoonAtkBridge.dll
 	MOONLIGHT_MONO=$(MOONLIGHT_MONO) $(SYSTEM_MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --runtime-version=4 -d:TEST -d:NET_2_1 --generate-html=false --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
+	mv moon-unit.xap moon-unit4.xap
 
 MoonAtkBridge.dll : ../FakeA11yBridge/MoonAtkBridge.dll
 	cp  ../FakeA11yBridge/MoonAtkBridge.dll* .
@@ -158,12 +177,12 @@ EXTRA_DIST = 			\
 	$(srcdir)/*/*.cs	\
 	$(srcdir)/mono-logo.png
 
-test: copy-xap-to-site
+test: copy-xaps-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
 	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index.html?$(TEST_NAME)"
 
-debug: copy-xap-to-site
+debug: copy-xaps-to-site
 	MONO_XDEBUG=1 MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
 	$(BROWSER_NAME) $(BROWSER_OPTS) -d gdb "file://`pwd`/site/index.html?$(TEST_NAME)"
@@ -176,12 +195,12 @@ test-automation:
 test-moonlight:
 	TEST_NAME="!($(AUTOMATION_NAMESPACES))" $(MAKE) test
 
-copy-xap-to-site: site/ClientBin/moon-unit.xap site/ClientBin/timecode-long.wmv site/ClientBin/images/mono-logo.png
+copy-xaps-to-site: $(clientbin_xaps) site/ClientBin/timecode-long.wmv site/ClientBin/images/mono-logo.png
 	cp -p $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/
 
-site/ClientBin/moon-unit.xap: moon-unit.xap
+$(clientbin_xaps): $(xaps)
 	@mkdir -p site/ClientBin
-	@cp moon-unit.xap site/ClientBin
+	@cp $(xaps) site/ClientBin
 	@cp $(srcdir)/../../media/video/timecode-long.wmv site/ClientBin
 
 site/ClientBin/timecode-long.wmv: $(srcdir)/../../media/video/timecode-long.wmv
