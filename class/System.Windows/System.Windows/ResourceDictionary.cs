@@ -90,7 +90,7 @@ namespace System.Windows {
 #if DEBUG_REF
 				Console.WriteLine ("rd {0}/{1} adding ref to {2}/{3}", GetHashCode(), this, args.GetNewItem().GetHashCode(), args.GetNewItem());
 #endif
-				managedDict.Add (args.Key, args.GetNewItem ());
+				managedDict[args.Key] = args.GetNewItem ();
 				break;
 			case CollectionChangedAction.Remove:
 #if DEBUG_REF
