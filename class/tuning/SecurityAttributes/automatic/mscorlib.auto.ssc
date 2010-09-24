@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 462 methods
+# 463 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -317,6 +317,7 @@
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObject(System.IO.BinaryWriter,System.Int64,System.Object)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::GetObjectData(System.Object,System.Runtime.Serialization.Formatters.Binary.TypeMetadata&,System.Object&)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteValue(System.IO.BinaryWriter,System.Type,System.Object)
++SSC-M: System.Int32 System.Runtime.Serialization.SerializationObjectManager/HashHelper::GetHashCode(System.Object)
 +SSC-M: System.Void System.RuntimeFieldHandle::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
 +SSC-M: System.Boolean System.RuntimeFieldHandle::Equals(System.Object)
 +SSC-M: System.Boolean System.RuntimeFieldHandle::Equals(System.RuntimeFieldHandle)
