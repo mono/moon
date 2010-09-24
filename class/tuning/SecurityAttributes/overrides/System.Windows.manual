@@ -229,3 +229,8 @@
 
 # need this for heap visualization in moon-unit (when enabled)
 +SC-T: Mono.HeapUtil
+
+# parser helpers (until they are re-writtern in managed code)
++SC-M: System.Windows.Point System.Windows.Point::FromString(System.String)
++SC-M: System.Windows.Rect System.Windows.Rect::FromString(System.String)
+

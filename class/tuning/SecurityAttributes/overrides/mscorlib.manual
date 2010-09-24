@@ -283,6 +283,7 @@
 +SC-M: System.Guid System.Reflection.Module::Mono_GetGuid(System.Reflection.Module)
 +SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::Mono_GetGuid(System.Reflection.Emit.ModuleBuilder)
 +SC-M: System.Void System.Reflection.Emit.ModuleBuilder::Save()
++SC-M: System.TypeCode System.Reflection.Emit.TypeBuilder::GetTypeCodeInternal()
 
 +SC-M: System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromLcid(System.Int32)
 +SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.Int32,System.Boolean,System.Boolean)
