@@ -989,6 +989,14 @@ EventObject::CanEmitEvents (int event_id)
 		 * have been unloaded */
 		return false;
 	}
+
+	if (hadManagedPeer && managed_handle == NULL) {
+#if DEBUG
+		/* We're doomed. Don't emit any more events. Note that we'll normally hit this condition once in a while. */
+		printf ("Moonlight: Trying to emit event %i on %s after the managed object has been collected.", event_id, GetTypeName ());
+#endif
+		return false;
+	}
 	
 	return true;
 }
