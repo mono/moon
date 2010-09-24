@@ -161,6 +161,8 @@ namespace Mono {
 				if (destinationType == typeof (TextDecorationCollection)) {
 					if (str_val == "Underline") {
 						return TextDecorations.Underline;
+					} else if (str_val == "None") {
+						return null;
 					}
 				}
 
