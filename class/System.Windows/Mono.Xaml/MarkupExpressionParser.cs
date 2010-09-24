@@ -379,7 +379,7 @@ namespace Mono.Xaml {
 			case "Path":
 				if (str_value == null)
 					throw new XamlParseException (String.Format ("Invalid type '{0}' for Path.", value == null ? "null" : value.GetType ().ToString ()));
-				b.Path = new PropertyPath (str_value);
+				b.Path = ParsePropertyPath (str_value);
 				break;
 			case "Source":
 				// if the expression was: Source="{StaticResource xxx}" then 'value' will be populated
