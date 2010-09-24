@@ -192,12 +192,19 @@ namespace Mono.Xaml {
 			}
 		}
 
-		public void SetBinding (Binding binding, object obj)
+		public bool SetBinding (Binding binding, object obj)
 		{
 			DependencyProperty prop = LookupDependencyProperty ();
 
-			if (prop == null)
+			if (prop == null) {
+				if (typeof (Binding).IsAssignableFrom (Type)) {
+					// If the property is of type Binding we don't throw, we just
+					// fall through, and allow the CLR property setter to try
+					// and set the property.
+					return false;
+				}
 				throw Parser.ParseException ("Invalid Binding, can not find DependencyProperty {0}.", Name);
+			}
 
 			DependencyObject dob = obj as DependencyObject;
 
@@ -205,6 +212,7 @@ namespace Mono.Xaml {
 				throw Parser.ParseException ("Bindings can not be used on non DependencyObject types.");
 
 			BindingOperations.SetBinding (dob, prop, binding);
+			return true;
 		}
 
 		
@@ -307,13 +315,9 @@ namespace Mono.Xaml {
 			if (mutable != null)
 				value = mutable.Object;
 
-			if (!typeof (Binding).IsAssignableFrom (Type)) {
-				Binding binding = value as Binding;
-				if (binding != null) {
-					SetBinding (binding, Target);
-					return;
-				}
-			}
+			Binding binding = value as Binding;
+			if (binding != null && SetBinding (binding, Target))
+				return;
 
 			if (!typeof (TemplateBindingExpression).IsAssignableFrom (Type)) {
 				TemplateBindingExpression tb = value as TemplateBindingExpression;
