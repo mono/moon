@@ -41,15 +41,17 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ChangeUseSprings ()
 		{
 			MultiScaleImage msi = new MultiScaleImage ();
 
-			msi.UseSprings = true;
-			msi.ViewportWidth = 3.0;
-			Assert.AreEqual (1.0, msi.ViewportWidth, "OriginalWidth");
-			msi.ViewportWidth = .3;
 			msi.UseSprings = false;
+			msi.ViewportWidth = 3.0;
+			Assert.AreEqual (3.0, msi.ViewportWidth, "OriginalWidth");
+			
+			msi.UseSprings = true;
+			msi.ViewportWidth = .3;
 			Assert.AreEqual (.3, msi.ViewportWidth, "FinalWidth");
 		}
 	}
