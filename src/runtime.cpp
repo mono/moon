@@ -489,6 +489,7 @@ Surface::Dispose ()
 		toplevel->SetIsAttached (false);
 		toplevel->Dispose ();
 	}
+	input_list->Clear (true);
 	
 	EventObject::Dispose ();
 }
