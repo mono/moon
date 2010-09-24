@@ -53,6 +53,10 @@ System.Void System.Windows.Browser.ManagedObject::SetProperty(System.String,Syst
 System.Void System.Windows.Browser.ScriptObject::FreeNativeMapping(System.Windows.Browser.ScriptObject)
 	r153088		spouliot - remove a ScriptObjectToggleRef [SecurityCritical] (unexposed) related to the ScriptObject parameter from the tracked references
 
+!SSC-2125741BF8681992FEA502C40E870B56
+System.Void System.Windows.Browser.ScriptObject::set_Handle(System.IntPtr)
+	20100924	spouliot - 223d4b8 - FIXME (temporary, it leaks) pinvoke into html_object_retain using PluginHost.Handle and 'value'
+
 !SSC-B6981C923A7E2CFC76E73E9383F49B7D
 System.Void System.Windows.Browser.ScriptObject::SetDefaultHandle()
 	r154365		spouliot - logic moved from default .ctor to new method in order to follow coreclr inheritance rules

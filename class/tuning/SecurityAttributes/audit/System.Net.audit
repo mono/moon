@@ -63,8 +63,9 @@ System.Void System.Net.Sockets.Socket::set_Ttl(System.Int16)
 System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
 	r142142		spouliot - calls Shutdown_internal (icall)
 
-!SSC-A9CEA642527079CCDD65021191A9F2E9
+!SSC-79034E9A2BFA0459D7570E051D5AC3AC
 System.Void System.Net.Sockets.SocketAsyncEventArgs::ConnectCallback()
+	20100924	spouliot - no change in 2010, likely a compiler-related change
 	r153971		spouliot - call Dns [SecurityCritical] GetHostAddresses to get a list of address on the DnsEndPoint's Host
 
 !SSC-EE0014F1EEE4C026729F68C8889178E8

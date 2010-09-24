@@ -509,13 +509,15 @@ System.Double System.Math::Tan(System.Double)
 System.Double System.Math::Tanh(System.Double)
 	r144558		spouliot - visible icall (sysmath.c)
 
-!SSC-AACE3A4B9D79851EE93FB893C94828F9
+!SSC-5D9F445B064DBF8371550591B8D3407C
 System.Globalization.CultureInfo System.Threading.Thread::get_CurrentCulture()
+	20100924	spouliot - no source code change, likely a compiler-related change
 	r142661		spouliot - most logic is now around the InternalThread (Internal property)
 	r142142		spouliot - call GetCachedCurrentCulture (icall in threads.c), GetSerializedCurrentCulture (icall in threads.c) and SetCachedCurrentCulture (icall in threads.c)
 
-!SSC-B96C243DD72BC227F6E95C0E41C8D3C6
+!SSC-D4B1F02CEFA28F997E36020A2EB801A4
 System.Globalization.CultureInfo System.Threading.Thread::get_CurrentUICulture()
+	20100924	spouliot - no source code change, likely a compiler-related change
 	r142661		spouliot - most logic is now around the InternalThread (Internal property)
 	r142142		spouliot - call GetCachedCurrentUICulture (icall in threads.c), GetSerializedCurrentUICulture (icall in threads.c) and SetCachedCurrentUICulture (icall in threads.c)
 
@@ -733,6 +735,10 @@ System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::get_OffsetToStringD
 !SSC-13BBAC2DDD4B5567CE048A2B8DED7EAF
 System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::GetHashCode(System.Object)
 	r142142		spouliot - call Object.InternalGetHashCode (icall named mono_object_hash in mono/metadata/monitor.c)
+
+!SSC-B25E89CAA05F42E9FDE3AD1F2BFBF926
+System.Int32 System.Runtime.Serialization.SerializationObjectManager/HashHelper::GetHashCode(System.Object)
+	20100924	spouliot - 501bf45 - call call Object.InternalGetHashCode (icall named mono_object_hash in mono/metadata/monitor.c) on non-null 'obj' parameter
 
 !SSC-76EEE16393EB6927AF422D99015ECD52
 System.Int32 System.Text.ASCIIEncoding::GetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Text.EncoderFallbackBuffer&,System.Char[]&)
@@ -1013,8 +1019,9 @@ System.Reflection.Assembly System.Reflection.Assembly::GetCallingAssembly()
 System.Reflection.Assembly System.Reflection.Assembly::GetExecutingAssembly()
 	r144558		spouliot - visible icall. parameter-less (static)
 
-!SSC-CC82B164BCBE150AF29F63EA3C636D96
+!SSC-D56034AD2AEFF3D593B4DB21EDDC3596
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
+	20100924	spouliot - no source change (compiler?)
 	r159682		spouliot - no source change (compiler?)
 	r154229		spouliot - visibility changed from private to internal
 	r150368		spouliot - call AppDomain.LoadSatellite(AssemblyName,bool), with false, instead of LoadSatellite(AssemblyName)
@@ -1987,6 +1994,10 @@ System.Void System.IO.FileStream::.ctor(System.String,System.IO.FileMode,System.
 System.Void System.IO.FileStream::Dispose(System.Boolean)
 	r151761		spouliot - catch any exception on FlushBuffer and throw it back just before returning
 	r142142		spouliot - call MonoIO.Close [SecurityCritical] on a valid 'handle'
+
+!SSC-4CBFD26FB4E16D14F6FE69624A8BF9EA
+System.Void System.IO.FileStream::Flush(System.Boolean)
+	20100924	spouliot - 2f05148 - call MonoIO.Flush [SecurityCritical] if 'flushToDisk' parameter is true
 
 !SSC-5F7A973B24863E55736426EF8CA3B423
 System.Void System.IO.FileStream::FlushBuffer(System.IO.Stream)
