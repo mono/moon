@@ -179,7 +179,12 @@ namespace System.Windows {
 
 		static void EnsureDesignMode ()
 		{
-			if (Int32.Parse (Deployment.Current.RuntimeVersion.Split('.')[0]) < 4 &&
+			// NOTE:
+			// If you ended up here from drt 539 you should know
+			// it doesn't pass on Silverlight but MobileStubsTests
+			// does so tread lightly
+
+			if (//Int32.Parse (Deployment.Current.RuntimeVersion.Split('.')[0]) < 4 &&
 			    !DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
 				throw new NotImplementedException ();
 		}
