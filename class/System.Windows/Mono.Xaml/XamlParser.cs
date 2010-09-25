@@ -765,7 +765,7 @@ namespace Mono.Xaml {
 				throw ParseException ("Could not convert attribute value '{0}' on element {1}.", reader.Value, element.Name, e);
 			}
 
-			if (o == null && !MarkupExpressionParser.IsExplicitNull (expression))
+			if (o == null && !MarkupExpressionParser.IsExplicitNull (expression) && !MarkupExpressionParser.IsIndex (expression))
 				throw ParseException ("Unable to convert attribute value: '{0}'.", reader.Value);
 
 			return property.ConvertValue (property.Type, o);
