@@ -843,6 +843,7 @@ AsxParser::ParseBuffer (MemoryBuffer *buffer)
 {
 	this->buffer = buffer;
 	TextStream *stream = new TextStream ();
+	buffer->SeekSet (0);
 	stream->OpenBuffer ((char *) buffer->GetCurrentPtr (), buffer->GetSize ());
 
 	return parser->parse_stream (stream);
