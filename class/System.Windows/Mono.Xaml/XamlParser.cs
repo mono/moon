@@ -765,7 +765,7 @@ namespace Mono.Xaml {
 				throw ParseException ("Could not convert attribute value '{0}' on element {1}.", reader.Value, element.Name, e);
 			}
 
-			if (o == null && !MarkupExpressionParser.IsExplicitNull (expression) && !MarkupExpressionParser.IsIndex (expression))
+			if (o == null && !MarkupExpressionParser.IsExplicitNull (expression))
 				throw ParseException ("Unable to convert attribute value: '{0}'.", reader.Value);
 
 			return property.ConvertValue (property.Type, o);
@@ -794,15 +794,7 @@ namespace Mono.Xaml {
 
 		private bool IsMarkupExpression (string str)
 		{
-			for (int i = 0; i < str.Length; i++) {
-				if (str [i] == '{')
-					return true;
-				else if (char.IsWhiteSpace (str [i]))
-					continue;
-				else
-					break;
-			}
-			return false;
+			return str.Length == 0 ? false : str [0] == '{';
 		}
 
 		private bool IsValidXmlSpaceValue (string val)

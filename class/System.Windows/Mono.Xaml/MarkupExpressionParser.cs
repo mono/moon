@@ -33,7 +33,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Collections.Generic;
 using System.Windows.Markup;
-using System.Text.RegularExpressions;
 
 
 namespace Mono.Xaml {
@@ -185,12 +184,6 @@ namespace Mono.Xaml {
 		public static bool IsExplicitNull (string expression)
 		{
 			return MatchExpression ("x:Null", expression);
-		}
-
-		public static bool IsIndex (string expression)
-		{
-			Regex re = new Regex (@"\{\d+\}");
-			return re.IsMatch (expression);
 		}
 
 		public delegate object ExpressionHandler (ref string expression);

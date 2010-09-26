@@ -267,6 +267,18 @@ namespace MoonTest.System.Windows.Markup {
 			Assert.IsNotNull (b.Binding, "#2");
 		}
 
+		[TestMethod]
+		public void SpaceBeforeBindingStarts ()
+		{
+			// Put a space before the '{' char and verify that
+			// a binding is not applied
+			var x = (TextBlock) XamlReader.Load (@"
+<TextBlock xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		Text="" {Binding}"" />");
+			Assert.AreEqual (" {Binding}", x.Text, "#1");
+		}
+
 		Base CreateBase (string properties)
 		{
 			var canvas = (Canvas) XamlReader.Load(string.Format (@"
