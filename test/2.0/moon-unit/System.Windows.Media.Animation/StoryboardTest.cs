@@ -1656,6 +1656,17 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 		
 		[TestMethod]
+		public void NullableKeyTime ()
+		{	
+			var kf = new DiscreteDoubleKeyFrame ();
+			kf.SetValue (DoubleKeyFrame.KeyTimeProperty, null);
+			Assert.AreEqual (new KeyTime (), kf.ReadLocalValue (DoubleKeyFrame.KeyTimeProperty), "#0");
+			Assert.Throws<ArgumentException>(() => kf.SetValue (DoubleKeyFrame.ValueProperty, null), "#1");
+			var key = kf.KeyTime;
+			Assert.AreEqual (new KeyTime (), kf.KeyTime, "#2");
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void TargetGridLength ()
 		{
@@ -1746,6 +1757,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Rectangle r = new Rectangle { Name = "A" };
 			Storyboard child = new Storyboard ();
 			DoubleAnimation animation = new DoubleAnimation { Duration = new Duration (TimeSpan.FromSeconds (1)), From = 10, To = 100 };
+
 			Storyboard.SetTargetName (animation, "A");
 			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
 
