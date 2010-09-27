@@ -232,7 +232,7 @@ namespace System.Windows.Browser {
 						str += ",";
 					str += ScriptName(t);
 				}
-				return (type.Name.Substring(0, type.Name.IndexOf('`')) + "<" + str + ">");
+				return ((type.Name.IndexOf('`') > 0 ? type.Name.Substring(0, type.Name.IndexOf('`')) : type.Name) + "<" + str + ">");
 			} else if (type.IsArray) {
 				return ScriptName (type.GetElementType ()) + "[]";
 			} else if (type.IsPrimitive) {
