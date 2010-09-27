@@ -509,21 +509,31 @@ namespace Mono.Xaml {
 
 	internal class XamlAttachedPropertySetter : XamlPropertySetter {
 
+		private Type type;
 		private MethodInfo getter;
 		private MethodInfo setter;
 
-		public XamlAttachedPropertySetter (XamlObjectElement element, string name, MethodInfo getter, MethodInfo setter) : base (element, name, Helper.GetConverterFor (setter, getter.ReturnType))
+		public XamlAttachedPropertySetter (XamlObjectElement element, string name, MethodInfo getter, MethodInfo setter, TypeConverter converter) : base (element, name, converter)
 		{
 			this.getter = getter;
 			this.setter = setter;
+
+			if (getter != null)
+				type = getter.ReturnType;
+			else
+				type = setter.GetParameters () [1].ParameterType;
 		}
 
 		public override Type Type {
-			get { return getter.ReturnType; }
+			get { return type; }
 		}
 
 		public override Type DeclaringType {
-			get { return getter.DeclaringType; }
+			get {
+				if (getter != null)
+					return getter.DeclaringType;
+				return setter.DeclaringType;
+			}
 		}
 
 		public override void SetValue (XamlObjectElement obj, object value)

@@ -308,7 +308,6 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AttachedProp_FE_GetOnly_OnRectangle ()
 		{
 			// Attached properties need a getter and setter
@@ -337,7 +336,6 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AttachedProp_FE_SetOnly_OnRectangle ()
 		{
 			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_SetProperty);

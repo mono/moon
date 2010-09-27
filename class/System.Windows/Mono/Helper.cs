@@ -68,7 +68,7 @@ namespace Mono {
 			return x == y;
 		}
 
-		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
+		public static TypeConverter GetConverterFor (ICustomAttributeProvider info, Type target_type)
 		{
 			Attribute[] attrs;
 			TypeConverterAttribute at = null;

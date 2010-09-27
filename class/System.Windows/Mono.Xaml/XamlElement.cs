@@ -363,16 +363,24 @@ namespace Mono.Xaml {
 		private XamlPropertySetter LookupAttachedProperty (Type t, string name)
 		{
 			MethodInfo getter = ResolveAttachedPropertyGetter (name, t);
+			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter == null ? null : getter.ReturnType);
 
-			if (getter == null)
+			if (getter == null && setter == null)
 				return null;
-
-			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter.ReturnType);
 
 			if (setter == null && !IsCollectionType (getter.ReturnType))
 				return null;
-			
-			return new XamlAttachedPropertySetter (this, name, getter, setter);
+
+			TypeConverter converter = null;
+			if (setter != null) {
+				ParameterInfo type_param = setter.GetParameters () [1];
+				converter = Helper.GetConverterFor (type_param, type_param.ParameterType);
+			}
+
+			if (converter == null && getter != null)
+				converter = Helper.GetConverterFor (getter, getter.ReturnType);
+
+			return new XamlAttachedPropertySetter (this, name, getter, setter, converter);
 		}
 
 		private bool IsCollectionType (Type t)
@@ -401,9 +409,22 @@ namespace Mono.Xaml {
 			Type [] arg_types = new Type [] { typeof (DependencyObject) };
 			string full_name = String.Concat ("Get", base_name);
 
+			return ResolveAttachedPropertyMethod (full_name, type, arg_types);
+		}
+
+		private MethodInfo ResolveAttachedPropertySetter (string base_name, Type type, Type return_type)
+		{
+			Type [] arg_types = new Type [] { typeof (DependencyObject), return_type };
+			string full_name = String.Concat ("Set", base_name);
+
+			return ResolveAttachedPropertyMethod (full_name, type, arg_types);
+		}
+
+		private MethodInfo ResolveAttachedPropertyMethod (string name, Type type, Type [] arg_types)
+		{
 			MethodInfo [] methods = type.GetMethods (XamlParser.METHOD_BINDING_FLAGS);
 			foreach (MethodInfo method in methods) {
-				if (method.Name != full_name)
+				if (method.Name != name)
 					continue;
 
 				ParameterInfo [] the_params = method.GetParameters ();
@@ -412,7 +433,7 @@ namespace Mono.Xaml {
 
 				bool match = true;
 				for (int i = 0; i < arg_types.Length; i++) {
-					if (!arg_types [i].IsAssignableFrom (the_params [i].ParameterType)) {
+					if (arg_types [i] != null && !arg_types [i].IsAssignableFrom (the_params [i].ParameterType)) {
 						match = false;
 						break;
 					}
@@ -423,11 +444,6 @@ namespace Mono.Xaml {
 			}
 
 			return null;
-		}
-
-		private MethodInfo ResolveAttachedPropertySetter (string base_name, Type type, Type return_type)
-		{
-			return type.GetMethod (String.Concat ("Set", base_name), XamlParser.METHOD_BINDING_FLAGS);
 		}
 	}
 }
