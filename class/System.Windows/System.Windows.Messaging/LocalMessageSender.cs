@@ -85,6 +85,8 @@ namespace System.Windows.Messaging {
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 			}
+			if (event_list != null)
+				event_list.Free ();
 		}
 
 		public void SendAsync (string message)
@@ -106,8 +108,8 @@ namespace System.Windows.Messaging {
 		}
 
 		public event EventHandler<SendCompletedEventArgs> SendCompleted {
-			add { RegisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value, Events.CreateSendCompletedEventArgsEventHandlerDispatcher (value)); }
-			remove { UnregisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value); }
+			add { EventList.RegisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value, Events.CreateSendCompletedEventArgsEventHandlerDispatcher (value)); }
+			remove { EventList.UnregisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value); }
 		}
 
 		string receiverDomain;
@@ -155,30 +157,13 @@ namespace System.Windows.Messaging {
 
 #endregion
 
-		private EventHandlerList EventList = new EventHandlerList ();
-
-		private void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
-		{
-			if (managedHandler == null)
-				return;
-
-			int token = -1;
-			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, token);
-			};
-
-			token = Events.AddHandler (this, eventId, nativeHandler, dtor_action);
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
-		}
-
-		private void UnregisterEvent (int eventId, Delegate managedHandler)
-		{
-			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
-
-			if (nativeHandler == null)
-				return;
-
-			Events.RemoveHandler (this, eventId, nativeHandler);
+		private EventHandlerList event_list;
+		private EventHandlerList EventList {
+			get {
+				if (event_list == null)
+					event_list = new EventHandlerList (this);
+				return event_list;
+			}
 		}
 	}
 

@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Mono {
 
@@ -48,6 +49,22 @@ namespace Mono {
 	}
 
 	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
+		GCHandle gc_handle; /* to make sure the EventHandlerList outlives its INativeDependencyObjectWrapper */
+		INativeEventObjectWrapper obj;
+
+		public EventHandlerList (INativeEventObjectWrapper wrapper)
+		{
+			if (wrapper != null)
+				gc_handle = GCHandle.Alloc (this);
+			obj = wrapper;
+		}
+
+		public void Free ()
+		{
+			if (gc_handle.IsAllocated)
+				gc_handle.Free ();
+		}
+
 		public void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
 		{
 			AddHandler (eventId, token, managedDelegate, nativeHandler);
@@ -92,6 +109,41 @@ namespace Mono {
 			return null;
 		}
 
+		public void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
+		{
+			RegisterEvent (obj.NativeHandle, eventId, managedHandler, nativeHandler);
+		}
+
+		public void RegisterEvent (IntPtr obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
+		{
+			if (managedHandler == null)
+				return;
+
+			int token = -1;
+
+			GDestroyNotify dtor_action = (data) => {
+				RemoveHandler (eventId, token);
+			};
+
+			token = Events.AddHandler (obj, eventId, nativeHandler, dtor_action);
+			
+			AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
+		}
+
+		public void UnregisterEvent (int eventId, Delegate managedHandler)
+		{
+			UnregisterEvent (obj.NativeHandle, eventId, managedHandler);
+		}
+
+		public void UnregisterEvent (IntPtr obj, int eventId, Delegate managedHandler)
+		{
+			UnmanagedEventHandler nativeHandler = LookupHandler (eventId, managedHandler);
+
+			if (nativeHandler == null)
+				return;
+
+			Events.RemoveHandler (obj, eventId, nativeHandler);
+		}
 	}
 	
 }

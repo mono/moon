@@ -18,43 +18,23 @@ namespace System.Windows.Media
 {
 	public static class CompositionTarget
 	{
-		private static EventHandlerList EventList = new EventHandlerList ();
+		private static EventHandlerList event_list;
+
+		private static EventHandlerList EventList {
+			get {
+				if (event_list == null)
+					event_list = new EventHandlerList (null);
+				return event_list;
+			}
+		}
 
 		public static event EventHandler Rendering {
 			add {
-				RegisterEvent (EventIds.TimeManager_RenderEvent, value, Events.CreateRenderingEventHandlerDispatcher (value));
+				EventList.RegisterEvent (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), EventIds.TimeManager_RenderEvent, value, Events.CreateRenderingEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (EventIds.TimeManager_RenderEvent, value);
+				EventList.UnregisterEvent (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), EventIds.TimeManager_RenderEvent, value);
 			}
 		}
-
-		private static void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
-		{
-			if (managedHandler == null)
-				return;
-
-			int token = -1;
-			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, token);
-			};
-
-			IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
-			token = Events.AddHandler (t, eventId, nativeHandler, dtor_action);
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
-		}
-
-
-		private static void UnregisterEvent (int eventId, Delegate managedHandler)
-		{
-			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
-
-			if (nativeHandler == null)
-				return;
-
-			IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
-			Events.RemoveHandler (t, eventId, nativeHandler);
-		}
-
 	}
 }

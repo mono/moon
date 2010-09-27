@@ -84,58 +84,31 @@ namespace System.Windows.Interop {
 			}
 		}	
 		
-		static EventHandlerList EventList = new EventHandlerList ();
-		
 		public event EventHandler FullScreenChanged {
 			add {
-				RegisterEvent (EventIds.Surface_FullScreenChangeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+				Deployment.Current.Surface.EventList.RegisterEvent (EventIds.Surface_FullScreenChangeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (EventIds.Surface_FullScreenChangeEvent, value);
+				Deployment.Current.Surface.EventList.UnregisterEvent (EventIds.Surface_FullScreenChangeEvent, value);
 			}
 		}
 		
 		public event EventHandler Resized {
 			add {
-				RegisterEvent (EventIds.Surface_ResizeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+				Deployment.Current.Surface.EventList.RegisterEvent (EventIds.Surface_ResizeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (EventIds.Surface_ResizeEvent, value);
+				Deployment.Current.Surface.EventList.UnregisterEvent (EventIds.Surface_ResizeEvent, value);
 			}
 		}
 		
 		public event EventHandler Zoomed {
 			add {
-				RegisterEvent (EventIds.Surface_ZoomedEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+				Deployment.Current.Surface.EventList.RegisterEvent (EventIds.Surface_ZoomedEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (EventIds.Surface_ZoomedEvent, value);
+				Deployment.Current.Surface.EventList.UnregisterEvent (EventIds.Surface_ZoomedEvent, value);
 			}
-		}
-		
-		private void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
-		{
-			if (managedHandler == null)
-				return;
-
-			int token = -1;
-
-			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, token);
-			};
-
-			token = Events.AddHandler (Deployment.Current.Surface.Native, eventId, nativeHandler, dtor_action);
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
-		}
-
-		private void UnregisterEvent (int eventId, Delegate managedHandler)
-		{
-			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
-
-			if (nativeHandler == null)
-				return;
-
-			Events.RemoveHandler (Deployment.Current.Surface.Native, eventId, nativeHandler);
 		}
 	}
 }

@@ -44,15 +44,12 @@ namespace System.Windows {
 		internal static Thread moonlight_thread;
 		IntPtr _native;
 		EventHandlerList event_list;
-		GCHandle event_list_gchandle; /* to make sure the gchandle is valid even when the DO is about to be finalized */
 		bool free_mapping;
 
 		internal EventHandlerList EventList {
 			get {
-				if (event_list == null) {
-					event_list = new EventHandlerList ();
-					event_list_gchandle = GCHandle.Alloc (event_list);
-				}
+				if (event_list == null)
+					event_list = new EventHandlerList (this);
 				return event_list;
 			}
 		}
@@ -298,8 +295,8 @@ namespace System.Windows {
 
 		internal void Free ()
 		{
-			event_list_gchandle.Free ();
-
+			if (event_list != null)
+				event_list.Free ();
 			DetachAllExpressions ();
 
 			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
@@ -332,28 +329,12 @@ namespace System.Windows {
 
 		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
-			if (managedHandler == null)
-				return;
-
-			int token = -1;
-
-			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, token);
-			};
-
-			token = Events.AddHandler (this, eventId, nativeHandler, dtor_action);
-
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
+			EventList.RegisterEvent (eventId, managedHandler, nativeHandler);
 		}
 
 		internal void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
-			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
-
-			if (nativeHandler == null)
-				return;
-
-			Events.RemoveHandler (this, eventId, nativeHandler);
+			EventList.UnregisterEvent (eventId, managedHandler);
 		}
 
 		internal object ReadLocalValueImpl (DependencyProperty dp)

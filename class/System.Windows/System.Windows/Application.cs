@@ -162,40 +162,16 @@ namespace System.Windows {
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 			}
+			if (event_list != null)
+				event_list.Free ();
 		}
 		
 		internal Mono.EventHandlerList EventList {
 			get {
 				if (event_list == null)
-					event_list = new Mono.EventHandlerList ();
+					event_list = new Mono.EventHandlerList (this);
 				return event_list;
 			}
-		}
-		
-		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
-		{
-			if (managedHandler == null)
-				return;
-
-			int token = -1;
-
-			GDestroyNotify dtor_action = (data) => {
-				EventList.RemoveHandler (eventId, token);
-			};
-
-			token = Events.AddHandler (this, eventId, nativeHandler, dtor_action);
-			
-			EventList.AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
-		}
-
-		internal void UnregisterEvent (int eventId, Delegate managedHandler)
-		{
-			UnmanagedEventHandler nativeHandler = EventList.LookupHandler (eventId, managedHandler);
-			
-			if (nativeHandler == null)
-				return;
-			
-			Events.RemoveHandler (this, eventId, nativeHandler);
 		}
 		
 		static void ReinitializeStaticData ()
@@ -759,21 +735,21 @@ namespace System.Windows {
 		
 		public event CheckAndDownloadUpdateCompletedEventHandler CheckAndDownloadUpdateCompleted {
 			add {
-				RegisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value,
+				EventList.RegisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value,
 					       Events.CreateCheckAndDownloadUpdateCompletedEventHandlerDispatcher (this, value));
 			}
 			remove {
-				UnregisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value);
+				EventList.UnregisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value);
 			}
 		}
 		
 		public event EventHandler InstallStateChanged {
 			add {
-				RegisterEvent (EventIds.Application_InstallStateChangedEvent, value,
+				EventList.RegisterEvent (EventIds.Application_InstallStateChangedEvent, value,
 					       Events.CreateEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (EventIds.Application_InstallStateChangedEvent, value);
+				EventList.UnregisterEvent (EventIds.Application_InstallStateChangedEvent, value);
 			}
 		}
 		

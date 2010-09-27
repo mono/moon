@@ -43,6 +43,16 @@ namespace Mono
 		private IntPtr native;
 		bool free_mapping;
 		
+		private EventHandlerList event_list;
+
+		internal EventHandlerList EventList {
+			get {
+				if (event_list == null)
+					event_list = new EventHandlerList (this);
+				return event_list;
+			}
+		}
+
 		public IntPtr Native {
 			get { return native; }
 			set {
@@ -135,6 +145,8 @@ namespace Mono
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 			}
+			if (event_list != null)
+				event_list.Free ();
 		}
 		
 		~Surface ()
