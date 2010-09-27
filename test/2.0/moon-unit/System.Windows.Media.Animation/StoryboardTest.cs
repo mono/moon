@@ -283,7 +283,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 
 		[TestMethod]
-		public void NameAndKey_Resource_Namespace ()
+		[MaxRuntimeVersion(3)]
+		public void NameAndKey_Resource_Namespace_sl3 ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (
 @"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:sl=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
@@ -294,6 +295,21 @@ namespace MoonTest.System.Windows.Media.Animation {
 	</sl:Canvas>
 </Canvas>");
 			Assert.IsTrue (c.FindName ("Blah") is Storyboard, "FindName");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void NameAndKey_Resource_Namespace_sl4 ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (
+@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:sl=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<sl:Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+		<sl:Canvas.Resources xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+			<sl:Storyboard x:Name=""Blah"" x:Key=""Blah"" />
+		</sl:Canvas.Resources>
+	</sl:Canvas>
+</Canvas>");
+			Assert.IsFalse (c.FindName ("Blah") is Storyboard, "FindName");
 		}
 
 		[TestMethod]
@@ -1511,10 +1527,11 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Canvas c = new Canvas ();
 			Storyboard.SetTarget (sb, c);
 			Enqueue (() => { TestPanel.Children.Add (c); TestPanel.Resources.Add ("a", sb); });
-			Enqueue (() => sb.Begin ());
-			EnqueueConditional (() => complete);
-			Enqueue (() => Assert.AreEqual (50.0, c.GetValue (Canvas.TopProperty)));
-			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			// In Sl4 (all quirks modes) this throws
+			Enqueue (() => {Assert.Throws<InvalidOperationException>(() => sb.Begin ());});
+			//EnqueueConditional (() => complete);
+			//Enqueue (() => Assert.AreEqual (50.0, c.GetValue (Canvas.TopProperty)));
+			//Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}
 
