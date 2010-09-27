@@ -65,12 +65,12 @@ namespace Mono {
 				gc_handle.Free ();
 		}
 
-		public void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
+		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
 		{
 			AddHandler (eventId, token, managedDelegate, nativeHandler);
 		}
 
-		public void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler, GDestroyNotify dtor_action)
+		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler, GDestroyNotify dtor_action)
 		{
 			Dictionary<int, EventHandlerData> events;
 
@@ -89,13 +89,13 @@ namespace Mono {
 						DtorAction = dtor_action });
 		}
 
-		public void RemoveHandler (int eventId, int token)
+		private void RemoveHandler (int eventId, int token)
 		{
 			if (ContainsKey (eventId))
 				this[eventId].Remove (token);
 		}
 
-		public UnmanagedEventHandler LookupHandler (int eventId, Delegate managedDelegate)
+		private UnmanagedEventHandler LookupHandler (int eventId, Delegate managedDelegate)
 		{
 			if (ContainsKey (eventId)) {
 				Dictionary<int, EventHandlerData> events = this[eventId];
