@@ -57,6 +57,7 @@ private:
 
 	ReceiverNameScope namescope;
 	MoonMessageListener *listener;
+	bool unref_in_dispose;
 };
 
 /* @Namespace=None,ManagedEvents=Manual */

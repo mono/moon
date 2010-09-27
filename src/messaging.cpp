@@ -22,9 +22,10 @@ namespace Moonlight {
 
 LocalMessageReceiver::LocalMessageReceiver (const char *receiverName,
 					    ReceiverNameScope namescope)
+	: DependencyObject (Type::LOCALMESSAGERECEIVER)
 {
-	SetObjectType (Type::LOCALMESSAGERECEIVER);
 	listener = NULL;
+	this->unref_in_dispose = false;
 	this->receiverName = g_strdup (receiverName);
 	this->namescope = namescope;
 	if (namescope == ReceiverNameScopeGlobal)
@@ -86,8 +87,10 @@ LocalMessageReceiver::ListenWithError (MoonError *error)
 
 	listener->AddMessageReceivedCallback (MessageReceivedHandler, this);
 
-	// we unref_delayed in ::Dispose.
-	ref ();
+	if (!unref_in_dispose) {
+		ref ();
+		unref_in_dispose = true;
+	}
 }
 
 char*
@@ -146,16 +149,19 @@ LocalMessageReceiver::DisposeWithError (MoonError *error)
 {
 	delete listener;
 	listener = NULL;
-	unref_delayed ();
+	
+	if (unref_in_dispose) {
+		unref_in_dispose = false;
+		unref_delayed ();
+	}
 }
 
 //// Senders
 
 
 LocalMessageSender::LocalMessageSender (const char *receiverName, const char *receiverDomain)
+	: DependencyObject (Type::LOCALMESSAGESENDER)
 {
-	SetObjectType (Type::LOCALMESSAGESENDER);
-
 	this->receiverName = g_strdup (receiverName);
 
 	this->senderDomain = NULL;
