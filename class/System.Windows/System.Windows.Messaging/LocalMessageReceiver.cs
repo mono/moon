@@ -115,8 +115,10 @@ namespace System.Windows.Messaging {
 
 		public void Dispose ()
 		{
-			disposed = true;
-			NativeMethods.local_message_receiver_dispose (NativeHandle);
+			if (!disposed) {
+				disposed = true;
+				NativeMethods.local_message_receiver_dispose (NativeHandle);
+			}
 		}
 
 		public IEnumerable<string> AllowedSenderDomains {
