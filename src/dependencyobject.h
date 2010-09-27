@@ -12,7 +12,7 @@
 #define __MONO_DEPOBJECT_H__
 
 #ifndef HEAPVIZ
-#define EVENT_ARG_REUSE 1
+#define EVENT_ARG_REUSE 0 // disabled until working on telerik
 #endif
 //#define PROPERTY_LOOKUP_DIAGNOSTICS 1
 
