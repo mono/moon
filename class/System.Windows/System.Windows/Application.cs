@@ -762,21 +762,21 @@ namespace System.Windows {
 		
 		public event CheckAndDownloadUpdateCompletedEventHandler CheckAndDownloadUpdateCompleted {
 			add {
-				EventList.RegisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value,
+				EventList.RegisterEvent (this, EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value,
 					       Events.CreateCheckAndDownloadUpdateCompletedEventHandlerDispatcher (this, value));
 			}
 			remove {
-				EventList.UnregisterEvent (EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value);
+				EventList.UnregisterEvent (this, EventIds.Application_CheckAndDownloadUpdateCompletedEvent, value);
 			}
 		}
 		
 		public event EventHandler InstallStateChanged {
 			add {
-				EventList.RegisterEvent (EventIds.Application_InstallStateChangedEvent, value,
+				EventList.RegisterEvent (this, EventIds.Application_InstallStateChangedEvent, value,
 					       Events.CreateEventHandlerDispatcher (value));
 			}
 			remove {
-				EventList.UnregisterEvent (EventIds.Application_InstallStateChangedEvent, value);
+				EventList.UnregisterEvent (this, EventIds.Application_InstallStateChangedEvent, value);
 			}
 		}
 		

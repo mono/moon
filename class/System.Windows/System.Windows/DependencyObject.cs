@@ -329,12 +329,12 @@ namespace System.Windows {
 
 		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
-			EventList.RegisterEvent (eventId, managedHandler, nativeHandler);
+			EventList.RegisterEvent (this, eventId, managedHandler, nativeHandler);
 		}
 
 		internal void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
-			EventList.UnregisterEvent (eventId, managedHandler);
+			EventList.UnregisterEvent (this, eventId, managedHandler);
 		}
 
 		internal object ReadLocalValueImpl (DependencyProperty dp)

@@ -50,13 +50,11 @@ namespace Mono {
 
 	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
 		GCHandle gc_handle; /* to make sure the EventHandlerList outlives its INativeDependencyObjectWrapper */
-		INativeEventObjectWrapper obj;
 
 		public EventHandlerList (INativeEventObjectWrapper wrapper)
 		{
 			if (wrapper != null)
 				gc_handle = GCHandle.Alloc (this);
-			obj = wrapper;
 		}
 
 		public void Free ()
@@ -109,7 +107,7 @@ namespace Mono {
 			return null;
 		}
 
-		public void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
+		public void RegisterEvent (INativeEventObjectWrapper obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
 			RegisterEvent (obj.NativeHandle, eventId, managedHandler, nativeHandler);
 		}
@@ -130,7 +128,7 @@ namespace Mono {
 			AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 
-		public void UnregisterEvent (int eventId, Delegate managedHandler)
+		public void UnregisterEvent (INativeEventObjectWrapper obj, int eventId, Delegate managedHandler)
 		{
 			UnregisterEvent (obj.NativeHandle, eventId, managedHandler);
 		}

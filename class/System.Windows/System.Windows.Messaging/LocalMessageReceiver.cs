@@ -148,8 +148,8 @@ namespace System.Windows.Messaging {
 		}
 
 		public event EventHandler<MessageReceivedEventArgs> MessageReceived {
-			add { EventList.RegisterEvent (EventIds.LocalMessageReceiver_MessageReceivedEvent, value, Events.CreateMessageReceivedEventArgsEventHandlerDispatcher (value)); }
-			remove { EventList.UnregisterEvent (EventIds.LocalMessageReceiver_MessageReceivedEvent, value); }
+			add { EventList.RegisterEvent (this, EventIds.LocalMessageReceiver_MessageReceivedEvent, value, Events.CreateMessageReceivedEventArgsEventHandlerDispatcher (value)); }
+			remove { EventList.UnregisterEvent (this, EventIds.LocalMessageReceiver_MessageReceivedEvent, value); }
 		}
 
 		IEnumerable<string> allowedSenderDomains;

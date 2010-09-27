@@ -86,28 +86,28 @@ namespace System.Windows.Interop {
 		
 		public event EventHandler FullScreenChanged {
 			add {
-				Deployment.Current.Surface.EventList.RegisterEvent (EventIds.Surface_FullScreenChangeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+				Deployment.Current.Surface.EventList.RegisterEvent (Deployment.Current.Surface, EventIds.Surface_FullScreenChangeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				Deployment.Current.Surface.EventList.UnregisterEvent (EventIds.Surface_FullScreenChangeEvent, value);
+				Deployment.Current.Surface.EventList.UnregisterEvent (Deployment.Current.Surface, EventIds.Surface_FullScreenChangeEvent, value);
 			}
 		}
 		
 		public event EventHandler Resized {
 			add {
-				Deployment.Current.Surface.EventList.RegisterEvent (EventIds.Surface_ResizeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+				Deployment.Current.Surface.EventList.RegisterEvent (Deployment.Current.Surface, EventIds.Surface_ResizeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				Deployment.Current.Surface.EventList.UnregisterEvent (EventIds.Surface_ResizeEvent, value);
+				Deployment.Current.Surface.EventList.UnregisterEvent (Deployment.Current.Surface, EventIds.Surface_ResizeEvent, value);
 			}
 		}
 		
 		public event EventHandler Zoomed {
 			add {
-				Deployment.Current.Surface.EventList.RegisterEvent (EventIds.Surface_ZoomedEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+				Deployment.Current.Surface.EventList.RegisterEvent (Deployment.Current.Surface, EventIds.Surface_ZoomedEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				Deployment.Current.Surface.EventList.UnregisterEvent (EventIds.Surface_ZoomedEvent, value);
+				Deployment.Current.Surface.EventList.UnregisterEvent (Deployment.Current.Surface, EventIds.Surface_ZoomedEvent, value);
 			}
 		}
 	}

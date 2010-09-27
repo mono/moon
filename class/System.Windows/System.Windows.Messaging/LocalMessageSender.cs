@@ -108,8 +108,8 @@ namespace System.Windows.Messaging {
 		}
 
 		public event EventHandler<SendCompletedEventArgs> SendCompleted {
-			add { EventList.RegisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value, Events.CreateSendCompletedEventArgsEventHandlerDispatcher (value)); }
-			remove { EventList.UnregisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value); }
+			add { EventList.RegisterEvent (this, EventIds.LocalMessageSender_SendCompletedEvent, value, Events.CreateSendCompletedEventArgsEventHandlerDispatcher (value)); }
+			remove { EventList.UnregisterEvent (this, EventIds.LocalMessageSender_SendCompletedEvent, value); }
 		}
 
 		string receiverDomain;
