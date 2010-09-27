@@ -890,15 +890,15 @@ private:
 		SenderMachine *machine = (SenderMachine*)data;
 		MoonMessageSenderGlib *sender = (MoonMessageSenderGlib*)user_data;
 		
-		g_warning ("SenderMachine had an error: %s\n", machine->GetError());
-
-		delete machine;
+		printf ("Moonlight: SenderMachine had an error: %s\n", machine->GetError());
 
 		ErrorClosure *error_closure = new ErrorClosure();
 		error_closure->error = g_strdup (machine->GetError());
 		error_closure->msg = g_strdup (machine->GetMessageContents());
 		error_closure->sender = sender;
 		error_closure->deployment = machine->GetDeployment();
+
+		delete machine;
 
 		runtime_get_windowing_system()->AddIdle (idle_machine_error, error_closure);
 	}
