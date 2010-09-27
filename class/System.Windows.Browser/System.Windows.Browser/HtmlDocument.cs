@@ -62,7 +62,7 @@ namespace System.Windows.Browser
 
 		public ScriptObjectCollection GetElementsByTagName (string tagName)
 		{
-			return new ScriptObjectCollection (InvokeInternal<IntPtr> ("getElementsByTagName", tagName));
+			return InvokeInternal<ScriptObjectCollection> ("getElementsByTagName", tagName);
 		}
 		
 		public IDictionary<string,string> QueryString {
