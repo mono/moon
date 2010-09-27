@@ -137,13 +137,21 @@ namespace System.Windows.Browser {
 
 		public override void SetProperty (string name, object value)
 		{
+			if (!properties.ContainsKey (name))
+				throw new InvalidOperationException ("Property '" + name + "' not found");
+
 			PropertyInfo pi = properties[name].property;
 			object obj = properties[name].obj;
+			if (pi.GetSetMethod () == null)
+				throw new InvalidOperationException ("Property '" + name + "' cannot be set");
 			pi.SetValue (obj, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
 		}
 
 		internal override void SetProperty (string name, object[] args)
 		{
+			if (!properties.ContainsKey (name))
+				throw new InvalidOperationException ("Property '" + name + "' not found");
+
 			PropertyInfo pi = properties[name].property;
 			object obj = properties[name].obj;
 			MethodInfo mi = pi.GetSetMethod ();

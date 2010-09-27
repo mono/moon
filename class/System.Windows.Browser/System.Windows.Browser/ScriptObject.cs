@@ -386,6 +386,8 @@ namespace System.Windows.Browser {
 
 		internal object GetProperty (string scriptAlias, object[] args)
 		{
+			if (!properties.ContainsKey (scriptAlias))
+				throw new InvalidOperationException ("Property '" + scriptAlias + "' not found");
 			PropertyInfo pi = properties[scriptAlias].property;
 			object obj = properties[scriptAlias].obj;
 			if (pi.GetIndexParameters().Length > 0) {
@@ -395,6 +397,9 @@ namespace System.Windows.Browser {
 				else
 					throw new ArgumentException ("args");
 			}
+			if (pi.GetGetMethod () == null)
+				throw new InvalidOperationException ("Property '" + scriptAlias + "' is not accessible");
+
 			return pi.GetValue (obj, null);
 		}
 
