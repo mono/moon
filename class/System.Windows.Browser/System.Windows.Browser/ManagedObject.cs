@@ -189,7 +189,10 @@ namespace System.Windows.Browser {
 
 		public override object InvokeSelf (params object [] args)
 		{
-			throw new InvalidOperationException ("Invoke failed");
+			Delegate d = managed as Delegate;
+			if (d == null)
+				throw new InvalidOperationException ("Invoke failed");
+			return d.DynamicInvoke (args);
 		}
 
 		internal override object ManagedObjectCore {
