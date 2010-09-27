@@ -546,10 +546,9 @@ namespace Mono.Xaml {
 
 		private void ParseText ()
 		{
-			XamlObjectElement obj = CurrentElement as XamlObjectElement;
-
 			string value = HandleWhiteSpace (reader.Value);
 
+			XamlObjectElement obj = CurrentElement as XamlObjectElement;
 			if (obj != null) {
 				if (typeof (TextBlock).IsAssignableFrom (obj.Type)) {
 					ParseTextBlockText (obj, value);
@@ -583,6 +582,13 @@ namespace Mono.Xaml {
 				
 				object converted = content.ConvertTextValue (value);
 				content.SetValue (converted);
+				return;
+			}
+
+			XamlPropertyElement prop = CurrentElement as XamlPropertyElement;
+			if (prop != null) {
+				object converted = prop.Setter.ConvertTextValue (value);
+				prop.Setter.SetValue (converted);
 			}
 		}
 
