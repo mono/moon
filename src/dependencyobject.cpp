@@ -47,19 +47,22 @@ struct totals
 // event handlers for c++
 class EventClosure : public List::Node {
 public:
-	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy, int token) {
+	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor, int token) {
 		this->func = func;
 		this->data = data;
 		this->data_dtor = data_dtor;
 		this->token = token;
-		this->invoke_data_dtor_on_destroy = invoke_data_dtor_on_destroy;
+		this->managed_data_dtor = managed_data_dtor;
 	       
 		pending_removal = false;
 		emit_count = 0;
 	}
 
-	void InvokeDataDtor ()
+	void InvokeDataDtor (bool is_shutting_down)
 	{
+		if (is_shutting_down && managed_data_dtor)
+			return;
+
 		if (data_dtor) {
 			data_dtor (data);
 			data_dtor = NULL;
@@ -69,7 +72,7 @@ public:
 
 	~EventClosure ()
 	{
-		if (invoke_data_dtor_on_destroy && data_dtor)
+		if (!managed_data_dtor && data_dtor)
 			data_dtor (data);
 	}
 
@@ -79,7 +82,9 @@ public:
 	int token;
 	bool pending_removal;
 	int emit_count;
-	bool invoke_data_dtor_on_destroy;
+	/* Managed data dtor aren't called when we're destroyed, nor when we're shutting down.
+	 * In both cases becuase the managed delegate might have been collected, and we'd abort. */
+	bool managed_data_dtor;
 };
 
 struct EmitContext {
@@ -629,7 +634,7 @@ EventObject::PrintStackTrace ()
 #endif
 
 int
-EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy)
+EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
 {
 	int id = GetType()->LookupEvent (event_name);
 
@@ -638,11 +643,11 @@ EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer 
 		return -1;
 	}
 
-	return AddHandler (id, handler, data, data_dtor, invoke_data_dtor_on_destroy);
+	return AddHandler (id, handler, data, data_dtor, managed_data_dtor);
 }
 
 int
-EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy)
+EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
 { 
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
@@ -654,13 +659,13 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDes
 
 	int token = events->lists [event_id].current_token++;
 	
-	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, invoke_data_dtor_on_destroy, token));
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, managed_data_dtor, token));
 	
 	return token;
 }
 
 void
-EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy)
+EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
 {
 	if (GetType()->GetEventCount() <= event_id) {
 		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
@@ -670,7 +675,7 @@ EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer dat
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
 
-	events->lists [event_id].onevent = new EventClosure (handler, data, data_dtor, invoke_data_dtor_on_destroy, 0);
+	events->lists [event_id].onevent = new EventClosure (handler, data, data_dtor, managed_data_dtor, 0);
 }
 
 void
@@ -696,7 +701,7 @@ EventObject::RemoveOnEventHandler (int event_id, EventHandler handler, gpointer 
 }
 
 int
-EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy)
+EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
 {
 	int id = GetType ()->LookupEvent (event_name);
 	
@@ -705,11 +710,11 @@ EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpoin
 		return -1;
 	}
 	
-	return AddXamlHandler (id, handler, data, data_dtor, invoke_data_dtor_on_destroy);
+	return AddXamlHandler (id, handler, data, data_dtor, managed_data_dtor);
 }
 
 int
-EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy)
+EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
 { 
 	if (GetType ()->GetEventCount () <= 0) {
 		g_warning ("adding xaml handler to event with id %d, which has not been registered\n", event_id);
@@ -719,7 +724,7 @@ EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, 
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
 
-	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, invoke_data_dtor_on_destroy, 0));
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, managed_data_dtor, 0));
 	
 	return 0;
 }
@@ -771,6 +776,7 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 		return -1;
 	}
 
+	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->func == handler && closure->data == data) {
@@ -778,7 +784,7 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
  			if (!events->lists [event_id].context_stack->IsEmpty()) {
  				closure->pending_removal = true;
  			} else {
-				closure->InvokeDataDtor ();
+				closure->InvokeDataDtor (is_shutting_down);
 				events->lists [event_id].event_list->Remove (closure);
  			}
 			break;
@@ -804,13 +810,14 @@ EventObject::RemoveHandler (int event_id, int token)
 		return;
 	}
 
+	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->token == token) {
 			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				closure->pending_removal = true;
 			} else {
-				closure->InvokeDataDtor();
+				closure->InvokeDataDtor(is_shutting_down);
 				events->lists [event_id].event_list->Remove (closure);
 			}
 			break;
@@ -826,6 +833,7 @@ EventObject::RemoveAllHandlers (gpointer data)
 	if (events == NULL)
 		return;
 
+	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	int count = GetType ()->GetEventCount ();
 	
 	for (int i = 0; i < count; i++) {
@@ -835,7 +843,7 @@ EventObject::RemoveAllHandlers (gpointer data)
 				if (!events->lists [i].context_stack->IsEmpty()) {
 					closure->pending_removal = true;
 				} else {
-					closure->InvokeDataDtor();
+					closure->InvokeDataDtor(is_shutting_down);
 					events->lists [i].event_list->Remove (closure);
 				}
 				break;
@@ -862,12 +870,13 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	}
 
 	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
+	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	while (c) {
 		if (predicate (c->func, c->data, closure)) {
 			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				c->pending_removal = true;
 			} else {
-				c->InvokeDataDtor ();
+				c->InvokeDataDtor (is_shutting_down);
 				events->lists [event_id].event_list->Remove (c);
 			}
 			break;
@@ -1295,13 +1304,14 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 	delete first_node;
 	events->emitting--;
 
+	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	if (events->lists [event_id].context_stack->IsEmpty ()) {
 		// Remove closures which are waiting for removal
 		EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 		while (closure != NULL) {
 			EventClosure *next = (EventClosure *) closure->next;
 			if (closure->pending_removal) {
-				closure->InvokeDataDtor();
+				closure->InvokeDataDtor(is_shutting_down);
 				events->lists [event_id].event_list->Remove (closure);
 			}
 			closure = next;

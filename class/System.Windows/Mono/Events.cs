@@ -393,7 +393,7 @@ namespace Mono {
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
 		{
-			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, null, false);
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, null, true);
 		}
 
 		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, GDestroyNotify dtor_action)
@@ -403,7 +403,7 @@ namespace Mono {
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, GDestroyNotify data_dtor)
 		{
-			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, data_dtor, false);
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, data_dtor, true);
 		}
 
 		public static void RemoveHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)
