@@ -1172,6 +1172,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ElementName_MentorBased_AttachMentorAfterBinding()
 		{
 			var source = TestPanel;
@@ -2828,6 +2829,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug]
 		public void XamlBindAfterResourcesb_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
@@ -2886,6 +2888,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug]
 		public void XamlBindAfterResources2b_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
@@ -2925,6 +2928,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
+		[MoonlightBug]
 		public void XamlBindAfterResources3b_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -2944,6 +2948,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug]
 		public void XamlBindAfterResources3b_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
@@ -2982,6 +2987,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
+		[MoonlightBug]
 		public void XamlBindBeforeResourcesb_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -3000,6 +3006,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug]
 		public void XamlBindBeforeResourcesb_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
@@ -3166,6 +3173,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug]
 		public void XamlStaticResource_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
