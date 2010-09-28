@@ -19,7 +19,6 @@ namespace MoonTest.System.Windows {
 	public class ParserTypeConverterTests {
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ConverterCallOnAttachedGetter ()
 		{
 			// Do look up TypeConverters declared on the static getter method.
@@ -70,7 +69,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TypeConverterOnClass_AttachedProperty_OnOtherClass  ()
 		{
 			// Attached DPs don't look up type converters on their declaring class
