@@ -346,7 +346,7 @@ namespace Mono.Xaml {
 
 		private XamlPropertySetter XamlImplicitAttachedPropertyForName (object target, string name)
 		{
-			return LookupAttachedProperty (Type, name);
+			return LookupAttachedProperty (this, Type, name);
 		}
 
 		private XamlPropertySetter LookupAttachedProperty (XmlReader reader)
@@ -357,14 +357,15 @@ namespace Mono.Xaml {
 			if (t == null || name == null)
 				return null;
 
-			return LookupAttachedProperty (t, name);
+			return LookupAttachedProperty (this, t, name);
 		}
 
-		private XamlPropertySetter LookupAttachedProperty (Type t, string name)
+		public static XamlPropertySetter LookupAttachedProperty (XamlObjectElement parent, Type t, string name)
 		{
 			MethodInfo getter = ResolveAttachedPropertyGetter (name, t);
 			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter == null ? null : getter.ReturnType);
 
+			Console.WriteLine (" looked up:  '{0}'  on '{1}'  getter: '{2}'  setter: '{3}'", t, name, getter, setter);
 			if (getter == null && setter == null)
 				return null;
 
@@ -380,15 +381,15 @@ namespace Mono.Xaml {
 			if (converter == null && getter != null)
 				converter = Helper.GetConverterFor (getter, getter.ReturnType);
 
-			return new XamlAttachedPropertySetter (this, name, getter, setter, converter);
+			return new XamlAttachedPropertySetter (parent, name, getter, setter, converter);
 		}
 
-		private bool IsCollectionType (Type t)
+		private static bool IsCollectionType (Type t)
 		{
 			return (typeof (IDictionary).IsAssignableFrom (t) || typeof (IList).IsAssignableFrom (t));
 		}
 
-		private string AttachedPropertyName (string name)
+		public static string AttachedPropertyName (string name)
 		{
 			int dot = name.IndexOf ('.');
 			if (dot < 1)
@@ -404,7 +405,7 @@ namespace Mono.Xaml {
 			return name.Substring (++dot, name.Length - dot);
 		}
 
-		private MethodInfo ResolveAttachedPropertyGetter (string base_name, Type type)
+		private static MethodInfo ResolveAttachedPropertyGetter (string base_name, Type type)
 		{
 			Type [] arg_types = new Type [] { typeof (DependencyObject) };
 			string full_name = String.Concat ("Get", base_name);
@@ -412,7 +413,7 @@ namespace Mono.Xaml {
 			return ResolveAttachedPropertyMethod (full_name, type, arg_types);
 		}
 
-		private MethodInfo ResolveAttachedPropertySetter (string base_name, Type type, Type return_type)
+		private static MethodInfo ResolveAttachedPropertySetter (string base_name, Type type, Type return_type)
 		{
 			Type [] arg_types = new Type [] { typeof (DependencyObject), return_type };
 			string full_name = String.Concat ("Set", base_name);
@@ -420,7 +421,7 @@ namespace Mono.Xaml {
 			return ResolveAttachedPropertyMethod (full_name, type, arg_types);
 		}
 
-		private MethodInfo ResolveAttachedPropertyMethod (string name, Type type, Type [] arg_types)
+		private static MethodInfo ResolveAttachedPropertyMethod (string name, Type type, Type [] arg_types)
 		{
 			MethodInfo [] methods = type.GetMethods (XamlParser.METHOD_BINDING_FLAGS);
 			foreach (MethodInfo method in methods) {

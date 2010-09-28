@@ -445,6 +445,12 @@ namespace Mono.Xaml {
 				setter = CurrentElement.LookupProperty (reader);
 				if (setter == null)
 					throw ParseException ("Property {0} was not found on type {1}.", reader.LocalName, CurrentElement.Name);
+			} else {
+				// We might be dealing with a top level property, in this case it should
+				// be a
+				setter = XamlObjectElement.LookupAttachedProperty (null, t, XamlObjectElement.AttachedPropertyName (reader.LocalName));
+				if (setter == null)
+					throw ParseException ("Top Level property is not an attached property.");
 			}
 
 			XamlPropertyElement element = new XamlPropertyElement (this, reader.LocalName, setter);
@@ -1536,8 +1542,12 @@ namespace Mono.Xaml {
 				try {
 					dp = DependencyProperty.Lookup (kind, name + "Property");
 				} catch (Exception ee) {
-					Console.Error.WriteLine ("Exception while looking up DependencyProperty '{0}'.", name + "Property");
+					Console.Error.WriteLine ("Exception while looking up DependencyProperty '{0}'::'{1}'.",
+							Deployment.Current.Types.KindToType (kind), name + "Property");
 					Console.Error.WriteLine (ee);
+
+					Console.Error.WriteLine ("HAPPENING HERE");
+					Console.Error.WriteLine (Environment.StackTrace);
 				}
 			}
 
