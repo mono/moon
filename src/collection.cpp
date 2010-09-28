@@ -213,7 +213,10 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 		if (addStrongRef) {
 			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *added_obj = added->AsDependencyObject();
-				if (added_obj && added_obj->hadManagedPeer) {
+				/* The managed StylusPointCollection contains StylusPoint objects, while the native StylusPointCollection
+				 * contains UnmanagedStylusPoint objects. This means that UnmanagedStylusPoint's managed peer is not
+				 * reachable, so if it's unreffed here, it ends up getting gc'ed pretty quickly. DRTs: #TopXXScenarios5 and #TopXXScenarios6 */
+				if (added_obj && added_obj->hadManagedPeer && GetObjectType () != Type::STYLUSPOINT_COLLECTION) {
 					added->AsDependencyObject()->unref();
 					added->SetNeedUnref (false);
 				}
