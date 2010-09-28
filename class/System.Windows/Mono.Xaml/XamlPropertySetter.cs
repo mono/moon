@@ -555,7 +555,7 @@ namespace Mono.Xaml {
 			}
 
 			if (value == null || Type.IsAssignableFrom (value.GetType ())) {
-				setter.Invoke (null, new object [] { Element.Object, ConvertValue (Type, value) });
+				setter.Invoke (null, new object [] { Element == null ? null : Element.Object, ConvertValue (Type, value) });
 				return;
 			}
 				
