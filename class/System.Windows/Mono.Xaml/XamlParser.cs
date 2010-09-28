@@ -577,6 +577,15 @@ namespace Mono.Xaml {
 						return;
 					}
 
+					if (IsTypeConvertedType (obj.Type)) {
+						var converter = Helper.GetConverterFor (obj.Type);
+						if (converter.CanConvertFrom (typeof (string))) {
+							MutableObject mutable = (MutableObject) obj.Object;
+							mutable.Object = converter.ConvertFrom (null, Helper.DefaultCulture, value);
+							return;
+						}
+					}
+
 					throw ParseException ("Element {0} does not support text properties.", CurrentElement.Name);
 				}
 				
@@ -1261,6 +1270,11 @@ namespace Mono.Xaml {
 			if (o == null && IsSpecialCasedType (type))
 				o = DefaultValueForSpecialCasedType (type);
 
+			// If an object does not have a content property, we can use
+			// a class level type converter to generate an object of this type
+			if (!(o is MutableObject) && IsTypeConvertedType (type))
+				o = new MutableObject (o);
+
 			return o;
 		}
 
@@ -1408,6 +1422,11 @@ namespace Mono.Xaml {
 		private static object DefaultValueForSpecialCasedType (Type t)
 		{
 			return new MutableObject (null);
+		}
+
+		private static bool IsTypeConvertedType (Type t)
+		{
+			return Helper.GetConverterFor (t) != null;
 		}
 
 		private object SpecialCasedTypeValueFromString (XamlObjectElement element, string value)
