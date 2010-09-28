@@ -68,7 +68,7 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	AbsoluteTransform    transform = AbsoluteTransform ();
 	struct pipe_resource *tex = surface->Texture ();
 	struct pipe_screen   *screen = tex->screen;
-	Rect                 r = Rect (0, 0, tex->width0, tex->height0);
+	Rect                 r = Rect (0, 0, 32768, 32768);
 	const uint           semantic_names[] = { TGSI_SEMANTIC_POSITION,
 						  TGSI_SEMANTIC_GENERIC };
 	const uint           semantic_indexes[] = { 0, 0 };
