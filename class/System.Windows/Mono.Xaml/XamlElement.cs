@@ -365,7 +365,6 @@ namespace Mono.Xaml {
 			MethodInfo getter = ResolveAttachedPropertyGetter (name, t);
 			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter == null ? null : getter.ReturnType);
 
-			Console.WriteLine (" looked up:  '{0}'  on '{1}'  getter: '{2}'  setter: '{3}'", t, name, getter, setter);
 			if (getter == null && setter == null)
 				return null;
 
