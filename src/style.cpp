@@ -51,6 +51,46 @@ Style::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 }
 
 void
+Style::OnIsAttachedChanged (bool value)
+{
+	// printf ("Style::OnIsAttachedChanged\n");
+	DependencyObject::OnIsAttachedChanged (value);
+	if (!value) {
+		// printf ("emitting Style::DetachedEvent\n");
+		Emit (Style::DetachedEvent);
+	}
+}
+
+void
+Style::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	// printf ("OnCollectionChanged");
+	switch (args->GetChangedAction()) {
+	case CollectionChangedActionAdd:
+		// printf (" (Add)\n");
+		break;
+	case CollectionChangedActionRemove:
+		// printf (" (Remove)\n");
+		break;
+	case CollectionChangedActionReplace:
+		// printf (" (Replace)\n");
+		break;
+	case CollectionChangedActionClearing:
+		// printf (" (Clearing)\n");
+		break;
+	case CollectionChangedActionCleared:
+		// printf (" (Cleared)\n");
+		break;
+	}
+}
+
+void
+Style::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	// printf ("OnCollectionItemChanged (%s)\n", args->GetProperty()->GetName());
+}
+
+void
 Style::Seal ()
 {
 	if (GetIsSealed ())
@@ -239,6 +279,61 @@ DeepStyleWalker::DeepStyleWalker (Style *style, Types *types)
 	}
 	
 	g_hash_table_destroy (dps);
+	g_ptr_array_sort (setter_list, SetterComparer);
+}
+
+DeepStyleWalker::DeepStyleWalker (Style **styles, Types *types)
+{
+	// Create a list of all Setters in the style sorted by their DP.
+	// Use the hashtable to ensure that we only take the first setter
+	// declared for each DP (i.e. if the BasedOn style and main style
+	// have setters for the same DP, we ignore the BasedOn one
+	
+	// NOTE: This can be pre-computed and cached as once a style is
+	// sealed it can never be changed.
+
+	this->offset = 0;
+	this->types = types || !styles[0] ? types : styles[0]->GetDeployment ()->GetTypes ();
+	this->setter_list = g_ptr_array_new ();
+
+	if (!styles)
+		return;
+
+	GHashTable *styles_seen = g_hash_table_new (g_direct_hash, g_direct_equal);
+	GHashTable *dps = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	for (int i = 0; styles[i]; i ++) {
+		Style *style = styles[i];
+		while (style != NULL) {
+			if (g_hash_table_lookup (styles_seen, style))
+				continue;
+
+			SetterBaseCollection *setters = style->GetSetters ();
+			int count = setters ? setters->GetCount () : 0;
+			for (int i = 0; i < count; i++) {
+				Value *v = setters->GetValueAt (i);
+				if (Value::IsNull (v) || !types->IsSubclassOf (v->GetKind (), Type::SETTER))
+					continue;
+
+				Setter *setter = v->AsSetter ();
+				Value* dpVal = setter->GetValue (Setter::PropertyProperty);
+				if (Value::IsNull (dpVal))
+					continue;
+
+				DependencyProperty *prop = dpVal->AsDependencyProperty ();
+				if (!g_hash_table_lookup_extended (dps, prop, NULL, NULL)) {
+					g_hash_table_insert (dps, prop, setter);
+					g_ptr_array_add (setter_list, setter);
+				}
+			}
+
+			g_hash_table_insert (styles_seen, style, style);
+			style = style->GetBasedOn ();
+		}
+	}
+	
+	g_hash_table_destroy (dps);
+	g_hash_table_destroy (styles_seen);
 	g_ptr_array_sort (setter_list, SetterComparer);
 }
 

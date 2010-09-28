@@ -192,6 +192,168 @@ StylePropertyValueProvider::ForeachValue (GHFunc func, gpointer data)
 	g_hash_table_foreach (style_hash, func, data);
 }
 
+
+//
+// ImplicitStylePropertyValueProvider
+//
+
+ImplicitStylePropertyValueProvider::ImplicitStylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
+	: PropertyValueProvider (obj, precedence, ProviderFlags_RecomputesOnClear)
+{
+	styles = NULL;
+	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+					    (GDestroyNotify)NULL,
+					    (GDestroyNotify)value_delete_value);
+	this->dispose_value = dispose_value;
+}
+
+ImplicitStylePropertyValueProvider::~ImplicitStylePropertyValueProvider ()
+{
+	if (styles) {
+		for (int i = 0; styles[i]; i ++) {
+			// styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+			// styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &styles[i]);
+		}
+		g_free (styles);
+	}
+
+	g_hash_table_foreach_remove (style_hash, dispose_value, obj);
+	g_hash_table_destroy (style_hash);
+}
+
+Value*
+ImplicitStylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
+{
+	return (Value *) g_hash_table_lookup (style_hash, property);
+}
+
+void
+ImplicitStylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, ProviderFlags reason, MoonError *error)
+{
+	// we only recompute on clear
+	if ((reason & ProviderFlags_RecomputesOnClear) == 0)
+		return;
+
+	if (!styles)
+		return;
+
+	Value old_value;
+	Value *new_value = NULL;
+	DependencyProperty *property = NULL;
+
+	DeepStyleWalker walker (styles);
+	while (Setter *setter = walker.Step ()) {
+		property = setter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+		if (property != prop)
+			continue;
+
+		new_value = setter->GetValue (Setter::ConvertedValueProperty);
+		if (new_value != NULL)
+			new_value = new Value (*new_value);
+
+		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
+
+		g_hash_table_insert (style_hash, property, new_value);
+
+		obj->ProviderValueChanged (precedence, property, &old_value, new_value, true, true, true, error);
+		if (error->number)
+			return;
+	}
+}
+
+void
+ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *error)
+{
+	Value *oldValue;
+	Value *newValue;
+
+	Types *types = obj->GetDeployment()->GetTypes();
+	DeepStyleWalker oldWalker (this->styles, types);
+	DeepStyleWalker newWalker (styles, types);
+
+	Setter *oldSetter = oldWalker.Step ();
+	Setter *newSetter = newWalker.Step ();
+
+	while (oldSetter || newSetter) {
+
+		DependencyProperty *oldProp = NULL;
+		DependencyProperty *newProp = NULL;
+
+		if (oldSetter)
+			oldProp = oldSetter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+		if (newSetter)
+			newProp = newSetter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+		
+		if (oldProp != NULL && (oldProp < newProp || newProp == NULL)) {
+			// this is a property in the old style which is not in the new style
+			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
+			newValue = NULL;
+
+			g_hash_table_remove (style_hash, oldProp);
+			obj->ProviderValueChanged (precedence, oldProp, oldValue, newValue, true, true, false, error);
+
+			oldSetter = oldWalker.Step ();
+		} else if (oldProp == newProp) {
+			// This is a property which is in both styles
+			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
+			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
+			if (newValue != NULL)
+				newValue = new Value (*newValue);
+
+			g_hash_table_insert (style_hash, oldProp, newValue);
+			obj->ProviderValueChanged (precedence, oldProp, oldValue, newValue, true, true, false, error);
+
+			oldSetter = oldWalker.Step ();
+			newSetter = newWalker.Step ();
+		} else {
+			// This is a property which is only in the new style
+			oldValue = NULL;
+			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
+			if (newValue != NULL)
+				newValue = new Value (*newValue);
+
+			g_hash_table_insert (style_hash, newProp, newValue);
+			obj->ProviderValueChanged (precedence, newProp, oldValue, newValue, true, true, false, error);
+
+			newSetter = newWalker.Step ();
+		}
+	}
+
+	if (this->styles) {
+		for (int i = 0; this->styles[i]; i ++) {
+			this->styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+			//this->styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+		}
+		g_free (this->styles);
+	}
+	this->styles = styles;
+	if (this->styles) {
+		for (int i = 0; this->styles[i]; i ++) {
+			//this->styles[i]->AddHandler (Style::SettersChangedEvent, ImplicitStylePropertyValueProvider::setters_changed, this);
+			this->styles[i]->AddHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+			//this->styles[i]->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+		}
+	}
+}
+
+void
+ImplicitStylePropertyValueProvider::style_detached (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((ImplicitStylePropertyValueProvider*)closure)->StyleDetached ();
+}
+
+void
+ImplicitStylePropertyValueProvider::StyleDetached ()
+{
+	((FrameworkElement*)obj)->ApplyDefaultStyle();
+}
+
+void
+ImplicitStylePropertyValueProvider::ForeachValue (GHFunc func, gpointer data)
+{
+	g_hash_table_foreach (style_hash, func, data);
+}
+
 //
 // InheritedPropertyValueProvider
 //

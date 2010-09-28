@@ -42,7 +42,12 @@ public:
 	void Seal ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-	
+
+	virtual void OnIsAttachedChanged (bool value);
+
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
+
 	//
 	// Property Accessors
 	//
@@ -57,7 +62,10 @@ public:
 	
 	void SetTargetType (ManagedTypeInfo *type_info);
 	ManagedTypeInfo *GetTargetType ();
-	
+
+	const static int SettersChangedEvent;
+	const static int DetachedEvent;
+
 protected:
 	virtual ~Style ();
 };
@@ -152,6 +160,7 @@ class Setter : public SetterBase {
 class DeepStyleWalker {
  public:
 	DeepStyleWalker (Style *style, Types *types = NULL);
+	DeepStyleWalker (Style **styles, Types *types = NULL);
 	~DeepStyleWalker ();
 	Setter *Step ();
  private:

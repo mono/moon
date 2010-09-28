@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 629 methods
+# 630 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -276,7 +276,7 @@
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
 +SSC-M: System.Windows.InstallState System.Windows.Application::get_InstallState()
 +SSC-M: System.Boolean System.Windows.Application::Install()
-+SSC-M: System.IntPtr System.Windows.Application::get_default_style_cb(System.IntPtr)
++SSC-M: System.Void System.Windows.Application::get_default_style_cb(System.IntPtr,System.IntPtr&)
 +SSC-M: System.Void System.Windows.Application::convert_setter_values_cb(System.IntPtr)
 +SSC-M: System.Void System.Windows.Application::CheckAndDownloadUpdateAsync()
 +SSC-M: System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)
@@ -594,6 +594,7 @@
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
++SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Clear()
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()

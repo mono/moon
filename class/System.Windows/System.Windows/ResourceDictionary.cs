@@ -71,6 +71,9 @@ namespace System.Windows {
 	}
 
 	public partial class ResourceDictionary	: DependencyObject, IDictionary, IDictionary<object, object> {
+
+		const string INTERNAL_TYPE_KEY_MAGIC_COOKIE = "___internal___moonlight___key___do___not__use___it___will___kill__cats__";
+
 		Uri source;
 
 		Dictionary<object, object> managedDict;
@@ -266,12 +269,20 @@ namespace System.Windows {
 				throw new ArgumentNullException ("key");
 			
 			if (key is string) {
-				bool rv = NativeMethods.resource_dictionary_remove (native, (string)key);
+				if (((string)key).StartsWith (INTERNAL_TYPE_KEY_MAGIC_COOKIE))
+					return false;
 				managedDict.Remove (key);
-				return rv;
+				return NativeMethods.resource_dictionary_remove (native, (string)key);
 			}
 			else if (key is Type) {
+				bool rv;
+
 				managedDict.Remove (key);
+				rv = NativeMethods.resource_dictionary_remove (native, INTERNAL_TYPE_KEY_MAGIC_COOKIE + ((Type)key).AssemblyQualifiedName);
+
+				managedDict.Remove (((Type)key).FullName);
+				rv = rv || NativeMethods.resource_dictionary_remove (native, ((Type)key).FullName);
+
 				return true;
 			}
 			else
@@ -322,10 +333,20 @@ namespace System.Windows {
 			if (s == null || s.TargetType != key)
 				throw new ArgumentException ("Type as key can only be used with Styles whose target type is the same as the key");
 
-			// we only add it to the managed dictionary,
-			// since unmanaged doesn't know about type
-			// keys at all.
-			managedDict[key] = value;
+			if (managedDict.ContainsKey (key))
+				throw new ArgumentException ("An item with the same key has already been added");
+
+			using (var val = Value.FromObject (value, true)) {
+				var v = val;
+
+				// we have to add this first because in the case of implicit styles the resource_dictionary_add can make us re-enter.
+				managedDict[key] = value;
+
+				if (!NativeMethods.resource_dictionary_add (native,
+									    INTERNAL_TYPE_KEY_MAGIC_COOKIE + ((Type)key).AssemblyQualifiedName,
+									    ref v))
+					managedDict.Remove (key);
+			}
 		}
 		
 		public void Clear ()

@@ -34,6 +34,7 @@ class InheritedIsEnabledValueProvider;
 class LocalPropertyValueProvider;
 class PropertyValueProvider;
 class StylePropertyValueProvider;
+class ImplicitStylePropertyValueProvider;
 class InheritedPropertyValueProvider;
 class InheritedDataContextValueProvider;
 class AutoCreatePropertyValueProvider;
@@ -62,7 +63,7 @@ struct PropertyValueProviderVTable {
 	LocalPropertyValueProvider *localvalue;
 	PropertyValueProvider *dynamicvalue; // base class pointer since DO subclasses will define their own.
 	StylePropertyValueProvider *localstyle;
-	StylePropertyValueProvider *defaultstyle;
+	ImplicitStylePropertyValueProvider *defaultstyle;
 	InheritedPropertyValueProvider *inherited;
 	InheritedDataContextValueProvider *inheriteddatacontext;
 	AutoCreatePropertyValueProvider *autocreate;
@@ -124,14 +125,38 @@ public:
 
 	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error);
 
-	void UpdateStyle (Style *Style, MoonError *error);
+	void UpdateStyle (Style *style, MoonError *error);
 
 	virtual void ForeachValue (GHFunc func, gpointer data);
 
 private:
+
 	GHashTable *style_hash;
 	GHRFunc dispose_value;
 	Style *style;
+};
+
+class ImplicitStylePropertyValueProvider : public PropertyValueProvider {
+public:
+	ImplicitStylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence, GHRFunc dispose_value);
+	virtual ~ImplicitStylePropertyValueProvider ();
+
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+
+	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error);
+
+	virtual void ForeachValue (GHFunc func, gpointer data);
+
+	void UpdateStyle (Style **styles, MoonError *error);
+
+private:
+
+	static void style_detached (EventObject *sender, EventArgs *calldata, gpointer closure);
+	void StyleDetached ();
+
+	GHashTable *style_hash;
+	GHRFunc dispose_value;
+	Style **styles;
 };
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {

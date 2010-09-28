@@ -448,14 +448,14 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[Ignore("On silverlight this seems to throw an uncatchable exception")]
+		[MoonlightBug]
 		public void ParsedMissingTargetType ()
 		{
-			Assert.Throws<ExecutionEngineException>(delegate {
+			Assert.Throws<XamlParseException>(delegate {
 				XamlReader.Load(@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""Width"" Value=""10""/></Style>");
 			});
 
-			Assert.Throws<ExecutionEngineException>(delegate {
+			Assert.Throws<XamlParseException>(delegate {
 				XamlReader.Load(@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>");
 			});
 		}

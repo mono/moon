@@ -239,6 +239,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	UIElement *GetFocusedElement () { return focused_element; }
 
+	UIElementCollection *GetLayers () { return layers; }
+
 	bool FocusElement (UIElement *element);
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -376,7 +378,7 @@ private:
 	MoonWindow *fullscreen_window;
 	
 	// We can have multiple top level elements, these are stored as layers
-	WeakRef<HitTestCollection> layers;
+	WeakRef<UIElementCollection> layers;
 	
 	WeakRef<UIElement> toplevel;
 

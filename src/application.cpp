@@ -67,12 +67,15 @@ Application::RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb,
 	this->get_resource_cb = get_resource_cb;
 }
 
-Style *
+Style **
 Application::GetDefaultStyle (FrameworkElement *el)
 {
+	Style** array = NULL;
+
 	if (get_default_style_cb)
-		return get_default_style_cb (el);
-	return NULL;
+		get_default_style_cb (el, &array);
+
+	return array;
 }
 
 void

@@ -21,7 +21,7 @@
 namespace Moonlight {
 
 /* @CBindingRequisite */
-typedef Style *(*GetDefaultStyleCallback)(FrameworkElement *el);
+typedef void (*GetDefaultStyleCallback)(FrameworkElement *el, Style ***styles);
 /* @CBindingRequisite */
 typedef void (*ConvertSetterValuesCallback)(Style *style);
 /* @CBindingRequisite */
@@ -44,7 +44,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 	
-	Style *GetDefaultStyle (FrameworkElement *el);
+	Style **GetDefaultStyle (FrameworkElement *el);
 	void ConvertSetterValues (Style *style);
 	
 	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);

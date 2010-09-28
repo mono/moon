@@ -21,6 +21,7 @@
 
 namespace Moonlight {
 
+#define INTERNAL_TYPE_KEY_MAGIC_COOKIE "___internal___moonlight___key___do___not__use___it___will___kill__cats__"
 
 //
 // ResourceDictionaryIterator
@@ -260,6 +261,49 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 			addStrongRef (this, ob, key);
 			ob->unref();
 			v->SetNeedUnref (false);
+		}
+
+		if (!strncmp (key, INTERNAL_TYPE_KEY_MAGIC_COOKIE, sizeof (INTERNAL_TYPE_KEY_MAGIC_COOKIE) - 1)
+		    && v->Is (GetDeployment (), Type::STYLE)) {
+			DependencyObject *p = GetParent();
+			if (p->Is (Type::APPLICATION)) {
+				// we modified the application's resources, so we need to traverse all layers
+
+				CollectionIterator *iterator = p->GetDeployment()->GetSurface()->GetLayers()->GetIterator();
+				while (iterator->Next (NULL)) {
+					Value *v = iterator->GetCurrent(NULL);
+					UIElement *ui = v->AsUIElement();
+
+					DeepTreeWalker walker (ui);
+
+					while (UIElement *el = walker.Step()) {
+						((FrameworkElement*)el)->ApplyDefaultStyle();
+					}
+				}
+
+				delete iterator;
+			}
+			else if (p->Is (Type::FRAMEWORKELEMENT)) {
+				// just traverse down from this frameworkelement
+
+				// FIXME grossly inefficient.  causes
+				// all FWE's under the root to update
+				// their implicit style, regardless of
+				// whether or not it was their type.
+				FrameworkElement *root = (FrameworkElement*)p;
+
+				DependencyObject *owner = root->GetTemplateOwner();
+				DeepTreeWalker walker (root);
+
+				while (UIElement *el = walker.Step()) {
+					if (el->GetTemplateOwner() != owner) {
+						walker.SkipBranch();
+						continue;
+					}
+					((FrameworkElement*)el)->ApplyDefaultStyle();
+				}
+				
+			}
 		}
 
 	}

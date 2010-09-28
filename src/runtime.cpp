@@ -781,7 +781,7 @@ void
 Surface::DetachLayer (UIElement *layer)
 {
 	if (layers == NULL) {
-		layers = MoonUnmanagedFactory::CreateHitTestCollection ();
+		layers = MoonUnmanagedFactory::CreateUIElementCollection ();
 		layers->unref ();
 	}
 

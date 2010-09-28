@@ -91,7 +91,7 @@ FrameworkElement::FrameworkElement ()
 	surface_bounds_with_children = Rect ();
 
 	providers.localstyle = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle, dispose_value);
-	providers.defaultstyle = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle, dispose_value);
+	providers.defaultstyle = new ImplicitStylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle, dispose_value);
 	providers.dynamicvalue = new FrameworkElementProvider (this, PropertyPrecedence_DynamicValue);
 	providers.inheriteddatacontext = new InheritedDataContextValueProvider (this, PropertyPrecedence_InheritedDataContext);
 }
@@ -1031,8 +1031,7 @@ FrameworkElement::OnIsAttachedChanged (bool attached)
 void
 FrameworkElement::OnIsLoadedChanged (bool loaded)
 {
-	if (loaded)
-		ApplyDefaultStyle ();
+	ApplyDefaultStyle ();
 
 	UIElement::OnIsLoadedChanged (loaded);
 	if (providers.inheriteddatacontext)
@@ -1108,24 +1107,33 @@ void
 FrameworkElement::ApplyDefaultStyle ()
 {
 	if (!default_style_applied) {
-		Style *style = NULL;
+		Style **styles = NULL;
 		//		default_style_applied = true;
 
 		Application *app = Application::GetCurrent ();
 		if (app)
-			style = app->GetDefaultStyle (this);
+			styles = app->GetDefaultStyle (this);
 		else
 			g_warning ("Attempting to use a null Application applying implicit style.");
 
-		if (style) {
-			MoonError e;
-			DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
-			Value val (style);
-			if (Validators::StyleValidator (this, style_prop, &val, &e))
-				providers.defaultstyle->UpdateStyle (style, &e);
-			else
-				printf ("Error in the default style\n");
+		// verify all the styles
+		MoonError e;
+		DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
+
+		if (styles) {
+			for (int i = 0; styles[i]; i ++) {
+				Style *style = styles[i];
+
+				Value val (style);
+				if (!Validators::StyleValidator (this, style_prop, &val, &e)) {
+					printf ("Error in the default style\n");
+					g_free (styles);
+					return;
+				}
+			}
 		}
+	
+		providers.defaultstyle->UpdateStyle (styles, &e);
 	}
 }
 
