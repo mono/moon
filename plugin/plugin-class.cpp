@@ -140,9 +140,9 @@ string_to_npvariant (const char *value, NPVariant *result)
 
 static void
 value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
+                  PluginInstance* plugin = NULL,
                   DependencyObject *parent_obj = NULL,
-                  DependencyProperty *parent_property = NULL,
-                  PluginInstance* plugin = NULL)
+                  DependencyProperty *parent_property = NULL)
 {
 	char utf8[8];
 	int n;
@@ -175,6 +175,8 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
 		string_to_npvariant (v->AsString(), result);
 		break;
 	case Type::DATETIME: {
+		if (!plugin)
+			plugin = ((MoonlightObject *) npobj)->GetPlugin ();
 		NPString string;
 		string.utf8characters = g_strdup_printf ("new Date(%ld)", v->AsDateTime());
 		string.utf8length = strlen (string.utf8characters);
@@ -3230,7 +3232,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			if (s)
 				string_to_npvariant (s, result);
 		} else
-			value_to_variant (this, value, result, dob, prop);
+			value_to_variant (this, value, result, NULL, dob, prop);
 		
 		return true;
 	}
@@ -5294,7 +5296,7 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 		npobj = window;
 	}
 
-	value_to_variant (npobj, value, &npvalue, NULL, NULL, plugin);
+	value_to_variant (npobj, value, &npvalue, plugin);
 
 	bool ret = MOON_NPN_SetProperty (npp, npobj, identifier, &npvalue);
 	if (!ret)
@@ -5323,7 +5325,7 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	if (arg_count) {
 		npargs = new NPVariant [arg_count];
 		for (guint32 i = 0; i < arg_count; i++)
-			value_to_variant (npobj, &args [i], &npargs [i]);
+			value_to_variant (npobj, &args [i], &npargs [i], plugin);
 	}
 
 	bool ret = MOON_NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
@@ -5369,7 +5371,7 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 	if (arg_count) {
 		npargs = new NPVariant [arg_count];
 		for (guint32 i = 0; i < arg_count; i++)
-			value_to_variant (npobj, &args [i], &npargs [i]);
+			value_to_variant (npobj, &args [i], &npargs [i], plugin);
 	}
 
 	bool ret = MOON_NPN_InvokeDefault (npp, npobj, npargs, arg_count, &npresult);
