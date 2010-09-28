@@ -145,6 +145,22 @@ namespace Mono {
 					v.k = Kind.INT32;
 					v.u.i32 = Convert.ToInt32 (o);
 					break;
+				case TypeCode.Int16:
+					v.k = Kind.INT32;
+					v.u.i32 = Convert.ToInt32 (o);
+					break;
+				case TypeCode.UInt16:
+					v.k = Kind.UINT32;
+					v.u.ui32 = Convert.ToUInt32 (o);
+					break;
+				case TypeCode.Single:
+					v.k = Kind.DOUBLE;
+					v.u.d = Convert.ToDouble (o);
+					break;
+				case TypeCode.DateTime:
+					v.k = Kind.DATETIME;
+					v.u.i64 = (((DateTime)o).Ticks - new DateTime (1970,1,1).Ticks) / 10000;
+					break;
 				case TypeCode.Object:
 	//				Console.WriteLine ("Trying to marshal managed object {0}...", o.GetType ().FullName);
 					ScriptObject so = o as ScriptObject;
@@ -158,7 +174,11 @@ namespace Mono {
 	//				Console.WriteLine ("  Marshalled as {0}", v.k);
 					break;
 				default:
-					v = Value.FromObject (o);
+					if (o.GetType ().IsEnum) {
+						v.k = Kind.INT32;
+						v.u.i32 = Convert.ToInt32 (o);
+					} else
+						v = Value.FromObject (o);
 					break;
 			}
 		}

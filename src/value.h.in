@@ -56,6 +56,7 @@ class AnimationStorage;
 
 #if SANITY || DEBUG
 #define checked_get_enum() g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, Type::ENUM), -1); return u.i64;
+#define checked_get_datetime() g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, Type::DATETIME), -1); return u.i64;
 #define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind) && !GetIsManaged (), errval); return mem;
 #define checked_get_subclass(kind, castas) \
 	if (u.dependency_object == NULL || k == (kind)) \
@@ -65,6 +66,7 @@ class AnimationStorage;
 	return (castas*)u.dependency_object;
 #else
 #define checked_get_enum() return u.i64;
+#define checked_get_datetime() return u.i32;
 #define checked_get_exact(kind, errval, mem) return mem;
 #define checked_get_subclass(kind, castas) return (castas*)u.dependency_object;
 #endif
@@ -163,6 +165,7 @@ public:
 	PropertyPath*	AsPropertyPath () const	    { checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
 	char*		AsString () const	    { checked_get_exact (Type::STRING, NULL, u.s); }
 	DependencyProperty* AsDependencyProperty () const { checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
+	gint64		AsDateTime (Types *types = NULL) const { checked_get_datetime (); }
 	
 	void *		AsManagedObject () const    { g_return_val_if_fail (GetIsManaged (), NULL); return u.managed_object; }
 	void *		AsNPObj () const            { checked_get_exact (Type::NPOBJ, NULL, u.npobj); }

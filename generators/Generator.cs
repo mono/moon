@@ -2148,6 +2148,7 @@ class Generator {
 		f ("string", "STRING");
 		f ("TimeSpan", "TIMESPAN");
 		f ("Enum", "ENUM");
+		f ("DateTime", "DATETIME");
 
 		f ("System.Windows.Application", "APPLICATION");
 		f ("System.Windows.Thickness", "THICKNESS");
@@ -2705,6 +2706,7 @@ class Generator {
 		text.AppendLine ("\tDeployment *deployment = Deployment::GetCurrent ();");
 		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (deployment, Type::INVALID, Type::INVALID, false, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
 		text.AppendLine ("\ttypes [(int) Type::ENUM] = new Type (deployment, Type::ENUM, Type::OBJECT, false, false, false, \"Enum\", 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::DATETIME] = new Type (deployment, Type::DATETIME, Type::OBJECT, false, false, false, \"DateTime\", 0, 0, NULL, 0, NULL, false, NULL, NULL );");
 
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;

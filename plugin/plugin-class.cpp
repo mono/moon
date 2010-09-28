@@ -139,7 +139,10 @@ string_to_npvariant (const char *value, NPVariant *result)
 }
 
 static void
-value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject *parent_obj = NULL, DependencyProperty *parent_property = NULL)
+value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
+                  DependencyObject *parent_obj = NULL,
+                  DependencyProperty *parent_property = NULL,
+                  PluginInstance* plugin = NULL)
 {
 	char utf8[8];
 	int n;
@@ -171,6 +174,18 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 	case Type::STRING:
 		string_to_npvariant (v->AsString(), result);
 		break;
+	case Type::DATETIME: {
+		NPString string;
+		string.utf8characters = g_strdup_printf ("new Date(%ld)", v->AsDateTime());
+		string.utf8length = strlen (string.utf8characters);
+		bool ret = MOON_NPN_Evaluate (plugin->GetInstance (), plugin->GetHost (), &string, result);
+#if DEBUG
+		if (!ret)
+			printf ("value_to_variant, error creating a Date object from %s\n", string.utf8characters);
+#endif
+		g_free ((void*)string.utf8characters);
+		break;
+	}
 	case Type::POINT: {
 		MoonlightPoint *point = (MoonlightPoint *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightPointClass);
 		point->point = *v->AsPoint ();
@@ -5279,7 +5294,7 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 		npobj = window;
 	}
 
-	value_to_variant (npobj, value, &npvalue);
+	value_to_variant (npobj, value, &npvalue, NULL, NULL, plugin);
 
 	bool ret = MOON_NPN_SetProperty (npp, npobj, identifier, &npvalue);
 	if (!ret)

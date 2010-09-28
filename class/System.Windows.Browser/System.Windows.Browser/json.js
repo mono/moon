@@ -91,9 +91,9 @@ new function () {
                     }
                     stringBuilder.push (']');
                 } else if (object instanceof Date) {
-                    stringBuilder.push ('\"\\\\/Date(');
+                    stringBuilder.push ('\"\\/Date(');
                     stringBuilder.push (object.getTime ());
-                    stringBuilder.push (')\\\\/\"');
+                    stringBuilder.push (')\\/\"');
                 } else if (this._managedServices.requiresManagedSerializer (object))
                     stringBuilder.push (this._managedServices.jsonSerialize (object));
                 else {
