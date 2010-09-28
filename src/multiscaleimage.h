@@ -30,8 +30,6 @@ struct BitmapImageContext;
 
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
-	friend class MultiScaleImagePropertyValueProvider;
-	
 	DOPtr<DoubleAnimationUsingKeyFrames> zoom_animation;
 	DOPtr<PointAnimationUsingKeyFrames> pan_animation;
 	DOPtr<DoubleAnimation> fadein_animation;
@@ -52,10 +50,10 @@ class MultiScaleImage : public MediaBase {
 	
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int TileFadeProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
-	const static int InternalViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
-	const static int InternalViewportWidthProperty;
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	const static int AnimatedViewportOriginProperty;
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	const static int AnimatedViewportWidthProperty;
 	
 	static void tile_layer_invalidated (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
@@ -86,18 +84,21 @@ class MultiScaleImage : public MediaBase {
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);
 	
-	Point *GetInternalViewportOrigin ();
-	void SetInternalViewportOrigin (Point* p);
+	void AnimateViewportOrigin (Point *origin);
+	void SetAnimatedViewportOrigin (Point *origin);
+	Point *GetAnimatedViewportOrigin ();
 	
-	double GetInternalViewportWidth ();
-	void SetInternalViewportWidth (double width);
+	void AnimateViewportWidth (double width);
+	void SetAnimatedViewportWidth (double width);
+	double GetAnimatedViewportWidth ();
 	
 	double GetTileFade ();
 	
-	double GetZoomAnimationEndPoint ();
 	void SetZoomAnimationEndPoint (double endpoint);
-	Point *GetPanAnimationEndPoint ();
+	double GetZoomAnimationEndPoint ();
+	
 	void SetPanAnimationEndPoint (Point endpoint);
+	Point *GetPanAnimationEndPoint ();
 	
  protected:
 	virtual ~MultiScaleImage ();
@@ -223,25 +224,6 @@ class MultiScaleImage : public MediaBase {
 	
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };
-
-/*
- * MultiScaleImagePropertyValueProvider
- */
- 
-class MultiScaleImagePropertyValueProvider : public FrameworkElementProvider {
- private:
-	Value *viewport_origin;
-	Value *viewport_width;
-
-	Value *GetViewportOrigin ();
-	Value *GetViewportWidth ();
-
- public:
-	MultiScaleImagePropertyValueProvider (MultiScaleImage *obj, PropertyPrecedence precedence);
-	virtual ~MultiScaleImagePropertyValueProvider ();
-	virtual Value *GetPropertyValue (DependencyProperty *property);
-};
-
 
 };
 #endif /* __MULTISCALIMAGE_H__ */
