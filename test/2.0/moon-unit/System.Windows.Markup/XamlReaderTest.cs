@@ -203,7 +203,6 @@ namespace MoonTest.System.Windows.Markup {
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void DPNotFullyQualified ()
 		{
 			// I didn't fully qualify the type so we should fail. It should be clr:Base.DPColorAttached

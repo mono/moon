@@ -625,7 +625,6 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void EscapeMarkup ()
 		{
 			Canvas c;
