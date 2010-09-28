@@ -91,7 +91,7 @@ namespace System.Windows.Browser {
 				RegisterBuiltinScriptableMethod (eventOpsType.GetMethod ("RemoveEventListener"), "removeEventListener", eventOps);
 			}
 
-			RegisterScriptableMethod (type.GetMethod ("ToString"), "toString");
+			RegisterScriptableMethod (type.GetMethod ("ToString", Type.EmptyTypes), "toString");
 
 			if (ManagedObject is IList) {
 				if (type.GetProperty ("Length") != null)
