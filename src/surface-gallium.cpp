@@ -103,6 +103,14 @@ GalliumSurface::Transfer::Unmap ()
 	return pipe->transfer_unmap (pipe, transfer);
 }
 
+GalliumSurface::GalliumSurface ()
+{
+	gpipe        = NULL;
+	mapped       = NULL;
+	resource     = NULL;
+	sampler_view = NULL;
+}
+
 GalliumSurface::GalliumSurface (pipe_resource *texture)
 {
 	gpipe        = NULL;

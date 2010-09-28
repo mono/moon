@@ -51,6 +51,7 @@ public:
 		pipe_transfer *transfer;
 	};
 
+	GalliumSurface ();
 	GalliumSurface (pipe_resource *texture);
 	GalliumSurface (GalliumPipe *pipe,
 			int         width,
@@ -60,10 +61,10 @@ public:
 	cairo_surface_t *Cairo (GalliumPipe *pipe);
 	cairo_surface_t *Cairo ();
 
-	pipe_resource *Texture ();
-	pipe_sampler_view *SamplerView ();
+	virtual pipe_resource *Texture ();
+	virtual pipe_sampler_view *SamplerView ();
 
-private:
+protected:
 	static void CairoDestroy (void *data);
 
 	void Sync ();
