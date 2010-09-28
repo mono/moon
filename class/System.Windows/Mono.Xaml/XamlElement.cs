@@ -372,12 +372,7 @@ namespace Mono.Xaml {
 				return null;
 
 			TypeConverter converter = null;
-			if (setter != null) {
-				ParameterInfo type_param = setter.GetParameters () [1];
-				converter = Helper.GetConverterFor (type_param, type_param.ParameterType);
-			}
-
-			if (converter == null && getter != null)
+			if (getter != null)
 				converter = Helper.GetConverterFor (getter, getter.ReturnType);
 
 			return new XamlAttachedPropertySetter (this, name, getter, setter, converter);
