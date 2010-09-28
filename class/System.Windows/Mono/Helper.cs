@@ -120,6 +120,28 @@ namespace Mono {
 			return converter;
 		}
 
+		// This method checks for a class level TypeConverter and returns it
+		public static TypeConverter GetConverterFor (Type type)
+		{
+			TypeConverter converter = null;
+			string converterTypeName = null;
+			Type converterType = null;
+			foreach (Attribute attr in type.GetCustomAttributes (true)) {
+				if (attr is TypeConverterAttribute) {
+					converterTypeName = ((TypeConverterAttribute) attr).ConverterTypeName;
+					break;
+				}
+			}
+
+			if (!string.IsNullOrEmpty (converterTypeName))
+				converterType = Type.GetType (converterTypeName);
+
+			if (converterType == null)
+				return null;
+
+			return (TypeConverter) Activator.CreateInstance (converterType);
+		}
+
 		public static IntPtr StreamToIntPtr (Stream stream)
 		{
 			byte[] buffer = new byte[1024];
