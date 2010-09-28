@@ -233,7 +233,18 @@ namespace Mono {
 			
 			return base.ConvertFrom (context, culture, value);
 		}
-			
+
+		public override object ConvertTo (ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			// Yeah, this is kinda broken. Why would ConvertTo just call ConvertFrom in a proper converter, eh?
+			// We need this so we can support ConvertFrom/ConvertTo properly in databinding.
+			this.destinationType = destinationType;
+			this.destinationKind = Deployment.Current.Types.TypeToKind (destinationType);
+			if (destinationKind == Kind.STRING)
+				return value == null ? null : value.ToString ();
+			return ConvertFrom (context, culture, value);
+		}
+
 		public static bool IsAssignableToIConvertible (Type type)
 		{
 			return typeof (IConvertible).IsAssignableFrom (type);
@@ -326,7 +337,6 @@ namespace Mono {
 			return tc.ConvertFrom (val);
 		}
 
-		
 		private static MethodInfo GetGetterMethodForAttachedDP (DependencyProperty dp, object obj)
 		{
 			MethodInfo res = dp.DeclaringType.GetMethod (String.Concat ("Get", dp.Name), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
