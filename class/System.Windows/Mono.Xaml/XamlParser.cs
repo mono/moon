@@ -1542,24 +1542,12 @@ namespace Mono.Xaml {
 
 		public static DependencyProperty LookupDependencyProperty (Kind kind, string name)
 		{
-			DependencyProperty dp = null;
-
-			try {
-				dp = DependencyProperty.Lookup (kind, name);
-			} catch (Exception e) {
-				Console.Error.WriteLine ("Exception while looking up DependencyProperty '{0}'.", name);
-				Console.Error.WriteLine (e);
-			}
-
-			if (dp == null) {
-				try {
-					dp = DependencyProperty.Lookup (kind, name + "Property");
-				} catch (Exception ee) {
-					Console.Error.WriteLine ("Exception while looking up DependencyProperty '{0}'.", name + "Property");
-					Console.Error.WriteLine (ee);
-				}
-			}
-
+			DependencyProperty dp;
+			
+			if (!DependencyProperty.TryLookup (kind, name, out dp))
+				if (!DependencyProperty.TryLookup (kind, name + "Property", out dp))
+					return null;
+			
 			return dp;
 		}
 	}
