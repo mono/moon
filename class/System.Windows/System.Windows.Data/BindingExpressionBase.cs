@@ -363,6 +363,32 @@ namespace System.Windows.Data {
 			return Helper.DefaultCulture;
 		}
 
+		TypeConverter GetConverterFrom ()
+		{
+			var sourceType = PropertyPathWalker.FinalNode.ValueType;
+			var destType = Property.PropertyType;
+			if (destType.IsAssignableFrom (sourceType))
+				return null;
+
+			var converter = Helper.GetConverterFor (sourceType);
+			if (converter == null)
+				converter = new MoonlightTypeConverter ("", sourceType);
+			return converter;
+		}
+
+		TypeConverter GetConverterTo ()
+		{
+			var sourceType = PropertyPathWalker.FinalNode.ValueType;
+			var destType = Property.PropertyType;
+			if (destType.IsAssignableFrom (sourceType))
+				return null;
+
+			var converter = Helper.GetConverterFor (sourceType);
+			if (converter == null)
+				converter = new MoonlightTypeConverter (Property.Name, Property.PropertyType);
+			return converter;
+		}
+
 		internal override object GetValue (DependencyProperty dp)
 		{
 			if (cached)
@@ -416,10 +442,15 @@ namespace System.Windows.Data {
 						value = string.Format (GetConverterCulture (), format, value);
 					}
 				}
-				return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
-			} catch {
+
+				if (value != null) {
+					var converter = GetConverterTo ();
+					value = converter == null ? value : converter.ConvertTo (null, GetConverterCulture (), value, dp.PropertyType);
+				}
+			} catch (Exception ex) {
 				return MoonlightTypeConverter.ConvertObject (dp, Binding.FallbackValue, Target.GetType (), true);
 			}
+			return value;
 		}
 
 		void TextBoxLostFocus (object sender, RoutedEventArgs e)
@@ -555,7 +586,10 @@ namespace System.Windows.Data {
 				}
 				
 				try {
-					value = MoonlightTypeConverter.ConvertObject (node.PropertyInfo, value, Target.GetType ());
+					if (value != null) {
+						var converter = GetConverterFrom ();
+						value = converter == null ? value : converter.ConvertFrom (null, GetConverterCulture (), value);
+					}
 				} catch {
 					return;
 				}

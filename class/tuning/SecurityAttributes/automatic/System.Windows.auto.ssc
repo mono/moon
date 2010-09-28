@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 627 methods
+# 629 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -354,6 +354,8 @@
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::AttachDataContextHandlers(System.Windows.FrameworkElement)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::DetachDataContextHandlers(System.Windows.FrameworkElement)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnNativeMentorDataContextChangedSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
++SSC-M: System.ComponentModel.TypeConverter System.Windows.Data.BindingExpressionBase::GetConverterFrom()
++SSC-M: System.ComponentModel.TypeConverter System.Windows.Data.BindingExpressionBase::GetConverterTo()
 +SSC-M: System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::OnSourceChanged(System.Object,System.Object)
