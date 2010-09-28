@@ -166,7 +166,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
 		break;
 	case Type::UINT32:
 		// XXX not much else we can do here...
-		INT32_TO_NPVARIANT ((gint32)v->AsUInt32(), *result);
+		DOUBLE_TO_NPVARIANT (v->AsUInt32(), *result);
 		break;
 	case Type::DOUBLE:
 		DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
