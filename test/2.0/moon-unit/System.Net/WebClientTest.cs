@@ -62,7 +62,10 @@ namespace MoonTest.System.Net {
 		{
 			Assert.IsTrue (wc.AllowReadStreamBuffering, "AllowReadStreamBuffering");
 			Assert.IsTrue (wc.AllowWriteStreamBuffering, "AllowWriteStreamBuffering");
-			Assert.IsTrue (wc.BaseAddress.EndsWith ("/moon-unit.xap"), "BaseAddress");
+			string ba = wc.BaseAddress;
+			Assert.IsTrue (ba.EndsWith (".xap"), "BaseAddress (.xap)");
+			int last_slash = ba.LastIndexOf ('/');
+			Assert.IsTrue (ba.Substring (last_slash, ba.Length - last_slash - 5) == "/moon-unit", "BaseAddress: " + ba);
 			Assert.AreEqual ("utf-8", wc.Encoding.WebName, "Encoding");
 			Assert.AreEqual (0, wc.Headers.Count, "Headers");
 			Assert.IsFalse (wc.IsBusy, "IsBusy");
