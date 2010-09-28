@@ -445,6 +445,12 @@ namespace Mono.Xaml {
 				setter = CurrentElement.LookupProperty (reader);
 				if (setter == null)
 					throw ParseException ("Property {0} was not found on type {1}.", reader.LocalName, CurrentElement.Name);
+			} else {
+				// We might be dealing with a top level property, in this case it should
+				// be a
+				setter = XamlObjectElement.LookupAttachedProperty (null, t, XamlObjectElement.AttachedPropertyName (reader.LocalName));
+				if (setter == null)
+					throw ParseException ("Top Level property is not an attached property.");
 			}
 
 			XamlPropertyElement element = new XamlPropertyElement (this, reader.LocalName, setter);
@@ -1547,7 +1553,7 @@ namespace Mono.Xaml {
 			if (!DependencyProperty.TryLookup (kind, name, out dp))
 				if (!DependencyProperty.TryLookup (kind, name + "Property", out dp))
 					return null;
-			
+
 			return dp;
 		}
 	}
