@@ -15,6 +15,9 @@
 
 #ifdef __MOON_GALLIUM__
 
+#define template templat
+#include "state_tracker/sw_winsys.h"
+#undef template
 #include "common/native.h"
 
 namespace Moonlight {

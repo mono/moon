@@ -20,7 +20,7 @@ AC_DEFUN([MOONLIGHT_CHECK_GALLIUM],
 		GALLIUM_PATH=$(cd "$with_gallium_path" && pwd)
 		AC_SUBST(GALLIUM_PATH)
 		
-		GALLIUM_CFLAGS="-I\$(GALLIUM_PATH)/src/gallium/include -I\$(GALLIUM_PATH)/src/gallium/auxiliary -I\$(GALLIUM_PATH)/src/gallium/drivers -I\$(GALLIUM_PATH)/src/gallium/winsys -I\$(GALLIUM_PATH)/src/gallium/state_trackers/egl"
+		GALLIUM_CFLAGS="-I\$(GALLIUM_PATH)/include -I\$(GALLIUM_PATH)/src/gallium/include -I\$(GALLIUM_PATH)/src/gallium/auxiliary -I\$(GALLIUM_PATH)/src/gallium/drivers -I\$(GALLIUM_PATH)/src/gallium/winsys -I\$(GALLIUM_PATH)/src/gallium/state_trackers/egl"
 		GALLIUM_LIBS="\$(GALLIUM_PATH)/src/gallium/drivers/softpipe/libsoftpipe.a \$(GALLIUM_PATH)/src/gallium/auxiliary/libgallium.a \$(GALLIUM_PATH)/src/gallium/winsys/sw/null/libws_null.a"
 
 		if test "x$enable_llvm" = "xyes"; then
