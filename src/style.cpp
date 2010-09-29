@@ -259,7 +259,7 @@ DeepStyleWalker::DeepStyleWalker (Style *style, Types *types)
 	while (style != NULL) {
 		SetterBaseCollection *setters = style->GetSetters ();
 		int count = setters ? setters->GetCount () : 0;
-		for (int i = 0; i < count; i++) {
+		for (int i = count-1; i >= 0; i--) {
 			Value *v = setters->GetValueAt (i);
 			if (Value::IsNull (v) || !types->IsSubclassOf (v->GetKind (), Type::SETTER))
 				continue;
@@ -310,7 +310,7 @@ DeepStyleWalker::DeepStyleWalker (Style **styles, Types *types)
 
 			SetterBaseCollection *setters = style->GetSetters ();
 			int count = setters ? setters->GetCount () : 0;
-			for (int i = 0; i < count; i++) {
+			for (int i = count-1; i >= 0; i--) {
 				Value *v = setters->GetValueAt (i);
 				if (Value::IsNull (v) || !types->IsSubclassOf (v->GetKind (), Type::SETTER))
 					continue;
