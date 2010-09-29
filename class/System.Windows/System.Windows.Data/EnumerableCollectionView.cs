@@ -128,7 +128,7 @@ namespace System.Windows.Data {
 
 			case NotifyCollectionChangedAction.Replace:
 				for (int i = 0; i < e.OldItems.Count; i++)
-					clonedCollection[e.OldStartingIndex + i] = e.NewItems [i];
+					clonedCollection[e.NewStartingIndex + i] = e.NewItems [i];
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				clonedCollection.Clear ();

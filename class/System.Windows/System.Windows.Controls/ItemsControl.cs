@@ -181,7 +181,7 @@ namespace System.Windows.Controls {
 				break;
 			case NotifyCollectionChangedAction.Replace:
 				for (int i = 0; i < e.NewItems.Count; i++)
-					Items.SetItemImpl (e.NewStartingIndex+i, e.NewItems[i]);
+					Items.SetItemImpl (e.NewStartingIndex + i, e.NewItems[i]);
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				Items.ClearImpl ();
