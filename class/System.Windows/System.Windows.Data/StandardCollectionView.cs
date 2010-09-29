@@ -229,7 +229,30 @@ namespace System.Windows.Data {
 					index = ~index;
 				filteredList.Insert (index, item);
 			} else {
-				filteredList.Add (item);
+				// If we're not sorting we need to keep the items in the filtered list
+				// in the same order as they are in the SourceCollection.
+				int insertIndex;
+				if (Filter == null) {
+					insertIndex = SourceCollection.IndexOf (item);
+				} else {
+					insertIndex = -1;
+					for (int i = 0; i < SourceCollection.Count; i ++) {
+						if (Filter (SourceCollection [i]))
+							insertIndex ++;
+						if (SourceCollection [i] == item)
+							break;
+					}
+					// If everything is filtered out except for this item, we insert at 0.
+					// This can happen if the Filter returns false for everything and we use 'AddNew'.
+					if (insertIndex == -1)
+						insertIndex = 0;
+
+					// If some items are filtered out, SourceCollection.Count will be greater than filteredList.Count
+					// so ensure that if we are inserting at the end of the list we don't exceed the filteredList Count.
+					insertIndex = Math.Min (insertIndex, filteredList.Count);
+				}
+
+				filteredList.Insert (Math.Min (insertIndex, filteredList.Count), item);
 			}
 			return true;
 		}
