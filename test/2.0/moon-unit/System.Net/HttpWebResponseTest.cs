@@ -104,6 +104,11 @@ namespace MoonTest.System.Net {
 			Assert.Throws<NotImplementedException> (delegate {
 				hwr.GetResponseStream ();
 			}, "GetResponseStream");
+
+			Assert.Throws<NotImplementedException> (delegate {
+				Assert.IsNotNull (hwr.Headers);
+			}, "Headers");
+			Assert.IsFalse (hwr.SupportsHeaders, "SupportsHeaders");
 		}
 	}
 }
