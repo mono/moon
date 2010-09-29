@@ -285,7 +285,6 @@ private:
 		
 	EventLists *events;
 	Deployment *deployment;
-	bool unref_deployment;
 	gint32 refcount;
 	gint32 flags; // Don't define as Flags, we need to keep this reliably at 32 bits.
 
