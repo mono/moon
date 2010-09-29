@@ -154,6 +154,9 @@ namespace Mono {
 					v.u.ui32 = Convert.ToUInt32 (o);
 					break;
 				case TypeCode.Single:
+				case TypeCode.Int64:
+				case TypeCode.UInt64:
+				case TypeCode.Decimal:
 					v.k = Kind.DOUBLE;
 					v.u.d = Convert.ToDouble (o);
 					break;

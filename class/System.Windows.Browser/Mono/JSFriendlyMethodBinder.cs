@@ -101,6 +101,11 @@ namespace Mono
 				}
 			}
 
+			if (type == typeof(Guid) && value is string) {
+				ret = new Guid ((string)value);
+				return true;
+			}
+
 			/* the set of source types for JS functions is
 			 * very, very small, so we switch over the
 			 * parameter type first */
