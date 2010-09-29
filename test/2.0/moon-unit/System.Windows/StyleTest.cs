@@ -299,8 +299,23 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void ManagedAccessAfterParsing_sl3 ()
+		{
+			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
+			Button b = new Button ();
+
+			b.Style = s;
+			Assert.AreEqual(typeof(Button), s.TargetType, "#0");
+			Setter setter = (Setter)s.Setters[0];
+			Assert.IsNotNull (setter.Property, "#1");
+			Assert.IsNull (setter.Value, "#2");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
 		[MoonlightBug ("The XamlLoader should not call the managed properties when setting the value of 'Setter.Value'")]
-		public void ManagedAccessAfterParsing ()
+		public void ManagedAccessAfterParsing_sl4 ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
 			Button b = new Button ();
