@@ -170,13 +170,8 @@ namespace System.Windows.Controls
             // Make relative Uris absolute
             if (!destination.IsAbsoluteUri) 
             {
-                // Page relative Uris are invalid
                 string original = destination.OriginalString; 
-                if (!string.IsNullOrEmpty(original) && (original[0] != '/'))
-                {
-                    throw new NotSupportedException(); 
-                } 
-                else if (Application.Current == null)
+                if (Application.Current == null)
                 { 
                     throw new NotSupportedException();
                 }
