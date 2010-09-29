@@ -39,14 +39,30 @@ namespace Mono
 	{
 		public ScriptObject Callback;
 		public string Name;
-		public EventInfo EventInfo;
-		private System.Delegate Delegate;
+		System.Delegate _delegate;
+		Type type;
+		EventInfo _event;
+		public EventInfo EventInfo {
+			get { return _event; }
+			set {
+				_event = value;
+				type = (value != null ? value.EventHandlerType : null);
+			}
+		}
 
 		public ScriptObjectEventInfo (string name, ScriptObject callback, EventInfo ei)
 		{
 			Name = name;
 			Callback = callback;
 			EventInfo = ei;
+			NativeMethods.html_object_retain (PluginHost.Handle, Callback.Handle);
+		}
+
+		// for js event handlers
+		public ScriptObjectEventInfo (ScriptObject callback, Type type)
+		{
+			Callback = callback;
+			this.type = type;
 
 			NativeMethods.html_object_retain (PluginHost.Handle, Callback.Handle);
 		}
@@ -59,9 +75,11 @@ namespace Mono
 
 		public Delegate GetDelegate ()
 		{
-			if (Delegate == null)
-				Delegate = System.Delegate.CreateDelegate (EventInfo.EventHandlerType, this, GetType ().GetMethod ("HandleEvent", BindingFlags.Instance | BindingFlags.NonPublic));
-			return Delegate;
+			if (_delegate == null)
+				_delegate = Delegate.CreateDelegate (type, this,
+								GetType ().GetMethod ("HandleEvent",
+								BindingFlags.Instance | BindingFlags.NonPublic));
+			return _delegate;
 		}
 				
 		private void HandleEvent (object sender, EventArgs args)
