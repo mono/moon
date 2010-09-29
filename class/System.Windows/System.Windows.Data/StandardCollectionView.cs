@@ -152,8 +152,12 @@ namespace System.Windows.Data {
 
 			IsEmpty = ActiveList.Count == 0;
 		}
-
 		protected override void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
+		{
+			RaiseCollectionChanged (e, true);
+		}
+
+		void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e, bool moveOnReset)
 		{
 			base.RaiseCollectionChanged (e);
 
@@ -182,7 +186,8 @@ namespace System.Windows.Data {
 				break;
 
 			case NotifyCollectionChangedAction.Reset:
-				MoveCurrentTo (IndexOf (CurrentItem));
+				if (moveOnReset)
+					MoveCurrentTo (IndexOf (CurrentItem));
 				break;
 			}
 		}
@@ -292,6 +297,11 @@ namespace System.Windows.Data {
 
 		bool MoveCurrentTo (int position, bool force)
 		{
+			return MoveCurrentTo (position, force, true);
+		}
+
+		bool MoveCurrentTo (int position, bool force, bool cancellable)
+		{
 			if (DeferCurrentChanged)
 				return false;
 
@@ -299,7 +309,7 @@ namespace System.Windows.Data {
 			bool raiseEvents = force || CurrentItem != newItem;
 
 			if (raiseEvents) {
-				CurrentChangingEventArgs e = new CurrentChangingEventArgs (true);
+				CurrentChangingEventArgs e = new CurrentChangingEventArgs (cancellable);
 				RaiseCurrentChanging (e);
 				if (e.Cancel)
 					return true;
@@ -373,8 +383,8 @@ namespace System.Windows.Data {
 				if (index < 0 && CurrentPosition != -1 && !IsEmpty)
 					index = 0;
 	
-				RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-				MoveCurrentTo (index, true);
+				RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset), false);
+				MoveCurrentTo (index, true, false);
 			} finally {
 				DeferLevel --;
 			}
