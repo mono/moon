@@ -308,6 +308,8 @@ if HAVE_GALLIUM
 libmoon_la_SOURCES += 		\
 	surface-gallium.cpp	\
 	surface-gallium.h	\
+	surface-gallium-egl.cpp	\
+	surface-gallium-egl.h	\
 	context-gallium.cpp	\
 	context-gallium.h
 endif
