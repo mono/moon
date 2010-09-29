@@ -53,7 +53,11 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue (host.IsLoaded, "IsLoaded");
 			Assert.AreEqual (String.Empty, host.NavigationState, "NavigationState");
 			Assert.IsNotNull (host.Settings, "Settings");
-			Assert.IsTrue (host.Source.AbsoluteUri.EndsWith ("moon-unit.xap"), "Source");
+			// ensure this works with 'moon-unit#.xap'
+			string ba = host.Source.AbsoluteUri;
+			Assert.IsTrue (ba.EndsWith (".xap"), "Source (.xap)");
+			int last_slash = ba.LastIndexOf ('/');
+			Assert.IsTrue (ba.Substring (last_slash, ba.Length - last_slash - 5) == "/moon-unit", "Source: " + ba);
 		}
 
 		[TestMethod]
