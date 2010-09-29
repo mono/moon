@@ -266,6 +266,9 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 		if (!strncmp (key, INTERNAL_TYPE_KEY_MAGIC_COOKIE, sizeof (INTERNAL_TYPE_KEY_MAGIC_COOKIE) - 1)
 		    && v->Is (GetDeployment (), Type::STYLE)) {
 			DependencyObject *p = GetParent();
+			if (!p)
+				return result;
+
 			if (p->Is (Type::APPLICATION)) {
 				// we modified the application's resources, so we need to traverse all layers
 
