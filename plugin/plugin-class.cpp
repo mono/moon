@@ -3194,10 +3194,10 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		// some default values are different between SL1 and SL2 (even if the SL1 apps runs under SL2)
 		if (prop->GetId () == UIElement::RenderTransformProperty) {
 			// e.g. the default RenderTransform is NULL for Javascript, unless it was setted by application code
-			value = dob->ReadLocalValue (prop);
+			value = dob->GetValueNoDefault (prop);
 		} else if ((prop->GetId () == FrameworkElement::HeightProperty) || (prop->GetId () == FrameworkElement::WidthProperty)) {
 			// e.g. the Width and Height are NaN in SL2 and 0 in Javascript (unless set to NaN in managed code)
-			value = dob->ReadLocalValue (prop);
+			value = dob->GetValueNoDefault (prop);
 			if (!value) {
 				DOUBLE_TO_NPVARIANT (0.0, *result);
 				return true;
