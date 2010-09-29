@@ -1362,7 +1362,8 @@ public:
 	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error)
 	{
 		// FIXME we ignore error here.
-		obj->OnSubPropertyChanged (prop, sender, args);
+		if (obj)
+			obj->OnSubPropertyChanged (prop, sender, args);
 	}
 
 	virtual gpointer GetListener ()
@@ -1377,7 +1378,7 @@ public:
 
 private:
 
-	DependencyObject *obj;
+	WeakRef<DependencyObject> obj;
 	DependencyProperty *prop;
 };
 

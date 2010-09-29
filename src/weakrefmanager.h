@@ -19,6 +19,12 @@ protected:
 	EventObject *obj;
 	EventObject *field;
 	const char *name;
+	WeakRefBase ()
+	{
+		this->obj = NULL;
+		this->name = NULL;
+		this->field = NULL;
+	}
 	WeakRefBase (EventObject *obj, const char *name)
 	{
 		this->obj = obj;
@@ -41,6 +47,9 @@ public:
 template<typename EO>
 class WeakRef : public WeakRefBase {
 public:
+	WeakRef ()
+	{
+	}
 	WeakRef (EventObject *obj, const char *name)
 		: WeakRefBase (obj, name)
 	{
@@ -56,7 +65,6 @@ private:
 	WeakRef operator=(const WeakRef wr); // assignment operator
 	EO& operator*(); // dereference operator
 	WeakRef (const WeakRef& wr); // copy ctor
-	WeakRef (); // default ctors
 };
 
 };
