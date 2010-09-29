@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Net, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 15 methods needs to be decorated.
+# 16 methods needs to be decorated.
 
 # internal call
 +SC-M: System.Boolean System.Net.Dns::GetHostByName_internal(System.String,System.String&,System.String[]&,System.String[]&)
@@ -11,10 +11,10 @@
 +SC-M: System.Boolean System.Net.Sockets.Socket::Poll_internal(System.IntPtr,System.Net.Sockets.SelectMode,System.Int32,System.Int32&)
 
 # internal call
-+SC-M: System.Int32 System.Net.Sockets.Socket::Receive_internal(System.IntPtr,System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Int32&)
++SC-M: System.Int32 System.Net.Sockets.Socket::Receive_internal(System.IntPtr,System.Net.Sockets.Socket/WSABUF[],System.Net.Sockets.SocketFlags,System.Int32&)
 
 # internal call
-+SC-M: System.Int32 System.Net.Sockets.Socket::Send_internal(System.IntPtr,System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Int32&)
++SC-M: System.Int32 System.Net.Sockets.Socket::Send_internal(System.IntPtr,System.Net.Sockets.Socket/WSABUF[],System.Net.Sockets.SocketFlags,System.Int32&)
 
 # internal call
 +SC-M: System.Int32 System.Net.Sockets.SocketException::WSAGetLastError_internal()
@@ -45,4 +45,7 @@
 
 # internal call
 +SC-M: System.Void System.Net.Sockets.Socket::Shutdown_internal(System.IntPtr,System.Net.Sockets.SocketShutdown,System.Int32&)
+
+# internal call
++SC-M: System.Void System.Net.Sockets.Socket::socket_pool_queue(System.Net.Sockets.Socket/SocketAsyncCall,System.Net.Sockets.Socket/SocketAsyncResult)
 

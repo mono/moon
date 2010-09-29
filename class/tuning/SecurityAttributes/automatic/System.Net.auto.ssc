@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Net to call all [SecurityCritical] methods
-# 21 methods
+# 25 methods
 
 +SSC-M: System.Boolean System.Net.NetworkInformation.NetworkInterface::GetIsNetworkAvailable()
 +SSC-M: System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
@@ -15,10 +15,14 @@
 +SSC-M: System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
 +SSC-M: System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
 +SSC-M: System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
++SSC-M: System.Boolean System.Net.Sockets.Socket::ReceiveAsync(System.Net.Sockets.SocketAsyncEventArgs)
++SSC-M: System.Boolean System.Net.Sockets.Socket::SendAsync(System.Net.Sockets.SocketAsyncEventArgs)
 +SSC-M: System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
 +SSC-M: System.Void System.Net.Sockets.Socket::CancelConnectAsync(System.Net.Sockets.SocketAsyncEventArgs)
-+SSC-M: System.Void System.Net.Sockets.SocketAsyncEventArgs::ReceiveCallback()
++SSC-M: System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
++SSC-M: System.Int32 System.Net.Sockets.Socket::Send(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
++SSC-M: System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
++SSC-M: System.Void System.Net.Sockets.Socket/Worker::Send()
 +SSC-M: System.Void System.Net.Sockets.SocketAsyncEventArgs::ConnectCallback()
-+SSC-M: System.Void System.Net.Sockets.SocketAsyncEventArgs::SendCallback()
 +SSC-M: System.Void System.Net.Sockets.SocketException::.ctor()
 +SSC-M: System.Void System.Net.WebClient::.ctor()

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 62 methods needs to be decorated.
+# 63 methods needs to be decorated.
 
 # internal call
 +SC-M: System.Boolean System.Net.Dns::GetHostByAddr_internal(System.String,System.String&,System.String[]&,System.String[]&)
@@ -186,4 +186,7 @@
 
 # internal call
 +SC-M: System.Void System.Net.Sockets.Socket::Shutdown_internal(System.IntPtr,System.Net.Sockets.SocketShutdown,System.Int32&)
+
+# internal call
++SC-M: System.Void System.Net.Sockets.Socket::socket_pool_queue(System.Net.Sockets.Socket/SocketAsyncCall,System.Net.Sockets.Socket/SocketAsyncResult)
 
