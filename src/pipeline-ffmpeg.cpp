@@ -835,14 +835,14 @@ FfmpegDemuxer::Open ()
 	media = GetMediaReffed ();
 	if (media == NULL) {
 		/* Possibly disposed, do nothing */
-		goto failure;
+		goto cleanup;
 	}
 	
 	/* Get the input format. This should never return null since we checked for support earlier */
 	input_format = GetInputFormat (current_buffer);
 	if (input_format == NULL){
 		ReportErrorOccurred ("FfmpegDemuxer: Input format could not be found");
-		goto failure;
+		goto cleanup;
 	}
 
 	current_buffer->SeekSet (0);
@@ -853,14 +853,14 @@ FfmpegDemuxer::Open ()
 	/* Open the stream */
 	if (av_open_input_stream (&format_context, byte_context, "Moonlight stream", input_format, NULL) != 0) {
 		ReportErrorOccurred ("FfmpegDemuxer: Input stream could not be opened");
-		goto failure;
+		goto cleanup;
 	}
 
 	/* Get stream info (some header-less or header-weak formats needs this) */
 	res = av_find_stream_info (format_context);
 	if (res < 0) {
 		ReportErrorOccurred ("FfmpegDemuxer: Could not get stream info");
-		goto failure;
+		goto cleanup;
 	}
 
 	/* Count the streams that we will actually use */
@@ -932,9 +932,7 @@ FfmpegDemuxer::Open ()
 	for (int i = 0; i < number_of_streams; i++)
 		streams [i]->unref ();
 
-	return;
-
-failure:
+cleanup:
 	if (media != NULL)
 		media->unref ();
 }
