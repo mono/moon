@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 631 methods
+# 630 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -360,7 +360,6 @@
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.Data.CollectionViewNode::ViewChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
-+SSC-M: System.Boolean System.Windows.Data.ListCollectionView::MoveCurrentTo(System.Int32,System.Boolean,System.Boolean)
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Uri System.Windows.DependencyObject::get_ResourceBase()

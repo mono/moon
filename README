@@ -19,7 +19,7 @@ Requirements
 	Do this like this:
             git clone git://github.com/mono/moon.git moon
             git clone git://github.com/mono/mono.git mono
-            cd mono && git reset --hard 316f0fcb && cd ..
+            cd mono && git reset --hard 966a4e1 && cd ..
             git clone git://github.com/mono/mono-basic.git mono-basic
             cd mono-basic && git reset --hard HEAD && cd ..
 

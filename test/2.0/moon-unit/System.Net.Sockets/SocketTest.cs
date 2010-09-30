@@ -149,9 +149,9 @@ namespace MoonTest.System.Net.Sockets {
 			complete = false;
 			saea.BufferList = null;
 			saea.Completed += new EventHandler<SocketAsyncEventArgs> (CompletedAccessDenied);
-			Enqueue (() => {
-				Assert.IsTrue (s.ConnectAsync (saea), "SocketAsyncEventArgs");
-			});
+			Assert.IsNull (s.RemoteEndPoint, "RemoteEndPoint before ConnectAsync");
+			Assert.IsTrue (s.ConnectAsync (saea), "SocketAsyncEventArgs");
+			Assert.AreSame (saea.RemoteEndPoint, s.RemoteEndPoint, "RemoteEndPoint after ConnectAsync / even if not yet connected");
 			EnqueueConditional (() => complete);
 			EnqueueTestComplete ();
 		}
@@ -259,6 +259,56 @@ namespace MoonTest.System.Net.Sockets {
 					s.ConnectAsync (saea);
 				}, "IPv6 endpoint used in IPv4 socket");
 			}
+		}
+
+		[TestMethod]
+		public void ReceiveAsync ()
+		{
+			Socket s = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+			Assert.Throws<NullReferenceException> (delegate {
+				s.ReceiveAsync (null);
+			}, "null");
+
+			SocketAsyncEventArgs saea = new SocketAsyncEventArgs ();
+			Assert.Throws<NullReferenceException> (delegate {
+				s.ReceiveAsync (saea);
+			}, "SocketAsyncEventArgs");
+
+			saea.SetBuffer (null, 0, 0);
+			Assert.Throws<NullReferenceException> (delegate {
+				s.ReceiveAsync (saea);
+			}, "SetBuffer / null");
+
+			s.Close ();
+			Assert.Throws<ObjectDisposedException> (delegate {
+				s.ReceiveAsync (saea);
+			}, "Closed");
+		}
+
+		[TestMethod]
+		public void SendAsync ()
+		{
+			Socket s = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+			Assert.Throws<NullReferenceException> (delegate {
+				s.SendAsync (null);
+			}, "null");
+
+			SocketAsyncEventArgs saea = new SocketAsyncEventArgs ();
+			Assert.Throws<NullReferenceException> (delegate {
+				s.SendAsync (saea);
+			}, "SocketAsyncEventArgs");
+
+			saea.SetBuffer (null, 0, 0);
+			Assert.Throws<NullReferenceException> (delegate {
+				s.SendAsync (saea);
+			}, "SetBuffer / null");
+
+			s.Close ();
+			Assert.Throws<ObjectDisposedException> (delegate {
+				s.SendAsync (saea);
+			}, "Closed");
 		}
 	}
 }
