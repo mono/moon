@@ -282,6 +282,7 @@ HttpRequest::SendAsync ()
 		HttpResponse *response = new HttpResponse (this);
 		response->SetStatus (200, "OK"); /* Not sure if this is expected or not */
 		Started (response);
+		response->unref ();
 
 		/* TODO: Opt-in for write events unless we're serving a local file. */
 		/* Serve the file if needed */
