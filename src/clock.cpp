@@ -273,7 +273,9 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 				SetCurrentTime (localTime);
 				progress = normalizedTime;
 
-				return false;
+				// Return true because we still need to tick the child clocks
+				// even though this clock finished immediately.
+				return true;
 			}
 		}
 		else if (natural_duration_timespan > 0) {
@@ -768,7 +770,7 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 	// targetting.  and the new setting isnt clobbered by the
 	// animation like it would be if the storyboard was active.
 
-	bool update_child_clocks = (current_state == Clock::Active || seeking);
+	bool update_child_clocks = rv || current_state == Clock::Active || seeking;
 
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *clock = (Clock*)l->data;
