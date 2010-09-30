@@ -159,28 +159,32 @@ namespace Mono.Xaml {
 
 		public object ParseReader (TextReader stream)
 		{
-			reader = XmlReader.Create (stream);
+			try {
+				reader = XmlReader.Create (stream);
+				while (skip_read || reader.Read ()) {
+					skip_read = false;
 
-			while (skip_read || reader.Read ()) {
-				skip_read = false;
-
-				switch (reader.NodeType) {
-				case XmlNodeType.Element:
-					ParseElement ();
-					break;
-				case XmlNodeType.EndElement:
-					ParseEndElement ();
-					break;
-				case XmlNodeType.Text:
-					ParseText ();
-					break;
-				case XmlNodeType.Whitespace:
-					ParseWhitespace ();
-					break;
-				case XmlNodeType.SignificantWhitespace:
-					ParseSignificantWhitespace ();
-					break;
+					switch (reader.NodeType) {
+					case XmlNodeType.Element:
+						ParseElement ();
+						break;
+					case XmlNodeType.EndElement:
+						ParseEndElement ();
+						break;
+					case XmlNodeType.Text:
+						ParseText ();
+						break;
+					case XmlNodeType.Whitespace:
+						ParseWhitespace ();
+						break;
+					case XmlNodeType.SignificantWhitespace:
+						ParseSignificantWhitespace ();
+						break;
+					}
 				}
+			}
+			catch (Exception e) {
+				throw ParseException ("Caught exception: {0}", e.Message);
 			}
 
 			XamlObjectElement obj = top_element as XamlObjectElement;
