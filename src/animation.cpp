@@ -1296,6 +1296,12 @@ LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	double start = baseValue->AsDouble();
 	double end = GetValue ();
 
+
+	if (isnan (start))
+		start = 0;
+	if (isnan (end))
+		end = 0;
+
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
@@ -1353,6 +1359,11 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	double start = baseValue->AsDouble();
 	double end = GetValue ();
 	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
+
+	if (isnan (start))
+		start = 0;
+	if (isnan (end))
+		end = 0;
 
 	return new Value (LERP (start, end, splineProgress));
 }
@@ -1446,6 +1457,11 @@ EasingDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 
 	if (GetEasingFunction ())
 		keyFrameProgress = GetEasingFunction ()->Ease (keyFrameProgress);
+
+	if (isnan (start))
+		start = 0;
+	if (isnan (end))
+		end = 0;
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }
