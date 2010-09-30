@@ -406,7 +406,7 @@ namespace System.Windows.Browser {
 		private bool GetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)
 		{
 			object[] args;
-			if (ManagedObject is IDictionary) {
+			if (ManagedObject is IDictionary && scriptAlias != "item") {
 				args = new object[]{scriptAlias};
 				scriptAlias = "item";
 			} else {
