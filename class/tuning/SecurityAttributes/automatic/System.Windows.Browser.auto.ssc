@@ -1,6 +1,7 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 23 methods
+# 26 methods
 
++SSC-M: System.Boolean Mono.JSFriendlyMethodBinder::TryChangeType(System.Object,System.Type,System.Globalization.CultureInfo,System.Object&)
 +SSC-M: System.Windows.Browser.ScriptObject System.Windows.Browser.HostServices::get_JsonSerializer()
 +SSC-M: System.Void System.Windows.Browser.HtmlPage::.cctor()
 +SSC-M: System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
@@ -18,6 +19,8 @@
 +SSC-M: T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.String,System.Object[])
 +SSC-M: T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.Object[])
 +SSC-M: System.Object System.Windows.Browser.ScriptObject::GetProperty(System.String,System.Object[])
++SSC-M: System.Void System.Windows.Browser.ScriptObject::AddEventHandler(System.String,System.Windows.Browser.ScriptObject,System.Reflection.EventInfo)
++SSC-M: System.Void System.Windows.Browser.ScriptObject::RemoveEventHandler(System.String,System.Windows.Browser.ScriptObject)
 +SSC-M: System.Windows.Browser.ScriptObject System.Windows.Browser.ScriptObject::LookupScriptObject(System.IntPtr)
 +SSC-M: System.Boolean System.Windows.Browser.ScriptObject::AddNativeMapping(System.IntPtr,System.Windows.Browser.ScriptObject)
 +SSC-M: System.Void System.Windows.Browser.ScriptObject::FreeNativeMapping(System.Windows.Browser.ScriptObject)

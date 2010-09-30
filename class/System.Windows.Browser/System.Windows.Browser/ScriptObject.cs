@@ -372,10 +372,10 @@ namespace System.Windows.Browser {
 					throw new InvalidOperationException ("html bridge only allows function objects as event delegates");
 
 				ScriptObject event_object = (ScriptObject)ScriptObjectHelper.ObjectFromValue<ScriptObject> (value);
-
-				ScriptObjectEventInfo ei = new ScriptObjectEventInfo (scriptAlias, event_object, einfo);
-
-				AddEventHandler (ei);
+				if (event_object == null)
+					RemoveEventHandler (scriptAlias, null);
+				else
+					AddEventHandler (scriptAlias, event_object, einfo);
 
 				return true;
 			}
@@ -448,18 +448,39 @@ namespace System.Windows.Browser {
 			events[scriptAlias] = ei;
 		}
 
-		internal void AddEventHandler (ScriptObjectEventInfo ei)
+		internal void AddEventHandler (string name, ScriptObject handler, EventInfo e)
 		{
 			List<ScriptObjectEventInfo> list;
 			if (event_handlers == null)
 				event_handlers = new Dictionary<string, List<ScriptObjectEventInfo>>();
-			if (!event_handlers.TryGetValue (ei.Name, out list)) {
+			if (!event_handlers.TryGetValue (name, out list)) {
 				list = new List<ScriptObjectEventInfo> ();
-				event_handlers.Add (ei.Name, list);
+				event_handlers.Add (name, list);
 			}
+
+			ScriptObjectEventInfo ei = new ScriptObjectEventInfo (name, handler, e);
 			list.Add (ei);
-				
 			ei.EventInfo.AddEventHandler (ManagedObject, ei.GetDelegate ());
+		}
+
+		internal void RemoveEventHandler (string name, ScriptObject handler)
+		{
+			if (event_handlers == null)
+				return;
+
+			List<ScriptObjectEventInfo> list;
+			if (!event_handlers.TryGetValue (name, out list))
+				return;
+
+			for (int i = list.Count - 1; i >= 0; i--) {
+				if (handler == null || list [i].Callback.Handle == handler.Handle) {
+					ScriptObjectEventInfo ei = list [i];
+					ei.EventInfo.RemoveEventHandler (ManagedObject, ei.GetDelegate ());
+					list.RemoveAt (i);
+					if (handler != null)
+						return;
+				}
+			}
 		}
 #endregion
 

@@ -76,8 +76,12 @@ namespace Mono
 					return true;
 				else {
 					value = script_object.ManagedObject;
-					if (value == null && type == typeof(HtmlElement))
-						value = new HtmlElement (script_object.Handle);
+					if (value == null) {
+						if (typeof(Delegate).IsAssignableFrom(type))
+							value = new ScriptObjectEventInfo (script_object, type).GetDelegate ();
+						else if (type == typeof(HtmlElement))
+							value = new HtmlElement (script_object.Handle);
+					}
 					ret = value;
 					if (value.GetType () == type)
 						return true;

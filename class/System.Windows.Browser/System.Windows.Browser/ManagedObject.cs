@@ -384,34 +384,13 @@ namespace System.Windows.Browser {
 					// this is silently ignored.
 					return;
 				}
-				
-				ScriptObjectEventInfo ei = new ScriptObjectEventInfo (eventName,
-										      handler,
-										      einfo);
-				
-				obj.AddEventHandler (ei);
+
+				obj.AddEventHandler (eventName, handler, einfo);
 			}
 
 			public void RemoveEventListener (string eventName, ScriptObject handler)
 			{
-				List<ScriptObjectEventInfo> list;
-				if (!obj.event_handlers.TryGetValue (eventName, out list)) {
-					// TODO: throw exception?
-					Console.WriteLine ("removeEventListener: There are no event listeners registered for '{0}'", eventName);
-					return;
-				}
-			
-				for (int i = list.Count - 1; i >= 0; i--) {
-					if (list [i].Callback.Handle == handler.Handle) {
-						ScriptObjectEventInfo ei = list [i];
-						ei.EventInfo.RemoveEventHandler (obj.ManagedObject, ei.GetDelegate ());
-						list.RemoveAt (i);
-						return;
-					}
-				}
-				
-				// TODO: throw exception?
-				Console.WriteLine ("removeEventListener: Could not find the specified listener in the list of registered listeners for '{0}'", eventName);
+				obj.RemoveEventHandler (eventName, handler);
 			}
 		}
 #endregion
