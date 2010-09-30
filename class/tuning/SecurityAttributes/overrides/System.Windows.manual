@@ -64,6 +64,7 @@
 # Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
 
 # too many new helpers don't require to be critical so we'll be more precise with them
++SC-M: System.ComponentModel.TypeConverter Mono.Helper::GetConverterFor(System.Reflection.ICustomAttributeProvider,System.Type)
 +SC-M: System.ComponentModel.TypeConverter Mono.Helper::GetConverterFor(System.Reflection.MemberInfo,System.Type)
 +SC-M: System.IntPtr Mono.Helper::StreamToIntPtr(System.IO.Stream)
 +SC-M: System.Void Mono.Helper::ReportException(System.Exception)
