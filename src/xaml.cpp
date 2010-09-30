@@ -896,6 +896,8 @@ class XamlParserInfo {
 		if (top_element)
 			delete top_element;
 		namescope->unref ();
+		if (error_args)
+			error_args->unref ();
 	}
 
  
