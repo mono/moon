@@ -342,6 +342,13 @@ ResourceDictionary::Clear ()
 	return rv;
 }
 
+void
+ResourceDictionary::OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor)
+{
+	Collection::OnMentorChanged (old_mentor, new_mentor);
+	g_hash_table_foreach (hash, (GHFunc)DependencyObject::propagate_mentor, new_mentor);
+}
+
 bool
 ResourceDictionary::ContainsKey (const char *key)
 {

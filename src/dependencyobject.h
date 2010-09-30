@@ -499,6 +499,7 @@ protected:
 	void NotifyListenersOfPropertyChange (int id, MoonError *error);
 	virtual void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor);
 
+	static void propagate_mentor (DependencyProperty *key, Value *value, gpointer data);
 	void RemoveAllListeners ();
 
 	virtual void CloneCore (Types *types, DependencyObject* from);
@@ -521,8 +522,6 @@ private:
 	static void clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data);
 	static void clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data);
 	void CloneAnimationStorageList (DependencyProperty *key, List *list);
-
-	static void propagate_mentor (DependencyProperty *key, Value *value, gpointer data);
 
 	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 

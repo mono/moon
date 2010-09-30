@@ -99,6 +99,7 @@ protected:
 
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
+	virtual void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor);
 
 #if EVENT_ARG_REUSE
 	ResourceDictionaryChangedEventArgs *changedEventArgs;

@@ -873,6 +873,9 @@ WalkSubtreeLookingForCycle (ResourceDictionary* subtree_root,
 bool
 ResourceDictionaryCollection::AddedToCollection (Value *value, MoonError *error)
 {
+	if (!DependencyObjectCollection::AddedToCollection (value, error))
+		return false;
+
 	DependencyObject *parent = GetParent();
 	if (!parent)
 		return TRUE;
