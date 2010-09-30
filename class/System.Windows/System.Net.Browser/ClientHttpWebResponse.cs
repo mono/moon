@@ -137,6 +137,10 @@ namespace System.Net.Browser {
 			get { return response_uri; }
 		}
 
+		public override bool SupportsHeaders {
+			get { return true; }
+		}
+
 
 		public override void Close ()
 		{
