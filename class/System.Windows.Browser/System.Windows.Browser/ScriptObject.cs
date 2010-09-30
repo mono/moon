@@ -423,11 +423,6 @@ namespace System.Windows.Browser {
 			}
 
 			object v = GetProperty (scriptAlias, args);
-
-			if (v != null && Type.GetTypeCode (v.GetType ()) == TypeCode.Object) {
-				v = (swb.ManagedObject.LookupManagedObject (v) ?? new ManagedObject (v));
-			}
-
 			ScriptObjectHelper.ValueFromObject (ref value, v);
 
 			return true;

@@ -167,13 +167,18 @@ namespace Mono {
 				case TypeCode.Object:
 	//				Console.WriteLine ("Trying to marshal managed object {0}...", o.GetType ().FullName);
 					ScriptObject so = o as ScriptObject;
+					v.k = Kind.NPOBJ;
 					if (so != null) {
 						v.u.p = so.Handle;
 					} else {
-						ManagedObject obj = new ManagedObject (o);
-						v.u.p = obj.Handle;
+						if (o is Guid) {
+							v.k = Kind.STRING;
+							v.u.p = Value.StringToIntPtr (o.ToString ());
+						} else {
+							ManagedObject obj = (ManagedObject.LookupManagedObject (o) ?? new ManagedObject (o));
+							v.u.p = obj.Handle;
+						}
 					}
-					v.k = Kind.NPOBJ;
 	//				Console.WriteLine ("  Marshalled as {0}", v.k);
 					break;
 				default:
