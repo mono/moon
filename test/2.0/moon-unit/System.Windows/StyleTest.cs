@@ -300,6 +300,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
+		[MoonlightBug]
 		public void ManagedAccessAfterParsing_sl3 ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -314,7 +315,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug ("The XamlLoader should not call the managed properties when setting the value of 'Setter.Value'")]
 		public void ManagedAccessAfterParsing_sl4 ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -434,7 +434,9 @@ namespace MoonTest.System.Windows
 			style.Setters.Add(new Setter(Canvas.BackgroundProperty, red));
 			Canvas c = new Canvas();
 			c.Background = blue;
+			Console.WriteLine (1);
 			c.Style = style;
+			Console.WriteLine (2);
 			Assert.AreEqual(blue, c.Background, "#1");
 			c.Background = null;
 			Assert.AreEqual(null, c.Background, "#2");
@@ -463,7 +465,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ParsedMissingTargetType ()
 		{
 			Assert.Throws<XamlParseException>(delegate {

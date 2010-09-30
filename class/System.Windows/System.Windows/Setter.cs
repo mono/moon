@@ -61,13 +61,24 @@ namespace System.Windows {
 		}
 
 		public object Value {
-			get { return GetValue (ValueProperty); }
-			set { SetValue (ValueProperty, value); }
+			get {
+				// RuntimeVersion 4 returns the converted value here
+				if (!converted_value_set || Int32.Parse (Deployment.Current.RuntimeVersion.Split('.')[0]) < 4)
+					return GetValue (ValueProperty);
+				else
+					return ConvertedValue;
+			}
+			set {
+				SetValue (ValueProperty, value);
+			}
 		}
+
+		bool converted_value_set;
 
 		internal object ConvertedValue {
 			get { return GetValue (ConvertedValueProperty); }
-			set { SetValue (ConvertedValueProperty, value); }
+			set { converted_value_set = true;
+			      SetValue (ConvertedValueProperty, value); }
 		}
 	}
 }
