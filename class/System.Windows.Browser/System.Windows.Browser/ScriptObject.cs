@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Mono;
 using System.Runtime.InteropServices;
+using swb=System.Windows.Browser;
 
 namespace System.Windows.Browser {
 
@@ -423,8 +424,9 @@ namespace System.Windows.Browser {
 
 			object v = GetProperty (scriptAlias, args);
 
-			if (v != null && Type.GetTypeCode (v.GetType ()) == TypeCode.Object)
-				v = new ManagedObject (v);
+			if (v != null && Type.GetTypeCode (v.GetType ()) == TypeCode.Object) {
+				v = (swb.ManagedObject.LookupManagedObject (v) ?? new ManagedObject (v));
+			}
 
 			ScriptObjectHelper.ValueFromObject (ref value, v);
 

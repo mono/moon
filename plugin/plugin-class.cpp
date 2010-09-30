@@ -4983,7 +4983,7 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	}
 
 #if ds(!)0
-	printf ("getting scriptable object property %x = %s result: %i\n", name, strname, result);
+	printf ("getting scriptable object property %x = %s result: %p\n", name, strname, result);
 #endif
 
 	if (argCount > 0) {

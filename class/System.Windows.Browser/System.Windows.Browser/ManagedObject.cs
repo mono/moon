@@ -38,12 +38,21 @@ namespace System.Windows.Browser {
 	internal class ManagedObject : ScriptObject {
 
 		object managed;
+		int hash;
+
+		static ManagedObject ()
+		{
+			cachedObjects = new Dictionary<int, IntPtr> ();
+		}
 
 		public ManagedObject (object obj)
 		{
 //			Console.WriteLine ("new ManagedObject created wrapping object of type {0}, handle == {1}", obj.GetType(), Handle);
 
 			managed = obj;
+			hash = managed.GetHashCode ();
+			lock (cachedObjects)
+				cachedObjects[hash] = Handle;
 
 			Type type = obj.GetType ();
 
@@ -133,6 +142,12 @@ namespace System.Windows.Browser {
 
 				RegisterScriptableProperty (dictOpsType.GetProperty ("Item"), "item", dictOps);
 			}
+		}
+
+		~ManagedObject ()
+		{
+			lock (cachedObjects)
+				cachedObjects.Remove (hash);
 		}
 
 		public override void SetProperty (string name, object value)
@@ -352,6 +367,26 @@ namespace System.Windows.Browser {
 
 			return true;
 		}
+
+
+#region managed object cache
+		static Dictionary<int, IntPtr> cachedObjects;
+		internal static ManagedObject LookupManagedObject (object o)
+		{
+			ManagedObject obj = null;
+			IntPtr handle;
+
+			lock (cachedObjects) {
+				cachedObjects.TryGetValue (o.GetHashCode (), out handle);
+				if (handle != IntPtr.Zero) {
+					obj = LookupScriptObject (handle) as ManagedObject;
+					if (obj != null && obj.ManagedObject != o)
+						obj = null;
+				}
+			}
+			return obj;
+		}
+#endregion
 
 #region built-in operations on objects which expose types
 		class TypeOps {
