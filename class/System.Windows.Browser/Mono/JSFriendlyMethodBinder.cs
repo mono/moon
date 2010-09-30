@@ -70,6 +70,13 @@ namespace Mono
 			if (value.GetType() == type)
 				return true;
 
+			if (type.Equals (typeof(object))) {
+				ManagedObject mo = value as ManagedObject;
+				if (mo != null)
+					ret = mo.ManagedObjectCore;
+				return true;
+			}
+
 			script_object = value as ScriptObject;
 			if (script_object != null) {
 				if (typeof(ScriptObject).IsAssignableFrom (type))
