@@ -463,7 +463,7 @@ Surface::~Surface ()
 	delete focus_changed_events;
 	delete input_list;
 	
-	g_free (source_location);
+	delete source_location;
 
 	if (fullscreen_window)
 		delete fullscreen_window;
