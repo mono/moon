@@ -2444,6 +2444,7 @@ Surface::HandleUIWindowDestroyed (MoonWindow *window)
 	}
 	else if (window == normal_window) {
 		// something destroyed our normal window
+		delete normal_window;
 		normal_window = NULL;
 	}
 
