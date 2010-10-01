@@ -9,8 +9,8 @@ libshocker_la_SOURCES = 	\
 	debug.h				\
 	shocker.cpp  		\
 	shocker.h		\
-	plugin.h		\
-	plugin.cpp		\
+	shocker-plugin.h		\
+	shocker-plugin.cpp		\
 	browser.h		\
 	browser.cpp		\
 	netscape.h		\

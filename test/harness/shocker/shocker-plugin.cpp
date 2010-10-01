@@ -17,7 +17,7 @@
 
 #include "debug.h"
 #include "browser.h"
-#include "plugin.h"
+#include "shocker-plugin.h"
 #include "logging.h"
 
 #define MIME_TYPES_HANDLED  	"application/x-jolttest"

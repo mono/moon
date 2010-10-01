@@ -26,7 +26,7 @@ class AutoCapture;
 #include "gdk/gdkx.h"
 #undef Visual
 
-#include "plugin.h"
+#include "shocker-plugin.h"
 
 class ScreenCaptureData {
 private:

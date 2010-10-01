@@ -20,7 +20,7 @@
 #include "debug.h"
 #include "netscape.h"
 #include "shocker.h"
-#include "plugin.h"
+#include "shocker-plugin.h"
 #include "browser.h"
 #include "logging.h"
 #include "input.h"

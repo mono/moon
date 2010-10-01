@@ -23,7 +23,7 @@
 #include "debug.h"
 #include "shutdown-manager.h"
 #include "input.h"
-#include "plugin.h"
+#include "shocker-plugin.h"
 #include "harness.h"
 
 static gint wait_count = 0;

@@ -24,7 +24,7 @@
 
 #include "debug.h"
 #include "harness.h"
-#include "plugin.h"
+#include "shocker-plugin.h"
 
 bool
 send_all (int sockfd, const char *buffer, guint32 length)
