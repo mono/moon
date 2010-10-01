@@ -1879,6 +1879,8 @@ PluginXamlLoader::~PluginXamlLoader ()
 {
 	if (managed_loader)
 		plugin->GetDeployment ()->DestroyManagedXamlLoader (managed_loader);
+	g_free (xaml_string);
+	g_free (xaml_file);
 }
 
 PluginXamlLoader *
