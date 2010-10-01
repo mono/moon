@@ -496,7 +496,7 @@ namespace System.Windows.Data {
 			// If we've databound to a DependencyObject we need to emit
 			// the error on the Mentor, if it has one.
 			var fe = Target as FrameworkElement ?? Target.Mentor;
-			if (!Binding.NotifyOnValidationError || fe == null) {
+			if (fe == null) {
 				return;
 			}
 
@@ -515,14 +515,18 @@ namespace System.Windows.Data {
 			if (oldError != null && CurrentError != null) {
 				Validation.AddError (fe, CurrentError);
 				Validation.RemoveError (fe, oldError);
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, oldError));
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, CurrentError));
+				if (Binding.NotifyOnValidationError) {
+					fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, oldError));
+					fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, CurrentError));
+				}
 			} else if (oldError != null) {
 				Validation.RemoveError (fe, oldError);
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, oldError));
+				if (Binding.NotifyOnValidationError)
+					fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Removed, oldError));
 			} else if (CurrentError != null) {
 				Validation.AddError (fe, CurrentError);
-				fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, CurrentError));
+				if (Binding.NotifyOnValidationError)
+					fe.RaiseBindingValidationError (new ValidationErrorEventArgs(ValidationErrorEventAction.Added, CurrentError));
 			}
 		}
 
