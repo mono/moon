@@ -361,14 +361,18 @@ namespace System.Windows.Data {
 
 		TypeConverter GetConverterFrom ()
 		{
-			var sourceType = PropertyPathWalker.FinalNode.ValueType;
-			var destType = Property.PropertyType;
-			if (destType.IsAssignableFrom (sourceType))
+			var sourceType = Property.PropertyType;
+			var destType = PropertyPathWalker.FinalNode.ValueType;
+			if (destType.IsAssignableFrom (sourceType)) {
+				Console.WriteLine ("Can store {0} in {1}", sourceType.Name, destType.Name);
 				return null;
+			}
 
-			var converter = Helper.GetConverterFor (sourceType);
-			if (converter == null)
-				converter = new MoonlightTypeConverter ("", sourceType);
+			var converter = Helper.GetConverterFor (destType);
+			if (converter == null) {
+				converter = new MoonlightTypeConverter ("", destType);
+				Console.WriteLine ("Generated one for {0}", destType.Name);
+			}
 			return converter;
 		}
 

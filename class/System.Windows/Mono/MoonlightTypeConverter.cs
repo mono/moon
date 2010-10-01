@@ -91,7 +91,10 @@ namespace Mono {
 		{
 			if (destinationType == typeof (object))
 				return value;
-			
+
+			if (destinationType == typeof (string))
+				return value.ToString ();
+
 			if (destinationType.IsInstanceOfType (value))
 				return value;
 			
