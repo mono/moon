@@ -396,9 +396,6 @@ public:
 	void Shutdown (); /* main thread only */
 	bool IsShuttingDown (); /* main thread only */
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	bool IsSafeToDie ();
-
 	void TrackPath (char *path);
 
 	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */

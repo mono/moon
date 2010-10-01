@@ -305,11 +305,9 @@ namespace System.Windows {
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
-		protected bool should_free_in_finalizer = true;
 		~DependencyObject ()
 		{
-			if (should_free_in_finalizer)
-				Free ();
+			Free ();
 		}
 
 		public object GetValue (DependencyProperty dp)

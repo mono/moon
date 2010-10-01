@@ -1092,24 +1092,6 @@ Deployment::IsShuttingDown ()
 	return is_shutting_down;
 }
 
-bool
-Deployment::IsSafeToDie ()
-{
-#if OBJECT_TRACKING
-	bool ok;
-
-	pthread_mutex_lock (&objects_alive_mutex);
-
-	ok = !objects_alive || g_hash_table_size (objects_alive) == 0;
-
-	pthread_mutex_unlock (&objects_alive_mutex);
-
-	return ok;
-#else
-	return true;
-#endif
-}
-
 void
 Deployment::Dispose ()
 {

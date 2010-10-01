@@ -65,16 +65,6 @@ namespace System.Windows {
 			parse_uri_stack = new Stack<Uri>();
 		}
 
-		~Deployment ()
-		{
-			if (!NativeMethods.deployment_is_safe_to_die (native)) {
-				should_free_in_finalizer = false;
-				GC.ReRegisterForFinalize (this);
-			}
-			else
-				should_free_in_finalizer = true;
-		}
-
 		Application current_app;
 
 		internal override void AddStrongRef (IntPtr referent, string name)

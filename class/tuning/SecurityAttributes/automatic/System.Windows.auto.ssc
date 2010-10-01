@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 630 methods
+# 629 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -391,7 +391,6 @@
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsReadOnly()
 +SSC-M: System.Void System.Windows.DependencyPropertyChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Deployment::Initialize()
-+SSC-M: System.Void System.Windows.Deployment::Finalize()
 +SSC-M: Mono.Surface System.Windows.Deployment::get_Surface()
 +SSC-M: System.Windows.Deployment System.Windows.Deployment::get_Current()
 +SSC-M: System.Windows.Media.GlyphTypefaceCollection System.Windows.Deployment::get_SystemTypefaces()
