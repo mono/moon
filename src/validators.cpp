@@ -439,7 +439,9 @@ bool
 Validators::OnlyDuringInitializationValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!instance->GetDeployment ()->IsInitializing ()) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, g_strdup_printf ("Property %s cannot be changed.", property->GetName ()));
+		char *msg = g_strdup_printf ("Property %s cannot be changed.", property->GetName ());
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, msg);
+		g_free (msg);
 		return false;
 	}
 	return true;
