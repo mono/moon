@@ -51,7 +51,7 @@ namespace Mono {
 			case Kind.UINT64:
 				if (isobject)
 					return (double) v.u.ui64;
-				else if (type.IsAssignableFrom (typeof (UInt64)))
+				else if (type != typeof (UInt64))
 					return Convert.ChangeType (v.u.i64, type, null);
 				return v.u.ui64;
 			case Kind.INT32:
@@ -65,16 +65,20 @@ namespace Mono {
 						default:
 							throw new ArgumentException ("The browser returned an unsupported value for 'button'");
 					}
-				} else if (type.IsAssignableFrom (typeof (Int32)))
+				} else if (type != typeof (Int32))
 					return Convert.ChangeType (v.u.i32, type, null);
 				return v.u.i32;
 			case Kind.INT64:
 				if (isobject)
 					return (double) v.u.i64;
-				else if (type.IsAssignableFrom (typeof (Int64)))
+				else if (type != typeof (Int64))
 					return Convert.ChangeType (v.u.i64, type, null);
 				return v.u.i64;
 			case Kind.DOUBLE:
+				if (isobject)
+					return v.u.d;
+				else if (type != typeof (Double))
+					return Convert.ChangeType (v.u.d, type, null);
 				return v.u.d;
 			case Kind.STRING:
 				string s = Marshal.PtrToStringAnsi (v.u.p);
@@ -84,7 +88,6 @@ namespace Mono {
 					return DateTime.Parse (s);
 				return Convert.ChangeType (s, type, null);
 			case Kind.NPOBJ:
-				// FIXME: Move all of this one caller up
 				if (type.Equals (typeof(IntPtr)))
 				    return v.u.p;
 

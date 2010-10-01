@@ -88,6 +88,14 @@ namespace Mono
 							value = new ScriptObjectEventInfo (script_object, type).GetDelegate ();
 						else if (type == typeof(HtmlElement))
 							value = new HtmlElement (script_object.Handle);
+						else if (type == typeof(DateTime)) {
+							try {
+								ret = new DateTime (new DateTime (1970,1,1).Ticks + script_object.InvokeInternal<long> ("getTime") * 10000);
+							} catch {
+								return false;
+							}
+							return true;
+						}
 					}
 					ret = value;
 					if (value.GetType () == type)
