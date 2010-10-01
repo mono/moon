@@ -36,6 +36,7 @@ LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj, P
 LocalPropertyValueProvider::~LocalPropertyValueProvider ()
 {
 	g_hash_table_foreach_remove (local_values, dispose_value, obj);
+	g_hash_table_destroy (local_values);
 }
 
 Value *
