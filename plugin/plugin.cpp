@@ -891,6 +891,8 @@ PluginInstance::UpdateSource ()
 			request->Open ("GET", request_uri, NoPolicy);
 			request->Send ();
 		}
+
+		delete request_uri;
 	}
 }
 
