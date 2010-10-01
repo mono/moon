@@ -537,9 +537,9 @@ Storyboard::BeginWithError (MoonError *error)
 		DetachCompletedHandler ();
 
 		Clock *myClock = clock;
+		clock = NULL;
 
-		clock->Dispose (); // this will null out clock.
-
+		myClock->Dispose ();
 		myClock->unref ();
 	}
 
