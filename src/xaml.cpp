@@ -1840,8 +1840,10 @@ start_element (void *data, const char *el, const char **attr)
 			inst->GetAsDependencyObject ()->SetIsBeingParsed (true);
 		
 		inst->SetAttributes (p, attr);
-		if (p->error_args)
+		if (p->error_args) {
+			delete inst;
 			return;
+		}
 
 	} else {
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
