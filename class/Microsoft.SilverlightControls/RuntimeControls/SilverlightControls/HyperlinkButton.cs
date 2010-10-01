@@ -170,8 +170,13 @@ namespace System.Windows.Controls
             // Make relative Uris absolute
             if (!destination.IsAbsoluteUri) 
             {
+                // Page relative Uris are not invalid
                 string original = destination.OriginalString; 
-                if (Application.Current == null)
+                if (string.IsNullOrEmpty(original) && (original[0] != '/'))
+                {
+                    throw new NotSupportedException();
+                } 
+                else if (Application.Current == null)
                 { 
                     throw new NotSupportedException();
                 }
@@ -191,19 +196,20 @@ namespace System.Windows.Controls
         /// </SecurityNote> 
         private void Navigate()
         { 
-            Uri destination = GetAbsoluteUri();
             string target = TargetName;
-
-            if (!destination.IsAbsoluteUri || !IsSafeScheme(destination.Scheme))
-            {
-                throw new InvalidOperationException(); 
-            } 
 
             try 
             {
 #if !BOOTSTRAP
                 if (ExternalTargets.Contains (TargetName))
                 { 
+                    Uri destination = GetAbsoluteUri();
+
+                    if (!destination.IsAbsoluteUri || !IsSafeScheme(destination.Scheme))
+                    {
+                        throw new InvalidOperationException();
+                    }
+
                     HtmlPage.Window.Navigate(destination, TargetName);
                 }
                 else 
