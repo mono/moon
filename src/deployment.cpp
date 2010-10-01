@@ -1778,8 +1778,6 @@ Deployment::TrackObjectDestroyed (EventObject *obj)
 	pthread_mutex_lock (&objects_alive_mutex);
 	g_hash_table_remove (objects_alive, obj);
 	pthread_mutex_unlock (&objects_alive_mutex);
-
-	Track ("Destroyed", "");
 #endif
 }
 
