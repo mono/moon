@@ -1988,7 +1988,9 @@ PluginInstance::SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 		return;
 
 	if (!args->IsSuccess ()) {
-		GetSurface ()->GetTimeManager ()->AddTickCall (network_error_tickcall, new PluginClosure (this));
+		PluginClosure *pc = new PluginClosure (this);
+		GetSurface ()->GetTimeManager ()->AddTickCall (network_error_tickcall, pc);
+		pc->unref ();
 	} else {
 		// the xdomain check MUST be done with the final URI so it can consider any redirection (DRT956)
 		CrossDomainApplicationCheck (request->GetFinalUri ()->GetOriginalString ());
