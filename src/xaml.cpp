@@ -2660,6 +2660,7 @@ SL3XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_n
 	
 	if (parser_info->error_args) {
 		error_args = parser_info->error_args;
+		error_args->ref ();
 		printf ("Could not parse element %s, attribute %s, error: %s\n",
 			error_args->xml_element,
 			error_args->xml_attribute,
