@@ -310,7 +310,7 @@ PluginInstance::Shutdown ()
 	cleanup_pointers = NULL;
 
 	if (rootobject) {
-		MOON_NPN_ReleaseObject ((NPObject*)rootobject);
+		MOON_NPN_ReleaseObject (rootobject);
 		rootobject = NULL;
 	}
 
@@ -785,6 +785,8 @@ PluginInstance::CreateWindow ()
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
 	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
 	register_event (instance, "onError", onError, root);
+	MOON_NPN_ReleaseObject (root);
+
 	//	register_event (instance, "onResize", onResize, rootx->content);
 
 	// NOTE: last testing showed this call causes opera to reenter but moving it is trouble and
@@ -1143,6 +1145,7 @@ PluginInstance::LoadXAML ()
 		is_splash = true;
 		loading_splash = false;
 	}
+	MOON_NPN_ReleaseObject (root);
 
 	xaml_loader->TryLoad (&error);
 
