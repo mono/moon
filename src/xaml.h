@@ -211,6 +211,8 @@ class XamlLoader {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error) = 0;
+
+	virtual ~XamlLoader () {}
 };
 
 
@@ -218,7 +220,7 @@ class SL4XamlLoader : public XamlLoader {
 
  public:
 	SL4XamlLoader (Surface *surface);
-	~SL4XamlLoader ();
+	virtual ~SL4XamlLoader ();
 
 	virtual Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	virtual Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
