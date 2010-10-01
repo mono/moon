@@ -481,6 +481,9 @@ MoonWindowGtk::EnableEvents (bool first)
 void
 MoonWindowGtk::DisableEvents ()
 {
+	if (widget == NULL)
+		return;
+
 	g_signal_handlers_disconnect_matched (widget, G_SIGNAL_MATCH_DATA,
 					      0, 0, NULL, NULL, this);
 }
