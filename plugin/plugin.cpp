@@ -234,6 +234,7 @@ PluginInstance::Recreate (const char *source)
 PluginInstance::~PluginInstance ()
 {
 	deployment->unref_delayed ();
+	delete accessibility_bridge;
 }
 
 void
