@@ -43,7 +43,7 @@ PluginObject::GetXY (NPWindow *window, guint32 *x, guint32 *y)
 	XTranslateCoordinates (display, src, root, -window->x, -window->y, (int*) x, (int*) y, &dummy);
 	XCloseDisplay (display);
 
-	LOG_PLUGIN ("[%i shocker] PluginObject::GetXY (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", getpid (), window->window, window->x, window->y, window->width, window->height, x, y);
+	LOG_PLUGIN ("[%i shocker] PluginObject::GetXY (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %u, y: %u)\n", getpid (), window->window, window->x, window->y, window->width, window->height, *x, *y);
 }
 
 char*
