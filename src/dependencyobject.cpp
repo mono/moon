@@ -1081,20 +1081,22 @@ EventObject::emit_async (EventObject *calldata)
 	AsyncEventClosure *async = (AsyncEventClosure *) calldata;
 	
 	async->sender->Emit (async->event_id, async->args, async->unemitted, async->generation);
-	
-	async->unref ();
 }
 
 bool
 EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
 {
+	AsyncEventClosure *async;
+
 	if (!CanEmitEvents (event_id)) {
 		if (calldata)
 			calldata->unref ();
 		return false;
 	}
 
-	AddTickCall (EventObject::emit_async, new AsyncEventClosure (this, event_id, calldata, only_unemitted, GetEventGeneration (event_id)));
+	async = new AsyncEventClosure (this, event_id, calldata, only_unemitted, GetEventGeneration (event_id));
+	AddTickCall (EventObject::emit_async, async);
+	async->unref ();
 	
 	return true;
 }
