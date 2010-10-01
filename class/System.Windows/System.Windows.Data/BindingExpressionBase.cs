@@ -127,25 +127,21 @@ namespace System.Windows.Data {
 						if (mentor != null)
 							source = mentor.DataContext;
 					}
-				} else if (IsMentorBound && Target.Mentor != null) {
-					source = Target.Mentor.DataContext;
+				} else {
+					// If we've bound to a FrameworkElements own DataContext property or the ContentProperty, we need
+					// to read the datacontext of the parent element.
+					var fe = Target as FrameworkElement;
+					if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty))
+						fe = (FrameworkElement) fe.Parent;
+
+					// If the FE's parent is null or if the Target is not an FE, we should take the datacontext from the mentor.
+					// Note that we use the mentor here for the first time because we don't want to accidentally select the mentors
+					// parent in the previous block of code.
+					fe = fe ?? Target.Mentor;
+					if (fe != null)
+						source = fe.DataContext;
 				}
 
-				// If DataContext is bound, then we need to read the parents datacontext or use null
-				if (source == null && Target != null) {
-					if (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty) {
-						FrameworkElement e = ((FrameworkElement) Target).Parent as FrameworkElement;
-						if (e != null) {
-							source = e.DataContext;
-						}
-					} else if (Target is FrameworkElement) {
-						source = ((FrameworkElement) Target).DataContext;
-					} else {
-						var mentor = Target.Mentor;
-						if (mentor != null)
-							source = mentor.DataContext;
-					}
-				}
 				if (PropertyPathWalker != null)
 					PropertyPathWalker.Update (source);
 				return source;
