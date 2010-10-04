@@ -82,6 +82,36 @@ namespace MoonTest.System.Windows.Controls
 		
 		[TestMethod]
 		[Asynchronous]
+		public void RelativeEmptyUrisAllowedTest ()
+		{
+			MyHyperlinkButton hlb = new MyHyperlinkButton ();
+			hlb.NavigateUri = new Uri ("", UriKind.Relative);
+			hlb.TargetName = "";
+			Canvas root = new Canvas ();
+			root.Children.Add (hlb);
+			
+			CreateAsyncTest (root, () => {
+				hlb.Clickify (); // make sure it doesn't throw
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void RelativeNullUrisAllowedTest ()
+		{
+			MyHyperlinkButton hlb = new MyHyperlinkButton ();
+			hlb.NavigateUri = null;
+			hlb.TargetName = "";
+			Canvas root = new Canvas ();
+			root.Children.Add (hlb);
+			
+			CreateAsyncTest (root, () => {
+				hlb.Clickify (); // make sure it doesn't throw
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
 		public void DeepLinkingNoTargetNameTest ()
 		{
 			MyHyperlinkTarget target = new MyHyperlinkTarget ();
