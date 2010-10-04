@@ -368,12 +368,7 @@ namespace System.Windows.Data {
 				return null;
 			}
 
-			var converter = Helper.GetConverterFor (destType);
-			if (converter == null) {
-				converter = new MoonlightTypeConverter ("", destType);
-				Console.WriteLine ("Generated one for {0}", destType.Name);
-			}
-			return converter;
+			return GetConverter (destType, String.Empty, destType);
 		}
 
 		TypeConverter GetConverterTo ()
@@ -383,9 +378,15 @@ namespace System.Windows.Data {
 			if (destType.IsAssignableFrom (sourceType))
 				return null;
 
-			var converter = Helper.GetConverterFor (sourceType);
+			return GetConverter (sourceType, Property.Name, Property.PropertyType);
+		}
+
+		// refactor to reduce [SSC] code duplication
+		TypeConverter GetConverter (Type type, string name, Type propertyType)
+		{
+			TypeConverter converter = Helper.GetConverterFor (type);
 			if (converter == null)
-				converter = new MoonlightTypeConverter (Property.Name, Property.PropertyType);
+				converter = new MoonlightTypeConverter (name, propertyType);
 			return converter;
 		}
 

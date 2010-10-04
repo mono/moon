@@ -17,6 +17,7 @@
 +SC-M: System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
 +SC-M: System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
 
-# parameter type is [SecurityCritical] so the code needs to be too (and the tooling is not wise enough to cover this right now)
-+SC-M: System.Void System.Windows.Browser.ScriptObject::AddEventHandler(Mono.ScriptObjectEventInfo)
++SC-M: System.Void System.Windows.Browser.ScriptObject::AddEventHandler(System.String,System.Windows.Browser.ScriptObject,System.Reflection.EventInfo)
++SC-M: System.Void System.Windows.Browser.ScriptObject::RemoveEventHandler(System.String,System.Windows.Browser.ScriptObject)
+
 

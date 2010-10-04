@@ -8,7 +8,19 @@
 +SC-M: System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
 +SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
 
++SC-M: System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
++SC-M: System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags)
++SC-M: System.Int32 System.Net.Sockets.Socket::Send(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
++SC-M: System.Int32 System.Net.Sockets.Socket::Send(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags)
+
++SC-M: System.Void System.Net.Sockets.Socket/Worker::Receive()
++SC-M: System.Void System.Net.Sockets.Socket/Worker::ReceiveGeneric()
++SC-M: System.Void System.Net.Sockets.Socket/Worker::Send()
++SC-M: System.Void System.Net.Sockets.Socket/Worker::SendGeneric()
+
 +SC-M: System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
+
++SC-M: System.Net.Sockets.Socket/SocketAsyncCall System.Net.Sockets.Socket/SocketAsyncResult::GetDelegate(System.Net.Sockets.Socket/Worker,System.Net.Sockets.Socket/SocketOperation)
 
 # we now have two different copies (type name clash) in System.dll and System.Net.dll
 +SC-T: System.Net.Dns
@@ -17,4 +29,4 @@
 +SSC-M: System.Void System.Net.WebRequest::.cctor()
 
 # makes a pinvoke into libmoon
-+SC-M: System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
++SSC-M: System.Void System.Net.NetworkInformation.NetworkChange::.cctor()

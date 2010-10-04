@@ -58,6 +58,12 @@ namespace Mono
 			return ret;
 		}
 
+		// helper method to avoid SSC-ing the whole TryChangeType (wrt ScriptObjectEventInfo being SC)
+		private object GetDelegate (ScriptObject script_object, Type type)
+		{
+			return new ScriptObjectEventInfo (script_object, type).GetDelegate ();
+		}
+
 		public bool TryChangeType (object value, Type type, CultureInfo culture, out object ret)
 		{
 			ScriptObject script_object;
@@ -85,7 +91,7 @@ namespace Mono
 					value = script_object.ManagedObject;
 					if (value == null) {
 						if (typeof(Delegate).IsAssignableFrom(type))
-							value = new ScriptObjectEventInfo (script_object, type).GetDelegate ();
+							value = GetDelegate (script_object, type);
 						else if (type == typeof(HtmlElement))
 							value = new HtmlElement (script_object.Handle);
 						else if (type == typeof(DateTime)) {
