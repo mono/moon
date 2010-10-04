@@ -357,7 +357,7 @@ DispatcherTimer::Start ()
 	started = true;
 	stopped = false;
 
-	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	Surface *surface = GetDeployment ()->GetSurface ();
 
 	if (clock) {
 		clock->Reset ();
