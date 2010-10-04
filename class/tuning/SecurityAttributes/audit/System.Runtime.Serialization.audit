@@ -1,5 +1,6 @@
-!SSC-62EC0F6C029A125FB842FCD5AA9CFE1E
-System.Object System.Runtime.Serialization.SerializationMap::DeserializeContent(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer,System.Boolean)
+!SSC-A2B342C5B9EACE6117D1AC03B61A5D0D
+System.Object System.Runtime.Serialization.SerializationMap::DeserializeContent(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer,System.String,System.Boolean)
+	20101004	spouliot - 582a90e8 - an extra 'id' (string) parameter was added, which is turned over to a new (protected) HandleId method
 	r143412		spouliot - calls FormatterServices.GetUninitializedObject (mscorlib)
 
 !SSC-E40FB53FD5D249AA0B6C87C78CB574E1
