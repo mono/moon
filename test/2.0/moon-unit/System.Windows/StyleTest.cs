@@ -321,7 +321,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
-		[MoonlightBug]
+		[MoonlightBug ("we're failing #2")]
 		public void ManagedAccessAfterParsing_sl3 ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
