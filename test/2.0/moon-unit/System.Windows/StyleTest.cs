@@ -63,13 +63,34 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Both the property and value must be specified")]
 		public void AddIncompleteSetter ()
 		{
 			Style s = new Style (typeof (Rectangle));
 			Assert.Throws<Exception> (() => s.Setters.Add (new Setter ()), "#1");
 			Assert.Throws<Exception> (() => s.Setters.Add (new Setter { Value = 5 }), "#2");
 			Assert.Throws<Exception> (() => s.Setters.Add (new Setter { Property = Rectangle.WidthProperty }), "#3");
+
+			Assert.Throws<NullReferenceException> (() => s.Setters.Add (new Setter { Property = null, Value = 5 }), "#4");
+
+			// this one should succeed
+			s.Setters.Add (new Setter { Property = Rectangle.FillProperty, Value = null });
+		}
+
+		[TestMethod]
+		[MoonlightBug ("we fail the x:Null as value test")]
+		public void ParseIncompleteSetter ()
+		{
+			// missing Value attribute
+			Assert.Throws<XamlParseException> ( () => XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle""><Setter Property=""Width"" /></Style>"), "#1");
+
+			// missing Property attribute
+			Assert.Throws<XamlParseException> ( () => XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle""><Setter Value=""10"" /></Style>"), "#2");
+
+			// x:Null as value
+			Assert.Throws<XamlParseException> ( () => XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle""><Setter Property=""Fill"" Value=""{x:Null}"" /></Style>"), "#3");
+
+			// x:Null as property
+			Assert.Throws<XamlParseException> ( () => XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle""><Setter Property=""{x:Null}"" Value=""10"" /></Style>"), "#4");
 		}
 
 		[TestMethod]

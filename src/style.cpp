@@ -166,8 +166,12 @@ SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
 
 	if (types->IsSubclassOf (value->GetKind (), Type::SETTER)) {
 		Setter *s = value->AsSetter (types);
-		if (!s->GetValue (Setter::PropertyProperty)) {// || !s->GetValue (Setter::ValueProperty)) {
-			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null target property");
+		if (!s->GetValue (Setter::PropertyProperty)) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null PropertyProperty value");
+			return false;	
+		}
+		if (!s->ReadLocalValue (Setter::ValueProperty)) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null ValueProperty value");
 			return false;	
 		}
 	}
