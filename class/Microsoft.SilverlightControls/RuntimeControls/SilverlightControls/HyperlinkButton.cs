@@ -172,7 +172,7 @@ namespace System.Windows.Controls
             {
                 // Page relative Uris are not invalid
                 string original = destination.OriginalString; 
-                if (string.IsNullOrEmpty(original) && (original[0] != '/'))
+                if (!string.IsNullOrEmpty(original) && (original[0] != '/'))
                 {
                     throw new NotSupportedException();
                 } 
