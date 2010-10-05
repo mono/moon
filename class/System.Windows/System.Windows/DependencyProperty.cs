@@ -100,6 +100,12 @@ namespace System.Windows {
 		}
 
 		// internally Silverlight use some read-only properties
+		internal static DependencyProperty RegisterReadOnlyAttached (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
+		{
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true, true, true);
+		}
+
+		// internally Silverlight use some read-only properties
 		internal static DependencyProperty RegisterReadOnlyCore (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
 		{
 			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true, true, false);
