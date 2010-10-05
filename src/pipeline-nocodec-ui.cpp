@@ -45,7 +45,7 @@ CodecDownloader::~CodecDownloader ()
 }
 
 void
-CodecDownloader::ShowUI (Surface *surface)
+CodecDownloader::ShowUI (Surface *surface, bool is_user_initiated)
 {
 	if (running) {
 		return;

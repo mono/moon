@@ -55,7 +55,7 @@ private:
 
 
 public:
-	static void ShowUI (Surface *surface); 
+	static void ShowUI (Surface *surface, bool is_user_initiated); 
 };
 
 };
