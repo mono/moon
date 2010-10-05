@@ -1617,17 +1617,17 @@ class Generator {
 
 		//Console.WriteLine ("ParseMembers ({0})", type.Name);
 
+		if (parent_type != null)
+			accessibility = parent_type.IsStruct ? "public" : "private";
+		else
+			accessibility = "public";
+
 		do {
 			returntype = null;
 			is_dtor = is_ctor = is_virtual = is_static = false;
 			is_extern = is_const = false;
 			name = null;
 			properties = new Annotations ();
-
-			if (parent_type != null)
-				accessibility = parent_type.IsStruct ? "public" : "private";
-			else
-				accessibility = "public";
 
 			try {
 				if (tokenizer.Accept (Token2Type.Punctuation, ";"))
