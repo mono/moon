@@ -572,7 +572,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ICV_OneItemTwoGroups3 ()
 		{
 			var o = new object();
@@ -591,7 +590,6 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.AreEqual(o, box.Items[0], "#2");
 					Assert.AreEqual(o, box.Items[1], "#3");
 
-					// FIXME: This assertion passes in SL but not in ML. I don't think it's hugely important.
 					Assert.IsNull(box.ItemContainerGenerator.ContainerFromIndex(0), "#4");
 				}, () => {
 					Assert.IsNotNull(box.ItemContainerGenerator.ContainerFromIndex(0), "#5");
