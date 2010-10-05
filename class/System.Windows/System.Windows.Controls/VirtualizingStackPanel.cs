@@ -40,7 +40,7 @@ namespace System.Windows.Controls {
 		// DependencyProperties
 		//
 		public static readonly DependencyProperty IsVirtualizingProperty =
-			DependencyProperty.RegisterAttached ("IsVirtualizing",
+			DependencyProperty.RegisterReadOnlyAttached ("IsVirtualizing",
 							     typeof (bool),
 							     typeof (VirtualizingStackPanel),
 							     new PropertyMetadata (false));
@@ -67,6 +67,14 @@ namespace System.Windows.Controls {
 				throw new ArgumentNullException ("o");
 			
 			return (bool) o.GetValue (VirtualizingStackPanel.IsVirtualizingProperty);
+		}
+
+		internal static void SetIsVirtualizing (DependencyObject o, bool value)
+		{
+			if (o == null)
+				throw new ArgumentNullException ("o");
+			
+			o.SetValueImpl (VirtualizingStackPanel.IsVirtualizingProperty, value);
 		}
 		
 		public static VirtualizationMode GetVirtualizationMode (DependencyObject element)
