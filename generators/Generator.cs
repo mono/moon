@@ -230,6 +230,8 @@ class Generator {
 							}
 							
 							body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (" + strobj + ", *result);");
+								if (method.Annotations.ContainsKey ("JSBinding_ReturnValueIsReffed"))
+									body.AppendLine ("\t\t\t\tret->unref ();");
 							body.AppendLine ("\t\t\t} else");
 							body.AppendLine ("\t\t\t\tNULL_TO_NPVARIANT (*result);");
 						} else {
