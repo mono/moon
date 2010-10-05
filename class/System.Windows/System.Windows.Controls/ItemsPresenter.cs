@@ -33,7 +33,9 @@ namespace System.Windows.Controls
 {
 	public sealed class ItemsPresenter : FrameworkElement
 	{
-		static ItemsPanelTemplate FallbackTemplate = CreateFallbackTemplate ();
+		static ItemsPanelTemplate StackPanelFallbackTemplate = CreateStackPanelFallbackTemplate ();
+		static ItemsPanelTemplate VirtualizingStackPanelFallbackTemplate = CreateVirtualizingStackPanelFallbackTemplate ();
+
 		internal Panel _elementRoot;
 
 		public ItemsPresenter ()
@@ -73,8 +75,9 @@ namespace System.Windows.Controls
 					_elementRoot = new StackPanel ();
 			}
 #else
-			if (_elementRoot == null)
-				_elementRoot =  (Panel) FallbackTemplate.GetVisualTree (c);
+			if (_elementRoot == null) {
+				_elementRoot = (Panel) (c is ListBox ? VirtualizingStackPanelFallbackTemplate : StackPanelFallbackTemplate).GetVisualTree (c);
+			}
 #endif
 			
 			_elementRoot.IsItemsHost = true;
@@ -85,12 +88,19 @@ namespace System.Windows.Controls
 			return _elementRoot;
 		}
 
-
-		internal static ItemsPanelTemplate CreateFallbackTemplate ()
+		static ItemsPanelTemplate CreateStackPanelFallbackTemplate ()
 		{
 			return (ItemsPanelTemplate) XamlReader.Load (@"
 <ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007"">
 	<StackPanel />
+</ItemsPanelTemplate>");
+		}
+
+		static ItemsPanelTemplate CreateVirtualizingStackPanelFallbackTemplate ()
+		{
+			return (ItemsPanelTemplate) XamlReader.Load (@"
+<ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007"">
+	<VirtualizingStackPanel />
 </ItemsPanelTemplate>");
 		}
 	}
