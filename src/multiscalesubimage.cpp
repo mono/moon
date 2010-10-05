@@ -29,7 +29,7 @@ MultiScaleSubImage::MultiScaleSubImage ()
 	source = NULL;	
 }
 
-MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSource *tsource, int _id, int _n)
+MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, DeepZoomImageTileSource *tsource, int _id, int _n)
 	: DependencyObject (Type::MULTISCALESUBIMAGE)
 {
 	LOG_MSI ("new MultiScaleSubImage ()\n");
@@ -37,7 +37,7 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	id = _id;
 	n = _n;
 
-	const Uri *source_uri = ((DeepZoomImageTileSource*)source)->GetUriSource ();
+	const Uri *source_uri = source->GetUriSource ();
 	if (!source_uri || source_uri->IsAbsolute ())
 		return;
 
@@ -52,7 +52,7 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 
 	LOG_MSI ("MSSI: UriSource changed from %s to %s\n", source_uri->ToString (), new_uri->ToString ());
 
-	((DeepZoomImageTileSource*) source)->SetUriSource (new_uri);
+	source->SetUriSource (new_uri);
 	delete new_uri;
 
 	EnsureManagedPeer ();

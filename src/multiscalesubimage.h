@@ -23,7 +23,7 @@ class MultiScaleSubImage : public DependencyObject {
 	friend class MultiScaleImage;
 	friend void multi_scale_image_handle_parsed (void *userdata);
 
-	MultiScaleTileSource *source;
+	DeepZoomImageTileSource *source;
 
 	int id, n;
 
@@ -52,7 +52,7 @@ class MultiScaleSubImage : public DependencyObject {
 
 	
 	/* @SkipFactories */
-	MultiScaleSubImage (const Uri* parent_uri, MultiScaleTileSource *source, int id, int n);
+	MultiScaleSubImage (const Uri* parent_uri, DeepZoomImageTileSource *source, int id, int n);
 
 	double GetAspectRatio ();
 	void SetAspectRatio (double ratio);
