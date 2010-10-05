@@ -364,7 +364,7 @@ namespace System.Windows.Controls.Primitives {
 			base.PrepareContainerForItemOverride (element, item);
 			ListBoxItem listBoxItem = (ListBoxItem) element; 
 			listBoxItem.ParentSelector = this; 
-			if (listBoxItem.IsSelected && ItemContainerGenerator.ContainerFromIndex (SelectedIndex) != null)
+			if (listBoxItem.IsSelected && !Selection.SelectedItems.Contains (item) && ItemContainerGenerator.ContainerFromIndex (SelectedIndex) != null)
 				Selection.Select (listBoxItem);
 		}
 
