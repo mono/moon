@@ -163,6 +163,36 @@ namespace System.Windows.Controls.Primitives
 			}
 		}
 
+		public void SelectAll (ItemCollection items)
+		{
+
+			try {
+				Updating = true;
+
+				if (Mode == SelectionMode.Single)
+					throw new NotSupportedException ("Cannot call SelectAll when in Single select mode");
+
+				var toSelect = new List<object> ();
+				foreach (var v in items)
+					if (!SelectedItems.Contains (v))
+						toSelect.Add (v);
+
+				if (toSelect.Count == 0)
+					return;
+
+				SelectedItems.AddRange (toSelect);
+				if (SelectedItem == null) {
+					SelectedItem = toSelect [0];
+					UpdateOwner (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.GetValueFromItem (SelectedItem));
+				}
+
+				UpdateOwnerSelectedItems ();
+				Owner.RaiseSelectionChanged (Empty, toSelect);
+			} finally {
+				Updating = false;
+			}
+		}
+
 		public void SelectOnly (object item)
 		{
 			if ((SelectedItem == item && SelectedItems.Count == 1)) {
@@ -242,7 +272,7 @@ namespace System.Windows.Controls.Primitives
 				}
 			}
 
-			// Alwayus update the selection properties to keep everything nicely in sync. These could get out of sync
+			// Always update the selection properties to keep everything nicely in sync. These could get out of sync
 			// if (for example) the user inserts an item at the start of the ItemsControl.Items collection.
 			SelectedItem = item;
 			UpdateOwner (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));

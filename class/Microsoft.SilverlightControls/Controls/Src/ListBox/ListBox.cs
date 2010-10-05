@@ -339,6 +339,11 @@ namespace System.Windows.Controls
             }
         } 
 
+        public void SelectAll ()
+        {
+            Selection.SelectAll (Items);
+        }
+
         /// <summary>
         /// Call ElementScrollViewer.ScrollInDirection if possible. 
         /// </summary>
@@ -525,15 +530,9 @@ namespace System.Windows.Controls
         }
 #endif 
 
-	protected override AutomationPeer OnCreateAutomationPeer ()
-	{
-		return new ListBoxAutomationPeer (this);
-	}
-
-		public void SelectAll ()
-		{
-			Console.WriteLine ("NIEX: System.Windows.Controls.ListBox:.SelectAll ()\n");
-			throw new NotImplementedException ();
-		}
-    } 
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new ListBoxAutomationPeer (this);
+        }
+    }
 }
