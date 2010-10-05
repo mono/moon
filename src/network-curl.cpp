@@ -317,6 +317,9 @@ void CurlDownloaderRequest::SendImpl ()
 	if (isPost ())
 		curl_easy_setopt(curl, CURLOPT_POST, 1);
 
+	if (response)
+		response->unref ();
+
 	// we're ready to start the connection, set the headers
 	response = new CurlDownloaderResponse (bridge, this);
 	curl_easy_setopt (curl, CURLOPT_URL, GetUri ()->GetHttpRequestString ());
@@ -331,6 +334,8 @@ void CurlDownloaderRequest::SendImpl ()
 
 CurlDownloaderRequest::~CurlDownloaderRequest ()
 {
+	if (response)
+		response->unref ();
 }
 
 CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
@@ -407,6 +412,7 @@ CurlDownloaderRequest::Close ()
 			response->Abort ();
 		else
 			response->Close ();
+		response->unref ();
 		response = NULL;
 	}
 
