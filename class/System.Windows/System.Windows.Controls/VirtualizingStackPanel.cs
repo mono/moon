@@ -231,7 +231,7 @@ namespace System.Windows.Controls {
 				}
 			}
 
-			VirtualizingStackPanel.SetIsVirtualizing (owner, beyond > 0 || index > 0);
+			VirtualizingStackPanel.SetIsVirtualizing (owner, true);
 			// FIXME: this if-check is a workaround for a bug
 			// exposed by NBC Olympics but should not normally be
 			// here.
