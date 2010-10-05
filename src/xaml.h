@@ -78,12 +78,13 @@ class XamlContextInternal;
 
 
 class XamlContext : public EventObject {
+ protected:
+	virtual ~XamlContext ();
 
  public:
 	XamlContextInternal *internal;
 
 	XamlContext (XamlContextInternal *internal);
-	~XamlContext ();
 
 	void SetTemplateBindingSource (DependencyObject *source);
 

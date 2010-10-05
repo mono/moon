@@ -2099,13 +2099,14 @@ end_element_handler (void *data, const char *el)
 						p->ValidateTemplate (buffer, context, template_);
 
 						if (p->error_args) {
-							delete context;
+							context->unref ();
 							return;
 						}
 					}
 
 					Value v = Value (context);
 					template_->SetXamlBuffer (parse_template, &v, buffer);
+					context->unref ();
 
 					if (p->current_element->parent)
 						p->current_element->parent->AddChild (p, p->current_element);
