@@ -78,6 +78,8 @@ namespace System.Windows.Controls
             // DirectionalNavigation not supported by Silverlight
             // Focusable not supported by Silverlight
 #endif
+	    var errors = Validation.GetErrors (this) as INotifyCollectionChanged;
+	    errors.CollectionChanged += (sender, args) => { VisualStateManager.GoToState(this, Validation.GetErrors (this).Count > 0 ? "InvalidFocused" : "Valid", true); };
         } 
 
         /// <summary>

@@ -194,6 +194,13 @@ namespace System.Windows.Controls.Primitives
             {
                 GoToState(useTransitions, StateNormal); 
             }
+	    
+	    // Update the validation state group
+	    if (Validation.GetErrors (this).Count > 0) {
+		    GoToState (useTransitions, IsFocused ? "InvalidFocused" : "InvalidUnfocused");
+	    } else {
+		    GoToState (useTransitions, "Valid");
+	    }
 
             // Update the Check state group 
             if (isChecked == true)

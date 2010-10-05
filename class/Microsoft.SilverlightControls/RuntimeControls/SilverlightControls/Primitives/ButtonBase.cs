@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Collections.Specialized;
 
 namespace System.Windows.Controls.Primitives
 { 
@@ -316,6 +317,9 @@ namespace System.Windows.Controls.Primitives
             // Attach the necessary events to their virtual counterparts
             Loaded += delegate { _isLoaded = true; UpdateVisualState(false); }; 
             IsEnabledChanged += OnIsEnabledChanged; 
+
+	    var errors = Validation.GetErrors (this) as INotifyCollectionChanged;
+	    errors.CollectionChanged += (sender, args) => { UpdateVisualState (true); };
         }
  
         /// <summary>

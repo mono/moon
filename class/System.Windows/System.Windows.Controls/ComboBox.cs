@@ -30,6 +30,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Collections.Specialized;
 
 namespace System.Windows.Controls
 {
@@ -124,6 +125,9 @@ namespace System.Windows.Controls
 				if (!IsDropDownOpen)
 					UpdateDisplayedItem (SelectedItem);
 			};
+
+			var errors = Validation.GetErrors (this) as INotifyCollectionChanged;
+			errors.CollectionChanged += (sender, args) => { UpdateVisualState (true); };
 		}
 
 		#region Property Changed Handlers
@@ -197,6 +201,12 @@ namespace System.Windows.Controls
 				VisualStateManager.GoToState (this, "Normal", useTransitions);
 			}
 
+			if (Validation.GetErrors (this).Count > 0) {
+				VisualStateManager.GoToState (this, isFocused ? "InvalidFocused" : "InvalidUnfocused", useTransitions);
+			} else {
+				VisualStateManager.GoToState (this, "Valid", useTransitions);
+			}
+			
 			if (IsDropDownOpen && IsEnabled) {
 				VisualStateManager.GoToState (this, "FocusedDropDown", useTransitions);
 			}
