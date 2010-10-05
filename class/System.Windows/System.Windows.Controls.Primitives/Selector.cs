@@ -203,9 +203,9 @@ namespace System.Windows.Controls.Primitives {
 				if (SynchronizeWithCurrentItem)
 					Selection.SelectOnly (view.CurrentItem);
 				else
-					Selection.Select (null);
+					Selection.ClearSelection ();
 			} else {
-				Selection.Select (null);
+				Selection.ClearSelection ();
 			}
 		}
 		
@@ -232,7 +232,7 @@ namespace System.Windows.Controls.Primitives {
 
 			var newVal = (int) e.NewValue;
 			if (newVal < 0 || newVal >= Items.Count) {
-				Selection.Select (null);
+				Selection.ClearSelection ();
 			} else {
 				Selection.Select (Items [newVal]);
 			}
@@ -247,11 +247,13 @@ namespace System.Windows.Controls.Primitives {
 			// and not in the Items array, then we revert to the old selection as
 			// we can't select something which is not in the Selector.
 			if (e.NewValue == null) {
-				Selection.Select (null);
-			} else if (Items.IndexOf (e.NewValue) == -1) {
+				Selection.ClearSelection ();
+			} else if (Items.IndexOf (e.NewValue) != -1) {
+				Selection.Select (e.NewValue);
+			} else if (Items.IndexOf (e.OldValue) != -1) {
 				Selection.Select (e.OldValue);
 			} else {
-				Selection.Select (e.NewValue);
+				Selection.ClearSelection ();
 			}
 		}
 
@@ -276,7 +278,7 @@ namespace System.Windows.Controls.Primitives {
 		void SelectItemFromValue (object selectedValue, bool ignoreSelectedValue)
 		{
 			if (selectedValue == null) {
-				Selection.Select (null, ignoreSelectedValue);
+				Selection.ClearSelection (ignoreSelectedValue);
 				return;
 			}
 
@@ -286,13 +288,13 @@ namespace System.Windows.Controls.Primitives {
 					// FIXME: I don't like this check here, but it fixes drt 232. What was happening
 					// is that if we set the selected value to the same thing twice we'd end up
 					// unselecting the item instead of maintaining the selection.
-					if (!Selection.SelectedItems.Contains (item))
+					if (!SelectedItems.Contains (item))
 						Selection.Select (item, ignoreSelectedValue);
 					return;
 				}
 			}
 
-			Selection.Select (null, ignoreSelectedValue);
+			Selection.ClearSelection (ignoreSelectedValue);
 		}
 
 		internal void RaiseSelectionChanged (IList oldVals, IList newVals)
@@ -364,7 +366,9 @@ namespace System.Windows.Controls.Primitives {
 			base.PrepareContainerForItemOverride (element, item);
 			ListBoxItem listBoxItem = (ListBoxItem) element; 
 			listBoxItem.ParentSelector = this; 
-			if (listBoxItem.IsSelected && !Selection.SelectedItems.Contains (item))
+			if (SelectedItems.Contains (item))
+				listBoxItem.IsSelected = true;
+			if (listBoxItem.IsSelected && !SelectedItems.Contains (item))
 				Selection.Select (item);
 		}
 
@@ -392,7 +396,7 @@ namespace System.Windows.Controls.Primitives {
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
 				ListBoxItem item = e.NewItems [0] as ListBoxItem;
-				if (item != null && item.IsSelected) {
+				if (item != null && item.IsSelected && !SelectedItems.Contains (item)) {
 					Selection.Select (item);
 				} else if (SelectedItem != null) {
 					// The index of our selected item may have changed, so we need to
@@ -402,21 +406,26 @@ namespace System.Windows.Controls.Primitives {
 				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
+				object o;
 				if (ItemsSource is ICollectionView && SynchronizeWithCurrentItem)
-					Selection.Select (((ICollectionView) ItemsSource).CurrentItem);
+					o = ((ICollectionView) ItemsSource).CurrentItem;
 				else
-					Selection.Select (SelectedItem);
+					o = SelectedItem;
+				if (Items.Contains (o))
+					Selection.Select (o);
+				else
+					Selection.ClearSelection ();
 				break;
 				
 			case NotifyCollectionChangedAction.Remove:
-				if (e.OldItems [0] == SelectedItem) {
-					Selection.Select (null);
+				if (SelectedItems.Contains (e.OldItems [0])) {
+					Selection.Unselect (e.OldItems [0]);
 				} else if (e.OldStartingIndex <= SelectedIndex) {
 					Selection.Select (SelectedItem);
 				}
 				break;
 			case NotifyCollectionChangedAction.Replace:
-				Selection.Select (e.OldItems [0]);
+				Selection.Unselect (e.OldItems [0]);
 				break;
 			default:
 				throw new NotSupportedException (string.Format ("Collection changed action '{0}' not supported", e.Action));

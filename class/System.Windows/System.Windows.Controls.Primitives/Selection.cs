@@ -54,8 +54,8 @@ namespace System.Windows.Controls.Primitives
 			get; set;
 		}
 
-		internal List<object> SelectedItems {
-			get; private set;
+		List<object> SelectedItems {
+			get; set;
 		}
 
 		public bool Updating {
@@ -120,6 +120,33 @@ namespace System.Windows.Controls.Primitives
 			Owner.SelectedItems.AddRange (SelectedItems);
 		}
 
+		public void ClearSelection ()
+		{
+			ClearSelection (false);
+		}
+
+		public void ClearSelection (bool ignoreSelectedValue)
+		{
+			if (SelectedItems.Count == 0) {
+				UpdateSelectorProperties (null, -1, ignoreSelectedValue ? Owner.SelectedValue : null);
+				return;
+			}
+
+			try {
+				Updating = true;
+				var oldSelection = SelectedItems.Cast <object> ().ToArray ();
+	
+				SelectedItems.Clear ();
+				SelectedItem = null;
+				UpdateSelectorProperties (null, -1, ignoreSelectedValue ? Owner.SelectedValue : null);
+	
+				UpdateOwnerSelectedItems ();
+				Owner.RaiseSelectionChanged (oldSelection, Empty);
+			} finally {
+				Updating = false;
+			}
+		}
+
 		public void Select (object item)
 		{
 			Select (item, false);
@@ -127,40 +154,41 @@ namespace System.Windows.Controls.Primitives
 
 		public void Select (object item, bool ignoreSelectedValue)
 		{
+			// Ignore any Select requests for items which aren't in the  owners Items list
+			if (!Owner.Items.Contains (item))
+				return;
+
+			bool selected = SelectedItems.Contains (item);
+
 			try {
 				Updating = true;
 
-				if (item == null) {
-					ClearSelection (ignoreSelectedValue);
-					return;
-				} else if (!Owner.Items.Contains (item)) {
-					if (SelectedItems.Contains (item)) {
-						RemoveFromSelected (item);
-					}
-					return;
-				}
-
 				switch (Mode) {
 				case SelectionMode.Single:
-					if (SelectedItem == item && ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control))
-						ClearSelection (ignoreSelectedValue);
-					else
-						ReplaceSelection (item);
-					break;
-				case SelectionMode.Multiple:
-				case SelectionMode.Extended:
-					if (SelectedItems.Contains (item)) {
-						RemoveFromSelected (item);
+					// When in single select mode we unselect the item if the Control key is held,
+					// otherwise we just ensure that the SelectedIndex is in sync. It could be out
+					// of sync if the user inserts an item before the current selected item.
+					if (selected) {
+						if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control))
+							ClearSelection (ignoreSelectedValue);
+						else
+							UpdateSelectorProperties (item, Owner.Items.IndexOf (item), Owner.SelectedValue);
 					} else {
-						AddToSelected (item);
+						ReplaceSelection (item);
 					}
 					break;
+				case SelectionMode.Extended:
+				case SelectionMode.Multiple:
+					if (!SelectedItems.Contains (item))
+						AddToSelected (item);
+					break;
 				default:
-					throw new Exception (string.Format ("SelectionMode.{0} is not supported", Mode));
+					throw new NotSupportedException (string.Format ("SelectionMode {0} is not support", Mode));
 				}
 			} finally {
 				Updating = false;
 			}
+
 		}
 
 		public void SelectAll (ItemCollection items)
@@ -194,20 +222,25 @@ namespace System.Windows.Controls.Primitives
 
 		public void SelectOnly (object item)
 		{
-			if ((SelectedItem == item && SelectedItems.Count == 1)) {
-				Console.WriteLine ("Already have: {0} selected", SelectedItem);
+			if (SelectedItem == item && SelectedItems.Count == 1)
 				return;
-			}
+
 			try {
 				Updating = true;
-				if (item == null) {
-					ClearSelection (false);
-					Console.WriteLine ("Cleared. Selected: {0}. Owner.SelectedItem: {1}, Count {2}, Owner.Count {3}", SelectedItem, Owner.SelectedItem, SelectedItems.Count, Owner.SelectedItems.Count);
-				}
-				else {
-					ReplaceSelection (item);
-					Console.WriteLine ("Replaced. Selected: {0}. Owner.SelectedItem: {1}, Count {2}, Owner.Count {3}", SelectedItem, Owner.SelectedItem, SelectedItems.Count, Owner.SelectedItems.Count);
-				}
+				ReplaceSelection (item);
+			} finally {
+				Updating = false;
+			}
+		}
+
+		public void Unselect (object item)
+		{
+			if (!SelectedItems.Contains (item))
+				return;
+
+			try {
+				Updating = true;
+				RemoveFromSelected (item);
 			} finally {
 				Updating = false;
 			}
@@ -223,20 +256,6 @@ namespace System.Windows.Controls.Primitives
 
 			UpdateOwnerSelectedItems ();
 			Owner.RaiseSelectionChanged (Empty, new object [] { item });
-		}
-
-		void ClearSelection (bool ignoreSelectedValue)
-		{
-			var oldSelection = SelectedItems.Cast <object> ().ToArray ();
-
-			SelectedItems.Clear ();
-			SelectedItem = null;
-			UpdateSelectorProperties (null, -1, ignoreSelectedValue ? Owner.SelectedValue : null);
-
-			if (oldSelection.Length > 0) {
-				UpdateOwnerSelectedItems ();
-				Owner.RaiseSelectionChanged (oldSelection, Empty);
-			}
 		}
 
 		void RemoveFromSelected (object item)
@@ -255,20 +274,17 @@ namespace System.Windows.Controls.Primitives
 		void ReplaceSelection (object item)
 		{
 			var addedItems = Empty;
-			var oldItems = Empty;
-			if (SelectedItem != item || SelectedItems.Count != 1) {
-				oldItems = SelectedItems.Cast <object> ().Where (o => o != item).ToArray ();
+			var oldItems = SelectedItems.Cast <object> ().Where (o => o != item).ToArray ();
 
-				// Unselect all the previously selected items
-				foreach (var v in oldItems)
-					SelectedItems.Remove (v);
+			// Unselect all the previously selected items
+			foreach (var v in oldItems)
+				SelectedItems.Remove (v);
 
-				// If we previously had the current item selected, it will be the only one the list now
-				// so we only have to add it if the list is empty.
-				if (SelectedItems.Count == 0) {
-					addedItems = new object [] { item };
-					SelectedItems.Add (item);
-				}
+			// If we previously had the current item selected, it will be the only one the list now
+			// so we only have to add it if the list is empty.
+			if (SelectedItems.Count == 0) {
+				addedItems = new object [] { item };
+				SelectedItems.Add (item);
 			}
 
 			// Always update the selection properties to keep everything nicely in sync. These could get out of sync
