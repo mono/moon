@@ -165,7 +165,6 @@ namespace System.Windows.Controls.Primitives
 
 		public void SelectAll (ItemCollection items)
 		{
-
 			try {
 				Updating = true;
 
@@ -183,7 +182,7 @@ namespace System.Windows.Controls.Primitives
 				SelectedItems.AddRange (toSelect);
 				if (SelectedItem == null) {
 					SelectedItem = toSelect [0];
-					UpdateOwner (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.GetValueFromItem (SelectedItem));
+					UpdateSelectorProperties (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.GetValueFromItem (SelectedItem));
 				}
 
 				UpdateOwnerSelectedItems ();
@@ -219,7 +218,7 @@ namespace System.Windows.Controls.Primitives
 			SelectedItems.Add (item);
 			if (SelectedItems.Count == 1) {
 				SelectedItem = item;
-				UpdateOwner (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));
+				UpdateSelectorProperties (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));
 			}
 
 			UpdateOwnerSelectedItems ();
@@ -232,7 +231,7 @@ namespace System.Windows.Controls.Primitives
 
 			SelectedItems.Clear ();
 			SelectedItem = null;
-			UpdateOwner (null, -1, ignoreSelectedValue ? Owner.SelectedValue : null);
+			UpdateSelectorProperties (null, -1, ignoreSelectedValue ? Owner.SelectedValue : null);
 
 			if (oldSelection.Length > 0) {
 				UpdateOwnerSelectedItems ();
@@ -246,7 +245,7 @@ namespace System.Windows.Controls.Primitives
 			if (SelectedItem == item) {
 				var newItem = SelectedItems.Count == 0 ? null : SelectedItems [0];
 				SelectedItem = newItem;
-				UpdateOwner (newItem,newItem == null ? -1 : Owner.Items.IndexOf (newItem), Owner.GetValueFromItem (item));
+				UpdateSelectorProperties (newItem,newItem == null ? -1 : Owner.Items.IndexOf (newItem), Owner.GetValueFromItem (item));
 			}
 
 			UpdateOwnerSelectedItems ();
@@ -275,7 +274,7 @@ namespace System.Windows.Controls.Primitives
 			// Always update the selection properties to keep everything nicely in sync. These could get out of sync
 			// if (for example) the user inserts an item at the start of the ItemsControl.Items collection.
 			SelectedItem = item;
-			UpdateOwner (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));
+			UpdateSelectorProperties (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));
 
 			if (addedItems != Empty || oldItems != Empty) {
 				// Refresh the Selector.SelectedItems list
@@ -286,7 +285,7 @@ namespace System.Windows.Controls.Primitives
 			}
 		}
 
-		void UpdateOwner (object item, int index, object value)
+		void UpdateSelectorProperties (object item, int index, object value)
 		{
 			if (Owner.SelectedItem != item)
 				Owner.SelectedItem = item;
