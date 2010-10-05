@@ -391,8 +391,6 @@ namespace System.Windows.Controls
         /// <remarks>Similar to WPF's corresponding ItemsControl method.</remarks>
         private bool IsOnCurrentPage(object item, out Rect itemsHostRect, out Rect listBoxItemRect)
         { 
-            ListBoxItem listBoxItem = (ListBoxItem) ItemContainerGenerator.ContainerFromItem (item);
-            Debug.Assert(null != listBoxItem);
             // Get Rect for item host element 
             DependencyObject ItemsHost = VisualTreeHelper.GetChild(this, 0);
             ItemsHost = VisualTreeHelper.GetChild(ItemsHost, 0);
@@ -400,8 +398,21 @@ namespace System.Windows.Controls
                 (null != TemplateScrollViewer) ?
                     ((null != TemplateScrollViewer.ElementScrollContentPresenter) ? TemplateScrollViewer.ElementScrollContentPresenter as FrameworkElement : TemplateScrollViewer as FrameworkElement) : 
                     ItemsHost as FrameworkElement;
-            Debug.Assert(null != itemsHost);
-            itemsHostRect = new Rect(new Point(), new Point(itemsHost.RenderSize.Width, itemsHost.RenderSize.Height)); 
+            if (itemsHost == null) {
+                itemsHostRect = Rect.Empty;
+                listBoxItemRect = Rect.Empty;
+                return false;
+            }
+            itemsHostRect = new Rect(new Point(), new Point(itemsHost.RenderSize.Width, itemsHost.RenderSize.Height));
+
+            ListBoxItem listBoxItem = (ListBoxItem) ItemContainerGenerator.ContainerFromItem (item);
+            if (listBoxItem == null) {
+                listBoxItemRect = Rect.Empty;
+                return false;
+            }
+
+            listBoxItemRect = new Rect (new Point (), listBoxItem.RenderSize);
+
             // Adjust Rect to account for padding 
             Control itemsHostControl = itemsHost as Control;
             if (null != itemsHostControl) 
@@ -415,8 +426,10 @@ namespace System.Windows.Controls
             }
             // Get relative Rect for ListBoxItem 
             GeneralTransform generalTransform = listBoxItem.TransformToVisual(itemsHost);
-            listBoxItemRect = new Rect(generalTransform.Transform(new Point()), generalTransform.Transform(new Point(listBoxItem.RenderSize.Width, listBoxItem.RenderSize.Height)));
-            // Return result 
+            if (generalTransform != null)
+                listBoxItemRect = new Rect(generalTransform.Transform(new Point()), generalTransform.Transform(new Point(listBoxItem.RenderSize.Width, listBoxItem.RenderSize.Height)));
+
+            // Return result
             return (IsVerticalOrientation() ?
                 (itemsHostRect.Top <= listBoxItemRect.Top) && (listBoxItemRect.Bottom <= itemsHostRect.Bottom) :
                 (itemsHostRect.Left <= listBoxItemRect.Left) && (listBoxItemRect.Right <= itemsHostRect.Right)); 
