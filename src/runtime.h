@@ -290,6 +290,7 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
+	/* @GeneratePInvoke */
 	TimeManager *GetTimeManagerReffed ();
 
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);

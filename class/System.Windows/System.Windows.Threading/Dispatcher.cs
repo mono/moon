@@ -36,7 +36,12 @@ namespace System.Windows.Threading {
 	public sealed class Dispatcher {
 		TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
-		bool pending;
+		/* The time manager we added a tick call to.
+		 * We need to be able to remove any pending tick calls from the dtor, which may be executed after shutdown
+		 * has started, in which case it's not safe to access any static Deployment/Surface properties (since those
+		 * objects might have gotten freed already). So we keep a ref to the timemanager to be able to properly
+		 * remove any pending tick call upon destruction. */
+		IntPtr time_manager;
 
 		static Dispatcher main;
 		internal static Dispatcher Main {
@@ -51,20 +56,15 @@ namespace System.Windows.Threading {
 		internal Dispatcher ()
 		{
 			queuedOperations = new Queue<DispatcherOperation>();
-			pending = false;
 		}
 
 		~Dispatcher () {
-			Dispose ();
-		}
-
-		void Dispose () {
-			Surface surface = Deployment.Current.Surface;
-
 			lock (queuedOperations) {
-				if (callback != null)
-					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
-				pending = false;
+				if (time_manager != IntPtr.Zero) {
+					NativeMethods.time_manager_remove_tick_call (time_manager, callback, IntPtr.Zero);
+					NativeMethods.event_object_unref (time_manager);
+					time_manager = IntPtr.Zero;
+				}
 #if DEBUG_DISPATCHER
 				if (queuedOperations.Count > 0) {
 					Console.WriteLine ("Dispatcher was destroyed with " + queuedOperations.Count + " call to be processed");
@@ -94,12 +94,11 @@ namespace System.Windows.Threading {
 			lock (queuedOperations) {
 				op = new DispatcherOperation (d, args);
 				queuedOperations.Enqueue (op);
-				if (!pending) {
+				if (time_manager == IntPtr.Zero) {
 					if (callback == null)
 						callback = new TickCallHandler (dispatcher_callback);
-					NativeMethods.time_manager_add_dispatcher_call (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native),
-					                                                   callback, IntPtr.Zero);
-					pending = true;
+					time_manager = NativeMethods.surface_get_time_manager_reffed (Deployment.Current.Surface.Native);
+					NativeMethods.time_manager_add_dispatcher_call (time_manager, callback, IntPtr.Zero);
 				}
 			}
 			return op;
@@ -156,7 +155,8 @@ namespace System.Windows.Threading {
 			lock (queuedOperations) {
 				ops = queuedOperations.ToArray ();
 				queuedOperations.Clear ();
-				pending = false;
+				NativeMethods.event_object_unref (time_manager);
+				time_manager = IntPtr.Zero;
 			}
 
 			foreach (DispatcherOperation op in ops) {
