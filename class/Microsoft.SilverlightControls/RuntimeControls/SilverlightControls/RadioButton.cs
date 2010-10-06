@@ -111,7 +111,6 @@ namespace System.Windows.Controls
         private void UpdateRadioButtonGroup() 
         {
             string groupName = GroupName ?? "";
-            int majorVersion = int.Parse (Deployment.Current.RuntimeVersion.Split ('.') [0]);
 
             if (!string.IsNullOrEmpty(groupName))
             {
@@ -144,7 +143,7 @@ namespace System.Windows.Controls
                     }
                 }
             } 
-            else if (majorVersion < 3)
+            else if (Deployment.Current.MajorVersion < 3)
             {
                 // Synchronize the rest of the elements in the nameless group 
                 Panel parent = Parent as Panel;
