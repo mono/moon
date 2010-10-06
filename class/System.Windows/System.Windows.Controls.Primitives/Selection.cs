@@ -172,14 +172,16 @@ namespace System.Windows.Controls.Primitives
 						if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control))
 							ClearSelection (ignoreSelectedValue);
 						else
-							UpdateSelectorProperties (item, Owner.Items.IndexOf (item), Owner.SelectedValue);
+							UpdateSelectorProperties (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.SelectedValue);
 					} else {
 						ReplaceSelection (item);
 					}
 					break;
 				case SelectionMode.Extended:
 				case SelectionMode.Multiple:
-					if (!SelectedItems.Contains (item))
+					if (SelectedItems.Contains (item))
+						UpdateSelectorProperties (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.SelectedValue);
+					else
 						AddToSelected (item);
 					break;
 				default:
@@ -264,7 +266,7 @@ namespace System.Windows.Controls.Primitives
 			if (SelectedItem == item) {
 				var newItem = SelectedItems.Count == 0 ? null : SelectedItems [0];
 				SelectedItem = newItem;
-				UpdateSelectorProperties (newItem,newItem == null ? -1 : Owner.Items.IndexOf (newItem), Owner.GetValueFromItem (item));
+				UpdateSelectorProperties (newItem, newItem == null ? -1 : Owner.Items.IndexOf (newItem), Owner.GetValueFromItem (item));
 			}
 
 			UpdateOwnerSelectedItems ();
