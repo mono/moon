@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 631 methods
+# 630 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -327,7 +327,6 @@
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::SelectAll()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::Initialize()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::OnOpened()
-+SSC-M: System.Void System.Windows.Controls.Primitives.Selection::Select(System.Object,System.Boolean)
 +SSC-M: System.Void System.Windows.Controls.RichTextBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.RichTextBox::OnKeyUp(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.RichTextBox::OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
