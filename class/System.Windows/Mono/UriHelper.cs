@@ -361,29 +361,6 @@ namespace Mono
 			}
 		}
 
-		private static IntPtr Clone (IntPtr instance)
-		{
-			try {
-				Uri uri;
-
-				if (instance == IntPtr.Zero)
-					return IntPtr.Zero;
-
-				uri = FromGCHandle (instance);
-
-				// Since Uri is immutable, we just create another gchandle to the same uri instance.
-				return ToGCHandlePtr (ToGCHandle (uri));
-			} catch (Exception ex) {
-#if DEBUG
-				try {
-					Console.WriteLine ("UriHelper.Clone ({1}): {0}", ex.Message, FromGCHandle (instance).ToString ());
-				} catch {
-				}
-#endif
-				return IntPtr.Zero;
-			}
-		}
-
 		private static IntPtr CloneWithScheme (IntPtr instance, string scheme)
 		{
 			try {
@@ -426,7 +403,6 @@ namespace Mono
 			functions.get_is_absolute = GetIsAbsolute;
 			functions.tostring = ToString;
 			functions.equals = Equals;
-			functions.clone = Clone;
 			functions.clone_with_scheme = CloneWithScheme;
 			functions.toescapedstring = GetHttpRequestString;
 

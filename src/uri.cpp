@@ -130,7 +130,7 @@ Uri::Clone (const Uri *uri_to_clone)
 	void *gchandle = NULL;
 
 	if (uri_to_clone != NULL && uri_to_clone->GetGCHandle () != NULL)
-		gchandle = uri_to_clone->deployment->GetUriFunctions ()->clone (uri_to_clone->GetGCHandle ());
+		gchandle = uri_to_clone->deployment->CloneGCHandle (uri_to_clone->GetGCHandle ());
 
 	return new Uri (gchandle);
 }

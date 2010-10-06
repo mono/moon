@@ -160,7 +160,6 @@ namespace Mono {
 		public System_Uri_GetBooleanProperty get_is_absolute;
 		public System_Uri_ToString tostring;
 		public System_Uri_Equals equals;
-		public System_Uri_Clone clone;
 		public System_Uri_CloneWithScheme clone_with_scheme;
 		public System_Uri_ToString toescapedstring;
 	};

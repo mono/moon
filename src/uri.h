@@ -34,7 +34,6 @@ typedef gint32 (* System_Uri_GetInt32Property) (const void *instance);
 typedef bool (* System_Uri_GetBooleanProperty) (const void *instance);
 typedef char *(* System_Uri_ToString) (const void *instance);
 typedef bool (* System_Uri_Equals) (const void *a, const void *b);
-typedef void *(* System_Uri_Clone) (const void *instance);
 typedef void *(* System_Uri_CloneWithScheme) (const void *instance, const char *scheme);
 
 struct UriFunctions {
@@ -52,7 +51,6 @@ struct UriFunctions {
 	System_Uri_GetBooleanProperty get_is_absolute;
 	System_Uri_ToString tostring;
 	System_Uri_Equals equals;
-	System_Uri_Clone clone;
 	System_Uri_CloneWithScheme clone_with_scheme;
 	System_Uri_ToString get_http_request_string;
 };
