@@ -20,6 +20,7 @@ namespace Moonlight {
 
 class NPStreamRequest : public BrowserHttpRequest {
 private:
+	bool pending_unref;
 	NPStream *stream;
 
 	virtual void OpenImpl ();
