@@ -1697,6 +1697,9 @@ Deployment::DrainUnrefs ()
 {
 	UnrefData *list;
 	UnrefData *next;
+#if DEBUG
+	bool processed_data = false;
+#endif
 	
 loop:
 	// Get the list of objects to unref.
@@ -1704,12 +1707,15 @@ loop:
 		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
 		
 		if (list == NULL)
-			return;
+			break;
 		
 	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, NULL));
 	
 	// Loop over all the objects in the list and unref them.
 	while (list != NULL) {
+#if DEBUG
+		processed_data = true;
+#endif
 		list->obj->unref ();
 		next = list->next;
 		g_free (list);
@@ -1720,10 +1726,23 @@ loop:
 	if (list != NULL)
 		goto loop;
 	
+#if DEBUG
+	if (processed_data && IsDisposed ()) {
+		if (objects_created != objects_destroyed) {
+			const char *leak_log = getenv ("MOONLIGHT_LEAK_LOG");
+			if (leak_log != NULL && leak_log [0] != 0) {
+				FILE *log = fopen (leak_log, "a");
+				/* Make sure the test doesn't pass if we can't create a leak log, so that it doesn't go unnoticed */
+				g_assert (log); /* #if DEBUG */
+				fprintf (log, "Deployment: %p/%i, objects created: %i, objects destroyed: %i, objects leaked: %i\n",
+					this, this->GetId (), objects_created, objects_destroyed, objects_created - objects_destroyed);
+				fclose (log);
+			}
+		}
 #if OBJECT_TRACKING
-	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL) {
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
+#endif
 	}
 #endif
 }
