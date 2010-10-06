@@ -54,6 +54,10 @@ namespace System.Windows {
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 
+		internal int MajorVersion {
+			get { return int.Parse (RuntimeVersion.Split ('.') [0]); }
+		}
+
 		private new void Initialize ()
 		{
 			UriHelper.Initialize (this);
