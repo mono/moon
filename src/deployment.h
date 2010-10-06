@@ -441,6 +441,7 @@ public:
 	/* @GeneratePInvoke */
 	void SetUriFunctions (const UriFunctions *value);
 	void FreeGCHandle (void *gchandle);
+	void *CloneGCHandle (void *gchandle);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();

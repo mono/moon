@@ -585,6 +585,14 @@ Deployment::FreeGCHandle (void *gchandle)
 	mono_gchandle_free (GPOINTER_TO_INT (gchandle));
 }
 
+void *
+Deployment::CloneGCHandle (void *gchandle)
+{
+	if (gchandle == NULL)
+		return NULL;
+	return GINT_TO_POINTER (mono_gchandle_new (mono_gchandle_get_target (GPOINTER_TO_INT (gchandle)), false));
+}
+
 void
 Deployment::DestroyManagedApplication (gpointer plugin_instance)
 {

@@ -222,7 +222,9 @@ class XamlContextInternal {
 
 	XamlContextInternal (XamlLoaderCallbacks callbacks, Value *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources, XamlContextInternal *parent_context)
 	{
+		/* We need to clone the gc handle, the one passed in isn't ours */
 		this->callbacks = callbacks;
+		this->callbacks.gchandle = Deployment::GetCurrent ()->CloneGCHandle (this->callbacks.gchandle);
 		this->top_element = new Value (top_element->AsDependencyObject());
 		this->top_element->SetNeedUnref (false);
 		this->top_element->AsDependencyObject()->unref();
@@ -1609,6 +1611,7 @@ SL3XamlLoader::GetCallbacks ()
 void
 SL3XamlLoader::SetCallbacks (XamlLoaderCallbacks callbacks)
 {
+	/* We're given ownership of the gchandle here */
 	context->internal->callbacks = callbacks;
 }
 
