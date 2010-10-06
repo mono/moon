@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace System.Windows.Controls.Primitives
 { 
@@ -819,7 +820,19 @@ namespace System.Windows.Controls.Primitives
         } 
 
         internal static DependencyObject GetVisualRoot(DependencyObject d)
-        { 
+        {
+            // ContentPresenters can be an elements visual parent while
+            // not being the FrameworkElement.Parent. Silverlight 3+ looks up
+            // the VisualTree to so RadioButtons can group correctly in ContentPresenters
+            if (Deployment.Current.MajorVersion >= 3) {
+                var parent = d;
+                while (parent != null) {
+                    d = parent;
+                    parent = VisualTreeHelper.GetParent (parent);
+                }
+                return d;
+            }
+
             DependencyObject root = d; 
             for (; ; )
             { 

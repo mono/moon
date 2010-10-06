@@ -47,6 +47,29 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void ButtonInContentPresenter()
+		{
+			var b1 = new RadioButton { GroupName = "CP" };
+			var b2 = new RadioButton {GroupName = "CP"};
+
+			var cp1 = new ContentPresenter { Content = b1 };
+			var cp2 = new ContentPresenter { Content = b2 };
+
+			TestPanel.Children.Add(cp1);
+			TestPanel.Children.Add(cp2);
+
+			// Force the visual tree to be constructed
+			TestPanel.UpdateLayout();
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			if (MajorVersion >= 3)
+				Assert.IsFalse((bool)b1.IsChecked, "#1");
+			else
+				Assert.IsTrue((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
 		public void GroupNameNoParent()
 		{
 			var b1 = new RadioButton { GroupName = "AA" };
