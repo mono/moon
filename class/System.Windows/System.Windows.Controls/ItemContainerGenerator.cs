@@ -111,6 +111,9 @@ namespace System.Windows.Controls {
 
 		internal DependencyObject GenerateNext (out bool isNewlyRealized)
 		{
+			if (GenerationState == null)
+				throw new InvalidOperationException ("Cannot call GenerateNext before calling StartAt");
+
 			int index;
 			// This is relative to the realised elements.
 			int startAt = GenerationState.Position.Index;
