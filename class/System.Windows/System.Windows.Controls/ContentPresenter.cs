@@ -109,6 +109,7 @@ namespace System.Windows.Controls
 			// Otherwise we directly update the text in our textbox.
 			if (e.OldValue is UIElement || newValue is UIElement)
 				source.ClearRoot ();
+			source.InvalidateMeasure ();
 		}
 #endregion Content
  
