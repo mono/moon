@@ -92,8 +92,6 @@
     <File subtype="Code" buildaction="Nothing" name="silverlight-versions.h.in" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/lunar-launcher.cpp" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/Makefile.am" />
-    <File subtype="Code" buildaction="Nothing" name="lunar-launcher/getopts.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="lunar-launcher/getopts.h" />
     <File subtype="Code" buildaction="Nothing" name="lunar-launcher/ChangeLog" />
   </Contents>
   <compiler ctype="GccCompiler" />
