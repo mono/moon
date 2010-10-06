@@ -1108,7 +1108,7 @@ Deployment::Dispose ()
 		for (guint i = 0; i < change_args->len; i ++) {
 			((PropertyChangedEventArgs*)g_ptr_array_index (change_args, i))->unref();
 		}
-		g_ptr_array_free (change_args, FALSE);
+		g_ptr_array_free (change_args, true);
 		change_args = NULL;
 	}
 #endif
