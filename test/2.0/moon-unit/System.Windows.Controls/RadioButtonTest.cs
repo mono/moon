@@ -35,13 +35,125 @@ using System.Threading;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
-namespace MoonTest.System.Windows.Controls.Primitives
-{
+namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class RadioButtonTest
-	{
+	public partial class RadioButtonTest : SilverlightTest {
+
+		int MajorVersion {
+			get { return int.Parse(Deployment.Current.RuntimeVersion.Split('.')[0]); }
+		}
+
+		[TestMethod]
+		public void GroupNameNoParent()
+		{
+			var b1 = new RadioButton { GroupName = "AA" };
+			var b2 = new RadioButton { GroupName = "AA" };
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			Assert.IsTrue((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
+		public void GroupNameSameParent()
+		{
+			var b1 = new RadioButton { GroupName = "A" };
+			var b2 = new RadioButton { GroupName = "A" };
+			TestPanel.Children.Add(b1);
+			TestPanel.Children.Add(b2);
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			Assert.IsFalse((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
+		public void GroupNameSameSubtree()
+		{
+			var b1 = new RadioButton { GroupName = "A" };
+			var b2 = new RadioButton { GroupName = "A" };
+			var panel = new StackPanel();
+			panel.Children.Add(b2);
+			TestPanel.Children.Add(b1);
+			TestPanel.Children.Add(panel);
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			Assert.IsFalse((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
+		public void GroupNameOneParented()
+		{
+			var b1 = new RadioButton { GroupName = "A" };
+			var b2 = new RadioButton { GroupName = "A" };
+			TestPanel.Children.Add(b1);
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			Assert.IsTrue((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
+		public void NoGroupNameNoParent()
+		{
+			var b1 = new RadioButton();
+			var b2 = new RadioButton();
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			if (MajorVersion >= 3)
+				Assert.IsFalse((bool)b1.IsChecked, "#1");
+			else
+				Assert.IsTrue((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
+		public void NoGroupNameOneParented()
+		{
+			var b1 = new RadioButton();
+			var b2 = new RadioButton();
+			TestPanel.Children.Add(b1);
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			Assert.IsTrue((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
+		public void NoGroupNameSameParent()
+		{
+			var b1 = new RadioButton();
+			var b2 = new RadioButton();
+			TestPanel.Children.Add(b1);
+			TestPanel.Children.Add(b2);
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			Assert.IsFalse((bool)b1.IsChecked, "#2");
+		}
+
+		[TestMethod]
+		public void NoGroupNameSameSubtree()
+		{
+			var b1 = new RadioButton();
+			var b2 = new RadioButton();
+			var panel = new StackPanel();
+			panel.Children.Add(b2);
+			TestPanel.Children.Add(b1);
+			TestPanel.Children.Add(panel);
+
+			b1.IsChecked = true;
+			b2.IsChecked = true;
+			if (MajorVersion >= 3)
+				Assert.IsTrue((bool)b1.IsChecked, "#1");
+			else
+				Assert.IsTrue((bool)b1.IsChecked, "#2");
+		}
+
 		[TestMethod]
 		public void ToStringTest ()
 		{

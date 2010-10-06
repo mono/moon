@@ -73,27 +73,9 @@ namespace System.Windows.Controls
         /// <param name="e">DependencyPropertyChangedEventArgs.</param>
         private static void OnGroupNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
         { 
-            RadioButton source = d as RadioButton;
-            Debug.Assert(source != null, 
-                "The source is not an instance of RadioButton!");
-
-            // Unregister the old name 
-            Debug.Assert(typeof(string).IsInstanceOfType(e.OldValue) || (e.OldValue == null),
-                "The old value is not an instance of string!");
-            string oldValue = (string) e.OldValue; 
-            if (!string.IsNullOrEmpty(oldValue)) 
-            {
-                Unregister(oldValue, source); 
-            }
-
-            // Register the new name 
-            Debug.Assert(typeof(string).IsInstanceOfType(e.NewValue) || (e.NewValue == null),
-                "The value is not an instance of string!");
-            string value = (string) e.NewValue; 
-            if (!string.IsNullOrEmpty(value)) 
-            {
-                Register(value, source); 
-            }
+            RadioButton source = (RadioButton) d;
+            Unregister((string) e.OldValue, source);
+            Register((string) e.NewValue, source);
         }
         #endregion GroupName 
 
@@ -103,6 +85,7 @@ namespace System.Windows.Controls
         public RadioButton()
         { 
             DefaultStyleKey = typeof(RadioButton);
+            Register ("", this);
         }
  
         /// <summary>
@@ -126,18 +109,17 @@ namespace System.Windows.Controls
         /// Update this button's entire group
         /// </summary>
         private void UpdateRadioButtonGroup() 
-        { 
-            string groupName = GroupName;
-            if (!string.IsNullOrEmpty(groupName)) 
+        {
+            string groupName = GroupName ?? "";
+            int majorVersion = int.Parse (Deployment.Current.RuntimeVersion.Split ('.') [0]);
+
+            if (!string.IsNullOrEmpty(groupName))
             {
                 // Get the root of this RadioButton's visual tree
                 DependencyObject visualRoot = GetVisualRoot(this); 
 
-                Debug.Assert(_groupNameToElements != null, "_groupNameToElements should already exist!");
-                List<WeakReference> elements = _groupNameToElements[groupName]; 
-                Debug.Assert(elements != null, string.Format(CultureInfo.InvariantCulture, 
-                    "GroupName {0} not found in _groupNameToElements!", groupName));
- 
+                List<WeakReference> elements = _groupNameToElements[groupName];
+
                 // Synchronize the rest of the elements in the group
                 int index = 0;
                 while (index < elements.Count) 
@@ -162,7 +144,7 @@ namespace System.Windows.Controls
                     }
                 }
             } 
-            else 
+            else if (majorVersion < 3)
             {
                 // Synchronize the rest of the elements in the nameless group 
                 Panel parent = Parent as Panel;
@@ -185,7 +167,33 @@ namespace System.Windows.Controls
                         } 
                     }
                 }
-            } 
+            } else {
+                // New logic for SL3 and higher for radiobuttons with an empty or null GroupName.
+                // Uncheck all elements with the same FrameworkElement.Parent
+                List<WeakReference> elements = _groupNameToElements[groupName];
+
+                // Synchronize the rest of the elements in the group
+                int index = 0;
+                while (index < elements.Count)
+                {
+                    RadioButton button = elements[index].Target as RadioButton;
+                    if (button == null) 
+                    { 
+                        // Remove any weak references that were collected
+                        elements.RemoveAt(index); 
+                    }
+                    else
+                    { 
+                        // Uncheck the button if it's in the same group and
+                        // was already checked
+                        if (button != this && button.IsChecked == true && Parent == button.Parent)
+                        { 
+                            button.IsChecked = false;
+                        }
+                        index++; 
+                    }
+                }
+            }
         }
 
         /// <summary> 
@@ -194,11 +202,11 @@ namespace System.Windows.Controls
         /// <param name="groupName">Name of the RadioButton's group.</param> 
         /// <param name="radioButton">RadioButton.</param>
         private static void Register(string groupName, RadioButton radioButton)
-        { 
-            Debug.Assert(!string.IsNullOrEmpty(groupName), "No groupName provided!");
-            Debug.Assert(radioButton != null, "No radioButton provided!");
- 
-            if (_groupNameToElements == null) 
+        {
+            // Treat null as being string.Empty
+            groupName = groupName ?? "";
+
+            if (_groupNameToElements == null)
             {
                 _groupNameToElements = new Dictionary<string, List<WeakReference>>(1); 
             }
@@ -224,10 +232,10 @@ namespace System.Windows.Controls
         /// <param name="radioButton">RadioButton.</param> 
         private static void Unregister(string groupName, RadioButton radioButton)
         {
-            Debug.Assert(!string.IsNullOrEmpty(groupName), "No groupName provided!"); 
-            Debug.Assert(radioButton != null, "No radioButton provided!"); 
+            // Treat null as being string.Empty
+            groupName = groupName ?? "";
 
-            if (_groupNameToElements != null) 
+            if (_groupNameToElements != null)
             {
                 List<WeakReference> elements = _groupNameToElements[groupName];
                 if (elements != null) 
@@ -272,13 +280,13 @@ namespace System.Windows.Controls
         {
             return new RadioButtonAutomationPeer (this);
         }
-		
-		// Moonlight: This method wasn't included in the control drop. 
-		public override string ToString ()
-		{
-			string content = Content == null ? string.Empty : Content.ToString ();
-			string ischecked = IsChecked.HasValue ? IsChecked.Value.ToString () : "null";
-			return string.Format("System.Windows.Controls.RadioButton Content:{0} IsChecked:{1}", content, ischecked);
-		}
+        
+        // Moonlight: This method wasn't included in the control drop. 
+        public override string ToString ()
+        {
+            string content = Content == null ? string.Empty : Content.ToString ();
+            string ischecked = IsChecked.HasValue ? IsChecked.Value.ToString () : "null";
+            return string.Format("System.Windows.Controls.RadioButton Content:{0} IsChecked:{1}", content, ischecked);
+        }
     }
 }
