@@ -51,7 +51,6 @@ namespace System.Windows.Data {
 		bool validatesOnDataErrors;
 		bool validatesOnNotifyDataErrors;
 
-		[MonoTODO]
 		public bool BindsDirectlyToSource {
 			get { return bindsDirectlyToSource; }
 			set {
@@ -190,6 +189,7 @@ namespace System.Windows.Data {
 			
 			Mode = BindingMode.OneWay;
 			Path = new PropertyPath (path);
+			ValidatesOnNotifyDataErrors = true;
 			UpdateSourceTrigger = UpdateSourceTrigger.Default;
 		}
 

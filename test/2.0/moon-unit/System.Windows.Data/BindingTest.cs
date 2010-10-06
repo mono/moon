@@ -768,7 +768,9 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreNotEqual (new PropertyPath (""), binding.Path);
 			Assert.AreEqual (new PropertyPath ("").Path, binding.Path.Path);
 			Assert.IsNull (binding.Source);
-			Assert.IsFalse (binding.ValidatesOnExceptions);
+			Assert.IsFalse(binding.ValidatesOnDataErrors, "#ValidatesOnDataErrors");
+			Assert.IsFalse(binding.ValidatesOnExceptions, "#ValidatesOnExceptions");
+			Assert.IsTrue(binding.ValidatesOnNotifyDataErrors, "#ValidatesOnNotifyDataErrors");
 
 			binding = new Binding ("Path.To.Prop");
 			Assert.AreEqual ("Path.To.Prop", binding.Path.Path);
