@@ -1095,13 +1095,17 @@ Deployment::IsShuttingDown ()
 void
 Deployment::Dispose ()
 {
+	Surface *surface;
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 
 	Deployment::SetCurrent (this);
 
 	surface_mutex.Lock ();
-	surface = NULL;
+	surface = this->surface;
+	this->surface = NULL;
 	surface_mutex.Unlock ();
+	if (surface)
+		surface->unref ();
 
 #if EVENT_ARG_REUSE
 	if (change_args) {
