@@ -348,6 +348,7 @@ DispatcherTimer::DispatcherTimer ()
 	stopped = false;
 	started = false;
 	ontick = false;
+	pending_unref = false;
 }
 
 void
@@ -375,7 +376,10 @@ DispatcherTimer::Start ()
 		// we unref ourselves when we're stopped, but we have
 		// to force ourselves to remain alive while the timer
 		// is active
-		ref ();
+		if (!pending_unref) {
+			pending_unref = true;
+			ref ();
+		}
 	}
 }
 
@@ -388,7 +392,10 @@ DispatcherTimer::Stop ()
 	started = false;
 	if (!ontick) {
 		Timeline::TeardownClock ();
-		unref_delayed ();
+		if (pending_unref) {
+			pending_unref = false;
+			unref_delayed ();
+		}
 	}
 }
 
@@ -424,7 +431,10 @@ DispatcherTimer::OnClockCompleted ()
 		Restart ();
 	else if (stopped && !started) {
 		Timeline::TeardownClock ();
-		unref_delayed ();
+		if (pending_unref) {
+			pending_unref = false;
+			unref_delayed ();
+		}
 	}
 }
 
@@ -440,7 +450,10 @@ DispatcherTimer::TeardownClock ()
 	if (clock) {
 		Stop ();
 		Timeline::TeardownClock ();
-		unref_delayed ();
+		if (pending_unref) {
+			pending_unref = false;
+			unref_delayed ();
+		}
 	}
 }
 
