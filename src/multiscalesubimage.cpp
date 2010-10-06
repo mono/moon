@@ -24,15 +24,15 @@
 namespace Moonlight {
 
 MultiScaleSubImage::MultiScaleSubImage ()
+	: DependencyObject (Type::MULTISCALESUBIMAGE)
 {
-	SetObjectType (Type::MULTISCALESUBIMAGE);
 	source = NULL;	
 }
 
 MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSource *tsource, int _id, int _n)
+	: DependencyObject (Type::MULTISCALESUBIMAGE)
 {
 	LOG_MSI ("new MultiScaleSubImage ()\n");
-	SetObjectType (Type::MULTISCALESUBIMAGE);
 	source = tsource;
 	id = _id;
 	n = _n;

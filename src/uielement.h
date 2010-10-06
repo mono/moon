@@ -662,6 +662,8 @@ public:
 
 protected:
 	virtual ~UIElement ();
+	/* @SkipFactories */
+	UIElement (Type::Kind object_type);
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr, bool path_only = false);
 
@@ -714,6 +716,8 @@ private:
 
 	// Local perspective transform, including inverse cache transform
 	double render_projection[16];
+
+	void Init ();
 };
 
 };

@@ -471,24 +471,26 @@ KeyEventArgs::GetPlatformKeyCode ()
 // ErrorEventArgs
 //
 ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error)
+	: EventArgs (kind)
 {
-	Initialize (kind, type, error, 0, NULL);
+	Initialize (type, error, 0, NULL);
 }
 
 ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error)
+	: EventArgs (Type::ERROREVENTARGS)
 {
-	Initialize (Type::ERROREVENTARGS, type, error, 0, NULL);
+	Initialize (type, error, 0, NULL);
 }
 
 ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_error_code, const char *extended_msg)
+	: EventArgs (Type::ERROREVENTARGS)
 {
-	Initialize (Type::ERROREVENTARGS, type, error, extended_error_code, extended_msg);
+	Initialize (type, error, extended_error_code, extended_msg);
 }
 
 void
-ErrorEventArgs::Initialize (Type::Kind kind, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg)
+ErrorEventArgs::Initialize (ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg)
 {
-	SetObjectType (kind);
 	error_type = type;
 	this->error = new MoonError (error);
 	extended_message = g_strdup (extended_msg);

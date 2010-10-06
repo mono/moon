@@ -409,7 +409,7 @@ protected:
 class ErrorEventArgs : public EventArgs  {
 private:
 	MoonError *error;
-	void Initialize (Type::Kind kind, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg);
+	void Initialize (ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg);
 	int extended_code;
 	char *extended_message;
 	ErrorEventArgsType error_type;

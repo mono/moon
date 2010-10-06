@@ -204,6 +204,8 @@ protected:
 	GHashTable *styles;
 
 	virtual ~FrameworkElement ();
+	/* @SkipFactories */
+	FrameworkElement (Type::Kind object_type);
 	
 private:
 	MeasureOverrideCallback measure_cb;
@@ -213,6 +215,8 @@ private:
 	WeakRef<DependencyObject> logical_parent;
 	WeakRef<UIElement> default_template;
 	bool default_style_applied;
+
+	void Init ();
 };
 
 class FrameworkElementProvider : public PropertyValueProvider {

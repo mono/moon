@@ -3153,9 +3153,8 @@ PasswordBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 #define CURSOR_BLINK_DIVIDER          3
 
 TextBoxView::TextBoxView ()
+	: FrameworkElement (Type::TEXTBOXVIEW)
 {
-	SetObjectType (Type::TEXTBOXVIEW);
-	
 	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxView::mouse_left_button_down, this);
 	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxView::mouse_left_button_up, this);
 	

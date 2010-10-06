@@ -41,6 +41,19 @@ namespace Moonlight {
 UIElement::UIElement ()
 	: DependencyObject (Type::UIELEMENT), visual_parent (this, "VisualParent"), subtree_object (this, "SubtreeObject")
 {
+	Init ();
+}
+
+
+UIElement::UIElement (Type::Kind object_type)
+	: DependencyObject (object_type), visual_parent (this, "VisualParent"), subtree_object (this, "SubtreeObject")
+{
+	Init ();
+}
+
+void
+UIElement::Init ()
+{
 	providers.inherited = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
 
 	loaded = false;
