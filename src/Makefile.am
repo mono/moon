@@ -316,6 +316,18 @@ libmoon_la_SOURCES += 		\
 	context-gallium.h
 endif
 
+if HAVE_GLX
+libmoon_la_SOURCES += 	\
+	surface-gl.cpp	\
+	surface-gl.h	\
+	context-gl.cpp	\
+	context-gl.h    \
+	surface-glx.cpp	\
+	surface-glx.h	\
+	context-glx.cpp	\
+	context-glx.h
+endif
+
 EXTRA_DIST = \
 	type.h.in \
 	value.h.in \

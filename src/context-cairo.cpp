@@ -14,13 +14,8 @@
 
 namespace Moonlight {
 
-CairoContext::CairoContext (CairoSurface *surface)
+CairoContext::CairoContext (CairoSurface *surface) : Context (surface)
 {
-	AbsoluteTransform transform = AbsoluteTransform ();
-	Surface           *cs = new Surface (surface, Rect ());
-
-	Stack::Push (new Context::Node (cs, &transform.m, NULL));
-	cs->unref ();
 }
 
 void
@@ -51,11 +46,18 @@ CairoContext::Clear (Color *color)
 	cairo_t *cr = Cairo ();
 
 	cairo_save (cr);
+	cairo_set_operator (cr , CAIRO_OPERATOR_SOURCE);
 	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
 	cairo_paint (cr);
 	cairo_restore (cr);
-
 }
 
+void
+CairoContext::Flush ()
+{
+	cairo_t *cr = Cairo ();
+
+	cairo_surface_flush (cairo_get_target (cr));
+}
 
 };

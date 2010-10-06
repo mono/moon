@@ -65,6 +65,7 @@ public:
 		virtual cairo_surface_t *Cairo ();
 
 		Rect GetData (MoonSurface **surface);
+		void Sync ();
 
 	protected:
 		MoonSurface     *native;
@@ -85,6 +86,7 @@ public:
 		void GetMatrix (cairo_matrix_t *matrix);
 		void GetClip (Rect *clip);
 		Surface *GetSurface ();
+		void Sync ();
 
 	private:
 		Surface        *target;
@@ -93,6 +95,8 @@ public:
 		cairo_t        *context;
 	};
 
+	Context () {}
+	Context (MoonSurface *surface);
 	virtual ~Context () {}
 
 	void Push (Transform transform);
@@ -141,6 +145,8 @@ public:
 				   int         *ddxUvDdyUvPtr,
 				   double      x,
 				   double      y);
+
+	virtual void Flush ();
 };
 
 };

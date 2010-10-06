@@ -77,6 +77,8 @@ public:
 			   double      x,
 			   double      y);
 
+	void Flush ();
+
 private:
 	void SetFramebuffer ();
 	void SetScissor ();

@@ -31,6 +31,8 @@ struct pipe_screen;
 
 namespace Moonlight {
 
+class GLXSurface;
+
 /* @Namespace=System.Windows */
 class MoonWindowGtk : public MoonWindow {
 public:
@@ -107,6 +109,10 @@ private:
 
 #ifdef USE_GALLIUM
 	pipe_screen *screen;
+#endif
+
+#ifdef USE_GLX
+	GLXSurface *glxtarget;
 #endif
 
 	int left;

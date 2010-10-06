@@ -23,6 +23,8 @@ public:
 	void Push (Group extents);
 
 	void Clear (Color *color);
+
+	void Flush ();
 };
 
 };

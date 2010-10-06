@@ -81,6 +81,23 @@ Context::Surface::Cairo ()
 	return cairo_surface_reference (surface);
 }
 
+void
+Context::Surface::Sync ()
+{
+	if (surface) {
+
+		/* restore device offset */
+		if (!box.IsEmpty ())
+			cairo_surface_set_device_offset (surface,
+							 device_offset.x,
+							 device_offset.y);
+
+		cairo_surface_destroy (surface);
+		surface = NULL;
+	}
+
+}
+
 Context::Node::Node (Surface        *surface,
 		     cairo_matrix_t *matrix,
 		     const Rect     *clip)
@@ -135,6 +152,28 @@ Context::Surface *
 Context::Node::GetSurface ()
 {
 	return target;
+}
+
+void
+Context::Node::Sync ()
+{
+	if (context) {
+		cairo_destroy (context);
+		context = NULL;
+	}
+
+	GetSurface ()->Sync ();
+}
+
+Context::Context (MoonSurface *surface)
+{
+	AbsoluteTransform transform = AbsoluteTransform ();
+	Rect              r = Rect (0, 0, 32768, 32768);
+	Surface           *cs;
+
+	cs = new Surface (surface, r);
+	Stack::Push (new Context::Node (cs, &transform.m, NULL));
+	cs->unref ();
 }
 
 void
@@ -287,6 +326,12 @@ Context::ShaderEffect (MoonSurface *src,
 		       double      y)
 {
 	g_warning ("Context::ShaderEffect has been called. The derived class should have overridden it.");
+}
+
+void
+Context::Flush ()
+{
+	g_warning ("Context::Flush has been called. The derived class should have overridden it.");
 }
 
 };

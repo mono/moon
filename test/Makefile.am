@@ -34,7 +34,9 @@ dist-hook:
 gendarme:
 	gendarme --html gendarme.html --config gendarme.xml $(prefix)/lib/moonlight/plugin/*.dll --ignore gendarme.ignore
 
+if HAVE_GLX
 noinst_PROGRAMS = effects projections
+endif
 
 effects_SOURCES= effect-test.cpp
 

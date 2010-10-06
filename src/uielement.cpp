@@ -1609,7 +1609,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	if (flags & COMPOSITE_OPACITY_MASK) {
 		MoonSurface *surface;
 		Rect        r = ctx->Pop (&surface);
-
+ 
 		ctx->Push (Context::Clip (r));
 
 		if (!r.IsEmpty ()) {

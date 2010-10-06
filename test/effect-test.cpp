@@ -5,85 +5,89 @@
 #include <string.h>
 #include <stdio.h>
 #include <gtk/gtk.h>
-#ifdef USE_GALLIUM
-#define __MOON_GALLIUM__
-#include "context-gallium.h"
-extern "C" {
-#include "pipe/p_screen.h"
-#ifdef CLAMP
-#undef CLAMP
-#endif
-#include "util/u_inlines.h"
-#include "util/u_simple_screen.h"
-#include "util/u_debug.h"
-#define template templat
-#include "state_tracker/sw_winsys.h"
-#undef template
-#include "sw/null/null_sw_winsys.h"
-#include "softpipe/sp_public.h"
-#ifdef USE_LLVM
-#include "llvmpipe/lp_public.h"
-#endif
-};
-static struct pipe_screen *
-swrast_create_screen (struct sw_winsys *ws)
-{
-	const char         *default_driver;
-	const char         *driver;
-	struct pipe_screen *screen = NULL;
-
-#ifdef USE_LLVM
-	default_driver = "llvmpipe";
-#else
-	default_driver = "softpipe";
-#endif
-
-	driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
-
-#ifdef USE_LLVM
-	if (screen == NULL && strcmp (driver, "llvmpipe") == 0)
-		screen = llvmpipe_create_screen (ws);
-#endif
-
-	if (screen == NULL)
-		screen = softpipe_create_screen (ws);
-
-	return screen;
-}
-struct pipe_screen *screen;
-#endif
+#include <gdk/gdkx.h>
+#define __MOON_GLX__
+#include "context-glx.h"
 #include "runtime.h"
 #include "effect.h"
 #include "factory.h"
 
 using namespace Moonlight;
 
-class CustomEffect : public ShaderEffect {};
+struct effect {
+	Context     *ctx;
+	MoonSurface *target;
+	MoonSurface *surface;
+	PixelShader *shader;
+	int         count;
+	int         frames;
+};
 
-const int width = 256;
-const int height = 256;
+const int width = 800;
+const int height = 600;
 
-int frames = 0;
-
-static void
-effect_alarm_handler (int sig)
+gboolean
+on_timeout (gpointer data)
 {
-	printf ("%d frames in 5.0 seconds = %f FPS\n", frames, frames / 5.0);
-	frames = 0;
-	alarm (5);
+	struct effect *e = (struct effect *) data;
+
+	printf ("%d frames in 5.0 seconds = %f FPS\n", e->frames,
+		e->frames / 5.0);
+	e->frames = 0;
+
+	return TRUE;
+}
+
+gboolean
+on_expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	GdkDrawable    *drawable = GDK_DRAWABLE (widget->window);
+	struct effect  *e = (struct effect *) data;
+	GLXSurface     *window = (GLXSurface *) e->target;
+	GLXContext     *ctx = (GLXContext *) e->ctx;
+	static double  max = e->count;
+	int            width;
+	int            height;
+
+	gdk_drawable_get_size (drawable, &width, &height);
+	if (width != window->Width () || height != window->Height ()) {
+		Color color = Color ();
+
+		window->Reshape (width, height);
+		glDrawBuffer (GL_FRONT);
+		glReadBuffer (GL_FRONT);
+		ctx->Clear (&color);
+	}
+
+	ctx->ShaderEffect (e->surface,
+			   e->shader,
+			   NULL,
+			   NULL,
+			   0,
+			   NULL,
+			   0,
+			   NULL,
+			   (double) rand () / RAND_MAX * width,
+			   (double) rand () / RAND_MAX * height);
+	ctx->Flush ();
+
+	e->frames++;
+
+	if (e->count-- > 0)
+		gtk_widget_queue_draw (widget);
+	else
+		gtk_main_quit ();
+
+	return TRUE;
 }
 
 int
 main (int argc, char **argv)
 {
-	Context *ctx = NULL;
-	MoonSurface *surface;
-	cairo_surface_t *dst, *src;
-	CustomEffect *effect;
-	PixelShader *shader;
+	GtkWidget *window;
+	struct effect e;
 	Rect bounds = Rect (0, 0, width, height);
-	Color color = Color (1.0, 0.0, 0.0, 1.0);
-	int count = 1;
+	Color color = Color (0.0, 0.0, 1.0, 1.0);
 
 	if (argc < 2) {
 		printf ("usage: %s SHADERFILE [COUNT]\n", argv[0]);
@@ -94,35 +98,29 @@ main (int argc, char **argv)
 
 	runtime_init_desktop ();
 
-#ifdef USE_GALLIUM
-	if (!ctx) {
-		struct sw_winsys     *sw;
-		struct pipe_resource pt, *texture;
-		GalliumSurface       *target;
+	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_default_size (GTK_WINDOW (window), width, height); 
+	gtk_widget_set_double_buffered (window, false);
+	gtk_widget_realize (window);
 
-		sw = null_sw_create ();
-		screen = swrast_create_screen (sw);
+	e.ctx = NULL;
 
-		memset (&pt, 0, sizeof (pt));
-		pt.target = PIPE_TEXTURE_2D;
-		pt.format = PIPE_FORMAT_B8G8R8A8_UNORM;
-		pt.width0 = width;
-		pt.height0 = height;
-		pt.depth0 = 1;
-		pt.last_level = 0;
-		pt.bind = PIPE_BIND_RENDER_TARGET | PIPE_BIND_TRANSFER_WRITE |
-			PIPE_BIND_TRANSFER_READ;
+	if (!e.ctx) {
+		GLXContext  *ctx;
+		GLXSurface  *target;
+		GdkDrawable *drawable = GDK_DRAWABLE (window->window);
+		XID         win = gdk_x11_drawable_get_xid (drawable);
 
-		texture = screen->resource_create (screen, &pt);
+		target = new GLXSurface (GDK_DISPLAY (), win);
+		ctx = new GLXContext (target);
+		e.target = target;
+		e.ctx = ctx;
 
-		target = new GalliumSurface (texture);
-		pipe_resource_reference (&texture, NULL);
-		ctx = new GalliumContext (target);
-		target->unref ();
+		if (!ctx->CheckVersion ())
+			return 1;
 	}
-#endif
 
-	if (!ctx) {
+	if (!e.ctx) {
 		cairo_surface_t *image;
 		CairoSurface    *target;
 
@@ -131,43 +129,50 @@ main (int argc, char **argv)
 						    height);
 		target = new CairoSurface (image);
 		cairo_surface_destroy (image);
-		ctx = new CairoContext (target);
-		target->unref ();
+		e.ctx = new CairoContext (target);
+		e.target = target;
 	}
 
-	effect = new CustomEffect ();
-	shader = MoonUnmanagedFactory::CreatePixelShader ();
+	e.shader = MoonUnmanagedFactory::CreatePixelShader ();
+	e.shader->SetTokensFromPath (argv[1]);
 
-	shader->SetTokensFromPath (argv[1]);
-	effect->SetPixelShader (shader);
+	bounds = Rect (0, 0, 512, 512);
 
-	ctx->Push (Context::Group (bounds));
-	ctx->Clear (&color);
-	bounds = ctx->Pop (&surface);
+	e.ctx->Push (Context::Group (bounds));
+	cairo_t *cr = e.ctx->Cairo ();
+	cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
+	cairo_paint (cr);
+	cairo_scale (cr, bounds.width, bounds.height);
+	cairo_move_to (cr, 0.25, 0.25);
+	cairo_line_to (cr, 0.5, 0.375);
+	cairo_rel_line_to (cr, 0.25, -0.125);
+	cairo_arc (cr, 0.5, 0.5, 0.25 * sqrt (2), -0.25 * M_PI, 0.25 * M_PI);
+	cairo_rel_curve_to (cr, -0.25, -0.125, -0.25, 0.125, -0.5, 0);
+	cairo_close_path (cr);
+	cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
+	cairo_fill (cr);
+	bounds = e.ctx->Pop (&e.surface);
 
-	if (argc > 2) {
-		count = atoi (argv[2]);
-		if (count > 1) {
-			signal (SIGALRM, effect_alarm_handler);
-			alarm (5);
-		}
-	}
+	if (argc > 2)
+		e.count = atoi (argv[2]);
+	else
+		e.count = 1;
 
-	while (count-- > 0) {
-		effect->Render (ctx, surface, 0, 0);
+	e.frames = 0;
+	gtk_timeout_add (5000, on_timeout, &e);
 
-		frames++;
-	}
+	g_signal_connect (window,
+			  "expose-event",
+			  G_CALLBACK (on_expose_event),
+			  &e);
 
-	effect->unref ();
-	shader->unref ();
+	gtk_widget_show (window);
+	gtk_main ();
 
-	surface->unref ();
-	delete ctx;
-
-#ifdef USE_GALLIUM
-	(*screen->destroy) (screen);
-#endif
+	e.shader->unref ();
+	e.surface->unref ();
+	e.target->unref ();
+	delete e.ctx;
 
 	runtime_shutdown ();
 

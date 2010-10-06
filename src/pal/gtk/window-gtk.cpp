@@ -38,9 +38,19 @@
 #define Window _XxWindow
 #include <gdk/gdkx.h>
 #include <cairo-xlib.h>
+#ifdef USE_GLX
+#define GLXContext _XxGLXContext
+#include <GL/glx.h>
+#undef GLXContext
+#endif
 #undef Visual
 #undef Region
 #undef Window
+
+#ifdef USE_GLX
+#define __MOON_GLX__
+#include "context-glx.h"
+#endif
 
 #define PLUGIN_OURNAME      "Novell Moonlight"
 
@@ -80,6 +90,10 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 	screen = NULL;
 #endif
 
+#ifdef USE_GLX
+	glxtarget = NULL;
+#endif
+
 }
 
 MoonWindowGtk::~MoonWindowGtk ()
@@ -103,6 +117,12 @@ MoonWindowGtk::~MoonWindowGtk ()
 
 	if (ctx)
 		delete ctx;
+
+#ifdef USE_GLX
+	if (glxtarget)
+		glxtarget->unref ();
+#endif
+
 }
 
 void
@@ -515,6 +535,47 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 
 	if (!surface)
 		return true;
+
+#ifdef USE_GLX
+	Display *dpy = gdk_x11_drawable_get_xdisplay (w->window);
+	XID     win = gdk_x11_drawable_get_xid (w->window);
+	int     width, height;
+
+	gdk_drawable_get_size (w->window, &width, &height);
+
+	if (!ctx) {
+		GLXContext *context;
+
+		glxtarget = new GLXSurface (dpy, win);
+		context = new GLXContext (glxtarget);
+
+		if (!context->CheckVersion ()) {
+			delete context;
+			glxtarget->unref ();
+			glxtarget = NULL;
+		}
+		else {
+			ctx = context;
+		}
+	}
+
+	if (glxtarget) {
+		Rect r = Rect (0, 0, width, height);
+		Region *region = new Region (r);
+
+		glxtarget->Reshape (width, height);
+
+		ctx->Push (Context::Clip (r));
+		surface->Paint (ctx, region, GetTransparent (), true);
+		ctx->Pop ();
+
+		ctx->Flush ();
+
+		glXSwapBuffers (dpy, win);
+
+		return true;
+	}
+#endif
 
 	// we draw to a backbuffer pixmap, then transfer the contents
 	// to the widget's window.

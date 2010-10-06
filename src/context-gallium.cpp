@@ -1725,4 +1725,10 @@ GalliumContext::ShaderEffect (MoonSurface *src,
 			input[i]->unref ();
 }
 
+void
+GalliumContext::Flush ()
+{
+	pipe->flush (pipe, PIPE_FLUSH_RENDER_CACHE, NULL);
+}
+
 };
