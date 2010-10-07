@@ -486,6 +486,10 @@ Surface::Zombify ()
 {
 	zombie = true;
 
+	HideFullScreenMessage ();
+	HideIncompleteSilverlightSupportMessage ();
+	HideDrmMessage ();
+
 	time_manager->Shutdown ();
 
 	if (toplevel) {
