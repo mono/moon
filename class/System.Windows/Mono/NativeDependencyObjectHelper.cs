@@ -351,14 +351,26 @@ namespace Mono {
 			return wrapper;
 		}
 
-		internal static INativeEventObjectWrapper FromIntPtr (IntPtr ptr)
+		internal static INativeEventObjectWrapper FromIntPtr (IntPtr data)
 		{
+			return FromIntPtr (data, false);
+		}
+
+		internal static INativeEventObjectWrapper FromIntPtr (IntPtr ptr, bool unref)
+		{
+			INativeEventObjectWrapper result;
+
 			if (ptr == IntPtr.Zero)
 				return null;
 
 			Kind k = NativeMethods.event_object_get_object_type (ptr);
 
-			return Lookup (k, ptr);
+			result = Lookup (k, ptr);
+
+			if (unref)
+				NativeMethods.event_object_unref (ptr);
+
+			return result;
 		}
 
 		//

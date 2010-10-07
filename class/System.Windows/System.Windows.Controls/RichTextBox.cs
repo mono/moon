@@ -144,18 +144,18 @@ namespace System.Windows.Controls {
 
 		public TextPointer GetPositionFromPoint (Point point)
 		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_position_from_point (native, point)) as TextPointer;
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_position_from_point (native, point), true) as TextPointer;
 		}
 
 		public TextPointer ContentStart {
 			get {
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_content_start (native)) as TextPointer;
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_content_start (native), true) as TextPointer;
 			}
 		}
 
 		public TextPointer ContentEnd {
 			get {
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_content_end (native)) as TextPointer;
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_content_end (native), true) as TextPointer;
 			}
 		}
 	}

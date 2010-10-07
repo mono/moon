@@ -51,19 +51,19 @@ namespace System.Windows.Documents {
 		}
 
 		public TextPointer ContentStart {
-			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_content_start (native)) as TextPointer; }
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_content_start (native), true) as TextPointer; }
 		}
 
 		public TextPointer ContentEnd {
-			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_content_end (native)) as TextPointer; }
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_content_end (native), true) as TextPointer; }
 		}
 
 		public TextPointer ElementStart {
-			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_element_start (native)) as TextPointer; }
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_element_start (native), true) as TextPointer; }
 		}
 
 		public TextPointer ElementEnd {
-			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_element_end (native)) as TextPointer; }
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_element_get_element_end (native), true) as TextPointer; }
 		}
 	}
 }
