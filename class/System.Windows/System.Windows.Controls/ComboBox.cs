@@ -388,7 +388,8 @@ namespace System.Windows.Controls
 						IsDropDownOpen = true;
 					}
 					break;
-					
+
+				case Key.Right:
 				case Key.Down:
 					if (IsDropDownOpen) {
 						if (FocusedIndex < Items.Count - 1) {
@@ -399,7 +400,8 @@ namespace System.Windows.Controls
 						SelectedIndex = Math.Min (SelectedIndex + 1, Items.Count - 1);
 					}
 					break;
-					
+
+				case Key.Left:
 				case Key.Up:
 					if (IsDropDownOpen) {
 						if (FocusedIndex > 0) {
