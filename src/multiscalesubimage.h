@@ -33,7 +33,7 @@ class MultiScaleSubImage : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleSubImage ();
 
-	virtual ~MultiScaleSubImage () {}
+	virtual ~MultiScaleSubImage ();
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;

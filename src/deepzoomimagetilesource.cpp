@@ -941,6 +941,7 @@ item_end (DZParserInfo *info)
 		subsource->SetFormat (collection->format);
 		subsource->SetImageHeight (item->height);
 		subsource->SetImageWidth (item->width);
+		subsource->unref ();
 		
 		if (item->has_viewport) {
 			subimage->SetViewportOrigin (new Point (item->vp_x, item->vp_y));

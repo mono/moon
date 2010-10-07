@@ -756,6 +756,7 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 		TimelineCollection *tlc = new TimelineCollection ();
 		tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
 		fadein_sb->SetChildren (tlc);
+		tlc->unref ();
 		fadein_sb->AddHandler (Storyboard::CompletedEvent, fade_finished, this);
 #if DEBUG
 		fadein_sb->SetName ("Multiscale Fade-In");
@@ -1651,10 +1652,12 @@ MultiScaleImage::AnimateViewportOrigin (Point *origin)
 		keyframe->SetKeySpline (DOPtr<KeySpline> (new KeySpline (.05, .5, 0, 1.0)));
 		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
 		pan_animation->GetKeyFrames ()->Add (keyframe);
+		keyframe->unref ();
 
 		TimelineCollection *tlc = new TimelineCollection ();
 		tlc->Add (static_cast<PointAnimationUsingKeyFrames*> (pan_animation));
 		pan_sb->SetChildren(tlc);
+		tlc->unref ();
 #if DEBUG
 		pan_sb->SetName ("Multiscale Pan");
 #endif

@@ -34,6 +34,7 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, DeepZoomImageTile
 {
 	LOG_MSI ("new MultiScaleSubImage ()\n");
 	source = tsource;
+	source->ref ();
 	id = _id;
 	n = _n;
 
@@ -56,6 +57,12 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, DeepZoomImageTile
 	delete new_uri;
 
 	EnsureManagedPeer ();
+}
+
+MultiScaleSubImage::~MultiScaleSubImage ()
+{
+	if (source)
+		source->unref ();
 }
 
 double
