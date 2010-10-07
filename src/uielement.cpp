@@ -113,7 +113,6 @@ UIElement::OnIsLoadedChanged (bool loaded)
 {
 	// If we unload, emit the Unloaded event before the children
 	if (!loaded) {
-		GetDeployment ()->RemoveAllLoadedHandlers (this);
 		ClearForeachGeneration (UIElement::LoadedEvent);
 		Emit (UIElement::UnloadedEvent);
 	}
