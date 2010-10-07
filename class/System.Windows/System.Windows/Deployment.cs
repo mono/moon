@@ -564,7 +564,7 @@ namespace System.Windows {
 		{
 			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
 			if (Thread.CurrentThread == DependencyObject.moonlight_thread) {
-				NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
+				NativeMethods.surface_emit_error (Surface.Native, IntPtr.Zero, 8, errorCode, message);
 			} else {
 				Dispatcher.BeginInvoke (() => {
 					// call again but, this time, from main thread

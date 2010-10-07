@@ -927,7 +927,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 						// FIXME: I'm guessing, based on moon-unit tests, that this event should only be emitted
 						// when being parsed from javascript as opposed to managed land...
 						if (uri->IsUncPath ())
-							GetDeployment ()->GetSurface ()->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
+							GetDeployment ()->GetSurface ()->EmitError (new ParserErrorEventArgs (this, "invalid uri", NULL, 0, 0, 0, NULL, NULL));
 						return;
 					}
 				} else {

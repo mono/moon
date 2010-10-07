@@ -409,7 +409,8 @@ protected:
 class ErrorEventArgs : public EventArgs  {
 private:
 	MoonError *error;
-	void Initialize (ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg);
+	void Initialize (DependencyObject *original_source, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg);
+	DependencyObject *original_source;
 	int extended_code;
 	char *extended_message;
 	ErrorEventArgsType error_type;
@@ -421,7 +422,11 @@ public:
 	/* @SkipFactories */
 	ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error);
 	/* @SkipFactories */
+	ErrorEventArgs (DependencyObject *original_source, Type::Kind kind, ErrorEventArgsType type, const MoonError error);
+	/* @SkipFactories */
 	ErrorEventArgs (ErrorEventArgsType type, MoonError error);
+	/* @SkipFactories */
+	ErrorEventArgs (DependencyObject *original_source, ErrorEventArgsType type, MoonError error);
 	/* @SkipFactories */
 	ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_code, const char *extended_msg);
 
@@ -442,13 +447,15 @@ public:
 	//  3 (MEDIA_UNKNOWN_CODEC): used by playlist to determine if we should raise a MediaFailed event or just continue to play the next entry.
 	int GetExtendedCode () { return extended_code; }
 	const char *GetExtendedMessage () { return extended_message; }
+
+	DependencyObject *GetOriginalSource () { return original_source; }
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
 class ImageErrorEventArgs : public ErrorEventArgs {
 public:
 	/* @SkipFactories */
-	ImageErrorEventArgs (MoonError error);
+	ImageErrorEventArgs (DependencyObject *original_source, MoonError error);
 
 protected:
 	virtual ~ImageErrorEventArgs ();
@@ -574,7 +581,7 @@ protected:
 	virtual ~ParserErrorEventArgs ();
 
 public:
-	ParserErrorEventArgs (const char *msg, const char *file,
+	ParserErrorEventArgs (DependencyObject *original_source, const char *msg, const char *file,
 			      int line, int column, int error_code, 
 			      const char *element, const char *attribute);
 	

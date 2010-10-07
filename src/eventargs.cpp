@@ -473,26 +473,40 @@ KeyEventArgs::GetPlatformKeyCode ()
 ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error)
 	: EventArgs (kind)
 {
-	Initialize (type, error, 0, NULL);
+	Initialize (NULL, type, error, 0, NULL);
+}
+ErrorEventArgs::ErrorEventArgs (DependencyObject *original_source, Type::Kind kind, ErrorEventArgsType type, const MoonError error)
+	: EventArgs (kind)
+{
+	Initialize (original_source, type, error, 0, NULL);
 }
 
 ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error)
 	: EventArgs (Type::ERROREVENTARGS)
 {
-	Initialize (type, error, 0, NULL);
+	Initialize (NULL, type, error, 0, NULL);
+}
+
+ErrorEventArgs::ErrorEventArgs (DependencyObject *original_source, ErrorEventArgsType type, MoonError error)
+	: EventArgs (Type::ERROREVENTARGS)
+{
+	Initialize (original_source, type, error, 0, NULL);
 }
 
 ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_error_code, const char *extended_msg)
 	: EventArgs (Type::ERROREVENTARGS)
 {
-	Initialize (type, error, extended_error_code, extended_msg);
+	Initialize (NULL, type, error, extended_error_code, extended_msg);
 }
 
 void
-ErrorEventArgs::Initialize (ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg)
+ErrorEventArgs::Initialize (DependencyObject *original_source, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg)
 {
 	error_type = type;
 	this->error = new MoonError (error);
+	this->original_source = original_source;
+	if (original_source)
+		original_source->ref ();
 	extended_message = g_strdup (extended_msg);
 	extended_code = extended_error_code;
 #if DEBUG
@@ -504,6 +518,8 @@ ErrorEventArgs::~ErrorEventArgs ()
 {
 	delete error;
 	g_free (extended_message);
+	if (original_source)
+		original_source->unref ();
 }
 
 
@@ -511,8 +527,8 @@ ErrorEventArgs::~ErrorEventArgs ()
 // ImageErrorEventArgs
 //
 
-ImageErrorEventArgs::ImageErrorEventArgs (MoonError error)
-  : ErrorEventArgs (Type::IMAGEERROREVENTARGS, ImageError, error)
+ImageErrorEventArgs::ImageErrorEventArgs (DependencyObject *original_source, MoonError error)
+  : ErrorEventArgs (original_source, Type::IMAGEERROREVENTARGS, ImageError, error)
 {
 }
 
@@ -606,10 +622,10 @@ CaptureImageCompletedEventArgs::~CaptureImageCompletedEventArgs ()
 // ParserErrorEventArgs
 //
 
-ParserErrorEventArgs::ParserErrorEventArgs (const char *msg, const char *file,
+ParserErrorEventArgs::ParserErrorEventArgs (DependencyObject *original_source, const char *msg, const char *file,
 					    int line, int column, int error_code, 
 					    const char *element, const char *attribute)
-  : ErrorEventArgs (Type::PARSERERROREVENTARGS, ParserError, MoonError (MoonError::XAML_PARSE_EXCEPTION, error_code, msg))
+  : ErrorEventArgs (original_source, Type::PARSERERROREVENTARGS, ParserError, MoonError (MoonError::XAML_PARSE_EXCEPTION, error_code, msg))
 {
 	xml_attribute = g_strdup (attribute);
 	xml_element = g_strdup (element);

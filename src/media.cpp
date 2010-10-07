@@ -311,9 +311,11 @@ Image::ImageFailed (ImageErrorEventArgs *args)
 	UpdateBounds ();
 	Invalidate ();
 
+	args = new ImageErrorEventArgs (this, *(MoonError*)args->GetMoonError ());
 	if (HasHandlers (ImageFailedEvent)) {
-		args->ref (); // to counter the unref in Emit
 		Emit (ImageFailedEvent, args);
+	} else {
+		GetDeployment ()->GetSurface ()->EmitError (args);
 	}
 }
 
@@ -623,15 +625,14 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			
 			// can uri ever be null?
 			if (IsBeingParsed () && uri) {
-				ImageErrorEventArgs *args = NULL;
-				
 				if (uri->IsInvalidPath ()) {
-					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
-				}
-
-				if (args != NULL) {
 					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-					EmitAsync (ImageFailedEvent, args); // just like ImageBrush does, also see DRT#171 and #173
+					ImageErrorEventArgs *args = new ImageErrorEventArgs (this, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
+					if (HasHandlers (ImageFailedEvent)) {
+						EmitAsync (ImageFailedEvent, args); // just like ImageBrush does, also see DRT#171 and #173
+					} else {
+						GetDeployment ()->GetSurface ()->EmitError (args);
+					}
 				}
 			}
 		}

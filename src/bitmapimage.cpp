@@ -385,13 +385,12 @@ failed:
 	if (loader)
 		loader->Close ();
 
-	ImageErrorEventArgs *args = NULL;
-
-	if (HasHandlers(ImageFailedEvent))
-		args = new ImageErrorEventArgs (*moon_error);
+	ImageErrorEventArgs *args = new ImageErrorEventArgs (this, *moon_error);
 	CleanupLoader ();
-	if (args)
+	if (HasHandlers(ImageFailedEvent))
 		Emit (ImageFailedEvent, args);
+	else
+		GetDeployment ()->GetSurface ()->EmitError (args);
 }
 
 
@@ -441,13 +440,13 @@ BitmapImage::PixmapComplete ()
 	return;
 	
 failed:
-	ImageErrorEventArgs *args = NULL;
+	ImageErrorEventArgs *args = new ImageErrorEventArgs (this, *moon_error);
 
-	if (HasHandlers (ImageFailedEvent))
-		args = new ImageErrorEventArgs (*moon_error);
 	CleanupLoader ();
-	if (args)
+	if (HasHandlers (ImageFailedEvent))
 		Emit (ImageFailedEvent, args);
+	else
+		GetDeployment ()->GetSurface ()->EmitError (args);
 }
 
 void
@@ -457,9 +456,11 @@ BitmapImage::DownloaderFailed ()
 	//printf ("\tBitmapImage::DownloaderFailed() for %s\n", uri ? uri->ToString () : "null?");
 	
 	Abort ();
+	ImageErrorEventArgs *args = new ImageErrorEventArgs (this, MoonError (MoonError::EXCEPTION, 4001, "downloader failed"));
 	if (HasHandlers (ImageFailedEvent))
-		Emit (ImageFailedEvent,
-		      new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
+		Emit (ImageFailedEvent, args);
+	else
+		GetDeployment ()->GetSurface ()->EmitError (args);
 }
 
 void
@@ -519,12 +520,13 @@ BitmapImage::pixbuf_write (EventObject *sender, EventArgs *calldata, gpointer da
 
 	source->PixbufWrite ((unsigned char *) ea->GetData (), ea->GetOffset (), ea->GetCount ());
 	if (source->moon_error) {
-		ImageErrorEventArgs *args = NULL;
-		if (source->HasHandlers(ImageFailedEvent))
-			args = new ImageErrorEventArgs (*source->moon_error);
+		ImageErrorEventArgs *args = new ImageErrorEventArgs (source, *source->moon_error);
+
 		source->CleanupLoader ();
-		if (args)
+		if (source->HasHandlers(ImageFailedEvent))
 			source->Emit (ImageFailedEvent, args);
+		else
+			source->GetDeployment ()->GetSurface ()->EmitError (args);
 	}
 }
 

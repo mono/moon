@@ -843,7 +843,7 @@ class XamlParserInfo {
 
 		if (error.number != MoonError::NO_ERROR) {
 			int line_number = error.line_number + XML_GetCurrentLineNumber (parser);
-			error_args = new ParserErrorEventArgs (error.message, file_name, line_number, error.char_position, error.code, NULL, NULL);
+			error_args = new ParserErrorEventArgs (NULL, error.message, file_name, line_number, error.char_position, error.code, NULL, NULL);
 		}
 	}
 
@@ -1742,7 +1742,7 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_cod
 	message = g_strdup_vprintf (format, args);
 	va_end (args);
 
-	p->error_args = new ParserErrorEventArgs (message, p->file_name, line_number, char_position, error_code, el, attr);
+	p->error_args = new ParserErrorEventArgs (NULL, message, p->file_name, line_number, char_position, error_code, el, attr);
 	
 	g_free (message);
 	
@@ -2470,7 +2470,7 @@ SL3XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
  cleanup_and_return:
 	
 	if (!parser_info)
-		error_args = new ParserErrorEventArgs ("Error opening xaml file", xaml_file, 0, 0, 1, "", "");
+		error_args = new ParserErrorEventArgs (NULL, "Error opening xaml file", xaml_file, 0, 0, 1, "", "");
 	else if (parser_info->error_args) {
 		error_args = parser_info->error_args;
 		error_args->ref ();
@@ -2650,7 +2650,7 @@ SL3XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_n
 			*element_type = parser_info->top_element->info->GetKind ();
 
 		if (!res && !parser_info->error_args)
-			parser_info->error_args = new ParserErrorEventArgs ("No DependencyObject found", "", 0, 0, 1, "", "");
+			parser_info->error_args = new ParserErrorEventArgs (NULL, "No DependencyObject found", "", 0, 0, 1, "", "");
 
 		if (parser_info->error_args) {
 			delete res;

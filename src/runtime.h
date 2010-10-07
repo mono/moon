@@ -217,7 +217,7 @@ public:
 	void EmitSourceDownloadProgressChanged (float progress);
 	void EmitError (ErrorEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void EmitError (int number, int code, const char *message);
+	void EmitError (DependencyObject *original_source, int number, int code, const char *message);
 	
 	void EmitLoad ();
 	

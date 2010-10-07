@@ -1100,9 +1100,9 @@ Surface::EmitError (ErrorEventArgs *args)
 }
 
 void
-Surface::EmitError (int number, int code, const char *message)
+Surface::EmitError (DependencyObject *original_source, int number, int code, const char *message)
 {
-	EmitError (new ErrorEventArgs ((ErrorEventArgsType)number,
+	EmitError (new ErrorEventArgs (original_source, (ErrorEventArgsType)number,
 				       MoonError (MoonError::EXCEPTION, code, message)));
 }
 

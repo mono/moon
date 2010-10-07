@@ -1001,7 +1001,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	if (demuxer->IsDrm ()) {
 		LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler () drm source\n");
 		GetDeployment ()->GetSurface ()->ShowDrmMessage ();
-		ErrorEventArgs *eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 6000, "DRM_E_UNABLE_TO_PLAY_PROTECTED_CONTENT"));
+		ErrorEventArgs *eea = new ErrorEventArgs (this, MediaError, MoonError (MoonError::EXCEPTION, 6000, "DRM_E_UNABLE_TO_PLAY_PROTECTED_CONTENT"));
 		ReportErrorOccurred (eea);
 		eea->unref ();
 	}
@@ -1610,7 +1610,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 				policy = StreamingPolicy;
 			
 			if (uri->IsInvalidPath ()) {
-				EmitAsync (MediaFailedEvent, new ErrorEventArgs (MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri")));
+				EmitAsync (MediaFailedEvent, new ErrorEventArgs (this, MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri")));
 				uri = NULL;
 			}
 		}
@@ -1720,7 +1720,7 @@ MediaElement::ReportErrorOccurred (const char *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred ('%s')\n", args);
 
-	ErrorEventArgs *eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3001, g_strdup (args)));
+	ErrorEventArgs *eea = new ErrorEventArgs (this, MediaError, MoonError (MoonError::EXCEPTION, 3001, g_strdup (args)));
 	ReportErrorOccurred (eea);
 	eea->unref ();
 }

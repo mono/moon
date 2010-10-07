@@ -1514,7 +1514,7 @@ MultiScaleImage::EmitImageOpenFailed ()
 		MoonError moon_error;
 		
 		MoonError::FillIn (&moon_error, MoonError::EXCEPTION, -2147467259, "");
-		Emit (MultiScaleImage::ImageOpenFailedEvent, new ErrorEventArgs (UnknownError, moon_error));
+		Emit (MultiScaleImage::ImageOpenFailedEvent, new ErrorEventArgs (this, UnknownError, moon_error));
 	}
 }
 

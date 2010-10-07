@@ -685,15 +685,15 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			
 			// can uri ever be null?
 			if (uri != NULL) {
-				ImageErrorEventArgs *args = NULL;
-				
+
 				if (uri->IsInvalidPath ()) {
-					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
-				}
-				
-				if (args != NULL) {
 					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-					EmitAsync (ImageFailedEvent, args);
+					ImageErrorEventArgs *args = new ImageErrorEventArgs (this, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
+
+					if (HasHandlers (ImageFailedEvent))
+						EmitAsync (ImageFailedEvent, args);
+					else
+						GetDeployment ()->GetSurface ()->EmitError (args);
 				}
 			}
 		}

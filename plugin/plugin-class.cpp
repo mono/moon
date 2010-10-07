@@ -598,7 +598,18 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	int argcount = 1;
 	PluginInstance *plugin = proxy->GetPlugin ();
 	Deployment *previous_deployment;
-	
+
+	if (calldata && calldata->Is (Type::ERROREVENTARGS))
+		js_sender = ((ErrorEventArgs *)calldata)->GetOriginalSource ();
+
+	if (js_sender && js_sender->GetObjectType () == Type::SURFACE) {
+		// This is somewhat hackish, but is required for
+		// the FullScreenChanged event (js expects the
+		// sender to be the toplevel canvas, not the surface,
+		// nor the content).
+		js_sender = ((Surface *)js_sender)->GetToplevel ();
+	}
+
 	if (plugin == NULL || plugin->HasShutdown ()) {
 		// Firefox can invalidate our NPObjects after the plugin itself
 		// has been destroyed. During this invalidation our NPObjects call 
@@ -629,14 +640,14 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 
 	previous_deployment = Deployment::GetCurrent ();
 	Deployment::SetCurrent (plugin->GetDeployment ());
-
-	if (js_sender && (js_sender->GetObjectType () == Type::SURFACE)) {
-		// This is somewhat hackish, but is required for
-		// the FullScreenChanged event (js expects the
-		// sender to be the toplevel canvas, not the surface,
-		// nor the content).
-		js_sender = ((Surface*) js_sender)->GetToplevel ();
-	}
+//
+//	if (js_sender && (js_sender->GetObjectType () == Type::SURFACE)) {
+//		// This is somewhat hackish, but is required for
+//		// the FullScreenChanged event (js expects the
+//		// sender to be the toplevel canvas, not the surface,
+//		// nor the content).
+//		js_sender = ((Surface*) js_sender)->GetToplevel ();
+//	}
 
 	MoonlightEventObjectObject *depobj = NULL; 
 	if (js_sender) {
