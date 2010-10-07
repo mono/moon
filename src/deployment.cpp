@@ -1700,6 +1700,7 @@ Deployment::DrainUnrefs ()
 	UnrefData *list;
 	UnrefData *next;
 	
+loop:
 	// Get the list of objects to unref.
 	do {
 		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
@@ -1716,6 +1717,10 @@ Deployment::DrainUnrefs ()
 		g_free (list);
 		list = next;
 	}
+
+	list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
+	if (list != NULL)
+		goto loop;
 	
 #if OBJECT_TRACKING
 	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL && objects_destroyed != objects_created) {
