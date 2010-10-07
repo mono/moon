@@ -182,7 +182,6 @@ class Surface : public EventObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
 	Surface (MoonWindow *window);
-	virtual void Dispose ();
 	
 	/* @GenerateCBinding */
 	MoonWindow *GetWindow () { return active_window; }

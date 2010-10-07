@@ -482,8 +482,10 @@ Surface::~Surface ()
 }
 
 void
-Surface::Dispose ()
+Surface::Zombify ()
 {
+	time_manager->Shutdown ();
+
 	if (toplevel) {
 		toplevel->SetIsLoaded (false);
 		toplevel->SetIsAttached (false);
@@ -491,13 +493,6 @@ Surface::Dispose ()
 	}
 	input_list->Clear (true);
 	
-	EventObject::Dispose ();
-}
-
-void
-Surface::Zombify ()
-{
-	time_manager->Shutdown ();
 	zombie = true;
 }
 

@@ -355,7 +355,6 @@ PluginInstance::Shutdown ()
 	if (surface != NULL) {
 		//gdk_error_trap_push ();
 		surface->Zombify();
-		surface->Dispose ();
 		surface->unref_delayed();
 		//gdk_error_trap_pop ();
 		surface = NULL;
