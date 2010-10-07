@@ -1150,7 +1150,7 @@ UIElement::FindElementsInHostCoordinates_p (Point p, HitTestCollection *uielemen
 	
 	UIElementNode *node = (UIElementNode *) list->First ();
 	while (node) {
-		uielement_list->Add (new Value (node->uielement));
+		uielement_list->Add (Value (node->uielement));
 		node = (UIElementNode *) node->next;
 	}
 	
@@ -1176,7 +1176,7 @@ UIElement::FindElementsInHostCoordinates_r (Rect r, HitTestCollection *uielement
 	
 	UIElementNode *node = (UIElementNode *) list->First ();
 	while (node) {
-		uielement_list->Add (new Value (node->uielement));
+		uielement_list->Add (Value (node->uielement));
 		node = (UIElementNode *) node->next;
 	}
 	

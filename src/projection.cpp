@@ -727,7 +727,7 @@ PlaneProjection::UpdateProjection ()
 	Matrix3D::Multiply (m, m, zoom);
 	Matrix3D::Multiply (m, m, viewport);
 
-	SetProjectionMatrix (new Matrix3D (m));
+	SetValue (ProjectionMatrixProperty, Value::CreateUnref (new Matrix3D (m)));
 }
 
 };

@@ -159,8 +159,8 @@ TextSelection::TextSelection ()
 	SetObjectType (Type::TEXTSELECTION);
 
 	// FIXME: we should not be doing this... should they be autocreated?
-	SetEnd (MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward));
-	SetStart (MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward));
+	SetValue (EndProperty, Value::CreateUnref (MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward)));
+	SetValue (StartProperty, Value::CreateUnref (MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward)));
 }
 
 void
@@ -266,7 +266,7 @@ RichTextBox::RichTextBox ()
 	rootSection = MoonUnmanagedFactory::CreateSection();
 
 	// FIXME: we should not be doing this... should the selection be autocreated?
-	SetSelection (new TextSelection());
+	SetValue (SelectionProperty, Value::CreateUnref (new TextSelection()));
 
 	contentElement = NULL;
 	
