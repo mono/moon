@@ -5252,7 +5252,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				}
 
 //				printf ("setting managed property: %s::%s to %s=%s\n", dep->GetType ()->GetName (), prop->GetName (), attr [i], attr [i + 1]);
-				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, g_strdup (attr [i]), v, NULL)) {
+				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, attr [i], v, NULL)) {
 					delete v;
 					g_free (attr_value);
 					continue;
@@ -5310,7 +5310,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 			if (ns == x_namespace) {
 				// Skip these, they are handled earlier
-				g_strfreev (attr_name);
 				walk = walk->prev;
 			}
 
@@ -5328,6 +5327,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			if (p->error_args)
 				break;
 		} else {
+			g_strfreev (attr_name);
 			if (!item->SetUnknownAttribute (p, attr [i], attr [i + 1])) {
 				parser_error (p, item->element_name, attr [i], 2012,
 						"Unknown attribute %s on element %s.",
@@ -5453,7 +5453,7 @@ void
 xaml_mark_property_as_set (void *parser, void *element_instance, char *name)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
-	item->MarkPropertyAsSet (g_strdup (name));
+	item->MarkPropertyAsSet (name);
 }
 
 void
