@@ -484,6 +484,8 @@ Surface::~Surface ()
 void
 Surface::Zombify ()
 {
+	zombie = true;
+
 	time_manager->Shutdown ();
 
 	if (toplevel) {
@@ -492,8 +494,6 @@ Surface::Zombify ()
 		toplevel->Dispose ();
 	}
 	input_list->Clear (true);
-	
-	zombie = true;
 }
 
 guint32
