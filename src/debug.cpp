@@ -27,6 +27,7 @@ G_END_DECLS
  
 #include "runtime.h"
 #include "debug.h"
+#include "deployment.h"
 
 #include <signal.h>
 #include <sys/syscall.h>
@@ -385,6 +386,9 @@ addr2line_offset (gpointer ip, bool use_offset)
 static char *
 get_managed_frame (gpointer ip)
 {
+	if (!Deployment::GetCurrent ()->IsAppDomainAlive ())
+		return NULL;
+
 	return get_method_from_ip (ip);
 }
 

@@ -396,6 +396,13 @@ public:
 	void Shutdown (); /* main thread only */
 	bool IsShuttingDown (); /* main thread only */
 
+#if DEBUG
+	// This method should only be used for debug purposes, it's not thread-safe (by the time it has returned,
+	// the result is invalid). It's used by the stack printing code to check if it's safe to call into mono
+	// for stack frame information.
+	bool IsAppDomainAlive () { return shutdown_state <= UnloadDomain; }
+#endif
+
 	void TrackPath (char *path);
 
 	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */
