@@ -220,10 +220,13 @@ create_window (Deployment *deployment, const char *app_id)
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 
-	if (!load_app (deployment, installer->GetBaseInstallDir (), app))
+	if (!load_app (deployment, installer->GetBaseInstallDir (), app)) {
+		surface->unref ();
 		return NULL;
-	
+	}
+
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
+	surface->unref ();
 	
 	if ((oob = deployment->GetOutOfBrowserSettings ())) {
 		load_window_icons (moon_window, deployment, oob->GetIcons ());
