@@ -2250,6 +2250,7 @@ TextBoxBase::OnApplyTemplate ()
 	} else {
 		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentElement of type %s",
 			   contentElement->GetType ()->GetName ());
+		view->SetTextBox (NULL);
 		view->unref ();
 		view = NULL;
 	}
@@ -3188,6 +3189,7 @@ TextBoxView::~TextBoxView ()
 	
 	if (textbox) {
 		textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		textbox->view->unref ();
 		textbox->view = NULL;
 	}
 	
