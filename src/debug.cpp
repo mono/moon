@@ -383,6 +383,117 @@ addr2line_offset (gpointer ip, bool use_offset)
 	return res;
 }
 
+#define STORABLE_STACK_SIZE 25
+struct storable_stack_trace_entry {
+	void *frames [STORABLE_STACK_SIZE];
+	storable_stack_trace_entry *next;
+	const char *done;
+	guint32 refcount;
+};
+struct storable_stack_trace_object {
+	void *obj;
+	int entries;
+	storable_stack_trace_entry *traces;
+	storable_stack_trace_entry *traces_end;
+};
+
+pthread_mutex_t stored_objects_mutex = PTHREAD_MUTEX_INITIALIZER;
+GHashTable *stored_objects = NULL;
+
+static void
+free_storable_stack_trace_object (gpointer ptr)
+{
+	storable_stack_trace_object *object;
+	storable_stack_trace_entry *entry;
+	storable_stack_trace_entry *next;
+
+	object = (storable_stack_trace_object *) ptr;
+
+	g_return_if_fail (object != NULL);
+	entry = object->traces;
+	while (entry != NULL) {
+		next = entry->next;
+		g_free (entry);
+		entry = next;
+	}
+	g_free (object);
+}
+
+void store_reftrace (void *obj, const char *done, guint32 refcount)
+{
+	storable_stack_trace_entry *entry;
+	storable_stack_trace_object *object = NULL;
+
+	entry = (storable_stack_trace_entry *) g_malloc (sizeof (storable_stack_trace_entry));
+	entry->done = done;
+	entry->next = NULL;
+	entry->refcount = refcount;
+	int symbols = backtrace (entry->frames, STORABLE_STACK_SIZE);
+	if (symbols < STORABLE_STACK_SIZE)
+		entry->frames [symbols] = NULL; // NULL-terminate the array.
+
+	pthread_mutex_lock (&stored_objects_mutex);
+	if (stored_objects == NULL) {
+		stored_objects = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, free_storable_stack_trace_object);
+	} else {
+		object = (storable_stack_trace_object *) g_hash_table_lookup (stored_objects, obj);
+	}
+	if (object == NULL) {
+		object = (storable_stack_trace_object *) g_malloc (sizeof (storable_stack_trace_object));
+		object->obj = obj;
+		object->traces = entry;
+		object->traces_end = entry;
+		object->entries = 1;
+		g_hash_table_insert (stored_objects, obj, object);
+	} else {
+		object->traces_end->next = entry;
+		object->traces_end = entry;
+		object->entries++;
+	}
+	pthread_mutex_unlock (&stored_objects_mutex);
+}
+
+void free_reftrace (void *obj)
+{
+	pthread_mutex_lock (&stored_objects_mutex);
+	if (stored_objects != NULL)
+		g_hash_table_remove (stored_objects, obj);
+	pthread_mutex_unlock (&stored_objects_mutex);
+}
+
+static void
+stack_trace_prefix_n_with_frames (FILE *fout, GString *sout, const char *prefix, void **ips, int maxframes, int address_count);
+
+void show_reftrace (void *obj)
+{
+	EventObject *eo = (EventObject *) obj;
+	storable_stack_trace_object *object;
+	storable_stack_trace_entry *entry;
+	int id = eo->GetId ();
+	const char *tname = eo->GetTypeName ();
+
+	object = (storable_stack_trace_object *) g_hash_table_lookup (stored_objects, obj);
+
+	if (object == NULL) {
+		fprintf (stderr, "show_reftrace (%p): Nothing found for '%s': %i\n", obj, tname, id);
+		return;
+	}
+
+	entry = object->traces;
+
+	printf ("Showing %i traces for '%s': %i (%p)\n", object->entries, tname, id, obj);
+	while (entry != NULL) {
+		int address_count = 0;
+
+		for (int i = 0; entry->frames [i] != NULL && i <= STORABLE_STACK_SIZE; i++)
+			address_count++;
+
+		printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i\n", obj, entry->done, tname, id, entry->refcount);
+		stack_trace_prefix_n_with_frames (stdout, NULL, "    ", entry->frames, STORABLE_STACK_SIZE, address_count);
+		entry = entry->next;
+	}
+}
+
 static char *
 get_managed_frame (gpointer ip)
 {
@@ -398,14 +509,21 @@ static pthread_mutex_t ip_lock = PTHREAD_MUTEX_INITIALIZER;
 static void
 stack_trace_prefix_n (FILE *fout, GString *sout, const char *prefix, int maxframes)
 {
-	size_t prefix_length = strlen (prefix);
-	void *ips [maxframes];
 	int address_count;
+	void *ips [maxframes];
+
+	address_count = backtrace (ips, maxframes);
+
+	stack_trace_prefix_n_with_frames (fout, sout, prefix, ips, maxframes, address_count);
+}
+
+static void
+stack_trace_prefix_n_with_frames (FILE *fout, GString *sout, const char *prefix, void **ips, int maxframes, int address_count)
+{
+	size_t prefix_length = strlen (prefix);
 	char **names;
 	gpointer ip;
-	
-	address_count = backtrace (ips, maxframes);
-	
+
 	pthread_mutex_lock (&ip_lock);
 	
 	for (int i = 2; i < address_count; i++) {

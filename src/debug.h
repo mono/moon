@@ -31,6 +31,9 @@
 
 void print_reftrace (const char * type, const char * typname, int refcount, bool keep);
 void dump_frames (void);
+void store_reftrace (void *obj, const char *done, guint32 refcount);
+void free_reftrace (void *obj);
+void show_reftrace (void *obj);
 
 G_BEGIN_DECLS
 

@@ -1024,6 +1024,8 @@ Deployment::ReportLeaks ()
 				if (strong_handled && obj->GetRefCount () < 2)
 					continue;
 				printf ("\t\t%p\t%i = %s, refcount: %i\n", obj, obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
+				if (getenv ("MOONLIGHT_OBJECT_TRACK_STORE_REPORT") != NULL)
+					show_reftrace (obj);
 			}
 		}
 

@@ -599,6 +599,7 @@ static int object_id = -1;
 static const char *track_object_type = NULL;
 static bool use_visi_output = false;
 static bool track_all = false;
+static bool track_store = false;
 
 #define OBJECT_TRACK_ID (0)
 
@@ -616,29 +617,37 @@ EventObject::Track (const char* done, const char* typname)
 		track_object_type = getenv ("MOONLIGHT_OBJECT_TRACK_TYPE");
 		use_visi_output = (getenv ("MOONLIGHT_OBJECT_TRACK_VISI") != NULL);
 		track_all = (getenv ("MOONLIGHT_OBJECT_TRACK_ALL") != NULL);
+		track_store = (getenv ("MOONLIGHT_OBJECT_TRACK_STORE") != NULL);
 	}
 
-	if (track_all)
+	if (track_store) {
+		if (strcmp (done, "Destroyed") != 0) {
+			store_reftrace (this, done, refcount);
+		} else {
+			free_reftrace (this);
+		}
+	} else if (track_all) {
 		printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n", this, done, typname, id, refcount, deployment);
 
-	if (id == object_id || (track_object_type != NULL && typname != NULL && strcmp (typname, track_object_type) == 0)) {
-		char *st = NULL;
-		// load the stack trace before we print anything
-		// this way there's a lot smaller chance of 
-		// ending up with other output between the first line (tracked object of type...)
-		// and the stack trace when using multiple threads.
-		if (!use_visi_output)
-			st = get_stack_trace ();
-		
-		if (!track_all)
-			printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n", this, done, typname, id, refcount, deployment);
-
-		if (!use_visi_output) {
-			printf("%s", st);
-		} else {
-			print_reftrace (done, typname, refcount, false);
+		if (id == object_id || (track_object_type != NULL && typname != NULL && strcmp (typname, track_object_type) == 0)) {
+			char *st = NULL;
+			// load the stack trace before we print anything
+			// this way there's a lot smaller chance of 
+			// ending up with other output between the first line (tracked object of type...)
+			// and the stack trace when using multiple threads.
+			if (!use_visi_output)
+				st = get_stack_trace ();
+			
+			if (!track_all)
+				printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n", this, done, typname, id, refcount, deployment);
+	
+			if (!use_visi_output) {
+				printf("%s", st);
+			} else {
+				print_reftrace (done, typname, refcount, false);
+			}
+			g_free (st);
 		}
-		g_free (st);
 	}
 }
 
