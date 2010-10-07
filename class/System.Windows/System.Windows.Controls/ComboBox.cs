@@ -373,8 +373,16 @@ namespace System.Windows.Controls
 		{
 			base.OnKeyDown (e);
 			if (!e.Handled) {
+				var key = e.Key;
+				if (FlowDirection == FlowDirection.RightToLeft) {
+					if (key == Key.Left)
+						key = Key.Right;
+					else if (key == Key.Right)
+						key = Key.Left;
+				}
+
 				e.Handled = true;
-				switch (e.Key) {
+				switch (key) {
 				case Key.Escape:
 					IsDropDownOpen = false;
 					break;
