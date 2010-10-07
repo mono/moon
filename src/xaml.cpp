@@ -5022,7 +5022,8 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 			}
 		} else if (types->IsSubclassOf (prop->GetPropertyType (), Type::COLLECTION) || types->IsSubclassOf (prop->GetPropertyType (), Type::RESOURCE_DICTIONARY)) {
 			// The items were added in add_child
-			return true;
+			res = true;
+			goto cleanup;
 		} else {
 			if (raise_errors)
 				parser_error (p, item->element_name, NULL, 2010, "does not support %s as content.", value->element_name);
