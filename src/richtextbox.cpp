@@ -302,6 +302,11 @@ RichTextBox::RichTextBox ()
 
 RichTextBox::~RichTextBox ()
 {
+	rootSection->unref ();
+	if (view) {
+		view->SetTextBox (NULL);
+		view->unref ();
+	}
 	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
 	
 	ResetIMContext ();
@@ -1123,6 +1128,11 @@ RichTextBox::OnApplyTemplate ()
 			contentElement->SetValue (prop, GetValue (RichTextBox::HorizontalScrollBarVisibilityProperty));
 	}
 	
+	if (view) {
+		view->SetTextBox (NULL);
+		view->unref ();
+	}
+
 	// Create our view control
 	view = MoonUnmanagedFactory::CreateRichTextBoxView ();
 	
@@ -1145,6 +1155,7 @@ RichTextBox::OnApplyTemplate ()
 	} else {
 		g_warning ("RichTextBox::OnApplyTemplate: don't know how to handle a ContentElement of type %s",
 			   contentElement->GetType ()->GetName ());
+		view->SetTextBox (NULL);
 		view->unref ();
 		view = NULL;
 	}
@@ -1327,6 +1338,7 @@ RichTextBoxView::~RichTextBoxView ()
 	
 	if (textbox) {
 		textbox->RemoveHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
+		textbox->view->unref ();
 		textbox->view = NULL;
 	}
 	

@@ -611,6 +611,11 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 
 TextBoxBase::~TextBoxBase ()
 {
+	if (view) {
+		view->SetTextBox (NULL);
+		view->unref ();
+	}
+
 	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	
 	ResetIMContext ();
@@ -2219,6 +2224,11 @@ TextBoxBase::OnApplyTemplate ()
 		return;
 	}
 	
+	if (view != NULL) {
+		view->SetTextBox (NULL);
+		view->unref ();
+	}
+
 	view = MoonUnmanagedFactory::CreateTextBoxView ();
 	
 	view->SetEnableCursor (!is_read_only);
