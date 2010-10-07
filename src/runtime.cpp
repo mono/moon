@@ -2311,6 +2311,9 @@ Surface::EmitFocusChangeEvents()
 bool
 Surface::FocusElement (UIElement *focused)
 {
+	if (zombie)
+		return true;
+
 	if (focused == focused_element)
 		return true;
 
