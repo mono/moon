@@ -152,8 +152,21 @@ namespace System.Windows.Controls
 				if (t != null)
 					t.Focus ();
 
-				UpdatePopupSizeAndPosition (this, EventArgs.Empty);
 				LayoutUpdated += UpdatePopupSizeAndPosition;
+
+				UpdateLayout ();
+				// FIXME: this *shouldn't* be
+				// necessary, but UpdateLayout only
+				// runs on the layer that this
+				// combobox is in, and the popup's
+				// child is in a separate layer.
+				//
+				// this is needed to get templates
+				// expanded in popup children
+				// synchronously, which drt cfd1
+				// requires.
+				_popup.Child.UpdateLayout ();
+
 				OnDropDownOpened (EventArgs.Empty);
 
 				// Raises UIA Event
