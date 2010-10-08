@@ -948,16 +948,14 @@ Deployment::~Deployment()
 void 
 Deployment::ReportLeaks ()
 {
-	printf ("Deployment leak report:\n");
+	printf ("Deployment leak report for %p/%i: leaked %i objects (%.1f%%) ", this, this->GetId (), objects_created - objects_destroyed, (100.0 * objects_destroyed) / objects_created);
 	float used = (float)(mono_gc_get_used_size () / 1024.0 / 1024.0);
 	float total = (float)(mono_gc_get_heap_size () / 1024.0 / 1024.0);
 	printf ("Managed heap used: %.2f MB. Managed heap total: %.2f MB\n", used, total);
-	if (objects_created == objects_destroyed) {
-		printf ("\tno leaked objects.\n");
-	} else {
+
+	if (objects_created != objects_destroyed) {
 		printf ("\tObjects created: %i\n", objects_created);
 		printf ("\tObjects destroyed: %i\n", objects_destroyed);
-		printf ("\tDifference: %i (%.1f%%)\n", objects_created - objects_destroyed, (100.0 * objects_destroyed) / objects_created);
 
 		GPtrArray* last_n = g_ptr_array_new ();
 		GHashTable *by_type = g_hash_table_new (g_str_hash, g_str_equal);;
@@ -1723,7 +1721,7 @@ loop:
 		goto loop;
 	
 #if OBJECT_TRACKING
-	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL && objects_destroyed != objects_created) {
+	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL) {
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
 	}
