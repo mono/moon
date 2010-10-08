@@ -470,11 +470,18 @@ KeyEventArgs::GetPlatformKeyCode ()
 //
 // ErrorEventArgs
 //
+ErrorEventArgs::ErrorEventArgs (DependencyObject *original_source, ErrorEventArgs *args)
+	: EventArgs (args->GetObjectType ())
+{
+	Initialize (original_source, args->error_type, *args->error, args->extended_code, args->extended_message);
+}
+
 ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error)
 	: EventArgs (kind)
 {
 	Initialize (NULL, type, error, 0, NULL);
 }
+
 ErrorEventArgs::ErrorEventArgs (DependencyObject *original_source, Type::Kind kind, ErrorEventArgsType type, const MoonError error)
 	: EventArgs (kind)
 {

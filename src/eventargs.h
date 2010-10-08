@@ -420,6 +420,8 @@ protected:
 
 public:
 	/* @SkipFactories */
+	ErrorEventArgs (DependencyObject *original_source, ErrorEventArgs *args);
+	/* @SkipFactories */
 	ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error);
 	/* @SkipFactories */
 	ErrorEventArgs (DependencyObject *original_source, Type::Kind kind, ErrorEventArgsType type, const MoonError error);
