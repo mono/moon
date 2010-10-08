@@ -458,6 +458,7 @@ class ImageErrorEventArgs : public ErrorEventArgs {
 public:
 	/* @SkipFactories */
 	ImageErrorEventArgs (DependencyObject *original_source, MoonError error);
+	ImageErrorEventArgs (DependencyObject *original_source, ImageErrorEventArgs *args);
 
 protected:
 	virtual ~ImageErrorEventArgs ();

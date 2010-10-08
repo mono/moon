@@ -50,9 +50,8 @@ icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
 	switch (type) {
 	case NotifyCompleted:
 		if (icon->loader) {
-			MoonError *error = NULL;
-			icon->loader->Close (&error);
-			if (error == NULL) {
+			icon->loader->Close ();
+			if (icon->loader->GetError () == NULL) {
 				/* get the pixbuf and add it to our icon_list */
 				pixbuf = icon->loader->GetPixbuf ();
 				window->SetIconFromPixbuf (pixbuf);
@@ -103,8 +102,8 @@ icon_loader_write_cb (EventObject *obj, EventArgs *ea, gpointer user_data)
 	if (icon->loader == NULL && offset == 0)
 		CreateLoader (icon, buffer);
 
-	if (icon->loader && icon->moon_error == NULL)
-		icon->loader->Write (buffer, n, &icon->moon_error);
+	if (icon->loader && icon->loader->GetError () == NULL)
+		icon->loader->Write (buffer, n);
 }
 
 static void

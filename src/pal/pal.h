@@ -195,10 +195,15 @@ public:
 
 class MoonPixbufLoader {
 public:
-	virtual void Write (const guchar *buffer, int buflen, MoonError **error = NULL) = 0;
-	virtual void Close (MoonError **error = NULL) = 0;
-	virtual MoonPixbuf *GetPixbuf () = 0;
-	virtual ~MoonPixbufLoader () {}
+	MoonPixbufLoader () { error = NULL;  }
+	virtual void Write (const guchar *buffer, int buflen) = 0;
+	virtual void Close () = 0;
+	virtual MoonPixbuf *GetPixbuf ()=0;
+	virtual ~MoonPixbufLoader () { delete error; }
+
+	MoonError *GetError () { return error; }
+protected:
+	MoonError *error;
 };
 
 enum MoonMessageBoxType {
