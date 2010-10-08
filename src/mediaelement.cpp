@@ -1210,15 +1210,16 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	InvalidateArrange ();
 
 	SetState (MediaElementStateClosed);
-	
-	if (args)
-		args->ref ();
-	
-	if (flags & Initializing)
-		EmitAsync (MediaFailedEvent, args);
-	else
-		Emit (MediaFailedEvent, args);
-	
+
+	args = new ErrorEventArgs (this, args);
+	if (HasHandlers (MediaFailedEvent)) {
+		if (flags & Initializing)
+			EmitAsync (MediaFailedEvent, args);
+		else
+			Emit (MediaFailedEvent, args);
+	} else {
+		GetDeployment ()->GetSurface ()->EmitError (args);
+	}
 	flags &= ~Initializing;
 }
 
@@ -1610,7 +1611,11 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 				policy = StreamingPolicy;
 			
 			if (uri->IsInvalidPath ()) {
-				EmitAsync (MediaFailedEvent, new ErrorEventArgs (this, MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri")));
+				ErrorEventArgs *args =  new ErrorEventArgs (this, MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
+				if (HasHandlers (MediaFailedEvent))
+					EmitAsync (MediaFailedEvent, args);
+				else
+					GetDeployment ()->GetSurface ()->EmitError (args);
 				uri = NULL;
 			}
 		}
