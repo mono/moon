@@ -29,39 +29,62 @@ using System.IO;
 using System.Windows.Resources;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Collections.Generic;
 
 namespace System.Windows.Browser {
 
 	internal class HostServices {
 
 		ScriptObject jsonSerializer;
+		Dictionary<string, Type> types;
+
+		HostServices ()
+		{
+			types = new Dictionary<string, Type> ();
+		}
+
+		static HostServices services = new HostServices ();
+
+		public static HostServices Current {
+			get { return services; }
+		}
+
+		public Dictionary<string, Type> CreateableTypes {
+			get { return types; }
+		}
 
 		[ScriptableMember(ScriptAlias="createObject")]
 		public ScriptObject CreateObject (string name)
 		{
-			if (!HtmlPage.ScriptableTypes.ContainsKey (name))
+			if (!types.ContainsKey (name))
 				return null;
 
-			object o = Activator.CreateInstance (HtmlPage.ScriptableTypes[name]);
-
-			return new ManagedObject (o);
+			return CreateObject (types [name]);
 		}
 
 		[ScriptableMember(ScriptAlias="createObject")]
 		public ScriptObject CreateObject (string name, object obj)
 		{
-			if (!HtmlPage.ScriptableTypes.ContainsKey (name))
+			if (!types.ContainsKey (name))
 				return null;
+			return CreateObject (types [name], obj);
+		}
+
+		public ScriptObject CreateObject (Type type, object obj = null)
+		{
+			if (obj == null)
+				return new ManagedObject (Activator.CreateInstance (type));
 
 			if (obj is double || obj is int) {
 				int size = int.Parse (obj.ToString());
-				Type t = HtmlPage.ScriptableTypes[name].GetElementType ();
+				Type t = type.GetElementType ();
 				if (t == null)
 					return null;
 				return new ManagedObject (Array.CreateInstance (t, size));
 			}
-			return new ManagedObject (JsonDeserialize (obj, HtmlPage.ScriptableTypes[name]));
+			return new ManagedObject (JsonDeserialize (obj, type));
 		}
+
 
 		[ScriptableMember(ScriptAlias="jsonSerialize")]
 		public string JsonSerialize (ScriptObject obj)
@@ -114,13 +137,6 @@ namespace System.Windows.Browser {
 				return deserializer.ReadObject (ms);
 			}
 		}
-
-		static HostServices services = new HostServices ();
-
-		public static HostServices Services {
-			get { return services; }
-		}
-
 
 		ScriptObject JsonSerializer {
 			get {

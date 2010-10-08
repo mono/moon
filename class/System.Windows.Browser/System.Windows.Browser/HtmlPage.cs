@@ -38,28 +38,20 @@ namespace System.Windows.Browser {
 
 	public static class HtmlPage {
 
-		private static BrowserInformation browser_info;
-		private static HtmlWindow window;
-		private static HtmlDocument document;
-		private static HtmlElement plugin;
-		private static Dictionary<string, Type> scriptableTypes;
-		private static int last_user_initiated_event;
+		static BrowserInformation browser_info;
+		static HtmlWindow window;
+		static HtmlDocument document;
+		static HtmlElement plugin;
+		static int last_user_initiated_event;
 
 		static HtmlPage ()
 		{
-			scriptableTypes = new Dictionary<string, Type> ();
-
 			if (PluginHost.Handle != IntPtr.Zero) {
 				// we don't call RegisterScriptableObject since we're registering a private type
-				ScriptObject services = new ManagedObject (HostServices.Services);
+				ScriptObject services = new ManagedObject (HostServices.Current);
 				NativeMethods.moonlight_scriptable_object_register (PluginHost.Handle, "services", services.Handle);
 			}
 		}
-
-		static internal Dictionary<string, Type> ScriptableTypes {
-			get { return scriptableTypes;}
-		}
-
 
 		public static BrowserInformation BrowserInformation {
 			get {
@@ -84,7 +76,7 @@ namespace System.Windows.Browser {
 				CheckHtmlAccess();
 
 				if (document == null)
-					document = HtmlObject.GetPropertyInternal<HtmlDocument> (IntPtr.Zero, "document");
+					document = (HtmlDocument) HtmlObject.GetPropertyInternal (IntPtr.Zero, "document");
 
 				return document;
 			}
@@ -136,10 +128,10 @@ namespace System.Windows.Browser {
 			if (!ManagedObject.IsCreateable (type))
 				throw new ArgumentException (type.ToString (), "type");
 
-			if (ScriptableTypes.ContainsKey (scriptAlias))
+			if (HostServices.Current.CreateableTypes.ContainsKey (scriptAlias))
 				throw new ArgumentException ("scriptAlias");
 
-			ScriptableTypes [scriptAlias] = type;
+			HostServices.Current.CreateableTypes [scriptAlias] = type;
 		}
 
 		public static void UnregisterCreateableType (string scriptAlias)
@@ -147,10 +139,10 @@ namespace System.Windows.Browser {
 			CheckThread ();
 			CheckName (scriptAlias, "scriptAlias");
 
-			if (!ScriptableTypes.ContainsKey (scriptAlias))
+			if (!HostServices.Current.CreateableTypes.ContainsKey (scriptAlias))
 				throw new ArgumentException ("scriptAlias");
 
-			ScriptableTypes.Remove (scriptAlias);
+			HostServices.Current.CreateableTypes.Remove (scriptAlias);
 		}
 
 		public static HtmlWindow Window {
@@ -166,7 +158,7 @@ namespace System.Windows.Browser {
 			get {
 				CheckThread ();
 				if (window == null)
-					window = ScriptObject.GetPropertyInternal<HtmlWindow> (IntPtr.Zero, "window");
+					window = (HtmlWindow) ScriptObject.GetPropertyInternal (IntPtr.Zero, "window");
 
 				return window;
 			}

@@ -32,8 +32,8 @@ namespace System.Windows.Browser
 {
 	public sealed class HtmlDocument : HtmlObject 
 	{
-		private HtmlElement document_element;
-		private HtmlElement body;
+		HtmlElement document_element;
+		HtmlElement body;
 
 		internal HtmlDocument ()
 		{
@@ -46,30 +46,30 @@ namespace System.Windows.Browser
 
 		public HtmlElement DocumentElement {
 			get {
-				return GetPropertyInternal <HtmlElement> ("documentElement");
+				return (HtmlElement) GetProperty ("documentElement");
 			}
 		}
 
 		public HtmlElement CreateElement (string tagName)
 		{
-			return InvokeInternal<HtmlElement> ("createElement", tagName);
+			return (HtmlElement) InvokeInternal ("createElement", tagName);
 		}
 
 		public HtmlElement GetElementById (string id)
 		{
-			return InvokeInternal<HtmlElement>("getElementById", id);
+			return (HtmlElement) InvokeInternal ("getElementById", id);
 		}
 
 		public ScriptObjectCollection GetElementsByTagName (string tagName)
 		{
-			return InvokeInternal<ScriptObjectCollection> ("getElementsByTagName", tagName);
+			return (ScriptObjectCollection) InvokeInternal ("getElementsByTagName", tagName);
 		}
 		
 		public IDictionary<string,string> QueryString {
 			get {
 				// document.location.search
-				ScriptObject loc = GetPropertyInternal<ScriptObject> ("location");
-				string search = loc.GetPropertyInternal<string> ("search");
+				ScriptObject loc = (ScriptObject) GetProperty ("location");
+				string search = (string) loc.GetProperty ("search");
 
 				Dictionary<string, string> res = new Dictionary<string, string> ();
 
@@ -104,7 +104,7 @@ namespace System.Windows.Browser
 		
 		public string Cookies {
 			get {
-				return GetPropertyInternal<string> ("cookie");
+				return (string) GetProperty ("cookie");
 			}
 			set {
 				SetProperty ("cookie", value);
@@ -113,18 +113,18 @@ namespace System.Windows.Browser
 
 		public Uri DocumentUri {
 			get {
-				ScriptObject location = GetPropertyInternal<ScriptObject> ("location");
+				ScriptObject location = GetProperty ("location") as ScriptObject;
 				if (location == null)
 					return null;
 
-				return new Uri (location.GetPropertyInternal<string> ("href"));
+				return new Uri ((string)location.GetProperty ("href"));
 			}
 		}
 		
 		public HtmlElement Body {
 			get {
 				if (body == null)
-					body = GetPropertyInternal<HtmlElement> ("body");
+					body = GetProperty ("body") as HtmlElement;
 
 				return body;
 			}
@@ -132,7 +132,7 @@ namespace System.Windows.Browser
 		
 		public void Submit ()
 		{
-			ScriptObjectCollection forms = GetElementsByTagName ("form");
+			ScriptObjectCollection forms = GetElementsByTagName ("form") as ScriptObjectCollection;
 			if (forms.Count < 1)
 				return;
 			forms [0].Invoke ("submit");
@@ -140,7 +140,7 @@ namespace System.Windows.Browser
 
 		public void Submit (string formId)
 		{
-			HtmlElement form = GetElementById (formId);
+			HtmlElement form = GetElementById (formId) as HtmlElement;
 			if (form == null)
 				return;
 			form.Invoke ("submit");

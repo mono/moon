@@ -66,7 +66,7 @@ namespace System.Windows.Browser
 			
 			if (result != IntPtr.Zero) {
 				Value v = (Value)Marshal.PtrToStructure (result, typeof (Value));
-				return ScriptObjectHelper.ObjectFromValue<object> (v);
+				return ScriptObjectHelper.FromValue (v);
 			}
 			return null;
 		}
@@ -111,8 +111,8 @@ namespace System.Windows.Browser
 			if (NewWindowTargets.Contains (target)) {
 				return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 			} else {
-				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
-				SetPropertyInternal (loc, "href", navigateToUri.ToString ());
+				ScriptObject loc = HtmlPage.Document.GetProperty ("location") as ScriptObject;
+				SetPropertyInternal (loc.Handle, "href", navigateToUri.ToString ());
 				return HtmlPage.Window;
 			}
 		}
@@ -124,8 +124,10 @@ namespace System.Windows.Browser
 
 		public string CurrentBookmark {
 			get {
-				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
-				string hash = GetPropertyInternal<string> (loc, "hash");
+				ScriptObject loc = HtmlPage.Document.GetProperty ("location") as ScriptObject;
+				if (loc == null)
+					return String.Empty;
+				string hash = GetPropertyInternal (loc.Handle, "hash") as string;
 
 				if (string.IsNullOrEmpty (hash) || hash [0] != '#')
 					return String.Empty;
@@ -135,8 +137,8 @@ namespace System.Windows.Browser
 				if (value == null)
 					throw new ArgumentNullException ("CurrentBookmark");
 
-				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
-				SetPropertyInternal (loc, "hash", String.Concat ("#", value));
+				ScriptObject loc = HtmlPage.Document.GetProperty ("location") as ScriptObject;
+				SetPropertyInternal (loc.Handle, "hash", String.Concat ("#", value));
 			}
 		}
 

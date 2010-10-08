@@ -86,7 +86,9 @@ namespace System.Windows.Browser
 				
 		public void RemoveStyleAttribute (string name)
 		{
-			ScriptObject so = GetPropertyInternal<ScriptObject> ("style");
+			ScriptObject so = GetProperty ("style") as ScriptObject;
+			if (so == null)
+				return;
 			so.Invoke ("removeProperty", name);
 		}
 
@@ -104,27 +106,27 @@ namespace System.Windows.Browser
 		}
 
 		public ScriptObjectCollection Children {
-			get { return new ScriptObjectCollection (GetPropertyInternal<IntPtr> ("childNodes")); }
+			get { return GetProperty ("childNodes") as ScriptObjectCollection; }
 		}
 
 		public string CssClass {
-			get { return GetPropertyInternal<string> ("class"); }
+			get { return (string) GetProperty ("class"); }
 			set { SetProperty ("class", value); }
 		}
 
 		public string Id {
-			get { return GetPropertyInternal<string> ("id"); }
+			get { return (string) GetProperty ("id"); }
 			set { SetProperty ("id", value); }
 		}
 
 		public HtmlElement Parent {
 			get {
-				return GetPropertyInternal <HtmlElement> ("parentNode");
+				return (HtmlElement) GetProperty ("parentNode");
 			}
 		}
 
 		public string TagName {
-			get { return GetPropertyInternal<string> ("tagName"); }
+			get { return (string) GetProperty ("tagName"); }
 		}
 	}
 }

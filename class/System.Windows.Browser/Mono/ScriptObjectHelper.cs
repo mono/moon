@@ -29,109 +29,156 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Windows.Interop;
 using System;
+using System.Globalization;
 
 namespace Mono {
 
 	internal static class ScriptObjectHelper {
 
-		public static object ObjectFromValue<T> (Value v)
+		public static bool TryChangeType (object value, Type type, CultureInfo culture, out object ret)
 		{
-			// When the target type is object, SL converts ints to doubles to wash out
+			ret = value;
+			if (value == null)
+				return true;
+
+			if (value.GetType() == type)
+				return true;
+
+			ScriptObject so = value as ScriptObject;
+			if (so != null) {
+				if (value.GetType ().Equals (typeof(ManagedObject)) || value.GetType().Equals(typeof(ScriptObject))) {
+					ret = so.ConvertTo (type, false);
+					return true;
+				} else if (type.IsAssignableFrom (value.GetType ())) {
+					return true;
+				}
+				return false;
+			}
+
+			bool ismousebuttons = type.Equals (typeof(MouseButtons));
+			if (ismousebuttons) {
+				try {
+					int d = (int) Convert.ChangeType (value, typeof(int), culture);
+					switch (d) {
+						case 0: ret = MouseButtons.Left; break;
+						case 1: ret = MouseButtons.Middle; break;
+						case 2:	ret = MouseButtons.Right; break;
+						default:
+							return false;
+					}
+					return true;
+				} catch {
+					return false;
+				}
+			}
+
+			if (type.IsAssignableFrom (value.GetType ())) {
+				return true;
+			}
+
+			if (type.IsEnum) {
+				try {
+					ret = Enum.Parse (type, value.ToString (), true);
+					return true;
+				} catch {
+					return false;
+				}
+			}
+
+			if (type == typeof(Guid) && value is string) {
+				ret = new Guid ((string)value);
+				return true;
+			}
+
+			if (type == typeof (ScriptObject)) {
+				ret = new ManagedObject (value);
+				return true;
+			}
+
+			try {
+				ret = Convert.ChangeType (value, type, culture);
+				return true;
+			}
+			catch {
+				switch (Type.GetTypeCode (type))
+				{
+					case TypeCode.Char:
+					case TypeCode.Byte:
+					case TypeCode.SByte:
+					case TypeCode.Int16:
+					case TypeCode.Int32:
+					case TypeCode.Int64:
+					case TypeCode.UInt16:
+					case TypeCode.UInt32:
+					case TypeCode.UInt64:
+					case TypeCode.Single:
+					case TypeCode.Double:
+						ret = Convert.ChangeType (0, type, culture);
+						return true;
+					case TypeCode.String:
+						ret = "";
+						return true;
+					case TypeCode.Boolean:
+						ret = false;
+						return true;
+				}
+			}
+
+			return false;
+
+		}
+
+		public static object FromValue (Value v)
+		{
+			// When the target type is a number or equivalent, SL converts ints
+			// to doubles to wash out
 			// browser differences. (Safari apparently always returns doubles, FF
 			// ints and doubles, depending on the value).
 			// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
 
-			Type type = typeof (T);
-			bool isobject = type.Equals (typeof(object));
-			bool ismousebuttons = type.Equals (typeof(MouseButtons));
-
 			switch (v.k) {
-			case Kind.BOOL:
-				return v.u.i32 != 0;
-			case Kind.UINT64:
-				if (isobject)
-					return (double) v.u.ui64;
-				else if (type != typeof (UInt64))
-					return Convert.ChangeType (v.u.i64, type, null);
-				return v.u.ui64;
-			case Kind.INT32:
-				if (isobject)
+				case Kind.BOOL:
+					return v.u.i32 != 0;
+				case Kind.INT32:
 					return (double) v.u.i32;
-				else if (ismousebuttons) {
-					switch (v.u.i32) {
-						case 0: return MouseButtons.Left;
-						case 1: return MouseButtons.Middle;
-						case 2:	return MouseButtons.Right;
-						default:
-							throw new ArgumentException ("The browser returned an unsupported value for 'button'");
-					}
-				} else if (type != typeof (Int32))
-					return Convert.ChangeType (v.u.i32, type, null);
-				return v.u.i32;
-			case Kind.INT64:
-				if (isobject)
-					return (double) v.u.i64;
-				else if (type != typeof (Int64))
-					return Convert.ChangeType (v.u.i64, type, null);
-				return v.u.i64;
-			case Kind.DOUBLE:
-				if (isobject)
+				case Kind.DOUBLE:
 					return v.u.d;
-				else if (type != typeof (Double))
-					return Convert.ChangeType (v.u.d, type, null);
-				return v.u.d;
-			case Kind.STRING:
-				string s = Marshal.PtrToStringAnsi (v.u.p);
-				if (isobject || type.Equals (typeof (string)))
-					return s;
-				else if (type.Equals (typeof(DateTime)))
-					return DateTime.Parse (s);
-				return Convert.ChangeType (s, type, null);
-			case Kind.NPOBJ:
-				if (type.Equals (typeof(IntPtr)))
-				    return v.u.p;
+				case Kind.STRING:
+					return Marshal.PtrToStringAnsi (v.u.p);
+				case Kind.NPOBJ:
+					if (v.IsNull)
+						return null;
 
-				if (v.u.p == IntPtr.Zero)
-					return null;
+					ScriptObject reference = ScriptObject.LookupScriptObject (v.u.p);
+					if (reference != null)
+						return reference;
 
-				ScriptObject reference = ScriptObject.LookupScriptObject (v.u.p);
-				if (reference != null)
-					return reference;
-
-				if (!isobject && typeof (ScriptObject).IsAssignableFrom (type)) {
-					return CreateInstance<T> (v.u.p);
-				} else if (isobject) {
 					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "nodeType")) {
+
 						Value val;
 						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
-
-						if (val.u.i32 == 9 /* HtmlDocument */) {
-							object result = CreateInstance<HtmlDocument> (v.u.p);
-							NativeMethods.value_free_value (ref val);
-							return result;
-						}
-						else if (val.u.i32 == 1 /* HtmlElement */) {
-							object result = CreateInstance<HtmlElement> (v.u.p);
-							NativeMethods.value_free_value (ref val);
-							return result;
-						}
-
+						int r = val.u.i32;
 						NativeMethods.value_free_value (ref val);
+
+						if (r == 9)
+							return new HtmlDocument (v.u.p);
+						else if (r == 1)
+							return new HtmlElement (v.u.p);
+
 					}
-					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "location")) {
-						return CreateInstance<HtmlWindow> (v.u.p);
-					}
-					return CreateInstance<ScriptObject> (v.u.p);
-				} else
-					return v.u.p;
+					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "location"))
+						return new HtmlWindow (v.u.p);
+					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "length") &&
+							 NativeMethods.html_object_has_method (PluginHost.Handle, v.u.p, "item"))
+						return new ScriptObjectCollection (v.u.p);
+					return new ScriptObject (v.u.p);
 			default:
 				Console.WriteLine ("unsupported Kind.{0}", v.k);
 				throw new NotSupportedException ();
 			}
 		}
-	
 
-		public static void ValueFromObject (ref Value v, object o)
+		public static void ToValue (ref Value v, object o)
 		{
 			if (o == null) {
 				v.k = Kind.NPOBJ;
@@ -139,58 +186,28 @@ namespace Mono {
 				return;
 			}
 
-			switch (Type.GetTypeCode (o.GetType())) {
-				case TypeCode.Byte:
-					v.k = Kind.UINT32;
-					v.u.ui32 = Convert.ToUInt32 (o);
-					break;
-				case TypeCode.SByte:
-					v.k = Kind.INT32;
-					v.u.i32 = Convert.ToInt32 (o);
-					break;
-				case TypeCode.Int16:
-					v.k = Kind.INT32;
-					v.u.i32 = Convert.ToInt32 (o);
-					break;
-				case TypeCode.UInt16:
-					v.k = Kind.UINT32;
-					v.u.ui32 = Convert.ToUInt32 (o);
-					break;
-				case TypeCode.Single:
-				case TypeCode.Int64:
-				case TypeCode.UInt64:
-				case TypeCode.Decimal:
-					v.k = Kind.DOUBLE;
-					v.u.d = Convert.ToDouble (o);
-					break;
-				case TypeCode.DateTime:
-					v.k = Kind.DATETIME;
-					v.u.i64 = (((DateTime)o).Ticks - new DateTime (1970,1,1).Ticks) / 10000;
-					break;
-				case TypeCode.Object:
-	//				Console.WriteLine ("Trying to marshal managed object {0}...", o.GetType ().FullName);
-					ScriptObject so = o as ScriptObject;
-					v.k = Kind.NPOBJ;
-					if (so != null) {
-						v.u.p = so.Handle;
-					} else {
-						if (o is Guid) {
-							v.k = Kind.STRING;
-							v.u.p = Value.StringToIntPtr (o.ToString ());
-						} else {
-							ManagedObject obj = (ManagedObject.LookupManagedObject (o) ?? new ManagedObject (o));
-							v.u.p = obj.Handle;
-						}
-					}
-	//				Console.WriteLine ("  Marshalled as {0}", v.k);
-					break;
-				default:
-					if (o.GetType ().IsEnum) {
-						v.k = Kind.INT32;
-						v.u.i32 = Convert.ToInt32 (o);
-					} else
-						v = Value.FromObject (o);
-					break;
+			if (o is sbyte || o is short || o is int || o is byte || o is ushort ||
+				o is uint || o is long || o is ulong || o is float || o is double ||
+				o is decimal || o.GetType ().IsEnum) {
+				v.k = Kind.DOUBLE;
+				v.u.d = Convert.ToDouble (o);
+			} else if (o is bool) {
+				v.k = Kind.BOOL;
+				v.u.i32 = ((bool) o) ? 1 : 0;
+			} else if (o is char || o is string || o is Guid) {
+				v.k = Kind.STRING;
+				v.u.p = Value.StringToIntPtr (o.ToString ());
+			} else if (o is DateTime) {
+				v.k = Kind.DATETIME;
+				v.u.i64 = (((DateTime)o).Ticks - new DateTime (1970,1,1).Ticks) / 10000;
+			} else if (o is ScriptObject) {
+				// FIXME: We should ref the SO here
+				v.k = Kind.NPOBJ;
+				v.u.p = ((ScriptObject)o).Handle;
+			} else {
+				// FIXME: We should ref the SO here
+				v.k = Kind.NPOBJ;
+				v.u.p = ManagedObject.GetManagedObject (o).Handle;
 			}
 		}
 
@@ -198,13 +215,18 @@ namespace Mono {
 		{
 			ConstructorInfo i = typeof(T).GetConstructor (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
 						null, new Type[]{typeof(IntPtr)}, null);
-
 			object o = i.Invoke (new object[]{ptr});
-
 			return (T) o;
 		}
 
-	
+		public static object CreateInstance (Type type, IntPtr ptr)
+		{
+			ConstructorInfo i = type.GetConstructor (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+						null, new Type[]{typeof(IntPtr)}, null);
+			object o = i.Invoke (new object[]{ptr});
+			return o;
+		}
+
 	}
 
 }

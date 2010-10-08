@@ -1230,6 +1230,8 @@ void moonlight_scriptable_object_register (PluginInstance *plugin,
 
 // These are meant to be called by System.Silverlight.dll
 /* @GeneratePInvoke */
+bool html_object_has_method (PluginInstance *plugin, NPObject *npobj, char *name);
+/* @GeneratePInvoke */
 bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name);
 /* @GeneratePInvoke */
 void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value,IsOut */ Value *result);

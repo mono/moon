@@ -117,7 +117,7 @@ namespace System.Windows.Browser
 		// http://msdn.microsoft.com/en-us/library/system.windows.browser.htmlpage.popupwindow(VS.95).aspx
 		internal string AsString ()
 		{
-			ScriptObject screen = HtmlPage.Window.GetPropertyInternal<ScriptObject> ("screen");
+			ScriptObject screen = HtmlPage.Window.GetProperty ("screen") as ScriptObject;
 			int screen_width = screen == null ? 1024 : Convert.ToInt32 (screen.GetProperty ("availWidth"));
 			int screen_height = screen == null ? 768 : Convert.ToInt32 (screen.GetProperty ("availHeight"));
 

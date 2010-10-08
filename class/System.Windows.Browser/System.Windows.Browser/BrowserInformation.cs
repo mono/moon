@@ -30,7 +30,7 @@ namespace System.Windows.Browser {
 
 	public sealed class BrowserInformation {
 
-		HtmlElement navigator;
+		ScriptObject navigator;
 		Version version;
 		string user_agent, product_name, product_version;
 
@@ -43,15 +43,15 @@ namespace System.Windows.Browser {
 		}
 
 		public bool CookiesEnabled {
-			get { return GetNavigatorProperty<bool> ("cookieEnabled"); }
+			get { return (bool) navigator.GetProperty ("cookieEnabled"); }
 		}
 
 		public string Name {
-			get { return GetNavigatorProperty<string> ("appName"); }
+			get { return (string) navigator.GetProperty ("appName"); }
 		}
 
 		public string Platform {
-			get { return GetNavigatorProperty<string> ("platform"); }
+			get { return (string) navigator.GetProperty ("platform"); }
 		}
 
 		public string ProductName {
@@ -73,20 +73,20 @@ namespace System.Windows.Browser {
 		public string UserAgent {
 			get {
 				if (user_agent == null)
-					user_agent = GetNavigatorProperty<string> ("userAgent");
+					user_agent = (string) navigator.GetProperty ("userAgent");
 				return user_agent;
 			}
 		}
 
 		internal BrowserInformation (HtmlWindow window)
 		{
-			navigator = window.GetPropertyInternal<HtmlElement> ("navigator");
+			navigator = window.GetProperty ("navigator") as ScriptObject;
 		}
 
 		Version GetVersion ()
 		{
 			try {
-				var appVersion = GetNavigatorProperty<string> ("appVersion");
+				string appVersion = (string) navigator.GetProperty ("appVersion");
 				int position = appVersion.IndexOf (' ');
 				if (position == -1)
 					return new Version (appVersion);
@@ -97,11 +97,6 @@ namespace System.Windows.Browser {
 				// don't throw an exception for weird/bad ua strings
 				return new Version ();
 			}
-		}
-
-		T GetNavigatorProperty<T> (string name)
-		{
-			return navigator.GetPropertyInternal<T> (name);
 		}
 
 		// according to documentation ProductName and ProductVersion properties are extracted from userAgent

@@ -38,11 +38,11 @@ namespace System.Windows.Browser {
 	internal class ManagedObject : ScriptObject {
 
 		object managed;
-		int hash;
+		static Dictionary<object, WeakReference> cachedObjects;
 
 		static ManagedObject ()
 		{
-			cachedObjects = new Dictionary<int, IntPtr> ();
+			cachedObjects = new Dictionary<object, WeakReference> ();
 		}
 
 		public ManagedObject (object obj)
@@ -50,22 +50,24 @@ namespace System.Windows.Browser {
 //			Console.WriteLine ("new ManagedObject created wrapping object of type {0}, handle == {1}", obj.GetType(), Handle);
 
 			managed = obj;
-			hash = managed.GetHashCode ();
 			lock (cachedObjects)
-				cachedObjects[hash] = Handle;
+				cachedObjects[obj] = new WeakReference (this);
 
 			Type type = obj.GetType ();
 
 			bool isScriptable = type.IsDefined (typeof(ScriptableTypeAttribute), true);
 
 			// add properties
+			TypeOps typeOps = null;
 
 			foreach (PropertyInfo pi in type.GetProperties ()) {
 				if (!isScriptable && !pi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				RegisterScriptableProperty (pi);
-				if (RegisterScriptableTypes (pi))
-					HasTypes = true;
+				if (IsCreateable (pi.PropertyType)) {
+					typeOps = typeOps ?? new TypeOps ();
+					typeOps.RegisterCreateableType (pi.PropertyType);
+				}
 			}
 
 			// add events
@@ -75,7 +77,7 @@ namespace System.Windows.Browser {
 				RegisterScriptableEvent (ei);
 				HasEvents = true;
 
-				// XXX toshok - do we need to RegisterScriptableTypes for parameters on the delegate?
+				// XXX toshok - do we need to RegisterCreateableTypes for parameters on the delegate?
 			}
 
 			// add functions
@@ -83,15 +85,14 @@ namespace System.Windows.Browser {
 				if (!isScriptable && !mi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				RegisterScriptableMethod (mi);
-				if (RegisterScriptableTypes (mi))
-					HasTypes = true;
+				if (IsCreateable (mi)) {
+					typeOps = typeOps ?? new TypeOps ();
+					typeOps.RegisterCreateableTypes (mi);
+				}
 			}
 
-			if (HasTypes) {
-				TypeOps typeOps = new TypeOps ();
-				Type typeOpsType = typeof (TypeOps);
-				RegisterBuiltinScriptableMethod (typeOpsType.GetMethod ("CreateManagedObject"), "createManagedObject", typeOps);
-			}
+			if (typeOps != null)
+				RegisterBuiltinScriptableMethod (typeof (TypeOps).GetMethod ("CreateManagedObject"), "createManagedObject", typeOps);
 
 			if (HasEvents) {
 				EventOps eventOps = new EventOps (this);
@@ -122,8 +123,21 @@ namespace System.Windows.Browser {
 					}
 				}
 
-				ListOps listOps = new ListOps ((IList)ManagedObject);
-				Type listOpsType = typeof (ListOps);
+				Type listType = typeof(object);
+				if (type.IsArray)
+					listType = type.GetElementType ();
+				else {
+					foreach (Type t in type.GetInterfaces()) {
+						if (t.IsGenericType && t.GetGenericTypeDefinition () == typeof (IList<>)) {
+							listType = t.GetGenericArguments ()[0];
+							break;
+						}
+					}
+				}
+
+				var listOps = Activator.CreateInstance (Type.GetType ("System.Windows.Browser.ManagedObject+ListOps`1").MakeGenericType (listType), 
+					new object[] {(IList)ManagedObject});
+				Type listOpsType = listOps.GetType ();
 
 				if (type.GetProperty ("Item") != null)
 					RegisterScriptableProperty (type.GetProperty ("Item"), "item");
@@ -147,8 +161,27 @@ namespace System.Windows.Browser {
 		~ManagedObject ()
 		{
 			lock (cachedObjects)
-				cachedObjects.Remove (hash);
+				cachedObjects.Remove (ManagedObject);
 		}
+
+
+		internal static ManagedObject GetManagedObject (object o)
+		{
+			ManagedObject obj = null;
+			WeakReference wref;
+
+			lock (cachedObjects) {
+				cachedObjects.TryGetValue (o, out wref);
+				if (wref != null) {
+					if (wref.IsAlive)
+						obj = wref.Target as ManagedObject;
+				} else
+					obj = new ManagedObject (o);
+			}
+
+			return obj;
+		}
+
 
 		public override void SetProperty (string name, object value)
 		{
@@ -184,16 +217,16 @@ namespace System.Windows.Browser {
 			return base.GetProperty (name, new object[]{});
 		}
 
-		protected override object ConvertTo (Type targetType, bool allowSerialization)
+		protected internal override object ConvertTo (Type targetType, bool allowSerialization)
 		{
-			if (typeof (ScriptObject).IsAssignableFrom (targetType))
-				return this;
-
 			if (targetType.IsAssignableFrom (ManagedObject.GetType ()))
 				return ManagedObject;
 
+			if (typeof (ScriptObject).IsAssignableFrom (targetType))
+				return this;
+
 			if (allowSerialization)
-				return HostServices.Services.JsonDeserialize (ManagedObject, targetType);
+				return HostServices.Current.JsonDeserialize (ManagedObject, targetType);
 
 			return null;
 		}
@@ -207,7 +240,7 @@ namespace System.Windows.Browser {
 
 			base.Invoke (name, args, ref v);
 
-			return ScriptObjectHelper.ObjectFromValue<object> (v);
+			return ScriptObjectHelper.FromValue (v);
 		}
 
 		public override object InvokeSelf (params object [] args)
@@ -222,32 +255,18 @@ namespace System.Windows.Browser {
 			get { return managed; }
 		}
 
-		private static bool RegisterScriptableTypes (PropertyInfo pi)
+		bool IsCreateable (MethodInfo mi)
 		{
-			bool ret = false;
-			if (IsCreateable (pi.PropertyType)) {
-				ret = true;
-				RegisterScriptableType (pi.PropertyType);
-			}
-			return ret;
-		}
-
-		private static bool RegisterScriptableTypes (MethodInfo mi)
-		{
-			bool ret = false;
-			if (IsCreateable (mi.ReturnType)) {
-				ret = true;
-				RegisterScriptableType (mi.ReturnType);
-			}
+			if (IsCreateable (mi.ReturnType))
+				return true;
 
 			ParameterInfo[] ps = mi.GetParameters();
 			foreach (ParameterInfo p in ps) {
-				if (IsCreateable (p.ParameterType)) {
-					ret = true;
-					RegisterScriptableType (p.ParameterType);
-				}
+				if (IsCreateable (p.ParameterType))
+					return true;
 			}
-			return ret;
+
+			return false;
 		}
 
 		static string ScriptName (Type type) {
@@ -291,13 +310,6 @@ namespace System.Windows.Browser {
 			} else if (type == typeof(string))
 				return "string";
 			return type.Name;
-		}
-
-		static void RegisterScriptableType (Type type)
-		{
-			string name = ScriptName (type);
-			if (!HtmlPage.ScriptableTypes.ContainsKey (name))
-				HtmlPage.ScriptableTypes[name] = type;
 		}
 
 		public static bool IsSupportedType (Type t)
@@ -368,37 +380,48 @@ namespace System.Windows.Browser {
 			return true;
 		}
 
-
-#region managed object cache
-		static Dictionary<int, IntPtr> cachedObjects;
-		internal static ManagedObject LookupManagedObject (object o)
-		{
-			ManagedObject obj = null;
-			IntPtr handle;
-
-			lock (cachedObjects) {
-				cachedObjects.TryGetValue (o.GetHashCode (), out handle);
-				if (handle != IntPtr.Zero) {
-					obj = LookupScriptObject (handle) as ManagedObject;
-					if (obj != null && obj.ManagedObject != o)
-						obj = null;
-				}
-			}
-			return obj;
-		}
-#endregion
-
 #region built-in operations on objects which expose types
 		class TypeOps {
+			Dictionary<string, Type> createableTypes;
+
 			public TypeOps ()
 			{
+				createableTypes = new Dictionary<string, Type> ();
 			}
 
-			public ScriptObject CreateManagedObject (string type, params object [] args)
+			public void RegisterCreateableTypes (PropertyInfo pi)
 			{
+				RegisterCreateableType (pi.PropertyType);
+			}
+
+			public void RegisterCreateableTypes (MethodInfo mi)
+			{
+				if (IsCreateable (mi.ReturnType))
+					RegisterCreateableType (mi.ReturnType);
+
+				ParameterInfo[] ps = mi.GetParameters();
+				foreach (ParameterInfo p in ps) {
+					if (IsCreateable (p.ParameterType))
+						RegisterCreateableType (p.ParameterType);
+				}
+			}
+
+			public void RegisterCreateableType (Type type)
+			{
+				string name = ScriptName (type);
+				if (!createableTypes.ContainsKey (name))
+					createableTypes[name] = type;
+			}
+
+			public ScriptObject CreateManagedObject (string name, params object [] args)
+			{
+				if (!createableTypes.ContainsKey (name))
+					return null;
+
+				Type type = createableTypes[name];
 				if (args != null)
-					return HostServices.Services.CreateObject (type, args[0]);
-				return HostServices.Services.CreateObject (type);
+					return HostServices.Current.CreateObject (type, args[0]);
+				return HostServices.Current.CreateObject (type);
 			}
 		}
 #endregion
@@ -431,7 +454,7 @@ namespace System.Windows.Browser {
 #endregion
 
 #region built-in operations on collections
-		class ListOps {
+		class ListOps<T> {
 			IList col;
 
 			public ListOps (IList obj)
@@ -439,8 +462,8 @@ namespace System.Windows.Browser {
 				col = obj;
 			}
 
-			public object this[int index] {
-				get { return col[index]; }
+			public T this[int index] {
+				get { return (T) col[index]; }
 				set { col[index] = value; }
 			}
 

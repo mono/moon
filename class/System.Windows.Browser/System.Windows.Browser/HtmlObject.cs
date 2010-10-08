@@ -35,7 +35,7 @@ namespace System.Windows.Browser {
 
 	public abstract class HtmlObject : ScriptObject {
 
-		private Dictionary<string, Dictionary<object,DOMEventListener>> events;
+		Dictionary<string, Dictionary<object,DOMEventListener>> events;
 
 		
 		protected HtmlObject ()
@@ -79,7 +79,7 @@ namespace System.Windows.Browser {
 			return AddListener (handler, listener);
 		}
 
-		private bool AddListener (object handler, DOMEventListener listener)
+		bool AddListener (object handler, DOMEventListener listener)
 		{
 			Dictionary<object,DOMEventListener> listeners;
 
@@ -112,7 +112,7 @@ namespace System.Windows.Browser {
 			DetachListener (eventName, handler);
 		}
 
-		private void DetachListener (string eventName, object handler)
+		void DetachListener (string eventName, object handler)
 		{
 			Dictionary<object,DOMEventListener> listeners;
 
@@ -131,16 +131,20 @@ namespace System.Windows.Browser {
 			listeners.Remove (handler);
 		}
 
-		protected override object ConvertTo (Type targetType, bool allowSerialization)
+		protected internal override object ConvertTo (Type targetType, bool allowSerialization)
 		{
 			// documented as "not supported" in SL2 and to throw a ArgumentException "in all cases"
 			// not quite true since a null targetType throws a NRE but otherwise seems correct
 			throw new ArgumentException (targetType.ToString ());
 		}
 
+		class DOMEventListener {
 
+			HtmlObject obj;
+			string name;
+			EventHandler handler;
+			EventHandler<HtmlEventArgs> handler_args;
 
-		private class DOMEventListener {
 			public DOMEventListener (HtmlObject obj, string name, EventHandler<HtmlEventArgs> handler_args) : this (obj, name)
 			{
 				this.handler_args = handler_args;
@@ -176,7 +180,7 @@ namespace System.Windows.Browser {
 				get { return name; }
 			}
 
-			private string EventNameMozilla {
+			string EventNameMozilla {
 				get {
 					if (name.StartsWith ("on"))
 						return name.Substring (2);
@@ -193,11 +197,6 @@ namespace System.Windows.Browser {
 			{
 				obj.Invoke ("removeEventListener", new object[] { EventNameMozilla, this, false });
 			}
-
-			private HtmlObject obj;
-			private string name;
-			private EventHandler handler;
-			private EventHandler<HtmlEventArgs> handler_args;
 		}
 	}
 }

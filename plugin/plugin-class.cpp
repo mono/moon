@@ -5023,7 +5023,6 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	variant_to_value (value, &v);
 
 	bool res;
-
 	char *exc_string = NULL;
 	Value **vargs = NULL;
 	guint32 argCount = 0;
@@ -5033,9 +5032,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 		vargs[0] = new Value (MOON_NPN_IntFromIdentifier (name));
 		name = MOON_NPN_GetStringIdentifier ("item");
 		strname = MOON_NPN_UTF8FromIdentifier (name);
-#if ds(!)0
-		printf ("index: %d\n", vargs[0]->AsInt32 ());
-#endif
+		ds(printf ("index: %d\n", vargs[0]->AsInt32 ()));
 	}
 
 	if ((res = setprop (this, strname, vargs, argCount, v, &exc_string))) {
@@ -5253,6 +5250,22 @@ enumerate_html_object (NPP npp, NPObject *npobj, int recurse, int initial_recurs
 #endif
 
 bool
+html_object_has_method (PluginInstance *plugin, NPObject *npobj, char *name)
+{
+	NPP npp = plugin->GetInstance ();
+	NPObject *window = NULL;
+	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (name);
+	if (npobj == NULL) {
+		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		npobj = window;
+	}
+
+	ds(printf ("html object %p has method %s: result: %i\n", npobj, name, MOON_NPN_HasMethod (npp, npobj, identifier)));
+
+	return MOON_NPN_HasMethod (npp, npobj, identifier);
+}
+
+bool
 html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name)
 {
 	NPP npp = plugin->GetInstance ();
@@ -5262,6 +5275,8 @@ html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name)
 		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
 	}
+
+	ds(printf ("html object %p has property %s: result: %i\n", npobj, name, MOON_NPN_HasProperty (npp, npobj, identifier)));
 
 	return MOON_NPN_HasProperty (npp, npobj, identifier);
 }
@@ -5283,7 +5298,11 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 
 	bool ret = MOON_NPN_GetProperty (npp, npobj, identifier, &npresult);
 
+	ds(printf ("html object %p get property %s: result: %i\n", npobj, name, ret));
+
 	if (ret) {
+		ds(printf ("==>sucess ==> %p\n", NPVARIANT_TO_OBJECT (npresult)));
+
 		Value *res = NULL;
 		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
 			variant_to_value (&npresult, &res);

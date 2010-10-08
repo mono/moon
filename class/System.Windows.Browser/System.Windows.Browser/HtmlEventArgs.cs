@@ -48,7 +48,7 @@ namespace System.Windows.Browser
 			this.source_element = source;
 			this.eventObject = eventObj;
 
-			eventType = eventObject.GetPropertyInternal<string>("type");
+			eventType = (string) eventObject.GetProperty("type");
 
 			if (eventType.StartsWith ("click") ||
 			    eventType.StartsWith ("dblclick") ||
@@ -78,47 +78,47 @@ namespace System.Windows.Browser
 		}
 
 		public int ClientX {
-			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("clientX") : 0; }
+			get { return eventKind == EventKind.Mouse ? (int) eventObject.GetProperty ("clientX") : 0; }
 		}
 
 		public int ClientY {
-			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("clientY") : 0; }
+			get { return eventKind == EventKind.Mouse ? (int) eventObject.GetProperty ("clientY") : 0; }
 		}
 
 		public int ScreenX {
-			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("screenX") : 0; }
+			get { return eventKind == EventKind.Mouse ? (int) eventObject.GetProperty ("screenX") : 0; }
 		}
 
 		public int ScreenY {
-			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("screenY") : 0; }
+			get { return eventKind == EventKind.Mouse ? (int) eventObject.GetProperty ("screenY") : 0; }
 		}
 		
 		public int OffsetX {
-			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("offsetX") : 0; }
+			get { return eventKind == EventKind.Mouse ? (int) eventObject.GetProperty ("offsetX") : 0; }
 		}
 
 		public int OffsetY {
-			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("offsetY") : 0; }
+			get { return eventKind == EventKind.Mouse ? (int) eventObject.GetProperty ("offsetY") : 0; }
 		}
 
 		public bool AltKey {
-			get { return eventKind != EventKind.Html ? eventObject.GetPropertyInternal<bool>("altKey") : false; }
+			get { return eventKind != EventKind.Html ? (bool) eventObject.GetProperty ("altKey") : false; }
 		}
 
 		public bool CtrlKey {
-			get { return eventKind != EventKind.Html ? eventObject.GetPropertyInternal<bool>("ctrlKey") : false; }
+			get { return eventKind != EventKind.Html ? (bool) eventObject.GetProperty ("ctrlKey") : false; }
 		}
 
 		public bool ShiftKey {
-			get { return eventKind != EventKind.Html ? eventObject.GetPropertyInternal<bool>("shiftKey") : false; }
+			get { return eventKind != EventKind.Html ? (bool) eventObject.GetProperty ("shiftKey") : false; }
 		}
 
 		public MouseButtons MouseButton {
-			get { return eventKind == EventKind.Mouse ? (MouseButtons)eventObject.GetPropertyInternal<MouseButtons>("button") : (MouseButtons)0; }
+			get { return eventKind == EventKind.Mouse ? (MouseButtons) eventObject.GetProperty<MouseButtons>("button") : (MouseButtons)0; }
 		}
 
 		public int KeyCode {
-			get { return eventKind == EventKind.Key ? eventObject.GetPropertyInternal<int>("keyCode") : 0; }
+			get { return eventKind == EventKind.Key ? (int) eventObject.GetProperty ("keyCode") : 0; }
 		}
 
 		public int CharacterCode {
@@ -126,10 +126,10 @@ namespace System.Windows.Browser
 				if (eventKind != EventKind.Key)
 					return 0;
 
-				int code = eventObject.GetPropertyInternal<int>("charCode");
+				int code = (int) eventObject.GetProperty ("charCode");
 				if (code != 0)
 					return code;
-				return eventObject.GetPropertyInternal<int>("keyCode");
+				return (int) eventObject.GetProperty ("keyCode");
 			}
 		}
 		

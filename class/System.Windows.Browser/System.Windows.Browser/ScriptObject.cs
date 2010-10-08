@@ -152,7 +152,7 @@ namespace System.Windows.Browser {
 		public virtual object GetProperty (string name)
 		{
 			CheckHandle ();
-			return GetPropertyInternal <object> (Handle, name);
+			return GetPropertyInternal (Handle, name);
 		}
 
 		public object GetProperty (int index)
@@ -160,16 +160,32 @@ namespace System.Windows.Browser {
 			CheckHandle ();
 			// XXX this is likely wrong, as it needs to call into the plugin using an ordinal, not a string - toshok
 			// XXX SL does the same half-assed conversion, so shrugging and keeping this one as-is - shana
-			return GetPropertyInternal <object> (Handle, index.ToString ());
+			return GetPropertyInternal (Handle, index.ToString ());
 		}
 
-		protected virtual object ConvertTo (Type targetType, bool allowSerialization)
+		internal T GetProperty<T> (string name)
+		{
+			object o = GetProperty (name);
+			ScriptObjectHelper.TryChangeType (o, typeof (T), null, out o);
+			return (T)o;
+		}
+
+		protected internal virtual object ConvertTo (Type targetType, bool allowSerialization)
 		{
 			if (targetType.IsAssignableFrom (GetType()))
 				return this;
 
+			if (targetType.Equals (typeof (IntPtr)))
+				return Handle;
+
+			if (targetType.Equals (typeof (DateTime)))
+				return new DateTime (new DateTime (1970,1,1).Ticks + (long)(double)InvokeInternal ("getTime") * 10000);
+
+			if (typeof(Delegate).IsAssignableFrom(targetType))
+				return new ScriptObjectEventInfo (this, targetType).GetDelegate ();
+
 			if (allowSerialization)
-				return HostServices.Services.JsonDeserialize (this, targetType);
+				return HostServices.Current.JsonDeserialize (this, targetType);
 
 			return null;
 		}
@@ -181,12 +197,12 @@ namespace System.Windows.Browser {
 
 		public virtual object Invoke (string name, params object [] args)
 		{
-			return InvokeInternal <object> (name, args);
+			return InvokeInternal (name, args);
 		}
 
 		public virtual object InvokeSelf (params object [] args)
 		{
-			return InvokeInternal <object> (args);
+			return InvokeInternal (args);
 		}
 
 		protected void Initialize (IntPtr handle, IntPtr identity, bool addReference, bool releaseReferenceOnDispose)
@@ -227,34 +243,31 @@ namespace System.Windows.Browser {
 				throw new InvalidOperationException ("the NPObject has been invalidated");
 		}
 
-		internal static T GetPropertyInternal<T> (IntPtr h, string name)
+		internal static object GetPropertyInternal (IntPtr h, string name)
 		{
-			T result;
+			object result = null;
 
 			CheckName (name);
 			Mono.Value res;
 			NativeMethods.html_object_get_property (PluginHost.Handle, h, name, out res);
 			if (res.k != Mono.Kind.INVALID)
-				result = (T)ScriptObjectHelper.ObjectFromValue<T> (res);
-			else
-				result = default (T);
+				result = ScriptObjectHelper.FromValue (res);
 
 			NativeMethods.value_free_value (ref res);
-
 			return result;
 		}
 
-		internal T GetPropertyInternal<T> (string name)
+		internal object GetPropertyInternal (string name)
 		{
 			CheckHandle ();
-			return GetPropertyInternal<T> (Handle, name);
+			return GetPropertyInternal (Handle, name);
 		}
 
 		internal static void SetPropertyInternal (IntPtr h, string name, object value)
 		{
 			CheckName (name);
 			Mono.Value dp = new Mono.Value ();
-			ScriptObjectHelper.ValueFromObject (ref dp, value);
+			ScriptObjectHelper.ToValue (ref dp, value);
 			NativeMethods.html_object_set_property (PluginHost.Handle, h, name, ref dp);
 
 			NativeMethods.value_free_value (ref dp);
@@ -266,49 +279,45 @@ namespace System.Windows.Browser {
 			SetPropertyInternal (Handle, name, value);
 		}
 
-		internal T InvokeInternal<T> (string name, params object [] args)
+		internal object InvokeInternal (string name, params object [] args)
 		{
 			CheckName (name);
 			CheckHandle ();
 			int length = args == null ? 0 : args.Length;
-			T result;
+			object result = null;
 			Mono.Value res;
 			Mono.Value [] vargs = new Mono.Value [length];
 
 			for (int i = 0; i < length; i++)
-				ScriptObjectHelper.ValueFromObject (ref vargs [i], args [i]);
+				ScriptObjectHelper.ToValue (ref vargs [i], args [i]);
 
 			if (!NativeMethods.html_object_invoke (PluginHost.Handle, Handle, name, vargs, (uint) length, out res))
 				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)
-				result = (T)ScriptObjectHelper.ObjectFromValue<T> (res);
-			else
-				result = default (T);
+				result = ScriptObjectHelper.FromValue (res);
 
 			NativeMethods.value_free_value (ref res);
 
 			return result;
 		}
 
-		internal T InvokeInternal<T> (params object [] args)
+		internal object InvokeInternal (params object [] args)
 		{
 			CheckHandle ();
 			int length = args == null ? 0 : args.Length;
-			T result;
+			object result = null;
 			Mono.Value res;
 			Mono.Value [] vargs = new Mono.Value [length];
 
 			for (int i = 0; i < length; i++)
-				ScriptObjectHelper.ValueFromObject (ref vargs [i], args [i]);
+				ScriptObjectHelper.ToValue (ref vargs [i], args [i]);
 
 			if (!NativeMethods.html_object_invoke_self (PluginHost.Handle, Handle, vargs, (uint)length, out res))
 				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)
-				result = (T)ScriptObjectHelper.ObjectFromValue<T> (res);
-			else
-				result = default (T);
+				result = ScriptObjectHelper.FromValue (res);
 
 			NativeMethods.value_free_value (ref res);
 
@@ -337,7 +346,7 @@ namespace System.Windows.Browser {
 			properties[scriptAlias] = new Property () {property = pi, obj = target};
 		}
 
-		private bool HasProperty (string scriptAlias)
+		bool HasProperty (string scriptAlias)
 		{
 			if (ManagedObject is IDictionary) {
 				return true;
@@ -345,25 +354,28 @@ namespace System.Windows.Browser {
 			return properties.ContainsKey (scriptAlias) || events.ContainsKey (scriptAlias);
 		}
 
-		private bool SetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)
+		bool SetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)
 		{
-			if (properties.ContainsKey (scriptAlias)) {
+			if (ManagedObject is IDictionary) {
+				IDictionary dic = ManagedObject as IDictionary;
+				dic[scriptAlias] = ScriptObjectHelper.FromValue (value);
+				return true;
+			} else if (properties.ContainsKey (scriptAlias)) {
 				object[] args = new object[arg_count + 1];
 				for (int i = 0; i < arg_count; i++) {
 					if (uargs[i] == IntPtr.Zero) {
 						args[i] = null;
 					} else {
 						Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
-						args[i] = ScriptObjectHelper.ObjectFromValue<object> (val);
+						args[i] = ScriptObjectHelper.FromValue (val);
 					}
 				}
 
-				args[arg_count] = ScriptObjectHelper.ObjectFromValue<object> (value);
+				args[arg_count] = ScriptObjectHelper.FromValue (value);
 				SetProperty (scriptAlias, args);
 
 				return true;
-			}
-			else if (events.ContainsKey (scriptAlias)) {
+			} else if (events.ContainsKey (scriptAlias)) {
 				if (arg_count != 0)
 					throw new InvalidOperationException ("arg count != 0");
 
@@ -372,7 +384,7 @@ namespace System.Windows.Browser {
 				if (value.k != Kind.NPOBJ)
 					throw new InvalidOperationException ("html bridge only allows function objects as event delegates");
 
-				ScriptObject event_object = (ScriptObject)ScriptObjectHelper.ObjectFromValue<ScriptObject> (value);
+				ScriptObject event_object = ScriptObjectHelper.FromValue (value) as ScriptObject;
 				if (event_object == null)
 					RemoveEventHandler (scriptAlias, null);
 				else
@@ -404,7 +416,7 @@ namespace System.Windows.Browser {
 			return pi.GetValue (obj, null);
 		}
 
-		private bool GetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)
+		bool GetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)
 		{
 			object[] args;
 			if (ManagedObject is IDictionary && scriptAlias != "item") {
@@ -417,13 +429,13 @@ namespace System.Windows.Browser {
 						args[i] = null;
 					} else {
 						Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
-						args[i] = ScriptObjectHelper.ObjectFromValue<object> (val);
+						args[i] = ScriptObjectHelper.FromValue (val);
 					}
 				}
 			}
 
 			object v = GetProperty (scriptAlias, args);
-			ScriptObjectHelper.ValueFromObject (ref value, v);
+			ScriptObjectHelper.ToValue (ref value, v);
 
 			return true;
 		}
@@ -519,7 +531,7 @@ namespace System.Windows.Browser {
 			RegisterScriptableMethod (mi, scriptAlias, ManagedObject);
 		}
 
-		private bool HasMethod (string scriptAlias)
+		bool HasMethod (string scriptAlias)
 		{
 			return methods.ContainsKey (scriptAlias);
 		}
@@ -556,7 +568,7 @@ namespace System.Windows.Browser {
 		}
 
 		/* thread-safe */
-		private static bool AddNativeMapping (IntPtr native, ScriptObject obj)
+		static bool AddNativeMapping (IntPtr native, ScriptObject obj)
 		{
 			ScriptObjectToggleRef tref;
 			
@@ -581,7 +593,7 @@ namespace System.Windows.Browser {
 		}
 		
 		/* thread-safe */
-		private static void FreeNativeMapping (ScriptObject obj)
+		static void FreeNativeMapping (ScriptObject obj)
 		{
 			ScriptObjectToggleRef tref = null;
 			IntPtr native = obj.Handle;
@@ -619,7 +631,7 @@ namespace System.Windows.Browser {
 		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanagedSafe);
 		static GetPropertyDelegate get_prop = new GetPropertyDelegate (GetPropertyFromUnmanagedSafe);
 
-		private static bool InvalidateHandleFromUnmanagedSafe (IntPtr obj_handle)
+		static bool InvalidateHandleFromUnmanagedSafe (IntPtr obj_handle)
 		{
 			try {
 				ScriptObject obj = LookupScriptObject (obj_handle);
@@ -634,7 +646,7 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		private static bool HasPropertyFromUnmanagedSafe (IntPtr obj_handle, string name)
+		static bool HasPropertyFromUnmanagedSafe (IntPtr obj_handle, string name)
 		{
 			try {
 				ScriptObject obj = LookupScriptObject (obj_handle);
@@ -649,7 +661,7 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		private static bool HasMethodFromUnmanagedSafe (IntPtr obj_handle, string name)
+		static bool HasMethodFromUnmanagedSafe (IntPtr obj_handle, string name)
 		{
 			try {
 				ScriptObject obj = LookupScriptObject (obj_handle);
@@ -664,7 +676,7 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		private static bool InvokeFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value, out string exc_string)
+		static bool InvokeFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value, out string exc_string)
 		{
 			exc_string = null;
 			try {
@@ -681,7 +693,7 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		private static bool SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value, out string exc_string)
+		static bool SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value, out string exc_string)
 		{
 			exc_string = null;
 			try {
@@ -698,7 +710,7 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		private static bool GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value, out string exc_string)
+		static bool GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value, out string exc_string)
 		{
 			exc_string = null;
 			try {
@@ -757,25 +769,10 @@ namespace System.Windows.Browser {
 					continue;
 
 				Type cstype = parms[i].ParameterType;
-				JSFriendlyMethodBinder binder = new JSFriendlyMethodBinder ();
 				object ret;
-				if (binder.TryChangeType (args[i], cstype, CultureInfo.CurrentUICulture, out ret))
-					continue;
 
-				Type jstype = args[i].GetType();
-				if (jstype != cstype && Type.GetTypeCode (jstype) != Type.GetTypeCode (cstype)) {
-					switch (Type.GetTypeCode (jstype)) {
-						case TypeCode.Int32:
-							if (cstype.IsPrimitive || (cstype == typeof(object)))
-								continue;
-							break;
-						case TypeCode.String:
-							if (cstype == typeof(char) || cstype == typeof(object) || cstype == typeof(Guid))
-								continue;
-							break;
-					}
-					return false;
-				}
+				if (ScriptObjectHelper.TryChangeType (args[i], cstype, CultureInfo.CurrentUICulture, out ret))
+					continue;
 			}
 
 			return true;
@@ -790,7 +787,7 @@ namespace System.Windows.Browser {
 							object rv = Invoke (method.method, method.obj, args);
 
 							if (method.method.ReturnType != typeof (void))
-								ScriptObjectHelper.ValueFromObject (ref ret, rv);
+								ScriptObjectHelper.ToValue (ref ret, rv);
 
 							return;
 						}
@@ -829,7 +826,7 @@ namespace System.Windows.Browser {
 				}
 				else {
 					Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
-					args[i] = ScriptObjectHelper.ObjectFromValue<object> (v);
+					args[i] = ScriptObjectHelper.FromValue (v);
 				}
 			}
 

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 565 methods needs to be decorated.
+# 566 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -75,6 +75,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::framework_element_apply_template_with_error_(System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::html_object_has_method(System.IntPtr,System.IntPtr,System.String)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::html_object_has_property(System.IntPtr,System.IntPtr,System.String)

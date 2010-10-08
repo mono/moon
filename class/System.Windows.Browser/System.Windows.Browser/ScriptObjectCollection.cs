@@ -24,13 +24,13 @@ namespace System.Windows.Browser
 
 		public int Count {
 			get {
-				return GetPropertyInternal<int> ("length");
+				return GetProperty<int> ("length");
 			}
 		}
 
 		public ScriptObject this [int i] {
 			get {
-				return InvokeInternal<HtmlElement> ("item", i);
+				return (ScriptObject) Invoke ("item", i);
 			}
 		}
 
