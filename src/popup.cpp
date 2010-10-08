@@ -12,6 +12,7 @@
 #include "popup.h"
 #include "runtime.h"
 #include "deployment.h"
+#include "canvas.h"
 
 namespace Moonlight {
 
@@ -76,9 +77,19 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			if (GetIsOpen ())
 				Hide (el);
 
+			providers.inherited->ClearInheritedPropertiesOnRemovingFromTree (el);
+
 			el->SetLogicalParent (NULL, error);
+
 			if (error->number)
 				return;
+
+			// this is a hack...  VisualParent should be a canvas
+			DependencyObject *obj = el->GetVisualParent ();
+			if (obj) {
+				Canvas *canvas = (Canvas*)obj;
+				canvas->GetChildren()->Remove (Value (el));
+			}
 		}
 		if (args->GetNewValue () && !args->GetNewValue ()->GetIsNull ()) {
 			FrameworkElement *el = args->GetNewValue ()->AsFrameworkElement ();
@@ -86,6 +97,8 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			if (error->number) 
 				return;
 			
+			providers.inherited->PropagateInheritedPropertiesOnAddingToTree (el);
+
 			if (GetIsOpen ())
 				Show (el);
 		}
