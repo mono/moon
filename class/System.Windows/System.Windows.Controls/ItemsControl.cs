@@ -244,7 +244,12 @@ namespace System.Windows.Controls {
 		{
 			
 		}
-		
+
+		void OnItemsClearing (object o, EventArgs e)
+		{
+			SetLogicalParent (IntPtr.Zero, Items);
+		}
+
 		void InvokeItemsChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action) {
@@ -390,6 +395,7 @@ namespace System.Windows.Controls {
 					items = new ItemCollection ();
 					itemsIsDataBound = false;
 					items.ItemsChanged += InvokeItemsChanged;
+					items.Clearing +=  OnItemsClearing;
 				}
 				return items;
 			}

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 629 methods
+# 631 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -304,6 +304,7 @@
 +SSC-M: System.Void System.Windows.Controls.Control::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.ItemContainerGenerator::GenerateNext(System.Boolean&)
++SSC-M: System.Void System.Windows.Controls.ItemsControl::OnItemsClearing(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::AddItemsToPresenter(System.Windows.Controls.Primitives.GeneratorPosition,System.Int32)
 +SSC-M: System.Windows.Controls.ItemCollection System.Windows.Controls.ItemsControl::get_Items()
 +SSC-M: System.Void System.Windows.Controls.ItemsPresenter::InvokeOnApplyTemplate()
@@ -438,6 +439,7 @@
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalCollectionChangedEventArgs::get_ChangedAction()
 +SSC-M: System.Object System.Windows.InternalCollectionChangedEventArgs::GetNewItem(System.Type)
++SSC-M: System.Object System.Windows.InternalCollectionChangedEventArgs::GetOldItem(System.Type)
 +SSC-M: System.Int32 System.Windows.InternalCollectionChangedEventArgs::get_Index()
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalResourceDictionaryChangedEventArgs::get_ChangedAction()
 +SSC-M: System.Object System.Windows.InternalResourceDictionaryChangedEventArgs::GetNewItem()

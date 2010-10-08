@@ -1424,7 +1424,7 @@
 +SC-M: System.Void Mono.NativeMethods::surface_attach(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::surface_emit_error(System.IntPtr,System.Int32,System.Int32,System.String)
++SC-M: System.Void Mono.NativeMethods::surface_emit_error(System.IntPtr,System.IntPtr,System.Int32,System.Int32,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::surface_paint(System.IntPtr,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)
