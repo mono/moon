@@ -86,6 +86,49 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Rect (0,66,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
 		}
 
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug("FlowDirection is not implemented")]
+		public void LayoutSlotTest_Flow ()
+		{
+			var stack = new StackPanel ();
+			var border = new Border () { Width = 100, Height = 200 };
+			border.Child = stack;
+
+			stack.FlowDirection = FlowDirection.RightToLeft;
+			stack.Orientation = Orientation.Horizontal;
+			
+			var child0 = CreateSlotItem ();
+			var child1 = CreateSlotItem ();
+			child1.FlowDirection = FlowDirection.LeftToRight;
+
+			stack.Children.Add (child0);
+			stack.Children.Add (child1);
+			stack.Children.Add (CreateSlotItem ());
+			stack.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			stack.Arrange (new Rect (0,0,stack.DesiredSize.Width,stack.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,25,33), LayoutInformation.GetLayoutSlot (child0));
+			Assert.AreEqual (new Rect (25,0,25,33), LayoutInformation.GetLayoutSlot (child1));
+			Assert.AreEqual (new Rect (50,0,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
+			CreateAsyncTest (border, () => {
+
+					MatrixTransform xform0 = child0.TransformToVisual (border) as MatrixTransform;
+					Assert.AreEqual ("-1,0,0,1,100,84", xform0.Matrix.ToString(), "transform0 string");
+
+					MatrixTransform xform1 = child1.TransformToVisual (border) as MatrixTransform;
+					Assert.AreEqual ("1,0,0,1,50,84", xform1.Matrix.ToString(), "transform1 string");
+
+					MatrixTransform xform0_st = child0.TransformToVisual (stack) as MatrixTransform;
+					Assert.AreEqual ("1,0,0,1,0,84", xform0_st.Matrix.ToString(), "transform0_st string");
+
+					MatrixTransform xform1_st = child1.TransformToVisual (stack) as MatrixTransform;
+					Assert.AreEqual ("-1,0,0,1,50,84", xform1_st.Matrix.ToString(), "transform1_st string");
+
+				});
+ 		}
+
 		[TestMethod]
 		public void LayoutSlotTest2 ()
 		{
@@ -147,7 +190,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug("We don't currently clear our layout information when our parent is set to a canvas")]
 		public void LayoutSlotTest3InTree ()
 		{
 			Border b = new Border ();
@@ -181,8 +224,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (25,99), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
 
 			TestPanel.Children.Add (panel);
-			Assert.AreEqual (new Size (0,0),b.DesiredSize);
-			Assert.AreEqual (new Size (0,0),stack.DesiredSize);
+			Assert.AreEqual (new Size (0,0),b.DesiredSize, "Parented desired b");
+			Assert.AreEqual (new Size (0,0),stack.DesiredSize, "parented desired stack");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			Assert.AreEqual (new Size (0,0), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
