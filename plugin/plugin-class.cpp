@@ -599,9 +599,12 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	PluginInstance *plugin = proxy->GetPlugin ();
 	Deployment *previous_deployment;
 
-	if (calldata && calldata->Is (Type::ERROREVENTARGS))
+	if (calldata && calldata->Is (Type::ERROREVENTARGS)) {
 		js_sender = ((ErrorEventArgs *)calldata)->GetOriginalSource ();
-
+#if DEBUG
+		g_warn_if_fail (js_sender != NULL);
+#endif
+	}
 	if (js_sender && js_sender->GetObjectType () == Type::SURFACE) {
 		// This is somewhat hackish, but is required for
 		// the FullScreenChanged event (js expects the
