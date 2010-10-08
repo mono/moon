@@ -907,16 +907,6 @@ Deployment::~Deployment()
 #endif
 
 #if OBJECT_TRACKING
-	printf ("Deployment destroyed, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
-	if (objects_created != objects_destroyed)
-		ReportLeaks ();
-#elif DEBUG
-	if (objects_created != objects_destroyed) {
-		printf ("Deployment destroyed, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
-	}
-#endif
-
-#if OBJECT_TRACKING
 	pthread_mutex_destroy (&objects_alive_mutex);
 	if (objects_alive != NULL)
 		g_hash_table_destroy (objects_alive);
@@ -1119,11 +1109,6 @@ Deployment::Dispose ()
 		g_hash_table_destroy (interned_strings);
 	interned_strings = NULL;
 
-#if OBJECT_TRACKING
-	printf ("Deployment disposing, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
-	if (objects_created != objects_destroyed)
-		ReportLeaks ();
-#endif
 	DependencyObject::Dispose ();
 }
 
@@ -1217,12 +1202,6 @@ Deployment::Shutdown ()
 
 	if (types)
 		types->Dispose ();
-
-#if OBJECT_TRACKING
-	printf ("Deployment shutting down, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
-	if (objects_created != objects_destroyed)
-		ReportLeaks ();
-#endif
 }
 
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
