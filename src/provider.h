@@ -186,7 +186,7 @@ public:
 	DependencyObject* GetPropertySource (Inheritable inheritableProperty);
 	void SetPropertySource (Inheritable inheritableProperty, DependencyObject *source);
 
-	static bool IsPropertyInherited (int propertyId);
+	static bool IsPropertyInherited (DependencyObject *obj, int propertyId);
 
 
 	// this method is used when a property changes on an object
@@ -200,7 +200,7 @@ public:
 
 	void ClearInheritedPropertiesOnRemovingFromTree (DependencyObject *subtree);
 
-	static Inheritable InheritablePropertyFromPropertyId (int propertyId);
+	static Inheritable InheritablePropertyFromPropertyId (DependencyObject *obj, int propertyId);
 	static int InheritablePropertyToPropertyId (Types *types, Inheritable property, Type::Kind objectType);
 
 private:

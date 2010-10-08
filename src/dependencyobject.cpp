@@ -2260,19 +2260,28 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
 		if (notify_listeners && !GetDeployment()->IsShuttingDown()) {
-			Value *old_value_copy = old_value == NULL ? NULL : new Value (*old_value);
-			Value *new_value_copy = new_value == NULL ? NULL : new Value (*new_value);
+			Value old_value_copy, new_value_copy;
+			Value *old_value_ptr = NULL, *new_value_ptr = NULL;
+
+			if (old_value != NULL) {
+				old_value_copy = Value (*old_value);
+				old_value_ptr = &old_value_copy;
+			}
+			if (new_value != NULL) {
+				new_value_copy = Value (*new_value);
+				new_value_ptr = &new_value_copy;
+			}
 
 #if EVENT_ARG_REUSE
 			PropertyChangedEventArgs* args = GetDeployment()->GetPropertyChangedEventArgs ();
-#else
-			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value_copy, new_value_copy);
-#endif
 
 			args->SetProperty (property);
 			args->SetId (property->GetId());
-			args->SetOldValue (old_value_copy);
-			args->SetNewValue (new_value_copy);
+			args->SetOldValue (old_value_ptr);
+			args->SetNewValue (new_value_ptr);
+#else
+			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value_ptr, new_value_ptr);
+#endif
 
 			listeners_notified = false;
 		
@@ -2306,14 +2315,11 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 						providers.inherited->PropagateInheritedProperty (property, source, this);
 				}
 				else {
-					if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ())
+					if (InheritedPropertyValueProvider::IsPropertyInherited (this, property->GetId ())
 					    && GetPropertyValueProvider (property) < PropertyPrecedence_Inherited)
 						providers.inherited->PropagateInheritedProperty (property, this, this);
 				}
 			}
-
-			delete old_value_copy;
-			delete new_value_copy;
 		}
 
 		// if we have an active animation on this property,
@@ -2945,6 +2951,8 @@ DependencyObject::GetPropertyValueProvider (DependencyProperty *property)
 		int p = 1 << i;
 		if ((provider_bitmask & p) == p)
 			return i;
+		if (i == PropertyPrecedence_AutoCreate && (property->GetAutoCreator() || property->GetDefaultValue (GetObjectType())))
+			return i;
 	}
 
 	return -1;
@@ -2964,7 +2972,24 @@ DependencyObject::SetInheritedValueSource (InheritedPropertyValueProvider::Inher
 {
 	if (!providers.inherited)
 		return;
-	return providers.inherited->SetPropertySource (inheritableProperty, source);
+	// if source is null, we need to remove the precedence from the provider_bitmask for this property
+	if (source == NULL) {
+		Types *types = GetDeployment()->GetTypes();
+		int propertyId = InheritedPropertyValueProvider::InheritablePropertyToPropertyId (types,
+												  inheritableProperty,
+												  GetObjectType());
+
+		if (propertyId == -1) {
+			return;
+		}
+
+		DependencyProperty *property = types->GetProperty (propertyId);
+
+		int provider_bitmask = GPOINTER_TO_INT (g_hash_table_lookup (provider_bitmasks, property));
+		provider_bitmask &= ~(1 << PropertyPrecedence_Inherited);
+		g_hash_table_insert (provider_bitmasks, property, GINT_TO_POINTER (provider_bitmask));
+	}
+	providers.inherited->SetPropertySource (inheritableProperty, source);
 }
 
 DependencyObject *
