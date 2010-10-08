@@ -53,11 +53,13 @@ Timeline::Dispose ()
 Clock*
 Timeline::AllocateClock ()
 {
-	clock = new Clock (this);
+	Clock *clock = new Clock (this);
+	SetClock (clock);
+	clock->unref ();
 
 	AttachCompletedHandler ();
 
-	return clock;
+	return GetClock ();
 }
 
 Clock*
@@ -151,13 +153,13 @@ Timeline::SetManualTarget (DependencyObject *o)
 void
 Timeline::AttachCompletedHandler ()
 {
-	clock->AddHandler (Clock::CompletedEvent, clock_completed, this);
+	GetClock ()->AddHandler (Clock::CompletedEvent, clock_completed, this);
 }
 
 void
 Timeline::DetachCompletedHandler ()
 {
-	clock->RemoveHandler (Clock::CompletedEvent, clock_completed, this);
+	GetClock ()->RemoveHandler (Clock::CompletedEvent, clock_completed, this);
 }
 
 void
@@ -174,14 +176,33 @@ Timeline::OnClockCompleted ()
 }
 
 void
+Timeline::ClearClock (bool dispose)
+{
+	Clock *clock = this->clock;
+	this->clock = NULL;
+
+	if (dispose)
+		clock->Dispose ();
+	clock->unref_delayed (); /* We may recurse a lot, don't recurse more than necessary */
+}
+
+void
+Timeline::SetClock (Clock *value)
+{
+#if SANITY
+	g_assert (value != NULL); /* #if SANITY */
+	g_assert (clock == NULL); /* #if SANITY */
+#endif
+	clock = value;
+	clock->ref ();
+}
+
+void
 Timeline::TeardownClock ()
 {
 	if (clock) {
 		DetachCompletedHandler ();
-		Clock *c = clock;
-		ClockGroup *group = c->GetParentClock();
-		if (group)
-			group->RemoveChild (c);
+		clock->unref_delayed (); /* We may recurse a lot, don't recurse more than necessary */
 		clock = NULL;
 	}
 }
@@ -197,18 +218,33 @@ TimelineGroup::~TimelineGroup ()
 {
 }
 
+void
+TimelineGroup::ClearClock (bool dispose)
+{
+	TimelineCollection *collection = GetChildren ();
+	int count = collection->GetCount ();
+
+	for (int i = 0; i < count; i++)
+		collection->GetValueAt (i)->AsTimeline ()->ClearClock (dispose);
+
+	Timeline::ClearClock (dispose);
+}
+
 Clock *
 TimelineGroup::AllocateClock ()
 {
-	clock = new ClockGroup (this);
+	ClockGroup *clock_group = new ClockGroup (this);
 	TimelineCollection *collection = GetChildren ();
+
+	SetClock (clock_group);
 
 	int count = collection->GetCount ();
 	for (int i = 0; i < count; i++)
-		((ClockGroup*)clock)->AddChild (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ());
+		clock_group->AddChild (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ());
+	clock_group->unref ();
 
 	AttachCompletedHandler ();
-	return clock;
+	return GetClock ();
 }
 
 // Validate this TimelineGroup by validating all of it's children
@@ -342,7 +378,6 @@ DispatcherTimer::DispatcherTimer ()
 {
 	SetObjectType (Type::DISPATCHERTIMER);
 
-	clock = NULL;
 	stopped = false;
 	started = false;
 	ontick = false;
@@ -352,17 +387,19 @@ DispatcherTimer::DispatcherTimer ()
 void
 DispatcherTimer::Start ()
 {
+	Clock *clock;
 	started = true;
 	stopped = false;
 
 	Surface *surface = GetDeployment ()->GetSurface ();
 
+	clock = GetClock ();
 	if (clock) {
 		clock->Reset ();
 		clock->BeginOnTick ();
 		clock->SetRootParentTime (surface->GetTimeManager()->GetCurrentTime());
 	} else {
-		AllocateClock ();
+		clock = AllocateClock ();
 
 		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
 		clock->SetName (name);
@@ -384,6 +421,7 @@ DispatcherTimer::Start ()
 void
 DispatcherTimer::Stop ()
 {
+	Clock *clock = GetClock ();
 	if (clock)
 		clock->Stop ();
 	stopped = true;
@@ -400,6 +438,7 @@ DispatcherTimer::Stop ()
 void
 DispatcherTimer::Restart ()
 {
+	Clock *clock = GetClock ();
 	started = false;
 	stopped = false;
 	clock->Reset ();
@@ -445,7 +484,7 @@ DispatcherTimer::GetNaturalDurationCore (Clock *clock)
 void
 DispatcherTimer::TeardownClock ()
 {
-	if (clock) {
+	if (GetClock ()) {
 		Stop ();
 		Timeline::TeardownClock ();
 		if (pending_unref) {

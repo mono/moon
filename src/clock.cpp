@@ -113,9 +113,8 @@ Clock::Dispose ()
 	if (!IsDisposed ()) {
 		if (GetTimeline ())
 			GetTimeline()->TeardownClock ();
-
-		EventObject::Dispose ();
 	}
+	EventObject::Dispose ();
 }
 
 void
@@ -814,12 +813,19 @@ ClockGroup::~ClockGroup ()
 void
 ClockGroup::Dispose ()
 {
-	GList *node = child_clocks;
+	GList *clocks = child_clocks;
+	GList *node = clocks;
+
+	child_clocks = NULL;
 	while (node) {
-		Clock *clock = (Clock*)node->data;
-		node = node->next;
+		Clock *clock = (Clock *)node->data;
+		clock->SetTimeManager (NULL);
+		clock->SetParentClock (NULL);
 		clock->Dispose ();
+		clock->unref ();
+		node = node->next;
 	}
+	g_list_free (clocks);
 	Clock::Dispose ();
 }
 

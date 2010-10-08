@@ -382,11 +382,13 @@ Animation::Animation ()
 Clock*
 Animation::AllocateClock()
 {
-	clock = new AnimationClock (this);
+	Clock *clock = new AnimationClock (this);
+	SetClock (clock);
+	clock->unref ();
 
 	AttachCompletedHandler ();
 
-	return clock;
+	return GetClock ();
 }
 
 Value*
@@ -533,14 +535,9 @@ Storyboard::BeginWithError (MoonError *error)
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
-	if (clock) {
+	if (GetClock ()) {
 		DetachCompletedHandler ();
-
-		Clock *myClock = clock;
-		clock = NULL;
-
-		myClock->Dispose ();
-		myClock->unref ();
+		ClearClock (true);
 	}
 
 	if (Validate () == false)
@@ -549,7 +546,7 @@ Storyboard::BeginWithError (MoonError *error)
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
-	AllocateClock ();
+	Clock *clock = AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard %p, named '%s'", this, GetName());
 	clock->SetName (name);
 
@@ -574,10 +571,12 @@ Storyboard::BeginWithError (MoonError *error)
 void
 Storyboard::PauseWithError (MoonError *error)
 {
+	Clock *clock;
 	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Pause a Storyboard which is not the root Storyboard.");
 		return;
 	}
+	clock = GetClock ();
 	if (clock)
 		clock->Pause ();
 }
@@ -585,10 +584,12 @@ Storyboard::PauseWithError (MoonError *error)
 void
 Storyboard::ResumeWithError (MoonError *error)
 {
+	Clock *clock;
 	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Resume a Storyboard which is not the root Storyboard.");
 		return;
 	}
+	clock = GetClock ();
 	if (clock)
 		clock->Resume ();
 }
@@ -596,10 +597,12 @@ Storyboard::ResumeWithError (MoonError *error)
 void
 Storyboard::SeekWithError (TimeSpan timespan, MoonError *error)
 {
+	Clock *clock;
 	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Seek a Storyboard which is not the root Storyboard.");
 		return;
 	}
+	clock = GetClock ();
 	if (clock)
 		clock->Seek (timespan);
 }
@@ -607,10 +610,12 @@ Storyboard::SeekWithError (TimeSpan timespan, MoonError *error)
 void
 Storyboard::SeekAlignedToLastTickWithError (TimeSpan timespan, MoonError *error)
 {
+	Clock *clock;
 	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Seek a Storyboard which is not the root Storyboard.");
 		return;
 	}
+	clock = GetClock ();
 	if (clock)
 		clock->SeekAlignedToLastTick (timespan);
 }
@@ -618,10 +623,12 @@ Storyboard::SeekAlignedToLastTickWithError (TimeSpan timespan, MoonError *error)
 void
 Storyboard::SkipToFillWithError (MoonError *error)
 {
+	Clock *clock;
 	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot SkipToFill a Storyboard which is not the root Storyboard.");
 		return;
 	}
+	clock = GetClock ();
 	if (clock) {
 		clock->SkipToFill ();
 	}
@@ -630,15 +637,16 @@ Storyboard::SkipToFillWithError (MoonError *error)
 void
 Storyboard::StopWithError (MoonError *error)
 {
+	Clock *clock;
 	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Stop a Storyboard which is not the root Storyboard.");
 		return;
 	}
+	clock = GetClock ();
 	if (clock) {
 		DetachCompletedHandler ();
 		clock->Stop ();
-		clock->unref ();
-		clock = NULL;
+		ClearClock (false);
 	}
 }
 

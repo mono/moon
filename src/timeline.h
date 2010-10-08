@@ -63,6 +63,7 @@ public:
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 	
 	virtual Clock *AllocateClock ();
+	virtual void ClearClock (bool dispose);
 	virtual bool Validate ();
 
 	Clock* GetClock ();
@@ -97,10 +98,11 @@ protected:
 
 	static void clock_completed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
-	Clock *clock;
+	void SetClock (Clock *value);
 
 private:
  	bool had_parent;
+	Clock *clock;
 	TimelineStatus timeline_status;
 	WeakRef<DependencyObject> manual_target;
 };
@@ -129,6 +131,7 @@ public:
 	TimelineGroup ();
 	
 	virtual Clock *AllocateClock ();
+	virtual void ClearClock (bool dispose);
 	virtual bool Validate ();
 	
 	void AddChild (Timeline *child);
