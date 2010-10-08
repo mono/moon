@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 462 methods
+# 463 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -238,6 +238,7 @@
 +SSC-M: System.Void System.Reflection.Emit.DynamicMethod::CreateDynMethod()
 +SSC-M: System.Void System.Reflection.Emit.DynamicMethod::Finalize()
 +SSC-M: System.Void System.Reflection.Emit.DynamicMethod::RejectIfCreated()
++SSC-M: System.Void System.Reflection.Emit.FieldBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.String,System.Type,System.Reflection.FieldAttributes,System.Type[],System.Type[])
 +SSC-M: System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.MethodBuilder::DefineGenericParameters(System.String[])
 +SSC-M: System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.AssemblyBuilder,System.String,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Reflection.Emit.EnumBuilder System.Reflection.Emit.ModuleBuilder::DefineEnum(System.String,System.Reflection.TypeAttributes,System.Type)
