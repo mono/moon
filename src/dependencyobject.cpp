@@ -2361,42 +2361,44 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		if (property->IsAutoCreated ())
 			old_local_value = providers.autocreate->ReadLocalValue (property);
 	
-	// detach from the existing value
-	if (old_local_value != NULL && old_local_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *dob = old_local_value->AsDependencyObject();
-
-		// Custom properties are non-parenting and so shouldn't clear the parent (same code
-		// as found in the SetValue path)
-		if (dob != NULL && !property->IsCustom ()) {
-			// unset its parent
-			dob->SetParent (NULL, NULL);
-
-			// unregister from the existing value
-			dob->RemovePropertyChangeListener (this, property);
-			dob->SetIsAttached (false);
-			if (dob->Is(Type::COLLECTION)) {
-				dob->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
-				dob->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+	if (old_local_value) {
+		// detach from the existing value
+		if (old_local_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+			DependencyObject *dob = old_local_value->AsDependencyObject();
+			
+			// Custom properties are non-parenting and so shouldn't clear the parent (same code
+			// as found in the SetValue path)
+			if (dob != NULL && !property->IsCustom ()) {
+				// unset its parent
+				dob->SetParent (NULL, NULL);
+				
+				// unregister from the existing value
+				dob->RemovePropertyChangeListener (this, property);
+				dob->SetIsAttached (false);
+				if (dob->Is(Type::COLLECTION)) {
+					dob->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
+					dob->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+				}
 			}
 		}
-	}
-
-	if (old_local_value)
+		
 		old_local_value = new Value (*old_local_value);
-
-	providers.localvalue->ClearValue (property);
-	if (property->IsAutoCreated ())
-		providers.autocreate->ClearValue (property);
+		
+		providers.localvalue->ClearValue (property);
+		if (property->IsAutoCreated ())
+			providers.autocreate->ClearValue (property);
+	}
 	
 	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 	for (int p = PropertyPrecedence_LocalValue + 1; p < PropertyPrecedence_Count; p ++) {
 		if (provider_array[p] && (provider_array[p]->GetFlags () & ProviderFlags_RecomputesOnClear) != 0)
 			provider_array[p]->RecomputePropertyValue (property, ProviderFlags_RecomputesOnClear, error);
 	}
-
-	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, false, error);
 	
-	delete old_local_value;
+	if (old_local_value) {
+		ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, false, error);
+		delete old_local_value;
+	}
 }
 
 gboolean
