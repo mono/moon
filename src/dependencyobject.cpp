@@ -1769,14 +1769,14 @@ DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inher
 
 	if (propertyId == -1) {
 		// there can be no local value, so it has to be inherited
-		return true;
+		return false;
 	}
 
 	DependencyProperty *property = GetDeployment()->GetTypes()->GetProperty (propertyId);
 	MoonError unused;
 	ProviderValueChanged (PropertyPrecedence_Inherited, property, old_value, new_value, true, false, false, &unused);
 
-	return GetPropertyValueProvider (property) == PropertyPrecedence_Inherited;
+	return GetPropertyValueProvider (property) != PropertyPrecedence_Inherited;
 }
 
 struct RegisterNamesClosure {
