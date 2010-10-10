@@ -1122,10 +1122,10 @@ FrameworkElement::ApplyDefaultStyle ()
 		//		default_style_applied = true;
 
 		Application *app = Application::GetCurrent ();
-		if (app)
-			styles = app->GetDefaultStyle (this);
-		else
-			g_warning ("Attempting to use a null Application applying implicit style.");
+		if (!app)
+			return;
+
+		styles = app->GetDefaultStyle (this);
 
 		// verify all the styles
 		MoonError e;
