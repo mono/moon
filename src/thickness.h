@@ -61,17 +61,6 @@ struct Thickness {
 		top = thickness.top;
 	}
 
-	Thickness ApplyFlow (FlowDirection dir) const
-	{
-		Thickness adjusted = *this;
-		if (dir == FlowDirectionRightToLeft) {
-			adjusted.left = right;
-			adjusted.right = left;
-		}
-
-		return adjusted;
-	}
-
 	Thickness operator- ()
 	{
 		return Thickness (-left, -top, -right, -bottom);

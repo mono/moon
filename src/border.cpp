@@ -31,7 +31,6 @@ Border::MeasureOverrideWithError (Size availableSize, MoonError *error)
 	Size desired = Size (0,0);
 
 	Thickness border = *GetPadding () + *GetBorderThickness ();
-	border = border.ApplyFlow (GetFlowDirection ());
 
 	// Get the desired size of our child, and include any margins we set
 	VisualTreeWalker walker = VisualTreeWalker (this);
@@ -51,8 +50,6 @@ Size
 Border::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
-	border = border.ApplyFlow (GetFlowDirection ());
-
 	Size arranged = finalSize;
 	
 	VisualTreeWalker walker = VisualTreeWalker (this);
@@ -82,10 +79,9 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	if (!path_only)
 		RenderLayoutClip (cr);
 
-	FlowDirection dir = GetFlowDirection ();
-	CornerRadius r = GetCornerRadius ()->ApplyFlow (dir);
+	CornerRadius r = *GetCornerRadius ();
 	CornerRadius *round =  &r;
-	Thickness thickness = GetBorderThickness ()->ApplyFlow (dir);
+	Thickness thickness = *GetBorderThickness ();
 	Rect paint_border = extents;
 	Rect paint_background = paint_border.GrowBy (-thickness);
 
