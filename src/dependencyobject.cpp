@@ -1754,12 +1754,17 @@ DependencyObject::SetValueWithError (DependencyProperty *property, Value *value,
 	return SetValueWithErrorImpl (property, value, error);
 }
 
+// sets the inherited property source on this object to @source.
+// returns true if this->GetValue(inheritedProperty) is equal to the inherited value (i.e. false if the value is of a higher precedence)
 bool
 DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
 					   DependencyObject *source, Value *old_value, Value *new_value)
 {
-	if (!providers.inherited)
+	if (!providers.inherited) {
+		// we don't have an inherited provider at all, so the
+		// value must be coming from some other provider
 		return true;
+	}
 
 	providers.inherited->SetPropertySource (inheritableProperty, source);
 
@@ -1776,7 +1781,7 @@ DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inher
 	MoonError unused;
 	ProviderValueChanged (PropertyPrecedence_Inherited, property, old_value, new_value, true, false, false, &unused);
 
-	return GetPropertyValueProvider (property) != PropertyPrecedence_Inherited;
+	return GetPropertyValueProvider (property) == PropertyPrecedence_Inherited;
 }
 
 struct RegisterNamesClosure {

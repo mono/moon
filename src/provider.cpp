@@ -546,7 +546,12 @@ InheritedPropertyValueProvider::IsPropertyInherited (DependencyObject *obj, int 
 	return inheritable != InheritedPropertyValueProvider::InheritableNone;
 }
 
-// returns true if we successfully added the inherited property to this element.
+// return true if we should not continue to propagate this property down the inheritance tree.
+// this could be for a couple reasons:
+//
+// 1: the property already has a value on @element of a higher precedence than Inherited
+// 2: there is no source for the property further up in the tree
+
 bool
 InheritedPropertyValueProvider::PropAdd (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property)
 {
@@ -567,16 +572,24 @@ InheritedPropertyValueProvider::PropAdd (Types *types, DependencyObject *rootPar
 				types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
 			value = source->GetValue (sourceProperty);
 
-			return element->PropagateInheritedValue (property, source, NULL, value);
+			return !element->PropagateInheritedValue (property, source, NULL, value);
 		}
-		else
-			return false;
+		else {
+			// there's no property source to use, so
+			// there's no reason to continue walking the
+			// tree setting it on other children
+			return true;
+		}
 	}
 	else {
 		DependencyProperty *rootProperty = types->GetProperty (rootPropertyId);
 		int root_prec = rootParent->GetPropertyValueProvider (rootProperty);
-		if (root_prec == -1)
+		if (root_prec == -1) {
+			// there is no provider for the value in
+			// rootParent, so we can skip further
+			// children
 			return true;
+		}
 
 		DependencyObject *source;
 		DependencyProperty *sourceProperty = NULL;
