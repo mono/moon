@@ -24,7 +24,7 @@ namespace System.Windows
 		public static int WheelScrollLines {
 			get {
 				Console.WriteLine ("System.Windows.SystemParameters.get_WheelScrollLines: NIEX");
-				throw new NotImplementedException ();
+				return 1;
 			}
 		}
 	}
