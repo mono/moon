@@ -112,9 +112,6 @@ namespace System.Windows.Controls.Primitives {
 
 		internal Selector ()
 		{
-			// Set default values for ScrollViewer attached properties
-			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
-			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			SelectedItems = new ObservableCollection<object> ();
 			Selection = new Selection (this);
 		}

@@ -27,9 +27,9 @@ class InputMethod : public DependencyObject {
  public:
 	/* @PropertyType=bool,Attached,DefaultValue=true,Validator=IsInputMethodEnabledValidator */
 	const static int IsInputMethodEnabledProperty;
-	/* @PropertyType=ImeConversionModeValues,Attached,GenerateAccessors */
+	/* @PropertyType=ImeConversionModeValues,DefaultValue=ImeConversionModeValuesDoNotCare,Attached,GenerateAccessors */
 	const static int PreferredImeConversionModeProperty;
-	/* @PropertyType=InputMethodState,Attached,GenerateAccessors */
+	/* @PropertyType=InputMethodState,DefaultValue=InputMethodStateDoNotCare,Attached,GenerateAccessors */
 	const static int PreferredImeStateProperty;
 	
  	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */

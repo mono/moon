@@ -589,8 +589,8 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (b.SelectionBoxItemTemplate, "#7");
 			Assert.AreEqual (-1, b.SelectedIndex, "#8");
 
-			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Horizontal Scroll Vis"); // Fails in Silverlight 3
-			Assert.AreEqual (ScrollViewer.GetVerticalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Vertical Scroll Vis");
+			Assert.AreEqual (ScrollBarVisibility.Disabled, ScrollViewer.GetHorizontalScrollBarVisibility (b), "Horizontal Scroll Vis");
+			Assert.AreEqual (ScrollBarVisibility.Disabled, ScrollViewer.GetVerticalScrollBarVisibility (b), "Vertical Scroll Vis");
 		}
 
 		[TestMethod]

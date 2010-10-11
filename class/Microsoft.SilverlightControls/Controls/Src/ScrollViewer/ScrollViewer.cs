@@ -41,7 +41,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public static readonly DependencyProperty HorizontalScrollBarVisibilityProperty = DependencyProperty.RegisterAttachedCore(
             "HorizontalScrollBarVisibility", typeof(ScrollBarVisibility), typeof(ScrollViewer),
-            new PropertyMetadata(new PropertyChangedCallback(OnScrollBarVisibilityChanged))); 
+            new PropertyMetadata(ScrollBarVisibility.Disabled, new PropertyChangedCallback(OnScrollBarVisibilityChanged)));
  
         /// <summary>
         /// Gets or sets a value that indicates whether a vertical ScrollBar should be displayed. 
@@ -56,7 +56,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public static readonly DependencyProperty VerticalScrollBarVisibilityProperty = DependencyProperty.RegisterAttachedCore(
             "VerticalScrollBarVisibility", typeof(ScrollBarVisibility), typeof(ScrollViewer),
-            new PropertyMetadata(new PropertyChangedCallback(OnScrollBarVisibilityChanged))); 
+            new PropertyMetadata(ScrollBarVisibility.Disabled, new PropertyChangedCallback(OnScrollBarVisibilityChanged)));
 
         /// <summary>
         /// Gets the value of the horizontal offset of the content. 
