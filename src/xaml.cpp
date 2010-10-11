@@ -1841,7 +1841,8 @@ start_element (void *data, const char *el, const char **attr)
 		
 		inst->SetAttributes (p, attr);
 		if (p->error_args) {
-			delete inst;
+			if (p->top_element != inst)
+				delete inst;
 			return;
 		}
 
