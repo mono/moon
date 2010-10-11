@@ -496,7 +496,7 @@ AsxTokenizer::read_comment ()
 {
 	static char close [] = "-->";
 
-	char c;
+	char c = -1;
 	int match_ind = 0;
 
 	while (c != TOKEN_EOF) {
@@ -601,6 +601,7 @@ AsxParserInternal::move_next ()
 		tok = next_non_whitespace_token ();
 		if (tok->get_type () != TOKEN_CLOSE_ELEMENT) {
 			raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid closing element found.");
+			g_free (close);
 			return false;
 		}
 
@@ -657,23 +658,26 @@ AsxParserInternal::parse_attribute ()
 	
 	if (g_hash_table_lookup (current_attributes, name)) {
 		raise_error (ASXPARSER_ERROR_DUPLICATE_ATTRIBUTE, "Invalid element, attribute specified twice.\n");
+		g_free (name);
 		return false;
 	}
 
 	tok = next_non_whitespace_token ();
 	if (tok->get_type () != TOKEN_ASSIGNMENT) {
 		raise_error (ASXPARSER_ERROR_INVALID_TOKEN, "Invalid attribute, = character not found.\n");
+		g_free (name);
 		return false;
 	}
 
 	tok = next_non_whitespace_token ();
 	if (tok->get_type () != TOKEN_QUOTED_STRING) {
 		raise_error (ASXPARSER_ERROR_QUOTE_EXPECTED, "Invalid attribute, value not found.\n");
+		g_free (name);
 		return false;
 	}
 
 	value = g_strdup (tok->get_value ());
-	g_hash_table_insert (current_attributes, name, g_strdup (tok->get_value ()));
+	g_hash_table_insert (current_attributes, name, value);
 
 	return true;
 }
