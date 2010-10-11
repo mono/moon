@@ -719,14 +719,6 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 
 	Thickness margin = *GetMargin ();
 	Rect child_rect = finalRect.GrowBy (-margin);
-	bool flip_horiz = parent ? ((FrameworkElement *)parent)->GetFlowDirection () != GetFlowDirection () : GetFlowDirection() == FlowDirectionRightToLeft;
-
-	cairo_matrix_init_identity (&layout_xform);
-	cairo_matrix_translate (&layout_xform, child_rect.x, child_rect.y);
-	if (flip_horiz) {
-		cairo_matrix_translate (&layout_xform, child_rect.width, 0.0);
-		cairo_matrix_scale (&layout_xform, -1, 1);
-	}
 
 	UpdateTransform ();
 	UpdateProjection ();
@@ -756,6 +748,15 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 	else
 		response = ArrangeOverrideWithError (offer, error);
 
+	bool flip_horiz = parent ? ((FrameworkElement *)parent)->GetFlowDirection () != GetFlowDirection () : GetFlowDirection() == FlowDirectionRightToLeft;
+
+	cairo_matrix_init_identity (&layout_xform);
+	cairo_matrix_translate (&layout_xform, child_rect.x, child_rect.y);
+	if (flip_horiz) {
+		cairo_matrix_translate (&layout_xform, offer.width, 0.0);
+		cairo_matrix_scale (&layout_xform, -1, 1);
+	}
+
 	if (error->number)
 		return;
 
@@ -771,6 +772,7 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 	}
 
 	SetRenderSize (response);
+	Size constrainedResponse = response.Min (ApplySizeConstraints (response));
 
 	if (!parent || parent->Is (Type::CANVAS)) {
 		if (!IsLayoutContainer ()) {
@@ -778,8 +780,6 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 			return;
 		}
 	}
-
-	Size constrainedResponse = response.Min (ApplySizeConstraints (response));
 
 	/* it doesn't appear we apply aligment or layout clipping to toplevel elements */
 	bool toplevel = IsAttached () && GetDeployment ()->GetSurface ()->IsTopLevel (this);
