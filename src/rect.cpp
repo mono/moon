@@ -105,8 +105,8 @@ void Rect::Draw (cairo_t *cr, CornerRadius *round) const
 		double trr = round->topRight - right_adj;
 		cairo_line_to (cr, paint.x + paint.width - trt, paint.y);
 		cairo_curve_to (cr, 
-				paint.x + paint.width - trt +  trt * ARC_TO_BEZIER, paint.y,
-				paint.x + paint.width, paint.y + trr * ARC_TO_BEZIER,
+				paint.x + paint.width - trt + trt * ARC_TO_BEZIER, paint.y,
+				paint.x + paint.width, paint.y + trr - trr * ARC_TO_BEZIER,
 				paint.x + paint.width, paint.y + trr);
 		
 		double brr = round->bottomRight - right_adj;
@@ -122,7 +122,7 @@ void Rect::Draw (cairo_t *cr, CornerRadius *round) const
 		cairo_line_to (cr, paint.x + blb, paint.y + paint.height);
 		cairo_curve_to (cr,
 				paint.x + blb - blb * ARC_TO_BEZIER, paint.y + paint.height,
-				paint.x, paint.y + paint.height - bll * ARC_TO_BEZIER,
+				paint.x, paint.y + paint.height - bll + bll * ARC_TO_BEZIER,
 				paint.x, paint.y + paint.height - bll);
 		
 		double tll = round->topLeft - left_adj;
