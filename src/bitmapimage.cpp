@@ -242,10 +242,6 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 
 		if (Uri::IsNullOrEmpty (uri)) {
 			SetBitmapData (NULL, false);
-		} else if (uri->IsInvalidPath ()) {
-			if (IsBeingParsed ())
-				MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri");
-			SetBitmapData (NULL, false);
 		} else {
 			AddTickCall (uri_source_changed_callback);
 		}

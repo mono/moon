@@ -674,31 +674,14 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-                }
+		}
 		if (source && source->Is(Type::BITMAPIMAGE)) {
-			BitmapImage *bitmap = (BitmapImage *) source;
-			const Uri *uri = bitmap->GetUriSource ();
-			
 			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-			
-			// can uri ever be null?
-			if (uri != NULL) {
-
-				if (uri->IsInvalidPath ()) {
-					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-					ImageErrorEventArgs *args = new ImageErrorEventArgs (this, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
-
-					if (HasHandlers (ImageFailedEvent))
-						EmitAsync (ImageFailedEvent, args);
-					else
-						GetDeployment ()->GetSurface ()->EmitError (args);
-				}
-			}
 		}
 		SourcePixelDataChanged ();
-        }
+	}
 
 	NotifyListenersOfPropertyChange (args, error);
 }

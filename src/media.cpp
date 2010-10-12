@@ -611,8 +611,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (source && source->Is(Type::BITMAPIMAGE)) {
 			BitmapImage *bitmap = (BitmapImage *) source;
-			const Uri *uri = bitmap->GetUriSource ();
-			
+
 			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
@@ -621,19 +620,6 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				RoutedEventArgs *args = MoonUnmanagedFactory::CreateRoutedEventArgs ();
 				ImageOpened (args);
 				args->unref ();
-			}
-			
-			// can uri ever be null?
-			if (IsBeingParsed () && uri) {
-				if (uri->IsInvalidPath ()) {
-					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-					ImageErrorEventArgs *args = new ImageErrorEventArgs (this, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
-					if (HasHandlers (ImageFailedEvent)) {
-						EmitAsync (ImageFailedEvent, args); // just like ImageBrush does, also see DRT#171 and #173
-					} else {
-						GetDeployment ()->GetSurface ()->EmitError (args);
-					}
-				}
 			}
 		}
 		
