@@ -48,7 +48,6 @@ bool
 MoonNetworkServiceDbus::SetNetworkStateChangedCallback (MoonCallback callback, gpointer data)
 {
 	GValue state = { 0, };
-	GError *error = NULL;
 	
 	if (!dbus_connection)
 		return false;
