@@ -86,5 +86,5 @@ else
 	@echo "Error: You must configure with Firefox 2 or 3 support"; exit 1
 endif
 
-checkout-mono:
+reset-mono:
 	cd $(MONO_PATH) && git reset --hard `grep 'cd mono .*hard' $(PWD)/README | awk -F' ' '{print $$7}'`
