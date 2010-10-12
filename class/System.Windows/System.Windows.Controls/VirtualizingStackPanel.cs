@@ -160,6 +160,7 @@ namespace System.Windows.Controls {
 			int nvisible = 0;
 			int beyond = 0;
 			int index;
+			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
 			
 			if (Orientation == Orientation.Horizontal)
 				index = (int) HorizontalOffset;
@@ -171,19 +172,24 @@ namespace System.Windows.Controls {
 			IItemContainerGenerator generator = ItemContainerGenerator;
 			if (owner.Items.Count > 0) {
 				GeneratorPosition start;
-				Size childAvailable;
 				int insertAt;
 				
 				// Calculate the child sizing constraints
 				childAvailable = availableSize;
 				if (Orientation == Orientation.Vertical) {
-					childAvailable.Height = double.PositiveInfinity;
+					childAvailable.Width = availableSize.Width;
 					if (CanHorizontallyScroll)
 						childAvailable.Width = double.PositiveInfinity;
+
+					childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
+					childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
 				} else {
-					childAvailable.Width = double.PositiveInfinity;
+					childAvailable.Height = availableSize.Height;
 					if (CanVerticallyScroll)
 						childAvailable.Height = double.PositiveInfinity;
+
+					childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
+					childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
 				}
 				
 				// Next, prepare and measure the extents of our viewable items...
@@ -261,11 +267,6 @@ namespace System.Windows.Controls {
 					ViewportWidth = availableSize.Width;
 					invalidate = true;
 				}
-				
-				// Massage 'measured' into what Silverlight would return...
-				measured.Width = Math.Min (measured.Width, availableSize.Width);
-				if (!Double.IsPositiveInfinity (availableSize.Height))
-					measured.Height = availableSize.Height;
 			} else {
 				if (ExtentHeight != measured.Height) {
 					ExtentHeight = measured.Height;
@@ -286,11 +287,6 @@ namespace System.Windows.Controls {
 					ViewportWidth = nvisible;
 					invalidate = true;
 				}
-				
-				// Massage 'measured' into what Silverlight would return...
-				measured.Height = Math.Min (measured.Height, availableSize.Height);
-				if (!Double.IsPositiveInfinity (availableSize.Width))
-					measured.Width = availableSize.Width;
 			}
 			
 			if (invalidate && ScrollOwner != null)
@@ -341,7 +337,7 @@ namespace System.Windows.Controls {
 			else
 				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
 			
-			return finalSize;
+			return arranged;
 		}
 		
 		protected override void OnClearChildren ()
