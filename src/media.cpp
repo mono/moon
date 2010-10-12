@@ -311,7 +311,7 @@ Image::ImageFailed (ImageErrorEventArgs *args)
 	UpdateBounds ();
 	Invalidate ();
 
-	args = new ImageErrorEventArgs (this, args);
+	args = new ImageErrorEventArgs (this, *(MoonError*)args->GetMoonError ());
 	if (HasHandlers (ImageFailedEvent)) {
 		Emit (ImageFailedEvent, args);
 	} else {

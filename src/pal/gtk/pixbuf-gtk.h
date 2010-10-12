@@ -30,8 +30,8 @@ public:
 	MoonPixbufLoaderGtk ();
 	virtual ~MoonPixbufLoaderGtk ();
 
-	virtual void Write (const guchar *buffer, int buflen);
-	virtual void Close ();
+	virtual void Write (const guchar *buffer, int buflen, MoonError **error);
+	virtual void Close (MoonError **error);
 	virtual MoonPixbuf *GetPixbuf ();
 
 private:

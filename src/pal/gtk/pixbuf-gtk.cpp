@@ -26,25 +26,25 @@ MoonPixbufLoaderGtk::~MoonPixbufLoaderGtk ()
 }
 
 void
-MoonPixbufLoaderGtk::Write (const guchar *buffer, int buflen)
+MoonPixbufLoaderGtk::Write (const guchar *buffer, int buflen, MoonError **error)
 {
 	GError *gerror = NULL;
 
 	gdk_pixbuf_loader_write (gdk_loader, buffer, buflen, &gerror);
 
-	if (gerror && !error)
-		error = new MoonError (MoonError::EXCEPTION, 4001, gerror->message);
+	if (gerror && error)
+		*error = new MoonError (MoonError::EXCEPTION, 4001, gerror->message);
 }
 
 void
-MoonPixbufLoaderGtk::Close ()
+MoonPixbufLoaderGtk::Close (MoonError **error)
 {
 	GError *gerror = NULL;
 
 	gdk_pixbuf_loader_close (gdk_loader, &gerror);
 
-	if (gerror && !error)
-		error = new MoonError (MoonError::EXCEPTION, 4001, gerror->message);
+	if (gerror && error)
+		*error = new MoonError (MoonError::EXCEPTION, 4001, gerror->message);
 }
 
 MoonPixbuf*

@@ -534,14 +534,6 @@ ErrorEventArgs::~ErrorEventArgs ()
 // ImageErrorEventArgs
 //
 
-
-
-ImageErrorEventArgs::ImageErrorEventArgs (DependencyObject *original_source, ImageErrorEventArgs *args)
-	: ErrorEventArgs (original_source, args)
-{
-
-}
-
 ImageErrorEventArgs::ImageErrorEventArgs (DependencyObject *original_source, MoonError error)
   : ErrorEventArgs (original_source, Type::IMAGEERROREVENTARGS, ImageError, error)
 {

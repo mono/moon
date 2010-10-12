@@ -346,7 +346,7 @@ BitmapImage::DownloaderComplete ()
 			PixbufWrite (b, offset, n);
 
 			offset += n;
-		} while (n > 0 && !loader->GetError ());
+		} while (n > 0 && !moon_error);
 
 		close (fd);
 
@@ -403,13 +403,7 @@ BitmapImage::PixmapComplete ()
 		goto failed;
 	}
 
-	loader->Close ();
-	// If there's a CRC error or similar loading the image, don't emit a failed event.
-	// drt #0 relies on this. drt 358 relies on the error being emitted if the downloader failed.
-	if (loader->GetError ()) {
-		CleanupLoader ();
-		return;
-	}
+	loader->Close (moon_error == NULL ? &moon_error : NULL);
 
 	if (moon_error)
 		goto failed;
@@ -472,7 +466,7 @@ BitmapImage::CleanupLoader ()
 	SetPixelHeight (0);
 
 	if (loader) {
-		loader->Close ();
+		loader->Close (NULL);
 		delete loader;
 		loader = NULL;
 	}
@@ -510,8 +504,8 @@ BitmapImage::PixbufWrite (gpointer buffer, gint32 offset, gint32 n)
 	if (loader == NULL && offset == 0)
 		CreateLoader ((unsigned char *)buffer);
 
-	if (loader != NULL && !loader->GetError ())
-		loader->Write ((const guchar *)buffer, n);
+	if (loader != NULL && moon_error == NULL)
+		loader->Write ((const guchar *)buffer, n, &moon_error);
 }
 
 void
@@ -521,6 +515,15 @@ BitmapImage::pixbuf_write (EventObject *sender, EventArgs *calldata, gpointer da
 	HttpRequestWriteEventArgs *ea = (HttpRequestWriteEventArgs *) calldata;
 
 	source->PixbufWrite ((unsigned char *) ea->GetData (), ea->GetOffset (), ea->GetCount ());
+	if (source->moon_error) {
+		ImageErrorEventArgs *args = new ImageErrorEventArgs (source, *source->moon_error);
+
+		source->CleanupLoader ();
+		if (source->HasHandlers(ImageFailedEvent))
+			source->Emit (ImageFailedEvent, args);
+		else
+			source->GetDeployment ()->GetSurface ()->EmitError (args);
+	}
 }
 
 };
