@@ -10,21 +10,7 @@
 
 #include <config.h>
 
-#define INCLUDED_MONO_HEADERS 1
-
 #include <glib.h>
-#include <mono/metadata/debug-helpers.h>
-G_BEGIN_DECLS
-/* because this header sucks */
-#include <mono/metadata/mono-debug.h>
-G_END_DECLS
-#include <mono/metadata/mono-config.h>
-#include <mono/metadata/mono-gc.h>
-#include <mono/metadata/threads.h>
-#include <mono/metadata/profiler.h>
-
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/appdomain.h>
 
 #include "eventargs.h"
 #include "uielement.h"
@@ -577,7 +563,7 @@ SendCompletedEventArgs::SendCompletedEventArgs (MoonError *error,
 						const char* receiverName,
 						const char* receiverDomain,
 						const char* response,
-						gpointer managedUserState)
+						GCHandle managedUserState)
 	: EventArgs (Type::SENDCOMPLETEDEVENTARGS)
 {
 	this->error = error ? new MoonError (*error) : NULL;
@@ -585,7 +571,7 @@ SendCompletedEventArgs::SendCompletedEventArgs (MoonError *error,
 	this->receiverName = g_strdup (receiverName);
 	this->receiverDomain = g_strdup (receiverDomain);
 	this->response = g_strdup (response);
-	this->managedUserState = managedUserState;
+	this->managedUserState = Deployment::GetCurrent ()->CloneGCHandle (managedUserState);
 }
 
 SendCompletedEventArgs::~SendCompletedEventArgs ()
@@ -596,10 +582,7 @@ SendCompletedEventArgs::~SendCompletedEventArgs ()
 	g_free (receiverDomain);
 	g_free (response);
 
-	if (managedUserState) {
-		guint32 state = GPOINTER_TO_UINT (managedUserState);
-		mono_gchandle_free (state);
-	}
+	GetDeployment ()->FreeGCHandle (managedUserState);
 }
 
 //

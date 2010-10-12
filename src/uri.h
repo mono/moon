@@ -16,6 +16,7 @@
 #include <glib.h>
 
 #include "value.h"
+#include "gchandle.h"
 
 namespace Moonlight {
 
@@ -62,11 +63,11 @@ class Uri {
 public:
 	Uri ();
 	/* @GenerateCBinding,GeneratePInvoke */
-	Uri (void *gc_handle);
+	Uri (GCHandle gc_handle);
 	~Uri ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void *GetGCHandle () const;
+	GCHandle GetGCHandle () const;
 
 	/* Managed API. Note that we don't use a ctor because we can't throw exceptions like managed code can. */
 	static Uri *Create (const char *uri_string);
@@ -108,7 +109,7 @@ public:
 
 private:
 	Deployment *deployment;
-	void *gchandle;
+	GCHandle gchandle;
 	/* Since Uri is immutable, we can cache properties to only do the native->managed transition once per property */
 	mutable char *scheme;
 	mutable char *host;

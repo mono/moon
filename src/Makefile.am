@@ -52,6 +52,7 @@ libmoon_include_headers = 	\
 	fontstyle.h		\
 	fontweight.h		\
 	frameworkelement.h 	\
+	gchandle.h		\
 	geometry.h		\
 	glyphs.h		\
 	grid.h			\
@@ -188,6 +189,7 @@ libmoon_la_SOURCES = 		\
 	fontmanager.cpp		\
 	fonts.cpp		\
 	frameworkelement.cpp	\
+	gchandle.cpp		\
 	geometry.cpp		\
 	glyphs.cpp		\
 	grid.cpp		\

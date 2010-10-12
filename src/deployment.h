@@ -356,8 +356,8 @@ public:
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
 	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
-	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const Uri *resourceBase);
-	void DestroyManagedXamlLoader (gpointer xaml_loader);
+	GCHandle CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const Uri *resourceBase);
+	void DestroyManagedXamlLoader (GCHandle xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
 
 	Value *MonoXamlParserCreateFromFile (const char *file, bool create_namescope, bool validate_templates, MoonError *error);
@@ -444,8 +444,13 @@ public:
 	const UriFunctions *GetUriFunctions () { return &uri_functions; }
 	/* @GeneratePInvoke */
 	void SetUriFunctions (const UriFunctions *value);
-	void FreeGCHandle (void *gchandle);
-	void *CloneGCHandle (void *gchandle);
+
+	// GCHandle helpers
+	void FreeGCHandle (GCHandle gchandle);
+	GCHandle CloneGCHandle (GCHandle gchandle);
+	GCHandle CreateGCHandle (void *mono_object);
+	GCHandle CreateWeakGCHandle (void *mono_object);
+	void *GetGCHandleTarget (GCHandle gchandle);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();

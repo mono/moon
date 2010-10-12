@@ -19,6 +19,7 @@ class ErrorEventArgs;
 };
 
 #include "enums.h"
+#include "gchandle.h"
 
 namespace Moonlight {
 
@@ -56,7 +57,7 @@ public:
 
 	// managed code has thrown an exception, we store a gchandle
 	// to the exception here.
-	void* gchandle_ptr;
+	GCHandle gchandle;
 	
 	MoonError ();
 	MoonError (ExceptionType type, int code, const char *message);

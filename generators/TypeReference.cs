@@ -61,7 +61,11 @@ class TypeReference {
 		if (type == SignatureType.NativeC && info.IsEnum (Value)) {
 			text.Append (GetPrettyType ().Replace (Value.Replace ("*", ""), "int"));
 		} else if (type == SignatureType.Native || type == SignatureType.NativeC) {
-			text.Append (GetPrettyType ());
+			if (Value == "GCHandle") {
+				text.Append ("void *");
+			} else {
+				text.Append (GetPrettyType ());
+			}
 		} else {
 			text.Append (GetManagedType ());
 		}
@@ -397,6 +401,10 @@ class TypeReference {
 			case "XamlLoaderCallbacks":
 				managed_type = "Xaml.XamlLoaderCallbacks";
 				break;
+			case "XamlLoaderCallbacks*":
+				managed_type = "Xaml.XamlLoaderCallbacks";
+				IsRef = true;
+				break;
 			case "get_image_uri_func":
 				managed_type = "Mono.ImageUriFunc";
 				break;
@@ -423,6 +431,10 @@ class TypeReference {
 			case "GetPropertyDelegate":
 			case "DownloaderAccessPolicy":
 				managed_type = Value;
+				break;
+			case "GCHandle":
+			case "ManagedObject":
+				managed_type = "IntPtr";
 				break;
 			case "UriFunctions*":
 				managed_type = "Mono.UriFunctions";

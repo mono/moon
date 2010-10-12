@@ -510,7 +510,7 @@ public:
 				const char *receiverName,
 				const char* receiverDomain,
 				const char *response,
-				gpointer managedUserState);
+				GCHandle managedUserState);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void GetError (MoonError *error) {
@@ -535,7 +535,7 @@ public:
 	const char *GetResponse () { return response; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	const gpointer GetManagedUserState () { return managedUserState; }
+	const GCHandle GetManagedUserState () { return managedUserState; }
 
 
 protected:
@@ -547,7 +547,7 @@ private:
 	char *receiverName;
 	char *receiverDomain;
 	char *response;
-	gpointer managedUserState;
+	GCHandle managedUserState;
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */

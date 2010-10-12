@@ -1687,14 +1687,14 @@ xaml_loader_free (XamlLoader* loader)
 }
 
 void 
-xaml_loader_set_callbacks (SL3XamlLoader* loader, XamlLoaderCallbacks callbacks)
+xaml_loader_set_callbacks (SL3XamlLoader* loader, XamlLoaderCallbacks *callbacks)
 {
 	if (!loader) {
 		LOG_XAML ("Trying to set callbacks for a null object\n");
 		return;
 	}
 
-	loader->SetCallbacks (callbacks);
+	loader->SetCallbacks (*callbacks);
 	loader->vm_loaded = true;
 }
 

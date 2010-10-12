@@ -190,7 +190,7 @@ LocalMessageSender::~LocalMessageSender ()
 }
 
 void
-LocalMessageSender::SendAsyncWithError (const char *msg, gpointer managedUserState, MoonError *error)
+LocalMessageSender::SendAsyncWithError (const char *msg, GCHandle managedUserState, MoonError *error)
 {
 	if (sender == NULL) {
 		sender = runtime_get_messaging_service ()->CreateMessagingSender (receiverName,
@@ -207,7 +207,7 @@ LocalMessageSender::SendAsyncWithError (const char *msg, gpointer managedUserSta
 }
 
 void
-LocalMessageSender::MessageSentHandler (MoonError *error, const char *message, const char *response, gpointer managedUserState, gpointer data)
+LocalMessageSender::MessageSentHandler (MoonError *error, const char *message, const char *response, GCHandle managedUserState, gpointer data)
 {
 	LocalMessageSender *sender = (LocalMessageSender*)data;
 
@@ -215,7 +215,7 @@ LocalMessageSender::MessageSentHandler (MoonError *error, const char *message, c
 }
 
 void
-LocalMessageSender::MessageSent (MoonError *error, const char *message, const char *response, gpointer managedUserState)
+LocalMessageSender::MessageSent (MoonError *error, const char *message, const char *response, GCHandle managedUserState)
 {
 	if (HasHandlers (SendCompletedEvent)) {
 		Emit (SendCompletedEvent, new SendCompletedEventArgs (error,

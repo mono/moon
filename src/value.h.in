@@ -229,7 +229,7 @@ public:
 		VideoFormat *videoformat;
 		GlyphTypeface *typeface;
 		ManagedTypeInfo *type_info;
-		void *managed_object;
+		void *managed_object; // This should be a GCHandle, but g++ says that types with ctors/copy assignment operators can't be used in unions
 		void *npobj;
 	} u;
 	

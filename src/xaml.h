@@ -53,14 +53,13 @@ typedef bool (*xaml_import_xaml_xmlns_callback) (XamlCallbackData *data, const c
 typedef bool (*xaml_add_child_callback) (XamlCallbackData *data, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data, MoonError *error);
 
 struct XamlLoaderCallbacks {
-	void *gchandle;
+	GCHandle gchandle;
 	xaml_lookup_object_callback lookup_object;
 	xaml_set_property_callback set_property;
 	xaml_import_xaml_xmlns_callback import_xaml_xmlns;
 	xaml_add_child_callback add_child;
 
 	XamlLoaderCallbacks () :
-		gchandle (0),
 		lookup_object (NULL),
 		set_property (NULL),
 		import_xaml_xmlns (NULL),
@@ -128,7 +127,7 @@ XamlLoader *xaml_loader_new (const Uri *resourceBase, Surface *surface);
 /* @GeneratePInvoke */
 void	    xaml_loader_free (XamlLoader *loader);
 /* @GeneratePInvoke */
-void        xaml_loader_set_callbacks (SL3XamlLoader *loader, XamlLoaderCallbacks callbacks);
+void        xaml_loader_set_callbacks (SL3XamlLoader *loader, XamlLoaderCallbacks *callbacks);
 
 /* @GeneratePInvoke */
 char*       xaml_uri_for_prefix (void *parser, char* prefix);

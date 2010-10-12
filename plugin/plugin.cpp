@@ -1758,7 +1758,7 @@ PluginXamlLoader::InitializeLoader ()
 	if (initialized)
 		return true;
 
-	if (managed_loader)
+	if (managed_loader.IsAllocated ())
 		return true;
 
 	if (GetXamlFile () || GetXamlString ()) {
@@ -1767,7 +1767,7 @@ PluginXamlLoader::InitializeLoader ()
 		return false;
 	}
 
-	initialized = managed_loader != NULL;
+	initialized = managed_loader.IsAllocated ();
 
 	return initialized;
 }
@@ -1870,13 +1870,11 @@ PluginXamlLoader::PluginXamlLoader (const Uri *resourceBase, PluginInstance *plu
 
 	xaml_string = NULL;
 	xaml_file = NULL;
-
-	managed_loader = NULL;
 }
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
-	if (managed_loader)
+	if (managed_loader.IsAllocated ())
 		plugin->GetDeployment ()->DestroyManagedXamlLoader (managed_loader);
 	g_free (xaml_string);
 	g_free (xaml_file);
@@ -1926,7 +1924,7 @@ PluginInstance::AppDomainUnloadedEventHandler (Deployment *deployment, EventArgs
 	unref (); /* See comment in CreatePluginDeployment */
 }
 
-gpointer
+GCHandle
 PluginInstance::CreateManagedXamlLoader (XamlLoader *native_loader, const Uri *resourceBase)
 {
 	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase);

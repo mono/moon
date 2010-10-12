@@ -350,6 +350,8 @@
     <File subtype="Code" buildaction="Nothing" name="pal/network/pal-linux-network.h" />
     <File subtype="Code" buildaction="Compile" name="weakrefmanager.cpp" />
     <File subtype="Code" buildaction="Nothing" name="weakrefmanager.h" />
+    <File subtype="Code" buildaction="Nothing" name="gchandle.h" />
+    <File subtype="Code" buildaction="Compile" name="gchandle.cpp" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

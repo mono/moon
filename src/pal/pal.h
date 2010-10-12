@@ -346,7 +346,7 @@ public:
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.
 
 typedef char* (*MessageReceivedCallback) (const char *message, gpointer data);
-typedef void (*MessageSentCallback) (MoonError *error, const char *message, const char *response, gpointer managedUserState, gpointer data);
+typedef void (*MessageSentCallback) (MoonError *error, const char *message, const char *response, GCHandle managedUserState, gpointer data);
 
 /* @Version=2 */
 class MoonMessageListener {
@@ -367,7 +367,7 @@ public:
 	virtual void AddMessageSentCallback (MessageSentCallback messageSentCallback, gpointer data) = 0;
 	virtual void RemoveMessageSentCallback () = 0;
 
-	virtual void SendMessageAsync (const char *msg, gpointer managedUserState, MoonError *error) = 0;
+	virtual void SendMessageAsync (const char *msg, GCHandle managedUserState, MoonError *error) = 0;
 };
 
 /* @Version=2 */

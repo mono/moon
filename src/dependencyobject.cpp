@@ -8,10 +8,6 @@
  * 
  */
 
-#define INCLUDED_MONO_HEADERS 1
-
-#include "mono/metadata/object.h"
-
 #include <config.h>
 
 #include <stdio.h>
@@ -218,7 +214,6 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	attached = NULL;
 	detached = NULL;
 	hadManagedPeer = false;
-	managed_handle = NULL;
 
 #if OBJECT_TRACKING
 	switch (object_type) {
@@ -262,7 +257,7 @@ EventObject::~EventObject()
 	 * already, we might be in the Disposed handler */
 	refcount = -666;
 
-	if (managed_handle) {
+	if (managed_handle.IsAllocated ()) {
 		g_warning ("EventObject::~EventObject () was called with a non-null managed_handle\n");
 	}
 #endif
@@ -469,15 +464,26 @@ EventObject::ref ()
 		// gone.
 		g_warning ("Ref was called on an object with a refcount of 0.\n");
 
-	} else if (v == 1 && managed_handle) {
+	} else if (v == 1 && managed_handle.IsAllocated ()) {
 		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS) {
-			int old_handle = GPOINTER_TO_INT (managed_handle);
-			MonoObject *man_ob = mono_gchandle_get_target (old_handle);
+			GCHandle old_handle = managed_handle;
+			void *man_ob = deployment->GetGCHandleTarget (old_handle);
 #if SANITY
-			g_assert (man_ob != NULL);
+			/* It is rare, but this check may fail in some circumstances: in particular when the managed object
+			 * has been finalized, and the corresponding unref is delayed (but not executed yet). Other code might
+			 * hold a pointer to this object without a ref (possibly because it'll clear out the pointer once this
+			 * object is destroyed, which hasn't happened yet). One example is FrameworkTemplate, it adds a handler
+			 * to Deployment::ShuttingDownEvent without reffing itself (which could cause it to stay alive until
+			 * shutdown). Now if the ShuttingDownEvent is emitted just between the unref delayed is enqueued and
+			 * before it's executed, we fail this check. */
+			g_warn_if_fail (man_ob != NULL);
 #endif
-			managed_handle = GINT_TO_POINTER (mono_gchandle_new (man_ob, false));
-			mono_gchandle_free (old_handle);
+			managed_handle = deployment->CreateGCHandle (man_ob);
+#if 0
+			printf ("%s::ref (): %p switching from weak %p to strong %p (weak obj: %p strong obj: %p) deployment: %p\n",
+			 GetTypeName (), this, old_handle.ToIntPtr (), managed_handle.ToIntPtr (), deployment->GetGCHandleTarget (old_handle), deployment->GetGCHandleTarget (managed_handle), deployment);
+#endif
+			deployment->FreeGCHandle (old_handle);
 		}
 	}
 
@@ -490,7 +496,7 @@ EventObject::unref ()
 	// we need to retrieve all instance fields into locals before decreasing the refcount
 	// TODO: do we need some sort of gcc foo (volatile variables, memory barries)
 	// to ensure that gcc does not optimize the fetches below away
-	void *managed_handle = this->managed_handle;
+	GCHandle managed_handle = this->managed_handle;
 	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
 #if OBJECT_TRACKING
 	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
@@ -537,15 +543,22 @@ EventObject::unref ()
 		if (v == 0)
 			delete this;
 			
-	} else if (v == 1 && managed_handle) {
-		int old_handle = GPOINTER_TO_INT (managed_handle);
-		MonoObject *man_ob = mono_gchandle_get_target (old_handle);
+	} else if (v == 1 && managed_handle.IsAllocated ()) {
+		GCHandle old_handle = managed_handle;
+		void *man_ob = deployment->GetGCHandleTarget (old_handle);
 #if SANITY
-		g_assert (man_ob != NULL);
+		if (man_ob == NULL) {
+			printf ("%s::unref () %p managed_handle: %p NO MANAGED OBJECT\n", GetTypeName (), this, managed_handle.ToIntPtr ());
+			g_assert (man_ob != NULL);
+		}
 #endif
-		this->managed_handle = GINT_TO_POINTER (mono_gchandle_new_weakref (man_ob, false));
-		mono_gchandle_free (old_handle);
-
+		this->managed_handle = deployment->CreateWeakGCHandle (man_ob);
+#if 0
+		printf ("%s::unref (): %p switching from strong %p to weak %p (strong obj: %p weak obj: %p) deployment: %p\n",
+			GetTypeName (), this, old_handle.ToIntPtr (), this->managed_handle.ToIntPtr (), deployment->GetGCHandleTarget (old_handle),
+			deployment->GetGCHandleTarget (this->managed_handle), deployment);
+#endif
+		deployment->FreeGCHandle (old_handle);
 	}
 
 #if SANITY
@@ -558,17 +571,20 @@ EventObject::unref ()
 }
 
 void
-EventObject::SetManagedHandle (void *managed_handle)
+EventObject::SetManagedHandle (GCHandle managed_handle)
 {
 	// This method should be called exactly twice. Once to set the
 	// managed handle when the managed peer is created and once to
 	// clear the handle when the managed peer has died. Ensure that
 	// we free the weak gchandle when the managed peer dies.
-	if (this->managed_handle)
-		mono_gchandle_free (GPOINTER_TO_INT (this->managed_handle));
+#if SANITY
+	g_assert (this->managed_handle.IsAllocated () != managed_handle.IsAllocated ()); // #if SANITY
+#endif
+
+	deployment->FreeGCHandle (this->managed_handle);
 
 	this->managed_handle = managed_handle;
-	if (managed_handle)
+	if (managed_handle.IsAllocated ())
 		ref ();
 	else
 		unref ();
@@ -990,7 +1006,7 @@ EventObject::CanEmitEvents (int event_id)
 		return false;
 	}
 
-	if (hadManagedPeer && managed_handle == NULL) {
+	if (hadManagedPeer && !managed_handle.IsAllocated ()) {
 #if DEBUG
 		/* We're doomed. Don't emit any more events. Note that we'll normally hit this condition once in a while. */
 		printf ("Moonlight: Trying to emit event %i on %s after the managed object has been collected.", event_id, GetTypeName ());

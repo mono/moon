@@ -25,6 +25,7 @@
 #include "value.h"
 #include "enums.h"
 #include "list.h"
+#include "gchandle.h"
 
 namespace Moonlight {
 
@@ -110,7 +111,7 @@ public:
 	static void PrintStackTrace ();
 	void Track (const char *done, const char *typname);
 #endif
-	void *GetManagedHandle () { return managed_handle; }
+	GCHandle GetManagedHandle () { return managed_handle; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	void ref ();
 	
@@ -230,9 +231,8 @@ public:
 	// and we want the deployment on this object.
 	Deployment *GetUnsafeDeployment () { return deployment; }
 
-
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetManagedHandle (void *managed_handle);
+	void SetManagedHandle (GCHandle managed_handle);
 
 	StrongRefCallback addStrongRef;
 	StrongRefCallback clearStrongRef;
@@ -289,7 +289,7 @@ private:
 	gint32 flags; // Don't define as Flags, we need to keep this reliably at 32 bits.
 
 	Type::Kind object_type;
-	void *managed_handle;
+	GCHandle managed_handle;
 
 	friend class WeakRefBase;
 };

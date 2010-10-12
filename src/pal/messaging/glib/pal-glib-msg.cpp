@@ -536,7 +536,7 @@ public:
 		current_state = INITIAL;
 	}
 
-	void Send (const char *domain, const char *msg, gpointer managedUserState)
+	void Send (const char *domain, const char *msg, GCHandle managedUserState)
 	{
 		if (current_state != FINISHED &&
 		    current_state != INITIAL &&
@@ -797,7 +797,7 @@ private:
 	MessageSentCallback messageSentCallback;
 	gpointer messageSentCallbackData;
 
-	gpointer managedUserState;
+	GCHandle managedUserState;
 
 	Deployment *deployment;
 };
@@ -830,7 +830,7 @@ public:
 		this->messageSentCallbackData = NULL;
 	}
 
-	virtual void SendMessageAsync (const char *msg, gpointer managedUserState, MoonError *error)
+	virtual void SendMessageAsync (const char *msg, GCHandle managedUserState, MoonError *error)
 	{
 		SenderMachine *machine = new SenderMachine (listener_path,
 							    domain_listener_path,
@@ -855,7 +855,7 @@ private:
 		if (messageSentCallback) {
 			MoonError err;
 			MoonError::FillIn (&err, MoonError::SEND_FAILED, error);
-			messageSentCallback (&err, msg, NULL, NULL, messageSentCallbackData);
+			messageSentCallback (&err, msg, NULL, GCHandle::Zero, messageSentCallbackData);
 		}
 		g_free (error);
 		g_free (msg);

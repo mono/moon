@@ -542,15 +542,18 @@ Deployment::EnsureManagedPeer (EventObject *forObj)
 	}
 }
 
-gpointer
+GCHandle
 Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const Uri *resourceBase)
 {
 	MonoObject *loader;
 	MonoObject *exc = NULL;
-	void *resource_base = resourceBase ? resourceBase->GetGCHandle () : NULL;
+	GCHandle resource_base;
+
+	if (resourceBase)
+		resource_base = resourceBase->GetGCHandle ();
 	
 	if (moon_load_xaml == NULL)
-		return NULL;
+		return GCHandle::Zero;
 
 	void *params [6];
 	Surface *surface = GetSurface ();
@@ -565,32 +568,67 @@ Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* nativ
 
 	if (exc) {
 		surface->EmitError (ManagedExceptionToErrorEventArgs (exc));
-		return NULL;
+		return GCHandle::Zero;
 	}
 
-	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
+	return GCHandle (mono_gchandle_new (loader, false));
 }
 
 void
-Deployment::DestroyManagedXamlLoader (gpointer xaml_loader)
+Deployment::DestroyManagedXamlLoader (GCHandle xaml_loader)
 {
 	FreeGCHandle (xaml_loader);
 }
 
 void
-Deployment::FreeGCHandle (void *gchandle)
+Deployment::FreeGCHandle (GCHandle gchandle)
 {
-	if (gchandle == NULL)
+	if (!gchandle.IsAllocated ())
 		return;
-	mono_gchandle_free (GPOINTER_TO_INT (gchandle));
+
+	/* If shutdown has started, the gchandle we have might have been freed automatically,
+	 * and actually reused by another managed object in another appdomain. So don't free
+	 * any gchandles after shutdown has started. */
+
+	if (Surface::InMainThread () && IsShuttingDown ()) {
+		/* If we're not on the main thread, our appdomain is still alive. */
+		return;
+	}
+
+	mono_gchandle_free (gchandle.ToInt ());
+}
+
+GCHandle
+Deployment::CloneGCHandle (GCHandle gchandle)
+{
+	if (!gchandle.IsAllocated ())
+		return GCHandle::Zero;
+
+	return GCHandle (mono_gchandle_new (mono_gchandle_get_target (gchandle.ToInt ()), false));
+}
+
+GCHandle
+Deployment::CreateWeakGCHandle (void *mono_object)
+{
+	if (mono_object == NULL)
+		return GCHandle::Zero;
+
+	return GCHandle (mono_gchandle_new_weakref ((MonoObject *) mono_object, false));
+}
+
+GCHandle
+Deployment::CreateGCHandle (void *mono_object)
+{
+	if (mono_object == NULL)
+		return GCHandle::Zero;
+
+	return GCHandle (mono_gchandle_new ((MonoObject *) mono_object, false));
 }
 
 void *
-Deployment::CloneGCHandle (void *gchandle)
+Deployment::GetGCHandleTarget (GCHandle handle)
 {
-	if (gchandle == NULL)
-		return NULL;
-	return GINT_TO_POINTER (mono_gchandle_new (mono_gchandle_get_target (GPOINTER_TO_INT (gchandle)), false));
+	return mono_gchandle_get_target (handle.ToInt ());
 }
 
 void
@@ -979,9 +1017,9 @@ Deployment::ReportLeaks ()
 			printf ("\tOldest %d objects alive:\n", counter);
 			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
 				EventObject* obj = (EventObject *) last_n->pdata [i];
-				uint gchandle = GPOINTER_TO_INT (obj->GetManagedHandle ());
-				bool is_weak_handle = ((gchandle & 7) - 1) == 0;
-				if (obj->GetRefCount () == 1 && !is_weak_handle && obj->GetManagedHandle () != 0)
+				GCHandle gchandle = obj->GetManagedHandle ();
+				bool is_weak_handle = gchandle.IsWeak ();
+				if (obj->GetRefCount () == 1 && !is_weak_handle && gchandle.IsAllocated ())
 					printf ("**** Refcount of 1 with a strong handle ****\n");
 				if (strong_handled && obj->GetRefCount () < 2)
 					continue;

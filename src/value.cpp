@@ -30,13 +30,11 @@
 #include "grid.h"
 #include "cornerradius.h"
 #include "capture.h"
-#include "mono/metadata/object.h"
 #include "fontmanager.h"
 #include "fontsource.h"
 #include "transform.h"
 #include "utils.h"
 #include "debug.h"
-#define INCLUDED_MONO_HEADERS 1
 #include "deployment.h"
 #include "managedtypeinfo.h"
 
@@ -472,9 +470,7 @@ Value::Copy (const Value& v)
 	u = v.u;
 
 	if ((padding & GCHandleFlag) == GCHandleFlag) {
-		guint32 a = GPOINTER_TO_INT (u.managed_object);
-		MonoObject *mobj = mono_gchandle_get_target (a);
-		u.managed_object = GINT_TO_POINTER (mono_gchandle_new (mobj, FALSE));
+		u.managed_object = Deployment::GetCurrent ()->CloneGCHandle (u.managed_object).ToIntPtr ();
 		return;
 	}
 
@@ -643,7 +639,7 @@ void
 Value::FreeValue ()
 {
 	if ((padding & GCHandleFlag) == GCHandleFlag) {
-		mono_gchandle_free (GPOINTER_TO_INT (u.managed_object));
+		Deployment::GetCurrent ()->FreeGCHandle ((GCHandle) u.managed_object);
 		return;
 	}
 
@@ -817,11 +813,8 @@ Value::operator== (const Value &v) const
 		return false;
 
 	if ((padding & GCHandleFlag) == GCHandleFlag) {
-		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
-		//g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
-		guint32 a = GPOINTER_TO_INT (u.managed_object);
-		guint32 b = GPOINTER_TO_INT (v.u.managed_object);
-		return mono_gchandle_get_target (a) == mono_gchandle_get_target (b);
+		Deployment *deployment = Deployment::GetCurrent ();
+		return deployment->GetGCHandleTarget (u.managed_object) == deployment->GetGCHandleTarget (v.u.managed_object);
 	}
 
 	switch (k) {

@@ -37,6 +37,8 @@ class ParameterInfo : MemberInfo {
 
 		if (type == SignatureType.PInvoke && Annotations.ContainsKey ("MarshalAs")) {
 			text.Append (Annotations ["MarshalAs"].Value);
+		} else if (type == SignatureType.NativeC && ParameterType.Value == "GCHandle") {
+			text.Append ("void *");
 		} else {
 			ParameterType.Write (text, type, GlobalInfo);
 		}

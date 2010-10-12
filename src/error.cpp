@@ -14,7 +14,7 @@
  
 #include "error.h"
 #include "eventargs.h"
-#include "mono/metadata/object.h"
+#include "deployment.h"
 
 namespace Moonlight {
 
@@ -29,7 +29,6 @@ MoonError::MoonError ()
 	message = 0;
 	char_position = -1;
 	line_number = -1;
-	gchandle_ptr = NULL;
 }
 
 MoonError::MoonError (ExceptionType type, int code, const char *message)
@@ -39,7 +38,6 @@ MoonError::MoonError (ExceptionType type, int code, const char *message)
 	this->message = g_strdup (message);
 	char_position = -1;
 	line_number = -1;
-	gchandle_ptr = NULL;
 }
 
 MoonError::MoonError (const MoonError &e)
@@ -49,7 +47,7 @@ MoonError::MoonError (const MoonError &e)
 	message = g_strdup (e.message);
 	char_position = e.char_position;
 	line_number = e.line_number;
-	gchandle_ptr = e.gchandle_ptr;
+	gchandle = Deployment::GetCurrent ()->CloneGCHandle (e.gchandle);
 }
 
 MoonError::~MoonError ()
@@ -60,10 +58,8 @@ MoonError::~MoonError ()
 void
 MoonError::Clear ()
 {
-	if (gchandle_ptr != NULL) {
-		mono_gchandle_free (GPOINTER_TO_INT (gchandle_ptr));
-		gchandle_ptr = NULL;
-	}
+	Deployment::GetCurrent ()->FreeGCHandle (gchandle);
+	gchandle.Clear ();
 	number = NO_ERROR;
 	code = 0;
 	g_free (message);
@@ -73,12 +69,15 @@ MoonError::Clear ()
 MoonError&
 MoonError::operator= (const MoonError& other)
 {
+	if (&other == this)
+		return *this;
+
 	number = other.number;
 	code = other.code;
 	message = g_strdup (other.message);
 	char_position = other.char_position;
 	line_number = other.line_number;
-	gchandle_ptr = other.gchandle_ptr;
+	gchandle = Deployment::GetCurrent ()->CloneGCHandle (other.gchandle);
 	return *this;
 }
 

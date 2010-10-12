@@ -149,7 +149,7 @@ class PluginInstance
 	
 	bool CreatePluginDeployment ();
 
-	gpointer CreateManagedXamlLoader (XamlLoader* loader, const Uri *resourceBase);
+	GCHandle CreateManagedXamlLoader (XamlLoader* loader, const Uri *resourceBase);
 	static void progress_changed_handler (EventObject *sender, EventArgs *args, gpointer closure);
 	int progress_changed_token;
 
@@ -314,7 +314,7 @@ class PluginXamlLoader : public SL3XamlLoader
 	char* xaml_string;
 	char* xaml_file;
 
-	gpointer managed_loader;
+	GCHandle managed_loader;
  public:
 	virtual ~PluginXamlLoader ();
 	void TryLoad (int *error);

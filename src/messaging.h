@@ -67,7 +67,7 @@ public:
 	LocalMessageSender (const char *receiverName, const char *receiverDomain);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SendAsyncWithError (const char *msg, gpointer managedUserState, MoonError *error);
+	void SendAsyncWithError (const char *msg, GCHandle managedUserState, MoonError *error);
 
 	/* @DelegateType=EventHandler<SendCompletedEventArgs> */
 	const static int SendCompletedEvent;
@@ -76,8 +76,8 @@ protected:
 	virtual ~LocalMessageSender ();
 
 private:
-	static void MessageSentHandler (MoonError *error, const char *message, const char *response, gpointer managedUserState, gpointer data);
-	void MessageSent (MoonError *error, const char *message, const char *msg, gpointer managedUserState);
+	static void MessageSentHandler (MoonError *error, const char *message, const char *response, GCHandle managedUserState, gpointer data);
+	void MessageSent (MoonError *error, const char *message, const char *msg, GCHandle managedUserState);
 
 	MoonMessageSender *sender;
 

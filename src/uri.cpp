@@ -27,7 +27,7 @@ Uri::Uri ()
 	Init ();
 }
 
-Uri::Uri (void *gchandle)
+Uri::Uri (GCHandle gchandle)
 {
 	Init ();
 	this->gchandle = gchandle;
@@ -43,9 +43,7 @@ Uri::~Uri ()
 	g_free (original_string); original_string = NULL;
 	g_free (tostring); tostring = NULL;
 	g_free (http_request_string); http_request_string = NULL;
-	if (gchandle)
-		deployment->FreeGCHandle (gchandle);
-	gchandle = NULL;
+	deployment->FreeGCHandle (gchandle);
 	deployment = NULL;
 	is_absolute = false;
 }
@@ -54,7 +52,6 @@ void
 Uri::Init ()
 {
 	deployment = Deployment::GetCurrent ();
-	gchandle = NULL;
 	scheme = NULL;
 	host = NULL;
 	port = 0;
@@ -78,7 +75,7 @@ Uri::Init ()
 	port_fetched = false;
 }
 
-void *
+GCHandle
 Uri::GetGCHandle () const
 {
 	return gchandle;
@@ -87,49 +84,49 @@ Uri::GetGCHandle () const
 Uri *
 Uri::Create (const char *uri_string)
 {
-	void *gchandle;
+	GCHandle gchandle;
 
 	gchandle = Deployment::GetCurrent ()->GetUriFunctions ()->ctor_2 (uri_string, UriKindRelativeOrAbsolute);
 
-	return gchandle == NULL ? NULL : new Uri (gchandle);
+	return !gchandle.IsAllocated () ? NULL : new Uri (gchandle);
 }
 
 Uri *
 Uri::Create (const char *uri_string, UriKind uri_kind)
 {
-	void *gchandle;
+	GCHandle gchandle;
 
-	gchandle = Deployment::GetCurrent ()->GetUriFunctions ()->ctor_2 (uri_string, uri_kind);
+	gchandle = GCHandle (Deployment::GetCurrent ()->GetUriFunctions ()->ctor_2 (uri_string, uri_kind));
 
-	return gchandle == NULL ? NULL : new Uri (gchandle);
+	return !gchandle.IsAllocated () ? NULL : new Uri (gchandle);
 }
 
 Uri *
 Uri::Create (const Uri *base_uri, const char *relative_uri)
 {
-	void *gchandle;
+	GCHandle gchandle;
 
-	gchandle = Deployment::GetCurrent ()->GetUriFunctions ()->ctor_3 (base_uri->GetGCHandle (), relative_uri);
+	gchandle = GCHandle (Deployment::GetCurrent ()->GetUriFunctions ()->ctor_3 (base_uri->GetGCHandle ().ToIntPtr (), relative_uri));
 
-	return gchandle == NULL ? NULL : new Uri (gchandle);
+	return !gchandle.IsAllocated () ? NULL : new Uri (gchandle);
 }
 
 Uri *
 Uri::Create (const Uri *base_uri, const Uri *relative_uri)
 {
-	void *gchandle;
+	GCHandle gchandle;
 
-	gchandle = Deployment::GetCurrent ()->GetUriFunctions ()->ctor_4 (base_uri->GetGCHandle (), relative_uri->GetGCHandle ());
+	gchandle = GCHandle (Deployment::GetCurrent ()->GetUriFunctions ()->ctor_4 (base_uri->GetGCHandle ().ToIntPtr (), relative_uri->GetGCHandle ().ToIntPtr ()));
 
-	return gchandle == NULL ? NULL : new Uri (gchandle);
+	return !gchandle.IsAllocated () ? NULL : new Uri (gchandle);
 }
 
 Uri *
 Uri::Clone (const Uri *uri_to_clone)
 {
-	void *gchandle = NULL;
+	GCHandle gchandle;
 
-	if (uri_to_clone != NULL && uri_to_clone->GetGCHandle () != NULL)
+	if (uri_to_clone != NULL && uri_to_clone->GetGCHandle ().IsAllocated ())
 		gchandle = uri_to_clone->deployment->CloneGCHandle (uri_to_clone->GetGCHandle ());
 
 	return new Uri (gchandle);
@@ -138,10 +135,10 @@ Uri::Clone (const Uri *uri_to_clone)
 Uri *
 Uri::CloneWithScheme (const Uri *uri_to_clone, const char *scheme)
 {
-	void *gchandle = NULL;
+	GCHandle gchandle;
 
-	if (uri_to_clone != NULL && uri_to_clone->GetGCHandle () != NULL)
-		gchandle = uri_to_clone->deployment->GetUriFunctions ()->clone_with_scheme (uri_to_clone->GetGCHandle (), scheme);
+	if (uri_to_clone != NULL && uri_to_clone->GetGCHandle ().IsAllocated ())
+		gchandle = GCHandle (uri_to_clone->deployment->GetUriFunctions ()->clone_with_scheme (uri_to_clone->GetGCHandle ().ToIntPtr (), scheme));
 
 	return new Uri (gchandle);
 }
@@ -153,7 +150,6 @@ Uri::CombineWithSourceLocation (Deployment *deployment, const Uri *base_uri, con
 	Uri *absolute_base;
 	Uri *absolute_uri;
 	Uri *result;
-
 
 	LOG_DOWNLOADER ("Uri::CombineWithSourceLocation (%s, %s, %s, %s)\n", deployment->GetSourceLocation (NULL)->ToString (), base_uri ? base_uri->ToString () : NULL, relative_uri->ToString (), allow_escape ? "true" : "false");
 
@@ -214,8 +210,8 @@ Uri::CombineWithSourceLocation (Deployment *deployment, const Uri *base_uri, con
 const char *
 Uri::GetScheme () const
 {
-	if (!scheme_fetched && gchandle != NULL) {
-		scheme = deployment->GetUriFunctions ()->get_scheme (gchandle);
+	if (!scheme_fetched && gchandle.IsAllocated ()) {
+		scheme = deployment->GetUriFunctions ()->get_scheme (gchandle.ToIntPtr ());
 		scheme_fetched = true;
 	}
 	return scheme;
@@ -224,8 +220,8 @@ Uri::GetScheme () const
 const char *
 Uri::GetHost () const
 {
-	if (!host_fetched && gchandle != NULL) {
-		host = deployment->GetUriFunctions ()->get_host (gchandle);
+	if (!host_fetched && gchandle.IsAllocated ()) {
+		host = deployment->GetUriFunctions ()->get_host (gchandle.ToIntPtr ());
 		host_fetched = true;
 	}
 	return host;
@@ -234,8 +230,8 @@ Uri::GetHost () const
 int
 Uri::GetPort () const
 {
-	if (!port_fetched && gchandle != NULL) {
-		port = deployment->GetUriFunctions ()->get_port (gchandle);
+	if (!port_fetched && gchandle.IsAllocated ()) {
+		port = deployment->GetUriFunctions ()->get_port (gchandle.ToIntPtr ());
 		port_fetched = true;
 	}
 	return port;
@@ -244,8 +240,8 @@ Uri::GetPort () const
 const char *
 Uri::GetFragment () const
 {
-	if (!fragment_fetched && gchandle != NULL) {
-		fragment = deployment->GetUriFunctions ()->get_fragment (gchandle);
+	if (!fragment_fetched && gchandle.IsAllocated ()) {
+		fragment = deployment->GetUriFunctions ()->get_fragment (gchandle.ToIntPtr ());
 		fragment_fetched = true;
 	}
 	return fragment;
@@ -254,8 +250,8 @@ Uri::GetFragment () const
 const char *
 Uri::GetPath () const
 {
-	if (!path_fetched && gchandle != NULL) {
-		path = deployment->GetUriFunctions ()->get_path (gchandle);
+	if (!path_fetched && gchandle.IsAllocated ()) {
+		path = deployment->GetUriFunctions ()->get_path (gchandle.ToIntPtr ());
 		path_fetched = true;
 	}
 	return path;
@@ -264,8 +260,8 @@ Uri::GetPath () const
 const char *
 Uri::GetQuery () const
 {
-	if (!query_fetched && gchandle != NULL) {
-		query = deployment->GetUriFunctions ()->get_query (gchandle);
+	if (!query_fetched && gchandle.IsAllocated ()) {
+		query = deployment->GetUriFunctions ()->get_query (gchandle.ToIntPtr ());
 		query_fetched = true;
 	}
 	return query;
@@ -274,8 +270,8 @@ Uri::GetQuery () const
 const char *
 Uri::GetOriginalString () const
 {
-	if (!original_string_fetched && gchandle != NULL) {
-		original_string = deployment->GetUriFunctions ()->get_original_string (gchandle);
+	if (!original_string_fetched && gchandle.IsAllocated ()) {
+		original_string = deployment->GetUriFunctions ()->get_original_string (gchandle.ToIntPtr ());
 		original_string_fetched = true;
 	}
 	return original_string;
@@ -284,8 +280,8 @@ Uri::GetOriginalString () const
 const char *
 Uri::ToString () const
 {
-	if (!tostring_fetched && gchandle != NULL) {
-		tostring = deployment->GetUriFunctions ()->tostring (gchandle);
+	if (!tostring_fetched && gchandle.IsAllocated ()) {
+		tostring = deployment->GetUriFunctions ()->tostring (gchandle.ToIntPtr ());
 		tostring_fetched = true;
 	}
 	return tostring;
@@ -294,8 +290,8 @@ Uri::ToString () const
 const char *
 Uri::GetHttpRequestString () const
 {
-	if (!http_request_string_fetched && gchandle != NULL) {
-		http_request_string = deployment->GetUriFunctions ()->get_http_request_string (gchandle);
+	if (!http_request_string_fetched && gchandle.IsAllocated ()) {
+		http_request_string = deployment->GetUriFunctions ()->get_http_request_string (gchandle.ToIntPtr ());
 		http_request_string_fetched = true;
 	}
 	return http_request_string;
@@ -304,8 +300,8 @@ Uri::GetHttpRequestString () const
 bool
 Uri::IsAbsolute () const
 {
-	if (!is_absolute_fetched && gchandle != NULL) {
-		is_absolute = deployment->GetUriFunctions ()->get_is_absolute (gchandle);
+	if (!is_absolute_fetched && gchandle.IsAllocated ()) {
+		is_absolute = deployment->GetUriFunctions ()->get_is_absolute (gchandle.ToIntPtr ());
 		is_absolute_fetched = true;
 	}
 	return is_absolute;
@@ -324,9 +320,9 @@ Uri::Equals (const Uri *left, const Uri *right)
 		return true;
 	if (!left || !right)
 		return false;
-	if (left == right || left->GetGCHandle () == right->GetGCHandle ())
+	if (left == right || left->GetGCHandle ().ToIntPtr () == right->GetGCHandle ().ToIntPtr ())
 		return true;
-	return left->deployment->GetUriFunctions ()->equals (left->GetGCHandle (), right->GetGCHandle ());
+	return left->deployment->GetUriFunctions ()->equals (left->GetGCHandle ().ToIntPtr (), right->GetGCHandle ().ToIntPtr ());
 }
 
 bool

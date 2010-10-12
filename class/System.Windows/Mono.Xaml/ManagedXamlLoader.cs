@@ -74,7 +74,7 @@ namespace Mono.Xaml
 				callbacks.add_child = new AddChildCallback (cb_add_child);
 			}
 
-			NativeMethods.xaml_loader_set_callbacks (native_loader, callbacks);
+			NativeMethods.xaml_loader_set_callbacks (native_loader, ref callbacks);
 			
 			if (plugin != IntPtr.Zero)
 				System.Windows.Interop.PluginHost.SetPluginHandle (plugin);
