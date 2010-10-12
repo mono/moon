@@ -387,6 +387,15 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			}
 		}
 
+		public static void DoesNotThrow (TestCode code, string message, params object [] parameters)
+		{
+			try {
+				code ();
+			} catch (Exception ex) {
+				Assert.Fail ("Expected no exception but got: {0}. {1}", ex.GetType ().Name, string.Format (message, parameters));
+			}
+		}
+
 		public static void IsInstanceOfType<T> (object value)
 		{
 			IsInstanceOfType (value, typeof (T));
