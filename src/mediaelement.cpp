@@ -54,6 +54,7 @@ public:
  */
  
 enum MediaElementFlags {
+	ErrorPending        = (1 << 1),
 	PlayRequested       = (1 << 2),  // set if Play() has been requested prior to being ready
 	BufferingFailed     = (1 << 3),  // set if TryOpen failed to buffer the media.
 	DisableBuffering    = (1 << 4),  // set if we cannot give useful buffering progress
@@ -1183,11 +1184,17 @@ MediaElement::CurrentStateChangedHandler (PlaylistRoot *playlist, EventArgs *arg
 void
 MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL);
+	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s Initializing: %i Uri: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL, flags & Initializing, GetSource ()->ToString ());
 	VERIFY_MAIN_THREAD;
 	
-	if (state == MediaElementStateClosed && !(flags & Initializing))
+	if (state == MediaElementStateClosed && !(flags & Initializing) && !(flags & ErrorPending))
 		return;
+
+	if (flags & Initializing) {
+		flags |= ErrorPending;
+		ReportErrorOccurred (args, true);
+		return;
+	}
 	
 	// TODO: Should ClearValue be called on these instead?
 	SetAudioStreamCount (0);
@@ -1209,14 +1216,11 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 
 	args = new ErrorEventArgs (this, args);
 	if (HasHandlers (MediaFailedEvent)) {
-		if (flags & Initializing)
-			EmitAsync (MediaFailedEvent, args);
-		else
-			Emit (MediaFailedEvent, args);
+		Emit (MediaFailedEvent, args);
 	} else {
 		GetDeployment ()->GetSurface ()->EmitError (args);
 	}
-	flags &= ~Initializing;
+	flags &= ~ErrorPending;
 }
 
 void
@@ -1605,15 +1609,6 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 			
 			if (uri->IsAbsolute () && uri->GetScheme () && (uri->IsScheme ("mms") || uri->IsScheme ("rtsp") || uri->IsScheme ("rtsps")))
 				policy = StreamingPolicy;
-			
-			if (uri->IsInvalidPath ()) {
-				ErrorEventArgs *args =  new ErrorEventArgs (this, MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
-				if (HasHandlers (MediaFailedEvent))
-					EmitAsync (MediaFailedEvent, args);
-				else
-					GetDeployment ()->GetSurface ()->EmitError (args);
-				uri = NULL;
-			}
 		}
 		
 		SetUriSource (uri);
@@ -1694,9 +1689,15 @@ MediaElement::ReportErrorOccurredCallback (EventObject *obj)
 void
 MediaElement::ReportErrorOccurred (ErrorEventArgs *args)
 {
+	ReportErrorOccurred (args, false);
+}
+
+void
+MediaElement::ReportErrorOccurred (ErrorEventArgs *args, bool force_async)
+{
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred (%p)\n", args);
 
-	if (!Surface::InMainThread ()) {
+	if (force_async || !Surface::InMainThread ()) {
 		mutex.Lock ();
 		if (error_args)
 			error_args->unref ();

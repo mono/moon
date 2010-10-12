@@ -249,6 +249,7 @@ class MediaElement : public FrameworkElement {
 
 	void Seek (TimeSpan to, bool force); // Not thread-safe. 
 	
+	void ReportErrorOccurred (ErrorEventArgs *args, bool force_async); // Thread safe
 	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
 	/* @GenerateCBinding,GeneratePInvoke */
 	void ReportErrorOccurred (const char *args); // Thread safe
