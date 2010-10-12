@@ -116,6 +116,11 @@ namespace MoonTest.System.Windows.Data
 		ILinked next;
 		double value;
 
+		public double GetterException {
+			get { throw new Exception ("BOOM!"); }
+			set {  }
+		}
+
 		public double SetterException {
 			get { return 100; }
 			set { throw new ArgumentException(); }
@@ -2271,6 +2276,16 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 			Assert.AreEqual (1.0f, rectangle.Opacity, "#1");
 			rectangle.DataContext = data;
 			Assert.AreEqual (0.5f, rectangle.Opacity, "#2");
+		}
+
+		[TestMethod]
+		public void TestOneWayBinding_GetterThrows ()
+		{
+			var source = new INPC ();
+			var target = new Rectangle ();
+			target.SetBinding (Rectangle.WidthProperty, new Binding ("GetterException") { ValidatesOnDataErrors = true, NotifyOnValidationError = true, ValidatesOnExceptions = true });
+			Assert.DoesNotThrow (() => target.DataContext = source, "#1");
+			Assert.AreEqual (0, Validation.GetErrors (target).Count, "#2");
 		}
 
 		[TestMethod]

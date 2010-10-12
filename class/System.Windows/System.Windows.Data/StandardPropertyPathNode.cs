@@ -131,7 +131,11 @@ namespace System.Windows.Data
 				Value = ((DependencyObject) Source).GetValue (DependencyProperty);
 			} else if (PropertyInfo != null) {
 				ValueType = PropertyInfo.PropertyType;
-				Value = PropertyInfo.GetValue (Source, null);
+				try {
+					Value = PropertyInfo.GetValue (Source, null);
+				} catch {
+					Value = null;
+				}
 			} else {
 				ValueType = null;
 				Value = null;
