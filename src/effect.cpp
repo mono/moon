@@ -847,13 +847,13 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 		g_free (tokens);
 		tokens = NULL;
 
-		if (!Uri::IsNullOrEmpty (uri) &&
+		if (!Uri::IsNullOrEmpty (uri) && application &&
 		    (path = application->GetResourceAsPath (GetResourceBase (),
 							    uri))) {
 			SetTokensFromPath (path);
 			g_free (path);
 		}
-		else {
+		else if (application) {
 			g_warning ("invalid uri: %s", uri ? uri->ToString () :
 				   "null");
 		}
