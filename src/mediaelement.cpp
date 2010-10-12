@@ -57,7 +57,6 @@ enum MediaElementFlags {
 	PlayRequested       = (1 << 2),  // set if Play() has been requested prior to being ready
 	BufferingFailed     = (1 << 3),  // set if TryOpen failed to buffer the media.
 	DisableBuffering    = (1 << 4),  // set if we cannot give useful buffering progress
-	RecalculateMatrix   = (1 << 7),  // set if the patern matrix needs to be recomputed
 	MediaOpenedEmitted  = (1 << 9),  // set if MediaOpened has been emitted.
 	MissingCodecs       = (1 << 11), // set if we have no video codecs
 	AutoPlayed          = (1 << 12), // set if we've autoplayed
@@ -145,8 +144,6 @@ MediaElement::GetFlagNames (guint32 flags)
 		v [i++] = "BufferingFailed";
 	if (flags & DisableBuffering)
 		v [i++] = "DisableBuffering";
-	if (flags & RecalculateMatrix)
-		v [i++] = "RecalculateMatrix";
 	if (flags & MediaOpenedEmitted)
 		v [i++] = "MediaOpenedEmitted";
 	if (flags & MissingCodecs)
@@ -501,8 +498,7 @@ MediaElement::Reinitialize (bool is_shutting_down)
 	}
 	
 	flags &= (PlayRequested | UseMediaHeight | UseMediaWidth);
-	flags |= RecalculateMatrix;
-	
+
 	prev_state = MediaElementStateClosed;
 	state = MediaElementStateClosed;
 	
@@ -1620,7 +1616,6 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 			}
 		}
 		
-		flags |= RecalculateMatrix;
 		SetUriSource (uri);
 	} else if (args->GetId () == MediaElement::AudioStreamIndexProperty) {
 		if (mplayer)
@@ -1653,10 +1648,8 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		// 
 	} else if (args->GetId () == MediaElement::NaturalVideoHeightProperty) {
 		// read-only property
-		flags |= RecalculateMatrix;
 	} else if (args->GetId () == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
-		flags |= RecalculateMatrix;
 	} else if (args->GetId () == MediaElement::PositionProperty) {
 		Seek (args->GetNewValue()->AsTimeSpan (), false);
 		ClearValue (MediaElement::PositionProperty, false); // We need this, otherwise our property system will return the seeked-to position forever (MediaElementPropertyValueProvider isn't called).
@@ -1668,7 +1661,6 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 	if (args->GetProperty ()->GetOwnerType() != Type::MEDIAELEMENT) {
 		// propagate to parent class
 		FrameworkElement::OnPropertyChanged (args, error);
-		flags |= RecalculateMatrix;
 		return;
 	}
 	
