@@ -1,6 +1,6 @@
 <Combine fileversion="2.0" name="moon">
   <Policies>
-    <ChangeLogPolicy UpdateMode="Nearest" VcsIntegration="RequireEntry" inheritsSet="Mono" />
+    <ChangeLogPolicy UpdateMode="None" VcsIntegration="RequireEntry" inheritsSet="Mono" />
     <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileFormatDefault" />
     <VersionControlPolicy inheritsSet="Mono">
       <CommitMessageStyle Header="${Date:yyyy-MM-dd}  ${AuthorName}  &lt;${AuthorEmail}&gt;&#xA;&#xA;" Indent="	" />
