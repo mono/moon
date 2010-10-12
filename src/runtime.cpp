@@ -13,22 +13,7 @@
 
 #include <config.h>
 
-#define INCLUDED_MONO_HEADERS 1
-
 #include <glib.h>
-#include <mono/mini/jit.h>
-#include <mono/metadata/appdomain.h>
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/debug-helpers.h>
-G_BEGIN_DECLS
-/* because this header sucks */
-#include <mono/metadata/mono-debug.h>
-G_END_DECLS
-#include <mono/metadata/mono-config.h>
-#include <mono/metadata/threads.h>
-#include <mono/metadata/mono-gc.h>
-
-
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
