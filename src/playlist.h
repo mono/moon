@@ -119,7 +119,7 @@ public:
 	PlaylistEntry (Playlist *parent);
 
 	void Initialize (Media *media);
-	void InitializeWithUri (const Uri *uri);
+	void InitializeWithUri (const Uri *resource_base, const Uri *uri);
 	void InitializeWithDownloader (Downloader *dl, const char *PartName);
 	void InitializeWithDemuxer (IMediaDemuxer *demuxer);
 	void InitializeWithStream (ManagedStreamCallbacks *callbacks);

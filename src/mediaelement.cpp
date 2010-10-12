@@ -1306,7 +1306,7 @@ MediaElement::SetUriSource (const Uri *uri)
 	
 	if (!Uri::IsNullOrEmpty (uri)) {
 		CreatePlaylist ();
-		playlist->GetCurrentEntry ()->InitializeWithUri (uri);
+		playlist->GetCurrentEntry ()->InitializeWithUri (GetResourceBase (), uri);
 	} else {
 		UpdateBounds ();
 		InvalidateMeasure ();

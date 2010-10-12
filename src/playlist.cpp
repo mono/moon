@@ -222,7 +222,7 @@ PlaylistEntry::InitializeWithSource (IMediaSource *source)
 }
 
 void
-PlaylistEntry::InitializeWithUri (const Uri *uri)
+PlaylistEntry::InitializeWithUri (const Uri *resource_base, const Uri *uri)
 {
 	Media *media;
 	PlaylistRoot *root = GetRoot ();
@@ -232,7 +232,7 @@ PlaylistEntry::InitializeWithUri (const Uri *uri)
 	
 	media = new Media (root);
 	Initialize (media);
-	media->Initialize (uri);
+	media->Initialize (resource_base, uri);
 	if (!media->HasReportedError ())
 		media->OpenAsync ();
 	media->unref ();
@@ -809,7 +809,7 @@ PlaylistEntry::Open ()
 
 	if (!media) {
 		g_return_if_fail (GetFullSourceName () != NULL);
-		InitializeWithUri (GetFullSourceName ());
+		InitializeWithUri (GetElement ()->GetResourceBase (), GetFullSourceName ());
 	} else if (opened) {
 		OpenMediaPlayer ();
 	} else {

@@ -569,6 +569,7 @@ private:
 	guint64 buffering_time; // Access must be protected with mutex.
 	bool is_disposed; // Access must be protected with mutex. This is used to ensure that we don't add work to the thread pool after having been disposed.
 	Uri *uri;
+	Uri *resource_base;
 	char *file;
 	IMediaSource *source;
 	IMediaDemuxer *demuxer;
@@ -630,7 +631,7 @@ public:
 	// Initialize the Media.
 	// These methods may raise MediaError events.
 	void Initialize (Downloader *downloader, const char *PartName); // MediaElement.SetSource (dl, 'PartName');
-	void Initialize (const Uri *uri); // MediaElement.Source = 'uri';
+	void Initialize (const Uri *resource_base, const Uri *uri); // MediaElement.Source = 'uri';
 	void Initialize (IMediaDemuxer *demuxer); // MediaElement.SetSource (demuxer);
 	void Initialize (IMediaSource *source);
 
@@ -1235,6 +1236,7 @@ private:
 	FILE *read_fd;
 	char *filename;
 	Uri *uri;
+	Uri *resource_base;
 	int brr_enabled; /* If we'll do byte range requests (if server sent 'Accept-Ranges: bytes' or not) 0: not checked, 1: yes, 2: no. Main thread only. */
 	Cancellable *cancellable; /* Write on main thread & Read on other threads require lock to be held. Reads on main thread is safe. */
 
@@ -1283,7 +1285,7 @@ protected:
 	virtual gint64 GetSizeInternal () { return size; }
 
 public:
-	ProgressiveSource (Media *media, const Uri *uri);
+	ProgressiveSource (Media *media, const Uri *resource_base, const Uri *uri);
 	virtual void Dispose ();
 
 	virtual bool Eof ();

@@ -64,6 +64,7 @@ Media::Media (PlaylistRoot *root)
 	buffering_time = 0;
 	file = NULL;
 	uri = NULL;
+	resource_base = NULL;
 	source = NULL;
 	demuxer = NULL;
 	markers = NULL;
@@ -130,6 +131,8 @@ Media::Dispose ()
 	file = NULL;
 	delete uri;
 	uri = NULL;
+	delete resource_base;
+	resource_base = NULL;
 
 	src = this->source;
 	this->source = NULL;
@@ -694,7 +697,7 @@ Media::Initialize (IMediaSource *source)
 }
 
 void
-Media::Initialize (const Uri *uri)
+Media::Initialize (const Uri *resource_base, const Uri *uri)
 {
 	IMediaSource *source = NULL;
 	
@@ -709,11 +712,13 @@ Media::Initialize (const Uri *uri)
 	g_return_if_fail (this->source == NULL);
 	
 	this->uri = Uri::Clone (uri);
+	this->resource_base = Uri::Clone (resource_base);
 	
 	if (this->uri->IsAbsolute () && (this->uri->IsScheme ("mms") || this->uri->IsScheme ("rtsp") || this->uri->IsScheme ("rtsps"))) {
+		// We ignore resource base for mms sources, they have to live on a server
 		source = new MmsSource (this, this->uri);
 	} else {
-		source = new ProgressiveSource (this, this->uri);
+		source = new ProgressiveSource (this, this->resource_base, this->uri);
 	}
 
 	Initialize (source);
@@ -756,6 +761,7 @@ Media::GetTargetPts ()
 void
 Media::RetryHttp (ErrorEventArgs *args)
 {
+	Uri *resource_base = NULL;
 	Uri *http_uri = NULL;
 	
 	LOG_PIPELINE ("Media::RetryHttp (), current uri: '%s'\n", uri->ToString ());
@@ -783,6 +789,9 @@ Media::RetryHttp (ErrorEventArgs *args)
 	
 	delete uri;
 	uri = NULL;
+	resource_base = this->resource_base;
+	this->resource_base = NULL;
+
 	/* this method is called on the main thread, ensure Dispose is called on the source on the media thread  */
 	DisposeObject (source);
 	source->unref ();
@@ -790,7 +799,8 @@ Media::RetryHttp (ErrorEventArgs *args)
 	initialized = false;
 	error_reported = false;
 	
-	Initialize (http_uri);
+	Initialize (resource_base, http_uri);
+	delete resource_base; // Initialize has cloned the resource base now, we can delete it
 	
 	delete http_uri;
 	
@@ -1670,7 +1680,7 @@ Ranges::Contains (guint64 offset, guint64 length, Range *partial)
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media, const Uri *uri)
+ProgressiveSource::ProgressiveSource (Media *media, const Uri *resource_base, const Uri *uri)
 	: IMediaSource (Type::PROGRESSIVESOURCE, media)
 {
 	complete = false;
@@ -1689,6 +1699,7 @@ ProgressiveSource::ProgressiveSource (Media *media, const Uri *uri)
 	brr_enabled = 0;
 
 	this->uri = Uri::Clone (uri);
+	this->resource_base = Uri::Clone (resource_base);
 }
 
 ProgressiveSource::~ProgressiveSource ()
@@ -1703,6 +1714,8 @@ ProgressiveSource::~ProgressiveSource ()
 	}
 	delete uri;
 	uri = NULL;
+	delete resource_base;
+	resource_base = NULL;
 	g_free (filename);
 	filename = NULL;
 }
@@ -1838,7 +1851,7 @@ ProgressiveSource::Initialize ()
 	}
 	
 	cancellable = new Cancellable ();
-	if (!application->GetResource (NULL, uri, NotifyCallback, DataWriteCallback, MediaPolicy,
+	if (!application->GetResource (resource_base, uri, NotifyCallback, DataWriteCallback, MediaPolicy,
 		 (HttpRequest::Options) (HttpRequest::DisableFileStorage), cancellable, (gpointer) this)) {
 		result = MEDIA_FAIL;
 		char *msg = g_strdup_printf ("invalid path found in uri '%s'", uri->ToString ());
