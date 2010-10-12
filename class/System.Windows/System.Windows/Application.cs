@@ -205,7 +205,7 @@ namespace System.Windows {
 		bool Install (bool unattended)
 		{
 			// note: user-initiated check is done in unmanaged code
-			if (!NativeMethods.application_install (NativeHandle, unattended))
+			if (!NativeMethods.application_install (NativeHandle, false, unattended))
 				return false;
 
 			// once installed the default quota for isolated storage is augmented to 25MB (instead of 1MB)

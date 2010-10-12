@@ -442,7 +442,7 @@ Application::IsInstallable ()
 }
 
 bool
-Application::InstallWithError (MoonError *error, bool unattended)
+Application::InstallWithError (MoonError *error, bool user_initiated, bool unattended)
 {
 	MoonInstallerService *installer = runtime_get_installer_service ();
 	Deployment *deployment = Deployment::GetCurrent ();
@@ -465,7 +465,7 @@ Application::InstallWithError (MoonError *error, bool unattended)
 	}
 
 	// the dialog is displayed only if the action leading to this call was initiated directly from the user
-	if (!unattended && !deployment->GetSurface ()->IsUserInitiatedEvent ())
+	if (!unattended && !user_initiated && !deployment->GetSurface ()->IsUserInitiatedEvent ())
 		return false;
 	
 	SetInstallState (InstallStateInstalling);
@@ -485,7 +485,7 @@ Application::Install ()
 {
 	MoonError err;
 	
-	return InstallWithError (&err, false);
+	return InstallWithError (&err, true, false);
 }
 
 void

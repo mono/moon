@@ -69,7 +69,7 @@ public:
 	
 	// The test harness calls the InstallWithError p/invoke through reflection, so if you update the signature here, be sure to update the harness too.
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool InstallWithError (MoonError *error, bool unattended);
+	bool InstallWithError (MoonError *error, bool user_initiated, bool unattended);
 	void Uninstall ();
 	bool Install ();
 	
