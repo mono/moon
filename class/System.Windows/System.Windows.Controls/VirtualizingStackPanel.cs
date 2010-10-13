@@ -92,8 +92,10 @@ namespace System.Windows.Controls {
 			
 			element.SetValue (VirtualizingStackPanel.VirtualizationModeProperty, mode);
 		}
-		
-		
+
+		bool canHorizontallyScroll;
+		bool canVerticallyScroll;
+
 		//
 		// Property Accessors
 		//
@@ -439,8 +441,21 @@ namespace System.Windows.Controls {
 		}
 		
 #region "IScrollInfo"
-		public bool CanHorizontallyScroll { get; set; }
-		public bool CanVerticallyScroll { get; set; }
+		public bool CanHorizontallyScroll {
+			get { return canHorizontallyScroll; }
+			set {
+				canHorizontallyScroll = value;
+				InvalidateMeasure ();
+			}
+		}
+
+		public bool CanVerticallyScroll {
+			get { return canVerticallyScroll; }
+			set {
+				canVerticallyScroll = value;
+				InvalidateMeasure ();
+			}
+		}
 		
 		public double ExtentWidth {
 			get; private set;
