@@ -57,7 +57,7 @@ enum GradientSpreadMethod {
 /* @Namespace=System.Windows */
 enum ElevatedPermissions {
 	ElevatedPermissionsNone,
-	ElevatedPermissionsRequired
+	ElevatedPermissionsRequired = 2147483647
 };
 
 /* @IncludeInKinds */
