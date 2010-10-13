@@ -20,7 +20,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::accessibility_bridge_is_accessibility_enabled(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&,System.Boolean)
++SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&,System.Boolean,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::application_is_running_out_of_browser(System.IntPtr)
