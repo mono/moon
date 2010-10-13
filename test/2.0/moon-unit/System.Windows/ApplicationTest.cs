@@ -195,5 +195,105 @@ namespace MoonTest.System.Windows {
 		{
 			Assert.IsFalse (Application.Current.Install (), "Install");
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MinRuntimeVersion (3)]
+		public void IsRunningOutOfBrowser_UserThread ()
+		{
+			Application app = Application.Current;
+			if (app.IsRunningOutOfBrowser)
+				return;
+
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						// testing IsRunningOutOfBrowser (not Application.Current)
+						Assert.IsFalse (app.IsRunningOutOfBrowser);
+					}, "IsRunningOutOfBrowser");
+					status = true;
+				}
+				finally {
+					complete = true;
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete && status);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion (4)]
+		public void MainWindow ()
+		{
+			Application app = Application.Current;
+			if (app.IsRunningOutOfBrowser)
+				return;
+
+			Assert.Throws<NotSupportedException> (delegate {
+				Assert.IsNotNull (app.MainWindow);
+			}, "MainWindow");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MinRuntimeVersion (4)]
+		public void MainWindow_Dispatched ()
+		{
+			Application app = Application.Current;
+			if (app.IsRunningOutOfBrowser)
+				return;
+
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Application.Current.RootVisual.Dispatcher.BeginInvoke (() => {
+				try {
+					Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					Assert.Throws<NotSupportedException> (delegate {
+						Assert.IsNotNull (app.MainWindow);
+					}, "MainWindow");
+					status = true;
+				}
+				finally {
+					complete = true;
+				}
+			});
+			EnqueueConditional (() => complete && status);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MinRuntimeVersion (4)]
+		public void MainWindow_UserThread ()
+		{
+			Application app = Application.Current;
+			if (app.IsRunningOutOfBrowser)
+				return;
+
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						Assert.IsNotNull (app.MainWindow);
+					}, "MainWindow");
+					status = true;
+				}
+				finally {
+					complete = true;
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete && status);
+			EnqueueTestComplete ();
+		}
 	}
 }

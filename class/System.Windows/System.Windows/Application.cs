@@ -187,6 +187,8 @@ namespace System.Windows {
 
 		public bool IsRunningOutOfBrowser {
 			get {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
 				return NativeMethods.application_is_running_out_of_browser (NativeHandle);
 			}
 		}
@@ -703,7 +705,7 @@ namespace System.Windows {
 		public Window MainWindow {
 			get {
 				if (!IsRunningOutOfBrowser)
-					throw new Exception ("this exception might need work... but we aren't running OOB");
+					throw new NotSupportedException ("OoB-only feature");
 
 				Window window = new Window ();
 				IntPtr moon_window = NativeMethods.surface_get_normal_window (Deployment.Current.Surface.Native);
