@@ -364,7 +364,6 @@ namespace System.Windows.Data {
 			var sourceType = Property.PropertyType;
 			var destType = PropertyPathWalker.FinalNode.ValueType;
 			if (destType.IsAssignableFrom (sourceType)) {
-				Console.WriteLine ("Can store {0} in {1}", sourceType.Name, destType.Name);
 				return null;
 			}
 
