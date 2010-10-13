@@ -330,7 +330,7 @@ public:
 	bool SetValueWithError (DependencyProperty *property, Value value, MoonError *error);
 
 	bool PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
-				      DependencyObject *source, Value *old_value, Value *new_value);
+				      DependencyObject *source, Value *new_value);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);

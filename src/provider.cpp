@@ -359,6 +359,136 @@ ImplicitStylePropertyValueProvider::ForeachValue (GHFunc func, gpointer data)
 //
 // InheritedPropertyValueProvider
 //
+
+class InheritedContext {
+public:
+	InheritedContext (DependencyObject *foreground_source,
+			  DependencyObject *font_family_source,
+			  DependencyObject *font_stretch_source,
+			  DependencyObject *font_style_source,
+			  DependencyObject *font_weight_source,
+			  DependencyObject *font_size_source,
+			  DependencyObject *language_source,
+			  DependencyObject *flow_direction_source,
+			  DependencyObject *use_layout_rounding_source,
+			  DependencyObject *text_decorations_source)
+	{
+		this->foreground_source = foreground_source;
+		this->font_family_source = font_family_source;
+		this->font_stretch_source = font_stretch_source;
+		this->font_style_source = font_style_source;
+		this->font_weight_source = font_weight_source;
+		this->font_size_source = font_size_source;
+		this->language_source = language_source;
+		this->flow_direction_source = flow_direction_source;
+		this->use_layout_rounding_source = use_layout_rounding_source;
+		this->text_decorations_source = text_decorations_source;
+	}
+	
+
+	// initialize our sources with obj's local sources, falling
+	// back to the parent context for those properties for which
+	// obj doesn't have higher precedent values.
+	InheritedContext (Types *types, DependencyObject *obj, InheritedContext *parent_context)
+	{
+		foreground_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::Foreground);
+		if (!foreground_source && parent_context) foreground_source = parent_context->foreground_source;
+
+		font_family_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::FontFamily);
+		if (!font_family_source && parent_context) font_family_source = parent_context->font_family_source;
+
+		font_stretch_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::FontStretch);
+		if (!font_stretch_source && parent_context) font_stretch_source = parent_context->font_stretch_source;
+
+		font_style_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::FontStyle);
+		if (!font_style_source && parent_context) font_style_source = parent_context->font_style_source;
+
+		font_weight_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::FontWeight);
+		if (!font_weight_source && parent_context) font_weight_source = parent_context->font_weight_source;
+
+		font_size_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::FontSize);
+		if (!font_size_source && parent_context) font_size_source = parent_context->font_size_source;
+
+		language_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::Language);
+		if (!language_source && parent_context) language_source = parent_context->language_source;
+
+		flow_direction_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::FlowDirection);
+		if (!flow_direction_source && parent_context) flow_direction_source = parent_context->flow_direction_source;
+
+		use_layout_rounding_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::UseLayoutRounding);
+		if (!use_layout_rounding_source && parent_context) use_layout_rounding_source = parent_context->use_layout_rounding_source;
+
+		text_decorations_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::TextDecorations);
+		if (!text_decorations_source && parent_context) text_decorations_source = parent_context->text_decorations_source;
+	}
+
+	~InheritedContext()
+	{
+	}
+
+	// this method takes @this and @with_context, and returns the
+	// original bitmask with bits cleared corresponding to
+	// properties that are *not* inherited from the same source.
+	//
+	// we use this to determine which properties have higher
+	// precedent values in @this than @with_context.
+	InheritedPropertyValueProvider::Inheritable Compare (InheritedContext *with_context, InheritedPropertyValueProvider::Inheritable props)
+	{
+		guint32 rv = InheritedPropertyValueProvider::InheritableNone;
+		if (props & InheritedPropertyValueProvider::Foreground && with_context->foreground_source == foreground_source)
+			rv |= InheritedPropertyValueProvider::Foreground;
+		if (props & InheritedPropertyValueProvider::FontFamily && with_context->font_family_source == font_family_source)
+			rv |= InheritedPropertyValueProvider::FontFamily;
+		if (props & InheritedPropertyValueProvider::FontStretch && with_context->font_stretch_source == font_stretch_source)
+			rv |= InheritedPropertyValueProvider::FontStretch;
+		if (props & InheritedPropertyValueProvider::FontStyle && with_context->font_style_source == font_style_source)
+			rv |= InheritedPropertyValueProvider::FontStyle;
+		if (props & InheritedPropertyValueProvider::FontWeight && with_context->font_weight_source == font_weight_source)
+			rv |= InheritedPropertyValueProvider::FontWeight;
+		if (props & InheritedPropertyValueProvider::FontSize && with_context->font_size_source == font_size_source)
+			rv |= InheritedPropertyValueProvider::FontSize;
+		if (props & InheritedPropertyValueProvider::Language && with_context->language_source == language_source)
+			rv |= InheritedPropertyValueProvider::Language;
+		if (props & InheritedPropertyValueProvider::FlowDirection && with_context->flow_direction_source == flow_direction_source)
+			rv |= InheritedPropertyValueProvider::FlowDirection;
+		if (props & InheritedPropertyValueProvider::UseLayoutRounding && with_context->use_layout_rounding_source == use_layout_rounding_source)
+			rv |= InheritedPropertyValueProvider::UseLayoutRounding;
+		if (props & InheritedPropertyValueProvider::TextDecorations && with_context->text_decorations_source == text_decorations_source)
+			rv |= InheritedPropertyValueProvider::TextDecorations;
+
+		return (InheritedPropertyValueProvider::Inheritable)rv;
+	}
+
+	// Returns obj if obj has a value of higher precedence than Inherited for the given property.
+	// Returns NULL if obj inherits its value for the given property, or if obj doesn't *have* that property at all.
+	DependencyObject* GetLocalSource (Types *types, DependencyObject *obj, InheritedPropertyValueProvider::Inheritable prop)
+	{
+		DependencyObject *source = NULL;
+		DependencyProperty *dp = NULL;
+		int propertyId = InheritedPropertyValueProvider::InheritablePropertyToPropertyId (types, prop, obj->GetObjectType());
+		if (propertyId != -1)
+			dp = types->GetProperty (propertyId);
+		if (dp != NULL && obj->GetPropertyValueProvider (dp) < PropertyPrecedence_Inherited)
+			source = obj;
+
+		return source;
+	}
+
+
+	DependencyObject *foreground_source;
+	DependencyObject *font_family_source;
+	DependencyObject *font_stretch_source;
+	DependencyObject *font_style_source;
+	DependencyObject *font_weight_source;
+	DependencyObject *font_size_source;
+	DependencyObject *language_source;
+	DependencyObject *flow_direction_source;
+	DependencyObject *use_layout_rounding_source;
+	DependencyObject *text_decorations_source;
+};
+
+
+
 InheritedPropertyValueProvider::InheritedPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence)
   : PropertyValueProvider (obj, precedence)
 {
@@ -546,104 +676,9 @@ InheritedPropertyValueProvider::IsPropertyInherited (DependencyObject *obj, int 
 	return inheritable != InheritedPropertyValueProvider::InheritableNone;
 }
 
-// return true if we should not continue to propagate this property down the inheritance tree.
-// this could be for a couple reasons:
-//
-// 1: the property already has a value on @element of a higher precedence than Inherited
-// 2: there is no source for the property further up in the tree
-
-bool
-InheritedPropertyValueProvider::PropAdd (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property)
-{
-	// we always assign a provider source on @element (the child),
-	// and it'll either be the rootParent's source (if it's value
-	// is inherited) or rootParent itself (if the value is local).
-
-	int rootPropertyId = InheritablePropertyToPropertyId (types, property, rootParent->GetObjectType());
-
-	if (rootPropertyId == -1) {
-		// the property doesn't exist on rootParent at all, so
-		// we must be inheriting.
-		DependencyObject *source = rootParent->GetInheritedValueSource (property);
-		Value *value = NULL;
-
-		if (source) {
-			DependencyProperty *sourceProperty =
-				types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
-			value = source->GetValue (sourceProperty);
-
-			return !element->PropagateInheritedValue (property, source, NULL, value);
-		}
-		else {
-			// there's no property source to use, so
-			// there's no reason to continue walking the
-			// tree setting it on other children
-			return true;
-		}
-	}
-	else {
-		DependencyProperty *rootProperty = types->GetProperty (rootPropertyId);
-		int root_prec = rootParent->GetPropertyValueProvider (rootProperty);
-		if (root_prec == -1) {
-			// there is no provider for the value in
-			// rootParent, so we can skip further
-			// children
-			return true;
-		}
-
-		DependencyObject *source;
-		DependencyProperty *sourceProperty = NULL;
-
-		if (root_prec == PropertyPrecedence_Inherited) {
-			source = rootParent->GetInheritedValueSource (property);
-			if (source)
-				sourceProperty = types->GetProperty (InheritablePropertyToPropertyId (types, property, source->GetObjectType()));
-		}
-		else if (root_prec < PropertyPrecedence_Inherited) {
-			source = rootParent;
-			sourceProperty = rootProperty;
-		}
-		/* FIXME what happens with lower precedences? */
-
-		Value *sourceValue = source && sourceProperty ? source->GetValue (sourceProperty) : NULL;
-		return element->PropagateInheritedValue (property, source, NULL, sourceValue);
-	}
-}
-
-// returns true if we successfully removed the inherited property from this element
-bool
-InheritedPropertyValueProvider::PropRemove (Types *types, DependencyObject *element, Inheritable property)
-{
-	int propertyId = InheritablePropertyToPropertyId (types, property, element->GetObjectType());
-
-	element->SetInheritedValueSource (property, NULL);
-
-	if (propertyId == -1) {
-		// the property doesn't exist on this element, so it's
-		// necessarily inherited - we have to continue down
-		// the tree.
-		return true;
-	}
-	else {
-		DependencyProperty *dp = types->GetProperty (propertyId);
-		int prec = element->GetPropertyValueProvider (dp);
-
-		if (prec == -1)
-			return true;
-
-		if (prec < PropertyPrecedence_Inherited)
-			return false;
-
-		return true;
-	}
-}
-
 void
-InheritedPropertyValueProvider::WalkSubtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding)
+InheritedPropertyValueProvider::WalkSubtree (Types *types, DependencyObject *rootParent, DependencyObject *element, InheritedContext *context, Inheritable props, bool adding)
 {
-	if (seen == InheritedPropertyValueProvider::InheritableAll)
-		return;
-
 	Type::Kind elementType = element->GetObjectType();
 
 	if (types->IsSubclassOf (elementType, Type::TEXTELEMENT)
@@ -667,7 +702,7 @@ InheritedPropertyValueProvider::WalkSubtree (Types *types, DependencyObject *roo
 
 				for (int i = 0; i < count; i++) {
 					DependencyObject *obj = col->GetValueAt (i)->AsDependencyObject ();
-					WalkTree (types, rootParent, obj, seen, adding);
+					WalkTree (types, rootParent, obj, context, props, adding);
 				}
 			}
 		}
@@ -678,81 +713,152 @@ InheritedPropertyValueProvider::WalkSubtree (Types *types, DependencyObject *roo
 		UIElement *child = popup->GetChild();
 
 		if (child)
-			WalkTree (types, rootParent, child, seen, adding);
+			WalkTree (types, rootParent, child, context, props, adding);
 	}
 
 	if (types->IsSubclassOf (elementType, Type::UIELEMENT)) {
 		VisualTreeWalker walker ((UIElement*)element, Logical, true, types);
 
 		while (UIElement *child = walker.Step ())
-			WalkTree (types, rootParent, child, seen, adding);
+			WalkTree (types, rootParent, child, context, props, adding);
 	}
 
 }
 
-
 void
-InheritedPropertyValueProvider::WalkTree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding)
+InheritedPropertyValueProvider::WalkTree (Types *types, DependencyObject *rootParent, DependencyObject *element, InheritedContext *context, Inheritable props, bool adding)
 {
-	if (seen == InheritedPropertyValueProvider::InheritableAll)
+	if (props == InheritableNone)
 		return;
 
-#define HAS_SEEN(p)  ((seen & (InheritedPropertyValueProvider::p))!=0)
-#define SEEN(p)      (seen|=(InheritedPropertyValueProvider::p))
-
 	if (adding) {
-		if (!HAS_SEEN (Foreground) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::Foreground)) SEEN (Foreground);
-		if (!HAS_SEEN (FontFamily) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontFamily)) SEEN (FontFamily);
-		if (!HAS_SEEN (FontStretch) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontStretch)) SEEN (FontStretch);
-		if (!HAS_SEEN (FontStyle) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontStyle)) SEEN (FontStyle);
-		if (!HAS_SEEN (FontWeight) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontWeight)) SEEN (FontWeight);
-		if (!HAS_SEEN (FontSize) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FontSize)) SEEN (FontSize);
+		MaybePropagateInheritedValue (types, context->foreground_source, Foreground, props, element);
+		MaybePropagateInheritedValue (types, context->font_family_source, FontFamily, props, element);
+		MaybePropagateInheritedValue (types, context->font_stretch_source, FontStretch, props, element);
+		MaybePropagateInheritedValue (types, context->font_style_source, FontStyle, props, element);
+		MaybePropagateInheritedValue (types, context->font_weight_source, FontWeight, props, element);
+		MaybePropagateInheritedValue (types, context->font_size_source, FontSize, props, element);
+		MaybePropagateInheritedValue (types, context->language_source, Language, props, element);
+		MaybePropagateInheritedValue (types, context->flow_direction_source, FlowDirection, props, element);
+		MaybePropagateInheritedValue (types, context->use_layout_rounding_source, UseLayoutRounding, props, element);
+		MaybePropagateInheritedValue (types, context->text_decorations_source, TextDecorations, props, element);
 
-		if (!HAS_SEEN (Language) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::Language)) SEEN (Language);
-		if (!HAS_SEEN (FlowDirection) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::FlowDirection)) SEEN (FlowDirection);
+		InheritedContext element_context (types, element, context);
 
-		if (!HAS_SEEN (UseLayoutRounding) && PropAdd (types, rootParent, element, InheritedPropertyValueProvider::UseLayoutRounding)) SEEN (UseLayoutRounding);
+		props = element_context.Compare (context, props);
+		if (props == InheritableNone)
+			return;
+
+		WalkSubtree (types, rootParent, element, &element_context, props, adding);
 	}
 	else {
-		if (!HAS_SEEN (Foreground) && !PropRemove (types, element, InheritedPropertyValueProvider::Foreground)) SEEN (Foreground);
-		if (!HAS_SEEN (FontFamily) && !PropRemove (types, element, InheritedPropertyValueProvider::FontFamily)) SEEN (FontFamily);
-		if (!HAS_SEEN (FontStretch) && !PropRemove (types, element, InheritedPropertyValueProvider::FontStretch)) SEEN (FontStretch);
-		if (!HAS_SEEN (FontStyle) && !PropRemove (types, element, InheritedPropertyValueProvider::FontStyle)) SEEN (FontStyle);
-		if (!HAS_SEEN (FontWeight) && !PropRemove (types, element, InheritedPropertyValueProvider::FontWeight)) SEEN (FontWeight);
-		if (!HAS_SEEN (FontSize) && !PropRemove (types, element, InheritedPropertyValueProvider::FontSize)) SEEN (FontSize);
+		InheritedContext element_context (types, element, context);
 
-		if (!HAS_SEEN (Language) && !PropRemove (types, element, InheritedPropertyValueProvider::Language)) SEEN (Language);
-		if (!HAS_SEEN (FlowDirection) && !PropRemove (types, element, InheritedPropertyValueProvider::FlowDirection)) SEEN (FlowDirection);
+		MaybeRemoveInheritedValue (types, context->foreground_source, Foreground, props, element);
+		MaybeRemoveInheritedValue (types, context->font_family_source, FontFamily, props, element);
+		MaybeRemoveInheritedValue (types, context->font_stretch_source, FontStretch, props, element);
+		MaybeRemoveInheritedValue (types, context->font_style_source, FontStyle, props, element);
+		MaybeRemoveInheritedValue (types, context->font_weight_source, FontWeight, props, element);
+		MaybeRemoveInheritedValue (types, context->font_size_source, FontSize, props, element);
+		MaybeRemoveInheritedValue (types, context->language_source, Language, props, element);
+		MaybeRemoveInheritedValue (types, context->flow_direction_source, FlowDirection, props, element);
+		MaybeRemoveInheritedValue (types, context->use_layout_rounding_source, UseLayoutRounding, props, element);
+		MaybeRemoveInheritedValue (types, context->text_decorations_source, TextDecorations, props, element);
 
-		if (!HAS_SEEN (UseLayoutRounding) && !PropRemove (types, element, InheritedPropertyValueProvider::UseLayoutRounding)) SEEN (UseLayoutRounding);
+		props = element_context.Compare (context, props);
+		if (props == InheritableNone)
+			return;
+
+		WalkSubtree (types, rootParent, element, context, props, adding);
 	}
+}
 
-	WalkSubtree (types, rootParent, element, seen, adding);
+void
+InheritedPropertyValueProvider::MaybePropagateInheritedValue (Types *types, DependencyObject *source, Inheritable prop, Inheritable props, DependencyObject *element)
+{
+	if (!source) return;
+	if ((props & prop) == 0) return;
 
-#undef HAS_SEEN
-#undef SEEN
+	DependencyProperty *sourceProperty =
+		types->GetProperty (InheritablePropertyToPropertyId (types, prop, source->GetObjectType()));
+	Value *value = source->GetValue (sourceProperty);
+
+	element->PropagateInheritedValue (prop, source, value);
+}
+
+void
+InheritedPropertyValueProvider::MaybeRemoveInheritedValue (Types *types, DependencyObject *source, Inheritable prop, Inheritable props, DependencyObject *element)
+{
+	if (!source) return;
+	if ((props & prop) == 0) return;
+
+	if (source == element->GetInheritedValueSource (prop))
+		element->PropagateInheritedValue (prop, NULL, NULL);
 }
 
 void
 InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (DependencyObject *subtree)
 {
 	Types *types = subtree->GetDeployment ()->GetTypes ();
-	WalkTree (types, obj, subtree, InheritedPropertyValueProvider::InheritableNone, true);
+
+	// initially populate our source_stack with a context
+	// containing the the property sources from this->obj
+	InheritedContext base_context (GetPropertySource (Foreground),
+				       GetPropertySource (FontFamily),
+				       GetPropertySource (FontStretch),
+				       GetPropertySource (FontStyle),
+				       GetPropertySource (FontWeight),
+				       GetPropertySource (FontSize),
+				       GetPropertySource (Language),
+				       GetPropertySource (FlowDirection),
+				       GetPropertySource (UseLayoutRounding),
+				       GetPropertySource (TextDecorations));
+
+
+	InheritedContext obj_context (types, obj, &base_context);
+	WalkTree (types, obj, subtree, &obj_context, InheritableAll, true);
 }
 
 void
 InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyProperty *property, DependencyObject *source, DependencyObject *subtree)
 {
-	Types *types = source->GetDeployment ()->GetTypes ();
 	Inheritable inheritable = InheritablePropertyFromPropertyId(source, property->GetId());
-	WalkSubtree (types, source, subtree, (InheritedPropertyValueProvider::InheritableAll & ~inheritable), true);
+
+	Types *types = source->GetDeployment ()->GetTypes ();
+
+	// since we're only propagating one property to the subtree,
+	// we don't care about anything other than @inheritable, and
+	// we also don't need to create a base_context as in
+	// PropagateInheritedPropertiesOnAddingToTree (since we know
+	// the value is higher precedence, otherwise we wouldn't have
+	// been called.)
+	InheritedContext obj_context (types, obj, NULL);
+
+	WalkSubtree (types, source, subtree, &obj_context, inheritable, true);
 }
 
 void
 InheritedPropertyValueProvider::ClearInheritedPropertiesOnRemovingFromTree (DependencyObject *subtree)
 {
 	Types *types = subtree->GetDeployment ()->GetTypes ();
-	WalkTree (types, obj, subtree, InheritedPropertyValueProvider::InheritableNone, false);
+
+	// initially populate our source_stack with a context
+	// containing the the property sources from this->obj
+	InheritedContext base_context (GetPropertySource (Foreground),
+				       GetPropertySource (FontFamily),
+				       GetPropertySource (FontStretch),
+				       GetPropertySource (FontStyle),
+				       GetPropertySource (FontWeight),
+				       GetPropertySource (FontSize),
+				       GetPropertySource (Language),
+				       GetPropertySource (FlowDirection),
+				       GetPropertySource (UseLayoutRounding),
+				       GetPropertySource (TextDecorations));
+
+
+	InheritedContext obj_context (types, obj, &base_context);
+
+	WalkTree (types, obj, subtree, &obj_context, InheritableAll, false);
 }
 									    
 DependencyObject*

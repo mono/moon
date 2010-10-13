@@ -1758,7 +1758,7 @@ DependencyObject::SetValueWithError (DependencyProperty *property, Value *value,
 // returns true if this->GetValue(inheritedProperty) is equal to the inherited value (i.e. false if the value is of a higher precedence)
 bool
 DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
-					   DependencyObject *source, Value *old_value, Value *new_value)
+					   DependencyObject *source, Value *new_value)
 {
 	if (!providers.inherited) {
 		// we don't have an inherited provider at all, so the
@@ -1779,7 +1779,7 @@ DependencyObject::PropagateInheritedValue (InheritedPropertyValueProvider::Inher
 
 	DependencyProperty *property = GetDeployment()->GetTypes()->GetProperty (propertyId);
 	MoonError unused;
-	ProviderValueChanged (PropertyPrecedence_Inherited, property, old_value, new_value, true, false, false, &unused);
+	ProviderValueChanged (PropertyPrecedence_Inherited, property, NULL, new_value, true, false, false, &unused);
 
 	return GetPropertyValueProvider (property) == PropertyPrecedence_Inherited;
 }
@@ -2312,12 +2312,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 			if (providers.inherited) {
 				if (providerPrecedence == PropertyPrecedence_Inherited) {
-					DependencyObject *source = providers.inherited->GetPropertySource (property);
-
-					if (source == NULL)
-						g_warning ("ProviderValueChanged called on inherited property with no property source set");
-					else
-						providers.inherited->PropagateInheritedProperty (property, source, this);
+					// we don't do anything here, it's handled in provider.cpp
 				}
 				else {
 					if (InheritedPropertyValueProvider::IsPropertyInherited (this, property->GetId ())

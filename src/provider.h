@@ -159,6 +159,8 @@ private:
 	Style **styles;
 };
 
+class InheritedContext;
+
 class InheritedPropertyValueProvider : public PropertyValueProvider {
 public:
 	enum Inheritable {
@@ -204,11 +206,11 @@ public:
 	static int InheritablePropertyToPropertyId (Types *types, Inheritable property, Type::Kind objectType);
 
 private:
-	bool PropAdd (Types *types, DependencyObject *rootParent, DependencyObject *element, Inheritable property);
-	bool PropRemove (Types *types, DependencyObject *element, Inheritable property);
+	void MaybePropagateInheritedValue (Types *types, DependencyObject *source, Inheritable prop, Inheritable props, DependencyObject *element);
+	void MaybeRemoveInheritedValue (Types *types, DependencyObject *source, Inheritable prop, Inheritable props, DependencyObject *element);
 
-	void WalkSubtree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding);
-	void WalkTree (Types *types, DependencyObject *rootParent, DependencyObject *element, guint32 seen, bool adding);
+	void WalkSubtree (Types *types, DependencyObject *rootParent, DependencyObject *element, InheritedContext *context, Inheritable props, bool adding);
+	void WalkTree (Types *types, DependencyObject *rootParent, DependencyObject *element, InheritedContext *context, Inheritable props, bool adding);
 
 	GHashTable *propertyToSupplyingAncestor;
 };
