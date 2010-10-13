@@ -21,9 +21,13 @@ System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanagedSafe
 	r157803		spouliot - call LookupScriptObject without a 'false' parameter (previously used to 'createIfNotFound)
 	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call SetPropertyFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
-!SSC-15242E823CC1FF11F659AA0218DEF3E2
-System.Object Mono.JSFriendlyMethodBinder::GetDelegate(System.Windows.Browser.ScriptObject,System.Type)
-	20101004	spouliot - extracted from TryChangeType (reduce SSC surface). Create an instance of ScriptObjectEventInfo [SecurityCritical] using the parameters and return the value of the GetDelegate call on it
+!SSC-095EF057B779BCCE7CFEFC96D0615EC1
+System.Boolean System.Windows.Browser.ScriptObject::ValidateArguments(System.Reflection.MethodInfo,System.Object[])
+	20101013	spouliot - 7795670 - call ScriptObjectHelper [SecurityCritical] TryChangeType on all 'args'
+
+!SSC-2FB9151BFF721EA9C491BCC6DCA68DA4
+System.Object Mono.JSFriendlyMethodBinder::ChangeType(System.Object,System.Type,System.Globalization.CultureInfo)
+	20101013	spouliot - 7795670 - call ScriptObjectHelper [SecurityCritical] TryChangeType using the same parameters, if it returns false then throw an InvalidOperationException
 
 !SSC-A765C36C8641572A68B66AEF8763F5BE
 System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
@@ -33,9 +37,30 @@ System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
 System.Object System.Windows.Browser.ManagedObject::Invoke(System.String,System.Object[])
 	r153088		spouliot - call ScriptObjectHelper [SecurityCritical] ObjectFromValue to get an object from the (return) Value of the call to base.Invoke
 
+!SSC-4038AD52FC70225CFC8C3E9C96A19920
+System.Object System.Windows.Browser.ScriptObject::ConvertTo(System.Type,System.Boolean)
+	20101013	spouliot - 7795670 - if the 'targetType' is a delegate then return a delegate based on a new ScriptObjectEventInfo [SecurityCritical] built on 'this' and the specified 'targetType'
+
 !SSC-DA8A8DE1D235928AFF304F5A8FE2CD7B
 System.Object System.Windows.Browser.ScriptObject::GetProperty(System.String,System.Object[])
 	r153088		spouliot - calls Invoke [SecurityCritical] on the 'scriptAlias' property getter using the arguments 'args'
+
+!SSC-6CD7993C96A70F4E0D25E3137204F8B5
+System.Object System.Windows.Browser.ScriptObject::GetPropertyInternal(System.IntPtr,System.String)
+	20101013	spouliot - 7795670 - non-generic version, same pinvoke then, if not invalid, call ScriptObjectHelper [SecurityCritical] FromValue on the 'res' (this will be the return value) and pinvoke value_free_value on (temporary) 'res'
+	r142142		spouliot - added validations, pinvoke into html_object_get_property
+
+!SSC-4E7F4E200C56498D211001AA679B4D40
+System.Object System.Windows.Browser.ScriptObject::InvokeInternal(System.Object[])
+	20101013	spouliot - 7795670 - non-generic version, call ScriptObjectHelper [SecurityCritical] ToValue on all 'args' before the pinvoke, then ScriptObjectHelper [SecurityCritical] FromValue on 'res' (this will be the return value) and pinvoke value_free_value on (temporary) 'res'
+	r142747		spouliot - visibility changed to internal (to match SL2 API)
+	r142142		spouliot - added validations, pinvoke into html_object_invoke_self
+
+!SSC-9F6DB261566743AD12D0CBCD1952B0D7
+System.Object System.Windows.Browser.ScriptObject::InvokeInternal(System.String,System.Object[])
+	20101013	spouliot - 7795670 - non-generic version, call ScriptObjectHelper [SecurityCritical] ToValue on all 'args' before the pinvoke, then ScriptObjectHelper [SecurityCritical] FromValue on 'res' (this will be the return value) and pinvoke value_free_value on (temporary) 'res'
+	r142747		spouliot - visibility changed to internal (to match SL2 API)
+	r142142		spouliot - added validations, pinvoke into html_object_invoke
 
 !SSC-401048995EF5228679D4F025E4BEB30C
 System.Void System.Windows.Browser.HtmlPage::.cctor()
@@ -45,8 +70,9 @@ System.Void System.Windows.Browser.HtmlPage::.cctor()
 System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
 	r143068		spouliot - calls ScriptableObjectGenerator.Generate
 
-!SSC-5E7A9CEE83579C0CF194BE08AEA940FC
+!SSC-A1C5E5F5AC171837D31C0BACC0833002
 System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
+	20101013	spouliot - 7795670 - Dictionary changed from <int,IntPtr> to <object,WeakReference>
 	20101004	spouliot - d225a6f4 - cache ManagedObject / b320e418 - fix ToString registration (to make sure the parameter-less overload is used)
 	r153088		spouliot - create instances of inner-type EventOps [SecurityCritical] (unexposed)
 
@@ -88,17 +114,7 @@ System.Windows.Browser.ScriptObject System.Windows.Browser.ScriptObject::LookupS
 	r157803		spouliot - signature changed (boolean parameter removed). ScriptObject are not created (here) anymore but are fetched from 'cachedObjects' if not found in 'toggleRefs'
 	r153088		spouliot - retrieve a ScriptObjectToggleRef [SecurityCritical] (unexposed) from an IntPtr, optionally creating a ScriptObject is not found
 
-!SSC-1AC5E9BD897947C17BF230A83069CF94
-T System.Windows.Browser.ScriptObject::GetPropertyInternal<T>(System.IntPtr,System.String)
-	r142142		spouliot - added validations, pinvoke into html_object_get_property
-
-!SSC-690C958CDCBCC69BD3D9BA98F2561785
-T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.Object[])
-	r142747		spouliot - visibility changed to internal (to match SL2 API)
-	r142142		spouliot - added validations, pinvoke into html_object_invoke_self
-
-!SSC-E03CA4D6C7E01408F28802124F2CF739
-T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.String,System.Object[])
-	r142747		spouliot - visibility changed to internal (to match SL2 API)
-	r142142		spouliot - added validations, pinvoke into html_object_invoke
+!SSC-0EA5B4040E4ED82AFDC01338E01DEFAF
+T System.Windows.Browser.ScriptObject::GetProperty<T>(System.String)
+	20101013	spouliot - 7795670 - call GetProperty (non-generic version) then call ScriptObjectHelper [SecurityCritical] TryChangeType on the result and the generic type requested
 

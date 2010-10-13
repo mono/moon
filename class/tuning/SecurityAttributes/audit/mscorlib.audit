@@ -2104,6 +2104,10 @@ System.Void System.Reflection.Emit.DynamicMethod::Finalize()
 System.Void System.Reflection.Emit.DynamicMethod::RejectIfCreated()
 	r155836		spouliot - call RuntimeMethodHandle.get_Value [SecurityCritical] to compare it with IntPtr.Zero
 
+!SSC-B5B5B41DA8086E07F71FD421D1026F84
+System.Void System.Reflection.Emit.FieldBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.String,System.Type,System.Reflection.FieldAttributes,System.Type[],System.Type[])
+	20101013	spouliot - 9bf0d24 - call ModuleBuilder.RegisterToken [SecurityCritical] using 'this' and the (int32) Token property retuned from GetToken call
+
 !SSC-A9BBA57B3670D5537E9F91B185D810E3
 System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.AssemblyBuilder,System.String,System.String,System.Boolean,System.Boolean)
 	r142142		spouliot - call set_wrappers_type (icall) and debugging symbol loading/initialization
