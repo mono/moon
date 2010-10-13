@@ -589,6 +589,18 @@ namespace System.Windows {
 				NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
 		}
 
+		bool IsElevatedPermissionsRequired {
+			get {
+				OutOfBrowserSettings oobs = OutOfBrowserSettings;
+				if (oobs == null)
+					return false;
+				SecuritySettings ss = oobs.SecuritySettings;
+				if (ss == null)
+					return false;
+				return ss.ElevatedPermissions == ElevatedPermissions.Required;
+			}
+		}
+
 		// will be called when all assemblies are loaded (can be async for downloading)
 		// which means we need to report errors to the plugin, since it won't get it from calling managed code
 		internal bool CreateApplication ()
@@ -634,6 +646,10 @@ namespace System.Windows {
 
 			try {
 				instance = (Application) Activator.CreateInstance (entry_type);
+				// set HasElevatedPermissions based on IsRunningOutOfBrowser and ElevatedPermissions.Required
+				if (IsElevatedPermissionsRequired) {
+					instance.HasElevatedPermissions = instance.IsRunningOutOfBrowser;
+				}
 			} catch {
 				EmitError (2103, String.Format ("Error while creating the instance of type {0}", entry_type));
 				return false;
