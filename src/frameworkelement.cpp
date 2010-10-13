@@ -32,7 +32,7 @@ namespace Moonlight {
 
 #define MAX_LAYOUT_PASSES 250
 
-FrameworkElementProvider::FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
+FrameworkElementProvider::FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence, int flags) : PropertyValueProvider (obj, precedence, flags)
 {
 	actual_height_value = NULL;
 	actual_width_value = NULL;

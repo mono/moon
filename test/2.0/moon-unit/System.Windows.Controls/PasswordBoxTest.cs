@@ -39,11 +39,12 @@ using System.Windows.Shapes;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Markup;
+using Microsoft.Silverlight.Testing;
 
 namespace Mono.Moonlight.UnitTesting
 {
     [TestClass]
-    public class PasswordBoxTest
+    public class PasswordBoxTest : SilverlightTest
     {
         PasswordBox box;
 
@@ -62,6 +63,73 @@ namespace Mono.Moonlight.UnitTesting
             Assert.AreEqual((char)9679, box.PasswordChar, "#4");
             Assert.AreEqual(null, box.SelectionBackground, "#5");
             Assert.AreEqual(null, box.SelectionForeground, "#6");
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void SelectionForeground()
+        {
+            var box = new PasswordBox();
+            Assert.IsNull(box.SelectionForeground, "#1");
+            TestPanel.Children.Add(box);
+            Assert.IsNull(box.SelectionForeground, "#2");
+            box.UpdateLayout();
+            Assert.IsNull(box.SelectionForeground, "#3");
+            Enqueue(() => {
+                Assert.IsNotNull(box.SelectionForeground, "#4");
+                Assert.IsUnset(box, PasswordBox.SelectionForegroundProperty, "#5");
+            });
+            Enqueue (() => {
+                box.ClearValue(PasswordBox.SelectionForegroundProperty);
+                Assert.IsNull(box.SelectionForeground, "#6");
+            });
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void SelectionForeground_Styled ()
+        {
+            var brush = new SolidColorBrush (Colors.Red);
+            var style = new Style (typeof (PasswordBox));
+            style.Setters.Add (new Setter (PasswordBox.SelectionForegroundProperty, brush));
+
+            var box = new PasswordBox { Style = style };
+
+            Assert.AreSame (brush, box.SelectionForeground, "#1");
+            TestPanel.Children.Add(box);
+            Assert.AreSame (brush, box.SelectionForeground, "#2");
+            box.UpdateLayout();
+            Assert.AreSame (brush, box.SelectionForeground, "#3");
+            Enqueue(() => {
+                Assert.AreSame (brush, box.SelectionForeground, "#4");
+                Assert.IsUnset(box, PasswordBox.SelectionForegroundProperty, "#5");
+            });
+            Enqueue (() => {
+                box.ClearValue(PasswordBox.SelectionForegroundProperty);
+                Assert.AreSame (brush, box.SelectionForeground, "#6");
+            });
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        [MoonlightBug ("We don't recompute when a lower precedence value changes")]
+        public void SelectionForeground_SetStyle_RemoveStyle()
+        {
+            var brush = new SolidColorBrush(Colors.Red);
+            var style = new Style(typeof(PasswordBox));
+            style.Setters.Add(new Setter(PasswordBox.SelectionForegroundProperty, brush));
+
+            var box = new PasswordBox { Style = style };
+
+            TestPanel.Children.Add(box);
+            box.UpdateLayout();
+            Enqueue(() => {
+                box.Style = null;
+                Assert.IsNull (box.SelectionForeground, "#1");
+            });
+            EnqueueTestComplete();
         }
 
         [TestMethod]

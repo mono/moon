@@ -2426,7 +2426,20 @@ protected:
 	Value *selection_foreground;
 	
 public:
-	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence)
+	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error)
+	{
+		if (property->GetId () == TextBox::SelectionBackgroundProperty) {
+			delete selection_background;
+			selection_background = NULL;
+		} else if (property->GetId () == TextBox::SelectionForegroundProperty) {
+			delete selection_foreground;
+			selection_foreground = NULL;
+		} else {
+			FrameworkElementProvider::RecomputePropertyValue (property, flags, error);
+		}
+	}
+
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence, ProviderFlags_RecomputesOnClear | ProviderFlags_RecomputesOnLowerPriorityChange)
 	{
 		selection_background = NULL;
 		selection_foreground = NULL;
@@ -2440,13 +2453,17 @@ public:
 	
 	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
+		Value *v = NULL;
 		if (property->GetId () == TextBox::SelectionBackgroundProperty) {
-			return selection_background;
+			v = obj->GetValue (property, (PropertyPrecedence) (precedence + 1));
+			if (!v)
+				v = selection_background;
 		} else if (property->GetId () == TextBox::SelectionForegroundProperty) {
-			return selection_foreground;
+			v = obj->GetValue (property, (PropertyPrecedence) (precedence + 1));
+			if (!v)
+				v = selection_foreground;
 		}
-		
-		return FrameworkElementProvider::GetPropertyValue (property);
+		return v ? v : FrameworkElementProvider::GetPropertyValue (property);
 	}
 	
 	void InitializeSelectionBrushes ()
@@ -2809,21 +2826,39 @@ class PasswordBoxDynamicPropertyValueProvider : public TextBoxDynamicPropertyVal
 		: TextBoxDynamicPropertyValueProvider (obj, precedence)
 	{
 	}
-	
+
+	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error)
+	{
+		if (property->GetId () == PasswordBox::SelectionBackgroundProperty) {
+			delete selection_background;
+			selection_background = NULL;
+		} else if (property->GetId () == PasswordBox::SelectionForegroundProperty) {
+			delete selection_foreground;
+			selection_foreground = NULL;
+		} else {
+			FrameworkElementProvider::RecomputePropertyValue (property, flags, error);
+		}
+	}
+
 	virtual ~PasswordBoxDynamicPropertyValueProvider ()
 	{
 	}
 	
 	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
+		Value *v = NULL;
 		if (property->GetId () == PasswordBox::SelectionBackgroundProperty) {
-			return selection_background;
+			v = obj->GetValue (property, (PropertyPrecedence) (precedence + 1));
+			if (!v)
+				v = selection_background;
 		} else if (property->GetId () == PasswordBox::SelectionForegroundProperty) {
-			return selection_foreground;
+			v = obj->GetValue (property, (PropertyPrecedence) (precedence + 1));
+			if (!v)
+				v = selection_foreground;
 		}
 		
 		// note: we skip over TextBoxDynamicPropertyValueProvider's implementation.
-		return FrameworkElementProvider::GetPropertyValue (property);
+		return v ? v : FrameworkElementProvider::GetPropertyValue (property);
 	}
 };
 

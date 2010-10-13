@@ -225,7 +225,7 @@ class FrameworkElementProvider : public PropertyValueProvider {
 	Size last;
 
  public:
-	FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence);
+	FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence, int flags = 0);
 	virtual ~FrameworkElementProvider ();
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
