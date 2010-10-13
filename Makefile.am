@@ -87,4 +87,4 @@ else
 endif
 
 reset-mono:
-	cd $(MONO_PATH) && git reset --hard `grep 'cd mono .*hard' $(PWD)/README | awk -F' ' '{print $$7}'`
+	cd $(MONO_PATH) && git fetch && git reset --hard `grep 'cd mono .*hard' $(PWD)/README | awk -F' ' '{print $$7}'`
