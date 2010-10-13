@@ -532,13 +532,15 @@ namespace System.Windows.Controls
 			}
 			
 			Point  offset = new Point (0,ActualHeight);
-
-			if (FlowDirection == FlowDirection.RightToLeft)
-			   offset.X = ActualWidth - child.ActualWidth;
-			
 			Point bottom_right = new Point (offset.X + child.ActualWidth, offset.Y + child.ActualHeight);
 			bottom_right = xform.Transform (bottom_right);
 			Point top_left = xform.Transform (offset);
+
+			if (FlowDirection == FlowDirection.RightToLeft) {
+				double left = bottom_right.X;
+				bottom_right.X = top_left.X;
+				top_left.X = left;
+			}
 
 			if (bottom_right.X > root.ActualWidth) {
 				_popup.HorizontalOffset = root.ActualWidth - bottom_right.X;
@@ -547,6 +549,11 @@ namespace System.Windows.Controls
 			} else {
 				_popup.HorizontalOffset = offset.X;
 			}
+			
+			if (FlowDirection == FlowDirection.RightToLeft) {
+				_popup.HorizontalOffset = - _popup.HorizontalOffset;
+			}
+
 			if (bottom_right.Y > root.ActualHeight) {
 				_popup.VerticalOffset = -child.ActualHeight;
 			} else {
