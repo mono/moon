@@ -1854,6 +1854,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	if (toplevel == NULL || event == NULL)
 		return false;
 
+	time_manager->InvokeTickCalls();
 	emittingMouseEvent = true;
 
 	if (captured) {
