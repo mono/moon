@@ -141,7 +141,7 @@ TabNavigationWalker::Focus (UIElement *element, bool forwards)
 
 	// If tabbing in reverse, we immediately go up a level from initial root as
 	// we know we will not be focusing any of its children.
-	if (!forwards)
+	if (!forwards && root->GetVisualParent ())
 		root = root->GetVisualParent ();
 
 	do {
