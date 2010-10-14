@@ -1022,7 +1022,8 @@ class Generator {
 			bool is_readonly = field.IsDPReadOnly;
 			bool is_always_change = field.IsDPAlwaysChange;
 			string validator = field.DPValidator;
-			bool is_full = is_attached || is_readonly || is_always_change || validator != null || autocreator != null || is_nullable;
+			string coercer = field.DPCoercer;
+			bool is_full = is_attached || is_readonly || is_always_change || validator != null || coercer != null || autocreator != null || is_nullable;
 
 			propertyType = field.GetDPPropertyType (all);
 
@@ -1079,6 +1080,9 @@ class Generator {
 				text.Append ("NULL");
 				text.Append (", ");
 				text.Append (validator != null ? ("Validators::" + validator) : "NULL");
+				text.Append (", ");
+				text.Append (coercer != null ? (coercer.Contains("::") ? coercer : "Coercers::" + coercer)
+					     : "NULL");
 				text.Append (", ");
 				text.Append (autocreator != null
 					     ? (autocreator.Contains("::") ? autocreator : "AutoCreators::" + autocreator)

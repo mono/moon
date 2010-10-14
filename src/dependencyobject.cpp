@@ -1609,7 +1609,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 		return false;
 	}
 
-	if (value != NULL) {
+	if (value != NULL && !value->GetIsNull ()) {
 		if (value->Is (GetDeployment (), Type::EVENTOBJECT) && !value->AsEventObject ()) {
 			// if it's a null DependencyObject, it doesn't matter what type it is
 			return true;
@@ -1633,10 +1633,6 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 			return false;
 		}
 	} else {
-		// In 2.0, property->GetPropertyType() can return
-		// something greater than Type::LASTTYPE.  Only check
-		// built-in types for null Types registered on the
-		// managed side has their own check there.
 		if (!property->CanBeSetToNull ()) {
 			char *error_msg = g_strdup_printf ("Can not set a non-nullable scalar type to NULL (property: %s)",
 							   property->GetName());
@@ -1771,12 +1767,24 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 bool
 DependencyObject::SetValueWithError (DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (!IsValueValid (property, value, error))
+	Value *coerced = NULL;
+
+	if (!property->Coerce (this, value, &coerced, error)) {
+		delete coerced;
 		return false;
-	if (!property->Validate (this, value, error))
+	}
+	if (!IsValueValid (property, coerced, error)) {
+		delete coerced;
 		return false;
+	}
+	if (!property->Validate (this, coerced, error)) {
+		delete coerced;
+		return false;
+	}
 	
-	return SetValueWithErrorImpl (property, value, error);
+	bool rv = SetValueWithErrorImpl (property, coerced, error);
+	delete coerced;
+	return rv;
 }
 
 // sets the inherited property source on this object to @source.

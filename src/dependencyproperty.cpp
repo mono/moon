@@ -27,7 +27,7 @@ namespace Moonlight {
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom)
+	DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, ValueCoercer* coercer, AutoCreator* autocreator, bool is_custom)
 {
 	this->owner_type = owner_type;
 	this->has_hidden_default_value = false;
@@ -42,6 +42,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
 	this->validator = validator ? validator : Validators::default_validator;
+	this->coercer = coercer;
 	this->autocreator = autocreator;
 	this->is_custom = is_custom;
 	this->is_value_type = Type::Find (Deployment::GetCurrent (), property_type)->IsValueType ();
@@ -212,7 +213,7 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 int
 DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool is_custom, Type::Kind vtype)
 {
-	return RegisterFull (types, type, name, is_custom, NULL, vtype, false, false, false, NULL, NULL, NULL, false);
+	return RegisterFull (types, type, name, is_custom, NULL, vtype, false, false, false, NULL, NULL, NULL, NULL, false);
 }
 
 //
@@ -223,7 +224,7 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, b
 {
 	g_return_val_if_fail (default_value != NULL, -1);
 
-	return RegisterFull (types, type, name, is_custom, default_value, default_value->GetKind (), false, false, false, NULL, NULL, NULL, false);
+	return RegisterFull (types, type, name, is_custom, default_value, default_value->GetKind (), false, false, false, NULL, NULL, NULL, NULL, false);
 }
 
 //
@@ -235,7 +236,7 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, b
 int
 DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype)
 {
-	return RegisterFull (types, type, name, is_custom, default_value, vtype, false, false, false, NULL, NULL, NULL, false);
+	return RegisterFull (types, type, name, is_custom, default_value, vtype, false, false, false, NULL, NULL, NULL, NULL, false);
 }
 
 DependencyProperty *
@@ -249,7 +250,7 @@ DependencyProperty::RegisterCoreProperty (const char *name, Type::Kind property_
 	else
 		default_value = new Value (*default_value);
 	
-	id = DependencyProperty::RegisterFull (types, owner_type, name, false, default_value, property_type, attached, readonly, false, callback, NULL, NULL, false);
+	id = DependencyProperty::RegisterFull (types, owner_type, name, false, default_value, property_type, attached, readonly, false, callback, NULL, NULL, NULL, false);
 	
 	return types->GetProperty (id);
 }
@@ -265,7 +266,7 @@ DependencyProperty::RegisterCustomProperty (const char *name, Type::Kind propert
 	else
 		default_value = new Value (*default_value);
 	
-	id = DependencyProperty::RegisterFull (types, owner_type, name, true, default_value, property_type, attached, readonly, false, callback, NULL, NULL, false);
+	id = DependencyProperty::RegisterFull (types, owner_type, name, true, default_value, property_type, attached, readonly, false, callback, NULL, NULL, NULL, false);
 	
 	return types->GetProperty (id);
 }
@@ -276,7 +277,7 @@ DependencyProperty::RegisterCustomProperty (const char *name, Type::Kind propert
 // stored in the dependency property is of type @vtype
 //
 int
-DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_nullable)
+DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, ValueCoercer *coercer, AutoCreator* autocreator, bool is_nullable)
 {
 	DependencyProperty *property;
 	
@@ -287,7 +288,7 @@ DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *nam
 	if (!is_custom && !Value::IsNull (default_value) && types->IsSubclassOf (default_value->GetKind (), Type::DEPENDENCY_OBJECT))
 		default_value->AsDependencyObject ()->Freeze();
 		
-	property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, autocreator, is_custom);
+	property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, coercer, autocreator, is_custom);
 	property->is_nullable = is_nullable;
 	
 	types->AddProperty (property);
@@ -299,6 +300,17 @@ bool
 DependencyProperty::Validate (DependencyObject *instance, Value *value, MoonError *error)
 { 
 	return validator (instance, this, value, error);
+}
+
+bool
+DependencyProperty::Coerce (DependencyObject *instance, Value *value, Value **coerced, MoonError *error)
+{ 
+	if (!coercer) {
+		*coerced = value ? new Value (*value) : NULL;
+		return true;
+	}
+
+	return coercer (instance, this, value, coerced, error);
 }
 
 void

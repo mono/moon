@@ -23,6 +23,7 @@ namespace Moonlight {
 class PropertyChangedEventArgs;
 class MoonError;
 
+typedef bool ValueCoercer (DependencyObject *instance, DependencyProperty *property, Value *value, Value **coerced, MoonError *error);
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 typedef Value* AutoCreator  (Type::Kind type, DependencyProperty *property, DependencyObject *forObj);
 
@@ -36,7 +37,7 @@ typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChange
 /* @SkipValue */
 class DependencyProperty {
  public:
-	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator *autocreator, bool is_custom);
+	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, ValueCoercer *coercer, AutoCreator *autocreator, bool is_custom);
 	void Dispose ();
 	~DependencyProperty ();
 
@@ -77,13 +78,15 @@ class DependencyProperty {
 
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 
+	bool Coerce (DependencyObject *instance, Value *value, Value **coerced, MoonError *error);
+
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetPropertyChangedCallback (PropertyChangeHandler changed_callback);
 	
 	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value);
 	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Type::Kind vtype);
 	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype);
-	static int RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  AutoCreator* autocreator, bool is_nullable);
+	static int RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  ValueCoercer *coercer, AutoCreator* autocreator, bool is_nullable);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	static DependencyProperty *RegisterCustomProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
@@ -116,6 +119,7 @@ private:
 	Value *default_value;
 	GHashTable *default_value_overrides;
 	ValueValidator *validator;
+	ValueCoercer *coercer;
 
 	Type::Kind owner_type;
 	Type::Kind property_type;

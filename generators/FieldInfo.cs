@@ -148,6 +148,10 @@ class FieldInfo : MemberInfo {
 		get { return Annotations.GetValue ("Validator"); }
 	}
 
+	public string DPCoercer {
+		get { return Annotations.GetValue ("Coercer"); }
+	}
+
 	public bool GenerateManagedAccessors {
 		get {
 			string val = Annotations.GetValue ("GenerateManagedAccessors");
