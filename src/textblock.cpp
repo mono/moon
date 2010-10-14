@@ -441,8 +441,14 @@ TextBlock::Paint (cairo_t *cr)
 {
 	Thickness *padding = GetPadding ();
 	Point offset (padding->left, padding->top);
-	
+	cairo_save (cr);
+	if (GetFlowDirection () == FlowDirectionRightToLeft) {
+		Rect bbox = layout->GetRenderExtents ();
+		cairo_translate (cr, bbox.width, 0.0);
+		cairo_scale (cr, -1.0, 1.0);
+	}
 	layout->Render (cr, GetOriginPoint (), offset);
+	cairo_restore (cr);
 }
 
 char *
