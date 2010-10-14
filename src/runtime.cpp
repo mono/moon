@@ -471,6 +471,9 @@ Surface::Zombify ()
 {
 	zombie = true;
 
+	if (toplevel)
+		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
+
 	HideFullScreenMessage ();
 	HideIncompleteSilverlightSupportMessage ();
 	HideDrmMessage ();
