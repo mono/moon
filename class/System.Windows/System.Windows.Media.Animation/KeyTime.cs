@@ -44,7 +44,7 @@ namespace System.Windows.Media.Animation {
 			this.type = type;
 			this.percent = percent;
 			this.time_span = time_span;
-			this.padding = 0;
+			this.padding = 1;
 		}
 		
 		public static KeyTime FromTimeSpan(TimeSpan timeSpan)
@@ -59,6 +59,13 @@ namespace System.Windows.Media.Animation {
 		
 		public static bool operator ==(KeyTime keyTime1, KeyTime keyTime2)
 		{
+			Console.WriteLine ("comparing {0}/{1}/{2}/{3} to {4}/{5}/{6}/{7}",
+					   keyTime1.type, keyTime1.percent, keyTime1.time_span, keyTime1.padding,
+					   keyTime2.type, keyTime2.percent, keyTime2.time_span, keyTime2.padding);
+
+			if (keyTime1.padding != keyTime2.padding)
+				return false;
+
 			if (keyTime1.type != keyTime2.type)
 				return false;
 			
@@ -66,7 +73,7 @@ namespace System.Windows.Media.Animation {
 			case KeyTimeType.TimeSpan:
 				return keyTime1.time_span == keyTime2.time_span;
 			}
-			return false;
+			return true;
 		}
 		
 		public static bool operator !=(KeyTime keyTime1, KeyTime keyTime2)
@@ -124,9 +131,7 @@ namespace System.Windows.Media.Animation {
 
 		public static KeyTime Uniform {
 			get {
-				KeyTime result = new KeyTime ();
-				result.type = KeyTimeType.Uniform;
-				return result;
+				return new KeyTime (KeyTimeType.Uniform, 0, TimeSpan.Zero);
 			}
 		}
 	}

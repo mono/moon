@@ -82,19 +82,42 @@ struct KeyTime {
 		k = keytime.k;
 		percent = keytime.percent;
 		timespan = keytime.timespan;
+		padding = keytime.padding;
 	}
 
 	KeyTime (double percent)
-	  : k (PERCENT),
-	    percent (percent),
-	    timespan (0) { }
+		: k (PERCENT),
+		  padding(1),
+		  percent (percent),
+		  timespan (0)
+	{
+	}
 
 	KeyTime (TimeSpan timeSpan)
-	  : k (TIMESPAN),
-            timespan (timeSpan) { }
+		: k (TIMESPAN),
+		  padding(1),
+		  percent (0.0),
+		  timespan (timeSpan)
+	{
+	}
 
 
-	KeyTime (KeyTimeType kind) : k(kind) { }
+	KeyTime (KeyTimeType kind)
+		: k(kind),
+		  padding (1),
+		  percent (0.0),
+		  timespan (0)
+	{
+	}
+
+	// this ctor creates an invalid KeyTime.  it's used when coercing a null value to a keytime
+	KeyTime ()
+		: k (UNIFORM),
+		  padding(0),
+		  percent (0.0),
+		  timespan (0)
+	{
+	}
 
 	static KeyTime FromPercent (double percent) { return KeyTime (percent); }
 	static KeyTime FromTimeSpan (TimeSpan timeSpan) { return KeyTime (timeSpan); }
@@ -124,6 +147,8 @@ struct KeyTime {
 
 	bool HasTimeSpan () { return k == TIMESPAN; }
 	TimeSpan GetTimeSpan () { return timespan; }
+
+	bool IsValid () { return padding == 1; }
 
 private:
 	KeyTimeType k;
@@ -351,6 +376,8 @@ public:
 	void SetKeyTime (KeyTime keytime) { SetKeyTime (&keytime); }
 	virtual void SetKeyTime (KeyTime *keytime) = 0;
 
+	static bool CoerceKeyTime (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
+
 protected:
 	virtual ~KeyFrame ();
 	/* @SkipFactories */
@@ -449,7 +476,7 @@ class DoubleKeyFrame : public KeyFrame {
 public:
  	/* @PropertyType=double,DefaultValue=0.0,ManagedPropertyType=double,GenerateAccessors */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors,Coercer=KeyFrame::CoerceKeyTime */
 	const static int KeyTimeProperty;
 	
 	//
@@ -477,7 +504,7 @@ class ColorKeyFrame : public KeyFrame {
 public:
  	/* @PropertyType=Color,DefaultValue=Color(0.0\,0.0\,0.0\,1.0),ManagedPropertyType=Color,GenerateAccessors */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors,Coercer=KeyFrame::CoerceKeyTime */
 	const static int KeyTimeProperty;
 	
 	//
@@ -508,7 +535,7 @@ public:
 	const static int ConvertedValueProperty;
 	/* @PropertyType=object,ManagedPropertyType=object */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors,Coercer=KeyFrame::CoerceKeyTime */
 	const static int KeyTimeProperty;
 
 	Value *GetConvertedValue ();
@@ -534,7 +561,7 @@ class PointKeyFrame : public KeyFrame {
 public:
 	/* @PropertyType=Point,DefaultValue=Point(),ManagedPropertyType=Point,GenerateAccessors */
 	const static int ValueProperty;
-	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors */
+	/* @PropertyType=KeyTime,DefaultValue=KeyTime(KeyTime::UNIFORM),ManagedPropertyType=KeyTime,GenerateAccessors,Coercer=KeyFrame::CoerceKeyTime */
 	const static int KeyTimeProperty;
 	
 	//

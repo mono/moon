@@ -1055,6 +1055,17 @@ KeyFrame::~KeyFrame ()
 {
 }
 
+bool
+KeyFrame::CoerceKeyTime (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error)
+{
+	if (!value || value->GetIsNull())
+		*coerced = new Value (KeyTime());
+	else
+		*coerced = new Value (*value);
+
+	return true;
+}
+
 Value *
 KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1740,6 +1751,15 @@ bool
 DoubleAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
 	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+
+	DoubleKeyFrameCollection *key_frames = GetKeyFrames ();
+	guint len = key_frames->sorted_list->len;
+
+	for (guint i = 0; i < len; i ++) {
+		if (!((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->GetKeyTime()->IsValid())
+			return false;
+	}
+
 	return true;
 }
 
@@ -1845,6 +1865,15 @@ bool
 ColorAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
 	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+
+	ColorKeyFrameCollection *key_frames = GetKeyFrames ();
+	guint len = key_frames->sorted_list->len;
+
+	for (guint i = 0; i < len; i ++) {
+		if (!((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->GetKeyTime()->IsValid())
+			return false;
+	}
+
 	return true;
 }
 
@@ -1950,6 +1979,15 @@ bool
 PointAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
 	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+
+	PointKeyFrameCollection *key_frames = GetKeyFrames ();
+	guint len = key_frames->sorted_list->len;
+
+	for (guint i = 0; i < len; i ++) {
+		if (!((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->GetKeyTime()->IsValid())
+			return false;
+	}
+
 	return true;
 }
 
@@ -2052,6 +2090,15 @@ ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 		}
 	}
 	KeyFrameAnimation_ResolveKeyFrames (this, frames);
+
+	ObjectKeyFrameCollection *key_frames = GetKeyFrames ();
+	guint len = key_frames->sorted_list->len;
+
+	for (guint i = 0; i < len; i ++) {
+		if (!((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->GetKeyTime()->IsValid())
+			return false;
+	}
+
 	return true;
 }
 
