@@ -1546,30 +1546,23 @@ Surface::HandleUIWindowUnavailable ()
 /* for emitting focus changed events */
 class FocusChangedNode : public List::Node {
 public:
-	UIElement *lost_focus;
-	UIElement *got_focus;
-	
-	FocusChangedNode (UIElement *lost_focus, UIElement *got_focus);
+	List *lost_focus;
+	List *got_focus;
+
+	FocusChangedNode (List *lost_focus, List *got_focus);
 	virtual ~FocusChangedNode ();
 };
 
-FocusChangedNode::FocusChangedNode (UIElement *lost_focus, UIElement *got_focus)
+FocusChangedNode::FocusChangedNode (List *lost_focus, List *got_focus)
 {
 	this->lost_focus = lost_focus;
 	this->got_focus = got_focus;
-	
-	if (lost_focus)
-		lost_focus->ref ();
-	if (got_focus)
-		got_focus->ref ();
 }
 
 FocusChangedNode::~FocusChangedNode ()
 {
-	if (lost_focus)
-		lost_focus->unref ();
-	if (got_focus)
-		got_focus->unref ();
+	delete lost_focus;
+	delete got_focus;
 }
 
 RenderNode::RenderNode (UIElement *el,
@@ -1752,7 +1745,7 @@ Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, in
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
 		args->ref ();
-		
+
 		if (node->uielement->DoEmit (event_id, args))
 			handled = true;
 		
@@ -2290,9 +2283,10 @@ Surface::EmitFocusChangeEvents()
 {
 	while (FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->First ()) {
 		if (node->lost_focus)
-			node->lost_focus->EmitLostFocus ();
+			EmitEventOnList (UIElement::LostFocusEvent, node->lost_focus, NULL, -1);
 		if (node->got_focus)
-			node->got_focus->EmitGotFocus ();
+			EmitEventOnList (UIElement::GotFocusEvent, node->got_focus, NULL, -1);
+
 		focus_changed_events->Remove (node);
 	}
 }
@@ -2306,17 +2300,13 @@ Surface::FocusElement (UIElement *focused)
 	if (focused == focused_element)
 		return true;
 
-	while (focused_element) {
-		focus_changed_events->Append (new FocusChangedNode (focused_element, NULL));
-		focused_element = focused_element->GetVisualParent ();
-	}
+	if (focused_element)
+		focus_changed_events->Append (new FocusChangedNode (ElementPathToRoot (focused_element), NULL));
 
 	focused_element = focused;
 
-	while (focused) {
-		focus_changed_events->Append (new FocusChangedNode (NULL, focused));
-		focused = focused->GetVisualParent ();
-	}
+	if (focused)
+		focus_changed_events->Append (new FocusChangedNode (NULL, ElementPathToRoot (focused)));
 
 	if (FirstUserInitiatedEvent ())
 		AddTickCall (Surface::EmitFocusChangeEventsAsync);
