@@ -1745,16 +1745,21 @@ loop:
 	
 #if DEBUG
 	if (processed_data && IsDisposed ()) {
-		if (objects_created != objects_destroyed) {
-			const char *leak_log = getenv ("MOONLIGHT_LEAK_LOG");
-			if (leak_log != NULL && leak_log [0] != 0) {
-				FILE *log = fopen (leak_log, "a");
-				/* Make sure the test doesn't pass if we can't create a leak log, so that it doesn't go unnoticed */
-				g_assert (log); /* #if DEBUG */
-				fprintf (log, "Deployment: %p/%i, objects created: %i, objects destroyed: %i, objects leaked: %i\n",
-					this, this->GetId (), objects_created, objects_destroyed, objects_created - objects_destroyed);
-				fclose (log);
-			}
+		static const char *leak_log = NULL;
+
+		if (leak_log == NULL) {
+			leak_log = getenv ("MOONLIGHT_LEAK_LOG");
+			if (leak_log == NULL)
+				leak_log = "";
+		}
+
+		if (leak_log != NULL && leak_log [0] != 0) {
+			FILE *log = fopen (leak_log, "a");
+			/* Make sure the test doesn't pass if we can't create a leak log, so that it doesn't go unnoticed */
+			g_assert (log); /* #if DEBUG */
+			fprintf (log, "Deployment: %p/%i, objects created: %i, objects destroyed: %i, objects leaked: %i\n",
+				this, this->GetId (), objects_created, objects_destroyed, objects_created - objects_destroyed);
+			fclose (log);
 		}
 #if OBJECT_TRACKING
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
