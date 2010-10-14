@@ -1597,6 +1597,12 @@ RichTextBoxView::Layout (Size constraint)
 void
 RichTextBoxView::Paint (cairo_t *cr)
 {
+	cairo_save (cr);
+	if (GetFlowDirection () == FlowDirectionRightToLeft) {
+		Rect bbox = layout->GetRenderExtents ();
+		cairo_translate (cr, bbox.width, 0.0);
+		cairo_scale (cr, -1.0, 1.0);
+	}
 	layout->Render (cr, GetOriginPoint (), Point ());
 	
 	if (cursor_visible) {
@@ -1636,6 +1642,7 @@ RichTextBoxView::Paint (cairo_t *cr)
 		// restore antialiasing
 		cairo_set_antialias (cr, alias);
 	}
+	cairo_restore (cr);
 }
 
 void
