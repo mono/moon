@@ -153,8 +153,6 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 
 	accessibility_bridge = new AccessibilityBridge ();
 	
-	/* back pointer to us */
-	instance->pdata = this;
 	download_dir = NULL;
 }
 
@@ -183,9 +181,6 @@ PluginInstance::Recreate (const char *source)
 		onSourceDownloadProgressChanged, onSourceDownloadComplete,
 		culture, uiCulture, NULL };
 
-		
-	instance->pdata = NULL;
-	
 	PluginInstance *result;
 	result = new PluginInstance (instance, mode);
 	
@@ -217,6 +212,8 @@ PluginInstance::Recreate (const char *source)
 	/* destroy the current plugin instance */
 	Deployment::SetCurrent (deployment);
 	Shutdown ();
+
+	instance->pdata = NULL;
 	unref (); /* the ref instance->pdata has */
 	
 	/* put in the new plugin instance */
