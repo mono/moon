@@ -566,9 +566,14 @@ int WindowHelper_SetWindowPosition (guint32 left, guint32 top)
 
 void WindowHelper_GetPrimaryScreenSize (guint32 *width, guint32 *height)
 {
+	int x, y;
+	unsigned int bwidth, depth;
+	Display *display = XOpenDisplay (NULL);
+	Window root = XDefaultRootWindow (display);
+
 	LOG_HARNESS ("[%i shocker] WindowHelper_GetPrimaryScreenSize ()\n", getpid ());
-	*width = 0;
-	*height = 0;
-	Shocker_FailTestFast ("WindowHelper_GetPrimaryScreenSize: Not implemented");
+
+	XGetGeometry (display, root, &root, &x, &y, width, height, &bwidth, &depth);
+	XCloseDisplay (display);
 }
 
