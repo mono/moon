@@ -470,4 +470,14 @@ Validators::NullOrInDesignMode (DependencyObject* instance, DependencyProperty *
 	return true;
 }
 
+bool
+Validators::UserInitiatedValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (instance->GetDeployment ()->GetSurface ()->IsUserInitiatedEvent ())
+		return true;
+
+	MoonError::FillIn (error, MoonError::SECURITY_EXCEPTION, 1001, "Value can only be set from a user-initiated event");
+	return false;
+}
+
 };

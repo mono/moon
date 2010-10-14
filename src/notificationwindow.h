@@ -30,9 +30,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Window ();
 	
-	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal,Validator=UserInitiatedValidator */
 	const static int HeightProperty;
-	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal,Validator=UserInitiatedValidator */
 	const static int WidthProperty;
 	/* @PropertyType=double,DefaultValue=50.0,ManagedFieldAccess=Internal */
 	const static int LeftProperty;
@@ -40,7 +40,7 @@ public:
 	const static int TopProperty;
 	/* @PropertyType=bool,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	const static int IsActiveProperty;
-	/* @PropertyType=bool,ManagedFieldAccess=Internal */
+	/* @PropertyType=bool,ManagedFieldAccess=Internal,Validator=UserInitiatedValidator */
 	const static int TopMostProperty;
 	/* @PropertyType=WindowState,ManagedFieldAccess=Internal */
 	const static int WindowStateProperty;

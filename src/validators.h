@@ -53,6 +53,7 @@ public:
 	static ValueValidator OnlyDuringInitializationValidator;
 	static ValueValidator NonNullOnlyDuringInitializationValidator;
 	static ValueValidator NullOrInDesignMode;
+	static ValueValidator UserInitiatedValidator;
 };
 
 };

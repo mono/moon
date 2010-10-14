@@ -30,6 +30,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Messaging;
@@ -213,6 +214,8 @@ namespace Mono {
 				return new SendFailedException (msg);
 			case 12:
 				return new NotImplementedException (msg);
+			case 13:
+				return new SecurityException (msg);
 			}
 		}
 	}
