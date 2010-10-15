@@ -65,6 +65,18 @@
               </method>
             </methods>
           </class>
+          <class name="ExternalTypeMap" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+		      <method name="AddExternalType(System.Type,System.Func`2[System.Object,System.String],System.Func`2[System.String,System.Object])" 
+				attrib="134" static="true" returntype="System.Void">
+		        <parameters>
+		          <parameter name="t" position="0" attrib="0" type="System.Type" />
+		          <parameter name="ser" position="1" attrib="0" type="System.Func`2[System.Object,System.String]" />
+		          <parameter name="deser" position="2" attrib="0" type="System.Func`2[System.String,System.Object]" />
+		        </parameters>
+		      </method>
+		    </methods>
+          </class>
         </classes>
       </namespace>
     </namespaces>

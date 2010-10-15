@@ -41,6 +41,9 @@ namespace System.Windows.Browser {
 		HostServices ()
 		{
 			types = new Dictionary<string, Type> ();
+#if !DESKTOP
+			ExternalTypeMap.AddExternalType (typeof(ScriptObject), JsonSerialize, JsonDeserialize);
+#endif
 		}
 
 		static HostServices services = new HostServices ();
@@ -107,6 +110,11 @@ namespace System.Windows.Browser {
 			return (string) JsonSerializer.Invoke("serialize", new object[] { obj });
 		}
 
+		public object JsonDeserialize (string json)
+		{
+			return JsonSerializer.Invoke("deserialize", new object[] { "(" + json + ")" });
+		}
+
 		[ScriptableMember(ScriptAlias="requiresManagedSerializer")]
 		public bool RequiresManagedSerializer (ScriptObject obj)
 		{
@@ -132,6 +140,8 @@ namespace System.Windows.Browser {
 		public object JsonDeserialize (object obj, Type type)
 		{
 			string jsgraph = JsonSerialize (obj);
+			if (type == typeof(string))
+				return jsgraph;
 			DataContractJsonSerializer deserializer = new DataContractJsonSerializer (type);
 			using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes (jsgraph))) {
 				return deserializer.ReadObject (ms);
