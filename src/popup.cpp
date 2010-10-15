@@ -83,13 +83,6 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 			if (error->number)
 				return;
-
-			// this is a hack...  VisualParent should be a canvas
-			DependencyObject *obj = el->GetVisualParent ();
-			if (obj) {
-				Canvas *canvas = (Canvas*)obj;
-				canvas->GetChildren()->Remove (Value (el));
-			}
 		}
 		if (args->GetNewValue () && !args->GetNewValue ()->GetIsNull ()) {
 			FrameworkElement *el = args->GetNewValue ()->AsFrameworkElement ();
