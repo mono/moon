@@ -604,9 +604,17 @@ namespace System.Windows {
 
 			if (resourceBase != null && info == null) {
 				try {
-					Uri absolute_uri = new Uri (resourceBase, name);
-					if (!absolute_uri.IsAbsoluteUri || absolute_uri.Scheme == Uri.UriSchemeFile)
-						info = GetResourceStream (absolute_uri);
+					if (resourceBase.IsAbsoluteUri && resourceBase.Scheme == Uri.UriSchemeFile) {
+						Uri file_stream_locator = new Uri (resourceBase, name);
+						info = GetResourceStream (file_stream_locator);
+					} else if (!resourceBase.IsAbsoluteUri) {
+						// DRT #243 has a resource base like this: dir/file.xaml, and requests subdir/file.wmv,
+						// which is in dir/subdir/file.wmv. Since we can't combine relative urls, create a
+						// fake absolute uri and then take the relative path of it.
+						Uri absolute_resbase = new Uri (new Uri ("http://mono-project.com"), resourceBase);
+						Uri relative_stream_locator = new Uri (new Uri (absolute_resbase, name).AbsolutePath.Substring (1), UriKind.Relative);
+						info = GetResourceStream (relative_stream_locator);
+					}
 				} catch {}
 			}
 
