@@ -588,13 +588,17 @@ namespace System.Windows {
 		{
 			StreamResourceInfo info = null;
 
-			if (resourceBase != null && !resourceBase.IsAbsoluteUri && resourceBase.OriginalString.Contains (";component/") && resourceBase.OriginalString [0] == '/') {
+			if (resourceBase != null
+				&& !resourceBase.IsAbsoluteUri
+				&& resourceBase.OriginalString.IndexOf (";component/", StringComparison.OrdinalIgnoreCase) != -1
+				&& resourceBase.OriginalString [0] == '/') {
 				// DRT: #788
 				// resource base is like: /assembly;component/path/to/file.xaml
 				// we make an absolute uri of resourceBase by faking a file:// uri,
 				// combine with the name, and then strip off the file:// when 
 				// passing it to GetResourceStream. The file:// hack is to avoid
 				// parsing strings manually.
+				// #243 checks that the ";component/" comparison must ignore case.
 				try {
 					Uri absolute_rb = new Uri ("file://" + resourceBase.OriginalString, UriKind.Absolute);
 					Uri absolute_uri = new Uri (absolute_rb, name);
