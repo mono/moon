@@ -1482,7 +1482,7 @@ class Generator {
 		t.Interfaces.Add (IEquatableIntInfo);
 		t.Interfaces.Add (IFormattableInfo);
 
-		all.Children.Add (t = new TypeInfo ("char*", "STRING", "OBJECT", true, true, true, false));
+		all.Children.Add (t = new TypeInfo ("char*", "STRING", "OBJECT", true, true, false, false));
 		t.Interfaces.Add (IComparableInfo);
 		t.Interfaces.Add (IComparableStringInfo);
 		t.Interfaces.Add (IConvertibleInfo);
