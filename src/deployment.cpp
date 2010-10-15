@@ -1149,6 +1149,13 @@ Deployment::Dispose ()
 		g_hash_table_destroy (interned_strings);
 	interned_strings = NULL;
 
+#if OBJECT_TRACKING
+	if (getenv ("MOONLIGHT_OBJECT_TRACK_IMMORTALS") != NULL) {
+		printf ("Deployment disposing, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
+		if (objects_created != objects_destroyed)
+			ReportLeaks ();
+	}
+#endif
 	DependencyObject::Dispose ();
 }
 
@@ -1242,6 +1249,14 @@ Deployment::Shutdown ()
 
 	if (types)
 		types->Dispose ();
+
+#if OBJECT_TRACKING
+	if (getenv ("MOONLIGHT_OBJECT_TRACK_IMMORTALS") != NULL) {
+		printf ("Deployment shutting down, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
+		if (objects_created != objects_destroyed)
+			ReportLeaks ();
+	}
+#endif
 }
 
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
