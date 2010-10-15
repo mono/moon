@@ -448,6 +448,11 @@ failed:
 void
 BitmapImage::DownloaderFailed ()
 {
+	if (IsDisposing () || IsDisposed ()) {
+		/* This may happen if we cancelled the request in our dtor */
+		return;
+	}
+
 	//Uri *uri = GetUriSource ();
 	//printf ("\tBitmapImage::DownloaderFailed() for %s\n", uri ? uri->ToString () : "null?");
 	

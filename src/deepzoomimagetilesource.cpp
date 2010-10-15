@@ -453,6 +453,11 @@ DeepZoomImageTileSource::DownloaderComplete ()
 void
 DeepZoomImageTileSource::DownloaderFailed ()
 {
+	if (IsDisposing () || IsDisposed ()) {
+		/* This may happen if we cancelled the request in our dtor */
+		return;
+	}
+
 	LOG_MSI ("DZITS::dl failed\n");
 	if (HasHandlers (DownloaderFailedEvent))
 		Emit (DownloaderFailedEvent);
