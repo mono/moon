@@ -97,7 +97,7 @@ class TextBlock : public FrameworkElement {
 	const static int PaddingProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
-	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
+	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors,Coercer=TextElement::CoerceTextDecorations */
 	const static int TextDecorationsProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
