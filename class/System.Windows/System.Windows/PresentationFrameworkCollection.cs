@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#pragma warning disable 67 // "The event 'E' is never used" shown for ItemsChanged
+
 using Mono;
 using System;
 using System.Windows;
@@ -59,24 +61,9 @@ namespace System.Windows {
 			}
 		}
 
-		public object GetNewItem ()
-		{
-			return GetNewItem (typeof (object));
-		}
-
 		public object GetNewItem (Type t)
 		{
 			return Value.ToObject (t, NativeMethods.collection_changed_event_args_get_new_item (NativeHandle));
-		}
-
-		public object GetOldItem ()
-		{
-			return GetOldItem (typeof (object));
-		}
-
-		public object GetOldItem (Type t)
-		{
-			return Value.ToObject (t, NativeMethods.collection_changed_event_args_get_old_item (NativeHandle));
 		}
 
 		public int Index {
@@ -103,7 +90,7 @@ namespace System.Windows {
 				 ((PresentationFrameworkCollection<T>) NativeDependencyObjectHelper.FromIntPtr (closure)).InternalCollectionChanged (args);
 			 });
 
-		internal virtual void InternalCollectionChanged (InternalCollectionChangedEventArgs args)
+		void InternalCollectionChanged (InternalCollectionChangedEventArgs args)
 		{
 			switch (args.ChangedAction) {
 			case CollectionChangedAction.Add:
@@ -260,6 +247,9 @@ namespace System.Windows {
 				throw new ArgumentNullException ();
 			return result;
 		}
+
+		internal event EventHandler Clearing;
+		internal event NotifyCollectionChangedEventHandler ItemsChanged;
 
 		//
 		// ICollection members
@@ -450,7 +440,12 @@ namespace System.Windows {
 
 		internal void ClearImpl ()
 		{
+			var h = Clearing;
+			if (h != null)
+				h (this, EventArgs.Empty);
+
 			NativeMethods.collection_clear (native);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Reset);
 		}
 
 		internal virtual void AddImpl (T value)
@@ -468,6 +463,7 @@ namespace System.Windows {
 				var v = val;
 				index = NativeMethods.collection_add (native, ref v);
 			}
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Add, value, index);
 		}
 
 		internal virtual void InsertImpl (int index, T value)
@@ -486,6 +482,7 @@ namespace System.Windows {
 				var v = val;
 				NativeMethods.collection_insert (native, index, ref v);
 			}
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Add, value, index);
 		}
 
 		internal bool RemoveImpl (T value)
@@ -498,6 +495,7 @@ namespace System.Windows {
 				return false;
 
 			NativeMethods.collection_remove_at (native, index);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Remove, value, index);
 			return true;
 		}
 
@@ -505,6 +503,7 @@ namespace System.Windows {
 		{
 			T value = GetItemImpl (index);
 			NativeMethods.collection_remove_at (native, index);
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Remove, value, index);
 		}
 
 		internal T GetItemImpl (int index)
@@ -528,6 +527,7 @@ namespace System.Windows {
 				var v = val;
 				NativeMethods.collection_set_value_at (native, index, ref v);
 			}
+			ItemsChanged.Raise (this, NotifyCollectionChangedAction.Replace, value, old, index);
 		}
 
 		internal virtual int IndexOfImpl (T value)

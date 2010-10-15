@@ -76,38 +76,9 @@ namespace System.Windows.Controls {
 			return readOnly;
 		}
 		
-		internal event EventHandler Clearing;
-
-		internal event NotifyCollectionChangedEventHandler ItemsChanged;
-
 		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged {
 			add { ItemsChanged += value; }
 			remove { ItemsChanged -= value; }
-		}
-
-		internal override void InternalCollectionChanged (InternalCollectionChangedEventArgs args)
-		{
-			base.InternalCollectionChanged (args);
-
-			switch (args.ChangedAction) {
-			case CollectionChangedAction.Add:
-				ItemsChanged.Raise (this, NotifyCollectionChangedAction.Add, args.GetNewItem (), args.Index);
-				break;
-			case CollectionChangedAction.Remove:
-				ItemsChanged.Raise (this, NotifyCollectionChangedAction.Remove, args.GetOldItem (), args.Index);
-				break;
-			case CollectionChangedAction.Replace:
-				ItemsChanged.Raise (this, NotifyCollectionChangedAction.Replace, args.GetNewItem (), args.GetOldItem (), args.Index);
-				break;
-			case CollectionChangedAction.Clearing:
-				var h = Clearing;
-				if (h != null)
-					h (this, EventArgs.Empty);
-				break;
-			case CollectionChangedAction.Cleared:
-				ItemsChanged.Raise (this, NotifyCollectionChangedAction.Reset);
-				break;
-			}
 		}
 	}
 }

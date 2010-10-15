@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 631 methods
+# 630 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -439,7 +439,6 @@
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalCollectionChangedEventArgs::get_ChangedAction()
 +SSC-M: System.Object System.Windows.InternalCollectionChangedEventArgs::GetNewItem(System.Type)
-+SSC-M: System.Object System.Windows.InternalCollectionChangedEventArgs::GetOldItem(System.Type)
 +SSC-M: System.Int32 System.Windows.InternalCollectionChangedEventArgs::get_Index()
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalResourceDictionaryChangedEventArgs::get_ChangedAction()
 +SSC-M: System.Object System.Windows.InternalResourceDictionaryChangedEventArgs::GetNewItem()
