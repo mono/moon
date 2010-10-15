@@ -474,6 +474,8 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "enablenavigation")) {
 			// default value is 'all', 'none' means navigation is disabled
+			// <quote>Strings other than none are ignored and treated as the default all case.</quote>
+			// http://msdn.microsoft.com/en-us/library/dd833071(v=VS.95).aspx
 			enable_navigation = g_ascii_strcasecmp (argv [i], "none");
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
