@@ -164,6 +164,7 @@ public:
 	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	virtual void RemoveHandler (int event_id, int token);
 	void RemoveAllHandlers (gpointer data);
+	// A NULL predicate means all handlers match
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
 
 	int FindHandlerToken (int event_id, EventHandler handler, gpointer data);

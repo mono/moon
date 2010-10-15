@@ -1218,6 +1218,9 @@ Deployment::Shutdown ()
 	 */
 	DisposeAllMedias ();
 	
+	// Detach all loaded handlers we may have, they cause circular refs
+	RemoveMatchingHandlers (Deployment::LoadedEvent, NULL, NULL);
+
 	if (current_app != NULL) {
 		current_app->Dispose ();
 		current_app = NULL;

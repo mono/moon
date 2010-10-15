@@ -904,7 +904,7 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
 	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	while (c) {
-		if (predicate (c->func, c->data, closure)) {
+		if (!predicate || predicate (c->func, c->data, closure)) {
 			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				c->pending_removal = true;
 			} else {
