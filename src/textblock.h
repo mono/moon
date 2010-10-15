@@ -104,7 +104,7 @@ class TextBlock : public FrameworkElement {
 	/* @PropertyType=TextTrimming,DefaultValue=TextTrimmingNone */
 	const static int TextTrimmingProperty;	
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextBlock ();
 	
 	void SetFontSource (Downloader *downloader);

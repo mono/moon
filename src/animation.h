@@ -55,7 +55,7 @@ public:
 	void SetControlPoint2 (Point *controlPoint2);
 	
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	KeySpline ();
 	
 	virtual ~KeySpline ();
@@ -227,7 +227,7 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DoubleAnimation ();
 	
 	virtual ~DoubleAnimation () {}
@@ -285,7 +285,7 @@ class ColorAnimation : public Animation {
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ColorAnimation ();
 
 	virtual ~ColorAnimation () {}
@@ -342,7 +342,7 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
  	PointAnimation ();
  	
 	virtual ~PointAnimation ();
@@ -402,7 +402,7 @@ protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	KeyFrameCollection ();
 	
 	virtual ~KeyFrameCollection ();
@@ -417,7 +417,7 @@ public:
 	virtual Type::Kind GetElementType() { return Type::COLORKEYFRAME; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ColorKeyFrameCollection ();
 	
 	virtual ~ColorKeyFrameCollection ();
@@ -432,7 +432,7 @@ public:
 	virtual Type::Kind GetElementType() { return Type::DOUBLEKEYFRAME; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DoubleKeyFrameCollection ();
 	
 	virtual ~DoubleKeyFrameCollection ();
@@ -447,7 +447,7 @@ public:
 	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PointKeyFrameCollection ();
 
 	virtual ~PointKeyFrameCollection ();
@@ -462,7 +462,7 @@ public:
 	virtual Type::Kind GetElementType() { return Type::OBJECTKEYFRAME; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ObjectKeyFrameCollection ();
 
 	virtual ~ObjectKeyFrameCollection ();
@@ -490,7 +490,7 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	DoubleKeyFrame ();
 	
 	virtual ~DoubleKeyFrame ();
@@ -519,7 +519,7 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	ColorKeyFrame ();
 	
 	virtual ~ColorKeyFrame ();
@@ -547,7 +547,7 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	ObjectKeyFrame ();
 	
 	virtual ~ObjectKeyFrame ();
@@ -576,7 +576,7 @@ public:
 	virtual void SetKeyTime (KeyTime *keytime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	PointKeyFrame ();
 	
 	virtual ~PointKeyFrame ();
@@ -593,7 +593,7 @@ public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DiscreteDoubleKeyFrame ();
 	
 	virtual ~DiscreteDoubleKeyFrame ();
@@ -611,7 +611,7 @@ public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DiscreteColorKeyFrame ();
 	
 	virtual ~DiscreteColorKeyFrame ();
@@ -627,7 +627,7 @@ public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DiscreteObjectKeyFrame ();
 	
 	virtual ~DiscreteObjectKeyFrame ();
@@ -642,7 +642,7 @@ public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DiscretePointKeyFrame ();
 	
 	virtual ~DiscretePointKeyFrame ();
@@ -658,7 +658,7 @@ public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LinearDoubleKeyFrame ();
 	
 	virtual ~LinearDoubleKeyFrame ();
@@ -675,7 +675,7 @@ public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LinearColorKeyFrame ();
 	
 	virtual ~LinearColorKeyFrame ();
@@ -692,7 +692,7 @@ public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LinearPointKeyFrame ();
 	
 	virtual ~LinearPointKeyFrame ();
@@ -718,7 +718,7 @@ public:
 	void SetKeySpline (KeySpline* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SplineDoubleKeyFrame ();
 	
 	virtual ~SplineDoubleKeyFrame ();
@@ -744,7 +744,7 @@ public:
 	void SetKeySpline (KeySpline* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SplineColorKeyFrame ();
 	
 	virtual ~SplineColorKeyFrame ();
@@ -770,7 +770,7 @@ public:
 	void SetKeySpline (KeySpline* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SplinePointKeyFrame ();
 
 	virtual ~SplinePointKeyFrame ();
@@ -794,7 +794,7 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	EasingColorKeyFrame ();
 
 	virtual ~EasingColorKeyFrame ();
@@ -818,7 +818,7 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	EasingDoubleKeyFrame ();
 
 	virtual ~EasingDoubleKeyFrame ();
@@ -842,7 +842,7 @@ public:
 	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	EasingPointKeyFrame ();
 
 	virtual ~EasingPointKeyFrame ();
@@ -876,7 +876,7 @@ public:
 	void SetKeyFrames (DoubleKeyFrameCollection* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DoubleAnimationUsingKeyFrames ();
 	
 	virtual ~DoubleAnimationUsingKeyFrames ();
@@ -910,7 +910,7 @@ public:
 	void SetKeyFrames (ColorKeyFrameCollection* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ColorAnimationUsingKeyFrames ();
 	
 	virtual ~ColorAnimationUsingKeyFrames ();
@@ -945,7 +945,7 @@ public:
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ObjectAnimationUsingKeyFrames ();
 
 	virtual ~ObjectAnimationUsingKeyFrames ();
@@ -979,7 +979,7 @@ public:
 	void SetKeyFrames (PointKeyFrameCollection* value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PointAnimationUsingKeyFrames ();
 	
 	virtual ~PointAnimationUsingKeyFrames ();
@@ -997,34 +997,34 @@ public:
  	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=StoryboardTargetPropertyValidator */
 	const static int TargetPropertyProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool BeginWithError (MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void PauseWithError (MoonError *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ResumeWithError (MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SeekWithError (TimeSpan timespan, MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SeekAlignedToLastTickWithError (TimeSpan timespan, MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SkipToFillWithError (MoonError *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void StopWithError (MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TimeSpan GetCurrentTime ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetCurrentState ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyProperty *GetTargetDependencyProperty ();
 	
 	static void SetTargetName (DependencyObject *o, const char *targetName);
@@ -1033,7 +1033,7 @@ public:
 	static PropertyPath *GetTargetProperty (DependencyObject *o);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Storyboard ();
 	
 	virtual ~Storyboard ();
@@ -1064,7 +1064,7 @@ public:
 	Storyboard *GetStoryboard ();
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BeginStoryboard ();
 	
 	virtual ~BeginStoryboard ();

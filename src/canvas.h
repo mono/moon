@@ -30,7 +30,7 @@ class Canvas : public Panel {
 	Rect coverage_bounds;
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Canvas ();
 	
 	virtual ~Canvas () {}

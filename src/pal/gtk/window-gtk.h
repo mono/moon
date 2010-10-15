@@ -72,7 +72,7 @@ public:
 
 	GtkWidget* GetWidget() { return widget; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void *GetNativeWidget () { return GetWidget (); }  // same as GetWidget, just without bleeding GtkWidget into the cbindings
 	
 	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType);

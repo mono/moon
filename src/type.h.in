@@ -128,16 +128,16 @@ public:
 	Types ();
 	~Types ();
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */	
+	/* @GeneratePInvoke,Version=2.0 */	
 	Type::Kind RegisterType (const char *name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */	
+	/* @GeneratePInvoke,Version=2.0 */	
 	void RegisterInterfaces (Type::Kind type, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
 
 	void AddProperty (DependencyProperty *property);
 	DependencyProperty *GetProperty (int id);
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	Type *Find (Type::Kind type)
 	{
 		if ((int) type >= types.GetCount ())

@@ -58,12 +58,12 @@ public:
 	virtual void OnIsAttachedChanged (bool attached);
 	virtual bool Focus (bool recurse = true);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	UIElement *GetTemplateRoot () { return template_root; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void UpdateIsEnabledSource (Control *control);
 	//
 	// Property Accessors
@@ -169,7 +169,7 @@ public:
 	const static int DefaultStyleKeyProperty;
 	
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
 
 	virtual ~Control ();

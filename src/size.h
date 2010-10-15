@@ -94,7 +94,7 @@ class SizeChangedEventArgs : public RoutedEventArgs {
 	Size new_size;
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SizeChangedEventArgs ();
 
 	virtual ~SizeChangedEventArgs () {}

@@ -34,7 +34,7 @@ class TextChangedEventArgs : public RoutedEventArgs {
 	virtual ~TextChangedEventArgs () { }
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextChangedEventArgs () { SetObjectType (Type::TEXTCHANGEDEVENTARGS); }
 };
 
@@ -64,13 +64,13 @@ class CursorPositionChangedEventArgs : public EventArgs {
 		this->y = y;
 	}
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetCursorHeight () { return height; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetCursorX () { return x; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetCursorY () { return y; }
 };
 
@@ -278,23 +278,23 @@ class TextBoxBase : public Control, public ITextAttributes {
 			return GetForeground ();
 	}
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnMouseMove (MouseEventArgs *args);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void PostOnKeyDown (KeyEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnKeyDown (KeyEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnKeyUp (KeyEventArgs *args);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnGotFocus (RoutedEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnLostFocus (RoutedEventArgs *args);
 	
 	//
@@ -308,10 +308,10 @@ class TextBoxBase : public Control, public ITextAttributes {
 	//
 	// Selection Operations
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool SelectWithError (int start, int length, MoonError *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SelectAll ();
 	
 	virtual Brush *GetSelectionBackground () = 0;
@@ -349,7 +349,7 @@ class TextBox : public TextBoxBase {
 	virtual void SetSelectionStart (int start);
 	virtual void SetSelectionLength (int length);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextBox ();
 	
 	virtual ~TextBox () { }
@@ -500,7 +500,7 @@ class PasswordBox : public TextBoxBase {
 	virtual void SetSelectionLength (int length);
 	virtual int GetSelectionLength ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PasswordBox ();
 	
 	virtual ~PasswordBox ();
@@ -613,7 +613,7 @@ class TextBoxView : public FrameworkElement {
 	void Paint (cairo_t *cr);
 	
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextBoxView ();
 
 	virtual ~TextBoxView ();

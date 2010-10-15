@@ -30,7 +30,7 @@ class MultiScaleSubImage : public DependencyObject {
 	double GetViewportHeight ();
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	MultiScaleSubImage ();
 
 	virtual ~MultiScaleSubImage ();

@@ -30,7 +30,7 @@ class BitmapSource : public ImageSource {
  protected:
 	cairo_surface_t *image_surface;
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	BitmapSource ();
 
 	virtual ~BitmapSource ();
@@ -52,12 +52,12 @@ class BitmapSource : public ImageSource {
 	virtual gint32 GetPixelHeight ();
 	virtual void SetPixelHeight (gint32 height);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	gpointer GetBitmapData ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetBitmapData (gpointer data, bool own);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void Invalidate ();
 	virtual cairo_surface_t *GetSurface (cairo_t *cr);
 

@@ -27,7 +27,7 @@ protected:
 	virtual ~SecuritySettings () {}
 
 public:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	SecuritySettings () : DependencyObject (Type::SECURITYSETTINGS) {}
 
 	/* @PropertyType=ElevatedPermissions,DefaultValue=ElevatedPermissionsNone,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */

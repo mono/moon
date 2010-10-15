@@ -20,17 +20,16 @@ namespace Moonlight {
 /* @Namespace=System.Windows */
 class TriggerBase : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	TriggerBase () { SetObjectType (Type::TRIGGERBASE); }
 };
 
 /* @Namespace=System.Windows */
 class TriggerAction : public DependencyObject {
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	TriggerAction () { SetObjectType (Type::TRIGGERACTION); }
 	
-	/* @GenerateCBinding */
 	virtual void Fire () {}
 
  protected:
@@ -54,7 +53,7 @@ class EventTrigger : public TriggerBase {
 	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int RoutedEventProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	EventTrigger ();
 	
 	void SetTarget (DependencyObject *target);

@@ -28,17 +28,17 @@ public:
 
 	double Ease (double normalizedTime);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual double EaseInCore (double normalizedTime) { return normalizedTime; }
 
 	EasingMode GetEasingMode ();
 	void SetEasingMode (EasingMode easingMode);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetEasingFunction (EasingFunction value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	EasingFunctionBase ();
 
 	virtual ~EasingFunctionBase ();
@@ -63,7 +63,7 @@ public:
 	void SetAmplitude (double value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BackEase ();
 
 	virtual ~BackEase();
@@ -90,7 +90,7 @@ public:
 	void SetBounciness (double value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BounceEase ();
 
 	virtual ~BounceEase();
@@ -106,7 +106,7 @@ public:
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	CircleEase ();
 	
 	virtual ~CircleEase ();
@@ -122,7 +122,7 @@ public:
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	CubicEase ();
 	
 	virtual ~CubicEase ();
@@ -149,7 +149,7 @@ public:
 	void SetSpringiness (double value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ElasticEase ();
 
 	virtual ~ElasticEase();
@@ -171,7 +171,7 @@ public:
 	void SetExponent (double value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ExponentialEase ();
 
 	virtual ~ExponentialEase();
@@ -193,7 +193,7 @@ public:
 	void SetPower (double value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PowerEase ();
 
 	virtual ~PowerEase();
@@ -209,7 +209,7 @@ public:
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	QuadraticEase ();
 	
 	virtual ~QuadraticEase ();
@@ -225,7 +225,7 @@ public:
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	QuarticEase ();
 	
 	virtual ~QuarticEase ();
@@ -241,7 +241,7 @@ public:
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	QuinticEase ();
 	
 	virtual ~QuinticEase ();
@@ -257,7 +257,7 @@ public:
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SineEase ();
 	
 	virtual ~SineEase ();

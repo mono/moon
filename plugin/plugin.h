@@ -50,7 +50,7 @@ class PluginInstance
 	AtkObject* GetRootAccessible ();
 #endif
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	AccessibilityBridge* GetAccessibilityBridge ();
 
 	// Mozilla plugin related methods
@@ -67,12 +67,12 @@ class PluginInstance
 	void FlushSplash ();
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void *Evaluate (const char *code);
 	
 	NPObject *GetHost ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void *GetBrowserHost () { return GetHost (); } // same as GetHost, just without bleeding NPObjects into the cbindings
 
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
@@ -85,16 +85,16 @@ class PluginInstance
 	void Properties ();
 	
 	// Property getters and setters
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetInitParams () { return this->initParams; }
 	void SetInitParams (const char *value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetSource () { return this->source; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetSourceOriginal () { return this->source_original; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetSourceLocation () { return this->source_location; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetSourceLocationOriginal () { return this->source_location_original; }
 	char *GetId () { return this->id; }
 	
@@ -102,27 +102,27 @@ class PluginInstance
 	
 	char *GetBackground ();
 	bool SetBackground (const char *value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetEnableFrameRateCounter ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetEnableFrameRateCounter (bool value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetEnableRedrawRegions ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetEnableRedrawRegions (bool value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetEnableHtmlAccess ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetEnableNavigation ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetAllowHtmlPopupWindow ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetWindowless ();
 	bool IsLoaded ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetMaxFrameRate (int value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int  GetMaxFrameRate ();
 	
 	Deployment *GetDeployment ();
@@ -132,14 +132,14 @@ class PluginInstance
 	MoonlightScriptControlObject *GetRootObject ();
 	NPP GetInstance ();
 	NPWindow *GetWindow ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void *GetNPWindow () { return GetWindow (); }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Surface *GetSurface () { return surface; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	gint32 GetActualHeight ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	gint32 GetActualWidth ();
 
 	bool IsCrossDomainApplication () { return cross_domain_app; }

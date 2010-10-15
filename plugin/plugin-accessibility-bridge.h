@@ -43,7 +43,7 @@ public:
 	void Initialize ();
 	void Shutdown ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool IsAccessibilityEnabled ();
 
 #if PAL_GTK_A11Y

@@ -37,34 +37,34 @@ public:
  	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
 	const static int CountProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Type::Kind GetElementType () = 0;
 	
 	int Generation () { return generation; }
 	GPtrArray *Array () { return array; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual CollectionIterator *GetIterator ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual int GetCount ();
 	
 	int Add (Value value);
 	int Add (Value *value);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool Clear ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool Contains (Value *value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int IndexOf (Value *value);
 	
 	bool Insert (int index, Value value);
 	bool Insert (int index, Value *value);
 	
 	bool Remove (Value value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool Remove (Value *value);
 	
 	bool RemoveAt (int index);
@@ -72,15 +72,15 @@ public:
 	bool SetValueAt (int index, Value *value);
 	Value *GetValueAt (int index);
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	virtual int AddWithError (Value *value, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	virtual bool InsertWithError (int index, Value *value, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	virtual Value *GetValueAtWithError (int index, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	virtual bool SetValueAtWithError (int index, Value *value, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	virtual bool RemoveAtWithError (int index, MoonError *error);
 
 	const static int ChangedEvent;
@@ -130,7 +130,7 @@ protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObjectCollection ();
 	
 	virtual void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor);
@@ -148,7 +148,7 @@ public:
 	static DoubleCollection* FromStr (const char *str);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DoubleCollection ();
 	
 	virtual ~DoubleCollection ();
@@ -165,7 +165,7 @@ public:
 	static PointCollection* FromStr (const char *str);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PointCollection ();
 
 	virtual ~PointCollection ();
@@ -179,16 +179,16 @@ public:
 	CollectionIterator (Collection *c);
 	virtual ~CollectionIterator ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool Next (MoonError *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool Reset ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Value *GetCurrent (MoonError *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static void Destroy (CollectionIterator *iterator);
 
 protected:
@@ -238,7 +238,7 @@ protected:
 /* @Namespace=System.Windows */
 class TriggerCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	TriggerCollection ();
 	
 	virtual ~TriggerCollection ();
@@ -253,7 +253,7 @@ class TriggerCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows */
 class TriggerActionCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TriggerActionCollection ();
 	
 	virtual ~TriggerActionCollection ();
@@ -269,7 +269,7 @@ class TriggerActionCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Documents */
 class InlineCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	InlineCollection ();
 
 	virtual ~InlineCollection ();
@@ -286,7 +286,7 @@ class InlineCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class UIElementCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	UIElementCollection ();
 
 	virtual ~UIElementCollection ();
@@ -307,7 +307,7 @@ class UIElementCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class ItemCollection : public Collection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	ItemCollection ();
 	
 	virtual ~ItemCollection ();
@@ -331,7 +331,7 @@ public:
 	void ResortByZIndex ();
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	MultiScaleSubImageCollection ();
 	
 	virtual ~MultiScaleSubImageCollection ();
@@ -346,7 +346,7 @@ class HitTestCollection : public UIElementCollection {
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
 	virtual void RemovedFromCollection (Value *value, bool is_value_safe) {}
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	HitTestCollection ();
 
 	virtual ~HitTestCollection () {}
@@ -358,7 +358,7 @@ class HitTestCollection : public UIElementCollection {
 /* @Namespace=System.Windows */
 class ResourceDictionaryCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ResourceDictionaryCollection ();
 	
 	virtual ~ResourceDictionaryCollection ();
@@ -376,7 +376,7 @@ class ResourceDictionaryCollection : public DependencyObjectCollection {
 /* @ManagedName=TextElementCollection`1 */
 class TextElementCollection : public DependencyObjectCollection {
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextElementCollection ();
 
 	virtual ~TextElementCollection () {}
@@ -391,7 +391,7 @@ public:
 /* @Namespace=System.Windows.Documents */
 class BlockCollection : public TextElementCollection {
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	BlockCollection ();
  
 	virtual ~BlockCollection () {}

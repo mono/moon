@@ -26,7 +26,7 @@ class Xap {
 
 	DependencyObject *getRoot () { return root; } 
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static char *Unpack (const char *fname);
 };
 

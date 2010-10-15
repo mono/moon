@@ -125,7 +125,7 @@ class MultiScaleImage : public MediaBase {
 	/* @PropertyType=double,AlwaysChange,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	MultiScaleImage ();
 	
 	//
@@ -146,11 +146,11 @@ class MultiScaleImage : public MediaBase {
 	//
 	// Methods
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Point ElementToLogicalPoint (Point elementPoint);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Point LogicalToElementPoint (Point logicalPoint);
 
 	MultiScaleSubImage *GetIthSubImage (int index);

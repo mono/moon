@@ -20,23 +20,23 @@ namespace Moonlight {
 /* @Namespace=None,ManagedEvents=Manual */
 class LocalMessageReceiver : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LocalMessageReceiver (const char *receiverName,
 			      ReceiverNameScope namescope);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetReceiverName () { return receiverName; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ReceiverNameScope GetReceiverNameScope () { return namescope; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetAllowedSenderDomains (char **allowedSenderDomains, int count);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ListenWithError (MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void DisposeWithError (MoonError *error);
 
 	/* @DelegateType=EventHandler<MessageReceivedEventArgs> */
@@ -63,10 +63,10 @@ private:
 /* @Namespace=None,ManagedEvents=Manual */
 class LocalMessageSender : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LocalMessageSender (const char *receiverName, const char *receiverDomain);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SendAsyncWithError (const char *msg, GCHandle managedUserState, MoonError *error);
 
 	/* @DelegateType=EventHandler<SendCompletedEventArgs> */

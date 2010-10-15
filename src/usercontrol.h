@@ -30,7 +30,7 @@ public:
 	/* @PropertyType=UIElement */
 	const static int ContentProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	UserControl ();
 	
 	virtual bool IsLayoutContainer () { return true; }

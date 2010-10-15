@@ -37,7 +37,7 @@ class Panel : public FrameworkElement {
 	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IsItemsHostProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+ 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
 
 	virtual void OnIsAttachedChanged (bool attached);

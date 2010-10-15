@@ -81,13 +81,13 @@ public:
 		this->offset = offset;
 		this->count = count;
 	}
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void *GetData () { return data; }
 	void SetData (void *value) { data = value; }
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	guint64 GetOffset () { return offset; }
 	void SetOffset (gint64 value) { offset = value; }
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	guint32 GetCount () { return count; }
 	void SetCount (gint32 value) { count = value; }
 };
@@ -115,19 +115,19 @@ public:
 	virtual void Dispose ();
 
 	/* Public API */
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void Open (const char *verb, const Uri *uri, DownloaderAccessPolicy policy);
 	void Open (const char *verb, const Uri *uri, const Uri *resource_base, DownloaderAccessPolicy policy);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void Send ();
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void Abort ();
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void SetBody (/* @MarshalAs=byte[] */ void *body, gint32 length);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void SetHeader (const char *header, const char *value, bool disable_folding);
 	void SetHeaderFormatted (const char *header, char *value, bool disable_folding);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	HttpResponse *GetResponse ();
 
 	Options GetOptions () { return options; }
@@ -248,7 +248,7 @@ public:
 	HttpResponse (HttpRequest *request);
 	virtual void Dispose ();
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void VisitHeaders (HttpHeaderVisitor visitor, void *context);
 
 	/* List of HttpHeader */
@@ -257,10 +257,10 @@ public:
 	void AppendHeader (const char *header, const char *value);
 	bool ContainsHeader (const char *header, const char *value);
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	gint32 GetResponseStatus () { return response_status; }
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	const char *GetResponseStatusText () { return response_status_text; }
 
 	void SetStatus (gint32 status, const char *status_text);

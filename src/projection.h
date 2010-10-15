@@ -67,7 +67,7 @@ public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int M44Property;
 	
-	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
+	/* @GeneratePInvoke,SkipFactories */
 	Matrix3D ();
 
 	/* @SkipFactories */
@@ -75,7 +75,7 @@ public:
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	gpointer GetMatrixValues () { return matrix; }
 	
 	//
@@ -154,14 +154,14 @@ class UnmanagedMatrix3D : public Matrix3D {
 	virtual ~UnmanagedMatrix3D () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
+	/* @GeneratePInvoke,SkipFactories */
 	UnmanagedMatrix3D () {  SetObjectType (Type::UNMANAGEDMATRIX3D); }
 };
 
 /* @Namespace=System.Windows.Media */
 class Projection : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Projection ();
 
 	virtual Matrix3D *GetProjectionMatrix ();
@@ -182,7 +182,7 @@ protected:
 /* @Namespace=System.Windows.Media */
 class PlaneProjection : public Projection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PlaneProjection ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -276,7 +276,7 @@ protected:
 /* @ContentProperty="ProjectionMatrix" */
 class Matrix3DProjection : public Projection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Matrix3DProjection () { SetObjectType (Type::MATRIX3DPROJECTION); }
 
 	/* @PropertyType=Matrix3D,AutoCreateValue,GenerateAccessors */

@@ -81,22 +81,22 @@ public:
 	virtual void SetSurface (Surface* s) { surface = s; }
 	Surface *GetSurface () { return surface; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetTransparent (bool flag) { if (transparent != flag) Invalidate (); transparent = flag; }
 	
 	virtual void SetBackgroundColor (Color *color) { Invalidate (); };
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetTransparent () { return transparent; }
 
 	bool IsFullScreen () { return windowType == MoonWindowType_FullScreen; }
 
 	void SetCurrentDeployment ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType) = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual gpointer GetPlatformWindow () = 0;
 
 protected:

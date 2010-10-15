@@ -23,7 +23,7 @@ protected:
 	virtual ~PrintDocument () {}
 
 public:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	PrintDocument ();
 
 	/* @DelegateType=EventHandler<EndPrintEventArgs> */

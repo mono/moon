@@ -33,7 +33,7 @@ class BitmapImage : public BitmapSource {
 	DownloaderAccessPolicy policy;
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BitmapImage ();
 
 	virtual ~BitmapImage ();
@@ -67,9 +67,9 @@ class BitmapImage : public BitmapSource {
 	
 	void CleanupLoader ();
 	void CreateLoader (unsigned char *buffer);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void PixbufWrite (gpointer buffer, gint32 offset, gint32 n);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void PixmapComplete ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

@@ -111,10 +111,10 @@ class Shape : public FrameworkElement {
  	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int StrokeThicknessProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Shape ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Transform *GetGeometryTransform ();
 	
 	//
@@ -212,7 +212,7 @@ class Ellipse : public Shape {
 	virtual Rect ComputeStretchBounds ();
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Ellipse ();
 	
 	virtual void BuildPath ();
@@ -239,7 +239,7 @@ class Rectangle : public Shape {
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RadiusYProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Rectangle ();
 	
 	virtual Rect GetCoverageBounds ();
@@ -279,7 +279,7 @@ class Line : public Shape {
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int Y2Property;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Line () { SetObjectType (Type::LINE); }
 	
 	virtual void BuildPath ();
@@ -323,7 +323,7 @@ class Polygon : public Shape {
  	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Polygon ();
 	
 	// Polygon has no center to compute, it's always 0,0 because it provides it's own start and end
@@ -364,7 +364,7 @@ class Polyline : public Shape {
  	/* @PropertyType=PointCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int PointsProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Polyline ();
 	
 	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
@@ -403,7 +403,7 @@ class Path : public Shape {
  	/* @PropertyType=Geometry,GenerateAccessors */
 	const static int DataProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Path () { SetObjectType (Type::PATH); }
 	
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end

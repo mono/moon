@@ -40,11 +40,11 @@ public:
 	virtual TimeSpan GetLastTime ()        { return last_global_time - start_time; }
 	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void AddTickCall (TickCallHandler handler, EventObject *tick_data);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void RemoveTickCall (TickCallHandler handler, EventObject *tick_data);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void AddDispatcherCall (TickCallHandler handler, EventObject *tick_data);
 
 	void NeedRedraw ();
@@ -52,14 +52,14 @@ public:
 
 	void InvokeTickCalls ();
 
-	/* @GenerateCBinding, GeneratePInvoke */
+	/* @GeneratePInvoke */
 	guint AddTimeout (gint priority, guint ms_interval, MoonSourceFunc func, gpointer timeout_data);
-	/* @GenerateCBinding, GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void RemoveTimeout (guint timeout_id);
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal,Version=2 */
+	/* @GeneratePInvoke,ManagedAccess=Internal,Version=2 */
 	void SetMaximumRefreshRate (int hz);
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal,Version=2 */
+	/* @GeneratePInvoke,ManagedAccess=Internal,Version=2 */
 	int GetMaximumRefreshRate () { return max_fps; }
 
 	// Events you can AddHandler to

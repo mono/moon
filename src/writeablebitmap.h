@@ -30,17 +30,17 @@ class WriteableBitmap : public BitmapSource {
 	virtual ~WriteableBitmap ();
 
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	WriteableBitmap ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	gpointer InitializeFromBitmapSource (BitmapSource *source);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void Render (UIElement *element, Transform *transform);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void Lock ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void Unlock ();
 
 	virtual cairo_surface_t *GetSurface (cairo_t *cr);

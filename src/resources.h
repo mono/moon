@@ -36,7 +36,7 @@ class ResourceDictionaryIterator : public CollectionIterator {
 	
 	virtual Value *GetCurrent (MoonError *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetCurrentKey (MoonError *error);
 };
 
@@ -50,7 +50,7 @@ public:
 	const static int MergedDictionariesProperty;
 
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ResourceDictionary ();
 
 	/* just to provide an implementation.  our CanAdd always returns true. */
@@ -60,22 +60,22 @@ public:
 	
 	bool Add (const char* key, Value *value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool AddWithError (const char* key, Value *value, MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool Clear ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool ContainsKey (const char *key);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool Remove (const char *key);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool Set (const char *key, Value *value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value* Get (const char *key, bool *exists);
 	Value* GetFromMergedDictionaries (const char *key, bool *exists);
 

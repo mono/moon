@@ -49,7 +49,7 @@ class Geometry : public DependencyObject {
 
 	Rect local_bounds;
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	Geometry ();
 
 	virtual ~Geometry ();
@@ -66,7 +66,7 @@ class Geometry : public DependencyObject {
 
 	virtual void Draw (cairo_t *cr);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Rect GetBounds ();
 	void InvalidateCache ();
 
@@ -94,7 +94,7 @@ class Geometry : public DependencyObject {
 /* @Namespace=System.Windows.Media */
 class GeometryCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GeometryCollection ();
 
 	virtual ~GeometryCollection ();
@@ -114,7 +114,7 @@ class GeometryCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class GeometryGroup : public Geometry {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GeometryGroup ();
 
 	virtual ~GeometryGroup ();
@@ -152,7 +152,7 @@ class EllipseGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	EllipseGeometry ();
 	
 	virtual ~EllipseGeometry ();
@@ -191,7 +191,7 @@ class LineGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LineGeometry ();
 	
 	virtual ~LineGeometry ();
@@ -226,7 +226,7 @@ class PathFigureCollection : public DependencyObjectCollection {
 	virtual ~PathFigureCollection ();
 
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PathFigureCollection ();
 
 	virtual Type::Kind GetElementType () { return Type::PATHFIGURE; }
@@ -242,7 +242,7 @@ class PathGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PathGeometry ();
 
 	virtual ~PathGeometry ();
@@ -285,7 +285,7 @@ class RectangleGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	RectangleGeometry ();
 	
 	virtual ~RectangleGeometry ();
@@ -322,7 +322,7 @@ class RectangleGeometry : public Geometry {
 /* @Namespace=System.Windows.Media */
 class PathSegmentCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PathSegmentCollection ();
 	
 	virtual ~PathSegmentCollection ();
@@ -342,7 +342,7 @@ class PathSegmentCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class PathFigure : public DependencyObject {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PathFigure ();
 	
 	virtual ~PathFigure ();
@@ -395,7 +395,7 @@ class PathSegment : public DependencyObject {
  protected:
 	virtual void Build ();
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	PathSegment ();
 
 	virtual ~PathSegment ();
@@ -415,7 +415,7 @@ class PathSegment : public DependencyObject {
 /* @Namespace=System.Windows.Media */
 class ArcSegment : public PathSegment {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ArcSegment ();
 	
 	virtual ~ArcSegment ();
@@ -465,7 +465,7 @@ class ArcSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class BezierSegment : public PathSegment {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BezierSegment ();
 	
 	virtual ~BezierSegment ();
@@ -505,7 +505,7 @@ class BezierSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class LineSegment : public PathSegment {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LineSegment ();
 	
 	virtual ~LineSegment ();
@@ -534,7 +534,7 @@ class LineSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class PolyBezierSegment : public PathSegment {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PolyBezierSegment ();
 
 	virtual ~PolyBezierSegment ();
@@ -555,7 +555,6 @@ class PolyBezierSegment : public PathSegment {
 	//
 	// Property Accessors
 	//
-	/* @GenerateCBinding */
 	void SetPoints (PointCollection *points);
 };
 
@@ -566,7 +565,7 @@ class PolyBezierSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class PolyLineSegment : public PathSegment {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PolyLineSegment ();
 
 	virtual ~PolyLineSegment ();
@@ -597,7 +596,7 @@ class PolyLineSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class PolyQuadraticBezierSegment : public PathSegment {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PolyQuadraticBezierSegment ();
 
 	virtual ~PolyQuadraticBezierSegment ();
@@ -628,7 +627,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 /* @Namespace=System.Windows.Media */
 class QuadraticBezierSegment : public PathSegment {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	QuadraticBezierSegment ();
 	
 	virtual ~QuadraticBezierSegment ();

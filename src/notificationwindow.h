@@ -27,7 +27,7 @@ protected:
 	virtual ~Window () {}
 
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Window ();
 	
 	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal,Validator=UserInitiatedValidator */
@@ -73,7 +73,7 @@ protected:
 	virtual ~NotificationWindow () {}
 
 public:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	NotificationWindow ();
 
 	/* @PropertyType=FrameworkElement */

@@ -26,7 +26,7 @@ class GeneralTransform : public DependencyObject {
 	cairo_matrix_t _matrix;
 	bool need_update;
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	GeneralTransform () : DependencyObject (Type::GENERALTRANSFORM), need_update (true) { }
 	
 	virtual ~GeneralTransform () {};
@@ -45,7 +45,7 @@ class GeneralTransform : public DependencyObject {
 	
 	virtual void GetTransform (cairo_matrix_t *value);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Matrix *GetMatrix ();
 	
 	Point Transform (Point point);
@@ -58,7 +58,7 @@ class GeneralTransform : public DependencyObject {
 /* @Namespace=System.Windows.Media */
 class Transform : public GeneralTransform {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	Transform () : GeneralTransform (Type::TRANSFORM) { }
 
 	virtual ~Transform () {}
@@ -70,10 +70,10 @@ class Transform : public GeneralTransform {
 	friend class MoonManagedFactory;
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GeneralTransform *GetInverse ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool TryTransform (Point inPoint, /* @MarshalAs=Point,IsOut */ Point *outPoint);
 };
 
@@ -81,7 +81,7 @@ class Transform : public GeneralTransform {
 /* @Namespace=System.Windows.Media */
 class RotateTransform : public Transform {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	RotateTransform () { SetObjectType (Type::ROTATETRANSFORM); }
 
 	virtual ~RotateTransform () {}
@@ -117,7 +117,7 @@ protected:
 	virtual ~CompositeTransform () {}
 	virtual void UpdateTransform ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	CompositeTransform ();
 
 	friend class MoonUnmanagedFactory;
@@ -178,7 +178,7 @@ public:
 /* @Namespace=System.Windows.Media */
 class TranslateTransform : public Transform {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TranslateTransform () { SetObjectType (Type::TRANSLATETRANSFORM); }
 
 	virtual ~TranslateTransform () { }
@@ -207,7 +207,7 @@ class TranslateTransform : public Transform {
 /* @Namespace=System.Windows.Media */
 class ScaleTransform : public Transform {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ScaleTransform () { SetObjectType (Type::SCALETRANSFORM); }
 	
 	virtual ~ScaleTransform () {}
@@ -246,7 +246,7 @@ class ScaleTransform : public Transform {
 /* @Namespace=System.Windows.Media */
 class SkewTransform : public Transform {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SkewTransform () { SetObjectType (Type::SKEWTRANSFORM); }
 
 	virtual ~SkewTransform () {}
@@ -305,7 +305,7 @@ class Matrix : public DependencyObject {
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int OffsetYProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
+	/* @GeneratePInvoke,SkipFactories */
 	Matrix ();
 
 	/* @SkipFactories */
@@ -315,7 +315,7 @@ class Matrix : public DependencyObject {
 	
 	cairo_matrix_t GetUnderlyingMatrix ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	cairo_matrix_t *GetMatrixValues () { return &matrix; }
 	
 	//
@@ -349,14 +349,14 @@ class UnmanagedMatrix : public Matrix {
 	virtual ~UnmanagedMatrix () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
+	/* @GeneratePInvoke,SkipFactories */
 	UnmanagedMatrix () {  SetObjectType (Type::UNMANAGEDMATRIX); }
 };
 
 /* @Namespace=System.Windows.Media */
 class MatrixTransform : public Transform {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	MatrixTransform () { SetObjectType (Type::MATRIXTRANSFORM); }
 	
 	virtual ~MatrixTransform () {}
@@ -383,7 +383,7 @@ class MatrixTransform : public Transform {
 /* @Namespace=System.Windows.Media */
 class TransformCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TransformCollection () { SetObjectType (Type::TRANSFORM_COLLECTION); }
 	
 	virtual ~TransformCollection () {}
@@ -400,7 +400,7 @@ class TransformCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class TransformGroup : public Transform {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TransformGroup () : Transform (Type::TRANSFORMGROUP) { }
 	
 	virtual ~TransformGroup () {}

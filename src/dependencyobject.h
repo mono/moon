@@ -112,10 +112,10 @@ public:
 	void Track (const char *done, const char *typname);
 #endif
 	GCHandle GetManagedHandle () { return managed_handle; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ref ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void unref ();
 	
 	/* @GeneratePInvoke */
@@ -137,7 +137,7 @@ public:
 		return Type::Find (GetDeployment (), GetObjectType ());
 	}
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual const char *GetTypeName ()
 	{
 		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
@@ -147,20 +147,20 @@ public:
 	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
  	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
  	void RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data);
 
 	// called from the managed layer (Control.cs).
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void DoEmitCurrentContext (int event_id, EventArgs *calldata);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	virtual void RemoveHandler (int event_id, int token);
 	void RemoveAllHandlers (gpointer data);
@@ -179,10 +179,10 @@ public:
 	//  This method is thread-safe.
 	void AddTickCall (TickCallHandler handler, EventObject *data = NULL);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetObjectType (Type::Kind value) { object_type = value; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetManagedPeerCallbacks (StrongRefCallback add_strong_ref,
 				      StrongRefCallback clear_strong_ref,
 				      MentorChangedCallback mentor_changed,
@@ -191,7 +191,7 @@ public:
 
 	virtual void EnsureManagedPeer ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Type::Kind GetObjectType () { return object_type; }
 
 	const static int DestroyedEvent;
@@ -231,7 +231,7 @@ public:
 	// and we want the deployment on this object.
 	Deployment *GetUnsafeDeployment () { return deployment; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetManagedHandle (GCHandle managed_handle);
 
 	StrongRefCallback addStrongRef;
@@ -308,9 +308,9 @@ public:
 	DependencyObject *GetMentor ();
 	void SetMentor (DependencyObject *value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetTemplateOwner (DependencyObject *value);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObject *GetTemplateOwner ();
 
 	// Gets the content property from this object's type, and
@@ -325,14 +325,14 @@ public:
 	bool SetValue (int property, Value *value);
 	bool SetValue (int property, Value value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool SetValueWithError (DependencyProperty *property, Value *value, MoonError *error);
 	bool SetValueWithError (DependencyProperty *property, Value value, MoonError *error);
 
 	bool PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
 				      DependencyObject *source, Value *new_value);
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValue (int id);
@@ -348,18 +348,18 @@ public:
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence);
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	Value *ReadLocalValueWithError (DependencyProperty *property, MoonError *error);
 	virtual Value *ReadLocalValue (DependencyProperty *property);
 	virtual Value *ReadLocalValue (int id);
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
 	Value *GetValueNoDefault (int id);
 	
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);
 	void ClearValue (int id, bool notify_listeners, MoonError *error);
 	void ClearValue (DependencyProperty *property, bool notify_listeners = true /*, error = NULL */);
@@ -373,7 +373,7 @@ public:
 
 	DependencyObject *FindName (const char *name);
 	DependencyObject *FindName (const char *name, bool template_item);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObject *FindName (const char *name, Type::Kind *element_kind);
 	NameScope *FindNameScope ();
 	NameScope *FindNameScope (bool template_namescope);
@@ -382,11 +382,11 @@ public:
 	void DetachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage);
 	AnimationStorage *GetAnimationStorageFor (DependencyProperty *prop);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetName ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetName (const char *name);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool SetNameOnScope (const char *name, NameScope *scope);
 
 	virtual void OnIsAttachedChanged (bool value);
@@ -397,9 +397,9 @@ public:
 
 	virtual bool PermitsMultipleParents () { return true; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetResourceBase (const Uri *resourceBase);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const Uri *GetResourceBase ();
 	const Uri *GetResourceBaseRecursive ();
 
@@ -455,9 +455,9 @@ public:
 	// dependencyobject with a callback and a closure to be
 	// invoked when the given property changes.
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void RemovePropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb);
 
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
@@ -478,7 +478,7 @@ public:
 	bool IsBeingParsed () { return is_being_parsed; }
 
 protected:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	DependencyObject ();
 
 	virtual ~DependencyObject ();

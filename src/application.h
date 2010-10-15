@@ -41,7 +41,7 @@ public:
 	/* @PropertyType=ResourceDictionary,AutoCreateValue,GenerateAccessors */
 	const static int ResourcesProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 	
 	Style **GetDefaultStyle (FrameworkElement *el);
@@ -53,29 +53,29 @@ public:
 	char *GetResourceAsPath (const Uri *resourceBase, const Uri *uri);
 	const char *GetResourceRoot ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void CheckAndDownloadUpdateAsync ();
 	
 	void UpdateComplete (bool updated, const char *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool IsRunningOutOfBrowser ();
 	
 	void SetInstallState (InstallState state);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	InstallState GetInstallState ();
 	
 	bool IsInstallable ();
 	
 	// The test harness calls the InstallWithError p/invoke through reflection, so if you update the signature here, be sure to update the harness too.
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool InstallWithError (MoonError *error, bool user_initiated, bool unattended);
 	void Uninstall ();
 	bool Install ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static Application *GetCurrent ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static void SetCurrent (Application *current);
 	
 	//
@@ -88,7 +88,7 @@ public:
 	const static int CheckAndDownloadUpdateCompletedEvent;
 	
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Application ();
 	
 	virtual ~Application ();

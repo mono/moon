@@ -180,25 +180,24 @@ typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, vo
 /* @Namespace=None,ManagedEvents=Manual */
 class Surface : public EventObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
+	/* @GeneratePInvoke,SkipFactories */
 	Surface (MoonWindow *window);
 	
-	/* @GenerateCBinding */
 	MoonWindow *GetWindow () { return active_window; }
 	MoonWindow *DetachWindow ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	MoonWindow *GetNormalWindow () { return normal_window; }
 	
 	// arbitrary context.
 	void Paint (Context *ctx, Region *region);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void Paint (Context *ctx, int x, int y, int width, int height);
 
 	void Paint (Context *ctx, Region *region, bool transparent, bool clear_transparent);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
 	void AttachLayer (UIElement *layer);
@@ -210,19 +209,19 @@ public:
 	void ReleaseMouseCapture (UIElement *capture);
 	bool SetMouseCapture (UIElement *capture);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void Resize (int width, int height);
 
 	void EmitSourceDownloadComplete ();
 	void EmitSourceDownloadProgressChanged (float progress);
 	void EmitError (ErrorEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void EmitError (DependencyObject *original_source, int number, int code, const char *message);
 	
 	void EmitLoad ();
 	
 	void SetBackgroundColor (Color *color);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Color *GetBackgroundColor ();
 	
 	int GetFrameCount () { return frames; }
@@ -231,21 +230,21 @@ public:
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	UIElement *GetFocusedElement () { return focused_element; }
 
 	UIElementCollection *GetLayers () { return layers; }
 
 	bool FocusElement (UIElement *element);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool IsLoaded () { return toplevel != NULL && ticked_after_attach; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static bool IsVersionSupported (const char *version);
 
 	const static int ResizeEvent;
@@ -259,12 +258,12 @@ public:
 
 	const static int ZoomedEvent;
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	bool GetFullScreen () { return full_screen; }
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	void SetFullScreen (bool value);
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=3.0 */
+	/* @GeneratePInvoke,Version=3.0 */
 	double GetZoomFactor () { return zoom_factor; }
 	void SetZoomFactor (double value);
 	
@@ -277,17 +276,17 @@ public:
 	void SetUserInitiatedEvent (bool value);
 	
 	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	bool IsUserInitiatedEvent () { return user_initiated_event; }
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	int GetUserInitiatedCounter () { return user_initiated_monotonic_counter; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const Uri* GetSourceLocation ();
 	void SetSourceLocation (const Uri *location);
 	bool FullScreenKeyHandled (MoonKeyEvent *key);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
 	/* @GeneratePInvoke */
 	TimeManager *GetTimeManagerReffed ();
@@ -338,7 +337,7 @@ public:
 
 	static bool main_thread_inited;
 	static pthread_t main_thread;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static bool InMainThread () { return (!main_thread_inited || pthread_equal (main_thread, pthread_self ())); }
 
 	void ShowDrmMessage ();

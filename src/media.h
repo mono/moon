@@ -33,7 +33,7 @@ class MediaAttribute : public DependencyObject {
  	/* @PropertyType=string,GenerateAccessors */
 	const static int ValueProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	MediaAttribute () { SetObjectType (Type::MEDIAATTRIBUTE); }
 	
 	//
@@ -50,12 +50,12 @@ class MediaAttributeCollection : public DependencyObjectCollection {
 	virtual ~MediaAttributeCollection () {}
 
  public:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	MediaAttributeCollection () { SetObjectType (Type::MEDIAATTRIBUTE_COLLECTION); }
 	
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	MediaAttribute *GetItemByName (const char *name);
 };
 
@@ -72,7 +72,7 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 	virtual ~TimelineMarkerCollection () {}
 	
  public:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	TimelineMarkerCollection () { SetObjectType (Type::TIMELINEMARKER_COLLECTION); }
 	
 	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
@@ -118,12 +118,12 @@ class MediaBase : public FrameworkElement {
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	MediaBase ();
 
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetSource (const char *uri);
 	
 	void SetAllowDownloads (bool allow);
@@ -169,7 +169,7 @@ class Image : public MediaBase {
 	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	Image ();
 
 	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
@@ -199,7 +199,7 @@ class Image : public MediaBase {
 	//
 	// Property Accessors
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetSource (ImageSource *source);
 	ImageSource *GetSource ();
 

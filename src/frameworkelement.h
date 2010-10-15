@@ -64,10 +64,10 @@ public:
 	/* @PropertyType=FlowDirection,DefaultValue=FlowDirectionLeftToRight,GenerateAccessors */
 	const static int FlowDirectionProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkElement ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool ApplyTemplateWithError (MoonError *error);
 	virtual bool DoApplyTemplateWithError (MoonError *error);
 	virtual UIElement *GetDefaultTemplate ();
@@ -99,13 +99,13 @@ public:
 
 	virtual void SetVisualParent (UIElement *visual_parent);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetLogicalParent (DependencyObject *value, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObject *GetLogicalParent () { return logical_parent; }
 	virtual void OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ApplyDefaultStyle ();
 
 	//
@@ -127,7 +127,7 @@ public:
 	virtual void MeasureWithError (Size availableSize, MoonError *error);
 	virtual void ArrangeWithError (Rect finalRect, MoonError *error);
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
 				       GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
 
@@ -136,9 +136,9 @@ public:
 	// classes want to implement fully unmanaged layout, they
 	// should override these two methods.
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
 	virtual Size ComputeActualSize ();
 

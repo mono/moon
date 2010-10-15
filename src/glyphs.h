@@ -88,7 +88,7 @@ class Glyphs : public FrameworkElement {
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int UnicodeStringProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Glyphs ();
 	
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);

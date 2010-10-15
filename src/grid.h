@@ -48,7 +48,7 @@ struct GridLength {
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinition : public DependencyObject {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ColumnDefinition ();
 	
 	virtual ~ColumnDefinition ();
@@ -83,7 +83,7 @@ class ColumnDefinition : public DependencyObject {
 /* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	RowDefinition ();
 
 	virtual ~RowDefinition ();
@@ -118,7 +118,7 @@ class RowDefinition : public DependencyObject {
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	ColumnDefinitionCollection ();
 
 	virtual ~ColumnDefinitionCollection ();
@@ -136,7 +136,7 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	RowDefinitionCollection ();
 	
 	virtual ~RowDefinitionCollection ();
@@ -186,7 +186,7 @@ class Grid : public Panel {
 	void RestoreMeasureResults ();
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Grid ();
 	
 	virtual ~Grid ();

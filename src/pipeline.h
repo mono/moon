@@ -418,12 +418,12 @@ public:
 	IMediaObject (Type::Kind kind, Media *media);
 	virtual void Dispose ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Media *GetMediaReffed ();
 	void SetMedia (Media *value);
 
 	void ReportErrorOccurred (ErrorEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportErrorOccurred (const char *message);
 	
 	// All the event methods are thread-safe
@@ -498,7 +498,6 @@ public:
 	IMediaDecoder *GetDecoder ();
 	void SetDecoder (IMediaDecoder *value);
 	
-	/* @GenerateCBinding */
 	const char *GetCodec () { return codec; }
 
 	bool GetSelected () { return selected; }
@@ -768,7 +767,7 @@ protected:
 	
 public:
 	MediaFrame (IMediaStream *stream);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
 	void Dispose ();
 	
@@ -976,17 +975,17 @@ public:
 	void SeekAsync (guint64 pts);
 	void SwitchMediaStreamAsync (IMediaStream *stream);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportOpenDemuxerCompleted ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportGetFrameCompleted (MediaFrame *frame);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportGetFrameProgress (double bufferingProgress);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportSeekCompleted (guint64 pts);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportSwitchMediaStreamCompleted (IMediaStream *stream);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportGetDiagnosticCompleted (MediaStreamSourceDiagnosticKind diagnosticKind, gint64 diagnosticValue);
 	
 	guint64 GetBufferedSize ();
@@ -1010,7 +1009,7 @@ public:
 	virtual bool IsPlaylist () { return false; }
 	virtual Playlist *GetPlaylist () { return NULL; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetIsDrm (bool value) { drm = value; }
 	bool IsDrm () { return drm; }
 
@@ -1411,7 +1410,7 @@ public:
 	VideoStream (Media *media);
 	virtual void Dispose ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
 
 	void SetBitsPerSample (guint32 value) { bits_per_sample = value; }
@@ -1456,7 +1455,7 @@ public:
 
 	AudioStream (Media *media);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 	
 	// TODO: remove the non Input/Output accessors
@@ -1584,13 +1583,13 @@ public:
 	
 	virtual void Dispose ();
 		
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetCanSeek (bool value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ClearCallbacks (); /* thread-safe */
 		
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	gint32 AddStream (IMediaStream *stream);
 	
 	virtual bool GetCanSeek () { return can_seek; }

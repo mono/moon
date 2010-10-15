@@ -34,7 +34,7 @@ public:
  	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int SpeedRatioProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+ 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Timeline ();
 
 	virtual void Dispose ();
@@ -77,10 +77,10 @@ public:
 
 	bool HasManualTarget () { return manual_target != NULL; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObject* GetManualTarget () { return manual_target; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetManualTarget (DependencyObject *o);
 
 	// events
@@ -111,7 +111,7 @@ private:
 /* @Namespace=System.Windows.Media.Animation */
 class TimelineCollection : public DependencyObjectCollection {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	TimelineCollection ();
 
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
@@ -127,7 +127,7 @@ public:
 	/* @PropertyType=TimelineCollection,AutoCreateValue,GenerateAccessors */
 	const static int ChildrenProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	TimelineGroup ();
 	
 	virtual Clock *AllocateClock ();
@@ -153,7 +153,7 @@ protected:
 /* @Namespace=None */
 class ParallelTimeline : public TimelineGroup {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	ParallelTimeline ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
@@ -173,7 +173,7 @@ public:
  	/* @PropertyType=string,GenerateAccessors */
 	const static int TypeProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	TimelineMarker ();
 
 	//
@@ -197,10 +197,10 @@ protected:
 /* @ManagedEvents=Manual */
 class DispatcherTimer : public Timeline {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	/* @GeneratePInvoke,Version=2 */
 	void Start ();
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	/* @GeneratePInvoke,Version=2 */
 	void Stop ();
 
 	const static int TickEvent;
@@ -211,7 +211,7 @@ public:
 	virtual void TeardownClock ();
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */
+	/* @GeneratePInvoke,MainThread,Version=2 */
 	DispatcherTimer ();
 
 	virtual ~DispatcherTimer() {}

@@ -22,7 +22,7 @@ class Keyboard {
 	static GHashTable *pressedKeys;
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static ModifierKeys GetModifiers ();
 	
 	static void SetModifiers (ModifierKeys m);

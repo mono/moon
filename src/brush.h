@@ -27,7 +27,7 @@ class MediaElement;
 /* @Namespace=System.Windows.Media */
 class Brush : public DependencyObject {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Brush (): DependencyObject (Type::BRUSH) { }
 
 	/* @SkipFactories */
@@ -86,7 +86,7 @@ class Brush : public DependencyObject {
 /* @ContentProperty="Color" */
 class SolidColorBrush : public Brush {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SolidColorBrush ();
 
 	virtual ~SolidColorBrush () {}
@@ -116,7 +116,7 @@ class SolidColorBrush : public Brush {
 /* @Namespace=System.Windows.Media */
 class GradientStopCollection : public DependencyObjectCollection {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GradientStopCollection ();
 
 	virtual ~GradientStopCollection ();
@@ -132,7 +132,7 @@ class GradientStopCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class GradientStop : public DependencyObject {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GradientStop ();
 	
 	virtual ~GradientStop ();
@@ -162,7 +162,7 @@ class GradientStop : public DependencyObject {
 /* @ContentProperty="GradientStops" */
 class GradientBrush : public Brush {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	GradientBrush ();
 	
 	virtual ~GradientBrush ();
@@ -206,7 +206,7 @@ class GradientBrush : public Brush {
 /* @Namespace=System.Windows.Media */
 class LinearGradientBrush : public GradientBrush {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LinearGradientBrush ();
 
 	virtual ~LinearGradientBrush ();
@@ -236,7 +236,7 @@ class LinearGradientBrush : public GradientBrush {
 /* @Namespace=System.Windows.Media */
 class RadialGradientBrush : public GradientBrush {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	RadialGradientBrush ();
 	
 	virtual ~RadialGradientBrush ();
@@ -276,7 +276,7 @@ class RadialGradientBrush : public GradientBrush {
 /* @Namespace=System.Windows.Media */
 class TileBrush : public Brush {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	TileBrush () : Brush (Type::TILEBRUSH) {}
 
 	virtual ~TileBrush ();
@@ -314,7 +314,7 @@ class TileBrush : public Brush {
 /* @Namespace=System.Windows.Media */
 class ImplicitInputBrush : public Brush {
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ImplicitInputBrush () : Brush (Type::IMPLICITINPUTBRUSH) { }
 
 	virtual ~ImplicitInputBrush () {}
@@ -326,7 +326,7 @@ protected:
 /* @Namespace=System.Windows.Controls */
 class HtmlBrush : public TileBrush {
 protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	HtmlBrush () : TileBrush (Type::HTMLBRUSH) { }
 
 	virtual ~HtmlBrush () {}
@@ -353,7 +353,7 @@ private:
 	static void source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ImageBrush ();
 
 	virtual ~ImageBrush ();
@@ -412,7 +412,7 @@ class VideoBrush : public TileBrush {
 	VideoFormat *video_format;
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	VideoBrush ();
 	
 	virtual ~VideoBrush ();
@@ -434,7 +434,7 @@ class VideoBrush : public TileBrush {
 	//
 	// Methods
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetSource (DependencyObject *source);
 	
 	//
@@ -454,7 +454,7 @@ class VisualBrush : public TileBrush {
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	VisualBrush ();
 
 	virtual ~VisualBrush ();
@@ -488,7 +488,7 @@ class WebBrowserBrush : public TileBrush {
 	const char * GetSourceName ();
 
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	WebBrowserBrush () { SetObjectType (Type::WEBBROWSERBRUSH); }
 
 	virtual ~WebBrowserBrush () { }

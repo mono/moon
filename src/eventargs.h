@@ -62,13 +62,13 @@ public:
 		delete old_value;
 	}
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyProperty *GetProperty () { return obj; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetId () { return id; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value* GetOldValue () { return old_value; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value* GetNewValue () { return new_value; }
 
 	void SetProperty (DependencyProperty *prop) { obj = prop; }
@@ -88,7 +88,7 @@ class RenderingEventArgs : public EventArgs {
 public:
 	RenderingEventArgs ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TimeSpan GetRenderingTime ();
 
 	void SetRenderingTime (TimeSpan renderingTime);
@@ -112,34 +112,34 @@ enum CollectionChangedAction {
 /* @Namespace=None */
 class CollectionChangedEventArgs : public EventArgs {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,SkipTypeConstructor */
+	/* @GeneratePInvoke,SkipTypeConstructor */
 	CollectionChangedEventArgs ();
 
 	/* @SkipFactories */
 	CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetChangedAction (CollectionChangedAction action);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	CollectionChangedAction GetChangedAction ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetNewItem (Value *item);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value *GetNewItem ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetOldItem (Value *item);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value *GetOldItem ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetIndex (int index);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetIndex ();
 
 protected:
@@ -199,34 +199,34 @@ private:
 /* @Namespace=None */
 class ResourceDictionaryChangedEventArgs : public EventArgs {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,SkipTypeConstructor */
+	/* @GeneratePInvoke,SkipTypeConstructor */
 	ResourceDictionaryChangedEventArgs ();
 
 	/* @SkipFactories */
 	ResourceDictionaryChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, const char *key);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetChangedAction (CollectionChangedAction action);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	CollectionChangedAction GetChangedAction ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetNewItem (Value *item);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value *GetNewItem ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetOldItem (Value *item);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value *GetOldItem ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetKey (const char *key);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char* GetKey ();
 
 protected:
@@ -254,30 +254,30 @@ class DownloadProgressEventArgs : public EventArgs {
 	
 	void SetProgress (double progress);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetProgress ();
 };
 
 /* @Namespace=None */
 class RoutedEventArgs : public EventArgs {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObject *GetSource ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetSource(DependencyObject *el);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetHandled (bool handled);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetHandled ();
 
 	/* @SkipFactories */
 	RoutedEventArgs (DependencyObject *source);
 
 protected:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	RoutedEventArgs ();
 
 	/* @SkipFactories */
@@ -302,15 +302,15 @@ public:
  	/* @SkipFactories */
 	KeyEventArgs (MoonKeyEvent *event);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetKey ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetPlatformKeyCode ();
 	
 	MoonKeyEvent *GetEvent () { return event; }
 protected:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	KeyEventArgs ();
 
 	virtual ~KeyEventArgs ();
@@ -330,17 +330,17 @@ public:
 	
 	MoonMouseEvent *GetEvent () { return event; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void GetPosition (UIElement *relative_to, double *x, double *y);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	StylusInfo *GetStylusInfo ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
 	
 protected:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	MouseEventArgs ();
 
 	/* @SkipFactories */
@@ -362,7 +362,7 @@ public:
 	LogSource GetLogSource () { return log_source; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	LogReadyRoutedEventArgs ();
 	
 	virtual ~LogReadyRoutedEventArgs () {}
@@ -378,7 +378,7 @@ private:
 /* @Namespace=None */
 class MouseButtonEventArgs : public MouseEventArgs {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	MouseButtonEventArgs ();
 
 	/* @SkipFactories */
@@ -391,13 +391,13 @@ protected:
 /* @Namespace=None */
 class MouseWheelEventArgs : public MouseEventArgs {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	MouseWheelEventArgs ();
 
 	/* @SkipFactories */
 	MouseWheelEventArgs (MoonScrollWheelEvent *event);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetWheelDelta ();
 	
 protected:
@@ -432,14 +432,14 @@ public:
 	/* @SkipFactories */
 	ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_code, const char *extended_msg);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	gpointer GetMoonError () { return error; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetErrorMessage () { return error->message; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetErrorCode () { return error->code; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetErrorType () { return error_type; }
 
 	// To match SL behaviour we need to match SL error messages, which aren't all that helpful
@@ -473,22 +473,22 @@ public:
 				  const char* receiverName,
 				  const char* senderDomain);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetMessage () { return message; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ReceiverNameScope GetNamescope () { return namescope; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetReceiverName () { return receiverName; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetResponse () { return response; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetResponse (const char *value) { g_free (response); response = g_strdup (value); }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetSenderDomain () { return senderDomain; }
 
 protected:
@@ -512,7 +512,7 @@ public:
 				const char *response,
 				GCHandle managedUserState);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void GetError (MoonError *error) {
 		if (this->error) {
 			*error = MoonError (*this->error);
@@ -522,19 +522,19 @@ public:
 		}
 	}
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetMessage () { return message; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetReceiverName () { return receiverName; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetReceiverDomain () { return receiverDomain; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetResponse () { return response; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const GCHandle GetManagedUserState () { return managedUserState; }
 
 
@@ -556,7 +556,7 @@ public:
 	CaptureImageCompletedEventArgs (MoonError *error,
 					BitmapSource *source);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void GetError (MoonError *error) {
 		if (this->error) {
 			*error = MoonError (*this->error);
@@ -566,7 +566,7 @@ public:
 		}
 	}
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BitmapSource *GetSource () { return source; }
 
 protected:
@@ -602,10 +602,10 @@ class TimelineMarkerRoutedEventArgs : public RoutedEventArgs {
 	virtual ~TimelineMarkerRoutedEventArgs ();
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TimelineMarkerRoutedEventArgs (TimelineMarker *marker);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TimelineMarker *GetMarker () { return marker; }
 };
 
@@ -618,13 +618,13 @@ class CheckAndDownloadUpdateCompletedEventArgs : public EventArgs {
 	virtual ~CheckAndDownloadUpdateCompletedEventArgs ();
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	CheckAndDownloadUpdateCompletedEventArgs (bool updated, const char *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetUpdateAvailable () { return updated; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetError () { return error; }
 };
 

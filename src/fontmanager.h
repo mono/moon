@@ -117,10 +117,10 @@ class GlyphTypeface {
 	//
 	int GetMajorVersion () const { return ver_major; }
 	int GetMinorVersion () const { return ver_minor; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetVersion () const;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetFontUri () const;
 	
 	bool operator== (const GlyphTypeface &v) const;
@@ -136,7 +136,7 @@ class GlyphTypefaceCollection : public Collection {
 	virtual ~GlyphTypefaceCollection () { }
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GlyphTypefaceCollection ();
 
 	virtual void OnIsAttachedChanged (bool attached);
@@ -196,7 +196,7 @@ class FontManager {
 	FontFace *OpenFont (const char *name, int index);
 	FontFace *OpenFont (const GlyphTypeface *typeface);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GlyphTypefaceCollection *GetSystemGlyphTypefaces ();
 };
 

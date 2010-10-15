@@ -35,10 +35,10 @@ public:
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int TargetTypeProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Style ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void Seal ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -76,7 +76,7 @@ protected:
 /* @Namespace=System.Windows */
 class SetterBaseCollection : public DependencyObjectCollection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	SetterBaseCollection ();
 	
   	/* @PropertyType=bool,DefaultValue=false,ManagedFieldAccess=Internal,ManagedSetterAccess=Private,GenerateAccessors */
@@ -114,7 +114,7 @@ class SetterBase : public DependencyObject {
    	/* @PropertyType=bool,DefaultValue=false,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IsSealedProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	SetterBase ();
 	
 	void Seal ();
@@ -150,7 +150,7 @@ class Setter : public SetterBase {
 	/* @PropertyType=object */
 	const static int ConvertedValueProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Setter ();
 
 	virtual bool PermitsMultipleParents () { return false; }

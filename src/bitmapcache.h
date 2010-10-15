@@ -22,7 +22,7 @@ namespace Moonlight {
 /* @Namespace=System.Windows.Media */
 class CacheMode : public DependencyObject {
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	CacheMode ();
 
 	virtual ~CacheMode ();
@@ -44,7 +44,7 @@ public:
 	void SetRenderAtScale (double scale);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BitmapCache ();
 
 	virtual ~BitmapCache ();

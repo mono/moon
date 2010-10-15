@@ -23,7 +23,7 @@ protected:
 	virtual ~WebBrowser () {}
 
 public:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	WebBrowser ();
 
 	/* @PropertyType=Uri */

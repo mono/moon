@@ -87,7 +87,7 @@ class XamlContext : public EventObject {
 
 	void SetTemplateBindingSource (DependencyObject *source);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DependencyObject* GetTemplateBindingSource ();
 };
 
@@ -203,13 +203,13 @@ class XamlLoader {
 	DependencyObject* CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type);
 	DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error) = 0;
 
-        /* @GenerateCBinding,GeneratePInvoke */
+        /* @GeneratePInvoke */
 	virtual Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error) = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error) = 0;
 
 	virtual ~XamlLoader () {}
@@ -268,7 +268,7 @@ class SL3XamlLoader : public XamlLoader {
 	DependencyObject *GetTemplateOwner () { return template_owner; }
 	void SetTemplateOwner (DependencyObject *value) { template_owner = value; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	XamlContext *GetContext () { return context; }
 
 	bool vm_loaded;
@@ -277,11 +277,11 @@ class SL3XamlLoader : public XamlLoader {
 	Value* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags);
 	Value* HydrateFromString (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
 	
 	XamlLoaderCallbacks GetCallbacks ();

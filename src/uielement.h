@@ -103,21 +103,21 @@ public:
 	virtual bool PermitsMultipleParents () { return false; }
 
 	virtual void SetVisualParent (UIElement *visual_parent);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 
 	int GetVisualLevel () { return visual_level; }
 	void SetVisualLevel (int level) { visual_level = level; }
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	virtual void SetSubtreeObject (DependencyObject *value);
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	virtual DependencyObject *GetSubtreeObject () { return subtree_object; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void ElementAdded (UIElement *obj);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void ElementRemoved (UIElement *obj);
 	
 	virtual bool EnableAntiAlias() { return true; }
@@ -337,9 +337,9 @@ public:
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void FindElementsInHostCoordinates_p (Point p, HitTestCollection *uielement_list);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void FindElementsInHostCoordinates_r (Rect p, HitTestCollection *uielement_list);
 	
 	virtual bool CanFindElement () { return false; }
@@ -377,7 +377,6 @@ public:
 	//
 	// Invalidates the entire bounding rectangle of this element
 	//
-	/* @GenerateCBinding */
 	void Invalidate ();
 
 	// 
@@ -434,11 +433,11 @@ public:
 	//    events will be transmitted directly to this element.
 	//    Leave/Enter events will no longer be sent.
 	//
-	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
+	/* @GeneratePInvoke,GenerateJSBinding */
 	bool CaptureMouse ();
 	virtual bool CanCaptureMouse () { return true; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool Focus (bool recurse = true);
 	
 	//
@@ -448,7 +447,7 @@ public:
 	//    applicable Leave/Enter events for the current mouse
 	//    position will be sent.
 	//
-	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
+	/* @GeneratePInvoke,GenerateJSBinding */
 	void ReleaseMouseCapture ();
 
 	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
@@ -476,25 +475,25 @@ public:
 	void DoMeasureWithError (MoonError *error);
 	void DoArrangeWithError (MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void MeasureWithError (Size availableSize, MoonError *error) = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void ArrangeWithError (Rect finalRect, MoonError *error) = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void InvalidateMeasure ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void InvalidateArrange ();
 
-	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding=UpdateLayout */
+	/* @GeneratePInvoke,GenerateJSBinding=UpdateLayout */
 	virtual void UpdateLayoutWithError (MoonError *error) = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Size GetRenderSize () { return render_size; }
 
-	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding=TransformToVisual,JSBinding_ReturnValueIsReffed,Version=2.0 */
+	/* @GeneratePInvoke,GenerateJSBinding=TransformToVisual,JSBinding_ReturnValueIsReffed,Version=2.0 */
 	/* This method always returns a reffed object */
 	GeneralTransform *GetTransformToUIElementWithError (UIElement *to_element, MoonError *error);
 

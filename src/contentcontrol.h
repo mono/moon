@@ -28,10 +28,10 @@ class ContentControlChangedEventArgs : public EventArgs {
  public:
 	ContentControlChangedEventArgs (Value *old_content, Value *new_content);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value *GetOldContent ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value *GetNewContent ();
 };
 
@@ -41,7 +41,7 @@ class ContentControlChangedEventArgs : public EventArgs {
 /* @CallInitialize */
 class ContentControl : public Control {
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ContentControl ();
 	
 	virtual ~ContentControl ();
@@ -65,9 +65,9 @@ class ContentControl : public Control {
 	void SetContentTemplate (DataTemplate *t);
 	DataTemplate *GetContentTemplate ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetContentSetsParent (bool value) { content_sets_parent = value; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetContentSetsParent () { return content_sets_parent; }
 	
 	//

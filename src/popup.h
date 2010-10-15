@@ -31,7 +31,7 @@ class Popup : public FrameworkElement {
 	/* @PropertyType=double,GenerateAccessors,DefaultValue=0.0 */
 	const static int VerticalOffsetProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Popup ();
 
 	virtual void Dispose ();

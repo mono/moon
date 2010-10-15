@@ -62,11 +62,11 @@ struct UriFunctions {
 class Uri {
 public:
 	Uri ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Uri (GCHandle gc_handle);
 	~Uri ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GCHandle GetGCHandle () const;
 
 	/* Managed API. Note that we don't use a ctor because we can't throw exceptions like managed code can. */

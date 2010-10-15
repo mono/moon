@@ -133,7 +133,7 @@ class MediaElement : public FrameworkElement {
 	virtual ~MediaElement () {}
 	
  public:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	MediaElement ();
 
 	virtual void Dispose ();
@@ -232,25 +232,25 @@ class MediaElement : public FrameworkElement {
 
 	void SetSource (Downloader *downloader, const char *PartName);
 	void SetUriSource (const Uri *uri); // This is called from OnPropertyChanged
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	IMediaDemuxer *SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void Pause (); // Not thread-safe
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void Play (); // Not thread-safe
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void Stop (); // Not thread-safe
 
 	void Seek (TimeSpan to, bool force); // Not thread-safe. 
 	
 	void ReportErrorOccurred (ErrorEventArgs *args, bool force_async); // Thread safe
 	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void ReportErrorOccurred (const char *args); // Thread safe
 	
 	// State methods

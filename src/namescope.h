@@ -38,7 +38,7 @@ class NameScope : public EventObject {
  	/* @PropertyType=NameScope,Attached,GenerateAccessors,ManagedSetterAccess=Internal */
 	const static int NameScopeProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke*/
+	/* @GeneratePInvoke*/
 	NameScope ();
 
 	virtual void Dispose ();
@@ -51,9 +51,9 @@ class NameScope : public EventObject {
 	bool GetIsLocked () { return is_locked; }
 	void Lock () { is_locked = true; }
 
-	/* @GenerateCBinding,GeneratePInvoke*/
+	/* @GeneratePInvoke*/
 	void SetTemporary (bool flag) { temporary = flag; }
-	/* @GenerateCBinding,GeneratePInvoke*/
+	/* @GeneratePInvoke*/
 	bool GetTemporary () { return temporary; }
 	
 	void MergeTemporaryScope (NameScope *scope, MoonError *error);

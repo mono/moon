@@ -29,15 +29,15 @@ class FrameworkTemplate : public DependencyObject {
 public:
 	virtual void Dispose ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	/* This method always returns a reffed object */
 	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *buffer);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkTemplate ();
 
 	virtual ~FrameworkTemplate () {}
@@ -67,7 +67,7 @@ public:
 	ManagedTypeInfo *GetTargetType ();
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ControlTemplate ();
 	virtual ~ControlTemplate () {}
 
@@ -84,7 +84,7 @@ public:
 	/* This method always returns a reffed object */
 	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DataTemplate ();
 
 	virtual ~DataTemplate () {}

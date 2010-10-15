@@ -29,7 +29,7 @@ class ContentChangedEventArgs : public RoutedEventArgs {
 	virtual ~ContentChangedEventArgs () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ContentChangedEventArgs () { SetObjectType (Type::CONTENTCHANGEDEVENTARGS); }
 };
 
@@ -93,19 +93,19 @@ class TextSelection : public DependencyObject {
 	/* @PropertyType=string,GenerateAccessors */
 	const static int XamlProperty;
 	
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	TextSelection ();
 	
 	//
 	// Methods
 	//
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void ApplyPropertyValue (DependencyProperty *formatting, Value *value);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	Value *GetPropertyValue (DependencyProperty *formatting);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void Insert (TextElement *element);
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	bool SelectWithError (TextPointer *anchor, TextPointer *cursor, MoonError *error);
 	bool Select (TextPointer *anchor, TextPointer *cursor);
 	
@@ -272,7 +272,7 @@ class RichTextBox : public Control {
 	
 	virtual ~RichTextBox ();
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	RichTextBox ();
 	
 	friend class MoonUnmanagedFactory;
@@ -312,23 +312,23 @@ class RichTextBox : public Control {
 	virtual void OnIsAttachedChanged (bool value);
 	virtual void OnApplyTemplate ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnMouseMove (MouseEventArgs *args);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void PostOnKeyDown (KeyEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnKeyDown (KeyEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnKeyUp (KeyEventArgs *args);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnGotFocus (RoutedEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void OnLostFocus (RoutedEventArgs *args);
 	
 	//
@@ -341,19 +341,19 @@ class RichTextBox : public Control {
 
 	// TextPointer things
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextPointer* GetPositionFromPoint (Point point);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextPointer* GetContentStart ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TextPointer* GetContentEnd ();
 	
 	//
 	// Selection Operations
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SelectAll ();
 	
 	//
@@ -444,7 +444,7 @@ class RichTextBoxView : public FrameworkElement {
 	void Paint (cairo_t *cr);
 	
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	RichTextBoxView ();
 	
 	virtual ~RichTextBoxView ();

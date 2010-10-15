@@ -62,7 +62,7 @@ class MultiScaleTileSource : public DependencyObject {
  public:
 	get_image_uri_func get_tile_func;
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	MultiScaleTileSource ();
 
 	double GetImageWidth ();
@@ -83,10 +83,10 @@ class MultiScaleTileSource : public DependencyObject {
 	TimeSpan GetTileBlendTime ();
 	void SetTileBlendTime (TimeSpan time);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void set_image_uri_func (get_image_uri_func func);
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 	
 	//

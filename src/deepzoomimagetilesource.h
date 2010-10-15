@@ -45,7 +45,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void Abort ();
 	
  protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DeepZoomImageTileSource ();
 
 	virtual ~DeepZoomImageTileSource ();

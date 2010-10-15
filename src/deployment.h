@@ -42,7 +42,7 @@ public:
 	const static int SourceProperty;
 	
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	AssemblyPart ();
 
 	virtual ~AssemblyPart ();
@@ -57,7 +57,7 @@ public:
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	AssemblyPartCollection ();
 
 	virtual ~AssemblyPartCollection ();
@@ -69,7 +69,7 @@ protected:
 /* @Namespace=System.Windows */
 class ExternalPart : public DependencyObject {
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ExternalPart ();
 
 	virtual ~ExternalPart ();
@@ -88,7 +88,7 @@ public:
 	const Uri* GetSource ();
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ExtensionPart ();
 
 	virtual ~ExtensionPart ();
@@ -103,7 +103,7 @@ public:
 	virtual Type::Kind GetElementType () { return Type::EXTERNALPART; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	ExternalPartCollection ();
 
 	virtual ~ExternalPartCollection ();
@@ -152,7 +152,7 @@ public:
 	void SetWindowStyle (WindowStyle style);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	WindowSettings ();
 
 	virtual ~WindowSettings ();
@@ -177,7 +177,7 @@ public:
 	void SetSize (Size *size);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Icon ();
 
 	virtual ~Icon ();
@@ -192,7 +192,7 @@ public:
 	virtual Type::Kind GetElementType () { return Type::ICON; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	IconCollection ();
 	
 	virtual ~IconCollection ();
@@ -241,7 +241,7 @@ public:
 	void SetSecuritySettings (SecuritySettings *value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	OutOfBrowserSettings ();
 
 	virtual ~OutOfBrowserSettings ();
@@ -273,11 +273,11 @@ public:
 
 	virtual void Dispose ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Types* GetTypes () { return types; }
 	
 	Surface *GetSurface ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Surface *GetSurfaceReffed (); /* thread-safe */
 	void SetSurface (Surface *surface);
 	
@@ -301,10 +301,10 @@ public:
 	void Reinitialize ();
 
 	Application* GetCurrentApplication ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetCurrentApplication (Application* value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetEnsureManagedPeerCallback (EnsureManagedPeerCallback callback);
 
 	/*
@@ -316,9 +316,9 @@ public:
 	/* thread-safe */
 	void UnregisterMedia (EventObject *media);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static Deployment* GetCurrent ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static void SetCurrent (Deployment* value);
 	static void SetCurrent (Deployment* value, bool domain);
 
@@ -332,11 +332,11 @@ public:
 	void TrackObjectDestroyed (EventObject *obj);
 
 	bool IsLoadedFromXap ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetIsLoadedFromXap (bool flag);
 
 	bool IsInitializing () { return is_initializing; };
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetInitialization (bool init);
 
 	void SetXapLocation (const Uri *location);
@@ -349,7 +349,7 @@ public:
 	
 	FontManager *GetFontManager ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	GlyphTypefaceCollection *GetSystemTypefaces ();
 	
 	CrossDomainAccess GetExternalCallersFromCrossDomain ();
@@ -434,7 +434,7 @@ public:
 	void SetHttpHandler (HttpHandler *handler);
 	void SetDefaultHttpHandler (HttpHandler *handler);
 	Downloader *CreateDownloader ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	HttpRequest *CreateHttpRequest (HttpRequest::Options options);
 	void UnregisterHttpRequest (HttpRequest *request);
 	void AbortAllHttpRequests ();
@@ -452,7 +452,7 @@ public:
 	GCHandle CreateWeakGCHandle (void *mono_object);
 	void *GetGCHandleTarget (GCHandle gchandle);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Deployment ();
 	
 

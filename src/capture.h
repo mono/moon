@@ -76,13 +76,13 @@ public:
 		SetObjectType (Type::SAMPLEREADYEVENTARGS);
 	}
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	gint64 GetSampleTime () { return sampleTime; }
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	gint64 GetFrameDuration () { return frameDuration; }
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	guint8* GetSampleData () { return sampleData; }
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	int GetSampleDataLength () { return sampleDataLength; }
 	
 protected:
@@ -104,7 +104,7 @@ public:
 		this->newFormat = new VideoFormat (*newFormat);
 	}
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	VideoFormat *GetNewFormat () { return newFormat; }
 	
 protected:
@@ -129,13 +129,13 @@ public:
 	VideoCaptureDevice *GetVideoCaptureDevice ();
 	void SetVideoCaptureDevice (VideoCaptureDevice *value);
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void CaptureImageAsync ();
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void Start ();
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	void Stop ();
 
 	enum State {
@@ -144,7 +144,7 @@ public:
 		Failed
 	};
 
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	int GetState ();
 
 	// used by VideoBrush
@@ -167,7 +167,7 @@ public:
 	const static int CaptureStoppedEvent;
 
 protected:
-	/* @GeneratePInvoke,GenerateCBinding */
+	/* @GeneratePInvoke */
 	CaptureSource ();
 
 	virtual ~CaptureSource ();
@@ -218,10 +218,10 @@ public:
 	void Stop ();
 
 	MoonCaptureDevice* GetPalDevice () { return pal_device; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void SetPalDevice (MoonCaptureDevice *device) { pal_device = device; }
 protected:
-	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	/* @ManagedAccess=Internal,GeneratePInvoke */
 	CaptureDevice ();
 
 	virtual ~CaptureDevice () {}
@@ -239,7 +239,7 @@ public:
 	virtual Type::Kind GetElementType () { return Type::AUDIOFORMAT; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	AudioFormatCollection () { SetObjectType (Type::AUDIOFORMAT_COLLECTION); }
 
 	virtual ~AudioFormatCollection () { }
@@ -275,7 +275,7 @@ public:
 	void Stop ();
 
 protected:
-	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	/* @ManagedAccess=Internal,GeneratePInvoke */
 	AudioCaptureDevice ();
 
 	virtual ~AudioCaptureDevice ();
@@ -290,7 +290,7 @@ public:
 	virtual Type::Kind GetElementType () { return Type::VIDEOFORMAT; }
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	VideoFormatCollection () { SetObjectType (Type::VIDEOFORMAT_COLLECTION); }
 
 	virtual ~VideoFormatCollection () { }
@@ -324,7 +324,7 @@ public:
 	void Stop ();
 
 protected:
-	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	/* @ManagedAccess=Internal,GeneratePInvoke */
 	VideoCaptureDevice ();
 
 	virtual ~VideoCaptureDevice ();

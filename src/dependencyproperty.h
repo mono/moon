@@ -44,22 +44,22 @@ class DependencyProperty {
 	int GetId () { return id; }
 	void SetId (int value) { id = value; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	const char *GetName() { return name; }
 	const char *GetHashKey ();
 	Type::Kind GetOwnerType() { return owner_type; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Type::Kind GetPropertyType() { return property_type; }
 
 	bool CanBeSetToNull ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool IsNullable () { return is_nullable; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetIsNullable (bool value) { is_nullable = value; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool IsReadOnly () { return is_readonly; }
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool IsAttached () { return is_attached; }
 	bool IsAutoCreated () { return autocreator != NULL; }
 	AutoCreator* GetAutoCreator () { return autocreator; }
@@ -67,11 +67,11 @@ class DependencyProperty {
 	bool IsCustom () { return is_custom; }
 	PropertyChangeHandler GetChangedCallback () { return changed_callback; }
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool GetHasHiddenDefaultValue () { return has_hidden_default_value; }
 	void SetHasHiddenDefaultValue (bool value) { has_hidden_default_value = value;}
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Value *GetDefaultValue (Type::Kind kind);
 	Value *GetDefaultValue (Type::Kind kind, DependencyObject *forObj);
 	void AddDefaultValueOverride (Type::Kind kind, Value *value);
@@ -80,7 +80,7 @@ class DependencyProperty {
 
 	bool Coerce (DependencyObject *instance, Value *value, Value **coerced, MoonError *error);
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	void SetPropertyChangedCallback (PropertyChangeHandler changed_callback);
 	
 	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value);
@@ -88,17 +88,17 @@ class DependencyProperty {
 	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype);
 	static int RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  ValueCoercer *coercer, AutoCreator* autocreator, bool is_nullable);
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	static DependencyProperty *RegisterCustomProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke,Version=2.0 */
 	static DependencyProperty *RegisterCoreProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type *type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type *type, const char *name, bool inherits);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	static DependencyProperty *GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits);
 	static DependencyProperty *GetDependencyPropertyFull (Type *type, const char *name, bool inherits);
 

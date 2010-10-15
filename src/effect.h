@@ -254,7 +254,7 @@ public:
 				double      height);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();
 
 	virtual ~Effect () {}
@@ -296,7 +296,7 @@ public:
 		     double      y);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	BlurEffect ();
 
 	friend class MoonUnmanagedFactory;
@@ -351,7 +351,7 @@ public:
 		     double      y);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DropShadowEffect ();
 
 	friend class MoonUnmanagedFactory;
@@ -396,7 +396,7 @@ public:
 			    d3d_dcl_instruction_t *value);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	PixelShader ();
 
 	virtual ~PixelShader ();
@@ -444,10 +444,10 @@ public:
 	int GetDdxUvDdyUvRegisterIndex ();
 	void SetDdxUvDdyUvRegisterIndex (gint32 index);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void UpdateShaderConstant (int reg, double x, double y, double z, double w);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void UpdateShaderSampler (int reg, int mode, Brush *input);
 
 	//
@@ -463,7 +463,7 @@ public:
 	static void ShaderError (PixelShader *ps, const char *format, ...);
 
 protected:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Protected */
 	ShaderEffect ();
 
 	friend class MoonUnmanagedFactory;

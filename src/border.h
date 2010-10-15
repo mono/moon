@@ -25,7 +25,7 @@ namespace Moonlight {
 /* @Namespace=System.Windows.Controls */
 class Border : public FrameworkElement {
 protected:
- 	/* @GenerateCBinding,GeneratePInvoke */
+ 	/* @GeneratePInvoke */
 	Border ();
 	
 	virtual ~Border () { };

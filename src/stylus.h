@@ -32,7 +32,7 @@ class StylusInfo : public DependencyObject {
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsInvertedProperty;
 	
-	/* @ManagedAccess=Internal,GenerateCBinding,GeneratePInvoke */
+	/* @ManagedAccess=Internal,GeneratePInvoke */
 	StylusInfo () { SetObjectType (Type::STYLUSINFO); }
 	
 	//
@@ -61,25 +61,25 @@ class StylusPoint : public DependencyObject {
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int YProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke,SkipFactories */
+	/* @GeneratePInvoke,SkipFactories */
 	StylusPoint () { SetObjectType (Type::STYLUSPOINT); }
 	
 	//
 	// Property Accessors
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetPressureFactor (double factor);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetPressureFactor ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetX (double x);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetX ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetY (double y);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double GetY ();
 };
 
@@ -90,7 +90,7 @@ class UnmanagedStylusPoint : public StylusPoint {
 	virtual ~UnmanagedStylusPoint () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	UnmanagedStylusPoint () { SetObjectType (Type::UNMANAGEDSTYLUSPOINT); }
 };
 
@@ -102,12 +102,12 @@ class StylusPointCollection : public DependencyObjectCollection {
 	virtual ~StylusPointCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	StylusPointCollection () { SetObjectType (Type::STYLUSPOINT_COLLECTION); }
 
 	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
 	
 	Rect GetBounds ();
@@ -124,21 +124,21 @@ class TouchDevice : public DependencyObject {
 	/* @PropertyType=gint32,DefaultValue=0,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IdProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TouchDevice () { SetObjectType (Type::TOUCHDEVICE); }
 	
 	//
 	// Property Accessors
 	//
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetDirectlyOver (UIElement *element);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	UIElement *GetDirectlyOver ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetId (int id);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	int GetId ();
 };
 
@@ -157,31 +157,31 @@ class TouchPoint : public DependencyObject {
 	/* @PropertyType=TouchDevice,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int TouchDeviceProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TouchPoint () { SetObjectType (Type::TOUCHPOINT); }
 	
 	//
 	// Property Accessors
 	//
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetAction (TouchAction action);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TouchAction GetAction ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetPosition (Point *position);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Point *GetPosition ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetSize (Size *size);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Size *GetSize ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void SetTouchDevice (TouchDevice *device);
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	TouchDevice *GetTouchDevice ();
 };
 
@@ -192,7 +192,7 @@ class TouchPointCollection : public DependencyObjectCollection {
 	virtual ~TouchPointCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	TouchPointCollection () { SetObjectType (Type::TOUCHPOINT_COLLECTION); }
 
 	virtual Type::Kind GetElementType () { return Type::TOUCHPOINT; }
@@ -214,7 +214,7 @@ class DrawingAttributes : public DependencyObject {
 	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private,GenerateAccessors */
 	const static int WidthProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	DrawingAttributes () { SetObjectType (Type::DRAWINGATTRIBUTES); }
 	
 	void Render (cairo_t *cr, StylusPointCollection *collection);
@@ -263,9 +263,9 @@ class Stroke : public DependencyObject {
 	/* @PropertyType=StylusPointCollection,AutoCreateValue,ManagedFieldAccess=Private,GenerateAccessors */
 	const static int StylusPointsProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Stroke ();
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	bool HitTest (StylusPointCollection *stylusPoints);
 	
 	Rect GetOldBounds () { return old_bounds; }
@@ -298,14 +298,14 @@ class StrokeCollection : public DependencyObjectCollection {
 	virtual ~StrokeCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	StrokeCollection () { SetObjectType (Type::STROKE_COLLECTION); }
 	
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
 	
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	StrokeCollection *HitTest (StylusPointCollection *stylusPoints);
 	
 	Rect GetBounds ();
@@ -325,7 +325,7 @@ class InkPresenter : public Canvas {
 	/* @PropertyType=StrokeCollection,AutoCreateValue,HiddenDefaultValue,GenerateAccessors */
 	const static int StrokesProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	InkPresenter ();
 	
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

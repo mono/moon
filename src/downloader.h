@@ -92,7 +92,7 @@ class Downloader : public DependencyObject {
 	const static int DownloadProgressChangedEvent;
 	const static int DownloadFailedEvent;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	Downloader ();
 	
 	static bool ValidateDownloadPolicy (const Uri *location, const Uri *uri, DownloaderAccessPolicy policy);

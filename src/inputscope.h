@@ -22,7 +22,7 @@ namespace Moonlight {
 /* @CallInitialize */
 class InputScope : public DependencyObject {
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	InputScope () { SetObjectType (Type::INPUTSCOPE); }
 
  protected:
@@ -34,7 +34,7 @@ class InputScope : public DependencyObject {
 /* @CallInitialize */
 class InputScopeName : public DependencyObject {
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	InputScopeName () : DependencyObject (Type::INPUTSCOPENAME) {}
 
  protected:

@@ -172,12 +172,12 @@ enum MoonClipboardType {
 
 class MoonClipboard {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool ContainsText () = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual void SetText (const char *text, int length) = 0;
 	virtual void AsyncGetText (MoonClipboardGetTextCallback cb, gpointer data) = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual char* GetText () = 0;
 	virtual ~MoonClipboard () {}
 };
@@ -234,22 +234,22 @@ public:
 	// creates a platform/windowing system specific surface
 	virtual cairo_surface_t *CreateSurface () = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonWindow *CreateWindow (MoonWindowType windowType, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface* surface = NULL) = 0;
 	virtual MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonMessageBoxResult ShowMessageBox (MoonMessageBoxType messagebox_type, const char *caption, const char *text, MoonMessageBoxButton button) = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx) = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx) = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool ShowConsentDialog (const char *question, const char *detail, const char *website, bool *remember) = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual Color *GetSystemColor (SystemColor id) = 0;
 	
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data) = 0;
@@ -503,9 +503,9 @@ public:
 	MoonVideoCaptureService () {};
 	virtual ~MoonVideoCaptureService () {}
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonVideoCaptureDevice* GetDefaultCaptureDevice () = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonVideoCaptureDevice** GetAvailableCaptureDevices (int *num_devices) = 0;
 };
 
@@ -514,9 +514,9 @@ public:
 	MoonAudioCaptureService () {};
 	virtual ~MoonAudioCaptureService () {}
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonAudioCaptureDevice* GetDefaultCaptureDevice () = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonAudioCaptureDevice** GetAvailableCaptureDevices (int *num_devices) = 0;
 };
 
@@ -525,9 +525,9 @@ public:
 	MoonCaptureService () {};
 	virtual ~MoonCaptureService () {};
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonVideoCaptureService *GetVideoCaptureService() = 0;
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual MoonAudioCaptureService *GetAudioCaptureService() = 0;
 
 	// return true if the platform requires its own user
@@ -536,7 +536,7 @@ public:
 
 	// it's alright to block waiting on a response here, return
 	// true if the user has allowed access.
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool RequestSystemAccess () = 0;
 };
 
@@ -550,10 +550,10 @@ public:
 	// 2. network up/down
 	// 3. etc...
 	// return value is true for success in setting up the service, false for an error
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool SetNetworkStateChangedCallback (MoonCallback callback, gpointer data) = 0;
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	virtual bool GetIsNetworkAvailable () = 0;
 };
 

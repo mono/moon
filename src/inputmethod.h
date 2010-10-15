@@ -32,7 +32,7 @@ class InputMethod : public DependencyObject {
 	/* @PropertyType=InputMethodState,DefaultValue=InputMethodStateDoNotCare,Attached,GenerateAccessors */
 	const static int PreferredImeStateProperty;
 	
- 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+ 	/* @ManagedAccess=Internal,GeneratePInvoke */
 	InputMethod () { SetObjectType (Type::INPUTMETHOD); }
 	
 	static ImeConversionModeValues GetPreferredImeConversionMode (DependencyObject *obj);
