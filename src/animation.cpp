@@ -417,6 +417,7 @@ Animation::GetNaturalDurationCore (Clock* clock)
 /* storyboard */
 Storyboard::Storyboard ()
 {
+	reffed = false;
 	SetObjectType (Type::STORYBOARD);
 }
 
@@ -565,6 +566,11 @@ Storyboard::BeginWithError (MoonError *error)
 	if (GetBeginTime() == 0)
 		clock->BeginOnTick ();
 
+	if (!reffed) {
+		reffed = true;
+		ref ();
+	}
+
 	return true;
 }
 
@@ -647,6 +653,10 @@ Storyboard::StopWithError (MoonError *error)
 		DetachCompletedHandler ();
 		clock->Stop ();
 		ClearClock (false);
+	}
+	if (reffed) {
+		reffed = false;
+		unref ();
 	}
 }
 
