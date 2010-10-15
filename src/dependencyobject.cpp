@@ -615,6 +615,7 @@ static const char *track_object_type = NULL;
 static bool use_visi_output = false;
 static bool track_all = false;
 static bool track_store = false;
+static bool track_store_forever = false;
 
 #define OBJECT_TRACK_ID (0)
 
@@ -633,13 +634,21 @@ EventObject::Track (const char* done, const char* typname)
 		use_visi_output = (getenv ("MOONLIGHT_OBJECT_TRACK_VISI") != NULL);
 		track_all = (getenv ("MOONLIGHT_OBJECT_TRACK_ALL") != NULL);
 		track_store = (getenv ("MOONLIGHT_OBJECT_TRACK_STORE") != NULL);
+		track_store_forever = (getenv ("MOONLIGHT_OBJECT_TRACK_STORE_FOREVER") != NULL);
 	}
 
 	if (track_store) {
-		if (strcmp (done, "Destroyed") != 0) {
-			store_reftrace (this, done, refcount);
-		} else {
-			free_reftrace (this);
+		bool store = true;
+		if (object_id != -1 && object_id != id)
+			store = false;
+		if (track_object_type != NULL && typname != NULL && strcmp (typname, track_object_type) != 0)
+			store = false;
+		if (store) {
+			if (strcmp (done, "Destroyed") != 0) {
+				store_reftrace (this, done, refcount);
+			} else if (!track_store_forever) {
+				free_reftrace (this);
+			}
 		}
 	} else {
 		if (track_all)
