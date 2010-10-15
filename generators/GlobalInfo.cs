@@ -85,6 +85,7 @@ class GlobalInfo : MemberInfo {
 				Dictionary<string, string> known_annotations = new Dictionary <string, string> ();
 
 				known_annotations.Add ("DelegateType", null);
+				known_annotations.Add ("ManagedAccess", null);
 				known_annotations.Add ("GenerateManagedEvent", null);
 				known_annotations.Add ("GenerateManagedEventField", null);
 				known_annotations.Add ("ManagedDeclaringType", null);
@@ -149,6 +150,7 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("GenerateManagedDP", null);
 				known_annotations.Add ("GenerateManagedAccessors", null);
 				known_annotations.Add ("Validator", null);
+				known_annotations.Add ("Coercer", null);
 				known_annotations.Add ("AutoCreator", null);
 				known_annotations.Add ("IsCustom", null);
 				known_annotations.Add ("MetadataOverrides", null);
@@ -239,6 +241,8 @@ class GlobalInfo : MemberInfo {
 						}
 						if (!method.Annotations.ContainsKey ("GenerateCBinding") && !method.Annotations.ContainsKey ("GeneratePInvoke"))
 							continue;
+						else if (method.Annotations.ContainsKey ("GenerateCBinding") && method.Annotations.ContainsKey ("GeneratePInvoke"))
+							Console.WriteLine ("The method {0} in type {1} has both GenerateCBinding and GeneratePInvoke set.  Only GeneratePInvoke is necessary in this context.", method.Name, type.Name);
 						cppmethods_to_bind.Add (method);
 					}
 				}
