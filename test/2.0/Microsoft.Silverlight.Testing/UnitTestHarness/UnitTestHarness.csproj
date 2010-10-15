@@ -89,6 +89,7 @@
     <Compile Include="UnitTesting\Harness\HarnessExtensions.cs" />
     <Compile Include="UnitTesting\Harness\IProvideDynamicTestMethods.cs" />
     <Compile Include="UnitTesting\Harness\RetryTestRunFilter.cs" />
+    <Compile Include="UnitTesting\Harness\RuntimeVersionTestRunFilter.cs" />
     <Compile Include="UnitTesting\Harness\TagManager.cs" />
     <Compile Include="UnitTesting\Harness\TagManager.ExpressionEvaluator.cs" />
     <Compile Include="UnitTesting\Harness\TagManager.Tags.cs" />

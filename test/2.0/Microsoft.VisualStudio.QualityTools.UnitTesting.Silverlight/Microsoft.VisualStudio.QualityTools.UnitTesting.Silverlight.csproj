@@ -84,8 +84,12 @@
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\IgnoreAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\InternalTestFailureException.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\IVerifiable.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\MaxRuntimeVersionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\MinRuntimeVersionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\NotRuntimeVersionAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\OwnerAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\PriorityAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\RuntimeVersionAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\StringAssert.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestClassAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestCleanupAttribute.cs" />
