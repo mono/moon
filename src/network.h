@@ -30,6 +30,7 @@ class HttpResponse;
  * HttpRequestProgressChangedEventArgs
  */
 
+/* @Namespace=None */
 class HttpRequestProgressChangedEventArgs : public EventArgs {
 private:
 	double progress;
@@ -47,6 +48,7 @@ public:
  * HttpRequestStoppedEventArgs
  */
 
+/* @Namespace=None */
 class HttpRequestStoppedEventArgs : public EventArgs {
 private:
 	char *error_msg;
@@ -69,6 +71,7 @@ public:
  * HttpRequestWriteEventArgs
  */
 
+/* @Namespace=None */
 class HttpRequestWriteEventArgs : public EventArgs {
 private:
 	void *data;
@@ -96,6 +99,7 @@ public:
  * HttpRequest
  */
 
+/* @Namespace=None,ManagedEvents=Manual */
 class HttpRequest : public EventObject {
 public:
 	enum Options {

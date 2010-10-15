@@ -56,7 +56,7 @@ public:
 	PropertyChangedEventArgs () : obj (NULL), id (0), old_value(NULL), new_value (NULL) { }
 
 
-	~PropertyChangedEventArgs ()
+	virtual ~PropertyChangedEventArgs ()
 	{
 		delete new_value;
 		delete old_value;

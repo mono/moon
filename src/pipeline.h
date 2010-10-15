@@ -890,6 +890,7 @@ public:
 
 // Interfaces
 
+/* @Namespace=None,ManagedEvents=Manual */
 class IMediaDemuxer : public IMediaObject {
 private:
 	class PtsNode : public List::Node {

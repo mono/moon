@@ -126,7 +126,7 @@ class CurlDownloaderRequest : public HttpRequest {
 
 	/* @SkipFactories */
 	CurlDownloaderRequest (CurlHttpHandler *bridge, HttpRequest::Options options);
-	~CurlDownloaderRequest ();
+	virtual ~CurlDownloaderRequest ();
 	virtual void AbortImpl ();
 	const bool IsAborted () {
 		if (state != ABORTED && bridge->IsShuttingDown ())
@@ -174,7 +174,7 @@ class CurlDownloaderResponse : public HttpResponse {
 	CurlDownloaderResponse (CurlHttpHandler *bridge,
 	    CurlDownloaderRequest *request);
 
-	~CurlDownloaderResponse ();
+	virtual ~CurlDownloaderResponse ();
 
 	void Abort ();
 	int GetResponseStatus ();

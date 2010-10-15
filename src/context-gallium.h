@@ -31,7 +31,7 @@ public:
 		Surface (MoonSurface  *moon,
 			 Rect         extents,
 			 GalliumPipe  *pipe);
-		~Surface ();
+		virtual ~Surface ();
 
 		cairo_surface_t *Cairo ();
 

@@ -24,6 +24,7 @@ namespace Moonlight {
 /* @CBindingRequisite */
 typedef bool (*get_image_uri_func) (int level, int posX, int posY, Uri **uri, void* user_data);
 
+/* @Namespace=None */
 class TileLayerInvalidatedEventArgs : public EventArgs {
 	int level, x, y, layer;
 	

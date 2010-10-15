@@ -33,7 +33,7 @@ class ContentChangedEventArgs : public RoutedEventArgs {
 	ContentChangedEventArgs () { SetObjectType (Type::CONTENTCHANGEDEVENTARGS); }
 };
 
-/* @Namespace=None */
+/* @Namespace=None,ManagedDependencyProperties=Manual */
 class TextPointer : public DependencyObject {
  protected:
 	virtual ~TextPointer () {}
@@ -78,7 +78,7 @@ class TextPointer : public DependencyObject {
 	DependencyObject *GetParent ();
 };
 
-/* @Namespace=None */
+/* @Namespace=None,ManagedDependencyProperties=Manual */
 class TextSelection : public DependencyObject {
  protected:
 	virtual ~TextSelection () {}

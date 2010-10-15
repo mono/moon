@@ -65,6 +65,7 @@ public:
 	}
 };
 
+/* @Namespace=None */
 class SampleReadyEventArgs : public EventArgs {
 public:
 	SampleReadyEventArgs (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength)
@@ -95,6 +96,7 @@ private:
 	int sampleDataLength;
 };
 
+/* @Namespace=None */
 class VideoFormatChangedEventArgs : public EventArgs {
 public:
 	VideoFormatChangedEventArgs (VideoFormat *newFormat)
