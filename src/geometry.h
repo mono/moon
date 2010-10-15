@@ -357,7 +357,7 @@ class PathFigure : public DependencyObject {
 	const static int SegmentsProperty;
  	/* @PropertyType=Point,DefaultValue=Point(),GenerateAccessors */
 	const static int StartPointProperty;
-	/* @PropertyType=bool,DefaultValue=true,Version=2,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsFilledProperty;
 	
 	moon_path *path;

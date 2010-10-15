@@ -72,15 +72,15 @@ public:
 	bool SetValueAt (int index, Value *value);
 	Value *GetValueAt (int index);
 
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	virtual int AddWithError (Value *value, MoonError *error);
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	virtual bool InsertWithError (int index, Value *value, MoonError *error);
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	virtual Value *GetValueAtWithError (int index, MoonError *error);
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	virtual bool SetValueAtWithError (int index, Value *value, MoonError *error);
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	virtual bool RemoveAtWithError (int index, MoonError *error);
 
 	const static int ChangedEvent;

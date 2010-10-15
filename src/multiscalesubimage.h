@@ -18,7 +18,7 @@
 
 namespace Moonlight {
 
-/* @Version=2,Namespace=System.Windows.Controls */
+/* @Namespace=System.Windows.Controls */
 class MultiScaleSubImage : public DependencyObject {
 	friend class MultiScaleImage;
 	friend void multi_scale_image_handle_parsed (void *userdata);
@@ -39,15 +39,15 @@ class MultiScaleSubImage : public DependencyObject {
 	friend class MoonManagedFactory;
 
  public:
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,ReadOnly,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=1.0,ReadOnly,GenerateGetter */
 	const static int AspectRatioProperty;
- 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int OpacityProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),GenerateAccessors */
 	const static int ViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
 	const static int ZIndexProperty;
 
 	

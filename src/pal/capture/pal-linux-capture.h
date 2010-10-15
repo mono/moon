@@ -15,7 +15,6 @@
 
 namespace Moonlight {
 
-/* @Version=2 */
 class MoonCaptureServiceLinux : public MoonCaptureService {
 public:
 	MoonCaptureServiceLinux ();

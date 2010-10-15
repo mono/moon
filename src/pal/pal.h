@@ -306,7 +306,6 @@ public:
 
 typedef void (* UpdateCompletedCallback) (bool updated, const char *error, gpointer user_data);
 
-/* @Version=2 */
 class MoonInstallerService {
 	UpdateCompletedCallback completed;
 	HttpRequest *request;
@@ -348,7 +347,6 @@ public:
 typedef char* (*MessageReceivedCallback) (const char *message, gpointer data);
 typedef void (*MessageSentCallback) (MoonError *error, const char *message, const char *response, GCHandle managedUserState, gpointer data);
 
-/* @Version=2 */
 class MoonMessageListener {
 public:
 	MoonMessageListener () {};
@@ -358,7 +356,6 @@ public:
 	virtual void RemoveMessageReceivedCallback () = 0;
 };
 
-/* @Version=2 */
 class MoonMessageSender {
 public:
 	MoonMessageSender () {};
@@ -370,7 +367,6 @@ public:
 	virtual void SendMessageAsync (const char *msg, GCHandle managedUserState, MoonError *error) = 0;
 };
 
-/* @Version=2 */
 class MoonMessagingService {
 public:
 	MoonMessagingService () {};
@@ -458,7 +454,6 @@ private:
 	MoonWaveFormatType waveFormat;
 };
 
-/* @Version=2 */
 class MoonCaptureDevice {
 public:
 	MoonCaptureDevice () {};

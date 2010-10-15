@@ -234,7 +234,7 @@ public:
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	UIElement *GetFocusedElement () { return focused_element; }
 
 	UIElementCollection *GetLayers () { return layers; }
@@ -258,12 +258,12 @@ public:
 
 	const static int ZoomedEvent;
 	
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	bool GetFullScreen () { return full_screen; }
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	void SetFullScreen (bool value);
 	
-	/* @GeneratePInvoke,Version=3.0 */
+	/* @GeneratePInvoke */
 	double GetZoomFactor () { return zoom_factor; }
 	void SetZoomFactor (double value);
 	
@@ -276,9 +276,9 @@ public:
 	void SetUserInitiatedEvent (bool value);
 	
 	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	bool IsUserInitiatedEvent () { return user_initiated_event; }
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	int GetUserInitiatedCounter () { return user_initiated_monotonic_counter; }
 
 	/* @GeneratePInvoke */

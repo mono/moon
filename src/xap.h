@@ -14,7 +14,6 @@
 
 namespace Moonlight {
 
-/* @Version=2 */
 class Xap {
 	char *xap_dir;
 	XamlLoader *loader;

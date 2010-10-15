@@ -24,7 +24,7 @@
 
 namespace Moonlight {
 
-/* @Version=2,Namespace=System.Windows.Media */
+/* @Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
 	Cancellable *get_resource_aborter;
 	bool is_collection;

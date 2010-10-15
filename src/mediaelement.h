@@ -232,7 +232,7 @@ class MediaElement : public FrameworkElement {
 
 	void SetSource (Downloader *downloader, const char *PartName);
 	void SetUriSource (const Uri *uri); // This is called from OnPropertyChanged
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
 	/* @GeneratePInvoke */
 	IMediaDemuxer *SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);

@@ -50,7 +50,7 @@ class GeneralTransform : public DependencyObject {
 	
 	Point Transform (Point point);
 
-	/* @GenerateJSBinding,Version=3.0 */
+	/* @GenerateJSBinding */
 	Point TransformXY (double x, double y);
 };
 

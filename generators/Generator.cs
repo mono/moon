@@ -2473,9 +2473,8 @@ class Generator {
 
 	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)
 	{
-		Log.WriteLine ("Writing header: {0}::{1} (Version: '{2}', GenerateManaged: {3})",
+		Log.WriteLine ("Writing header: {0}::{1} (GenerateManaged: {2})",
 		               cmethod.Parent.Name, cmethod.Name,
-		               cmethod.Annotations.GetValue ("Version"),
 		               cmethod.Annotations.ContainsKey ("GenerateManaged"));
 
 		if (cmethod.Annotations.ContainsKey ("GeneratePInvoke"))

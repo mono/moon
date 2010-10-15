@@ -111,13 +111,6 @@ public static class Helper {
 		}
 	}
 
-	public static void WriteVersion (StringBuilder text, int SilverlightVersion)
-	{
-		text.Append ("SL_");
-		text.Append (SilverlightVersion);
-		text.AppendLine ("_0");
-	}
-
 	public static void WriteWarningGenerated (StringBuilder text)
 	{
 		text.AppendLine ("/*");

@@ -456,7 +456,7 @@ protected:
 	friend class MoonManagedFactory;
 };
 
-/* @Version=2,Namespace=System.Windows.Media.Animation */
+/* @Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrameCollection : public KeyFrameCollection {
 public:
 	virtual Type::Kind GetElementType() { return Type::OBJECTKEYFRAME; }
@@ -528,7 +528,7 @@ protected:
 	friend class MoonManagedFactory;
 };
 
-/* @Version=2,Namespace=System.Windows.Media.Animation */
+/* @Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrame : public KeyFrame /* The managed class derives directly from DependencyObject */ {
 public:
 	/* @PropertyType=object,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Internal */
@@ -621,7 +621,7 @@ protected:
 };
 
 
-/* @Version=2,Namespace=System.Windows.Media.Animation */
+/* @Namespace=System.Windows.Media.Animation */
 class DiscreteObjectKeyFrame : public ObjectKeyFrame {
 public:
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
@@ -919,7 +919,6 @@ protected:
 	friend class MoonManagedFactory;
 };
 
-/* @Version=2 */
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {

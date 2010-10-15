@@ -57,9 +57,9 @@ public:
 	/* @GeneratePInvoke */
 	void RemoveTimeout (guint timeout_id);
 
-	/* @GeneratePInvoke,ManagedAccess=Internal,Version=2 */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	void SetMaximumRefreshRate (int hz);
-	/* @GeneratePInvoke,ManagedAccess=Internal,Version=2 */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	int GetMaximumRefreshRate () { return max_fps; }
 
 	// Events you can AddHandler to

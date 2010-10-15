@@ -40,21 +40,21 @@ class TileLayerInvalidatedEventArgs : public EventArgs {
 	int GetTileLayer () { return layer; }
 };
 
-/* @Version=2,Namespace=System.Windows.Media */
+/* @Namespace=System.Windows.Media */
 /* @CallInitialize */
 class MultiScaleTileSource : public DependencyObject {
  protected:
-	/* @PropertyType=double,Version=2.0,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
+	/* @PropertyType=double,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
 	const static int ImageWidthProperty;
-	/* @PropertyType=double,Version=2.0,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
+	/* @PropertyType=double,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
 	const static int ImageHeightProperty;
-	/* @PropertyType=gint32,Version=2.0,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
+	/* @PropertyType=gint32,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
 	const static int TileWidthProperty;
-	/* @PropertyType=gint32,Version=2.0,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
+	/* @PropertyType=gint32,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
 	const static int TileHeightProperty;
-	/* @PropertyType=gint32,Version=2.0,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
+	/* @PropertyType=gint32,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
 	const static int TileOverlapProperty;
-	/* @PropertyType=TimeSpan,Version=2.0,DefaultValue=(gint64) TimeSpan_FromSecondsFloat (0.5)\,Type::TIMESPAN,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Protected,ManagedFieldAccess=Private */
+	/* @PropertyType=TimeSpan,DefaultValue=(gint64) TimeSpan_FromSecondsFloat (0.5)\,Type::TIMESPAN,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Protected,ManagedFieldAccess=Private */
 	const static int TileBlendTimeProperty;
 	
 	virtual ~MultiScaleTileSource () {}

@@ -325,30 +325,4 @@ class TypeInfo : MemberInfo {
 		this.IsValueType = is_value_type;
 		this.IsInterface = is_interface;
 	}
-
-	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)
-	{
-		this.Name = Name;
-		this.KindName = KindName;
-		this.Base = new TypeReference (Base);
-		this.Include = Include;
-		if (Include)
-			Annotations.Add (new Annotation ("IncludeInKinds"));
-		Annotations.Add (new Annotation ("SilverlightVersion", "\"" + SLVersion.ToString () + "\""));
-	}
-
-	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion, bool SkipValue)
-	{
-		this.Name = Name;
-		this.KindName = KindName;
-		this.Base = new TypeReference (Base);
-		this.Include = Include;
-		if (Include)
-			Annotations.Add (new Annotation ("IncludeInKinds"));
-		Annotations.Add (new Annotation ("SilverlightVersion", "\"" + SLVersion.ToString () + "\""));
-		this.SkipValue = SkipValue;
-		if (SkipValue)
-			Annotations.Add (new Annotation ("SkipValue"));
-	}
-
 }

@@ -81,7 +81,7 @@ class TextBlock : public FrameworkElement {
 	const static int FontStyleProperty;
 	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
-	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
+	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
 	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush,GenerateAccessors */
 	const static int ForegroundProperty;
@@ -89,13 +89,13 @@ class TextBlock : public FrameworkElement {
 	const static int InlinesProperty;
 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int TextProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int LineHeightProperty;
-	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight,Version=2.0,GenerateAccessors */
+	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight,GenerateAccessors */
 	const static int LineStackingStrategyProperty;
-	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Thickness,DefaultValue=Thickness (0),GenerateAccessors */
 	const static int PaddingProperty;
-	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;

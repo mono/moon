@@ -37,29 +37,29 @@ public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int WidthProperty;
 
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
 	const static int ActualHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
 	const static int ActualWidthProperty;
-	/* @PropertyType=object,Version=2.0,IsCustom=true */
+	/* @PropertyType=object,IsCustom=true */
 	const static int DataContextProperty;
-	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0,GenerateAccessors */
+	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,GenerateAccessors */
 	const static int HorizontalAlignmentProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=LanguageValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=LanguageValidator,GenerateAccessors */
 	const static int LanguageProperty;
-	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Thickness,DefaultValue=Thickness (0),GenerateAccessors */
 	const static int MarginProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
+	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MaxHeightProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
+	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MaxWidthProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MinHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,Validator=DoubleNotNegativeValidator */
 	const static int MinWidthProperty;
-	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
+	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,GenerateAccessors */
 	const static int VerticalAlignmentProperty;
-	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
+	/* @PropertyType=Style,GenerateAccessors,Validator=StyleValidator */
 	const static int StyleProperty;
 	/* @PropertyType=FlowDirection,DefaultValue=FlowDirectionLeftToRight,GenerateAccessors */
 	const static int FlowDirectionProperty;

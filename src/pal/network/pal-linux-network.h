@@ -17,7 +17,6 @@
 
 namespace Moonlight {
 
-/* @Version=2 */
 class MoonNetworkServiceLinux : public MoonNetworkService {
 public:
 	MoonNetworkServiceLinux ();

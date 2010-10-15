@@ -48,11 +48,11 @@ class MultiScaleImage : public MediaBase {
 	Point pan_target;
 	int motion;
 	
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int TileFadeProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int AnimatedViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int AnimatedViewportWidthProperty;
 	
 	static void tile_layer_invalidated (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -104,25 +104,25 @@ class MultiScaleImage : public MediaBase {
 	virtual ~MultiScaleImage ();
 
  public:
-	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int AllowDownloadingProperty;
-	/* @PropertyType=double,ReadOnly,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	/* @PropertyType=double,ReadOnly,DefaultValue=1.0,GenerateGetter */
 	const static int AspectRatioProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=3.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int BlurFactorProperty;
-	/* @PropertyType=bool,ReadOnly,DefaultValue=false,Version=3.0,GenerateGetter */
+	/* @PropertyType=bool,ReadOnly,DefaultValue=false,GenerateGetter */
 	const static int IsDownloadingProperty;
-	/* @PropertyType=bool,ReadOnly,DefaultValue=true,Version=3.0,GenerateGetter */
+	/* @PropertyType=bool,ReadOnly,DefaultValue=true,GenerateGetter */
 	const static int IsIdleProperty;
-	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
+	/* @PropertyType=MultiScaleTileSource,GenerateAccessors */
 	const static int SourceProperty;
-	/* @PropertyType=MultiScaleSubImageCollection,AutoCreateValue,ReadOnly,Version=2.0,GenerateGetter,GenerateManagedAccessors=false */
+	/* @PropertyType=MultiScaleSubImageCollection,AutoCreateValue,ReadOnly,GenerateGetter,GenerateManagedAccessors=false */
 	const static int SubImagesProperty;
-	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int UseSpringsProperty;
-	/* @PropertyType=Point,AlwaysChange,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Point,AlwaysChange,DefaultValue=Point(0\,0),GenerateAccessors */
 	const static int ViewportOriginProperty;
-	/* @PropertyType=double,AlwaysChange,DefaultValue=1.0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,AlwaysChange,DefaultValue=1.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
 	
 	/* @GeneratePInvoke */

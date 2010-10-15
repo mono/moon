@@ -332,7 +332,7 @@ public:
 	bool PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
 				      DependencyObject *source, Value *new_value);
 
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValue (int id);
@@ -348,18 +348,18 @@ public:
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence);
 	
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	Value *ReadLocalValueWithError (DependencyProperty *property, MoonError *error);
 	virtual Value *ReadLocalValue (DependencyProperty *property);
 	virtual Value *ReadLocalValue (int id);
 	
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	Value *GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
 	Value *GetValueNoDefault (int id);
 	
 	
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);
 	void ClearValue (int id, bool notify_listeners, MoonError *error);
 	void ClearValue (DependencyProperty *property, bool notify_listeners = true /*, error = NULL */);

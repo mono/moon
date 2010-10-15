@@ -193,14 +193,14 @@ protected:
 };
 
 
-/* @Namespace=Mono,Version=2 */
+/* @Namespace=Mono */
 /* @ManagedEvents=Manual */
 class DispatcherTimer : public Timeline {
 public:
-	/* @GeneratePInvoke,Version=2 */
+	/* @GeneratePInvoke */
 	void Start ();
 
-	/* @GeneratePInvoke,Version=2 */
+	/* @GeneratePInvoke */
 	void Stop ();
 
 	const static int TickEvent;
@@ -211,7 +211,7 @@ public:
 	virtual void TeardownClock ();
 
 protected:
-	/* @GeneratePInvoke,MainThread,Version=2 */
+	/* @GeneratePInvoke,MainThread */
 	DispatcherTimer ();
 
 	virtual ~DispatcherTimer() {}

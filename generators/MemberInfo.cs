@@ -28,7 +28,6 @@ class MemberInfo {
 	private Annotations annotations;
 	private string fullname;
 	private string managed_fullname;
-	private Nullable<int> silverlight_version;
 	private string managed_name;
 
 	public GlobalInfo GlobalInfo {
@@ -59,18 +58,6 @@ class MemberInfo {
 	public TypeInfo ParentType {
 		get {
 			return (TypeInfo) Parent;
-		}
-	}
-
-	public void WriteVersionIf (StringBuilder text, bool end)
-	{
-		if (SilverlightVersion > 1) {
-			if (!end) {
-				text.AppendLine ("#if ");
-				Helper.WriteVersion (text, SilverlightVersion);
-			} else {
-				text.AppendLine ("#endif");
-			}
 		}
 	}
 
@@ -180,36 +167,6 @@ class MemberInfo {
 
 	public string Namespace {
 		get { return Annotations.GetValue ("Namespace"); }
-	}
-
-	public int SilverlightVersion {
-		get {
-			string value = null;
-			Annotation property;
-			if (!silverlight_version.HasValue) {
-				if (Annotations.TryGetValue ("Version", out property)) {
-					value = property.Value;
-				} else if (Annotations.TryGetValue ("SilverlightVersion", out property)) {
-					value = property.Value;
-				}
-
-				if (value == null) {
-					if (Parent != null)
-						silverlight_version = new Nullable<int> (Parent.SilverlightVersion);
-					else
-						silverlight_version = new Nullable<int> (1);
-				} else {
-					if (value == "\"2\"" || value == "2" || value == "2.0")
-						silverlight_version = new Nullable<int> (2);
-					else if (value == "\"1\"" || value == "1" || value == "1.0")
-						silverlight_version = new Nullable<int> (1);
-					else
-						throw new Exception (string.Format ("Invalid Version/SilverlightVersion: '{0}'", value));
-				}
-			}
-
-			return silverlight_version.Value;
-		}
 	}
 
 	public void Dump (int ident)
@@ -363,8 +320,6 @@ class Members : Dictionary <string, MemberInfo>{
 				kinds_for_enum.Append ("\t\t");
 				kinds_for_enum.Append (type.KindName);
 				kinds_for_enum.Append (",");
-				if (type.Annotations.ContainsKey ("SilverlightVersion"))// && type.Annotations ["SilverlightVersion"].Value == "\"2\"")
-					kinds_for_enum.Append ("// Silverlight 2.0 only");
 				kinds_for_enum.AppendLine ();
 			}
 		}

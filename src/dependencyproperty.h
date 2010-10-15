@@ -80,7 +80,7 @@ class DependencyProperty {
 
 	bool Coerce (DependencyObject *instance, Value *value, Value **coerced, MoonError *error);
 
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	void SetPropertyChangedCallback (PropertyChangeHandler changed_callback);
 	
 	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value);
@@ -88,9 +88,9 @@ class DependencyProperty {
 	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype);
 	static int RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  ValueCoercer *coercer, AutoCreator* autocreator, bool is_nullable);
 
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	static DependencyProperty *RegisterCustomProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
-	/* @GeneratePInvoke,Version=2.0 */
+	/* @GeneratePInvoke */
 	static DependencyProperty *RegisterCoreProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 	
 	/* @GeneratePInvoke */
