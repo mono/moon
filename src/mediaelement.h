@@ -104,7 +104,6 @@ class MediaElement : public FrameworkElement {
 	static void EmitStateChanged (EventObject *obj);
 	static void ReportErrorOccurredCallback (EventObject *obj);
 	
-	void AddStreamedMarker (TimelineMarker *marker); // Thread-safe
 	void AddStreamedMarker (MediaMarker *marker); // Thread-safe
 	static MediaResult AddStreamedMarkerCallback (MediaClosure *closure); // Thread-safe
 	void CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *col, bool remove); // Not thread-safe

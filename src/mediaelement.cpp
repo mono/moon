@@ -34,10 +34,10 @@ namespace Moonlight {
  */
 class TimelineMarkerNode : public List::Node {
 private:
-	TimelineMarker *marker;
+	MediaMarker *marker;
 	
 public:
-	TimelineMarkerNode (TimelineMarker *marker)
+	TimelineMarkerNode (MediaMarker *marker)
 	{
 		this->marker = marker;
 		marker->ref ();
@@ -46,7 +46,7 @@ public:
 	{
 		marker->unref ();
 	}
-	TimelineMarker *GetTimelineMarker () { return marker; }
+	MediaMarker *GetTimelineMarker () { return marker; }
 };
 
 /*
@@ -184,32 +184,9 @@ MediaElement::AddStreamedMarkerCallback (MediaClosure *c)
 }
 
 void
-MediaElement::AddStreamedMarker (MediaMarker *mmarker)
+MediaElement::AddStreamedMarker (MediaMarker *marker)
 {
-	guint64 pts;
-	TimelineMarker *marker;
-	
-	g_return_if_fail (mmarker != NULL);
-	
-	pts = mmarker->Pts ();
-	
-	marker = new TimelineMarker ();
-	marker->SetText (mmarker->Text ());
-	marker->SetType (mmarker->Type ());
-	marker->SetTime (pts);
-	
-	AddStreamedMarker (marker);
-	marker->unref ();
-}
-
-void
-MediaElement::AddStreamedMarker (TimelineMarker *marker)
-{	
-	LOG_MEDIAELEMENT ("MediaElement::AddStreamedMarker (): got marker %s, %s, %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
-			  marker->GetText (), marker->GetType (), marker->GetTime (),
-			  MilliSeconds_FromPts (marker->GetTime ()));
-	
-	// thread-safe
+	g_return_if_fail (marker != NULL);
 	
 	mutex.Lock ();
 	if (streamed_markers_queue == NULL)
@@ -364,7 +341,15 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 		while (node != NULL) {
 			if (streamed_markers == NULL)
 				streamed_markers = new TimelineMarkerCollection ();
-			streamed_markers->Add (node->GetTimelineMarker ());
+
+			MediaMarker *mmarker = node->GetTimelineMarker ();
+			TimelineMarker *marker = new TimelineMarker ();
+			marker->SetText (mmarker->Text ());
+			marker->SetType (mmarker->Type ());
+			marker->SetTime (mmarker->Pts ());
+			streamed_markers->Add (marker);
+			marker->unref ();
+
 			node = (TimelineMarkerNode *) node->next;
 		}
 		streamed_markers_queue->Clear (true);
