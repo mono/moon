@@ -498,7 +498,8 @@ public:
 	IMediaDecoder *GetDecoder ();
 	void SetDecoder (IMediaDecoder *value);
 	
-	const char *GetCodec () { return codec; }
+	/* @GenerateCBinding */
+        const char *GetCodec () { return codec; }
 
 	bool GetSelected () { return selected; }
 	void SetSelected (bool value);
