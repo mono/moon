@@ -165,7 +165,11 @@ namespace System.Windows.Controls
 				// expanded in popup children
 				// synchronously, which drt cfd1
 				// requires.
-				_popup.Child.UpdateLayout ();
+				// Note: This isn't right and it breaks
+				// some moon-unit tests. Opening the popup
+				// doesn't apply the template.
+				if (_popup != null && _popup.Child != null)
+					_popup.Child.UpdateLayout ();
 
 				OnDropDownOpened (EventArgs.Empty);
 
