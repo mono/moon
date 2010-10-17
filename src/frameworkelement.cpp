@@ -755,7 +755,7 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 	else if (GetParent () && GetParent ()->Is (Type::POPUP)) {
 		flip_horiz = ((FrameworkElement *)GetParent())->GetFlowDirection () != GetFlowDirection ();		
 	} else {
-		GetFlowDirection() == FlowDirectionRightToLeft;
+		flip_horiz = GetFlowDirection() == FlowDirectionRightToLeft;
 	}
 
 	cairo_matrix_init_identity (&layout_xform);
