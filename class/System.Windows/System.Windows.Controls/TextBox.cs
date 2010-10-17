@@ -116,40 +116,30 @@ namespace System.Windows.Controls {
 			// works as well as allowing developers to filter our
 			// input.
 			base.OnKeyDown (k);
-			
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
+			NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
 		}
 
 		internal override void PostOnKeyDown (KeyEventArgs k)
 		{
 			base.PostOnKeyDown (k);
-
-			if (!k.Handled)
-				NativeMethods.text_box_base_post_on_key_down (native, k.NativeHandle);
+			NativeMethods.text_box_base_post_on_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyUp (KeyEventArgs k)
 		{
 			base.OnKeyUp (k);
-			
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_key_up (native, k.NativeHandle);
+			NativeMethods.text_box_base_on_key_up (native, k.NativeHandle);
 		}
 		
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
-			if (!e.Handled)
-				NativeMethods.text_box_base_on_mouse_left_button_down (native, e.NativeHandle);
-			
+			NativeMethods.text_box_base_on_mouse_left_button_down (native, e.NativeHandle);
 			base.OnMouseLeftButtonDown (e);
 		}
 		
 		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
-			if (!e.Handled)
-				NativeMethods.text_box_base_on_mouse_left_button_up (native, e.NativeHandle);
-			
+			NativeMethods.text_box_base_on_mouse_left_button_up (native, e.NativeHandle);
 			base.OnMouseLeftButtonUp (e);
 		}
 		

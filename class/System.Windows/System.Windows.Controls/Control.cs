@@ -68,10 +68,8 @@ namespace System.Windows.Controls {
 				  KeyEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 				  control.PreOnKeyDown (args);
-				  if (!args.Handled)
-					  control.OnKeyDown (args);
-				  if (!args.Handled)
-					  control.PostOnKeyDown (args);
+				  control.OnKeyDown (args);
+				  control.PostOnKeyDown (args);
 			  });
 
 		static UnmanagedEventHandler on_key_up = Events.SafeDispatcher (
@@ -79,10 +77,8 @@ namespace System.Windows.Controls {
 				  KeyEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 				  control.PreOnKeyUp (args);
-				  if (!args.Handled)
-					  control.OnKeyUp (args);
-				  if (!args.Handled)
-					  control.PostOnKeyUp (args);
+				  control.OnKeyUp (args);
+				  control.PostOnKeyUp (args);
 			  });
 
 		static UnmanagedEventHandler on_mouse_enter = Events.SafeDispatcher (
@@ -117,10 +113,8 @@ namespace System.Windows.Controls {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 				  control.PreOnMouseLeftButtonDown (args);
-				  if (!args.Handled)
-					  control.OnMouseLeftButtonDown (args);
-				  if (!args.Handled)
-					  control.PostOnMouseLeftButtonDown (args);
+				  control.OnMouseLeftButtonDown (args);
+				  control.PostOnMouseLeftButtonDown (args);
 			  });
 
 		static UnmanagedEventHandler on_mouse_left_button_up = Events.SafeDispatcher (
@@ -128,10 +122,8 @@ namespace System.Windows.Controls {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 				  control.PreOnMouseLeftButtonUp (args);
-				  if (!args.Handled)
-					  control.OnMouseLeftButtonUp (args);
-				  if (!args.Handled)
-					  control.PostOnMouseLeftButtonUp (args);
+				  control.OnMouseLeftButtonUp (args);
+				  control.PostOnMouseLeftButtonUp (args);
 			  });
 
 		static UnmanagedEventHandler on_mouse_right_button_down = Events.SafeDispatcher (
@@ -139,10 +131,8 @@ namespace System.Windows.Controls {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 				  control.PreOnMouseRightButtonDown (args);
-				  if (!args.Handled)
-					  control.OnMouseRightButtonDown (args);
-				  if (!args.Handled)
-					  control.PostOnMouseRightButtonDown (args);
+				  control.OnMouseRightButtonDown (args);
+				  control.PostOnMouseRightButtonDown (args);
 			  });
 
 		static UnmanagedEventHandler on_mouse_right_button_up = Events.SafeDispatcher (
@@ -150,10 +140,8 @@ namespace System.Windows.Controls {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 				  control.PreOnMouseRightButtonUp (args);
-				  if (!args.Handled)
-					  control.OnMouseRightButtonUp (args);
-				  if (!args.Handled)
-					  control.PostOnMouseRightButtonUp (args);
+				  control.OnMouseRightButtonUp (args);
+				  control.PostOnMouseRightButtonUp (args);
 			  });
 
 		static UnmanagedEventHandler on_mouse_wheel = Events.SafeDispatcher (
@@ -161,10 +149,8 @@ namespace System.Windows.Controls {
 				  MouseWheelEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseWheelEventArgs ?? new MouseWheelEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 				  control.PreOnMouseWheel (args);
-				  if (!args.Handled)
-					  control.OnMouseWheel (args);
-				  if (!args.Handled)
-					  control.PostOnMouseWheel (args);
+				  control.OnMouseWheel (args);
+				  control.PostOnMouseWheel (args);
 			  });
 
 		static UnmanagedEventHandler on_isenabledproperty_changed = Events.SafeDispatcher (

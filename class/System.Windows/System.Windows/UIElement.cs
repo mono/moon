@@ -153,8 +153,7 @@ namespace System.Windows {
 		{
 			if (IsManipulation (routedEvent))
 				EnsureDesignMode ();
-			// FIXME: we don't handle handledEventsToo
-			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler));
+			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler), handledEventsToo);
 		}
 		
 		public void RemoveHandler (RoutedEvent routedEvent, Delegate handler)

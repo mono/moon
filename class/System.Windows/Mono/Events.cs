@@ -377,7 +377,12 @@ namespace Mono {
 
 		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, null, false);
+			AddOnEventHandler (obj, eventId, handler, false);
+		}
+
+		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler, bool handledEventsToo)
+		{
+			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, handledEventsToo, null, false);
 		}
 
 		public static void RemoveOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
@@ -388,22 +393,32 @@ namespace Mono {
 
 		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)
 		{
-			return AddHandler (obj.NativeHandle, eventId, handler);
+			return AddHandler (obj, eventId, handler, false);
+		}
+
+		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, bool handledEventsToo)
+		{
+			return AddHandler (obj.NativeHandle, eventId, handler, handledEventsToo);
 		}
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
 		{
-			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, null, true);
+			return AddHandler (raw, eventId, handler, false);
 		}
 
-		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, GDestroyNotify dtor_action)
+		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, bool handledEventsToo)
 		{
-			return AddHandler (obj.NativeHandle, eventId, handler, dtor_action);
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, handledEventsToo, null, true);
 		}
 
-		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, GDestroyNotify data_dtor)
+		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler, GDestroyNotify dtor_action, bool handledEventsToo)
 		{
-			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, data_dtor, true);
+			return AddHandler (obj.NativeHandle, eventId, handler, dtor_action, handledEventsToo);
+		}
+
+		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler, GDestroyNotify data_dtor, bool handledEventsToo)
+		{
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, handledEventsToo, data_dtor, true);
 		}
 
 		public static void RemoveHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)

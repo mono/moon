@@ -43,9 +43,10 @@ struct totals
 // event handlers for c++
 class EventClosure : public List::Node {
 public:
-	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor, int token) {
+	EventClosure (EventHandler func, gpointer data, bool handledEventsToo, GDestroyNotify data_dtor, bool managed_data_dtor, int token) {
 		this->func = func;
 		this->data = data;
+		this->handledEventsToo = handledEventsToo;
 		this->data_dtor = data_dtor;
 		this->token = token;
 		this->managed_data_dtor = managed_data_dtor;
@@ -74,6 +75,7 @@ public:
 
 	EventHandler func;
 	gpointer data;
+	bool handledEventsToo;
 	GDestroyNotify data_dtor;
 	int token;
 	bool pending_removal;
@@ -659,7 +661,7 @@ EventObject::PrintStackTrace ()
 #endif
 
 int
-EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
+EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data, bool handledEventsToo, GDestroyNotify data_dtor, bool managed_data_dtor)
 {
 	int id = GetType()->LookupEvent (event_name);
 
@@ -668,11 +670,11 @@ EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer 
 		return -1;
 	}
 
-	return AddHandler (id, handler, data, data_dtor, managed_data_dtor);
+	return AddHandler (id, handler, data, handledEventsToo, data_dtor, managed_data_dtor);
 }
 
 int
-EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
+EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, bool handledEventsToo, GDestroyNotify data_dtor, bool managed_data_dtor)
 { 
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
@@ -684,13 +686,13 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDes
 
 	int token = events->lists [event_id].current_token++;
 	
-	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, managed_data_dtor, token));
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, handledEventsToo, data_dtor, managed_data_dtor, token));
 	
 	return token;
 }
 
 void
-EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
+EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer data, bool handledEventsToo,  GDestroyNotify data_dtor, bool managed_data_dtor)
 {
 	if (GetType()->GetEventCount() <= event_id) {
 		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
@@ -700,7 +702,7 @@ EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer dat
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
 
-	events->lists [event_id].onevent = new EventClosure (handler, data, data_dtor, managed_data_dtor, 0);
+	events->lists [event_id].onevent = new EventClosure (handler, data, handledEventsToo, data_dtor, managed_data_dtor, 0);
 }
 
 void
@@ -726,7 +728,7 @@ EventObject::RemoveOnEventHandler (int event_id, EventHandler handler, gpointer 
 }
 
 int
-EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
+EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, bool handledEventsToo, GDestroyNotify data_dtor, bool managed_data_dtor)
 {
 	int id = GetType ()->LookupEvent (event_name);
 	
@@ -735,11 +737,11 @@ EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpoin
 		return -1;
 	}
 	
-	return AddXamlHandler (id, handler, data, data_dtor, managed_data_dtor);
+	return AddXamlHandler (id, handler, data, handledEventsToo, data_dtor, managed_data_dtor);
 }
 
 int
-EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool managed_data_dtor)
+EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, bool handledEventsToo, GDestroyNotify data_dtor, bool managed_data_dtor)
 { 
 	if (GetType ()->GetEventCount () <= 0) {
 		g_warning ("adding xaml handler to event with id %d, which has not been registered\n", event_id);
@@ -749,7 +751,7 @@ EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, 
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
 
-	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, managed_data_dtor, 0));
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, handledEventsToo, data_dtor, managed_data_dtor, 0));
 	
 	return 0;
 }
@@ -1265,7 +1267,8 @@ EventObject::DoEmit (int event_id, EventArgs *calldata)
 
 	if (events->lists [event_id].onevent) {
 		EventClosure *closure = events->lists [event_id].onevent;
-		closure->func (this, calldata, closure->data);
+		if (!calldata || closure->handledEventsToo || !calldata->Is (Type::ROUTEDEVENTARGS) || !((RoutedEventArgs *) calldata)->GetHandled ())
+			closure->func (this, calldata, closure->data);
 	}
 	else {
 		DoEmitCurrentContext (event_id, calldata);
@@ -1292,13 +1295,12 @@ EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata)
 
 	/* emit the events using the copied list in the context*/
 	for (int i = 0; i < ctx->length; i++) {
-		if (calldata && calldata->Is (Type::ROUTEDEVENTARGS)) {
+		EventClosure *closure = ctx->closures[i];
+		if (!closure->handledEventsToo && calldata && calldata->Is (Type::ROUTEDEVENTARGS)) {
 			RoutedEventArgs *rea = (RoutedEventArgs*)calldata;
 			if (rea->GetHandled ())
-				break;
+				continue;
 		}
-
-		EventClosure *closure = ctx->closures[i];
 
 		if (closure && closure->func
 		    && (!ctx->only_unemitted || closure->emit_count == 0)

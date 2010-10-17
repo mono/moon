@@ -327,7 +327,12 @@ namespace System.Windows {
 
 		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
-			EventList.RegisterEvent (this, eventId, managedHandler, nativeHandler);
+			RegisterEvent (eventId, managedHandler, nativeHandler, false);
+		}
+
+		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler, bool handledEventsToo)
+		{
+			EventList.RegisterEvent (this, eventId, managedHandler, nativeHandler, handledEventsToo);
 		}
 
 		internal void UnregisterEvent (int eventId, Delegate managedHandler)

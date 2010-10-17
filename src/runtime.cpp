@@ -1756,9 +1756,6 @@ Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, in
 			handled = false;
 			break;
 		}
-		
-		if (args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
-			break;
 	}
 
 	args->unref();

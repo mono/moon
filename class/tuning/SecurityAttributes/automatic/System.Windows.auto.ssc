@@ -1,12 +1,14 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 630 methods
+# 632 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
-+SSC-M: System.Void Mono.EventHandlerList::RegisterEvent(System.IntPtr,System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.EventHandlerList::UnregisterEvent(System.IntPtr,System.Int32,System.Delegate)
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Exception Mono.Events::CaptureImageCompletedEventArgsGetError(System.IntPtr)
++SSC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler,System.Boolean)
++SSC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.Boolean)
++SSC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,Mono.GDestroyNotify,System.Boolean)
 +SSC-M: System.Void Mono.Helper::.cctor()
 +SSC-M: System.Boolean Mono.Helper::IsUserInitiated()
 +SSC-M: System.Void Mono.NameScope::.ctor(System.IntPtr,System.Boolean)
