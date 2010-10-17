@@ -167,7 +167,7 @@ Mono.Moonlight.UnitTesting.dll: ../Mono.Moonlight.UnitTesting/Mono.Moonlight.Uni
 	$(MAKE) -C ../FakeA11yBridge
 
 moon-unit.sources: $(SOURCES)
-	ls $(SOURCES) | grep -v aspx | grep -v obj/Debug > $@
+	@ls $(SOURCES) | grep -v aspx | grep -v obj/Debug > $@
 
 EXTRA_DIST = 			\
 	$(srcdir)/*xaml.cs	\
@@ -182,6 +182,11 @@ test: copy-xaps-to-site
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
 	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index.html?$(TEST_NAME)"
 
+test-all: copy-xaps-to-site
+	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
+	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
+	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index.html?$(TEST_NAME)" "file://`pwd`/site/index3.html?$(TEST_NAME)" "file://`pwd`/site/index2.html?$(TEST_NAME)"
+
 debug: copy-xaps-to-site
 	MONO_XDEBUG=1 MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
@@ -194,6 +199,9 @@ test-automation:
 
 test-moonlight:
 	TEST_NAME="!($(AUTOMATION_NAMESPACES))" $(MAKE) test
+
+test-all-moonlight:
+	TEST_NAME="!($(AUTOMATION_NAMESPACES))" $(MAKE) test-all
 
 copy-xaps-to-site: $(clientbin_xaps) site/ClientBin/timecode-long.wmv site/ClientBin/images/mono-logo.png
 	cp -p $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/
