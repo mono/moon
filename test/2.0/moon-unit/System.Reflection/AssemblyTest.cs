@@ -113,7 +113,6 @@ namespace MoonTest.System.Reflection {
 				// minimal
 				"System.Security"
 			};
-			Assembly a = null;
 			// full, partial or wrong - always throws an exception
 			foreach (string name in system_security) {
 				Assert.Throws<FileNotFoundException> (delegate {
@@ -139,7 +138,6 @@ namespace MoonTest.System.Reflection {
 				// minimal
 				"Mono.CompilerServices.SymbolWriter"
 			};
-			Assembly a = null;
 			// full, partial or wrong - always throws an exception
 			foreach (string name in mono_symbol_writer) {
 				Assert.Throws<FileNotFoundException> (delegate {

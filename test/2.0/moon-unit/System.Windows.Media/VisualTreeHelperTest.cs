@@ -101,16 +101,16 @@ namespace MoonTest.System.Windows.Media
 		{
 			Canvas p = new Canvas ();
 			Canvas p2 = new Canvas ();
-			Canvas p3 = new Canvas ();
+			// Canvas p3 = new Canvas ();
 			SolidColorBrush scb = new SolidColorBrush ();
 
 			p.Children.Add (p2);
-			//			p.Resources.Add ("foo", p3);
+			// p.Resources.Add ("foo", p3);
 
 			p.Background = scb;
 
 			Assert.AreEqual (p, VisualTreeHelper.GetParent (p2), "1");
-			//Assert.AreEqual (p, VisualTreeHelper.GetParent (p3));
+			// Assert.AreEqual (p, VisualTreeHelper.GetParent (p3));
 			Assert.AreEqual (null, VisualTreeHelper.GetParent (p), "2");
 
 			Assert.Throws (delegate { VisualTreeHelper.GetParent (scb); }, typeof (InvalidOperationException));

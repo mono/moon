@@ -51,10 +51,10 @@ namespace MoonTest.Security {
 		}
 
 		Uri http = new Uri ("http://www.host.com/app.xap");
-		Uri https = new Uri ("https://secure.host.net/app.xap");
-		Uri file = new Uri ("file:///app.xap");
+		// Uri https = new Uri ("https://secure.host.net/app.xap");
+		// Uri file = new Uri ("file:///app.xap");
 
-		Uri http_non_standard_port = new Uri ("http://www.host.com:8080/app.xap");
+		// Uri http_non_standard_port = new Uri ("http://www.host.com:8080/app.xap");
 
 		[TestMethod]
 		public void AllDomains ()

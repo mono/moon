@@ -54,7 +54,6 @@ namespace MoonTest.System.Windows
 		{
 			Assembly assembly = typeof (DependencyObject).Assembly;
 			ResourceDictionary rd = new Canvas ().Resources;
-			ResourceDictionary rd2 = new Canvas ().Resources;
 
 			foreach (string s in CanAddToSameRDTwice ()) {
 				object o = Activator.CreateInstance (assembly.GetType (s));
@@ -158,8 +157,6 @@ namespace MoonTest.System.Windows
 
 			Assert.IsNotNull (b.Resources["color"], "1");
 
-			Color c = (Color)b.Resources["color"];
-
 			Assert.AreEqual (Color.FromArgb (0xff, 0xff, 0xff, 0xff), b.Resources["color"], "2");
 		}
 
@@ -185,8 +182,6 @@ namespace MoonTest.System.Windows
 			Canvas b = (Canvas)
 				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 
-
-			Color c = (Color)b.Resources["color"];
 
 			Assert.AreEqual (Color.FromArgb (0xff, 0xff, 0xff, 0xff), b.Resources["color"]);
 		}
@@ -460,7 +455,7 @@ namespace MoonTest.System.Windows
 			Canvas b = (Canvas)
 				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 
-			Assert.Throws<ArgumentException>(delegate { Color c = (Color)b.Resources[0]; });
+			Assert.Throws<ArgumentException>(delegate { Color c = (Color)b.Resources[0]; GC.KeepAlive (c); });
 		}
 
 		[TestMethod]
@@ -476,7 +471,6 @@ namespace MoonTest.System.Windows
 
 			b = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 
-			ICollection<KeyValuePair<object, object>> koo = (ICollection<KeyValuePair<object, object>>)b.Resources;
 			Assert.IsFalse (oo.Remove ("color"), "3");
 			Assert.IsFalse (oo.Remove ("color"), "4");
 
@@ -528,6 +522,7 @@ namespace MoonTest.System.Windows
 			d.Add (new KeyValuePair<object, object> ("bob", new object ()));
 			Assert.Throws<NotImplementedException> (delegate {
 				int a = d.Count;
+				GC.KeepAlive (a);
 			}, "#2");
 			Assert.AreEqual (1, ((ResourceDictionary) d).Count, "#3");
 			Assert.Throws<ArgumentException> (delegate {
@@ -547,9 +542,11 @@ namespace MoonTest.System.Windows
 
 			Assert.Throws<NotImplementedException> (delegate {
 				var v = d.Keys;
+				GC.KeepAlive (v);
 			}, "#10");
 			Assert.Throws<NotImplementedException> (delegate {
 				var v = d.Values;
+				GC.KeepAlive (v);
 			}, "#11");
 			Assert.IsFalse (d.IsReadOnly, "#12");
 			Assert.Throws<NotImplementedException> (delegate {

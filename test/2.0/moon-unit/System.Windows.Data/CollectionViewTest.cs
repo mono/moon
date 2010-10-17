@@ -363,7 +363,6 @@ namespace MoonTest.System.Windows.Data {
 		public void EventOrdering_SelectNewItem ()
 		{
 			int count = 0;
-			List<object> events = new List<object> ();
 			((INotifyPropertyChanged) View).PropertyChanged += (o, e) => {
 				Assert.AreSame (Items [1], View.CurrentItem, "#1");
 				Assert.AreEqual (1, View.CurrentPosition, "#2");

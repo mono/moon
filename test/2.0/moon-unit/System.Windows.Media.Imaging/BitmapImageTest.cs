@@ -110,7 +110,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 			Image image = new Image ();
 			TestPanel.Children.Add (image);
 
-			bool l1 = false;
+			//bool l1 = false;
 			BitmapImage bi;
 
 			//bi = new BitmapImage (new Uri ("http://192.168.42.20:8080/site/ClientBin/images/mono-logo.png", UriKind.RelativeOrAbsolute));

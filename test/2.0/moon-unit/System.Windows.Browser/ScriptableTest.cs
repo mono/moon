@@ -71,8 +71,6 @@ namespace MoonTest.System.Windows.Browser
 
 		[TestMethod]
 		public void AA_PropertiesTest () {
-			HtmlDocument document = HtmlPage.Document;
-
 			var c = content.GetProperty("calc") as ScriptObject;
 			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
 
@@ -340,7 +338,7 @@ namespace MoonTest.System.Windows.Browser
 		[TestMethod]
 		public void EventAsPropertyTest ()
 		{
-			object o, result;
+			object o;
 			HtmlPage.RegisterCreateableType ("eventAsPropertyTestCalculator", typeof (EventCalculator));
 			o = window.Eval ("scriptable = " + strplugin + ".content.services.createObject ('eventAsPropertyTestCalculator');");
 
@@ -408,7 +406,7 @@ function (sender, args) {
 				Assert.IsInstanceOfType (o, typeof (bool), "#3 return type");
 				Assert.IsFalse ((bool) o, "#3 event raised");
 
-			} catch (Exception ex) {
+			} catch (Exception) {
 				throw;
 			} finally {
 				HtmlPage.UnregisterCreateableType ("eventCalculator");

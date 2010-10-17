@@ -322,6 +322,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNotNull (valueProvider, "#0");
 			Assert.Throws<InvalidOperationException> (delegate {
 				string value = valueProvider.Value;
+				GC.KeepAlive (value);
 			}, "#1");
 		}
 
@@ -336,11 +337,13 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNotNull (valueProvider, "#0");
 			Assert.Throws<InvalidOperationException> (delegate {
 				string value = valueProvider.Value;
+				GC.KeepAlive (value);
 			}, "#1");
 
 			valueProvider.SetValue ("new text");
 			Assert.Throws<InvalidOperationException> (delegate {
 				string value = valueProvider.Value;
+				GC.KeepAlive (value);
 			}, "#2");
 
 			passwordbox.IsEnabled = false;

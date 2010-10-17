@@ -998,7 +998,6 @@ namespace MoonTest.System.Windows.Controls
 			CreateAsyncTest (control, () => {
 				var panel = control.FindFirstChild<CustomVirtualizingPanel>();
 				panel.OnItemsChangedAction = () => raised = true;
-				var g = panel.ItemContainerGenerator;
 				control.Items.Add (new object ());
 				Assert.IsTrue (raised, "#1");
 			});
@@ -1009,6 +1008,7 @@ namespace MoonTest.System.Windows.Controls
 		{
 			Assert.Throws<InvalidOperationException> (() => {
 				var g = new CustomVirtualizingPanel ().ItemContainerGenerator;
+				GC.KeepAlive (g);
 			});
 		}
 
@@ -1416,7 +1416,7 @@ namespace MoonTest.System.Windows.Controls
 				Panel.Children.Add (new Rectangle { Name = count.ToString () }); ;
 		}
 
-		void Generate (int index, int count)
+		new void Generate (int index, int count)
 		{
 			bool realized;
 			var p = IGenerator.GeneratorPositionFromIndex (index);

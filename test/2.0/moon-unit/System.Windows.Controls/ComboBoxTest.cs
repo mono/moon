@@ -708,7 +708,7 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		[Asynchronous]
 		[Ignore ("Throws an internal exception of type MS.Internal.WrappedException. Can/should we replicate this?")]
-		public void ContainerItemTest5 ()
+		public new void ContainerItemTest5 ()
 		{
 			ComboBoxPoker box = new ComboBoxPoker ();
 			box.ApplyTemplate ();
@@ -853,13 +853,10 @@ namespace MoonTest.System.Windows.Controls {
 		public void ItemParentTest4 ()
 		{
 			bool loaded = false;
-			bool opened = false;
 			Rectangle content = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Green) };
 			ComboBoxItem item = new ComboBoxItem { Content = content };
 			ComboBox box = new ComboBox ();
 			box.Items.Add (item);
-			box.DropDownOpened += (o, e) => opened = true;
-			box.DropDownClosed += (o, e) => opened = false;
 			box.Loaded += (o, e) => loaded = true;
 
 			TestPanel.Children.Add (box);
@@ -886,7 +883,6 @@ namespace MoonTest.System.Windows.Controls {
 			};
 			ComboBoxPoker box = new ComboBoxPoker { Width = 50, Height = 50 };
 			ComboBoxItem item = new ComboBoxItem { Content = content };
-			StringBuilder sb = new StringBuilder ();
 			box.DropDownOpened += delegate { opened = true; };
 			box.DropDownClosed += delegate { opened = false; };
 			box.Items.Add (item);

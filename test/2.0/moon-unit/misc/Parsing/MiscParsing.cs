@@ -628,7 +628,6 @@ namespace MoonTest.Misc.Parsing
 		public void EscapeMarkup ()
 		{
 			Canvas c;
-			string s;
 
 			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -732,7 +731,7 @@ namespace MoonTest.Misc.Parsing
 		[MaxRuntimeVersion(2)]
 		public void MissingXmlnsOnAttachedProp_sl2 ()
 		{
-			MiscParsingManagedAttachedProp m = new MiscParsingManagedAttachedProp ();
+			new MiscParsingManagedAttachedProp ();
 		}
 		
 		[TestMethod]
@@ -804,7 +803,6 @@ namespace MoonTest.Misc.Parsing
 			var c = (TextBox) XamlReader.Load (@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Left>5</Canvas.Left></TextBox>");
 
-			object val = c.GetValue (Canvas.LeftProperty);
 			Assert.AreEqual (5.0, c.GetValue (Canvas.LeftProperty), "1");
 		}
 

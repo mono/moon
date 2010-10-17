@@ -51,7 +51,6 @@ namespace MoonTest.System.Security.Cryptography {
 		public void ChangingKeySize ()
 		{
 			Aes aes = new AesManaged ();
-			byte [] original_key = aes.Key;
 			byte [] original_iv = aes.IV;
 			foreach (KeySizes ks in aes.LegalKeySizes) {
 				for (int key_size = ks.MinSize; key_size <= ks.MaxSize; key_size += ks.SkipSize) {

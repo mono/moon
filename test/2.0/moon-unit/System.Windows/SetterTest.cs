@@ -50,7 +50,7 @@ namespace MoonTest.System.Windows
 		{
 			Setter s = new Setter (UIElement.OpacityProperty, "does this work?");
 			Assert.AreEqual (UIElement.OpacityProperty, s.Property, "Property");
-			Assert.Throws <Exception> (() => { object o = s.Value; }, "Value");
+			Assert.Throws <Exception> (() => { object o = s.Value; GC.KeepAlive (o); }, "Value");
 		}
 
 		[TestMethod]
@@ -83,7 +83,7 @@ namespace MoonTest.System.Windows
 
 			Setter s = (Setter) style.Setters [0];
 			Assert.AreSame (Control.IsEnabledProperty, s.Property, "Property");
-			Assert.Throws<Exception>(() => { object o = s.Value; }, "Value");
+			Assert.Throws<Exception>(() => { object o = s.Value; GC.KeepAlive (o); }, "Value");
 			Assert.IsTrue (s.IsSealed, "IsSealed");
 		}
 
@@ -107,7 +107,7 @@ namespace MoonTest.System.Windows
 
 			Setter s = (Setter) style.Setters [0];
 			Assert.AreSame (Control.IsEnabledProperty, s.Property, "Property");
-			Assert.Throws<Exception>(() => { object o = s.Value; }, "Value");
+			Assert.Throws<Exception>(() => { object o = s.Value; GC.KeepAlive (o); }, "Value");
 			Assert.IsTrue (s.IsSealed, "IsSealed");
 		}
 

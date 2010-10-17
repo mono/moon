@@ -83,7 +83,6 @@ namespace MoonTest.System.Windows.Threading {
 		[Asynchronous]
 		public void Post ()
 		{
-			DefaultValueAttribute fva = new DefaultValueAttribute (null);
 			DispatcherSynchronizationContext dsc = new DispatcherSynchronizationContext ();
 			// that would throw a NRE but we can't catch it
 			//dsc.Post (null, this);

@@ -47,13 +47,13 @@ namespace MoonTest.System.Windows {
 			}, "Add(null)");
 
 			AssemblyPart ap1 = new AssemblyPart ();
-			Assembly a1 = ap1.Load (AssemblyPartTest.GetLibraryStream ());
+			ap1.Load (AssemblyPartTest.GetLibraryStream ());
 			Assert.AreEqual (String.Empty, ap1.Source, "Source-1");
 			apc.Add (ap1);
 			Assert.AreEqual (1, apc.Count, "Count-1");
 
 			AssemblyPart ap2 = new AssemblyPart ();
-			Assembly a2 = ap2.Load (AssemblyPartTest.GetLibraryStream ());
+			ap2.Load (AssemblyPartTest.GetLibraryStream ());
 			Assert.AreEqual (String.Empty, ap2.Source, "Source-2");
 			apc.Add (ap2);
 			Assert.AreEqual (2, apc.Count, "Count-2");

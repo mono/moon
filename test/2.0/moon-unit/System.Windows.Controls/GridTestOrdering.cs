@@ -23,7 +23,7 @@ namespace MoonTest.System.Windows.Controls
 	{
 		static readonly GridLength Auto = GridLength.Auto;
 		static readonly GridLength Star = new GridLength (1, GridUnitType.Star);
-		static readonly GridLength Pixel = new GridLength (30, GridUnitType.Pixel);
+		//static readonly GridLength Pixel = new GridLength (30, GridUnitType.Pixel);
 		static readonly double inf = double.PositiveInfinity;
 
 		MyContentControl ContentControlWithChild ()
@@ -258,7 +258,6 @@ namespace MoonTest.System.Windows.Controls
 			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Auto), new GridLength (50), new GridLength (1, GridUnitType.Star));
 			grid.AddColumns (new GridLength (1, GridUnitType.Auto), new GridLength (50), new GridLength (1, GridUnitType.Star));
-			PresentationFrameworkCollection<UIElement> c = grid.Children;
 			for (int i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++)
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
@@ -289,7 +288,6 @@ namespace MoonTest.System.Windows.Controls
 			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (50), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star));
 			grid.AddColumns (new GridLength (50), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star));
-			PresentationFrameworkCollection<UIElement> c = grid.Children;
 			for (int i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++)
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
@@ -320,7 +318,6 @@ namespace MoonTest.System.Windows.Controls
 			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (50), new GridLength (1, GridUnitType.Auto));
 			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (50), new GridLength (1, GridUnitType.Auto));
-			PresentationFrameworkCollection<UIElement> c = grid.Children;
 			for (int i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++)
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
@@ -351,7 +348,6 @@ namespace MoonTest.System.Windows.Controls
 			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50));
 			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50));
-			PresentationFrameworkCollection<UIElement> c = grid.Children;
 			for (int i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++)
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
@@ -382,7 +378,6 @@ namespace MoonTest.System.Windows.Controls
 			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50), new GridLength (1, GridUnitType.Star), GridLength.Auto);
 			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star), new GridLength (50), GridLength.Auto);
-			PresentationFrameworkCollection<UIElement> c = grid.Children;
 			for (int i = 0; i < 5; i++)
 				for (int j = 0; j < 5; j++)
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);

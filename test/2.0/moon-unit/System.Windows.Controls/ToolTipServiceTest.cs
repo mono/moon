@@ -17,7 +17,6 @@ namespace MoonTest
 		{
 			// ToolTip does not set "ContentControl.ContentSetsParent" to false
 			var data = new Rectangle ();
-			var target = new Rectangle ();
 
 			TestPanel.Children.Add (data);
 			Assert.Throws<ArgumentException> (() =>

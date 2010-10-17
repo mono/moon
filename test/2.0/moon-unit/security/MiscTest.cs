@@ -186,6 +186,7 @@ namespace MoonTest.Security {
 		[MoonlightBug ("we do not throw - but API is unusable")]
 		public void Local_SecurityCritical ()
 		{
+#pragma warning disable 219 // The variable `adm' is assigned but its value is never used
 			AppDomainManager adm; 
 			// we can't read from it -> Use of unassigned variable 'adm'
 			Assert.Throws<FieldAccessException> (delegate {

@@ -17,7 +17,7 @@ namespace Mono.Moonlight.UnitTesting
 {
 	public static class Tester
 	{
-		static StringBuilder test_output = new StringBuilder ();
+		//static StringBuilder test_output = new StringBuilder ();
 
 		public static void Write (string text)
 		{

@@ -494,7 +494,6 @@ namespace MoonTest.System.Windows.Data
 			var data = new OpacityObject ();
 			Canvas.SetTop (data, 100);
 
-			var target = new OpacityObject ();
 			Assert.Throws<Exception> (() => {
 				new Binding {
 					Path = new PropertyPath ("(MoonTest.System.Windows.Data.OpacityObject.Attached)"),
@@ -513,7 +512,6 @@ namespace MoonTest.System.Windows.Data
 			var data = new OpacityObject ();
 			Canvas.SetTop (data, 100);
 
-			var target = new OpacityObject ();
 			Assert.Throws<Exception> (() => {
 				new Binding {
 					Path = new PropertyPath ("(OpacityObject.Attached)"),
@@ -524,6 +522,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore]
 		public void BindContentPresenterContent ()
 		{
 			ContentPresenter presenter = new ContentPresenter ();
@@ -634,16 +633,12 @@ namespace MoonTest.System.Windows.Data
 		public void BindToDP_WrongDPName_WithProperty ()
 		{
 			var data = new UnbackedDPs ();
-			var rect = new Rectangle ();
 			var binding = new Binding ();
 			binding.Source = data;
 			Assert.Throws<Exception> (() =>
 				binding.Path = new PropertyPath (UnbackedDPs.WrongPropertyName)
 			);
-			return;
-			rect.SetBinding (Rectangle.WidthProperty, binding);
 
-			Assert.AreEqual (5, rect.Width, "#1");
 		}
 
 		[TestMethod]
@@ -840,7 +835,6 @@ namespace MoonTest.System.Windows.Data
 		[Asynchronous]
 		public void DataContext_Applied2 ()
 		{
-			bool loaded = false;
 			Canvas c = (Canvas) XamlReader.Load (@"	
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 	 DataContext=""100"" >
@@ -848,7 +842,7 @@ namespace MoonTest.System.Windows.Data
 </Canvas>
 ");
 			Ellipse e = (Ellipse) c.Children [0];
-			e.Loaded += delegate { loaded = true; Assert.AreEqual (100, e.Height, "#3"); };
+			e.Loaded += delegate { Assert.AreEqual (100, e.Height, "#3"); };
 			Assert.IsTrue (double.IsNaN (e.Height), "#2");
 
 			CreateAsyncTest (c,
@@ -948,6 +942,7 @@ namespace MoonTest.System.Windows.Data
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
 				Binding binding = new Binding (null);
+				GC.KeepAlive (binding);
 			});
 		}
 
@@ -1679,6 +1674,8 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 			BindingOperations.SetBinding(child, Button.WidthProperty, new Binding());
 			Assert.IsTrue (double.IsNaN (child.Width), "#1");
+
+			GC.KeepAlive (canvas);
 		}
 
 		[TestMethod]
@@ -2807,7 +2804,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		public void XamlBindAfterResources ()
 		{
 			Assert.Throws<XamlParseException> (() => {
-				Canvas canvas = (Canvas) XamlReader.Load (@"
+				XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     Width=""400"" Height=""300"">
@@ -2925,7 +2922,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		public void XamlBindAfterResources3 ()
 		{
 			Assert.Throws<XamlParseException> (() => {
-				Canvas canvas = (Canvas) XamlReader.Load (@"
+				XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
     Width=""400"" Height=""300"">
@@ -2985,7 +2982,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		public void XamlBindBeforeResources ()
 		{
 			Assert.Throws<XamlParseException> (() => {
-				Canvas canvas = (Canvas) XamlReader.Load (@"
+				XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
     Width=""400"" Height=""300"">
@@ -3042,7 +3039,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		public void XamlBindBeforeResources2 ()
 		{
 			Assert.Throws<XamlParseException> (() => {
-				Canvas canvas = (Canvas) XamlReader.Load (@"
+				XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
     Width=""400"" Height=""300"">
@@ -3063,7 +3060,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		public void XamlBindBeforeResources3 ()
 		{
 			Assert.Throws<XamlParseException> (() => {
-				Canvas canvas = (Canvas) XamlReader.Load (@"
+				XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
     Width=""400"" Height=""300"">

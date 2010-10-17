@@ -219,8 +219,6 @@ namespace MoonTest.System.Windows {
 </Canvas>
 ");
 
-			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
-			
 			Button b = (Button)canvas.Children[0];
 
 			b.ApplyTemplate ();

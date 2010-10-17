@@ -320,7 +320,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				
 				selectionProvider = peer.GetPattern (PatternInterface.Selection) as ISelectionProvider;
 				Assert.AreEqual (1, selection.Length, "GetSelection #2");
-				IRawElementProviderSimple first = selection [0];
 
 				selector.Items.Add (new TextBlock () { Text = "Item1" });
 				selector.SelectedIndex = 0;
@@ -345,11 +344,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return;
 			}
 
-			bool concreteLoaded = false;
 			Selector selector = CreateConcreteFrameworkElement () as Selector;
 			selector.Width = 300;
 			selector.Height = 400;
-			selector.Loaded += (o, e) => concreteLoaded = true;
 
 			selector.Items.Add (new TextBlock () { Text = "Item0" });
 			selector.Items.Add (new TextBlock () { Text = "Item1" });

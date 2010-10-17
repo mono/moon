@@ -214,7 +214,6 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			// When the ContentPresenter is in the tree, its DataContext gets set to ContentPresenter.Content
 			// when it is loaded
-			object o = new object ();
 			object content = new object ();
 			ContentPresenter c = new ContentPresenter { Content = content };
 			CreateAsyncTest (c,

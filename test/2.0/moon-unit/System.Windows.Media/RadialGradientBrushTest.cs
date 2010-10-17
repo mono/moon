@@ -56,6 +56,7 @@ namespace MoonTest.System.Windows.Media {
 		public void CollectionCtorNull ()
 		{
 			RadialGradientBrush rgb = new RadialGradientBrush (null);
+			GC.KeepAlive (rgb);
 		}
 
 		[TestMethod]

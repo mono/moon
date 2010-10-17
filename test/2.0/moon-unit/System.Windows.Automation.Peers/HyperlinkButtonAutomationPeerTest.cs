@@ -282,8 +282,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			TextBox textbox = new TextBox ();
 			Button gridButton = new Button ();
 			AutomationEventTuple tuple = null;
-			AutomationPeer tb0 = null;
-			AutomationPeer tb1 = null;
 
 			CreateAsyncTest (control,
 			() => {

@@ -29,7 +29,8 @@ namespace MoonTest.System.Windows.Controls {
 		public void CheckIndicesAfterRemoval ()
 		{
 			CreateAsyncTest (Control, () => {
-				object first = Generator.ContainerFromIndex (0);
+				Generator.ContainerFromIndex (0);
+
 				object second = Generator.ContainerFromIndex (1);
 
 				// If we remove the first realized item, all the existing realized
@@ -59,7 +60,6 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void ClearItemsList_CheckContainerFromIndex ()
 		{
-			int count = Control.Items.Count;
 			CreateAsyncTest (Control,
 				() => Control.ApplyTemplate (),
 				() => {
@@ -77,7 +77,6 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void ClearItemsList_CheckIndexFromContainer ()
 		{
-			int count = Control.Items.Count;
 			CreateAsyncTest (Control,
 				() => Control.ApplyTemplate (),
 				() => {

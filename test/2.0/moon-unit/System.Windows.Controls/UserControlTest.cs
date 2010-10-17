@@ -79,16 +79,11 @@ namespace MoonTest.System.Windows.Controls {
 		
 		public void DefaultStyleKeyTest ()
 		{
-			Assert.Throws (delegate { DefaultStyleKey_NonDOTypeClass ndotc = new DefaultStyleKey_NonDOTypeClass (); },
-				       typeof (ArgumentException), "5");
-			Assert.Throws (delegate { DefaultStyleKey_NonTypeClass ntc = new DefaultStyleKey_NonTypeClass (); },
-				       typeof (ArgumentException), "6");
-			Assert.Throws (delegate { DefaultStyleKey_TypeClass tc = new DefaultStyleKey_TypeClass (); },
-				       typeof (ArgumentException), "1");
-			Assert.Throws (delegate { DefaultStyleKey_TypeClass2 tc = new DefaultStyleKey_TypeClass2 (); },
-				       typeof (ArgumentException), "2");
-			Assert.Throws (delegate { DefaultStyleKey_DifferentTypeClass dtc = new DefaultStyleKey_DifferentTypeClass (); },
-				       typeof (InvalidOperationException), "4");
+			Assert.Throws<ArgumentException> (() => new DefaultStyleKey_NonDOTypeClass (), "5");
+			Assert.Throws<ArgumentException> (() => new DefaultStyleKey_NonTypeClass (), "6");
+			Assert.Throws<ArgumentException> (() => new DefaultStyleKey_TypeClass (), "1");
+			Assert.Throws<ArgumentException> (() => new DefaultStyleKey_TypeClass2 (), "2");
+			Assert.Throws<InvalidOperationException> (() => new DefaultStyleKey_DifferentTypeClass (), "4");
 		}
 
 		class UserControlPoker : UserControl {

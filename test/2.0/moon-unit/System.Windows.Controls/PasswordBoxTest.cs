@@ -148,7 +148,7 @@ namespace Mono.Moonlight.UnitTesting
             box.MaxLength = Int32.MaxValue;
 
             Assert.Throws<XamlParseException>(delegate {
-                object block = XamlReader.Load(@"
+                XamlReader.Load(@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 

@@ -290,7 +290,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
 			Assert.AreEqual (string.Empty, peer.GetName (), "GetName");
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 
 			string name = "Attached Name";
 

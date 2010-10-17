@@ -20,7 +20,7 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		public void GetNonTimeSpanDurationTimeSpan ()
 		{
-			Assert.Throws (() => { var t = Duration.Forever.TimeSpan; }, typeof (InvalidOperationException));
+			Assert.Throws<InvalidOperationException> (() => { var t = Duration.Forever.TimeSpan; GC.KeepAlive (t); } );
 		}
 
 		[TestMethod]
@@ -28,7 +28,7 @@ namespace MoonTest.System.Windows {
 		{
 			Duration d = new Duration ();
 			Assert.AreEqual (false, d.HasTimeSpan, "HasTimeSpan");
-			Assert.Throws<InvalidOperationException> (() => { object o = d.TimeSpan; }, "TimeSpan");
+			Assert.Throws<InvalidOperationException> (() => { object o = d.TimeSpan; GC.KeepAlive(o); }, "TimeSpan");
 			Assert.AreEqual ("Automatic", d.ToString (), "ToString");
 		}
 	}

@@ -807,7 +807,6 @@ namespace MoonTest.System.Windows.Controls
 			Border b = new Border ();
 			Border b2 = new Border ();
 			LayoutPoker poker = new LayoutPoker ();
-			LayoutPoker pchild = new LayoutPoker ();
 
 			b.Child = b2;
 			b2.Child = poker;

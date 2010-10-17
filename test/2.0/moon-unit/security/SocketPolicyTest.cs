@@ -350,7 +350,7 @@ namespace MoonTest.Security {
   </cross-domain-access>
 </access-policy>";
 			Assert.Throws<XmlException> (delegate {
-				ClientAccessPolicy cap = GetPolicy (policy);
+				 GetPolicy (policy);
 			}, "wildcard");
 		}
 
@@ -371,7 +371,7 @@ namespace MoonTest.Security {
   </cross-domain-access>
 </access-policy>";
 			Assert.Throws<XmlException> (delegate {
-				ClientAccessPolicy cap = GetPolicy (policy);
+				GetPolicy (policy);
 			}, "out of range");
 		}
 

@@ -92,7 +92,7 @@ namespace MoonTest.System.Windows.Controls {
 			return LastCreatedContainer;
 		}
 
-		public DependencyObject GetTemplateChild (string name)
+		public new DependencyObject GetTemplateChild (string name)
 		{
 			return base.GetTemplateChild (name);
 		}
@@ -175,7 +175,6 @@ namespace MoonTest.System.Windows.Controls {
 		public override void DisplayMemberPathTest ()
 		{
 			base.DisplayMemberPathTest ();
-			ItemsControl c = (ItemsControl) CurrentControl;
 			Enqueue (() => {
 				ListBoxItem item = (ListBoxItem) CurrentControl.LastCreatedContainer;
 				Assert.IsNull (item.ContentTemplate, "#template");
@@ -451,7 +450,6 @@ namespace MoonTest.System.Windows.Controls {
 			CreateAsyncTest (box,
 				() => box.ApplyTemplate (),
 				() => {
-					var sv = box.FindFirstChild<ScrollViewer> ();
 					var scp = box.FindFirstChild<ScrollContentPresenter> ();
 					var vsp = box.FindFirstChild<VirtualizingStackPanel> ();
 
@@ -637,6 +635,7 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			// Doesn't throw an exception to access it
 			var items = new ListBox ().SelectedItems;
+			GC.KeepAlive (items);
 		}
 
 		[TestMethod]
@@ -709,7 +708,6 @@ namespace MoonTest.System.Windows.Controls {
 					for (int i = 0; i < lb.Items.Count; i++)
 						lb.SelectedItems.Add (lb.Items [i]);
 
-					var container = lb.ItemContainerGenerator.ContainerFromIndex (2);
 					lb.Items [2] = new object ();
 					Assert.AreEqual (4, lb.SelectedItems.Count, "#1");
 					Assert.IsFalse (lb.SelectedItems.Contains (lb.Items [2]), "#2");

@@ -213,7 +213,7 @@ namespace MoonTest.System.Windows.Browser
 				arg[1] = 'c';
 			}}");
 
-			object ret = so.Invoke ("test1", new object[] {c});
+			so.Invoke ("test1", new object[] {c});
 			Assert.AreEqual ("c", c[1], "ArrayTest2 #1");
 		}
 	}

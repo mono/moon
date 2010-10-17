@@ -49,10 +49,10 @@ namespace MoonTest.Security {
 		}
 
 		Uri http = new Uri ("http://www.host.com/app.xap");
-		Uri https = new Uri ("https://secure.host.net/app.xap");
-		Uri file = new Uri ("file:///app.xap");
+		// Uri https = new Uri ("https://secure.host.net/app.xap");
+		// Uri file = new Uri ("file:///app.xap");
 
-		Uri http_non_standard_port = new Uri ("http://www.host.com:8080/app.xap");
+		// Uri http_non_standard_port = new Uri ("http://www.host.com:8080/app.xap");
 
 		[TestMethod]
 		public void AllDomainsAllSubPaths ()
@@ -204,7 +204,6 @@ namespace MoonTest.Security {
 			ClientAccessPolicy cap = GetPolicy (policy);
 			ClientAccessPolicy.ApplicationUri = http;
 
-			Uri uri = new Uri ("http://localhost/data/file.txt");
 			Assert.IsTrue (cap.IsAllowed (http, "GET", null), "null");
 			Assert.IsTrue (cap.IsAllowed (http, "GET", new string [0]), "none");
 			Assert.IsTrue (cap.IsAllowed (http, "GET", "Content-Type"), "Content-Type");

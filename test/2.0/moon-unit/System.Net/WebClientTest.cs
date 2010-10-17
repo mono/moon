@@ -331,7 +331,6 @@ namespace MoonTest.System.Net {
 				Assert.Fail ("not called");
 			};
 
-			Uri uri = new Uri ("http://www.mono-project.com");
 			// note: null method == POST
 			Assert.Throws<ArgumentNullException> (delegate {
 				wc.OpenWriteAsync (null, "POST");

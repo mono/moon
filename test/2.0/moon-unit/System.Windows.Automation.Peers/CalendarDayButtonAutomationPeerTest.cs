@@ -202,7 +202,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Button button = null;
 			AutomationEventTuple tuple = null;
 			object oldContent = null;
-			AutomationPeer oldChild = null;
 
 			CreateAsyncTest (calendar,
 			() => {
@@ -215,7 +214,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				children = peer.GetChildren ();
 				Assert.IsNotNull (children, "GetChildren #0");
 				Assert.AreEqual (1, children.Count, "GetChildren #1");
-				oldChild = children[0];
 			},
 			() => {
 				button = new Button () { Content = "Button0" };

@@ -318,7 +318,7 @@ namespace MoonTest.System.Windows.Controls
 		public void TemplateBindingInsideTemplateTest ()
 		{
 			// For now just make sure it parses
-			Canvas c = (Canvas)XamlReader.Load (@"
+			XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas.Resources>
   <ControlTemplate x:Key=""ControlTemplate"" TargetType=""Button"">

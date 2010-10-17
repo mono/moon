@@ -232,11 +232,11 @@ namespace MoonTest.Security {
 			Assert.IsNotNull (mi, "Reset");
 
 			Assert.Throws<MethodAccessException> (delegate {
-				Caller dcall = (Caller) Delegate.CreateDelegate (typeof (Caller), pt, mi);
+				Delegate.CreateDelegate (typeof (Caller), pt, mi);
 			}, "Delegate.CreateDelegate(Type,object,MethodInfo)");
 
 			Assert.Throws<MethodAccessException> (delegate {
-				Caller dcall = (Caller) Delegate.CreateDelegate (typeof (Caller), pt, "Reset");
+				Delegate.CreateDelegate (typeof (Caller), pt, "Reset");
 			}, "Delegate.CreateDelegate(Type,object,string)");
 		}
 

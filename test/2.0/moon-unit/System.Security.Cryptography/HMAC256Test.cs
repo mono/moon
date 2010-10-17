@@ -78,7 +78,6 @@ namespace MoonTest.System.Security.Cryptography {
 
 		public void Check (string testName, byte[] key, byte[] data, byte[] result) 
 		{
-			string classTestName = "HMACSHA256-" + testName;
 			CheckA (testName, key, data, result);
 			CheckB (testName, key, data, result);
 			CheckC (testName, key, data, result);

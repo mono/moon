@@ -239,8 +239,12 @@ namespace MoonTest.System.Windows
 				if ((double) expected_value != (double) previous_expected_value) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual ((double) changed_info.args.OldValue, (double) previous_expected_value);
-					Assert.AreEqual ((double) changed_info.args.NewValue, (double) expected_value);
+					
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+
+					Assert.AreEqual ((double) args.OldValue, (double) previous_expected_value);
+					Assert.AreEqual ((double) args.NewValue, (double) expected_value);
+
 					Assert.AreSame (changed_info.obj, canvas);
 				}
 
@@ -287,8 +291,9 @@ namespace MoonTest.System.Windows
 				if ((Nullable<double>) expected_value != (Nullable<double>) previous_expected_value) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual ((Nullable<double>) changed_info.args.OldValue, (Nullable<double>) previous_expected_value);
-					Assert.AreEqual ((Nullable<double>) changed_info.args.NewValue, (Nullable<double>) expected_value);
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+					Assert.AreEqual ((Nullable<double>) args.OldValue, (Nullable<double>) previous_expected_value);
+					Assert.AreEqual ((Nullable<double>) args.NewValue, (Nullable<double>) expected_value);
 					Assert.AreSame (changed_info.obj, canvas);
 				}
 
@@ -336,8 +341,11 @@ namespace MoonTest.System.Windows
 				if ((Nullable<bool>) expected_value != (Nullable<bool>) previous_expected_value) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual ((Nullable<bool>) changed_info.args.OldValue, (Nullable<bool>) previous_expected_value);
-					Assert.AreEqual ((Nullable<bool>) changed_info.args.NewValue, (Nullable<bool>) expected_value);
+
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+
+					Assert.AreEqual ((Nullable<bool>) args.OldValue, (Nullable<bool>) previous_expected_value);
+					Assert.AreEqual ((Nullable<bool>) args.NewValue, (Nullable<bool>) expected_value);
 					Assert.AreSame (changed_info.obj, canvas);
 				}
 
@@ -389,8 +397,9 @@ namespace MoonTest.System.Windows
 				if (expected_value != previous_expected_value) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreSame (changed_info.args.OldValue, previous_expected_value);
-					Assert.AreSame (changed_info.args.NewValue, expected_value);
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+					Assert.AreSame (args.OldValue, previous_expected_value);
+					Assert.AreSame (args.NewValue, expected_value);
 					Assert.AreSame (changed_info.obj, canvas);
 				}
 
@@ -501,8 +510,9 @@ namespace MoonTest.System.Windows
 				if ((int) expected_value != (int) previous_expected_value) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual ((int) changed_info.args.OldValue, (int) previous_expected_value);
-					Assert.AreEqual ((int) changed_info.args.NewValue, (int) expected_value);
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+					Assert.AreEqual ((int) args.OldValue, (int) previous_expected_value);
+					Assert.AreEqual ((int) args.NewValue, (int) expected_value);
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 
@@ -551,8 +561,9 @@ namespace MoonTest.System.Windows
 				if ((double) expected_value != (double) previous_expected_value) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual ((double) changed_info.args.OldValue, (double) previous_expected_value);
-					Assert.AreEqual ((double) changed_info.args.NewValue, (double) expected_value);
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+					Assert.AreEqual ((double) args.OldValue, (double) previous_expected_value);
+					Assert.AreEqual ((double) args.NewValue, (double) expected_value);
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 
@@ -631,8 +642,9 @@ namespace MoonTest.System.Windows
 				if (!object.Equals (expected_value, previous_expected_value)) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual (changed_info.args.OldValue, previous_expected_value, "OldValue, iteration: " + iterations.ToString ());
-					Assert.AreEqual (changed_info.args.NewValue, expected_value, "NewValue, iteration: " + iterations.ToString ());
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+					Assert.AreEqual (args.OldValue, previous_expected_value, "OldValue, iteration: " + iterations.ToString ());
+					Assert.AreEqual (args.NewValue, expected_value, "NewValue, iteration: " + iterations.ToString ());
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 
@@ -682,8 +694,9 @@ namespace MoonTest.System.Windows
 				if (!object.Equals (expected_value, previous_expected_value)) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual (changed_info.args.OldValue, previous_expected_value);
-					Assert.AreEqual (changed_info.args.NewValue, expected_value);
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+					Assert.AreEqual (args.OldValue, previous_expected_value);
+					Assert.AreEqual (args.NewValue, expected_value);
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 
@@ -735,8 +748,9 @@ namespace MoonTest.System.Windows
 				if (!object.Equals (expected_value, previous_expected_value)) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual (changed_info.args.OldValue, previous_expected_value, "OldValue");
-					Assert.AreEqual (changed_info.args.NewValue, expected_value, "NewValue");
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+					Assert.AreEqual (args.OldValue, previous_expected_value, "OldValue");
+					Assert.AreEqual (args.NewValue, expected_value, "NewValue");
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 
@@ -788,8 +802,11 @@ namespace MoonTest.System.Windows
 				if (!object.Equals (expected_value, previous_expected_value)) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual (changed_info.args.OldValue, previous_expected_value, "OldValue");
-					Assert.AreEqual (changed_info.args.NewValue, expected_value, "NewValue");
+
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+
+					Assert.AreEqual (args.OldValue, previous_expected_value, "OldValue");
+					Assert.AreEqual (args.NewValue, expected_value, "NewValue");
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 
@@ -858,8 +875,11 @@ namespace MoonTest.System.Windows
 				if ((double) expected_value != (double) previous_expected_value) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual ((double) changed_info.args.OldValue, (double) previous_expected_value);
-					Assert.AreEqual ((double) changed_info.args.NewValue, (double) expected_value);
+
+					DependencyPropertyChangedEventArgs args = changed_info.args;
+
+					Assert.AreEqual ((double) args.OldValue, (double) previous_expected_value);
+					Assert.AreEqual ((double) args.NewValue, (double) expected_value);
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 
@@ -1759,9 +1779,12 @@ namespace MoonTest.System.Windows
 
 			for (int i = 0; i < Changes.Count; i++) {
 				ChangedInfo c = Changes [i];
+				DependencyPropertyChangedEventArgs args = c.args;
+				
 				if (i != 0)
 					result.Append (separator);
-				result.AppendFormat (format, i, c.args.OldValue, c.args.NewValue);
+
+				result.AppendFormat (format, i, args.OldValue, args.NewValue);
 			}
 
 			return result.ToString ();

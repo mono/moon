@@ -50,7 +50,7 @@ namespace MoonTest.Security {
 				Headers = new Headers ();
 			}
 
-			public Headers Headers { get; private set; }
+			public new Headers Headers { get; private set; }
 
 			public override bool IsAllowed (WebRequest request)
 			{
@@ -73,9 +73,9 @@ namespace MoonTest.Security {
 		string [] HeadersSOAPAction2 = new string [] { "Content-Type", "SOAPAction" };
 		string [] HeadersSOAPAction3 = new string [] { "SOAPActionX" };
 
-		string [] XHeaders1 = new string [] { "x-flash-version" };
-		string [] XHeaders2 = new string [] { "X-My-Header" };
-		string [] XHeaders3 = new string [] { "x-flash-version", "X-My-Header" };
+		// string [] XHeaders1 = new string [] { "x-flash-version" };
+		// string [] XHeaders2 = new string [] { "X-My-Header" };
+		// string [] XHeaders3 = new string [] { "x-flash-version", "X-My-Header" };
 
 		string [] FlashHeaders1 = new string [] { "x-flash-version" };
 		string [] FlashHeaders2 = new string [] { "X-Permitted-Cross-Domain-Policies" };

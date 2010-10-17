@@ -110,7 +110,7 @@ namespace Mono.Moonlight.UnitTesting
             Assert.AreEqual("", box.Text, "#8");
 
             Assert.Throws<XamlParseException>(delegate {
-                object block = XamlReader.Load(@"
+                XamlReader.Load(@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 

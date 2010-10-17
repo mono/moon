@@ -358,7 +358,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		public void SetTargetProperty_nullAndNonNull ()
 		{
 			Rectangle target = new Rectangle { Width = 0, Height = 0 };
-			Storyboard sb = new Storyboard ();
 			DoubleAnimation anim = new DoubleAnimation { From = 10, To = 100, Duration = TimeSpan.FromMilliseconds (100) };
 
 			Storyboard.SetTarget (anim, target);
@@ -367,7 +366,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Assert.IsNull (Storyboard.GetTargetProperty (anim), "Null target");
 
 
-			sb = new Storyboard ();
 			anim = new DoubleAnimation { From = 10, To = 100, Duration = TimeSpan.FromMilliseconds (100) };
 
 			Storyboard.SetTarget (anim, target);
@@ -614,7 +612,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		public void AddTimelineDifferentNamescope_OutsideTemplate ()
 		{
 			// If the nonTemplated item is added to TestPanel it can't be found
-			bool complete = false;
 			var nonTemplated = new Rectangle { Name = "Target" };
 
 			var c = (ContentControl) XamlReader.Load (@"
@@ -1295,14 +1292,11 @@ namespace MoonTest.System.Windows.Media.Animation {
 		[Asynchronous]
 		public void ComplexTarget3 ()
 		{
-			bool complete = false;
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetProperty=""Content.(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
 </Storyboard>");
-			sb.Completed += delegate { complete = true; };
-
 			ContentControl c = new ContentControl();
 
 			Rectangle r = new Rectangle ();
@@ -1437,7 +1431,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		[Asynchronous]
 		public void ComplexTarget8 ()
 		{
-			bool complete = false;
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -1517,13 +1510,13 @@ namespace MoonTest.System.Windows.Media.Animation {
 		[Asynchronous]
 		public void ComplexTarget12 ()
 		{
-			bool complete = false;
+			//bool complete = false;
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""Top"" To=""50"" />
 </Storyboard>");
-			sb.Completed += delegate { complete = true; };
+			//sb.Completed += delegate { complete = true; };
 			Canvas c = new Canvas ();
 			Storyboard.SetTarget (sb, c);
 			Enqueue (() => { TestPanel.Children.Add (c); TestPanel.Resources.Add ("a", sb); });
@@ -1679,7 +1672,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 			kf.SetValue (DoubleKeyFrame.KeyTimeProperty, null);
 			Assert.AreEqual (new KeyTime (), kf.ReadLocalValue (DoubleKeyFrame.KeyTimeProperty), "#0");
 			Assert.Throws<ArgumentException>(() => kf.SetValue (DoubleKeyFrame.ValueProperty, null), "#1");
-			var key = kf.KeyTime;
 			Assert.AreEqual (new KeyTime (), kf.KeyTime, "#2");
 		}
 

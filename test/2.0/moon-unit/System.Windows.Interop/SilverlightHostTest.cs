@@ -44,8 +44,6 @@ namespace MoonTest.System.Windows {
 	[TestClass]
 	public class SilverlightHostTest : SilverlightTest {
 
-		static private Uri uri = new Uri ("http://www.mono-project.com");
-
 		void Check (SilverlightHost host)
 		{
 			Assert.AreEqual (Colors.White, host.Background, "Background");

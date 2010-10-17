@@ -47,6 +47,11 @@ namespace MoonTest.System.Windows.Controls {
 			{
 				return Name.Equals(((S)obj).Name);
 			}
+
+			public override int GetHashCode ()
+			{
+				return base.GetHashCode();
+			}
 		}
 
 		class T
@@ -55,6 +60,11 @@ namespace MoonTest.System.Windows.Controls {
 			public override bool Equals(object obj)
 			{
 				return Name.Equals(((T)obj).Name);
+			}
+
+			public override int GetHashCode ()
+			{
+				return base.GetHashCode();
 			}
 		}
 

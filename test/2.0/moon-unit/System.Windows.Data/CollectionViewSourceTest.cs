@@ -95,8 +95,6 @@ namespace MoonTest.System.Windows.Data
 			BindingOperations.SetBinding(cvs2, CollectionViewSource.SourceProperty, new Binding("Divisions") { Source = cvs1 });
 			BindingOperations.SetBinding(cvs3, CollectionViewSource.SourceProperty, new Binding("Teams") { Source = cvs2 });
 
-			var lb1 = new ListBox { ItemsSource = cvs1.View };
-			var lb2 = new ListBox { ItemsSource = cvs2.View };
 			var lb3 = new ListBox { ItemsSource = cvs3.View };
 			lb3.UpdateLayout();
 

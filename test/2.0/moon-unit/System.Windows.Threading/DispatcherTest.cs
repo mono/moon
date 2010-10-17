@@ -141,10 +141,10 @@ namespace MoonTest.System.Windows.Threading
 			timer.Tick += delegate { if (count < 5) count++; };
 			Enqueue (() => { timer.Start (); });
 			Enqueue (() => { sb.Begin (); });
-			Enqueue (() => complete = true);
+			EnqueueConditional (() => complete);
 			Enqueue (() => { timer.Stop (); complete = false; });
 			Enqueue (() => { sb.Begin (); });
-			Enqueue (() => complete = true);
+			EnqueueConditional (() => complete);
 			Enqueue (() => {count =0; timer.Start (); complete = false; });
 			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (1000));
 			EnqueueTestComplete ();

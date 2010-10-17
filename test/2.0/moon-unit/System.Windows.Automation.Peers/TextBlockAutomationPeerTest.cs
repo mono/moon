@@ -302,7 +302,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.AreNotSame (labeledByPeer, feap.GetLabeledBy (), "GetLabeledBy NotSame #1");
 			Assert.AreNotSame (labeledByPeer, feap.GetLabeledByCore_ (), "GetLabeledByCore NotSame #1");
 
-			AutomationPeer realPeer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			Assert.IsNotNull (feap.GetLabeledBy (), "GetLabeledBy NotNull #2");
 			Assert.IsNotNull (feap.GetLabeledByCore_ (), "GetLabeledByCore NotNull #2");
 

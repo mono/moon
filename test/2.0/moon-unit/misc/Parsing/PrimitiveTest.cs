@@ -342,9 +342,6 @@ namespace MoonTest.Misc
 		[TestMethod]
 		public void ParseDouble_Auto ()
 		{
-			Canvas c;
-			double d;
-
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
  						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Double x:Key=""double"">Auto</sys:Double></Canvas.Resources></Canvas>"));

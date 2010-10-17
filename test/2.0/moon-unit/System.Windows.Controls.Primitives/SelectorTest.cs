@@ -155,7 +155,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		{
 			Selector selector = (Selector) CurrentControl;
 			Style first = new Style (typeof (ListBoxItem));
-			Style second = new Style (typeof (ListBoxItem));
 
 			ListBoxItem item = (ListBoxItem) CreateContainer ();
 			item.Content = "A";
@@ -321,7 +320,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 			CreateAsyncTest (selector, () => {
 				Assert.IsFalse ((bool) selector.GetValue (ListBox.IsSelectionActiveProperty), "#1");
-				bool b = selector.Focus ();
+				selector.Focus ();
 				Assert.IsFalse ((bool) selector.GetValue (ListBox.IsSelectionActiveProperty), "#2");
 				selector.SelectedIndex = 0;
 				Assert.IsFalse ((bool) selector.GetValue (ListBox.IsSelectionActiveProperty), "#2");

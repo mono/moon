@@ -311,6 +311,7 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			Rectangle r = new Rectangle ();
 			Popup p1 = new Popup { Child = r };
 			Assert.Throws<ArgumentException> (() => new Popup { Child = r }); 
+			GC.KeepAlive (p1);
 		}
 
 		[TestMethod]

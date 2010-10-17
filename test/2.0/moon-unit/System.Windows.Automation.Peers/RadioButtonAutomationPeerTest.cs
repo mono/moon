@@ -526,8 +526,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			AutomationPeer peer
 				= FrameworkElementAutomationPeer.CreatePeerForElement (radioButton);
 			AutomationPropertyEventTuple tuple = null;
-			ISelectionItemProvider selectionProvider
-				= (ISelectionItemProvider) peer.GetPattern (PatternInterface.SelectionItem);
 
 			CreateAsyncTest (radioButton,
 			() => {

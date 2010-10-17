@@ -155,8 +155,9 @@ namespace MoonTest.System.Windows.Controls
 		{
 			for (int i = 0; i < grid.Children.Count; i++) {
 				var poker = (MyContentControl) grid.Children [i];
-				if (!poker.MeasureOverrideArg.Equals (sizes [i]))
-					Assert.Fail ("{2}.{3} Expected measure argument to be {0} but was {1}", sizes [i], poker.MeasureOverrideArg, message, i);
+				var arg = poker.MeasureOverrideArg;
+				if (!arg.Equals (sizes [i]))
+					Assert.Fail ("{2}.{3} Expected measure argument to be {0} but was {1}", sizes [i], arg, message, i);
 			}
 		}
 
@@ -164,8 +165,9 @@ namespace MoonTest.System.Windows.Controls
 		{
 			for (int i = 0; i < grid.Children.Count; i++) {
 				var poker = (MyContentControl) grid.Children [i];
-				if (!poker.MeasureOverrideResult.Equals (sizes [i]))
-					Assert.Fail ("{2}.{3} Expected measure result to be {0} but was {1}", sizes [i], poker.MeasureOverrideResult, message, i);
+				var result = poker.MeasureOverrideResult;
+				if (!result.Equals (sizes [i]))
+					Assert.Fail ("{2}.{3} Expected measure result to be {0} but was {1}", sizes [i], result, message, i);
 			}
 		}
 		public static void CheckArrangeResult (this MyGrid grid, string message, params Size [] sizes)
@@ -1868,8 +1870,6 @@ namespace MoonTest.System.Windows.Controls
 					parent.InvalidateSubtree ();
 					grid.Reset ();
 				}, () => {
-					string [] measureArgs = grid.MeasuredElements.Select (d => d.Value.ToString ()).ToArray ();
-
 					grid.CheckMeasureArgs ("#3a", new Size (8, 8), new Size (17, 8), new Size (25, 8),
 												  new Size (8, 17), new Size (17, 17), new Size (25, 17),
 												  new Size (8, 25), new Size (17, 25), new Size (25, 25));
@@ -1894,8 +1894,6 @@ namespace MoonTest.System.Windows.Controls
 		public void ExpandStarsInStackPanel ()
 		{
 			MyGrid grid = CreateGridWithChildren ();
-			MyContentControl c = new MyContentControl ();
-			//c.Content = grid;
 			var parent = new StackPanel ();
 			parent.Children.Add (grid);
 
@@ -1982,10 +1980,6 @@ namespace MoonTest.System.Windows.Controls
 					g.CheckArrangeArgs ("#7", new Size (80, 17), new Size (80, 17));
 					g.CheckArrangeResult ("#8", new Size (80, 17), new Size (80, 17));
 				}
-
-				for (int i = 0; i < parent.Children.Count; i++) {
-					MyGrid g = (MyGrid) parent.Children [i];
-				}
 			});
 		}
 
@@ -2054,13 +2048,16 @@ namespace MoonTest.System.Windows.Controls
 
 			CreateAsyncTest (g,
 				() => {
-					Assert.AreEqual (25, child.MeasureOverrideArg.Height, "#1");
+					var arg = child.MeasureOverrideArg;
+					Assert.AreEqual (25, arg.Height, "#1");
 					g.RowDefinitions [0].MaxHeight = 10;
 				}, () => {
-					Assert.AreEqual (30, child.MeasureOverrideArg.Height, "#2");
+					var arg = child.MeasureOverrideArg;
+					Assert.AreEqual (30, arg.Height, "#2");
 					g.RowDefinitions [0].MaxHeight = 20;
 				}, () => {
-					Assert.AreEqual (40, child.MeasureOverrideArg.Height, "#3");
+					var arg = child.MeasureOverrideArg;
+					Assert.AreEqual (40, arg.Height, "#3");
 				}
 			);
 		}
@@ -2176,7 +2173,6 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void MeasureAutoRows3 ()
 		{
-			double inf = double.PositiveInfinity;
 			Grid grid = new Grid ();
 
 			grid.AddColumns (new GridLength (50), new GridLength (50));
@@ -2195,7 +2191,6 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void MeasureAutoRows4 ()
 		{
-			double inf = double.PositiveInfinity;
 			Grid grid = new Grid ();
 
 			grid.AddColumns (new GridLength (50), new GridLength (50));
@@ -2322,7 +2317,6 @@ namespace MoonTest.System.Windows.Controls
 		{
 			// Check the widths/heights of the rows/cols without specifying a size for the grid
 			// Measuring the rows initialises the sizes to Infinity for 'star' elements
-			double inf = double.PositiveInfinity;
 			Grid grid = new Grid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Star));
 			grid.AddColumns (new GridLength (1, GridUnitType.Star));

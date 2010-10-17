@@ -1058,11 +1058,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 				bool controlLoaded = false;
 				bool panelLoaded = false;
-				bool focused = false;
 				control.Height = 30;
 				control.Loaded += (o, e) => { controlLoaded = true; };
-				control.GotFocus += (o, e) => { focused = true; };
-				control.LostFocus += (o, e) => { focused = false; };
 
 				StackPanel panel = new StackPanel ();
 				panel.Loaded += (o, e) => { panelLoaded = true; };
@@ -1072,9 +1069,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				
 				//control.TabIndex = 0;
 				//control1.TabIndex = 1;
-
-				bool control1Focused = false;
-				control1.GotFocus += (o, e) => control1Focused = true;
 
 				panel.Children.Add (control);
 				panel.Children.Add (control1);

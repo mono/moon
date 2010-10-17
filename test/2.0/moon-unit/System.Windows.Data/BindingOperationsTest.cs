@@ -63,7 +63,6 @@ namespace MoonTest.System.Windows.Data
 		[MoonlightBug ("We need to throw exception is we use Rectangle Dps on non-rectangles etc")]
 		public void InvalidArguments ()
 		{
-			var target = new Rectangle ();
 			var property = Rectangle.WidthProperty;
 			var binding = new Binding ();
 

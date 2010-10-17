@@ -208,7 +208,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			element.SetValue (AutomationProperties.NameProperty, nameProperty);
 			Assert.AreEqual (element.Content, peer.GetName (), "GetName #0");
-			FrameworkElementAutomationPeerContract tbap = peer as FrameworkElementAutomationPeerContract;
 
 			element.SetValue (AutomationProperties.LabeledByProperty, textblock);
 			Assert.AreEqual (textblockName, peer.GetName (), "GetName #1");

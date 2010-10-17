@@ -25,6 +25,8 @@ using Mono.Moonlight.UnitTesting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
+#pragma warning disable 219 // The variable `X' is assigned but its value is never used
+
 namespace MoonTest.System.Windows
 {
     [TestClass]

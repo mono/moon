@@ -43,8 +43,8 @@ namespace MoonTest.System.Windows
 				}, "negative infinity");
 
 			Assert.Throws<ArgumentException>(delegate{
-					Rect a = new Rect (Double.PositiveInfinity,Double.PositiveInfinity,
-							   Double.NegativeInfinity, Double.NegativeInfinity);
+					new Rect (Double.PositiveInfinity,Double.PositiveInfinity,
+						  Double.NegativeInfinity, Double.NegativeInfinity);
 				}, "negative ctor");
 		}
 

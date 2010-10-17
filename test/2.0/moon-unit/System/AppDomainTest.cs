@@ -38,7 +38,7 @@ namespace MoonTest.System.Windows.Input {
 	public class AppDomainTest {
 
 		const string FriendlyName = "Silverlight AppDomain";
-		static string ToString = "Name:" + FriendlyName + Environment.NewLine +
+		static string ToStringValue = "Name:" + FriendlyName + Environment.NewLine +
 			"There are no context policies." + Environment.NewLine;
 
 		[TestMethod]
@@ -49,7 +49,7 @@ namespace MoonTest.System.Windows.Input {
 
 			Assert.AreEqual ("Silverlight AppDomain", ad.FriendlyName, "FriendlyName");
 			Assert.AreEqual (typeof (AppDomain), ad.GetType (), "GetType");
-			Assert.AreEqual (ToString, ad.ToString (), "ToString");
+			Assert.AreEqual (ToStringValue, ad.ToString (), "ToString");
 		}
 
 		// Silverlight only defines AssemblyBuilderAccess.Run but the normal framework

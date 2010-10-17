@@ -107,7 +107,7 @@ namespace MoonTest.Security {
 			Type t = Type.GetType ("System.Security.Policy.Evidence");
 			Assert.IsNotNull (t, "Type");
 			Assert.IsTrue (t.IsNotPublic, "IsNotPublic");
-			ConstructorInfo ci = ci = t.GetConstructor (Type.EmptyTypes);
+			ConstructorInfo ci = t.GetConstructor (Type.EmptyTypes);
 			Assert.IsNotNull (ci, "ctor");
 			// but we can't use it since it comes from another assembly (mscorlib)
 			// from a non-public type

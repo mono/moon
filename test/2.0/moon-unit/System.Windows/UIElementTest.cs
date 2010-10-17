@@ -39,7 +39,6 @@ using Microsoft.Silverlight.Testing.UnitTesting.UI;
 using Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Shapes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using MoonTest.System.Windows.Media;
 

@@ -187,7 +187,7 @@ namespace MoonTest.System.Windows.Data {
 			var alteredCount = Items.Count;
 			Assert.AreEqual (alteredCount, View.Cast<object> ().Count (), "#1");
 
-			var newItem = Editable.AddNew ();
+			Editable.AddNew ();
 			Assert.AreEqual (alteredCount + 1, View.Cast<object> ().Count (), "#2");
 
 			Assert.IsTrue (View.MoveCurrentTo (Items [initialCount + 1]), "#3");
@@ -223,10 +223,9 @@ namespace MoonTest.System.Windows.Data {
 			Items.Add (new object ());
 			Items.Add (new object ());
 
-			var alteredCount = Items.Count;
 			Assert.AreEqual (initialCount, View.Cast<object> ().Count (), "#1");
 
-			var newItem = Editable.AddNew ();
+			Editable.AddNew ();
 			Assert.AreEqual (initialCount + 1, View.Cast<object> ().Count (), "#2");
 
 			Assert.IsFalse (View.MoveCurrentTo (Items [initialCount + 1]), "#3");
@@ -390,8 +389,6 @@ namespace MoonTest.System.Windows.Data {
 		[TestMethod]
 		public void AddNew_UpdatesViewImmediately ()
 		{
-			var groups = View.Groups;
-
 			var item = Editable.AddNew ();
 			Assert.AreEqual (item, View.Cast<object> ().Last (), "#1");
 		}
