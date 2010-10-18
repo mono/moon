@@ -2378,7 +2378,8 @@ DependencyObject::ClearValue (int id, bool notify_listeners)
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
-	ClearValue(property, notify_listeners, NULL);
+	MoonError error;
+	ClearValue(property, notify_listeners, &error);
 }
 
 void
@@ -3153,7 +3154,7 @@ DependencyObject::DetachAnimationStorage (DependencyProperty *prop, AnimationSto
 
 				List::Node *remove = node;
 				node = node->next;
-				((AnimationStorage::Node*)node)->storage->SetStopValue (storage->GetResetValue ());
+				((AnimationStorage::Node*)node)->storage->SetStopValue (storage->GetStopValue ());
 				list->Remove (remove);
 				break;
 			}

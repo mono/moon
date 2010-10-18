@@ -1101,7 +1101,7 @@ public:
 	void Stop ();
 	bool IsCurrentStorage ();
 
-	Value* GetResetValue ();
+	Value* GetStopValue ();
 	void SetStopValue (Value *value);
 
 	AnimationClock *GetClock ();

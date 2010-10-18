@@ -73,7 +73,10 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 	}
 
 	if (precedence == APPLIER_PRECEDENCE_INSTANT) {
-		object->SetValue (property, *v);
+		if (v)
+			object->SetValue (property, *v);
+		else
+			object->ClearValue (property);
 		delete v;
 		return;
 	}
@@ -157,7 +160,10 @@ apply_property_func (property_indexer *p_indexer, DependencyObject *object)
 	g_return_if_fail (p_indexer->values_list != NULL);
 
 	value_indexer *v_indexer = (value_indexer *) p_indexer->values_list->data;
-	object->SetValue (p_indexer->property, *v_indexer->v);
+	if (v_indexer->v)
+		object->SetValue (p_indexer->property, *v_indexer->v);
+	else
+		object->ClearValue (p_indexer->property);
 }
 
 static void

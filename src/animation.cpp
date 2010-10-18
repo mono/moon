@@ -82,8 +82,11 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 		baseValue = new Value (targetprop->GetPropertyType ());
 
 	if (prev_storage) {
-		Value *v = prev_storage->GetResetValue ();
-		stopValue = new Value (*v);
+		Value *v = prev_storage->GetStopValue ();
+		stopValue = v ? new Value (*v) : NULL;
+	} else {
+		Value *v = targetobj->ReadLocalValue (targetprop);
+		stopValue = v ? new Value (*v) : NULL;
 	}
 }
 
@@ -137,16 +140,18 @@ AnimationStorage::Disable ()
 void
 AnimationStorage::Stop ()
 {
+	// When stopping an animation storage we need to detach the storage
+	// before calling ResetPropertyValue in case we need to do a ClearValue
+	// call on the property. #508 shows ClearValue does nothing while a
+	// storage is attached.
+	DetachFromProperty ();
 	ResetPropertyValue ();
 }
 
 Value*
-AnimationStorage::GetResetValue ()
+AnimationStorage::GetStopValue ()
 {
-	if (stopValue)
-		return stopValue;
-	else
-		return baseValue;
+	return stopValue;
 }
 
 void
@@ -233,7 +238,7 @@ AnimationStorage::ResetPropertyValue ()
 
 	if (applier)
 		applier->AddPropertyChange (targetobj, targetprop,
-			    new Value (*GetResetValue ()),
+			    stopValue ? new Value (*stopValue) : NULL,
 			    APPLIER_PRECEDENCE_ANIMATION_RESET);
 }
 

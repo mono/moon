@@ -1192,6 +1192,44 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		public void RestoreOriginalValueOnStop_NoLocalValue()
+		{
+			bool completed = false;
+			var target = new Rectangle();
+			Storyboard sb = new Storyboard { FillBehavior = FillBehavior.Stop };
+			DoubleAnimation anim = new DoubleAnimation { From = 0, To = 1, Duration = TimeSpan.Zero };
+			Storyboard.SetTarget(anim, target);
+			Storyboard.SetTargetProperty(anim, new PropertyPath("Opacity"));
+			sb.Children.Add(anim);
+			sb.Completed += (o, e) => completed = true;
+			sb.Begin();
+
+			EnqueueConditional(() => completed, "#1");
+			Enqueue(() => Assert.IsUnset(target, FrameworkElement.OpacityProperty, "#2"));
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RestoreOriginalValueOnStop_LocalValue()
+		{
+			bool completed = false;
+			var target = new Rectangle { Opacity = 0.5 };
+			Storyboard sb = new Storyboard { FillBehavior = FillBehavior.Stop };
+			DoubleAnimation anim = new DoubleAnimation { From = 0, To = 1, Duration = TimeSpan.Zero };
+			Storyboard.SetTarget(anim, target);
+			Storyboard.SetTargetProperty(anim, new PropertyPath("Opacity"));
+			sb.Children.Add(anim);
+			sb.Completed += (o, e) => completed = true;
+			sb.Begin();
+
+			EnqueueConditional(() => completed, "#1");
+			Enqueue(() => Assert.AreEqual(0.5, (double)target.ReadLocalValue(FrameworkElement.OpacityProperty), "#2"));
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
 		public void TargetSameProperty ()
 		{
