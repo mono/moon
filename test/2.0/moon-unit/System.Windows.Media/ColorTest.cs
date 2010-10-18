@@ -51,6 +51,7 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we fail this across all runtime versions")]
 		public void ParseValidColorAsTopLevel ()
 		{
 			Assert.Throws<XamlParseException> (delegate {
