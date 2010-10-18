@@ -538,6 +538,10 @@ namespace Mono.Xaml {
 
 		public override void SetValue (XamlObjectElement obj, object value)
 		{
+			var mutable = value as MutableObject;
+			if (mutable != null)
+				value = mutable.Object;
+
 			if (!typeof (Binding).IsAssignableFrom (Type)) {
 				Binding binding = value as Binding;
 				if (binding != null) {
@@ -563,6 +567,13 @@ namespace Mono.Xaml {
 				AddToCollection (value);
 				return;
 			}
+
+			throw new XamlParseException (
+				string.Format ("XamlAttachedPropertySetter.SetValue: Could not set value '{0}' to the attached property '{1}.{2}'",
+					value,
+					setter.DeclaringType,
+					setter.Name)
+			);
 		}
 
 		public void AddToCollection (object value)
