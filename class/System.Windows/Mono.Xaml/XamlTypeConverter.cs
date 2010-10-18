@@ -84,6 +84,9 @@ namespace Mono.Xaml {
 			string str_value = value as string;
 
 			if (str_value != null) {
+				if (destinationType.IsEnum)
+					return Enum.Parse (destinationType, str_value, true);
+
 				object o = ConvertFromString (context, culture, str_value);
 				if (o != null)
 					return o;
