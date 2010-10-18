@@ -180,7 +180,7 @@ EXTRA_DIST = 			\
 test: copy-xaps-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
-	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index.html?$(TEST_NAME)"
+	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index$(RUNTIME_VERSION).html?$(TEST_NAME)"
 
 test-all: copy-xaps-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
