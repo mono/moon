@@ -183,6 +183,7 @@ PluginInstance::Recreate (const char *source)
 
 	PluginInstance *result;
 	result = new PluginInstance (instance, mode);
+	instance->pdata = result;
 	
 	// printf ("PluginInstance::Recreate (%s), created %p\n", source, result);
 	
@@ -210,6 +211,7 @@ PluginInstance::Recreate (const char *source)
 	g_free (maxFramerate);
 	
 	/* destroy the current plugin instance */
+	instance->pdata = this;
 	Deployment::SetCurrent (deployment);
 	Shutdown ();
 
