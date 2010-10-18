@@ -436,6 +436,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[MaxRuntimeVersion(2)]
+		[MoonlightBug ("#1 is failing bcause the objects are the same")]
 		public void AttachedProperty_ClashWithCLRProperty_sl2()
 		{
 			// Check to ensure we do *not* use the type converter
@@ -563,6 +564,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[MaxRuntimeVersion(2)]
+		[MoonlightBug ("#2 is failing because block.Text == 'Yarr'")]
 		public void BindDpToDp_sl2 ()
 		{
 			var data = new TextProp { MyText = "Hello" };
@@ -578,7 +580,7 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual ("Hello", block.Text, "#1");
 
 			data.MyText = "Yarr";
-			Assert.AreEqual ("Hello", block.Text, "#1");
+			Assert.AreEqual ("Hello", block.Text, "#2");
 		}
 
 		[TestMethod]
@@ -643,6 +645,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[MaxRuntimeVersion(2)]
+		[MoonlightBug ("#1 is failing")]
 		public void BindToDP_WrongDPName_WithName_sl2 ()
 		{
 			var data = new UnbackedDPs ();
@@ -1307,6 +1310,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[MaxRuntimeVersion(2)]
+		[MoonlightBug ("#1 is failing - the color is still Blue")]
 		public void DOBinding_OneWay_SourceToTarget_sl2 ()
 		{
 			var source = new SolidColorBrush (Colors.Red);
@@ -1335,6 +1339,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[MaxRuntimeVersion(2)]
+		[MoonlightBug ("#1 is failing - the color is still Blue")]
 		public void DOBinding_TwoWay_SourceToTarget_sl2 ()
 		{
 			var source = new SolidColorBrush (Colors.Red);
@@ -1376,6 +1381,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[MaxRuntimeVersion(2)]
+		[MoonlightBug ("#2 is failing")]
 		public void DPSetValuePreferred_TwoWay_sl2()
 		{
 			var str = "test_string";
@@ -2942,7 +2948,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
-		[MoonlightBug]
 		public void XamlBindAfterResources3b_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -3001,7 +3006,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
-		[MoonlightBug]
 		public void XamlBindBeforeResourcesb_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
@@ -3245,7 +3249,8 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
-		public void XamlStaticResource4 ()
+		[MinRuntimeVersion(4)]
+		public void XamlStaticResource4_sl4 ()
 		{
 			var c = (Canvas) XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
@@ -3259,8 +3264,29 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 	</TextBlock>
 </Canvas>
 ");
-            // Where does the binding go?
-            Assert.IsNull(((TextBlock)c.Children[0]).GetBindingExpression(TextBlock.TextProperty), "#1");
+			// Where does the binding go?
+			Assert.IsNull(((TextBlock)c.Children[0]).GetBindingExpression(TextBlock.TextProperty), "#1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("this test is identical to the _sl4 variant, but we're throwing a XamlParseException incorrectly")]
+		public void XamlStaticResource4_sl3 ()
+		{
+			var c = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+	<TextBlock x:Name=""block"">
+		<Binding />
+	</TextBlock>
+</Canvas>
+");
+			// Where does the binding go?
+			Assert.IsNull(((TextBlock)c.Children[0]).GetBindingExpression(TextBlock.TextProperty), "#1");
 		}
 
 		[TestMethod]
