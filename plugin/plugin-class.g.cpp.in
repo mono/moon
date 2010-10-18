@@ -22,6 +22,7 @@
 #include "bitmapimage.h"
 #include "uri.h"
 #include "textbox.h"
+#include "plugin-class.h"
 
 namespace Moonlight {
 

@@ -229,7 +229,7 @@ class Generator {
 								strobj = strname.ToLower();
 							}
 							
-							body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (" + strobj + ", *result);");
+							body.AppendLine ("\t\t\t\tobject_to_npvariant (" + strobj + ", *result);");
 								if (method.Annotations.ContainsKey ("JSBinding_ReturnValueIsReffed"))
 									body.AppendLine ("\t\t\t\tret->unref ();");
 							body.AppendLine ("\t\t\t} else");
@@ -241,7 +241,7 @@ class Generator {
 							body.AppendLine (String.Format ("\t\t\t{0}->{0} = ret;", strname.ToLower()));
 							strobj = strname.ToLower();
 							
-							body.AppendLine ("\t\t\tOBJECT_TO_NPVARIANT (" + strobj + ", *result);");
+							body.AppendLine ("\t\t\tobject_to_npvariant (" + strobj + ", *result);");
 						}
 						break;
 					case "d":

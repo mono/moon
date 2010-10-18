@@ -40,6 +40,15 @@ namespace Moonlight {
 		g_free (message);	\
 	} while (0);	\
 
+#define object_to_npvariant(obj, variant) \
+	do {	\
+		if (obj) {	\
+			OBJECT_TO_NPVARIANT (obj, variant);	\
+		} else {	\
+			NULL_TO_NPVARIANT (variant);	\
+		}	\
+	} while (0)
+
 enum PluginPropertyId {
 	NoMapping = 0,
 

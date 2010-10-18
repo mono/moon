@@ -191,37 +191,37 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
 	case Type::POINT: {
 		MoonlightPoint *point = (MoonlightPoint *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightPointClass);
 		point->point = *v->AsPoint ();
-		OBJECT_TO_NPVARIANT (point, *result);
+		object_to_npvariant (point, *result);
 		break;
 	}
 	case Type::RECT: {
 		MoonlightRect *rect = (MoonlightRect *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightRectClass);
 		rect->rect = *v->AsRect ();
-		OBJECT_TO_NPVARIANT (rect, *result);
+		object_to_npvariant (rect, *result);
 		break;
 	}
 	case Type::DURATION: {
 		MoonlightDuration *duration = (MoonlightDuration *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightDurationClass);
 		duration->SetParentInfo (parent_obj, parent_property);
-		OBJECT_TO_NPVARIANT (duration, *result);
+		object_to_npvariant (duration, *result);
 		break;
 	}
 	case Type::TIMESPAN: {
 		MoonlightTimeSpan *timespan = (MoonlightTimeSpan *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightTimeSpanClass);
 		timespan->SetParentInfo (parent_obj, parent_property);
-		OBJECT_TO_NPVARIANT (timespan, *result);
+		object_to_npvariant (timespan, *result);
 		break;
 	}
 	case Type::GLYPHTYPEFACE: {
 		MoonlightGlyphTypeface *typeface = (MoonlightGlyphTypeface *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightGlyphTypefaceClass);
 		typeface->typeface = v->AsGlyphTypeface ();
-		OBJECT_TO_NPVARIANT (typeface, *result);
+		object_to_npvariant (typeface, *result);
 		break;
 	}
 	case Type::GRIDLENGTH: {
 		MoonlightGridLength *gridlength = (MoonlightGridLength *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightGridLengthClass);
 		gridlength->SetParentInfo (parent_obj, parent_property);
-		OBJECT_TO_NPVARIANT (gridlength, *result);
+		object_to_npvariant (gridlength, *result);
 		break;
 	}
 	case Type::URI: {
@@ -258,19 +258,19 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
 	case Type::KEYTIME: {
 		MoonlightKeyTime *keytime = (MoonlightKeyTime *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightKeyTimeClass);
 		keytime->SetParentInfo (parent_obj, parent_property);
-		OBJECT_TO_NPVARIANT (keytime, *result);
+		object_to_npvariant (keytime, *result);
 		break;
 	}
 	case Type::THICKNESS: {
 		MoonlightThickness *thickness = (MoonlightThickness *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightThicknessClass);
 		thickness->SetParentInfo (parent_obj, parent_property);
-		OBJECT_TO_NPVARIANT (thickness, *result);
+		object_to_npvariant (thickness, *result);
 		break;
 	}
 	case Type::CORNERRADIUS: {
 		MoonlightCornerRadius *corner_radius = (MoonlightCornerRadius *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightCornerRadiusClass);
 		corner_radius->SetParentInfo (parent_obj, parent_property);
-		OBJECT_TO_NPVARIANT (corner_radius, *result);
+		object_to_npvariant (corner_radius, *result);
 		break;
 	}
 	case Type::NPOBJ: {
@@ -278,7 +278,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
 		if (npobj == NULL) {
 			NULL_TO_NPVARIANT (*result);
 		} else {
-			OBJECT_TO_NPVARIANT (npobj, *result);
+			object_to_npvariant (npobj, *result);
 			MOON_NPN_RetainObject (npobj);
 		}
 		break;
@@ -288,7 +288,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
 		if (v->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT)) {
 			MoonlightEventObjectObject *depobj =
 				EventObjectCreateWrapper (((MoonlightObject *) npobj)->GetPlugin (), v->AsDependencyObject ());
-			OBJECT_TO_NPVARIANT (depobj, *result);
+			object_to_npvariant (depobj, *result);
 		} else {
 #if DEBUG
 			printf ("value_to_variant, can't create a variant of a %i = %s\n", v->GetKind (), Type::Find (Deployment::GetCurrent (), v->GetKind ())->GetName ());
@@ -656,7 +656,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	if (js_sender) {
 		depobj = EventObjectCreateWrapper (plugin, js_sender);
 		plugin->AddCleanupPointer (&depobj);
-		OBJECT_TO_NPVARIANT (depobj, args[0]);
+		object_to_npvariant (depobj, args[0]);
 	} else {
 		NULL_TO_NPVARIANT (args[0]);
 	}
@@ -666,7 +666,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	if (calldata) {
 		depargs = EventObjectCreateWrapper (plugin, calldata);
 		plugin->AddCleanupPointer (&depargs);
-		OBJECT_TO_NPVARIANT (depargs, args[1]);
+		object_to_npvariant (depargs, args[1]);
 		argcount++;
 	}
 	
@@ -762,7 +762,7 @@ MoonlightRoutedEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *res
 		DependencyObject *source = args->GetSource ();
 		if (source) {
 			MoonlightEventObjectObject *source_obj = EventObjectCreateWrapper (GetPlugin (), source);
-			OBJECT_TO_NPVARIANT (source_obj, *result);
+			object_to_npvariant (source_obj, *result);
 		}
 		else {
 			NULL_TO_NPVARIANT (*result);
@@ -952,7 +952,7 @@ MoonlightGlyphTypefaceCollectionObject::Invoke (int id, NPIdentifier name, const
 		wrapper = (MoonlightGlyphTypeface *) MOON_NPN_CreateObject (GetInstance (), MoonlightGlyphTypefaceClass);
 		wrapper->typeface = typeface;
 		
-		OBJECT_TO_NPVARIANT (wrapper, *result);
+		object_to_npvariant (wrapper, *result);
 		
 		return true;
 	default:
@@ -1727,7 +1727,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		MoonlightPoint *point = (MoonlightPoint*)MOON_NPN_CreateObject (GetInstance (), MoonlightPointClass);
 		point->point = Point (x, y);
 
-		OBJECT_TO_NPVARIANT (point, *result);
+		object_to_npvariant (point, *result);
 
 		return true;
 	}
@@ -1738,7 +1738,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		StylusInfo *info = event_args->GetStylusInfo ();
 		MoonlightEventObjectObject *info_obj = EventObjectCreateWrapper (GetPlugin (), info);
 		info->unref ();
-		OBJECT_TO_NPVARIANT (info_obj, *result);
+		object_to_npvariant (info_obj, *result);
 		
 		return true;
 	}
@@ -1754,7 +1754,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 			StylusPointCollection *points = event_args->GetStylusPoints ((UIElement*)dob);
 			MoonlightEventObjectObject *col_obj = EventObjectCreateWrapper (GetPlugin (), points);
 			points->unref ();
-			OBJECT_TO_NPVARIANT (col_obj, *result);
+			object_to_npvariant (col_obj, *result);
 		}
 
 		return true;
@@ -1797,7 +1797,7 @@ MoonlightTimelineMarkerRoutedEventArgsObject::GetProperty (int id, NPIdentifier 
 	switch (id) {
 	case MoonId_Marker: {
 		MoonlightEventObjectObject *meoo = EventObjectCreateWrapper (GetPlugin (), marker);
-		OBJECT_TO_NPVARIANT (meoo, *result);
+		object_to_npvariant (meoo, *result);
 		return true;
 	}
 	default:
@@ -2300,12 +2300,12 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 	switch (id) {
 	case MoonId_Settings:
 		MOON_NPN_RetainObject (settings);
-		OBJECT_TO_NPVARIANT (settings, *result);
+		object_to_npvariant (settings, *result);
 		settings_fetched = true;
 		return true;
 	case MoonId_Content:
 		MOON_NPN_RetainObject (content);
-		OBJECT_TO_NPVARIANT (content, *result);
+		object_to_npvariant (content, *result);
 		content_fetched = true;
 		return true;
 	case MoonId_InitParams:
@@ -2476,7 +2476,7 @@ MoonlightScriptControlObject::PostSwitchPlugin (PluginInstance *old_plugin, Plug
 		
 		NPVariant value;
 		if (events_is_func [i]) {
-			OBJECT_TO_NPVARIANT ((NPObject *) events_callbacks [i], value);
+			object_to_npvariant ((NPObject *) events_callbacks [i], value);
 		} else {
 			string_to_npvariant ((const char *) events_callbacks [i], &value);
 		}
@@ -2510,7 +2510,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 			obj = EventObjectCreateWrapper (plugin, dl);
 			dl->unref ();
 
-			OBJECT_TO_NPVARIANT (obj, *result);
+			object_to_npvariant (obj, *result);
 			g_free (object_type);
 			return true;
 		} else {
@@ -2672,7 +2672,7 @@ MoonlightSettingsObject::Invoke (int id, NPIdentifier name,
 	case MoonId_GetSystemGlyphTypefaces:
 		typefaces = plugin->GetDeployment ()->GetFontManager ()->GetSystemGlyphTypefaces ();
 		wrapper = EventObjectCreateWrapper (plugin, typefaces);
-		OBJECT_TO_NPVARIANT (wrapper, *result);
+		object_to_npvariant (wrapper, *result);
 		return true;
 	case MoonId_ToString:
 		if (argCount != 0)
@@ -2773,7 +2773,7 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 			accessibility = new Accessibility ();
 		MoonlightEventObjectObject *acc = EventObjectCreateWrapper (plugin, accessibility);
 
-		OBJECT_TO_NPVARIANT (acc, *result);
+		object_to_npvariant (acc, *result);
 		return true;
 	}
 	case MoonId_ActualHeight:
@@ -2816,7 +2816,7 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		} else {
 			MoonlightEventObjectObject *topobj = EventObjectCreateWrapper (plugin, top);
 
-			OBJECT_TO_NPVARIANT (topobj, *result);
+			object_to_npvariant (topobj, *result);
 		}
 		return true;
 	}
@@ -2830,7 +2830,7 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		obj = (MoonlightScriptableObjectObject *) val;
 		
 		MOON_NPN_RetainObject (obj);
-		OBJECT_TO_NPVARIANT ((NPObject*)obj, *result);
+		object_to_npvariant ((NPObject*)obj, *result);
 		return true;
 	}
 	default:
@@ -2912,7 +2912,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 			return true;
 		}
 
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (plugin, element), *result);
+		object_to_npvariant (EventObjectCreateWrapper (plugin, element), *result);
 		return true;
 	}
 
@@ -2954,7 +2954,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (plugin, dep);
 		delete val;
 
-		OBJECT_TO_NPVARIANT (depobj, *result);
+		object_to_npvariant (depobj, *result);
 		return true;
 	}
 
@@ -2981,7 +2981,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		if (!dep)
 			THROW_JS_EXCEPTION ("createFromXamlDownloader");
 
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (plugin, dep), *result);
+		object_to_npvariant (EventObjectCreateWrapper (plugin, dep), *result);
 		dep->unref ();
 		return true;
 	}
@@ -3397,7 +3397,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		}
 
 		g_free (name);
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (plugin, element), *result);
+		object_to_npvariant (EventObjectCreateWrapper (plugin, element), *result);
 		return true;
 	}
 
@@ -3407,7 +3407,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_GETHOST");
 
-		OBJECT_TO_NPVARIANT (plugin->GetHost (), *result);
+		object_to_npvariant (plugin->GetHost (), *result);
 
 		return true;
 	}
@@ -3418,7 +3418,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		
 		DependencyObject *parent = ((FrameworkElement*)dob)->GetLogicalParent ();
 		if (parent)
-			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetPlugin (), parent), *result);
+			object_to_npvariant (EventObjectCreateWrapper (GetPlugin (), parent), *result);
 		else
 			NULL_TO_NPVARIANT (*result);
 
@@ -3733,7 +3733,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("removeAt");
 		
 		DependencyObject *obj = col->GetValueAt (index)->AsDependencyObject ();
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetPlugin (), obj), *result);
+		object_to_npvariant (EventObjectCreateWrapper (GetPlugin (), obj), *result);
 		
 		col->RemoveAt (index);
 		
@@ -3807,7 +3807,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		}
 		
 		DependencyObject *obj = col->GetValueAt (index)->AsDependencyObject ();
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetPlugin (), obj), *result);
+		object_to_npvariant (EventObjectCreateWrapper (GetPlugin (), obj), *result);
 		
 		return true;
 	}
@@ -3820,7 +3820,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		DependencyObject *obj = ((MediaAttributeCollection *) col)->GetItemByName (name);
 		g_free (name);
 		
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetPlugin (), obj), *result);
+		object_to_npvariant (EventObjectCreateWrapper (GetPlugin (), obj), *result);
 		
 		return true;
 	}
@@ -4058,7 +4058,7 @@ MoonlightMultiScaleImageObject::Invoke (int id, NPIdentifier name,
 			int arg0 = NPVARIANT_TO_INT32 (args[0]);
 			MultiScaleSubImage * ret = dob->GetIthSubImage(arg0);
 			if (ret)
-				OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetPlugin (), ret), *result);
+				object_to_npvariant (EventObjectCreateWrapper (GetPlugin (), ret), *result);
 			else
 				NULL_TO_NPVARIANT (*result);
 			return true;
@@ -4693,7 +4693,7 @@ MoonlightStrokeCollectionObject::Invoke (int id, NPIdentifier name,
 
 		StrokeCollection *hit_col = col->HitTest ((StylusPointCollection*)dob);
 
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetPlugin (), hit_col), *result);
+		object_to_npvariant (EventObjectCreateWrapper (GetPlugin (), hit_col), *result);
 		hit_col->unref ();
 		return true;
 	}
