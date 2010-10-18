@@ -38,6 +38,7 @@ namespace Moonlight {
 		private string entry_point_type = null;
 		private string cs_sources;
 		private string cd;
+		private string warn_as_error_arg;
 		private bool in_place = true;
 		
 		const string RuntimeVersion2 = "2.0.31005.0";
@@ -89,6 +90,11 @@ namespace Moonlight {
 		public bool ListGenerated {
 			get { return list_generated; }
 			set { list_generated = value; }
+		}
+
+		public string WarnAsErrorArg {
+			get { return warn_as_error_arg; }
+			set { warn_as_error_arg = value; }
 		}
 		
 		public string Cd {
@@ -494,6 +500,9 @@ namespace Moonlight {
 			foreach (KeyValuePair<string, string> pair in AssemblyResources)
 				compiler_args.AppendFormat (" -resource:\"{0},{1}\"", pair.Value, pair.Key);
 
+			if (warn_as_error_arg != null)
+				compiler_args.AppendFormat (" {0}", warn_as_error_arg);
+
 			if (desktop)
 				return RunProcess ("gmcs", compiler_args.ToString());
 			else
@@ -816,7 +825,8 @@ namespace Moonlight {
 				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null },
 				{ "out=|output-dir=", v => mxap.OutputDir = v },
 				{ "inplace:", "Don't use a temporary directory", v => mxap.InPlace = ParseBool (v, mxap.InPlace) },
-				{ "runtime-version=|rv=", String.Format ("Select the Silverlight Runtime Version (2 = {0}, 3 = {1} 4 = {2}, or use the full version string)", RuntimeVersion2, RuntimeVersion3, RuntimeVersion4), v => mxap.SetRuntimeVersion (v) }
+				{ "runtime-version=|rv=", String.Format ("Select the Silverlight Runtime Version (2 = {0}, 3 = {1} 4 = {2}, or use the full version string)", RuntimeVersion2, RuntimeVersion3, RuntimeVersion4), v => mxap.SetRuntimeVersion (v) },
+				{ "warnaserror", "Treats all warnings as errors", v => mxap.WarnAsErrorArg = v != null ? "-warnaserror+" : null }
 			};
 
 			List<string> extra = null;
