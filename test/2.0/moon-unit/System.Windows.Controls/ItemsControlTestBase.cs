@@ -179,6 +179,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		[Asynchronous]
 		[MaxRuntimeVersion (3)]
+		[MoonlightBug ("item.DataContext is null (the passing condition for the _sl4 variant)")]
 		public void ContainerItemTest7_sl3 ()
 		{
 			// Force all elements to *not* be their own container

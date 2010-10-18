@@ -641,6 +641,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("NRE someplace in this method, across runtime versions")]
 		public void TestOverrides ()
 		{
 			ComboBoxPoker b = new ComboBoxPoker ();
@@ -872,6 +873,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("we're failing #3 across runtimeversions, looks like VisualTreeHelper.GetParent(item.Content) is returning null")]
 		public void ItemParentTest5 ()
 		{
 			bool loaded = false;
@@ -1270,6 +1272,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TemplateClosesDropdown ()
 		{
 			ComboBox box = new ComboBox ();
@@ -1279,7 +1282,23 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void XamlSelectedIndex ()
+		[MinRuntimeVersion(4)]
+		public void XamlSelectedIndex_sl4 ()
+		{
+			var c = (ComboBox)XamlReader.Load (@"
+<ComboBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" SelectedIndex=""1"">
+	<Rectangle />
+	<Ellipse />
+</ComboBox>
+");
+			Assert.AreEqual (1, c.SelectedIndex, "#1");
+			Assert.AreEqual (c.Items [1], c.SelectedItem, "#2");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("This test is identical to the _sl4 variant, but c.SelectedIndex == -1, not 1.")]
+		public void XamlSelectedIndex_sl3 ()
 		{
 			var c = (ComboBox)XamlReader.Load (@"
 <ComboBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" SelectedIndex=""1"">
@@ -1308,7 +1327,32 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void XamlSelectedIndex3 ()
+		[MinRuntimeVersion(4)]
+		public void XamlSelectedIndex3_sl4 ()
+		{
+			var panel = (StackPanel)XamlReader.Load(@"
+<StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+			xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit""
+			xmlns:system=""clr-namespace:System;assembly=mscorlib"">
+	<StackPanel.Resources>
+		<clr:ObjectCollection x:Key=""collection"">
+			<system:String>String 1</system:String>
+			<system:String>String 2</system:String>
+		</clr:ObjectCollection>
+	</StackPanel.Resources>
+	<ComboBox SelectedIndex=""1"" ItemsSource=""{StaticResource collection}"">
+	</ComboBox>
+</StackPanel>
+");
+			Assert.AreEqual (-1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
+			Assert.IsNull (panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("this test is identical to the _sl4 variant, but the parser fails with 'Unknown element: char*")]
+		public void XamlSelectedIndex3_sl3 ()
 		{
 			var panel = (StackPanel)XamlReader.Load(@"
 <StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
