@@ -178,7 +178,39 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void ContainerItemTest7 ()
+		[MaxRuntimeVersion (3)]
+		public void ContainerItemTest7_sl3 ()
+		{
+			// Force all elements to *not* be their own container
+			ItemsControlPoker c = new ItemsControlPoker { IsOwnContainer = false };
+			c.ApplyTemplate ();
+
+			CreateAsyncTest (c, () => {
+				ContentPresenter item;
+				object content;
+
+				content = new Rectangle ();
+				c.Items.Add (content);
+				Assert.IsInstanceOfType<ContentPresenter> (c.LastCreatedContainer, "#1");
+				item = (ContentPresenter) c.LastCreatedContainer;
+				Assert.AreEqual (content, item.Content, "#2");
+				Assert.AreEqual (content, item.DataContext, "#3");
+
+				c.LastCreatedContainer = null;
+
+				content = "I'm a string";
+				c.Items.Add (content);
+				Assert.IsInstanceOfType<ContentPresenter> (c.LastCreatedContainer, "#4");
+				item = (ContentPresenter) c.LastCreatedContainer;
+				Assert.AreEqual (content, item.Content, "#5");
+				Assert.AreEqual (content, item.DataContext, "#6");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MinRuntimeVersion (4)]
+		public void ContainerItemTest7_sl4 ()
 		{
 			// Force all elements to *not* be their own container
 			ItemsControlPoker c = new ItemsControlPoker { IsOwnContainer = false };
@@ -194,6 +226,7 @@ namespace MoonTest.System.Windows.Controls
 				item = (ContentPresenter) c.LastCreatedContainer;
 				Assert.AreEqual (content, item.Content, "#2");
 				Assert.IsNull (item.DataContext, "#3");
+
 				c.LastCreatedContainer = null;
 
 				content = "I'm a string";
