@@ -2283,12 +2283,13 @@ void
 Surface::EmitFocusChangeEvents()
 {
 	while (FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->First ()) {
+		focus_changed_events->Unlink (node);
 		if (node->lost_focus)
 			EmitEventOnList (UIElement::LostFocusEvent, node->lost_focus, NULL, -1);
 		if (node->got_focus)
 			EmitEventOnList (UIElement::GotFocusEvent, node->got_focus, NULL, -1);
 
-		focus_changed_events->Remove (node);
+		delete node;
 	}
 }
 
