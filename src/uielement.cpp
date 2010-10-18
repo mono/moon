@@ -138,6 +138,17 @@ UIElement::IsSubtreeLoaded (UIElement *element)
 	return element;
 }
 
+
+bool
+UIElement::CoerceCursor (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error)
+{
+	if (Value::IsNull (value))
+		*coerced = new Value (CursorTypeDefault, Type::CURSORTYPE);
+	else
+		*coerced = new Value (*value);
+	return true;
+}
+
 void
 UIElement::Dispose()
 {

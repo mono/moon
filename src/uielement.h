@@ -530,7 +530,7 @@ public:
 	const static int AllowDropProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
- 	/* @PropertyType=CursorType,DefaultValue=CursorTypeDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,GenerateAccessors,Validator=CursorValidator */
+ 	/* @PropertyType=CursorType,DefaultValue=CursorTypeDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,GenerateAccessors,Validator=CursorValidator,Coercer=UIElement::CoerceCursor */
 	const static int CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int ResourcesProperty;
@@ -652,6 +652,8 @@ public:
 	// Helper method which checks recursively checks this element and its visual
 	// parents to see if any are loaded.
 	static bool IsSubtreeLoaded (UIElement *element);
+
+	static bool CoerceCursor (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
 
 	// Helper methods for properties that should be ignored when runtime
 	// flags are not present
