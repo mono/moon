@@ -9,7 +9,7 @@ namespace Moonlight {
 
 class MoonPixbufGtk : public MoonPixbuf {
 public:
-	MoonPixbufGtk (GdkPixbuf *pixbuf);
+	MoonPixbufGtk (GdkPixbuf *pixbuf, bool crc_error);
 	virtual ~MoonPixbufGtk ();
 
 	virtual gint GetWidth ();
@@ -21,6 +21,7 @@ public:
 	virtual gpointer GetPlatformPixbuf ();
 
 private:
+	bool crc_error;
 	GdkPixbuf *gdk_pixbuf;
 };
 
@@ -36,6 +37,7 @@ public:
 
 private:
 	GdkPixbufLoader *gdk_loader;
+	bool crc_error;
 };
 
 };
