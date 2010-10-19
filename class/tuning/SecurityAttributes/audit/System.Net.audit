@@ -38,8 +38,9 @@ System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
 System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
 	r153396		spouliot - call AppDomain.GetData [SecurityCritical] to retrive the XAP URI
 
-!SSC-169A415186A561CFF397839A29E09CC9
+!SSC-193370BE8AC59AAB0E477E814A5FC6D7
 System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
+	20101019	spouliot - aad016f - warning cleanup (an always null variable, req, was removed)
 	20101013	spouliot - 936c28a - only call queue.Dequeue if queue.Count > 0
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on non-null 'sac' which represents the queued delegate returned by Socket/SocketAsyncResult::GetDelegate [SecurityCritical]
 

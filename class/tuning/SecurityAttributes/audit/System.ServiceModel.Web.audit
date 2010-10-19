@@ -1,4 +1,5 @@
-!SSC-891EA8AB0CA9505060B1E4445F9A45A3
+!SSC-C6D2199382BF70E2AB512D786BA20981
 System.Object System.Runtime.Serialization.Json.TypeMap::Deserialize(System.Runtime.Serialization.Json.JsonSerializationReader)
+	20101019	spouliot - 987ef9d - signature changed to virtual, (new) ExternalTypeMap inherits from TypeMap and overrides this method
 	r145113		spouliot - call FormatterServices [SecurityCritical] GetUninitializedObject to create an instance of 'type'
 
