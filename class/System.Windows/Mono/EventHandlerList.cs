@@ -112,9 +112,9 @@ namespace Mono {
 			RegisterEvent (obj, eventId, managedHandler, nativeHandler, false);
 		}
 
-		public void RegisterEvent (INativeEventObjectWrapper obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler, bool unhandledEventsToo)
+		public void RegisterEvent (INativeEventObjectWrapper obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler, bool handledEventsToo)
 		{
-			RegisterEvent (obj.NativeHandle, eventId, managedHandler, nativeHandler, unhandledEventsToo);
+			RegisterEvent (obj.NativeHandle, eventId, managedHandler, nativeHandler, handledEventsToo);
 		}
 
 		public void RegisterEvent (IntPtr obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
@@ -122,7 +122,7 @@ namespace Mono {
 			RegisterEvent (obj, eventId, managedHandler, nativeHandler, false);
 		}
 
-		public void RegisterEvent (IntPtr obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler, bool unhandledEventsToo)
+		public void RegisterEvent (IntPtr obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler, bool handledEventsToo)
 		{
 			if (managedHandler == null)
 				return;
@@ -133,7 +133,7 @@ namespace Mono {
 				RemoveHandler (eventId, token);
 			};
 
-			token = Events.AddHandler (obj, eventId, nativeHandler, dtor_action, unhandledEventsToo);
+			token = Events.AddHandler (obj, eventId, nativeHandler, dtor_action, handledEventsToo);
 			
 			AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
