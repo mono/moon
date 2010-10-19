@@ -1088,7 +1088,8 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void ReplaceTest ()
+		[MinRuntimeVersion(3)]
+		public void ReplaceTest_sl3 ()
 		{
 			object orig = new object ();
 			ComboBoxPoker c = new ComboBoxPoker ();
@@ -1101,6 +1102,33 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (2, c.methods.Count, "#1");
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
 			Assert.AreEqual (NotifyCollectionChangedAction.Replace, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+
+			Assert.AreEqual ("SelectionChangedEvent", c.methods [1].MethodName, "#4");
+			SelectionChangedEventArgs args = (SelectionChangedEventArgs)c.methods[1].ReturnValue;
+			Assert.AreEqual (0, args.AddedItems.Count, "#5");
+			Assert.AreEqual (1, args.RemovedItems.Count, "#6");
+			Assert.AreEqual (orig, args.RemovedItems[0], "#7");
+
+			Assert.AreEqual (-1, c.SelectedIndex, "#8");
+			Assert.IsNull (c.SelectedItem, "#9");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		[MoonlightBug ("RV2 on silverlight has '4' for #1, not '2' as in the _sl3 variant above, and #3 is also different (Remove instead of Replace)")]
+		public void ReplaceTest_sl2 ()
+		{
+			object orig = new object ();
+			ComboBoxPoker c = new ComboBoxPoker ();
+			c.Items.Add (orig);
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items [0] = new object ();
+
+			Assert.AreEqual (4, c.methods.Count, "#1");
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
 
 			Assert.AreEqual ("SelectionChangedEvent", c.methods [1].MethodName, "#4");
 			SelectionChangedEventArgs args = (SelectionChangedEventArgs)c.methods[1].ReturnValue;
