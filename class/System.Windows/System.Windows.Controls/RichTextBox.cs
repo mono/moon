@@ -1,5 +1,5 @@
 //
-// RichTextArea.cs
+// RichTextBox.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -52,18 +52,13 @@ namespace System.Windows.Controls {
 		protected override void OnKeyDown (KeyEventArgs e)
 		{
 			base.OnKeyDown (e);
-
-			
-			if (!e.Handled)
-				NativeMethods.rich_text_box_on_key_down (native, e.NativeHandle);
+			NativeMethods.rich_text_box_on_key_down (native, e.NativeHandle);
 		}
 
 		protected override void OnKeyUp (KeyEventArgs e)
 		{
 			base.OnKeyUp (e);
-
-			if (!e.Handled)
-				NativeMethods.rich_text_box_on_key_up (native, e.NativeHandle);
+			NativeMethods.rich_text_box_on_key_up (native, e.NativeHandle);
 		}
 
 		protected override void OnLostFocus (RoutedEventArgs e)
@@ -86,9 +81,7 @@ namespace System.Windows.Controls {
 			if (e == null)
 				throw new ArgumentNullException ("e");
 
-			if (!e.Handled)
-				NativeMethods.rich_text_box_on_mouse_left_button_down (native, e.NativeHandle);
-
+			NativeMethods.rich_text_box_on_mouse_left_button_down (native, e.NativeHandle);
 			base.OnMouseLeftButtonDown (e);
 		}
 
@@ -97,9 +90,7 @@ namespace System.Windows.Controls {
 			if (e == null)
 				throw new ArgumentNullException ("e");
 
-			if (!e.Handled)
-				NativeMethods.rich_text_box_on_mouse_left_button_up (native, e.NativeHandle);
-
+			NativeMethods.rich_text_box_on_mouse_left_button_up (native, e.NativeHandle);
 			base.OnMouseLeftButtonUp (e);
 		}
 
