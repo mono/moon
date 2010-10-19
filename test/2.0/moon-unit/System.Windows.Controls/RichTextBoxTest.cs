@@ -102,6 +102,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("The OnTextInput* methods emit NIE")]
 		public void OnNullEventArgs ()
 		{
 			MyRichTextBox rtb = new MyRichTextBox ();
@@ -132,8 +133,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.Throws<ArgumentNullException> (delegate {
 				rtb.OnMouseMove_Null ();
 			}, "OnMouseMove");
-#if false
-// throw NotImplementedException
 			Assert.Throws<ArgumentNullException> (delegate {
 				rtb.OnTextInput_Null ();
 			}, "OnTextInput");
@@ -143,7 +142,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.Throws<ArgumentNullException> (delegate {
 				rtb.OnTextInputUpdate_Null ();
 			}, "OnTextInputUpdate");
-#endif
 		}
 	}
 }
