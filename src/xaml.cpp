@@ -4394,7 +4394,7 @@ XamlElementInfoNative::GetContentProperty (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoNative::CreateElementInstance (XamlParserInfo *p)
 {
-	if (type->IsValueType ())
+	if (type->IsValueType () || type->GetKind() == Type::STRING)
 		return new XamlElementInstanceValueType (this, p, GetName (), XamlElementInstance::ELEMENT);
 	else if (type->IsSubclassOf (Type::FRAMEWORKTEMPLATE))
 		return new XamlElementInstanceTemplate (this, p, GetName (), XamlElementInstance::ELEMENT);

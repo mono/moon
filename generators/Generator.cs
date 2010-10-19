@@ -2759,7 +2759,7 @@ class Generator {
 							events,
 							type.Interfaces.Count,
 							interfaces,
-							type.DefaultCtorVisible || type.IsValueType || type.IsEnum ? "true" : "false",
+							type.DefaultCtorVisible || type.IsValueType || type.IsEnum || type.KindName == "STRING" ? "true" : "false",
 							((type.C_Constructor != null && type.GenerateCBindingCtor && (all.GetDependencyObjects ().Contains (type) || type.Name == "DependencyObject"))
 							 ? (type.ConstructorSkipsFactories
 							    ? string.Concat ("(create_inst_func *) ", type.C_Constructor)
