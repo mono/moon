@@ -928,9 +928,9 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 }
 
 int
-UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, bool handledEventsToo, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy)
+UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor, bool invoke_data_dtor_on_destroy, bool handledEventsToo)
 {
-	int rv = DependencyObject::AddHandler (event_id, handler, data, handledEventsToo, data_dtor, invoke_data_dtor_on_destroy);
+	int rv = DependencyObject::AddHandler (event_id, handler, data, data_dtor, invoke_data_dtor_on_destroy, handledEventsToo);
 	if (IsLoaded () && event_id == UIElement::LoadedEvent) {
 		GetDeployment ()->AddAllLoadedHandlers (this, true);// (this, FindHandlerToken (UIElement::LoadedEvent, handler, data));
 	}

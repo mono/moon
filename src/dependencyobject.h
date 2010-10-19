@@ -143,12 +143,12 @@ public:
 		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
 	}	
 	
-	int AddHandler (const char *event_name, EventHandler handler, gpointer data, bool handledEventsToo = false, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
-	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, bool handledEventsToo = false, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
+	int AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
+	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
  	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
 	/* @GeneratePInvoke */
-	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, bool handledEventsToo = false, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
+	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
 	/* @GeneratePInvoke */
  	void RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data);
 
@@ -157,9 +157,9 @@ public:
 	void DoEmitCurrentContext (int event_id, EventArgs *calldata);
 
 	/* @GeneratePInvoke */
-	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, bool handledEventsToo = false, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
+	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
 	/* @GeneratePInvoke */
-	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, bool handledEventsToo = false, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false);
+	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
 	/* @GeneratePInvoke */
 	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	virtual void RemoveHandler (int event_id, int token);
