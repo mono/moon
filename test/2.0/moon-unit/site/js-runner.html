@@ -1,0 +1,119 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+
+
+
+    If you change this file, make sure you do the same thing to test.html.
+    
+    There are a few (intended) differences between test.html and index.html:
+    * test.html closes itself when the test run completes (so this is the file the bots use, since otherwise the test will time out waiting for firefox to exit)
+    * index.html does not load the test plugin (libshocker.so in moonlight), since it would make it a lot harder to run with VS.
+      - this also means that the error handling is different: test.html closes itself, while index.html can't, so it just shows the error in the page.
+
+    Those differences are the only differences these files should have.
+
+
+
+
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Moonlight Unit Test Harness</title>
+    <style type="text/css">
+        html, body
+        {
+            height: 100%;
+            overflow: auto;
+        }
+        body
+        {
+            padding: 0;
+            margin: 0;
+        }
+        #silverlightControlHost
+        {
+            height: 100%;
+        }
+    </style>
+
+
+    <script language="javascript">
+      var _testNames;
+      var _currentTest;
+      var _numTests;
+      var _testResults = {};
+      var _testFrame;
+      var _results;
+
+      function ReportHarnessError (errMsg) {
+        alert ("error message" + errMsg);
+      };
+
+      function toggleVisibility (id) {
+        var d = document.getElementById (id);
+        if (d == null)
+          return;
+
+        if (d.style.display=="none")
+          d.style.display="block";
+        else
+          d.style.display="none";
+      }
+
+      function ReportTestFinished (results) {
+        var name = _testNames[_currentTest];
+
+        var newdiv = document.createElement ("DIV");
+        newdiv.innerHTML = "<div style='display: none;' id='results-" + name + "'><bold>" + name + "</bold> : " + results + "</div>";
+        _results.appendChild (newdiv);
+
+        var spinner = document.getElementById ("spinner-" + name);
+        spinner.style.display="none";
+
+        _currentTest ++;
+        if (_currentTest == _numTests) {
+          alert ("done!");
+        }
+        else {
+          RunCurrentTest ();
+        }
+      };
+
+      function RunCurrentTest () {
+        var test = _testNames[_currentTest];
+
+        _testFrame.src = "./js-runner-frame.html?" + test;
+
+        var newdiv = document.createElement("DIV");
+      newdiv.innerHTML = "<a href=\"javascript:toggleVisibility('results-" + test + "')\">" + test + "</a><img style='display:inline;' id='spinner-" + test + "' src='spinner.gif'>";
+        _results.appendChild (newdiv);
+      };
+
+      function RunTests (testNames) {
+        _testFrame = document.getElementById ("testFrame");
+        _results = document.getElementById ("results");
+        _testNames = testNames;
+        _currentTest = 0;
+        _numTests = _testNames.length;
+
+        RunCurrentTest ();
+      }
+    </script>
+
+</head>
+<body>
+    <iframe id="testFrame" style='visibility: visible; height: 1; width: 1; border: 0px'></iframe>
+
+    <div id="results">
+    </div>
+
+    <script language="javascript">
+
+      RunTests (["ActivatorTest", "BindingTest", "ComboBoxTest", "PopupTest"]);
+
+    </script>
+
+</body>
+</html>
