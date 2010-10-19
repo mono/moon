@@ -91,6 +91,14 @@ namespace System.Windows.Threading {
 		public DispatcherOperation BeginInvoke (Delegate d, params object[] args)
 		{
 			DispatcherOperation op = null;
+
+			if (Deployment.IsShuttingDown) {
+				/* DRT #232: some object calls us from the dtor, which happens to run upon shutdown. Here we access
+				 * Deployment::Current::Surface, which may have been destroyed if we're shutting down (and accessing
+				 * it again will recreate it, which is very bad). So just bail out if this is the case. */
+				return new DispatcherOperation (null, null); // return a dummy object
+			}
+
 			lock (queuedOperations) {
 				op = new DispatcherOperation (d, args);
 				queuedOperations.Enqueue (op);
