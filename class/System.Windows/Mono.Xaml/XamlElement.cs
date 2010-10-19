@@ -315,11 +315,16 @@ namespace Mono.Xaml {
 			if (prop != null)
 				return prop;
 
-			XamlPropertySetter evnt = XamlReflectionEventForName (Object, reader.LocalName);
+			object target = Object;
+			MutableObject obj = Object as MutableObject;
+			if (obj != null)
+				target = obj.Object;
+			
+			XamlPropertySetter evnt = XamlReflectionEventForName (target, reader.LocalName);
 			if (evnt != null)
 				return evnt;
 
-			XamlPropertySetter attached = XamlImplicitAttachedPropertyForName (Object, reader.LocalName);
+			XamlPropertySetter attached = XamlImplicitAttachedPropertyForName (target, reader.LocalName);
 			if (attached != null)
 				return attached;
 
