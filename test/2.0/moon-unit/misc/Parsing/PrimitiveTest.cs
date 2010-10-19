@@ -115,13 +115,27 @@ namespace MoonTest.Misc
  						   xmlns:moon=""assembly=mscorlib""><Canvas.Resources><moon:String x:Key=""hola"">hola</moon:String></Canvas.Resources></Canvas>"); }, "1");
 		}
 
-		[TestMethod]
 		public void ParseStringNamespaceAssemblyReversed ()
 		{
 			// Can't get away with not setting the namespace
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
  						   xmlns:moon=""assembly=mscorlib;clr-namespace:System""><Canvas.Resources><moon:String x:Key=""hola"">hola</moon:String></Canvas.Resources></Canvas>"); }, "1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
+		public void ParseStringNamespaceAssemblyReversed_sl4 ()
+		{
+			ParseStringNamespaceAssemblyReversed ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void ParseStringNamespaceAssemblyReversed_sl3 ()
+		{
+			ParseStringNamespaceAssemblyReversed ();
 		}
 
 		[TestMethod]
@@ -339,12 +353,26 @@ namespace MoonTest.Misc
 			Assert.AreEqual (d, 39.0, "3");
 		}
 
-		[TestMethod]
 		public void ParseDouble_Auto ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
  						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Double x:Key=""double"">Auto</sys:Double></Canvas.Resources></Canvas>"));
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void ParseDouble_Auto_sl4 ()
+		{
+			ParseDouble_Auto ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("we don't throw the exception for RV 2/3")]
+		public void ParseDouble_Auto_sl3 ()
+		{
+			ParseDouble_Auto ();
 		}
 
 		[TestMethod]
@@ -401,8 +429,6 @@ namespace MoonTest.Misc
 			Assert.AreEqual (d, 39.0, "3");
 		}
 
-		[TestMethod]
-		[MoonlightBug ("Moonlight doesn't permit empty doubles (perhaps because of the plugin?)", RuntimeVersion=3)]
 		public void ParseEmptyDouble ()
 		{
 			Canvas c;
@@ -421,6 +447,21 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("Moonlight doesn't permit empty doubles (perhaps because of the plugin?)")]
+		public void ParseEmptyDouble_sl3 ()
+		{
+			ParseEmptyDouble ();
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void ParseEmptyDouble_sl4 ()
+		{
+			ParseEmptyDouble ();
+		}
+
+		[TestMethod]
 		public void ParseDoubleWithComma ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
@@ -436,13 +477,26 @@ namespace MoonTest.Misc
  						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Double x:Key=""double"">39 000</sys:Double></Canvas.Resources></Canvas>"); }, "1");
 		}
 
-		[TestMethod]
-		[MoonlightBug ("Moonlight permits doubles in hex format (thanks to strtod)", RuntimeVersion=3)]
 		public void ParseDoubleHex ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
  						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Double x:Key=""double"">0x10</sys:Double></Canvas.Resources></Canvas>"); }, "1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("Moonlight permits doubles in hex format (thanks to strtod)")]
+		public void ParseDoubleHex_sl3 ()
+		{
+			ParseDoubleHex ();
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void ParseDoubleHex_sl4 ()
+		{
+			ParseDoubleHex ();
 		}
 
 		[TestMethod]

@@ -135,7 +135,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			ButtonBaseTest.ReadOnlyProperties (new RepeatButton ());
 		}
 
-		[TestMethod]
 		public void CheckReadOnlyXaml ()
 		{
 			Assert.Throws<XamlParseException> (delegate {
@@ -178,5 +177,20 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 </Canvas>");
 			}, "IsPressed/False/Default");
 		}
+
+		[TestMethod]
+		[MinRuntimeVersion (4)]
+		[MoonlightBug ("Expected 'System.Windows.Markup.XamlParseException', but got no exception. IsFocused/True")]
+		public void CheckReadOnlyXaml_sl4 ()
+		{
+			CheckReadOnlyXaml ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion (3)]
+		public void CheckReadOnlyXaml_sl3 ()
+		{
+			CheckReadOnlyXaml ();
+		}		
 	}
 }

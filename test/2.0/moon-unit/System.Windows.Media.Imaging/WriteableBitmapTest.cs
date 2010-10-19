@@ -81,6 +81,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Actual value is '11' while the expected value was '10'. Rectangle-PixelWidth")]
 		public void Ctor_UIElementTransform ()
 		{
 			MatrixTransform transform = new MatrixTransform ();

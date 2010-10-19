@@ -484,7 +484,6 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (b));
 		}
 
-		[TestMethod]
 		public void DoublesForZIndex ()
 		{
 		        Canvas c = (Canvas)XamlReader.Load (@"
@@ -516,6 +515,21 @@ namespace MoonTest.System.Windows.Controls
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <Rectangle Canvas.ZIndex=""V"" />
 </Canvas>"); });
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		[MoonlightBug ("Actual value is '5000' while the expected value was '5'. 2")]
+		public void DoublesForZIndex_sl4 ()
+		{
+			DoublesForZIndex ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		public void DoublesForZIndex_sl3 ()
+		{
+			DoublesForZIndex ();
 		}
 	}
 

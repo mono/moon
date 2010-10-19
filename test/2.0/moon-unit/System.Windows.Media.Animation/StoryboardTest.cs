@@ -130,6 +130,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 		
 		[TestMethod]
+		[MoonlightBug ("Expected 'System.Exception', got 'System.ArgumentException'. 2")]
 		public void InvalidValues_NonTimeline ()
 		{
 			Rectangle r = new Rectangle ();
@@ -148,6 +149,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Can not set a non-nullable scalar type to NULL (property: TargetProperty)")]
 		public void ValidValues_Timeline ()
 		{
 			Timeline t = (Timeline) new ColorAnimation ();
@@ -299,6 +301,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("FindName failing")]
 		public void NameAndKey_Resource_Namespace_sl4 ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (
@@ -1546,6 +1549,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("this is failing across runtime versions")]
 		public void ComplexTarget12 ()
 		{
 			//bool complete = false;

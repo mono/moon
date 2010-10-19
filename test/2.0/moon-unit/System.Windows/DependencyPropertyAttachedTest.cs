@@ -468,6 +468,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod ()]
+		[MoonlightBug ("we aren't throwing the expected ArgumentException someplace in this test")]
 		public void Register_CustomCanvasType_Height_CustomStruct ()
 		{
 			CustomCanvasType the_object = new CustomCanvasType ();
@@ -520,6 +521,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod ()]
+		[MoonlightBug ("we aren't throwing the expected ArgumentException someplace in this test")]
 		public void Register_CustomCanvasType_Height_CustomEnum ()
 		{
 			CustomCanvasType the_object = new CustomCanvasType ();

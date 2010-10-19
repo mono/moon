@@ -308,7 +308,19 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void AttachedProp_FE_GetOnly_OnRectangle ()
+		[MinRuntimeVersion(4)]
+		public void AttachedProp_FE_GetOnly_OnRectangle_sl4 ()
+		{
+			// Attached properties need a getter and setter
+			Assert.Throws<XamlParseException> (() =>
+				AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_GetProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("we don't throw the exception")]
+		public void AttachedProp_FE_GetOnly_OnRectangle_sl3 ()
 		{
 			// Attached properties need a getter and setter
 			Assert.Throws<XamlParseException> (() =>
@@ -336,7 +348,18 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void AttachedProp_FE_SetOnly_OnRectangle ()
+		[MinRuntimeVersion(4)]
+		public void AttachedProp_FE_SetOnly_OnRectangle_sl4 ()
+		{
+			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_SetProperty);
+			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_SetProperty), "#1");
+			Assert.IsNotNull (((FrameworkElement) f.Parent).FindName ("Hidden"), "#should be findable");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("XamlParseException: Unknown element: AttachedProperties.FE_Set.")]
+		public void AttachedProp_FE_SetOnly_OnRectangle_sl3 ()
 		{
 			var f = AttachedPropertiesCore<Rectangle> (() => AttachedProperties.FE_SetProperty);
 			Assert.IsInstanceOfType<Rectangle> (f.GetValue (AttachedProperties.FE_SetProperty), "#1");
@@ -494,6 +517,7 @@ namespace MoonTest.Misc.Parsing
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void AttachedPropWithManagedNamespace_NoTemplateOwner_sl4()
 		{
 			string xaml =
@@ -625,7 +649,21 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void EscapeMarkup ()
+		[MinRuntimeVersion (4)]
+		public void EscapeMarkup_sl4 ()
+		{
+			EscapeMarkupTest ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion (3)]
+		[MoonlightBug ("we don't get the expected XamlParseException")]
+		public void EscapeMarkup_sl3 ()
+		{
+			EscapeMarkupTest ();
+		}
+
+		public void EscapeMarkupTest ()
 		{
 			Canvas c;
 
@@ -715,6 +753,7 @@ namespace MoonTest.Misc.Parsing
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void EventHandlerInBaseAndImplClasses_sl4 ()
 		{
 
@@ -722,7 +761,16 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		public void EventHandlerInBaseClass ()
+		[MaxRuntimeVersion(3)]
+		public void EventHandlerInBaseClass_sl3 ()
+		{
+			Assert.Throws <XamlParseException> (() => new MiscParsingEventImpl2 ());
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
+		public void EventHandlerInBaseClass_sl4 ()
 		{
 			Assert.Throws <XamlParseException> (() => new MiscParsingEventImpl2 ());
 		}
@@ -735,11 +783,20 @@ namespace MoonTest.Misc.Parsing
 		}
 		
 		[TestMethod]
-		[MinRuntimeVersion(3)]
+		[RuntimeVersion(3)]
+		[MoonlightBug ("we aren't throwing this exception properly")]
 		public void MissingXmlnsOnAttachedProp_sl3 ()
 		{
 			Assert.Throws<XamlParseException>(() => new MiscParsingManagedAttachedProp ());
 		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void MissingXmlnsOnAttachedProp_sl4 ()
+		{
+			Assert.Throws<XamlParseException>(() => new MiscParsingManagedAttachedProp ());
+		}
+
 		
 		[TestMethod]
 		public void StaticResourceFromStyleTest ()
@@ -782,6 +839,7 @@ namespace MoonTest.Misc.Parsing
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void SetHandlerBeforeProps_sl4 ()
 		{
 			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -882,6 +940,7 @@ Width=""100"" Height=""100"">
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void EscapedExtensions_sl4 ()
 		{
 			// Parse a binding which has escaped curly braces with escaped commas inside it
@@ -917,6 +976,7 @@ Width=""100"" Height=""100"">
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void EscapedExtensions2_sl4 ()
 		{
 			// Parse a binding which uses escaped curly braces and has whitespace in it
@@ -947,6 +1007,7 @@ Width=""100"" Height=""100"">
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void EscapedExtensions_CommaTerminated_sl4 ()
 		{
 			// Parse a binding with spaces and escaped curly braces
@@ -974,6 +1035,7 @@ Width=""100"" Height=""100"">
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void EscapedCharacters_sl4 ()
 		{
 			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"	
@@ -999,6 +1061,7 @@ Width=""100"" Height=""100"">
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void QuotedString_EscapedQuotes_sl4 ()
 		{
 			// Parse a binding with an escaped quote mark and whitespace at the end
@@ -1025,6 +1088,7 @@ Width=""100"" Height=""100"">
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("we don't throw the exception")]
 		public void QuotedString_EscapedQuotesAndWhitespace_sl4 ()
 		{
 			// Parse a binding with an escaped quote mark with whitespace inside it

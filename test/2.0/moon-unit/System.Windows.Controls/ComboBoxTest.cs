@@ -1297,7 +1297,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
-		[MoonlightBug ("This test is identical to the _sl4 variant, but c.SelectedIndex == -1, not 1.")]
+		[MoonlightBug ("this test is identical to the _sl4 variant, but <= runtime version 3 is failing the #1 check - c.SelectedIndex is -1, not 1")]
 		public void XamlSelectedIndex_sl3 ()
 		{
 			var c = (ComboBox)XamlReader.Load (@"
@@ -1327,32 +1327,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MinRuntimeVersion(4)]
-		public void XamlSelectedIndex3_sl4 ()
-		{
-			var panel = (StackPanel)XamlReader.Load(@"
-<StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit""
-			xmlns:system=""clr-namespace:System;assembly=mscorlib"">
-	<StackPanel.Resources>
-		<clr:ObjectCollection x:Key=""collection"">
-			<system:String>String 1</system:String>
-			<system:String>String 2</system:String>
-		</clr:ObjectCollection>
-	</StackPanel.Resources>
-	<ComboBox SelectedIndex=""1"" ItemsSource=""{StaticResource collection}"">
-	</ComboBox>
-</StackPanel>
-");
-			Assert.AreEqual (-1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
-			Assert.IsNull (panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
-		}
-
-		[TestMethod]
-		[MaxRuntimeVersion(3)]
-		[MoonlightBug ("this test is identical to the _sl4 variant, but the parser fails with 'Unknown element: char*")]
-		public void XamlSelectedIndex3_sl3 ()
+		public void XamlSelectedIndex3 ()
 		{
 			var panel = (StackPanel)XamlReader.Load(@"
 <StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

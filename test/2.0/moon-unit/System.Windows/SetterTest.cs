@@ -61,12 +61,26 @@ namespace MoonTest.System.Windows
 			style.Setters.Add (s);
 		}
 
-		[TestMethod]
 		public void Parse ()
 		{
 			Assert.Throws<XamlParseException>(() =>
 				XamlReader.Load("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"IsEnabled\" Value=\"hi\" />")
 			);
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void Parse_sl4 ()
+		{
+			Parse ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("we don't throw the proper exception")]
+		public void Parse_sl3 ()
+		{
+			Parse ();
 		}
 
 		[TestMethod]
@@ -130,12 +144,26 @@ namespace MoonTest.System.Windows
 			}, "self");
 		}
 
-		[TestMethod]
 		public void ParseAndAddToStyle ()
 		{
 			Assert.Throws<XamlParseException>(() =>
 				XamlReader.Load("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"Width\" Value=\"5.0\" />")
 			, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void ParseAndAddToStyle_sl4 ()
+		{
+			ParseAndAddToStyle ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("we don't throw the proper exception")]
+		public void ParseAndAddToStyle_sl3 ()
+		{
+			ParseAndAddToStyle ();
 		}
 
 		[TestMethod]

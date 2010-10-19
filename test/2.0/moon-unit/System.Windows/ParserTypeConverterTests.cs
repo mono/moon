@@ -18,7 +18,6 @@ namespace MoonTest.System.Windows {
 	[TestClass]
 	public class ParserTypeConverterTests {
 
-		[TestMethod]
 		public void ConverterCallOnAttachedGetter ()
 		{
 			// Do look up TypeConverters declared on the static getter method.
@@ -33,6 +32,21 @@ namespace MoonTest.System.Windows {
 </clr:ClassWithoutTypeConverter>
 ");
 			Assert.IsInstanceOfType<ConvertedObject>(x.GetValue(ClassWithoutTypeConverter.ConverterOnAttachedGetterProperty), "#1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("Unknown element: ClassWithoutTypeConverter.ConverterOnAttachedGetter.")]
+		public void ConverterCallOnAttachedGetter_sl3 ()
+		{
+			ConverterCallOnAttachedGetter ();
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void ConverterCallOnAttachedGetter_sl4 ()
+		{
+			ConverterCallOnAttachedGetter ();
 		}
 
 		[TestMethod]

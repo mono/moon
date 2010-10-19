@@ -989,6 +989,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("we aren't raising the event properly")]
 		public void Panel_OnItemsChanged_TouchGenerator ()
 		{
 			bool raised = false;

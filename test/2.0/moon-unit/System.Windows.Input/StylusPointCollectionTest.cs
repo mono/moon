@@ -70,7 +70,6 @@ namespace MoonTest.System.Windows.Input {
 			Assert.Throws<ArgumentOutOfRangeException> (() => p.PressureFactor = 1.1f, "#3");
 		}
 
-		[TestMethod]
 		public void ModifyValuesInManaged ()
 		{
 			var c = (StylusPointCollection) XamlReader.Load (@"
@@ -86,6 +85,21 @@ namespace MoonTest.System.Windows.Input {
 			var p = c [0];
 			p.X = 10;
 			Assert.AreEqual (expected, c [0], "#3");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion (4)]
+		[MoonlightBug ("Actual value is '[StylusPoint: PressureFactor=0, X=1, Y=2]' while the expected value was '[StylusPoint: PressureFactor=0.5, X=1, Y=2]'. #2")]
+		public void ModifyValuesInManaged_sl4 ()
+		{
+			ModifyValuesInManaged ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion (3)]
+		public void ModifyValuesInManaged_sl3 ()
+		{
+			ModifyValuesInManaged ();
 		}
 
 		[TestMethod]

@@ -64,6 +64,7 @@ namespace MoonTest.System.Windows.Browser {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("this test can't assume that the .CurrentBookmark is empty - some other tests may have changed it.")]
 		public void CurrentBookmark ()
 		{
 			Assert.AreEqual (String.Empty, HtmlPage.Window.CurrentBookmark, "get");

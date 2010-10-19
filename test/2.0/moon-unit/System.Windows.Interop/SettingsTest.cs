@@ -46,10 +46,7 @@ namespace MoonTest.System.Windows.Interop {
 			Assert.IsFalse (settings.EnableFrameRateCounter, "Host.Settings.EnableFrameRateCounter");
 			Assert.IsTrue (settings.EnableHTMLAccess, "Host.Settings.EnableHTMLAccess");
 			Assert.IsFalse (settings.EnableRedrawRegions, "Host.Settings.EnableRedrawRegions");
-			if (Environment.OSVersion.Platform == PlatformID.MacOSX)
-				Assert.AreEqual (400, settings.MaxFrameRate, "Host.Settings.MaxFrameRate");
-			else
-				Assert.AreEqual (60, settings.MaxFrameRate, "Host.Settings.MaxFrameRate");
+			Assert.AreEqual (60, settings.MaxFrameRate, "Host.Settings.MaxFrameRate");
 			Assert.IsFalse (settings.Windowless, "Host.Settings.Windowless");
 		}
 

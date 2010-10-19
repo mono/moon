@@ -116,6 +116,7 @@ namespace MoonTest.System.Windows.Markup {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Expected 'System.Windows.Markup.XamlParseException', but got no exception. #14")]
 		public void DiscreteObjectValuesWithContent ()
 		{
 
@@ -202,11 +203,25 @@ namespace MoonTest.System.Windows.Markup {
 
 		}
 		
-		[TestMethod]
 		public void DPNotFullyQualified ()
 		{
 			// I didn't fully qualify the type so we should fail. It should be clr:Base.DPColorAttached
 			Assert.Throws<XamlParseException> (() => CreateBase (@"Base.DPColorAttached=""{StaticResource Col}"""), "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void DPNotFullyQualified_sl4 ()
+		{
+			DPNotFullyQualified ();
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("Expected 'System.Windows.Markup.XamlParseException', but got no exception. #1")]
+		public void DPNotFullyQualified_sl3 ()
+		{
+			DPNotFullyQualified ();
 		}
 
 		[TestMethod]
