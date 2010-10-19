@@ -185,12 +185,12 @@ test: copy-xaps-to-site
 test-all: copy-xaps-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
-	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index.html?$(TEST_NAME)" "file://`pwd`/site/index3.html?$(TEST_NAME)" "file://`pwd`/site/index2.html?$(TEST_NAME)"
+	$(BROWSER_NAME) $(BROWSER_OPTS) "file://`pwd`/site/index4.html?$(TEST_NAME)" "file://`pwd`/site/index3.html?$(TEST_NAME)" "file://`pwd`/site/index2.html?$(TEST_NAME)"
 
 debug: copy-xaps-to-site
 	MONO_XDEBUG=1 MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
-	$(BROWSER_NAME) $(BROWSER_OPTS) -d gdb "file://`pwd`/site/index.html?$(TEST_NAME)"
+	$(BROWSER_NAME) $(BROWSER_OPTS) -d gdb "file://`pwd`/site/index4.html?$(TEST_NAME)"
 
 AUTOMATION_NAMESPACES="MoonTest.System.Windows.Automation+MoonTest.System.Windows.Automation.Peers"
 
