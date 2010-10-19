@@ -411,7 +411,7 @@ namespace Mono.Xaml {
 
 			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, t, o);
 
-			if (IsTemplateElement (element)) {
+			if (IsBufferedTemplateElement (element)) {
 				ParseTemplateElement (element);
 				return;
 			}
@@ -466,7 +466,8 @@ namespace Mono.Xaml {
 
 			ParseElementAttributes (element);
 
-			string template_xml = reader.ReadInnerXml ();
+			string template_xml = reader.ReadOuterXml ();
+			
 
 			FrameworkTemplate template = (FrameworkTemplate) element.Object;
 
@@ -502,19 +503,21 @@ namespace Mono.Xaml {
 			context.IsExpandingTemplate = true;
 			context.TemplateOwner = source as DependencyObject;
 			context.TemplateBindingSource = fwe;
+			parser.HydrateObject = context.Template;
 
+			
 			INativeEventObjectWrapper dob = null;
 			try {
-				dob = parser.ParseString (xaml) as INativeEventObjectWrapper;
-			} catch (Exception e) {
-				if (xaml.Trim ().Length == 0)
-					return IntPtr.Zero;
-				error = new MoonError (e);
-				return IntPtr.Zero;
-			}
+				FrameworkTemplate template = parser.ParseString (xaml) as FrameworkTemplate;
+				
+				if (template != null)
+					dob = template.Content as INativeEventObjectWrapper;
 
-			if (dob == null) {
-				error = new MoonError (parser.ParseException ("Unable to parse template item."));
+				// No errors, but the template was just empty.
+				if (dob == null)
+					return IntPtr.Zero;
+			} catch (Exception e) {
+				error = new MoonError (e);
 				return IntPtr.Zero;
 			}
 
@@ -529,9 +532,18 @@ namespace Mono.Xaml {
 			return reader.LocalName.IndexOf ('.') > 0;
 		}
 
-		private bool IsTemplateElement (XamlObjectElement element)
+		private bool IsBufferedTemplateElement (XamlObjectElement element)
 		{
-			return typeof (FrameworkTemplate).IsAssignableFrom (element.Type);
+			if (!typeof (FrameworkTemplate).IsAssignableFrom (element.Type))
+				return false;
+
+			// If we are parsing a template (In the ParseTemplate callback,
+			// the top level template elementis not buffered because we are
+			// trying to parse the contents of that template element
+			if (IsTopElement && Context.IsExpandingTemplate)
+				return false;
+
+			return true;
 		}
 
 		private bool IsObjectElement ()

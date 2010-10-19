@@ -32,6 +32,20 @@ using Mono.Xaml;
 namespace System.Windows {
 
 	public abstract partial class FrameworkTemplate : DependencyObject {
+
+		//
+		// This is used by the parser when actually parsing the templates.
+		// It uses this property to store the actual contents of the template.
+		// so in <DataTemplate><FooBar /></DataTemplate> we would set
+		// the Content property to FooBar. Once parsing is finished,
+		// we get the FooBar value from the Content property and return
+		// it from get_visual_tree.
+		//
+		internal DependencyObject Content {
+			get;
+			set;
+		}
+
 		internal DependencyObject GetVisualTree ()
 		{
 			return GetVisualTree (null);
