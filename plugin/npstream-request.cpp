@@ -53,12 +53,6 @@ NPStreamRequest::DestroyStream ()
 {
 	if (stream != NULL)
 		stream = NULL;
-
-	if (pending_unref) {
-		/*  Unref the ref we took when we called NPN_GetURLNotify in SendImpl */
-		pending_unref = false;
-		unref ();
-	}
 }
 
 void
@@ -78,7 +72,7 @@ NPStreamRequest::SendImpl ()
 
 	if (err == NPERR_NO_ERROR) {
 		/* This is a ref to ensure that we don't get deleted while the browser have a pointer to us */
-		/* We unref when DestroyStream is called */
+		/* We unref when UrlNotify is called */
 		pending_unref = true;
 		this->ref ();
 		return;
@@ -154,10 +148,9 @@ NPStreamRequest::UrlNotify (const char *url, NPReason reason)
 	}
 
 	if (pending_unref) {
-		/* The browser is supposed to call DestroyStream before UrlNotify.
-		 * That doesn't always happen (if the stream was never created, due to a 404 for instance). */
+		/*  Unref the ref we took when we called NPN_GetURLNotify in SendImpl */
 		pending_unref = false;
-		this->unref ();
+		this->unref_delayed ();
 	}
 }
 
