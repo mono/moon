@@ -1,5 +1,5 @@
 
-SUBDIRS=harness parsertest sizes
+SUBDIRS=harness
 DIST_SUBDIRS = $(SUBDIRS) cpp templates
 
 if INCLUDE_BROWSER_MANAGED_CODE
