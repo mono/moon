@@ -1311,6 +1311,8 @@ ASXDemuxer::DataCallback (MediaClosure *c)
 {
 	MediaReadClosure *closure = (MediaReadClosure *) c;
 	ASXDemuxer *demuxer = (ASXDemuxer *) closure->GetContext ();
+	if (demuxer->buffer)
+		demuxer->buffer->unref ();
 	demuxer->buffer = closure->GetData ();
 	demuxer->buffer->ref ();
 	demuxer->OpenDemuxerAsyncInternal ();
