@@ -530,7 +530,9 @@ EventListenerProxy::AddHandler (EventObject *obj)
 		return -1;
 	}
 
+	this->ref ();
 	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this, on_handler_removed);
+
 	return token;
 }
 
@@ -546,7 +548,8 @@ EventListenerProxy::AddXamlHandler (EventObject *obj)
 			  obj->GetTypeName(), event_name));
 		return -1;
 	}
-	
+
+	this->ref ();
 	token = obj->AddXamlHandler (event_id, proxy_listener_to_javascript, this, on_handler_removed);
 	
 	return token;
@@ -563,6 +566,7 @@ EventListenerProxy::RemoveHandler ()
 		}
 	}
 	else {
+		ref (); // on_handler_removed unrefs.
 		on_handler_removed (this);
 	}
 }
@@ -703,6 +707,7 @@ event_object_add_xaml_listener (EventObject *obj, PluginInstance *plugin, const 
 {
 	EventListenerProxy *proxy = new EventListenerProxy (plugin, event_name, cb_name);
 	proxy->AddXamlHandler (obj);
+	proxy->unref ();
 }
 
 class NamedProxyPredicate {
@@ -1905,16 +1910,29 @@ _deallocate (NPObject *npobj)
 }
 
 static void
-detach_xaml_proxy (gpointer key, gpointer value, gpointer closure)
+detach_xaml_proxy (gpointer value)
 {
 	EventListenerProxy *proxy = (EventListenerProxy*)value;
 	proxy->SetOwner (NULL);
+	proxy->unref ();
+}
+
+MoonlightObject::MoonlightObject (NPP instance)
+{
+#if SANITY
+	g_assert (instance->pdata != NULL); /* #if SANITY */
+#endif
+	this->plugin = (PluginInstance *) instance->pdata;
+	if (this->plugin)
+		this->plugin->ref ();
+	this->moonlight_type = Type::INVALID;
+	this->event_listener_proxies = NULL;
+	this->toggleNotifyListener = NULL;
 }
 
 MoonlightObject::~MoonlightObject ()
 {
 	if (event_listener_proxies) {
-		g_hash_table_foreach (event_listener_proxies, detach_xaml_proxy, NULL);
 		g_hash_table_destroy (event_listener_proxies);
 		event_listener_proxies = NULL;
 	}
@@ -1987,24 +2005,30 @@ MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, guint
 EventListenerProxy *
 MoonlightObject::LookupEventProxy (int event_id)
 {
+	if (event_listener_proxies == NULL)
+		return NULL;
+
 	return (EventListenerProxy*)g_hash_table_lookup (event_listener_proxies, GINT_TO_POINTER (event_id));
 }
 
 void
 MoonlightObject::SetEventProxy (EventListenerProxy *proxy)
 {
+	if (event_listener_proxies == NULL)
+		event_listener_proxies = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, detach_xaml_proxy);
+
+	proxy->ref ();
 	g_hash_table_insert (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()), proxy);
 }
 
 void
 MoonlightObject::ClearEventProxies ()
 {
-	g_hash_table_foreach (event_listener_proxies, detach_xaml_proxy, NULL);
 #if GLIB_CHECK_VERSION(2,12,0)
 	g_hash_table_remove_all (event_listener_proxies);
 #else
 	g_hash_table_destroy (event_listener_proxies);
-	event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
+	event_listener_proxies = NULL;
 #endif
 }
 
@@ -2014,10 +2038,13 @@ MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
 	proxy->SetOwner (NULL);
 
 #if SANITY
-	EventListenerProxy *p = LookupEventProxy (proxy->GetEventId());
-	if (!p)
-		abort();
+	g_assert (event_listener_proxies != NULL); /* #if SANITY */
+	g_assert (LookupEventProxy (proxy->GetEventId ()) != NULL); /* #if SANITY */
 #endif
+
+	if (event_listener_proxies == NULL)
+		return;
+
 	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()));
 }
 
@@ -2389,6 +2416,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 					if (id == MoonId_OnLoad)
 						proxy->SetOneShot ();
 					SetEventProxy (proxy);
+					proxy->unref ();
 				}
 
 				return true;
@@ -2876,6 +2904,7 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 				proxy->SetOwner (this);
 				proxy->AddHandler (plugin->GetSurface());
 				SetEventProxy (proxy);
+				proxy->unref ();
 			}
 
 			return true;
@@ -3436,6 +3465,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		EventListenerProxy *proxy = new EventListenerProxy (GetPlugin (), name, &args[1]);
 		int token = proxy->AddHandler (dob);
 		g_free (name);
+		proxy->unref ();
 
 		if (token == -1)
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_ADDEVENT");

@@ -315,19 +315,7 @@ struct MoonlightObjectType : NPClass {
 extern MoonlightObjectType *MoonlightObjectClass;
 
 struct MoonlightObject : NPObject {
-	MoonlightObject (NPP instance)
-	{
-#if SANITY
-		g_assert (instance->pdata != NULL); /* #if SANITY */
-#endif
-		this->plugin = (PluginInstance *) instance->pdata;
-		if (this->plugin)
-			this->plugin->ref ();
-		this->moonlight_type = Type::INVALID;
-		this->event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
-
-		this->toggleNotifyListener = NULL;
-	}
+	MoonlightObject (NPP instance);
 
 	virtual void Invalidate ();
 	virtual ~MoonlightObject ();
