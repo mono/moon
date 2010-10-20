@@ -632,8 +632,9 @@ EventObject::Track (const char* done, const char* typname)
 		} else {
 			free_reftrace (this);
 		}
-	} else if (track_all) {
-		printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n", this, done, typname, id, refcount, deployment);
+	} else {
+		if (track_all)
+			printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n", this, done, typname, id, refcount, deployment);
 
 		if (id == object_id || (track_object_type != NULL && typname != NULL && strcmp (typname, track_object_type) == 0)) {
 			char *st = NULL;
