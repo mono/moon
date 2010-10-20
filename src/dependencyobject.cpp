@@ -229,9 +229,11 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 		Track ("Created", depl->GetTypes ()->Find (object_type)->GetName ());
 		break;
 	}
+#endif
 	
+#if DEBUG || OBJECT_TRACKING
 	if (object_type != Type::DEPLOYMENT)
-		Deployment::GetCurrent ()->TrackObjectCreated (this);
+		deployment->TrackObjectCreated (this);
 #endif
 
 #if SANITY
@@ -244,9 +246,11 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 
 EventObject::~EventObject()
 {
-#if OBJECT_TRACKING
+#if DEBUG || OBJECT_TRACKING
 	if (object_type != Type::DEPLOYMENT)
 		deployment->TrackObjectDestroyed (this);
+#endif
+#if OBJECT_TRACKING
 	Track ("Destroyed", "");
 #endif
 
