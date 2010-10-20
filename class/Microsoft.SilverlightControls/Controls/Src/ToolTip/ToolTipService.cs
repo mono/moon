@@ -211,9 +211,9 @@ namespace System.Windows.Controls
             }
  
             UIElement senderElement = (UIElement)sender;
-            if (ToolTipService._currentToolTip != null)
+            if (ToolTipService._owner != null)
             { 
-                if (ToolTipService._toolTipDictionary[senderElement] != ToolTipService._currentToolTip)
+                if (senderElement != ToolTipService._owner)
                 {
                     // first close the previous ToolTip if entering nested elements with tooltips 
                     CloseAutomaticToolTip(null, EventArgs.Empty); 
@@ -273,7 +273,9 @@ namespace System.Windows.Controls
         { 
             ToolTipService._closeTimer.Stop();
             Debug.Assert(ToolTipService._currentToolTip != null, "no ToolTip to close");
- 
+
+            ToolTipService._currentToolTip.PlacementOverride = null;
+            ToolTipService._currentToolTip.PlacementTargetOverride = null;
             ToolTipService._currentToolTip.IsOpen = false;
             ToolTipService._currentToolTip = null;
             ToolTipService._owner = null; 
@@ -400,7 +402,9 @@ namespace System.Windows.Controls
  
             ToolTipService._currentToolTip = ToolTipService._toolTipDictionary[ToolTipService._owner];
 
-            ToolTipService._currentToolTip.IsOpen = true; 
+            ToolTipService._currentToolTip.PlacementOverride = ToolTipService.GetPlacement (_owner);
+            ToolTipService._currentToolTip.PlacementTargetOverride = ToolTipService.GetPlacementTarget (_owner) ?? _owner;
+            ToolTipService._currentToolTip.IsOpen = true;
 
             // start the timer which closes the ToolTip
             if (ToolTipService._closeTimer == null) 

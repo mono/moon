@@ -34,6 +34,8 @@ using System.Runtime.InteropServices;
 
 namespace System.Windows {
 	public struct Point : IFormattable  {
+		internal static Point Zero = new Point (0, 0);
+
 		double x, y;
 
 		public Point (double x, double y)

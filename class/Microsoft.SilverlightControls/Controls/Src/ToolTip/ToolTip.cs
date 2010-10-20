@@ -63,7 +63,7 @@ namespace System.Windows.Controls
 
         #endregion HorizontalOffset Property
 
-	#region PlacementTarget Property
+    #region PlacementTarget Property
         /// <summary>
         /// Determines a horizontal offset in pixels from the left side of 
         /// the mouse bounding rectangle to the left side of the ToolTip.
@@ -87,9 +87,9 @@ namespace System.Windows.Controls
         private static void OnPlacementTargetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
         } 
-	#endregion PlacementTarget Property
+    #endregion PlacementTarget Property
 
-	#region Placement Property
+    #region Placement Property
         /// <summary>
         /// Determines a horizontal offset in pixels from the left side of 
         /// the mouse bounding rectangle to the left side of the ToolTip.
@@ -113,7 +113,7 @@ namespace System.Windows.Controls
         private static void OnPlacementPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
         } 
-	#endregion PlacementTarget Property
+    #endregion PlacementTarget Property
 
         #region IsOpen Property
 
@@ -196,13 +196,19 @@ namespace System.Windows.Controls
 
         #region Data
  
-        private Size _lastSize;
-
         Popup _parentPopup;
         internal Popup ParentPopup {
             get { return _parentPopup; }
         }
- 
+
+        internal PlacementMode? PlacementOverride {
+            get; set;
+        }
+
+        internal UIElement PlacementTargetOverride {
+            get; set;
+        }
+
         #endregion Data
 
         /// <summary> 
@@ -234,7 +240,16 @@ namespace System.Windows.Controls
             Debug.Assert(this._parentPopup == null, "this._parentPopup should be null, we want to set visual tree once"); 
  
             this._parentPopup = new Popup();
- 
+            this._parentPopup.Opened += delegate {
+                var h = Opened;
+                if (h != null)
+                    h (this, new RoutedEventArgs { OriginalSource = this });
+            };
+            this._parentPopup.Closed += delegate {
+                var h = Closed;
+                if (h != null)
+                    h (this, new RoutedEventArgs { OriginalSource = this });
+            };
             this.IsTabStop = false;
 
             this._parentPopup.Child = this; 
@@ -263,16 +278,10 @@ namespace System.Windows.Controls
 
                 PerformPlacement(HorizontalOffset, VerticalOffset);
                 this._parentPopup.IsOpen = true;
-                var h = Opened;
-                if (h != null)
-                    h (this, new RoutedEventArgs { OriginalSource = this });
             }
             else 
             {
                 this._parentPopup.IsOpen = false;
-                var h = Closed;
-                if (h != null)
-                    h (this, new RoutedEventArgs { OriginalSource = this });
             }
             UpdateVisualState ();
         }
@@ -301,8 +310,7 @@ namespace System.Windows.Controls
  
         private void OnToolTipSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this._lastSize = e.NewSize; 
-            if (this._parentPopup != null) 
+            if (this._parentPopup != null)
             {
                 PerformPlacement(this.HorizontalOffset, this.VerticalOffset); 
             }
@@ -310,113 +318,100 @@ namespace System.Windows.Controls
  
         private void PerformClipping(Size size)
         {
-            Point mouse = ToolTipService.MousePosition; 
+            Point mouse = ToolTipService.MousePosition;
             RectangleGeometry rectangle = new RectangleGeometry(); 
             rectangle.Rect = new Rect(mouse.X, mouse.Y, size.Width, size.Height);
-            ((UIElement)Content).Clip = rectangle; 
+            if (Content is UIElement)
+                ((UIElement)Content).Clip = rectangle;
         }
 
-        private void PerformPlacement(double horizontalOffset, double verticalOffset) 
+        private void PerformPlacement(double horizontalOffset, double verticalOffset)
         {
-            Point mouse = ToolTipService.MousePosition;
- 
-            // align ToolTip with the bottom left corner of mouse bounding rectangle 
-            //
-            double top = mouse.Y + new TextBlock().FontSize; 
-            double left = mouse.X;
+            var bounds = new Point (0, 0);
+            var point = Point.Zero;
 
-            top += verticalOffset; 
-            left += horizontalOffset;
+            var mode = PlacementOverride.HasValue ? PlacementOverride.Value : Placement;
+            var target = (FrameworkElement) (PlacementTargetOverride ?? PlacementTarget);
 
-            double maxY = 0;
-            double maxX = 0;
-            if (ToolTipService.RootVisual != null) {
-                maxX = ToolTipService.RootVisual.ActualWidth;
-                maxY = ToolTipService.RootVisual.ActualHeight;
+            if (ToolTipService.RootVisual != null)
+                bounds = new Point (ToolTipService.RootVisual.ActualWidth, ToolTipService.RootVisual.ActualHeight);
+
+            if (mode == PlacementMode.Mouse) {
+                point = ToolTipService.MousePosition;
+            } else{
+                try {
+                    point = target.TransformToVisual (ToolTipService.RootVisual).Transform (Point.Zero);
+                } catch {
+                    Console.WriteLine ("MOONLIGHT WARNING: Could not transform the tooltip point");
+                }
             }
 
-            Rect toolTipRect = new Rect(left, top, this._lastSize.Width, this._lastSize.Height); 
-            Rect intersectionRect = new Rect(0, 0, maxX, maxY);
+            point.Y += verticalOffset;
+            point.X += horizontalOffset;
 
-            intersectionRect.Intersect(toolTipRect); 
-            if ((Math.Abs(intersectionRect.Width - toolTipRect.Width) < TOOLTIP_tolerance) &&
-                (Math.Abs(intersectionRect.Height - toolTipRect.Height) < TOOLTIP_tolerance))
-            { 
-                // ToolTip is almost completely inside the plug-in 
-                this._parentPopup.VerticalOffset = top;
-                this._parentPopup.HorizontalOffset = left; 
-                return;
+            switch (mode) {
+            case PlacementMode.Top:
+                point.Y -= ActualHeight;
+                break;
+            case PlacementMode.Bottom:
+                point.Y += target.ActualHeight;
+                break;
+            case PlacementMode.Left:
+                point.X -= ActualWidth;
+                break;
+            case PlacementMode.Right:
+                point.X += target.ActualWidth;
+                break;
+            case PlacementMode.Mouse:
+                point.Y += new TextBox ().FontSize; // FIXME: Just a guess, it's about right.
+                break;
+            default:
+                throw new NotSupportedException (string.Format ("PlacementMode '{0}' is not supported", Placement));
             }
-            else if (intersectionRect.Equals(new Rect(0, 0, maxX, maxY))) 
-            {
-                //ToolTip is bigger than the plug-in
-                PerformClipping(new Size(maxX, maxY)); 
-                this._parentPopup.VerticalOffset = 0; 
-                this._parentPopup.HorizontalOffset = 0;
- 
-                PerformClipping(new Size(maxX, maxY));
-                return;
-            } 
 
-            double right = left + toolTipRect.Width;
-            double bottom = top + toolTipRect.Height; 
- 
-            if (bottom > maxY)
-            { 
-                // If the lower edge of the plug-in obscures the ToolTip,
-                // it repositions itself to align with the upper edge of the bounding box of the mouse.
-                bottom = top; 
-                top -= toolTipRect.Height;
+            if (target != null && target.FlowDirection == FlowDirection.RightToLeft) {
+                if (Application.Current.RootVisual != null)
+                point.X = ((FrameworkElement) Application.Current.RootVisual).ActualWidth - point.X;
             }
- 
-            if (top < 0) 
-            {
-                // If the upper edge of Plug-in obscures the ToolTip, 
-                // the control repositions itself to align with the upper edge.
-                // align with the top of the plug-in
-                top = 0; 
-            }
-            else if (bottom > maxY)
-            { 
-                // align with the bottom edge 
-                top = Math.Max(0, maxY - toolTipRect.Height);
-            } 
 
-            if (right > maxX)
-            { 
-                // If the right edge obscures the ToolTip,
-                // it opens in the opposite direction from the obscuring edge.
-                right = left; 
-                left -= toolTipRect.Width; 
+            switch (mode) {
+            case PlacementMode.Bottom:
+                if ((point.Y + ActualHeight) > bounds.Y)
+                    point.Y -= ActualHeight + target.ActualHeight;
+                break;
+            case PlacementMode.Top:
+                if (point.Y < 0)
+                    point.Y += ActualHeight + target.ActualHeight;
+                break;
+            case PlacementMode.Left:
+                if (point.X < 0)
+                    point.X += ActualWidth + target.ActualWidth;
+                break;
+            case PlacementMode.Right:
+                if ((point.X + ActualWidth) > bounds.X)
+                    point.X -= ActualWidth + target.ActualWidth;
+                break;
+            default:
+                if ((point.X + ActualWidth) > bounds.X)
+                    point.X = Math.Max (0, bounds.X - ActualWidth);
+                if ((point.Y + ActualHeight) > bounds.Y)
+                    point.Y = Math.Max (0, bounds.Y - ActualHeight);
+                break;
             }
- 
-            if (left < 0)
-            {
-                // If the left edge obscures the ToolTip, 
-                // it then aligns with the obscuring screen edge
-                left = 0;
-            } 
-            else if (right > maxX) 
-            {
-                // align with the right edge 
-                left = Math.Max(0, maxX - toolTipRect.Width);
-            }
- 
-            // position the parent Popup
-            this._parentPopup.VerticalOffset = top;
-            this._parentPopup.HorizontalOffset = left; 
- 
-            bottom = top + toolTipRect.Height;
-            right = left + toolTipRect.Width; 
 
+            this._parentPopup.VerticalOffset = point.Y;
+            this._parentPopup.HorizontalOffset = point.X;
             // if right/bottom doesn't fit into the plug-in bounds, clip the ToolTip
-            double dX = right - maxX; 
-            double dY = bottom - maxY;
+
+            double dX = (point.X + ActualWidth) - bounds.X;
+            double dY = (point.Y + ActualHeight) - bounds.Y;
             if ((dX >= TOOLTIP_tolerance) || (dY >= TOOLTIP_tolerance))
-            { 
-                PerformClipping(new Size(toolTipRect.Width - dX, toolTipRect.Height - dY)); 
+            {
+                PerformClipping(new Size(Math.Max (0, ActualWidth - dX), Math.Max (0, ActualHeight - dY)));
+            } else {
+                PerformClipping (new Size (ActualWidth, ActualHeight));
             }
-        } 
+        }
 
         #endregion Private Methods
 
