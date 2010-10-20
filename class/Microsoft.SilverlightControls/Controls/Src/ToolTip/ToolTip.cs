@@ -13,12 +13,6 @@ using System.Windows.Controls;
 
 namespace System.Windows.Controls
 { 
-    /// <summary>
-    /// A control to display information when the user hovers over an owner control
-    /// </summary> 
-    [TemplatePart(Name = System.Windows.Controls.ToolTip.NormalStateName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = System.Windows.Controls.ToolTip.RootElementName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = System.Windows.Controls.ToolTip.VisibleStateName, Type = typeof(Storyboard))] 
     [TemplateVisualState(Name = "Closed", GroupName = "OpenStates")]
     [TemplateVisualState(Name = "Open", GroupName = "OpenStates")]
     public partial class ToolTip : ContentControl
@@ -144,14 +138,9 @@ namespace System.Windows.Controls
  
         private static void OnIsOpenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
         {
-            // IsOpen dependency property should be defined on a ToolTip 
-            ToolTip toolTip = (ToolTip)d;
-
-            if (((bool)e.NewValue != (bool)e.OldValue)) 
-            {
-                toolTip.OnIsOpenChanged((bool)e.NewValue);
-            } 
-        } 
+            ToolTip toolTip = (ToolTip) d;
+            toolTip.OnIsOpenChanged ((bool) e.NewValue);
+        }
 
         #endregion IsOpen Property 
 
@@ -191,29 +180,7 @@ namespace System.Windows.Controls
 
         #endregion VerticalOffset Property 
 
-        #region Template Parts
- 
-        /// <summary>
-        /// This storyboard runs when the ToolTip closes.
-        /// </summary> 
-        private Storyboard NormalState; 
-        private const string NormalStateName = "Normal State";
- 
-        /// <summary>
-        /// Part for the ToolTip.
-        /// </summary> 
-        internal FrameworkElement RootElement;
-        internal const string RootElementName = "RootElement";
- 
-        /// <summary> 
-        /// This storyboard runs when the ToolTip opens.
-        /// </summary> 
-        private Storyboard VisibleState;
-        private const string VisibleStateName = "Visible State";
- 
-        #endregion Template Parts
-
-        #region Events 
+        #region Events
  
         /// <summary>
         /// Occurs when a ToolTip is closed and is no longer visible. 
@@ -229,19 +196,11 @@ namespace System.Windows.Controls
 
         #region Data
  
-        private bool _beginClosing;
-        private bool _closingCompleted = true;
-        private Size _lastSize; 
-        private bool _openingCompleted = true; 
-        private bool _openPopup;
-        private Popup _parentPopup; 
+        private Size _lastSize;
 
-        private delegate void PerformOnNextTick();
- 
-        internal Popup ParentPopup
-        {
-            get { return this._parentPopup; } 
-            private set { this._parentPopup = value; } 
+        Popup _parentPopup;
+        internal Popup ParentPopup {
+            get { return _parentPopup; }
         }
  
         #endregion Data
@@ -249,9 +208,9 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Creates a default ToolTip element
         /// </summary>
-        public ToolTip() : base() 
+        public ToolTip()
         { 
-	    DefaultStyleKey = typeof (ToolTip);
+            DefaultStyleKey = typeof (ToolTip);
             this.SizeChanged += new SizeChangedEventHandler(OnToolTipSizeChanged);
         } 
 
@@ -262,55 +221,14 @@ namespace System.Windows.Controls
         /// </summary> 
         public override void OnApplyTemplate() 
         {
-            base.OnApplyTemplate(); 
-
-            // If the part is not present in the template,
-            // don't display content, but don't throw either 
-
-            // get the element
-            RootElement = GetTemplateChild(System.Windows.Controls.ToolTip.RootElementName) as FrameworkElement; 
- 
-            if (RootElement != null)
-            { 
-                // get the states
-                this.VisibleState = RootElement.Resources[VisibleStateName] as Storyboard;
-                this.NormalState = RootElement.Resources[NormalStateName] as Storyboard; 
-
-                if (this.VisibleState != null)
-                { 
-                    this.VisibleState.Completed += new EventHandler(OnOpeningCompleted); 
-
-                    // first time through when the opened event is fired, the storyboard is not 
-                    // loaded from the template yet, because ApplyTemplate wasn't called yet,
-                    // so I start the storyboard manually
-                    // 
-
-                    OnPopupOpened(null, EventArgs.Empty);
-                } 
- 
-                if (this.NormalState != null)
-                { 
-                    this.NormalState.Completed += new EventHandler(OnClosingCompleted);
-                }
-            } 
+            base.OnApplyTemplate();
+            UpdateVisualState (false);
         }
 
         #endregion Protected Methods 
  
         #region Private Methods
- 
-        private void BeginClosing()
-        {
-            this._beginClosing = false; 
 
-            // close the popup after the animation is completed
-            if (this.NormalState != null) 
-            { 
-                this._closingCompleted = false;
-                this.NormalState.Begin(); 
-            }
-        }
- 
         private void HookupParentPopup()
         {
             Debug.Assert(this._parentPopup == null, "this._parentPopup should be null, we want to set visual tree once"); 
@@ -336,102 +254,28 @@ namespace System.Windows.Controls
 
         } 
 
-        private void OnClosed(RoutedEventArgs e)
-        { 
-            RoutedEventHandler snapshot = this.Closed;
-            if (snapshot != null)
-            { 
-                snapshot(this, e); 
-            }
-        } 
-
-        // called when the closing state transition is completed
-        private void OnClosingCompleted(object sender, EventArgs e) 
-        {
-            this._closingCompleted = true;
-            this._parentPopup.IsOpen = false; 
- 
-            // Working around temporary limitations in Silverlight:
-            // send the event manually 
-            //
-
-            this.Dispatcher.BeginInvoke(delegate() { OnPopupClosed (null, EventArgs.Empty); }); 
-
-            // if the tooltip was forced to stop the closing animation, because it has to reopen,
-            // proceed with open 
-            if (this._openPopup) 
-            {
-		    this.Dispatcher.BeginInvoke(delegate() { OpenPopup(); }); 
-            }
-        }
- 
         private void OnIsOpenChanged(bool isOpen)
         {
             if (isOpen) 
             { 
-                if (this._parentPopup == null)
-                { 
+                if (_parentPopup == null)
                     HookupParentPopup();
-                    OpenPopup();
-                    return; 
-                }
 
-                if (!this._closingCompleted) 
-                { 
-                    Debug.Assert(this.NormalState != null);
- 
-                    // Completed event for the closing storyboard will open the parent popup
-                    // because _openPopup is set
-                    this._openPopup = true; 
-
-                    this.NormalState.SkipToFill();
-                    return; 
-                } 
-
-                PerformPlacement(this.HorizontalOffset, this.VerticalOffset); 
-                OpenPopup();
+                PerformPlacement(HorizontalOffset, VerticalOffset);
+                this._parentPopup.IsOpen = true;
+                var h = Opened;
+                if (h != null)
+                    h (this, new RoutedEventArgs { OriginalSource = this });
             }
             else 
             {
-                Debug.Assert(this._parentPopup != null);
- 
-                if (!this._openingCompleted) 
-                {
-                    if (this.NormalState != null) 
-                    {
-                        this._beginClosing = true;
-                    } 
-                    this.VisibleState.SkipToFill();
-                    // delay start of the closing storyboard until the opening one is completed
-                    return; 
-                } 
-
-                if ((this.NormalState == null) || (this.NormalState.Children.Count != 0)) 
-                {
-                    // close immediatelly if no storyboard provided
-                    this._parentPopup.IsOpen = false; 
-                    this.Dispatcher.BeginInvoke(delegate () { OnPopupClosed (null, EventArgs.Empty); });
-                }
-                else 
-                { 
-                    // close the popup after the animation is completed
-                    this._closingCompleted = false; 
-                    this.NormalState.Begin();
-                }
-            } 
+                this._parentPopup.IsOpen = false;
+                var h = Closed;
+                if (h != null)
+                    h (this, new RoutedEventArgs { OriginalSource = this });
+            }
+            UpdateVisualState ();
         }
-
-        private void OpenPopup() 
-        { 
-            this._parentPopup.IsOpen = true;
- 
-            // Working around temporary limitations in Silverlight:
-            // send the Opened event manually
-            // 
-            this.Dispatcher.BeginInvoke(delegate () { OnPopupOpened (null, EventArgs.Empty); });
-
-            this._openPopup = false; 
-        } 
 
         private void OnOffsetChanged(double horizontalOffset, double verticalOffset) 
         {
@@ -445,42 +289,6 @@ namespace System.Windows.Controls
                 // update the current ToolTip position if needed 
                 PerformPlacement(horizontalOffset, verticalOffset);
             }
-        } 
-
-        private void OnOpened(RoutedEventArgs e)
-        { 
-            RoutedEventHandler snapshot = this.Opened; 
-            if (snapshot != null)
-            { 
-                snapshot(this, e);
-            }
-        } 
-
-        // called when the Visible state transition is completed
-        private void OnOpeningCompleted(object sender, EventArgs e) 
-        { 
-            this._openingCompleted = true;
- 
-            if (this._beginClosing)
-            {
-		    this.Dispatcher.BeginInvoke(delegate () { BeginClosing(); }); 
-            }
-        }
- 
-        private void OnPopupClosed(object source, EventArgs e) 
-        {
-            OnClosed(new RoutedEventArgs { OriginalSource = this }); 
-        }
-
-        private void OnPopupOpened(object source, EventArgs e) 
-        {
-            //
-            if (this.VisibleState != null) 
-            { 
-                this._openingCompleted = false;
-                this.VisibleState.Begin(); 
-            }
-            OnOpened(new RoutedEventArgs { OriginalSource = this });
         } 
 
         internal void OnRootVisualSizeChanged()
@@ -520,8 +328,12 @@ namespace System.Windows.Controls
             top += verticalOffset; 
             left += horizontalOffset;
 
-            double maxY = ToolTipService.RootVisual.ActualHeight; 
-            double maxX = ToolTipService.RootVisual.ActualWidth; 
+            double maxY = 0;
+            double maxX = 0;
+            if (ToolTipService.RootVisual != null) {
+                maxX = ToolTipService.RootVisual.ActualWidth;
+                maxY = ToolTipService.RootVisual.ActualHeight;
+            }
 
             Rect toolTipRect = new Rect(left, top, this._lastSize.Width, this._lastSize.Height); 
             Rect intersectionRect = new Rect(0, 0, maxX, maxY);
@@ -611,6 +423,20 @@ namespace System.Windows.Controls
         protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer ()
         {
             return base.OnCreateAutomationPeer ();
+        }
+
+        void UpdateVisualState ()
+        {
+            UpdateVisualState (true);
+        }
+
+        void UpdateVisualState (bool useTransitions)
+        {
+            if (IsOpen) {
+                VisualStateManager.GoToState (this, "Open", useTransitions);
+            } else {
+                VisualStateManager.GoToState (this, "Closed", useTransitions);
+            }
         }
     } 
 }
