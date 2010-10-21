@@ -1301,13 +1301,18 @@ EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata)
 	/* emit the events using the copied list in the context*/
 	for (int i = 0; i < ctx->length; i++) {
 		EventClosure *closure = ctx->closures[i];
+
+		// closures might be null if they were pending removal on StartEmit
+		if (!closure)
+			continue;
+
 		if (!closure->handledEventsToo && calldata && calldata->Is (Type::ROUTEDEVENTARGS)) {
 			RoutedEventArgs *rea = (RoutedEventArgs*)calldata;
 			if (rea->GetHandled ())
 				continue;
 		}
 
-		if (closure && closure->func
+		if (closure->func
 		    && (!ctx->only_unemitted || closure->emit_count == 0)
 		    && (ctx->starting_generation == -1 || closure->token < ctx->starting_generation)) {
 			closure->func (this, calldata, closure->data);
