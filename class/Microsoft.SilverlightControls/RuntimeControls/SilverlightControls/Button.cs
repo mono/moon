@@ -82,13 +82,7 @@ namespace System.Windows.Controls
             {
                 GoToState(useTransitions, StateUnfocused);
             } 
-
-	    if (Validation.GetErrors (this).Count > 0) {
-	        VisualStateManager.GoToState (this, IsFocused ? "InvalidFocused" : "InvalidUnfocused", useTransitions);
-	    } else {
-		    VisualStateManager.GoToState (this, "Valid", useTransitions);
-	    }
-        } 
+        }
 
         /// <summary>
         /// Raises the Click routed event.

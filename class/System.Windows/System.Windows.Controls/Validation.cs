@@ -45,6 +45,10 @@ namespace System.Windows.Controls {
 			errors.Add (error);
 			if (errors.Count == 1)
 				SetHasError (element, true);
+
+			var control = element as Control;
+			if (control != null)
+				control.UpdateValidationState (false);
 		}
 
 		public static ReadOnlyObservableCollection<ValidationError> GetErrors (DependencyObject element)
@@ -90,8 +94,12 @@ namespace System.Windows.Controls {
 		{
 			var errors = GetErrorsCore (element);
 			if (errors.Remove (error)) {
-				if (errors.Count == 0)
+				if (errors.Count == 0) {
 					SetHasError (element, false);
+					var control = element as Control;
+					if (control != null)
+						control.UpdateValidationState (true);
+				}
 			}
 		}
 	}

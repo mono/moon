@@ -77,9 +77,6 @@ namespace System.Windows.Controls {
 		{
 			// FIXME: Should use Events.AddOnEventHandler or something similar.
 			CursorPositionChanged += OnCursorPositionChanged;
-
-			var errors = Validation.GetErrors (this) as INotifyCollectionChanged;
-			errors.CollectionChanged += (sender, args) => { ChangeVisualState (true); };
 		}
 
 		static void IsReadOnlyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
@@ -301,12 +298,6 @@ namespace System.Windows.Controls {
 				VisualStateManager.GoToState (this, "Normal", useTransitions);
 			}
 
-			if (Validation.GetErrors (this).Count > 0) {
-				VisualStateManager.GoToState (this, IsFocused ? "InvalidFocused" : "InvalidUnfocused", useTransitions);
-			} else {
-				VisualStateManager.GoToState (this, "Valid", useTransitions);
-			}
-			
 			if (IsFocused) {
 				VisualStateManager.GoToState (this, "Focused", useTransitions);
 			} else {

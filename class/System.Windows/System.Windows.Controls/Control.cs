@@ -238,6 +238,12 @@ namespace System.Windows.Controls {
 		{
 		}
 
+		internal override void InvokeOnApplyTemplate ()
+		{
+			base.InvokeOnApplyTemplate ();
+			UpdateValidationState (!Validation.GetHasError (this));
+		}
+
 		// centralize call to pinvoke to reduce [SecuritySafeCritical] methods
 		private void EmitCurrentContext (int id, RoutedEventArgs e)
 		{
@@ -466,6 +472,17 @@ namespace System.Windows.Controls {
 		{
 			Console.WriteLine ("System.Windows.Controls.OnManipulationCompleted (): NIEX");
 			throw new NotImplementedException ();
+		}
+
+		internal void UpdateValidationState (bool valid)
+		{
+			if (valid) {
+				VisualStateManager.GoToState (this, "Valid", true);
+			} else if (FocusManager.GetFocusedElement () == this) {
+				VisualStateManager.GoToState (this, "InvalidFocused", true);
+			} else {
+				VisualStateManager.GoToState (this, "InvalidUnfocused", true);
+			}
 		}
 
 		#region UIA Events
