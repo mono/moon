@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Windows;
+using System.Windows.Browser;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
@@ -50,10 +51,9 @@ namespace MoonTest.System.Net {
 
 		static WebClientTest ()
 		{
-			WebClient wc = new WebClient ();
-			Uri uri = new Uri (wc.BaseAddress);
+			Uri uri = HtmlPage.Document.DocumentUri;
 			RunningFromHttp = (uri.Scheme == "http");
-			IndexHtml = new Uri (uri, "../index.html");
+			IndexHtml = new Uri (uri, "../index4.html");
 			PostAspx = new Uri (uri, "../POST.aspx");
 			TimecodeLongWmv = new Uri (uri, "timecode-long.wmv");
 		}
@@ -65,7 +65,7 @@ namespace MoonTest.System.Net {
 			string ba = wc.BaseAddress;
 			Assert.IsTrue (ba.EndsWith (".xap"), "BaseAddress (.xap)");
 			int last_slash = ba.LastIndexOf ('/');
-			Assert.IsTrue (ba.Substring (last_slash, ba.Length - last_slash - 5) == "/moon-unit", "BaseAddress: " + ba);
+			Assert.IsTrue (ba.Substring (last_slash, ba.Length - last_slash - 4).StartsWith ("/moon-unit"), "BaseAddress: " + ba);
 			Assert.AreEqual ("utf-8", wc.Encoding.WebName, "Encoding");
 			Assert.AreEqual (0, wc.Headers.Count, "Headers");
 			Assert.IsFalse (wc.IsBusy, "IsBusy");
@@ -679,18 +679,15 @@ namespace MoonTest.System.Net {
 			DependencyObject TestPanel = this.TestPanel;
 			Thread main_thread = Thread.CurrentThread;
 			AssertFailedException afe = null;
+			bool progress = false;
 			bool done = false;
 
 			/* Check that the DownloadStringAsync events are executed on a threadpool thread when the request was done on a user thread */
 
 			WebClient wc = new WebClient ();
-			if (!RunningFromHttp) {
-				EnqueueTestComplete ();
-				return;
-			}
-
 			wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler (delegate (object sender, DownloadProgressChangedEventArgs dpcea) {
 				try {
+					progress = true;
 					Assert.IsFalse (TestPanel.CheckAccess ());
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadProgressChanged");
 				}
@@ -701,9 +698,20 @@ namespace MoonTest.System.Net {
 			wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler (delegate (object sender, DownloadStringCompletedEventArgs dscea) {
 				try {
 					// ResponseHeaders not available from browser stack
-					Assert.Throws<NotImplementedException> (delegate {
-						Assert.IsNotNull (wc.ResponseHeaders);
-					}, "ResponseHeaders");
+					if (RunningFromHttp) {
+						// if the response is successful then...
+						Assert.IsFalse (dscea.Cancelled, "Cancelled");
+						Assert.IsNull (dscea.Error, "Error");
+						Assert.Throws<NotImplementedException> (delegate {
+							Assert.IsNotNull (wc.ResponseHeaders);
+						}, "ResponseHeaders");
+					} else {
+						// unsuccessful (WebClient cannot be used from file:///)
+						Assert.IsFalse (dscea.Cancelled, "Cancelled");
+						Assert.IsTrue (dscea.Error is WebException, "Error");
+						Assert.IsTrue (dscea.Error.InnerException is NotSupportedException, "Error.InnerException");
+						Assert.IsNull (wc.ResponseHeaders, "ResponseHeaders");
+					}
 					Assert.IsFalse (TestPanel.CheckAccess ());
 					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadStringCompleted");
 				}
@@ -720,6 +728,8 @@ namespace MoonTest.System.Net {
 			t.Start ();
 			EnqueueConditional (() => done);
 			Enqueue (() => {
+				// DownloadProgressChanged is only called if running from http:// (not file://)
+				Assert.AreEqual (RunningFromHttp, progress, "DownloadProgressChanged");
 				if (afe != null)
 					throw afe;
 			});
