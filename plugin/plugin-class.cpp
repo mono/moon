@@ -2024,6 +2024,9 @@ MoonlightObject::SetEventProxy (EventListenerProxy *proxy)
 void
 MoonlightObject::ClearEventProxies ()
 {
+	if (event_listener_proxies == NULL)
+		return;
+
 #if GLIB_CHECK_VERSION(2,12,0)
 	g_hash_table_remove_all (event_listener_proxies);
 #else
