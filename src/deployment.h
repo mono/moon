@@ -346,7 +346,12 @@ public:
 
 	void SetXapFilename (const char *filename);
 	const char *GetXapFilename ();
-	
+
+	// refs object until either SetKeepAlive is called again with a false value, or shutdown
+	// starts. Note that the implementation is not symmetric: the first SetKeepAlive (false)
+	// will release the object even if SetKeepAlive (true) has been called several times.
+	void SetKeepAlive (EventObject *object, bool value);
+
 	FontManager *GetFontManager ();
 	
 	/* @GeneratePInvoke */
@@ -504,6 +509,10 @@ private:
 	Mutex medias_mutex;
 	/* accessed from several threads, needs the medias_mutex locked on all accesses */
 	List *medias;
+
+	/* A list of objects that must be kept alive until told otherwise */
+	GHashTable *keepalive;
+	Mutex keepalive_mutex;
 
 	bool is_initializing;
 	bool is_shutting_down;

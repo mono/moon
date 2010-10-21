@@ -450,6 +450,7 @@ Deployment::InnerConstructor ()
 #endif
 	surface = NULL;
 	medias = NULL;
+	keepalive = NULL;
 	is_initializing = false;
 	is_shutting_down = false;
 	is_network_stopped = false;
@@ -510,6 +511,33 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 	// FIXME: we need to figure out what type of exception it is
 	// and map it to the right MoonError::ExceptionType enum
 	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
+}
+
+static void
+unref_kept_alive_object (gpointer obj)
+{
+	((EventObject *) obj)->unref_delayed ();
+}
+
+void
+Deployment::SetKeepAlive (EventObject *object, bool value)
+{
+	// Don't keep anything alive after shutdown
+	if (is_shutting_down)
+		return;
+
+	keepalive_mutex.Lock ();
+	if (value) {
+		if (!keepalive)
+			keepalive = g_hash_table_new_full (g_direct_hash, g_direct_equal, unref_kept_alive_object, NULL);
+
+		object->ref ();
+		g_hash_table_insert (keepalive, object, NULL);
+	} else {
+		if (keepalive)
+			g_hash_table_remove (keepalive, object);
+	}
+	keepalive_mutex.Unlock ();
 }
 
 void
@@ -1220,6 +1248,14 @@ Deployment::Shutdown ()
 	
 	// Detach all loaded handlers we may have, they cause circular refs
 	RemoveMatchingHandlers (Deployment::LoadedEvent, NULL, NULL);
+
+	/* The objects kept alive must now be allowed to die */
+	keepalive_mutex.Lock ();
+	if (keepalive != NULL) {
+		g_hash_table_destroy (keepalive);
+		keepalive = NULL;
+	}
+	keepalive_mutex.Unlock ();
 
 	if (current_app != NULL) {
 		current_app->Dispose ();

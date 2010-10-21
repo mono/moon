@@ -1040,7 +1040,6 @@ protected:
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 private:
-	bool reffed;
 	bool HookupAnimationsRecurse (Clock *clock,
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
 				      GHashTable *promoted_values,

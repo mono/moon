@@ -225,7 +225,6 @@ private:
 	bool stopped;
 	bool started;
 	bool ontick;
-	bool pending_unref;
 };
 
 };
