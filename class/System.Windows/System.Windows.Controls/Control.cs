@@ -167,6 +167,10 @@ namespace System.Windows.Controls {
 			((Control) sender).RaiseUIAIsTabStopChanged (args);
 		}
 
+		internal bool Focused {
+			get; private set;
+		}
+
 		private new void Initialize ()
 		{
 			// FIXME this should not be handled using Events.AddHandler, since those handlers are removable via the plugin
@@ -241,7 +245,7 @@ namespace System.Windows.Controls {
 		internal override void InvokeOnApplyTemplate ()
 		{
 			base.InvokeOnApplyTemplate ();
-			UpdateValidationState (!Validation.GetHasError (this));
+			UpdateValidationState ();
 		}
 
 		// centralize call to pinvoke to reduce [SecuritySafeCritical] methods
@@ -251,13 +255,14 @@ namespace System.Windows.Controls {
 		}
 
 		internal virtual void PreOnGotFocus (RoutedEventArgs e) { }
-		bool focused = false;
+
 		protected virtual void OnGotFocus (RoutedEventArgs e)
 		{
-			focused  = true;
-			UpdateValidationState ();
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			Focused  = true;
+			UpdateValidationState ();
 		}
 		internal virtual void PostOnGotFocus (RoutedEventArgs e)
 		{
@@ -272,10 +277,11 @@ namespace System.Windows.Controls {
 		internal virtual void PreOnLostFocus (RoutedEventArgs e) { }
 		protected virtual void OnLostFocus (RoutedEventArgs e)
 		{
-			focused = false;
-			UpdateValidationState ();
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			Focused = false;
+			UpdateValidationState ();
 		}
 		internal virtual void PostOnLostFocus (RoutedEventArgs e)
 		{
@@ -488,7 +494,7 @@ namespace System.Windows.Controls {
 		{
 			if (valid) {
 				VisualStateManager.GoToState (this, "Valid", true);
-			} else if (focused) {
+			} else if (Focused) {
 				VisualStateManager.GoToState (this, "InvalidFocused", true);
 			} else {
 				VisualStateManager.GoToState (this, "InvalidUnfocused", true);

@@ -49,11 +49,7 @@ namespace System.Windows.Controls {
 	[TemplatePartAttribute (Name = "ContentElement",	Type = typeof (FrameworkElement))]
 	public partial class TextBox : Control {
 		object contentElement;
-		
-		bool IsFocused {
-			get; set;
-		}
-		
+
 		bool IsMouseOver {
 			get; set;
 		}
@@ -177,17 +173,15 @@ namespace System.Windows.Controls {
 
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
-			IsFocused = true;
-			ChangeVisualState ();
 			base.OnGotFocus (e);
+			ChangeVisualState ();
 			NativeMethods.text_box_base_on_got_focus (native, e.NativeHandle);
 		}
 		
 		protected override void OnLostFocus (RoutedEventArgs e)
 		{
-			IsFocused = false;
-			ChangeVisualState ();
 			base.OnLostFocus (e);
+			ChangeVisualState ();
 			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
 		}
 
@@ -298,7 +292,7 @@ namespace System.Windows.Controls {
 				VisualStateManager.GoToState (this, "Normal", useTransitions);
 			}
 
-			if (IsFocused) {
+			if (Focused) {
 				VisualStateManager.GoToState (this, "Focused", useTransitions);
 			} else {
 				VisualStateManager.GoToState (this, "Unfocused", useTransitions);

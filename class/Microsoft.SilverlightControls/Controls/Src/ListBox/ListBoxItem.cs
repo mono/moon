@@ -77,8 +77,6 @@ namespace System.Windows.Controls
 	private Selector parentSelector;
 	internal event EventHandler ParentSelectorChanged; 
 
-        internal bool IsFocused { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the ListBoxItem class. 
         /// </summary> 
@@ -157,7 +155,6 @@ namespace System.Windows.Controls
         protected override void OnGotFocus(RoutedEventArgs e) 
         {
             base.OnGotFocus(e);
-            IsFocused = true;
             ChangeVisualState ();
 
             if (null != ParentSelector) {
@@ -172,7 +169,6 @@ namespace System.Windows.Controls
         protected override void OnLostFocus(RoutedEventArgs e) 
         {
             base.OnLostFocus (e);
-            IsFocused = false;
             ChangeVisualState ();
             if (null != ParentSelector) {
                 ParentSelector.NotifyListItemLostFocus(this); 
@@ -198,7 +194,7 @@ namespace System.Windows.Controls
         /// </summary>
         void ChangeVisualState()
         {
-            if (IsFocused) {
+            if (Focused) {
                 VisualStateManager.GoToState (this, "Focused", true);
             } else {
                 VisualStateManager.GoToState (this, "Unfocused", true);
@@ -212,12 +208,12 @@ namespace System.Windows.Controls
                 VisualStateManager.GoToState (this, "Normal", true);
             }
             
-            if (!IsSelected) {
+            if (IsSelected && Focused) {
+                VisualStateManager.GoToState (this, "Selected", true);
+            } else if (IsSelected) {
+                VisualStateManager.GoToState (this, "SelectedUnfocused", true);
+            } else {
                 VisualStateManager.GoToState (this, "Unselected", true);
-            } else /*if (true || IsFocused) */ {
-                 VisualStateManager.GoToState (this, "Selected", true);
-            //} else {
-            //     VisualStateManager.GoToState (this, "SelectedUnfocused", true);
             }
         }
 

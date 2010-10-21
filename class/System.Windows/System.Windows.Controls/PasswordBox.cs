@@ -146,10 +146,9 @@ namespace System.Windows.Controls
 		
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
-			IsFocused = true;
 			base.OnGotFocus (e);
-			NativeMethods.text_box_base_on_got_focus (native, e.NativeHandle);
 			ChangeVisualState ();
+			NativeMethods.text_box_base_on_got_focus (native, e.NativeHandle);
 		}
 		
 		protected override void OnLostFocus (RoutedEventArgs e)

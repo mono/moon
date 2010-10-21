@@ -218,7 +218,7 @@ namespace System.Windows.Controls
 			if (IsDropDownOpen && IsEnabled) {
 				VisualStateManager.GoToState (this, "FocusedDropDown", useTransitions);
 			}
-			else if (isFocused && IsEnabled) {
+			else if (Focused && IsEnabled) {
 				VisualStateManager.GoToState (this, "Focused", useTransitions);
 			}
 			else {
@@ -325,7 +325,6 @@ namespace System.Windows.Controls
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
 			base.OnGotFocus (e);
-			isFocused = true;
 			UpdateVisualState (true);
 		}
 
@@ -343,7 +342,6 @@ namespace System.Windows.Controls
 		protected override void OnLostFocus (RoutedEventArgs e)
 		{
 			base.OnLostFocus (e);
-			isFocused = false;
 			IsSelectionActive = _popup == null ? false : _popup.IsOpen;
 			UpdateVisualState (true);
 		}
@@ -582,6 +580,5 @@ namespace System.Windows.Controls
 		ToggleButton _dropDownToggle;
 
 		bool isMouseOver;
-		bool isFocused;
 	}
 }
