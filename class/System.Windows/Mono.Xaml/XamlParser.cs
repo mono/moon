@@ -183,8 +183,10 @@ namespace Mono.Xaml {
 						break;
 					}
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
+				Console.Error.WriteLine ("Exception while parsing reader:");
+				Console.Error.WriteLine (e);
+
 				throw ParseException ("Caught exception: {0}", e.Message);
 			}
 
