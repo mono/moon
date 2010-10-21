@@ -251,8 +251,11 @@ namespace System.Windows.Controls {
 		}
 
 		internal virtual void PreOnGotFocus (RoutedEventArgs e) { }
+		bool focused = false;
 		protected virtual void OnGotFocus (RoutedEventArgs e)
 		{
+			focused  = true;
+			UpdateValidationState ();
 			if (e == null)
 				throw new ArgumentNullException ("e");
 		}
@@ -269,6 +272,8 @@ namespace System.Windows.Controls {
 		internal virtual void PreOnLostFocus (RoutedEventArgs e) { }
 		protected virtual void OnLostFocus (RoutedEventArgs e)
 		{
+			focused = false;
+			UpdateValidationState ();
 			if (e == null)
 				throw new ArgumentNullException ("e");
 		}
@@ -474,11 +479,16 @@ namespace System.Windows.Controls {
 			throw new NotImplementedException ();
 		}
 
+		internal void UpdateValidationState ()
+		{
+			UpdateValidationState (Validation.GetErrors (this).Count == 0);
+		}
+
 		internal void UpdateValidationState (bool valid)
 		{
 			if (valid) {
 				VisualStateManager.GoToState (this, "Valid", true);
-			} else if (FocusManager.GetFocusedElement () == this) {
+			} else if (focused) {
 				VisualStateManager.GoToState (this, "InvalidFocused", true);
 			} else {
 				VisualStateManager.GoToState (this, "InvalidUnfocused", true);
