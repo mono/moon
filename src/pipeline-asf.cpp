@@ -1606,25 +1606,16 @@ MmsSource::Dispose ()
 	// thread safe method
 	MmsPlaylistEntry *current;
 	IMediaDemuxer *demuxer;
-	HttpRequest *request;
 	bool delete_tmp_downloaders;
 
 	// don't lock during unref, only while nulling out the local field
 	Lock ();
 	current = this->current;
 	this->current = NULL;
-	request = this->request;
-	this->request = NULL;
 	demuxer = this->demuxer;
 	this->demuxer = NULL;
-	delete_tmp_downloaders = this->temporary_downloaders != NULL;
+	delete_tmp_downloaders = this->temporary_downloaders != NULL || this->request != NULL;
 	Unlock ();
-	
-	if (request) {
-		request->RemoveAllHandlers (this);
-		request->unref ();
-		request = NULL;
-	}
 
 	if (current) {
 		current->unref ();
@@ -1640,7 +1631,7 @@ MmsSource::Dispose ()
 		if (Surface::InMainThread ()) {
 			DeleteTemporaryDownloaders (this);
 		} else {
-			/* We can't touch the downloaders on any thread but the main one */
+			/* We can't touch the downloaders / request on any thread but the main one */
 			Resurrect (); /* Don't call ref, since that will cause a warning to be printed */
 			AddTickCall (DeleteTemporaryDownloaders);
 			unref (); /* The tick call still has a ref */
@@ -1654,15 +1645,23 @@ void
 MmsSource::DeleteTemporaryDownloaders (EventObject *obj)
 {
 	List *temporary_downloaders;
+	HttpRequest *request;
 
 	MmsSource *src = (MmsSource *) obj;
 	src->Lock ();
 	temporary_downloaders = src->temporary_downloaders;
 	src->temporary_downloaders = NULL;
+	request = src->request;
+	src->request = NULL;
 	src->Unlock ();
 
 	delete temporary_downloaders;
 	temporary_downloaders = NULL;
+	if (request) {
+		request->RemoveAllHandlers (obj);
+		request->unref ();
+		request = NULL;
+	}
 }
 
 MediaResult
