@@ -138,6 +138,7 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected override void OnGotFocus(RoutedEventArgs e) 
         {
+            base.OnGotFocus (e);
             IsSelectionActive = true; 
         }
 
@@ -147,6 +148,7 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected override void OnLostFocus(RoutedEventArgs e) 
         {
+            base.OnLostFocus (e);
             IsSelectionActive = false; 
         }
 
