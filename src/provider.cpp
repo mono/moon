@@ -549,7 +549,7 @@ InheritedPropertyValueProvider::InheritablePropertyFromPropertyId (DependencyObj
 	else if (propertyId == UIElement::UseLayoutRoundingProperty)
 		return InheritedPropertyValueProvider::UseLayoutRounding;
 
-	else if (propertyId == TextElement::TextDecorationsProperty)
+	else if (propertyId == TextElement::TextDecorationsProperty || propertyId == TextBlock::TextDecorationsProperty)
 		return InheritedPropertyValueProvider::TextDecorations;
 
 	else
@@ -630,6 +630,8 @@ InheritedPropertyValueProvider::InheritablePropertyToPropertyId (Types *types, I
 	case InheritedPropertyValueProvider::TextDecorations:
 		if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
 			return TextElement::TextDecorationsProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::TextDecorationsProperty;
 	default:
 		break;
 	}

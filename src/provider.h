@@ -175,7 +175,7 @@ public:
 		UseLayoutRounding = 1 << 8,
 		TextDecorations = 1 << 9,
 
-		InheritableAll = 0x1ff,
+		InheritableAll = 0x3ff,
 		InheritableNone = 0
 	};
 
