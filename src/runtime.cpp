@@ -1721,16 +1721,31 @@ Surface::CreateArgsForEvent (int event_id, MoonEvent *event)
 	}
 }
 
+static List*
+copy_input_list_from_node (List *input_list, UIElementNode* node)
+{
+	List *list = new List ();
+
+	while (node) {
+		list->Append (new UIElementNode (node->uielement));
+		node = (UIElementNode*) node->next;
+	}
+
+	return list;
+}
+
 bool
-Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, int end_idx)
+Surface::EmitEventOnList (int event_id, List *list, MoonEvent *event, int end_idx)
 {
 	bool handled = false;
 
 	int idx;
 	UIElementNode *node;
 
-	if (element_list->IsEmpty() || end_idx == 0)
+	if (list->IsEmpty() || end_idx == 0)
 		return handled;
+
+	List *element_list = copy_input_list_from_node (list, (UIElementNode*)list->First());
 
 	if (end_idx == -1)
 		end_idx = element_list->Length();
@@ -1764,6 +1779,7 @@ Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, in
 		node->uielement->FinishEmit (event_id, emit_ctxs[idx]);
 	}
 	g_free (emit_ctxs);
+	delete element_list;
 
 	return handled;
 }
@@ -1810,19 +1826,6 @@ Surface::FindFirstCommonElement (List *l1, int *index1,
 		i1--;
 		i2--;
 	}
-}
-
-static List*
-copy_input_list_from_node (List *input_list, UIElementNode* node)
-{
-	List *list = new List ();
-
-	while (node) {
-		list->Append (new UIElementNode (node->uielement));
-		node = (UIElementNode*) node->next;
-	}
-
-	return list;
 }
 
 bool
