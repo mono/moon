@@ -617,6 +617,8 @@ UIElement::ComputeTransform ()
 	if (memcmp (old_projection, local_projection, sizeof (double) * 16)) {
 		if (GetVisualParent ())
 			GetVisualParent ()->Invalidate (GetSubtreeBounds ());
+		else if (GetDeployment ()->GetSurface ()->IsTopLevel (this))
+			InvalidateSubtreePaint ();
 
 		if (IsAttached ())
 			GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyNewBounds);

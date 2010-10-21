@@ -387,6 +387,9 @@ Surface::ProcessUpDirtyElements ()
 		if (el->dirty_flags & DirtyNewBounds) {
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->Invalidate (el->GetSubtreeBounds ());
+			else if (IsTopLevel (el))
+				el->InvalidateSubtreePaint ();
+
 			el->dirty_flags &= ~DirtyNewBounds;
 		}
 		if (el->dirty_flags & DirtyInvalidate) {
