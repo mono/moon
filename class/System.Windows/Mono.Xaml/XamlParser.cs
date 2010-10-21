@@ -45,6 +45,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Markup;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace Mono.Xaml {
 
@@ -572,8 +573,12 @@ namespace Mono.Xaml {
 					return;
 				}
 
-				XamlReflectionPropertySetter content = obj.FindContentProperty ();
+				if (typeof (Span).IsAssignableFrom (obj.Type)) {
+					ParseSpanText (obj, value);
+					return;
+				}
 
+				XamlReflectionPropertySetter content = obj.FindContentProperty ();
 				if (content == null) {
 
 					if (IsLegalCorlibType (obj.Type)) {
@@ -624,6 +629,15 @@ namespace Mono.Xaml {
 
 			if (tb != null)
 				tb.Text = value;
+		}
+
+		private void ParseSpanText (XamlObjectElement obj, string value)
+		{
+			Span span = (Span) obj.Object;
+			Run run = new Run ();
+
+			run.Text = value;
+			span.Inlines.Add (run);
 		}
 
 		private void ParseWhitespace ()
