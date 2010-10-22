@@ -262,16 +262,35 @@ namespace Mono.Xaml {
 
 		public XamlReflectionPropertySetter FindContentProperty ()
 		{
-			ContentPropertyAttribute [] atts = (ContentPropertyAttribute []) Type.GetCustomAttributes (typeof (ContentPropertyAttribute), true);
-			if (atts.Length == 0) {
+			Type type = null;
+			ContentPropertyAttribute cnt = FindContentPropertyAttribute (out type);
+			if (cnt == null) {
 				// If there wasn't an explicitly set content property (via attributes)
 				// attempt to use a property named Content. Will return null if the
 				// property is not found.
 				return XamlReflectionPropertyForName (Type, "Content");
 			}
 
-			ContentPropertyAttribute cpa = (ContentPropertyAttribute ) atts [0];
-			return XamlReflectionPropertyForName (Type, cpa.Name);
+
+			return XamlReflectionPropertyForName (type, cnt.Name);
+		}
+
+		private ContentPropertyAttribute FindContentPropertyAttribute (out Type type)
+		{
+			type = Type;
+
+			while (type != typeof (object) && type != typeof (ValueType)) {
+				ContentPropertyAttribute [] atts = (ContentPropertyAttribute []) type.GetCustomAttributes (typeof (ContentPropertyAttribute), false);
+				if (atts.Length == 0) {
+					type = type.BaseType;
+					continue;
+				}
+				
+				return atts [0];
+			}
+
+			type = null;
+			return null;
 		}
 
 		public override XamlPropertySetter LookupProperty (XmlReader reader)
