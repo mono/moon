@@ -130,13 +130,14 @@ namespace Mono.Xaml {
 			try {
 				res = ParseReader (new StringReader (str));
 			} catch (XamlParseException pe) {
-				Console.WriteLine ("Exception while parsing string:");
+				Console.WriteLine ("Exception while parsing string ({0}:{1})", pe.LineNumber, pe.LinePosition);
 				Console.WriteLine (pe);
 				Console.WriteLine ("string:");
 				Console.WriteLine (str);
 
 				throw pe;
 			} catch (Exception e) {
+				
 				Console.WriteLine ("Exception while parsing string:");
 				Console.WriteLine (e);
 				Console.WriteLine ("string:");
@@ -184,7 +185,14 @@ namespace Mono.Xaml {
 					}
 				}
 			} catch (Exception e) {
-				Console.Error.WriteLine ("Exception while parsing reader:");
+				int line = -1;
+				int col = -1;
+				IXmlLineInfo linfo = reader as IXmlLineInfo;
+				if (linfo != null) {
+					line = linfo.LineNumber;
+					col = linfo.LinePosition;
+				}
+				Console.Error.WriteLine ("Exception while parsing reader ({0}:{1}):", line, col);
 				Console.Error.WriteLine (e);
 
 				throw ParseException ("Caught exception: {0}", e.Message);
