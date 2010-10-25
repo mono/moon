@@ -48,6 +48,10 @@ namespace Mono.Xaml {
 			this.target_data = target_data;
 		}
 
+		protected override bool ThrowOnNullConverter {
+			get { return false; }
+		}
+
 		protected override object LookupNamedResource (DependencyObject dob, string name)
 		{
 			if (name == null)
@@ -114,6 +118,10 @@ namespace Mono.Xaml {
 			this.target_element = target_element;
 		}
 
+		protected override bool ThrowOnNullConverter {
+			get { return true; }
+		}
+
 		protected override object LookupNamedResource (DependencyObject dob, string name)
 		{
 			if (name == null)
@@ -164,6 +172,10 @@ namespace Mono.Xaml {
 
 		public string AttributeName {
 			get { return attribute_name; }
+		}
+
+		protected abstract bool ThrowOnNullConverter {
+			get;
 		}
 
 		public static bool IsTemplateBinding (string expression)
@@ -396,6 +408,8 @@ namespace Mono.Xaml {
 				IValueConverter value_converter = value as IValueConverter;
 				if (value_converter == null && value != null)
 					throw new Exception ("A Binding Converter must be of type IValueConverter.");
+				if (value == null && ThrowOnNullConverter)
+					throw new Exception ("Binding Converter not found.");
 				b.Converter = value_converter;
 				break;
 			case "ConverterCulture":
