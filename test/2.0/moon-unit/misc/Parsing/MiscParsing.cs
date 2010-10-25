@@ -920,6 +920,22 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void MarkupParser_ConverterDoesNotExist_Throws ()
+		{
+			// Parse a binding which has escaped curly braces with escaped commas inside it
+			Assert.Throws<XamlParseException> (() => XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+Width=""100"" Height=""100"">
+	<Canvas.Resources>
+	</Canvas.Resources>
+	<TextBlock x:Name=""text"" Text=""{Binding somedate, Converter={StaticResource DateTimeConverter}, ConverterParameter=\{0:MMMM d\, yyyy\}, Mode=OneWay}"" />
+</Canvas>
+"));
+		}
+
+		[TestMethod]
 		[MaxRuntimeVersion(3)]
 		public void EscapedExtensions_sl3 ()
 		{
@@ -936,23 +952,6 @@ Width=""100"" Height=""100"">
 			
 			var beb = (BindingExpression) canvas.Children[0].ReadLocalValue (TextBlock.TextProperty);
 			Assert.AreEqual ("{0:MMMM d, yyyy}", beb.ParentBinding.ConverterParameter, "#1");
-		}
-
-		[TestMethod]
-		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
-		public void EscapedExtensions_sl4 ()
-		{
-			// Parse a binding which has escaped curly braces with escaped commas inside it
-			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"	
-<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-Width=""100"" Height=""100"">
-	<Canvas.Resources>
-	</Canvas.Resources>
-	<TextBlock x:Name=""text"" Text=""{Binding somedate, Converter={StaticResource DateTimeConverter}, ConverterParameter=\{0:MMMM d\, yyyy\}, Mode=OneWay}"" />
-</Canvas>
-"));
 		}
 
 		[TestMethod]
@@ -975,23 +974,6 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
-		public void EscapedExtensions2_sl4 ()
-		{
-			// Parse a binding which uses escaped curly braces and has whitespace in it
-			Assert.Throws<XamlParseException> (() => XamlReader.Load(@"	
-<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-Width=""100"" Height=""100"">
-	<Canvas.Resources>
-	</Canvas.Resources>
-	<TextBlock x:Name=""text"" Text=""{Binding somedate, Converter={StaticResource DateTimeConverter}, ConverterParameter=\{0:t\} ET, Mode=OneWay}"" />
-</Canvas>
-"));
-		}
-
-		[TestMethod]
 		[MaxRuntimeVersion(3)]
 		public void EscapedExtensions_CommaTerminated_sl3 ()
 		{
@@ -1003,19 +985,6 @@ Width=""100"" Height=""100"">
 ");
 			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
 			Assert.AreEqual ("Click {0}", beb.ParentBinding.ConverterParameter, "#1");
-		}
-
-		[TestMethod]
-		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
-		public void EscapedExtensions_CommaTerminated_sl4 ()
-		{
-			// Parse a binding with spaces and escaped curly braces
-			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"	
-<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
-	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter=Click \{0\}, Mode=OneWay}"" />
-</Canvas>
-"));
 		}
 
 		[TestMethod]
@@ -1034,18 +1003,6 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
-		public void EscapedCharacters_sl4 ()
-		{
-			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"	
-<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
-	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter=\\a\{\, test , Mode=OneWay}"" />
-</Canvas>
-"));
-		}
-
-		[TestMethod]
 		[MaxRuntimeVersion(3)]
 		public void QuotedString_EscapedQuotes_sl3 ()
 		{
@@ -1060,19 +1017,6 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
-		public void QuotedString_EscapedQuotes_sl4 ()
-		{
-			// Parse a binding with an escaped quote mark and whitespace at the end
-			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"	
-<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
-	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter='\'' , Mode=OneWay}"" />
-</Canvas>
-"));
-		}
-
-		[TestMethod]
 		[MaxRuntimeVersion(3)]
 		public void QuotedString_EscapedBackslashesAndWhitespace_sl3 ()
 		{
@@ -1084,19 +1028,6 @@ Width=""100"" Height=""100"">
 ");
 			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
 			Assert.AreEqual (@"\ \ ", beb.ParentBinding.ConverterParameter, "#1");
-		}
-
-		[TestMethod]
-		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
-		public void QuotedString_EscapedQuotesAndWhitespace_sl4 ()
-		{
-			// Parse a binding with an escaped quote mark with whitespace inside it
-			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"	
-<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
-	<TextBlock Text=""{Binding Something, Converter={StaticResource SomeFormatter}, ConverterParameter='\' ' , Mode=OneWay}"" />
-</Canvas>
-"));
 		}
 
 		[TestMethod]
