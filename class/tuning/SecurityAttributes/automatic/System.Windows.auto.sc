@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 566 methods needs to be decorated.
+# 568 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -288,6 +288,12 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
+
+# overrides 'System.Boolean Mono.Xaml.MarkupExpressionParser::get_ThrowOnNullConverter()'.
++SC-M: System.Boolean Mono.Xaml.SL3MarkupExpressionParser::get_ThrowOnNullConverter()
+
+# overrides 'System.Boolean Mono.Xaml.MarkupExpressionParser::get_ThrowOnNullConverter()'.
++SC-M: System.Boolean Mono.Xaml.SL4MarkupExpressionParser::get_ThrowOnNullConverter()
 
 # overrides 'System.Boolean Mono.MoonlightTypeConverter::CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)'.
 +SC-M: System.Boolean Mono.Xaml.XamlTypeConverter::CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)
