@@ -240,7 +240,7 @@ namespace System.Net.Browser {
 						async_result.Exception = new SecurityException ("Cannot redirect policy files");
 						async_result.SetComplete ();
 					} else {
-						string location = wres.Headers ["Location"];
+						string location = wres.InternalHeaders ["Location"];
 						Uri redirect = new Uri (location);
 						// Silverlight does NOT redirect POST as POST to avoid cross site attacks - see DRT #866 or
 						// http://blogs.msdn.com/jackgr/archive/2010/04/19/silverlight-clients-and-appfabric-access-control.aspx
