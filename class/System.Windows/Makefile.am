@@ -50,6 +50,14 @@ RUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/SDKControls
 MSTOOLKIT=$(srcdir)/../Microsoft.Windows.Controls/Source
 WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
 
+system_windows_generated_sources =						\
+	$(srcdir)/Mono/GeneratedPInvokes.cs					\
+	$(srcdir)/Mono/Kind.cs							\
+	$(srcdir)/Mono/Types.g.cs						\
+	$(srcdir)/System.Windows/DependencyObject.g.cs				\
+	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
+	$(srcdir)/System.Windows/Events.g.cs
+
 system_windows_sources =							\
 	$(srcdir)/MS.Internal.ComAutomation/ComAutomationParam.cs	\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
@@ -64,7 +72,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/EasingFunctionWrapper.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
-	$(srcdir)/Mono/GeneratedPInvokes.cs					\
 	$(srcdir)/Mono/HeapUtil.cs						\
 	$(srcdir)/Mono/Helper.cs						\
 	$(srcdir)/Mono/Helper.PublicKey.cs					\
@@ -74,7 +81,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/INativeEventObjectWrapper.cs				\
 	$(srcdir)/Mono/IRefContainer.cs						\
 	$(srcdir)/Mono/IWeakListener.cs						\
-	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\
 	$(srcdir)/Mono/MoonError.cs						\
 	$(srcdir)/Mono/MoonException.cs						\
@@ -92,7 +98,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Surface.cs						\
 	$(srcdir)/Mono/ToggleRef.cs						\
 	$(srcdir)/Mono/Types.cs							\
-	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/UriHelper.cs				\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/WeakCollectionChangedListener.cs				\
@@ -756,9 +761,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Printing/PrintDocument.cs			\
 	$(srcdir)/System.Windows.Printing/PrintPageEventArgs.cs			\
 	$(srcdir)/System.Windows.Printing/BeginPrintEventArgs.cs		\
-	$(srcdir)/System.Windows/DependencyObject.g.cs				\
-	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
-	$(srcdir)/System.Windows/Events.g.cs					\
 \
 	$(WPFTOOLKIT)/VSM/System/Windows/TemplateVisualStateAttribute.cs	\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateGroup.cs			\
@@ -840,8 +842,8 @@ LINKER_FLAGS =	\
 	-b true	\
 	-m secattrs ../tuning/SecurityAttributes
 
-$(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
+$(assemblysl_raw): $(system_windows_sources) $(system_windows_generated_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) $(system_windows_generated_sources) -d:NET_2_1 \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
 	sn -q -R $@ $(srcdir)/../mono.snk
@@ -850,8 +852,8 @@ $(assemblysl): $(assemblysl_raw) $(sl_secattr)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
+$(assemblydesktop): $(system_windows_sources) $(system_windows_generated_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) $(system_windows_generated_sources) \
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 
@@ -860,8 +862,8 @@ $(assemblydesktop).config: Makefile $(assembly).dll.config
 
 bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
 
-$(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
+$(bootstrap_assemblysl_raw): $(system_windows_sources) $(system_windows_generated_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) $(system_windows_generated_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
 		-delaysign+ -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
 	sn -q -R $@ $(srcdir)/../mono.snk
 
@@ -870,8 +872,8 @@ $(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
 		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(bootstrap_assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(GMCS) -d:BOOTSTRAP $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \
+$(bootstrap_assemblydesktop): $(system_windows_sources) $(system_windows_generated_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(GMCS) -d:BOOTSTRAP $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) $(system_windows_generated_sources) \
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 
