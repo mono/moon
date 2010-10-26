@@ -20,7 +20,6 @@ libmoon_include_headers = 	\
 	brush.h			\
 	canvas.h		\
 	capture.h		\
-	cbinding.h		\
 	clock.h			\
 	codec-url.h		\
 	collection.h		\
@@ -135,19 +134,22 @@ libmoon_include_headers = 	\
 	timesource.h		\
 	transform.h		\
 	trigger.h		\
-	type.h			\
 	uielement.h		\
 	uri.h			\
 	usercontrol.h		\
 	utils.h			\
 	validators.h		\
-	value.h			\
 	weakrefmanager.h	\
 	webbrowser.h		\
 	writeablebitmap.h	\
 	xaml.h			\
 	xap.h			\
 	yuv-converter.h
+
+nodist_libmoon_la_SOURCES =	\
+	cbinding.cpp		\
+	dependencyproperty.g.cpp\
+	type-generated.cpp
 
 libmoon_la_SOURCES = 		\
 	animation.cpp		\
@@ -162,7 +164,6 @@ libmoon_la_SOURCES = 		\
 	brush.cpp		\
 	canvas.cpp		\
 	capture.cpp		\
-	cbinding.cpp		\
 	clock.cpp		\
 	collection.cpp		\
 	color.cpp		\
@@ -176,7 +177,6 @@ libmoon_la_SOURCES = 		\
 	deepzoomimagetilesource.cpp \
 	dependencyobject.cpp	\
 	dependencyproperty.cpp	\
-	dependencyproperty.g.cpp\
 	deployment.cpp		\
 	dirty.cpp		\
 	dirty.h			\
@@ -265,7 +265,6 @@ libmoon_la_SOURCES = 		\
 	transform.cpp		\
 	trigger.cpp		\
 	type.cpp		\
-	type-generated.cpp	\
 	uielement.cpp		\
 	uri.cpp			\
 	usercontrol.cpp 	\
