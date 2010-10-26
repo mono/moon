@@ -693,21 +693,17 @@ System.Int32 System.MonoType::GetArrayRank()
 System.Int32 System.Object::GetHashCode()
 	r142142		spouliot - call InternalGetHashCode (icall)
 
-!SSC-47DE7FC4D4B70DA8BC871559DE90879C
-System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.Emit.SignatureHelper)
-	r142142		spouliot - call getToken (icall) with itself (instance) and the (non-null, checked by caller) parameter
-
-!SSC-EFF8D9DAD010380A3393836295F49FE8
-System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MemberInfo)
-	r142142		spouliot - call getToken (icall) with itself (instance) and the (non-null, checked by caller) parameter
-
-!SSC-19191BD3BB73EDA2F0DE5E5BF2C12901
-System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MethodInfo,System.Type[])
-	r142142		spouliot - call getMethodToken (icall) with itself (instance) and the (icall verified) parameters
-
 !SSC-E82C466995CD121040D7EBF68A2F0313
 System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.String)
 	r142142		spouliot - call getUSIndex (icall named mono_image_insert_string in reflection.c) with itself (instance) and the string
+
+!SSC-8D65CE9B986C4693AA7D08FF92C183D7
+System.Int32 System.Reflection.Emit.ModuleBuilderTokenGenerator::GetToken(System.Reflection.MemberInfo,System.Boolean)
+	20101026	spouliot - call ModuleBuilder.GetToken [SecurityCritical] using it's parameters (checked inside the icall, unmanaged)
+
+!SSC-6C14D383857173FEBE4AAE2157E970ED
+System.Int32 System.Reflection.Emit.ModuleBuilderTokenGenerator::GetToken(System.Reflection.MethodInfo,System.Type[])
+	20101026	spouliot - call ModuleBuilder.GetToken [SecurityCritical] using it's parameters (checked inside the icall, unmanaged)
 
 !SSC-1F05584ADCD6FB63E932EB33D57A7619
 System.Int32 System.Reflection.MemberInfo::get_MetadataToken()
@@ -1069,6 +1065,10 @@ System.Reflection.Emit.EnumBuilder System.Reflection.Emit.ModuleBuilder::DefineE
 System.Reflection.Emit.FieldBuilder System.Reflection.Emit.TypeBuilder::DefineField(System.String,System.Type,System.Type[],System.Type[],System.Reflection.FieldAttributes)
 	r142142		spouliot - call create_internal_class (icall in reflection.c) on 'this'
 
+!SSC-AABE52E007AE73701E423515FCC9952A
+System.Reflection.Emit.FieldToken System.Reflection.Emit.ModuleBuilder::GetFieldToken(System.Reflection.FieldInfo)
+	20101026	spouliot - call GetToken [SecurityCritical] using non-null and same-module 'field' parameter
+
 !SSC-5B38D10533774F4AF92C8A9365DA2FB4
 System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.MethodBuilder::DefineGenericParameters(System.String[])
 	r145113		spouliot - added 'names' validations. call GenericTypeParameterBuilder [SecurityCritical] constructor with 'type' (TypeBuilder owner), 'this', a non-null name form 'names' and a unique integer (loop)
@@ -1081,9 +1081,25 @@ System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.Type
 System.Reflection.Emit.MethodBuilder System.Reflection.Emit.TypeBuilder::DefineMethod(System.String,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type,System.Type[],System.Type[],System.Type[],System.Type[][],System.Type[][])
 	r145113		spouliot - validation 'name' and 'attributes'. If type is not created call MethodBuilder ctor with 'this' and the parameters
 
+!SSC-3EC3611696814D5180D590DBBA2D7806
+System.Reflection.Emit.MethodToken System.Reflection.Emit.ModuleBuilder::GetConstructorToken(System.Reflection.ConstructorInfo)
+	20101026	spouliot - call GetToken [SecurityCritical] using non-null 'con' parameter
+
+!SSC-D2602C19DAE10E5FDF0B05157C115BB9
+System.Reflection.Emit.MethodToken System.Reflection.Emit.ModuleBuilder::GetMethodToken(System.Reflection.MethodInfo)
+	20101026	spouliot - call GetToken [SecurityCritical] using non-null and same-module 'field' parameter
+
 !SSC-1ACA4998111545C5A8E86ADB22238472
 System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
 	r143412		spouliot - call check_name_and_filename [SecurityCritical] but does not provide a user 'fileName' (instead the 'name' is reused)
+
+!SSC-B6B22CA17A2AB7A29F4604CC1A71C4AD
+System.Reflection.Emit.SignatureToken System.Reflection.Emit.ModuleBuilder::GetSignatureToken(System.Reflection.Emit.SignatureHelper)
+	20101026	spouliot - call GetToken [SecurityCritical] using non-null 'sigHelper' parameter
+
+!SSC-8E8FFAAF0B1E23264969D2CF7CB7D313
+System.Reflection.Emit.TypeToken System.Reflection.Emit.ModuleBuilder::GetTypeToken(System.Type)
+	20101026	spouliot - call GetToken [SecurityCritical] using non-null, non-byref and transient-checked 'type' parameter
 
 !SSC-9862C0A6312DB5DF80A35F83567190B6
 System.Reflection.EventInfo System.MonoType::GetEvent(System.String,System.Reflection.BindingFlags)
