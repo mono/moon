@@ -26,3 +26,6 @@
 +SC-T: System.Net.WebConnectionGroup
 +SC-T: System.Net.WebConnectionStream
 
+# internalized types used only by smcs
++SC-T: System.Diagnostics.Stopwatch
+

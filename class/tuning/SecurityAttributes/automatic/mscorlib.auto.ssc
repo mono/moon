@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 464 methods
+# 467 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -243,14 +243,17 @@
 +SSC-M: System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.AssemblyBuilder,System.String,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Reflection.Emit.EnumBuilder System.Reflection.Emit.ModuleBuilder::DefineEnum(System.String,System.Reflection.TypeAttributes,System.Type)
 +SSC-M: System.Type System.Reflection.Emit.ModuleBuilder::GetType(System.String,System.Boolean,System.Boolean)
++SSC-M: System.Reflection.Emit.MethodToken System.Reflection.Emit.ModuleBuilder::GetMethodToken(System.Reflection.MethodInfo)
++SSC-M: System.Reflection.Emit.MethodToken System.Reflection.Emit.ModuleBuilder::GetConstructorToken(System.Reflection.ConstructorInfo)
++SSC-M: System.Reflection.Emit.FieldToken System.Reflection.Emit.ModuleBuilder::GetFieldToken(System.Reflection.FieldInfo)
++SSC-M: System.Reflection.Emit.SignatureToken System.Reflection.Emit.ModuleBuilder::GetSignatureToken(System.Reflection.Emit.SignatureHelper)
++SSC-M: System.Reflection.Emit.TypeToken System.Reflection.Emit.ModuleBuilder::GetTypeToken(System.Type)
 +SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.String)
-+SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MemberInfo)
-+SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MemberInfo,System.Boolean)
-+SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MethodInfo,System.Type[])
-+SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.Emit.SignatureHelper)
 +SSC-M: System.Reflection.MethodBase System.Reflection.Emit.ModuleBuilder::ResolveMethod(System.Int32,System.Type[],System.Type[])
 +SSC-M: System.String System.Reflection.Emit.ModuleBuilder::ResolveString(System.Int32)
 +SSC-M: System.Type System.Reflection.Emit.ModuleBuilder::ResolveType(System.Int32,System.Type[],System.Type[])
++SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilderTokenGenerator::GetToken(System.Reflection.MemberInfo,System.Boolean)
++SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilderTokenGenerator::GetToken(System.Reflection.MethodInfo,System.Type[])
 +SSC-M: System.Byte[] System.Reflection.Emit.SignatureHelper::GetSignature()
 +SSC-M: System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.TypeAttributes,System.Int32)
 +SSC-M: System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.String,System.Reflection.TypeAttributes,System.Type,System.Type[],System.Reflection.Emit.PackingSize,System.Int32,System.Type)

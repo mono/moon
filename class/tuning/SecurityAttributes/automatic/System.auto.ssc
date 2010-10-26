@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System to call all [SecurityCritical] methods
-# 11 methods
+# 8 methods
 
 +SSC-M: System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 +SSC-M: System.Void Mono.Security.Protocol.Ntlm.Type1Message::.ctor()
@@ -8,7 +8,4 @@
 +SSC-M: System.Int32 Mono.Security.Protocol.Tls.SslStreamBase::EndRead(System.IAsyncResult)
 +SSC-M: System.Void Mono.Security.Protocol.Tls.SslStreamBase::EndWrite(System.IAsyncResult)
 +SSC-M: System.Threading.SynchronizationContext System.ComponentModel.AsyncOperationManager::get_SynchronizationContext()
-+SSC-M: System.Int64 System.Diagnostics.Stopwatch::get_ElapsedTicks()
-+SSC-M: System.Void System.Diagnostics.Stopwatch::Start()
-+SSC-M: System.Void System.Diagnostics.Stopwatch::Stop()
 +SSC-M: System.Void System.Net.Sockets.SocketException::.ctor()
