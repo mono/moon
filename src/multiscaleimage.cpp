@@ -56,6 +56,20 @@ pow2 (int pow)
 	return ((guint64) 1 << pow);
 }
 
+static inline int
+blur_adjust (double factor)
+{
+	int adjust;
+	
+	if (factor < 0.0 || isnan (factor) || isinf (factor))
+		return 0;
+	
+	if (frexp (factor, &adjust) == 0.5)
+		adjust--;
+	
+	return -adjust;
+}
+
 /*
  * Q(uad)Tree.
  */
@@ -896,8 +910,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		
 		int optimal_layer;
 		frexp (msi_w / (subvp_w * msivp_w * MIN (1.0, sub_ar)), &optimal_layer);
+		LOG_MSI ("number of layers: %d; optimal layer: %d; BlurFactor: %.2f; adjustment: %d\n",
+			 layers, optimal_layer, GetBlurFactor (), blur_adjust (GetBlurFactor ()));
+		
+		optimal_layer += blur_adjust (GetBlurFactor ());
 		optimal_layer = MIN (optimal_layer, layers);
-		LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 		
 		int to_layer = -1;
 		int from_layer = optimal_layer;
@@ -1149,9 +1166,12 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar)), &optimal_layer) == 0.5)
 		optimal_layer--;
 	
+	LOG_MSI ("number of layers: %d; optimal layer: %d; BlurFactor: %.2f; adjustment: %d\n",
+		 layers, optimal_layer, GetBlurFactor (), blur_adjust (GetBlurFactor ()));
+	
+	optimal_layer += blur_adjust (GetBlurFactor ());
 	optimal_layer = MIN (optimal_layer, layers);
-	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
-
+	
 	// We have to figure all the layers that we'll have to render:
 	// - from_layer is the highest COMPLETE layer that we can display (all tiles are
 	//   there and blended (except for level 0, where it might not be blended yet))
