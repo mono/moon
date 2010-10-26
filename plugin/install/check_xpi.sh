@@ -20,10 +20,8 @@ echo "Checking $1"
 
 STATUS=0
 BADLIB="xcb"  # this lib should never be linked to
-cd $DIR
 
-for SOFILE in $(find . -name *.so)
-do
+for SOFILE in $(find $DIR -name *.so); do
 	#echo "Checking $SOFILE"
 	objdump -p $SOFILE | grep NEEDED | grep -i $BADLIB > /dev/null
 	if [ $? == 0 ]
@@ -32,6 +30,11 @@ do
 		echo "ERROR: $SOFILE is linked to $BADLIB"
 		#objdump -p $SOFILE | grep NEEDED
 		STATUS=1
+	fi
+
+	if eu-findtextrel $SOFILE > /dev/null 2>&1 ; then
+	    echo "ERROR: $SOFILE has textrelocations"
+	    STATUS=1
 	fi
 done
 
