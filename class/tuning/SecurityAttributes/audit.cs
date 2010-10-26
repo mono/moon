@@ -20,7 +20,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -163,6 +165,7 @@ class Program {
 				sw.WriteLine (method.Attributes);
 				sw.WriteLine (method.ImplAttributes);
 				// an icall (or pinvoke) can be audited but won't have any IL
+#if !I_CAN_HASH_IL
 				if (method.HasBody) {
 					var reader = method.DeclaringType.Module.Image.GetReaderAtVirtualAddress (method.RVA);
 					sw.WriteLine (reader.ReadBytes (method.Body.CodeSize));
@@ -181,6 +184,10 @@ class Program {
 							sw.WriteLine (s);
 					}
 				}
+#else
+				if (method.HasBody)
+					HashBody (method, sw);
+#endif
 				sw.Flush ();
 				ms.Position = 0;
 				hash.Initialize ();
@@ -193,7 +200,64 @@ class Program {
 		}
 		return sb.ToString ();
 	}
+#if I_CAN_HASH_IL
+	static void HashBody (MethodBody body, StreamWriter sw)
+	{
+		foreach (Instruction instr in body.Instructions)
+			sw.WriteLine ("{0}#{1}#{2}", instr.Offset, instr.OpCode.Value, FormatOperand (instr));
 
+		if (!body.HasExceptionHandlers)
+			return;
+
+		List<string> handlers = new List<string> ();
+		foreach (ExceptionHandler eh in body.ExceptionHandlers) {
+			handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.Type, eh.CatchType,
+				GetOffset (eh.TryStart), GetOffset (eh.TryEnd), 
+				GetOffset (eh.HandlerStart), GetOffset (eh.HandlerEnd),
+				GetOffset (eh.FilterStart), GetOffset (eh.FilterEnd)));
+		}
+		// we must preserve order else the hash will be different for the same handlers
+		if (handlers.Count > 1)
+			handlers.Sort (StringComparer.InvariantCulture);
+		foreach (string s in handlers)
+			sw.WriteLine (s);
+	}
+
+	static string FormatOperand (Instruction instr)
+	{
+		switch (instr.OpCode.OperandType) {
+		case OperandType.InlineNone:
+			return string.Empty;
+		case OperandType.InlineBrTarget:
+		case OperandType.ShortInlineBrTarget:
+			return ((Instruction) instr.Operand).Offset.ToString ();
+		case OperandType.InlineSwitch:
+			return ((Instruction []) instr.Operand).Aggregate ("", (s, i) => s + i.Offset.ToString ());
+		case OperandType.InlineField:
+		case OperandType.InlineMethod:
+		case OperandType.InlineTok:
+		case OperandType.InlineType:
+		case OperandType.InlineSig:
+			return ((IMetadataTokenProvider) instr.Operand).MetadataToken.ToUInt ().ToString ();
+		case OperandType.ShortInlineVar:
+		case OperandType.InlineVar:
+			return ((VariableDefinition) instr.Operand).Index.ToString ();
+		case OperandType.ShortInlineParam:
+		case OperandType.InlineParam:
+			return ((ParameterDefinition) instr.Operand).Sequence.ToString ();
+		case OperandType.ShortInlineI:
+		case OperandType.ShortInlineR:
+		case OperandType.InlineI:
+		case OperandType.InlineI8:
+		case OperandType.InlineR:
+			return ((IFormattable) instr.Operand).ToString (null, CultureInfo.InvariantCulture);
+		case OperandType.InlineString:
+			return (string) instr.Operand;
+		default:
+			throw new NotImplementedException ();
+		}
+	}
+#endif
 	static bool NeedReview (MethodDefinition method)
 	{
 		// report all icalls that are not SC (visible or not)
