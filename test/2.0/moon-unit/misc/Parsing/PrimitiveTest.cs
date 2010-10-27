@@ -125,7 +125,6 @@ namespace MoonTest.Misc
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
 		public void ParseStringNamespaceAssemblyReversed_sl4 ()
 		{
 			ParseStringNamespaceAssemblyReversed ();
