@@ -74,13 +74,11 @@ class Program {
 					continue;
 
 				if (Char.IsWhiteSpace (line [0])) {
-					bool date = false;
 					int s = line.IndexOf ("\tr") + 2;
 					// newer entries uses dates, e.g. 20100817, instead of SVN revision number
 					// since GIT digests are not usuable for sorting
 					if (s == -1) {
 						s = line.IndexOf ('\t') + 1;
-						date = true;
 					}
 					int e = line.IndexOf ('\t', s);
 					int revision = -1;
@@ -165,29 +163,8 @@ class Program {
 				sw.WriteLine (method.Attributes);
 				sw.WriteLine (method.ImplAttributes);
 				// an icall (or pinvoke) can be audited but won't have any IL
-#if !I_CAN_HASH_IL
-				if (method.HasBody) {
-					var reader = method.DeclaringType.Module.Image.GetReaderAtVirtualAddress (method.RVA);
-					sw.WriteLine (reader.ReadBytes (method.Body.CodeSize));
-					if (method.Body.HasExceptionHandlers) {
-						List<string> handlers = new List<string> ();
-						foreach (ExceptionHandler eh in method.Body.ExceptionHandlers) {
-							handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.Type, eh.CatchType,
-								GetOffset (eh.TryStart), GetOffset (eh.TryEnd), 
-								GetOffset (eh.HandlerStart), GetOffset (eh.HandlerEnd),
-								GetOffset (eh.FilterStart), GetOffset (eh.FilterEnd)));
-						}
-						// we must preserve order else the hash will be different for the same handlers
-						if (handlers.Count > 1)
-							handlers.Sort (StringComparer.InvariantCulture);
-						foreach (string s in handlers)
-							sw.WriteLine (s);
-					}
-				}
-#else
 				if (method.HasBody)
-					HashBody (method, sw);
-#endif
+					HashBody (method.Body, sw);
 				sw.Flush ();
 				ms.Position = 0;
 				hash.Initialize ();
@@ -200,7 +177,7 @@ class Program {
 		}
 		return sb.ToString ();
 	}
-#if I_CAN_HASH_IL
+
 	static void HashBody (MethodBody body, StreamWriter sw)
 	{
 		foreach (Instruction instr in body.Instructions)
@@ -232,13 +209,13 @@ class Program {
 		case OperandType.ShortInlineBrTarget:
 			return ((Instruction) instr.Operand).Offset.ToString ();
 		case OperandType.InlineSwitch:
-			return ((Instruction []) instr.Operand).Aggregate ("", (s, i) => s + i.Offset.ToString ());
+			return ((Instruction []) instr.Operand).Aggregate (" ", (s, i) => s + i.Offset.ToString ());
 		case OperandType.InlineField:
 		case OperandType.InlineMethod:
 		case OperandType.InlineTok:
 		case OperandType.InlineType:
 		case OperandType.InlineSig:
-			return ((IMetadataTokenProvider) instr.Operand).MetadataToken.ToUInt ().ToString ();
+			return ((IMetadataTokenProvider) instr.Operand).ToString ();
 		case OperandType.ShortInlineVar:
 		case OperandType.InlineVar:
 			return ((VariableDefinition) instr.Operand).Index.ToString ();
@@ -257,7 +234,7 @@ class Program {
 			throw new NotImplementedException ();
 		}
 	}
-#endif
+
 	static bool NeedReview (MethodDefinition method)
 	{
 		// report all icalls that are not SC (visible or not)

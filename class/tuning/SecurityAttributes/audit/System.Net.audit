@@ -1,101 +1,101 @@
-!SSC-B41D67FB352505CCB8D810DA1B15FE49
+!SSC-C71F10C2E2C77723153908DA4B7A2C77
 System.Boolean System.Net.NetworkInformation.NetworkInterface::GetIsNetworkAvailable()
 	r156737		spouliot - pinvoke into NetworkChange.runtime_get_network_service and NetworkChange.moon_network_service_get_is_network_available (libmoon)
 
-!SSC-CC91F24BA9CBB12B8031140E25BB879B
+!SSC-FBF603FAA55BD35CB41816C030D6B3A6
 System.Boolean System.Net.Sockets.Socket::get_NoDelay()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
-!SSC-7284C668036AEF87AE8841F666067E7C
+!SSC-7E48CCD960AA6D0DF39F372859319077
 System.Boolean System.Net.Sockets.Socket::ReceiveAsync(System.Net.Sockets.SocketAsyncEventArgs)
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on Socket/Worker.Receive [SecurityCritical] using a SocketAsyncResult built with a byte[] buffer ot a (ArraySegment) BufferList
 
-!SSC-4B5FAA6893204DC41D68F2258A596135
+!SSC-2C5D7D0042AA91AB560AD09F02FF6542
 System.Boolean System.Net.Sockets.Socket::SendAsync(System.Net.Sockets.SocketAsyncEventArgs)
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on Socket/Worker.Send [SecurityCritical] using a SocketAsyncResult built with a byte[] buffer ot a (ArraySegment) BufferList
 
-!SSC-D85ED56C0DF32C3B57FB9F9CF08DC7EE
+!SSC-20E9E3383FD6AA9DBF727A8894799126
 System.Int16 System.Net.Sockets.Socket::get_Ttl()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
-!SSC-A613DC7F89DBE39D9F3C39C068F7BA34
+!SSC-4BFBFFBE1E710B54651E2C067360E135
 System.Int32 System.Net.Sockets.Socket::get_ReceiveBufferSize()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
-!SSC-DA3115A9C03DCDEC54EF6C7304745756
+!SSC-B1B3DC336BD6F2C1BBBBF4064D8A5167
 System.Int32 System.Net.Sockets.Socket::get_SendBufferSize()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
-!SSC-62F273360A87D5C1E995C7718EC0EA8F
+!SSC-7AE61C4FEDC31CC5B2BF4295E257BF94
 System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
 	r142142		spouliot - calls into RemoteEndPoint_internal (icall) to retrieve a SocketAddress
 
-!SSC-E29DEA6D68B8AA0530C98D3C9FACAA93
+!SSC-EE99EE93B6926BBCC0766A964FB12C0E
 System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
 	20101004	spouliot - 987ee7ee - pinvoke into moon_network_service_set_network_state_changed_callback using (pinvoked) runtime_get_network_service. note: changed (override) from SC to SSC since a [SecurityCritical] cctor behavior is not defined (who's the caller?)
 
-!SSC-75C18304686DA1A80EFF9AEB47EBBFD9
+!SSC-8A8317F5925A8F572DCAD372F4E9AE4E
 System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
 	r153396		spouliot - call AppDomain.GetData [SecurityCritical] to retrive the XAP URI
 
-!SSC-193370BE8AC59AAB0E477E814A5FC6D7
+!SSC-E2F3102C3B75DDCFC339209387D4CEFF
 System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
 	20101019	spouliot - aad016f - warning cleanup (an always null variable, req, was removed)
 	20101013	spouliot - 936c28a - only call queue.Dequeue if queue.Count > 0
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on non-null 'sac' which represents the queued delegate returned by Socket/SocketAsyncResult::GetDelegate [SecurityCritical]
 
-!SSC-8FA2C90DE7524D8C78B28F874DE32549
+!SSC-772782D232533DB11580B5333BE3EFFF
 System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
 	r142142		spouliot - calls Socket_internal (icall)
 
-!SSC-B9247A8A51FD968F449AE60523118B26
+!SSC-80DD8DBE114D031E0A3CDA737C296EE4
 System.Void System.Net.Sockets.Socket::CancelConnectAsync(System.Net.Sockets.SocketAsyncEventArgs)
 	r142142		spouliot - calls Thread.Abort on the socket blocking_thread
 
-!SSC-A423CC66B45F2742070B424AD428A54C
+!SSC-8C5CB5944ABA848200A3E54FD3E2EEF7
 System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
 	r142747		spouliot - DnsEndPoint change
 	r142142		spouliot - calls Connect_internal (icall)
 
-!SSC-0F7F70F9DBE65AA3DC83BFF764C88B87
+!SSC-887C3BAC640A374A5112244382DE4A50
 System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
 	r142142		spouliot - calls into Close_internal (icall) and calls Thread.Abort on the socket blocking_thread
 
-!SSC-4B48CEBEF3A019F32D3646A33C4B84C6
+!SSC-E6649A0ED88847A88435D76E9DA63229
 System.Void System.Net.Sockets.Socket::set_NoDelay(System.Boolean)
 	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
 
-!SSC-E22DA4BE5A6C746E5FFCDC2AC1A77885
+!SSC-24A0D70BB9933F5C48AAE738A752313E
 System.Void System.Net.Sockets.Socket::set_ReceiveBufferSize(System.Int32)
 	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
 
-!SSC-06107AF40449649542511A35F2E9CE34
+!SSC-83B286683ABE32A61BDF3F1CB7C750E0
 System.Void System.Net.Sockets.Socket::set_SendBufferSize(System.Int32)
 	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
 
-!SSC-F9B06673BF0597F96AD8932806F6CAEB
+!SSC-76BB094C7B377A3EC5C3AD5EB00DE36E
 System.Void System.Net.Sockets.Socket::set_Ttl(System.Int16)
 	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
 
-!SSC-2772F7FCB2A2E3FCDA3561F9689BFED2
+!SSC-72F55EB21608C7A5ADA1518BB6531A69
 System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
 	r142142		spouliot - calls Shutdown_internal (icall)
 
-!SSC-1812396773615F0B13716E4B429E6677
+!SSC-D0A453B48C9937D39EFA9989208EE0D6
 System.Void System.Net.Sockets.SocketAsyncEventArgs::ConnectCallback()
 	20101004	spouliot - 2d0c85f4 / 31485d3e - change how the IPAddress are iterated to check all potential IP we want to connect to
 	20100924	spouliot - no change in 2010, likely a compiler-related change
 	r153971		spouliot - call Dns [SecurityCritical] GetHostAddresses to get a list of address on the DnsEndPoint's Host
 
-!SSC-EDEFDC8F89EC33B2D6A1CBF4C2D8F8C3
+!SSC-9C35ABD067AE936A914F4D79CF9A5F74
 System.Void System.Net.Sockets.SocketException::.ctor()
 	r142142		spouliot - use internal call WSAGetLastError_internal to get the error code (as documented)
 
-!SSC-15B73FCD3F1A50680C3459F49A3BCB9B
+!SSC-3003EE0FE3E99477B1996668C2D357CD
 System.Void System.Net.WebClient::.ctor()
 	r142142		spouliot - get "xap_uri" by calling (critical) AppDomain.GetData
 
-!SSC-BC3DAE3AB2CA2BE20A7424AD3E610C44
+!SSC-D9EF54028A2B8A0DA719B47446CEC8DC
 System.Void System.Net.WebRequest::.cctor()
 	r155874		spouliot - Activator.CreateInstance is useb to create both IWebCreator instances for the browser and client http stack (from System.Windows.dll)
 
