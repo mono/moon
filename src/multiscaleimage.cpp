@@ -56,18 +56,17 @@ pow2 (int pow)
 	return ((guint64) 1 << pow);
 }
 
+#define blur_factor_is_valid(x) (!isnan (x) && !isinf (x) && (x) > 0.0)
+
 static inline int
-blur_adjust (double factor)
+blur_factor_get_offset (double factor)
 {
-	int adjust;
+	int offset;
 	
-	if (factor < 0.0 || isnan (factor) || isinf (factor))
-		return 0;
+	if (frexp (factor, &offset) == 0.5)
+		offset--;
 	
-	if (frexp (factor, &adjust) == 0.5)
-		adjust--;
-	
-	return -adjust;
+	return -offset;
 }
 
 /*
@@ -849,7 +848,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	double msivp_ox = GetAnimatedViewportOrigin()->x;
 	double msivp_oy = GetAnimatedViewportOrigin()->y;
 	double msivp_w = GetAnimatedViewportWidth();
+	double blur_factor = GetBlurFactor ();
 	double fade = GetTileFade ();
+	int blur_offset;
 	
 	LOG_MSI ("\nMSI::RenderCollection\n");
 	
@@ -862,6 +863,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	
 	if (!dzits->IsParsed ())
 		return;
+	
+	if (msi_w <= 0.0 || msi_h <= 0.0 || !blur_factor_is_valid (blur_factor))
+		return; // invisible widget, nothing to render
+	
+	blur_offset = blur_factor_get_offset (blur_factor);
 	
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
@@ -906,15 +912,15 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		
 		int layers;
 		if (frexp (MAX (sub_w, sub_h), &layers) == 0.5)
-			layers --;
+			layers--;
 		
 		int optimal_layer;
+		
 		frexp (msi_w / (subvp_w * msivp_w * MIN (1.0, sub_ar)), &optimal_layer);
 		LOG_MSI ("number of layers: %d; optimal layer: %d; BlurFactor: %.2f; adjustment: %d\n",
-			 layers, optimal_layer, GetBlurFactor (), blur_adjust (GetBlurFactor ()));
+			 layers, optimal_layer, blur_factor, blur_offset);
 		
-		optimal_layer += blur_adjust (GetBlurFactor ());
-		optimal_layer = MIN (optimal_layer, layers);
+		optimal_layer = MIN (optimal_layer + blur_offset, layers);
 		
 		int to_layer = -1;
 		int from_layer = optimal_layer;
@@ -1151,26 +1157,29 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_ox = GetAnimatedViewportOrigin()->x;
 	double vp_oy = GetAnimatedViewportOrigin()->y;
 	double vp_w = GetAnimatedViewportWidth ();
+	double blur_factor = GetBlurFactor ();
 	double fade = GetTileFade ();
 	int optimal_layer;
+	int blur_offset;
 	int layers;
 	
-	if (msi_w <= 0.0 || msi_h <= 0.0)
+	if (msi_w <= 0.0 || msi_h <= 0.0 || !blur_factor_is_valid (blur_factor))
 		return; // invisible widget, nothing to render
+	
+	blur_offset = blur_factor_get_offset (blur_factor);
 	
 	// number of layers in the MSI, aka the lowest powerof2 that's bigger than width and height
 	if (frexp (MAX (im_w, im_h), &layers) == 0.5)
 		layers --;
 	
 	// optimal layer for this... aka "best viewed at"
-	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar)), &optimal_layer) == 0.5)
-		optimal_layer--;
+	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar)), &optimal_layer) > 0.5)
+		optimal_layer++;
 	
 	LOG_MSI ("number of layers: %d; optimal layer: %d; BlurFactor: %.2f; adjustment: %d\n",
-		 layers, optimal_layer, GetBlurFactor (), blur_adjust (GetBlurFactor ()));
+		 layers, optimal_layer, blur_factor, blur_offset);
 	
-	optimal_layer += blur_adjust (GetBlurFactor ());
-	optimal_layer = MIN (optimal_layer, layers);
+	optimal_layer = MIN (optimal_layer + blur_offset, layers);
 	
 	// We have to figure all the layers that we'll have to render:
 	// - from_layer is the highest COMPLETE layer that we can display (all tiles are
@@ -1412,6 +1421,8 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::AspectRatioProperty) {
 		InvalidateMeasure ();
+		Invalidate ();
+	} else if (args->GetId () == MultiScaleImage::BlurFactorProperty) {
 		Invalidate ();
 	} else if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
 		Point *origin = args->GetNewValue ()->AsPoint ();
