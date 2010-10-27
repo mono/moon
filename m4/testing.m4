@@ -42,7 +42,7 @@ AC_DEFUN([MOONLIGHT_CHECK_TESTING],
 	dnl performance suite
 	dnl
 
-	AC_ARG_WITH(performance, [  --with-performance=yes|no      Enable performance tests (defaults=yes)],[],[with_performance=yes])
+	AC_ARG_WITH(performance, [  --with-performance=yes|no      Enable performance tests (defaults=no)],[],[with_performance=no])
 
 	if test x$with_performance = xyes; then
 
