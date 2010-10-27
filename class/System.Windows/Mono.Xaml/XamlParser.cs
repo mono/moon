@@ -1117,7 +1117,7 @@ namespace Mono.Xaml {
 
 			int start = xmlns.IndexOf ("clr-namespace:");
 
-			if (start < 0)
+			if (start != 0)
 				return null;
 			start += "clr-namespace:".Length;
 
