@@ -513,6 +513,26 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
 }
 
+void
+Deployment::ManagedExceptionToMoonError (MonoObject *exc, MoonError::ExceptionType type, MoonError *error)
+{
+	int errorCode = -1;
+	char* message = NULL;
+
+	if (mono_object_isinst (exc, mono_get_exception_class())) {
+		MonoObject *ret = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
+
+		message = mono_string_to_utf8 ((MonoString*)ret);
+	}
+	if (mono_object_isinst (exc, moon_exception)) {
+		MonoObject *ret = mono_property_get_value (moon_exception_error_code, exc, NULL, NULL);
+
+		errorCode = *(int*) mono_object_unbox (ret);
+	}
+
+	MoonError::FillIn (error, type, errorCode, message);
+}
+
 static void
 unref_kept_alive_object (gpointer obj)
 {
@@ -782,7 +802,7 @@ Deployment::MonoXamlParserCreateFromFile (const char *file, bool create_namescop
 	ret = mono_runtime_invoke (mono_xaml_parser_create_from_file, NULL, params, &exc);
 
 	if (exc) {
-		g_warning ("awwww swht bitch\n");
+		ManagedExceptionToMoonError (exc, MoonError::XAML_PARSE_EXCEPTION, error);
 		return NULL;
 	}
 
@@ -807,7 +827,7 @@ Deployment::MonoXamlParserCreateFromString (const char *xaml, bool create_namesc
 	ret = mono_runtime_invoke (mono_xaml_parser_create_from_string, NULL, params, &exc);
 
 	if (exc) {
-		g_warning ("awwwdd shit biotch\n");
+		ManagedExceptionToMoonError (exc, MoonError::XAML_PARSE_EXCEPTION, error);
 		return NULL;
 	}
 
@@ -833,7 +853,7 @@ Deployment::MonoXamlParserHydrateFromString (const char *xaml, Value *obj, bool 
 	ret = mono_runtime_invoke (mono_xaml_parser_hydrate_from_string, NULL, params, &exc);
 
 	if (exc) {
-		g_warning ("aww wshit biotch\n");
+		ManagedExceptionToMoonError (exc, MoonError::XAML_PARSE_EXCEPTION, error);
 		return NULL;
 	}
 

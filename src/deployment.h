@@ -361,6 +361,8 @@ public:
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
 	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
+	void ManagedExceptionToMoonError (MonoObject *exc, MoonError::ExceptionType type, MoonError *error);
+
 	GCHandle CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const Uri *resourceBase);
 	void DestroyManagedXamlLoader (GCHandle xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
