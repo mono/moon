@@ -41,13 +41,9 @@ libmoonplugin_la_LDFLAGS = \
 
 libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon-static.la $(PLUGIN_LIBS)
 
-nodist_libmoonplugin_la_SOURCES = \
-	cbinding.h			\
-	cbinding.cpp			\
-	plugin-class.g.cpp 		\
-	plugin-class.h
-
 libmoonplugin_la_SOURCES = \
+	cbinding.h	\
+	cbinding.cpp	\
 	browser-bridge.h		\
 	moonlight.h			\
 	npstream-request.cpp		\
@@ -63,6 +59,8 @@ libmoonplugin_la_SOURCES = \
 	plugin-entry.cpp 		\
 	plugin-glue.cpp 		\
 	plugin-class.cpp 		\
+	plugin-class.g.cpp 		\
+	plugin-class.h			\
 	plugin-utils.cpp		\
 	../src/pal/gtk/windowless-gtk.cpp	\
 	../src/pal/gtk/windowless-gtk.h
@@ -101,7 +99,8 @@ EXTRA_DIST = \
 	moon.config \
 	silverlight-versions.h.in \
 	plugin-class.h.in \
-	plugin-class.g.cpp.in
+	plugin-class.g.cpp.in \
+	plugin-spinner.h
 
 DISTCLEANFILES= silverlight-version.h
 
