@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 454 methods needs to be decorated.
+# 456 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -402,6 +402,9 @@
 
 # internal call
 +SC-M: System.Int32 System.Reflection.Module::GetMDStreamVersion(System.IntPtr)
+
+# internal call
++SC-M: System.Int32 System.Reflection.MonoMethodInfo::get_method_attributes(System.IntPtr)
 
 # overrides 'System.Int32 System.Reflection.Module::get_MDStreamVersion()'.
 +SC-M: System.Int32 System.Reflection.MonoModule::get_MDStreamVersion()
@@ -1323,6 +1326,9 @@
 
 # internal call
 +SC-M: System.Void System.Threading.Monitor::Monitor_pulse_all(System.Object)
+
+# internal call
++SC-M: System.Void System.Threading.Monitor::try_enter_with_atomic_var(System.Object,System.Int32,System.Boolean&)
 
 # internal call
 +SC-M: System.Void System.Threading.NativeEventCalls::CloseEvent_internal(System.IntPtr)

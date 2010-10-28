@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 467 methods
+# 469 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -294,6 +294,7 @@
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::MakeGenericMethod(System.Type[])
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetGenericMethodDefinition()
 +SSC-M: System.Reflection.MonoMethodInfo System.Reflection.MonoMethodInfo::GetMethodInfo(System.IntPtr)
++SSC-M: System.Reflection.MethodAttributes System.Reflection.MonoMethodInfo::GetAttributes(System.IntPtr)
 +SSC-M: System.Reflection.ParameterInfo[] System.Reflection.MonoMethodInfo::GetParametersInfo(System.IntPtr,System.Reflection.MemberInfo)
 +SSC-M: System.Reflection.ParameterInfo System.Reflection.MonoMethodInfo::GetReturnParameterInfo(System.Reflection.MonoMethod)
 +SSC-M: System.Int32 System.Reflection.MonoModule::get_MetadataToken()
@@ -408,6 +409,7 @@
 +SSC-M: System.Void System.Threading.Monitor::PulseAll(System.Object)
 +SSC-M: System.Boolean System.Threading.Monitor::TryEnter(System.Object,System.Int32)
 +SSC-M: System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32)
++SSC-M: System.Void System.Threading.Monitor::TryEnter(System.Object,System.Int32,System.Boolean&)
 +SSC-M: System.Threading.InternalThread System.Threading.Thread::get_Internal()
 +SSC-M: System.Threading.Thread System.Threading.Thread::get_CurrentThread()
 +SSC-M: System.Void System.Threading.Thread::Sleep(System.Int32)
