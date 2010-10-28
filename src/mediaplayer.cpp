@@ -147,6 +147,7 @@ MediaPlayer::CheckFinished ()
 	if (HasAudio () && !GetBit (AudioEnded))
 		return;
 	
+	element->MediaInvalidate ();
 	Emit (MediaEndedEvent);
 }
 
