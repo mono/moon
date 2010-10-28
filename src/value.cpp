@@ -894,8 +894,6 @@ Value::operator== (const Value &v) const
 			return false;
 		return u.typeface == v.u.typeface;
 	case Type::DOUBLE:
-		if (isnan (u.d) && isnan (v.u.d))
-			return true;
 		return fabs (u.d - v.u.d) < DBL_EPSILON;
 	case Type::FLOAT:
 		return fabs (u.f - v.u.f) < FLT_EPSILON;
