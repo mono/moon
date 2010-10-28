@@ -154,15 +154,16 @@ struct Segment {
 	double original_size;
 	double max;
 	double min;
-	double size;
+	double desired_size;
+	double offered_size;
 	double stars;
 	GridUnitType type;
 
 	Segment ();
-	Segment (double size, double min, double max, GridUnitType type);
+	Segment (double offered_size, double min, double max, GridUnitType type);
 
  private:
-	void Init (double size, double min, double max, GridUnitType type);
+	void Init (double offered_size, double min, double max, GridUnitType type);
 };
 
 /* @Namespace=System.Windows.Controls */
@@ -175,8 +176,8 @@ class Grid : public Panel {
 	RowDefinitionCollection* GetRowDefinitionsNoAutoCreate ();
 	ColumnDefinitionCollection* GetColumnDefinitionsNoAutoCreate ();
 
-	void AllocateGridSegments (int row_count, int col_count);
-	void AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type);
+	void AllocateDesiredSize (int row_count, int col_count);
+	void AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type, bool desired_size);
 	void CreateMatrices (int row_count, int col_count);
 	void DestroyMatrices ();
 	void ExpandStarRows (Size availableSize);

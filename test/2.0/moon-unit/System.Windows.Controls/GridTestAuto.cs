@@ -2294,6 +2294,114 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void StarStarRows_LimitedHeight_RowSpan_ExactSpace()
+		{
+			var grid = new Grid();
+			grid.RowDefinitions.Add(new RowDefinition { Height = Star });
+			grid.RowDefinitions.Add(new RowDefinition { MaxHeight = 20, Height = Star });
+
+			var child1 = ContentControlWithChild();
+			var child2 = ContentControlWithChild();
+			(child1.Content as FrameworkElement).Height = 50;
+			(child2.Content as FrameworkElement).Height = 70;
+
+			grid.AddChild(child1, 0, 0, 1, 1);
+			grid.AddChild(child2, 0, 0, 2, 1);
+
+			Action<Size> sized = delegate {
+				Assert.AreEqual(50, grid.RowDefinitions[0].ActualHeight, "#row 0 sized");
+				Assert.AreEqual(20, grid.RowDefinitions[1].ActualHeight, "#row 1 sized");
+			};
+
+			child1.MeasureHook = sized;
+			child2.MeasureHook = sized;
+			grid.Measure(new Size(70, 70));
+
+			// The row definitions have already been fully sized before the first
+			// call to measure a child
+			Assert.AreEqual(new Size(70, 50), child1.MeasureOverrideArg, "#1");
+			Assert.AreEqual(new Size(70, 70), child2.MeasureOverrideArg, "#2");
+			Assert.AreEqual(new Size(50, 70), grid.DesiredSize, "#3");
+		}
+
+		[TestMethod]
+		public void StarStarRows_LimitedHeight_RowSpan_InfiniteSpace()
+		{
+			var grid = new Grid();
+			grid.RowDefinitions.Add(new RowDefinition { Height = Star });
+			grid.RowDefinitions.Add(new RowDefinition { MaxHeight = 20, Height = Star });
+
+			var child1 = ContentControlWithChild();
+			var child2 = ContentControlWithChild();
+			(child1.Content as FrameworkElement).Height = 50;
+			(child2.Content as FrameworkElement).Height = 70;
+			grid.AddChild(child1, 0, 0, 1, 1);
+			grid.AddChild(child2, 0, 0, 2, 1);
+
+			grid.Measure(Infinity);
+			Assert.AreEqual(Infinity, child1.MeasureOverrideArg, "#1");
+			Assert.AreEqual(Infinity, child2.MeasureOverrideArg, "#2");
+			Assert.AreEqual(new Size (50, 70), grid.DesiredSize, "#3");
+		}
+
+		[TestMethod]
+		public void StarStarRows_StarCol_LimitedHeight()
+		{
+			var g = new Grid();
+			var child = ContentControlWithChild();
+
+			g.RowDefinitions.Add(new RowDefinition { Height = Star });
+			g.RowDefinitions.Add(new RowDefinition { Height = Star, MaxHeight = 20 });
+			g.AddChild(child, 0, 0, 1, 1);
+
+			g.Measure(new Size(100, 100));
+			Assert.AreEqual(new Size(100, 80), child.MeasureOverrideArg, "#1");
+		}
+
+		[TestMethod]
+		public void StarRow_AutoCol_LimitedHeigth()
+		{
+			var g = new Grid();
+			var child = ContentControlWithChild();
+
+			g.RowDefinitions.Add(new RowDefinition { Height = Star });
+			g.RowDefinitions.Add(new RowDefinition { Height = Star, MaxHeight = 20 });
+			g.ColumnDefinitions.Add(new ColumnDefinition { Width = Auto });
+			g.AddChild(child, 0, 0, 1, 1);
+
+			g.Measure(new Size(100, 100));
+			Assert.AreEqual(new Size(inf, 80), child.MeasureOverrideArg, "#1");
+		}
+
+		[TestMethod]
+		public void StarRow_AutoStarCol_LimitedWidth()
+		{
+			var g = new Grid();
+			var child = ContentControlWithChild();
+
+			g.RowDefinitions.Add(new RowDefinition { Height = Star });
+			g.ColumnDefinitions.Add(new ColumnDefinition { Width = Auto });
+			g.ColumnDefinitions.Add(new ColumnDefinition { Width = Star, MaxWidth = 20 });
+			g.AddChild(child, 0, 0, 1, 1);
+
+			g.Measure(new Size(100, 100));
+			Assert.AreEqual(new Size(inf, 100), child.MeasureOverrideArg, "#1");
+		}
+
+		[TestMethod]
+		public void AutoRow_StarCol()
+		{
+			var g = new Grid();
+			var child = ContentControlWithChild ();
+			g.RowDefinitions.Add(new RowDefinition { Height = Star });
+			g.RowDefinitions.Add(new RowDefinition { Height = Star, MaxHeight = 20 });
+
+			g.AddChild(child, 0, 0, 1, 1);
+			g.Measure(new Size(100, 100));
+			Assert.AreEqual(new Size(100, 80), child.MeasureOverrideArg, "#1");
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void FixedGridAllStar ()
 		{
@@ -3070,6 +3178,8 @@ namespace MoonTest.System.Windows.Controls
 	{
 		public bool IsArranged { get; private set; }
 		public bool IsMeasured { get; private set; }
+		public Action<Size> ArrangeHook = delegate { };
+		public Action<Size> MeasureHook = delegate { };
 		public Size MeasureOverrideArg;
 		public Size ArrangeOverrideArg;
 		public Size MeasureOverrideResult;
@@ -3092,6 +3202,9 @@ namespace MoonTest.System.Windows.Controls
 				grid.ArrangedElements.Add (new KeyValuePair<MyContentControl, Size> (this, finalSize));
 
 			ArrangeOverrideArg = finalSize;
+			if (ArrangeHook != null)
+				ArrangeHook(finalSize);
+
 			ArrangeOverrideResult = base.ArrangeOverride (finalSize);
 
 			if (grid != null)
@@ -3108,6 +3221,9 @@ namespace MoonTest.System.Windows.Controls
 				grid.MeasuredElements.Add (new KeyValuePair<MyContentControl, Size> (this, availableSize));
 
 			MeasureOverrideArg = availableSize;
+			if (MeasureHook != null)
+				MeasureHook(availableSize);
+
 			MeasureOverrideResult = base.MeasureOverride (availableSize);
 			
 			if (grid != null)
