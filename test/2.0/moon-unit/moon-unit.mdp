@@ -390,6 +390,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows/ParserTypeConverterTests.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/BindingTest_TypeConverters.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/HyperlinkButtonTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizingStackPanel_MeasureTests.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

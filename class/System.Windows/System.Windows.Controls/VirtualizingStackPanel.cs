@@ -162,7 +162,6 @@ namespace System.Windows.Controls {
 			int nvisible = 0;
 			int beyond = 0;
 			int index;
-			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
 			
 			if (Orientation == Orientation.Horizontal)
 				index = (int) HorizontalOffset;
@@ -176,24 +175,12 @@ namespace System.Windows.Controls {
 				GeneratorPosition start;
 				int insertAt;
 				
-				// Calculate the child sizing constraints
-				childAvailable = availableSize;
-				if (Orientation == Orientation.Vertical) {
-					childAvailable.Width = availableSize.Width;
-					if (CanHorizontallyScroll)
-						childAvailable.Width = double.PositiveInfinity;
+				Size childAvailable = availableSize;
+				if (CanHorizontallyScroll || Orientation == Orientation.Horizontal)
+					childAvailable.Width = double.PositiveInfinity;
+				if (CanVerticallyScroll || Orientation == Orientation.Vertical)
+					childAvailable.Height = double.PositiveInfinity;
 
-					childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
-					childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
-				} else {
-					childAvailable.Height = availableSize.Height;
-					if (CanVerticallyScroll)
-						childAvailable.Height = double.PositiveInfinity;
-
-					childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
-					childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
-				}
-				
 				// Next, prepare and measure the extents of our viewable items...
 				start = generator.GeneratorPositionFromIndex (index);
 				insertAt = (start.Offset == 0) ? start.Index : start.Index + 1;
@@ -310,10 +297,10 @@ namespace System.Windows.Controls {
 			// Arrange our children
 			foreach (UIElement child in Children) {
 				Size size = child.DesiredSize;
-				
 				if (Orientation == Orientation.Vertical) {
+					size.Width = finalSize.Width;
 					Rect childFinal = new Rect (-HorizontalOffset, arranged.Height, size.Width, size.Height);
-					
+
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
 					else
@@ -322,8 +309,9 @@ namespace System.Windows.Controls {
 					arranged.Width = Math.Max (arranged.Width, size.Width);
 					arranged.Height += size.Height;
 				} else {
+					size.Height = finalSize.Height;
 					Rect childFinal = new Rect (arranged.Width, -VerticalOffset, size.Width, size.Height);
-					
+
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
 					else
