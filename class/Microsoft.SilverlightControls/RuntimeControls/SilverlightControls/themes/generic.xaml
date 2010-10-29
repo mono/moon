@@ -725,7 +725,7 @@
                                 x:Name="contentPresenter"
                                 Content="{TemplateBinding Content}"
                                 ContentTemplate="{TemplateBinding ContentTemplate}"
-                                HorizontalAlignment="Left"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 Margin="{TemplateBinding Padding}"/>
                         <Rectangle x:Name="FocusVisualElement" Stroke="#FF6DBDD1" StrokeThickness="1" Visibility="Collapsed" RadiusX="1" RadiusY="1" />
                     </Grid>
