@@ -286,7 +286,6 @@ namespace System.Windows.Controls {
 		
 		protected override Size ArrangeOverride (Size finalSize)
 		{
-			/*ItemsControl owner = */ItemsControl.GetItemsOwner (this);
 			Size arranged = finalSize;
 			
 			if (Orientation == Orientation.Vertical)
