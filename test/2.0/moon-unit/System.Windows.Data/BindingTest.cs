@@ -2967,7 +2967,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug]
 		public void XamlBindAfterResources3b_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"

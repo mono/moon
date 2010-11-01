@@ -111,6 +111,7 @@ namespace MoonTest.System.Windows.Controls {
 			Viewbox.Width = 25;
 			Viewbox.Height = 25;
 			Child.MeasureFunc = () => new Size(50, 50);
+			Child.ArrangeFunc = () => new Size(50, 50);
 
 			Viewbox.Measure(new Size(50, 50));
 			Viewbox.Arrange(new Rect(0, 0, 30, 70));
@@ -148,6 +149,7 @@ namespace MoonTest.System.Windows.Controls {
 		public void ArrangeTest_CheckScaling()
 		{
 			Child.MeasureFunc = () => new Size(50, 50);
+			Child.ArrangeFunc = () => new Size(50, 50);
 
 			Viewbox.Measure(new Size(50, 50));
 			Viewbox.Arrange(new Rect(0, 0, 30, 70));

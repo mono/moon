@@ -38,7 +38,6 @@ namespace MoonTest.System.Threading {
 	public class TimerTest : SilverlightTest {
 
 		[TestMethod]
-		[MoonlightBug ("that sync behavior should not be possible")]
 		public void TimerChangeZero_Sync ()
 		{
 			// old CrossThreadAccessTest used this non-async pattern (bad)

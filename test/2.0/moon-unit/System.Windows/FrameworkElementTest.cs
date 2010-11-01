@@ -1165,7 +1165,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Moonlight fails to break the inheritance chain here")]
 		public void PropertyInheritance_FlowDirection ()
 		{
 			var stack = new StackPanel ();
