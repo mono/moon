@@ -255,6 +255,7 @@ class XamlContextInternal {
 		if (resources)
 			g_slist_free (resources);
 		Deployment::GetCurrent ()->FreeGCHandle (callbacks.gchandle);
+
 		delete top_element;
 	}
 
@@ -338,14 +339,20 @@ parse_template (Value *data, const Uri *resource_base, Surface *surface, Depende
 	return result;
 }
 	 
-XamlContext::XamlContext (XamlContextInternal *internal)
+XamlContext::XamlContext (XamlContextInternal *internal, XamlContext *parent)
 	: EventObject (Type::XAMLCONTEXT)
 {
 	this->internal = internal;
+	this->parent = parent;
+
+	if (parent)
+		parent->ref ();
 }
 
 XamlContext::~XamlContext ()
 {
+	if (parent)
+		parent->unref ();
 	delete internal;
 }
 
@@ -1582,7 +1589,7 @@ SL3XamlLoader::Initialize (const Uri *resourceBase, Surface* surface, XamlContex
 		this->vm_loaded = true;
 		this->context->ref ();
 	} else {
-		this->context = new XamlContext (new XamlContextInternal ());
+		this->context = new XamlContext (new XamlContextInternal (), NULL);
 	}
 
 #if DEBUG
@@ -2061,7 +2068,8 @@ create_xaml_context (XamlParserInfo *p, FrameworkTemplate *template_, XamlContex
 {
 	GSList *resources = create_resource_list (p);
 	XamlContextInternal *ic =  new XamlContextInternal (p->loader->GetCallbacks (), p->GetTopElementPtr (), template_, p->namespace_map, resources, parent_context ? parent_context->internal : NULL);
-	return new XamlContext (ic);
+
+	return new XamlContext (ic, parent_context);
 }
 
 static void
