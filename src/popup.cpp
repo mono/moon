@@ -99,7 +99,7 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		   || args->GetId () == Popup::VerticalOffsetProperty) {
 		UIElement * child = GetChild ();
 		if (child)
-			child->UpdateTransform ();
+			child->InvalidateMeasure ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }

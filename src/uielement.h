@@ -486,6 +486,7 @@ public:
 
 	/* @GeneratePInvoke,GenerateJSBinding=UpdateLayout */
 	virtual void UpdateLayoutWithError (MoonError *error) = 0;
+	virtual void UpdateLayer (LayoutPass *pass, MoonError *error) = 0;
 
 	/* @GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }

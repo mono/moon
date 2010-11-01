@@ -217,7 +217,8 @@ namespace System.Windows.Controls
         public ToolTip()
         { 
             DefaultStyleKey = typeof (ToolTip);
-            this.SizeChanged += new SizeChangedEventHandler(OnToolTipSizeChanged);
+
+	    this.LayoutUpdated += OnLayoutUpdated;
         } 
 
         #region Protected Methods
@@ -261,12 +262,6 @@ namespace System.Windows.Controls
             this.IsHitTestVisible = false; 
 
             //
- 
-
-
- 
- 
-
         } 
 
         private void OnIsOpenChanged(bool isOpen)
@@ -276,8 +271,8 @@ namespace System.Windows.Controls
                 if (_parentPopup == null)
                     HookupParentPopup();
 
-                PerformPlacement(HorizontalOffset, VerticalOffset);
                 this._parentPopup.IsOpen = true;
+                PerformPlacement(HorizontalOffset, VerticalOffset);
             }
             else 
             {
@@ -296,26 +291,18 @@ namespace System.Windows.Controls
             if (IsOpen) 
             {
                 // update the current ToolTip position if needed 
-                PerformPlacement(horizontalOffset, verticalOffset);
+		PerformPlacement(horizontalOffset, verticalOffset);
             }
         } 
 
-        internal void OnRootVisualSizeChanged()
-        { 
-            if (this._parentPopup != null) 
-            {
-                PerformPlacement(this.HorizontalOffset, this.VerticalOffset); 
-            }
-        }
- 
-        private void OnToolTipSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (this._parentPopup != null)
-            {
-                PerformPlacement(this.HorizontalOffset, this.VerticalOffset); 
-            }
-        }
- 
+	private void OnLayoutUpdated(object sender, EventArgs args)
+	{
+	    if (this._parentPopup != null)
+	    {
+	        PerformPlacement(this.HorizontalOffset, this.VerticalOffset); 
+	    }
+	}
+
         private void PerformClipping(Size size)
         {
             Point mouse = ToolTipService.MousePosition;
@@ -329,38 +316,63 @@ namespace System.Windows.Controls
         {
             var bounds = new Point (0, 0);
             var point = Point.Zero;
+	    var target_bounds = new Rect (0,0,0,0);
 
             var mode = PlacementOverride.HasValue ? PlacementOverride.Value : Placement;
             var target = (FrameworkElement) (PlacementTargetOverride ?? PlacementTarget);
+	    var root = Application.Current.Host.Content;
+	    if (root == null)
+		    return;
 
-            if (ToolTipService.RootVisual != null)
-                bounds = new Point (ToolTipService.RootVisual.ActualWidth, ToolTipService.RootVisual.ActualHeight);
-
+	    bounds = new Point (root.ActualWidth, root.ActualHeight);
+	    
             if (mode == PlacementMode.Mouse) {
                 point = ToolTipService.MousePosition;
             } else{
                 try {
-                    point = target.TransformToVisual (ToolTipService.RootVisual).Transform (Point.Zero);
+			if (target != null) {
+				target_bounds = new Rect (0, 0, target.ActualWidth, target.ActualHeight);
+				target_bounds = target.TransformToVisual (null).TransformBounds (target_bounds);
+				point = new Point (target_bounds.Left, target_bounds.Top);
+			}
                 } catch {
-                    Console.WriteLine ("MOONLIGHT WARNING: Could not transform the tooltip point");
+			Console.WriteLine ("MOONLIGHT WARNING: Could not transform the tooltip point");
+			//_parentPopup.HorizontalOffset = horizontalOffset;
+			//_parentPopup.VerticalOffset = verticalOffset;
+			return;
                 }
             }
 
-            point.Y += verticalOffset;
-            point.X += horizontalOffset;
+	    /* FIXME this should probably be a binding */
+            if (target != null) {
+		    FlowDirection = target.FlowDirection;
+            }
+
+	    /* 
+	     * FIXME this is especially ugly based on the way we're
+	     * handling FlowDirection across an unparented popup
+	     */
+	    if (FlowDirection == FlowDirection.RightToLeft) {
+		    point.X = point.X + target_bounds.Width - ActualWidth;
+		    if (mode == PlacementMode.Left) {
+			    mode = PlacementMode.Right;
+		    } else if (mode == PlacementMode.Right) {
+			    mode = PlacementMode.Left;
+		    }
+	    }
 
             switch (mode) {
             case PlacementMode.Top:
-                point.Y -= ActualHeight;
+                point.Y = target_bounds.Top - ActualHeight;
                 break;
             case PlacementMode.Bottom:
-                point.Y += target.ActualHeight;
+		point.Y = target_bounds.Bottom;
                 break;
             case PlacementMode.Left:
-                point.X -= ActualWidth;
+                point.X = target_bounds.Left - ActualWidth;
                 break;
             case PlacementMode.Right:
-                point.X += target.ActualWidth;
+                point.X = target_bounds.Right;
                 break;
             case PlacementMode.Mouse:
                 point.Y += new TextBox ().FontSize; // FIXME: Just a guess, it's about right.
@@ -368,41 +380,43 @@ namespace System.Windows.Controls
             default:
                 throw new NotSupportedException (string.Format ("PlacementMode '{0}' is not supported", Placement));
             }
+	    
+	    /* FIXME offsets need work still */
+	    /*
+            point.Y += verticalOffset;
+            point.X += horizontalOffset;
+	    */
 
-            if (target != null && target.FlowDirection == FlowDirection.RightToLeft) {
-                if (Application.Current.RootVisual != null)
-                point.X = ((FrameworkElement) Application.Current.RootVisual).ActualWidth - point.X;
-            }
+	    
+	    if ((point.Y + ActualHeight) > bounds.Y) {
+		    if (mode == PlacementMode.Bottom)
+			    point.Y = target_bounds.Top - ActualHeight;
+		    else
+			    point.Y = bounds.Y - ActualHeight;
+	    } else if (point.Y < 0) {
+		    if (mode == PlacementMode.Top)
+			    point.Y = target_bounds.Bottom;
+		    else
+			    point.Y = 0;
+	    }
 
-            switch (mode) {
-            case PlacementMode.Bottom:
-                if ((point.Y + ActualHeight) > bounds.Y)
-                    point.Y -= ActualHeight + target.ActualHeight;
-                break;
-            case PlacementMode.Top:
-                if (point.Y < 0)
-                    point.Y += ActualHeight + target.ActualHeight;
-                break;
-            case PlacementMode.Left:
-                if (point.X < 0)
-                    point.X += ActualWidth + target.ActualWidth;
-                break;
-            case PlacementMode.Right:
-                if ((point.X + ActualWidth) > bounds.X)
-                    point.X -= ActualWidth + target.ActualWidth;
-                break;
-            default:
-                if ((point.X + ActualWidth) > bounds.X)
-                    point.X = Math.Max (0, bounds.X - ActualWidth);
-                if ((point.Y + ActualHeight) > bounds.Y)
-                    point.Y = Math.Max (0, bounds.Y - ActualHeight);
-                break;
-            }
+	    if ((point.X + ActualWidth) > bounds.X) {
+		    if (mode == PlacementMode.Right)
+			    point.X = target_bounds.Left - ActualWidth;
+		    else
+			    point.X = bounds.X - ActualWidth;
+	    } else if (point.X < 0) {
+		    if (mode == PlacementMode.Left)
+			    point.X = target_bounds.Right;
+		    else
+			    point.X = 0;
+	    }
 
             this._parentPopup.VerticalOffset = point.Y;
             this._parentPopup.HorizontalOffset = point.X;
-            // if right/bottom doesn't fit into the plug-in bounds, clip the ToolTip
 
+            // if right/bottom doesn't fit into the plug-in bounds, clip the ToolTip
+	    /*
             double dX = (point.X + ActualWidth) - bounds.X;
             double dY = (point.Y + ActualHeight) - bounds.Y;
             if ((dX >= TOOLTIP_tolerance) || (dY >= TOOLTIP_tolerance))
@@ -411,6 +425,7 @@ namespace System.Windows.Controls
             } else {
                 PerformClipping (new Size (ActualWidth, ActualHeight));
             }
+	    */
         }
 
         #endregion Private Methods

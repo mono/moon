@@ -427,40 +427,61 @@ Surface::ProcessUpDirtyElements ()
 		g_warning ("after up dirty pass, up dirty list is not empty");
 }
 
-void
-Surface::UpdateLayout ()
+bool
+Surface::UpdateLayout (MoonError *error)
 {
 	if (!layers)
-		return;
+		return false;
 	// Caching layers->GetCount causes a crash in #869 since the # of layers can change while measuring.
-	for (int i = 0; i < layers->GetCount (); i++) {
-		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
-		if (!layer->HasFlag (UIElement::DIRTY_MEASURE_HINT) && !layer->HasFlag (UIElement::DIRTY_ARRANGE_HINT))
-			continue;
+	LayoutPass *pass = new LayoutPass ();
+	bool dirty = true;
+	pass->updated = true;
+	while (pass->count < LayoutPass::MaxCount && pass->updated) {
+		pass->updated = false;
 
-		// This is a hack to make sure the elements understand the currnet 
-		// size of the surface until it is moved to a proper location.
-		Size *last = LayoutInformation::GetPreviousConstraint (layer);
-		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
-		if (layer->IsContainer () && (!last || (*last != available))) {
-			layer->InvalidateMeasure ();
-			LayoutInformation::SetPreviousConstraint (layer, &available);
+		for (int i = 0; i < layers->GetCount (); i++) {
+			UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+			if (!layer->HasFlag (UIElement::DIRTY_MEASURE_HINT) && !layer->HasFlag (UIElement::DIRTY_ARRANGE_HINT))
+				continue;
+			
+			// This is a hack to make sure the elements understand the currnet 
+			// size of the surface until it is moved to a proper location.
+			Size *last = LayoutInformation::GetPreviousConstraint (layer);
+			Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
+			if (layer->IsContainer () && (!last || (*last != available))) {
+				layer->InvalidateMeasure ();
+				LayoutInformation::SetPreviousConstraint (layer, &available);
+			}
+			
+			// FIXME: Propgate this somewhere?
+			layer->UpdateLayer (pass, error);
 		}
-
-		// FIXME: Propgate this somewhere?
-		MoonError error;
-		layer->UpdateLayoutWithError (&error);
+		
+		dirty |= down_dirty->IsEmpty() || !up_dirty->IsEmpty();
+		ProcessDownDirtyElements ();
+		ProcessUpDirtyElements ();
+		
+		if (pass->updated && dirty) {
+			GetDeployment ()->LayoutUpdated ();		
+		}
 	}
+
+	if (pass->count >= LayoutPass::MaxCount) {
+		if (error)
+			MoonError::FillIn (error, MoonError::EXCEPTION, "UpdateLayout has entered an infinite loop and has been aborted. The site will not render correctly.");
+		g_warning ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", pass->count);
+	}
+
+	delete pass;
+	return dirty;
 }
 
 bool
 Surface::ProcessDirtyElements ()
 {
-	UpdateLayout ();
-	bool dirty = down_dirty->IsEmpty() || !up_dirty->IsEmpty();
-	ProcessDownDirtyElements ();
-	ProcessUpDirtyElements ();
-	return dirty;
+	MoonError error;
+
+	return 	UpdateLayout (&error);
 }
 
 };

@@ -30,8 +30,6 @@
 
 namespace Moonlight {
 
-#define MAX_LAYOUT_PASSES 250
-
 FrameworkElementProvider::FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence, int flags) : PropertyValueProvider (obj, precedence, flags)
 {
 	actual_height_value = NULL;
@@ -882,6 +880,21 @@ FrameworkElement::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 void
 FrameworkElement::UpdateLayoutWithError (MoonError *error)
 {
+	if (IsAttached ()) {
+		GetDeployment ()->GetSurface ()->UpdateLayout (error);
+	} else {
+		LayoutPass *pass = new LayoutPass ();
+		UpdateLayer (pass, error);
+		if (pass->updated) {
+			GetDeployment ()->LayoutUpdated ();		
+		}
+		delete pass;
+	}	
+}
+
+void
+FrameworkElement::UpdateLayer (LayoutPass *pass, MoonError *error)
+{
 	UIElement *element = this;
 	UIElement *parent = NULL;
 
@@ -891,28 +904,23 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 	}
 
         LOG_LAYOUT ("\nFrameworkElement::UpdateLayout: ");
-	List *measure_list = new List ();
-	List *arrange_list = new List ();
-	List *size_list = new List ();
-	bool updated = false;
-	int i = 0;
-	while (i < MAX_LAYOUT_PASSES) {
+	while (pass->count < LayoutPass::MaxCount) {
 		LOG_LAYOUT ("\u267c");
 		
 		// If we abort the arrange phase because InvalidateMeasure was called or if
 		// we abort the size phase because InvalidateMeasure/InvalidateArrange
 		// was called, we need to put the hint flags back otherwise we'll skip that
 		// branch during the next pass.
-		while (UIElementNode *node = (UIElementNode *)arrange_list->First ()) {
+		while (UIElementNode *node = (UIElementNode *)pass->arrange_list->First ()) {
 			node->uielement->PropagateFlagUp (DIRTY_ARRANGE_HINT);
-			arrange_list->Remove (node);
+			pass->arrange_list->Remove (node);
 		}
-		while (UIElementNode *node = (UIElementNode *)size_list->First ()) {
+		while (UIElementNode *node = (UIElementNode *)pass->size_list->First ()) {
 			node->uielement->PropagateFlagUp (DIRTY_SIZE_HINT);
-			size_list->Remove (node);
+			pass->size_list->Remove (node);
 		}
 		
-		i++;
+		pass->count = pass->count +1;
 		// Figure out which type of elements we should be selected - dirty measure, arrange or size
 		UIElementFlags flag = NONE;
 		if (element->GetVisibility () == VisibilityVisible) {
@@ -936,15 +944,15 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 				switch (flag) {
 					case DIRTY_MEASURE_HINT:
 						if (child->dirty_flags & DirtyMeasure)
-							measure_list->Append (new UIElementNode (child));
+							pass->measure_list->Append (new UIElementNode (child));
 					break;
 					case DIRTY_ARRANGE_HINT:
 						if (child->dirty_flags & DirtyArrange)
-							arrange_list->Append (new UIElementNode (child));
+							pass->arrange_list->Append (new UIElementNode (child));
 					break;
 					case DIRTY_SIZE_HINT:
 						if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
-							size_list->Append (new UIElementNode (child));
+							pass->size_list->Append (new UIElementNode (child));
 					break;
 					default:
 					break;
@@ -953,36 +961,36 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 		}
 
 		if (flag == DIRTY_MEASURE_HINT) {
-			while (UIElementNode* node = (UIElementNode*)measure_list->First ()) {
-				measure_list->Unlink (node);
+			while (UIElementNode* node = (UIElementNode*)pass->measure_list->First ()) {
+				pass->measure_list->Unlink (node);
 				
 				node->uielement->DoMeasureWithError (error);
 				
-				updated = true;
+				pass->updated = true;
 				delete (node);
 			}
 		} else if (flag == DIRTY_ARRANGE_HINT) {
-			while (UIElementNode *node = (UIElementNode*)arrange_list->First ()) {
-				arrange_list->Unlink (node);
+			while (UIElementNode *node = (UIElementNode*)pass->arrange_list->First ()) {
+				pass->arrange_list->Unlink (node);
 				
 				node->uielement->DoArrangeWithError (error);
 			
-				updated = true;
+				pass->updated = true;
 				delete (node);
 				if (element->HasFlag (DIRTY_MEASURE_HINT))
 					break;
 			}
 		} else if (flag == DIRTY_SIZE_HINT) {
-			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
+			while (UIElementNode *node = (UIElementNode*)pass->size_list->First ()) {
 				//if (element->HasFlag (DIRTY_MEASURE_HINT) ||
 				//	element->HasFlag (DIRTY_ARRANGE_HINT)) {
 				//	break;
 				//}
 
-				size_list->Unlink (node);
+				pass->size_list->Unlink (node);
 				FrameworkElement *fe = (FrameworkElement*) node->uielement;
 
-				updated = true;
+				pass->updated = true;
 				Size *last = LayoutInformation::GetLastRenderSize (fe);
 				if (last) {
 					Size last_v = *last;
@@ -996,30 +1004,12 @@ FrameworkElement::UpdateLayoutWithError (MoonError *error)
 				delete (node);
 			}
 		} else {
-			if (updated)
-				GetDeployment ()->LayoutUpdated ();
-			
-			// If emitting LayoutUpdate invalidated measures/arranges, we should loop again
-			if (element->GetVisibility () == VisibilityVisible && (element->HasFlag (DIRTY_MEASURE_HINT) || element->HasFlag (DIRTY_ARRANGE_HINT)))
-				updated = false;
-			else
 				break;
 		}
 	}
 	
-	delete measure_list;
-	delete arrange_list;
-	delete size_list;
-	
-	if (i >= MAX_LAYOUT_PASSES)  {
-		// FIXME we shouldn't have to do this updated call here but otherwise we'll miss it completely
-		if (updated)
-			GetDeployment ()->LayoutUpdated ();
-		if (error)
-			MoonError::FillIn (error, MoonError::EXCEPTION, "UpdateLayout has entered an infinite loop and has been aborted. The site will not render correctly.");
-		g_warning ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", i);
-	} else {
-		LOG_LAYOUT (" (%d)\n", i);
+	if (pass->count < LayoutPass::MaxCount) {
+		LOG_LAYOUT (" (%d)\n", pass->count);
 
 #if SANITY
 		DeepTreeWalker verifier (element);

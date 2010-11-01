@@ -152,21 +152,6 @@ namespace System.Windows.Controls
 				LayoutUpdated += UpdatePopupSizeAndPosition;
 
 				UpdateLayout ();
-				// FIXME: this *shouldn't* be
-				// necessary, but UpdateLayout only
-				// runs on the layer that this
-				// combobox is in, and the popup's
-				// child is in a separate layer.
-				//
-				// this is needed to get templates
-				// expanded in popup children
-				// synchronously, which drt cfd1
-				// requires.
-				// Note: This isn't right and it breaks
-				// some moon-unit tests. Opening the popup
-				// doesn't apply the template.
-				if (_popup != null && _popup.Child != null)
-					_popup.Child.UpdateLayout ();
 
 				OnDropDownOpened (EventArgs.Empty);
 
@@ -534,25 +519,28 @@ namespace System.Windows.Controls
 				bottom_right.X = top_left.X;
 				top_left.X = left;
 			}
-
+			
+			Point final_offset = new Point (0,0);
 			if (bottom_right.X > root.ActualWidth) {
-				_popup.HorizontalOffset = root.ActualWidth - bottom_right.X;
+				final_offset.X = root.ActualWidth - bottom_right.X;
 			} else if (top_left.X < 0) {
-				_popup.HorizontalOffset = offset.X -top_left.X;
+				final_offset.X = offset.X -top_left.X;
 			} else {
-				_popup.HorizontalOffset = offset.X;
+				final_offset.X = offset.X;
 			}
 			
 			if (FlowDirection == FlowDirection.RightToLeft) {
-				_popup.HorizontalOffset = - _popup.HorizontalOffset;
+				final_offset.X = -offset.X;
 			}
 
 			if (bottom_right.Y > root.ActualHeight) {
-				_popup.VerticalOffset = -child.ActualHeight;
+				final_offset.Y = -child.ActualHeight;
 			} else {
-				_popup.VerticalOffset = RenderSize.Height;
+				final_offset.Y = RenderSize.Height;
 			}
 			
+			_popup.HorizontalOffset = final_offset.X;
+			_popup.VerticalOffset = final_offset.Y;
 			// Silverlight does not resize its dropdown properly when the available height is altered.
 			// This means that if you open a dropdown while your browser window is small, you end up
 			// with a dropdown that is far too small forever. Instead of this we will resize the dropdown

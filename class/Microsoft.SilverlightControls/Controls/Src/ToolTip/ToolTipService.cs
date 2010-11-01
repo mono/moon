@@ -444,20 +444,11 @@ namespace System.Windows.Controls
                 if (ToolTipService._rootVisual != null)
                 { 
                     // keep caching mouse position because we can't query it from Silverlight 
-                    ToolTipService._rootVisual.MouseMove += new MouseEventHandler(OnRootMouseMove);
-                    ToolTipService._rootVisual.SizeChanged += new SizeChangedEventHandler(OnRootVisualSizeChanged); 
+		    ToolTipService._rootVisual.MouseMove += new MouseEventHandler(OnRootMouseMove);
                 }
             }
         } 
 
-        private static void OnRootVisualSizeChanged(object sender, SizeChangedEventArgs e)
-        { 
-            if (ToolTipService._currentToolTip != null) 
-            {
-                ToolTipService._currentToolTip.OnRootVisualSizeChanged(); 
-            }
-        }
- 
         private static void UnregisterToolTip(UIElement owner)
         {
             Debug.Assert(owner != null, "owner element is required"); 

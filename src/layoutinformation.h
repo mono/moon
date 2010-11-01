@@ -60,5 +60,28 @@ public:
 
 	static Geometry *GetCompositeClip (FrameworkElement *item);
 };
+class LayoutPass {
+public:
+	static const int MaxCount = 250;
+	List *measure_list;
+	List *arrange_list;
+	List *size_list;
+        int count;
+	bool updated;
+
+	LayoutPass () {
+		measure_list = new List ();
+		arrange_list = new List ();
+		size_list = new List ();
+		count = 0;
+		updated = false;
+	}
+
+	~LayoutPass () {
+		delete measure_list;
+		delete arrange_list;
+		delete size_list;
+	}
+};
 };
 #endif /* __MOON_LAYOUTINFORMATION_H__ */

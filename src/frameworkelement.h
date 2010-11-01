@@ -147,6 +147,7 @@ public:
 	Size ApplySizeConstraints (const Size &size);
 	
 	virtual void UpdateLayoutWithError (MoonError *error);
+	virtual void UpdateLayer (LayoutPass *pass, MoonError *error);
 
 	virtual void OnIsAttachedChanged (bool attached);
 	virtual void OnIsLoadedChanged (bool loaded);

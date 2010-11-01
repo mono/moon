@@ -330,7 +330,7 @@ public:
 
 	// bad, but these live in dirty.cpp, not runtime.cpp
 	void AddDirtyElement (UIElement *element, DirtyType dirt);
-	void UpdateLayout ();
+        bool UpdateLayout (MoonError *error);
 	void RemoveDirtyElement (UIElement *element);
 	bool ProcessDirtyElements ();
 	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);
