@@ -77,6 +77,7 @@ protected:
 	static GLuint CreateShader (GLenum       shaderType,
 				    GLsizei      count,
 				    const GLchar **str);
+	GLuint GetVertexShader ();
 	GLuint GetProjectShader (double alpha);
 	GLuint GetConvolveShader (unsigned size);
 	GLuint GetDropShadowShader (unsigned size);
@@ -87,6 +88,7 @@ protected:
 
 	GLuint framebuffer;
 
+	GLuint vs;
 	GLuint project_fs[2];
 	GLuint convolve_fs[MAX_CONVOLVE_SIZE + 1];
 	GLuint dropshadow_fs[MAX_CONVOLVE_SIZE + 1];

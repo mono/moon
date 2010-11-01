@@ -28,6 +28,7 @@ GLContext::GLContext (MoonSurface *surface) : Context (surface)
 	}
 
 	framebuffer = 0;
+	vs = 0;
 
 	/* perspective transform fragment shaders */
 	for (i = 0; i < 2; i++)
@@ -51,14 +52,17 @@ GLContext::~GLContext ()
 
 	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
 		if (convolve_fs[i])
-			glDeleteShader (convolve_fs[i]);
+			glDeleteProgram (convolve_fs[i]);
 
 	for (i = 0; i < 2; i++)
 		if (project_fs[i])
-			glDeleteShader (project_fs[i]);
+			glDeleteProgram (project_fs[i]);
 
 	if (framebuffer)
 		glDeleteFramebuffers (1, &framebuffer);
+
+	if (vs)
+		glDeleteShader (vs);
 
 	g_hash_table_destroy (effect_fs);
 }
@@ -303,7 +307,7 @@ GLContext::CreateShader (GLenum       shaderType,
 }
 
 GLuint
-GLContext::GetProjectShader (double opacity)
+GLContext::GetVertexShader ()
 {
 	const GLchar *vShaderStr[] = {
 		"attribute vec4 InVertex;",
@@ -314,6 +318,20 @@ GLContext::GetProjectShader (double opacity)
 		"  gl_Position = InVertex;",
 		"}"
 	};
+
+	if (vs)
+		return vs;
+
+	vs = CreateShader (GL_VERTEX_SHADER,
+			   G_N_ELEMENTS (vShaderStr),
+			   vShaderStr);
+
+	return vs;
+}
+
+GLuint
+GLContext::GetProjectShader (double opacity)
+{
 	const GLchar *fShaderNoAlphaStr[] = {
 		"uniform sampler2D sampler0;",
 		"void main()",
@@ -329,16 +347,11 @@ GLContext::GetProjectShader (double opacity)
 		"  gl_FragColor = texture2D(sampler0, gl_TexCoord[0].xy) * alpha;",
 		"}"
 	};
-	unsigned   index = opacity < 1.0 ? 1 : 0;
-	GLuint     vs;
-	GLuint     fs;
+	unsigned     index = opacity < 1.0 ? 1 : 0;
+	GLuint       fs;
 
 	if (project_fs[index])
 		return project_fs[index];
-
-	vs = CreateShader (GL_VERTEX_SHADER,
-			   G_N_ELEMENTS (vShaderStr),
-			   vShaderStr);
 
 	if (index)
 		fs = CreateShader (GL_FRAGMENT_SHADER,
@@ -350,7 +363,7 @@ GLContext::GetProjectShader (double opacity)
 				   fShaderNoAlphaStr);
 
 	project_fs[index] = glCreateProgram ();
-	glAttachShader (project_fs[index], vs);
+	glAttachShader (project_fs[index], GetVertexShader ());
 	glAttachShader (project_fs[index], fs);
 	glBindAttribLocation (project_fs[index], 0, "InVertex");
 	glBindAttribLocation (project_fs[index], 1, "InTexCoord0");
@@ -421,28 +434,14 @@ GLContext::Project (MoonSurface  *src,
 GLuint
 GLContext::GetConvolveShader (unsigned size)
 {
-	const GLchar *vShaderStr[] = {
-		"attribute vec4 InVertex;",
-		"attribute vec4 InTexCoord0;",
-		"void main()",
-		"{",
-		"  gl_TexCoord[0] = InTexCoord0;",
-		"  gl_Position = InVertex;",
-		"}"
-	};
-	GString      *s;
-	GLuint       vs;
-	GLuint       fs;
-	unsigned     i;
+	GString  *s;
+	GLuint   fs;
+	unsigned i;
 
 	g_assert (size <= MAX_CONVOLVE_SIZE);
 
 	if (convolve_fs[size])
 		return convolve_fs[size];
-
-	vs = CreateShader (GL_VERTEX_SHADER,
-			   G_N_ELEMENTS (vShaderStr),
-			   vShaderStr);
 
 	s = g_string_new ("uniform sampler2D sampler0;");
 	g_string_sprintfa (s, "uniform vec4 InFilter[%d];", (size + 1) * 2);
@@ -476,7 +475,7 @@ GLContext::GetConvolveShader (unsigned size)
 	g_string_free (s, 1);
 
 	convolve_fs[size] = glCreateProgram ();
-	glAttachShader (convolve_fs[size], vs);
+	glAttachShader (convolve_fs[size], GetVertexShader ());
 	glAttachShader (convolve_fs[size], fs);
 	glBindAttribLocation (convolve_fs[size], 0, "InVertex");
 	glBindAttribLocation (convolve_fs[size], 1, "InTexCoord0");
@@ -624,28 +623,14 @@ GLContext::Blur (MoonSurface *src,
 GLuint
 GLContext::GetDropShadowShader (unsigned size)
 {
-	const GLchar *vShaderStr[] = {
-		"attribute vec4 InVertex;",
-		"attribute vec4 InTexCoord0;",
-		"void main()",
-		"{",
-		"  gl_TexCoord[0] = InTexCoord0;",
-		"  gl_Position = InVertex;",
-		"}"
-	};
-	GString      *s;
-	GLuint       vs;
-	GLuint       fs;
-	unsigned     i;
+	GString  *s;
+	GLuint   fs;
+	unsigned i;
 
 	g_assert (size <= MAX_CONVOLVE_SIZE);
 
 	if (dropshadow_fs[size])
 		return dropshadow_fs[size];
-
-	vs = CreateShader (GL_VERTEX_SHADER,
-			   G_N_ELEMENTS (vShaderStr),
-			   vShaderStr);
 
 	s = g_string_new ("uniform sampler2D sampler0;");
 	g_string_sprintfa (s, "uniform sampler2D sampler1;");
@@ -683,7 +668,7 @@ GLContext::GetDropShadowShader (unsigned size)
 	g_string_free (s, 1);
 
 	dropshadow_fs[size] = glCreateProgram ();
-	glAttachShader (dropshadow_fs[size], vs);
+	glAttachShader (dropshadow_fs[size], GetVertexShader ());
 	glAttachShader (dropshadow_fs[size], fs);
 	glBindAttribLocation (dropshadow_fs[size], 0, "InVertex");
 	glBindAttribLocation (dropshadow_fs[size], 1, "InTexCoord0");
@@ -861,17 +846,7 @@ GLContext::DropShadow (MoonSurface *src,
 GLuint
 GLContext::GetEffectShader (PixelShader *ps)
 {
-	const GLchar *vShaderStr[] = {
-		"attribute vec4 InVertex;",
-		"attribute vec4 InTexCoord0;",
-		"void main()",
-		"{",
-		"  gl_TexCoord[0] = InTexCoord0;",
-		"  gl_Position = InVertex;",
-		"}"
-	};
 	GString       *s;
-	GLuint        vs;
 	GLuint        fs;
 	GLuint        program;
 	gpointer      data;
@@ -889,10 +864,6 @@ GLContext::GetEffectShader (PixelShader *ps)
 	data = g_hash_table_lookup (effect_fs, ps);
 	if (data)
 		return GPOINTER_TO_UINT (data);
-
-	vs = CreateShader (GL_VERTEX_SHADER,
-			   G_N_ELEMENTS (vShaderStr),
-			   vShaderStr);
 
 	if ((index = ps->GetVersion (0, &version)) < 0)
 		return 0;
@@ -1361,7 +1332,7 @@ GLContext::GetEffectShader (PixelShader *ps)
 				g_string_free (s, 1);
 
 				program = glCreateProgram ();
-				glAttachShader (program, vs);
+				glAttachShader (program, GetVertexShader ());
 				glAttachShader (program, fs);
 				glBindAttribLocation (program, 0, "InVertex");
 				glBindAttribLocation (program, 1, "InTexCoord0");
