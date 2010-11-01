@@ -109,7 +109,7 @@ GLXContext::SetFramebuffer ()
 		GLuint texture = dst->StealTexture ();
 
 		if (texture) {
-			GLuint program = GetProjectShader (1.0);
+			GLuint program = GetProjectProgram (1.0);
 			double width = dst->Width ();
 			double height = dst->Height ();
 

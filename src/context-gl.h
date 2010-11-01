@@ -78,10 +78,10 @@ protected:
 				    GLsizei      count,
 				    const GLchar **str);
 	GLuint GetVertexShader ();
-	GLuint GetProjectShader (double alpha);
-	GLuint GetConvolveShader (unsigned size);
-	GLuint GetDropShadowShader (unsigned size);
-	GLuint GetEffectShader (PixelShader *ps);
+	GLuint GetProjectProgram (double alpha);
+	GLuint GetConvolveProgram (unsigned size);
+	GLuint GetDropShadowProgram (unsigned size);
+	GLuint GetEffectProgram (PixelShader *ps);
 
 	float vertices[4][4];
 	float texcoords[4][4];
@@ -89,11 +89,11 @@ protected:
 	GLuint framebuffer;
 
 	GLuint vs;
-	GLuint project_fs[2];
-	GLuint convolve_fs[MAX_CONVOLVE_SIZE + 1];
-	GLuint dropshadow_fs[MAX_CONVOLVE_SIZE + 1];
+	GLuint project_program[2];
+	GLuint convolve_program[MAX_CONVOLVE_SIZE + 1];
+	GLuint dropshadow_program[MAX_CONVOLVE_SIZE + 1];
 
-	GHashTable *effect_fs;
+	GHashTable *effect_program;
 };
 
 };
