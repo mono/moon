@@ -480,13 +480,17 @@ GalliumContext::Clear (Color *color)
 	float clear_color[4] = { color->r, color->g, color->b, color->a };
 
 	cso_save_framebuffer (cso);
+	cso_save_rasterizer (cso);
 
 	SetFramebuffer ();
+	SetScissor ();
+	SetRasterizer ();
 
 	pipe->clear (pipe, PIPE_CLEAR_COLOR, clear_color, 0, 0);
 	pipe->flush (pipe, PIPE_FLUSH_RENDER_CACHE, NULL);
 
 	cso_restore_framebuffer (cso);
+	cso_restore_rasterizer (cso);
 }
 
 void *
