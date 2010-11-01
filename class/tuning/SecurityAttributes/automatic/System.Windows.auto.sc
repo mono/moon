@@ -92,7 +92,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&,System.String)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream_first_file(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&)
++SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream_nth_file(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_capture_service_request_system_access(System.IntPtr)

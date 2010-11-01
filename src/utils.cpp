@@ -98,9 +98,14 @@ managed_stream_error (gpointer context, gpointer stream)
 	return 0;
 }
 
-
 gboolean
 managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest)
+{
+	return managed_unzip_stream_to_stream_nth_file (source, dest, 0);
+}
+
+gboolean
+managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file)
 {
 	zlib_filefunc_def funcs;
 	unzFile zipFile;
@@ -124,6 +129,11 @@ managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, Manag
 
 	if (unzGoToFirstFile (zipFile) != UNZ_OK)
 		goto cleanup;	
+
+	while (file -- > 0) {
+		if (unzGoToNextFile (zipFile) != UNZ_OK)
+			goto cleanup;
+	}
 
 	if (unzOpenCurrentFile (zipFile) != UNZ_OK)
 		goto cleanup;

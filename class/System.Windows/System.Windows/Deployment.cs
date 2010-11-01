@@ -46,7 +46,7 @@ namespace System.Windows {
 		GlyphTypefaceCollection typefaces;
 		Assembly entry_point_assembly;
 		List<Assembly> assemblies;
-		int pending_assemblies;
+		int pending_downloads;
 		string xap_dir;
 		Types types;
 		Stack<Uri> parse_uri_stack;
@@ -390,7 +390,7 @@ namespace System.Windows {
 			assemblies = new List <Assembly> ();
 			assemblies.Add (typeof (Application).Assembly);
 			
-			pending_assemblies = Parts != null ? Parts.Count : 0;
+			pending_downloads = 0;
 
 			for (int i = 0; i < ExternalParts.Count; i++) {
 				ExtensionPart ext = ExternalParts[i] as ExtensionPart;
@@ -402,8 +402,6 @@ namespace System.Windows {
 						Console.WriteLine ("Attempting To Load ExternalPart {0}", ext.Source);
 
 						DownloadAssembly (ext.Source, 2152);
-
-						pending_assemblies++;
 					} catch (Exception e) {
 						int error = (e is MethodAccessException) ? 4004 : 2152;
 						throw new MoonException (error, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
@@ -431,8 +429,6 @@ namespace System.Windows {
 						try {
 							Assembly asm = Assembly.LoadFrom (filename);
 							AssemblyRegister (asm);
-							if (pending_assemblies == 0)
-								return true;
 						} catch (FileNotFoundException) {
 							try_downloading = true;
 						}
@@ -452,7 +448,7 @@ namespace System.Windows {
 			}
 
 			// unmanaged (JS/XAML only) applications can go directly to create the application
-			return pending_assemblies == 0 ? CreateApplication () : true;
+			return pending_downloads == 0 ? CreateApplication () : true;
 		}
 
 		private static bool IsZip (byte [] buf)
@@ -478,6 +474,7 @@ namespace System.Windows {
 			}
 			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
 			req.BeginGetResponse (AssemblyGetResponse, new object[] { req, errorCode });
+			pending_downloads ++;
 		}
 
 		// note: throwing MoonException from here is NOT ok since this code is called async
@@ -522,26 +519,43 @@ namespace System.Windows {
 								source_cb = source_wrapper.GetCallbacks ();
 								dest_cb = dest_wrapper.GetCallbacks ();
 
-								// the zip files I've come across have a single file in them, the
-								// dll.  so we assume that any/every zip file will contain a single
-								// file, and just get the first one from the zip file directory.
-								if (NativeMethods.managed_unzip_stream_to_stream_first_file (ref source_cb, ref dest_cb))
-									buffer = dest.ToArray ();
+								// Zip files may contain multiple assemblies, all of which need to be loaded. Keep
+								// attempting to open subsequent files until it fails.
+								for (int i = 0; ; i ++) {
+									if (!NativeMethods.managed_unzip_stream_to_stream_nth_file (ref source_cb, ref dest_cb, i))
+										break;
+									LoadAssemblyFromBuffer (a, dest.ToArray (), wreq);
+									source.Position = 0;
+									dest.Position = 0;
+								}
 							}
 						}
+					} else {
+						LoadAssemblyFromBuffer (a, buffer, wreq);
 					}
-
-					asm = a.Load (buffer);
 				}
-
-				if (asm != null)
-					Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
-				else
-					EmitError (2153, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
 			}
 			catch (Exception e) {
 				// we need to report everything since any error means CreateApplication won't be called
 				EmitError (error_code, e.ToString ());
+			} finally {
+				Dispatcher.BeginInvoke (() => {
+					pending_downloads --;
+					if (pending_downloads == 0) {
+						CreateApplication ();
+					}
+				});
+			}
+		}
+
+		void LoadAssemblyFromBuffer (AssemblyPart a, byte[] buffer, WebRequest wreq)
+		{
+			var asm = a.Load (buffer);
+
+			if (asm != null) {
+				Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
+			} else {
+				EmitError (2153, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
 			}
 		}
 
@@ -552,11 +566,6 @@ namespace System.Windows {
 		{
 			assemblies.Add (assembly);
 			SetEntryAssembly (assembly);
-
-			pending_assemblies--;
-			
-			if (pending_assemblies == 0)
-				CreateApplication ();				
 		}
 
 		// extracted since NativeMethods.surface_emit_error is security critical
