@@ -539,12 +539,16 @@ namespace System.Windows {
 				// we need to report everything since any error means CreateApplication won't be called
 				EmitError (error_code, e.ToString ());
 			} finally {
-				Dispatcher.BeginInvoke (() => {
-					pending_downloads --;
-					if (pending_downloads == 0) {
-						CreateApplication ();
-					}
-				});
+				Dispatcher.BeginInvoke (AsyncDownloadComplete);
+			}
+		}
+
+		// Called on the main thread
+		void AsyncDownloadComplete ()
+		{
+			pending_downloads --;
+			if (pending_downloads == 0) {
+				CreateApplication ();
 			}
 		}
 
