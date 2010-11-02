@@ -82,6 +82,7 @@ struct DZImage {
 	DisplayRect *current_rect;
 	GPtrArray *display_rects;
 	int width, height;
+	bool has_size;
 	int tile_size;
 	int overlap;
 };
@@ -498,21 +499,76 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 #define DZParsedOverlap       (1 << 3)
 #define DZParsedMinLevel      (1 << 4)
 #define DZParsedMaxLevel      (1 << 5)
-#define DZParsedHeight        (1 << 6)
-#define DZParsedWidth         (1 << 7)
-#define DZParsedSource        (1 << 8)
-#define DZParsedId            (1 << 9)
-#define DZParsedN             (1 << 10)
-#define DZParsedX             (1 << 11)
-#define DZParsedY             (1 << 12)
+#define DZParsedNextItemId    (1 << 6)
+#define DZParsedQuality       (1 << 7)
+#define DZParsedHeight        (1 << 8)
+#define DZParsedWidth         (1 << 9)
+#define DZParsedSource        (1 << 10)
+#define DZParsedIsPath        (1 << 11)
+#define DZParsedType          (1 << 12)
+#define DZParsedId            (1 << 13)
+#define DZParsedN             (1 << 14)
+#define DZParsedX             (1 << 15)
+#define DZParsedY             (1 << 16)
 
-#define DZParsedCollection (/*DZParsedServerFormat |*/ DZParsedFormat | DZParsedTileSize | DZParsedMaxLevel)
+#define DZParsedCollection (/*DZParsedServerFormat |*/ DZParsedFormat | DZParsedTileSize | DZParsedMaxLevel | DZParsedNextItemId)
 #define DZParsedImage (/*DZParsedServerFormat |*/ DZParsedFormat | DZParsedTileSize | DZParsedOverlap)
 #define DZParsedRect (DZParsedWidth | DZParsedHeight | DZParsedX | DZParsedY)
 #define DZParsedDisplayRect (DZParsedMinLevel | DZParsedMaxLevel)
 #define DZParsedViewport (DZParsedWidth | DZParsedX | DZParsedY)
 #define DZParsedSize (DZParsedWidth | DZParsedHeight)
 #define DZParsedI (DZParsedId | DZParsedN)
+
+static bool
+DoubleTryParse (const char *str, double *val)
+{
+	const char *inptr = str;
+	char *inend;
+	
+	while (*inptr == ' ')
+		inptr++;
+	
+	if (*inptr == '\0')
+		return false;
+	
+	*val = g_ascii_strtod (inptr, &inend);
+	
+	while (*inend == ' ')
+		inend++;
+	
+	if (errno != 0 || *inend || fabs (*val) >= HUGE_VAL)
+		return false;
+	
+	return true;
+}
+
+static int
+Log2 (unsigned int v)
+{
+	/* algorithm based on http://graphics.stanford.edu/~seander/bithacks.html#IntegerLog */
+	/* Note: assumes v is already known to be a power of 2 */
+	register unsigned int r = (v & 0xAAAAAAAA) != 0;
+	
+	r |= ((v & 0xFFFF0000) != 0) << 4;
+	r |= ((v & 0xFF00FF00) != 0) << 3;
+	r |= ((v & 0xF0F0F0F0) != 0) << 2;
+	r |= ((v & 0xCCCCCCCC) != 0) << 1;
+	
+	return r;
+}
+
+static bool
+is_valid_format (const char *format)
+{
+	static const char *formats[2] = { "jpg", "png" };
+	
+	for (guint i = 0; i < G_N_ELEMENTS (formats); i++) {
+		if (!g_ascii_strcasecmp (formats[i], format))
+			return true;
+	}
+	
+	return false;
+}
 
 static bool
 current_element_is (DZParserInfo *info, const char *name)
@@ -535,8 +591,6 @@ image_start (DZParserInfo *info, const char **attr)
 	
 	info->type = ContentImage;
 	
-	image->display_rects = g_ptr_array_new ();
-	
 	for (int i = 0; attr[i] && !failed; i += 2) {
 		if (!g_ascii_strcasecmp ("ServerFormat", attr[i])) {
 			if (!(parsed & DZParsedServerFormat)) {
@@ -545,7 +599,7 @@ image_start (DZParserInfo *info, const char **attr)
 			} else
 				failed = true;
 		} else if (!g_ascii_strcasecmp ("Format", attr[i])) {
-			if (!(parsed & DZParsedFormat)) {
+			if (!(parsed & DZParsedFormat) && is_valid_format (attr[i+1])) {
 				image->format = g_strdup (attr[i+1]);
 				parsed |= DZParsedFormat;
 			} else
@@ -572,12 +626,24 @@ image_start (DZParserInfo *info, const char **attr)
 }
 
 static void
+image_end (DZParserInfo *info)
+{
+	DZImage *image = &info->content.image;
+	
+	if (!image->has_size) {
+		/* must contain a Size element! */
+		info->error = true;
+	}
+}
+
+static void
 collection_start (DZParserInfo *info, const char **attr)
 {
 	DZCollection *collection = &info->content.collection;
 	bool failed = false;
 	guint32 parsed = 0;
-	int err;
+	double quality;
+	int next, err;
 	
 	if (info->type != ContentUnknown) {
 		info->error = true;
@@ -585,8 +651,6 @@ collection_start (DZParserInfo *info, const char **attr)
 	}
 	
 	info->type = ContentCollection;
-	
-	collection->subimages = g_ptr_array_new ();
 	
 	for (int i = 0; attr[i] && !failed; i += 2) {
 		if (!g_ascii_strcasecmp ("ServerFormat", attr[i])) {
@@ -596,7 +660,7 @@ collection_start (DZParserInfo *info, const char **attr)
 			} else
 				failed = true;
 		} else if (!g_ascii_strcasecmp ("Format", attr[i])) {
-			if (!(parsed & DZParsedFormat)) {
+			if (!(parsed & DZParsedFormat) && is_valid_format (attr[i+1])) {
 				collection->format = g_strdup (attr[i+1]);
 				parsed |= DZParsedFormat;
 			} else
@@ -604,14 +668,15 @@ collection_start (DZParserInfo *info, const char **attr)
 		} else if (!g_ascii_strcasecmp ("TileSize", attr[i])) {
 			if (!(parsed & DZParsedTileSize)) {
 				// technically this value must be a power of 2
-				failed = !Int32TryParse (attr[i+1], &collection->tile_size, &err) || collection->tile_size <= 0;
+				failed = !Int32TryParse (attr[i+1], &collection->tile_size, &err) || collection->tile_size <= 0 ||
+					(collection->tile_size & (collection->tile_size - 1)) != 0; /* checks TileSize is a power of 2 */
 				parsed |= DZParsedTileSize;
 			} else
 				failed = true;
 		} else if (!g_ascii_strcasecmp ("MaxLevel", attr[i])) {
 			if (!(parsed & DZParsedMaxLevel)) {
 				// must be less than or equal to log2(TileSize)
-				failed = !Int32TryParse (attr[i+1], &collection->max_level, &err) || collection->max_level < 0;
+				failed = !Int32TryParse (attr[i+1], &collection->max_level, &err) || collection->max_level <= 0;
 				parsed |= DZParsedMaxLevel;
 			} else
 				failed = true;
@@ -619,22 +684,75 @@ collection_start (DZParserInfo *info, const char **attr)
 			// This attr would tell us the number
 			// of items we're likely to encounter,
 			// but beyond that it is useless.
+			if (!(parsed & DZParsedNextItemId)) {
+				failed = !Int32TryParse (attr[i+1], &next, &err) || next <= 0;
+				parsed |= DZParsedNextItemId;
+			} else
+				failed = true;
 		} else if (!g_ascii_strcasecmp ("Quality", attr[i])) {
 			// This attr is not useful to us.
+			if (!(parsed & DZParsedQuality)) {
+				failed = !DoubleTryParse (attr[i+1], &quality) || quality < 0.0 || quality > 1.0;
+				parsed |= DZParsedQuality;
+			} else
+				failed = true;
 		}
 	}
 	
 	if (failed || (parsed & DZParsedCollection) != DZParsedCollection) {
 		fprintf (stderr, "DeepZoom Collection parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
+		return;
+	}
+	
+	// verify MaxLevel <= log2(TileSize)
+	if (collection->max_level > Log2 (collection->tile_size)) {
+		info->error = true;
+		return;
+	}
+}
+
+static void
+collection_end (DZParserInfo *info)
+{
+	DZCollection *collection = &info->content.collection;
+	
+	if (!collection->subimages) {
+		/* must contain an Items element! */
+		info->error = true;
+		return;
 	}
 }
 
 static void
 display_rects_start (DZParserInfo *info, const char **attr)
 {
-	if (!(info->type == ContentImage && current_element_is (info, "Image")))
+	DZImage *image = &info->content.image;
+	
+	if (!(info->type == ContentImage && current_element_is (info, "Image"))) {
 		info->error = true;
+		return;
+	}
+	
+	if (image->display_rects != NULL) {
+		/* cannot have multiple DisplayRects elements! */
+		info->error = true;
+		return;
+	}
+	
+	image->display_rects = g_ptr_array_new ();
+}
+
+static void
+display_rects_end (DZParserInfo *info)
+{
+	DZImage *image = &info->content.image;
+	
+	if (image->display_rects->len == 0) {
+		/* must contain DisplayRect elements! */
+		info->error = true;
+		return;
+	}
 }
 
 static void
@@ -684,11 +802,6 @@ display_rect_end (DZParserInfo *info)
 {
 	DZImage *image = &info->content.image;
 	
-	if (!(info->type == ContentImage && current_element_is (info, "DisplayRect"))) {
-		info->error = true;
-		return;
-	}
-	
 	g_ptr_array_add (image->display_rects, image->current_rect);
 	image->current_rect = NULL;
 }
@@ -699,9 +812,14 @@ viewport_start (DZParserInfo *info, const char **attr)
 	DZCollection *collection = &info->content.collection;
 	bool failed = false;
 	guint32 parsed = 0;
-	char *inend;
 	
 	if (!(info->type == ContentCollection && current_element_is (info, "I") && collection->current_subimage)) {
+		info->error = true;
+		return;
+	}
+	
+	if (collection->current_subimage->has_viewport) {
+		/* cannot contain multiple Viewport elements! */
 		info->error = true;
 		return;
 	}
@@ -709,40 +827,27 @@ viewport_start (DZParserInfo *info, const char **attr)
 	collection->current_subimage->has_viewport = true;
 	
 	for (int i = 0; attr [i] && !failed; i += 2) {
-		inend = (char *) "";
-		
 		if (!g_ascii_strcasecmp ("Width", attr[i])) {
 			if (!(parsed & DZParsedWidth)) {
-				collection->current_subimage->vp_w = g_ascii_strtod (attr[i+1], &inend);
-				if (errno != 0 || collection->current_subimage->vp_w < 0)
+				failed = !DoubleTryParse (attr[i+1], &collection->current_subimage->vp_w);
+				if (collection->current_subimage->vp_w < 0)
 					failed = true;
 				parsed |= DZParsedWidth;
 			} else
 				failed = true;
 		} else if (!g_ascii_strcasecmp ("X", attr[i])) {
 			if (!(parsed & DZParsedX)) {
-				collection->current_subimage->vp_x = g_ascii_strtod (attr[i+1], &inend);
-				if (errno != 0)
-					failed = true;
+				failed = !DoubleTryParse (attr[i+1], &collection->current_subimage->vp_x);
 				parsed |= DZParsedX;
 			} else
 				failed = true;
 		} else if (!g_ascii_strcasecmp ("Y", attr[i])) {
 			if (!(parsed & DZParsedY)) {
-				collection->current_subimage->vp_y = g_ascii_strtod (attr[i+1], &inend);
-				if (errno != 0)
-					failed = true;
+				failed = !DoubleTryParse (attr[i+1], &collection->current_subimage->vp_y);
 				parsed |= DZParsedY;
 			} else
 				failed = true;
 		}
-		
-		// make sure there is no trailing data (except lwsp)
-		while (*inend == ' ')
-			inend++;
-		
-		if (*inend)
-			failed = true;
 	}
 	
 	if (failed || (parsed & DZParsedViewport) != DZParsedViewport) {
@@ -754,8 +859,32 @@ viewport_start (DZParserInfo *info, const char **attr)
 static void
 items_start (DZParserInfo *info, const char **attr)
 {
-	if (!(info->type == ContentCollection && current_element_is (info, "Collection")))
+	DZCollection *collection = &info->content.collection;
+	
+	if (!(info->type == ContentCollection && current_element_is (info, "Collection"))) {
 		info->error = true;
+		return;
+	}
+	
+	if (collection->subimages != NULL) {
+		/* cannot contain multiple Items elements! */
+		info->error = true;
+		return;
+	}
+	
+	collection->subimages = g_ptr_array_new ();
+}
+
+static void
+items_end (DZParserInfo *info)
+{
+	DZCollection *collection = &info->content.collection;
+	
+	if (collection->subimages->len == 0) {
+		/* must contain I elements! */
+		info->error = true;
+		return;
+	}
 }
 
 static void
@@ -826,6 +955,13 @@ size_start (DZParserInfo *info, const char **attr)
 			return;
 		}
 		
+		if (collection->current_subimage->has_size) {
+			/* cannot have more than 1 Size element! */
+			info->error = true;
+			return;
+		}
+		
+		collection->current_subimage->has_size = true;
 		height = &collection->current_subimage->height;
 		width = &collection->current_subimage->width;
 		break;
@@ -835,6 +971,13 @@ size_start (DZParserInfo *info, const char **attr)
 			return;
 		}
 		
+		if (image->has_size) {
+			/* cannot have more than 1 Size element! */
+			info->error = true;
+			return;
+		}
+		
+		image->has_size = true;
 		height = &image->height;
 		width = &image->width;
 		break;
@@ -863,9 +1006,6 @@ size_start (DZParserInfo *info, const char **attr)
 		fprintf (stderr, "DeepZoom Size parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 	}
-	
-	if (info->type == ContentCollection)
-		collection->current_subimage->has_size = true;
 }
 
 static void
@@ -885,6 +1025,9 @@ item_start (DZParserInfo *info, const char **attr)
 		return;
 	}
 	
+	if (!collection->subimages)
+		collection->subimages = g_ptr_array_new ();
+	
 	subimage = collection->current_subimage = new SubImage ();
 	
 	for (int i = 0; attr[i] && !failed; i += 2) {
@@ -898,10 +1041,20 @@ item_start (DZParserInfo *info, const char **attr)
 		} else if (!g_ascii_strcasecmp ("IsPath", attr[i])) {
 			// This attribute must always have a value of "1" or
 			// "true" for our uses, so it is safe to ignore it.
+			if (!(parsed & DZParsedIsPath)) {
+				failed = strcmp (attr[i+1], "1") != 0;
+				parsed |= DZParsedIsPath;
+			} else
+				failed = true;
 		} else if (!g_ascii_strcasecmp ("Type", attr[i])) {
 			// This attribute is the pixel source type. For
 			// Silverlight, this value is always ImagePixelSource
 			// so it is safe to ignore.
+			if (!(parsed & DZParsedType)) {
+				failed = strcmp (attr[i+1], "ImagePixelSource") != 0;
+				parsed |= DZParsedType;
+			} else
+				failed = true;
 		} else if (!g_ascii_strcasecmp ("Id", attr[i])) {
 			if (!(parsed & DZParsedId)) {
 				failed = !Int32TryParse (attr[i+1], &subimage->id, &err) || subimage->id < 0;
@@ -932,13 +1085,23 @@ item_end (DZParserInfo *info)
 	SubImage *item;
 	const Uri *uri;
 	
-	if (!(info->type == ContentCollection && current_element_is (info, "I"))) {
-		info->error = true;
-		return;
-	}
-	
 	if ((uri = info->source->GetUriSource ())) {
 		item = collection->current_subimage;
+		
+		if (!item->has_size) {
+			/* must contain a Size element! */
+			info->error = true;
+			return;
+		}
+		
+		for (guint i = 0; i < collection->subimages->len; i++) {
+			subimage = (MultiScaleSubImage *) collection->subimages->pdata[i];
+			if (item->id == subimage->GetId ()) {
+				/* must not contain duplicate entries! */
+				info->error = true;
+				return;
+			}
+		}
 		
 		subsource = new DeepZoomImageTileSource (item->source, true);
 		subimage = new MultiScaleSubImage (uri, subsource, item->id, item->n);
@@ -953,8 +1116,7 @@ item_end (DZParserInfo *info)
 			subimage->SetViewportWidth (item->vp_w);
 		}
 		
-		if (item->has_size)
-			subimage->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double) item->width / (double) item->height));
+		subimage->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double) item->width / (double) item->height));
 		
 		g_ptr_array_add (collection->subimages, subimage);
 	} else {
@@ -969,15 +1131,15 @@ static struct {
 	void (* element_start) (DZParserInfo *info, const char **attr);
 	void (* element_end) (DZParserInfo *info);
 } dz_elements[] = {
-	{ "Image",        image_start,         NULL             },
-	{ "Collection",   collection_start,    NULL             },
-	{ "DisplayRects", display_rects_start, NULL             },
-	{ "DisplayRect",  display_rect_start,  display_rect_end },
-	{ "Viewport",     viewport_start,      NULL             },
-	{ "Items",        items_start,         NULL             },
-	{ "Rect",         rect_start,          NULL             },
-	{ "Size",         size_start,          NULL             },
-	{ "I",            item_start,          item_end         },
+	{ "Image",        image_start,         image_end         },
+	{ "Collection",   collection_start,    collection_end    },
+	{ "DisplayRects", display_rects_start, display_rects_end },
+	{ "DisplayRect",  display_rect_start,  display_rect_end  },
+	{ "Viewport",     viewport_start,      NULL              },
+	{ "Items",        items_start,         items_end         },
+	{ "Rect",         rect_start,          NULL              },
+	{ "Size",         size_start,          NULL              },
+	{ "I",            item_start,          item_end          },
 };
 
 // DeepZoomParsing

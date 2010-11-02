@@ -1173,11 +1173,13 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		layers --;
 	
 	// optimal layer for this... aka "best viewed at"
-	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar)), &optimal_layer) == 0.5)
+	double fr;
+	
+	if ((fr = frexp (msi_w / (vp_w * MIN (1.0, msi_ar)), &optimal_layer)) == 0.5)
 		optimal_layer--;
 	
-	LOG_MSI ("number of layers: %d; optimal layer: %d; BlurFactor: %.2f; adjustment: %d\n",
-		 layers, optimal_layer, blur_factor, blur_offset);
+	printf ("number of layers: %d; optimal layer: %d; BlurFactor: %.2f; adjustment: %d; fr = %.4f\n",
+		 layers, optimal_layer, blur_factor, blur_offset, fr);
 	
 	optimal_layer = MIN (optimal_layer + blur_offset, layers);
 	
