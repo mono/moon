@@ -175,7 +175,10 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 		}
 		case Type::COLOR: {
 			Color *color = value->AsColor();
-			str = buf = g_strdup_printf ("<b>r=%g, g=%g, b=%g, a=%g</b>", color->r, color->g, color->b, color->a);
+			if (color)
+				str = buf = g_strdup_printf ("<b>r=%g, g=%g, b=%g, a=%g</b>", color->r, color->g, color->b, color->a);
+			else
+				str = buf = g_strdup_printf ("<NULL>");
 			break;
 		}
 		case Type::BOOL:
