@@ -1561,7 +1561,7 @@ namespace Mono.Xaml {
 				return str;
 
 			int i = 0;
-			while (Char.IsWhiteSpace (str [i]))
+			while (i < str.Length && Char.IsWhiteSpace (str [i]))
 				i++;
 
 			StringBuilder builder = new StringBuilder (str.Length);
