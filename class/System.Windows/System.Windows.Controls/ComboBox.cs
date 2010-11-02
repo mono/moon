@@ -530,7 +530,7 @@ namespace System.Windows.Controls
 			}
 			
 			if (FlowDirection == FlowDirection.RightToLeft) {
-				final_offset.X = -offset.X;
+				final_offset.X = -final_offset.X;
 			}
 
 			if (bottom_right.Y > root.ActualHeight) {
