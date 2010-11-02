@@ -44,11 +44,11 @@ class unsign
 				
 				output = output.Replace ("Public Key:", "");
 				output = output.Replace ("Public Key Token:", "|");
-				output = output.Replace ("\n", "");
-				output = output.Replace ("\r", "");
+				output = output.Replace ("\n", "|");
+				output = output.Replace ("\r", "|");
 				output = output.Replace (" ", "");
 				
-				string [] split = output.Split ('|');
+				string [] split = output.Split (new char [] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 				pubkey = split [0];
 				token = split [1];
 				
