@@ -582,10 +582,13 @@ Grid::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 	RestoreMeasureResults ();
 
 	Size total_consumed = Size (0, 0);
-	for (int c = 0; c < col_matrix_dim; c++)
+	for (int c = 0; c < col_matrix_dim; c++) {
+		col_matrix [c][c].offered_size = col_matrix [c][c].desired_size;
 		total_consumed.width += col_matrix [c][c].offered_size;
-	for (int r = 0; r < row_matrix_dim; r++)
+	} for (int r = 0; r < row_matrix_dim; r++) {
+		row_matrix [r][r].offered_size = row_matrix [r][r].desired_size;
 		total_consumed.height += row_matrix [r][r].offered_size;
+	}
 
 	if (total_consumed.width != finalSize.width)
 		ExpandStarCols (finalSize);
