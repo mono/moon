@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 568 methods needs to be decorated.
+# 569 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -495,6 +495,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_find_name(System.IntPtr,System.String,Mono.Kind&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_animation_base_value_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_name_(System.IntPtr)
@@ -1490,7 +1493,7 @@
 +SC-M: System.Void Mono.NativeMethods::time_manager_set_maximum_refresh_rate(System.IntPtr,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::touch_device_set_directly_over(System.IntPtr,System.IntPtr)

@@ -82,6 +82,7 @@ public:
 	
 	/* @GeneratePInvoke */
 	void SetManualTargetWithError (DependencyObject *o, MoonError *error);
+	bool ThrowIfRunning (MoonError *error);
 
 	// events
 	const static int CompletedEvent;
@@ -93,7 +94,6 @@ protected:
 
 	void AttachCompletedHandler ();
 	void DetachCompletedHandler ();
-
 	virtual void OnClockCompleted ();
 
 	static void clock_completed (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -114,10 +114,17 @@ public:
  	/* @GeneratePInvoke */
 	TimelineCollection ();
 
+	virtual bool InsertWithError (int index, Value *value, MoonError *error);
+	virtual bool SetValueAtWithError (int index, Value *value, MoonError *error);
+	virtual bool RemoveAtWithError (int index, MoonError *error);
+
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 
 protected:
 	virtual ~TimelineCollection ();
+
+private:
+	bool ThrowIfParentIsRunning (MoonError *error);
 };
 
 

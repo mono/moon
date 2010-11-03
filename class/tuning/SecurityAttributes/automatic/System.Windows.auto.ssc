@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 634 methods
+# 635 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -18,6 +18,7 @@
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
++SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetAnimationBaseValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::ClearValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::Lookup(Mono.Kind,System.IntPtr)
 +SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr,System.Boolean)

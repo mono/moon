@@ -343,6 +343,10 @@ public:
 	Value *GetValueNoAutoCreate (int id);
 	Value *GetValueNoAutoCreate (DependencyProperty *property);
 
+	Value *GetAnimationBaseValueWithError (int id, MoonError *error);
+	/* @GeneratePInvoke */
+	Value *GetAnimationBaseValueWithError (DependencyProperty *property, MoonError *error);
+
 	bool PropertyHasValueNoAutoCreate (int property_id, DependencyObject *obj);
 
 	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, bool set_parent, bool merge_names_on_set_parent, MoonError *error);

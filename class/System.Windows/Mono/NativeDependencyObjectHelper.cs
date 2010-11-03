@@ -253,7 +253,9 @@ namespace Mono {
 
 		public static object GetAnimationBaseValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
-			throw new NotImplementedException ();
+			if (dp == null)
+				throw new ArgumentNullException ("dp");
+			return Value.ToObject (null, NativeMethods.dependency_object_get_animation_base_value (wrapper.NativeHandle, dp.Native));
 		}
 
 		public static void ClearValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)

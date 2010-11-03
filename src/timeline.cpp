@@ -147,12 +147,22 @@ Timeline::GetBeginTime ()
 void
 Timeline::SetManualTargetWithError (DependencyObject *o, MoonError *error)
 {
-	if (GetClock() && GetClock()->GetClockState () != Clock::Stopped) {
-		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Operation is not valid on an active Animation or Storyboard.  Root Storyboard must be stopped first.");
+	if (ThrowIfRunning (error))
 		return;
-	}
 
 	manual_target = o;
+}
+
+
+bool
+Timeline::ThrowIfRunning (MoonError *error)
+{
+	// If a Storyboard has a clock allocated against it, then it's definitely active
+	if (GetClock()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Operation is not valid on an active Animation or Storyboard.  Root Storyboard must be stopped first.");
+		return true;
+	}
+	return false;
 }
 
 void
@@ -305,6 +315,41 @@ TimelineCollection::TimelineCollection ()
 
 TimelineCollection::~TimelineCollection ()
 {
+}
+
+bool
+TimelineCollection::InsertWithError (int index, Value *value, MoonError *error)
+{
+	if (ThrowIfParentIsRunning (error))
+		return false;
+	return DependencyObjectCollection::InsertWithError (index, value, error);
+}
+
+bool
+TimelineCollection::SetValueAtWithError (int index, Value *value, MoonError *error)
+{
+	if (ThrowIfParentIsRunning (error))
+		return false;
+	return DependencyObjectCollection::SetValueAtWithError (index, value, error);
+}
+
+bool
+TimelineCollection::RemoveAtWithError (int index, MoonError *error)
+{
+	if (ThrowIfParentIsRunning (error))
+		return false;
+	return DependencyObjectCollection::RemoveAtWithError (index, error);
+}
+
+bool
+TimelineCollection::ThrowIfParentIsRunning (MoonError *error)
+{
+	if (GetParent () && GetParent ()->Is (Type::TIMELINE)) {
+		Timeline *timeline = (Timeline *) GetParent ();
+		if (timeline->ThrowIfRunning (error))
+			return true;
+	}
+	return false;
 }
 
 ParallelTimeline::ParallelTimeline ()

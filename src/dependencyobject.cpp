@@ -2063,6 +2063,21 @@ DependencyObject::GetValueNoAutoCreate (DependencyProperty *property)
 	return v;
 }
 
+Value *
+DependencyObject::GetAnimationBaseValueWithError (int id, MoonError *error)
+{
+	if (IsDisposed ())
+		return NULL;
+	return GetAnimationBaseValueWithError (GetDeployment ()->GetTypes ()->GetProperty (id), error);
+}
+
+Value *
+DependencyObject::GetAnimationBaseValueWithError (DependencyProperty *property, MoonError *error)
+{
+	AnimationStorage *storage = GetAnimationStorageFor (property);
+	return storage ? storage->GetStopValue () : NULL;
+}
+
 bool
 DependencyObject::PropertyHasValueNoAutoCreate (int property_id, DependencyObject *obj)
 {

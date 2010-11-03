@@ -102,7 +102,7 @@ protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
 	// if 'is_value_safe' is false, 'value' might have been deleted, don't access it.
 	virtual void RemovedFromCollection (Value *value, bool is_value_safe) {}
-	
+
 	void SetCount (int count);
 
 	virtual void CloneCore (Types *types, DependencyObject* fromObj);
