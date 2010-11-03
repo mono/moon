@@ -1043,6 +1043,7 @@ private:
 	bool HookupAnimationsRecurse (Clock *clock,
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
 				      GHashTable *promoted_values,
+				      List *animated_properties,
 				      MoonError *error);
 };
 
@@ -1069,6 +1070,28 @@ protected:
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+};
+
+
+
+class AnimationNode : public List::Node {
+ public:
+	DependencyProperty *property;
+	DependencyObject *target;
+	AnimationNode (DependencyObject *target, DependencyProperty *property)
+	{
+		this->target = target;
+		this->property = property;
+	}
+
+	static bool AnimationNodeComparer (Node *node, void *data)
+	{
+		AnimationNode *left = (AnimationNode *) node;
+		AnimationNode *right = (AnimationNode *) data;
+
+		return left->property == right->property &&
+				left->target == right->target;
+	}
 };
 
 // internal WPF class gleaned from stack traces

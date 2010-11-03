@@ -449,7 +449,7 @@ Storyboard::GetTargetDependencyProperty ()
 }
 
 bool
-Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObject, PropertyPath *targetPropertyPath, GHashTable *promoted_values, MoonError *error)
+Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObject, PropertyPath *targetPropertyPath, GHashTable *promoted_values, List* animated_properties, MoonError *error)
 {
 	DependencyObject *localTargetObject = NULL;
 	PropertyPath *localTargetPropertyPath = NULL;
@@ -483,6 +483,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 						      targetObject,
 						      targetPropertyPath,
 						      promoted_values,
+						      animated_properties,
 						      error))
 				return false;
 		}
@@ -513,6 +514,14 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 			return false;
 		}
 
+		AnimationNode *node = new AnimationNode (realTargetObject, prop);
+		if (animated_properties->Find (AnimationNode::AnimationNodeComparer, node)) {
+			delete node;
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Multiple animations in the same containing Storyboard cannot target the same property on a single element.");
+			return false;
+		}
+
+		animated_properties->Append (node);
 		if (clock->Is(Type::ANIMATIONCLOCK)) {
 			Animation *animation = (Animation*)timeline;
 
@@ -559,7 +568,8 @@ Storyboard::BeginWithError (MoonError *error)
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
 	GHashTable *promoted_values = g_hash_table_new (g_direct_hash, g_direct_equal);
-	if (!HookupAnimationsRecurse (clock, NULL, NULL, promoted_values, error)) {
+	List animated_properties;
+	if (!HookupAnimationsRecurse (clock, NULL, NULL, promoted_values, &animated_properties, error)) {
 		g_hash_table_destroy (promoted_values);
 		return false;
 	}
