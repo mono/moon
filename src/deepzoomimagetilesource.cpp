@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007,2009 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -14,8 +14,11 @@
 #include <config.h>
 
 #include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
 #include <errno.h>
+#include <math.h>
 
 #include "application.h"
 #include "debug.h"
@@ -520,24 +523,120 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 #define DZParsedI (DZParsedId | DZParsedN)
 
 static bool
-DoubleTryParse (const char *str, double *val)
+FloatTryParse (const char *str, double *val)
 {
-	const char *inptr = str;
-	char *inend;
+	/* Note: sign + 38 + . + 38 + E + sign + 2 + null = 83 */
+	const char *decimal, *exponent, *vptr, *inptr = str;
+	char buf[84], *inend, *ptr;
+	struct lconv *locale;
+	size_t offset, len;
+	int sign = 0;
+	float f;
 	
-	while (*inptr == ' ')
+	while (*inptr == ' ' || *inptr == '\t')
 		inptr++;
 	
 	if (*inptr == '\0')
 		return false;
 	
-	*val = g_ascii_strtod (inptr, &inend);
+	/* validate input */
+	vptr = inptr;
 	
-	while (*inend == ' ')
-		inend++;
+	/* leading sign */
+	if (*vptr == '+' || *vptr == '-') {
+		sign = 1;
+		vptr++;
+	}
 	
-	if (errno != 0 || *inend || fabs (*val) >= HUGE_VAL)
+	/* integral part of the decimal number */
+	while (g_ascii_isdigit (*vptr))
+		vptr++;
+	
+	/* fail if the integral part is > 38 digits */
+	if ((vptr - inptr) > (38 + sign))
 		return false;
+	
+	/* decimal point */
+	if (*vptr == '.') {
+		offset = vptr - inptr;
+		decimal = vptr;
+		vptr++;
+		
+		/* decimal point must either be followed by a digit or trailing lwsp */
+		if (*vptr && !g_ascii_isdigit (*vptr) && *vptr != ' ' && *vptr != '\t')
+			return false;
+		
+		/* fractional part of the decimal number */
+		while (g_ascii_isdigit (*vptr))
+			vptr++;
+		
+		/* fail if the fractional part is > 38 digits */
+		if ((vptr - decimal) > (38 + 1))
+			return false;
+	}
+	
+	/* must contain at least 1 digit before exponent */
+	if (vptr == inptr || !g_ascii_isdigit (vptr[-1]))
+		return false;
+	
+	/* exponent expression */
+	if (*vptr == 'e' || *vptr == 'E') {
+		vptr++;
+		
+		exponent = vptr;
+		
+		/* exponent sign */
+		if (*vptr == '+' || *vptr == '-') {
+			sign = 1;
+			vptr++;
+		} else
+			sign = 0;
+		
+		/* exponent value */
+		while (g_ascii_isdigit (*vptr))
+			vptr++;
+		
+		/* fail if the exponent is > 2 digits */
+		if ((vptr - exponent) > (2 + sign))
+			return false;
+	}
+	
+	/* keep track of the length of the decimal number */
+	len = vptr - inptr;
+	
+	/* allow trailing lwsp */
+	while (*vptr == ' ' || *vptr == '\t')
+		vptr++;
+	
+	if (*vptr != '\0') {
+		/* invalid data in input string */
+		return false;
+	}
+	
+	if (decimal && (locale = localeconv ()) && strcmp (locale->decimal_point, ".") != 0) {
+		/* locale doesn't use '.' as decimal point so we need to munge
+		 * the string into the locale's formatting */
+		memcpy (buf, inptr, offset);
+		ptr = buf + offset;
+		len -= offset;
+		
+		ptr = g_stpcpy (ptr, locale->decimal_point);
+		decimal++;
+		len--;
+		
+		memcpy (ptr, decimal, len);
+		ptr[len] = '\0';
+		
+		inptr = buf;
+	}
+	
+	errno = 0;
+	f = strtof (inptr, &inend);
+	
+	if (errno != 0 || inend != (inptr + len) || f == HUGE_VALF || f == -HUGE_VALF)
+		return false;
+	
+	*val = (double) f;
 	
 	return true;
 }
@@ -692,7 +791,7 @@ collection_start (DZParserInfo *info, const char **attr)
 		} else if (!g_ascii_strcasecmp ("Quality", attr[i])) {
 			// This attr is not useful to us.
 			if (!(parsed & DZParsedQuality)) {
-				failed = !DoubleTryParse (attr[i+1], &quality) || quality < 0.0 || quality > 1.0;
+				failed = !FloatTryParse (attr[i+1], &quality) || quality < 0.0 || quality > 1.0;
 				parsed |= DZParsedQuality;
 			} else
 				failed = true;
@@ -829,7 +928,7 @@ viewport_start (DZParserInfo *info, const char **attr)
 	for (int i = 0; attr [i] && !failed; i += 2) {
 		if (!g_ascii_strcasecmp ("Width", attr[i])) {
 			if (!(parsed & DZParsedWidth)) {
-				failed = !DoubleTryParse (attr[i+1], &collection->current_subimage->vp_w);
+				failed = !FloatTryParse (attr[i+1], &collection->current_subimage->vp_w);
 				if (collection->current_subimage->vp_w < 0)
 					failed = true;
 				parsed |= DZParsedWidth;
@@ -837,13 +936,13 @@ viewport_start (DZParserInfo *info, const char **attr)
 				failed = true;
 		} else if (!g_ascii_strcasecmp ("X", attr[i])) {
 			if (!(parsed & DZParsedX)) {
-				failed = !DoubleTryParse (attr[i+1], &collection->current_subimage->vp_x);
+				failed = !FloatTryParse (attr[i+1], &collection->current_subimage->vp_x);
 				parsed |= DZParsedX;
 			} else
 				failed = true;
 		} else if (!g_ascii_strcasecmp ("Y", attr[i])) {
 			if (!(parsed & DZParsedY)) {
-				failed = !DoubleTryParse (attr[i+1], &collection->current_subimage->vp_y);
+				failed = !FloatTryParse (attr[i+1], &collection->current_subimage->vp_y);
 				parsed |= DZParsedY;
 			} else
 				failed = true;
