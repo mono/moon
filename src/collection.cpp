@@ -359,9 +359,10 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 		delete removed;
 
 		return true;
-	}
-	else
+	} else {
+		delete added;
 		return false;
+	}
 }
 
 void
