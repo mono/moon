@@ -762,7 +762,7 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	
 	if (!fadein_sb) {
 		fadein_sb = MoonUnmanagedFactory::CreateStoryboard ();
-		fadein_sb->SetManualTarget (this);
+		fadein_sb->SetManualTargetWithError (this, NULL);
 		fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
 		fadein_animation = MoonUnmanagedFactory::CreateDoubleAnimation ();
 		fadein_animation->SetDuration (Duration (GetSource ()->GetTileBlendTime ()));
@@ -1630,7 +1630,7 @@ MultiScaleImage::AnimateViewportWidth (double width)
 
 	if (!zoom_sb) {
 		zoom_sb = MoonUnmanagedFactory::CreateStoryboard ();
-		zoom_sb->SetManualTarget (this);
+		zoom_sb->SetManualTargetWithError (this, NULL);
 		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.AnimatedViewportWidth)"));
 		zoom_sb->AddHandler (Storyboard::CompletedEvent, zoom_finished, this);
 		zoom_animation = MoonUnmanagedFactory::CreateDoubleAnimationUsingKeyFrames ();
@@ -1675,7 +1675,7 @@ MultiScaleImage::AnimateViewportOrigin (Point *origin)
 
 	if (!pan_sb) {
 		pan_sb = MoonUnmanagedFactory::CreateStoryboard ();
-		pan_sb->SetManualTarget (this);
+		pan_sb->SetManualTargetWithError (this, NULL);
 		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.AnimatedViewportOrigin)"));
 		pan_sb->AddHandler (Storyboard::CompletedEvent, pan_finished, this);
 		pan_animation = MoonUnmanagedFactory::CreatePointAnimationUsingKeyFrames ();

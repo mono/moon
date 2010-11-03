@@ -145,8 +145,13 @@ Timeline::GetBeginTime ()
 }
 
 void
-Timeline::SetManualTarget (DependencyObject *o)
+Timeline::SetManualTargetWithError (DependencyObject *o, MoonError *error)
 {
+	if (GetClock() && GetClock()->GetClockState () != Clock::Stopped) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Operation is not valid on an active Animation or Storyboard.  Root Storyboard must be stopped first.");
+		return;
+	}
+
 	manual_target = o;
 }
 

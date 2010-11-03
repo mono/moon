@@ -81,7 +81,7 @@ public:
 	DependencyObject* GetManualTarget () { return manual_target; }
 	
 	/* @GeneratePInvoke */
-	void SetManualTarget (DependencyObject *o);
+	void SetManualTargetWithError (DependencyObject *o, MoonError *error);
 
 	// events
 	const static int CompletedEvent;
