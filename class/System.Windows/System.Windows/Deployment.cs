@@ -548,7 +548,12 @@ namespace System.Windows {
 		{
 			pending_downloads --;
 			if (pending_downloads == 0) {
-				CreateApplication ();
+				try {
+					CreateApplication ();
+				} catch (Exception e) {
+					int error = (e is MethodAccessException) ? 4004 : 2153;
+					EmitError (error, string.Format ("Error while creating the Application: {0}", e.Message));
+				}
 			}
 		}
 
