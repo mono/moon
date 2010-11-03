@@ -51,6 +51,8 @@ gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, Managed
 
 gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
 
+gboolean managed_unzip_is_current_file_valid (unzFile zipFile);
+
 /* @GeneratePInvoke */
 gboolean managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file);
 

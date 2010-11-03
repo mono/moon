@@ -128,11 +128,14 @@ managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, Managed
 		return FALSE;
 
 	if (unzGoToFirstFile (zipFile) != UNZ_OK)
-		goto cleanup;	
+		goto cleanup;
 
-	while (file -- > 0) {
+	while (!managed_unzip_is_current_file_valid (zipFile) || file > 0) {
 		if (unzGoToNextFile (zipFile) != UNZ_OK)
 			goto cleanup;
+		if (!managed_unzip_is_current_file_valid (zipFile))
+			continue;
+		file --;
 	}
 
 	if (unzOpenCurrentFile (zipFile) != UNZ_OK)
@@ -145,6 +148,29 @@ cleanup:
 	unzClose (zipFile);
 
 	return ret;
+}
+
+
+// This function checks the filename to see if it ends in the zip
+// directory separator character and if so, returns false. This way
+// we can ignore these entries when loading all the files in a zip
+// without accidentally ignoring regular zero-length files. Needed for
+// drt 1002/1003.
+gboolean
+managed_unzip_is_current_file_valid (unzFile zipFile)
+{
+	// Figure out how long the filename is using the file_info
+	unz_file_info file_info;
+	unzGetCurrentFileInfo (zipFile, &file_info, NULL, 0, NULL, 0, NULL, 0);
+
+	// Allocate a buffer big enough to fit the filename and then ignore
+	// this file if it ends in '/' as that implies it's a directory entry.
+	char *filename = new char [file_info.size_filename];
+	unzGetCurrentFileInfo (zipFile, NULL, filename, file_info.size_filename, NULL, 0, NULL, 0);
+
+	gboolean valid = filename [file_info.size_filename - 1] != '/';
+	delete filename;
+	return valid;
 }
 
 gboolean
