@@ -636,18 +636,25 @@ namespace Mono.Xaml {
 		private void ParseTextBlockText (XamlObjectElement block, string value)
 		{
 			TextBlock tb = block.Object as TextBlock;
+			Run run = ParseRunText (value);
 
-			if (tb != null)
-				tb.Text = value;
+			tb.Inlines.Add (run);
 		}
 
 		private void ParseSpanText (XamlObjectElement obj, string value)
 		{
 			Span span = (Span) obj.Object;
+			Run run = ParseRunText (value);
+
+			span.Inlines.Add (run);
+		}
+
+		private Run ParseRunText (string value)
+		{
 			Run run = new Run ();
 
 			run.Text = value;
-			span.Inlines.Add (run);
+			return run;
 		}
 
 		private void ParseWhitespace ()
