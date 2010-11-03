@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 636 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -398,6 +398,7 @@
 +SSC-M: Mono.Surface System.Windows.Deployment::get_Surface()
 +SSC-M: System.Windows.Deployment System.Windows.Deployment::get_Current()
 +SSC-M: System.Windows.Media.GlyphTypefaceCollection System.Windows.Deployment::get_SystemTypefaces()
++SSC-M: System.Reflection.Assembly System.Windows.Deployment::ResolveMissingAssemblies(System.Object,System.ResolveEventArgs)
 +SSC-M: System.Void System.Windows.Deployment::AsyncDownloadComplete()
 +SSC-M: System.Void System.Windows.Deployment::LoadAssemblyFromBuffer(System.Windows.AssemblyPart,System.Byte[],System.Net.WebRequest)
 +SSC-M: System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)

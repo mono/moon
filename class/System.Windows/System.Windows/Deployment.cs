@@ -366,6 +366,9 @@ namespace System.Windows {
 #if NET_2_1
 			AppDomain.CurrentDomain.SetupInformationNoCopy.ApplicationBase = XapDir;
 #endif
+			// called on failure - this can occur when TPE (transparent platform extensions) being loaded
+			// do not match the version against which the XAP has been linked (i.e. it was updated independently)
+			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler (ResolveMissingAssemblies);
 
 			NativeMethods.deployment_set_ensure_managed_peer_callback (native, ensure_managed_peer);
 			NativeMethods.deployment_set_initialization (native, true);
@@ -382,6 +385,45 @@ namespace System.Windows {
 			finally {
 				NativeMethods.deployment_set_initialization (native, false);
 			}
+		}
+
+		// calling Assembly.GetName means we're SSC so we avoid using a anonymous delegate (uncontrolled name)
+		Assembly ResolveMissingAssemblies (object sender, ResolveEventArgs args)
+		{
+			AssemblyName failed = new AssemblyName (args.Name);
+			foreach (Assembly assembly in assemblies) {
+				if (Compare (failed, assembly.GetName ()))
+					return assembly;
+			}
+			return null;
+		}
+
+		static bool Compare (AssemblyName a, AssemblyName b)
+		{
+			if (a.Name != b.Name)
+				return false;
+
+			// we could have something more recent (see DRT1001 where a TPE is updated)
+			if (a.Version > b.Version)
+				return false;
+
+			if (a.CultureInfo.LCID != b.CultureInfo.LCID)
+				return false;
+
+			byte[] apkt = a.GetPublicKeyToken ();
+			byte[] bpkt = b.GetPublicKeyToken ();
+			if (apkt == null) {
+				return (bpkt == null);
+			} else {
+				if ((bpkt == null) || (apkt.Length != bpkt.Length))
+					return false;
+
+				for (int i=0; i < apkt.Length; i++) {
+					if (apkt [i] != bpkt [i])
+						return false;
+				}
+			}
+			return true;
 		}
 
 		// note: throwing MoonException from here is ok since this code is called (sync) from the plugin

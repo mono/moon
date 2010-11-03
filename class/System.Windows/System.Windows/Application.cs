@@ -213,7 +213,7 @@ namespace System.Windows {
 			// once installed the default quota for isolated storage is augmented to 25MB (instead of 1MB)
 			// note: this applies only to the browser (not desktop) assemblies (it won't compile otherwise)
 #if !NET_3_0
-			const long OutOfBrowserQuota = 25 * IsolatedStorage.DefaultQuota;
+			long OutOfBrowserQuota = 25 * IsolatedStorage.DefaultQuota;
 			if (IsolatedStorage.Quota < OutOfBrowserQuota)
 				IsolatedStorage.Quota = OutOfBrowserQuota;
 #endif
