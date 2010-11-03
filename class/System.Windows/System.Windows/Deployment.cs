@@ -526,7 +526,7 @@ namespace System.Windows {
 										break;
 									LoadAssemblyFromBuffer (a, dest.ToArray (), wreq);
 									source.Position = 0;
-									dest.Position = 0;
+									dest.SetLength (0);
 								}
 							}
 						}
