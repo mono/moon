@@ -570,6 +570,8 @@ Storyboard::BeginWithError (MoonError *error)
 	GHashTable *promoted_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	List animated_properties;
 	if (!HookupAnimationsRecurse (clock, NULL, NULL, promoted_values, &animated_properties, error)) {
+		DetachCompletedHandler ();
+		ClearClock (true);
 		g_hash_table_destroy (promoted_values);
 		return false;
 	}
