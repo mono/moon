@@ -47,6 +47,7 @@ using System.Windows.Markup;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
+
 namespace Mono.Xaml {
 
 	internal class XamlParser {
@@ -567,6 +568,11 @@ namespace Mono.Xaml {
 			return reader.LocalName == "StaticResource";
 		}
 
+		private bool IsTextBoxElement (XamlObjectElement obj)
+		{
+			return (typeof (TextBlock).IsAssignableFrom (obj.Type) || typeof (TextBox).IsAssignableFrom (obj.Type) || typeof (RichTextBox).IsAssignableFrom (obj.Type));
+		}
+
 		private void ParseEndElement ()
 		{
 			OnElementEnd ();
@@ -578,7 +584,8 @@ namespace Mono.Xaml {
 
 			XamlObjectElement obj = CurrentElement as XamlObjectElement;
 			if (obj != null) {
-				if (typeof (TextBlock).IsAssignableFrom (obj.Type)) {
+
+				if (IsTextBoxElement (obj)) {
 					ParseTextBlockText (obj, value);
 					return;
 				}
