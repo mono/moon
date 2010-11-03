@@ -69,7 +69,7 @@ Timeline::GetClock ()
 }
 
 bool
-Timeline::Validate ()
+Timeline::Validate (MoonError *error)
 {
 	RepeatBehavior *repeat = GetRepeatBehavior ();
 	Duration *duration = GetDuration ();
@@ -249,7 +249,7 @@ TimelineGroup::AllocateClock ()
 
 // Validate this TimelineGroup by validating all of it's children
 bool
-TimelineGroup::Validate ()
+TimelineGroup::Validate (MoonError *error)
 {
 	TimelineCollection *collection = GetChildren ();
 	Timeline *timeline;
@@ -257,11 +257,11 @@ TimelineGroup::Validate ()
 	int count = collection->GetCount ();
 	for (int i = 0; i < count; i++) {
 		timeline = collection->GetValueAt (i)->AsTimeline ();
-		if (!timeline->Validate ())
+		if (!timeline->Validate (error))
 			return false;
 	}
 	
-	return Timeline::Validate ();
+	return Timeline::Validate (error);
 }
 
 void

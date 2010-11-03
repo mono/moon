@@ -64,7 +64,7 @@ public:
 	
 	virtual Clock *AllocateClock ();
 	virtual void ClearClock (bool dispose);
-	virtual bool Validate ();
+	virtual bool Validate (MoonError *error);
 
 	Clock* GetClock ();
 
@@ -132,7 +132,7 @@ public:
 	
 	virtual Clock *AllocateClock ();
 	virtual void ClearClock (bool dispose);
-	virtual bool Validate ();
+	virtual bool Validate (MoonError *error);
 	
 	void AddChild (Timeline *child);
 	void RemoveChild (Timeline *child);

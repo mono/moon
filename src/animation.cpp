@@ -545,7 +545,7 @@ Storyboard::BeginWithError (MoonError *error)
 		ClearClock (true);
 	}
 
-	if (Validate () == false)
+	if (Validate (error) == false)
 		return false;
 
 	// This creates the clock tree for the hierarchy.  if a
@@ -1644,17 +1644,21 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 // Generic validator of KeyFrameCollection's. Collection vallidates 
 // if all keyframes have valid time.
 static bool
-generic_keyframe_validator (KeyFrameCollection *col)
+generic_keyframe_validator (KeyFrameCollection *col, MoonError *error)
 {
 	KeyFrame *keyframe;
+	KeyTime *keytime;
 	Value *value;
 	int count = col->GetCount ();
 
 	for (int i = 0; i < count; i++) {
 		value = col->GetValueAt (i);
 		keyframe = value->AsKeyFrame ();
-		if (keyframe->GetKeyTime () == NULL)
+		keytime = keyframe->GetKeyTime ();
+		if (!keytime || !keytime->HasTimeSpan () || keytime->GetTimeSpan () < 0) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "KeyTime property on KeyFrame object must be set to a non-negative TimeSpan value.");
 			return false;
+		}
 	}
 
 	return true;
@@ -1772,9 +1776,9 @@ DoubleAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 }
 
 bool
-DoubleAnimationUsingKeyFrames::Validate ()
+DoubleAnimationUsingKeyFrames::Validate (MoonError *error)
 {
-	return generic_keyframe_validator (GetKeyFrames ());
+	return generic_keyframe_validator (GetKeyFrames (), error);
 }
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames ()
@@ -1886,9 +1890,9 @@ ColorAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyPrope
 }
 
 bool
-ColorAnimationUsingKeyFrames::Validate ()
+ColorAnimationUsingKeyFrames::Validate (MoonError *error)
 {
-	return generic_keyframe_validator (GetKeyFrames ());
+	return generic_keyframe_validator (GetKeyFrames (), error);
 }
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames ()
@@ -2000,9 +2004,9 @@ PointAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyPrope
 }
 
 bool
-PointAnimationUsingKeyFrames::Validate ()
+PointAnimationUsingKeyFrames::Validate (MoonError *error)
 {
-	return generic_keyframe_validator (GetKeyFrames ());
+	return generic_keyframe_validator (GetKeyFrames (), error);
 }
 
 ObjectKeyFrameCollection::ObjectKeyFrameCollection ()
@@ -2179,10 +2183,10 @@ ObjectAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 }
 
 bool
-ObjectAnimationUsingKeyFrames::Validate ()
+ObjectAnimationUsingKeyFrames::Validate (MoonError *error)
 {
 	// Interesting question -- should we check for null here?
-	return generic_keyframe_validator (GetKeyFrames ());
+	return generic_keyframe_validator (GetKeyFrames (), error);
 }
 
 };

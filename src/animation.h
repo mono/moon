@@ -867,7 +867,7 @@ public:
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 
-	virtual bool Validate ();
+	virtual bool Validate (MoonError *error);
 	
 	//
 	// Property Accessors
@@ -901,7 +901,7 @@ public:
 	
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 	
-	virtual bool Validate ();
+	virtual bool Validate (MoonError *error);
 	
 	//
 	// Property Accessors
@@ -939,7 +939,7 @@ public:
 	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
-	virtual bool Validate ();
+	virtual bool Validate (MoonError *error);
 
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
 
@@ -969,7 +969,7 @@ public:
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 
-	virtual bool Validate ();
+	virtual bool Validate (MoonError *error);
 	
 	//
 	// Property Accessors
