@@ -764,6 +764,32 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
+		public void RemoveAfterAdded_RemoveHandler()
+		{
+			// See what happens if we add/remove the same element
+			// multiple times in a row.
+			int loaded = 0;
+			ComboBox box = new ComboBox();
+			RoutedEventHandler h = null;
+			h = delegate {
+				box.Loaded -= h;
+				loaded++;
+			};
+			box.Loaded += h;
+			TestPanel.Children.Add(box);
+			TestPanel.Children.Clear();
+			TestPanel.Children.Add(box);
+			TestPanel.Children.Clear();
+			TestPanel.Children.Add(box);
+
+			Enqueue(() => {
+				Assert.AreEqual(1, loaded, "#1");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void RemoveAfterTemplateLoaded ()
 		{
 			RemoveAfterTemplateLoaded_test (false);
