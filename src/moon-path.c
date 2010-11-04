@@ -296,6 +296,11 @@ moon_quad_curve_to (moon_path* path, double x1, double y1, double x2, double y2)
 	moon_curve_to (path, x1, y1, x2, y2, x3, y3);
 }
 
+int is_zero_difference (float a, float b)
+{
+	return fabsf (a - b) < 0.000002;
+}
+
 /**
  * moon_arc_to:
  * @path: a #moon_path
@@ -326,7 +331,7 @@ moon_arc_to (moon_path *path, double width, double height, double angle, gboolea
 	// if start and end points are identical, then no arc is drawn
 	// FIXME: what's the logic (if any) to compare points
 	// e.g. 60 and 60.000002 are drawn while 80 and 80.000003 aren't
-	if (IS_ZERO (ex - sx) && IS_ZERO (ey - sy))
+	if (is_zero_difference ((float)ex,(float)sx) && is_zero_difference ((float)ey, (float)sy))
 		return;
 
 	// Correction of out-of-range radii, see F6.6 (step 1)
