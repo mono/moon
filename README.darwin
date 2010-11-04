@@ -1,6 +1,20 @@
-You must have cairo 1.10 from macport currently.
+Install the following from macports
 
-sudo /opt/local/bin/port install cairo +quartz
+1) cairo 1.10
+
+   sudo /opt/local/bin/port install cairo +quartz
+
+2) automake/autoconf/libtool
+
+   sudo /opt/local/bin/port install automake libtool
+
+3) glib
+
+   sudo /opt/local/bin/port install glib2
+
+4) curl
+
+   sudo /opt/local/bin/port install curl
 
 You can then make a moon/mono/mono-basic parallel checkout and run with:
 
