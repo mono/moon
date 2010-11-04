@@ -102,8 +102,20 @@ MoonPixbufGtk::GetHeight ()
 	return gdk_pixbuf_get_height (gdk_pixbuf);
 }
 
+MoonPixbufGtk::GetRowStride ()
+{
+	if (crc_error)
+		return 4;
+	return gdk_pixbuf_get_rowstride (gdk_pixbuf);
+}
+
 gint
-MoonPixbufGtk::GetRow
+MoonPixbufGtk::GetNumChannels ()
+{
+	if (crc_error)
+		return 4;
+	return gdk_pixbuf_get_n_channels (gdk_pixbuf);
+}
 
 guchar*
 MoonPixbufGtk::GetPixels ()
