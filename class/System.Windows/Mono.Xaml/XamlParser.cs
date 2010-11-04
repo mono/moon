@@ -568,9 +568,9 @@ namespace Mono.Xaml {
 			return reader.LocalName == "StaticResource";
 		}
 
-		private bool IsTextBoxElement (XamlObjectElement obj)
+		private bool IsTextBlockElement (XamlObjectElement obj)
 		{
-			return (typeof (TextBlock).IsAssignableFrom (obj.Type) || typeof (TextBox).IsAssignableFrom (obj.Type) || typeof (RichTextBox).IsAssignableFrom (obj.Type));
+			return (typeof (TextBlock).IsAssignableFrom (obj.Type));
 		}
 
 		private void ParseEndElement ()
@@ -585,7 +585,7 @@ namespace Mono.Xaml {
 			XamlObjectElement obj = CurrentElement as XamlObjectElement;
 			if (obj != null) {
 
-				if (IsTextBoxElement (obj)) {
+				if (IsTextBlockElement (obj)) {
 					ParseTextBlockText (obj, value);
 					return;
 				}
@@ -642,10 +642,10 @@ namespace Mono.Xaml {
 
 		private void ParseTextBlockText (XamlObjectElement block, string value)
 		{
-			TextBlock tb = block.Object as TextBlock;
 			Run run = ParseRunText (value);
+			TextBlock textblock = block.Object as TextBlock;
 
-			tb.Inlines.Add (run);
+			textblock.Inlines.Add (run);
 		}
 
 		private void ParseSpanText (XamlObjectElement obj, string value)
