@@ -123,6 +123,10 @@ bool
 Validators::DoubleNotNegativeValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (value->AsDouble () < 0) {
+		// Silverlight 1.0 apps are allowed set negative sizes here.
+		if (instance->GetDeployment ()->GetRuntimeVersion () [0] == '1')
+			return true;
+
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than zero");
 		return false;
 	}
