@@ -218,7 +218,7 @@ namespace System.Windows.Controls
         { 
             DefaultStyleKey = typeof (ToolTip);
 
-	    this.LayoutUpdated += OnLayoutUpdated;
+	    //this.LayoutUpdated += OnLayoutUpdated;
         } 
 
         #region Protected Methods
@@ -245,11 +245,13 @@ namespace System.Windows.Controls
                 var h = Opened;
                 if (h != null)
                     h (this, new RoutedEventArgs { OriginalSource = this });
+		this.LayoutUpdated += OnLayoutUpdated;
             };
             this._parentPopup.Closed += delegate {
                 var h = Closed;
                 if (h != null)
                     h (this, new RoutedEventArgs { OriginalSource = this });
+		this.LayoutUpdated -= OnLayoutUpdated;
             };
             this.IsTabStop = false;
 
@@ -314,6 +316,9 @@ namespace System.Windows.Controls
 
         private void PerformPlacement(double horizontalOffset, double verticalOffset)
         {
+	    if (!IsOpen)
+		return;
+
             var bounds = new Point (0, 0);
             var point = Point.Zero;
 	    var target_bounds = new Rect (0,0,0,0);
