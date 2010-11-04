@@ -641,7 +641,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("NRE someplace in this method, across runtime versions")]
 		public void TestOverrides ()
 		{
 			ComboBoxPoker b = new ComboBoxPoker ();
@@ -873,7 +872,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("we're failing #3 across runtimeversions, looks like VisualTreeHelper.GetParent(item.Content) is returning null")]
 		public void ItemParentTest5 ()
 		{
 			bool loaded = false;
@@ -1300,7 +1298,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TemplateClosesDropdown ()
 		{
 			ComboBox box = new ComboBox ();

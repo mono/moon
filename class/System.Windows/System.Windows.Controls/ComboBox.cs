@@ -151,8 +151,6 @@ namespace System.Windows.Controls
 
 				LayoutUpdated += UpdatePopupSizeAndPosition;
 
-				UpdateLayout ();
-
 				OnDropDownOpened (EventArgs.Empty);
 
 				// Raises UIA Event
