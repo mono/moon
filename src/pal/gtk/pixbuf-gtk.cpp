@@ -102,6 +102,7 @@ MoonPixbufGtk::GetHeight ()
 	return gdk_pixbuf_get_height (gdk_pixbuf);
 }
 
+gint
 MoonPixbufGtk::GetRowStride ()
 {
 	if (crc_error)
