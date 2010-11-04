@@ -20,7 +20,7 @@
 #include "clipboard-gtk.h"
 #include "config-dialog-gtk.h"
 #include "pixbuf-gtk.h"
-#include "install-dialog.h"
+#include "install-dialog-gtk.h"
 #include "deployment.h"
 #include "timemanager.h"
 #include "enums.h"
