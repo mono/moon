@@ -911,7 +911,6 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 				c->InvokeDataDtor (is_shutting_down);
 				events->lists [event_id].event_list->Remove (c);
 			}
-			break;
 		}
 		
 		c = (EventClosure *) c->next;
@@ -927,7 +926,7 @@ EventObject::ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpoin
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	int last_foreach_generation = events->lists [event_id].last_foreach_generation;
 	while (event_closure) {
-		if (!only_new || event_closure->token >= last_foreach_generation)
+		if (!event_closure->pending_removal && (!only_new || event_closure->token >= last_foreach_generation))
 			(*m) (this, event_closure->func, event_closure->data, closure);
 		event_closure = (EventClosure *) event_closure->next;
 	}
