@@ -2603,8 +2603,10 @@ MediaThreadPool::WorkerLoop (void *data)
 		 
 		if (pthread_sigmask (SIG_BLOCK, NULL, &signal_set) != 0) {
 			any_blocked_signals = true; /* Assume the worst */
+#ifdef HAVE_SIGISEMPTYSET
 		} else if (!sigisemptyset (&signal_set)) {
 			any_blocked_signals = true;
+#endif
 		}
 
 		if (any_blocked_signals) {

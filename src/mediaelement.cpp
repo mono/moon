@@ -1011,8 +1011,14 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 
 	// check if we're missing the codecs *and* if they are not installed 
 	// since we could already have downloaded/installed them without refreshing the browser (leading to a crash)
-	if ((flags & MissingCodecs) && !Media::IsMSCodecsInstalled ())
+	if ((flags & MissingCodecs) && !Media::IsMSCodecsInstalled ()) {
+		// FIXME: PAL THIS
+#if defined(__APPLE__)
+		g_warning ("I'm running on our only pal and I dont know what to do.  Help me and I've fallen and I can't get up");
+#else
 		CodecDownloader::ShowUI (GetDeployment ()->GetSurface (), false);
+#endif
+	}
 
 	entry->PopulateMediaAttributes ();
 	SetProperties (media);

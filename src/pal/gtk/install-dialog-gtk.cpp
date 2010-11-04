@@ -25,7 +25,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "install-dialog.h"
+#include "install-dialog-gtk.h"
 #include "application.h"
 #include "network.h"
 #include "runtime.h"

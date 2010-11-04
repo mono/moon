@@ -61,9 +61,19 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.cpp 		\
 	plugin-class.g.cpp 		\
 	plugin-class.h			\
-	plugin-utils.cpp		\
+	plugin-utils.cpp
+
+if GTK_PAL
+libmoonplugin_la_SOURCES += \
 	../src/pal/gtk/windowless-gtk.cpp	\
 	../src/pal/gtk/windowless-gtk.h
+endif
+
+if COCOA_PAL
+libmoonplugin_la_SOURCES += \
+	../src/pal/cocoa/windowless-cocoa.m	\
+	../src/pal/cocoa/windowless-cocoa.h
+endif
 
 plugin.lo: plugin-spinner.h
 

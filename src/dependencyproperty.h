@@ -41,8 +41,8 @@ class DependencyProperty {
 	void Dispose ();
 	~DependencyProperty ();
 
-	int GetId () { return id; }
-	void SetId (int value) { id = value; }
+	int GetId () { return pid; }
+	void SetId (int value) { pid = value; }
 	
 	/* @GeneratePInvoke */
 	const char *GetName() { return name; }
@@ -103,7 +103,7 @@ class DependencyProperty {
 	static DependencyProperty *GetDependencyPropertyFull (Type *type, const char *name, bool inherits);
 
 private:
-	int id;
+	int pid;
 	
 	AutoCreator* autocreator; // invoked by AutoCreatePropertyValueProvider to create values
 	bool is_value_type;

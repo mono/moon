@@ -33,6 +33,8 @@
 #include "codec-url.h"
 #include "deployment.h"
 
+//FIXME: PAL THIS
+#if !defined(__APPLE__)
 namespace Moonlight {
 
 #define EULA_URL "http://go.microsoft.com/fwlink/?LinkId=149579"
@@ -555,3 +557,4 @@ CodecDownloader::Close ()
 
 
 };
+#endif

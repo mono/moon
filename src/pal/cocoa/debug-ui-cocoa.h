@@ -1,0 +1,30 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * debug-ui.h: debugging/inspection support for cocoa+
+ *
+ * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ *
+ */
+
+#ifndef __MOON_DEBUG_UI_H__
+#define __MOON_DEBUG_UI_H__
+
+#include "window-cocoa.h"
+
+using namespace Moonlight;
+
+G_BEGIN_DECLS
+
+void show_debug (MoonWindowCocoa *window);
+void show_sources (MoonWindowCocoa *window);
+void debug_info (MoonWindowCocoa *window);
+#if OBJECT_TRACKING
+void debug_media (MoonWindowCocoa *window);
+void dump_media_elements ();
+#endif
+
+G_END_DECLS
+
+#endif /* __MOON_DEBUG_UI_H__ */

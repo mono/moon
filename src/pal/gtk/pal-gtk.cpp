@@ -6,7 +6,7 @@
 #include "runtime.h"
 #include "window-gtk.h"
 #include "pixbuf-gtk.h"
-#include "install-dialog.h"
+#include "install-dialog-gtk.h"
 #include "im-gtk.h"
 #include "debug.h"
 

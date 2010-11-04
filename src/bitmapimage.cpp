@@ -420,7 +420,11 @@ BitmapImage::PixmapComplete ()
 	// http://blogs.msdn.com/silverlight_sdk/archive/2009/07/01/breaking-changes-document-errata-silverlight-3.aspx
 	// not clear if '3' channel is still supported (converted to 4) in SL3
 	if (pixbuf->GetNumChannels () == 4) {
-		SetBitmapData (premultiply_rgba (pixbuf), true);
+		if (pixbuf->IsPremultiplied ()) {
+			SetBitmapData (pixbuf->GetPixels (), true);
+		} else {
+			SetBitmapData (premultiply_rgba (pixbuf), true);
+		}
 	} else {
 		SetBitmapData (expand_rgb_to_argb (pixbuf), true);
 	}

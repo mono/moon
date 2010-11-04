@@ -103,20 +103,7 @@ MoonPixbufGtk::GetHeight ()
 }
 
 gint
-MoonPixbufGtk::GetRowStride ()
-{
-	if (crc_error)
-		return 4;
-	return gdk_pixbuf_get_rowstride (gdk_pixbuf);
-}
-
-gint
-MoonPixbufGtk::GetNumChannels ()
-{
-	if (crc_error)
-		return 4;
-	return gdk_pixbuf_get_n_channels (gdk_pixbuf);
-}
+MoonPixbufGtk::GetRow
 
 guchar*
 MoonPixbufGtk::GetPixels ()
@@ -124,6 +111,12 @@ MoonPixbufGtk::GetPixels ()
 	if (crc_error)
 		return (guchar *) g_malloc0 (4);
 	return gdk_pixbuf_get_pixels (gdk_pixbuf);
+}
+
+gboolean
+MoonPixbufGtk::IsPremultiplied ()
+{
+	return FALSE;
 }
 
 gpointer

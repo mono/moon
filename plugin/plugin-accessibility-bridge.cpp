@@ -15,7 +15,9 @@
 #define __PLUGIN_ACCESSIBILITY_BRIDGE_H__
 
 #include <config.h>
+#if PAL_GTK_A11Y
 #include <gdk/gdk.h>
+#endif
 
 #define INCLUDED_MONO_HEADERS 1
 

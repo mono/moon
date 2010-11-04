@@ -1,16 +1,16 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-#ifndef MOON_PIXBUF_GTK_H
-#define MOON_PIXBUF_GTK_H
+#ifndef MOON_PIXBUF_COCOA_H
+#define MOON_PIXBUF_COCOA_H
 
 #include "pal.h"
 
 namespace Moonlight {
 
-class MoonPixbufGtk : public MoonPixbuf {
+class MoonPixbufCocoa : public MoonPixbuf {
 public:
-	MoonPixbufGtk (GdkPixbuf *pixbuf, bool crc_error);
-	virtual ~MoonPixbufGtk ();
+	MoonPixbufCocoa (void *pixbuf, bool crc_error);
+	virtual ~MoonPixbufCocoa ();
 
 	virtual gint GetWidth ();
 	virtual gint GetHeight ();
@@ -22,24 +22,23 @@ public:
 	virtual gpointer GetPlatformPixbuf ();
 
 private:
-	bool crc_error;
-	GdkPixbuf *gdk_pixbuf;
+	void *image;
 };
 
-class MoonPixbufLoaderGtk : public MoonPixbufLoader {
+class MoonPixbufLoaderCocoa : public MoonPixbufLoader {
 public:
-	MoonPixbufLoaderGtk (const char *imageType);
-	MoonPixbufLoaderGtk ();
-	virtual ~MoonPixbufLoaderGtk ();
+	MoonPixbufLoaderCocoa (const char *imageType);
+	MoonPixbufLoaderCocoa ();
+	virtual ~MoonPixbufLoaderCocoa ();
 
 	virtual void Write (const guchar *buffer, int buflen, MoonError **error);
 	virtual void Close (MoonError **error);
 	virtual MoonPixbuf *GetPixbuf ();
 
 private:
-	GdkPixbufLoader *gdk_loader;
-	bool crc_error;
+	void *image;
+	void *data;
 };
 
 };
-#endif /* MOON_PIXBUF_GTK_H */
+#endif /* MOON_PIXBUF_COCOA_H */

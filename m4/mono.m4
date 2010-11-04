@@ -54,22 +54,27 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	MOON_ARG_ENABLED_BY_DEFAULT([desktop-support], [Disable support for Moonlight-based desktop applications])
 	desktop_support=$enableval
 	if test "x$desktop_support" = xyes; then
-		PKG_CHECK_MODULES(GTKSHARP, gtk-sharp-2.0)
+		if test "x$with_pal" = "xgtk"; then
+			PKG_CHECK_MODULES(GTKSHARP, gtk-sharp-2.0)
 
-		PKG_CHECK_MODULES(WNCKSHARP, wnck-sharp-1.0)
+			PKG_CHECK_MODULES(WNCKSHARP, wnck-sharp-1.0)
 
-		rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
-		for pc in $rsvg_sharp_pcs; do
-			PKG_CHECK_EXISTS($pc, [rsvg_sharp=$pc])
-		done
+			rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
+			for pc in $rsvg_sharp_pcs; do
+				PKG_CHECK_EXISTS($pc, [rsvg_sharp=$pc])
+			done
 
-		PKG_CHECK_MODULES(RSVGSHARP, $rsvg_sharp, [
-			RSVG_SHARP=$rsvg_sharp
-			AC_SUBST(RSVG_SHARP)
-			AM_CONDITIONAL(HAVE_RSVG_SHARP, true)
-		], [
+			PKG_CHECK_MODULES(RSVGSHARP, $rsvg_sharp, [
+				RSVG_SHARP=$rsvg_sharp
+				AC_SUBST(RSVG_SHARP)
+				AM_CONDITIONAL(HAVE_RSVG_SHARP, true)
+			], [
+				AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
+			])
+		elif test "x$with_pal" = "xcocoa"; then
+			dnl FIXME
 			AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
-		])
+		fi
 	else
 		AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
 	fi

@@ -14,7 +14,10 @@ endif
 
 #if !PLUGIN_INSTALL
 if INCLUDE_DESKTOP_MANAGED_CODE
-MONO_SUBDIRS += gtk man data
+MONO_SUBDIRS += man data
+if GTK_PAL
+MONO_SUBDIRS += gtk
+endif
 if INCLUDE_EXAMPLES
 MONO_EXAMPLES = examples
 endif

@@ -69,6 +69,7 @@ get_method_name_from_ip (void *ip)
 }
 #endif
 
+#if !defined(__APPLE__) && !defined(__OS_THAT_DOESNT_HATE_POSIX__)
 static char*
 get_method_from_ip (void *ip)
 {
@@ -746,6 +747,12 @@ void dump_frames (void)
 	//frames = NULL;
 #endif
 }
+#else
+void
+print_stack_trace (void)
+{
+}
+#endif
 
 #if SANITY
 
@@ -905,4 +912,4 @@ moonlight_install_signal_handlers ()
 }
 #endif /* SANITY */
 
-#endif /* DEBUG */
+#endif

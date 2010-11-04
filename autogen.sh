@@ -134,7 +134,7 @@ fi
 
 if test -d $srcdir/cairo; then
   echo Running cairo/autogen.sh ...
-  pixmandir=`readlink -f $0`
+  pixmandir=`readlink -n $0`
   pixmandir=`dirname $pixmandir`/pixman
 
   old_pkg=$PKG_CONFIG_PATH

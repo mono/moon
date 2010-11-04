@@ -33,7 +33,11 @@
 #include "deployment.h"
 #include "uri.h"
 #include "timemanager.h"
+#if PAL_GTK_WINDOWING
 #include "pal/gtk/windowless-gtk.h"
+#elif PAL_COCOA_WINDOWING
+#include "pal/cocoa/windowless-cocoa.h"
+#endif
 
 #ifdef DEBUG
 #define d(x) x
@@ -72,6 +76,12 @@ static MoonWindow *
 create_gtk_windowless (int width, int height, PluginInstance *forPlugin)
 {
 	return new MoonWindowlessGtk (width, height, forPlugin);
+}
+#elif PAL_COCOA_WINDOWING
+static MoonWindow *
+create_cocoa_windowless (int width, int height, PluginInstance *forPlugin)
+{
+	return new MoonWindowlessCocoa (width, height, forPlugin);
 }
 #endif
 
@@ -144,6 +154,8 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 		// FIXME add some ifdefs + runtime checks here
 #if PAL_GTK_WINDOWING
 		runtime_get_windowing_system()->SetWindowlessCtor (create_gtk_windowless);
+#elif PAL_COCOA_WINDOWING
+		runtime_get_windowing_system()->SetWindowlessCtor (create_cocoa_windowless);
 #else
 #error "no PAL windowing system"
 #endif

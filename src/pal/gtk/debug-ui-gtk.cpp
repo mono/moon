@@ -23,7 +23,7 @@
 #include "animation.h"
 #include "namescope.h"
 
-#include "debug-ui.h"
+#include "debug-ui-gtk.h"
 #include "utils.h"
 #include "uri.h"
 #include "grid.h"

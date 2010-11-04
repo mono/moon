@@ -40,6 +40,8 @@ MOON_NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, 
 	if (err != NPERR_NO_ERROR
 #if PAL_GTK_WINDOWING
 	    || toolkit != NPNVGtk2
+#elif PAL_COCOA_WINDOWING
+// What does NPN_GetValue give on osx?
 #else
 #error "no PAL windowing system"
 #endif
@@ -47,6 +49,8 @@ MOON_NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, 
 		g_warning ("It appears your browser does not support the compiled in PAL toolkit: "
 #if PAL_GTK_WINDOWING
 			   "GTK2"
+#elif PAL_COCOA_WINDOWING
+			   "Cococa"
 #else
 #error "no PAL backend windowing system"
 #endif

@@ -22,7 +22,7 @@
 #include "pipeline.h"
 #include "pipeline-ui.h"
 #include "timemanager.h"
-#include "debug-ui.h"
+#include "debug-ui-gtk.h"
 #include "consent.h"
 
 #define PLUGIN_OURNAME      "Novell Moonlight"

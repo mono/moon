@@ -189,6 +189,7 @@ public:
 	virtual gint GetRowStride () = 0;
 	virtual gint GetNumChannels () = 0;
 	virtual guchar *GetPixels () = 0;
+	virtual gboolean IsPremultiplied () = 0;
 	virtual gpointer GetPlatformPixbuf () = 0;
 	virtual ~MoonPixbuf () {}
 };

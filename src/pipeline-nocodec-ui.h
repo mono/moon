@@ -13,13 +13,16 @@
 #ifndef __MOON_PIPELINE_NOCODEC_UI_H__
 #define __MOON_PIPELINE_NOCODEC_UI_H__
 
-#include <gtk/gtkwidget.h>
-#include <gtk/gtk.h>
 #include <glib.h>
 
 #include "downloader.h"
 #include "runtime.h"
 #include "moonlightconfiguration.h"
+
+//FIXME: PAL THIS
+#if !defined(__APPLE__)
+#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 namespace Moonlight {
 
@@ -59,4 +62,6 @@ public:
 };
 
 };
+#endif
+
 #endif /* __MOON_PIPELINE_UI_H__ */

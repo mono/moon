@@ -18,11 +18,17 @@
 
 #include <glib/gstdio.h>
 
-#include <gtk/gtk.h>
-
 #include "openfile.h"
 #include "runtime.h"
 #include "deployment.h"
+
+/* I keep pushing this button, telling them I've fallen down
+ * they're supposed to be here when I can't get up, but
+ * no one comes
+ */
+// FIXME: PAL THIS
+#if !defined (__APPLE__)
+#include <gtk/gtk.h>
 
 namespace Moonlight {
 
@@ -101,5 +107,5 @@ isolated_storage_get_current_usage (const char* root)
 	return get_size (root);
 }
 
-
 };
+#endif

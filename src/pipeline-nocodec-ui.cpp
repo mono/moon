@@ -22,6 +22,8 @@
 #include "pipeline.h"
 #include "debug.h"
 
+//FIXME: PAL THIS
+#if !defined(__APPLE__)
 namespace Moonlight {
 
 bool CodecDownloader::running = false;
@@ -230,3 +232,4 @@ CodecDownloader::Close ()
 
 
 };
+#endif

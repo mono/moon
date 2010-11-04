@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la libmoon-static.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) $(LLVM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk -fPIC
+INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) $(LLVM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/@PAL@ -fPIC
 
 libmoon_include_headers = 	\
 	animation.h		\
@@ -88,11 +88,22 @@ libmoon_include_headers = 	\
 	pal/gtk/clipboard-gtk.h	\
 	pal/gtk/config-dialog-gtk.h\
 	pal/gtk/im-gtk.h	\
-	pal/gtk/install-dialog.h\
+	pal/gtk/install-dialog-gtk.h\
 	pal/gtk/pal-gtk.h	\
 	pal/gtk/pixbuf-gtk.h	\
 	pal/gtk/window-gtk.h	\
-	pal/gtk/debug-ui.h	\
+	pal/gtk/debug-ui-gtk.h	\
+	pal/cocoa/MLEvent.h	\
+	pal/cocoa/MLTimer.h	\
+	pal/cocoa/MLView.h		\
+	pal/cocoa/clipboard-cocoa.h	\
+	pal/cocoa/config-dialog-cocoa.h\
+	pal/cocoa/im-cocoa.h	\
+	pal/cocoa/install-dialog-cocoa.h\
+	pal/cocoa/pal-cocoa.h	\
+	pal/cocoa/pixbuf-cocoa.h	\
+	pal/cocoa/window-cocoa.h	\
+	pal/cocoa/debug-ui-cocoa.h	\
 	pal/messaging/glib/pal-glib-msg.h	\
 	pal/network/dbus/pal-dbus-network.h	\
 	pal/network/pal-linux-network.h	\
@@ -216,19 +227,6 @@ libmoon_la_SOURCES = 		\
 	openfile.cpp		\
 	pal/pal.cpp	\
 	pal/window.cpp		\
-	pal/capture/pal-linux-capture.cpp	\
-	pal/capture/v4l2/pal-v4l2-video-capture.cpp	\
-	pal/gtk/clipboard-gtk.cpp	\
-	pal/gtk/config-dialog-gtk.cpp\
-	pal/gtk/im-gtk.cpp	\
-	pal/gtk/install-dialog.cpp\
-	pal/gtk/pal-gtk.cpp	\
-	pal/gtk/pixbuf-gtk.cpp	\
-	pal/gtk/window-gtk.cpp	\
-	pal/gtk/debug-ui.cpp	\
-	pal/messaging/glib/pal-glib-msg.cpp	\
-	pal/network/dbus/pal-dbus-network.cpp	\
-	pal/network/pal-linux-network.cpp	\
 	panel.cpp		\
 	pipeline-asf.cpp	\
 	pipeline.cpp		\
@@ -283,6 +281,47 @@ libmoon_la_SOURCES = 		\
 	zip/ioapi.h		\
 	zip/unzip.c		\
 	zip/unzip.h
+
+
+if GTK_PAL
+libmoon_la_SOURCES += \
+	pal/gtk/clipboard-gtk.cpp	\
+	pal/gtk/config-dialog-gtk.cpp\
+	pal/gtk/im-gtk.cpp	\
+	pal/gtk/install-dialog-gtk.cpp\
+	pal/gtk/pal-gtk.cpp	\
+	pal/gtk/pixbuf-gtk.cpp	\
+	pal/gtk/window-gtk.cpp	\
+	pal/gtk/debug-ui-gtk.cpp
+
+# FIXME: This should be individually guarded ot the pal backends, not lumped with GTK
+libmoon_la_SOURCES += \
+	pal/capture/pal-linux-capture.cpp	\
+	pal/capture/v4l2/pal-v4l2-video-capture.cpp	\
+	pal/messaging/glib/pal-glib-msg.cpp	\
+	pal/network/dbus/pal-dbus-network.cpp	\
+	pal/network/pal-linux-network.cpp
+endif
+
+if COCOA_PAL
+libmoon_la_OBJCFLAGS = $(AM_OBJCFLAGS)
+libmoon_la_OBJCXXFLAGS = $(AM_OBJCXXFLAGS)
+
+libmoon_la_SOURCES += \
+	pal/cocoa/MLView.m		\
+	pal/cocoa/MLEvent.m	\
+	pal/cocoa/MLTimer.m	\
+	pal/cocoa/clipboard-cocoa.m	\
+	pal/cocoa/config-dialog-cocoa.m\
+	pal/cocoa/im-cocoa.m	\
+	pal/cocoa/install-dialog-cocoa.m\
+	pal/cocoa/pal-cocoa.m	\
+	pal/cocoa/pixbuf-cocoa.m	\
+	pal/cocoa/window-cocoa.m	\
+	pal/cocoa/debug-ui-cocoa.m
+endif
+
+
 
 if CODECS_SUPPORTED
 libmoon_la_SOURCES += pipeline-ui.cpp

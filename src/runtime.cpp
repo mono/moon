@@ -16,7 +16,9 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <string.h>
+#if HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 #include <math.h>
 
 #include "debug.h"
@@ -54,6 +56,8 @@
 #include "window.h"
 #if PAL_GTK_WINDOWING
 #include "pal-gtk.h"
+#elif PAL_COCOA_WINDOWING
+#include "pal-cocoa.h"
 #endif
 #if PAL_GLIB_MESSAGING
 #include "pal/messaging/glib/pal-glib-msg.h"
@@ -1473,7 +1477,10 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 	if (s->active_window == NULL)
 		return; /* no active window to render to */
 
+//FIXME: Should we really be depending on GDK here, or should locking be pal-ized?
+#if PAL_GTK_WINDOWING
 	GDK_THREADS_ENTER ();
+#endif
 	if (s->zombie) {
 		s->up_dirty->Clear (true);
 		s->down_dirty->Clear (true);
@@ -1489,7 +1496,10 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 		}
 	}
 
+//FIXME: Should we really be depending on GDK here, or should locking be pal-ized?
+#if PAL_GTK_WINDOWING
 	GDK_THREADS_LEAVE ();
+#endif
 
 	if (s->GetEnableFrameRateCounter () && s->fps_start == 0)
 		s->fps_start = get_now ();
@@ -2675,10 +2685,15 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brows
 	
 	inited = true;
 
+// FIXME: We have glib in the darwin pal:
+// 	#1: Why is this missing?
+// 	#2: Why is this not palized?
+#if PAL_GTK_WINDOWING
 	if (!g_type_inited) {
 		g_type_inited = true;
 		g_type_init ();
 	}
+#endif
 	
 	moonlight_flags = flags;
 
@@ -2686,6 +2701,9 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brows
 #if PAL_GTK_WINDOWING
 	windowing_system = new MoonWindowingSystemGtk (out_of_browser);
 	installer_service = new MoonInstallerServiceGtk ();
+#elif PAL_COCOA_WINDOWING
+	windowing_system = new MoonWindowingSystemCocoa (out_of_browser);
+	installer_service = new MoonInstallerServiceCocoa ();
 #else
 #error "no PAL windowing system defined"
 #endif
@@ -2693,13 +2711,13 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brows
 #if PAL_GLIB_MESSAGING
 	messaging_service = new MoonMessagingServiceGlib ();
 #else
-#error "no PAL messaging service defined"
+	g_warning ("This pal doesn't have a messaging service, you will crash, burn and die a fiery death.");
 #endif
 
 #if PAL_LINUX_CAPTURE
 	capture_service = new MoonCaptureServiceLinux ();
 #else
-#error "no PAL capture service defined"
+	g_warning ("This pal doesn't have a capture service, you will crash, burn and die a fiery death.");
 #endif
 
 #if PAL_LINUX_NETWORKAVAILABILITY
@@ -2707,7 +2725,7 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brows
 #elif PAL_DBUS_NETWORKAVAILABILITY
 	network_service = new MoonNetworkServiceDbus ();
 #else
-#error "no PAL network availability service defined"
+	g_warning ("This pal doesn't have a network service, you will crash, burn and die a fiery death.");
 #endif
 
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
