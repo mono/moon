@@ -39,6 +39,12 @@ namespace System.Windows.Input {
 		{
 		}
 
+		// Don't change the declaration order of these properties as it'll affect the output
+		// in drt 912.
+		public int PlatformKeyCode {
+			get { return NativeMethods.key_event_args_get_platform_key_code (NativeHandle); }
+		}
+
 		public bool Handled {
 			get { return EventHandled; }
 			set { EventHandled = value; }
@@ -46,10 +52,6 @@ namespace System.Windows.Input {
 
 		public Key Key {
 			get { return (Key) NativeMethods.key_event_args_get_key (NativeHandle); }
-		}
-
-		public int PlatformKeyCode {
-			get { return NativeMethods.key_event_args_get_platform_key_code (NativeHandle); }
 		}
 	}
 }
