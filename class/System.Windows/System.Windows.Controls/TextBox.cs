@@ -54,15 +54,6 @@ namespace System.Windows.Controls {
 			get; set;
 		}
 		
-		[MonoTODO]
-		public double BaselineOffset {
-			get {
-				Console.WriteLine ("System.Windows.Controls.TextBox.get_BaselineOffset: TODO");
-				//throw new NotImplementedException ();
-				return Double.NaN;
-			}
-		}
-
 		static TextBox ()
 		{
 			IsReadOnlyProperty.AddPropertyChangeCallback (IsReadOnlyChanged);

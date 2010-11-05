@@ -204,6 +204,8 @@ class TextLayout {
 	void ResetState ();
 	void Layout ();
 	
+	double GetBaselineOffset ();
+
 	double HorizontalAlignment (double line_width);
 	
 	TextLayoutLine *GetLineFromY (const Point &offset, double y, int *index = NULL);

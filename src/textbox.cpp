@@ -2420,13 +2420,15 @@ TextBoxBase::Redo ()
 // TextBoxDynamicPropertyValueProvider
 //
 
-class SelectionBrushDynamicPropertyValueProvider : public FrameworkElementProvider {
+class TextBoxBaseDynamicPropertyValueProvider : public FrameworkElementProvider {
 private:
 	int foreground_id;
 	int background_id;
+	int baseline_offset_id;
+
 	Value *selection_background;
 	Value *selection_foreground;
-
+	Value *baseline_offset;
 public:
 	virtual void RecomputePropertyValue (DependencyProperty *property, ProviderFlags flags, MoonError *error)
 	{
@@ -2441,19 +2443,22 @@ public:
 		FrameworkElementProvider::RecomputePropertyValue (property, flags, error);
 	}
 
-	SelectionBrushDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, int foregroundId, int backgroundId)
+	TextBoxBaseDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, int foregroundId, int backgroundId, int baselineOffsetId)
 		: FrameworkElementProvider (obj, precedence, ProviderFlags_RecomputesOnClear | ProviderFlags_RecomputesOnLowerPriorityChange)
 	{
 		foreground_id = foregroundId;
 		background_id = backgroundId;
+		baseline_offset_id = baselineOffsetId;
 		selection_background = NULL;
 		selection_foreground = NULL;
+		baseline_offset = NULL;
 	}
 	
-	virtual ~SelectionBrushDynamicPropertyValueProvider ()
+	virtual ~TextBoxBaseDynamicPropertyValueProvider ()
 	{
 		delete selection_background;
 		delete selection_foreground;
+		delete baseline_offset;
 	}
 	
 	virtual Value *GetPropertyValue (DependencyProperty *property)
@@ -2469,6 +2474,10 @@ public:
 			v = obj->GetValue (property, (PropertyPrecedence) (precedence + 1));
 			if (!v)
 				v = selection_foreground;
+		} else if (property->GetId () == baseline_offset_id) {
+			delete baseline_offset;
+			baseline_offset = new Value (((TextBoxBase*)obj)->view->GetBaselineOffset ());
+			v = baseline_offset;
 		}
 		return v ? v : FrameworkElementProvider::GetPropertyValue (property);
 	}
@@ -2483,10 +2492,11 @@ public:
 	}
 };
 
-class TextBoxDynamicPropertyValueProvider : public SelectionBrushDynamicPropertyValueProvider {
+class TextBoxDynamicPropertyValueProvider : public TextBoxBaseDynamicPropertyValueProvider {
 public:
 	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence )
-		: SelectionBrushDynamicPropertyValueProvider (obj, precedence, TextBox::SelectionForegroundProperty, TextBox::SelectionBackgroundProperty)
+		: TextBoxBaseDynamicPropertyValueProvider (obj, precedence,
+							   TextBox::SelectionForegroundProperty, TextBox::SelectionBackgroundProperty, TextBox::BaselineOffsetProperty)
 	{
 
 	}
@@ -2836,10 +2846,11 @@ TextBox::OnApplyTemplate ()
 // PasswordBoxDynamicPropertyValueProvider
 //
 
-class PasswordBoxDynamicPropertyValueProvider : public SelectionBrushDynamicPropertyValueProvider {
+class PasswordBoxDynamicPropertyValueProvider : public TextBoxBaseDynamicPropertyValueProvider {
  public:
 	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
-		: SelectionBrushDynamicPropertyValueProvider (obj, precedence, PasswordBox::SelectionForegroundProperty, PasswordBox::SelectionBackgroundProperty)
+		: TextBoxBaseDynamicPropertyValueProvider (obj, precedence,
+							   PasswordBox::SelectionForegroundProperty, PasswordBox::SelectionBackgroundProperty, PasswordBox::BaselineOffsetProperty)
 	{
 	}
 };
@@ -3460,6 +3471,19 @@ TextBoxView::Layout (Size constraint)
 	
 	layout->Layout ();
 	dirty = false;
+}
+
+double
+TextBoxView::GetBaselineOffset ()
+{
+	MoonError error;
+	GeneralTransform *from_view_to_rtb = GetTransformToUIElementWithError (textbox, &error);
+
+	Point p = from_view_to_rtb->Transform (Point (0,0));
+
+	from_view_to_rtb->unref ();
+
+	return layout->GetBaselineOffset () + p.y;
 }
 
 void

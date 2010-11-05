@@ -49,6 +49,8 @@ class TextBlock : public FrameworkElement, public ITextLayoutContainer {
 	
 	void Layout (Size constraint);
 	void Paint (cairo_t *cr);
+
+	void SetBaselineOffset (double offset);
 	
 	char *GetTextInternal (InlineCollection *inlines);
 	void SetTextInternal (const char *text);
@@ -70,6 +72,8 @@ class TextBlock : public FrameworkElement, public ITextLayoutContainer {
 	virtual ~TextBlock ();
 	
  public:
+	/* @PropertyType=double,ReadOnly,GenerateAccessors,ManagedFieldAccess=Private */
+	const static int BaselineOffsetProperty;
 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors,Validator=NonNullValidator */
 	const static int FontFamilyProperty;
 	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
@@ -129,6 +133,8 @@ class TextBlock : public FrameworkElement, public ITextLayoutContainer {
 	// ITextLayoutContainer interface
 	virtual void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args);
 	virtual void DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args);
+
+	double GetBaselineOffset ();
 	
 	void SetFontFamily (FontFamily *family);
 	FontFamily *GetFontFamily ();

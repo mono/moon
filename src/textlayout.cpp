@@ -636,6 +636,17 @@ TextLayout::GetActualExtents (double *width, double *height)
 	*width = actual_width;
 }
 
+double
+TextLayout::GetBaselineOffset ()
+{
+	if (lines->len == 0)
+		return 0;
+
+	TextLayoutLine *line = (TextLayoutLine*)lines->pdata[0];
+
+	return line->height + line->descend;
+}
+
 static int
 unichar_combining_class (gunichar c)
 {

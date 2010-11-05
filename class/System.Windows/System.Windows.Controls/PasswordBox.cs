@@ -54,15 +54,6 @@ namespace System.Windows.Controls
 			get; set;
 		}
 		
-		[MonoTODO()]
-		public double BaselineOffset {
-			get {
-				Console.WriteLine ("System.Windows.Controls.PasswordBox.get_BaselineOffset: TODO");
-				//throw new NotImplementedException ();
-				return Double.NaN;
-			}
-		}
-		
 		private new void Initialize ()
 		{
 			// FIXME: Should use Events.AddOnEventHandler or something similar.

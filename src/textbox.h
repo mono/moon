@@ -104,11 +104,13 @@ class TextBoxModelChangedEventArgs : public EventArgs {
 
 class TextBuffer;
 class TextBoxUndoStack;
+class TextBoxBaseDynamicPropertyValueProvider;
 
 /* @Namespace=None,ManagedEvents=Manual */
 class TextBoxBase : public Control, public ITextAttributes {
  protected:
 	friend class TextBoxView;
+	friend class TextBoxBaseDynamicPropertyValueProvider;
 	
 	DependencyObject *contentElement;
 	
@@ -360,6 +362,8 @@ class TextBox : public TextBoxBase {
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int AcceptsReturnProperty;
+	/* @PropertyType=double,ReadOnly,GenerateAccessors,ManagedFieldAccess=Private */
+	const static int BaselineOffsetProperty;
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
@@ -407,6 +411,9 @@ class TextBox : public TextBoxBase {
 	//
 	void SetAcceptsReturn (bool accept);
 	bool GetAcceptsReturn ();
+
+	void SetBaselineOffset (double offset);
+	double GetBaselineOffset ();
 	
 	void SetCaretBrush (Brush *caret);
 	virtual Brush *GetCaretBrush ();
@@ -490,6 +497,8 @@ class PasswordBox : public TextBoxBase {
 	// Protected Property Accessors
 	//
 	virtual const char *GetActualText () { return GetPassword (); }
+
+	void SetBaselineOffset (double offset);
 	
 	virtual void SetSelectedText (const char *text);
 	virtual const char *GetSelectedText ();
@@ -509,6 +518,8 @@ class PasswordBox : public TextBoxBase {
 	friend class MoonManagedFactory;
 	
  public:
+	/* @PropertyType=double,ReadOnly,GenerateAccessors,ManagedFieldAccess=Private */
+	const static int BaselineOffsetProperty;
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
@@ -541,6 +552,8 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Property Accesors
 	//
+	double GetBaselineOffset ();
+
 	void SetCaretBrush (Brush *caret);
 	virtual Brush *GetCaretBrush ();
 	
@@ -644,6 +657,8 @@ class TextBoxView : public FrameworkElement {
 	
 	void OnLostFocus ();
 	void OnGotFocus ();
+
+	double GetBaselineOffset ();
 	
 	//
 	// Property Accessors

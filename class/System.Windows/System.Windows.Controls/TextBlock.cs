@@ -49,15 +49,6 @@ namespace System.Windows.Controls {
 			((TextBlock) sender).RaiseUIATextChanged (args);
 		}
 		
-		[MonoTODO]
-		public double BaselineOffset {
-			get {
-				Console.WriteLine ("System.Windows.Controls.TextBlock.get_BaselineOffset: TODO");
-				//throw new NotImplementedException ();
-				return Double.NaN;
-			}
-		}
-		
 		#region UIA Events
 
 		internal event DependencyPropertyChangedEventHandler UIATextChanged;

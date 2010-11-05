@@ -38,6 +38,33 @@ static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
 #define utf8_linebreak_len 3
 
 
+class TextBlockDynamicPropertyValueProvider : public FrameworkElementProvider {
+	Value *baseline_offset_value;
+
+ public:
+	TextBlockDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, int flags = 0)
+		: FrameworkElementProvider (obj, precedence, flags)
+	{
+		baseline_offset_value = NULL;
+	}
+
+	virtual ~TextBlockDynamicPropertyValueProvider ()
+	{
+		delete baseline_offset_value;
+	}
+
+	virtual Value *GetPropertyValue (DependencyProperty *property)
+	{
+		if (property->GetId () == TextBlock::BaselineOffsetProperty) {
+			delete baseline_offset_value;
+			baseline_offset_value = new Value (((TextBlock*)obj)->layout->GetBaselineOffset());
+			return baseline_offset_value;
+		}
+
+		return FrameworkElementProvider::GetPropertyValue (property);
+	}
+};
+
 //
 // TextBlock
 //
@@ -57,6 +84,9 @@ TextBlock::TextBlock ()
 	setvalue = true;
 	was_set = false;
 	dirty = true;
+
+	delete providers.dynamicvalue;
+	providers.dynamicvalue = new TextBlockDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 }
 
 TextBlock::~TextBlock ()
