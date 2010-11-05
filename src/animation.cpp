@@ -499,7 +499,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 		}
 
 		if (!targetObject) {
-			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "No Target or TargetName has been specified");
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Animation target not specified.");
 			return false;
 		}
 
@@ -542,7 +542,7 @@ bool
 Storyboard::BeginWithError (MoonError *error)
 {
 	if (GetHadParent ()) {
-		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Operation is not allowed on a non-root Storyboard.");
 		return false;
 	}
 
@@ -1646,9 +1646,6 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 		value = col->GetValueAt (i - 1);
 		keyframe = value->AsKeyFrame ();
 		
-		if (!keyframe->resolved)
-			g_warning ("***** unresolved keyframe!");
-		
 		g_ptr_array_insert_sorted (col->sorted_list, KeyFrameComparer, keyframe);
 	}
 }
@@ -1656,18 +1653,22 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 // Generic validator of KeyFrameCollection's. Collection vallidates 
 // if all keyframes have valid time.
 static bool
-generic_keyframe_validator (KeyFrameCollection *col, MoonError *error)
+generic_keyframe_validator (Animation *animation, KeyFrameCollection *col, MoonError *error)
 {
 	KeyFrame *keyframe;
 	KeyTime *keytime;
 	Value *value;
-	int count = col->GetCount ();
+	int count;
+	
+	KeyFrameAnimation_ResolveKeyFrames (animation, col);
+	
+	count = col->GetCount ();
 
 	for (int i = 0; i < count; i++) {
 		value = col->GetValueAt (i);
 		keyframe = value->AsKeyFrame ();
 		keytime = keyframe->GetKeyTime ();
-		if (!keytime || !keytime->HasTimeSpan () || keytime->GetTimeSpan () < 0) {
+		if (!keyframe->resolved || keyframe->resolved_keytime < 0) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "KeyTime property on KeyFrame object must be set to a non-negative TimeSpan value.");
 			return false;
 		}
@@ -1790,7 +1791,7 @@ DoubleAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 bool
 DoubleAnimationUsingKeyFrames::Validate (MoonError *error)
 {
-	return generic_keyframe_validator (GetKeyFrames (), error);
+	return generic_keyframe_validator (this, GetKeyFrames (), error);
 }
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames ()
@@ -1904,7 +1905,7 @@ ColorAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyPrope
 bool
 ColorAnimationUsingKeyFrames::Validate (MoonError *error)
 {
-	return generic_keyframe_validator (GetKeyFrames (), error);
+	return generic_keyframe_validator (this, GetKeyFrames (), error);
 }
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames ()
@@ -2018,7 +2019,7 @@ PointAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyPrope
 bool
 PointAnimationUsingKeyFrames::Validate (MoonError *error)
 {
-	return generic_keyframe_validator (GetKeyFrames (), error);
+	return generic_keyframe_validator (this, GetKeyFrames (), error);
 }
 
 ObjectKeyFrameCollection::ObjectKeyFrameCollection ()
@@ -2198,7 +2199,7 @@ bool
 ObjectAnimationUsingKeyFrames::Validate (MoonError *error)
 {
 	// Interesting question -- should we check for null here?
-	return generic_keyframe_validator (GetKeyFrames (), error);
+	return generic_keyframe_validator (this, GetKeyFrames (), error);
 }
 
 };
