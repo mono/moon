@@ -21,7 +21,7 @@
 #include "eventargs.h"
 #include "thickness.h"
 #include "control.h"
-#include "layout.h"
+#include "textlayout.h"
 #include "brush.h"
 #include "fonts.h"
 #include "size.h"

@@ -310,6 +310,14 @@ Value::Value (FontSource source)
 	SetIsNull (false);
 }
 
+Value::Value (FontResource resource)
+{
+	Init ();
+	k = Type::FONTRESOURCE;
+	u.fontresource = new FontResource (resource);
+	SetIsNull (false);
+}
+
 Value::Value (PropertyPath propertypath)
 {
 	Init ();
@@ -677,6 +685,9 @@ Value::FreeValue ()
 			
 			g_free (u.fontsource);
 		}
+		break;
+	case Type::FONTRESOURCE:
+		delete u.fontresource;
 		break;
 	case Type::PROPERTYPATH:
 		if (u.propertypath) {

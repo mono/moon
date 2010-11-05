@@ -19,7 +19,10 @@
 #include "inputmethod.h"
 #include "textelement.h"
 #include "control.h"
-#include "layout.h"
+#include "richtextlayout.h"
+#include "textelement.h"
+#include "textpointer.h"
+#include "textselection.h"
 
 namespace Moonlight {
 
@@ -32,99 +35,6 @@ class ContentChangedEventArgs : public RoutedEventArgs {
 	/* @GeneratePInvoke */
 	ContentChangedEventArgs () { SetObjectType (Type::CONTENTCHANGEDEVENTARGS); }
 };
-
-/* @Namespace=None,ManagedDependencyProperties=Manual */
-class TextPointer : public DependencyObject {
- protected:
-	virtual ~TextPointer () {}
-	
-	/* @GeneratePInvoke */
-	TextPointer (int location, LogicalDirection direction) { SetObjectType (Type::TEXTPOINTER); SetLogicalDirection (direction); /* FIXME: location? */}
-
-	friend class MoonUnmanagedFactory;
-	friend class MoonManagedFactory;
-	
- public:
-	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	const static int IsAtInsertionPositionProperty;
-	/* @PropertyType=LogicalDirection,DefaultValue=LogicalDirectionForward,GenerateAccessors */
-	const static int LogicalDirectionProperty;
-	/* @PropertyType=DependencyObject,GenerateAccessors */
-	const static int ParentProperty;
-	
-	//
-	// Methods
-	//
-	/* @GeneratePInvoke */
-	int CompareTo (TextPointer *pointer);
-	/* @GeneratePInvoke */
-	Rect GetCharacterRect (LogicalDirection dir);
-	/* @GeneratePInvoke */
-	TextPointer *GetNextInsertionPosition (LogicalDirection dir);
-	/* @GeneratePInvoke */
-	TextPointer *GetPositionAtOffset (int offset, LogicalDirection dir);
-	
-	//
-	// Property Accessors
-	//
-	void SetIsAtInsertionPosition (bool value);
-	bool GetIsAtInsertionPosition ();
-	
-	void SetLogicalDirection (LogicalDirection dir);
-	LogicalDirection GetLogicalDirection ();
-	
-	void SetParent (DependencyObject *parent);
-	/* @GeneratePInvoke */
-	DependencyObject *GetParent ();
-};
-
-/* @Namespace=None,ManagedDependencyProperties=Manual */
-class TextSelection : public DependencyObject {
- protected:
-	virtual ~TextSelection () {}
-	
- public:
-	/* @PropertyType=TextPointer,GenerateAccessors */
-	const static int EndProperty;
-	/* @PropertyType=TextPointer,GenerateAccessors */
-	const static int StartProperty;
-	/* @PropertyType=string,GenerateAccessors */
-	const static int TextProperty;
-	/* @PropertyType=string,GenerateAccessors */
-	const static int XamlProperty;
-	
-	/* @GeneratePInvoke */
-	TextSelection ();
-	
-	//
-	// Methods
-	//
-	/* @GeneratePInvoke */
-	void ApplyPropertyValue (DependencyProperty *formatting, Value *value);
-	/* @GeneratePInvoke */
-	Value *GetPropertyValue (DependencyProperty *formatting);
-	/* @GeneratePInvoke */
-	void Insert (TextElement *element);
-	/* @GeneratePInvoke */
-	bool SelectWithError (TextPointer *anchor, TextPointer *cursor, MoonError *error);
-	bool Select (TextPointer *anchor, TextPointer *cursor);
-	
-	//
-	// Property Accessors
-	//
-	void SetStart (TextPointer *start);
-	TextPointer *GetStart ();
-	
-	void SetEnd (TextPointer *end);
-	TextPointer *GetEnd ();
-	
-	void SetText (const char *text);
-	const char *GetText ();
-	
-	void SetXaml (const char *xaml);
-	const char *GetXaml ();
-};
-
 
 enum RichTextBoxModelChangeType {
 	RichTextBoxModelChangedNothing,
@@ -158,7 +68,7 @@ class RichTextBoxView;
 
 /* @Namespace=System.Windows.Controls */
 /* @ContentProperty=Blocks */
-class RichTextBox : public Control {
+class RichTextBox : public Control, public IDocumentNode, public ITextAttributes {
 	friend class RichTextBoxDynamicPropertyValueProvider;
 	friend class RichTextBoxView;
 	friend class TextSelection;
@@ -167,12 +77,11 @@ class RichTextBox : public Control {
  protected:
 	DependencyObject *contentElement;
 	
-	Section *rootSection;
+	TextSelection *selection;
+	GPtrArray *text_pointers;
 
 	RichTextBoxUndoStack *undo;
 	RichTextBoxUndoStack *redo;
-	int selection_anchor;
-	int selection_cursor;
 	double cursor_offset;
 	RichTextBoxView *view;
 	MoonIMContext *im_ctx;
@@ -216,12 +125,12 @@ class RichTextBox : public Control {
 	// Cursor Navigation
 	//
 	double GetCursorOffset ();
-	int CursorDown (int cursor, bool page);
-	int CursorUp (int cursor, bool page);
-	int CursorLineBegin (int cursor);
-	int CursorLineEnd (int cursor, bool include = false);
-	int CursorNextWord (int cursor);
-	int CursorPrevWord (int cursor);
+	TextPointer CursorDown (const TextPointer& cursor, bool page);
+	TextPointer CursorUp (const TextPointer& cursor, bool page);
+	TextPointer CursorLineBegin (const TextPointer& cursor);
+	TextPointer CursorLineEnd (const TextPointer& cursor, bool include = false);
+	TextPointer CursorNextWord (const TextPointer& cursor);
+	TextPointer CursorPrevWord (const TextPointer& cursor);
 	
 	//
 	// Keyboard Input
@@ -257,13 +166,9 @@ class RichTextBox : public Control {
 	//
 	// Protected Property Accessors
 	//
-	bool HasSelectedText () { return selection_cursor != selection_anchor; }
+	bool HasSelectedText () { return false; /* FIXME */ }
 	//TextBuffer *GetBuffer () { return buffer; }
-	int GetCursor () { return selection_cursor; }
 	bool IsFocused () { return focused; }
-	
-	void SetBaselineOffset (double offset);
-	void SetSelection (TextSelection *selection);
 	
 	//
 	// Protected Events
@@ -281,16 +186,14 @@ class RichTextBox : public Control {
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int AcceptsReturnProperty;
-	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	/* @PropertyType=double,ReadOnly,GenerateAccessors,ManagedFieldAccess=Private */
 	const static int BaselineOffsetProperty;
-	/* @PropertyType=BlockCollection,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
 	const static int BlocksProperty;
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int CaretBrushProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;
-	/* @PropertyType=TextSelection,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
-	const static int SelectionProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
@@ -311,7 +214,23 @@ class RichTextBox : public Control {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnIsAttachedChanged (bool value);
 	virtual void OnApplyTemplate ();
-	
+
+	// IDocumentNode interface
+	virtual DependencyObjectCollection* GetDocumentChildren ();
+	virtual void AddTextPointer (TextPointer *pointer);
+	virtual void RemoveTextPointer (TextPointer *pointer);
+
+	virtual char* Serialize ();
+
+	//
+	// ITextAttributes Interface Methods
+	//
+	virtual TextFontDescription *FontDescription () { return NULL; }
+	virtual FlowDirection Direction () { return FlowDirectionLeftToRight; }
+	virtual TextDecorations Decorations () { return TextDecorationsNone; }
+	virtual Brush *Background (bool selected) { return NULL; }
+	virtual Brush *Foreground (bool selected) { return NULL; }
+
 	/* @GeneratePInvoke */
 	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
 	/* @GeneratePInvoke */
@@ -355,15 +274,20 @@ class RichTextBox : public Control {
 	//
 	/* @GeneratePInvoke */
 	void SelectAll ();
-	
+
+	/* @GeneratePInvoke */
+	TextSelection *GetSelection ();
+	void SetSelection (TextSelection *selection);
+
 	//
 	// Property Accessors
 	//
 	void SetAcceptsReturn (bool accept);
 	bool GetAcceptsReturn ();
 	
+	void SetBaselineOffset (double offset);
 	double GetBaselineOffset ();
-	
+
 	void SetBlocks (BlockCollection *blocks);
 	BlockCollection *GetBlocks ();
 	
@@ -376,8 +300,6 @@ class RichTextBox : public Control {
 	void SetIsReadOnly (bool readonly);
 	bool GetIsReadOnly ();
 	
-	TextSelection *GetSelection ();
-	
 	void SetTextAlignment (TextAlignment alignment);
 	TextAlignment GetTextAlignment ();
 	
@@ -389,7 +311,11 @@ class RichTextBox : public Control {
 	
 	void SetXaml (const char *xaml);
 	const char *GetXaml ();
-	
+
+	Rect GetCharacterRect (TextPointer *tp, LogicalDirection direction);
+
+	RichTextBoxView *GetView () { return view; }
+
 	//
 	// Events
 	//
@@ -405,7 +331,7 @@ class RichTextBox : public Control {
 class RichTextBoxView : public FrameworkElement {
 	RichTextBox *textbox;
 	glong blink_timeout;
-	TextLayout *layout;
+	RichTextLayout *layout;
 	Rect cursor;
 	
 	int selection_changed:1;
@@ -419,7 +345,7 @@ class RichTextBoxView : public FrameworkElement {
 	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
 	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
-	
+
 	// RichTextBox events
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnModelChanged (RichTextBoxModelChangedEventArgs *args);
@@ -453,6 +379,9 @@ class RichTextBoxView : public FrameworkElement {
 	friend class MoonManagedFactory;
 	
  public:
+ 	/* @PropertyType=UIElementCollection,AutoCreator=RichTextBoxView::CreateChildren,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int ChildrenProperty;
+
 	//
 	// Overrides
 	//
@@ -466,15 +395,24 @@ class RichTextBoxView : public FrameworkElement {
 	// Methods
 	//
 	int GetLineCount () { return layout->GetLineCount (); }
-	TextLayoutLine *GetLineFromY (double y, int *index = NULL);
-	TextLayoutLine *GetLineFromIndex (int index);
+	RichTextLayoutLine *GetLineFromY (double y, int *index = NULL);
+	RichTextLayoutLine *GetLineFromIndex (int index);
 	
-	int GetCursorFromXY (double x, double y);
+	TextPointer GetLocationFromXY (double x, double y);
+	Rect GetCharacterRect (TextPointer *tp, LogicalDirection direction);
 	Rect GetCursor () { return cursor; }
 	
 	void OnLostFocus ();
 	void OnGotFocus ();
-	
+
+	void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+
+	double GetBaselineOffset ();
+
+	// ITextLayoutContainer interface
+	void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args);
+	void DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args);
+
 	//
 	// Property Accessors
 	//
@@ -483,6 +421,12 @@ class RichTextBoxView : public FrameworkElement {
 	
 	bool GetEnableCursor () { return enable_cursor ? true : false; }
 	void SetEnableCursor (bool enable);
+
+	void SetChildren (UIElementCollection *children);
+	UIElementCollection *GetChildren ();
+
+	// Autocreator for the Children property
+	static Value *CreateChildren (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 };
 
 };

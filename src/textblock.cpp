@@ -50,7 +50,6 @@ TextBlock::TextBlock ()
 	
 	downloaders = g_ptr_array_new ();
 	layout = new TextLayout ();
-	font_resource = NULL;
 	source = NULL;
 	
 	actual_height = 0.0;
@@ -67,6 +66,42 @@ TextBlock::~TextBlock ()
 	
 	delete layout;
 	delete font;
+}
+
+void
+TextBlock::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args)
+{
+	if (!setvalue)
+		return;
+
+	if (args->GetId () != Inline::ForegroundProperty) {
+		if (args->GetId () == Run::TextProperty) {
+			// update our TextProperty
+			setvalue = false;
+			SetValue (TextBlock::TextProperty, Value (GetTextInternal (GetInlines()), true));
+			setvalue = true;
+			
+			UpdateLayoutAttributes ();
+		}
+		
+		// All non-Foreground property changes require
+		// recalculating layout which can change the bounds.
+		InvalidateMeasure ();
+		InvalidateArrange ();
+		UpdateBounds (true);
+		dirty = true;
+	} else {
+		// A simple Foreground brush change does not require
+		// recalculating layout. Invalidate() and we're done.
+	}
+	
+	Invalidate ();
+}
+
+void
+TextBlock::DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args)
+{
+	// how do we deal with this?  do we need to?
 }
 
 bool
@@ -108,10 +143,8 @@ TextBlock::CleanupDownloaders (bool all)
 		source = NULL;
 	}
 	
-	if (all) {
-		delete font_resource;
-		font_resource = NULL;
-	}
+	if (all)
+		ClearValue (FontResourceProperty);
 }
 
 void
@@ -137,7 +170,8 @@ TextBlock::SetFontSource (Downloader *downloader)
 	source = downloader;
 	
 	if (downloader) {
-		font_resource = new FontResource (downloader->GetUri ()->ToString ());
+		FontResource resource (downloader->GetUri ()->ToString ());
+		SetFontResource (&resource);
 		AddFontSource (downloader);
 		return;
 	}
@@ -296,7 +330,6 @@ TextBlock::UpdateLayoutAttributes ()
 		int inlines_count = inlines->GetCount ();
 		for (int i = 0; i < inlines_count; i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-			item->UpdateFontDescription (font_resource, false);
 			
  			switch (item->GetObjectType ()) {
 			case Type::RUN:
@@ -335,7 +368,7 @@ TextBlock::UpdateFontDescription (bool force)
 	FontFamily *family = GetFontFamily ();
 	bool changed = false;
 	
-	if (font->SetResource (font_resource))
+	if (font->SetResource (GetFontResource()))
 		changed = true;
 	
 	if (font->SetFamily (family ? family->source : NULL))
@@ -375,18 +408,6 @@ TextBlock::UpdateFontDescriptions (bool force)
 	Inline *item;
 	
 	changed = UpdateFontDescription (force);
-	
-	if (inlines != NULL) {
-		int inlines_count = inlines->GetCount ();
-		for (int i = 0; i < inlines_count; i++) {
-			item = inlines->GetValueAt (i)->AsInline ();
-			if (item->UpdateFontDescription (font_resource, force))
-				changed = true;
-		}
-		
-		if (changed)
-			layout->ResetState ();
-	}
 	
 	if (changed) {
 		InvalidateMeasure ();
@@ -654,18 +675,20 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// FIXME: ideally we'd remove the old item from the cache (or,
 		// rather, 'unref' it since some other textblocks/boxes might
 		// still be using it).
-		delete font_resource;
-		font_resource = NULL;
 		
 		if (fs != NULL) {
 			switch (fs->type) {
 			case FontSourceTypeManagedStream:
-				font_resource = manager->AddResource (fs->source.stream);
+				SetFontResource (manager->AddResource (fs->source.stream));
 				break;
 			case FontSourceTypeGlyphTypeface:
-				font_resource = new FontResource (fs->source.typeface);
+				FontResource resource (fs->source.typeface);
+				SetFontResource (&resource);
 				break;
 			}
+		}
+		else {
+			ClearValue (FontResourceProperty);
 		}
 		
 		UpdateFontDescriptions (true);
@@ -724,46 +747,6 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	InvalidateMeasure ();
 	InvalidateArrange ();
 	UpdateBounds (true);
-	Invalidate ();
-}
-
-void
-TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
-{
-	if (!setvalue)
-		return;
-
-	if (!PropertyHasValueNoAutoCreate (TextBlock::InlinesProperty, col)) {
-		FrameworkElement::OnCollectionItemChanged (col, obj, args);
-		return;
-	}
-	
-	InlineCollection *inlines = GetInlines ();
-	
-	if (args->GetId () != Inline::ForegroundProperty) {
-		if (args->GetId () == Run::TextProperty) {
-			// update our TextProperty
-			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
-			setvalue = true;
-			
-			UpdateLayoutAttributes ();
-		} else {
-			// likely a font property change...
-			((Inline *) obj)->UpdateFontDescription (font_resource, true);
-		}
-		
-		// All non-Foreground property changes require
-		// recalculating layout which can change the bounds.
-		InvalidateMeasure ();
-		InvalidateArrange ();
-		UpdateBounds (true);
-		dirty = true;
-	} else {
-		// A simple Foreground brush change does not require
-		// recalculating layout. Invalidate() and we're done.
-	}
-	
 	Invalidate ();
 }
 

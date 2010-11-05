@@ -25,7 +25,7 @@
 #include "fontweight.h"
 #include "moon-path.h"
 #include "thickness.h"
-#include "layout.h"
+#include "textlayout.h"
 #include "brush.h"
 #include "fonts.h"
 

@@ -174,6 +174,12 @@ Collection::IndexOf (Value *value)
 	return -1;
 }
 
+int
+Collection::IndexOf (Value value)
+{
+	return IndexOf (&value);
+}
+
 bool
 Collection::Insert (int index, Value value)
 {
@@ -434,6 +440,13 @@ Collection::CanAdd (Value *value)
 DependencyObjectCollection::DependencyObjectCollection ()
 {
 	SetObjectType (Type::DEPENDENCY_OBJECT_COLLECTION);
+	sets_parent = true;
+}
+
+DependencyObjectCollection::DependencyObjectCollection (bool sets_parent)
+{
+	SetObjectType (Type::DEPENDENCY_OBJECT_COLLECTION);
+	this->sets_parent = sets_parent;
 }
 
 DependencyObjectCollection::~DependencyObjectCollection ()
@@ -465,16 +478,18 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 	obj->SetMentor (GetMentor ());
 	DependencyObject *parent = obj->GetParent();
 
-	if (parent) {
-		if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
-			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
-			return false;
+	if (sets_parent) {
+		if (parent) {
+			if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
+				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
+				return false;
+			}
 		}
-	}
-	else {
-		obj->SetParent (this, error);
-		if (error->number)
-			return false;
+		else {
+			obj->SetParent (this, error);
+			if (error->number)
+				return false;
+		}
 	}
 
 	obj->AddPropertyChangeListener (this);
@@ -484,7 +499,7 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 	bool rv = Collection::AddedToCollection (value, error);
 	obj->SetIsAttached (rv && IsAttached ());
 	
-	if (!rv && parent == NULL) {
+	if (sets_parent && !rv && parent == NULL) {
 		/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
 		obj->SetParent (NULL, error);
 	}
@@ -500,7 +515,8 @@ DependencyObjectCollection::RemovedFromCollection (Value *value, bool is_value_s
 
 		if (obj) {
 			obj->RemovePropertyChangeListener (this);
-			obj->SetParent (NULL, NULL);
+			if (sets_parent)
+				obj->SetParent (NULL, NULL);
 			obj->SetMentor (NULL);
 			obj->SetIsAttached (false);
 		}
@@ -607,6 +623,13 @@ InlineCollection::Equals (InlineCollection *inlines)
 //
 
 UIElementCollection::UIElementCollection ()
+{
+	SetObjectType (Type::UIELEMENT_COLLECTION);
+	z_sorted = g_ptr_array_new ();
+}
+
+UIElementCollection::UIElementCollection (bool sets_parent)
+	: DependencyObjectCollection (sets_parent)
 {
 	SetObjectType (Type::UIELEMENT_COLLECTION);
 	z_sorted = g_ptr_array_new ();

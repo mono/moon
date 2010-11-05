@@ -774,7 +774,7 @@ TextFontDescription::GetResource () const
 }
 
 bool
-TextFontDescription::SetResource (const FontResource *resource)
+TextFontDescription::SetResource (FontResource *resource)
 {
 	bool changed;
 	
@@ -784,7 +784,7 @@ TextFontDescription::SetResource (const FontResource *resource)
 				changed = false;
 			} else {
 				delete this->resource;
-				this->resource = new FontResource (resource);
+				this->resource = new FontResource (*resource);
 				changed = true;
 			}
 		} else {
@@ -794,7 +794,7 @@ TextFontDescription::SetResource (const FontResource *resource)
 		}
 	} else {
 		if (resource) {
-			this->resource = new FontResource (resource);
+			this->resource = new FontResource (*resource);
 			changed = true;
 		} else {
 			changed = false;

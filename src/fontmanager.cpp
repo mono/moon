@@ -1260,15 +1260,15 @@ font_face_destroy (gpointer data)
 // FontResource
 //
 
-FontResource::FontResource (const FontResource *resource)
+FontResource::FontResource (const FontResource& resource)
 {
-	type = resource->type;
+	type = resource.type;
 	switch (type) {
 	case FontResourceTypeGlyphTypeface:
-		this->resource.typeface = new GlyphTypeface (resource->resource.typeface);
+		this->resource.typeface = new GlyphTypeface (resource.resource.typeface);
 		break;
 	case FontResourceTypeResourceId:
-		this->resource.id = g_strdup (resource->resource.id);
+		this->resource.id = g_strdup (resource.resource.id);
 		break;
 	}
 }

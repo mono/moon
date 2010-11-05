@@ -984,6 +984,7 @@ class Generator {
 		headers.Add ("provider.h");
 		headers.Add ("color.h");
 		headers.Add ("managedtypeinfo.h");
+		headers.Add ("fontmanager.h");
 		foreach (FieldInfo field in fields) {
 			string h;
 			if (string.IsNullOrEmpty (field.Header))
@@ -2165,8 +2166,6 @@ class Generator {
 		f ("System.Windows.FontStretch", "FONTSTRETCH");
 		f ("System.Windows.FontWeight", "FONTWEIGHT");
 		f ("System.Windows.FontStyle", "FONTSTYLE");
-		f ("System.Windows.Documents.TextSelection", "TEXTSELECTION");
-		f ("System.Windows.Documents.TextPointer", "TEXTPOINTER");
 		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
 		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
 		f ("System.Windows.Input.Cursor", "CURSORTYPE");

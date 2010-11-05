@@ -17,6 +17,7 @@
 #include "dependencyobject.h"
 #include "keyboard.h"
 #include "enums.h"
+#include "size.h"
 #include "pal.h"
 #include "error.h"
 
@@ -627,6 +628,37 @@ class CheckAndDownloadUpdateCompletedEventArgs : public EventArgs {
 	/* @GeneratePInvoke */
 	const char *GetError () { return error; }
 };
+
+/* @Namespace=None */
+class SizeChangedEventArgs : public RoutedEventArgs {
+	Size prev_size;
+	Size new_size;
+
+protected:
+	/* @GeneratePInvoke */
+	SizeChangedEventArgs ();
+
+	virtual ~SizeChangedEventArgs () {}
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+	
+public:
+	/* @SkipFactories */
+	SizeChangedEventArgs (Size prev_size, Size new_size);
+	
+	Size GetPrevSize () { return prev_size; }
+	Size GetNewSize () { return new_size; }
+};
+
+G_BEGIN_DECLS
+
+/* @GeneratePInvoke */
+void                  size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size);
+/* @GeneratePInvoke */
+void                  size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size);
+
+G_END_DECLS
 
 };
 #endif /* __EVENTARGS_H__ */

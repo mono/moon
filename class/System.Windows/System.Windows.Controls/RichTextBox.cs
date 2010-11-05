@@ -55,6 +55,12 @@ namespace System.Windows.Controls {
 			NativeMethods.rich_text_box_on_key_down (native, e.NativeHandle);
 		}
 
+		internal override void PostOnKeyDown (KeyEventArgs k)
+		{
+			base.PostOnKeyDown (k);
+			NativeMethods.rich_text_box_post_on_key_down (native, k.NativeHandle);
+		}
+
 		protected override void OnKeyUp (KeyEventArgs e)
 		{
 			base.OnKeyUp (e);
@@ -135,18 +141,28 @@ namespace System.Windows.Controls {
 
 		public TextPointer GetPositionFromPoint (Point point)
 		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_position_from_point (native, point), true) as TextPointer;
+			IntPtr tp = NativeMethods.rich_text_box_get_position_from_point (native, point);
+			return tp == IntPtr.Zero ? null : new TextPointer (tp);
+		}
+
+		public TextSelection Selection {
+			get {
+				IntPtr ts = NativeMethods.rich_text_box_get_selection (native);
+				return ts == IntPtr.Zero ? null : new TextSelection (ts);
+			}
 		}
 
 		public TextPointer ContentStart {
 			get {
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_content_start (native), true) as TextPointer;
+				IntPtr tp = NativeMethods.rich_text_box_get_content_start (native);
+				return tp == IntPtr.Zero ? null : new TextPointer (tp);
 			}
 		}
 
 		public TextPointer ContentEnd {
 			get {
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.rich_text_box_get_content_end (native), true) as TextPointer;
+				IntPtr tp = NativeMethods.rich_text_box_get_content_end (native);
+				return tp == IntPtr.Zero ? null : new TextPointer (tp);
 			}
 		}
 	}

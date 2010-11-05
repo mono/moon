@@ -13,7 +13,6 @@
 
 #include <math.h>
 #include <glib.h>
-#include "eventargs.h"
 #include "thickness.h"
 
 namespace Moonlight {
@@ -87,37 +86,6 @@ struct Size {
 	//
 	static bool FromStr (const char *s, Size *size);
 };
-
-/* @Namespace=None */
-class SizeChangedEventArgs : public RoutedEventArgs {
-	Size prev_size;
-	Size new_size;
-
-protected:
-	/* @GeneratePInvoke */
-	SizeChangedEventArgs ();
-
-	virtual ~SizeChangedEventArgs () {}
-
-	friend class MoonUnmanagedFactory;
-	friend class MoonManagedFactory;
-	
-public:
-	/* @SkipFactories */
-	SizeChangedEventArgs (Size prev_size, Size new_size);
-	
-	Size GetPrevSize () { return prev_size; }
-	Size GetNewSize () { return new_size; }
-};
-
-G_BEGIN_DECLS
-
-/* @GeneratePInvoke */
-void                  size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size);
-/* @GeneratePInvoke */
-void                  size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size);
-
-G_END_DECLS
 
 };
 #endif /* __MOON_POINT_H__ */

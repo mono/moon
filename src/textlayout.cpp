@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * layout.cpp: 
+ * textlayout.cpp: 
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -17,7 +17,7 @@
 #include <math.h>
 
 #include "moon-path.h"
-#include "layout.h"
+#include "textlayout.h"
 #include "debug.h"
 
 namespace Moonlight {
@@ -336,8 +336,10 @@ TextLayout::SetTextAlignment (TextAlignment align)
 		return false;
 	
 	alignment = align;
-	
-	return false;
+
+	ResetState ();
+
+	return true;
 }
 
 bool
@@ -2339,5 +2341,6 @@ TextLayout::GetCursor (const Point &offset, int index)
 	
 	return Rect (x0, y0, 1.0, height);
 }
+
 
 };

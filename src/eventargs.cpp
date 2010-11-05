@@ -662,4 +662,36 @@ CheckAndDownloadUpdateCompletedEventArgs::~CheckAndDownloadUpdateCompletedEventA
 	g_free (error);
 }
 
+//
+// SizeChangedEventArgs
+//
+
+SizeChangedEventArgs::SizeChangedEventArgs()
+{
+	SetObjectType(Type::SIZECHANGEDEVENTARGS);
+	prev_size = Size (); new_size = Size ();
+}
+
+SizeChangedEventArgs::SizeChangedEventArgs (Size prev_size, Size new_size)
+{
+	SetObjectType(Type::SIZECHANGEDEVENTARGS);
+	this->prev_size = prev_size;
+	this->new_size = new_size;
+
+	EnsureManagedPeer ();
+}
+
+void
+size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, Size *prev_size)
+{
+	*prev_size = args->GetPrevSize ();
+}
+
+void
+size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, Size *new_size)
+{
+	*new_size = args->GetNewSize ();
+}
+
+
 };

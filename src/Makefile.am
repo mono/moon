@@ -61,7 +61,6 @@ libmoon_include_headers = 	\
 	inputmethod.h		\
 	inputscope.h		\
 	keyboard.h		\
-	layout.h		\
 	layoutinformation.h	\
 	libmoon.h		\
 	list.h			\
@@ -125,6 +124,7 @@ libmoon_include_headers = 	\
 	region.h		\
 	resources.h		\
 	richtextbox.h		\
+	richtextlayout.h	\
 	runtime.h		\
 	security.h		\
 	shape.h			\
@@ -138,7 +138,10 @@ libmoon_include_headers = 	\
 	textblock.h		\
 	textbox.h		\
 	textelement.h		\
+	textlayout.h		\
 	textoptions.h		\
+	textpointer.h		\
+	textselection.h		\
 	thickness.h		\
 	tilesource.h		\
 	timeline.h		\
@@ -207,7 +210,6 @@ libmoon_la_SOURCES = 		\
 	http-streaming.cpp	\
 	imagesource.cpp		\
 	keyboard.cpp		\
-	layout.cpp		\
 	layoutinformation.cpp	\
 	list.cpp		\
 	managedtypeinfo.cpp	\
@@ -242,6 +244,7 @@ libmoon_la_SOURCES = 		\
 	region.cpp		\
 	resources.cpp		\
 	richtextbox.cpp		\
+	richtextlayout.cpp	\
 	runtime.cpp		\
 	security.cpp		\
 	shape.cpp		\
@@ -255,6 +258,9 @@ libmoon_la_SOURCES = 		\
 	textblock.cpp		\
 	textbox.cpp		\
 	textelement.cpp		\
+	textlayout.cpp		\
+	textpointer.cpp		\
+	textselection.cpp	\
 	thickness.cpp		\
 	tilesource.cpp		\
 	timeline.cpp		\

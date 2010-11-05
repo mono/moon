@@ -546,8 +546,6 @@ namespace Mono {
 			case Kind.TEXTBOX: return new TextBox (raw, false);
 			case Kind.TEXTBOXVIEW: return new TextBoxView (raw, false);
 			case Kind.TEXTCHANGEDEVENTARGS: return new TextChangedEventArgs (raw);
-			case Kind.TEXTPOINTER: return new TextPointer (raw, false);
-			case Kind.TEXTSELECTION: return new TextSelection (raw, false);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw, false);
 			case Kind.TIMELINEMARKER: return new TimelineMarker (raw, false);
 			case Kind.TIMELINEMARKER_COLLECTION: return new TimelineMarkerCollection (raw, false);

@@ -98,7 +98,7 @@ class TextFontDescription {
 	TextFont *GetFont ();
 	void Reload ();
 	
-	bool SetResource (const FontResource *resource);
+	bool SetResource (FontResource *resource);
 	const FontResource *GetResource () const;
 	
 	bool SetFamily (const char *family);

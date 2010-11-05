@@ -26,6 +26,7 @@ namespace Moonlight {
 
 struct FontFamily;
 struct FontSource;
+struct FontResource;
 struct FontWeight;
 struct FontStyle;
 struct FontStretch;
@@ -92,6 +93,7 @@ public:
 	Value (FontWeight weight);
 	Value (FontStyle style);
 	Value (FontStretch stretch);
+	Value (FontResource source);
 	Value (PropertyPath propertypath);
 	Value (Point pt);
 	Value (Rect rect);
@@ -162,6 +164,7 @@ public:
 	FontStyle*	AsFontStyle () const	    { checked_get_exact (Type::FONTSTYLE, NULL, u.fontstyle); }
 	FontStretch*	AsFontStretch() const       { checked_get_exact (Type::FONTSTRETCH, NULL, u.fontstretch); }
 	FontSource*	AsFontSource ()	const       { checked_get_exact (Type::FONTSOURCE, NULL, u.fontsource); }
+	FontResource*	AsFontResource() const      { checked_get_exact (Type::FONTRESOURCE, NULL, u.fontresource); }
 	PropertyPath*	AsPropertyPath () const	    { checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
 	char*		AsString () const	    { checked_get_exact (Type::STRING, NULL, u.s); }
 	DependencyProperty* AsDependencyProperty () const { checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
@@ -218,6 +221,7 @@ public:
 		FontWeight *fontweight;
 		FontStretch *fontstretch;
 		FontStyle *fontstyle;
+		FontResource *fontresource;
 		PropertyPath *propertypath;
 		RepeatBehavior *repeat;
 		Duration *duration;

@@ -32,81 +32,33 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Windows.Documents {
-	public class TextPointer : INativeDependencyObjectWrapper {
-		bool free_mapping;
-		IntPtr native;
+	public class TextPointer {
+		internal IntPtr native;
 
-		private static readonly DependencyProperty IsAtInsertionPositionProperty =
-			DependencyProperty.Lookup (Kind.TEXTPOINTER, "IsAtInsertionPosition", typeof (bool));
-
-		private static readonly DependencyProperty LogicalDirectionProperty =
-			DependencyProperty.Lookup (Kind.TEXTPOINTER, "LogicalDirection", typeof (LogicalDirection));
-
-		internal TextPointer (IntPtr raw, bool dropref)
+		internal TextPointer (IntPtr raw)
 		{
-			NativeHandle = raw;
-			if (dropref)
-				NativeMethods.event_object_unref (raw);
-		}
-		
-		internal void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
+			IsAtInsertionPosition = NativeMethods.text_pointer_get_is_at_insertion_position (raw);
+			LogicalDirection = NativeMethods.text_pointer_get_logical_direction (raw);
+			Parent = NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_parent (raw)) as DependencyObject;
+
+			native = raw;
 		}
 		
 		~TextPointer ()
 		{
-			Free ();
-		}
-		
-		internal IntPtr NativeHandle {
-			get { return native; }
-			set {
-				if (native != IntPtr.Zero) {
-					throw new InvalidOperationException ("TextPointer.native is already set");
-				}
-				
-				native = value;
-				
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-			}
-		}
-		
-		IntPtr INativeEventObjectWrapper.NativeHandle {
-			get { return NativeHandle; }
-			set { NativeHandle = value; }
-		}
-		
-		Kind INativeEventObjectWrapper.GetKind ()
-		{
-			return Deployment.Current.Types.TypeToKind (GetType ());
+			NativeMethods.text_pointer_free (native);
 		}
 
-		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
-		{
-		}
-
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-		
 		public bool IsAtInsertionPosition {
-			get { return (bool)((INativeDependencyObjectWrapper)this).GetValue (IsAtInsertionPositionProperty); }
+			get; private set;
 		}
 
 		public LogicalDirection LogicalDirection {
-			get { return (LogicalDirection)((INativeDependencyObjectWrapper)this).GetValue (LogicalDirectionProperty); }
+			get; private set;
 		}
 
 		public DependencyObject Parent {
-			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_parent (native)) as DependencyObject; }
+			get; private set;
 		}
 
 		public int CompareTo (TextPointer position)
@@ -114,7 +66,7 @@ namespace System.Windows.Documents {
 			if (position == null)
 				throw new ArgumentNullException ("position");
 
-			return NativeMethods.text_pointer_compare_to (native, position.NativeHandle);
+			return NativeMethods.text_pointer_compare_to (native, position.native);
 		}
 
 		public Rect GetCharacterRect (LogicalDirection direction)
@@ -124,12 +76,14 @@ namespace System.Windows.Documents {
 
 		public TextPointer GetNextInsertionPosition (LogicalDirection direction)
 		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_next_insertion_position (native, direction)) as TextPointer;
+			IntPtr tp = NativeMethods.text_pointer_get_next_insertion_position (native, direction);
+			return tp == IntPtr.Zero ? null : new TextPointer (tp);
 		}
 
 		public TextPointer GetPositionAtOffset (int offset, LogicalDirection direction)
 		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.text_pointer_get_position_at_offset (native, offset, direction)) as TextPointer;
+			IntPtr tp = NativeMethods.text_pointer_get_position_at_offset (native, offset, direction);
+			return tp == IntPtr.Zero ? null : new TextPointer (tp);
 		}
 	}
 }

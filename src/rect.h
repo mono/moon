@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include "point.h"
+#include "size.h"
 #include "thickness.h"
 #include "cornerradius.h"
 
@@ -48,6 +49,14 @@ struct Rect {
 		y = MIN (p1.y, p2.y);
 		width = ABS (p1.x - p2.x);
 		height = ABS (p1.y - p2.y);
+	}
+
+	Rect (const Point& p, const Size& s)
+	{
+		x = p.x;
+		y = p.y;
+		width = s.width;
+		height = s.height;
 	}
 
         Rect Transform (cairo_matrix_t *matrix);

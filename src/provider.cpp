@@ -371,7 +371,8 @@ public:
 			  DependencyObject *language_source,
 			  DependencyObject *flow_direction_source,
 			  DependencyObject *use_layout_rounding_source,
-			  DependencyObject *text_decorations_source)
+			  DependencyObject *text_decorations_source,
+			  DependencyObject *font_resource_source)
 	{
 		this->foreground_source = foreground_source;
 		this->font_family_source = font_family_source;
@@ -383,6 +384,7 @@ public:
 		this->flow_direction_source = flow_direction_source;
 		this->use_layout_rounding_source = use_layout_rounding_source;
 		this->text_decorations_source = text_decorations_source;
+		this->font_resource_source = font_resource_source;
 	}
 	
 
@@ -420,6 +422,9 @@ public:
 
 		text_decorations_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::TextDecorations);
 		if (!text_decorations_source && parent_context) text_decorations_source = parent_context->text_decorations_source;
+
+		font_resource_source = GetLocalSource (types, obj, InheritedPropertyValueProvider::FontResource);
+		if (!font_resource_source && parent_context) font_resource_source = parent_context->font_resource_source;
 	}
 
 	~InheritedContext()
@@ -455,6 +460,8 @@ public:
 			rv |= InheritedPropertyValueProvider::UseLayoutRounding;
 		if (props & InheritedPropertyValueProvider::TextDecorations && with_context->text_decorations_source == text_decorations_source)
 			rv |= InheritedPropertyValueProvider::TextDecorations;
+		if (props & InheritedPropertyValueProvider::FontResource && with_context->font_resource_source == font_resource_source)
+			rv |= InheritedPropertyValueProvider::FontResource;
 
 		return (InheritedPropertyValueProvider::Inheritable)rv;
 	}
@@ -485,6 +492,7 @@ public:
 	DependencyObject *flow_direction_source;
 	DependencyObject *use_layout_rounding_source;
 	DependencyObject *text_decorations_source;
+	DependencyObject *font_resource_source;
 };
 
 
@@ -551,6 +559,10 @@ InheritedPropertyValueProvider::InheritablePropertyFromPropertyId (DependencyObj
 
 	else if (propertyId == TextElement::TextDecorationsProperty || propertyId == TextBlock::TextDecorationsProperty)
 		return InheritedPropertyValueProvider::TextDecorations;
+
+	else if (propertyId == TextBlock::FontResourceProperty ||
+		 propertyId == TextElement::FontResourceProperty)
+		return InheritedPropertyValueProvider::FontResource;
 
 	else
 		return InheritedPropertyValueProvider::InheritableNone;
@@ -632,6 +644,11 @@ InheritedPropertyValueProvider::InheritablePropertyToPropertyId (Types *types, I
 			return TextElement::TextDecorationsProperty;
 		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
 			return TextBlock::TextDecorationsProperty;
+	case InheritedPropertyValueProvider::FontResource:
+		if (types->IsSubclassOf (objectType, Type::TEXTELEMENT))
+			return TextElement::FontResourceProperty;
+		else if (types->IsSubclassOf (objectType, Type::TEXTBLOCK))
+			return TextBlock::FontResourceProperty;
 	default:
 		break;
 	}
@@ -744,6 +761,7 @@ InheritedPropertyValueProvider::WalkTree (Types *types, DependencyObject *rootPa
 		MaybePropagateInheritedValue (types, context->flow_direction_source, FlowDirection, props, element);
 		MaybePropagateInheritedValue (types, context->use_layout_rounding_source, UseLayoutRounding, props, element);
 		MaybePropagateInheritedValue (types, context->text_decorations_source, TextDecorations, props, element);
+		MaybePropagateInheritedValue (types, context->font_resource_source, FontResource, props, element);
 
 		InheritedContext element_context (types, element, context);
 
@@ -766,6 +784,7 @@ InheritedPropertyValueProvider::WalkTree (Types *types, DependencyObject *rootPa
 		MaybeRemoveInheritedValue (types, context->flow_direction_source, FlowDirection, props, element);
 		MaybeRemoveInheritedValue (types, context->use_layout_rounding_source, UseLayoutRounding, props, element);
 		MaybeRemoveInheritedValue (types, context->text_decorations_source, TextDecorations, props, element);
+		MaybeRemoveInheritedValue (types, context->font_resource_source, FontResource, props, element);
 
 		props = element_context.Compare (context, props);
 		if (props == InheritableNone)
@@ -814,7 +833,8 @@ InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (Depe
 				       GetPropertySource (Language),
 				       GetPropertySource (FlowDirection),
 				       GetPropertySource (UseLayoutRounding),
-				       GetPropertySource (TextDecorations));
+				       GetPropertySource (TextDecorations),
+				       GetPropertySource (FontResource));
 
 
 	InheritedContext obj_context (types, obj, &base_context);
@@ -855,7 +875,8 @@ InheritedPropertyValueProvider::ClearInheritedPropertiesOnRemovingFromTree (Depe
 				       GetPropertySource (Language),
 				       GetPropertySource (FlowDirection),
 				       GetPropertySource (UseLayoutRounding),
-				       GetPropertySource (TextDecorations));
+				       GetPropertySource (TextDecorations),
+				       GetPropertySource (FontResource));
 
 
 	InheritedContext obj_context (types, obj, &base_context);

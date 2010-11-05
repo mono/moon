@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * layout.h: 
+ * textlayout.h: 
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -10,17 +10,17 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifndef __LAYOUT_H__
-#define __LAYOUT_H__
+#ifndef __TEXT_LAYOUT_H__
+#define __TEXT_LAYOUT_H__
 
 #include <cairo.h>
 #include <glib.h>
 #include <math.h>
 
-#include <brush.h>
-#include <enums.h>
-#include <fonts.h>
-#include <list.h>
+#include "brush.h"
+#include "enums.h"
+#include "fonts.h"
+#include "list.h"
 
 namespace Moonlight {
 
@@ -41,7 +41,7 @@ class TextLayoutAttributes : public List::Node {
 	ITextAttributes *source;
 	int start;
 	
-	TextLayoutAttributes (ITextAttributes *source, int start)
+	TextLayoutAttributes (ITextAttributes *source, int start = 0)
 	{
 		this->source = source;
 		this->start = start;
@@ -59,7 +59,7 @@ class TextLayoutAttributes : public List::Node {
 	
 	TextFont *Font ()
 	{
-		return source->FontDescription ()->GetFont ();
+		return source->FontDescription () ? source->FontDescription()->GetFont () : NULL;
 	}
 	
 	FlowDirection Direction ()
@@ -218,4 +218,4 @@ class TextLayout {
 };
 
 };
-#endif /* __LAYOUT_H__ */
+#endif /* __TEXT_LAYOUT_H__ */

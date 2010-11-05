@@ -149,7 +149,8 @@ enum FontResourceType {
 	FontResourceTypeGlyphTypeface,
 };
 
-class FontResource {
+/* @IncludeInKinds */
+struct FontResource {
 	FontResourceType type;
 	union {
 		GlyphTypeface *typeface;
@@ -157,7 +158,7 @@ class FontResource {
 	} resource;
 	
  public:
-	FontResource (const FontResource *resource);
+	FontResource (const FontResource& resource);
 	FontResource (const GlyphTypeface *typeface);
 	FontResource (const char *id);
 	~FontResource ();

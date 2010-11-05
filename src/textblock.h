@@ -32,10 +32,9 @@ class TextBlockDynamicPropertyValueProvider;
 
 /* @ContentProperty="Inlines" */
 /* @Namespace=System.Windows.Controls */
-class TextBlock : public FrameworkElement {
+class TextBlock : public FrameworkElement, public ITextLayoutContainer {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
-	FontResource *font_resource;
 	TextFontDescription *font;
 	GPtrArray *downloaders;
 	Downloader *source;
@@ -103,6 +102,9 @@ class TextBlock : public FrameworkElement {
 	const static int TextWrappingProperty;
 	/* @PropertyType=TextTrimming,DefaultValue=TextTrimmingNone */
 	const static int TextTrimmingProperty;	
+
+	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateManagedField=false,GenerateAccessors */
+	const static int FontResourceProperty;
 	
 	/* @GeneratePInvoke */
 	TextBlock ();
@@ -120,10 +122,13 @@ class TextBlock : public FrameworkElement {
 	virtual Point GetTransformOrigin ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual bool CanFindElement () { return true; }
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+
+	// ITextLayoutContainer interface
+	virtual void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args);
+	virtual void DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args);
 	
 	void SetFontFamily (FontFamily *family);
 	FontFamily *GetFontFamily ();
@@ -142,6 +147,9 @@ class TextBlock : public FrameworkElement {
 	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
+
+	void SetFontResource (FontResource *resource);
+	FontResource *GetFontResource ();
 	
 	void SetForeground (Brush *fg);
 	Brush *GetForeground ();

@@ -33,69 +33,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Windows.Documents {
-	public sealed class TextSelection : INativeDependencyObjectWrapper {
-		bool free_mapping;
+	public sealed class TextSelection {
 		IntPtr native;
 		
-		internal TextSelection (IntPtr raw, bool dropref)
+		internal TextSelection (IntPtr raw)
 		{
-			NativeHandle = raw;
-			if (dropref)
-				NativeMethods.event_object_unref (raw);
+			native = raw;
 		}
 		
-		internal TextSelection () : this (SafeNativeMethods.text_selection_new (), true)
-		{
-		}
-		
-		internal void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-		
-		~TextSelection ()
-		{
-			Free ();
-		}
-
-		internal IntPtr NativeHandle {
-			get { return native; }
-			set {
-				if (native != IntPtr.Zero) {
-					throw new InvalidOperationException ("TextSelection.native is already set");
-				}
-
-				native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-			}
-		}
-
-		IntPtr INativeEventObjectWrapper.NativeHandle {
-			get { return NativeHandle; }
-			set { NativeHandle = value; }
-		}
-
-		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
-		{
-		}
-
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-
-		Kind INativeEventObjectWrapper.GetKind ()
-		{
-			return Kind.TEXTSELECTION;
-		}
-
 		public object GetPropertyValue (DependencyProperty formattingProperty)
 		{
 			Console.WriteLine ("System.Windows.Documents.TextSelection.GetPropertyValue () NIEX");
@@ -123,50 +68,31 @@ namespace System.Windows.Documents {
 			if (movingPosition == null)
 				throw new ArgumentNullException ("movingPosition");
 
-			NativeMethods.text_selection_select (native, anchorPosition.NativeHandle, movingPosition.NativeHandle);
+			NativeMethods.text_selection_select (native, anchorPosition.native, movingPosition.native);
 		}
 
 		public string Text {
-			get {
-				return (string)((INativeDependencyObjectWrapper)this).GetValue(TextProperty);
-			}
-			set {
-				((INativeDependencyObjectWrapper)this).SetValue(TextProperty, value);
-			}
+			get { return NativeMethods.text_selection_get_text (native); }
+			set { NativeMethods.text_selection_set_text (native, value); }
 		}
 
 		public string Xaml {
-			get {
-				return (string)((INativeDependencyObjectWrapper)this).GetValue(XamlProperty);
-			}
-			set {
-				((INativeDependencyObjectWrapper)this).SetValue(XamlProperty, value);
-			}
+			get { return NativeMethods.text_selection_get_xaml (native); }
+			set { NativeMethods.text_selection_set_xaml (native, value); }
 		}
 
 		public TextPointer End {
 			get {
-				return (TextPointer)((INativeDependencyObjectWrapper)this).GetValue(EndProperty);
+				IntPtr tp = NativeMethods.text_selection_get_end (native);
+				return tp == IntPtr.Zero ? null : new TextPointer (tp);
 			}
 		}
 
 		public TextPointer Start {
 			get {
-				return (TextPointer)((INativeDependencyObjectWrapper)this).GetValue(StartProperty);
+				IntPtr tp = NativeMethods.text_selection_get_start (native);
+				return tp == IntPtr.Zero ? null : new TextPointer (tp);
 			}
 		}
-
-		private DependencyProperty TextProperty = DependencyProperty.Lookup
-			(Kind.TEXTSELECTION, "Text", typeof (string));
-
-		private DependencyProperty XamlProperty = DependencyProperty.Lookup
-			(Kind.TEXTSELECTION, "Xaml", typeof (string));
-
-		private DependencyProperty EndProperty = DependencyProperty.Lookup
-			(Kind.TEXTSELECTION, "End", typeof (TextPointer));
-
-		private DependencyProperty StartProperty = DependencyProperty.Lookup
-			(Kind.TEXTSELECTION, "Start", typeof (TextPointer));
-										     
 	}
 }

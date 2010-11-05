@@ -174,8 +174,9 @@ public:
 		FlowDirection = 1 << 7,
 		UseLayoutRounding = 1 << 8,
 		TextDecorations = 1 << 9,
+		FontResource = 1 << 10,
 
-		InheritableAll = 0x3ff,
+		InheritableAll = 0x7ff,
 		InheritableNone = 0
 	};
 

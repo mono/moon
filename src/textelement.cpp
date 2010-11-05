@@ -32,6 +32,19 @@
 namespace Moonlight {
 
 //
+// IDocumentNode
+//
+
+IDocumentNode*
+IDocumentNode::CastToIDocumentNode (DependencyObject *obj)
+{
+	if (obj->Is (Type::RICHTEXTBOX))
+		return (RichTextBox*)obj;
+	else /* obj is a TextElement */
+		return (TextElement*)obj;
+}
+
+//
 // TextElement
 //
 
@@ -43,13 +56,57 @@ TextElement::TextElement ()
 
 	font = new TextFontDescription ();
 	downloaders = g_ptr_array_new ();
+	text_pointers = g_ptr_array_new ();
+
+	UpdateFontDescription (true);
 }
 
 TextElement::~TextElement ()
 {
 	CleanupDownloaders ();
-	g_ptr_array_free (downloaders, true);
+	g_ptr_array_free (downloaders, TRUE);
+	g_ptr_array_free (text_pointers, TRUE);
 	delete font;
+}
+
+void
+TextElement::NotifyLayoutContainerOnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	DependencyObject *el = this;
+	while (el) {
+		if (el->Is (Type::TEXTBLOCK)) {
+			((TextBlock*)el)->DocumentPropertyChanged (this, args);
+			return;
+		}
+		else if (el->Is (Type::RICHTEXTBOX)) {
+			((RichTextBox*)el)->GetView()->DocumentPropertyChanged (this, args);
+			return;
+		}
+		else {
+			el = el->GetParent(); // move to the collection
+			if (el) el = el->GetParent(); // if the collection is there, move to its parent
+		}
+	}
+}
+
+void
+TextElement::NotifyLayoutContainerOnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	DependencyObject *el = this;
+	while (el) {
+		if (el->Is (Type::TEXTBLOCK)) {
+			((TextBlock*)el)->DocumentCollectionChanged (this, col, args);
+			return;
+		}
+		else if (el->Is (Type::RICHTEXTBOX)) {
+			((RichTextBox*)el)->GetView()->DocumentCollectionChanged (this, col, args);
+			return;
+		}
+		else {
+			el = el->GetParent(); // move to the collection
+			if (el) el = el->GetParent(); // if the collection is there, move to its parent
+		}
+	}
 }
 
 void
@@ -177,6 +234,21 @@ TextElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			}
 			g_strfreev (families);
 		}
+		
+		if (UpdateFontDescription (false))
+			/*dirty = true*/;
+	} else if (args->GetId () == TextElement::FontSizeProperty) {
+		if (UpdateFontDescription (false))
+			/*dirty = true*/;
+	} else if (args->GetId () == TextElement::FontStretchProperty) {
+		if (UpdateFontDescription (false))
+			/*dirty = true*/;
+	} else if (args->GetId () == TextElement::FontStyleProperty) {
+		if (UpdateFontDescription (false))
+			/*dirty = true*/;
+	} else if (args->GetId () == TextElement::FontWeightProperty) {
+		if (UpdateFontDescription (false))
+			/*dirty = true*/;
 	}
 	
 	NotifyListenersOfPropertyChange (args, error);
@@ -195,12 +267,12 @@ TextElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 }
 
 bool
-TextElement::UpdateFontDescription (const FontResource *resource, bool force)
+TextElement::UpdateFontDescription (bool force)
 {
 	FontFamily *family = GetFontFamily ();
 	bool changed = false;
 	
-	if (font->SetResource (resource))
+	if (font->SetResource (GetFontResource()))
 		changed = true;
 	
 	if (font->SetFamily (family ? family->source : NULL))
@@ -229,32 +301,69 @@ TextElement::UpdateFontDescription (const FontResource *resource, bool force)
 	return changed;
 }
 
+
+void
+TextElement::AddTextPointer (TextPointer *pointer)
+{
+	g_ptr_array_insert_sorted (text_pointers, TextPointer::Comparer, pointer);
+}
+
+void
+TextElement::RemoveTextPointer (TextPointer *pointer)
+{
+	g_ptr_array_remove (text_pointers, pointer);
+}
+
 TextPointer*
 TextElement::GetContentStart ()
 {
-	return MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward);
+	return new TextPointer (this, 0, LogicalDirectionBackward);
+}
+
+TextPointer
+TextElement::GetContentStart_np ()
+{
+	return TextPointer (this, 0, LogicalDirectionBackward);
 }
 
 TextPointer*
 TextElement::GetContentEnd ()
 {
-	return MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward);
+	return new TextPointer (this, -1, LogicalDirectionForward);
+}
+
+TextPointer
+TextElement::GetContentEnd_np ()
+{
+	return TextPointer (this, -1, LogicalDirectionForward);
 }
 
 TextPointer*
 TextElement::GetElementStart ()
 {
-	printf ("NIEX TextElement::GetElementStart ()");
-	// FIXME this likely requires getting the parent, then getting a TextPointer just before @this
-	return NULL;
+	DependencyObject *el = GetParent();
+	if (el) el = el->GetParent();
+
+	if (!el)
+		return NULL;
+
+	return new TextPointer (el,
+				IDocumentNode::CastToIDocumentNode (el)->GetDocumentChildren ()->IndexOf (Value (this)),
+				LogicalDirectionBackward);
 }
 
 TextPointer*
 TextElement::GetElementEnd ()
 {
-	printf ("NIEX TextElement::GetElementEnd ()");
-	// FIXME this likely requires getting the parent, then getting a TextPointer just after @this
-	return NULL;
+	DependencyObject *el = GetParent();
+	if (el) el = el->GetParent();
+
+	if (!el)
+		return NULL;
+
+	return new TextPointer (el,
+				IDocumentNode::CastToIDocumentNode (el)->GetDocumentChildren ()->IndexOf (Value (this)),
+				LogicalDirectionForward);
 }
 
 //
@@ -322,6 +431,11 @@ LineBreak::LineBreak ()
 	SetObjectType (Type::LINEBREAK);
 }
 
+char*
+LineBreak::Serialize ()
+{
+	return g_strdup ("<LineBreak/>");
+}
 
 //
 // Run
@@ -330,6 +444,21 @@ LineBreak::LineBreak ()
 Run::Run ()
 {
 	SetObjectType (Type::RUN);
+}
+
+void
+Run::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty ()->GetOwnerType () != Type::RUN) {
+		Inline::OnPropertyChanged (args, error);
+		return;
+	}
+
+	if (args->GetId () == Run::TextProperty) {
+		NotifyLayoutContainerOnPropertyChanged (args);
+	}
+
+	NotifyListenersOfPropertyChange (args, error);
 }
  
 bool
@@ -352,6 +481,11 @@ Run::Equals (Inline *item)
 	return true;
 }
 
+char*
+Run::Serialize ()
+{
+	return g_strdup_printf ("<Run Text=\"%s\"/>", GetText());
+}
 
 //
 // Block
@@ -372,6 +506,33 @@ Paragraph::Paragraph ()
 	SetObjectType (Type::PARAGRAPH);
 }
 
+void
+Paragraph::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	if (PropertyHasValueNoAutoCreate (Paragraph::InlinesProperty, col)) {
+		NotifyLayoutContainerOnCollectionChanged (col, args);
+	} else {
+		Block::OnCollectionChanged (col, args);
+	}
+}
+
+char*
+Paragraph::Serialize ()
+{
+	const char *header = "<Paragraph>";
+	const char *trailer = "</Paragraph>";
+
+	GString* str = g_string_new (header);
+	int c = GetInlines()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
+		char *il_str = il->Serialize();
+		g_string_append (str, il_str);
+		g_free (il_str);
+	}
+	g_string_append (str, trailer);
+	return g_string_free (str, FALSE);
+}
 
 //
 // Section
@@ -382,6 +543,33 @@ Section::Section ()
 	SetObjectType (Type::SECTION);
 }
 
+char*
+Section::Serialize ()
+{
+	const char *header = "<Section>";
+	const char *trailer = "</Section>";
+
+	GString* str = g_string_new (header);
+	int c = GetBlocks()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Block *b = GetBlocks()->GetValueAt(i)->AsBlock();
+		char *b_str = b->Serialize();
+		g_string_append (str, b_str);
+		g_free (b_str);
+	}
+	g_string_append (str, trailer);
+	return g_string_free (str, FALSE);
+}
+
+void
+Section::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	if (PropertyHasValueNoAutoCreate (Section::BlocksProperty, col)) {
+		NotifyLayoutContainerOnCollectionChanged (col, args);
+	} else {
+		Block::OnCollectionChanged (col, args);
+	}
+}
 
 //
 // Span
@@ -392,6 +580,15 @@ Span::Span ()
 	SetObjectType (Type::SPAN);
 }
 
+void
+Span::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	if (PropertyHasValueNoAutoCreate (Span::InlinesProperty, col)) {
+		NotifyLayoutContainerOnCollectionChanged (col, args);
+	} else {
+		Inline::OnCollectionChanged (col, args);
+	}
+}
 
 //
 // Bold
@@ -406,6 +603,23 @@ Bold::Bold ()
 	SetFontWeight (&weight);
 }
 
+char*
+Bold::Serialize ()
+{
+	const char *header = "<Bold>";
+	const char *trailer = "</Bold>";
+
+	GString* str = g_string_new (header);
+	int c = GetInlines()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
+		char *il_str = il->Serialize();
+		g_string_append (str, il_str);
+		g_free (il_str);
+	}
+	g_string_append (str, trailer);
+	return g_string_free (str, FALSE);
+}
 
 //
 // Italic
@@ -419,6 +633,23 @@ Italic::Italic ()
 	SetFontStyle (&style);
 }
 
+char*
+Italic::Serialize ()
+{
+	const char *header = "<Italic>";
+	const char *trailer = "</Italic>";
+
+	GString* str = g_string_new (header);
+	int c = GetInlines()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
+		char *il_str = il->Serialize();
+		g_string_append (str, il_str);
+		g_free (il_str);
+	}
+	g_string_append (str, trailer);
+	return g_string_free (str, FALSE);
+}
 
 //
 // Underline
@@ -431,6 +662,23 @@ Underline::Underline ()
 	SetTextDecorations (TextDecorationsUnderline);
 }
 
+char*
+Underline::Serialize ()
+{
+	const char *header = "<Underline>";
+	const char *trailer = "</Underline>";
+
+	GString* str = g_string_new (header);
+	int c = GetInlines()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
+		char *il_str = il->Serialize();
+		g_string_append (str, il_str);
+		g_free (il_str);
+	}
+	g_string_append (str, trailer);
+	return g_string_free (str, FALSE);
+}
 
 //
 // Hyperlink
@@ -450,6 +698,24 @@ Hyperlink::Hyperlink ()
 	// SetForeground (new SolidColorBrush ("#FF337CBB"));
 }
 
+char*
+Hyperlink::Serialize ()
+{
+	const char *header = "<Hyperlink>";
+	const char *trailer = "</Hyperlink>";
+
+	GString* str = g_string_new (header);
+	int c = GetInlines()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
+		char *il_str = il->Serialize();
+		g_string_append (str, il_str);
+		g_free (il_str);
+	}
+	g_string_append (str, trailer);
+	return g_string_free (str, FALSE);
+}
+
 
 //
 // InlineUIContainer
@@ -458,6 +724,49 @@ Hyperlink::Hyperlink ()
 InlineUIContainer::InlineUIContainer ()
 {
 	SetObjectType (Type::INLINEUICONTAINER);
+}
+
+char*
+InlineUIContainer::Serialize ()
+{
+	return g_strdup ("<Run Text=\"\"/>");
+}
+
+void
+InlineUIContainer::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty ()->GetOwnerType () != Type::INLINEUICONTAINER) {
+		TextElement::OnPropertyChanged (args, error);
+		return;
+	}
+
+	if (args->GetId () == InlineUIContainer::ChildProperty) {
+		if (args->GetOldValue () && args->GetOldValue()->AsUIElement ()) {
+			if (args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
+				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
+				if (error->number)
+					return;
+			}
+		}
+
+		if (args->GetNewValue() && args->GetNewValue()->AsUIElement()) {
+			if (args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
+				FrameworkElement *fwe = args->GetNewValue()->AsFrameworkElement ();
+				if (fwe->GetLogicalParent() && fwe->GetLogicalParent() != this) {
+					MoonError::FillIn (error, MoonError::ARGUMENT, "Element is already a child of another element");
+					return;
+				}
+
+				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
+				if (error->number)
+					return;
+			}
+		}
+
+		NotifyLayoutContainerOnPropertyChanged (args);
+	}
+
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 };

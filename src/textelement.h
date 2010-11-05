@@ -24,10 +24,11 @@
 #include "fontstyle.h"
 #include "fontweight.h"
 #include "fontsource.h"
-#include "layout.h"
+#include "textlayout.h"
 #include "enums.h"
 #include "brush.h"
 #include "fonts.h"
+#include "textpointer.h"
 
 #define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
@@ -36,10 +37,16 @@
 
 namespace Moonlight {
 
+class ITextLayoutContainer {
+	virtual void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args) = 0;
+	virtual void DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args) = 0;
+};
+
 /* @Namespace=System.Windows.Documents */
-class TextElement : public DependencyObject, public ITextAttributes {
+class TextElement : public DependencyObject, public ITextAttributes, public IDocumentNode {
 	TextFontDescription *font;
 	GPtrArray *downloaders;
+	GPtrArray *text_pointers;
 	
 	void AddFontResource (const char *resource);
 	void AddFontSource (Downloader *downloader);
@@ -49,8 +56,10 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	void DownloaderComplete (Downloader *downloader);
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+
+	bool UpdateFontDescription (bool force);
 	
- protected:
+protected:
 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	TextElement ();
 	
@@ -59,7 +68,10 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
- public:
+	void NotifyLayoutContainerOnPropertyChanged (PropertyChangedEventArgs *args);
+	void NotifyLayoutContainerOnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+
+public:
 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
 	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
@@ -76,12 +88,20 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	const static int LanguageProperty;
 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,HiddenDefaultValue,ManagedPropertyType=TextDecorationCollection,GenerateAccessors,Coercer=TextElement::CoerceTextDecorations */
 	const static int TextDecorationsProperty;
+	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateManagedField=false,GenerateAccessors */
+	const static int FontResourceProperty;
 
 	static bool CoerceTextDecorations (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	
+
+	virtual DependencyObjectCollection *GetDocumentChildren () { return NULL; }
+	virtual char* Serialize () { return NULL; }
+
+	virtual void AddTextPointer (TextPointer *pointer);
+	virtual void RemoveTextPointer (TextPointer *pointer);
+
 	//
 	// ITextAttributes Interface Methods
 	//
@@ -99,6 +119,11 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	TextPointer *GetElementStart ();
 	/* @GeneratePInvoke */
 	TextPointer *GetElementEnd ();
+
+	TextPointer GetContentStart_np ();
+	TextPointer GetContentEnd_np ();
+	TextPointer GetElementStart_np ();
+	TextPointer GetElementEnd_np ();
 	
 	//
 	// Property Accessors
@@ -126,11 +151,9 @@ class TextElement : public DependencyObject, public ITextAttributes {
 	
 	void SetTextDecorations (TextDecorations decorations);
 	TextDecorations GetTextDecorations ();
-	
-	//
-	// Convenience Methods
-	//
-	bool UpdateFontDescription (const FontResource *resource, bool force);
+
+	void SetFontResource (FontResource *resource);
+	FontResource* GetFontResource ();
 };
 
 
@@ -181,6 +204,11 @@ class LineBreak : public Inline {
 	LineBreak ();
 
 	virtual ~LineBreak () {}
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual char* Serialize ();
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
@@ -203,6 +231,8 @@ class Run : public Inline {
 	const static int FlowDirectionProperty;
 	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int TextProperty;
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual bool Equals (Inline *item);
 	
@@ -210,7 +240,12 @@ class Run : public Inline {
 	// ITextAttributes Interface Method Overrides
 	//
 	virtual FlowDirection Direction () { return GetFlowDirection (); }
-	
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual char* Serialize ();
+
 	//
 	// Property Accessors
 	//
@@ -270,6 +305,14 @@ class Paragraph : public Block {
 	//
 	void SetInlines (InlineCollection *inlines);
 	InlineCollection *GetInlines ();
+
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
+	virtual char* Serialize ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -298,6 +341,14 @@ class Section : public Block {
 	
 	void SetHasTrailingParagraphBreakOnPaste (bool value);
 	bool GetHasTrailingParagraphBreakOnPaste ();
+
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual DependencyObjectCollection *GetDocumentChildren () { return GetBlocks(); }
+	virtual char* Serialize ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -321,6 +372,13 @@ class Span : public Inline {
 	//
 	void SetInlines (InlineCollection *inlines);
 	InlineCollection *GetInlines ();
+
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -333,6 +391,11 @@ class Bold : public Span {
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual char* Serialize ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -345,6 +408,11 @@ class Italic : public Span {
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual char* Serialize ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -357,6 +425,11 @@ class Underline : public Span {
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual char* Serialize ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -393,6 +466,11 @@ class Hyperlink : public Span {
 
 	/* @DelegateType=RoutedEventHandler */
 	const static int ClickEvent;
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual char* Serialize ();
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -416,6 +494,13 @@ class InlineUIContainer : public Inline {
 	//
 	void SetChild (UIElement *child);
 	UIElement *GetChild ();
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual char* Serialize ();
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 };
 
 };

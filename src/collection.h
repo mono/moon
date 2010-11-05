@@ -59,6 +59,7 @@ public:
 	bool Contains (Value *value);
 	/* @GeneratePInvoke */
 	int IndexOf (Value *value);
+	int IndexOf (Value value);
 	
 	bool Insert (int index, Value value);
 	bool Insert (int index, Value *value);
@@ -133,11 +134,16 @@ protected:
 	/* @GeneratePInvoke */
 	DependencyObjectCollection ();
 	
+	/* @SkipFactories */
+	DependencyObjectCollection (bool sets_parent);
+
 	virtual void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor);
 	virtual ~DependencyObjectCollection ();
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+	bool sets_parent;
 };
 
 /* @Namespace=System.Windows.Media */
@@ -295,6 +301,10 @@ class UIElementCollection : public DependencyObjectCollection {
 	friend class MoonManagedFactory;
 
  public:
+	// we need this for RTBView
+	/* @SkipFactories */
+	UIElementCollection (bool sets_parent);
+
 	GPtrArray *z_sorted;
 	
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }

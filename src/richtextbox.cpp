@@ -27,6 +27,42 @@
 
 namespace Moonlight {
 
+class RichTextBoxProvider : public FrameworkElementProvider {
+	Value *xaml_value;
+	Value *baseline_offset_value;
+
+ public:
+	RichTextBoxProvider (DependencyObject *obj, PropertyPrecedence precedence, int flags = 0)
+		: FrameworkElementProvider (obj, precedence, flags)
+	{
+		xaml_value = NULL;
+		baseline_offset_value = NULL;
+	}
+
+	virtual ~RichTextBoxProvider ()
+	{
+		delete xaml_value;
+		delete baseline_offset_value;
+	}
+
+	virtual Value *GetPropertyValue (DependencyProperty *property)
+	{
+		if (property->GetId () == RichTextBox::XamlProperty) {
+			delete xaml_value;
+			char *serialized_xaml = ((RichTextBox*)obj)->Serialize();
+			xaml_value = new Value (serialized_xaml);
+			return xaml_value;
+		}
+		else if (property->GetId () == RichTextBox::BaselineOffsetProperty) {
+			delete baseline_offset_value;
+			baseline_offset_value = new Value (((RichTextBox*)obj)->GetView()->GetBaselineOffset());
+			return baseline_offset_value;
+		}
+
+		return FrameworkElementProvider::GetPropertyValue (property);
+	}
+};
+
 //
 // RichTextBoxUndoActions
 //
@@ -118,107 +154,6 @@ RichTextBoxUndoStack::Peek ()
 
 
 //
-// TextPointer
-//
-
-int
-TextPointer::CompareTo (TextPointer *pointer)
-{
-	// FIXME: implement this
-	return 0;
-}
-
-Rect
-TextPointer::GetCharacterRect (LogicalDirection dir)
-{
-	// FIXME: implement this
-	return Rect ();
-}
-
-TextPointer *
-TextPointer::GetNextInsertionPosition (LogicalDirection dir)
-{
-	// FIXME: implement this
-	return NULL;
-}
-
-TextPointer *
-TextPointer::GetPositionAtOffset (int offset, LogicalDirection dir)
-{
-	// FIXME: implement this
-	return NULL;
-}
-
-
-//
-// TextSelection
-//
-
-TextSelection::TextSelection ()
-{
-	SetObjectType (Type::TEXTSELECTION);
-
-	// FIXME: we should not be doing this... should they be autocreated?
-	SetValue (EndProperty, Value::CreateUnref (MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward)));
-	SetValue (StartProperty, Value::CreateUnref (MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward)));
-}
-
-void
-TextSelection::ApplyPropertyValue (DependencyProperty *formatting, Value *value)
-{
-	// FIXME: implement this
-}
-
-Value *
-TextSelection::GetPropertyValue (DependencyProperty *formatting)
-{
-	// FIXME: implement this
-	return NULL;
-}
-
-void
-TextSelection::Insert (TextElement *element)
-{
-	// FIXME: implement this
-}
-
-bool
-TextSelection::SelectWithError (TextPointer *anchor, TextPointer *cursor, MoonError *error)
-{
-	// FIXME: implement this
-	return false;
-}
-
-bool
-TextSelection::Select (TextPointer *anchor, TextPointer *cursor)
-{
-	MoonError err;
-	
-	return SelectWithError (anchor, cursor, &err);
-}
-
-//
-// RichTextBoxDynamicPropertyValueProvider
-//
-class RichTextBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
- public:
-	RichTextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
-		: FrameworkElementProvider (obj, precedence)
-	{
-	}
-	
-	virtual ~RichTextBoxDynamicPropertyValueProvider () {}
-	
-	virtual Value *GetPropertyValue (DependencyProperty *property)
-	{
-		if (property->GetId () == RichTextBox::BlocksProperty)
-			return ((RichTextBox*)obj)->rootSection->GetValue (Section::BlocksProperty);
-		
-		return FrameworkElementProvider::GetPropertyValue (property);
-	}
-};
-
-//
 // RichTextBox
 //
 
@@ -253,20 +188,14 @@ GetClipboard (RichTextBox *textbox, MoonClipboardType clipboardType)
 
 RichTextBox::RichTextBox ()
 {
-	delete providers.dynamicvalue;
-	providers.dynamicvalue = new RichTextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
-
 	SetObjectType (Type::RICHTEXTBOX);
 	
 	ManagedTypeInfo type_info (GetObjectType (), "System.Windows.Controls.RichTextBox");
 	SetDefaultStyleKey (&type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
-	
-	rootSection = MoonUnmanagedFactory::CreateSection();
 
-	// FIXME: we should not be doing this... should the selection be autocreated?
-	SetValue (SelectionProperty, Value::CreateUnref (new TextSelection()));
+	text_pointers = g_ptr_array_new ();
 
 	contentElement = NULL;
 	
@@ -283,9 +212,7 @@ RichTextBox::RichTextBox ()
 	
 	events_mask = CONTENT_CHANGED | SELECTION_CHANGED;
 	emit = NOTHING_CHANGED;
-	
-	selection_anchor = 0;
-	selection_cursor = 0;
+
 	cursor_offset = 0.0;
 	batch = 0;
 	
@@ -298,11 +225,17 @@ RichTextBox::RichTextBox ()
 	captured = false;
 	focused = false;
 	view = NULL;
+
+	selection = NULL;
+
+	delete providers.dynamicvalue;
+	providers.dynamicvalue = new RichTextBoxProvider (this, PropertyPrecedence_DynamicValue);
 }
 
 RichTextBox::~RichTextBox ()
 {
-	rootSection->unref ();
+	g_ptr_array_free (text_pointers, TRUE);
+
 	if (view) {
 		view->SetTextBox (NULL);
 		view->unref ();
@@ -373,46 +306,106 @@ RichTextBox::GetCursorOffset ()
 	return cursor_offset;
 }
 
-int
-RichTextBox::CursorDown (int cursor, bool page)
+TextPointer
+RichTextBox::CursorDown (const TextPointer& cursor, bool page)
 {
-	return -1;
+	// FIXME
+	return cursor;
 }
 
-int
-RichTextBox::CursorUp (int cursor, bool page)
+TextPointer
+RichTextBox::CursorUp (const TextPointer& cursor, bool page)
 {
-	return -1;
+	// FIXME
+	return cursor;
 }
 
-int
-RichTextBox::CursorNextWord (int cursor)
+TextPointer
+RichTextBox::CursorNextWord (const TextPointer& cursor)
 {
-	return -1;
+	// FIXME
+	return cursor;
 }
 
-int
-RichTextBox::CursorPrevWord (int cursor)
+TextPointer
+RichTextBox::CursorPrevWord (const TextPointer& cursor)
 {
-	return -1;
+	// FIXME
+	return cursor;
 }
 
-int
-RichTextBox::CursorLineBegin (int cursor)
+TextPointer
+RichTextBox::CursorLineBegin (const TextPointer& cursor)
 {
-	return -1;
+	// FIXME
+	return cursor;
 }
 
-int
-RichTextBox::CursorLineEnd (int cursor, bool include)
+TextPointer
+RichTextBox::CursorLineEnd (const TextPointer& cursor, bool include)
 {
-	return -1;
+	// FIXME
+	return cursor;
 }
 
 bool
 RichTextBox::KeyPressBackSpace (MoonModifier modifiers)
 {
+#if 1
 	return false;
+#else
+	TextSelection *selection = GetSelection ();
+
+	TextBoxUndoAction *action;
+	int start = 0, length = 0;
+	bool handled = false;
+
+	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
+		return false;
+
+	if (!selection->IsEmpty ()) {
+		// BackSpace w/ active selection: delete the selected text
+		length = abs (cursor - anchor);
+		start = MIN (anchor, cursor);
+	} else if ((modifiers & CONTROL_MASK) != 0) {
+		// Ctrl+BackSpace: delete the word ending at the cursor
+		start = CursorPrevWord (cursor);
+		length = cursor - start;
+	} else if (cursor > 0) {
+		// BackSpace: delete the char before the cursor position
+		if (cursor >= 2 && buffer->text[cursor - 1] == '\n' && buffer->text[cursor - 2] == '\r') {
+			start = cursor - 2;
+			length = 2;
+		} else {
+			start = cursor - 1;
+			length = 1;
+		}
+	}
+
+	if (length > 0) {
+		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
+		undo->Push (action);
+		redo->Clear ();
+		
+		buffer->Cut (start, length);
+		emit |= TEXT_CHANGED;
+		anchor = start;
+		cursor = start;
+		handled = true;
+	}
+	
+	// check to see if selection has changed
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
+		emit |= SELECTION_CHANGED;
+		handled = true;
+	}
+	
+	return handled;
+#endif
 }
 
 bool
@@ -591,13 +584,17 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
+#if notyet
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard and then cut
-					// FIXME: clipboard->SetText (GetSelectedText (), -1);
+					clipboard->SetText (GetSelectedText (), -1);
 				}
+#endif
 			}
 			
-			// FIXME: SetSelectedText ("");
+#if notyet
+			SetSelectedText ("");
+#endif
 			handled = true;
 		} else {
 			handled = KeyPressDelete (modifiers);
@@ -618,10 +615,12 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
 			// Control+Insert => Copy
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
+#if notyet
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard
-					// FIXME: clipboard->SetText (GetSelectedText (), -1);
+					clipboard->SetText (GetSelectedText (), -1);
 				}
+#endif
 			}
 			
 			handled = true;
@@ -662,10 +661,12 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 			case KeyC:
 				// Ctrl+C => Copy
 				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
+#if notyet
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard
-						// FIXME: clipboard->SetText (GetSelectedText (), -1);
+						clipboard->SetText (GetSelectedText (), -1);
 					}
+#endif
 				}
 				
 				handled = true;
@@ -676,10 +677,12 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 					break;
 				
 				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
+#if notyet
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard and then cut
-						// FIXME: clipboard->SetText (GetSelectedText(), -1);
+						clipboard->SetText (GetSelectedText(), -1);
 					}
+#endif
 				}
 				
 				// FIXME: SetSelectedText ("");
@@ -810,7 +813,15 @@ RichTextBox::retrieve_surrounding (MoonIMContext *context, gpointer user_data)
 void
 RichTextBox::Commit (const char *str)
 {
-	// FIXME: implement this
+	TextSelection *selection = GetSelection();
+	if (selection->GetStart()->GetParent() == NULL)
+		SelectAll();
+
+	selection->SetText (str);
+
+	char *serialized_form = Serialize();
+	printf ("our new xaml is %s\n", serialized_form);
+	g_free (serialized_form);
 }
 
 void
@@ -832,7 +843,7 @@ void
 RichTextBox::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 {
 	double x, y;
-	int cursor;
+	TextPointer cursor;
 	
 	args->SetHandled (true);
 	Focus ();
@@ -840,7 +851,7 @@ RichTextBox::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 	if (view) {
 		args->GetPosition (view, &x, &y);
 		
-		cursor = view->GetCursorFromXY (x, y);
+		cursor = view->GetLocationFromXY (x, y);
 		
 		ResetIMContext ();
 		
@@ -850,8 +861,9 @@ RichTextBox::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 		
 		BatchPush ();
 		emit = NOTHING_CHANGED;
-		//SetSelectionStart (cursor);
-		//SetSelectionLength (0);
+		printf ("> mouse left button down\n");
+		GetSelection()->Select (&cursor, &cursor);
+		printf ("< mouse left button down\n");
 		BatchPop ();
 		
 		SyncAndEmit ();
@@ -861,7 +873,7 @@ RichTextBox::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 void
 RichTextBox::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 {
-	int cursor, start, end;
+	TextPointer cursor, start, end;
 	double x, y;
 	
 	args->SetHandled (true);
@@ -869,11 +881,21 @@ RichTextBox::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 	if (view) {
 		args->GetPosition (view, &x, &y);
 		
-		cursor = view->GetCursorFromXY (x, y);
+		cursor = view->GetLocationFromXY (x, y);
 		
 		ResetIMContext ();
 		
-		if (((MoonButtonEvent*)args->GetEvent())->GetNumberOfClicks () == 3) {
+		switch (((MoonButtonEvent*)args->GetEvent())->GetNumberOfClicks ()) {
+		case 2:
+			// Double-Click: select the word
+			if (captured)
+				ReleaseMouseCapture ();
+			start = CursorPrevWord (cursor);
+			end = CursorNextWord (cursor);
+			selecting = false;
+			captured = false;
+			break;
+		case 3:
 			// Note: Silverlight doesn't implement this, but to
 			// be consistent with other TextEntry-type
 			// widgets in Gtk+, we will.
@@ -885,20 +907,12 @@ RichTextBox::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 			end = CursorLineEnd (cursor, true);
 			selecting = false;
 			captured = false;
-		} else {
-			// Double-Click: select the word
-			if (captured)
-				ReleaseMouseCapture ();
-			start = CursorPrevWord (cursor);
-			end = CursorNextWord (cursor);
-			selecting = false;
-			captured = false;
+			break;
 		}
 		
 		BatchPush ();
 		emit = NOTHING_CHANGED;
-		//SetSelectionStart (start);
-		//SetSelectionLength (end - start);
+		GetSelection()->Select (&start, &end);
 		BatchPop ();
 		
 		SyncAndEmit ();
@@ -925,6 +939,7 @@ RichTextBox::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 void
 RichTextBox::OnMouseMove (MouseEventArgs *args)
 {
+#if notyet
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	MoonClipboard *clipboard;
@@ -951,6 +966,7 @@ RichTextBox::OnMouseMove (MouseEventArgs *args)
 			// FIXME: clipboard->SetText (GetSelectedText (), -1);
 		}
 	}
+#endif
 }
 
 void
@@ -1031,9 +1047,6 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		
 		if (view)
 			view->SetEnableCursor (!is_read_only);
-	} else if (args->GetId () == RichTextBox::SelectionProperty) {
-		// FIXME: probably need to do stuff here...
-		changed = RichTextBoxModelChangedSelection;
 	} else if (args->GetId () == RichTextBox::TextAlignmentProperty) {
 		changed = RichTextBoxModelChangedTextAlignment;
 	} else if (args->GetId () == RichTextBox::TextWrappingProperty) {
@@ -1067,6 +1080,33 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		}
 	} else if (args->GetId () == RichTextBox::XamlProperty) {
 		// FIXME: need to sync the XAML to Blocks
+		char *xaml = args->GetNewValue()->AsString();
+		Type::Kind element_type;
+		MoonError error;
+
+		printf ("setting xaml to %s\n", xaml);
+
+		SL4XamlLoader *loader = new SL4XamlLoader (GetDeployment()->GetSurface());
+		Value *objv = loader->CreateFromStringWithError (xaml, true, &element_type, 0, &error);
+		if (element_type != Type::SECTION) {
+			g_warning ("awww, crap");
+			return;
+		}
+
+		// FIXME: we need to figure out if this is done before
+		// the xaml loader (i.e. if you try to set RTB.Xaml to
+		// something invalid, does it first clear out the
+		// existing blocks?  right now our code won't)
+		GetBlocks()->Clear();
+
+		Section *s = objv->AsSection();
+		BlockCollection *sblocks = s->GetBlocks();
+		int count = sblocks->GetCount();
+		for (int i = 0; i < count; i ++) {
+			Block *b = sblocks->GetValueAt (0)->AsBlock();
+			sblocks->RemoveAt (0);
+			GetBlocks()->Add (Value(b));
+		}
 	}
 	
 	if (changed != RichTextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
@@ -1163,33 +1203,85 @@ RichTextBox::OnApplyTemplate ()
 	Control::OnApplyTemplate ();
 }
 
+DependencyObjectCollection*
+RichTextBox::GetDocumentChildren ()
+{
+	return GetBlocks();
+}
+
+void
+RichTextBox::AddTextPointer (TextPointer *pointer)
+{
+	g_ptr_array_insert_sorted (text_pointers, TextPointer::Comparer, pointer);
+}
+
+void
+RichTextBox::RemoveTextPointer (TextPointer *pointer)
+{
+	g_ptr_array_remove (text_pointers, pointer);
+}
+
+char*
+RichTextBox::Serialize ()
+{
+	const char *header = "<Section xml:space=\"preserve\" HasTrailingParagraphBreakOnPaste=\"False\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">";
+	const char *trailer = "</Section>";
+
+	GString* str = g_string_new (header);
+	int c = GetBlocks()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Block *b = GetBlocks()->GetValueAt(i)->AsBlock();
+		char *b_str = b->Serialize();
+		g_string_append (str, b_str);
+		g_free (b_str);
+	}
+	g_string_append (str, trailer);
+	return g_string_free (str, FALSE);
+}
+
 TextPointer*
 RichTextBox::GetPositionFromPoint (Point point)
 {
-	// FIXME
-	return MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionForward);
+	return new TextPointer (view->GetLocationFromXY (point.x, point.y));
 }
 
 TextPointer*
 RichTextBox::GetContentStart ()
 {
-	// FIXME
-	return MoonUnmanagedFactory::CreateTextPointer (0, LogicalDirectionBackward);
+	return new TextPointer (this, 0, LogicalDirectionBackward);
 }
 
 TextPointer*
 RichTextBox::GetContentEnd ()
 {
-	// FIXME
-	return MoonUnmanagedFactory::CreateTextPointer (-1, LogicalDirectionForward);
+	return new TextPointer (this, -1, LogicalDirectionForward);
 }
 
 void
 RichTextBox::SelectAll ()
 {
-	// FIXME: implement this
+	TextPointer *start, *end;
+
+	start = GetContentStart ();
+	end = GetContentEnd ();
+
+	GetSelection()->Select (start, end);
+
+	delete start;
+	delete end;
 }
 
+TextSelection *
+RichTextBox::GetSelection ()
+{
+	if (!selection) {
+		selection = new TextSelection ();
+		// should we fill in cursor/anchor?
+	}
+		
+	return selection;
+}
+	
 bool
 RichTextBox::CanUndo ()
 {
@@ -1246,8 +1338,10 @@ RichTextBox::Undo ()
 	//SetSelectionStart (MIN (anchor, cursor));
 	//SetSelectionLength (abs (cursor - anchor));
 	emit = CONTENT_CHANGED | SELECTION_CHANGED;
+#if notyet
 	selection_anchor = anchor;
 	selection_cursor = cursor;
+#endif
 	BatchPop ();
 	
 	SyncAndEmit ();
@@ -1294,11 +1388,19 @@ RichTextBox::Redo ()
 	//SetSelectionStart (MIN (anchor, cursor));
 	//SetSelectionLength (abs (cursor - anchor));
 	emit = CONTENT_CHANGED | SELECTION_CHANGED;
+#if notyet
 	selection_anchor = anchor;
 	selection_cursor = cursor;
+#endif
 	BatchPop ();
 	
 	SyncAndEmit ();
+}
+
+Rect
+RichTextBox::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
+{
+	return view->GetCharacterRect (tp, direction);
 }
 
 
@@ -1312,16 +1414,15 @@ RichTextBox::Redo ()
 #define CURSOR_BLINK_DIVIDER          3
 
 RichTextBoxView::RichTextBoxView ()
+	: FrameworkElement (Type::RICHTEXTBOXVIEW)
 {
-	SetObjectType (Type::RICHTEXTBOXVIEW);
-	
 	AddHandler (UIElement::MouseLeftButtonDownEvent, RichTextBoxView::mouse_left_button_down, this);
 	AddHandler (UIElement::MouseLeftButtonUpEvent, RichTextBoxView::mouse_left_button_up, this);
-	
+
 	SetCursor (CursorTypeIBeam);
 	
 	cursor = Rect (0, 0, 0, 0);
-	layout = new TextLayout ();
+	layout = new RichTextLayout ();
 	selection_changed = false;
 	had_selected_text = false;
 	cursor_visible = false;
@@ -1335,7 +1436,7 @@ RichTextBoxView::~RichTextBoxView ()
 {
 	RemoveHandler (UIElement::MouseLeftButtonDownEvent, RichTextBoxView::mouse_left_button_down, this);
 	RemoveHandler (UIElement::MouseLeftButtonUpEvent, RichTextBoxView::mouse_left_button_up, this);
-	
+
 	if (textbox) {
 		textbox->RemoveHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
 		textbox->view->unref ();
@@ -1347,22 +1448,29 @@ RichTextBoxView::~RichTextBoxView ()
 	delete layout;
 }
 
-TextLayoutLine *
+RichTextLayoutLine *
 RichTextBoxView::GetLineFromY (double y, int *index)
 {
 	return layout->GetLineFromY (Point (), y, index);
 }
 
-TextLayoutLine *
+RichTextLayoutLine *
 RichTextBoxView::GetLineFromIndex (int index)
 {
 	return layout->GetLineFromIndex (index);
 }
 
-int
-RichTextBoxView::GetCursorFromXY (double x, double y)
+TextPointer
+RichTextBoxView::GetLocationFromXY (double x, double y)
 {
-	return layout->GetCursorFromXY (Point (), x, y);
+	return layout->GetLocationFromXY (Point (), x, y);
+}
+
+
+Rect
+RichTextBoxView::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
+{
+	return layout->GetCharacterRect (tp, direction);
 }
 
 bool
@@ -1529,9 +1637,10 @@ RichTextBoxView::UpdateCursor (bool invalidate)
 void
 RichTextBoxView::UpdateText ()
 {
-	const char *text = NULL; // FIXME: textbox->GetDisplayText ();
-	
-	layout->SetText (text ? text : "", -1);
+       	if (layout->SetBlocks (textbox->GetBlocks())) {
+		layout->ResetState ();
+		GetChildren()->Clear(); // FIXME: pretty sure we need to ElementRemoved for all the children here.
+	}
 }
 
 void
@@ -1588,16 +1697,35 @@ RichTextBoxView::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 void
 RichTextBoxView::Layout (Size constraint)
 {
-	layout->SetMaxWidth (constraint.width);
+	if (layout->SetMaxWidth (constraint.width)) {
+		layout->ResetState();
+		GetChildren()->Clear(); // FIXME: pretty sure we need to ElementRemoved for all the children here.
+	}
 	
-	layout->Layout ();
+	layout->Layout (this);
 	dirty = false;
+}
+
+double
+RichTextBoxView::GetBaselineOffset ()
+{
+	MoonError error;
+	GeneralTransform *from_view_to_rtb = GetTransformToUIElementWithError (textbox, &error);
+
+	Point p = from_view_to_rtb->Transform (Point (0,0));
+
+	from_view_to_rtb->unref ();
+
+	return layout->GetBaselineOffset () + p.y;
 }
 
 void
 RichTextBoxView::Paint (cairo_t *cr)
 {
+	layout->Layout (this);
+
 	cairo_save (cr);
+
 	if (GetFlowDirection () == FlowDirectionRightToLeft) {
 		Rect bbox = layout->GetRenderExtents ();
 		cairo_translate (cr, bbox.width, 0.0);
@@ -1707,6 +1835,8 @@ RichTextBoxView::OnModelChanged (RichTextBoxModelChangedEventArgs *args)
 	}
 	
 	if (dirty) {
+		layout->ResetState ();
+		GetChildren()->Clear(); // FIXME: pretty sure we need to ElementRemoved for all the children here.
 		InvalidateMeasure ();
 		UpdateBounds (true);
 	}
@@ -1718,6 +1848,39 @@ void
 RichTextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	((RichTextBoxView *) closure)->OnModelChanged ((RichTextBoxModelChangedEventArgs *) args);
+}
+
+
+void
+RichTextBoxView::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	if (PropertyHasValueNoAutoCreate (RichTextBoxView::ChildrenProperty, col)) {
+		switch (args->GetChangedAction()) {
+		case CollectionChangedActionReplace:
+			ElementRemoved (args->GetOldItem()->AsUIElement ());
+			// now fall thru to Add
+		case CollectionChangedActionAdd:
+			ElementAdded (args->GetNewItem()->AsUIElement ());
+			break;
+		case CollectionChangedActionRemove:
+			ElementRemoved (args->GetOldItem()->AsUIElement ());
+			break;
+		case CollectionChangedActionClearing: {
+			int children_count = col->GetCount ();
+			for (int i = 0; i < children_count; i++) {
+				UIElement *ui = col->GetValueAt (i)->AsUIElement ();
+				ElementRemoved (ui);
+			}
+			break;
+		}
+		case CollectionChangedActionCleared:
+			// nothing needed here.
+			break;
+		}
+	}
+	else {
+		FrameworkElement::OnCollectionChanged (col, args);
+	}
 }
 
 void
@@ -1758,6 +1921,7 @@ RichTextBoxView::mouse_left_button_up (EventObject *sender, EventArgs *args, gpo
 	((RichTextBoxView *) closure)->OnMouseLeftButtonUp ((MouseButtonEventArgs *) args);
 }
 
+
 void
 RichTextBoxView::SetTextBox (RichTextBox *textbox)
 {
@@ -1776,25 +1940,46 @@ RichTextBoxView::SetTextBox (RichTextBox *textbox)
 	if (textbox) {
 		textbox->AddHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
 		
-		// sync our state with the textbox
-		layout->SetTextAttributes (new List ());
-		attrs = new TextLayoutAttributes (textbox->rootSection, 0);
-		layout->GetTextAttributes ()->Append (attrs);
-		
 		layout->SetTextAlignment (textbox->GetTextAlignment ());
 		layout->SetTextWrapping (textbox->GetTextWrapping ());
+
 		had_selected_text = textbox->HasSelectedText ();
 		selection_changed = true;
 		UpdateText ();
 	} else {
-		layout->SetTextAttributes (NULL);
-		layout->SetText (NULL, -1);
+		layout->SetBlocks (NULL);
 	}
 	
 	UpdateBounds (true);
 	InvalidateMeasure ();
 	Invalidate ();
 	dirty = true;
+}
+
+void
+RichTextBoxView::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args)
+{
+	// for now just relayout the entire RTB.  in the future, bump
+	// up to onElement's parent Paragraph and just relayout that
+	// paragraph.
+
+	layout->ResetState();
+	GetChildren()->Clear(); // FIXME: pretty sure we need to ElementRemoved for all the children here.
+	InvalidateMeasure ();
+	UpdateBounds (true);
+}
+
+void
+RichTextBoxView::DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args)
+{
+	// for now just relayout the entire RTB.  in the future, bump
+	// up to onElement's parent Paragraph and just relayout that
+	// paragraph.
+
+	layout->ResetState();
+	GetChildren()->Clear(); // FIXME: pretty sure we need to ElementRemoved for all the children here.
+	InvalidateMeasure ();
+	UpdateBounds (true);
 }
 
 void
@@ -1809,6 +1994,16 @@ RichTextBoxView::SetEnableCursor (bool enable)
 		ResetCursorBlink (false);
 	else
 		EndCursorBlink ();
+}
+
+Value *
+RichTextBoxView::CreateChildren (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
+{
+	UIElementCollection *col = new UIElementCollection (false);
+	col->EnsureManagedPeer ();
+	if (forObj)
+		((RichTextBoxView*)forObj)->SetSubtreeObject (col);
+	return Value::CreateUnrefPtr (col);
 }
 
 };
