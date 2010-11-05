@@ -1766,17 +1766,27 @@ Surface::EmitEventOnList (int event_id, List *list, MoonEvent *event, int end_id
 	}
 
 	EventArgs *args = CreateArgsForEvent(event_id, event);
-	bool args_are_routed = args->Is (Type::ROUTEDEVENTARGS);
-
-	if (args_are_routed && element_list->First())
-		((RoutedEventArgs*)args)->SetSource(((UIElementNode*)element_list->First())->uielement);
+	node = (UIElementNode *) element_list->First ();
+	if (node && args->Is (Type::ROUTEDEVENTARGS))
+		((RoutedEventArgs*) args)->SetSource (node->uielement);
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		args->ref ();
+		// If we're emitting a MouseLeave event we're supposed to create a new RoutedEventArgs
+		// each time with the current element as the source. Otherwise we re-use the same args
+		// again
+		if (event_id == UIElement::MouseLeaveEvent)
+			((RoutedEventArgs*) args)->SetSource (node->uielement);
+		else
+			args->ref ();
 
 		if (node->uielement->DoEmit (event_id, args))
 			handled = true;
-		
+
+		// Create the new args because the old one should be dead due
+		// to the unref in emit
+		if (event_id == UIElement::MouseLeaveEvent)
+			args = CreateArgsForEvent(event_id, event);
+
 		if (zombie) {
 			handled = false;
 			break;
