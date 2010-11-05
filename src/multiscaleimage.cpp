@@ -783,9 +783,10 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	fadein_animation->SetFrom (tile_fade);
 	fadein_animation->SetTo (tile_fade + 0.9);
 	
-	fadein_sb->BeginWithError (NULL);
-	motion |= MOTION_IS_FADING;
-	SetIsIdle (false);
+	if (fadein_sb->BeginWithError (NULL)) {
+		motion |= MOTION_IS_FADING;
+		SetIsIdle (false);
+	}
 	
 	cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
 	LOG_MSI ("caching %s\n", ctx->image->GetUriSource ()->ToString ());
@@ -1654,9 +1655,11 @@ MultiScaleImage::AnimateViewportWidth (double width)
 	LOG_MSI ("animating zoom from %f to %f\n\n", GetAnimatedViewportWidth (), width);
 	
 	SetZoomAnimationEndPoint (width);
-	zoom_sb->BeginWithError (NULL);
-	motion |= MOTION_IS_ZOOMING;
-	SetIsIdle (false);
+	
+	if (zoom_sb->BeginWithError (NULL)) {
+		motion |= MOTION_IS_ZOOMING;
+		SetIsIdle (false);
+	}
 }
 
 void
@@ -1694,13 +1697,16 @@ MultiScaleImage::AnimateViewportOrigin (Point *origin)
 #if DEBUG
 		pan_sb->SetName ("Multiscale Pan");
 #endif
-	} else
+	} else {
 		pan_sb->PauseWithError (NULL);
+	}
 	
 	SetPanAnimationEndPoint (*origin);
-	pan_sb->BeginWithError (NULL);
-	motion |= MOTION_IS_PANNING;
-	SetIsIdle (false);
+	
+	if (pan_sb->BeginWithError (NULL)) {
+		motion |= MOTION_IS_PANNING;
+		SetIsIdle (false);
+	}
 }
 
 void
