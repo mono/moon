@@ -1656,7 +1656,6 @@ static bool
 generic_keyframe_validator (Animation *animation, KeyFrameCollection *col, MoonError *error)
 {
 	KeyFrame *keyframe;
-	KeyTime *keytime;
 	Value *value;
 	int count;
 	
@@ -1667,7 +1666,7 @@ generic_keyframe_validator (Animation *animation, KeyFrameCollection *col, MoonE
 	for (int i = 0; i < count; i++) {
 		value = col->GetValueAt (i);
 		keyframe = value->AsKeyFrame ();
-		keytime = keyframe->GetKeyTime ();
+		
 		if (!keyframe->resolved || keyframe->resolved_keytime < 0) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "KeyTime property on KeyFrame object must be set to a non-negative TimeSpan value.");
 			return false;
