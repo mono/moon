@@ -145,6 +145,24 @@ namespace MoonTest.System.Windows
 
 		}
 
+		[TestMethod]
+		public void NaNToNaNDoesNotInvokeChangeHandler()
+		{
+			bool changed = false;
+			var prop = DependencyProperty.Register("NaNProp", typeof(double), typeof(CustomCanvas), new PropertyMetadata((o, e) => changed = true));
+
+			var target = new CustomCanvas();
+			target.SetValue(prop, double.NaN);
+
+			// Going from 0 -> NaN is counted as a change
+			Assert.IsTrue(changed, "#1");
+
+			// Going from NaN -> NaN is not counted as a change.
+            changed = false;
+			target.SetValue(prop, double.NaN);
+			Assert.IsFalse(changed, "#2");
+		}
+
 #region Canvas Custom
 		[TestMethod()]
 		public void Custom_Property_CanSetTwice ()
