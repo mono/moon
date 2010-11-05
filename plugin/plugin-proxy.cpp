@@ -36,15 +36,19 @@ load (void)
 {
 	char *plugin_path;
 
+#if DEBUG
+	printf ("Moonlight: " PACKAGE_VERSION "\n");
+#endif
+	
 	Dl_info dlinfo;
 	if (dladdr((void *) &load, &dlinfo) == 0) {
-		fprintf (stderr, "Unable to find the location of libmoonloaderxpi %s\n", dlerror ());
+		fprintf (stderr, "Moonlight: Unable to find the location of libmoonloaderxpi %s\n", dlerror ());
 		return FALSE;
 	}
 
 	if (strstr(dlinfo.dli_fname, "libmoonloaderxpi.so")) {
 
-		fprintf (stdout, "Attempting to load libmoonloaderxpi \n");
+		fprintf (stdout, "Moonlight: Attempting to load libmoonloaderxpi \n");
 		char *plugin_dir;
 		plugin_dir = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), "moonlight", NULL);
 
@@ -55,7 +59,7 @@ load (void)
 		char *avutil_path = g_build_filename (plugin_dir, "libavutil.so", NULL);
 		void *real_avutil = dlopen (avutil_path, RTLD_LAZY | RTLD_GLOBAL);
 		if (real_avutil == NULL){
-			fprintf (stderr, "Unable to load the libavutil %s\n", dlerror ());
+			fprintf (stderr, "Moonlight: Unable to load the libavutil %s\n", dlerror ());
 			return FALSE;
 		}
 		g_free (avutil_path);
@@ -64,7 +68,7 @@ load (void)
 		char *avcodec_path = g_build_filename (plugin_dir, "libavcodec.so", NULL);
 		void *real_avcodec = dlopen (avcodec_path, RTLD_LAZY | RTLD_GLOBAL);
 		if (real_avcodec == NULL){
-			fprintf (stderr, "Unable to load the libavcodec %s\n", dlerror ());
+			fprintf (stderr, "Moonlight: Unable to load the libavcodec %s\n", dlerror ());
 			return FALSE;
 		}
 		g_free (avcodec_path);
@@ -79,14 +83,14 @@ load (void)
 		} else {
 			plugin_path = g_build_filename (moon_plugin_dir, "libmoonplugin.so", NULL);
 		}
-		fprintf (stdout, "Attempting to load libmoonplugin from: %s\n", plugin_path);
+		fprintf (stdout, "Moonlight: Attempting to load libmoonplugin from: %s\n", plugin_path);
 	}
 
 	void *real_plugin = dlopen (plugin_path, RTLD_LAZY | RTLD_GLOBAL);
 
 	if (real_plugin == NULL){
-		fprintf (stderr, "Unable to load the real plugin %s\n", dlerror ());
-		fprintf (stderr, "plugin_path is %s\n", plugin_path);
+		fprintf (stderr, "Moonlight: Unable to load the real plugin %s\n", dlerror ());
+		fprintf (stderr, "Moonlight: plugin_path is %s\n", plugin_path);
 		return FALSE;
 	}
 
@@ -104,26 +108,26 @@ load (void)
 
 	initialize = (np_initialize_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_Initialize));
 	if (initialize == NULL){
-		fprintf (stderr, "NP_Initialize not found %s\n", dlerror ());
+		fprintf (stderr, "Moonlight: NP_Initialize not found %s\n", dlerror ());
 		return FALSE;
 	}
 
 
 	getvalue = (np_getvalue_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_GetValue));
 	if (getvalue == NULL){
-		fprintf (stderr, "NP_GetValue not found %s\n", dlerror ());
+		fprintf (stderr, "Moonlight: NP_GetValue not found %s\n", dlerror ());
 		return FALSE;
 	}
 
 	getmime = (np_getmime_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_GetMIMEDescription));
 	if (getmime == NULL){
-		fprintf (stderr, "NP_GetMIMEDescription not found %s\n", dlerror ());
+		fprintf (stderr, "Moonlight: NP_GetMIMEDescription not found %s\n", dlerror ());
 		return FALSE;
 	}
 
 	shutdown = (np_shutdown_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_Shutdown));
 	if (shutdown == NULL){
-		fprintf (stderr, "NP_Shutdown not found %s\n", dlerror ());
+		fprintf (stderr, "Moonlight: NP_Shutdown not found %s\n", dlerror ());
 		return FALSE;
 	}
 

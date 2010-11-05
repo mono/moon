@@ -1342,6 +1342,9 @@ Surface::GetSourceLocation ()
 void
 Surface::SetSourceLocation (const Uri* location)
 {
+#if DEBUG
+	printf ("Moonlight: URL = %s\n", location->ToString ());
+#endif
 	delete source_location;
 	source_location = Uri::Clone (location);
 }
