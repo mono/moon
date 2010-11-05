@@ -39,6 +39,7 @@ namespace System.Net.Browser {
 		static Type web_header_collection;
 		static MethodInfo headers_all_keys;
 		static MethodInfo headers_get;
+		static MethodInfo headers_get_values;
 		static MethodInfo headers_set;
 
 		static ConstructorInfo network_credential_ctor;
@@ -50,6 +51,7 @@ namespace System.Net.Browser {
 			headers_all_keys = web_header_collection.GetProperty ("AllKeys").GetGetMethod ();
 
 			headers_get = web_header_collection.GetMethod ("Get", new Type [] { typeof (string) });
+			headers_get_values = web_header_collection.GetMethod ("GetValues", new Type [] { typeof (string) });
 			headers_set = web_header_collection.GetMethod ("Set", new Type [] { typeof (string), typeof (string) });
 
 			Type network_credential = SystemAssembly.GetType ("System.Net.NetworkCredential");
@@ -70,6 +72,16 @@ namespace System.Net.Browser {
 		{
 			try {
 				return (string) headers_get.Invoke (headerCollection, new object [] { name });
+			}
+			catch (TargetInvocationException tie) {
+				throw tie.InnerException;
+			}
+		}
+
+		static public string[] GetHeaderValues (object headerCollection, string name)
+		{
+			try {
+				return (string []) headers_get_values.Invoke (headerCollection, new object [] { name });
 			}
 			catch (TargetInvocationException tie) {
 				throw tie.InnerException;

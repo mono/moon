@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <linker>
 	<assembly fullname="System.Net">
+		<type fullname="System.Net.CookieParser" preserve="all" />
 		<type fullname="System.Net.DnsEndPoint" preserve="all" />
 		<type fullname="System.Net.InternalWebRequestStreamWrapper" preserve="all" />
 		<type fullname="System.Net.InternalWebResponseStreamWrapper" preserve="all" />

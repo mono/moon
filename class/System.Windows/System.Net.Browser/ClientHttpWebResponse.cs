@@ -28,6 +28,7 @@
 
 #if NET_2_1
 
+using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
@@ -81,6 +82,7 @@ namespace System.Net.Browser {
 		private string status_description;
 		private WebHeaderCollection headers;
 		private Stream stream;
+		private CookieCollection jar;
 
 		internal ClientHttpWebResponse (HttpWebRequest request, object response)
 		{
@@ -94,12 +96,22 @@ namespace System.Net.Browser {
 				SetStatus ((HttpStatusCode) (int) get_status_code.Invoke (response, null),
 					(string) get_status_description.Invoke (response, null));
 
+				jar = new CookieCollection ();
 				headers = new WebHeaderCollection ();
 				object header_collection = get_headers.Invoke (response, null);
 				string[] keys = ClientReflectionHelper.GetHeaderKeys (header_collection);
 				foreach (string key in keys) {
-					string value = ClientReflectionHelper.GetHeader (header_collection, key);
-					headers.SetHeader (key, value);
+					switch (key) {
+					case "Set-Cookie":
+						string[] values = ClientReflectionHelper.GetHeaderValues (header_collection, key);
+						foreach (string cookie in values)
+							SetCookie (cookie);
+						break;
+					default:
+						string value = ClientReflectionHelper.GetHeader (header_collection, key);
+						headers.SetHeader (key, value);
+						break;
+					}
 				}
 
 				using (Stream response_stream = (Stream) get_response_stream.Invoke (response, null)) {
@@ -123,9 +135,8 @@ namespace System.Net.Browser {
 			get { return content_type; }
 		}
 
-		// FIXME: another type mismatch
 		public override CookieCollection Cookies {
-			get { throw new NotImplementedException (); }
+			get { return jar; }
 		}
 
 		// note: SL System.Net's WebHeaderCollection is a different type than (regular) System.dll's WebHeaderCollection
@@ -149,6 +160,79 @@ namespace System.Net.Browser {
 		public override Stream GetResponseStream ()
 		{
 			return stream;
+		}
+
+		// copy-pasted (and a bit adapted) from HttpWebResponse
+		void SetCookie (string header)
+		{
+			string name, val;
+			Cookie cookie = null;
+			CookieParser parser = new CookieParser (header);
+
+			while (parser.GetNextNameValue (out name, out val)) {
+				if (String.IsNullOrEmpty (name) && cookie == null)
+					continue;
+
+				if (cookie == null) {
+					cookie = new Cookie (name, val);
+					continue;
+				}
+
+				name = name.ToUpper ();
+				switch (name) {
+				case "COMMENT":
+					if (cookie.Comment == null)
+						cookie.Comment = val;
+					break;
+				case "COMMENTURL":
+					if (cookie.CommentUri == null)
+						cookie.CommentUri = new Uri (val);
+					break;
+				case "DISCARD":
+					cookie.Discard = true;
+					break;
+				case "DOMAIN":
+					if (cookie.Domain.Length == 0)
+						cookie.Domain = val;
+					break;
+				case "HTTPONLY":
+					cookie.HttpOnly = true;
+					break;
+				case "MAX-AGE": // RFC Style Set-Cookie2
+					if (cookie.Expires == DateTime.MinValue) {
+						try {
+						cookie.Expires = cookie.TimeStamp.AddSeconds (UInt32.Parse (val));
+						} catch {}
+					}
+					break;
+				case "EXPIRES": // Netscape Style Set-Cookie
+					if (cookie.Expires != DateTime.MinValue)
+						break;
+
+					cookie.Expires = CookieParser.TryParseCookieExpires (val);
+					break;
+				case "PATH":
+					cookie.Path = val;
+					break;
+				case "PORT":
+					if (cookie.Port == null)
+						cookie.Port = val;
+					break;
+				case "SECURE":
+					cookie.Secure = true;
+					break;
+				case "VERSION":
+					try {
+						cookie.Version = (int) UInt32.Parse (val);
+					} catch {}
+					break;
+				}
+			}
+
+			if (cookie.Domain.Length == 0)
+				cookie.Domain = response_uri.Host;
+
+			jar.Add (cookie);
 		}
 	}
 }

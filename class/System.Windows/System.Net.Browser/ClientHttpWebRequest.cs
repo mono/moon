@@ -101,8 +101,10 @@ namespace System.Net.Browser {
 
 		protected override HttpWebRequest GetHttpWebRequest (Uri uri)
 		{
-			if (request == null)
+			if (request == null) {
 				request = new ClientHttpWebRequestInternal (this, uri);
+				request.CookieContainer = CookieContainer;
+			}
 			return request;
 		}
 
