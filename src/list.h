@@ -106,9 +106,10 @@ public:
 class Stack {
 protected:
 	List *list;
+	int max_depth;
 
 public:
-	Stack ();
+	Stack (int max_depth = -1);
 	~Stack ();
 
 	bool IsEmpty ();

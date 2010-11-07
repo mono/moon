@@ -23,6 +23,7 @@
 #include "textelement.h"
 #include "textpointer.h"
 #include "textselection.h"
+#include "list.h"
 
 namespace Moonlight {
 
@@ -63,7 +64,6 @@ class RichTextBoxModelChangedEventArgs : public EventArgs {
 	}
 };
 
-class RichTextBoxUndoStack;
 class RichTextBoxView;
 
 /* @Namespace=System.Windows.Controls */
@@ -74,14 +74,17 @@ class RichTextBox : public Control, public IDocumentNode, public ITextAttributes
 	friend class TextSelection;
 	friend class TextPointer;
 
- protected:
+private:
+	void ApplyFormattingToSelection (TextSelection *selection, DependencyProperty *prop, Value *value);
+
+protected:
 	DependencyObject *contentElement;
 	
 	TextSelection *selection;
 	GPtrArray *text_pointers;
 
-	RichTextBoxUndoStack *undo;
-	RichTextBoxUndoStack *redo;
+	Stack *undo;
+	Stack *redo;
 	double cursor_offset;
 	RichTextBoxView *view;
 	MoonIMContext *im_ctx;

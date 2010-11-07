@@ -29,8 +29,22 @@ TextSelection::TextSelection ()
 void
 TextSelection::ApplyPropertyValue (DependencyProperty *formatting, Value *value)
 {
-	printf ("TextSelection::ApplyPropertyValue (%s)\n", formatting->GetName());
-	// FIXME: implement this
+	DependencyObject *el = anchor.GetParent();
+	while (el) {
+		if (el->Is (Type::RICHTEXTBOX))
+			break;
+		el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
+		if (!el)
+			break;
+	}
+	if (el == NULL) {
+		g_warning ("this shouldn't happen...");
+		return;
+	}
+	
+	RichTextBox *rtb = (RichTextBox*)el;
+
+	rtb->ApplyFormattingToSelection (this, formatting, value);
 }
 
 Value *

@@ -64,93 +64,99 @@ class RichTextBoxProvider : public FrameworkElementProvider {
 };
 
 //
-// RichTextBoxUndoActions
+// RichTextBoxActions
 //
 
-enum RichTextBoxUndoActionType {
-	RichTextBoxUndoActionTypeInsert,
-	RichTextBoxUndoActionTypeDelete,
-	RichTextBoxUndoActionTypeReplace,
+class RichTextBoxAction : public List::Node {
+public:
+	virtual ~RichTextBoxAction () {}
+	virtual void Do () = 0;
+	virtual void Undo () = 0;
 };
 
-class RichTextBoxUndoAction : public List::Node {
- public:
-	RichTextBoxUndoActionType type;
-	// FIXME: what else do we need?
-};
+class RichTextBoxActionApplyFormatting : public RichTextBoxAction {
+public:
+	RichTextBoxActionApplyFormatting (RichTextBox* rtb, TextSelection* selection, DependencyProperty* prop, Value* v)
+	{
+		this->rtb = rtb;
 
-class RichTextBoxUndoStack {
-	int max_count;
-	List *list;
-	
- public:
-	RichTextBoxUndoStack (int max_count);
-	~RichTextBoxUndoStack ();
-	
-	bool IsEmpty ();
-	void Clear ();
-	
-	void Push (RichTextBoxUndoAction *action);
-	RichTextBoxUndoAction *Peek ();
-	RichTextBoxUndoAction *Pop ();
-};
-
-
-//
-// RichTextBoxUndoStack
-//
-
-RichTextBoxUndoStack::RichTextBoxUndoStack (int max_count)
-{
-	this->max_count = max_count;
-	this->list = new List ();
-}
-
-RichTextBoxUndoStack::~RichTextBoxUndoStack ()
-{
-	delete list;
-}
-
-bool
-RichTextBoxUndoStack::IsEmpty ()
-{
-	return list->IsEmpty ();
-}
-
-void
-RichTextBoxUndoStack::Clear ()
-{
-	list->Clear (true);
-}
-
-void
-RichTextBoxUndoStack::Push (RichTextBoxUndoAction *action)
-{
-	if (list->Length () == max_count) {
-		List::Node *node = list->Last ();
-		list->Unlink (node);
-		delete node;
+		start = selection->GetStart();
+		end = selection->GetEnd();
+		
+		this->prop = prop;
+		this->v = *v;
 	}
-	
-	list->Prepend (action);
-}
 
-RichTextBoxUndoAction *
-RichTextBoxUndoStack::Pop ()
-{
-	List::Node *node = list->First ();
-	
-	if (node)
-		list->Unlink (node);
-	
-	return (RichTextBoxUndoAction *) node;
-}
+	virtual ~RichTextBoxActionApplyFormatting ()
+	{
+	}
 
-RichTextBoxUndoAction *
-RichTextBoxUndoStack::Peek ()
-{
-	return (RichTextBoxUndoAction *) list->First ();
-}
+	virtual void Do ()
+	{
+		TextSelection* selection = rtb->GetSelection();
+		selection->Select (start, end);
+
+		printf ("NIEX: RichTextBoxActionApplyFormatting::Do\n");
+	}
+
+	virtual void Undo ()
+	{
+		printf ("NIEX: RichTextBoxActionApplyFormatting::Undo\n");
+	}
+
+private:
+	DependencyProperty* prop;
+	Value v;
+
+	TextPointer* start;
+	TextPointer* end;
+	RichTextBox* rtb;
+};
+
+class RichTextBoxActionSetSelectionText : public RichTextBoxAction {
+public:
+	RichTextBoxActionSetSelectionText (RichTextBox* rtb, TextSelection* selection, const char* text)
+	{
+		this->rtb = rtb;
+
+		start = selection->GetStart();
+		end = selection->GetEnd();
+
+		this->text = g_strdup (text);
+		this->previous_text = NULL;
+	}
+
+	virtual ~RichTextBoxActionSetSelectionText ()
+	{
+		delete start;
+		delete end;
+
+		g_free (text);
+		g_free (previous_text);
+	}
+
+	virtual void Do ()
+	{
+		TextSelection *selection = rtb->GetSelection();
+		selection->Select (start, end);
+		previous_text = selection->GetText ();
+		selection->SetText (text);
+	}
+
+	virtual void Undo ()
+	{
+		printf ("NIEX: RichTextBoxActionApplyFormatting::Undo\n");
+	}
+
+private:
+	char* text;
+	char* previous_text;
+
+	TextPointer* start;
+	TextPointer* end;
+	RichTextBox* rtb;
+};
+
 
 
 //
@@ -207,8 +213,8 @@ RichTextBox::RichTextBox ()
 	im_ctx->SetDeleteSurroundingCallback ((MoonCallback) RichTextBox::delete_surrounding, this);
 	im_ctx->SetCommitCallback ((MoonCallback) RichTextBox::commit, this);
 	
-	undo = new RichTextBoxUndoStack (10);
-	redo = new RichTextBoxUndoStack (10);
+	undo = new Stack (10);
+	redo = new Stack (10);
 	
 	events_mask = CONTENT_CHANGED | SELECTION_CHANGED;
 	emit = NOTHING_CHANGED;
@@ -356,7 +362,7 @@ RichTextBox::KeyPressBackSpace (MoonModifier modifiers)
 #else
 	TextSelection *selection = GetSelection ();
 
-	TextBoxUndoAction *action;
+	TextBoxAction *action;
 	int start = 0, length = 0;
 	bool handled = false;
 
@@ -383,7 +389,7 @@ RichTextBox::KeyPressBackSpace (MoonModifier modifiers)
 	}
 
 	if (length > 0) {
-		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
+		action = new TextBoxActionDelete (selection_anchor, selection_cursor, buffer, start, length);
 		undo->Push (action);
 		redo->Clear ();
 		
@@ -817,17 +823,27 @@ RichTextBox::Commit (const char *str)
 	if (selection->GetStart()->GetParent() == NULL)
 		SelectAll();
 
-	selection->SetText (str);
+	RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText(this, selection, str);
 
-	char *serialized_form = Serialize();
-	printf ("our new xaml is %s\n", serialized_form);
-	g_free (serialized_form);
+	action->Do ();
+
+	undo->Push (action);
 }
 
 void
 RichTextBox::commit (MoonIMContext *context, const char *str, gpointer user_data)
 {
 	((RichTextBox *) user_data)->Commit (str);
+}
+
+void
+RichTextBox::ApplyFormattingToSelection (TextSelection *selection, DependencyProperty *prop, Value *value)
+{
+	RichTextBoxActionApplyFormatting *action = new RichTextBoxActionApplyFormatting (this, selection, prop, value);
+
+	action->Do ();
+
+	undo->Push (action);
 }
 
 void
@@ -1297,42 +1313,18 @@ RichTextBox::CanRedo ()
 void
 RichTextBox::Undo ()
 {
-	//RichTextBoxUndoActionReplace *replace;
-	//RichTextBoxUndoActionInsert *insert;
-	//RichTextBoxUndoActionDelete *dele;
-	RichTextBoxUndoAction *action;
+	//RichTextBoxActionReplace *replace;
+	//RichTextBoxActionInsert *insert;
+	//RichTextBoxActionDelete *dele;
+	RichTextBoxAction *action;
 	int anchor = 0, cursor = 0;
 	
 	if (undo->IsEmpty ())
 		return;
 	
-	action = undo->Pop ();
+	action = (RichTextBoxAction*)undo->Pop ();
 	redo->Push (action);
-	
-	switch (action->type) {
-	case RichTextBoxUndoActionTypeInsert:
-		//insert = (TextBoxUndoActionInsert *) action;
-		
-		//buffer->Cut (insert->start, insert->length);
-		//anchor = action->selection_anchor;
-		//cursor = action->selection_cursor;
-		break;
-	case RichTextBoxUndoActionTypeDelete:
-		//dele = (TextBoxUndoActionDelete *) action;
-		
-		//buffer->Insert (dele->start, dele->text, dele->length);
-		//anchor = action->selection_anchor;
-		//cursor = action->selection_cursor;
-		break;
-	case RichTextBoxUndoActionTypeReplace:
-		//replace = (TextBoxUndoActionReplace *) action;
-		
-		//buffer->Cut (replace->start, replace->inlen);
-		//buffer->Insert (replace->start, replace->deleted, replace->length);
-		//anchor = action->selection_anchor;
-		//cursor = action->selection_cursor;
-		break;
-	}
+	action->Undo ();
 	
 	BatchPush ();
 	//SetSelectionStart (MIN (anchor, cursor));
@@ -1350,39 +1342,19 @@ RichTextBox::Undo ()
 void
 RichTextBox::Redo ()
 {
-	//RichTextBoxUndoActionReplace *replace;
-	//RichTextBoxUndoActionInsert *insert;
-	//RichTextBoxUndoActionDelete *dele;
-	RichTextBoxUndoAction *action;
+	//RichTextBoxActionReplace *replace;
+	//RichTextBoxActionInsert *insert;
+	//RichTextBoxActionDelete *dele;
+	RichTextBoxAction *action;
 	int anchor = 0, cursor = 0;
 	
 	if (redo->IsEmpty ())
 		return;
 	
-	action = redo->Pop ();
+	action = (RichTextBoxAction*)redo->Pop ();
 	undo->Push (action);
-	
-	switch (action->type) {
-	case RichTextBoxUndoActionTypeInsert:
-		//insert = (TextBoxUndoActionInsert *) action;
-		
-		//buffer->Insert (insert->start, insert->buffer->text, insert->buffer->len);
-		//anchor = cursor = insert->start + insert->buffer->len;
-		break;
-	case RichTextBoxUndoActionTypeDelete:
-		//dele = (TextBoxUndoActionDelete *) action;
-		
-		//buffer->Cut (dele->start, dele->length);
-		//anchor = cursor = dele->start;
-		break;
-	case RichTextBoxUndoActionTypeReplace:
-		//replace = (TextBoxUndoActionReplace *) action;
-		
-		//buffer->Cut (replace->start, replace->length);
-		//buffer->Insert (replace->start, replace->inserted, replace->inlen);
-		//anchor = cursor = replace->start + replace->inlen;
-		break;
-	}
+
+	action->Do ();
 	
 	BatchPush ();
 	//SetSelectionStart (MIN (anchor, cursor));

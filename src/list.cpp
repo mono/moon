@@ -487,9 +487,10 @@ Queue::MoveTo (Queue &queue)
 	}
 }
 
-Stack::Stack ()
+Stack::Stack (int max_depth)
 {
 	list = new List ();
+	this->max_depth = max_depth;
 }
 
 Stack::~Stack ()
@@ -512,6 +513,12 @@ Stack::Clear (bool freeNodes)
 void
 Stack::Push (List::Node *node)
 {
+	if (list->Length () == max_depth) {
+		List::Node *node = list->First ();
+		list->Unlink (node);
+		delete node;
+	}
+
 	list->Append (node);
 }
 
