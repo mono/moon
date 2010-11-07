@@ -22,6 +22,7 @@
 #include "fonts.h"
 #include "list.h"
 #include "textpointer.h"
+#include "textselection.h"
 #include "textlayout.h"
 #include "textelement.h"
 
@@ -117,10 +118,11 @@ public:
 };
 
 class RichTextLayout {
+	TextPointer selection_start;
+	TextPointer selection_end;
+
 	TextAlignment alignment;
 	TextWrapping wrapping;
-	int selection_length;
-	int selection_start;
 	double avail_width;
 	double max_height;
 	double max_width;
@@ -147,9 +149,6 @@ class RichTextLayout {
 	// changed or %false otherwise.
 	//
 	
-	int GetSelectionLength () { return selection_length; }
-	int GetSelectionStart () { return selection_start; }
-	
 	TextAlignment GetTextAlignment () { return alignment; }
 	bool SetTextAlignment (TextAlignment align);
 	
@@ -172,8 +171,9 @@ class RichTextLayout {
 	//
 	
 	void Render (cairo_t *cr, const Point &origin, const Point &offset);
-	void Select (int start, int length, bool byte_offsets = false);
+	void Select (TextSelection *selection);
 	void ResetState ();
+
 
 	const char* AddWordsToLine (RichTextLayoutLine *line, TextLayoutAttributes *attrs, const char *inptr, const char *inend, TextPointer start, TextPointer end, TextPointer *endpoint);
 

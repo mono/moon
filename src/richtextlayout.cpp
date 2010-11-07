@@ -21,6 +21,8 @@
 #include "richtextbox.h"
 #include "textelement.h"
 #include "debug.h"
+#include "textblock.h"
+#include "textbox.h"
 
 namespace Moonlight {
 
@@ -1084,8 +1086,6 @@ RichTextLayout::RichTextLayout ()
 	// Note: TextBlock and TextBox assume their default values match these
 	alignment = TextAlignmentLeft;
 	wrapping = TextWrappingNoWrap;
-	selection_length = 0;
-	selection_start = 0;
 	avail_width = INFINITY;
 	max_height = INFINITY;
 	max_width = INFINITY;
@@ -1188,7 +1188,12 @@ RichTextLayout::SetBlocks (BlockCollection *blocks)
 		return false;
 
 	this->blocks = blocks;
-	
+
+	if (!this->blocks) {
+		selection_start = TextPointer();
+		selection_end = TextPointer();
+	}
+
 	return true;
 }
 
@@ -1208,64 +1213,18 @@ RichTextLayout::ClearCache ()
 }
 
 void
-RichTextLayout::Select (int start, int length, bool byte_offsets)
+RichTextLayout::Select (TextSelection *selection)
 {
 #if notyet
-	int new_selection_length;
-	int new_selection_start;
-	int new_selection_end;
-	int selection_end;
-	TextRegion pre, post;
-	const char *inptr;
-	const char *inend;
-	
-	if (!blocks) {
-		selection_length = 0;
-		selection_start = 0;
+	if (!blocks)
 		return;
-	}
 
-	if (!byte_offsets) {
-		inptr = g_utf8_offset_to_pointer (text, start);
-		new_selection_start = inptr - text;
-		
-		inend = g_utf8_offset_to_pointer (inptr, length);
-		new_selection_length = inend - inptr;
-	} else {
-		new_selection_length = length;
-		new_selection_start = start;
-	}
-	
-	if (selection_start == new_selection_start &&
-	    selection_length == new_selection_length) {
-		// no change in selection...
-		return;
-	}
-	
-#if 1
-	// compute the region between the 2 starts
-	pre.length = abs (new_selection_start - selection_start);
-	pre.start = MIN (selection_start, new_selection_start);
-	pre.select = (new_selection_start < selection_start) && (new_selection_length > 0);
-	
-	// compute the region between the 2 ends
-	new_selection_end = new_selection_start + new_selection_length;
-	selection_end = selection_start + selection_length;
-	post.length = abs (new_selection_end - selection_end);
-	post.start = MIN (selection_end, new_selection_end);
-	post.select = (new_selection_end > selection_end) && (new_selection_length > 0);
-	
-	UpdateSelection (lines, &pre, &post);
-	
-	selection_length = new_selection_length;
-	selection_start = new_selection_start;
-#else
-	if (selection_length || new_selection_length)
-		ClearCache ();
-	
-	selection_length = new_selection_length;
-	selection_start = new_selection_start;
-#endif
+	ClearCurrentSelection ();
+
+	if (selection->IsEmpty())
+		SetCurrentSelection (NULL, NULL);
+	else
+		SetCurrentSelection (selection->GetStart(), selection->GetEnd());
 #endif
 }
 
@@ -1593,6 +1552,20 @@ RichTextLayout::LayoutBlock (RichTextBoxView *rtbview, Block *b)
 
 				inline_->size = ui->GetDesiredSize ();
 
+				double offset = 0;
+				if (ui->Is (Type::TEXTBLOCK)) {
+					offset = ((TextBlock*)ui)->GetBaselineOffset();
+				}
+				else if (ui->Is (Type::TEXTBOX)) {
+					offset = ((TextBox*)ui)->GetBaselineOffset();
+				}
+				else if (ui->Is (Type::PASSWORDBOX)) {
+					offset = ((PasswordBox*)ui)->GetBaselineOffset();
+				}
+				else if (ui->Is (Type::RICHTEXTBOX)) {
+					offset = ((RichTextBox*)ui)->GetBaselineOffset();
+				}
+
 				// FIXME we need to deal with
 				// ui->GetDesiredSize better here.  we
 				// need to clip height by the
@@ -1604,7 +1577,7 @@ RichTextLayout::LayoutBlock (RichTextBoxView *rtbview, Block *b)
 				// guessing?)
 
 			wrap_uielement:
-				inline_->position = Point (line->size.width, line->y);
+				inline_->position = Point (line->size.width, offset == 0 ? line->y : line->y + (line->size.height - font->Descender() - offset) );
 
 				if (inline_->size.width + line->size.width > max_width) {
 					// the inline extends beyond
@@ -1629,7 +1602,7 @@ RichTextLayout::LayoutBlock (RichTextBoxView *rtbview, Block *b)
 
 				line->AddInline (inline_);
 
-				line->size.height = MAX (line->size.height, inline_->size.height + font->Descender ());
+				line->size.height = MAX (line->size.height, inline_->size.height - font->Descender ());
 			}
 
 			tp = container->GetContentEnd_np ();
@@ -2109,7 +2082,7 @@ RichTextLayoutInlineGlyphs::Render (cairo_t *cr, const Point &origin, double x, 
 	
 	// set y0 to the baseline relative to the translation matrix
 	y0 = font->Ascender ();
-	
+
 #if notyet
 	if (selected && (brush = attrs->Background (true))) {
 		area = Rect (origin.x, origin.y, advance, font->Height ());
