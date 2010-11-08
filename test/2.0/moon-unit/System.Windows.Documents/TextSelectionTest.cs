@@ -48,31 +48,43 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
-		public void Text ()
+		public void Defaults ()
 		{
 			TextSelection ts = rtb.Selection;
-
-			Assert.AreEqual (String.Empty, ts.Text, "Text-1");
-
-			Assert.Throws<ArgumentNullException> (delegate {
-				ts.Text = null;
-			}, "null");
-
-			ts.Text = "Moon";
-			Assert.AreEqual (String.Empty, ts.Text, "Text-2"); // still empty!
+			Assert.AreEqual (String.Empty, ts.Text, "Text");
+			Assert.AreEqual (String.Empty, ts.Xaml, "Xaml");
 		}
 
 		[TestMethod]
-		public void Xaml ()
+		public void Text_Set_Null ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				rtb.Selection.Text = null;
+			}, "null");
+		}
+
+		[TestMethod]
+		[Ignore ("crash")]
+		public void Text ()
 		{
 			TextSelection ts = rtb.Selection;
+			ts.Text = "Moon";
+			Assert.AreEqual (String.Empty, ts.Text, "Text"); // still empty!
+		}
 
-			Assert.AreEqual (String.Empty, ts.Xaml, "Xaml-1");
-
+		[TestMethod]
+		public void Xaml_Set_Null ()
+		{
 			Assert.Throws<ArgumentNullException> (delegate {
-				ts.Xaml = null;
+				rtb.Selection.Xaml = null;
 			}, "null");
+		}
 
+		[TestMethod]
+		[MoonlightBug ("no exception is thrown on invalid xaml")]
+		public void Xaml_Set_Invalid ()
+		{
+			TextSelection ts = rtb.Selection;
 			Assert.Throws<ArgumentException> (delegate {
 				ts.Xaml = "Moon";
 			}, "non-xaml");
