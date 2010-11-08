@@ -1081,8 +1081,9 @@ System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.Type
 System.Reflection.Emit.MethodBuilder System.Reflection.Emit.TypeBuilder::DefineMethod(System.String,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type,System.Type[],System.Type[],System.Type[],System.Type[][],System.Type[][])
 	r145113		spouliot - validation 'name' and 'attributes'. If type is not created call MethodBuilder ctor with 'this' and the parameters
 
-!SSC-C7C5416C6299123C7173A2901AE2CE12
+!SSC-D1675669B8F1F9BBBD92FD786FFFE754
 System.Reflection.Emit.MethodToken System.Reflection.Emit.ModuleBuilder::GetConstructorToken(System.Reflection.ConstructorInfo)
+	20111108	spouliot - 7b3f524 - added missing 'same-module' check
 	20101026	spouliot - call GetToken [SecurityCritical] using non-null 'con' parameter
 
 !SSC-1E275039D0BCBA543CC1B49F99A0F22F
@@ -1140,6 +1141,14 @@ System.Reflection.GenericParameterAttributes System.Type::get_GenericParameterAt
 !SSC-01D1C2522E79FE7879221F8DE0FBA9EE
 System.Reflection.InterfaceMapping System.Type::GetInterfaceMap(System.Type)
 	r142142		spouliot - call GetInterfaceMapData (icall)
+
+!SSC-7157489B8973C453E4B3102C5A53B6AB
+System.Reflection.MethodAttributes System.Reflection.MonoCMethod::get_Attributes()
+	20111108	spouliot - 0bc59ae - call MonoMethodInfo::GetAttributes(System.IntPtr) [SecurityCritical] using 'mhandle' field
+
+!SSC-EA7F65A82BC0E39A91CF8466FBC678D4
+System.Reflection.MethodAttributes System.Reflection.MonoMethod::get_Attributes()
+	20111108	spouliot - 0bc59ae - call MonoMethodInfo::GetAttributes(System.IntPtr) [SecurityCritical] using 'mhandle' field
 
 !SSC-C87E75B8F19D0F9592A5B202CA9A2AC5
 System.Reflection.MethodBase System.MonoType::get_DeclaringMethod()
@@ -2002,8 +2011,9 @@ System.Void System.IO.FileInfo::.ctor(System.String)
 System.Void System.IO.FileInfo::Delete()
 	r155836		spouliot - call MonoIO.Exists|ExistsDirectory|DeleteFile [SecurityCritical] on 'FullPath' property. FIXME need SecurityManager.EnsureElevatedPermissions check (r155869)
 
-!SSC-693554EB94AF961BC4883991C3BB7DD8
+!SSC-BD898C0C87B19300E673389A5A7FC195
 System.Void System.IO.FileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.Boolean,System.IO.FileOptions)
+	20111108	spouliot - 0e648f5 - initialize 'anonymous' earlier in the ctor since it's used by callees
 	r142142		spouliot - validate all parameters (except FileOption which is a [Flags]) then call MonoIO.Open [SecurityCritical] and MonoIO.GetFileType [SecurityCritical]
 
 !SSC-CA2FB70CF46FF9E6FAD44AF72E1B012A
@@ -2292,6 +2302,10 @@ System.Void System.Threading.Monitor::Pulse(System.Object)
 !SSC-6E7276266F748F4371B2EB7BE05B2E04
 System.Void System.Threading.Monitor::PulseAll(System.Object)
 	r142142		spouliot - call Monitor_test_synchronised (icall in monitor.c) with non-null 'obj', if true then call Monitor_pulse_all (icall in monitor.c)
+
+!SSC-E096691DBFE1851C0085A72C038DB364
+System.Void System.Threading.Monitor::TryEnter(System.Object,System.Int32,System.Boolean&)
+	20111108	spouliot - e07d438 - call try_enter_with_atomic_var once all three parameters have been validated
 
 !SSC-A38FDB01CEE439DF9B42B34FFA567628
 System.Void System.Threading.Thread::Join()
