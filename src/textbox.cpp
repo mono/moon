@@ -2476,7 +2476,8 @@ public:
 				v = selection_foreground;
 		} else if (property->GetId () == baseline_offset_id) {
 			delete baseline_offset;
-			baseline_offset = new Value (((TextBoxBase*)obj)->view->GetBaselineOffset ());
+			TextBoxView *view = ((TextBoxBase*)obj)->view;
+			baseline_offset = new Value (view ? view->GetBaselineOffset () : 0);
 			v = baseline_offset;
 		}
 		return v ? v : FrameworkElementProvider::GetPropertyValue (property);

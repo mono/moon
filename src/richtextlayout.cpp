@@ -971,12 +971,12 @@ print_lines (GPtrArray *lines)
 }
 #endif
 
+#if notyet
 struct TextRegion {
 	int start, length;
 	bool select;
 };
 
-#if notyet
 static void
 UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
 {

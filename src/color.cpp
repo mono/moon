@@ -299,7 +299,7 @@ color_from_str (const char *name)
 const char *
 color_to_string (Color *color)
 {
-	static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	static char buf[10];
 	guint8 v;
 	

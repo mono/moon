@@ -55,7 +55,8 @@ class RichTextBoxProvider : public FrameworkElementProvider {
 		}
 		else if (property->GetId () == RichTextBox::BaselineOffsetProperty) {
 			delete baseline_offset_value;
-			baseline_offset_value = new Value (((RichTextBox*)obj)->GetView()->GetBaselineOffset());
+			RichTextBoxView *view = ((RichTextBox*)obj)->GetView();
+			baseline_offset_value = new Value (view ? view->GetBaselineOffset() : 0);
 			return baseline_offset_value;
 		}
 
@@ -1254,6 +1255,12 @@ RichTextBox::Serialize ()
 	g_string_append (str, trailer);
 	return g_string_free (str, FALSE);
 }
+
+void
+RichTextBox::SerializeProperties (bool force, GString *str)
+{
+}
+
 
 TextPointer*
 RichTextBox::GetPositionFromPoint (Point point)

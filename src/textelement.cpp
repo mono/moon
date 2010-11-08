@@ -109,6 +109,23 @@ TextElement::NotifyLayoutContainerOnCollectionChanged (Collection *col, Collecti
 	}
 }
 
+bool
+TextElement::LocalValueOverrides (int prop_id)
+{
+	Value *local = ReadLocalValue (prop_id);
+	Value *lower_prec = GetValue (prop_id, (PropertyPrecedence)(PropertyPrecedence_LocalValue + 1));
+
+	if (!local)
+		return false;
+
+	if (local && lower_prec) {
+		return *local != *lower_prec;
+	}
+	else {
+		return true;
+	}
+}
+
 void
 TextElement::CleanupDownloaders ()
 {
@@ -366,6 +383,26 @@ TextElement::GetElementEnd ()
 				LogicalDirectionForward);
 }
 
+void
+TextElement::SerializeProperties (bool force, GString *str)
+{
+	if (force || LocalValueOverrides (FontSizeProperty))
+		g_string_append_printf (str, "FontSize=\"%g\" ", GetFontSize());
+	if (force || LocalValueOverrides (FontFamilyProperty))
+		g_string_append_printf (str, "FontFamily=\"%s\" ", GetFontFamily()->source);
+	if (force || LocalValueOverrides (ForegroundProperty)) {
+		if (GetForeground()->Is (Type::SOLIDCOLORBRUSH)) {
+			g_string_append_printf (str, "Foreground=\"%s\" ", color_to_string (((SolidColorBrush*)GetForeground())->GetColor()));
+		}
+	}
+	if (force || LocalValueOverrides (FontWeightProperty))
+		g_string_append_printf (str, "FontWeight=\"%s\" ", enums_int_to_str ("FontWeight", GetFontWeight()->weight));
+	if (force || LocalValueOverrides (FontStyleProperty))
+		g_string_append_printf (str, "FontStyle=\"%s\" ", enums_int_to_str ("FontStyle", GetFontStyle()->style));
+	if (force || LocalValueOverrides (FontStretchProperty))
+		g_string_append_printf (str, "FontStretch=\"%s\" ", enums_int_to_str ("FontStretch", GetFontStretch()->stretch));
+}
+
 //
 // Inline
 //
@@ -434,7 +471,10 @@ LineBreak::LineBreak ()
 char*
 LineBreak::Serialize ()
 {
-	return g_strdup ("<LineBreak/>");
+	GString *str = g_string_new ("<LineBreak ");
+	SerializeProperties (false, str);
+	g_string_append (str, "/>");
+	return g_string_free (str, FALSE);
 }
 
 //
@@ -481,11 +521,37 @@ Run::Equals (Inline *item)
 	return true;
 }
 
+void
+Run::SerializeProperties (bool force, GString *str)
+{
+	Inline::SerializeProperties (force, str);
+
+	if (force || GetPropertyValueProvider (Deployment::GetCurrent()->GetTypes()->GetProperty(FlowDirectionProperty)) == PropertyPrecedence_LocalValue)
+		g_string_append_printf (str, "FlowDirection=\"%s\" ", enums_int_to_str ("FlowDirection", GetFlowDirection()));
+
+	g_string_append_printf (str, "Text=\"%s\" ", GetText ());
+}
+
 char*
 Run::Serialize ()
 {
-	return g_strdup_printf ("<Run Text=\"%s\"/>", GetText());
+	GString *str = g_string_new ("<Run ");
+	SerializeProperties (false, str);
+	g_string_append (str, "/>");
+	return g_string_free (str, FALSE);
 }
+
+bool
+Run::CoerceText (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error)
+{
+	if (!value || value->GetIsNull())
+		*coerced = new Value ("");
+	else
+		*coerced = new Value (*value);
+
+	return true;
+}
+
 
 //
 // Block
@@ -494,6 +560,15 @@ Run::Serialize ()
 Block::Block ()
 {
 	SetObjectType (Type::BLOCK);
+}
+
+void
+Block::SerializeProperties (bool force, GString *str)
+{
+	TextElement::SerializeProperties (force, str);
+
+	if (force || LocalValueOverrides (TextAlignmentProperty))
+		g_string_append_printf (str, "TextAlignment=\"%s\" ", enums_int_to_str ("TextAlignment", GetTextAlignment()));
 }
 
 
@@ -510,6 +585,9 @@ void
 Paragraph::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (PropertyHasValueNoAutoCreate (Paragraph::InlinesProperty, col)) {
+		if (args->GetChangedAction () == CollectionChangedActionAdd)
+			providers.inherited->PropagateInheritedPropertiesOnAddingToTree (args->GetNewItem()->AsInline());
+
 		NotifyLayoutContainerOnCollectionChanged (col, args);
 	} else {
 		Block::OnCollectionChanged (col, args);
@@ -519,10 +597,14 @@ Paragraph::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 char*
 Paragraph::Serialize ()
 {
-	const char *header = "<Paragraph>";
 	const char *trailer = "</Paragraph>";
 
-	GString* str = g_string_new (header);
+	GString* str = g_string_new ("<Paragraph ");
+
+	SerializeProperties (true, str);
+
+	g_string_append (str, "/>");
+
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
@@ -530,7 +612,7 @@ Paragraph::Serialize ()
 		g_string_append (str, il_str);
 		g_free (il_str);
 	}
-	g_string_append (str, trailer);
+	g_string_append (str, "</Paragraph>");
 	return g_string_free (str, FALSE);
 }
 
@@ -565,6 +647,9 @@ void
 Section::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (PropertyHasValueNoAutoCreate (Section::BlocksProperty, col)) {
+		if (args->GetChangedAction () == CollectionChangedActionAdd)
+			providers.inherited->PropagateInheritedPropertiesOnAddingToTree (args->GetNewItem()->AsBlock());
+
 		NotifyLayoutContainerOnCollectionChanged (col, args);
 	} else {
 		Block::OnCollectionChanged (col, args);
@@ -584,10 +669,22 @@ void
 Span::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (PropertyHasValueNoAutoCreate (Span::InlinesProperty, col)) {
+		if (args->GetChangedAction () == CollectionChangedActionAdd)
+			providers.inherited->PropagateInheritedPropertiesOnAddingToTree (args->GetNewItem()->AsInline());
+
 		NotifyLayoutContainerOnCollectionChanged (col, args);
 	} else {
 		Inline::OnCollectionChanged (col, args);
 	}
+}
+
+Value* 
+Span::CreateInlineCollection (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
+{
+	InlineCollection *col = MoonUnmanagedFactory::CreateInlineCollection ();
+	if (forObj->Is (Type::HYPERLINK))
+		col->SetIsForHyperlink(); // yuck...
+	return Value::CreateUnrefPtr (col);
 }
 
 //
@@ -658,7 +755,6 @@ Italic::Serialize ()
 Underline::Underline ()
 {
 	SetObjectType (Type::UNDERLINE);
-	
 	SetTextDecorations (TextDecorationsUnderline);
 }
 
@@ -698,13 +794,30 @@ Hyperlink::Hyperlink ()
 	// SetForeground (new SolidColorBrush ("#FF337CBB"));
 }
 
+void
+Hyperlink::SerializeProperties (bool force, GString *str)
+{
+	Span::SerializeProperties (force, str);
+
+	// is this something that's actually set by the hyperlink class?
+	g_string_append (str, "TextDecorations=\"Underline\" ");
+
+	if (force || GetPropertyValueProvider (Deployment::GetCurrent()->GetTypes()->GetProperty(TargetNameProperty)) == PropertyPrecedence_LocalValue)
+		g_string_append_printf (str, "TargetName=\"%s\" ", GetTargetName ());
+	g_string_append_printf (str, "NavigateUri=\"%s\" ", GetNavigateUri()->GetOriginalString()); // FIXME do we check for null uri here?
+	if (force || LocalValueOverrides (MouseOverForegroundProperty)) {
+		if (GetMouseOverForeground()->Is (Type::SOLIDCOLORBRUSH)) {
+			g_string_append_printf (str, "MouseOverForeground=\"%s\" ", color_to_string (((SolidColorBrush*)GetMouseOverForeground())->GetColor()));
+		}
+	}
+}
+
 char*
 Hyperlink::Serialize ()
 {
-	const char *header = "<Hyperlink>";
-	const char *trailer = "</Hyperlink>";
-
-	GString* str = g_string_new (header);
+	GString* str = g_string_new ("<Hyperlink ");
+	SerializeProperties (false, str);
+	g_string_append (str, "/>");
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
@@ -712,7 +825,7 @@ Hyperlink::Serialize ()
 		g_string_append (str, il_str);
 		g_free (il_str);
 	}
-	g_string_append (str, trailer);
+	g_string_append (str, "</Hyperlink>");
 	return g_string_free (str, FALSE);
 }
 

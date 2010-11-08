@@ -330,6 +330,13 @@ PositionAtOffsetIterator::Step (int *offset)
 
 		if (element->Is (Type::RUN)) {
 			const char *text = ((Run*)element)->GetText();
+
+			if (text == NULL) {
+				*offset --;
+				location = CONTENT_END;
+				return true;
+			}
+
 			guint32 textlen = strlen (text);
 
 			if (location + *offset >= textlen) {

@@ -274,18 +274,27 @@ class TriggerActionCollection : public DependencyObjectCollection {
 
 /* @Namespace=System.Windows.Documents */
 class InlineCollection : public DependencyObjectCollection {
+ private:
+	bool for_hyperlink;
+
+	bool ValueIsSupportedInHyperlink (Deployment *depl, Value* val);
+
  protected:
 	/* @GeneratePInvoke,ManagedAccess=Internal */
 	InlineCollection ();
 
 	virtual ~InlineCollection ();
 
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 	
  public:
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
-	
+
+	void SetIsForHyperlink () { for_hyperlink = true; }
+
 	bool Equals (InlineCollection *inlines);
 };
 

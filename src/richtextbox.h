@@ -224,6 +224,7 @@ protected:
 	virtual void RemoveTextPointer (TextPointer *pointer);
 
 	virtual char* Serialize ();
+	virtual void SerializeProperties (bool force, GString *str);
 
 	//
 	// ITextAttributes Interface Methods

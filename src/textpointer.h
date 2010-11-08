@@ -31,6 +31,7 @@ public:
 	virtual void RemoveTextPointer (TextPointer *pointer) = 0;
 
 	virtual char* Serialize () = 0;
+	virtual void SerializeProperties (bool force, GString *str) = 0;
 
 	static IDocumentNode* CastToIDocumentNode (DependencyObject *obj);
 };

@@ -591,6 +591,7 @@ DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonErro
 InlineCollection::InlineCollection ()
 {
 	SetObjectType (Type::INLINE_COLLECTION);
+	for_hyperlink = false;
 }
 
 InlineCollection::~InlineCollection ()
@@ -617,6 +618,47 @@ InlineCollection::Equals (InlineCollection *inlines)
 	return true;
 }
 
+bool
+InlineCollection::ValueIsSupportedInHyperlink (Deployment *depl, Value* value)
+{
+	if (value->Is (depl, Type::INLINEUICONTAINER) ||
+	    value->Is (depl, Type::LINEBREAK) ||
+	    value->Is (depl, Type::HYPERLINK)) {
+		return false;
+	}
+
+	if (value->Is (depl, Type::SPAN)) {
+		// recurse into Span.Inlines
+		Span *span = value->AsSpan(depl->GetTypes());
+		int count = span->GetInlines()->GetCount();
+		for (int i = 0; i < count; i ++) {
+			Value *v = span->GetInlines()->GetValueAt(i);
+			if (!ValueIsSupportedInHyperlink (depl, v))
+				return false;
+		}
+	}
+
+	return true;
+}
+
+bool
+InlineCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	if (!for_hyperlink) {
+		return DependencyObjectCollection::AddedToCollection (value, error);
+	}
+	else {
+		Deployment *depl = GetDeployment ();
+
+		if (!ValueIsSupportedInHyperlink (depl, value)) {
+			// FIXME we need to figure out the actual message here..
+			MoonError::FillIn (error, MoonError::ARGUMENT, "value not permissible in Hyperlink");
+			return false;
+		}
+
+		return DependencyObjectCollection::AddedToCollection (value, error);
+	}
+}
 
 //
 // UIElementCollection

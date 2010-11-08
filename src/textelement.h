@@ -71,6 +71,8 @@ protected:
 	void NotifyLayoutContainerOnPropertyChanged (PropertyChangedEventArgs *args);
 	void NotifyLayoutContainerOnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 
+	bool LocalValueOverrides (int prop_id);
+
 public:
 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
@@ -98,6 +100,7 @@ public:
 
 	virtual DependencyObjectCollection *GetDocumentChildren () { return NULL; }
 	virtual char* Serialize () { return NULL; }
+	virtual void SerializeProperties (bool force, GString *str);
 
 	virtual void AddTextPointer (TextPointer *pointer);
 	virtual void RemoveTextPointer (TextPointer *pointer);
@@ -229,7 +232,7 @@ class Run : public Inline {
  public:
 	/* @PropertyType=FlowDirection,DefaultValue=FlowDirectionLeftToRight,GenerateAccessors */
 	const static int FlowDirectionProperty;
-	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors,Coercer=Run::CoerceText */
 	const static int TextProperty;
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -245,6 +248,7 @@ class Run : public Inline {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual char* Serialize ();
+	virtual void SerializeProperties (bool force, GString *str);
 
 	//
 	// Property Accessors
@@ -254,6 +258,8 @@ class Run : public Inline {
 	
 	void SetText (const char *text);
 	const char *GetText ();
+
+	static bool CoerceText (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
 };
 
 
@@ -276,6 +282,11 @@ class Block : public TextElement {
  public:
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
 	const static int TextAlignmentProperty;
+
+	//
+	// IDocumentNode Interface Method Overrides
+	//
+	virtual void SerializeProperties (bool force, GString *str);
 	
 	//
 	// Property Accessors
@@ -364,7 +375,7 @@ class Span : public Inline {
 	friend class MoonManagedFactory;
 
  public:
-	/* @PropertyType=InlineCollection,AutoCreateValue,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=InlineCollection,AutoCreator=Span::CreateInlineCollection,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int InlinesProperty;
 	
 	//
@@ -379,6 +390,8 @@ class Span : public Inline {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
+
+	static Value *CreateInlineCollection (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -453,16 +466,22 @@ class Hyperlink : public Span {
 	const static int MouseOverForegroundProperty;
 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsUnderline,ManagedPropertyType=TextDecorationCollection */
 	const static int MouseOverTextDecorationsProperty;
-	/* @PropertyType=Uri,DefaultValue=new Uri () */
+	/* @PropertyType=Uri,GenerateAccessors,IsConstPropertyType,DefaultValue=new Uri () */
 	const static int NavigateUriProperty;
-	/* @PropertyType=string,DefaultValue=\"\" */
+	/* @PropertyType=string,GenerateAccessors,DefaultValue=\"\" */
 	const static int TargetNameProperty;
-	
+
 	//
 	// Property Accessors
 	//
 	void SetMouseOverForeground (Brush *brush);
 	Brush *GetMouseOverForeground ();
+
+	void SetTargetName (const char *value);
+	const char *GetTargetName ();
+
+	void SetNavigateUri (const Uri *value);
+	const Uri *GetNavigateUri ();
 
 	/* @DelegateType=RoutedEventHandler */
 	const static int ClickEvent;
@@ -471,6 +490,7 @@ class Hyperlink : public Span {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual char* Serialize ();
+	virtual void SerializeProperties (bool force, GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */

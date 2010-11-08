@@ -57,7 +57,8 @@ class TextBlockDynamicPropertyValueProvider : public FrameworkElementProvider {
 	{
 		if (property->GetId () == TextBlock::BaselineOffsetProperty) {
 			delete baseline_offset_value;
-			baseline_offset_value = new Value (((TextBlock*)obj)->layout->GetBaselineOffset());
+			TextLayout *layout = ((TextBlock*)obj)->layout;
+			baseline_offset_value = new Value (layout ? layout->GetBaselineOffset() : 0);
 			return baseline_offset_value;
 		}
 
@@ -131,7 +132,11 @@ TextBlock::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEvent
 void
 TextBlock::DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args)
 {
-	// how do we deal with this?  do we need to?
+	// All non-Foreground property changes require
+	// recalculating layout which can change the bounds.
+	InvalidateMeasure ();
+	InvalidateArrange ();
+	UpdateBounds (true);
 }
 
 bool
@@ -433,9 +438,7 @@ TextBlock::UpdateFontDescription (bool force)
 bool
 TextBlock::UpdateFontDescriptions (bool force)
 {
-	InlineCollection *inlines = GetInlines ();
 	bool changed = false;
-	Inline *item;
 	
 	changed = UpdateFontDescription (force);
 	
