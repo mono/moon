@@ -35,13 +35,13 @@ namespace System.Windows.Browser
 {
 	public sealed class HtmlWindow : HtmlObject
 	{
-		// These targets open the target Uri in a new window, otherwise
+		// These targets open the target Uri in the current window, otherwise
 		// the existing window is reused. List was compiled from the MSDN
 		// docs for HyperLinkButton.NavigateUri
-		static readonly List<string> NewWindowTargets = new List<string> {
-			"_blank",
-			"_media",
-			"_search",
+		static readonly List<string> SameWindowTargets = new List<string> {
+			null,
+			"",
+			"_self",
 		};
 
 		internal HtmlWindow (IntPtr handle)
@@ -86,7 +86,7 @@ namespace System.Windows.Browser
 			if (navigateToUri == null)
 				throw new ArgumentNullException ("navigateToUri");
 
-			Navigate (navigateToUri, NewWindowTargets [0]);
+			Navigate (navigateToUri, "_self");
 		}
 		
 		public HtmlWindow Navigate (Uri navigateToUri, string target)
@@ -108,12 +108,12 @@ namespace System.Windows.Browser
 			if (targetFeatures == null)
 				throw new ArgumentNullException ("targetFeatures");
 
-			if (NewWindowTargets.Contains (target)) {
-				return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
-			} else {
+			if (SameWindowTargets.Contains (target)) {
 				ScriptObject loc = HtmlPage.Document.GetProperty ("location") as ScriptObject;
 				SetPropertyInternal (loc.Handle, "href", navigateToUri.ToString ());
 				return HtmlPage.Window;
+			} else {
+				return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 			}
 		}
 

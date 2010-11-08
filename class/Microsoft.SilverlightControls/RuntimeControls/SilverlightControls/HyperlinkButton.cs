@@ -16,6 +16,7 @@ using System.Security;
 using System.Windows.Browser;
 using System.Windows.Media;
 using System.Collections.Generic;
+using Mono;
 #endif 
 
 namespace System.Windows.Controls
@@ -35,7 +36,6 @@ namespace System.Windows.Controls
         // If the targetname is one of these, it counts as an external target.
         // The list is compiled from the MSDN docs.
         static readonly List<string> ExternalTargets = new List<string> {
-            "",
             "_blank",
             "_media",
             "_parent",
@@ -168,10 +168,10 @@ namespace System.Windows.Controls
                 "NavigateUri should not be null!"); 
  
             // Make relative Uris absolute
-            if (!destination.IsAbsoluteUri) 
+            if (!destination.IsAbsoluteUri)
             {
                 // Page relative Uris are not invalid
-                string original = destination.OriginalString; 
+                string original = destination.OriginalString;
                 if (!string.IsNullOrEmpty(original) && (original[0] != '/'))
                 {
                     throw new NotSupportedException();
@@ -195,14 +195,14 @@ namespace System.Windows.Controls
         /// Safe because we own the caller and the code this method pinvokes to. 
         /// </SecurityNote> 
         private void Navigate()
-        { 
+        {
             string target = TargetName;
-
-            try 
+            var navigateUri = NavigateUri;
+            try
             {
 #if !BOOTSTRAP
                 if (ExternalTargets.Contains (TargetName))
-                { 
+                {
                     Uri destination = GetAbsoluteUri();
 
                     if (!destination.IsAbsoluteUri || !IsSafeScheme(destination.Scheme))
@@ -210,33 +210,44 @@ namespace System.Windows.Controls
                         throw new InvalidOperationException();
                     }
 
-                    HtmlPage.Window.Navigate(destination, TargetName);
+                    if (Helper.IsUserInitiated ())
+                        HtmlPage.Window.Navigate(destination, TargetName);
                 }
                 else 
-                { 
-                    NavigateInternally (NavigateUri);
-                } 
+                {
+                    if (TryNavigateInternally (NavigateUri))
+                        return;
+
+                    if (navigateUri.IsAbsoluteUri || navigateUri.OriginalString.StartsWith ("/") || string.IsNullOrEmpty (navigateUri.OriginalString)) {
+                        if (Helper.IsUserInitiated ())
+                            HtmlPage.Window.Navigate(GetAbsoluteUri (), TargetName ?? "");
+                    } else {
+                        throw new NotSupportedException (string.Format ("Could not find the navigator specified by the TargetName '{0}'", TargetName));
+                    }
+                }
 #endif
             }
             catch (InvalidOperationException)
-            { 
+            {
                 throw new InvalidOperationException();
             }
-        } 
+        }
  
 #if !BOOTSTRAP
-        void NavigateInternally (Uri destination)
+        bool TryNavigateInternally (Uri destination)
         {
-            UIElement e = this;
-	    UIElement skip = null;
+            UIElement e = (UIElement) VisualTreeHelper.GetParent (this);
+            UIElement skip = this;
             INavigate navigator;
             while (e != null && !FindNavigatorInSubtree (e, skip, out navigator)) {
-		    e = (UIElement)VisualTreeHelper.GetParent (e);
-		    skip = e;
-	    }
+                skip = e;
+                e = (UIElement)VisualTreeHelper.GetParent (e);
+            }
 
-            if (navigator != null)
-                navigator.Navigate (destination);
+            if (navigator == null)
+                return false;
+            navigator.Navigate (destination);
+            return true;
         }
         
         bool FindNavigatorInSubtree (UIElement e, UIElement skip, out INavigate navigator)
@@ -245,7 +256,7 @@ namespace System.Windows.Controls
             // Maybe it actually uses FindName.
             navigator = e as INavigate;
             if (navigator != null) {
-		    if (TargetName != null) {
+		    if (!string.IsNullOrEmpty (TargetName)) {
 			    // if we have a target name make sure it matches
 			    if (navigator is FrameworkElement && ((FrameworkElement)navigator).Name == TargetName)
 				    return true;
@@ -256,12 +267,14 @@ namespace System.Windows.Controls
 		    }
 	    }
 
-            int count = VisualTreeHelper.GetChildrenCount (e);
+			// Popups are treated specially as they don't have a regular visual child.
+			// Needed to pass DRT HyperlinkButtonP2.
+            int count = e is Popup ? 1 : VisualTreeHelper.GetChildrenCount (e);
             for (int i = 0; i < count; i++) {
-		    UIElement ui = (UIElement) VisualTreeHelper.GetChild (e, i);
+		    UIElement ui = e is Popup ? ((Popup)e).Child : (UIElement) VisualTreeHelper.GetChild (e, i);
 		    if (ui == skip)
 			    continue;
-		    if (FindNavigatorInSubtree ((UIElement) VisualTreeHelper.GetChild (e, i), null, out navigator))
+		    if (FindNavigatorInSubtree (ui, null, out navigator))
 			    return true;
 	    }
             return false;

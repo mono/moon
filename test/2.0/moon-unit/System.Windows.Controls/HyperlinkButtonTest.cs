@@ -61,28 +61,73 @@ namespace MoonTest.System.Windows.Controls
 		
 		public bool Navigate (Uri uri) { Navigated = true; return true; }
 	}
-	
+
 	[TestClass]
 	public partial class HyperlinkButtonTest : SilverlightTest
 	{
 		[TestMethod]
 		[Asynchronous]
-		public void RelativeUrisNotAllowedTest ()
+		public void AbsoluteUri_EmptyTarget ()
+		{
+			MyHyperlinkButton hlb = new MyHyperlinkButton();
+			hlb.NavigateUri = new Uri("http://www.ireland.com", UriKind.Absolute);
+			hlb.TargetName = "";
+			Canvas root = new Canvas();
+			root.Children.Add(hlb);
+
+			CreateAsyncTest(root, () =>  {
+				Assert.DoesNotThrow(() => hlb.Clickify(), "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AbsoluteUri_SelfTarget ()
+		{
+			MyHyperlinkButton hlb = new MyHyperlinkButton();
+			hlb.NavigateUri = new Uri("http://www.ireland.com", UriKind.Absolute);
+			hlb.TargetName = "_self";
+			Canvas root = new Canvas();
+			root.Children.Add(hlb);
+
+			CreateAsyncTest(root, () => {
+				Assert.DoesNotThrow(() => hlb.Clickify(), "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RelativeUrisNotAllowedTest_EmptyTarget ()
 		{
 			MyHyperlinkButton hlb = new MyHyperlinkButton ();
 			hlb.NavigateUri = new Uri ("Relative", UriKind.Relative);
 			hlb.TargetName = "";
 			Canvas root = new Canvas ();
 			root.Children.Add (hlb);
-			
+
 			CreateAsyncTest (root, () => {
 				Assert.Throws<NotSupportedException>(() => { hlb.Clickify (); }, "Relative URI test");
 			});
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
-		public void RelativeEmptyUrisAllowedTest ()
+		public void RelativeUrisNotAllowedTest_SelfTarget()
+		{
+			MyHyperlinkButton hlb = new MyHyperlinkButton();
+			hlb.NavigateUri = new Uri("Relative", UriKind.Relative);
+			hlb.TargetName = "_self";
+			Canvas root = new Canvas();
+			root.Children.Add(hlb);
+
+			CreateAsyncTest(root, () => {
+				Assert.Throws<NotSupportedException>(() => hlb.Clickify(), "Relative URI test");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RelativeEmptyUrisAllowedTest_EmptyTargetName ()
 		{
 			MyHyperlinkButton hlb = new MyHyperlinkButton ();
 			hlb.NavigateUri = new Uri ("", UriKind.Relative);
@@ -91,7 +136,22 @@ namespace MoonTest.System.Windows.Controls
 			root.Children.Add (hlb);
 			
 			CreateAsyncTest (root, () => {
-				hlb.Clickify (); // make sure it doesn't throw
+				Assert.DoesNotThrow (() => hlb.Clickify ());
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RelativeEmptyUrisAllowedTest_TargetSelf()
+		{
+			MyHyperlinkButton hlb = new MyHyperlinkButton();
+			hlb.NavigateUri = new Uri("", UriKind.Relative);
+			hlb.TargetName = "_self";
+			Canvas root = new Canvas();
+			root.Children.Add(hlb);
+
+			CreateAsyncTest(root, () => {
+				Assert.DoesNotThrow (() => hlb.Clickify(), "#1");
 			});
 		}
 		
@@ -121,7 +181,7 @@ namespace MoonTest.System.Windows.Controls
 			Canvas root = new Canvas ();
 			root.Children.Add (target);
 			root.Children.Add (hlb);
-			
+
 			CreateAsyncTest (root, () => {
 				hlb.Clickify ();
 				Assert.IsTrue (target.Navigated, "Deep linked target navigation");
