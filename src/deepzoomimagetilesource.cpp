@@ -845,6 +845,9 @@ display_rects_start (DZParserInfo *info, const char **attr)
 static void
 display_rects_end (DZParserInfo *info)
 {
+#if 0
+	/* breaks drt Seadragon-520, 294HW and Seadragon-P0, but is needed by
+	 * Seadragon-InvalidXml for image_displayrects_empty.xml */
 	DZImage *image = &info->content.image;
 	
 	if (image->display_rects->len == 0) {
@@ -852,6 +855,7 @@ display_rects_end (DZParserInfo *info)
 		info->error = true;
 		return;
 	}
+#endif
 }
 
 static void
