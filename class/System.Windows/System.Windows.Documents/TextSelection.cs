@@ -73,12 +73,21 @@ namespace System.Windows.Documents {
 
 		public string Text {
 			get { return NativeMethods.text_selection_get_text (native); }
-			set { NativeMethods.text_selection_set_text (native, value); }
+			set {
+				if (value == null)
+					throw new ArgumentNullException ("Text");
+				NativeMethods.text_selection_set_text (native, value);
+			}
 		}
 
 		public string Xaml {
 			get { return NativeMethods.text_selection_get_xaml (native); }
-			set { NativeMethods.text_selection_set_xaml (native, value); }
+			set {
+				if (value == null)
+					throw new ArgumentNullException ("Xaml");
+				// FIXME: xaml validation -> ArgumentException
+				NativeMethods.text_selection_set_xaml (native, value);
+			}
 		}
 
 		public TextPointer End {
