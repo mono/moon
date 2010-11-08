@@ -431,3 +431,6 @@
 +SSC-M: System.IO.FileStream System.IO.FileInfo::OpenRead()
 +SSC-M: System.IO.StreamReader System.IO.FileInfo::OpenText()
 
+# unvalidated (caller responsability) IntPtr parameter
++SC-M: System.Reflection.MethodAttributes System.Reflection.MonoMethodInfo::GetAttributes(System.IntPtr)
+
