@@ -776,6 +776,7 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 #endif
 	} else {
 		fadein_sb->PauseWithError (NULL);
+		motion &= ~MOTION_IS_FADING;
 	}
 	
 	tile_fade = GetTileFade ();
@@ -783,10 +784,10 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	fadein_animation->SetFrom (tile_fade);
 	fadein_animation->SetTo (tile_fade + 0.9);
 	
-	if (fadein_sb->BeginWithError (NULL)) {
+	if (fadein_sb->BeginWithError (NULL))
 		motion |= MOTION_IS_FADING;
-		SetIsIdle (false);
-	}
+	
+	UpdateIdleStatus ();
 	
 	cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
 	LOG_MSI ("caching %s\n", ctx->image->GetUriSource ()->ToString ());
@@ -1628,7 +1629,7 @@ MultiScaleImage::AnimateViewportWidth (double width)
 		SetAnimatedViewportWidth (width);
 		return;
 	}
-
+	
 	if (!zoom_sb) {
 		zoom_sb = MoonUnmanagedFactory::CreateStoryboard ();
 		zoom_sb->SetManualTargetWithError (this, NULL);
@@ -1650,16 +1651,17 @@ MultiScaleImage::AnimateViewportWidth (double width)
 #endif
 	} else {
 		zoom_sb->PauseWithError (NULL);
+		motion &= ~MOTION_IS_ZOOMING;
 	}
 
 	LOG_MSI ("animating zoom from %f to %f\n\n", GetAnimatedViewportWidth (), width);
 	
 	SetZoomAnimationEndPoint (width);
 	
-	if (zoom_sb->BeginWithError (NULL)) {
+	if (zoom_sb->BeginWithError (NULL))
 		motion |= MOTION_IS_ZOOMING;
-		SetIsIdle (false);
-	}
+	
+	UpdateIdleStatus ();
 }
 
 void
@@ -1675,7 +1677,7 @@ MultiScaleImage::AnimateViewportOrigin (Point *origin)
 		SetAnimatedViewportOrigin (origin);
 		return;
 	}
-
+	
 	if (!pan_sb) {
 		pan_sb = MoonUnmanagedFactory::CreateStoryboard ();
 		pan_sb->SetManualTargetWithError (this, NULL);
@@ -1699,14 +1701,15 @@ MultiScaleImage::AnimateViewportOrigin (Point *origin)
 #endif
 	} else {
 		pan_sb->PauseWithError (NULL);
+		motion &= ~MOTION_IS_PANNING;
 	}
 	
 	SetPanAnimationEndPoint (*origin);
 	
-	if (pan_sb->BeginWithError (NULL)) {
+	if (pan_sb->BeginWithError (NULL))
 		motion |= MOTION_IS_PANNING;
-		SetIsIdle (false);
-	}
+	
+	UpdateIdleStatus ();
 }
 
 void
