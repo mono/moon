@@ -17,6 +17,7 @@ using System.Windows.Browser;
 using System.Windows.Media;
 using System.Collections.Generic;
 using Mono;
+using System.Windows.Interop;
 #endif 
 
 namespace System.Windows.Controls
@@ -232,6 +233,9 @@ namespace System.Windows.Controls
 #if !BOOTSTRAP
                 if (ExternalTargets.Contains (TargetName))
                 {
+                    if (!Settings.EnableNavigation)
+                        throw new InvalidOperationException ("Cannot navigate to an external site when Navigation is disabled");
+
                     Uri destination = GetAbsoluteUri();
 
                     if (!destination.IsAbsoluteUri || !IsSafeScheme(destination.Scheme))
@@ -248,6 +252,8 @@ namespace System.Windows.Controls
                         return;
 
                     if (navigateUri.IsAbsoluteUri || navigateUri.OriginalString.StartsWith ("/") || string.IsNullOrEmpty (navigateUri.OriginalString)) {
+                        if (!Settings.EnableNavigation)
+                            throw new InvalidOperationException ("Cannot navigate to an external site when Navigation is disabled");
                         if (Helper.IsUserInitiated ())
                             HtmlPage.Window.Navigate(GetAbsoluteUri (), TargetName ?? "");
                     } else {
