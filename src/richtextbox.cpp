@@ -225,7 +225,6 @@ RichTextBox::RichTextBox ()
 	
 	accepts_return = false;
 	need_im_reset = false;
-	is_read_only = false;
 	have_offset = false;
 	selecting = false;
 	setvalue = true;
@@ -579,13 +578,13 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 	
 	switch (key) {
 	case KeyBACKSPACE:
-		if (is_read_only)
+		if (GetIsReadOnly())
 			break;
 		
 		handled = KeyPressBackSpace (modifiers);
 		break;
 	case KeyDELETE:
-		if (is_read_only)
+		if (GetIsReadOnly())
 			break;
 		
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
@@ -610,7 +609,7 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 	case KeyINSERT:
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Insert => Paste
-			if (is_read_only)
+			if (GetIsReadOnly())
 				break;
 			
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
@@ -680,7 +679,7 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 				break;
 			case KeyX:
 				// Ctrl+X => Cut
-				if (is_read_only)
+				if (GetIsReadOnly())
 					break;
 				
 				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
@@ -697,7 +696,7 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 				break;
 			case KeyV:
 				// Ctrl+V => Paste
-				if (is_read_only)
+				if (GetIsReadOnly())
 					break;
 				
 				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
@@ -709,14 +708,14 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 				break;
 			case KeyY:
 				// Ctrl+Y => Redo
-				if (!is_read_only) {
+				if (!GetIsReadOnly()) {
 					handled = true;
 					Redo ();
 				}
 				break;
 			case KeyZ:
 				// Ctrl+Z => Undo
-				if (!is_read_only) {
+				if (!GetIsReadOnly()) {
 					handled = true;
 					Undo ();
 				}
@@ -748,12 +747,12 @@ RichTextBox::PostOnKeyDown (KeyEventArgs *args)
 	
 	// Note: we don't set Handled=true because anything we handle here, we
 	// want to bubble up.
-	if (!is_read_only && im_ctx->FilterKeyPress (event)) {
+	if (!GetIsReadOnly() && im_ctx->FilterKeyPress (event)) {
 		need_im_reset = true;
 		return;
 	}
 	
-	if (is_read_only || event->IsModifier ())
+	if (GetIsReadOnly() || event->IsModifier ())
 		return;
 	
 	// set 'emit' to NOTHING_CHANGED so that we can figure out
@@ -783,7 +782,7 @@ RichTextBox::PostOnKeyDown (KeyEventArgs *args)
 void
 RichTextBox::OnKeyUp (KeyEventArgs *args)
 {
-	if (!is_read_only) {
+	if (!GetIsReadOnly()) {
 		if (im_ctx->FilterKeyPress (args->GetEvent()))
 			need_im_reset = true;
 	}
@@ -1002,7 +1001,7 @@ RichTextBox::OnLostFocus (RoutedEventArgs *args)
 	if (view)
 		view->OnLostFocus ();
 	
-	if (!is_read_only) {
+	if (!GetIsReadOnly()) {
 		im_ctx->FocusOut ();
 		need_im_reset = true;
 	}
@@ -1016,7 +1015,7 @@ RichTextBox::OnGotFocus (RoutedEventArgs *args)
 	if (view)
 		view->OnGotFocus ();
 	
-	if (!is_read_only) {
+	if (!GetIsReadOnly()) {
 		im_ctx->FocusIn ();
 		need_im_reset = true;
 	}
@@ -1042,19 +1041,13 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	if (args->GetId () == RichTextBox::AcceptsReturnProperty) {
 		// update accepts_return state
 		accepts_return = args->GetNewValue ()->AsBool ();
-	} else if (args->GetId () == RichTextBox::BaselineOffsetProperty) {
-		// propagate this to our view
-		changed = RichTextBoxModelChangedBaselineOffset;
 	} else if (args->GetId () == RichTextBox::CaretBrushProperty) {
 		// Note: if we wanted to be perfect, we could invalidate the
 		// blinking cursor rect if it is active... but is it that
 		// really important? I don't think so...
 	} else if (args->GetId () == RichTextBox::IsReadOnlyProperty) {
-		// update is_read_only state
-		is_read_only = args->GetNewValue ()->AsBool ();
-		
 		if (focused) {
-			if (is_read_only) {
+			if (GetIsReadOnly()) {
 				ResetIMContext ();
 				im_ctx->FocusOut ();
 			} else {
@@ -1063,7 +1056,7 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		}
 		
 		if (view)
-			view->SetEnableCursor (!is_read_only);
+			view->SetEnableCursor (!GetIsReadOnly());
 	} else if (args->GetId () == RichTextBox::TextAlignmentProperty) {
 		changed = RichTextBoxModelChangedTextAlignment;
 	} else if (args->GetId () == RichTextBox::TextWrappingProperty) {
@@ -1126,8 +1119,8 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		}
 	}
 	
-	if (changed != RichTextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
-		Emit (ModelChangedEvent, new RichTextBoxModelChangedEventArgs (changed, args));
+	if (changed != RichTextBoxModelChangedNothing && view)
+		view->OnModelChanged (changed, args);
 	
 	NotifyListenersOfPropertyChange (args, error);
 }
@@ -1156,8 +1149,8 @@ RichTextBox::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Pr
 	
 	// FIXME: if we could pass the obj to the View via the Args, the View
 	// could probably optimize the invalidated region to minimize redraw
-	if (HasHandlers (ModelChangedEvent))
-		Emit (ModelChangedEvent, new RichTextBoxModelChangedEventArgs (RichTextBoxModelChangedContent, args));
+	if (view)
+		view->OnModelChanged (RichTextBoxModelChangedContent, args);
 }
 
 void
@@ -1193,7 +1186,7 @@ RichTextBox::OnApplyTemplate ()
 	// Create our view control
 	view = MoonUnmanagedFactory::CreateRichTextBoxView ();
 	
-	view->SetEnableCursor (!is_read_only);
+	view->SetEnableCursor (!GetIsReadOnly());
 	view->SetTextBox (this);
 	
 	// Insert our RichTextBoxView
@@ -1421,7 +1414,6 @@ RichTextBoxView::~RichTextBoxView ()
 	RemoveHandler (UIElement::MouseLeftButtonUpEvent, RichTextBoxView::mouse_left_button_up, this);
 
 	if (textbox) {
-		textbox->RemoveHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
 		textbox->view->unref ();
 		textbox->view = NULL;
 	}
@@ -1779,17 +1771,17 @@ RichTextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 }
 
 void
-RichTextBoxView::OnModelChanged (RichTextBoxModelChangedEventArgs *args)
+RichTextBoxView::OnModelChanged (RichTextBoxModelChangeType change, PropertyChangedEventArgs *args)
 {
-	switch (args->changed) {
+	switch (change) {
 	case RichTextBoxModelChangedTextAlignment:
 		// text alignment changed, update our layout
-		if (layout->SetTextAlignment (args->property->GetNewValue()->AsTextAlignment ()))
+		if (layout->SetTextAlignment (args->GetNewValue()->AsTextAlignment ()))
 			dirty = true;
 		break;
 	case RichTextBoxModelChangedTextWrapping:
 		// text wrapping changed, update our layout
-		if (layout->SetTextWrapping (args->property->GetNewValue()->AsTextWrapping ()))
+		if (layout->SetTextWrapping (args->GetNewValue()->AsTextWrapping ()))
 			dirty = true;
 		break;
 	case RichTextBoxModelChangedSelection:
@@ -1812,6 +1804,17 @@ RichTextBoxView::OnModelChanged (RichTextBoxModelChangedEventArgs *args)
 		UpdateText ();
 		dirty = true;
 		break;
+	case RichTextBoxModelChangedIsReadOnly: {
+		UIElementCollection *col = GetChildren();
+		int count = col->GetCount();
+		for (int i = 0; i < count; i ++) {
+			UIElement *el = col->GetValueAt (i)->AsUIElement();
+			if (el->Is (Type::CONTROL)) {
+				((Control*)el)->SetIsEnabled (!args->GetNewValue()->AsBool());
+			}
+		}
+		break;
+	}
 	default:
 		// nothing changed??
 		return;
@@ -1826,13 +1829,6 @@ RichTextBoxView::OnModelChanged (RichTextBoxModelChangedEventArgs *args)
 	
 	Invalidate ();
 }
-
-void
-RichTextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((RichTextBoxView *) closure)->OnModelChanged ((RichTextBoxModelChangedEventArgs *) args);
-}
-
 
 void
 RichTextBoxView::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
@@ -1913,16 +1909,9 @@ RichTextBoxView::SetTextBox (RichTextBox *textbox)
 	if (this->textbox == textbox)
 		return;
 	
-	if (this->textbox) {
-		// remove the event handlers from the old textbox
-		this->textbox->RemoveHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
-	}
-	
 	this->textbox = textbox;
 	
 	if (textbox) {
-		textbox->AddHandler (RichTextBox::ModelChangedEvent, RichTextBoxView::model_changed, this);
-		
 		layout->SetTextAlignment (textbox->GetTextAlignment ());
 		layout->SetTextWrapping (textbox->GetTextWrapping ());
 

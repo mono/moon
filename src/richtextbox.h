@@ -39,29 +39,12 @@ class ContentChangedEventArgs : public RoutedEventArgs {
 
 enum RichTextBoxModelChangeType {
 	RichTextBoxModelChangedNothing,
-	RichTextBoxModelChangedBaselineOffset,
+	RichTextBoxModelChangedIsReadOnly,
 	RichTextBoxModelChangedTextAlignment,
 	RichTextBoxModelChangedTextWrapping,
 	RichTextBoxModelChangedSelection,
 	RichTextBoxModelChangedContent,
 	RichTextBoxModelChangedBrush
-};
-
-/* @Namespace=None */
-class RichTextBoxModelChangedEventArgs : public EventArgs {
- protected:
-	virtual ~RichTextBoxModelChangedEventArgs () { }
-	
- public:
-	PropertyChangedEventArgs *property;
-	RichTextBoxModelChangeType changed;
-	
-	RichTextBoxModelChangedEventArgs (RichTextBoxModelChangeType changed, PropertyChangedEventArgs *property = NULL)
-	{
-		SetObjectType (Type::RICHTEXTBOXMODELCHANGEDEVENTARGS);
-		this->property = property;
-		this->changed = changed;
-	}
 };
 
 class RichTextBoxView;
@@ -91,7 +74,6 @@ protected:
 	
 	short accepts_return:1;
 	short need_im_reset:1;
-	short is_read_only:1;
 	short have_offset:1;
 	short selecting:1;
 	short setvalue:1;
@@ -350,10 +332,6 @@ class RichTextBoxView : public FrameworkElement {
 	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
 	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
 
-	// RichTextBox events
-	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
-	void OnModelChanged (RichTextBoxModelChangedEventArgs *args);
-	
 	// cursor blink
 	static bool blink (void *user_data);
 	void ConnectBlinkTimeout (guint multiplier);
@@ -394,7 +372,7 @@ class RichTextBoxView : public FrameworkElement {
 	virtual Size ComputeActualSize ();
 	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
 	virtual Size ArrangeOverrideWithError (Size finalSize, MoonError *error);
-	
+
 	//
 	// Methods
 	//
@@ -412,6 +390,8 @@ class RichTextBoxView : public FrameworkElement {
 	void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 
 	double GetBaselineOffset ();
+
+	void OnModelChanged (RichTextBoxModelChangeType change, PropertyChangedEventArgs *args);
 
 	// ITextLayoutContainer interface
 	void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args);

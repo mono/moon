@@ -58,8 +58,40 @@ TextSelection::GetPropertyValue (DependencyProperty *formatting)
 void
 TextSelection::Insert (TextElement *element)
 {
+	if (anchor.GetParent() == NULL || moving.GetParent() == NULL)
+		// if either are null we're going nowhere fast...
+		return;
+
+	if (anchor.GetParent() == moving.GetParent()) {
+		// refactor out the "clear out selection" from SetText
+
+		if (anchor.GetParent()->Is (Type::RUN)) {
+			if (element->Is (Type::RUN)) {
+				// FIXME we need to verify what SL does here,
+				// but I would *hope* that if you insert a run
+				// with identical formatting into another run,
+				// we just copy the text into the existing
+				// run's text.  but for now we'll just be
+				// naive and take the easy way out - split the
+				// run into two, and add the new one as a
+				// sibling between then.
+			}
+			else {
+			}
+		}
+		else {
+			// depending on what the anchor's parent is,
+			// and what @element is, we might need to
+			// split the tree higher up/lower down.
+		}
+	}
+	else {
+		// harder case, anchor/moving are in different elements
+		printf ("NIEX hard case TextSelection::Insert\n");
+	}
+
+
 	printf ("TextSelection::Insert\n");
-	// FIXME: implement this
 }
 
 bool
