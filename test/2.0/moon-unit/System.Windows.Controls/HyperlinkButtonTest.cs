@@ -136,7 +136,7 @@ namespace MoonTest.System.Windows.Controls
 			root.Children.Add (hlb);
 			
 			CreateAsyncTest (root, () => {
-				Assert.DoesNotThrow (() => hlb.Clickify ());
+				Assert.DoesNotThrow (() => hlb.Clickify (), "#1");
 			});
 		}
 
