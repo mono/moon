@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 469 methods
+# 470 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -272,6 +272,7 @@
 +SSC-M: System.Type System.Reflection.MonoAssembly::GetType(System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Reflection.AssemblyName[] System.Reflection.MonoAssembly::GetReferencedAssemblies()
 +SSC-M: System.Object System.Reflection.MonoCMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
++SSC-M: System.Reflection.MethodAttributes System.Reflection.MonoCMethod::get_Attributes()
 +SSC-M: System.String System.Reflection.MonoCMethod::get_Name()
 +SSC-M: System.Reflection.MonoEventInfo System.Reflection.MonoEventInfo::GetEventInfo(System.Reflection.MonoEvent)
 +SSC-M: System.Type System.Reflection.MonoField::get_FieldType()
@@ -289,12 +290,12 @@
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetBaseDefinition()
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetBaseMethod()
 +SSC-M: System.Object System.Reflection.MonoMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
++SSC-M: System.Reflection.MethodAttributes System.Reflection.MonoMethod::get_Attributes()
 +SSC-M: System.String System.Reflection.MonoMethod::get_Name()
 +SSC-M: System.Object[] System.Reflection.MonoMethod::GetPseudoCustomAttributes()
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::MakeGenericMethod(System.Type[])
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetGenericMethodDefinition()
 +SSC-M: System.Reflection.MonoMethodInfo System.Reflection.MonoMethodInfo::GetMethodInfo(System.IntPtr)
-+SSC-M: System.Reflection.MethodAttributes System.Reflection.MonoMethodInfo::GetAttributes(System.IntPtr)
 +SSC-M: System.Reflection.ParameterInfo[] System.Reflection.MonoMethodInfo::GetParametersInfo(System.IntPtr,System.Reflection.MemberInfo)
 +SSC-M: System.Reflection.ParameterInfo System.Reflection.MonoMethodInfo::GetReturnParameterInfo(System.Reflection.MonoMethod)
 +SSC-M: System.Int32 System.Reflection.MonoModule::get_MetadataToken()
