@@ -508,6 +508,10 @@ Value::Copy (const Value& v)
 				break;
 			}
 		}
+	case Type::FONTRESOURCE:
+		if (v.u.fontresource) {
+			u.fontresource = new FontResource (*v.u.fontresource);
+		}
 		break;
 	case Type::FONTWEIGHT:
 		if (v.u.fontweight) {
@@ -860,6 +864,12 @@ Value::operator== (const Value &v) const
 		}
 		
 		return u.fontsource == v.u.fontsource;
+	case Type::FONTRESOURCE:
+		if (u.fontresource && v.u.fontresource)
+			return *u.fontresource == *v.u.fontresource;
+		else
+			return u.fontresource == v.u.fontresource;
+
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
