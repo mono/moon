@@ -595,34 +595,38 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL; 
 		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 
-		if (old && old->Is(Type::BITMAPSOURCE)) {
-			old->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
-		}
-		
-		if (source && source->Is(Type::BITMAPSOURCE)) {
-			source->AddHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
-		}
-		
-		if (old && old->Is(Type::BITMAPIMAGE)) {
-			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-		}
-		
-		if (source && source->Is(Type::BITMAPIMAGE)) {
-			BitmapImage *bitmap = (BitmapImage *) source;
+		if (old) {
+			if (old->Is(Type::BITMAPSOURCE)) {
+				old->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+			}
 
-			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-			
-			if (bitmap->GetPixelWidth () > 0 && bitmap->GetPixelHeight () > 0) {
+			if (old->Is(Type::BITMAPIMAGE)) {
+				old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+				old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+				old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			}			
+		}
+		
+		if (source) {
+			if (source->Is(Type::BITMAPSOURCE)) {
+				source->AddHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+			}
+
+		        if (source->Is(Type::BITMAPIMAGE)) {
+				BitmapImage *bitmap = (BitmapImage *) source;
+
+				source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+				source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+				source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			}
+
+			if (source->GetPixelWidth () > 0 && source->GetPixelHeight () > 0) {
 				RoutedEventArgs *args = MoonUnmanagedFactory::CreateRoutedEventArgs ();
 				ImageOpened (args);
 				args->unref ();
 			}
 		}
-		
+
 		InvalidateMeasure ();
 	}
 	
