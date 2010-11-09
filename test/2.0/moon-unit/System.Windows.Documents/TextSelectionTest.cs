@@ -51,8 +51,15 @@ namespace MoonTest.System.Windows.Documents {
 		public void Defaults ()
 		{
 			TextSelection ts = rtb.Selection;
+
 			Assert.AreEqual (String.Empty, ts.Text, "Text");
 			Assert.AreEqual (String.Empty, ts.Xaml, "Xaml");
+
+#if notyet
+			// not until we can run on silverlight and find out what these values should be.
+			Assert.AreEqual (0, ts.Start.CompareTo (rtb.ContentStart), "Start");
+			Assert.AreEqual (0, ts.End.CompareTo (rtb.ContentStart), "End");
+#endif
 		}
 
 		[TestMethod]
@@ -64,7 +71,6 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
-		[Ignore ("crash")]
 		public void Text ()
 		{
 			TextSelection ts = rtb.Selection;

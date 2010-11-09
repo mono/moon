@@ -91,6 +91,10 @@ TextSelection::SetText (const char *text)
 #define CONTENT_START (0)
 #define CONTENT_END ((guint32)-1)
 
+	if (anchor.GetParent() == NULL || moving.GetParent() == NULL)
+		// if either are null we're going nowhere fast...
+		return;
+
 	if (anchor.GetParent() == moving.GetParent()) {
 		// clear out the selection
 		if (anchor.GetLocation () != moving.GetLocation()) {
