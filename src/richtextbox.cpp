@@ -1379,7 +1379,11 @@ RichTextBox::Redo ()
 Rect
 RichTextBox::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
 {
-	return view->GetCharacterRect (tp, direction);
+	// FIXME we need to make sure this is the proper error
+	// condition.  the moon-unit TextPointerTest.GetCharacterRect
+	// test is only checking an invalid direction, not an
+	// unapplied template.
+	return view ? view->GetCharacterRect (tp, direction) : Rect();
 }
 
 
