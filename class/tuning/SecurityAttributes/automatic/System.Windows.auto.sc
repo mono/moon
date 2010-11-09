@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 578 methods needs to be decorated.
+# 569 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -174,9 +174,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::text_box_base_select_with_error_(System.IntPtr,System.Int32,System.Int32,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::text_pointer_get_is_at_insertion_position(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::text_selection_select_with_error_(System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
@@ -746,9 +743,6 @@
 +SC-M: System.IntPtr Mono.NativeMethods::rich_text_box_get_position_from_point(System.IntPtr,System.Windows.Point)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::rich_text_box_get_selection(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::routed_event_args_get_source(System.IntPtr)
 
 # p/invoke declaration
@@ -845,19 +839,10 @@
 +SC-M: System.IntPtr Mono.NativeMethods::text_pointer_get_position_at_offset(System.IntPtr,System.Int32,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_end(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::text_pointer_new(System.Int32,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_property_value(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_start(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_text_(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::text_selection_get_xaml_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_get_manual_target(System.IntPtr)
@@ -1047,9 +1032,6 @@
 
 # p/invoke declaration
 +SC-M: System.UInt32 Mono.NativeMethods::http_request_write_event_args_get_count(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.UInt32 Mono.NativeMethods::text_pointer_get_location(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.UInt64 Mono.NativeMethods::http_request_write_event_args_get_offset(System.IntPtr)
@@ -1493,22 +1475,10 @@
 +SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_pointer_free(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_selection_apply_property_value(System.IntPtr,System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_selection_free(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_selection_insert(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_selection_set_text(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_selection_set_xaml(System.IntPtr,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_add_dispatcher_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
@@ -1661,6 +1631,12 @@
 +SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Documents.TextPointer::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Documents.TextSelection::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::set_NativeHandle(System.IntPtr)
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
@@ -1689,9 +1665,6 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::LookupDependencyPropertyForBinding(Mono.Xaml.XamlCallbackData*,System.Windows.DependencyObject,System.String,System.String)
-
-# p/invoke declaration
-+SC-M: System.Windows.Documents.LogicalDirection Mono.NativeMethods::text_pointer_get_logical_direction(System.IntPtr)
 
 # overrides 'System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()'.
 +SC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL3MarkupExpressionParser::GetParentTemplate()
