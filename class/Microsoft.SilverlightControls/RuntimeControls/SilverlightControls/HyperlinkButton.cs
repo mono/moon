@@ -21,6 +21,35 @@ using Mono;
 
 namespace System.Windows.Controls
 {
+	// These are a series of tests which can't be made into moonunits as they require user-initiated events
+	// The test the behaviour of HyperlinkButton under various permutations.
+
+	// Navigates to /test
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("/test", UriKind.Relative), TargetName = null };
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("/test", UriKind.Relative), TargetName = "" };
+
+	// Navigates to /test - new window
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("/test", UriKind.Relative), TargetName = "asdf" };
+
+	// Throws invalid operation exception
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("test", UriKind.Relative), TargetName = null };
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("test", UriKind.Relative), TargetName = "" };
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("test", UriKind.Relative), TargetName = "asdf" };
+
+	// Downloads the xap - same window
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("", UriKind.Relative), TargetName = null };
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("", UriKind.Relative), TargetName = "" };
+
+	// Downloads the xap - new window
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("", UriKind.Relative), TargetName = "asdasf" };
+
+	// Navigates to Ireland.com - same window
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("http://www.ireland.com", UriKind.Absolute), TargetName = null };
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("http://www.ireland.com", UriKind.Absolute), TargetName = "" };
+
+	// Navigates to Ireland.com - new window
+	//new HyperlinkButton { Content = "Click", NavigateUri = new Uri("http://www.ireland.com", UriKind.Absolute), TargetName = "sdfljh" };
+
     /// <summary> 
     /// Represents a control that displays a link to another website.
     /// </summary>
