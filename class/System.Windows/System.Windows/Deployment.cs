@@ -576,12 +576,11 @@ namespace System.Windows {
 						LoadAssemblyFromBuffer (a, buffer, wreq);
 					}
 				}
+				Dispatcher.BeginInvoke (AsyncDownloadComplete);
 			}
 			catch (Exception e) {
 				// we need to report everything since any error means CreateApplication won't be called
 				EmitError (error_code, e.ToString ());
-			} finally {
-				Dispatcher.BeginInvoke (AsyncDownloadComplete);
 			}
 		}
 
