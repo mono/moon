@@ -613,8 +613,6 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 
 		        if (source->Is(Type::BITMAPIMAGE)) {
-				BitmapImage *bitmap = (BitmapImage *) source;
-
 				source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 				source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 				source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
@@ -625,6 +623,9 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				ImageOpened (args);
 				args->unref ();
 			}
+		} else {
+			UpdateBounds ();
+			Invalidate ();
 		}
 
 		InvalidateMeasure ();
