@@ -785,7 +785,7 @@ is_start_of_word (TextBuffer *buffer, int index)
 	if (index > 0 && !g_unichar_isspace (buffer->text[index - 1]))
 		return false;
 	
-	return !g_unichar_isspace (buffer->text[index]);
+	return g_unichar_isalnum (buffer->text[index]);
 }
 #endif
 
