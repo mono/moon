@@ -133,11 +133,10 @@ DLLS_TO_EMBED = \
 	Mono.Moonlight.UnitTesting.dll \
 	System.Windows.Controls.dll \
 	System.Windows.Controls.Data.dll \
-	MoonAtkBridge.dll \
-	moon-unit.dll
+	MoonAtkBridge.dll
 
 appmanifest_ASSEMBLYPARTS= \
-	$(foreach dll,$(DLLS_TO_EMBED),\<AssemblyPart x:Name=\"$(basename $(dll))\" Source=\"$(dll)\"/\>)
+	$(foreach dll,$(DLLS_TO_EMBED) moon-unit.dll,\<AssemblyPart x:Name=\"$(basename $(dll))\" Source=\"$(dll)\"/\>)
 
 appmanifest_NAMESPACES=xmlns=\"http://schemas.microsoft.com/client/2007/deployment\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"
 
@@ -151,9 +150,7 @@ moon-unit.g.resources:
 	@echo Generating moon-unit.g.resources
 	@$(SYSTEM_MONO) $(top_builddir)/tools/respack/respack.exe moon-unit.g.resources $(moon_unit_dll_RESOURCES)
 
-# we include moon-unit.dll in the DLLS_TO_EMBED so we don't have to make the appmanifest_contents function even larger,
-# but it means we need to filter it out here or else we have a circular dependency (which gmake complains about and drops)
-moon-unit.dll: moon-unit.sources moon-unit.g.resources $(CODE_BEHINDS) $(filter-out moon-unit.dll,$(DLLS_TO_EMBED))
+moon-unit.dll: moon-unit.sources moon-unit.g.resources $(CODE_BEHINDS) $(DLLS_TO_EMBED)
 	@echo Compiling moon-unit.dll
 	@MONO_PATH=$(top_builddir)/class/lib/2.1 $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe -d:TEST -d:NET_2_1 -debug+ -target:library -out:moon-unit.dll $(BROWSER_ASSEMBLIES) $(REFERENCES) @$(top_builddir)/test/2.0/moon-unit/moon-unit.sources $(CODE_BEHINDS) -resource:moon-unit.g.resources -warnaserror+
 
