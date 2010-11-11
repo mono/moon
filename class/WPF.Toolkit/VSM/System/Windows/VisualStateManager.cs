@@ -60,7 +60,8 @@ namespace System.Windows
             // System.Diagnostics.Debug.WriteLine("Going to " + stateName);
             VisualState state;
             VisualStateGroup group;
-            VisualStateManager.TryGetState(groups, stateName, out group, out state);
+            if (!VisualStateManager.TryGetState(groups, stateName, out group, out state))
+                return false;
 
             // Look for a custom VSM, and call it if it was found, regardless of whether the state was found or not.
             // This is because we don't know what the custom VSM will want to do. But for our default implementation,
