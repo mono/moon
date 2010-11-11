@@ -261,6 +261,12 @@ namespace System.Windows {
 						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
 			}
 			else if (versions[0] == 3) {
+#if NET_2_1
+				// note: not enabled for NET_3_0 (desktop) since we're linking against FX2.0 (not 4.0) assemblies
+				// see DRT 924 and link below
+				// http://msdn.microsoft.com/en-us/library/system.appdomain.iscompatibilityswitchset%28VS.95%29.aspx
+				AppDomain.CurrentDomain.SetCompatibilitySwitch ("APP_EARLIER_THAN_SL4.0");
+#endif
 				// we need to add validation stuff for SL3 rtm here
 			}
 			else if (versions[0] == 4) {

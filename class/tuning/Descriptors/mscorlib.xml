@@ -3,6 +3,7 @@
 	<assembly fullname="mscorlib">
 		<type fullname="System.AppDomain" preserve="all">
 			<method name="get_SetupInformationNoCopy" />
+			<method name="SetCompatibilitySwitch" />
 		</type>
 		<type fullname="System.IO.FileSystemInfo" preserve="all" />
 		<type fullname="System.IO.IsolatedStorage.IsolatedStorage" preserve="all" />

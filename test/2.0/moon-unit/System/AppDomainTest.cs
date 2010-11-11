@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -29,10 +29,11 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Windows;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MoonTest.System.Windows.Input {
+namespace MoonTest.System {
 
 	[TestClass]
 	public class AppDomainTest {
@@ -100,10 +101,12 @@ namespace MoonTest.System.Windows.Input {
 				AppDomain.CurrentDomain.IsCompatibilitySwitchSet (null);
 			}, "null");
 			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet (String.Empty), "Empty");
-			// defined in SL4 RC documentation
-			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("NetFx40_Legacy20SortingBehavior"), "NetFx40_Legacy20SortingBehavior");
-			// defined in FX4 beta documentation
+			// defined in SL4 (final) documentation
+			bool v3 = (Deployment.Current.RuntimeVersion [0] == '3');
+			Assert.AreEqual (v3, (bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("APP_EARLIER_THAN_SL4.0"), "APP_EARLIER_THAN_SL4.0");
+			// defined in FX4 (final) documentation
 			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("NetFx40_LegacySecurityPolicy"), "NetFx40_LegacySecurityPolicy");
+			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("NetFx40_Legacy20SortingBehavior"), "NetFx40_Legacy20SortingBehavior");
 			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("NetFx40_TimeSpanLegacyFormatMode"), "NetFx40_TimeSpanLegacyFormatMode");
 			// undefined
 			Assert.IsFalse ((bool) AppDomain.CurrentDomain.IsCompatibilitySwitchSet ("MONO"), "undefined");
