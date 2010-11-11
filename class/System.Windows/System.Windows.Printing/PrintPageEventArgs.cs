@@ -26,14 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-
 namespace System.Windows.Printing {
+
+	[MonoTODO]
 	public sealed class PrintPageEventArgs : EventArgs {
 		public PrintPageEventArgs ()
 		{
 			Console.WriteLine ("System.Windows.Printing.PrintPageEventArgs..ctor: NIEX");
-			throw new NotImplementedException ();
 		}
 
 		public bool HasMorePages {

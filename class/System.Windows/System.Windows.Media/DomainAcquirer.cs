@@ -30,11 +30,12 @@ using System;
 using System.IO;
 
 namespace System.Windows.Media {
+
+	[MonoTODO]
 	public class DomainAcquirer {
 		public DomainAcquirer ()
 		{
 			Console.WriteLine ("System.Windows.Media.DomainAcquirer.ctor: NIEX");
-			throw new NotImplementedException ();
 		}
 
 		protected virtual void OnJoinDomain (Stream joinChallenge, Uri domainServerUri)
@@ -87,8 +88,7 @@ namespace System.Windows.Media {
 
 		public string ChallengeCustomData {
 			get {
-				Console.WriteLine ("System.Windows.Media.DomainAcquirer.get_ChallengeCustomData: NIEX");
-				throw new NotImplementedException ();
+				return null;
 			}
 			set {
 				Console.WriteLine ("System.Windows.Media.DomainAcquirer.set_ChallengeCustomData: NIEX");

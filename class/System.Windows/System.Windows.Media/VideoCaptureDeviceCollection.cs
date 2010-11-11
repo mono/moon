@@ -26,11 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System;
-
 namespace System.Windows.Media {
 	public sealed class VideoCaptureDeviceCollection : PresentationFrameworkCollection<VideoCaptureDevice> {
-		public VideoCaptureDeviceCollection ()
+		internal VideoCaptureDeviceCollection ()
 			: base (IntPtr.Zero, false)
 		{
 			Console.WriteLine ("System.Windows.Media.VideoCaptureDeviceCollection.ctor: NIEX");

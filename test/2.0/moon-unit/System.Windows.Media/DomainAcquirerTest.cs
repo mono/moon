@@ -1,11 +1,11 @@
-// 
-// AudioCaptureDeviceCollection.cs
-// 
+//
+// Unit tests for System.Windows.Media.DomainAcquirer
+//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
-// 
-// Copyright 2010 Novell, Inc.
-// 
+//
+// Copyright (C) 2010 Novell, Inc (http://www.novell.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -24,15 +24,25 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+//
 
-namespace System.Windows.Media {
-	public sealed class AudioCaptureDeviceCollection : PresentationFrameworkCollection<AudioCaptureDevice> {
-		internal AudioCaptureDeviceCollection ()
-			: base (IntPtr.Zero, false)
+using System;
+using System.Security;
+using System.Windows;
+using System.Windows.Media;
+using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace MoonTest.System.Windows.Media {
+
+	[TestClass]
+	public class DomainAcquirerTest {
+
+		[TestMethod]
+		public void Defaults ()
 		{
-			Console.WriteLine ("System.Windows.Media.AudioCaptureDeviceCollection.ctor: NIEX");
-			throw new NotImplementedException ();
+			DomainAcquirer da = new DomainAcquirer ();
+			Assert.IsNull (da.ChallengeCustomData, "ChallengeCustomData");
 		}
 	}
 }

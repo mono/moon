@@ -26,14 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-
 namespace System.Windows.Printing {
+
+	[MonoTODO]
 	public sealed class EndPrintEventArgs : EventArgs {
 		public EndPrintEventArgs ()
 		{
 			Console.WriteLine ("System.Windows.Printing.EndPrintEventArgs..ctor: NIEX");
-			throw new NotImplementedException ();
 		}
 
 		public Exception Error {

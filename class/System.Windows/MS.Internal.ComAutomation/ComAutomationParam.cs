@@ -28,6 +28,8 @@
 using System;
 
 namespace MS.Internal.ComAutomation {
+
+	[MonoTODO]
 	public sealed class ComAutomationParam {
 		private object value;
 		private bool byref;
@@ -36,7 +38,6 @@ namespace MS.Internal.ComAutomation {
 		{
 			// Need to test default values
 			Console.WriteLine ("MS.Internal.ComAutomation.ctor: NIEX");
-			throw new NotImplementedException ();
 		}
 
 		public ComAutomationParam (object value, bool byRef)
