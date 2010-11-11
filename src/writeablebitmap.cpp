@@ -100,6 +100,12 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 	if (transform)
 		transform->GetTransform (&xform);
 
+	FrameworkElement *fe = (FrameworkElement *)element;
+	if (fe->GetFlowDirection () == FlowDirectionRightToLeft) {
+		cairo_matrix_translate (&xform, fe->GetActualWidth (), 0.0);
+		cairo_matrix_scale (&xform, -1, 1);
+	}
+
 	element->Paint (target, bounds, &xform);
 
 	target->unref ();
