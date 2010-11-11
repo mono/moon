@@ -437,9 +437,13 @@ namespace System.Windows {
 
 			StreamResourceInfo sr = GetResourceStream (resourceLocator);
 
-			// Does not seem to throw.
-			if (sr == null)
+			if (sr == null) {
+				// throws for case like a resource outside the XAP (e.g. DRT924) i.e. no assembly specified
+				if (resourceLocator.ToString ().IndexOf (';') == -1)
+					throw new XamlParseException ();
+				// otherwise simply return
 				return;
+			}
 
 			Assembly loading_asm = component.GetType ().Assembly;
 	

@@ -210,7 +210,7 @@ namespace Mono.Xaml
 					flags |= XamlLoaderFlags.ImportDefaultXmlns;
 				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref v, createNamescope, out k, (int) flags);
 				if (ret == IntPtr.Zero)
-					throw new Exception ("Invalid XAML file");
+					throw new XamlParseException ("Invalid XAML file");
 			}
 			finally {
 				v.Dispose ();

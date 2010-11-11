@@ -152,6 +152,10 @@ namespace MoonTest.System.Windows {
 			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (sri, null), "GetResourceStream(sri,null)");
 
 			Assert.Throws<IndexOutOfRangeException> (() => Application.GetResourceStream (new Uri ("", UriKind.Relative)));
+
+			Uri docuri = HtmlPage.Document.DocumentUri;
+			Uri relative = new Uri (docuri.LocalPath, UriKind.RelativeOrAbsolute);
+			Assert.IsNull (Application.GetResourceStream (relative), "GetResourceStream(out-of-xap)");
 		}
 
 		[TestMethod]
@@ -175,6 +179,14 @@ namespace MoonTest.System.Windows {
 
 			// try to load an unexisting uri
 			Application.LoadComponent (Application.Current, new Uri ("/moon_unit;component/App-does-not-exists.xaml", UriKind.Relative));
+		}
+
+		[TestMethod]
+		public void LoadComponent_Application_OutsideXap ()
+		{
+			Uri docuri = HtmlPage.Document.DocumentUri;
+			Uri relative = new Uri (docuri.LocalPath, UriKind.RelativeOrAbsolute);
+			Assert.Throws<XamlParseException> (() => Application.LoadComponent (Application.Current, relative), "LoadComponent(app,out-of-xap)");
 		}
 
 		[TestMethod]
