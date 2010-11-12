@@ -495,11 +495,13 @@ namespace Mono.Xaml {
 			skip_read = true;
 		}
 
-		private static unsafe IntPtr ParseTemplate (Value *context_ptr, string resource_base, IntPtr surface, IntPtr binding_source, string xaml, ref MoonError error)
+		private static unsafe IntPtr ParseTemplate (Value *context_ptr, IntPtr resource_base, IntPtr surface, IntPtr binding_source, string xaml, ref MoonError error)
 		{
 			XamlContext context = Value.ToObject (typeof (XamlContext), context_ptr) as XamlContext;
 
-			var parser = new XamlParser (context);
+			var parser = new XamlParser (context) {
+				ResourceBase = UriHelper.FromNativeUri (resource_base),
+			};
 
 			FrameworkElement fwe = null;
 			var source = NativeDependencyObjectHelper.FromIntPtr (binding_source);
