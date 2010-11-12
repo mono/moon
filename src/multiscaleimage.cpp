@@ -757,9 +757,6 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 		return;
 	}
 	
-	cairo_surface_set_user_data (surface, &width_key, new int (ctx->image->GetPixelWidth ()), int_free);
-	cairo_surface_set_user_data (surface, &height_key, new int (ctx->image->GetPixelHeight ()), int_free);
-	
 	if (!fadein_sb) {
 		fadein_sb = MoonUnmanagedFactory::CreateStoryboard ();
 		fadein_sb->SetManualTargetWithError (this, NULL);

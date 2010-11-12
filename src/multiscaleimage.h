@@ -38,8 +38,6 @@ class MultiScaleImage : public MediaBase {
 	DOPtr<Storyboard> pan_sb;
 	
 	cairo_user_data_key_t full_opacity_at_key;
-	cairo_user_data_key_t height_key;
-	cairo_user_data_key_t width_key;
 	bool subimages_sorted;
 	GPtrArray *downloaders;
 	int n_downloading;
