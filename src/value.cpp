@@ -508,6 +508,7 @@ Value::Copy (const Value& v)
 				break;
 			}
 		}
+		break;
 	case Type::FONTRESOURCE:
 		if (v.u.fontresource) {
 			u.fontresource = new FontResource (*v.u.fontresource);
