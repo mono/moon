@@ -244,7 +244,7 @@ namespace MoonTest.System.Windows.Documents {
 			Assert.AreEqual (p, tp.Parent, "#7-0");
 			Assert.AreEqual (1, tp.CompareTo (b.ContentEnd), "#7-1");
 			Assert.AreEqual (-1, tp.CompareTo (i.ContentStart), "#7-2");
-			Assert.IsTrue (tp.IsAtInsertionPosition, "#7-3");
+			Assert.IsFalse (tp.IsAtInsertionPosition, "#7-3");
 
 			// forward 1 more and we'll be at i.ContentStart
 			Console.WriteLine ("8");
@@ -252,7 +252,7 @@ namespace MoonTest.System.Windows.Documents {
 			tp = p.ContentStart.GetPositionAtOffset (offset, LogicalDirection.Forward);
 			Assert.AreEqual (i, tp.Parent, "#8-0");
 			Assert.AreEqual (0, tp.CompareTo (i.ContentStart), "#8-1");
-			Assert.IsTrue (tp.IsAtInsertionPosition, "#8-2");
+			Assert.IsFalse (tp.IsAtInsertionPosition, "#8-2");
 
 
 			// backward tests from r3.ContentStart
@@ -273,7 +273,7 @@ namespace MoonTest.System.Windows.Documents {
 			Assert.AreEqual (i, tp.Parent, "#10-0");
 			Assert.AreEqual (-1, tp.CompareTo (r3.ContentStart), "#10-1");
 			Assert.AreEqual (1, tp.CompareTo (r2.ContentEnd), "#10-2");
-			Assert.IsTrue (tp.IsAtInsertionPosition, "#10-2");
+			Assert.IsFalse (tp.IsAtInsertionPosition, "#10-2");
 
 			// backward 1 more and we're at r2.ContentEnd
 			offset--;
