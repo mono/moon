@@ -17,13 +17,14 @@
 #include <cairo.h>
 
 #include "collection.h"
+#include "projection.h"
 
 namespace Moonlight {
 
 /* @Namespace=System.Windows.Media */
 class GeneralTransform : public DependencyObject {
  protected:
-	cairo_matrix_t _matrix;
+	double _m44[16];
 	bool need_update;
 	
 	/* @GeneratePInvoke,ManagedAccess=Protected */

@@ -49,6 +49,8 @@ CompositeTransform::UpdateTransform ()
 	double cx = GetCenterX ();
 	double cy = GetCenterY ();
 
+	cairo_matrix_t _matrix;
+
 	cairo_matrix_init_translate (&_matrix, cx, cy);
 	cairo_matrix_translate (&_matrix, GetTranslateX (), GetTranslateY ());
 
@@ -70,6 +72,11 @@ CompositeTransform::UpdateTransform ()
 	cairo_matrix_scale (&_matrix, sx, sy);
 
 	cairo_matrix_translate (&_matrix, -cx, -cy);
+
+	Matrix3D::Affine (_m44,
+			  _matrix.xx, _matrix.xy,
+			  _matrix.yx, _matrix.yy,
+			  _matrix.x0, _matrix.y0);
 }
 
 
@@ -118,22 +125,40 @@ GeneralTransform::MaybeUpdateTransform ()
 void
 GeneralTransform::GetTransform (cairo_matrix_t *value)
 {
+	cairo_matrix_t _matrix;
+
 	MaybeUpdateTransform ();
+
+#define M(row, col) _m44[col * 4 + row]
+	_matrix.xx = M (0, 0);
+	_matrix.yx = M (1, 0);
+	_matrix.xy = M (0, 1);
+	_matrix.yy = M (1, 1);
+	_matrix.x0 = M (0, 3);
+	_matrix.y0 = M (1, 3);
+#undef M
+
 	*value = _matrix;
 }
 
 Matrix *
 GeneralTransform::GetMatrix ()
 {
-	MaybeUpdateTransform ();
+	cairo_matrix_t _matrix;
+
+	GetTransform (&_matrix);
 	return new Matrix (&_matrix);
 }
 
 Point
 GeneralTransform::Transform (Point point)
 {
+	double p[4] = { point.x, point.y, 0.0, 1.0 };
+
 	MaybeUpdateTransform ();
-	return point.Transform (&_matrix);
+	Matrix3D::TransformPoint (p, _m44, p);
+
+	return Point (p[0], p[1]);
 }
 
 void
@@ -159,9 +184,8 @@ Transform::GetInverse ()
 	MatrixTransform *transform;
 	cairo_matrix_t inverted;
 	Matrix *matrix;
-	
-	MaybeUpdateTransform ();
-	inverted = _matrix;
+
+	GetTransform (&inverted);
 	
 	if (cairo_matrix_invert (&inverted) != CAIRO_STATUS_SUCCESS)
 		return NULL;
@@ -177,8 +201,13 @@ Transform::GetInverse ()
 bool
 Transform::TryTransform (Point inPoint, Point *outPoint)
 {
+	double p[4] = { inPoint.x, inPoint.y, 0.0, 1.0 };
+
 	MaybeUpdateTransform ();
-	*outPoint = inPoint.Transform (&_matrix);
+	Matrix3D::TransformPoint (p, _m44, p);
+
+	*outPoint = Point (p[0], p[1]);
+
 	return true;
 }
 
@@ -192,6 +221,8 @@ RotateTransform::UpdateTransform ()
 {
 	double angle, center_x, center_y;
 	double radians;
+
+	cairo_matrix_t _matrix;
 
 	angle = GetAngle ();
 	center_x = GetCenterX ();
@@ -207,6 +238,12 @@ RotateTransform::UpdateTransform ()
 		cairo_matrix_rotate (&_matrix, radians);
 		cairo_matrix_translate (&_matrix, -center_x, -center_y);
 	}
+
+	Matrix3D::Affine (_m44,
+			  _matrix.xx, _matrix.xy,
+			  _matrix.yx, _matrix.yy,
+			  _matrix.x0, _matrix.y0);
+
 	//printf ("Returning2 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
@@ -221,7 +258,15 @@ TranslateTransform::UpdateTransform ()
 	double x = GetX ();
 	double y = GetY ();
 
+	cairo_matrix_t _matrix;
+
 	cairo_matrix_init_translate (&_matrix, x, y);
+
+	Matrix3D::Affine (_m44,
+			  _matrix.xx, _matrix.xy,
+			  _matrix.yx, _matrix.yy,
+			  _matrix.x0, _matrix.y0);
+
 	//printf ("translating dx %g dy %g", x, y);
 	//printf ("TranslateTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
@@ -249,6 +294,8 @@ ScaleTransform::UpdateTransform ()
 	double cx = GetCenterX ();
 	double cy = GetCenterY ();
 
+	cairo_matrix_t _matrix;
+
 	if (cx == 0.0 && cy == 0.0) {
 		cairo_matrix_init_scale (&_matrix, sx, sy);
 	}
@@ -257,6 +304,12 @@ ScaleTransform::UpdateTransform ()
 		cairo_matrix_scale (&_matrix, sx, sy);
 		cairo_matrix_translate (&_matrix, -cx, -cy);
 	}
+
+	Matrix3D::Affine (_m44,
+			  _matrix.xx, _matrix.xy,
+			  _matrix.yx, _matrix.yy,
+			  _matrix.x0, _matrix.y0);
+
 	//printf ("scaling sx %g sy %g at center cx %g cy %g\n", sx, sy, cx, cy);
 	//printf ("ScaleTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
@@ -270,6 +323,7 @@ SkewTransform::UpdateTransform ()
 {
 	double cx = GetCenterX ();
 	double cy = GetCenterY ();
+	cairo_matrix_t _matrix;
 
 	bool translation = ((cx != 0.0) || (cy != 0.0));
 	if (translation)
@@ -287,6 +341,11 @@ SkewTransform::UpdateTransform ()
 
 	if (translation)
 		cairo_matrix_translate (&_matrix, -cx, -cy);
+
+	Matrix3D::Affine (_m44,
+			  _matrix.xx, _matrix.xy,
+			  _matrix.yx, _matrix.yy,
+			  _matrix.x0, _matrix.y0);
 
 	//printf ("SkewTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
@@ -360,11 +419,17 @@ MatrixTransform::OnSubPropertyChanged (DependencyProperty *prop, DependencyObjec
 void
 MatrixTransform::UpdateTransform ()
 {
+	cairo_matrix_t _matrix;
 	Matrix *matrix = GetMatrix ();
 	if (matrix)
 		_matrix = matrix->GetUnderlyingMatrix();
 	else
 		cairo_matrix_init_identity (&_matrix);
+
+	Matrix3D::Affine (_m44,
+			  _matrix.xx, _matrix.xy,
+			  _matrix.yx, _matrix.yy,
+			  _matrix.x0, _matrix.y0);
 }
 
 //
@@ -417,6 +482,7 @@ void
 TransformGroup::UpdateTransform ()
 {
 	TransformCollection *children = GetChildren ();
+	cairo_matrix_t _matrix;
 	
 	cairo_matrix_init_identity (&_matrix);
 	
@@ -428,6 +494,11 @@ TransformGroup::UpdateTransform ()
 		transform->GetTransform (&matrix);
 		cairo_matrix_multiply (&_matrix, &_matrix, &matrix);
 	}
+
+	Matrix3D::Affine (_m44,
+			  _matrix.xx, _matrix.xy,
+			  _matrix.yx, _matrix.yy,
+			  _matrix.x0, _matrix.y0);
 }
 
 };
