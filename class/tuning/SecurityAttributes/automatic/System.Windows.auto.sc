@@ -344,7 +344,7 @@
 +SC-M: System.IAsyncResult Mono.Xaml.LookupObjectCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.ParseTemplateFunc::BeginInvoke(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&,System.AsyncCallback,System.Object)
++SC-M: System.IAsyncResult Mono.Xaml.ParseTemplateFunc::BeginInvoke(Mono.Value*,System.IntPtr,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.IAsyncResult Mono.Xaml.SetPropertyCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
@@ -950,7 +950,7 @@
 +SC-M: System.IntPtr Mono.Xaml.ManagedXamlLoader::CreateFromStringInternal(System.String,System.Boolean,System.Boolean,System.Boolean,Mono.Kind&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.IntPtr Mono.Xaml.ParseTemplateFunc::Invoke(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
++SC-M: System.IntPtr Mono.Xaml.ParseTemplateFunc::Invoke(Mono.Value*,System.IntPtr,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
 
 # overrides 'System.IntPtr Mono.Xaml.XamlLoader::CreateFromFileInternal(System.String,System.Boolean,Mono.Kind&)'.
 +SC-M: System.IntPtr Mono.Xaml.SL4XamlLoader::CreateFromFileInternal(System.String,System.Boolean,Mono.Kind&)
@@ -959,7 +959,7 @@
 +SC-M: System.IntPtr Mono.Xaml.SL4XamlLoader::CreateFromStringInternal(System.String,System.Boolean,System.Boolean,System.Boolean,Mono.Kind&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.IntPtr Mono.Xaml.XamlParser::ParseTemplate(Mono.Value*,System.String,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
++SC-M: System.IntPtr Mono.Xaml.XamlParser::ParseTemplate(Mono.Value*,System.IntPtr,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Value::ToObject(System.Type,Mono.Value*)
