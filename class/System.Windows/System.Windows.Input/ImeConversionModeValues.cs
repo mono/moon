@@ -1,5 +1,5 @@
 // 
-// ImeConversionModeValues.cs.cs
+// ImeConversionModeValues.cs
 // 
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -40,7 +40,7 @@ namespace System.Windows.Input {
 		Symbol = 128,
 		Fixed = 256,
 		Alphanumeric = 512,
-		DoNotCare = int.MinValue,
+		DoNotCare = int.MaxValue,
 	}
 }
 

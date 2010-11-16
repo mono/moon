@@ -51,7 +51,6 @@ MSTOOLKIT=$(srcdir)/../Microsoft.Windows.Controls/Source
 WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
 
 system_windows_sources =							\
-	$(srcdir)/MS.Internal.ComAutomation/ComAutomationParam.cs	\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
@@ -253,7 +252,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/GenerationState.cs			\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
 	$(srcdir)/System.Windows.Controls/HitTestCollection.cs			\
-	$(srcdir)/System.Windows.Controls/HtmlBrush.cs			\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
 	$(srcdir)/System.Windows.Controls/ItemContainerGenerator.cs		\
 	$(srcdir)/System.Windows.Controls/INavigate.cs				\

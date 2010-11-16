@@ -59,10 +59,5 @@ namespace System.Windows.Input
 		public double Y {
 			get; set;
 		}
-
-		public override string ToString ()
-		{
-			return string.Format("[StylusPoint: PressureFactor={0}, X={1}, Y={2}]", PressureFactor, X, Y);
-		}
 	}
 }

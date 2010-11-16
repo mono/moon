@@ -143,7 +143,7 @@ namespace System.Windows.Data
 		}
 	}
 
-	public class BooleanToVisibilityConverter
+	class BooleanToVisibilityConverter
 	{
 		private static readonly bool?[] inverseMappings = new Nullable<bool>[] { true, false, null };
 		private readonly Visibility[] mappings = new Visibility[3] { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed };

@@ -30,6 +30,11 @@ using System;
 
 namespace System.Windows.Input {
 	public sealed class TextComposition {
+
+		internal TextComposition ()
+		{
+		}
+
 		public string CompositionText {
 			get {
 				Console.WriteLine ("System.Windows.Input.TextComposition..ctor: NIEX");
