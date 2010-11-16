@@ -29,15 +29,5 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class ScaleTransform : Transform {
-		public override GeneralTransform Inverse {
-			get {
-				return base.Inverse;
-			}
-		}
-		
-		public override bool TryTransform (Point inPoint, out Point outPoint)
-		{
-			return base.TryTransform (inPoint, out outPoint);
-		}
 	}
 }

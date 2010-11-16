@@ -39,18 +39,5 @@ namespace System.Windows.Media {
 				return new Matrix (matrix);
 			}
 		}
-		
-		public override GeneralTransform Inverse {
-			get {
-				Console.WriteLine ("System.Windows.Media.TransformGroup.Inverse : NIEX");
-				throw new System.NotImplementedException ();
-			}
-		}
-		
-		public override bool TryTransform (Point inPoint, out Point outPoint)
-		{
-			Console.WriteLine ("System.Windows.Media.TransformGroup.TryTransform : NIEX");
-			throw new System.NotImplementedException ();
-		} 
 	}
 }
