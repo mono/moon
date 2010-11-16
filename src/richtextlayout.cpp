@@ -1258,6 +1258,9 @@ RichTextLayout::GetLineFromIndex (int index)
 Rect
 RichTextLayout::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
 {
+	if (lines->len == 0)
+		return Rect (0,0,-1,-1);
+
 	/* find the line that contains the textpointer */
 	RichTextLayoutLine *line = NULL;
 	
@@ -1290,7 +1293,7 @@ RichTextLayout::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
 	}
 
 	printf ("NIEX GetCharacterRect()\n");
-	return Rect();
+	return Rect (0,0,-1,-1);
 }
 
 Rect
@@ -1695,7 +1698,7 @@ RichTextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 Rect
 RichTextLayout::GetCursor (const Point &offset, int index)
 {
-	return Rect();
+	return Rect (0,0,-1,-1);
 #if 0
 	const char *inptr, *inend, *pchar;
 	double height, x0, y0, y1;

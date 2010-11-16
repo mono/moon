@@ -48,7 +48,11 @@ int
 TextPointer::CompareTo (TextPointer *pointer)
 {
 	if (this->GetParent() == pointer->GetParent()) {
-		return compare_locations (this->GetLocation(), pointer->GetLocation());
+		DependencyObjectCollection *children = this->GetParentNode()->GetDocumentChildren();
+		if (children && children->GetCount() > 0)
+			return compare_locations (this->GetLocation(), pointer->GetLocation());
+		else
+			return this->ResolveLocation() - pointer->ResolveLocation();
 	}
 	else {
 		GPtrArray *this_array = g_ptr_array_new();
@@ -150,7 +154,7 @@ TextPointer::GetCharacterRect (LogicalDirection dir)
 	}
 	if (!el) {
 		g_warning ("a TextPointer outside of a RichTextBox?  say it ain't so...");
-		return Rect ();
+		return Rect (0,0,-1,-1);
 	}
 
 	return ((RichTextBox*)el)->GetCharacterRect (this, dir);
@@ -441,13 +445,8 @@ TextPointer::ResolveLocation ()
 bool
 TextPointer::GetIsAtInsertionPosition ()
 {
-	if (parent->Is (Type::PARAGRAPH)) {
-		return location != 0;
-	}
-	else {
-		// FIXME we need a bunch more tests to see if this is correct, but it seems to work for the tests we have..
-		return parent->Is (Type::RUN);
-	}
+	// FIXME we need a bunch more tests to see if this is correct, but it seems to work for the tests we have..
+	return parent->Is (Type::RUN);
 }
 
 int

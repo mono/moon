@@ -99,7 +99,9 @@ TextElement::NotifyLayoutContainerOnCollectionChanged (Collection *col, Collecti
 			return;
 		}
 		else if (el->Is (Type::RICHTEXTBOX)) {
-			((RichTextBox*)el)->GetView()->DocumentCollectionChanged (this, col, args);
+			RichTextBoxView* view = ((RichTextBox*)el)->GetView();
+			if (view)
+				view->DocumentCollectionChanged (this, col, args);
 			return;
 		}
 		else {

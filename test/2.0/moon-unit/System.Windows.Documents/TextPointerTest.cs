@@ -33,11 +33,12 @@ using System.Windows.Documents;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Documents {
 
 	[TestClass]
-	public partial class TextPointerTest {
+	public partial class TextPointerTest : SilverlightTest {
 
 		RichTextBox rtb;
 
@@ -48,16 +49,20 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		public void CompareTo_defaultRTBSettings ()
+		{
+			// for some reason RTB's initial values for ContentStart/ContentEnd are equal?
+			Assert.AreEqual (0, rtb.ContentStart.CompareTo (rtb.ContentStart), "#0");
+			Assert.AreEqual (0, rtb.ContentStart.CompareTo (rtb.ContentEnd), "#1");
+			Assert.AreEqual (0, rtb.ContentEnd.CompareTo (rtb.ContentStart), "#2");
+		}
+
+		[TestMethod]
 		public void CompareTo ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
 				rtb.ContentStart.CompareTo (null);
 			}, "null");
-
-			// for some reason RTB's initial values for ContentStart/ContentEnd are equal?
-			Assert.AreEqual (0, rtb.ContentStart.CompareTo (rtb.ContentStart), "#0");
-			Assert.AreEqual (0, rtb.ContentStart.CompareTo (rtb.ContentEnd), "#1");
-			Assert.AreEqual (0, rtb.ContentEnd.CompareTo (rtb.ContentStart), "#2");
 
 			rtb.SelectAll ();
 			rtb.Selection.Text = "hi";
@@ -97,16 +102,64 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public void GetCharacterRect ()
 		{
-			Rect r = rtb.ContentStart.GetCharacterRect ((LogicalDirection) Int32.MinValue);
-			Assert.IsTrue (r.IsEmpty, "invalid enum / Empty");
+			// all these cases return empty, presumably due to there being no RichTextBoxView
+
+			Rect r;
+			
+			Enqueue (() => {
+					r = rtb.ContentStart.GetCharacterRect ((LogicalDirection) Int32.MinValue);
+					Assert.IsTrue (r.IsEmpty, "#0");
+
+					r = rtb.ContentStart.GetCharacterRect (LogicalDirection.Forward);
+					Assert.IsTrue (r.IsEmpty, "#1");
+				});
+
+			Enqueue (() => rtb.Selection.Text = "hi" );
+
+			Enqueue (() => {
+					r = rtb.ContentStart.GetCharacterRect (LogicalDirection.Forward);
+					Assert.IsTrue (r.IsEmpty, "#2");
+				});
+
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
-		public void GetNextInsertionPosition ()
+		[Asynchronous]
+		public void GetCharacterRect_inTree ()
 		{
-			Assert.IsNull (rtb.ContentStart.GetNextInsertionPosition ((LogicalDirection) Int32.MinValue), "invalid enum");
+			CreateAsyncTest (rtb,
+					 () => {
+						 Rect r = rtb.ContentStart.GetCharacterRect ((LogicalDirection) Int32.MinValue);
+						 Assert.AreEqual (new Rect(4,4,0,16), r, "#0");
+
+						 r = rtb.ContentStart.GetCharacterRect (LogicalDirection.Forward);
+						 Assert.AreEqual (new Rect(4,4,0,16), r, "#1");
+					 },
+					 () => {
+						 rtb.Selection.Text = "hi";
+						 Rect r = rtb.ContentStart.GetCharacterRect (LogicalDirection.Forward);
+						 Assert.IsTrue (r.IsEmpty, "#2");
+					 },
+					 () => {
+						 Rect r = rtb.ContentStart.GetCharacterRect (LogicalDirection.Forward);
+						 Assert.AreEqual (new Rect(4,4,0,16), r, "#3");
+
+						 r = rtb.ContentStart.GetPositionAtOffset (1, LogicalDirection.Forward).GetCharacterRect (LogicalDirection.Forward);
+						 Assert.AreEqual (new Rect(4,4,0,16), r, "#4");
+
+						 r = rtb.ContentStart.GetPositionAtOffset (2, LogicalDirection.Forward).GetCharacterRect (LogicalDirection.Forward);
+						 Assert.AreEqual (new Rect(4,4,0,16), r, "#5");
+
+						 r = rtb.ContentStart.GetPositionAtOffset (3, LogicalDirection.Forward).GetCharacterRect (LogicalDirection.Forward);
+						 Assert.AreEqualWithDelta (10.960000038147, r.X, 0.001, "#6.x");
+						 Assert.AreEqualWithDelta (4, r.Y, 0.001, "#6.y");
+						 Assert.AreEqualWithDelta (0, r.Width, 0.001, "#6.width");
+						 Assert.AreEqualWithDelta (16, r.Height, 0.001, "#6.height");
+					 });
 		}
 
 		[TestMethod]
