@@ -736,7 +736,7 @@ namespace System.Windows.Browser {
 			return pi.IsOptional || pi.GetCustomAttributes(typeof (ParamArrayAttribute), false).Length > 0;
 		}
 
-		protected bool ValidateArguments (MethodInfo mi, object[] args)
+		internal bool ValidateArguments (MethodInfo mi, object[] args)
 		{
 			if (mi.GetParameters().Length != args.Length) {
 				int required_paramcount = 0;
