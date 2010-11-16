@@ -31,11 +31,6 @@ using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class CaptureSource : DependencyObject {
-		public void AsyncCaptureImage (Action<WriteableBitmap> Callback)
-		{
-			Console.WriteLine ("System.Windows.Media.CaptureSource.AsyncCaptureImage: NIEX");
-			throw new NotImplementedException ();
-		}
 
 		public void CaptureImageAsync ()
 		{

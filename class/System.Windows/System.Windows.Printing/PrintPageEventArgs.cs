@@ -62,10 +62,6 @@ namespace System.Windows.Printing {
 				Console.WriteLine ("System.Windows.Printing.PrintPageEventArgs.get_PrintableArea: NIEX");
 				throw new NotImplementedException ();
 			}
-			set {
-				Console.WriteLine ("System.Windows.Printing.PrintPageEventArgs.set_PrintableArea: NIEX");
-				throw new NotImplementedException ();
-			}
 		}
 
 		public Thickness PageMargins {

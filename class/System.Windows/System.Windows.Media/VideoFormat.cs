@@ -58,16 +58,6 @@ namespace System.Windows.Media {
 			get { return width; }
 		}
 
-		// SL4 beta api - required to build drts until we get the SL4 final drts.
-		public int Width {
-			get { return width; }
-		}
-
-		// SL4 beta api - required to build drts until we get the SL4 final drts.
-		public int Height {
-			get { return height; }
-		}
-
 		public int Stride {
 			get { return stride; }
 		}
