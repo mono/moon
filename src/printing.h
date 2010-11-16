@@ -29,7 +29,7 @@ public:
 	/* @DelegateType=EventHandler<EndPrintEventArgs> */
 	const static int EndPrintEvent;
 
-	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
+	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors,ReadOnly */
 	const static int PrintedPageCountProperty;
 
 	/* @DelegateType=EventHandler<PrintPageEventArgs> */

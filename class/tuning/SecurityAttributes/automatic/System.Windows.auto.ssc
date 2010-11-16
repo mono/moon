@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 637 methods
+# 636 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -104,7 +104,6 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::gradient_stop_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::grid_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::hit_test_collection_new()
-+SSC-M: System.IntPtr Mono.SafeNativeMethods::html_brush_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::hyperlink_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::icon_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::icon_collection_new()

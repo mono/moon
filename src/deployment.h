@@ -127,7 +127,7 @@ public:
 	const static int TopProperty;
 	/* @PropertyType=WindowStartupLocation,DefaultValue=WindowStartupLocationCenterScreen,GenerateAccessors,ManagedSetterAccess=Private,Validator=OnlyDuringInitializationValidator */
 	const static int WindowStartupLocationProperty;
-	/* @PropertyType=WindowStyle,DefaultValue=WindowStyleSingleBorderWindow,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
+	/* @PropertyType=WindowStyle,DefaultValue=WindowStyleSingleBorderWindow,GenerateAccessors,Validator=OnlyDuringInitializationValidator,ReadOnly */
 	const static int WindowStyleProperty;
 
 	const char *GetTitle ();

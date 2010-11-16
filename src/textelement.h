@@ -60,7 +60,7 @@ class TextElement : public DependencyObject, public ITextAttributes, public IDoc
 	bool UpdateFontDescription (bool force);
 	
 protected:
-	/* @GeneratePInvoke,ManagedAccess=Protected */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	TextElement ();
 	
 	virtual ~TextElement ();
@@ -330,7 +330,7 @@ class Paragraph : public Block {
 /* @ContentProperty=Blocks */
 class Section : public Block {
  protected:
-	/* @GeneratePInvoke */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	Section ();
 	
 	virtual ~Section () {}
@@ -375,7 +375,7 @@ class Span : public Inline {
 	friend class MoonManagedFactory;
 
  public:
-	/* @PropertyType=InlineCollection,AutoCreator=Span::CreateInlineCollection,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=InlineCollection,AutoCreator=Span::CreateInlineCollection,GenerateAccessors,ManagedFieldAccess=Internal,ReadOnly */
 	const static int InlinesProperty;
 	
 	//

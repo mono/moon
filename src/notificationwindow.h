@@ -82,8 +82,6 @@ public:
 	const static int HeightProperty;
 	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal*/
 	const static int VisibilityProperty;
-	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	const static int VisibleProperty; // FIXME: This DP should be removed when we have the SL4 final drts
 	/* @PropertyType=double */
 	const static int WidthProperty;
 

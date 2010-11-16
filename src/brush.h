@@ -323,22 +323,6 @@ protected:
 	friend class MoonManagedFactory;
 };
 
-/* @Namespace=System.Windows.Controls */
-class HtmlBrush : public TileBrush {
-protected:
-	/* @GeneratePInvoke */
-	HtmlBrush () : TileBrush (Type::HTMLBRUSH) { }
-
-	virtual ~HtmlBrush () {}
-
-	friend class MoonUnmanagedFactory;
-	friend class MoonManagedFactory;
-
-public:
-	/* @PropertyType=string,DefaultValue=\"\" */
-	const static int SourceNameProperty;
-};
-
 /* @Namespace=System.Windows.Media */
 class ImageBrush : public TileBrush {
 private:

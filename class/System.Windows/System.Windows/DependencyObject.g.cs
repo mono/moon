@@ -275,11 +275,6 @@ namespace System.Windows.Controls {
 		internal HitTestCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
-	partial class HtmlBrush {
-		public HtmlBrush () : base (SafeNativeMethods.html_brush_new (), true) {}
-		internal HtmlBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
-	}
-
 	partial class Image {
 		public Image () : base (SafeNativeMethods.image_new (), true) {}
 		internal Image (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -473,7 +468,7 @@ namespace System.Windows.Documents {
 
 	[ContentProperty ("Blocks")]
 	partial class Section {
-		public Section () : base (SafeNativeMethods.section_new (), true) {}
+		internal Section () : base (SafeNativeMethods.section_new (), true) {}
 		internal Section (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
@@ -484,12 +479,12 @@ namespace System.Windows.Documents {
 	}
 
 	partial class TextElement {
-		protected TextElement () : base (SafeNativeMethods.text_element_new (), true) {}
+		internal TextElement () : base (SafeNativeMethods.text_element_new (), true) {}
 		internal TextElement (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class TextElementCollection<T> {
-		public TextElementCollection () : base (SafeNativeMethods.text_element_collection_new (), true) {}
+		internal TextElementCollection () : base (SafeNativeMethods.text_element_collection_new (), true) {}
 		internal TextElementCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
@@ -690,7 +685,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class ImageSource {
-		public ImageSource () : base (SafeNativeMethods.image_source_new (), true) {}
+		internal ImageSource () : base (SafeNativeMethods.image_source_new (), true) {}
 		internal ImageSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 

@@ -24,7 +24,7 @@ class ImageSource : public DependencyObject {
 	virtual ~ImageSource ();
 
  public:
-	/* @GeneratePInvoke */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	ImageSource ();
 
 	virtual void Lock ();

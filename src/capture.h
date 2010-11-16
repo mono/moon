@@ -204,10 +204,10 @@ private:
 /* @Namespace=System.Windows.Media */
 class CaptureDevice : public DependencyObject {
 public:
-	/* @PropertyType=string,GenerateAccessors */
+	/* @PropertyType=string,GenerateAccessors,ReadOnly */
 	const static int FriendlyNameProperty;
 
-	/* @PropertyType=bool,GenerateAccessors */
+	/* @PropertyType=bool,GenerateAccessors,ReadOnly */
 	const static int IsDefaultDeviceProperty;
 
 	const char *GetFriendlyName ();

@@ -395,7 +395,7 @@ class ResourceDictionaryCollection : public DependencyObjectCollection {
 /* @ManagedName=TextElementCollection`1 */
 class TextElementCollection : public DependencyObjectCollection {
 protected:
-	/* @GeneratePInvoke */
+	/* @GeneratePInvoke,ManagedAccess=Internal */
 	TextElementCollection ();
 
 	virtual ~TextElementCollection () {}
