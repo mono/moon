@@ -4,3 +4,4 @@
 /stamp
 /*.exe
 /*.mdb
+/Generator.cs
