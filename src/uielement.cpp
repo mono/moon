@@ -1864,20 +1864,32 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 		}
 	}
 	
-	cairo_matrix_t result;
+	double result[16];
 	// A = From, B = To, M = what we want
 	// A = M * B
 	// => M = A * inv (B)
 	if (to_element) {
-		cairo_matrix_t inverse = to_element->absolute_xform;
-		cairo_matrix_invert (&inverse);
-		cairo_matrix_multiply (&result, &absolute_xform, &inverse);
+		double inverse[16];
+
+		Matrix3D::Inverse (inverse, to_element->absolute_projection);
+		Matrix3D::Multiply (result, absolute_projection, inverse);
 	}
 	else {
-		result = absolute_xform;
+		Matrix3D::Init (result, absolute_projection);
 	}
 
-	Matrix *matrix  = new Matrix (&result);
+	cairo_matrix_t _matrix;
+
+#define M(row, col) result[col * 4 + row]
+	_matrix.xx = M (0, 0);
+	_matrix.yx = M (1, 0);
+	_matrix.xy = M (0, 1);
+	_matrix.yy = M (1, 1);
+	_matrix.x0 = M (0, 3);
+	_matrix.y0 = M (1, 3);
+#undef M
+
+	Matrix *matrix = new Matrix (&_matrix);
 
 	MatrixTransform *transform = MoonUnmanagedFactory::CreateMatrixTransform ();
 	transform->SetValue (MatrixTransform::MatrixProperty, matrix);
