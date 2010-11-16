@@ -102,7 +102,7 @@ Validators::IntGreaterThanZeroValidator (DependencyObject* instance, DependencyP
 bool
 Validators::IsInputMethodEnabledValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (!instance->Is (Type::TEXTBOX)) {
+	if (!instance->Is (Type::TEXTBOX) && !instance->Is (Type::RICHTEXTBOX)) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Target object must be a TextBox");
 		return false;
 	}

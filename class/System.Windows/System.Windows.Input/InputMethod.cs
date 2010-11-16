@@ -20,8 +20,8 @@ namespace System.Windows.Input
 		{
 			if (target == null)
 				throw new ArgumentNullException ("target");
-			if (!(target is TextBox))
-				throw new ArgumentException ("target is not a TextBox", "target");
+			if (!(target is TextBox) && !(target is RichTextBox))
+				throw new ArgumentException ("target is not a TextBox or a RichTextBox", "target");
 		}
 
 		public static bool GetIsInputMethodEnabled (DependencyObject target)
