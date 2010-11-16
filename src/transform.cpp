@@ -175,6 +175,35 @@ GeneralTransform::TransformXY (double x, double y)
 
 
 //
+// InternalTransform
+//
+GeneralTransform *
+InternalTransform::GetInverse ()
+{
+	InternalTransform *transform;
+	double inverse[16];
+	
+	Matrix3D::Inverse (inverse, _m44);
+	
+	transform = MoonUnmanagedFactory::CreateInternalTransform ();
+	Matrix3D::Init (transform->_m44, inverse);
+	
+	return transform;
+}
+
+bool
+InternalTransform::TryTransform (Point inPoint, Point *outPoint)
+{
+	double p[4] = { inPoint.x, inPoint.y, 0.0, 1.0 };
+
+	Matrix3D::TransformPoint (p, _m44, p);
+
+	*outPoint = Point (p[0], p[1]);
+
+	return true;
+}
+
+//
 // Transform
 //
 
@@ -209,6 +238,12 @@ Transform::TryTransform (Point inPoint, Point *outPoint)
 	*outPoint = Point (p[0], p[1]);
 
 	return true;
+}
+
+void
+InternalTransform::UpdateTransform ()
+{
+	// do nothing
 }
 
 

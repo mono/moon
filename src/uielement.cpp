@@ -1878,24 +1878,31 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 		Matrix3D::Init (result, absolute_projection);
 	}
 
-	cairo_matrix_t _matrix;
-
+	if (Matrix3D::Is2DAffine(result)) {
+		cairo_matrix_t _matrix;
+		
 #define M(row, col) result[col * 4 + row]
-	_matrix.xx = M (0, 0);
-	_matrix.yx = M (1, 0);
-	_matrix.xy = M (0, 1);
-	_matrix.yy = M (1, 1);
-	_matrix.x0 = M (0, 3);
-	_matrix.y0 = M (1, 3);
+		_matrix.xx = M (0, 0);
+		_matrix.yx = M (1, 0);
+		_matrix.xy = M (0, 1);
+		_matrix.yy = M (1, 1);
+		_matrix.x0 = M (0, 3);
+		_matrix.y0 = M (1, 3);
 #undef M
 
-	Matrix *matrix = new Matrix (&_matrix);
+		Matrix *matrix = new Matrix (&_matrix);
 
-	MatrixTransform *transform = MoonUnmanagedFactory::CreateMatrixTransform ();
-	transform->SetValue (MatrixTransform::MatrixProperty, matrix);
-	matrix->unref ();
+		MatrixTransform *transform = MoonUnmanagedFactory::CreateMatrixTransform ();
+		transform->SetValue (MatrixTransform::MatrixProperty, matrix);
+		matrix->unref ();
 
-	return transform;
+		return transform;
+	}
+
+	InternalTransform *internal = MoonUnmanagedFactory::CreateInternalTransform ();
+	internal->SetTransform (result);
+
+	return internal;
 }
 
 void

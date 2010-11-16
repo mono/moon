@@ -35,6 +35,13 @@ namespace Mono {
 	}
 }
 
+namespace MS.Internal {
+	partial class InternalTransform {
+		internal InternalTransform () : base (SafeNativeMethods.internal_transform_new (), true) {}
+		internal InternalTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+}
+
 namespace System.Windows {
 	partial class AssemblyPart {
 		public AssemblyPart () : base (SafeNativeMethods.assembly_part_new (), true) {}

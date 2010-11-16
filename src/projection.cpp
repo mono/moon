@@ -556,6 +556,26 @@ Matrix3D::IsIntegerTranslation (const double *m, int *x0, int *y0)
 	return false;
 }
 
+bool
+Matrix3D::Is2DAffine (const double *m)
+{
+#define M(row, col) m[col * 4 + row]
+	if (M(0,2) == 0 &&
+	    M(1,2) == 0.0 &&
+	    M(2,0) == 0.0 &&
+	    M(2,1) == 0.0 &&
+	    M(2,2) == 1.0 &&
+	    M(2,3) == 0.0 &&
+	    M(3,0) == 0.0 &&
+	    M(3,1) == 0.0 &&
+	    M(3,2) == 0.0 &&
+	    M(3,3) == 1.0)
+		return true;
+	else
+		return false;
+#undef M
+}
+
 Projection::Projection ()
 {
 	SetObjectType (Type::PROJECTION);

@@ -55,10 +55,35 @@ class GeneralTransform : public DependencyObject {
 	Point TransformXY (double x, double y);
 };
 
+/* @Namespace=MS.Internal */
+class InternalTransform : public GeneralTransform { 
+protected:
+	/* @GeneratePInvoke,ManagedAccess=Internal */
+	InternalTransform () : GeneralTransform (Type::INTERNALTRANSFORM) { }
+
+	virtual ~InternalTransform () {}
+
+	/* @SkipFactories */
+	InternalTransform (Type::Kind object_type) : GeneralTransform (object_type) { }
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+	
+ public:
+	/* @GeneratePInvoke */
+	GeneralTransform *GetInverse ();
+	
+	/* @GeneratePInvoke */
+	bool TryTransform (Point inPoint, /* @MarshalAs=Point,IsOut */ Point *outPoint);
+
+	virtual void UpdateTransform ();
+	void SetTransform (const double *m) { Matrix3D::Init (_m44, m); };
+};
+
 
 /* @Namespace=System.Windows.Media */
 class Transform : public GeneralTransform {
- protected:
+protected:
 	/* @GeneratePInvoke,ManagedAccess=Internal */
 	Transform () : GeneralTransform (Type::TRANSFORM) { }
 

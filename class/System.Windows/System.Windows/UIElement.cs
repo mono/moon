@@ -112,7 +112,7 @@ namespace System.Windows {
 
 			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual == null ? IntPtr.Zero : visual.native);
 
-			result = (MatrixTransform) NativeDependencyObjectHelper.Lookup (Kind.MATRIXTRANSFORM, t);
+			result = (GeneralTransform) NativeDependencyObjectHelper.Lookup (Kind.GENERALTRANSFORM, t);
 			
 			NativeMethods.event_object_unref (t);
 			
