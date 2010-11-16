@@ -22,8 +22,9 @@ System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanagedSafe
 	r157803		spouliot - call LookupScriptObject without a 'false' parameter (previously used to 'createIfNotFound)
 	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call SetPropertyFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
-!SSC-3384CA5EF5E7C3668D401B8F85CD4367
+!SSC-42427DDDB5234BA586E7E11AAEAD3258
 System.Boolean System.Windows.Browser.ScriptObject::ValidateArguments(System.Reflection.MethodInfo,System.Object[])
+	20101116	spouliot - 47ad3407 - reduced visibility from protected to internal
 	20101013	spouliot - 7795670 - call ScriptObjectHelper [SecurityCritical] TryChangeType on all 'args'
 
 !SSC-A578018465CDE2427D153A4C78DF9BA2

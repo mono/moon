@@ -509,28 +509,33 @@ System.Double System.Math::Tan(System.Double)
 System.Double System.Math::Tanh(System.Double)
 	r144558		spouliot - visible icall (sysmath.c)
 
-!SSC-40DE1C3897C2BA3FD5E38E8675E5BB20
+!SSC-854CFDDE70EDE97D516799504653579A
 System.Globalization.CultureInfo System.Threading.Thread::get_CurrentCulture()
+	20101116	spouliot - no source change / compiler (lock) ?
 	20100924	spouliot - no source code change, likely a compiler-related change
 	r142661		spouliot - most logic is now around the InternalThread (Internal property)
 	r142142		spouliot - call GetCachedCurrentCulture (icall in threads.c), GetSerializedCurrentCulture (icall in threads.c) and SetCachedCurrentCulture (icall in threads.c)
 
-!SSC-5DA95E551C49D7561F1DE3D07143CA1B
+!SSC-7E5371882F122F62BC45F0E177A827D6
 System.Globalization.CultureInfo System.Threading.Thread::get_CurrentUICulture()
+	20101116	spouliot - no source change / compiler (lock) ?
 	20100924	spouliot - no source code change, likely a compiler-related change
 	r142661		spouliot - most logic is now around the InternalThread (Internal property)
 	r142142		spouliot - call GetCachedCurrentUICulture (icall in threads.c), GetSerializedCurrentUICulture (icall in threads.c) and SetCachedCurrentUICulture (icall in threads.c)
 
-!SSC-B618F119E2C52ECF44C770B7790378BE
+!SSC-C437596E7F81C73A69A23D0138FA1305
 System.Globalization.DateTimeFormatInfo System.Globalization.CultureInfo::get_DateTimeFormat()
+	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - call construct_datetime_format (icall in locales.c). parameter-less (instance)
 
-!SSC-DB9AE41063B760EC05B4911897D0E5BD
+!SSC-8ED9A0192A57C2FE7B0A075E72AE3201
 System.Globalization.DaylightTime System.CurrentSystemTimeZone::GetDaylightChanges(System.Int32)
+	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - call GetTimeZoneData (icall) with the 'year' parameter
 
-!SSC-1E55E2DE5C37D1B7ADB89982F1F29CC2
+!SSC-39DBB256888EF1964A66ABC2D9577B86
 System.Globalization.NumberFormatInfo System.Globalization.CultureInfo::get_NumberFormat()
+	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - call construct_number_format (icall in locales.c)
 
 !SSC-2ACC9F98371E39B211FC74F556E2BE0D
@@ -975,8 +980,9 @@ System.Object System.Reflection.MonoProperty::GetRawConstantValue()
 System.Object System.Runtime.CompilerServices.RuntimeHelpers::GetObjectValue(System.Object)
 	r144558		spouliot - visible icall. called with potentially null value
 
-!SSC-8E40852B9DEB1336CDB737A569E0B21D
+!SSC-A318222A1DE2652EBC8F0229427F281B
 System.Object System.Security.Cryptography.CryptoConfig::CreateFromName(System.String)
+	20101116	spouliot - 570ddb50 - handle fully qualified name for AES instead of just the "short" name
 	r160673		spouliot - using Activator.CreateInstance (SecurityCritical) to create AesManaged from System.Core.dll
 
 !SSC-614DD8AE12D0E30A84C3A66580ED233F
@@ -1569,8 +1575,9 @@ System.String[] System.String::Split(System.Char[],System.Int32)
 System.String[] System.String::Split(System.Char[],System.Int32,System.StringSplitOptions)
 	r142142		spouliot - call InternalSplit (icall in string-icalls.c) after validating parameters
 
-!SSC-4D2D0BD81004871C7B624979A237593F
+!SSC-534576D198C1D313550B9FF0C1EE6C40
 System.Text.Encoding System.Text.Encoding::get_Default()
+	20101116	spouliot - no source change / compiler (lock) ?
 	r142747		spouliot - call InternalCodePage (icall) to retrieve the code page (int32)
 
 !SSC-771D04F7C61DD39270B5129F5389B241
@@ -1923,8 +1930,9 @@ System.Void System.GC::SuppressFinalize(System.Object)
 System.Void System.GC::WaitForPendingFinalizers()
 	r144558		spouliot - visible icall (mono/metadata/gc.c). parameter less, no return value
 
-!SSC-DE3125C4724F8CE22C881131B92AC730
+!SSC-6DFBC29AA8E557BA8F91D8DB987E37A4
 System.Void System.Globalization.CompareInfo::.ctor(System.Globalization.CultureInfo)
+	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - create a new SimpleCollator instance (SecurityCritical / unsafe) based on the culture
 
 !SSC-91864D954B5049DE45C57E273DDB9E18
@@ -2016,8 +2024,9 @@ System.Void System.IO.FileStream::.ctor(System.String,System.IO.FileMode,System.
 	20111108	spouliot - 0e648f5 - initialize 'anonymous' earlier in the ctor since it's used by callees
 	r142142		spouliot - validate all parameters (except FileOption which is a [Flags]) then call MonoIO.Open [SecurityCritical] and MonoIO.GetFileType [SecurityCritical]
 
-!SSC-CA2FB70CF46FF9E6FAD44AF72E1B012A
+!SSC-1832AD9D995923D64A2F39A5B2D50501
 System.Void System.IO.FileStream::Dispose(System.Boolean)
+	20101116	spouliot - no source change / compiler (lock) ?
 	r151761		spouliot - catch any exception on FlushBuffer and throw it back just before returning
 	r142142		spouliot - call MonoIO.Close [SecurityCritical] on a valid 'handle'
 
@@ -2097,8 +2106,9 @@ System.Void System.IO.Path::.cctor()
 System.Void System.IO.UnmanagedMemoryStream::Write(System.Byte[],System.Int32,System.Int32)
 	r143653		spouliot - unsafe code, call Marshal.WriteByte (SecurityCritical) after parameter validations
 
-!SSC-2045F683672E51C3572A194252B02BD3
+!SSC-13699B4CFC31CB2671F8990117A99916
 System.Void System.MonoEnumInfo::GetInfo(System.Type,System.MonoEnumInfo&)
+	20101116	spouliot - no source change / compiler (lock) ?
 	r155002		spouliot - changed to call Enum.GetUnderlyingType instead of using array types
 	r142142		spouliot - call get_enum_info (icall) with non-null 'enumType' value (checked by Hashtable.ContainsKey)
 
@@ -2203,8 +2213,9 @@ System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(S
 	20100826	spouliot - e95ea2b4 - signature change to use a BinaryFormatter and assign fields from its properties
 	r143412		spouliot - internal type (needed to serialize CultureInfo and friends between appdomain/threads). Create a ObjectIDGenerator [SecurityCritical] instance
 
-!SSC-0AFDF266C78A3FB7E8501A9F487771B0
+!SSC-E58188F2AAA649120FA3DDF1AFCFA307
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::GetObjectData(System.Object,System.Runtime.Serialization.Formatters.Binary.TypeMetadata&,System.Object&)
+	20101116	spouliot - no source change / compiler (lock) ?
 	r145215		spouliot - create instance of SerializableTypeMetadata [SecurityCritical] or MemberTypeMetadata [SecurityCritical]
 
 !SSC-2BEDF0ECC9D734348B5312E720E60B46
@@ -2239,8 +2250,9 @@ System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor()
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::Finalize()
 	r142142		spouliot - call RngClose (icall)
 
-!SSC-090536FC9E09837C5B9CFF49D81E7996
+!SSC-099D8484B16B8D7C2F06A44B21235E0E
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetBytes(System.Byte[])
+	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - call RngGetBytes (icall)
 
 !SSC-F7E83743D09F7488C8F62720C57968B9
@@ -2365,8 +2377,9 @@ System.Void System.Threading.ThreadPool::GetMinThreads(System.Int32&,System.Int3
 System.Void System.Threading.Timer/Scheduler::.cctor()
 	r144307		spouliot - creates a global Scheduler instance (SecurityCritical type)
 
-!SSC-B534D2736CDD0921C7581B462D973755
+!SSC-A4C58A7BF3CBBA0A901DAF375094D728
 System.Void System.Threading.WaitHandle::Dispose(System.Boolean)
+	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - call SafeWaitHandle (SecurityCritical type) Dispose, eventually leading to NativeEventCalls.CloseEvent_internal (icall in threads.c)
 
 !SSC-0A7FE0A334D1AB337633C158A82E73A8
