@@ -21,7 +21,7 @@ namespace Moonlight {
 class GLXContext : public GLContext {
 public:
 	GLXContext (GLXSurface *surface);
-	~GLXContext ();
+	virtual ~GLXContext ();
 
 	void Push (Group extents);
 
