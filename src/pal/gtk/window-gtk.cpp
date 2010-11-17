@@ -148,7 +148,7 @@ MoonWindowGtk::ConnectToContainerPlatformWindow (gpointer container_window)
 			       GDK_FOCUS_CHANGE_MASK
 			       );
 
-	g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (MoonWindowGtk::container_button_press_callback), this);
+	g_signal_connect (G_OBJECT(container), "button-release-event", G_CALLBACK (MoonWindowGtk::container_button_press_callback), this);
 
 	gtk_container_add (GTK_CONTAINER (container), widget);
 	gtk_widget_show_all (container);
