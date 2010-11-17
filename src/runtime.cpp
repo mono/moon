@@ -416,6 +416,7 @@ Surface::Surface (MoonWindow *window)
 	enable_redraw_regions = false;
 	
 	emittingMouseEvent = false;
+	lastRightMouseDownUnhandled = false;
 	pendingCapture = NULL;
 	pendingReleaseCapture = false;
 
@@ -1880,6 +1881,14 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	if (toplevel == NULL || event == NULL)
 		return false;
 
+	// If the last right mouse down was unhandled, then this mouse up should be consumed
+	// by the context menu being popped up. Tested by drt 'RightClickPN'. Return false
+	// here to propagate the event to the context menu handler.
+	if (lastRightMouseDownUnhandled && event_id == UIElement::MouseRightButtonUpEvent) {
+		lastRightMouseDownUnhandled = false;
+		return false;
+	}
+
 	time_manager->InvokeTickCalls();
 	emittingMouseEvent = true;
 
@@ -2010,6 +2019,8 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		PerformCapture (pendingCapture);
 	if (pendingReleaseCapture || (captured && !captured->CanCaptureMouse ()))
 		PerformReleaseCapture ();
+
+	lastRightMouseDownUnhandled = event_id == UIElement::MouseRightButtonDownEvent && !handled;
 	emittingMouseEvent = false;
 	return handled;
 }
