@@ -73,9 +73,13 @@ blur_factor_get_offset (double factor)
  * Q(uad)Tree.
  */
 
-struct QTree {
+struct QTreeTile {
 	cairo_surface_t *image;
-	bool has_image;
+	double opacity;
+};
+
+struct QTree {
+	QTreeTile *tile;
 	QTree *parent;
 	QTree *l0; //N-E
 	QTree *l1; //N-W
@@ -143,13 +147,16 @@ qtree_insert (QTree *root, int level, guint64 x, guint64 y)
 }
 
 static void
-qtree_set_image (QTree *node, cairo_surface_t *image)
+qtree_set_tile (QTree *node, cairo_surface_t *image, double opacity)
 {
-	if (node->has_image && node->image)
-		cairo_surface_destroy (node->image);
+	if (node->tile) {
+		if (node->tile->image)
+			cairo_surface_destroy (node->tile->image);
+	} else
+		node->tile = g_slice_new (QTreeTile);
 	
-	node->has_image = true;
-	node->image = image;
+	node->tile->opacity = opacity;
+	node->tile->image = image;
 }
 
 static QTree *
@@ -186,13 +193,12 @@ qtree_lookup (QTree *root, int level, guint64 x, guint64 y)
 	return node;
 }
 
-static cairo_surface_t *
-qtree_lookup_image (QTree *root, int level, guint64 x, guint64 y)
+static QTreeTile *
+qtree_lookup_tile (QTree *root, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_lookup (root, level, x, y);
-	if (node && node->has_image)
-		return node->image;
-	return NULL;
+	
+	return node ? node->tile : NULL;
 }
 
 static void
@@ -201,14 +207,13 @@ qtree_remove (QTree *node, int depth)
 	if (!node)
 		return;
 	
-	if (node->has_image) {
-		node->has_image = false;
-		if (node->image) {
-			cairo_surface_destroy (node->image);
-			node->image = NULL;
-		}
-	}	
-
+	if (node->tile) {
+		if (node->tile->image)
+			cairo_surface_destroy (node->tile->image);
+		g_slice_free (QTreeTile, node->tile);
+		node->tile = NULL;
+	}
+	
 	if (depth <= 0)
 		return;
 	
@@ -227,9 +232,9 @@ qtree_remove_at (QTree *root, int level, guint64 x, guint64 y, int depth)
 }
 
 static inline bool
-qtree_has_image (QTree *node)
+qtree_has_tile (QTree *node)
 {
-	return node->has_image;	
+	return node->tile != NULL;
 }
 
 static void
@@ -238,11 +243,12 @@ qtree_destroy (QTree *root)
 	if (!root)
 		return;
 	
-	if (root->image) {
-		cairo_surface_destroy (root->image);
-		root->image = NULL;
+	if (root->tile) {
+		if (root->tile->image)
+			cairo_surface_destroy (root->tile->image);
+		g_slice_free (QTreeTile, root->tile);
 	}
-
+	
 	qtree_destroy (root->l0);
 	qtree_destroy (root->l1);
 	qtree_destroy (root->l2);
@@ -296,12 +302,6 @@ morton_y (int n)
 	n = (n & 0xff000000) + ((n & 0x0000ff00) << 8);
 
 	return n >> 16;
-}
-
-static void
-double_free (gpointer user_data)
-{
-	delete (double *) user_data;
 }
 
 static void
@@ -591,7 +591,7 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 		ctx->retry++;
 	} else {
 		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
-		qtree_set_image (ctx->node, NULL);
+		qtree_set_tile (ctx->node, NULL, 0.0);
 		ctx->avail = true;
 		n_downloading--;
 		Invalidate ();
@@ -753,7 +753,7 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	
 	if (!(surface = cairo_surface_reference (ctx->image->GetSurface (NULL)))) {
 		LOG_MSI ("caching NULL for %s\n", ctx->image->GetUriSource ()->ToString ());
-		qtree_set_image (ctx->node, NULL);
+		qtree_set_tile (ctx->node, NULL, 0.0);
 		return;
 	}
 	
@@ -786,9 +786,8 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	
 	UpdateIdleStatus ();
 	
-	cairo_surface_set_user_data (surface, &full_opacity_at_key, new double (tile_fade + 0.9), double_free);
 	LOG_MSI ("caching %s\n", ctx->image->GetUriSource ()->ToString ());
-	qtree_set_image (ctx->node, surface);
+	qtree_set_tile (ctx->node, surface, tile_fade + 0.9);
 }
 
 void
@@ -850,6 +849,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	double blur_factor = GetBlurFactor ();
 	double fade = GetTileFade ();
 	int blur_offset;
+	int max_level;
 	
 	LOG_MSI ("\nMSI::RenderCollection\n");
 	
@@ -862,6 +862,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	
 	if (!dzits->IsParsed ())
 		return;
+	
+	max_level = dzits->GetMaxLevel ();
 	
 	if (msi_w <= 0.0 || msi_h <= 0.0 || !blur_factor_is_valid (blur_factor))
 		return; // invisible widget, nothing to render
@@ -924,7 +926,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		int to_layer = -1;
 		int from_layer = optimal_layer;
 		while (from_layer >= 0) {
-			bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
+			bool parsed = (from_layer > max_level && sub_dzits->IsParsed ());
 			int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 			int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 			guint64 from_layer2 = pow2 (from_layer);
@@ -944,21 +946,19 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			
 			for (guint64 i = (guint64) minx; i < from_layer2 && i * v_tile_w < maxx; i++) {
 				for (guint64 j = (guint64) miny; j < from_layer2 && j * v_tile_h < maxy; j++) {
-					cairo_surface_t *image = NULL;
+					QTreeTile *tile;
 					
 					count++;
 					
-					if (from_layer > dzits->GetMaxLevel ())
-						image = qtree_lookup_image (subimage_cache, from_layer, i, j);
+					if (from_layer > max_level)
+						tile = qtree_lookup_tile (subimage_cache, from_layer, i, j);
 					else
-						image = qtree_lookup_image (shared_cache, from_layer,
-									    morton_x (sub_image->n) * from_layer2 / tile_width,
-									    morton_y (sub_image->n) * from_layer2 / tile_height);
+						tile = qtree_lookup_tile (shared_cache, from_layer,
+									  morton_x (sub_image->n) * from_layer2 / tile_width,
+									  morton_y (sub_image->n) * from_layer2 / tile_height);
 					
-					if (image) {
-						double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
-						
-						if (*opacity > GetTileFade ())
+					if (tile && tile->image) {
+						if (tile->opacity > GetTileFade ())
 							blending = true;
 						
 						found++;
@@ -974,7 +974,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			
 			from_layer--;
 		}
-	
+		
 		// render loop
 		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 		
@@ -1000,7 +1000,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
-				bool parsed = (layer_to_render > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
+				bool parsed = (layer_to_render > max_level && sub_dzits->IsParsed ());
 				int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 				int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 				guint64 render_layer2 = pow2 (layer_to_render);
@@ -1015,21 +1015,21 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				
 				for (guint64 i = (guint64) minx; i < render_layer2 && i * v_tile_w < maxx; i++) {
 					for (guint64 j = (guint64) miny; j < render_layer2 && j * v_tile_h < maxy; j++) {
-						cairo_surface_t *image = NULL;
 						bool shared_tile = false;
+						QTreeTile *tile;
 						
-						if (layer_to_render > dzits->GetMaxLevel())
-							image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
+						if (layer_to_render > max_level)
+							tile = qtree_lookup_tile (subimage_cache, layer_to_render, i, j);
 						else {
 							// Check in the shared levels
 							shared_tile = true;
 							
-							image = qtree_lookup_image (shared_cache, layer_to_render,
-										    morton_x (sub_image->n) * render_layer2 / tile_width,
-										    morton_y (sub_image->n) * render_layer2 / tile_height);
+							tile = qtree_lookup_tile (shared_cache, layer_to_render,
+										  morton_x (sub_image->n) * render_layer2 / tile_width,
+										  morton_y (sub_image->n) * render_layer2 / tile_height);
 						}
 						
-						if (!image)
+						if (!tile || !tile->image)
 							continue;
 						
 						LOG_MSI ("rendering subimage %d %d %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", sub_image->id, layer_to_render, i, j);
@@ -1045,14 +1045,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 									 (int)(-morton_y(sub_image->n) * render_layer2) % tile_height);
 						}
 						
-						cairo_set_source_surface (cr, image, 0, 0);
+						cairo_set_source_surface (cr, tile->image, 0, 0);
 						
-						double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
 						double combined = 1.0;
-
-						if (opacity && *opacity > fade) 
-							combined = MIN(1.0 - *opacity + fade, 1.0);
-
+						
+						if (tile->opacity > fade) 
+							combined = MIN (1.0 - tile->opacity + fade, 1.0);
+						
 						if (IS_TRANSLUCENT (combined))
 							cairo_paint_with_alpha (cr, combined);
 						else
@@ -1064,7 +1063,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				
 				layer_to_render++;
 			}
-
+			
 			if (IS_TRANSLUCENT (sub_image->GetOpacity ())) {
 				cairo_pattern_t *data = cairo_pop_group (cr);
 				if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
@@ -1073,24 +1072,24 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				}
 				cairo_pattern_destroy (data);
 			}
-
+			
 			cairo_restore (cr);
 		}
-
+		
 		if (!GetAllowDownloading () || !CanDownloadMoreTiles ())
 			continue;
 		
 		// Download the next set of tiles..
 		while (from_layer < optimal_layer) {
 			from_layer ++;
-
+			
 			// if the subimage is unparsed, trigger the download
-			if (from_layer > dzits->GetMaxLevel () && !sub_dzits->IsDownloaded ()) {
+			if (from_layer > max_level && !sub_dzits->IsDownloaded ()) {
 				sub_dzits->Download ();
 				break;
 			}
 			
-			bool parsed = (from_layer > dzits->GetMaxLevel () && sub_dzits->IsParsed ());
+			bool parsed = (from_layer > max_level && sub_dzits->IsParsed ());
 			int tile_width = parsed ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
 			int tile_height = parsed ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 			guint64 layers2 = pow2 (layers - from_layer);
@@ -1114,7 +1113,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					if (!CanDownloadMoreTiles ())
 						break;
 					
-					if (from_layer <= dzits->GetMaxLevel ()) {
+					if (from_layer <= max_level) {
 						guint64 from_layer2 = pow2 (from_layer);
 						x = morton_x (sub_image->n) * from_layer2 / tile_width;
 						y = morton_y (sub_image->n) * from_layer2 / tile_height;
@@ -1130,7 +1129,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					if (!(node = qtree_insert (tile_cache, from_layer, x, y)))
 						continue;
 					
-					if (!qtree_has_image (node)) {
+					if (!qtree_has_tile (node)) {
 						tile = NULL;
 						if (dzits->get_tile_func (from_layer, x, y, &tile, tile_source))
 							DownloadTile (tile, node);
@@ -1214,14 +1213,12 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		// This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
 		for (guint64 i = (guint64) minx; i < from_layer2 && i * v_tile_w < maxx; i++) {
 			for (guint64 j = (guint64) miny; j < from_layer2 && j * v_tile_h < maxy; j++) {
-				cairo_surface_t *image = qtree_lookup_image (subimage_cache, from_layer, i, j);
+				QTreeTile *tile = qtree_lookup_tile (subimage_cache, from_layer, i, j);
 				
 				count++;
 				
-				if (image) {
-					double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
-					
-					if (*opacity > fade)
+				if (tile && tile->image) {
+					if (tile->opacity > fade)
 						blending = true;
 					
 					found++;
@@ -1280,8 +1277,9 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		
 		for (guint64 i = (guint64) minx; i < render_layer2 && i * v_tile_w < maxx; i++) {
 			for (guint64 j = (guint64) miny; j < render_layer2 && j * v_tile_h < maxy; j++) {
-				cairo_surface_t *image = qtree_lookup_image (subimage_cache, layer_to_render, i, j);
-				if (!image)
+				QTreeTile *tile = qtree_lookup_tile (subimage_cache, layer_to_render, i, j);
+				
+				if (!tile || !tile->image)
 					continue;
 				
 				LOG_MSI ("rendering %d %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", layer_to_render, i, j);
@@ -1292,13 +1290,12 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				
 				cairo_translate (cr, i * tile_width, j * tile_height);
 				
-				cairo_set_source_surface (cr, image, 0, 0);
+				cairo_set_source_surface (cr, tile->image, 0, 0);
 				
-				double *opacity = (double *) cairo_surface_get_user_data (image, &full_opacity_at_key);
 				double combined = 1.0;
 				
-				if (opacity && *opacity > fade)
-					combined = MIN(1.0 - *opacity + fade, 1.0);
+				if (tile->opacity > fade)
+					combined = MIN (1.0 - tile->opacity + fade, 1.0);
 				
 				if (IS_TRANSLUCENT (combined))
 					cairo_paint_with_alpha (cr, combined);
@@ -1343,13 +1340,13 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (!(node = qtree_insert (subimage_cache, from_layer, i, j)))
 					continue;
 				
-				if (!qtree_has_image (node)) {
+				if (!qtree_has_tile (node)) {
 					Uri *tile = NULL;
 					
 					if (source->get_tile_func (from_layer, i, j, &tile, source))
 						DownloadTile (tile, node);
 					else
-						qtree_set_image (node, NULL);
+						qtree_set_tile (node, NULL, 0.0);
 					
 					delete tile;
 				}
