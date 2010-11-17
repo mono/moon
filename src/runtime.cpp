@@ -187,7 +187,7 @@ moonlight_get_runtime_option (RuntimeInitFlag flag)
 #endif
 
 #define RUNTIME_INIT_DESKTOP (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS | GALLIUM_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS )
-#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | GALLIUM_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS )
+#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_DESKTOP_EXTENSIONS | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | GALLIUM_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS )
 
 #if DEBUG || LOGGING
 static struct MoonlightDebugOption debugs[] = {
@@ -1782,8 +1782,8 @@ Surface::EmitEventOnList (int event_id, List *list, MoonEvent *event, int end_id
 		else
 			args->ref ();
 
-		if (node->uielement->DoEmit (event_id, args))
-			handled = true;
+		node->uielement->DoEmit (event_id, args);
+		handled = handled || ((RoutedEventArgs *)args)->GetHandled ();
 
 		// Create the new args because the old one should be dead due
 		// to the unref in emit
@@ -2150,10 +2150,11 @@ Surface::HandleUIFocusOut (MoonFocusEvent *event)
 gboolean
 Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 {
+	bool handled = false;
 	time_manager->InvokeTickCalls();
 
 	if (event->GetButton() != 1 && event->GetButton() != 3)
-		return false;
+		return handled;
 
 	SetUserInitiatedEvent (true);
 	
@@ -2161,7 +2162,7 @@ Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 	
 	mouse_event = (MoonMouseEvent*)event->Clone ();
 
-	HandleMouseEvent ((event->GetButton () == 1
+	handled = HandleMouseEvent ((event->GetButton () == 1
 			   ? UIElement::MouseLeftButtonUpEvent
 			   : UIElement::MouseRightButtonUpEvent),
 			  true, true, true, mouse_event);
@@ -2173,13 +2174,13 @@ Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 	if (captured)
 		PerformReleaseCapture ();
 
-	return !((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && event->GetButton () == 3);
+	return handled;
 }
 
 gboolean
 Surface::HandleUIButtonPress (MoonButtonEvent *event)
 {
-	bool handled;
+	bool handled = false;
 	int event_id;
 	
 	active_window->GrabFocus ();

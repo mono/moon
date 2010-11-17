@@ -644,20 +644,17 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 	if (event->button != 1 && event->button != 3)
 		return false;
 
+	bool handled = false;
 	if (window->surface) {
 		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIButtonPress (mevent);
+		handled = window->surface->HandleUIButtonPress (mevent);
 		delete mevent;
 	}
-	
-	// If we don't support right clicks (i.e. inside the browser)
-	// return false here
-	if (event->button == 3 && (moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0)
-		return false;
 
-	// ignore HandleUIButtonPress's return value, and always
-	// return true here, or it gets bubbled up to firefox.
-	return true;
+	// If false is returned, this will bubble up to the browser.
+	// We need this to happen if we want to display the moonlight
+	// settings window on an unhandled rightclick
+	return handled;
 }
 
 gboolean
