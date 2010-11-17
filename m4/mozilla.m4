@@ -70,23 +70,21 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 	
 	AM_CONDITIONAL(HAVE_GECKO_1_8,test x$with_ff2 = xyes)
 
+
 	dnl
 	dnl Put it all together
 	dnl
 
-	if test x$with_ff2 = xyes; then
+	if test x$with_ff2 = xyes -o x$with_ff3 = xyes; then
 		with_mozilla=yes
-		MIN_FIREFOX_VERSION="1.5"
-		if test x$with_ff3 = xyes; then
-			MAX_FIREFOX_VERSION="3.7.*"
-		else
-			MAX_FIREFOX_VERSION="2.0.0.*"
-		fi
-	elif test x$with_ff3 = xyes; then
-   		with_mozilla=yes
-		MIN_FIREFOX_VERSION="2.9.*"
-		MAX_FIREFOX_VERSION="3.7*"
   	fi
+
+	dnl dnl we just report that we support everything we used to
+	dnl support, regardless of libxul dev versions, since we'll
+	dnl use the curl bridge if there's no native browser support
+	dnl anyway.
+	MIN_FIREFOX_VERSION="1.5"
+	MAX_FIREFOX_VERSION="4.0.*"
 
 	AC_SUBST([MIN_FIREFOX_VERSION])
 	AC_SUBST([MAX_FIREFOX_VERSION])
