@@ -153,10 +153,12 @@ Grid::MeasureOverrideWithError (Size availableSize, MoonError *error)
 				row_matrix [i][i].offered_size = Grid::Clamp (height->val, row_matrix [i][i].min, row_matrix [i][i].max);
 				row_matrix [i][i].desired_size = row_matrix [i][i].offered_size;
 				rowdef->SetActualHeight (row_matrix [i][i].offered_size );
-			}
-			else if (height->type == GridUnitTypeStar) {
+			} else if (height->type == GridUnitTypeStar) {
 				row_matrix [i][i].stars = height->val;
 				total_stars.height += height->val;
+			} else if (height->type == GridUnitTypeAuto) {
+				row_matrix [i][i].offered_size = Grid::Clamp (0, row_matrix [i][i].min, row_matrix [i][i].max);
+				row_matrix [i][i].desired_size = row_matrix [i][i].offered_size;
 			}
 		}
 	}
@@ -181,6 +183,9 @@ Grid::MeasureOverrideWithError (Size availableSize, MoonError *error)
 			} else if (width->type == GridUnitTypeStar) {
 				col_matrix [i][i].stars = width->val;
 				total_stars.width += width->val;
+			} else if (width->type == GridUnitTypeAuto) {
+				col_matrix [i][i].offered_size = Grid::Clamp (0, col_matrix [i][i].min, col_matrix [i][i].max);
+				col_matrix [i][i].desired_size = col_matrix [i][i].offered_size;
 			}
 		}
 	}
