@@ -397,8 +397,7 @@ private:
 	
 	// are we currently emitting a mouse event?
 	bool emittingMouseEvent;
-	bool lastRightMouseDownUnhandled;
-
+	
 	// the currently shown cursor
 	CursorType cursor;
 
