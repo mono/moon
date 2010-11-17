@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 578 methods needs to be decorated.
+# 580 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -87,6 +87,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::html_object_invoke_self(System.IntPtr,System.IntPtr,Mono.Value[],System.UInt32,Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::internal_transform_try_transform(System.IntPtr,System.Windows.Point,System.Windows.Point&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&,System.String)
@@ -588,6 +591,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::imedia_object_get_media_reffed(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::internal_transform_get_inverse(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::local_message_receiver_get_receiver_name_(System.IntPtr)
